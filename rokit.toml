@@ -1,0 +1,10 @@
+# Toolchain pins (docs/06-tools-and-pipeline.md). Install with `rokit install`.
+# CI installs the same versions through CompeyDev/setup-rokit.
+[tools]
+rojo = "rojo-rbx/rojo@7.7.1"
+wally = "UpliftGames/wally@0.3.2"
+wally-package-types = "JohnnyMorganz/wally-package-types@1.7.0"
+luau-lsp = "JohnnyMorganz/luau-lsp@1.70.1"
+selene = "Kampfkarren/selene@0.32.0"
+stylua = "JohnnyMorganz/StyLua@2.6.0"
+lune = "lune-org/lune@0.10.5"
