@@ -1,0 +1,39 @@
+22:14:42
+opened, studio_id: 6fe58f9d-e288-40df-90ee-e973745e3c19
+inserted M_Veg_Bracken_01_LOD0 into Workspace
+inserted M_Veg_Bracken_02_LOD0 into Workspace
+inserted M_Veg_Gorse_01_LOD0 into Workspace
+inserted M_Veg_Gorse_02_LOD0 into Workspace
+inserted M_Veg_Gorse_03_LOD0 into Workspace
+inserted M_Veg_Grass_Marram_01_LOD0 into Workspace
+inserted M_Veg_Grass_Marram_02_LOD0 into Workspace
+inserted M_Veg_Grass_Turf_01_LOD0 into Workspace
+inserted M_Veg_Grass_Turf_02_LOD0 into Workspace
+inserted M_Veg_Hawthorn_01_LOD0 into Workspace
+inserted M_Veg_Hawthorn_02_LOD0 into Workspace
+inserted M_Veg_Heather_01_LOD0 into Workspace
+inserted M_Veg_Heather_02_LOD0 into Workspace
+inserted M_Veg_Heather_03_LOD0 into Workspace
+inserted M_Veg_SeaThrift_01_LOD0 into Workspace
+inserted M_Veg_SeaThrift_02_LOD0 into Workspace
+import_asset: _G.ImportAsset(config) installed
+shots 9 {'bracken': 5, 'thrift': 24, 'duneTurf': 18, 'duneGorse': 2, 'duneBracken': 3, 'turf': 76, 'heather': 15, 'marram': 90, 'hawthorn': 2, 'gorse': 5} {'cliff': [1732, 119.203125, 840, 'LeafyGrass'], 'dune': [1013.3300170898438, 21.31463623046875, 171.8800048828125, 'Sand']} warnings [] doubleSided {True}
+setup art/lookdev/shot-setup.luau: lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 256
+shot G1_dune_Clear_dry assets/review/G1/studio/G1_dune_Clear_dry.png
+shot G1_dune_Clear_wet assets/review/G1/studio/G1_dune_Clear_wet.png
+shot G1_dune_Overcast_dry assets/review/G1/studio/G1_dune_Overcast_dry.png
+shot G1_dune_Overcast_wet assets/review/G1/studio/G1_dune_Overcast_wet.png
+shot G1_dune_Storm_dry assets/review/G1/studio/G1_dune_Storm_dry.png
+shot G1_dune_Storm_wet assets/review/G1/studio/G1_dune_Storm_wet.png
+shot G1_dune_Night_dry assets/review/G1/studio/G1_dune_Night_dry.png
+shot G1_dune_Night_wet assets/review/G1/studio/G1_dune_Night_wet.png
+shot G1_dune_Overcast_close assets/review/G1/studio/G1_dune_Overcast_close.png
+SHEET: assets/review/G1/studio_dune.png
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-lookdev-g1.rbxl - Roblox Studio
+22:18:36

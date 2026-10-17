@@ -1,0 +1,137 @@
+[
+ {
+  "name": "G1_dune_Clear_dry",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "G1_dune_Clear_wet",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "G1_dune_Overcast_dry",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "G1_dune_Overcast_wet",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "G1_dune_Storm_dry",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "G1_dune_Storm_wet",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "G1_dune_Night_dry",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "G1_dune_Night_wet",
+  "cam": [
+   1004.3300170898438,
+   27.81463623046875,
+   146.8800048828125
+  ],
+  "look": [
+   1014.3300170898438,
+   22.51463623046875,
+   174.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Night', true)"
+ },
+ {
+  "name": "G1_dune_Overcast_close",
+  "cam": [
+   1009.3300170898438,
+   23.91463623046875,
+   162.8800048828125
+  ],
+  "look": [
+   1013.3300170898438,
+   22.11463623046875,
+   170.8800048828125
+  ],
+  "settle": 1.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 return _G.LookDev.apply('Overcast', false)"
+ }
+]
