@@ -1,5 +1,5 @@
 # M_Bld_Slipway
-dims_m: n/a
+dims_m: 7.33 x - x -
 Reference: concrete inshore slipway with steel launch rails and winch house.
 - Width about 5 m (verify; a trailer lane needs at least 2.3 m).
 - Gradient: lifeboat slipways about 1 in 5 (RNLI); general launch ramps 12 to 15% (about 1:8 to 1:6.7) per PIANC summary; UK harbour design 1:7 to 1:9. Use 1:6 (row, verify).

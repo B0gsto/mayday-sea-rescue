@@ -1,0 +1,355 @@
+{
+ "asset": "M_Bld_Station",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_HallBackDoor",
+   "parent": null,
+   "blender": [
+    -22.5,
+    26.055,
+    0.0474
+   ],
+   "roblox_from_origin": [
+    22.5,
+    0.0474,
+    26.055
+   ],
+   "roblox_from_bbox_centre": [
+    22.5,
+    -21.5463,
+    26.055
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CrewDoor",
+   "parent": null,
+   "blender": [
+    3.6,
+    -24.345,
+    0.0474
+   ],
+   "roblox_from_origin": [
+    -3.6,
+    0.0474,
+    -24.345
+   ],
+   "roblox_from_bbox_centre": [
+    -3.6,
+    -21.5463,
+    -24.345
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WingBackDoor",
+   "parent": null,
+   "blender": [
+    6.0,
+    26.055,
+    0.0474
+   ],
+   "roblox_from_origin": [
+    -6.0,
+    0.0474,
+    26.055
+   ],
+   "roblox_from_bbox_centre": [
+    -6.0,
+    -21.5463,
+    26.055
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WatchRoom",
+   "parent": null,
+   "blender": [
+    15.0,
+    -19.845,
+    15.6474
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    15.6474,
+    -19.845
+   ],
+   "roblox_from_bbox_centre": [
+    -15.0,
+    -5.9463,
+    -19.845
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BayDoor",
+   "parent": null,
+   "blender": [
+    -15.75,
+    -24.945,
+    0.0474
+   ],
+   "roblox_from_origin": [
+    15.75,
+    0.0474,
+    -24.945
+   ],
+   "roblox_from_bbox_centre": [
+    15.75,
+    -21.5463,
+    -24.945
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BayDoorTop",
+   "parent": null,
+   "blender": [
+    -15.75,
+    -22.665,
+    13.8474
+   ],
+   "roblox_from_origin": [
+    15.75,
+    13.8474,
+    -22.665
+   ],
+   "roblox_from_bbox_centre": [
+    15.75,
+    -7.7463,
+    -22.665
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BoatHall",
+   "parent": null,
+   "blender": [
+    -15.75,
+    0.855,
+    0.2874
+   ],
+   "roblox_from_origin": [
+    15.75,
+    0.2874,
+    0.855
+   ],
+   "roblox_from_bbox_centre": [
+    15.75,
+    -21.3063,
+    0.855
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign",
+   "parent": null,
+   "blender": [
+    -15.75,
+    -24.105,
+    17.4474
+   ],
+   "roblox_from_origin": [
+    15.75,
+    17.4474,
+    -24.105
+   ],
+   "roblox_from_bbox_centre": [
+    15.75,
+    -4.1463,
+    -24.105
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bay_01",
+   "parent": null,
+   "blender": [
+    15.0,
+    -83.0,
+    -3.8
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    -3.8,
+    -83.0
+   ],
+   "roblox_from_bbox_centre": [
+    -15.0,
+    -25.3937,
+    -83.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bay_02",
+   "parent": null,
+   "blender": [
+    15.0,
+    -105.0,
+    -3.8
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    -3.8,
+    -105.0
+   ],
+   "roblox_from_bbox_centre": [
+    -15.0,
+    -25.3937,
+    -105.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bay_03",
+   "parent": null,
+   "blender": [
+    15.0,
+    -127.0,
+    -3.8
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    -3.8,
+    -127.0
+   ],
+   "roblox_from_bbox_centre": [
+    -15.0,
+    -25.3937,
+    -127.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bay_04",
+   "parent": null,
+   "blender": [
+    15.0,
+    -149.0,
+    -3.8
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    -3.8,
+    -149.0
+   ],
+   "roblox_from_bbox_centre": [
+    -15.0,
+    -25.3937,
+    -149.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

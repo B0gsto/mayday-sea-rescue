@@ -1,0 +1,222 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_Station/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_Station_Stone_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Station_Render_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Station_Roof_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Station_Trim_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Station_Details_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Station_BayDoor_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Station_Render",
+  "T_Station_Slate",
+  "T_Station_Details",
+  "T_BldTrim_Sheet",
+  "T_Mat_QuayStone"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.159,
+    0.115,
+    0.963,
+    0.73
+   ],
+   "mannequin": [
+    0.048,
+    0.291,
+    0.07,
+    0.345
+   ],
+   "fill": 0.804
+  },
+  "Side": {
+   "asset": [
+    0.181,
+    0.148,
+    0.963,
+    0.784
+   ],
+   "mannequin": [
+    0.156,
+    0.26,
+    0.179,
+    0.323
+   ],
+   "fill": 0.782
+  },
+  "Rear3Q": {
+   "asset": [
+    0.158,
+    0.115,
+    0.963,
+    0.73
+   ],
+   "mannequin": [
+    0.047,
+    0.291,
+    0.07,
+    0.345
+   ],
+   "fill": 0.805
+  },
+  "High": {
+   "asset": [
+    0.194,
+    0.103,
+    0.963,
+    0.86
+   ],
+   "mannequin": [
+    0.114,
+    0.384,
+    0.138,
+    0.419
+   ],
+   "fill": 0.769
+  }
+ },
+ "closeups": [
+  {
+   "name": "bay_door_sign",
+   "target": [
+    -15.75,
+    -23.44500045776367,
+    15.0
+   ],
+   "dist": 30.0,
+   "az": 15.0,
+   "el": 8.0,
+   "file": "closeup_bay_door_sign.png"
+  },
+  {
+   "name": "watch_room",
+   "target": [
+    13.5,
+    -24.645000457763672,
+    15.0
+   ],
+   "dist": 18.0,
+   "az": -25.0,
+   "el": 5.0,
+   "file": "closeup_watch_room.png"
+  },
+  {
+   "name": "crew_door",
+   "target": [
+    3.5999999999999996,
+    -23.44500045776367,
+    4.5
+   ],
+   "dist": 9.0,
+   "az": 20.0,
+   "el": 5.0,
+   "file": "closeup_crew_door.png"
+  },
+  {
+   "name": "eaves_gutter_downpipe",
+   "target": [
+    29.25,
+    -22.24500045776367,
+    19.0
+   ],
+   "dist": 8.0,
+   "az": 50.0,
+   "el": 10.0,
+   "file": "closeup_eaves_gutter_downpipe.png"
+  },
+  {
+   "name": "quoins_plinth",
+   "target": [
+    29.25,
+    -23.44500045776367,
+    3.0
+   ],
+   "dist": 8.0,
+   "az": 40.0,
+   "el": 10.0,
+   "file": "closeup_quoins_plinth.png"
+  },
+  {
+   "name": "roof_ridge_chimney",
+   "target": [
+    19.5,
+    14.95499954223633,
+    32.0
+   ],
+   "dist": 14.0,
+   "az": 150.0,
+   "el": 25.0,
+   "file": "closeup_roof_ridge_chimney.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.769,
+ "in_frame": true,
+ "dims_m": [
+  20.0,
+  16.7,
+  null
+ ],
+ "validation_ok": true,
+ "seconds": 7.6
+}

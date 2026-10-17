@@ -1,0 +1,182 @@
+[
+ {
+  "name": "M_Bld_Station_Harbour_Clear_dry",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Clear_wet",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Overcast_dry",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Overcast_wet",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Storm_dry",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Storm_wet",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Night_dry",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "M_Bld_Station_Harbour_Night_wet",
+  "cam": [
+   45,
+   16,
+   165
+  ],
+  "look": [
+   -18,
+   15,
+   12
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Night', true)"
+ },
+ {
+  "name": "M_Bld_Slipway_Closeup_Overcast_dry",
+  "cam": [
+   -38,
+   9,
+   102
+  ],
+  "look": [
+   -55,
+   2,
+   82
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-38, 9, 102}, {-55, 2, 82}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Bld_Station_DoorDetail_Overcast_dry",
+  "cam": [
+   -6,
+   10,
+   42
+  ],
+  "look": [
+   -15,
+   10,
+   23
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-6, 10, 42}, {-15, 10, 23}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Bld_Slipway_Closeup_Overcast_wet",
+  "cam": [
+   -38,
+   9,
+   102
+  ],
+  "look": [
+   -55,
+   2,
+   82
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-38, 9, 102}, {-55, 2, 82}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Bld_Station_DoorDetail_Overcast_wet",
+  "cam": [
+   -6,
+   10,
+   42
+  ],
+  "look": [
+   -15,
+   10,
+   23
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-6, 10, 42}, {-15, 10, 23}) return _G.LookDev.apply('Overcast', true)"
+ }
+]

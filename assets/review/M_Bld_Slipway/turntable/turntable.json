@@ -1,0 +1,166 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_Slipway/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_Slipway_Ramp_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Slipway_Weedy_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Slipway_Steel_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Mat_Concrete",
+  "T_Mat_WeedyConcrete",
+  "T_Slipway_Steel"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.092,
+    0.068,
+    0.963,
+    0.671
+   ],
+   "mannequin": [
+    0.053,
+    0.339,
+    0.082,
+    0.408
+   ],
+   "fill": 0.871
+  },
+  "Side": {
+   "asset": [
+    0.171,
+    0.392,
+    0.963,
+    0.596
+   ],
+   "mannequin": [
+    0.067,
+    0.406,
+    0.084,
+    0.452
+   ],
+   "fill": 0.792
+  },
+  "Rear3Q": {
+   "asset": [
+    0.079,
+    0.089,
+    0.963,
+    0.673
+   ],
+   "mannequin": [
+    0.048,
+    0.337,
+    0.078,
+    0.406
+   ],
+   "fill": 0.884
+  },
+  "High": {
+   "asset": [
+    0.187,
+    0.037,
+    0.937,
+    0.831
+   ],
+   "mannequin": [
+    0.044,
+    0.419,
+    0.074,
+    0.461
+   ],
+   "fill": 0.794
+  }
+ },
+ "closeups": [
+  {
+   "name": "rails_weed_line",
+   "target": [
+    0.0,
+    -18.0,
+    -2.7272727272727275
+   ],
+   "dist": 10.0,
+   "az": 30.0,
+   "el": 25.0,
+   "file": "closeup_rails_weed_line.png"
+  },
+  {
+   "name": "winch_house",
+   "target": [
+    0.0,
+    13.5,
+    4.0
+   ],
+   "dist": 16.0,
+   "az": 200.0,
+   "el": 15.0,
+   "file": "closeup_winch_house.png"
+  },
+  {
+   "name": "head_winch_rails",
+   "target": [
+    0.0,
+    3.0,
+    1.5
+   ],
+   "dist": 9.0,
+   "az": 150.0,
+   "el": 30.0,
+   "file": "closeup_head_winch_rails.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.792,
+ "in_frame": true,
+ "dims_m": [
+  7.326666666666667,
+  null,
+  null
+ ],
+ "validation_ok": true,
+ "seconds": 11.5
+}
