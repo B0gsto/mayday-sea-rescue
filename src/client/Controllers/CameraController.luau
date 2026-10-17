@@ -58,6 +58,7 @@ local current: {
 
 local STATION = Vector3.new(-95, 0, 50)
 local arrivalPending = false
+local rodeColdOpen = false -- seated in a vehicle before the cold open finished
 
 -- look input gathered between frames
 local gamepadLook = Vector2.zero
@@ -399,6 +400,11 @@ local function update(dt: number)
 	setHelmBinding(helmWanted(mode))
 	Viewmodel.update(dt, camera.CFrame)
 
+	-- remember riding before ColdOpenDone: the server may reseat or reset the jet ski at the very
+	-- moment the cold open ends, so `current` can be nil when the attribute flips
+	if current and player:GetAttribute("ColdOpenDone") ~= true then
+		rodeColdOpen = true
+	end
 	if arrivalPending and root and (root.Position - STATION).Magnitude < 230 then
 		arrivalPending = false
 		Cinematic.play(Cinematic.Lists.arrival(), { id = "arrival" })
@@ -422,7 +428,7 @@ local function connectTriggers()
 		-- only when it flips at the end of the cold open (still riding), not on a profile load
 		if
 			player:GetAttribute("ColdOpenDone") == true
-			and current ~= nil
+			and (current ~= nil or rodeColdOpen)
 			and not Comfort.hasSeen("arrival")
 		then
 			arrivalPending = true
