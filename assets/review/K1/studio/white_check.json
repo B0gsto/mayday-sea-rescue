@@ -1,0 +1,63 @@
+{
+ "limit_pct": 8.0,
+ "luma": 245.0,
+ "wait_s": 8.0,
+ "shots": [
+  {
+   "name": "K1_Cove_Clear_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Clear_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Overcast_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Storm_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Storm_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Night_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cove_Night_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Ledge_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Ledge_Overcast_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Boulders_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Boulders_Overcast_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cliffs_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "K1_Cliffs_Overcast_wet",
+   "white_pct": 0.0
+  }
+ ]
+}

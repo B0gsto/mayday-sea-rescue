@@ -91,43 +91,6 @@ for name, p in P do
 		n += 1
 	end
 end
--- 5. preload: every K1 SurfaceAppearance instance (dry on the parts + wet in SurfaceVariants) and the cove's terrain
--- MaterialVariants, polled on GetAssetFetchStatus until all Success (freshly approved maps NetFail / stay white on
--- the first fetch: the round-0 Clear_wet blow-out)
-local MAPS = { "ColorMap", "NormalMap", "RoughnessMap", "MetalnessMap" }
-local function k1Preload(timeout: number): (number, number, number)
-	local inst, uris, seen = {}, {}, {}
-	for _, dd in workspace:GetDescendants() do
-		if dd:IsA("SurfaceAppearance") and string.find(dd:GetFullName(), "M_Rock_", 1, true) then table.insert(inst, dd) end
-	end
-	for _, mv in MS:GetChildren() do
-		if mv:IsA("MaterialVariant") then table.insert(inst, mv) end
-	end
-	for _, s in inst do
-		for _, k in MAPS do
-			local ok, v = pcall(function() return (s :: any)[k] end)
-			if ok and type(v) == "string" and v ~= "" and not seen[v] then seen[v] = true table.insert(uris, v) end
-		end
-	end
-	local t0 = os.clock()
-	local bad = #uris
-	for attempt = 1, 6 do
-		local list = table.clone(inst)
-		for _, id in uris do local dec = Instance.new("Decal") dec.Texture = id table.insert(list, dec) end
-		local done = false
-		task.spawn(function() pcall(function() CP:PreloadAsync(list) end) done = true end)
-		while not done and os.clock() - t0 < timeout do task.wait(0.25) end
-		bad = 0
-		for _, id in uris do
-			local ok, st = pcall(function() return CP:GetAssetFetchStatus(id) end)
-			if not (ok and st == Enum.AssetFetchStatus.Success) then bad += 1 end
-		end
-		if bad == 0 or os.clock() - t0 > timeout then break end
-		task.wait(1.5)
-	end
-	return #inst, #uris, bad
-end
-_G.K1Preload = k1Preload
 -- 6. per-shot driver: preset + wet, then the fill: Storm / Night readability lift (exposure + ambient) and, on close-ups,
 -- a camera key / fill pair re-aimed at the look point (as the Bosun / RIB passes); three overhead cove fills at Night
 local stage = Instance.new("Folder") stage.Name = "K1Stage" stage.Parent = workspace
@@ -148,30 +111,6 @@ for i, o in { Vector3.new(-14, 0, -20), Vector3.new(-18, 0, 6), Vector3.new(-12,
 	l.Color = Color3.fromRGB(196, 214, 255)
 	table.insert(over, l)
 end
-local LIFT = { Clear = {-0.2, 0, 0, 0}, Overcast = {0.1, 0.6, 0.3, 0}, Storm = {0.5, 1.4, 0.7, 0.35}, Night = {0.55, 1.6, 0.8, 0.45} } -- EV, key, fill, cove
-_G.K1Shot = function(preset: string, wet: boolean, cam: {number}, look: {number}): string
-	local r = _G.LookDev.apply(preset, wet)
-	local b = LIFT[preset] or {0, 0, 0, 0}
-	Lighting.ExposureCompensation += b[1]
-	if preset == "Storm" or preset == "Night" then
-		local oa = Lighting.OutdoorAmbient
-		Lighting.OutdoorAmbient = Color3.new(math.max(oa.R, 0.30), math.max(oa.G, 0.32), math.max(oa.B, 0.36))
-		local am = Lighting.Ambient
-		Lighting.Ambient = Color3.new(math.max(am.R, 0.16), math.max(am.G, 0.17), math.max(am.B, 0.2))
-	end
-	local c, l = Vector3.new(cam[1], cam[2], cam[3]), Vector3.new(look[1], look[2], look[3])
-	local cf = CFrame.lookAt(c, l)
-	local dist = (l - c).Magnitude
-	local k = math.clamp(dist * 0.3, 1, 8)
-	key.Parent.CFrame = CFrame.lookAt(c - cf.RightVector * k + cf.UpVector * k * 0.8, l)
-	fill.Parent.CFrame = CFrame.lookAt(c + cf.RightVector * k * 1.2 - cf.UpVector * k * 0.15, l)
-	local near = dist < 58
-	key.Brightness, fill.Brightness = b[2], b[3]
-	key.Enabled, fill.Enabled = near and b[2] > 0, near and b[3] > 0
-	for _, o in over do o.Brightness = b[4] o.Range = 60 o.Enabled = b[4] > 0 end
-	local ni, nu, bad = k1Preload(25)
-	return string.format("%s | EV +%.2f | rig %s key %.1f fill %.1f cove %.1f @%.0f | preload %d sa, %d maps, %d not loaded",
-		r, b[1], if near then "on" else "off", b[2], b[3], b[4], dist, ni, nu, bad)
-end
-local ni, nu, bad = k1Preload(60)
-return string.format("K1 cove: placed %d | probe %s | preload %d sa, %d maps, %d not loaded", n, probeReport, ni, nu, bad)
+for _, m in workspace:GetDescendants() do if m:IsA("Model") and string.match(m.Name, "^M_Rock_") then pcall(function() m.ModelStreamingMode = Enum.ModelStreamingMode.Persistent end) end end
+local lf = workspace:FindFirstChild("LookDev") if lf and lf:IsA("Model") then pcall(function() lf.ModelStreamingMode = Enum.ModelStreamingMode.Persistent end) end
+return string.format("K1 cove: placed %d | probe %s", n, probeReport)

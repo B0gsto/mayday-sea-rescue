@@ -143,3 +143,5 @@ Every batch's Studio look-dev pass (`art/source/<kind>/<Batch>/studio_pass.sh`) 
   Lines `WHITE <shot>: ...` and a final `WHITE-CHECK: n re-captured, m still white` go to stdout, details to
   `<keep>/white_check.json`. **Still white after the retry = the maps themselves** (wet ALB near-white, wet ALB lost its
   alpha so AlphaMode Transparency cards render opaque, wrong id in the wet set), not loading: fix the textures.
+
+- **Real ocean (opt-in per batch: shots.json `{"ocean": true, "shots": [...]}` or `--ocean`).** studio-shot.py runs `--setup` files in Edit, starts play and captures from the Client so the game's mesh ocean is in frame; `--look-setup` files (art/lookdev/shot-setup.luau + the batch driver) run on the Client; per-shot `"storm": true` sets the real server storm (`Storm_DevCommand`). Details: art/lookdev/README.md.
