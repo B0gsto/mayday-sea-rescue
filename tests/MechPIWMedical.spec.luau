@@ -139,7 +139,10 @@ return function(t)
 		t.expect(Grading.stepGrade(step("kit_launch"), { kitFit = 1, elapsed = 20 })).toBe("Gold")
 		t.expect(Grading.stepGrade(step("passage"), { routeRatio = 1.05, etaError = 0.1 }))
 			.toBe("Gold")
-		t.expect(Grading.stepGrade(step("search"), { startError = 30, lostSight = 0 })).toBe("Gold")
+		t.expect(
+			Grading.stepGrade(step("search"), { startError = 30, lostSight = 0, onPattern = 1 })
+		)
+			.toBe("Gold")
 		t.expect(
 			Grading.stepGrade(
 				step("approach"),

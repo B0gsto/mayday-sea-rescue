@@ -1,9 +1,11 @@
 --!strict
--- HudLaunch: the Launch buttons (bottom right, thumb reach; lifted above the mobile jump button).
--- Per vehicle: ready (orange "Launch X"), rank-locked (grey, "X: needs <Rank>") or for sale once
--- the rank is reached ("Buy X  4,000"). onLaunch / onBuy are wired by HudController.
+-- HudLaunch: the boatyard collection desk panel (docs 04 section 1.1: no launch buttons on the HUD).
+-- It opens only from the "BoatDesk" ProximityPrompt at the desk on the quay (wired by HudController,
+-- which also closes it when the player walks away). The bay prompts on the dock still launch too.
+-- One row per boat: ready (orange "Collect X", RequestVehicle), rank-locked (grey, "X / Rank: <Rank>")
+-- or for sale once the rank is reached ("Buy X / 4,000 Cash", BuyGear). Land vehicles (entries flagged
+-- land in ProgressionConfig.Vehicles) are station-yard pool vehicles and never listed here.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HudTheme = require(script.Parent.HudTheme)
@@ -15,32 +17,63 @@ local C = HudTheme.Colors
 
 export type Launch = {
 	frame: Frame,
+	setOpen: (open: boolean) -> (),
+	isOpen: () -> boolean,
 	update: (snapshot: { [string]: any }) -> (),
 	setBusy: (vehicleId: string?) -> (),
 }
 
 local HudLaunch = {}
 
+local function isLand(id: string): boolean
+	local unlock = (ProgressionConfig.Vehicles :: any)[id]
+	return type(unlock) == "table" and unlock.land == true
+end
+
 function HudLaunch.build(
 	parent: Instance,
 	onLaunch: (vehicleId: string) -> (),
 	onBuy: (vehicleId: string) -> ()
 ): Launch
-	local ids = VehicleConfig.Order
-	local buttonHeight = 60
-	local frame = Instance.new("Frame")
-	frame.Name = "Launch"
-	frame.BackgroundTransparency = 1
-	frame.AnchorPoint = Vector2.new(1, 1)
-	local bottom = if UserInputService.TouchEnabled then -180 else -20
-	frame.Position = UDim2.new(1, -20, 1, bottom)
-	frame.Size = UDim2.fromOffset(230, #ids * (buttonHeight + 10))
-	frame.Parent = parent
+	local ids: { string } = {}
+	for _, id in VehicleConfig.Order do
+		if not isLand(id) then
+			table.insert(ids, id)
+		end
+	end
+	local buttonHeight = 64
+	local frame =
+		HudTheme.panel("BoatDesk", UDim2.fromOffset(360, 70 + #ids * (buttonHeight + 10)), parent)
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	frame.Position = UDim2.fromScale(0.5, 0.5)
+	frame.Visible = false
+	HudTheme.padding(frame, 14)
+
+	local title = HudTheme.label(
+		"Title",
+		"BOAT COLLECTION",
+		UDim2.new(1, -60, 0, 36),
+		HudTheme.HeaderFont,
+		24,
+		frame
+	)
+	title.TextColor3 = C.accent
+
+	local close = HudTheme.button("Close", "X", UDim2.fromOffset(48, 48), frame)
+	close.AnchorPoint = Vector2.new(1, 0)
+	close.Position = UDim2.new(1, 0, 0, -6)
+	close.BackgroundColor3 = C.locked
+
+	local list = Instance.new("Frame")
+	list.Name = "List"
+	list.BackgroundTransparency = 1
+	list.Position = UDim2.fromOffset(0, 50)
+	list.Size = UDim2.new(1, 0, 1, -50)
+	list.Parent = frame
 	local layout = Instance.new("UIListLayout")
 	layout.Padding = UDim.new(0, 10)
-	layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Parent = frame
+	layout.Parent = list
 
 	type State = "ready" | "locked" | "buy" | "poor"
 	local buttons: { [string]: TextButton } = {}
@@ -53,7 +86,7 @@ function HudLaunch.build(
 			id,
 			spec and spec.displayName or id,
 			UDim2.new(1, 0, 0, buttonHeight),
-			frame
+			list
 		)
 		b.LayoutOrder = order
 		HudTheme.stroke(b, C.text, 2)
@@ -72,6 +105,15 @@ function HudLaunch.build(
 		end)
 	end
 
+	local open = false
+	local function setOpen(value: boolean)
+		open = value
+		frame.Visible = value
+	end
+	close.Activated:Connect(function()
+		setOpen(false)
+	end)
+
 	local lastSnapshot: { [string]: any }? = nil
 
 	local function update(snapshot: { [string]: any })
@@ -86,11 +128,11 @@ function HudLaunch.build(
 			local unlock = ProgressionConfig.Vehicles[id]
 			local usable = Rules.canUseVehicle(data, id)
 			if busy == id then
-				b.Text = "Launching..."
+				b.Text = "Collecting..."
 				b.BackgroundColor3 = C.panelLight
 			elseif usable then
 				states[id] = "ready"
-				b.Text = `Launch {name}`
+				b.Text = `Collect {name}`
 				b.BackgroundColor3 = C.accent
 			elseif unlock and Rules.rankIndexForRep(data.rep) < unlock.rankIndex then
 				states[id] = "locked"
@@ -113,7 +155,15 @@ function HudLaunch.build(
 		end
 	end
 
-	return { frame = frame, update = update, setBusy = setBusy }
+	return {
+		frame = frame,
+		setOpen = setOpen,
+		isOpen = function()
+			return open
+		end,
+		update = update,
+		setBusy = setBusy,
+	}
 end
 
 return HudLaunch

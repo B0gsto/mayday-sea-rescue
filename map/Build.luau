@@ -10,7 +10,8 @@
 --
 -- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
 --   OceanFloor   (fallback only) sand base, top at Y = -40
---   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback)
+--   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback),
+--                the Chandlery (walk-in gear store, PromptAnchor ShopCounter) and the BoatDesk (PromptAnchor BoatDesk)
 --   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
 --   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
 --   Slipways     the station slipway (concrete ramp into the harbour)
@@ -41,6 +42,7 @@ local COLORS = {
 	bay = rgb(255, 200, 40),
 	dropoff = rgb(60, 200, 110),
 	glass = rgb(255, 240, 180),
+	signBlue = rgb(0, 82, 160),
 }
 local HOUSE_COLORS = {
 	rgb(226, 120, 96),
@@ -151,6 +153,26 @@ local function buildHouse(
 		base + Vector3.new(1.5, 7, size.Z / 2 + 0.2),
 		COLORS.wood
 	)
+end
+
+-- White text on the +Z (street) face of a hospital sign board.
+local function hospitalSign(board: Part, text: string)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Sign"
+	gui.Face = Enum.NormalId.Back
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 30
+	gui.LightInfluence = 1
+	gui.Parent = board
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextScaled = true
+	label.FontFace = Font.new("rbxasset://fonts/families/GothamSSm.json", Enum.FontWeight.Bold)
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.Parent = gui
 end
 
 local function buildPortHaven(map: Instance, landTop: number, floorY: number, hasTerrain: boolean)
@@ -285,20 +307,23 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 		Vector3.new(160, landTop + 20, -100),
 		COLORS.white
 	)
-	box(
+	-- no red cross anywhere (a protected emblem, docs/05): a white "H" on blue and the name board
+	local hBoard = box(
 		hospital,
-		"CrossV",
-		Vector3.new(127, landTop + 8, -99.8),
-		Vector3.new(133, landTop + 18, -99.4),
-		COLORS.red
+		"SignH",
+		Vector3.new(125, landTop + 8, -99.8),
+		Vector3.new(135, landTop + 18, -99.4),
+		COLORS.signBlue
 	)
-	box(
+	hospitalSign(hBoard, "H")
+	local nameBoard = box(
 		hospital,
-		"CrossH",
-		Vector3.new(125, landTop + 11, -99.8),
-		Vector3.new(135, landTop + 15, -99.4),
-		COLORS.red
+		"SignName",
+		Vector3.new(112, landTop + 3.5, -99.8),
+		Vector3.new(148, landTop + 6.5, -99.4),
+		COLORS.signBlue
 	)
+	hospitalSign(nameBoard, "COTTAGE HOSPITAL")
 	box(
 		hospital,
 		"Ambulance",
@@ -1000,6 +1025,595 @@ local function buildShore(map: Instance, points: Instance, world: any)
 	end
 end
 
+-- A SurfaceGui sign on one face of a board part.
+local function sign(board: Part, text: string, face: any, color: Color3)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Sign"
+	gui.Face = face
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 30
+	gui.LightInfluence = 1
+	gui.Parent = board
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextScaled = true
+	label.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json")
+	label.TextColor3 = color
+	label.Parent = gui
+end
+
+local function ceilingLight(parent: Instance, pos: Vector3, range: number)
+	local lamp = part({
+		Name = "CeilingLight",
+		Size = Vector3.new(4, 0.3, 1.2),
+		CFrame = CFrame.new(pos),
+		Color = rgb(255, 244, 220),
+		Material = M.Neon,
+		CastShadow = false,
+		Parent = parent,
+	})
+	local light = Instance.new("PointLight")
+	light.Range = range
+	light.Brightness = 1.2
+	light.Color = rgb(255, 236, 205)
+	light.Shadows = true
+	light.Parent = lamp
+end
+
+-- A clothes rail: two uprights, a top rail and hanging drysuits / lifejackets (1 m = 3 studs).
+local function gearRack(
+	parent: Instance,
+	name: string,
+	from: Vector3,
+	to: Vector3,
+	colors: { Color3 }
+)
+	local rack = folder(parent, name, "Model")
+	local steel = rgb(150, 154, 160)
+	local h = 6 -- 2 m rail
+	for _, p in { from, to } do
+		box(
+			rack,
+			"Upright",
+			p - Vector3.new(0.15, 0, 0.15),
+			p + Vector3.new(0.15, h, 0.15),
+			steel,
+			M.Metal
+		)
+		box(
+			rack,
+			"Foot",
+			p - Vector3.new(0.9, 0, 0.9),
+			p + Vector3.new(0.9, 0.2, 0.9),
+			steel,
+			M.Metal
+		)
+	end
+	local railMin = Vector3.new(math.min(from.X, to.X), from.Y + h - 0.2, math.min(from.Z, to.Z))
+	local railMax = Vector3.new(math.max(from.X, to.X), from.Y + h, math.max(from.Z, to.Z))
+	box(
+		rack,
+		"Rail",
+		railMin - Vector3.new(0.1, 0, 0.1),
+		railMax + Vector3.new(0.1, 0, 0.1),
+		steel,
+		M.Metal
+	)
+	local span = to - from
+	local length = span.Magnitude
+	local along = span.Unit
+	local count = math.floor(length / 1.4) - 1
+	for i = 1, count do
+		local c = from + along * (i * length / (count + 1))
+		local at = c + Vector3.new(0, h - 1.7, 0)
+		part({
+			Name = "Garment",
+			-- 0.6 m wide, 0.9 m long, hung flat across the rail (thin along it)
+			Size = Vector3.new(1.8, 2.8, 0.5),
+			CFrame = CFrame.lookAt(at, at + along),
+			Color = colors[(i - 1) % #colors + 1],
+			Material = M.Fabric,
+			Parent = rack,
+		})
+	end
+end
+
+-- Port Haven Chandlery (docs 10 section 1.2, docs 04 section 1.1): the walk-in store next to the
+-- station on Harbour Road. 20 x 12 m (60 x 36 studs), two floors: the shop with the gear counter,
+-- racks and shelves below, the fitting loft (mirror, mannequins) above, reached by a stair ramp.
+-- The door faces the road and the quay, about 45 studs from the station door and 35 from the spawn.
+-- Docs 10 gives its centre as (+40, -20) from the station; the greybox station is not yet re-laid
+-- on the docs origin, so the shop sits beside the greybox station in the same relation instead.
+-- The gear counter carries PromptAnchor = "ShopCounter" (WorldService adds the ProximityPrompt).
+local function buildChandlery(parent: Instance, g: number)
+	local shop = folder(parent, "Chandlery", "Model")
+	local render = rgb(234, 230, 216) -- painted render
+	local navy = rgb(28, 50, 86)
+	local slate = rgb(62, 66, 74)
+	local oak = rgb(140, 104, 70)
+	local glass = rgb(170, 200, 210)
+	local x0, x1, z0, z1 = -74, -14, -78, -42 -- z0 back (north), z1 front (south, the road)
+	local floor1, top = 13, 25 -- first-floor slab underside and wall top, above ground
+
+	box(shop, "Floor", Vector3.new(x0, g - 2, z0), Vector3.new(x1, g + 0.2, z1), oak, M.WoodPlanks)
+	-- walls (1 stud = 0.33 m thick)
+	box(
+		shop,
+		"BackWall",
+		Vector3.new(x0, g, z0),
+		Vector3.new(x1, g + top, z0 + 1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"WestWall",
+		Vector3.new(x0, g, z0 + 1),
+		Vector3.new(x0 + 1, g + top, z1 - 1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"EastWall",
+		Vector3.new(x1 - 1, g, z0 + 1),
+		Vector3.new(x1, g + top, z1 - 1),
+		render,
+		M.Concrete
+	)
+	-- front, ground floor: door opening x -68..-62 (2 m wide, 3 m high), shop window x -58..-20
+	local fz0, fz1 = z1 - 1, z1
+	box(
+		shop,
+		"FrontWest",
+		Vector3.new(x0, g, fz0),
+		Vector3.new(-68, g + floor1, fz1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"OverDoor",
+		Vector3.new(-68, g + 9.5, fz0),
+		Vector3.new(-62, g + floor1, fz1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"Pier",
+		Vector3.new(-62, g, fz0),
+		Vector3.new(-58, g + floor1, fz1),
+		render,
+		M.Concrete
+	)
+	box(shop, "Sill", Vector3.new(-58, g, fz0), Vector3.new(-20, g + 3, fz1), navy, M.WoodPlanks)
+	local window = box(
+		shop,
+		"ShopWindow",
+		Vector3.new(-58, g + 3, fz0 + 0.35),
+		Vector3.new(-20, g + 10, fz1 - 0.35),
+		glass,
+		M.Glass
+	)
+	window.Transparency = 0.6
+	box(
+		shop,
+		"WindowHead",
+		Vector3.new(-58, g + 10, fz0),
+		Vector3.new(-20, g + floor1, fz1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"FrontEast",
+		Vector3.new(-20, g, fz0),
+		Vector3.new(x1, g + floor1, fz1),
+		render,
+		M.Concrete
+	)
+	box(
+		shop,
+		"FrontUpper",
+		Vector3.new(x0, g + floor1, fz0),
+		Vector3.new(x1, g + top, fz1),
+		render,
+		M.Concrete
+	)
+	-- door frame and the fascia sign over the window
+	box(
+		shop,
+		"DoorPostW",
+		Vector3.new(-68.6, g, fz1),
+		Vector3.new(-68, g + 10, fz1 + 0.4),
+		navy,
+		M.Wood
+	)
+	box(
+		shop,
+		"DoorPostE",
+		Vector3.new(-62, g, fz1),
+		Vector3.new(-61.4, g + 10, fz1 + 0.4),
+		navy,
+		M.Wood
+	)
+	box(
+		shop,
+		"DoorLintel",
+		Vector3.new(-68.6, g + 9.5, fz1),
+		Vector3.new(-61.4, g + 10.1, fz1 + 0.4),
+		navy,
+		M.Wood
+	)
+	local fascia = box(
+		shop,
+		"Fascia",
+		Vector3.new(-59, g + 10.4, fz1),
+		Vector3.new(-19, g + 12.8, fz1 + 0.4),
+		navy,
+		M.Wood
+	)
+	sign(fascia, "PORT HAVEN CHANDLERY", Enum.NormalId.Back, rgb(255, 214, 120))
+	box(
+		shop,
+		"StringCourse",
+		Vector3.new(x0, g + floor1, fz1),
+		Vector3.new(x1, g + floor1 + 0.6, fz1 + 0.3),
+		navy,
+		M.Wood
+	)
+	-- upper windows (fitting loft), proud of the wall
+	for _, wx in { -66, -50, -34 } do
+		local w = box(
+			shop,
+			"LoftWindow",
+			Vector3.new(wx, g + 16, fz1),
+			Vector3.new(wx + 8, g + 22, fz1 + 0.2),
+			rgb(70, 90, 105),
+			M.Glass
+		)
+		w.Transparency = 0.3
+		box(
+			shop,
+			"LoftSill",
+			Vector3.new(wx - 0.4, g + 15.6, fz1),
+			Vector3.new(wx + 8.4, g + 16, fz1 + 0.5),
+			navy,
+			M.Wood
+		)
+	end
+
+	-- first floor (fitting loft): slab with a stairwell along the east wall (x -21..-15, z -77..-56)
+	box(
+		shop,
+		"LoftFloor",
+		Vector3.new(x0 + 1, g + floor1, z0 + 1),
+		Vector3.new(-21, g + floor1 + 1, z1 - 1),
+		oak,
+		M.WoodPlanks
+	)
+	box(
+		shop,
+		"LoftLanding",
+		Vector3.new(-21, g + floor1, -56),
+		Vector3.new(x1 - 1, g + floor1 + 1, z1 - 1),
+		oak,
+		M.WoodPlanks
+	)
+	box(
+		shop,
+		"StairRailing",
+		Vector3.new(-21.4, g + floor1 + 1, -77),
+		Vector3.new(-21, g + floor1 + 4, -56),
+		navy,
+		M.Wood
+	)
+	local rise = floor1 + 1 - 0.2
+	part({
+		ClassName = "WedgePart",
+		Name = "Stair",
+		-- low end at the back wall, rising toward the front onto the landing (tall side +Z)
+		Size = Vector3.new(6, rise, 21),
+		CFrame = CFrame.new(-18, g + 0.2 + rise / 2, -66.5),
+		Color = oak,
+		Material = M.WoodPlanks,
+		Parent = shop,
+	})
+
+	-- roof: slate pitch along X over a flat deck
+	box(
+		shop,
+		"RoofDeck",
+		Vector3.new(x0 - 1, g + top, z0 - 1),
+		Vector3.new(x1 + 1, g + top + 1, z1 + 1),
+		slate,
+		M.Slate
+	)
+	local mid = (z0 + z1) / 2
+	local half = (z1 - z0) / 2 + 1
+	part({
+		ClassName = "WedgePart",
+		Name = "RoofBack",
+		Size = Vector3.new(x1 - x0 + 2, 6, half),
+		CFrame = CFrame.new((x0 + x1) / 2, g + top + 4, mid - half / 2),
+		Color = slate,
+		Material = M.Slate,
+		Parent = shop,
+	})
+	part({
+		ClassName = "WedgePart",
+		Name = "RoofFront",
+		Size = Vector3.new(x1 - x0 + 2, 6, half),
+		CFrame = CFrame.new((x0 + x1) / 2, g + top + 4, mid + half / 2)
+			* CFrame.Angles(0, math.pi, 0),
+		Color = slate,
+		Material = M.Slate,
+		Parent = shop,
+	})
+	box(
+		shop,
+		"Chimney",
+		Vector3.new(-70, g + top, -66),
+		Vector3.new(-66, g + top + 10, -62),
+		render,
+		M.Brick
+	)
+
+	-- ground floor: the gear counter, shelves behind it, racks and a gondola
+	box(
+		shop,
+		"Counter",
+		Vector3.new(-42, g + 0.2, -65),
+		Vector3.new(-22, g + 3.5, -62),
+		navy,
+		M.Wood
+	)
+	box(
+		shop,
+		"CounterTop",
+		Vector3.new(-42.3, g + 3.5, -65.3),
+		Vector3.new(-21.7, g + 3.8, -61.7),
+		oak,
+		M.WoodPlanks
+	)
+	box(
+		shop,
+		"Till",
+		Vector3.new(-26, g + 3.8, -64.5),
+		Vector3.new(-24, g + 5, -63),
+		rgb(40, 40, 44),
+		M.Metal
+	)
+	box(
+		shop,
+		"LogbookOnCounter",
+		Vector3.new(-35, g + 3.8, -64),
+		Vector3.new(-32.6, g + 3.95, -62.4),
+		rgb(120, 40, 36),
+		M.Fabric
+	)
+	box(
+		shop,
+		"ShelfBack",
+		Vector3.new(-44, g + 0.2, -77),
+		Vector3.new(-22, g + 10, -76.6),
+		oak,
+		M.WoodPlanks
+	)
+	for _, sx in { -44, -33.2, -22.4 } do
+		box(
+			shop,
+			"ShelfSide",
+			Vector3.new(sx, g + 0.2, -77),
+			Vector3.new(sx + 0.4, g + 10, -74.8),
+			oak,
+			M.Wood
+		)
+	end
+	local stock = {
+		rgb(255, 120, 30),
+		rgb(250, 210, 60),
+		rgb(40, 90, 160),
+		rgb(200, 50, 40),
+		rgb(60, 150, 90),
+	}
+	for level, sy in { 1, 3.5, 6, 8.5 } do
+		box(
+			shop,
+			"Shelf",
+			Vector3.new(-44, g + sy, -76.6),
+			Vector3.new(-22, g + sy + 0.2, -74.8),
+			oak,
+			M.WoodPlanks
+		)
+		for i = 0, 5 do
+			local bx = -43 + i * 3.4 + (level % 2) * 0.8
+			box(
+				shop,
+				"Stock",
+				Vector3.new(bx, g + sy + 0.2, -76.3),
+				Vector3.new(bx + 1.6, g + sy + 1.4, -75.2),
+				stock[(i + level) % #stock + 1],
+				M.SmoothPlastic
+			)
+		end
+	end
+	gearRack(shop, "RackWest", Vector3.new(-71.5, g + 0.2, -75), Vector3.new(-71.5, g + 0.2, -50), {
+		rgb(255, 110, 20),
+		rgb(250, 200, 40),
+		rgb(28, 50, 86),
+		rgb(200, 40, 36),
+	})
+	gearRack(shop, "RackMid", Vector3.new(-62, g + 0.2, -72), Vector3.new(-50, g + 0.2, -72), {
+		rgb(40, 40, 46),
+		rgb(255, 110, 20),
+		rgb(60, 120, 170),
+	})
+	-- gondola: a double-sided 1.2 m shelf unit with lifebuoys and rope coils
+	box(
+		shop,
+		"Gondola",
+		Vector3.new(-62, g + 0.2, -60),
+		Vector3.new(-48, g + 3.8, -56),
+		oak,
+		M.WoodPlanks
+	)
+	for i = 0, 3 do
+		part({
+			Name = "RopeCoil",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.8, 2.2, 2.2),
+			CFrame = CFrame.new(-60 + i * 3.4, g + 4.2, -58) * CFrame.Angles(0, 0, math.pi / 2),
+			Color = if i % 2 == 0 then rgb(230, 220, 190) else rgb(220, 90, 40),
+			Material = M.Fabric,
+			Parent = shop,
+		})
+	end
+	for i = 0, 2 do
+		part({
+			Name = "Lifebuoy",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(0.5, 2.6, 2.6),
+			-- hung flat on the west wall above the rack (axis along X)
+			CFrame = CFrame.new(x0 + 1.3, g + 8.5, -70 + i * 8),
+			Color = rgb(240, 90, 30),
+			Material = M.SmoothPlastic,
+			Parent = shop,
+		})
+	end
+	ceilingLight(shop, Vector3.new(-56, g + floor1 - 0.2, -64), 30)
+	ceilingLight(shop, Vector3.new(-32, g + floor1 - 0.2, -64), 30)
+	ceilingLight(shop, Vector3.new(-56, g + floor1 - 0.2, -50), 24)
+
+	-- fitting loft: a full-length mirror and two mannequins
+	local lf = g + floor1 + 1
+	local mirror = box(
+		shop,
+		"Mirror",
+		Vector3.new(x0 + 1, lf + 0.5, -62),
+		Vector3.new(x0 + 1.3, lf + 7, -56),
+		rgb(200, 210, 215),
+		M.Glass
+	)
+	mirror.Reflectance = 0.6
+	for i, mx in { -56, -46 } do
+		box(
+			shop,
+			"MannequinBase",
+			Vector3.new(mx - 1, lf, -72),
+			Vector3.new(mx + 1, lf + 0.3, -70),
+			slate,
+			M.Metal
+		)
+		box(
+			shop,
+			"MannequinBody",
+			Vector3.new(mx - 0.9, lf + 2.3, -71.5),
+			Vector3.new(mx + 0.9, lf + 5, -70.5),
+			stock[i],
+			M.Fabric
+		)
+		box(
+			shop,
+			"MannequinLegs",
+			Vector3.new(mx - 0.6, lf + 0.3, -71.3),
+			Vector3.new(mx + 0.6, lf + 2.3, -70.7),
+			navy,
+			M.Fabric
+		)
+		part({
+			Name = "MannequinHead",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(1, 1, 1),
+			CFrame = CFrame.new(mx, lf + 5.6, -71),
+			Color = rgb(230, 225, 215),
+			Material = M.SmoothPlastic,
+			Parent = shop,
+		})
+	end
+	ceilingLight(shop, Vector3.new(-48, g + top - 0.2, -62), 30)
+
+	marker(
+		shop,
+		"CounterPrompt",
+		Vector3.new(-32, g + 4.5, -60.5),
+		{ PromptAnchor = "ShopCounter" }
+	)
+	return shop
+end
+
+-- Boatyard collection desk on the quay at the head of the dock (docs 04 section 1.1, "Boatyard"):
+-- a kiosk facing the water, where boats are collected for the bays. PromptAnchor = "BoatDesk".
+local function buildBoatDesk(parent: Instance, g: number)
+	local desk = folder(parent, "BoatDesk", "Model")
+	local navy = rgb(28, 50, 86)
+	box(
+		desk,
+		"BackWall",
+		Vector3.new(-100, g, -18),
+		Vector3.new(-90, g + 10, -17),
+		COLORS.white,
+		M.Concrete
+	)
+	box(
+		desk,
+		"SideWest",
+		Vector3.new(-100, g, -17),
+		Vector3.new(-99, g + 10, -12),
+		COLORS.white,
+		M.Concrete
+	)
+	box(
+		desk,
+		"SideEast",
+		Vector3.new(-91, g, -17),
+		Vector3.new(-90, g + 10, -12),
+		COLORS.white,
+		M.Concrete
+	)
+	box(desk, "Desk", Vector3.new(-99, g, -13.5), Vector3.new(-91, g + 3.5, -12), navy, M.Wood)
+	box(
+		desk,
+		"DeskTop",
+		Vector3.new(-99.2, g + 3.5, -13.7),
+		Vector3.new(-90.8, g + 3.8, -11.6),
+		COLORS.wood,
+		M.WoodPlanks
+	)
+	box(
+		desk,
+		"Canopy",
+		Vector3.new(-101, g + 10, -19),
+		Vector3.new(-89, g + 10.6, -9),
+		COLORS.red,
+		M.SmoothPlastic
+	)
+	local board = box(
+		desk,
+		"SignBoard",
+		Vector3.new(-99, g + 10.6, -9.6),
+		Vector3.new(-91, g + 12.6, -9.2),
+		navy,
+		M.Wood
+	)
+	sign(board, "BOAT COLLECTION", Enum.NormalId.Back, COLORS.white)
+	local prices = box(
+		desk,
+		"PriceBoard",
+		Vector3.new(-98, g + 5, -16.9),
+		Vector3.new(-92, g + 9, -16.6),
+		rgb(30, 30, 34),
+		M.Slate
+	)
+	sign(prices, "JET SKI  free\nRIB  4,000", Enum.NormalId.Back, rgb(240, 240, 230))
+	marker(desk, "DeskPrompt", Vector3.new(-95, g + 4.5, -10.5), { PromptAnchor = "BoatDesk" })
+	return desk
+end
+
 return function(place: any, ctx: any)
 	local GameConfig = ctx.require("Config/GameConfig")
 	local WorldConfig = ctx.require("Config/WorldConfig")
@@ -1013,7 +1627,9 @@ return function(place: any, ctx: any)
 	if not hasTerrain then
 		buildOceanFloor(map, floorY)
 	end
-	buildPortHaven(map, landTop, floorY, hasTerrain)
+	local town = buildPortHaven(map, landTop, floorY, hasTerrain)
+	buildChandlery(town, landTop)
+	buildBoatDesk(town, landTop)
 	buildDropOffs(map)
 	local wallTop, wallFar = buildBreakwater(map, floorY, 30)
 	if not hasTerrain then

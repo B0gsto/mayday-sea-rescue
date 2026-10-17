@@ -14,6 +14,9 @@
 --   Ops_Radio       S->C  { opId, from, text } a radio line
 --   Ops_Debrief     S->C  the debrief { opId, kind, title, grade, takeover?, steps, condition, cash, rep, tip }
 --   Ops_Closed      S->C  { opId, reason, message?, silent? } offer withdrawn or operation closed
+--   Ops_TowLength   C->S  (opId, studs) the Crew stepped the tow out or in (server clamps 30..150)
+--   Ops_Board       S->C  { opId, osc, npc, assigned, tasksCovered, reportCorrect, board? } the
+--                         on-scene commander's scene board (ferry), to every crew on the operation
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -28,6 +31,8 @@ export type EventName =
 	| "Ops_Radio"
 	| "Ops_Debrief"
 	| "Ops_Closed"
+	| "Ops_TowLength"
+	| "Ops_Board"
 
 local Remotes = {}
 
@@ -42,6 +47,8 @@ Remotes.EVENTS = table.freeze({
 	"Ops_Radio",
 	"Ops_Debrief",
 	"Ops_Closed",
+	"Ops_Board",
+	"Ops_TowLength",
 } :: { EventName })
 
 local function folder(): Instance

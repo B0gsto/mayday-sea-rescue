@@ -131,7 +131,13 @@ return function(t)
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 }, { npc = true })).toBe("Silver")
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 }, { stub = true })).toBe("Silver")
 		t.expect(Grading.resolveStep(tasking, { elapsed = 30 }, { stub = true })).toBe("Bronze")
-		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Gold")
+		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 1 })).toBe("Gold")
+		-- voice procedure: one fault of three is Silver, no format sent is Bronze
+		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 0.67 })).toBe("Silver")
+		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Bronze")
+		-- stub: format is the client's, so a stub is still graded on elapsed alone
+		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 0 }, { stub = true }))
+			.toBe("Silver")
 		local survey = Operations.get("PersonInWater").steps[8]
 		-- stub: graded on server metrics only (elapsed), client "correct" ignored
 		t.expect(Grading.resolveStep(survey, { elapsed = 5 }, { stub = true })).toBe("Silver")

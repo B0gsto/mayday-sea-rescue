@@ -57,6 +57,7 @@ type Record = {
 }
 
 local GROUP = "LandVehicle"
+local CHARACTER_GROUP = "Characters" -- players on foot: never hit (or flung) by land vehicles
 local SPAWN_COOLDOWN = 3
 local CHECK_INTERVAL = 0.5
 local SPEED_TOLERANCE = 1.3 -- x top speed -- tune
@@ -119,6 +120,16 @@ local function canUse(player: Player, vehicleId: string, unlockRank: number): (b
 		end
 	end
 	return unlockRank <= 1, "Locked"
+end
+
+-- Blue lights and siren need an active operation (docs 10 section 3.3).
+local function onOperation(player: Player): boolean
+	local ops = sibling("OperationService")
+	if not (ops and type(ops.GetOperationOf) == "function") then
+		return false
+	end
+	local ok, op = pcall(ops.GetOperationOf, player)
+	return ok and op ~= nil
 end
 
 local function canUseBoat(player: Player, boatId: string): boolean
@@ -216,16 +227,36 @@ end
 
 -- Spawning --------------------------------------------------------------------------------------
 
+-- WorldConfig.LandVehicleSpawns (terrain stream, same SpawnPoint shape) wins when it holds valid
+-- points; otherwise the placeholder LandVehicleConfig.SpawnPoints stay.
+local function validPoint(point: any): boolean
+	return type(point) == "table"
+		and type(point.id) == "string"
+		and typeof(point.cframe) == "CFrame"
+		and type(point.vehicles) == "table"
+end
+
 local function loadWorldSpawns()
-	-- TODO(WorldConfig): the terrain stream's WorldConfig.LandVehicleSpawns, when it exists,
-	-- replaces the placeholder points (same SpawnPoint shape as LandVehicleConfig.SpawnPoints).
 	local configFolder = Shared:FindFirstChild("Config")
 	local module = configFolder and configFolder:FindFirstChild("WorldConfig")
-	if module and module:IsA("ModuleScript") then
-		local ok, world = pcall(require, module)
-		if ok and type(world) == "table" and type((world :: any).LandVehicleSpawns) == "table" then
-			spawnPoints = (world :: any).LandVehicleSpawns
+	if not (module and module:IsA("ModuleScript")) then
+		return
+	end
+	local ok, world = pcall(require, module)
+	local list = if ok and type(world) == "table" then (world :: any).LandVehicleSpawns else nil
+	if type(list) ~= "table" then
+		return
+	end
+	local valid: { SpawnPoint } = {}
+	for _, point in list do
+		if validPoint(point) then
+			table.insert(valid, point :: SpawnPoint)
+		else
+			warn("[LandVehicleService] skipping a malformed WorldConfig.LandVehicleSpawns entry")
 		end
+	end
+	if #valid > 0 then
+		spawnPoints = valid
 	end
 end
 
@@ -729,15 +760,56 @@ local function onControl(player: Player, action: any, value: any)
 			end)
 		end
 	elseif action == "LightBar" and record.spec.lightBar then
+		on = on and onOperation(player) -- blue lights only on a tasking (docs 10 section 3.3)
 		model:SetAttribute("LightBar", on)
 		setFloodlights(model, on and record.spec.class == "Response")
 	elseif action == "Siren" and record.spec.lightBar then
-		-- TODO(Ops): blue lights and siren only on a tasking (docs 10 section 3.3); free for now
-		model:SetAttribute("Siren", on)
+		model:SetAttribute("Siren", on and onOperation(player))
 	elseif action == "Headlights" then
 		setHeadlights(model, on)
 	elseif action == "Launch" then
 		launch(record, player)
+	end
+end
+
+-- Blue lights and siren go off once the owner's operation is over.
+local function emergencyOff(record: Record)
+	local model = record.model
+	if model:GetAttribute("LightBar") == true or model:GetAttribute("Siren") == true then
+		model:SetAttribute("LightBar", false)
+		model:SetAttribute("Siren", false)
+		setFloodlights(model, false)
+	end
+end
+
+local function checkEmergency(record: Record)
+	local model = record.model
+	if model:GetAttribute("LightBar") ~= true and model:GetAttribute("Siren") ~= true then
+		return
+	end
+	if not onOperation(record.owner) then
+		emergencyOff(record)
+	end
+end
+
+-- Characters on foot don't collide with land vehicles (no flinging); boats stay Default.
+local function setCharacterGroup(part: Instance)
+	if part:IsA("BasePart") then
+		part.CollisionGroup = CHARACTER_GROUP
+	end
+end
+
+local function watchCharacter(character: Model)
+	for _, d in character:GetDescendants() do
+		setCharacterGroup(d)
+	end
+	character.DescendantAdded:Connect(setCharacterGroup)
+end
+
+local function watchPlayer(player: Player)
+	player.CharacterAdded:Connect(watchCharacter)
+	if player.Character then
+		watchCharacter(player.Character)
 	end
 end
 
@@ -825,8 +897,13 @@ function LandVehicleService.Init()
 	pcall(function()
 		PhysicsService:RegisterCollisionGroup(GROUP)
 	end)
+	pcall(function()
+		PhysicsService:RegisterCollisionGroup(CHARACTER_GROUP)
+	end)
 	-- land vehicles pass through each other (docs 02 section 10)
 	PhysicsService:CollisionGroupSetCollidable(GROUP, GROUP, false)
+	-- pedestrians are never hit (docs 10 section 3); characters still collide with Default (boats)
+	PhysicsService:CollisionGroupSetCollidable(GROUP, CHARACTER_GROUP, false)
 	loadWorldSpawns()
 
 	folder = Instance.new("Folder")
@@ -863,6 +940,24 @@ end
 function LandVehicleService.Start()
 	placeAmbulances()
 	placeSigns()
+	Players.PlayerAdded:Connect(watchPlayer)
+	for _, player in Players:GetPlayers() do
+		watchPlayer(player)
+	end
+	local ops = sibling("OperationService")
+	local completed = ops and ops.OperationCompleted
+	if type(completed) == "table" and type(completed.Connect) == "function" then
+		pcall(function()
+			completed:Connect(function()
+				-- the op may still read as Active this frame; re-check next frame
+				task.defer(function()
+					for _, record in records do
+						checkEmergency(record)
+					end
+				end)
+			end)
+		end)
+	end
 	Players.PlayerRemoving:Connect(function(player)
 		local record = byPlayer[player]
 		if record then
@@ -890,6 +985,7 @@ function LandVehicleService.Start()
 			for _, record in list do
 				if records[record.model] == record then
 					check(record, dt)
+					checkEmergency(record)
 					checkDespawn(record)
 				end
 			end

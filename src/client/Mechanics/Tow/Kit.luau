@@ -12,6 +12,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HudTheme = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local TowLine = require(Shared:WaitForChild("Tow"):WaitForChild("TowLine"))
 local Waves = require(Shared:WaitForChild("Waves"))
 
@@ -760,6 +761,10 @@ end
 function Kit.setLength(link: Link, lengthStuds: number)
 	link.lengthStuds = lengthStuds
 	TowLine.setLength(link.line, lengthStuds)
+	-- the server rope follows the Crew's length (it clamps 30..150 and checks membership)
+	pcall(function()
+		Remotes.event("Ops_TowLength"):FireServer(link.opId, lengthStuds)
+	end)
 end
 
 function Kit.snapSound(where: Attachment)

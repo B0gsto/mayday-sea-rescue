@@ -6,6 +6,9 @@
 --   Cinematic  a film-style shot list (Camera/Cinematic), letterboxed
 -- Entering a seat picks the vehicle's VehicleConfig cameraMode; leaving it goes back to Foot.
 -- In a chase vehicle, V / R3 / the mobile "Helm" button toggles the helm view.
+-- Land vehicles (model attribute LandVehicle, CONTRACT Land vehicles): the DriverSeat (or any seat
+-- of a CameraMode = "Chase" model) gets the chase camera; the player attribute CarCockpit (set by
+-- CarController on V / R3, so no helm binding here) switches the driver to DriverSeat.EyePoint.
 --
 -- API (client):
 --   CameraController.GetMode(): string
@@ -21,6 +24,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local CameraFolder = script.Parent.Parent:WaitForChild("Camera")
@@ -42,7 +46,15 @@ local player = Players.LocalPlayer
 local mode: Mode = "None"
 local helmView = false
 local helmBound = false
-local current: { seat: BasePart, model: Model?, root: BasePart, spec: any, driver: boolean }? = nil
+local current: {
+	seat: BasePart,
+	model: Model?,
+	root: BasePart,
+	spec: any,
+	driver: boolean,
+	land: boolean,
+}? =
+	nil
 
 local STATION = Vector3.new(-95, 0, 50)
 local arrivalPending = false
@@ -173,6 +185,11 @@ local function wantedMode(): Mode
 		local spec = if model
 			then VehicleConfig.get(model:GetAttribute("VehicleId") :: any)
 			else nil
+		local land = model ~= nil and model:GetAttribute("LandVehicle") == true
+		if land and model then
+			local landSpec = (LandVehicleConfig :: any)[model:GetAttribute("VehicleId")]
+			spec = if type(landSpec) == "table" then landSpec else nil
+		end
 		local root = (if model then model.PrimaryPart else nil) or seat.AssemblyRootPart or seat
 		current = {
 			seat = seat,
@@ -180,10 +197,28 @@ local function wantedMode(): Mode
 			root = root :: BasePart,
 			spec = spec,
 			driver = seat.Name == "DriverSeat" or seat:IsA("VehicleSeat"),
+			land = land,
 		}
 		helmView = false
 	end
 	local c = current :: any
+	if c.land then
+		local chase = c.driver or (c.model and c.model:GetAttribute("CameraMode") == "Chase")
+		if not chase then
+			return "VehicleFP"
+		end
+		local cockpitAllowed = not (c.spec and c.spec.cockpitView == false)
+		local eye = c.seat:FindFirstChild("EyePoint")
+		if
+			c.driver
+			and cockpitAllowed
+			and eye ~= nil
+			and player:GetAttribute("CarCockpit") == true
+		then
+			return "VehicleFP"
+		end
+		return "Chase"
+	end
 	local cameraMode = if c.spec
 		then c.spec.cameraMode
 		elseif c.seat:IsA("VehicleSeat") then "Chase" -- cars and unknown craft
@@ -192,6 +227,11 @@ local function wantedMode(): Mode
 		return if helmView then "VehicleFP" else "Chase"
 	end
 	return "VehicleFP"
+end
+
+-- The helm toggle is for boats; in a land vehicle V / R3 belong to CarController (CarCockpit).
+local function helmWanted(m: Mode): boolean
+	return current ~= nil and not current.land and (m == "Chase" or (m == "VehicleFP" and helmView))
 end
 
 local function exitMode(old: Mode)
@@ -217,7 +257,9 @@ local function enterMode(new: Mode)
 	elseif new == "VehicleFP" then
 		player.CameraMode = Enum.CameraMode.Classic
 		FirstPerson.enterVehicle()
-		FirstPerson.setSprayEnabled(Comfort.get("lensSpray") == true)
+		FirstPerson.setSprayEnabled(
+			Comfort.get("lensSpray") == true and not (current ~= nil and current.land)
+		)
 		if current and current.driver then
 			Viewmodel.setBasePose("steer")
 		end
@@ -226,7 +268,7 @@ local function enterMode(new: Mode)
 		Chase.enter(current.model or (current.seat.Parent :: any), current.root)
 	end
 	Viewmodel.setEnabled(new == "Foot" or new == "VehicleFP")
-	setHelmBinding(current ~= nil and (new == "Chase" or (new == "VehicleFP" and helmView)))
+	setHelmBinding(helmWanted(new))
 end
 
 ---------------------------------------------------------------- input
@@ -295,6 +337,7 @@ local function telemetry(): any
 	if
 		current
 		and current.driver
+		and not current.land
 		and boatController
 		and type(boatController.GetTelemetry) == "function"
 	then
@@ -353,7 +396,7 @@ local function update(dt: number)
 		}, look)
 	end
 	-- the helm toggle stays bound while in a chase vehicle, also from the helm view
-	setHelmBinding(current ~= nil and (mode == "Chase" or (mode == "VehicleFP" and helmView)))
+	setHelmBinding(helmWanted(mode))
 	Viewmodel.update(dt, camera.CFrame)
 
 	if arrivalPending and root and (root.Position - STATION).Magnitude < 230 then

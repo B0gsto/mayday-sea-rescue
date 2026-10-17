@@ -356,4 +356,15 @@ function FerryUi.character(): (Model?, BasePart?)
 	return char, if root and root:IsA("BasePart") then root else nil
 end
 
+-- The shared scene board (Ops_Board) starts with the first ferry mechanic that loads.
+task.defer(function()
+	local ok, err = pcall(function()
+		local BoardView = script.Parent:WaitForChild("BoardView") :: ModuleScript
+		((require :: any)(BoardView) :: any).start()
+	end)
+	if not ok then
+		warn("[FerryUi] BoardView:", err)
+	end
+end)
+
 return FerryUi

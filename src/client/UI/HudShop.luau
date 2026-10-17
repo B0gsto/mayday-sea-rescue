@@ -1,6 +1,9 @@
 --!strict
--- HudShop: the Gear shop panel. One row per gear item: name, effect, level pips and a buy button
--- (price, or the rank needed, or MAX). Buying calls the onBuy callback (BuyGear on the server).
+-- HudShop: the Chandlery gear counter panel (docs 04 section 1.1: no shop button on the HUD). It
+-- opens only from the "ShopCounter" ProximityPrompt at the Port Haven Chandlery counter (wired by
+-- HudController, which also closes it when the player walks away). One row per gear item: name,
+-- effect, level pips and a buy button (price, or the rank needed, or MAX). Buying calls the onBuy
+-- callback (BuyGear on the server).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -23,7 +26,7 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 	local rowHeight = 84
 	local count = #ProgressionConfig.GearOrder
 	local frame =
-		HudTheme.panel("GearShop", UDim2.fromOffset(400, 70 + count * (rowHeight + 10)), parent)
+		HudTheme.panel("GearCounter", UDim2.fromOffset(400, 70 + count * (rowHeight + 10)), parent)
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
 	frame.Position = UDim2.fromScale(0.5, 0.5)
 	frame.Visible = false
@@ -31,10 +34,10 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 
 	local title = HudTheme.label(
 		"Title",
-		"GEAR LOCKER",
+		"CHANDLERY GEAR COUNTER",
 		UDim2.new(1, -60, 0, 36),
 		HudTheme.HeaderFont,
-		26,
+		24,
 		frame
 	)
 	title.TextColor3 = C.accent

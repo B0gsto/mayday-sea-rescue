@@ -13,6 +13,7 @@ export type Rank = {
 export type VehicleUnlock = {
 	rankIndex: number, -- rank needed to own and drive it
 	price: number, -- Cash to buy once the rank is reached (0 = free)
+	land: boolean?, -- true for the land fleet (LandVehicleService); boat UIs must skip these
 }
 
 export type GearStat = "speed" | "pullTime" | "searchRadius"
@@ -55,7 +56,18 @@ ProgressionConfig.Ranks = {
 ProgressionConfig.Vehicles = {
 	JetSki = { rankIndex = 1, price = 0 },
 	RIB = { rankIndex = 3, price = 4000 }, -- tune
+	-- docs 10 section 3: land vehicles are free station pool vehicles gated by rank. The Ambulance
+	-- is an NPC handover point until [P1], so it is not listed (not player-drivable).
+	LifeguardPickup = { rankIndex = 1, price = 0, land = true },
+	BeachATV = { rankIndex = 2, price = 0, land = true },
+	CoastguardResponse = { rankIndex = 3, price = 0, land = true },
 } :: { [string]: VehicleUnlock }
+
+-- True when the id is a land vehicle (never offered as a boat launch).
+function ProgressionConfig.isLandVehicle(vehicleId: string): boolean
+	local unlock = ProgressionConfig.Vehicles[vehicleId]
+	return unlock ~= nil and unlock.land == true
+end
 
 -- docs 03 section 5: level prices and the rank each level needs. MVP caps gear at level 3.
 ProgressionConfig.GearLevelPrices = { 300, 1200, 4000 } -- tune

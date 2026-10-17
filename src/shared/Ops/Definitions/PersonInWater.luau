@@ -24,6 +24,8 @@ local def: Types.OperationDef = {
 			mechanicId = "radio_ack",
 			gradeBands = {
 				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
+				-- voice procedure (RadioFormat.grade, 0..1; thirds: callsigns, message, proword)
+				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
 			},
 			serverMetrics = { "elapsed" },
 			weight = 1,
@@ -74,7 +76,16 @@ local def: Types.OperationDef = {
 			gradeBands = {
 				{ metric = "startError", gold = 40, silver = 80, bronze = 160 },
 				{ metric = "lostSight", gold = 0, silver = 1, bronze = 3 },
+				-- server: share of the search on the expanding square (1 below pattern rank)
+				{
+					metric = "onPattern",
+					gold = 0.7,
+					silver = 0.4,
+					bronze = 0,
+					higherIsBetter = true,
+				},
 			},
+			serverMetrics = { "onPattern" },
 			weight = 1,
 			timeoutSec = 120,
 			onFail = "retry",
@@ -204,8 +215,16 @@ local def: Types.OperationDef = {
 					bronze = 20,
 					higherIsBetter = true,
 				},
+				-- server: the pad reached suits the casualty (a heli case goes to the station)
+				{
+					metric = "destinationRight",
+					gold = 1,
+					silver = 1,
+					bronze = 0,
+					higherIsBetter = true,
+				},
 			},
-			serverMetrics = { "conditionAtEnd" },
+			serverMetrics = { "conditionAtEnd", "destinationRight" },
 			allowedEvents = { slam = 6 },
 			weight = 2,
 			timeoutSec = 180,

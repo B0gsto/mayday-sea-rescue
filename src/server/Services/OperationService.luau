@@ -27,6 +27,13 @@ local Remotes = require(OpsFolder:WaitForChild("Remotes"))
 local Types = require(OpsFolder:WaitForChild("Types"))
 
 local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
+-- Ferry (stream c): server-side metric checks and the scene board's task list.
+local FerryValidate = require(
+	script.Parent.Parent:WaitForChild("Ferry"):WaitForChild("FerryValidate") :: ModuleScript
+) :: any
+local SceneBoard = require(Shared:WaitForChild("Ferry"):WaitForChild("SceneBoard")) :: any
+-- Person in the Water: onPattern and destinationRight, measured on the server.
+local PiwMetrics = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("PiwMetrics"))
 
 type StepDef = Types.StepDef
 type OperationDef = Types.OperationDef
@@ -56,6 +63,7 @@ type StepInst = {
 	timeoutAt: number,
 	attempt: number,
 	tag: string?, -- triage: the tag the client chose
+	board: { [string]: string }?, -- scene_command: unit -> task id (optional result.board)
 }
 
 type Track = {
@@ -281,6 +289,22 @@ local function assigneeFor(track: Track, step: StepDef): Player?
 	return nil -- an NPC crewmate takes it
 end
 
+-- Scene command (ferry) needs a Coxswain or Helm certification (player attribute, stream E);
+-- otherwise the NPC Coastguard officer runs the scene. Studio skips the check for testing.
+local function canCommand(player: Player): boolean
+	return RunService:IsStudio()
+		or player:GetAttribute("CertCoxswain") == true
+		or player:GetAttribute("CertHelm") == true
+end
+
+local function stepAssignee(track: Track, step: StepDef): Player?
+	local p = assigneeFor(track, step)
+	if p and step.id == "scene_command" and not canCommand(p) then
+		return nil
+	end
+	return p
+end
+
 ---------------------------------------------------------------- snapshots
 
 local function casualtyPosition(op: any, index: number): Vector3
@@ -384,6 +408,7 @@ local function snapshot(op: any, player: Player): { [string]: any }
 		casualties = casualties,
 		saved = op.saved,
 		total = #op.casualties,
+		board = op.board, -- ferry: the last Ops_Board payload, for late listeners
 	}
 end
 
@@ -407,6 +432,8 @@ local function info(op: any): OperationInfo
 end
 
 ---------------------------------------------------------------- creation
+
+local POB_WORDS = { "one", "two", "three", "four" }
 
 local function newOp(kind: string, sceneKind: string, zone: string, position: Vector3): any
 	nextId += 1
@@ -452,6 +479,13 @@ local function newOp(kind: string, sceneKind: string, zone: string, position: Ve
 			opId = id,
 		},
 	}
+	if sceneKind == "Tow" then
+		-- people aboard the disabled vessel: the tasking says it and RescueService builds them
+		local n = rng:NextInteger(1, #POB_WORDS)
+		op.pob = n
+		op.scene.pob = n
+		op.radioLine = (string.gsub(def.radioLine, "%a+ aboard", `{POB_WORDS[n]} aboard`, 1))
+	end
 	ops[id] = op
 	return op
 end
@@ -534,7 +568,7 @@ local function beginStep(op: any, track: Track, def: StepDef, attempt: number?)
 	track.seq += 1
 	local ci = track.casualtyIndex
 	local cstate = if ci then op.casualties[ci].state else nil
-	local assignee = assigneeFor(track, def)
+	local assignee = stepAssignee(track, def)
 	local t = now()
 	local inst: StepInst = {
 		key = `{track.id}:{track.seq}`,
@@ -551,6 +585,9 @@ local function beginStep(op: any, track: Track, def: StepDef, attempt: number?)
 	track.current = inst
 	if assignee then
 		fire("Ops_StepStart", assignee, stepContext(op, track, inst, assignee))
+	end
+	if def.id == "alongside" or def.id == "berth" then
+		pcall(RescueService.SetTowMode, op.scene, "Alongside") -- lashed beside the tug
 	end
 	broadcast(op)
 end
@@ -621,6 +658,46 @@ local function applyEffect(
 	end
 end
 
+-- Ferry: the on-scene commander's assignments, to every crew on the operation (Ops_Board).
+-- A human OSC's map comes from the optional `result.board` (unit -> task id, sanitised in
+-- onStepResult); the NPC officer fills the board with every crew on scene plus NPC lifeboats.
+local function sendBoard(op: any, inst: StepInst, by: Player?, metrics: Types.Metrics)
+	local board = inst.board
+	if not by then
+		local units = {}
+		for _, t in op.tracks do
+			table.insert(units, `Haven {t.owner.DisplayName}`)
+		end
+		-- the NPC units scene_command.luau lists
+		for _, n in
+			{ "Lifeboat 17-01", "Haven Patrol", "ILB Two-Two", "ILB Two-Three", "Lifeboat 14-07" }
+		do
+			table.insert(units, `{n} (NPC)`)
+		end
+		board = SceneBoard.autoAssign(units)
+	end
+	local assigned: number? = if type(metrics.assigned) == "number" then metrics.assigned else nil
+	if board and assigned == nil then
+		local n = 0
+		for _ in board do
+			n += 1
+		end
+		assigned = n
+	end
+	op.board = {
+		opId = op.id,
+		osc = if by then by.DisplayName else "Coastguard (NPC)",
+		npc = by == nil,
+		assigned = assigned,
+		tasksCovered = if board then SceneBoard.tasksCovered(board) else metrics.tasksCovered,
+		reportCorrect = metrics.reportCorrect,
+		board = board,
+	}
+	for _, p in everyone(op) do
+		fire("Ops_Board", p, op.board)
+	end
+end
+
 local function complete(
 	op: any,
 	track: Track,
@@ -635,6 +712,9 @@ local function complete(
 	track.current = nil
 	record(op, track, inst, grade, by)
 	applyEffect(op, track, inst, by, metrics)
+	if inst.def.id == "scene_command" then
+		sendBoard(op, inst, by, metrics)
+	end
 	if op.takeover and inst.def.id == "standby" then
 		finish(op, "Takeover")
 		return
@@ -724,7 +804,7 @@ advance = function(op: any, track: Track)
 			end
 			op.shared[def.id] = track.id
 			if def.id == "scene_command" then
-				op.osc = track.owner
+				op.osc = if canCommand(track.owner) then track.owner else nil
 			end
 		end
 		if def.perCasualty and op.isBig then
@@ -968,6 +1048,91 @@ local function sanitize(raw: any): Types.Metrics
 	return out
 end
 
+---------------------------------------------------------------- PIW server metrics
+
+-- Per step instance (weak keys): the search pattern the server measures from the boat's track,
+-- and whether the casualty needed the helicopter when the transport step started.
+local piwState: { [StepInst]: { pattern: PiwMetrics.Pattern?, needsHeli: boolean? } } = setmetatable(
+	{},
+	{ __mode = "k" }
+) :: any
+-- The deliver step a pad completed, per track. The client's own transport result for that step
+-- arrives late: it is acknowledged with the pad's grade and otherwise ignored (no second
+-- completion, step advance or pay).
+local padDone: { [Track]: { key: string, grade: Grade } } = setmetatable({}, { __mode = "k" }) :: any
+
+local function windDirection(): number
+	local f = ReplicatedStorage:FindFirstChild("Weather")
+	local w = f and f:GetAttribute("WindDirection")
+	return if type(w) == "number" then w else 0
+end
+
+-- Every tick: sample the boat on a search step, note a transport's heli need at its start.
+local function samplePiw(op: any, dt: number)
+	for _, track in op.tracks do
+		local inst = track.current
+		local ci = inst and inst.casualtyIndex
+		if not inst or not ci or inst.npc then
+			continue
+		end
+		local st = piwState[inst]
+		if inst.mechanicId == "search" then
+			if not st then
+				local rank = inst.assignee and inst.assignee:GetAttribute("RankIndex")
+				local due = type(rank) == "number" and rank >= PiwMetrics.PATTERN_RANK_INDEX
+				st = {
+					pattern = if due
+						then PiwMetrics.newPattern(casualtyPosition(op, ci), windDirection())
+						else nil,
+				}
+				piwState[inst] = st
+			end
+			local pattern = st and st.pattern
+			local boat = inst.assignee and (vehicleOf(inst.assignee) or vehicleOf(track.owner))
+			if pattern and boat then
+				PiwMetrics.samplePattern(
+					pattern,
+					boat:GetPivot().Position,
+					casualtyPosition(op, ci),
+					dt
+				)
+			end
+		elseif inst.mechanicId == "transport" and not st then
+			local c: CasualtyState = op.casualties[ci]
+			piwState[inst] = {
+				needsHeli = PiwMetrics.needsHeli(
+					c.state,
+					c.lifejacket,
+					Condition.band(c.condition)
+				),
+			}
+		end
+	end
+end
+
+-- destinationRight for a transport step: the pad reached (or, for the client's result, the pad
+-- nearest the boat) suits the casualty. nil when there is no casualty to judge.
+local function destinationRight(op: any, inst: StepInst, pad: string?, player: Player?): boolean?
+	local ci = inst.casualtyIndex
+	local c: CasualtyState? = if ci then op.casualties[ci] else nil
+	if not c then
+		return nil
+	end
+	local allowed: { string } = op.scene.spec.dropOffs or {}
+	if not pad then
+		local boat = player and vehicleOf(player)
+		if boat then
+			pad =
+				PiwMetrics.nearestPad(RescueService.GetDropOffs(allowed), boat:GetPivot().Position)
+		end
+	end
+	local st = piwState[inst]
+	local heli = if st and st.needsHeli ~= nil
+		then st.needsHeli
+		else PiwMetrics.needsHeli(c.state, c.lifejacket, Condition.band(c.condition))
+	return PiwMetrics.destinationRight(pad, heli, allowed)
+end
+
 -- Server-owned and server-derived metrics (CONTRACT.md "Operations v2": never taken from the client).
 local function serverMetrics(op: any, inst: StepInst, metrics: Types.Metrics, rawResult: any)
 	metrics.elapsed = now() - inst.startedAt
@@ -1002,9 +1167,18 @@ local function serverMetrics(op: any, inst: StepInst, metrics: Types.Metrics, ra
 			metrics.priorityOrder = not (redWaiting and c.tag ~= "Red")
 		end
 	end
+	if inst.mechanicId == "search" then
+		local st = piwState[inst]
+		metrics.onPattern = PiwMetrics.onPattern(st and st.pattern)
+	elseif inst.mechanicId == "transport" then
+		local right = destinationRight(op, inst, nil, inst.assignee)
+		-- a stub away from any pad has no destination to judge: graded on the rest
+		local m: any = metrics
+		m.destinationRight = if rawResult.stub == true and not right then nil else right
+	end
 	local pob = type(rawResult.metrics) == "table" and rawResult.metrics.pob
 	if type(pob) == "number" then
-		local expected = if op.isBig then op.saved else #op.casualties
+		local expected = if op.isBig then op.saved else op.pob or #op.casualties
 		metrics.pobRight = pob == expected
 	else
 		(metrics :: any).pobRight = nil
@@ -1022,6 +1196,16 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 	local track = trackOf(op, player)
 	local inst = track and track.current
 	if not track or not inst or inst.key ~= key then
+		local done = track and padDone[track]
+		if done and done.key == key then
+			-- the pad already completed this deliver step: acknowledge it, change nothing
+			fire(
+				"Ops_StepAck",
+				player,
+				{ opId = opId, stepKey = key, accepted = true, grade = done.grade }
+			)
+			return
+		end
 		fire(
 			"Ops_StepAck",
 			player,
@@ -1054,6 +1238,27 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 	local metrics = sanitize(raw.metrics)
 	local rawTag = if type(raw.metrics) == "table" then raw.metrics.tag else nil
 	serverMetrics(op, inst, metrics, raw)
+	if op.kind == "CapsizedFerry" then
+		-- recompute what a ferry client could fake (rightCompartment, rescued, fractions)
+		pcall(FerryValidate.apply, op.id, inst.def.id, metrics)
+		if inst.def.id == "scene_command" and type(raw.board) == "table" then
+			local taskIds = {}
+			for _, t in SceneBoard.Tasks do
+				taskIds[t.id] = true
+			end
+			local board, n = {}, 0
+			for u, tid in raw.board do
+				if type(u) == "string" and #u <= 40 and type(tid) == "string" and taskIds[tid] then
+					board[u] = tid
+					n += 1
+					if n >= 16 then
+						break
+					end
+				end
+			end
+			inst.board = board
+		end
+	end
 	-- condition events the step allows, capped
 	local ci = inst.casualtyIndex
 	if ci and type(raw.events) == "table" and inst.def.allowedEvents then
@@ -1088,6 +1293,17 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 end
 
 -- Swap station (docs 09 section 4.2): a human on the track takes a step an NPC is doing.
+-- Ops_TowLength: the Crew stepped the tow out or in; the server line follows (clamped 30..150).
+local function onTowLength(player: Player, opId: any, studs: any)
+	local op = if type(opId) == "string" then ops[opId] else nil
+	if not op or op.state ~= "Active" or type(studs) ~= "number" or studs ~= studs then
+		return
+	end
+	if table.find(op.members, player) then
+		pcall(RescueService.SetTowLength, op.scene, studs)
+	end
+end
+
 local function onTakeStep(player: Player, opId: any, key: any)
 	local op = if type(opId) == "string" then ops[opId] else nil
 	if not op or op.state ~= "Active" then
@@ -1097,6 +1313,13 @@ local function onTakeStep(player: Player, opId: any, key: any)
 	local inst = track and track.current
 	if not track or not inst or inst.key ~= key or not inst.npc then
 		return
+	end
+	if inst.def.id == "scene_command" then
+		if not canCommand(player) then
+			radio(op, "Coastguard", "Scene command needs a Coxswain or Helm certification.", player)
+			return
+		end
+		op.osc = player
 	end
 	inst.npc = false
 	inst.assignee = player
@@ -1150,6 +1373,46 @@ function OperationService.OnTowLost(scene: any)
 	end
 end
 
+-- RescueService's server line (TowMotion) parted: the casualty is adrift again, so the crew
+-- re-passes the tow from the heaving line; those steps' old records go so the re-run grades count.
+function OperationService.OnTowParted(scene: any)
+	local op = opOfScene(scene)
+	if not op or op.state ~= "Active" or op.takeover then
+		return
+	end
+	radio(op, "Crew", "Line's parted! Heads down! Stand by, we'll pass it again.")
+	for _, c in op.casualties do
+		c.towed = false
+	end
+	local track: Track? = op.tracks[1]
+	local back: number? = nil
+	if track then
+		for i, sdef in track.plan do
+			if sdef.id == "heaving_line" then
+				back = i
+				break
+			end
+		end
+	end
+	if not track or not back or track.index <= back then
+		return
+	end
+	local redo: { [string]: boolean } = {}
+	for i = back, math.min(track.index, #track.plan) do
+		redo[track.plan[i].id] = true
+	end
+	for i = #op.results, 1, -1 do
+		local r = op.results[i]
+		if r.trackId == track.id and redo[r.stepId] then
+			table.remove(op.results, i)
+		end
+	end
+	track.current = nil
+	track.done = false
+	track.index = back - 1
+	advance(op, track)
+end
+
 function OperationService.OnTowDelivered(scene: any, _driver: Player?)
 	local op = opOfScene(scene)
 	if op then
@@ -1158,8 +1421,15 @@ function OperationService.OnTowDelivered(scene: any, _driver: Player?)
 end
 
 -- A boat with casualties reached a pad: the real transport path. The current "deliver" step of
--- the driver's track completes with the server-measured condition (no stub cap).
-function OperationService.OnVictimsDelivered(scene: any, _count: number, driver: Player?)
+-- the driver's track completes with the server-measured condition and destination (no stub cap).
+-- The pad and the client's transport result race: whichever reaches the step first completes it
+-- (complete() checks track.current), and the other is acknowledged and ignored.
+function OperationService.OnVictimsDelivered(
+	scene: any,
+	_count: number,
+	driver: Player?,
+	pad: string?
+)
 	local op = opOfScene(scene)
 	if not op or not driver or op.state ~= "Active" then
 		return
@@ -1172,8 +1442,15 @@ function OperationService.OnVictimsDelivered(scene: any, _count: number, driver:
 		if ci then
 			metrics.conditionAtEnd = op.casualties[ci].condition
 		end
+		if inst.mechanicId == "transport" then
+			local right = destinationRight(op, inst, pad, driver)
+			if right ~= nil then
+				metrics.destinationRight = right
+			end
+		end
 		local grade: Grade = Grading.stepGrade(inst.def, metrics, inst.def.serverMetrics) :: any
-		if inst.assignee and inst.assignee ~= driver then
+		padDone[track] = { key = inst.key, grade = grade }
+		if inst.assignee then
 			fire(
 				"Ops_StepAck",
 				inst.assignee,
@@ -1194,7 +1471,7 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 		opId = op.id,
 		kind = op.kind,
 		title = op.def.displayName,
-		radioLine = op.def.radioLine,
+		radioLine = op.radioLine or op.def.radioLine,
 		zoneName = op.zoneName,
 		position = op.position,
 		isBig = op.isBig,
@@ -1276,7 +1553,7 @@ local function activate(op: any, player: Player)
 	rollCasualties(op, 1)
 	RescueService.SpawnCall(op.scene)
 	newTrack(op, player, members)
-	radio(op, "Gale Isles Coastguard", op.def.radioLine)
+	radio(op, "Gale Isles Coastguard", op.radioLine or op.def.radioLine)
 	advance(op, op.tracks[1])
 end
 
@@ -1353,9 +1630,19 @@ local function tickOp(op: any, dt: number, t: number)
 	if op.state ~= "Active" then
 		return
 	end
+	samplePiw(op, dt)
 	local env = { storm = op.storm or weatherState() == "Storm", coldWater = false }
+	local ferry = op.kind == "CapsizedFerry"
 	for _, c in op.casualties do
+		local before = c.condition
 		Condition.step(c, dt, env)
+		if ferry and c.tag and not c.delivered and not c.takenOver and c.condition < before then
+			-- an under-triaged casualty waiting on scene declines faster (docs 09 section 7)
+			local f = FerryValidate.driftFactor(c.tag, c.state)
+			if f > 1 then
+				c.condition = math.clamp(c.condition - (before - c.condition) * (f - 1), 0, 100)
+			end
+		end
 	end
 	if t - op.lastSample >= 5 then
 		op.lastSample = t
@@ -1657,6 +1944,7 @@ function OperationService.Init()
 	Remotes.event("Ops_Accept").OnServerEvent:Connect(onAccept)
 	Remotes.event("Ops_StepResult").OnServerEvent:Connect(onStepResult)
 	Remotes.event("Ops_TakeStep").OnServerEvent:Connect(onTakeStep)
+	Remotes.event("Ops_TowLength").OnServerEvent:Connect(onTowLength)
 	Players.PlayerAdded:Connect(onPlayerAdded)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 	for _, p in Players:GetPlayers() do

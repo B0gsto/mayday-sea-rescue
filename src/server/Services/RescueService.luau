@@ -20,7 +20,9 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local TowMotion = require(script.Parent.Parent.Tow.TowMotion)
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
 
 local RescueService = {}
@@ -33,7 +35,15 @@ local SHIRTS =
 	{ Color3.fromRGB(70, 120, 190), Color3.fromRGB(200, 80, 90), Color3.fromRGB(90, 160, 110) }
 local DELIVER_MARGIN = 12
 local TOW_DOCK_MARGIN = 16
-local TOW_LENGTH = 18
+local TOW_DEFAULT_STUDS = 75 -- the tow mechanics' default rig until the Crew sends Ops_TowLength
+local TOW_LOST_STUDS = 400 -- hitch this far from the casualty (teleport, respawn): the tow is lost
+-- People aboard a disabled boat (torso centres; the skipper waves from the bow, then the cockpit).
+local DECK_SEATS = {
+	CFrame.new(1.5, 2.6, -3.5),
+	CFrame.new(-1.5, 2.6, -3.5),
+	CFrame.new(1.4, 2.6, 5.6),
+	CFrame.new(-1.4, 2.6, 5.6),
+}
 
 type Floater = {
 	parts: { BasePart },
@@ -343,7 +353,11 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 		),
 		CFrame.new(0, 1.6, 6)
 	)
-	addPerson(f, model, CFrame.new(1.5, 2.6, -3.5), true) -- the skipper, waving from the bow
+	-- scene.pob (OperationService, from the tasking) people aboard; assess_vessel counts the torsos
+	local pob = math.clamp(if type(call.pob) == "number" then call.pob else 1, 1, #DECK_SEATS)
+	for i = 1, pob do
+		addPerson(f, model, DECK_SEATS[i], true)
+	end
 	local bow = Instance.new("Attachment")
 	bow.Name = "BowPoint"
 	bow.Position = Vector3.new(0, 0.6, -7)
@@ -363,6 +377,9 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 		prompt = prompt,
 		state = "Waiting",
 		tower = nil :: Model?,
+		motion = nil :: TowMotion.Motion?, -- the TowLine spring-damper while trailing
+		mode = "Trail", -- "Trail" on the line, "Alongside" lashed beside the tug
+		towLength = TOW_DEFAULT_STUDS,
 	}
 end
 
@@ -676,6 +693,8 @@ local function releaseTow(boat: any)
 		boat.fallbackRope = nil
 	end
 	boat.tower = nil
+	boat.motion = nil
+	boat.mode = "Trail"
 end
 
 ---------------------------------------------------------------- per-frame motion
@@ -689,14 +708,36 @@ local function hitchPosition(vehicle: Model): Vector3
 	return (cf * CFrame.new(0, 0, 6)).Position
 end
 
-local function towLength(vehicle: Model): number
-	local rope = vehicle:FindFirstChildWhichIsA("RopeConstraint", true)
-	-- scripted tows: the rope is given extra slack so it never binds; ScriptedLength is the nominal
-	local nominal = rope and rope:GetAttribute("ScriptedLength")
-	if type(nominal) == "number" then
-		return nominal
+-- Scripted tows: VehicleService's rope is a visual over an anchored casualty, so give it enough
+-- slack for the elastic line's stretch (it must never bind the tug); ScriptedLength is nominal.
+local function fitRope(boat: any)
+	local tower: Model? = boat.tower
+	local rope = tower and tower:FindFirstChild("TowRope", true)
+	if rope and rope:IsA("RopeConstraint") and rope:GetAttribute("ScriptedLength") ~= nil then
+		rope:SetAttribute("ScriptedLength", boat.towLength)
+		local a0, a1 = rope.Attachment0, rope.Attachment1
+		local gap = if a0 and a1 then (a0.WorldPosition - a1.WorldPosition).Magnitude else 0
+		rope.Length = math.max(boat.towLength * 1.35, gap) + 10 -- never shorter than it lies now
+		rope.Visible = boat.mode ~= "Alongside"
 	end
-	return if rope then rope.Length else TOW_LENGTH
+end
+
+local function towLost(call: any, boat: any, parted: boolean)
+	releaseTow(boat)
+	boat.state = "Waiting"
+	-- a parted line on an ops tow is re-passed by the steps; a lost one falls back to the prompt
+	boat.prompt.Enabled = not (parted and call.opsDriven)
+	local svc = callService()
+	if parted and type(svc.OnTowParted) == "function" then
+		svc.OnTowParted(call)
+	else
+		svc.OnTowLost(call)
+	end
+end
+
+local function turnToward(f: Floater, target: number, k: number)
+	local delta = (target - f.yaw + math.pi) % (2 * math.pi) - math.pi
+	f.yaw += delta * k
 end
 
 local function stepTow(call: any, dt: number)
@@ -706,33 +747,35 @@ local function stepTow(call: any, dt: number)
 	end
 	local tower: Model? = boat.tower
 	if not tower or not tower.Parent then
-		releaseTow(boat)
-		boat.state = "Waiting"
-		boat.prompt.Enabled = true
-		callService().OnTowLost(call)
+		towLost(call, boat, false)
 		return
 	end
 	local f: Floater = boat.floater
-	local hitch = hitchPosition(tower)
-	local dx, dz = hitch.X - f.x, hitch.Z - f.z
-	local dist = math.sqrt(dx * dx + dz * dz)
-	local keep = towLength(tower) * 0.92 + 7 -- rope plus half a hull, slack so the rope never yanks
-	if dist > keep * 3 then
-		releaseTow(boat)
-		boat.state = "Waiting"
-		boat.prompt.Enabled = true
-		callService().OnTowLost(call)
+	local root = vehicleRoot(tower)
+	if boat.mode == "Alongside" then
+		-- lashed to the tug's starboard side with fenders between, riding at the tug's heading
+		local cf = tower:GetPivot()
+		local half = if root then root.Size.X / 2 else 3
+		local spot = (cf * CFrame.new(half + boat.hull.Size.X / 2 + 1, 0, 0)).Position
+		local k = math.min(dt * 3, 1)
+		f.x += (spot.X - f.x) * k
+		f.z += (spot.Z - f.z) * k
+		turnToward(f, math.atan2(-cf.LookVector.X, -cf.LookVector.Z), k)
 		return
 	end
-	if dist > keep then
-		local pull = (dist - keep) / dist
-		f.x += dx * pull
-		f.z += dz * pull
+	local hitch = hitchPosition(tower)
+	if Vector3.new(hitch.X - f.x, 0, hitch.Z - f.z).Magnitude > TOW_LOST_STUDS then
+		towLost(call, boat, false)
+		return
 	end
-	if dist > 1 then
-		local target = math.atan2(-dx, -dz)
-		local delta = (target - f.yaw + math.pi) % (2 * math.pi) - math.pi
-		f.yaw += delta * math.min(dt * 2, 1)
+	if not boat.motion then
+		boat.motion = TowMotion.new(f, hitch, boat.towLength, boat.hull.Size.Z)
+		fitRope(boat)
+	end
+	local velocity = if root then root.AssemblyLinearVelocity else Vector3.zero
+	TowMotion.step(boat.motion, f, hitch, velocity, math.min(dt, 0.1))
+	if TowMotion.parted(boat.motion) then
+		towLost(call, boat, true)
 	end
 end
 
@@ -791,6 +834,66 @@ local function stepFloaters(now: number)
 	end
 	if #bulkParts > 0 then
 		Workspace:BulkMoveTo(bulkParts, bulkCFrames, Enum.BulkMoveMode.FireCFrameChanged)
+	end
+end
+
+---------------------------------------------------------------- drift and wake (persons in water)
+
+-- A person in the water drifts mostly with the current and a little with the wind (docs 09
+-- section 5.2), and a boat passing near pushes them away on its wake (Boat/Wake: Kelvin wedge,
+-- side and prop wash). Scripted (the floaters are anchored); studs/s.
+RescueService.DRIFT_CURRENT = 0.45 -- studs/s (about 0.3 kn), one direction per call -- tune
+RescueService.DRIFT_LEEWAY = 0.15 -- studs/s downwind, doubled in a storm -- tune
+RescueService.DRIFT_RANGE = 240 -- studs from where they went in: the base drift fades out here
+RescueService.WAKE_PUSH_MAX = 12 -- studs/s cap on the summed wake push -- tune
+
+local function currentOf(call: any): Vector3
+	local c = call.driftCurrent
+	if typeof(c) ~= "Vector3" then
+		local id = tostring(call.id or "")
+		local h = 7
+		for i = 1, #id do
+			h = (h * 31 + string.byte(id, i)) % 100003
+		end
+		local a = h / 100003 * math.pi * 2
+		c = Vector3.new(math.cos(a), 0, math.sin(a))
+		call.driftCurrent = c
+	end
+	return c
+end
+
+local function stepDrift(dt: number)
+	if dt <= 0 then
+		return
+	end
+	local folder = ReplicatedStorage:FindFirstChild("Weather")
+	local w = folder and folder:GetAttribute("WindDirection")
+	local a = if type(w) == "number" then w else 0
+	local storm = folder ~= nil and folder:GetAttribute("State") == "Storm"
+	local leeway = Vector3.new(math.cos(a), 0, math.sin(a))
+		* (RescueService.DRIFT_LEEWAY * (if storm then 2 else 1))
+	for call in liveCalls do
+		if type(call.victims) ~= "table" then
+			continue
+		end
+		local base = currentOf(call) * RescueService.DRIFT_CURRENT + leeway
+		for _, v in call.victims do
+			local f: Floater? = v.floater
+			if v.state ~= "Water" or not f or f.parent or not f.active then
+				continue
+			end
+			local origin: Vector3 = v.driftOrigin or Vector3.new(f.x, 0, f.z)
+			v.driftOrigin = origin
+			local gone = (Vector3.new(f.x, 0, f.z) - origin).Magnitude
+			local fade = 1 - math.clamp(gone / RescueService.DRIFT_RANGE, 0, 1)
+			local push = Wake.pushAt(f.cf.Position)
+			if push.Magnitude > RescueService.WAKE_PUSH_MAX then
+				push = push.Unit * RescueService.WAKE_PUSH_MAX
+			end
+			local vel = base * fade + push
+			f.x += vel.X * dt
+			f.z += vel.Z * dt
+		end
 	end
 end
 
@@ -893,9 +996,12 @@ local function checkDeliveries()
 	for carrier, list in byCarrier do
 		local pos = carrier:GetPivot().Position
 		local deliverable = {}
+		local padOf: { [any]: string } = {}
 		for _, v in list do
-			if padAt(pos, v.call.spec.dropOffs, DELIVER_MARGIN) then
+			local pad = padAt(pos, v.call.spec.dropOffs, DELIVER_MARGIN)
+			if pad then
 				table.insert(deliverable, v)
+				padOf[v.call] = pad
 			end
 		end
 		if #deliverable > 0 then
@@ -909,7 +1015,7 @@ local function checkDeliveries()
 				if driver then
 					callService().RecordAction(call, driver)
 				end
-				callService().OnVictimsDelivered(call, count, driver)
+				callService().OnVictimsDelivered(call, count, driver, padOf[call])
 			end
 		end
 	end
@@ -993,6 +1099,30 @@ function RescueService.CountAboard(call: any): number
 	return n
 end
 
+-- Ops_TowLength: the Crew stepped the tow out or in (studs, clamped 30..150 by TowMotion).
+function RescueService.SetTowLength(call: any, studs: number)
+	local boat = call.boat
+	if not boat or studs ~= studs then
+		return
+	end
+	boat.towLength = math.clamp(studs, 30, 150)
+	if boat.motion then
+		TowMotion.setLength(boat.motion, boat.towLength)
+	end
+	fitRope(boat)
+end
+
+-- "Trail" (on the tow line) or "Alongside" (lashed beside the tug for the alongside/berth steps).
+function RescueService.SetTowMode(call: any, mode: string)
+	local boat = call.boat
+	if not boat or (mode ~= "Trail" and mode ~= "Alongside") or boat.mode == mode then
+		return
+	end
+	boat.mode = mode
+	boat.motion = nil -- back on the line: a fresh line from where she lies
+	fitRope(boat)
+end
+
 function RescueService.IsTowing(call: any): boolean
 	return call.boat ~= nil and call.boat.state == "Towed"
 end
@@ -1056,6 +1186,7 @@ function RescueService.Start()
 		for call in liveCalls do
 			stepTow(call, dt)
 		end
+		stepDrift(dt)
 		stepFloaters(now)
 		accum += dt
 		if accum >= 0.2 then

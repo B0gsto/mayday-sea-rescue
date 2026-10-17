@@ -2,13 +2,17 @@
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
 --   Top centre: Cash, rank name and a Rep bar to the next rank, plus "+Cash +Rep" award pops.
 --   Rank-up toast with the new unlocks; short notices for failed buys / launches.
---   Right edge: Gear button opening the Gear shop (BuyGear).
---   Bottom right: Launch buttons (RequestVehicle), locked with the rank needed, or Buy (BuyGear).
+--   No shop or launch buttons (docs 04 section 1.1). Diegetic panels open from map prompts that
+--   WorldService adds (attribute Panel on the prompt, read on this client's PromptTriggered):
+--     ShopCounter  the Chandlery gear counter (HudShop: BuyGear)
+--     BoatDesk     the boatyard collection desk (HudLaunch: RequestVehicle, rank locks, or BuyGear)
+--   A panel closes from its X button, or when the player walks away from the prompt.
 --   Left: crew chip with a Leave button while in a crew (CrewJoin / CrewLeave echoes).
 -- Data arrives as PlayerDataChanged snapshots; the first one is pulled via Progression_GetData.
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -38,6 +42,11 @@ local crewLabel: TextLabel
 local shop: HudShop.Shop
 local launch: HudLaunch.Launch
 local snapshot: { [string]: any }? = nil
+-- the open diegetic panel ("ShopCounter" / "BoatDesk") and where its prompt is
+local openPanel: string? = nil
+local panelAnchor: Vector3? = nil
+local panelRange = 0
+local WALK_AWAY_MARGIN = 6 -- studs past the prompt's activation distance
 local toastSerial = 0
 local awardSerial = 0
 
@@ -142,12 +151,60 @@ local function requestLaunch(vehicleId: string)
 		end)
 		finished = true
 		launch.setBusy(nil)
+		if ok and launched then
+			launch.setOpen(false)
+		end
 		if not ok then
 			notice("Launch bay offline")
 		elseif not launched then
 			notice(if type(reason) == "string" then reason else "Can't launch now")
 		end
 	end)
+end
+
+local function closePanels()
+	shop.setOpen(false)
+	launch.setOpen(false)
+	openPanel = nil
+	panelAnchor = nil
+end
+
+local function onPromptTriggered(prompt: ProximityPrompt)
+	local panel = prompt:GetAttribute("Panel")
+	if panel ~= "ShopCounter" and panel ~= "BoatDesk" then
+		return
+	end
+	local anchor = prompt.Parent
+	if not (anchor and anchor:IsA("BasePart")) then
+		return
+	end
+	closePanels()
+	openPanel = panel
+	panelAnchor = anchor.Position
+	panelRange = prompt.MaxActivationDistance + WALK_AWAY_MARGIN
+	if panel == "ShopCounter" then
+		shop.setOpen(true)
+	else
+		launch.setOpen(true)
+	end
+end
+
+-- Walking away (or dying) closes the open panel; a closed X clears the tracking.
+local function watchPanel()
+	if not openPanel then
+		return
+	end
+	local isOpen = if openPanel == "ShopCounter" then shop.isOpen() else launch.isOpen()
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if
+		not isOpen
+		or not panelAnchor
+		or not (root and root:IsA("BasePart"))
+		or (root.Position - panelAnchor).Magnitude > panelRange
+	then
+		closePanels()
+	end
 end
 
 local function buildStatus(parent: Instance)
@@ -263,14 +320,8 @@ function HudController.Init()
 	shop = HudShop.build(gui, buy)
 	launch = HudLaunch.build(gui, requestLaunch, buy)
 
-	local gearButton = HudTheme.button("GearButton", "Gear", UDim2.fromOffset(96, 56), gui)
-	gearButton.AnchorPoint = Vector2.new(1, 0.5)
-	gearButton.Position = UDim2.new(1, -20, 0.4, 0)
-	gearButton.BackgroundColor3 = C.panel
-	HudTheme.stroke(gearButton, C.accent, 2)
-	gearButton.Activated:Connect(function()
-		shop.setOpen(not shop.isOpen())
-	end)
+	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
+	RunService.Heartbeat:Connect(watchPanel)
 
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Net.event("CrewJoin").OnClientEvent:Connect(function(payload: any)

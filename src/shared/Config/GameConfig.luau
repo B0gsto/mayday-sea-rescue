@@ -19,7 +19,7 @@ local GameConfig = {
 	SeaLevel = 0,
 	OceanFloorY = -40,
 	LandTopY = 4, -- quay and town ground height
-	MapRadius = 2000, -- playable radius from the origin -- tune
+	MapRadius = 2500, -- playable radius from the origin (matches WorldConfig.MapRadius) -- tune
 	LaunchBayCount = 4, -- Bay1..Bay4 on the station dock
 
 	-- Ordered from most specific to least.
