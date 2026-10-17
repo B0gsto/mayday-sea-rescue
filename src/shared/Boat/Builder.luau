@@ -193,6 +193,7 @@ local function newCtx(
 
 	local root = newPart(nil, "Part", "HullRoot", spec.hullSize, CFrame.identity, ORANGE) :: Part
 	root.Transparency = 1
+	root.CastShadow = false
 	root.CanCollide = true
 	root.CanTouch = false
 	root.CanQuery = true
@@ -400,6 +401,7 @@ Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
 local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
 	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
 	ctx.body.Transparency = 1
+	ctx.body.CastShadow = false
 	local origin = Builder.RIB_ORIGIN
 	local atts = AssetIds.Attachments.M_Veh_RIB or {}
 	local function at(name: string, fallback: Vector3): Vector3

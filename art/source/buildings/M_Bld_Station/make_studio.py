@@ -57,8 +57,8 @@ def parts(asset, m):
 
 st = {"name": "M_Bld_Station", "source": "Workspace/M_Bld_Station", "tier": "hero",
       "sets": {"Render": own("M_Bld_Station", "T_Station_Render"), "Slate": own("M_Bld_Station", "T_Station_Slate"),
-               "Details": own("M_Bld_Station", "T_Station_Details"), "Sheet": sheet, "QuayStone": lib["QuayStone"]},
-      "partSets": parts("M_Bld_Station", {"Stone": "QuayStone", "Render": "Render", "Roof": "Slate", "Trim": "Sheet",
+               "Details": own("M_Bld_Station", "T_Station_Details"), "Sheet": sheet, "Granite": own("M_Bld_Station", "T_Station_Granite")},
+      "partSets": parts("M_Bld_Station", {"Stone": "Granite", "Render": "Render", "Roof": "Slate", "Trim": "Sheet",
                                           "Details": "Details", "BayDoor": "Details"}),
       "attachments": atts("M_Bld_Station"), "cframe": [0, 4, 0, 180]}
 sl = {"name": "M_Bld_Slipway", "source": "Workspace/M_Bld_Slipway", "tier": "hero",
@@ -109,11 +109,15 @@ def shot(name, cam, look, preset, wet):
     shots.append({"name": name, "cam": cam, "look": look, "settle": 3.0,
                   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot(%s, %s) return _G.LookDev.apply('%s', %s)"
                          % (lua(cam), lua(look), preset, "true" if wet else "false")})
-for p in ("Clear", "Overcast", "Storm", "Night"):
+for p in ("Clear", "Overcast", "Storm", "Night"):          # hero framing, both assets, four presets dry and wet
     for w in (False, True):
         shot("M_Bld_Station_Harbour_%s_%s" % (p, "wet" if w else "dry"), [45, 16, 165], [-18, 15, 12], p, w)
-for w in (False, True):
+for p in ("Clear", "Overcast", "Storm", "Night"):
+    for w in (False, True):
+        shot("M_Bld_Slipway_Hero_%s_%s" % (p, "wet" if w else "dry"), [-18, 24, 150], [-55, 0, 92], p, w)
+for w in (False, True):                                    # close-ups (Overcast): tide line, bay door + sign, wing wall
     shot("M_Bld_Slipway_Closeup_Overcast_%s" % ("wet" if w else "dry"), [-38, 9, 102], [-55, 2, 82], "Overcast", w)
     shot("M_Bld_Station_DoorDetail_Overcast_%s" % ("wet" if w else "dry"), [-6, 10, 42], [-15, 10, 23], "Overcast", w)
+    shot("M_Bld_Station_WallDetail_Overcast_%s" % ("wet" if w else "dry"), [38, 9, 46], [24, 9, 26], "Overcast", w)
 json.dump(shots, open(R + "shots.json", "w"), indent=1)
 print("sets station", sorted(st["sets"]), "slipway", sorted(sl["sets"]), "shots", len(shots))

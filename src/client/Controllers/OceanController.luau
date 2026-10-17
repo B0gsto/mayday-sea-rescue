@@ -518,12 +518,20 @@ local function updateLook()
 		local params = RaycastParams.new()
 		params.FilterType = Enum.RaycastFilterType.Include
 		params.FilterDescendantsInstances = { Workspace.Terrain }
-		local hit = Workspace:Raycast(
-			Vector3.new(centreX, SEA + 4, centreZ),
-			Vector3.new(0, -400, 0),
-			params
-		)
-		local depth = if hit then SEA - hit.Position.Y else math.huge
+		-- The near tile is 128 studs across: sample a 3x3 grid over it and take the deepest point, so
+		-- a camera over the shallow quay never turns the whole tile clear above deep, dark water (a
+		-- dark glossy rectangle next to the dock).
+		local depth = -math.huge
+		for ox = -48, 48, 48 do
+			for oz = -48, 48, 48 do
+				local hit = Workspace:Raycast(
+					Vector3.new(centreX + ox, SEA + 4, centreZ + oz),
+					Vector3.new(0, -400, 0),
+					params
+				)
+				depth = math.max(depth, if hit then SEA - hit.Position.Y else math.huge)
+			end
+		end
 		local target = MAX_CLEAR * (1 - smoothstep(CLEAR_DEPTH, OPAQUE_DEPTH, depth))
 		if math.abs(target - clarity) > 0.01 then
 			clarity = target

@@ -283,9 +283,12 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 			Size = Vector3.new(12, 0.4, 18),
 			CFrame = CFrame.new(-95, 0.2, z) * CFrame.Angles(0, math.pi, 0),
 			Color = COLORS.bay,
-			Transparency = 0.6,
+			-- spawn marker only (VehicleService reads its CFrame): never drawn over the boat/water
+			Transparency = 1,
+			CastShadow = false,
 			CanCollide = false,
 			CanTouch = false,
+			CanQuery = false,
 			Parent = dock,
 			Attributes = { LaunchBay = true, BayIndex = i, AllowedVehicles = "JetSki,RIB" },
 		})

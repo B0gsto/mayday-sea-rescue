@@ -81,3 +81,15 @@ ATT = {
 
 def studs(p):
     return tuple(v * 3.0 for v in p)
+
+
+# ---- appended by the Ext builder (H2): what the exterior shell actually builds (nothing above moved)
+DOOR_LEAF = (-8.0, -6.8, FLOOR, FLOOR + 1.98, Y0 + 0.15, Y0 + 0.20)   # x0, x1, z0, z1, y_out, y_in; fanlight above to DOOR z1
+DOOR_STONE_OPENING = (-8.05, -6.75, 0.0, FLOOR + 2.35)  # masonry hole; 0.05 m timber linings through the wall thickness
+DOOR_HINGE = (-8.0, Y0 + 0.20, FLOOR)                     # hinge line (inner face edge), the door swings inward (+Y)
+BAY_OPENING = (-4.6, 8.0, 0.0, 2.95)                      # masonry hole behind the bay: open from the quay to the bay head
+BAY_FLOOR = (-4.6, 8.0, Y0 - 0.58, Y0 + WALL, FLOOR)      # Ext builds the display bed up to the inner wall face (y IY0)
+SHOPFRONT_PILASTERS = [(-5.0, -4.6), (8.0, 8.4)]          # x ranges, projecting to Y0 - 0.7, consoles at the fascia ends
+ROOF_SLOPE = (RIDGE - EAVES) / (Y1)                       # rise per metre run (underside plane through the wall plate)
+SKYLIGHT_YZ = ((4.286, 7.0), (3.422, 7.504))               # roof hole on the back slope, (y, z underside) low and high edge
+ATT_EXT_EXTRA = {"ATT_DoorHinge": DOOR_HINGE}
