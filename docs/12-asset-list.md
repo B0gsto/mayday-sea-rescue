@@ -103,6 +103,16 @@ An asset is **done** only when every box is ticked in its `art/status/<Batch>.cs
 9. **Recorded**: asset ids in `assets/manifest.json` (via `tools/assets.py`), the status row filled with source, licence, author, date and **AI used: none / concept only / assisted** (05 section 10.2), and credits noted for any CC0 or commissioned work.
 10. **Readability** (casualties, hazards, nav marks, the objective): the section 9 checks of 05 pass on a phone-size Overcast screenshot.
 
+### 1.4a Fidelity bar (set by the wave 1 sign-off, 2026-10-17)
+
+Every later batch must meet all five before sign-off:
+
+- **Reference-matched livery and colour.** A same-light side-by-side with the reference photo shows shape, palette and decals within one step.
+- **Wear and detail at 2 m.** Every hero asset has wear, salt staining, visible fasteners, seams and fittings at 2 m camera distance. No smooth plastic planes.
+- **Distinct materials.** Each material has its own roughness and metalness; fabric, rubber, paint and metal are distinguishable in the maps.
+- **Form reads in all four presets.** No pure black or pure white albedo (keep albedo roughly 20 to 240 sRGB); Night shows detail under practical lights.
+- **Studio evidence first.** Dry and wet in-engine shots with no artefacts (alpha ghosting, z-fighting), on a neutral backdrop at hero distance, scoring at least 5/10 against the photo. The bar rises as the art improves.
+
 ### 1.5 Sourcing rules (from 05 section 11)
 
 - **Blender model + bake** (owned) is the default for every hero asset and anything with a real class to match.
