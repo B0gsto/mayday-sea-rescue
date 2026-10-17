@@ -149,7 +149,7 @@ local Clear: Preset = table.freeze({
 	ExposureCompensation = 0,
 	Ambient = hex("#2E3238"),
 	OutdoorAmbient = hex("#7C8590"),
-	ColorShift_Top = hex("#FFF1DC"),
+	ColorShift_Top = hex("#FFF8EE"), -- round 4: less yellow, the warm top light turned the water olive
 	EnvironmentDiffuseScale = 1,
 	EnvironmentSpecularScale = 1,
 	AtmosphereDensity = 0.28,
@@ -167,7 +167,7 @@ local Clear: Preset = table.freeze({
 	BloomSize = 24,
 	BloomThreshold = 1.2, -- glitter blooms (round 3)
 	SunRaysIntensity = 0.08,
-	WaterColor = hex("#364846"),
+	WaterColor = hex("#35484A"), -- round 4: less olive, low saturation (was #364846; #2F474E read cyan)
 })
 
 local Overcast: Preset = table.freeze({

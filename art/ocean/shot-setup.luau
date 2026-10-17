@@ -4,18 +4,8 @@ local Players = game:GetService("Players")
 local ps = Players.LocalPlayer:WaitForChild("PlayerScripts")
 local ctrlModule = ps:FindFirstChild("OceanController", true)
 local ctrl = ctrlModule and require(ctrlModule)
--- Test seabed (client-local terrain) for the shallow and underwater shots: sand flat with ripples
--- of rock, top at about -8, sloping off to -20.
-local T = workspace.Terrain
-T:FillBlock(CFrame.new(600, -14, -400), Vector3.new(240, 12, 240), Enum.Material.Sand)
-T:FillBlock(CFrame.new(600, -24, -400), Vector3.new(320, 8, 320), Enum.Material.Sand)
-for i, r in { { 570, -9, -430, 7 }, { 640, -10, -380, 9 }, { 610, -7, -455, 5 }, { 545, -11, -370, 8 }, { 660, -9, -445, 6 } } do
-	T:FillBall(Vector3.new(r[1], r[2], r[3]), r[4], if i % 2 == 0 then Enum.Material.Rock else Enum.Material.Basalt)
-end
-T:FillBall(Vector3.new(585, -12, -405), 4, Enum.Material.Slate)
--- A beach on the far side of the patch, rising out of the water, for the shoreline.
--- Round 3: moved north (crest at z -200); at z -560 its crest sat under the (600, -600) deep-water cameras.
-T:FillWedge(CFrame.new(600, -6, -240), Vector3.new(240, 16, 80), Enum.Material.Sand)
+-- Round 4: the real island terrain (map/terrain) is in the build; the round 1-3 test seabed is gone and
+-- every shot sits over real open water (art/ocean/make_shots.py writes the shot lists).
 local n, total, worst = 0, 0, 0
 local conn = RunService.RenderStepped:Connect(function(dt)
 	n += 1

@@ -2,106 +2,106 @@
  {
   "name": "golden_low_sunward",
   "cam": [
-   600,
+   -900,
    7,
-   -600
+   1500
   ],
   "look": [
-   600,
+   -1000,
    7,
-   -700
+   1500
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) local d = game.Lighting:GetSunDirection() local f = Vector3.new(d.X, 0, d.Z).Unit local pitch = -0.03 c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local p = Vector3.new(-900, 7, 1500) shoot(p, clearDir(p, flat(game.Lighting:GetSunDirection())), -0.03)"
  },
  {
   "name": "golden_low_away",
   "cam": [
-   600,
+   -900,
    7,
-   -600
+   1500
   ],
   "look": [
-   600,
+   -800,
    7,
-   -700
+   1500
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) local d = game.Lighting:GetSunDirection() local f = -Vector3.new(d.X, 0, d.Z).Unit local pitch = -0.03 c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local p = Vector3.new(-900, 7, 1500) shoot(p, clearDir(p, -flat(game.Lighting:GetSunDirection())), -0.03)"
  },
  {
   "name": "noon_high_clear",
   "cam": [
-   600,
+   200,
    90,
-   -600
+   1300
   ],
   "look": [
-   600,
+   200,
    0,
-   -760
+   1460
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 12.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,90,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(600,0,-760)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 12.5 local p = Vector3.new(200, 90, 1300) shoot(p, clearDir(p, flat(game.Lighting:GetSunDirection())), -0.5)"
  },
  {
   "name": "overcast_low",
   "cam": [
-   600,
+   300,
    7,
-   -600
+   1200
   ],
   "look": [
-   900,
+   450,
    0,
-   -560
+   1500
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(900,0,-560)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 13 local p = Vector3.new(300, 7, 1200) shoot(p, clearDir(p, Vector3.new(0.5, 0, 1).Unit), -0.02)"
  },
  {
   "name": "night_moon",
   "cam": [
-   600,
+   0,
    8,
-   -600
+   2000
   ],
   "look": [
-   600,
+   0,
    8,
-   -700
+   2100
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 22.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,8,-600) local d = game.Lighting:GetMoonDirection() local f = Vector3.new(d.X, 0, d.Z).Unit local pitch = math.clamp(math.asin(d.Y) - 0.42, -0.2, 0.25) c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 22.5 local p = Vector3.new(0, 8, 2000) local d = game.Lighting:GetMoonDirection() shoot(p, clearDir(p, flat(d)), math.clamp(math.asin(d.Y) - 0.42, -0.2, 0.25))"
  },
  {
   "name": "shallow_sand_rock",
   "cam": [
-   600,
-   14,
-   -330
+   880,
+   18,
+   560
   ],
   "look": [
-   600,
-   -8,
-   -410
+   935,
+   -6,
+   495
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,14,-330) c.CFrame = CFrame.lookAt(p, Vector3.new(600,-8,-410)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local p = Vector3.new(880, 18, 560) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, Vector3.new(935, -6, 495)) workspace:SetAttribute(\"ShotCF\", c.CFrame)"
  },
  {
   "name": "underwater",
   "cam": [
-   600,
-   -4,
-   -330
+   588,
+   -12,
+   818
   ],
   "look": [
-   600,
-   -9,
-   -420
+   620,
+   -19,
+   860
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,-4,-330) c.CFrame = CFrame.lookAt(p, Vector3.new(600,-9,-420)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local p = Vector3.new(588, -12, 818) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, Vector3.new(620, -19, 860)) workspace:SetAttribute(\"ShotCF\", c.CFrame)"
  }
 ]

@@ -2,31 +2,31 @@
  {
   "name": "storm_close",
   "cam": [
-   600,
+   206,
    9,
-   -600
+   1113
   ],
   "look": [
-   640,
-   1,
-   -680
+   194,
+   0,
+   1139
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,9,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(640,1,-680)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 workspace:SetAttribute(\"ShotBoatCam\", \"close\") local RS = game:GetService(\"RunService\") local Sh = game.ReplicatedStorage.Shared local Builder = require(Sh.Boat.Builder) local Sim = require(Sh.Boat.Simulator) local VC = require(Sh.Config.VehicleConfig) if not workspace:FindFirstChild(\"ShotBoats\") then local fold = Instance.new(\"Folder\") fold.Name = \"ShotBoats\" fold.Parent = workspace local O, D, V = Vector3.new(200, 0, 1150), Vector3.new(0.6, 0, 0.8).Unit, 22 local R = D:Cross(Vector3.yAxis) local boats = {} for _, b in {{\"JetSki\", 0, 0}, {\"RIB\", -24, 13}} do local m = Builder.build(VC.get(b[1])) m.Name = \"Shot_\" .. b[1] for _, d in m:GetDescendants() do if d:IsA(\"BasePart\") then d.Anchored = true end end m.Parent = fold table.insert(boats, {m = m, a = b[2], r = b[3]}) end local t0 = os.clock() pcall(function() RS:UnbindFromRenderStep(\"ShotBoats\") end) RS:BindToRenderStep(\"ShotBoats\", Enum.RenderPriority.Camera.Value - 1, function() local s = (os.clock() - t0) * V local now = workspace:GetServerTimeNow() for _, b in boats do local p = O + D * (s + b.a) + R * b.r local cf = Sim.restCFrame(b.m, p.X, p.Z, D, now) local L = 6 local hf = Sim.waterHeight(p.X + D.X * L, p.Z + D.Z * L, now) local hb = Sim.waterHeight(p.X - D.X * L, p.Z - D.Z * L, now) local hr = Sim.waterHeight(p.X + R.X * 2.5, p.Z + R.Z * 2.5, now) local hl = Sim.waterHeight(p.X - R.X * 2.5, p.Z - R.Z * 2.5, now) b.m:PivotTo(cf * CFrame.Angles(math.atan2(hf - hb, 2 * L), 0, math.atan2(hr - hl, 5) * 0.7)) if b.m.PrimaryPart then b.m.PrimaryPart.AssemblyLinearVelocity = D * V end end local jet = O + D * s local cam, look if workspace:GetAttribute(\"ShotBoatCam\") == \"low\" then cam = jet + D * 24 - R * 13 + Vector3.new(0, 4.5, 0) look = jet - D * 8 + R * 5 + Vector3.new(0, 1.2, 0) else cam = jet + D * 6 - R * 42 + Vector3.new(0, 9, 0) look = jet - D * 14 + R * 6 end workspace:SetAttribute(\"ShotCF\", CFrame.lookAt(cam, look)) end) end "
  },
  {
   "name": "jetski_storm",
   "cam": [
-   600,
+   222,
    4.5,
-   -600
+   1186
   ],
   "look": [
-   560,
-   3,
-   -700
+   195,
+   1.2,
+   1146
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,4.5,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(560,3,-700)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
+  "lua": "local rp = RaycastParams.new() rp.FilterType = Enum.RaycastFilterType.Include rp.FilterDescendantsInstances = {workspace.Terrain} local function clearDir(p, f) for _, a in {0, 0.26, -0.26, 0.52, -0.52, 0.79, -0.79, 1.05, -1.05, 1.4, -1.4} do local g = CFrame.Angles(0, a, 0):VectorToWorldSpace(f) local ok = true for _, e in {0, 0.5, -0.5} do if workspace:Raycast(Vector3.new(p.X, 3, p.Z), CFrame.Angles(0, e, 0):VectorToWorldSpace(g) * 2400, rp) then ok = false break end end if ok then return g end end return f end local function flat(v) return Vector3.new(v.X, 0, v.Z).Unit end local function shoot(p, f, pitch) local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) workspace:SetAttribute(\"ShotCF\", c.CFrame) end game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 workspace:SetAttribute(\"ShotBoatCam\", \"low\") local RS = game:GetService(\"RunService\") local Sh = game.ReplicatedStorage.Shared local Builder = require(Sh.Boat.Builder) local Sim = require(Sh.Boat.Simulator) local VC = require(Sh.Config.VehicleConfig) if not workspace:FindFirstChild(\"ShotBoats\") then local fold = Instance.new(\"Folder\") fold.Name = \"ShotBoats\" fold.Parent = workspace local O, D, V = Vector3.new(200, 0, 1150), Vector3.new(0.6, 0, 0.8).Unit, 22 local R = D:Cross(Vector3.yAxis) local boats = {} for _, b in {{\"JetSki\", 0, 0}, {\"RIB\", -24, 13}} do local m = Builder.build(VC.get(b[1])) m.Name = \"Shot_\" .. b[1] for _, d in m:GetDescendants() do if d:IsA(\"BasePart\") then d.Anchored = true end end m.Parent = fold table.insert(boats, {m = m, a = b[2], r = b[3]}) end local t0 = os.clock() pcall(function() RS:UnbindFromRenderStep(\"ShotBoats\") end) RS:BindToRenderStep(\"ShotBoats\", Enum.RenderPriority.Camera.Value - 1, function() local s = (os.clock() - t0) * V local now = workspace:GetServerTimeNow() for _, b in boats do local p = O + D * (s + b.a) + R * b.r local cf = Sim.restCFrame(b.m, p.X, p.Z, D, now) local L = 6 local hf = Sim.waterHeight(p.X + D.X * L, p.Z + D.Z * L, now) local hb = Sim.waterHeight(p.X - D.X * L, p.Z - D.Z * L, now) local hr = Sim.waterHeight(p.X + R.X * 2.5, p.Z + R.Z * 2.5, now) local hl = Sim.waterHeight(p.X - R.X * 2.5, p.Z - R.Z * 2.5, now) b.m:PivotTo(cf * CFrame.Angles(math.atan2(hf - hb, 2 * L), 0, math.atan2(hr - hl, 5) * 0.7)) if b.m.PrimaryPart then b.m.PrimaryPart.AssemblyLinearVelocity = D * V end end local jet = O + D * s local cam, look if workspace:GetAttribute(\"ShotBoatCam\") == \"low\" then cam = jet + D * 24 - R * 13 + Vector3.new(0, 4.5, 0) look = jet - D * 8 + R * 5 + Vector3.new(0, 1.2, 0) else cam = jet + D * 6 - R * 42 + Vector3.new(0, 9, 0) look = jet - D * 14 + R * 6 end workspace:SetAttribute(\"ShotCF\", CFrame.lookAt(cam, look)) end) end "
  }
 ]

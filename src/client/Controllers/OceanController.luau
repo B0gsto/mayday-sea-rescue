@@ -71,7 +71,7 @@ local SPRAY_RATE = 70 -- spindrift particles/s at full storm (High) -- tune
 local TINT_CALM = Color3.fromHex("#36463F")
 local TINT_STORM = Color3.fromHex("#232C2B")
 local HAZE_DEFAULT = Color3.fromHex("#A9B0B4")
-local SHALLOW_TINT = Color3.fromHex("#56695E") -- greener and lighter over sand -- tune
+local SHALLOW_TINT = Color3.fromHex("#4F6A66") -- lighter aqua-green over sand (round 4: less olive) -- tune
 
 local OceanController = {}
 OceanController.Priority = 50
@@ -89,6 +89,15 @@ local ring: MeshGrid.Grid? = nil
 local far: FarPlane.FarPlane? = nil
 local foam: MeshGrid.Grid? = nil
 local foamLift: { number } = {}
+-- Round 4 whitecaps: per-vertex foam that persists after the crest has passed and decays (slowly
+-- in a storm, so breaking crests leave wind-aligned streaks). World-locked: when the grid snaps,
+-- the values shift with it (foamIndex maps a vertex's integer cell coordinate to its index).
+local foamPersist: { number } = {}
+local foamSpare: { number } = {}
+local foamKey: { number } = {}
+local foamIndex: { [number]: number } = {}
+local foamT: number? = nil
+local FOAM_KEY_SPAN = 4096
 -- Crest-top positions from the last foam pass; spindrift is emitted only from these.
 local MAX_CRESTS = 48
 local crestPos: { Vector3 } = table.create(MAX_CRESTS)
@@ -183,6 +192,11 @@ local function teardown()
 		sprayEmitter = nil
 	end
 	table.clear(foamLift)
+	table.clear(foamPersist)
+	table.clear(foamSpare)
+	table.clear(foamKey)
+	table.clear(foamIndex)
+	foamT = nil
 	table.clear(stitchA)
 	table.clear(stitchB)
 	table.clear(stitchT)
@@ -254,14 +268,27 @@ local function buildMesh(parent: Instance): boolean
 	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT)
 	seabed = Seabed.new(parent)
 	if tier.name ~= "Low" then
-		-- Foam overlay: half the near patch's resolution, same footprint.
-		local foamGrid =
-			MeshGrid.new("OceanFoam", parent, tier.nearCells // 2, tier.nearCell * 2, 0, "Foam")
+		-- Foam overlay: half the near patch's resolution; round 4 widens it (up to twice the near
+		-- patch, inside the ring's unfaded area) so whitecaps reach past the boat in wide shots.
+		local foamCell = tier.nearCell * 2
+		local foamCells = math.clamp(
+			math.floor(tier.outerCells * tier.outerCell * 0.8 / foamCell),
+			tier.nearCells // 2,
+			tier.nearCells
+		)
+		local foamGrid = MeshGrid.new("OceanFoam", parent, foamCells, foamCell, 0, "Foam")
 		if foamGrid then
 			foam = foamGrid
 			foamGrid.part.Transparency = 1
 			for n = 1, foamGrid.count do
 				foamLift[n] = FOAM_SINK
+				foamPersist[n], foamSpare[n] = 0, 0
+				local key = (math.floor(foamGrid.lx[n] / foamCell + 0.5) + FOAM_KEY_SPAN // 2)
+						* FOAM_KEY_SPAN
+					+ math.floor(foamGrid.lz[n] / foamCell + 0.5)
+					+ FOAM_KEY_SPAN // 2
+				foamKey[n] = key
+				foamIndex[key] = n
 			end
 		end
 	end
@@ -316,6 +343,36 @@ local function buildFallback(parent: Instance)
 	mode = "Parts"
 end
 
+-- Grid snapped by (dx, dz) studs: carry the persistent foam with the world (cleared if the step is
+-- not a whole number of foam cells, e.g. the first placement).
+local function shiftFoam(dx: number, dz: number)
+	local grid = foam
+	if not grid or #foamPersist == 0 then
+		return
+	end
+	local di, dj = dx / grid.cellSize, dz / grid.cellSize
+	local old, new = foamPersist, foamSpare
+	if
+		di ~= di
+		or dj ~= dj
+		or di % 1 ~= 0
+		or dj % 1 ~= 0
+		or math.abs(di) > 64
+		or math.abs(dj) > 64
+	then
+		for n = 1, grid.count do
+			old[n] = 0
+		end
+		return
+	end
+	local offset = di * FOAM_KEY_SPAN + dj
+	for n = 1, grid.count do
+		local src = foamIndex[foamKey[n] + offset]
+		new[n] = if src then old[src] else 0
+	end
+	foamPersist, foamSpare = new, old
+end
+
 -- Writes every vertex for time t. Allocation-free.
 local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: number)
 	local ringGrid = ring
@@ -354,33 +411,54 @@ local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: num
 	local foamGrid = foam
 	if foamGrid then
 		local intensity = WaveField.intensity()
-		-- Whitecaps in every weather (the North Atlantic is never glassy): sparse on calm swell,
-		-- most crests breaking in a storm. Crest vertices feed the spindrift (crests only).
-		local visible = true
+		-- Whitecaps in every weather (the North Atlantic is never glassy): rare breaking peaks on
+		-- calm swell, most crests breaking in a storm. Fresh foam is driven by crest height plus
+		-- the steepness of the downwind (front) face, so it sits on the crest lip and spills down
+		-- the face; it then persists and decays, slowly in a storm, broken into wind-aligned
+		-- streaks. Crest vertices feed the spindrift (crests only).
 		foamGrid.part.Transparency = 0
 		crestCount = 0
-		if visible then
-			local amp = math.max(WaveField.maxAmplitude(), 0.1)
-			local heights, gxs, gzs, lx, lz =
-				foamGrid.heights, foamGrid.gx, foamGrid.gz, foamGrid.lx, foamGrid.lz
-			local edge = foamGrid.half - foamGrid.cellSize * 0.5
-			-- Crest threshold drops as the storm builds: more of each crest breaks. -- tune
-			local lo = 0.80 - 0.38 * intensity
-			local cover = 0.28 + 0.72 * math.min(intensity * 1.6, 1)
-			for n = 1, foamGrid.count do
-				local h, gx, gz = WaveField.gradientAt(centreX + lx[n], centreZ + lz[n], t)
-				local f = smoothstep(lo, lo + 0.22, (h - SEA) / amp) * cover
-				if math.abs(lx[n]) > edge or math.abs(lz[n]) > edge then
-					f = 0 -- keep the overlay's border under the water
-				elseif f > 0.6 and crestCount < MAX_CRESTS and (n % 3 == 0) then
-					crestCount += 1
-					crestPos[crestCount] = Vector3.new(centreX + lx[n], h + 0.4, centreZ + lz[n])
-				end
-				heights[n], gxs[n], gzs[n] = h, gx, gz
-				foamLift[n] = FOAM_SINK + (FOAM_LIFT - FOAM_SINK) * math.min(f * 2.2, 1)
+		local dt = if foamT then math.clamp(t - foamT, 0, 0.5) else 0
+		foamT = t
+		local amp = math.max(WaveField.maxAmplitude(), 0.1)
+		-- Max slope of the sine sum (sum of k * A): about 0.22 calm, 0.29 storm.
+		local slopeMax = 0.22 + 0.07 * intensity
+		local wx, wz = WaveField.windDirection()
+		local heights, gxs, gzs, lx, lz =
+			foamGrid.heights, foamGrid.gx, foamGrid.gz, foamGrid.lx, foamGrid.lz
+		local edge = foamGrid.half - foamGrid.cellSize * 0.5
+		-- Breaking threshold drops and coverage rises as the storm builds. -- tune
+		local lo = 0.92 - 0.5 * intensity
+		local cover = 0.55 + 0.45 * math.min(intensity * 1.6, 1)
+		local decay = math.exp(-dt / (0.5 + 4 * intensity)) -- foam half-life ~0.35 s calm, ~3 s storm
+		local streakAmt = 0.25 + 0.75 * intensity
+		local persist = foamPersist
+		for n = 1, foamGrid.count do
+			local x, z = centreX + lx[n], centreZ + lz[n]
+			local h, gx, gz = WaveField.gradientAt(x, z, t)
+			local w = fadeWeight(lx[n], lz[n])
+			local hN = (h - SEA) / amp
+			local face = math.max(-(gx * wx + gz * wz), 0) / slopeMax
+			local steep = math.sqrt(gx * gx + gz * gz) / slopeMax
+			local fresh = smoothstep(lo, lo + 0.24, hN + 0.32 * face + 0.12 * steep) * cover * w
+			local p = math.max(fresh, persist[n] * decay)
+			persist[n] = p
+			-- Remnant foam: world-locked bands across the wind, wavy along it (streaks).
+			local across, along = x * -wz + z * wx, x * wx + z * wz
+			local band = 0.5
+				+ 0.5 * math.sin(across * 0.85 + 1.8 * math.sin(along * 0.045 + across * 0.11))
+			local f = math.max(fresh, p * smoothstep(0.3, 0.85, band) * streakAmt)
+			if math.abs(lx[n]) > edge or math.abs(lz[n]) > edge then
+				f = 0 -- keep the overlay's border under the water
+			elseif fresh > 0.6 and crestCount < MAX_CRESTS and (n % 3 == 0) then
+				crestCount += 1
+				crestPos[crestCount] = Vector3.new(x, h + 0.4, z)
 			end
-			MeshGrid.apply(foamGrid, SEA, fu, fv, foamLift)
+			heights[n] = SEA + (h - SEA) * w
+			gxs[n], gzs[n] = gx * w, gz * w
+			foamLift[n] = FOAM_SINK + (FOAM_LIFT - FOAM_SINK) * math.min(f * 2.2, 1)
 		end
+		MeshGrid.apply(foamGrid, SEA, fu, fv, foamLift)
 	end
 end
 
@@ -525,6 +603,7 @@ local function step(dt: number)
 	lastT = t
 	WaveField.beginFrame(t, pos)
 	if snapped then
+		shiftFoam(cx - centreX, cz - centreZ)
 		centreX, centreZ = cx, cz
 		moveParts()
 	end
