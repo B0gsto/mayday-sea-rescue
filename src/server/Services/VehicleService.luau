@@ -27,11 +27,13 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local Weather = require(Shared:WaitForChild("Weather"))
 
 type VehicleSpec = VehicleConfig.VehicleSpec
 type Mode = "Dock" | "Driven" | "Drift"
@@ -50,12 +52,23 @@ type Record = {
 	lastGood: CFrame,
 	strikes: number,
 	resetting: boolean,
+	wetUntil: number,
 }
 
 local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
+-- Real models per vehicle id (AssetIds names, LOD0; the first is required, the rest optional). A
+-- vehicle whose first model fails to load is built as the greybox.
+local VISUAL_ASSETS: { [string]: { string } } = {
+	RIB = { "M_Veh_RIB", "M_Veh_RIB_Helm" },
+}
+-- Wet look (SurfaceAppearance _Wet, attribute Wet on the model): rain/storm at or over this
+-- intensity, spray while running at planing speed, or a SprayHit attribute set by any system;
+-- dries DRY_TIME seconds after the last of them.
+local WET_INTENSITY = 0.3 -- Weather.getIntensity -- tune
+local DRY_TIME = 20 -- tune
 -- Anti-teleport: the limit is speed-based, relative to the vehicle's own top speed (x gear bonus).
 -- A check fails when the hull's speed, or its distance from the last good spot divided by the time
 -- since, beats topSpeed * SPEED_TOLERANCE + SPEED_SLACK (surfing a wave face and wake pushes add
@@ -357,13 +370,70 @@ end
 
 -- Builds the player's vehicle floating at rest at `at` (X, Z and heading; Y from the waves),
 -- replacing their old one, and registers it. The caller seats the driver.
+-- Clones of the vehicle's real models (yields on the first load), or nil for the greybox.
+local function visualsFor(spec: VehicleSpec): { Model }?
+	local names = VISUAL_ASSETS[spec.id]
+	if not names then
+		return nil
+	end
+	local visuals = {}
+	for i, name in names do
+		local clone = AssetLoader.clone(name)
+		if clone then
+			table.insert(visuals, clone)
+		elseif i == 1 then
+			warn(`[VehicleService] {spec.id}: {name} did not load; building the greybox`)
+			for _, v in visuals do
+				v:Destroy()
+			end
+			return nil
+		else
+			warn(`[VehicleService] {spec.id}: optional model {name} did not load`)
+		end
+	end
+	return visuals
+end
+
+-- Rain, storm or spray wets the real model (see WET_INTENSITY); the attribute drives the swap.
+local function updateWet(record: Record)
+	local model = record.model
+	if model:GetAttribute("Visual") == "Greybox" then
+		return
+	end
+	local now = os.clock()
+	local speed = record.root.AssemblyLinearVelocity.Magnitude
+	local planing = record.spec.planingSpeed * record.spec.topSpeed
+	-- SprayHit: any system (spray FX, green water over the bow) sets it true to wet the boat now
+	local sprayHit = model:GetAttribute("SprayHit") == true
+	if sprayHit then
+		model:SetAttribute("SprayHit", nil)
+	end
+	if
+		sprayHit
+		or Weather.getIntensity() >= WET_INTENSITY
+		or (record.mode == "Driven" and speed >= planing)
+	then
+		record.wetUntil = now + DRY_TIME
+	end
+	local wet = now < record.wetUntil
+	if model:GetAttribute("Wet") ~= wet then
+		model:SetAttribute("Wet", wet)
+	end
+end
+
 local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Model, VehicleSeat)
+	local visuals = visualsFor(spec)
 	local old = byPlayer[player]
 	if old then
 		despawnModel(old.model)
 	end
 
-	local model = Builder.build(spec)
+	local model = Builder.build(spec, visuals)
+	if visuals then
+		model:GetAttributeChangedSignal("Wet"):Connect(function()
+			AssetLoader.setWet(model, model:GetAttribute("Wet") == true)
+		end)
+	end
 	model.Name = `{player.Name}_{spec.id}`
 	model:SetAttribute("Owner", player.UserId)
 	model:SetAttribute("SpeedMultiplier", speedBonus(player))
@@ -394,6 +464,7 @@ local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Mo
 		lastGood = root.CFrame,
 		strikes = 0,
 		resetting = false,
+		wetUntil = 0,
 	}
 	records[model] = record
 	byPlayer[player] = record
@@ -783,10 +854,18 @@ function VehicleService.Start()
 		acc = 0
 		for _, record in records do
 			checkVehicle(record, interval)
+			updateWet(record)
 		end
 	end)
 	findBays()
 	addPrompts()
+	local preload = {}
+	for _, names in VISUAL_ASSETS do
+		for _, name in names do
+			table.insert(preload, name)
+		end
+	end
+	AssetLoader.preload(preload)
 end
 
 -- API (CONTRACT.md, B) ---------------------------------------------------------------------------

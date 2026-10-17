@@ -20,7 +20,15 @@
 --                 off when built; BoatController switches them on at night and in storms (NavLights).
 -- Real dimensions at 1 m = 3 studs (docs 05 section 4.1): PWC 3.3 x 1.2 m, Atlantic 85 8.4 x 2.85 m.
 -- Colour scheme: rescue orange with white; the RIB has an RNLI navy hull and orange tubes.
+--
+-- Real models: Builder.build(spec, visuals) with the RIB's uploaded models (M_Veh_RIB + M_Veh_RIB_Helm,
+-- cloned by the server's AssetLoader at their authored pivot) keeps the same invisible physics
+-- (HullRoot, mass, float points, forces) and an invisible Body, welds every visual part to Body and
+-- puts the seats, lights and attachments at the model's ATT_* points (AssetIds.Attachments). Without
+-- visuals (asset failed to load) the greybox is built as before. Attribute Visual = asset name or
+-- "Greybox".
 
+local AssetIds = require(script.Parent.Parent.Config.AssetIds)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
 
 type VehicleSpec = VehicleConfig.VehicleSpec
@@ -114,7 +122,7 @@ local function navLight(
 	color: Color3,
 	yaw: number,
 	sector: number?
-)
+): BasePart
 	local lamp = newPart(
 		ctx,
 		"Part",
@@ -142,6 +150,7 @@ local function navLight(
 	light.Shadows = false
 	light.Enabled = false
 	light.Parent = lamp
+	return lamp
 end
 
 local function attach(root: BasePart, name: string, pos: Vector3): Attachment
@@ -383,6 +392,103 @@ local function buildRIB(spec: VehicleSpec): Model
 	return finish(ctx, spec, slots, Vector3.new(0, 0.6, 11.4), Vector3.new(0, 0.6, -12.6))
 end
 
+-- The RIB asset's authored pivot (Blender origin: skeg base, midships) in HullRoot space. Its ATT_*
+-- layout matches the greybox: ATT_DriverSeat (0, 4.35, 1.6761) is the greybox seat (0, 2.25, 1.6),
+-- ATT_Float1 (-2.2, 0.45, -8.9239) is floatPoints[1] (-2.2, -1.65, -9).
+Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
+
+local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
+	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
+	ctx.body.Transparency = 1
+	local origin = Builder.RIB_ORIGIN
+	local atts = AssetIds.Attachments.M_Veh_RIB or {}
+	local function at(name: string, fallback: Vector3): Vector3
+		local p = atts[name]
+		return if p then p + origin else fallback
+	end
+	for _, visual in visuals do
+		visual:PivotTo(CFrame.new(origin))
+		for _, d in visual:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = false
+				d.Massless = true
+				d.CanCollide = false
+				d.CanTouch = false
+				d.CanQuery = false
+				local weld = Instance.new("WeldConstraint")
+				weld.Part0 = ctx.body
+				weld.Part1 = d
+				weld.Parent = d
+			end
+		end
+		visual.Parent = ctx.model
+	end
+	-- functional seats, invisible inside the modelled jockey seats
+	local function hidden(part: BasePart)
+		part.Transparency = 1
+		part.CastShadow = false
+	end
+	local seatSize = Vector3.new(1.3, 0.6, 2.2)
+	hidden(seat(ctx, true, "DriverSeat", seatSize, at("ATT_DriverSeat", Vector3.new(0, 2.25, 1.6))))
+	for i = 1, spec.seats - 1 do
+		local side = if i % 2 == 1 then -1 else 1
+		local fallback = Vector3.new(side * 1.3, 2.25, 1.6 + math.ceil(i / 2) * 3.2)
+		hidden(seat(ctx, false, `PassengerSeat{i}`, seatSize, at(`ATT_PassengerSeat{i}`, fallback)))
+	end
+	-- nav lights: small lamps in the modelled housings (they glow when NavLights switches them on)
+	type Lamp = { name: string, pos: Vector3, color: Color3, yaw: number, sector: number }
+	local lamps: { Lamp } = {
+		{
+			name = "NavMasthead",
+			pos = Vector3.new(1.6, 7.45, 9.8),
+			color = WHITE_LIGHT,
+			yaw = 0,
+			sector = 225,
+		},
+		{
+			name = "NavStern",
+			pos = Vector3.new(0, 6.6, 10.25),
+			color = WHITE_LIGHT,
+			yaw = math.pi,
+			sector = 135,
+		},
+		{
+			name = "NavPort",
+			pos = Vector3.new(-1.45, 2.6, -1.6),
+			color = RED_LIGHT,
+			yaw = SIDELIGHT_YAW,
+			sector = 112.5,
+		},
+		{
+			name = "NavStarboard",
+			pos = Vector3.new(1.45, 2.6, -1.6),
+			color = GREEN_LIGHT,
+			yaw = -SIDELIGHT_YAW,
+			sector = 112.5,
+		},
+	}
+	for _, l in lamps do
+		local lamp = navLight(ctx, l.name, at(`ATT_{l.name}`, l.pos), l.color, l.yaw, l.sector)
+		lamp.Size = Vector3.new(0.2, 0.2, 0.2)
+		lamp.CastShadow = false
+	end
+	local slots = {}
+	for i = 1, spec.survivorCapacity do
+		local side = if i % 2 == 1 then -1 else 1
+		local fallback = Vector3.new(side * 1.3, 0.1, -5.0 - math.floor((i - 1) / 2) * 2.4)
+		table.insert(slots, at(`ATT_SurvivorSlot{i}`, fallback))
+	end
+	local model = finish(
+		ctx,
+		spec,
+		slots,
+		at("ATT_TowHitch", Vector3.new(0, 0.6, 11.4)),
+		at("ATT_BowPoint", Vector3.new(0, 0.6, -12.6))
+	)
+	model:SetAttribute("Visual", visuals[1].Name)
+	return model
+end
+
 -- Fallback for a vehicle id without a hand-built greybox: a plain box with seats in a column.
 local function buildGeneric(spec: VehicleSpec): Model
 	local size = spec.hullSize
@@ -406,11 +512,16 @@ local function buildGeneric(spec: VehicleSpec): Model
 end
 
 -- Builds a vehicle at the origin with its HullRoot anchored. The caller pivots and parents it.
-function Builder.build(spec: VehicleSpec): Model
+-- visuals: the real models for the RIB (see the header); nil or empty builds the greybox.
+function Builder.build(spec: VehicleSpec, visuals: { Model }?): Model
 	local model = if spec.id == "JetSki"
 		then buildJetSki(spec)
+		elseif spec.id == "RIB" and visuals and #visuals > 0 then buildRIBAsset(spec, visuals)
 		elseif spec.id == "RIB" then buildRIB(spec)
 		else buildGeneric(spec)
+	if model:GetAttribute("Visual") == nil then
+		model:SetAttribute("Visual", "Greybox")
+	end
 	local root = model.PrimaryPart :: BasePart
 	root.Anchored = true
 	return model
