@@ -258,6 +258,8 @@ Seen in first person within 1 m, so hand-held kit is **hero close-up** texel den
 
 ### 2.9 Characters
 
+> **Decision 2026-10-17 (user): Roblox characters for people, for now.** Custom human characters are paused. All human NPCs (crew, Chief Aggie, casualty variants, ferry passengers, townsfolk) use Roblox R15 characters dressed with realistic clothing and accessories (HumanoidDescription: drysuits, oilskins, lifejackets, helmets). The already-approved `M_Chr_Casualty_Swimmer` stays in use as the Person in the Water casualty. Batches CH2, CH3 and the human parts of CH4 and CH5 are on hold; Bosun (CH6, CH7) and the first-person arms (CH4) continue.
+
 > **Moderation rule for every CH batch (CH1 to CH5), from 2026-10-17.** Never upload a bare human body mesh: Roblox moderates each mesh alone, and two unclothed body meshes were removed for "Sexual Content" (account strikes). Clothing is real geometry merged into the same mesh as the body; no anatomical detail on skin areas; `M_Chr_HumanBase_M`/`_F` stay local Blender sources and are never exported or uploaded; no naked-body texture sets are uploaded; every upload has its real asset name, never "mesh". The full rule is in [document 06, section 2.1a](06-tools-and-pipeline.md#21a-character-uploads-moderation-rule-mandatory). The `M_Chr_HumanBase_*` row below is a **local source**, not an upload.
 
 Human NPCs are realistic skinned meshes on an **R15-compatible skeleton** so they share avatar animations (verify skinned realistic meshes on R15 and the bone cap, Spike 1). No injuries, no blood (05 section 8.2).
