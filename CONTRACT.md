@@ -213,3 +213,19 @@ Each stream owns only its files; the framework files above stay with the Ops fra
 ## Gate
 
 Each stream runs `~/RobloxProjects/tools/check.sh ~/RobloxProjects/MaydaySeaRescue` and `~/RobloxProjects/tools/build.sh ~/RobloxProjects/MaydaySeaRescue`, piped through `tail`, and fixes errors in its own files. If another stream's errors appear, report them; don't fix them. No Studio, and no commits.
+
+## Land vehicles
+
+Design: docs 10 section 3, speeds docs 02 section 4.3. Owner: `src/shared/Car/*`, `src/shared/Config/LandVehicleConfig.luau`, `src/server/Services/LandVehicleService.luau`, `src/client/Controllers/CarController.luau`, `tests/Car*.spec.luau`.
+
+- **Chassis** (`src/shared/Car/`, pure, Lune-tested): `Chassis` (prepare a real-world spec into studs/RMU, `step` per-wheel spring, anti-roll and tyre forces), `Tyre` (surface grip table, wet via `Weather.getIntensity`, magic-formula slip curves, friction ellipse, ABS/TC), `Suspension`, `Drivetrain` (torque curve, converter, six-speed auto, low range, engine braking), `LightBar` (patterns), `Trailer` (launch rule). `Physics` applies them in Roblox (raycasts, `CarForce`/`CarTorque` on the `Chassis` root); `Builder` makes greybox bodies at real dimensions.
+- **Vehicles** (`LandVehicleConfig`): `LifeguardPickup` (Recruit), `BeachATV` (Lifeguard), `CoastguardResponse` (Rescue Swimmer, optional `BoatTrailer` carrying a RIB or jet ski), `Ambulance` (parked handover point, tag `AmbulanceHandover`, attribute `HandoverPoint`, attachment `HandoverPoint`).
+- **Models** in `Workspace.LandVehicles`, tag `LandVehicle`, collision group `LandVehicle` (doesn't collide with itself). Attributes: `VehicleId`, `Owner`, `LandVehicle`, `CameraMode = "Chase"`, `CockpitView`, `Headlights`, `LightBar`, `Siren`, `Horn`, `CanLaunch`, `Towing`, `TrailerBoat`. `DriverSeat` (VehicleSeat, right-hand drive) holds `EyePoint`. A towing car has an ObjectValue `Trailer`.
+- **Server API**: `LandVehicleService.GetVehicle(player)`, `GetTrailer(model)`, `GetDriver(model)`, `Spawn(player, vehicleId, pointId?, withTrailer?)`, `Despawn(player)`, `SetLightBar(model, on)`, `VehicleSpawned` (signal `(player, model)`).
+- **Remotes** (under `ReplicatedStorage.Net`): `Land_Request` (RemoteFunction `(vehicleId, pointId?, withTrailer?) -> (ok, reason | Model)`), `Land_Control` (C->S `(action, value)`: `Horn`, `Siren`, `LightBar`, `Headlights`, `Launch`), `Land_Spawned` (S->C `(model)`).
+- **Client**: `CarController.GetDriving()`, `CarController.Request(...)`. The player attribute `CarCockpit` (bool, V / R3) asks for the cockpit view.
+- **Slipway launch**: once the trailer's `Cradle` is `LaunchDepth` under `Weather.heightAt` and the rig has stopped, `CanLaunch` turns true; `Launch` removes the boat greybox and calls `VehicleService.SpawnSeated(player, boatId, cframe, 0)` in pcall. Recovery onto the trailer is [L].
+- CONTRACT for **stream E**: add `LifeguardPickup` (rank 1), `BeachATV` (rank 2) and `CoastguardResponse` (rank 3), price 0, to `ProgressionConfig.Vehicles`. Until then `CanUseVehicle` answers "Unknown vehicle", and LandVehicleService falls back to `GetData().rankIndex` against the spec's `unlockRank`.
+- CONTRACT for the **camera stream**: a chase camera for `CameraMode = "Chase"` land vehicles, plus a cockpit view at `DriverSeat.EyePoint` when `CarCockpit` is true.
+- CONTRACT for the **terrain stream**: `WorldConfig.LandVehicleSpawns` (same shape as `LandVehicleConfig.SpawnPoints`) replaces the placeholder points marked TODO.
+- Open: no character/vehicle collision group yet (docs 10 says pedestrians are never hit). Sounds are empty TODO constants. Siren and blue lights aren't gated to a tasking yet.
