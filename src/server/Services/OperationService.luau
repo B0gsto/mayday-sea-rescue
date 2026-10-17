@@ -481,6 +481,8 @@ local function newOp(kind: string, sceneKind: string, zone: string, position: Ve
 			opId = id,
 		},
 	}
+	-- RescueService reads casualties[i].panicking live (the rigged swimmer thrashes until calmed)
+	op.scene.casualties = op.casualties
 	if sceneKind == "Tow" then
 		-- people aboard the disabled vessel: the tasking says it and RescueService builds them
 		local n = rng:NextInteger(1, #POB_WORDS)

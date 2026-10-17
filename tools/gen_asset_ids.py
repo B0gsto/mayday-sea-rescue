@@ -35,6 +35,8 @@ OUT_APPEAR = os.path.join(ROOT, "src", "server", "Assets", "Appearances.model.js
 MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "MetalnessMap"}
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
+RIG_SETS = ("Atlas",)  # texture sets a rigged (single skinned MeshPart) asset keeps
+
 _sha_cache = {}
 
 
@@ -92,6 +94,8 @@ def main():
             if not lod:
                 s = re.search(r"_(LOD\d)\.fbx$", src)
                 lod = s[1] if s else "LOD0"
+            if base.endswith("_RigRaw"):  # a rigged re-upload (new version) of an asset's LOD0
+                base = base[: -len("Raw")]
             models.setdefault(base, {})[lod] = e["assetId"]
         elif kind == "Image":
             r = TEX_RE.match(src)
@@ -99,9 +103,18 @@ def main():
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
                 (s.setdefault("Wet", {}) if r[4] else s)[r[3]] = e["imageId"]
 
+    # <asset>_Rig shares the asset's markers and its merged texture set (RIG_SETS) with the static asset
+    for base in models:
+        src_asset = base[: -len("_Rig")] if base.endswith("_Rig") else None
+        if src_asset and src_asset in textures:
+            keep = {k: v for k, v in textures[src_asset].items() if k in RIG_SETS}
+            if keep:
+                textures[base] = keep
+
     attachments = {}
     for base in models:
-        path = os.path.join(ROOT, "assets", "fbx", base, base + ".attachments.json")
+        stem = base[: -len("_Rig")] if base.endswith("_Rig") else base
+        path = os.path.join(ROOT, "assets", "fbx", stem, stem + ".attachments.json")
         if os.path.exists(path):
             with open(path) as f:
                 d = json.load(f)

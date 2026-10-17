@@ -1,6 +1,6 @@
 --!strict
--- RescueService: the physical side of calls. Builds victims (greybox people in Survivor Yellow
--- life vests), drifting dinghies, disabled boats and the capsized ferry; bobs them on
+-- RescueService: the physical side of calls. Builds victims (the rigged swimmer casualty from
+-- Assets/CasualtyAsset, falling back to greybox people in Survivor Yellow life vests), drifting dinghies, disabled boats and the capsized ferry; bobs them on
 -- Weather.heightAt every Heartbeat (anchored, no physics); runs the hold-to-pull and tow prompts;
 -- and detects deliveries at the DropOff pads. Operation bookkeeping, steps and pay live in
 -- OperationService (the scene table passed in here is OperationService's `op.scene`).
@@ -21,6 +21,13 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local TowMotion = require(script.Parent.Parent.Tow.TowMotion)
+local CasualtyAsset: any = (function()
+	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
+	if not ok then
+		warn(`[RescueService] CasualtyAsset unavailable ({m}): greybox victims`)
+	end
+	return if ok then m else nil
+end)()
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
@@ -214,6 +221,28 @@ local function addPerson(f: Floater, model: Instance, base: CFrame, vest: boolea
 	end
 end
 
+-- The rigged swimmer (CasualtyAsset): the skinned mesh rides the floater with the sea surface at its
+-- Waterline (f.cf sits on the surface, so the bob and roll pivot there). `pose` is the client pose.
+-- `seat`: torso centre on a parent floater (dinghy passengers), seated. Returns false when not loaded.
+RescueService.RIG_TORSO = 3.2 -- studs above the feet: the invisible root (prompt, welds) sits here
+local SIT_TORSO = 1.15 -- studs above the pivot of the Sit pose (hips lowered to the seat)
+local function addRiggedPerson(f: Floater, model: Model, seat: CFrame?): Model?
+	local rig = CasualtyAsset and CasualtyAsset.clone()
+	local mesh = rig and rig.PrimaryPart
+	if not (rig and mesh) then
+		return nil
+	end
+	local water = rig:GetAttribute("Waterline")
+	local w = if type(water) == "number" then water else 4.55
+	local feet = if seat then seat * CFrame.new(0, -SIT_TORSO, 0) else CFrame.new(0, -w, 0)
+	addPart(f, mesh, feet * mesh.PivotOffset:Inverse())
+	rig:SetAttribute("CasualtyPose", if seat then "Sit" else "TreadWater")
+	rig:SetAttribute("Strobe", true)
+	CollectionService:AddTag(rig, CasualtyAsset.TAG)
+	rig.Parent = model
+	return rig
+end
+
 local function register(f: Floater)
 	table.insert(floaters, f)
 end
@@ -258,7 +287,25 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 	root.Transparency = 1
 	addPart(f, root, CFrame.identity)
 	model.PrimaryPart = root
-	addPerson(f, model, CFrame.identity, true)
+	local rig: Model? = nil
+	if parent then
+		rig = addRiggedPerson(f, model, CFrame.identity)
+	else
+		-- f.cf on the sea surface; the root (prompt, welds, the PIW mechanics' target) at chest height
+		f.depth = 0
+		f.sway = 0.09
+		f.offsets[1] = CFrame.new(0, RescueService.RIG_TORSO - 4.55, 0)
+		rig = addRiggedPerson(f, model)
+		if not rig then
+			f.depth = -0.3
+			f.sway = 0.06
+			f.offsets[1] = CFrame.identity
+		end
+	end
+	if not rig then
+		addPerson(f, model, CFrame.identity, true)
+	end
+	model:SetAttribute("Rigged", rig ~= nil)
 	model.Parent = mapFolder
 	local victim = {
 		call = call,
@@ -268,6 +315,8 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		state = "Water",
 		carrier = nil :: Model?,
 		lastPos = pos,
+		rig = rig,
+		index = #(call.victims or {}) + 1,
 	}
 	local prompt = makePrompt(
 		root,
@@ -503,6 +552,9 @@ end
 -- Unanchors and welds a victim into one assembly so it can ride a boat.
 local function prepareCarry(victim: any)
 	unregister(victim.floater)
+	if victim.rig then
+		victim.rig:SetAttribute("CasualtyPose", "Sit")
+	end
 	local f: Floater = victim.floater
 	-- rest pose: arms down, sitting upright
 	for i, part in f.parts do
@@ -531,6 +583,12 @@ local function restoreFloat(victim: any)
 		end
 	end
 	victim.floater.active = true
+	if victim.rig then
+		victim.rig:SetAttribute(
+			"CasualtyPose",
+			if victim.floater.parent then "Sit" else "TreadWater"
+		)
+	end
 	register(victim.floater)
 end
 
@@ -834,6 +892,57 @@ local function stepFloaters(now: number)
 	end
 	if #bulkParts > 0 then
 		Workspace:BulkMoveTo(bulkParts, bulkCFrames, Enum.BulkMoveMode.FireCFrameChanged)
+	end
+end
+
+---------------------------------------------------------------- casualty poses (rigged swimmer)
+
+-- Chooses each swimmer's client pose (CasualtyController): Panic while the casualty is panicking
+-- (op casualties[i].panicking, until panic_calm), Wave with a boat in sight, else TreadWater; a
+-- swimmer who sees a boat turns slowly to face it. 4 Hz, server side (attributes replicate).
+RescueService.WAVE_RANGE = 160 -- studs: a boat this close gets waved at
+RescueService.WAVE_MIN = 9 -- studs: alongside, they stop waving and reach for the boat
+
+local function stepPoses()
+	local boats: { Vector3 } = {}
+	for _, player in Players:GetPlayers() do
+		local v = vehicleOf(player)
+		if v then
+			table.insert(boats, v:GetPivot().Position)
+		end
+	end
+	for call in liveCalls do
+		if type(call.victims) ~= "table" then
+			continue
+		end
+		for i, v in call.victims do
+			local rig = v.rig
+			if not rig or v.state ~= "Water" or not rig.Parent or v.floater.parent then
+				continue
+			end
+			local c = type(call.casualties) == "table" and call.casualties[i]
+			local f: Floater = v.floater
+			local best, bestD = nil :: Vector3?, math.huge
+			for _, b in boats do
+				local d = Vector2.new(b.X - f.x, b.Z - f.z).Magnitude
+				if d < bestD then
+					best, bestD = b, d
+				end
+			end
+			local pose = "TreadWater"
+			if c and c.panicking then
+				pose = "Panic"
+			elseif best and bestD < RescueService.WAVE_RANGE and bestD > RescueService.WAVE_MIN then
+				pose = "Wave"
+			end
+			if best and bestD < RescueService.WAVE_RANGE then
+				-- the face is -Z: yaw so the look vector points at the boat
+				turnToward(f, math.atan2(-(best.X - f.x), -(best.Z - f.z)), 0.12)
+			end
+			if rig:GetAttribute("CasualtyPose") ~= pose then
+				rig:SetAttribute("CasualtyPose", pose)
+			end
+		end
 	end
 end
 
@@ -1180,7 +1289,10 @@ function RescueService.Init()
 end
 
 function RescueService.Start()
-	local accum = 0
+	if CasualtyAsset then
+		CasualtyAsset.preload()
+	end
+	local accum, poseAccum = 0, 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = Workspace:GetServerTimeNow()
 		for call in liveCalls do
@@ -1188,6 +1300,11 @@ function RescueService.Start()
 		end
 		stepDrift(dt)
 		stepFloaters(now)
+		poseAccum += dt
+		if poseAccum >= 0.25 then
+			poseAccum = 0
+			stepPoses()
+		end
 		accum += dt
 		if accum >= 0.2 then
 			accum = 0
