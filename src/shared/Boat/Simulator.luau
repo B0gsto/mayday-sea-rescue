@@ -25,11 +25,44 @@ export type Rig = {
 	draft: number,
 	handling: Buoyancy.Handling,
 	inertia: Vector3, -- box moments about local X, Y, Z per unit mass; scaled by real mass per step
+	wakeSpeed: number, -- the stern wave's speed, lagging the hull's (Buoyancy.wakeCatchUp)
+	lastTime: number,
+}
+
+-- Per-step telemetry (read by BoatController for the HUD, VFX and the rider kill cord).
+export type Telemetry = {
+	speed: number, -- forward, studs/s
+	contact: number, -- 0..1 mean float point wetness
+	slam: number, -- summed slam strength this step (studs/s)
+	trim: number, -- target trim, radians
+	pitch: number, -- actual pitch, radians bow up
+	roll: number, -- actual roll, radians starboard down
+	planing: number, -- 0..1
 }
 
 -- Handling for towed / unknown hulls: no engine, moderate keel.
-local GENERIC_HANDLING: Buoyancy.Handling =
-	{ topSpeed = 20, accel = 6, brakeDecel = 6, turnRate = 30, lateralGrip = 0.5 }
+local GENERIC_HANDLING: Buoyancy.Handling = {
+	topSpeed = 15,
+	accel = 3,
+	brakeDecel = 3,
+	turnRate = 20,
+	lateralGrip = 0.5,
+	turnRadiusSlow = 20,
+	maxLateralG = 0.3,
+	pivotSpeed = 0,
+	offThrottleSteer = 1,
+	humpSpeed = 0.5,
+	planingSpeed = 1,
+	humpTrim = 0,
+	runningTrim = 0,
+	squatTrim = 0,
+	planingLift = 0,
+	leanFactor = 0,
+	maxLean = 0,
+	dampingRatio = 0.5,
+	idleCreep = 0,
+	approachSpeed = 5,
+}
 
 local Simulator = {}
 
@@ -67,6 +100,18 @@ function Simulator.waveParams(position: Vector3, now: number): Waves.WaveParams
 		fallbackParams = Waves.paramsFor(0, 0, 0)
 	end
 	return fallbackParams :: Waves.WaveParams
+end
+
+-- Storm intensity 0..1 from Weather (0 before Weather loads).
+function Simulator.stormIntensity(now: number?): number
+	local w = getWeather()
+	if w and type(w.getIntensity) == "function" then
+		local ok, value = pcall(w.getIntensity, now)
+		if ok and type(value) == "number" then
+			return value
+		end
+	end
+	return 0
 end
 
 function Simulator.waterHeight(x: number, z: number, now: number): number
@@ -164,52 +209,103 @@ function Simulator.getRig(model: Model): Rig?
 		draft = if type(draft) == "number" then draft elseif spec then spec.draft else 0.5,
 		handling = if spec then spec else GENERIC_HANDLING,
 		inertia = Vector3.new(ix, iy, iz),
+		wakeSpeed = 0,
+		lastTime = 0,
 	}
 	rigs[model] = rig
 	return rig
 end
 
 -- One simulation step. throttle and steer are -1..1 (0 for an empty or towed boat).
-function Simulator.step(model: Model, throttle: number, steer: number, now: number?)
+-- Model attributes read here: SpeedMultiplier (gear bonus), ApproachMode (bool, slow-speed governor),
+-- EngineRunning (false = kill cord pulled: no thrust, no idle creep).
+function Simulator.step(model: Model, throttle: number, steer: number, now: number?): Telemetry?
 	local rig = Simulator.getRig(model)
 	if not rig then
-		return
+		return nil
 	end
 	local root = rig.root
 	if root.Anchored then
-		return
+		return nil
 	end
 	local t = now or Workspace:GetServerTimeNow()
+	local dt = math.clamp(t - rig.lastTime, 0, 0.1)
+	rig.lastTime = t
 	local cf = root.CFrame
 	local params = Simulator.waveParams(cf.Position, t)
 	local mass = root.AssemblyMass
 	local gravity = Workspace.Gravity
+	local h = rig.handling
+	local mult = model:GetAttribute("SpeedMultiplier")
+	local speedMult = if type(mult) == "number" then math.clamp(mult, 0.5, 3) else 1
+	local approach = model:GetAttribute("ApproachMode") == true
+	local engine = model:GetAttribute("EngineRunning") ~= false
+
+	local velocity = root.AssemblyLinearVelocity
+	local omega = root.AssemblyAngularVelocity
+	local forward = Buoyancy.flatForward(cf.LookVector)
+	local forwardSpeed = velocity:Dot(forward)
+
+	-- Hydrodynamic targets: planing lift, trim (hump, squat, own wake) and lean into the turn.
+	rig.wakeSpeed += (forwardSpeed - rig.wakeSpeed) * math.min(1, dt / Buoyancy.WAKE_LAG)
+	local catchUp, wakePush = Buoyancy.wakeCatchUp(rig.wakeSpeed, forwardSpeed, h)
+	local effThrottle = if engine then throttle else 0
+	local planing = Buoyancy.planingFraction(forwardSpeed, h, speedMult)
+	local trim = Buoyancy.trimTarget(forwardSpeed, effThrottle, h, speedMult, catchUp)
+	local lean = Buoyancy.leanTarget(forwardSpeed, omega.Y, h, gravity)
+	local planeLift = h.planingLift * planing
+
 	local n = #rig.points
-	local contact = 0
+	local contact, slam = 0, 0
 	for i, a in rig.points do
 		local p = a.WorldPosition
 		local depth = Waves.heightAt(p.X, p.Z, t, params) - p.Y
 		local vy = root:GetVelocityAtPosition(p).Y
-		local fy, wet = Buoyancy.pointForce(depth, vy, rig.draft, mass, gravity, n)
+		local offset = Buoyancy.liftOffset(a.Position, rig.draft, planeLift, trim, lean)
+		local fy, wet, hit =
+			Buoyancy.pointForce(depth, vy, rig.draft, mass, gravity, n, offset, h.dampingRatio)
 		rig.forces[i].Force = Vector3.new(0, fy, 0)
 		contact += wet / n
+		slam += hit / n
 	end
 
-	local mult = model:GetAttribute("SpeedMultiplier")
-	local speedMult = if type(mult) == "number" then math.clamp(mult, 0.5, 3) else 1
-	local velocity = root.AssemblyLinearVelocity
-	local forward = Buoyancy.flatForward(cf.LookVector)
-	local forwardSpeed = velocity:Dot(forward)
-	local h = rig.handling
-	local thrust = Buoyancy.thrust(throttle, forwardSpeed, mass, h, contact, speedMult)
-	local drag = Buoyancy.drag(velocity, forward, mass, h, contact, speedMult)
-	rig.drive.Force = drag + forward * thrust
+	local grip = Buoyancy.grip(contact)
+	local pitchRate = omega:Dot(cf.RightVector)
+	local added = Buoyancy.addedResistance(pitchRate, slam)
+	local thrust =
+		Buoyancy.thrust(effThrottle, forwardSpeed, mass, h, grip, speedMult, approach, engine)
+	local drag = Buoyancy.drag(velocity, forward, mass, h, grip, speedMult, added)
+	rig.drive.Force = drag + forward * (thrust + mass * wakePush * grip)
 
-	local omega = root.AssemblyAngularVelocity
 	local inertia = rig.inertia * mass
-	local yaw = Buoyancy.steerTorque(steer, forwardSpeed, omega.Y, inertia.Y, h, contact, speedMult)
-	local upright = Buoyancy.uprightTorque(cf.UpVector, omega, math.max(inertia.X, inertia.Z))
+	local yaw = Buoyancy.steerTorque(
+		steer,
+		forwardSpeed,
+		omega.Y,
+		inertia.Y,
+		h,
+		grip,
+		speedMult,
+		if approach then math.max(math.abs(effThrottle), 0.6) else effThrottle,
+		gravity
+	)
+	-- Self-righting toward the trimmed and banked attitude, not dead level.
+	local right = Buoyancy.rightOf(forward)
+	local flat = CFrame.fromMatrix(Vector3.zero, right, Vector3.yAxis, -forward)
+	local targetUp = (flat * CFrame.Angles(trim, 0, -lean)).UpVector
+	local upright =
+		Buoyancy.uprightTorque(cf.UpVector, omega, math.max(inertia.X, inertia.Z), targetUp, grip)
 	rig.torque.Torque = upright + Vector3.new(0, yaw, 0)
+
+	return {
+		speed = forwardSpeed,
+		contact = contact,
+		slam = slam,
+		trim = trim,
+		pitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1)),
+		roll = math.asin(math.clamp(-cf.RightVector.Y, -1, 1)),
+		planing = planing,
+	}
 end
 
 -- Zeroes every force (call when this machine stops simulating the boat).

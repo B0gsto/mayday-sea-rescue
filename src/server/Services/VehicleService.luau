@@ -55,9 +55,18 @@ local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
-local SPEED_TOLERANCE = 1.35 -- x top speed (waves and surfing add speed) -- tune
-local SPEED_SLACK = 15 -- studs/s -- tune
-local TELEPORT_SLACK = 25 -- studs per check, for replication bursts -- tune
+-- Anti-teleport: the limit is speed-based, relative to the vehicle's own top speed (x gear bonus).
+-- A check fails when the hull's speed, or its distance from the last good spot divided by the time
+-- since, beats topSpeed * SPEED_TOLERANCE + SPEED_SLACK (surfing a wave face and wake pushes add
+-- speed), plus TELEPORT_SLACK studs for a replication burst. STRIKES_TO_RESET failures in a row
+-- reset the hull. At 0.5 s checks a jet ski may move about 63 studs per check, a RIB about 51.
+-- Studio only: attribute StudioBypassChecks = true on the vehicle model or on Workspace skips the
+-- check (test scripts that PivotTo a boat); ignored in live servers.
+local SPEED_TOLERANCE = 1.3 -- x top speed -- tune
+local SPEED_SLACK = 8 -- studs/s -- tune
+local TELEPORT_SLACK = 12 -- studs per check -- tune
+local BYPASS_ATTRIBUTE = "StudioBypassChecks"
+local IS_STUDIO = RunService:IsStudio()
 local STRIKES_TO_RESET = 2
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
@@ -206,6 +215,7 @@ local function onDriverChanged(record: Record)
 	end
 	if player then
 		record.driver = player
+		record.model:SetAttribute("EngineRunning", true)
 		record.mode = "Driven"
 		record.root.Anchored = false
 		setOwner(record.root, player)
@@ -213,6 +223,11 @@ local function onDriverChanged(record: Record)
 		record.strikes = 0
 	else
 		record.driver = nil
+		if record.spec.killCord then
+			-- The helm's kill cord pulls out with them: the engine stops (Buoyancy.thrust).
+			record.model:SetAttribute("EngineRunning", false)
+			record.model:SetAttribute("KillCordPulledAt", Workspace:GetServerTimeNow())
+		end
 		if nearestBay(record.root.Position, DOCK_RADIUS) and not towTargets[record.model] then
 			dock(record)
 		else
@@ -278,6 +293,49 @@ local function sitDriver(player: Player, seat: VehicleSeat)
 	seat:Sit(humanoid)
 end
 
+-- Seated players ride massless: VehicleConfig.massHint already includes the crew at real weight
+-- (a Roblox avatar weighs as much as the whole jet ski at our 37 kg/RMU scale). Restored on exit.
+local masslessParts: { [Seat | VehicleSeat]: { BasePart } } = {}
+
+local function setRiderMassless(seat: Seat | VehicleSeat)
+	local previous = masslessParts[seat]
+	if previous then
+		for _, part in previous do
+			if part.Parent then
+				part.Massless = false
+			end
+		end
+		masslessParts[seat] = nil
+	end
+	local humanoid = seat.Occupant
+	local character = humanoid and humanoid.Parent
+	if not character then
+		return
+	end
+	local parts = {}
+	for _, d in character:GetDescendants() do
+		if d:IsA("BasePart") and not d.Massless then
+			d.Massless = true
+			table.insert(parts, d)
+		end
+	end
+	masslessParts[seat] = parts
+end
+
+local function watchSeats(model: Model)
+	for _, d in model:GetDescendants() do
+		if d:IsA("Seat") or d:IsA("VehicleSeat") then
+			local seatPart = d :: Seat | VehicleSeat
+			seatPart:GetPropertyChangedSignal("Occupant"):Connect(function()
+				setRiderMassless(seatPart)
+			end)
+			seatPart.Destroying:Connect(function()
+				masslessParts[seatPart] = nil
+			end)
+		end
+	end
+end
+
 local function despawnModel(model: Model)
 	local record = records[model]
 	if not record then
@@ -294,6 +352,57 @@ local function despawnModel(model: Model)
 		byPlayer[record.owner] = nil
 	end
 	model:Destroy()
+end
+
+-- Builds the player's vehicle floating at rest at `at` (X, Z and heading; Y from the waves),
+-- replacing their old one, and registers it. The caller seats the driver.
+local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Model, VehicleSeat)
+	local old = byPlayer[player]
+	if old then
+		despawnModel(old.model)
+	end
+
+	local model = Builder.build(spec)
+	model.Name = `{player.Name}_{spec.id}`
+	model:SetAttribute("Owner", player.UserId)
+	model:SetAttribute("SpeedMultiplier", speedBonus(player))
+	model:SetAttribute("EngineRunning", false)
+	model:PivotTo(Simulator.restCFrame(model, at.X, at.Z, at.LookVector))
+	model.Parent = folder
+
+	local root = model.PrimaryPart :: BasePart
+	local seat = model:FindFirstChild("DriverSeat") :: VehicleSeat
+	local slots = {}
+	for i = 1, spec.survivorCapacity do
+		local slot = root:FindFirstChild(`SurvivorSlot{i}`)
+		if slot and slot:IsA("Attachment") then
+			table.insert(slots, slot)
+		end
+	end
+	local record: Record = {
+		model = model,
+		owner = player,
+		spec = spec,
+		root = root,
+		seat = seat,
+		slots = slots,
+		survivors = {},
+		mode = "Dock",
+		driver = nil,
+		tow = nil,
+		lastGood = root.CFrame,
+		strikes = 0,
+		resetting = false,
+	}
+	records[model] = record
+	byPlayer[player] = record
+	watchSeats(model)
+	seat:GetPropertyChangedSignal("Occupant"):Connect(function()
+		if records[model] == record then
+			onDriverChanged(record)
+		end
+	end)
+	return model, seat
 end
 
 local function spawnVehicle(
@@ -324,49 +433,7 @@ local function spawnVehicle(
 	end
 	lastSpawn[player] = now
 
-	local old = byPlayer[player]
-	if old then
-		despawnModel(old.model)
-	end
-
-	local model = Builder.build(spec)
-	model.Name = `{player.Name}_{spec.id}`
-	model:SetAttribute("Owner", player.UserId)
-	model:SetAttribute("SpeedMultiplier", speedBonus(player))
-	model:PivotTo(Simulator.restCFrame(model, at.Position.X, at.Position.Z, at.CFrame.LookVector))
-	model.Parent = folder
-
-	local root = model.PrimaryPart :: BasePart
-	local seat = model:FindFirstChild("DriverSeat") :: VehicleSeat
-	local slots = {}
-	for i = 1, spec.survivorCapacity do
-		local slot = root:FindFirstChild(`SurvivorSlot{i}`)
-		if slot and slot:IsA("Attachment") then
-			table.insert(slots, slot)
-		end
-	end
-	local record: Record = {
-		model = model,
-		owner = player,
-		spec = spec,
-		root = root,
-		seat = seat,
-		slots = slots,
-		survivors = {},
-		mode = "Dock",
-		driver = nil,
-		tow = nil,
-		lastGood = root.CFrame,
-		strikes = 0,
-		resetting = false,
-	}
-	records[model] = record
-	byPlayer[player] = record
-	seat:GetPropertyChangedSignal("Occupant"):Connect(function()
-		if records[model] == record then
-			onDriverChanged(record)
-		end
-	end)
+	local model, seat = createVehicle(player, spec, at.CFrame)
 	sitDriver(player, seat)
 
 	spawnedEvent:Fire(player, model)
@@ -399,6 +466,17 @@ local function checkVehicle(record: Record, dt: number)
 		return
 	end
 	local root = record.root
+	if
+		IS_STUDIO
+		and (
+			record.model:GetAttribute(BYPASS_ATTRIBUTE) == true
+			or Workspace:GetAttribute(BYPASS_ATTRIBUTE) == true
+		)
+	then
+		record.strikes = 0
+		record.lastGood = root.CFrame
+		return
+	end
 	local pos = root.Position
 	local v = root.AssemblyLinearVelocity
 	local limit = speedLimit(record)
@@ -410,6 +488,7 @@ local function checkVehicle(record: Record, dt: number)
 	if outOfBounds then
 		resetVehicle(record, "out of bounds")
 	elseif speed > limit or moved > limit * dt + TELEPORT_SLACK then
+		-- dt is the time since the last check, and lastGood was taken at that check
 		record.strikes += 1
 		if record.strikes >= STRIKES_TO_RESET then
 			resetVehicle(record, `speed {math.floor(speed)} moved {math.floor(moved)}`)
@@ -540,6 +619,41 @@ function VehicleService.Start()
 end
 
 -- API (CONTRACT.md, B) ---------------------------------------------------------------------------
+
+-- Cold open: spawns the player's vehicle at `cframe` (X, Z and heading; it floats on the waves),
+-- seats them at the helm and gives it initialSpeed studs/s ahead. Skips bays, cooldown and
+-- progression checks (the cold-open jet ski is free). The owning client applies the speed too
+-- (LaunchSpeed attribute, BoatController), since it simulates the hull once seated.
+function VehicleService.SpawnSeated(
+	player: Player,
+	vehicleId: string,
+	cframe: CFrame,
+	initialSpeed: number?
+): Model?
+	local spec = VehicleConfig.get(vehicleId)
+	if not spec then
+		warn(`[VehicleService] SpawnSeated: unknown vehicle {vehicleId}`)
+		return nil
+	end
+	local model, seat = createVehicle(player, spec, cframe)
+	local speed = math.clamp(initialSpeed or 0, 0, spec.topSpeed)
+	local root = model.PrimaryPart :: BasePart
+	if speed > 0 then
+		model:SetAttribute("LaunchSpeed", speed)
+		root.Anchored = false
+		local look = root.CFrame.LookVector
+		root.AssemblyLinearVelocity = Vector3.new(look.X, 0, look.Z).Unit * speed
+		task.delay(3, function()
+			if model.Parent then
+				model:SetAttribute("LaunchSpeed", nil)
+			end
+		end)
+	end
+	sitDriver(player, seat)
+	spawnedEvent:Fire(player, model)
+	Net.event("VehicleSpawned"):FireAllClients(model, "ColdOpen")
+	return model
+end
 
 function VehicleService.GetVehicle(player: Player): Model?
 	local record = byPlayer[player]

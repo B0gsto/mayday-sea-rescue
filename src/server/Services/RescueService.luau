@@ -2,7 +2,11 @@
 -- RescueService: the physical side of calls. Builds victims (greybox people in Survivor Yellow
 -- life vests), drifting dinghies, disabled boats and the capsized ferry; bobs them on
 -- Weather.heightAt every Heartbeat (anchored, no physics); runs the hold-to-pull and tow prompts;
--- and detects deliveries at the DropOff pads. Call bookkeeping and pay live in CallService.
+-- and detects deliveries at the DropOff pads. Operation bookkeeping, steps and pay live in
+-- OperationService (the scene table passed in here is OperationService's `op.scene`).
+--
+-- Ops v2: a scene with `opsDriven = true` keeps its prompts disabled; the recovery and tow steps
+-- call RescueService.BoardVictim / AttachTowFor when the step's mechanic succeeds.
 --
 -- CONTRACT: the towed NPC boat stays anchored and is moved by this script along the tow line.
 -- VehicleService.AttachTow is still called (rope visual and hitch) inside pcall; if it errors or is
@@ -84,7 +88,7 @@ local function try(serviceName: string, fnName: string, ...: any): (boolean, any
 end
 
 local function callService(): any
-	return require(script.Parent:WaitForChild("CallService") :: ModuleScript) :: any
+	return require(script.Parent:WaitForChild("OperationService") :: ModuleScript) :: any
 end
 
 -- Water height: Weather (stream D) if present, else calm waves.
@@ -228,8 +232,8 @@ local function makePrompt(
 	return prompt
 end
 
-local onPull: (victim: any, player: Player) -> ()
-local onTow: (call: any, player: Player) -> ()
+local onPull: (victim: any, player: Player, forced: boolean?) -> ()
+local onTow: (call: any, player: Player, forced: boolean?) -> ()
 
 -- One victim in the water (or seated on a parent floater such as a dinghy).
 local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffset: CFrame?): any
@@ -261,6 +265,7 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		if parent then "Passenger" else "Swimmer",
 		call.spec.interaction
 	)
+	prompt.Enabled = not call.opsDriven
 	prompt.Triggered:Connect(function(player)
 		onPull(victim, player)
 	end)
@@ -346,6 +351,7 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 	model.Parent = mapFolder
 	register(f)
 	local prompt = makePrompt(hull, "Attach tow line", "Disabled boat", call.spec.interaction)
+	prompt.Enabled = not call.opsDriven
 	prompt.Triggered:Connect(function(player)
 		onTow(call, player)
 	end)
@@ -526,13 +532,13 @@ local function fallbackWeld(vehicle: Model, victim: any): boolean
 	return true
 end
 
-onPull = function(victim: any, player: Player)
+onPull = function(victim: any, player: Player, forced: boolean?)
 	local call = victim.call
 	if victim.state ~= "Water" or not liveCalls[call] then
 		return
 	end
 	local CallService = callService()
-	if not CallService.CanAct(call, player) then
+	if not forced and not CallService.CanAct(call, player) then
 		notify(call, player, "That's another crew's call.")
 		return
 	end
@@ -542,8 +548,9 @@ onPull = function(victim: any, player: Player)
 		return
 	end
 	if
-		CallLogic.flatDistance(vehicle:GetPivot().Position, victim.root.Position)
-		> call.spec.interaction.vehicleRange
+		not forced
+		and CallLogic.flatDistance(vehicle:GetPivot().Position, victim.root.Position)
+			> call.spec.interaction.vehicleRange
 	then
 		notify(call, player, "Bring your boat closer.")
 		return
@@ -585,13 +592,13 @@ onPull = function(victim: any, player: Player)
 	CallService.OnVictimBoarded(call, player)
 end
 
-onTow = function(call: any, player: Player)
+onTow = function(call: any, player: Player, forced: boolean?)
 	local boat = call.boat
 	if not boat or boat.state ~= "Waiting" or not liveCalls[call] then
 		return
 	end
 	local CallService = callService()
-	if not CallService.CanAct(call, player) then
+	if not forced and not CallService.CanAct(call, player) then
 		notify(call, player, "That's another crew's call.")
 		return
 	end
@@ -601,8 +608,9 @@ onTow = function(call: any, player: Player)
 		return
 	end
 	if
-		CallLogic.flatDistance(vehicle:GetPivot().Position, boat.hull.Position)
-		> call.spec.interaction.vehicleRange
+		not forced
+		and CallLogic.flatDistance(vehicle:GetPivot().Position, boat.hull.Position)
+			> call.spec.interaction.vehicleRange
 	then
 		notify(call, player, "Bring your boat closer.")
 		return
@@ -905,6 +913,58 @@ local function checkDeliveries()
 			end
 		end
 	end
+end
+
+---------------------------------------------------------------- ops v2 step effects
+
+-- Recovery step succeeded: the victim goes aboard the player's boat (no range check: the client
+-- mechanic already played the approach). Without a boat (or a full one) the victim is taken out
+-- of the water and hidden ("Recovered"). Returns true when the victim rides the boat.
+function RescueService.BoardVictim(call: any, index: number, player: Player): boolean
+	local victim = call.victims and call.victims[index]
+	if not victim or victim.state ~= "Water" then
+		return victim ~= nil and victim.state == "Aboard"
+	end
+	if vehicleOf(player) then
+		onPull(victim, player, true)
+		if (victim.state :: any) == "Aboard" then
+			return true
+		end
+	end
+	victim.state = "Recovered"
+	if victim.prompt then
+		victim.prompt:Destroy()
+		victim.prompt = nil
+	end
+	unregister(victim.floater)
+	victimsByModel[victim.model] = nil
+	victim.model:Destroy()
+	return false
+end
+
+-- Take-the-strain step succeeded: the tow goes on (needs the player's tow-capable boat).
+function RescueService.AttachTowFor(call: any, player: Player): boolean
+	if call.boat and call.boat.state == "Waiting" and vehicleOf(player) then
+		onTow(call, player, true)
+	end
+	return RescueService.IsTowing(call)
+end
+
+-- A casualty was handed over without reaching a pad (stub transport, big-call movement):
+-- take it off the boat or out of the water.
+function RescueService.RemoveVictim(call: any, index: number)
+	local victim = call.victims and call.victims[index]
+	if not victim or victim.state == "Delivered" then
+		return
+	end
+	if victim.state == "Aboard" and victim.carrier and victim.carrier.Parent then
+		unloadVictims(victim.carrier, { victim })
+		return
+	end
+	victim.state = "Delivered"
+	unregister(victim.floater)
+	victimsByModel[victim.model] = nil
+	victim.model:Destroy()
 end
 
 ---------------------------------------------------------------- queries and cleanup

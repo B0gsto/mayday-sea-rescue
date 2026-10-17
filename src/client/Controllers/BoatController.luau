@@ -10,6 +10,16 @@
 --    top speed inside Simulator. A model tagged VehicleTowed with TowedBy = our UserId is ours to
 --    simulate too (no input), since the server gave us its ownership.
 --
+-- 1b. Helm modes and safety. Z (or the on-screen "Approach" button) toggles approach mode: a
+--    speed governor under 5 knots with fine throttle (Buoyancy.thrust), for the final run to a
+--    casualty; throttle released = neutral, the hull glides. On a vehicle with ejectOnCapsize (the
+--    jet ski) the rider is thrown off past CAPSIZE_ANGLE; leaving the seat pulls the kill cord and
+--    the server stops the engine (EngineRunning = false, see VehicleService).
+--    Telemetry from Simulator.step is kept for the HUD and test scripts (GetTelemetry).
+--
+-- 1c. Nav lights. Every NAV_INTERVAL each vehicle's lights follow NavLights.shouldBeOn (night or
+--    storm). Visual only, so each client decides for itself.
+--
 -- 2. Remote hulls. Boats we do not simulate arrive by replication from their owner, who floats
 --    them on the same deterministic Waves field, so they already ride the waves; only latency and
 --    the ocean mesh's interpolation between grid vertices make them look a little high or low,
@@ -21,6 +31,8 @@
 --    when stream A provides it, else from the shared wave field.
 
 local CollectionService = game:GetService("CollectionService")
+local ContextActionService = game:GetService("ContextActionService")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -28,11 +40,17 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
+local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local TOW_TAG = "VehicleTowed"
 local MAX_VISUAL_OFFSET = 1.5 -- studs; larger errors are left to replication -- tune
 local VISUAL_SMOOTHING = 10 -- 1/s -- tune
+local CAPSIZE_ANGLE = math.rad(70) -- the rider falls off past this heel -- tune
+local CAPSIZE_HOLD = 0.3 -- seconds past it -- tune
+local NAV_INTERVAL = 1 -- seconds
+local APPROACH_ACTION = "BoatApproachMode"
 
 local BoatController = {}
 
@@ -41,6 +59,10 @@ local vehicles: Folder? = nil
 local driving: Model? = nil -- the vehicle whose DriverSeat we sit in
 local simulated: { [Model]: boolean } = {} -- models this client applied forces to last frame
 local visualOffset: { [Model]: number } = {}
+local telemetry: Simulator.Telemetry? = nil
+local tiltTime = 0
+local navTimer = NAV_INTERVAL
+local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
 
 -- CONTRACT: OceanController.GetVisualHeight(x, z) from stream A, if it exists.
 local ocean: any = nil
@@ -95,6 +117,74 @@ local function snapRemote(model: Model, dt: number, now: number)
 	setVisualOffset(model, current)
 end
 
+-- Throws the rider off a capsizing sit-on hull (the kill cord then stops the engine).
+local function checkCapsize(model: Model, seat: VehicleSeat, dt: number)
+	local id = model:GetAttribute("VehicleId")
+	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+	local root = model.PrimaryPart
+	if not (spec and spec.ejectOnCapsize and root) then
+		return
+	end
+	if root.CFrame.UpVector.Y < math.cos(CAPSIZE_ANGLE) then
+		tiltTime += dt
+	else
+		tiltTime = 0
+	end
+	local humanoid = seat.Occupant
+	if tiltTime > CAPSIZE_HOLD and humanoid then
+		tiltTime = 0
+		humanoid.Sit = false
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end
+
+local function updateNavLights(dt: number, now: number)
+	navTimer += dt
+	if navTimer < NAV_INTERVAL or not vehicles then
+		return
+	end
+	navTimer = 0
+	local on = NavLights.shouldBeOn(Lighting.ClockTime, Simulator.stormIntensity(now))
+	for _, child in vehicles:GetChildren() do
+		if child:IsA("Model") then
+			NavLights.apply(child, on)
+		end
+	end
+end
+
+local function toggleApproach(_: string, state: Enum.UserInputState): Enum.ContextActionResult
+	if state ~= Enum.UserInputState.Begin then
+		return Enum.ContextActionResult.Pass
+	end
+	local model = driving
+	if not model then
+		return Enum.ContextActionResult.Pass
+	end
+	-- Local attribute: this client simulates the hull, so the governor runs here.
+	model:SetAttribute("ApproachMode", not (model:GetAttribute("ApproachMode") == true))
+	ContextActionService:SetTitle(
+		APPROACH_ACTION,
+		if model:GetAttribute("ApproachMode") then "Slow" else "Approach"
+	)
+	return Enum.ContextActionResult.Sink
+end
+
+local function setApproachBinding(on: boolean)
+	if on then
+		ContextActionService:BindAction(
+			APPROACH_ACTION,
+			toggleApproach,
+			true,
+			Enum.KeyCode.Z,
+			Enum.KeyCode.ButtonY
+		)
+		ContextActionService:SetTitle(APPROACH_ACTION, "Approach")
+		ContextActionService:SetPosition(APPROACH_ACTION, UDim2.new(1, -170, 1, -150))
+	else
+		ContextActionService:UnbindAction(APPROACH_ACTION)
+	end
+end
+
 local function stopSimulating(model: Model)
 	simulated[model] = nil
 	if model.Parent then
@@ -106,8 +196,11 @@ local function step(dt: number)
 	local now = Workspace:GetServerTimeNow()
 	local nowSimulated: { [Model]: boolean } = {}
 
+	local wasDriving = driving
 	if driving and (not driving.Parent or not isLocalDriver(driving)) then
+		driving:SetAttribute("ApproachMode", nil)
 		driving = nil
+		telemetry = nil
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
@@ -115,8 +208,21 @@ local function step(dt: number)
 				if isLocalDriver(child) then
 					driving = child
 					local seat = seatOf(child) :: VehicleSeat
-					Simulator.step(child, seat.ThrottleFloat, seat.SteerFloat, now)
+					local launchSpeed = child:GetAttribute("LaunchSpeed")
+					if
+						type(launchSpeed) == "number"
+						and not launched[child]
+						and child.PrimaryPart
+					then
+						-- VehicleService.SpawnSeated (cold open): start already under way
+						launched[child] = true
+						local look = child.PrimaryPart.CFrame.LookVector
+						child.PrimaryPart.AssemblyLinearVelocity = Vector3.new(look.X, 0, look.Z).Unit
+							* launchSpeed
+					end
+					telemetry = Simulator.step(child, seat.ThrottleFloat, seat.SteerFloat, now)
 					nowSimulated[child] = true
+					checkCapsize(child, seat, dt)
 				elseif isLocalTow(child) then
 					Simulator.step(child, 0, 0, now)
 					nowSimulated[child] = true
@@ -146,6 +252,15 @@ local function step(dt: number)
 		end
 	end
 	simulated = nowSimulated
+	if (driving ~= nil) ~= (wasDriving ~= nil) then
+		setApproachBinding(driving ~= nil)
+	end
+	updateNavLights(dt, now)
+end
+
+-- Last Simulator telemetry of the driven hull (speed, contact, slam, trim, pitch, roll, planing).
+function BoatController.GetTelemetry(): Simulator.Telemetry?
+	return telemetry
 end
 
 -- The vehicle the local player is driving, if any.

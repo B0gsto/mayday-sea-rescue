@@ -12,8 +12,14 @@
 --   Body          the visible hull; every other visual part and the seats weld to Body. All
 --                 non-root parts are Massless and CanCollide = false.
 --   DriverSeat    VehicleSeat (ThrottleFloat / SteerFloat come from keyboard, gamepad, thumbstick)
+--     EyePoint    Attachment at the driver's eye (spec.eyePoint) for the camera stream
 --   PassengerSeat1..n  Seats
--- Colour scheme: rescue orange with white.
+--   Nav*          navigation lights (COLREGs): NavPort red, NavStarboard green (112.5 deg sectors
+--                 from dead ahead to 22.5 deg abaft the beam), NavMasthead white (forward 225 deg,
+--                 all-round on the PWC), NavStern white (aft). Each holds a light named "NavLight",
+--                 off when built; BoatController switches them on at night and in storms (NavLights).
+-- Real dimensions at 1 m = 3 studs (docs 05 section 4.1): PWC 3.3 x 1.2 m, Atlantic 85 8.4 x 2.85 m.
+-- Colour scheme: rescue orange with white; the RIB has an RNLI navy hull and orange tubes.
 
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
 
@@ -23,6 +29,13 @@ local ORANGE = Color3.fromRGB(255, 102, 0)
 local WHITE = Color3.fromRGB(240, 240, 236)
 local DARK = Color3.fromRGB(45, 48, 54)
 local GLASS = Color3.fromRGB(120, 170, 200)
+local NAVY = Color3.fromRGB(28, 42, 82)
+local GREY = Color3.fromRGB(110, 114, 120)
+local RED_LIGHT = Color3.fromRGB(255, 40, 30)
+local GREEN_LIGHT = Color3.fromRGB(40, 255, 90)
+local WHITE_LIGHT = Color3.fromRGB(255, 244, 225)
+local BLUE_LIGHT = Color3.fromRGB(40, 110, 255)
+local SIDELIGHT_YAW = math.rad(56.25) -- centre of the dead-ahead .. 22.5 deg abaft the beam sector
 
 local Builder = {}
 
@@ -75,9 +88,11 @@ local function tube(
 	length: number,
 	diameter: number,
 	pos: Vector3,
-	alongZ: boolean
+	alongZ: boolean,
+	yaw: number?
 )
-	local turn = if alongZ then CFrame.Angles(0, math.pi / 2, 0) else CFrame.identity
+	local turn = (if alongZ then CFrame.Angles(0, math.pi / 2, 0) else CFrame.identity)
+	turn = CFrame.Angles(0, yaw or 0, 0) * turn
 	local part = newPart(
 		ctx,
 		"Part",
@@ -88,6 +103,45 @@ local function tube(
 	) :: Part
 	part.Shape = Enum.PartType.Cylinder
 	return part
+end
+
+-- A navigation light: a small lamp part plus a light named NavLight (off). sector nil = all-round
+-- PointLight, else a SpotLight of that many degrees centred on the lamp's yaw (0 = dead ahead).
+local function navLight(
+	ctx: Ctx,
+	name: string,
+	pos: Vector3,
+	color: Color3,
+	yaw: number,
+	sector: number?
+)
+	local lamp = newPart(
+		ctx,
+		"Part",
+		name,
+		Vector3.new(0.35, 0.35, 0.35),
+		CFrame.new(pos) * CFrame.Angles(0, yaw, 0),
+		color:Lerp(DARK, 0.6)
+	)
+	lamp:SetAttribute("NavColor", color)
+	local light: Light
+	if sector then
+		local spot = Instance.new("SpotLight")
+		spot.Face = Enum.NormalId.Front
+		spot.Angle = math.min(sector, 180)
+		spot.Range = 12
+		light = spot
+	else
+		local point = Instance.new("PointLight")
+		point.Range = 10
+		light = point
+	end
+	light.Name = "NavLight"
+	light.Color = color
+	light.Brightness = 2
+	light.Shadows = false
+	light.Enabled = false
+	light.Parent = lamp
 end
 
 local function attach(root: BasePart, name: string, pos: Vector3): Attachment
@@ -194,8 +248,14 @@ local function finish(
 	attach(root, "TowHitch", towHitch)
 	attach(root, "BowPoint", bow)
 
+	local driverSeat = ctx.model:FindFirstChild("DriverSeat")
+	if driverSeat then
+		attach(driverSeat :: BasePart, "EyePoint", spec.eyePoint)
+	end
+
 	local model = ctx.model
 	model:SetAttribute("VehicleId", spec.id)
+	model:SetAttribute("CameraMode", spec.cameraMode)
 	model:SetAttribute("Capacity", spec.survivorCapacity)
 	model:SetAttribute("SurvivorCount", 0)
 	model:SetAttribute("Draft", spec.draft)
@@ -203,59 +263,124 @@ local function finish(
 	return model
 end
 
+-- PWC, 3.3 m x 1.2 m (9.9 x 3.6 studs). Collision box 2.1 studs deep: keel at y -1.05, gunwale +1.05.
+-- Saddle top 0.8 m above the keel, handlebars about 1.05 m, a 1.5 m rescue sled off the stern.
 local function buildJetSki(spec: VehicleSpec): Model
-	local ctx = newCtx(spec, Vector3.new(2.8, 0.9, 7.4), Vector3.new(0, -0.35, 0.5), ORANGE)
-	deco(ctx, "Nose", Vector3.new(2.4, 0.8, 1.4), Vector3.new(0, -0.3, -3.6), WHITE)
-	deco(ctx, "Stripe", Vector3.new(2.9, 0.2, 7.4), Vector3.new(0, -0.15, 0.5), WHITE)
-	deco(ctx, "Console", Vector3.new(1.8, 0.6, 1.4), Vector3.new(0, 0.35, -1.9), ORANGE)
-	deco(ctx, "Handlebar", Vector3.new(2.4, 0.2, 0.25), Vector3.new(0, 0.95, -1.4), DARK)
-	deco(ctx, "HandlebarPost", Vector3.new(0.3, 0.5, 0.3), Vector3.new(0, 0.7, -1.5), DARK)
-	seat(ctx, true, "DriverSeat", Vector3.new(1.2, 0.5, 2.6), Vector3.new(0, 0.35, 1.0))
-	-- rescue sled towed flush behind the stern (docs 02: 1 survivor on the sled)
-	deco(ctx, "Sled", Vector3.new(2.6, 0.3, 2.4), Vector3.new(0, -0.5, 5.9), WHITE)
-	deco(ctx, "SledRailL", Vector3.new(0.2, 0.4, 2.4), Vector3.new(-1.25, -0.25, 5.9), ORANGE)
-	deco(ctx, "SledRailR", Vector3.new(0.2, 0.4, 2.4), Vector3.new(1.25, -0.25, 5.9), ORANGE)
+	local ctx = newCtx(spec, Vector3.new(3.4, 1.3, 8.4), Vector3.new(0, -0.4, 0.75), ORANGE)
+	deco(ctx, "Nose", Vector3.new(2.4, 1.0, 1.5), Vector3.new(0, -0.15, -4.2), ORANGE)
+	deco(ctx, "Keel", Vector3.new(1.2, 0.5, 8.6), Vector3.new(0, -0.85, 0.3), WHITE)
+	deco(ctx, "Stripe", Vector3.new(3.5, 0.25, 8.4), Vector3.new(0, -0.3, 0.75), WHITE)
+	deco(ctx, "Hood", Vector3.new(2.6, 0.9, 2.6), Vector3.new(0, 0.55, -2.4), WHITE)
+	deco(ctx, "FootwellL", Vector3.new(0.7, 0.15, 4.2), Vector3.new(-1.3, 0.32, 1.8), DARK)
+	deco(ctx, "FootwellR", Vector3.new(0.7, 0.15, 4.2), Vector3.new(1.3, 0.32, 1.8), DARK)
+	deco(ctx, "Pedestal", Vector3.new(1.5, 0.6, 3.4), Vector3.new(0, 0.55, 1.5), ORANGE)
+	deco(ctx, "HandlebarPost", Vector3.new(0.35, 0.9, 0.35), Vector3.new(0, 1.45, -1.3), DARK)
+	deco(ctx, "Handlebar", Vector3.new(2.25, 0.18, 0.25), Vector3.new(0, 2.0, -1.2), DARK)
+	deco(ctx, "Pump", Vector3.new(1.0, 0.6, 0.6), Vector3.new(0, -0.6, 5.0), DARK)
+	seat(ctx, true, "DriverSeat", Vector3.new(1.35, 0.5, 3.0), Vector3.new(0, 1.1, 1.4))
+	-- rescue sled (docs 05: board with handles), 1.5 m x 1.0 m, trailing flush off the stern
+	deco(ctx, "Sled", Vector3.new(3.0, 0.3, 4.5), Vector3.new(0, -0.7, 7.3), WHITE)
+	deco(ctx, "SledRailL", Vector3.new(0.2, 0.4, 4.2), Vector3.new(-1.45, -0.45, 7.3), ORANGE)
+	deco(ctx, "SledRailR", Vector3.new(0.2, 0.4, 4.2), Vector3.new(1.45, -0.45, 7.3), ORANGE)
+	-- PWC lights: bicolour sidelights on the nose, all-round white on a short stern pole
+	navLight(ctx, "NavPort", Vector3.new(-0.9, 0.5, -3.9), RED_LIGHT, SIDELIGHT_YAW, 112.5)
+	navLight(ctx, "NavStarboard", Vector3.new(0.9, 0.5, -3.9), GREEN_LIGHT, -SIDELIGHT_YAW, 112.5)
+	deco(ctx, "LightPole", Vector3.new(0.15, 1.6, 0.15), Vector3.new(0, 1.8, 4.3), DARK)
+	navLight(ctx, "NavMasthead", Vector3.new(0, 2.7, 4.3), WHITE_LIGHT, 0, nil)
 	return finish(
 		ctx,
 		spec,
-		{ Vector3.new(0, -0.35, 5.9) },
-		Vector3.new(0, -0.2, 4.5),
-		Vector3.new(0, -0.2, -4.5)
+		{ Vector3.new(0, -0.45, 7.3) },
+		Vector3.new(0, -0.3, 4.95),
+		Vector3.new(0, -0.3, -4.95)
 	)
 end
 
+-- Atlantic 85-class RIB, 8.4 m x 2.85 m (25.3 x 8.55 studs). Collision box 3.3 studs deep: keel
+-- at y -1.65, tube tops at +1.65, deck at 0. Navy deep-V hull inside 0.55 m orange tubes,
+-- centre console with screen, jockey seats behind it, twin outboards, A-frame with radar and lights.
 local function buildRIB(spec: VehicleSpec): Model
-	local ctx = newCtx(spec, Vector3.new(4.6, 0.5, 14), Vector3.new(0, -0.85, 0), WHITE)
-	tube(ctx, "TubeL", 13.4, 1.4, Vector3.new(-2.3, -0.4, 0.3), true)
-	tube(ctx, "TubeR", 13.4, 1.4, Vector3.new(2.3, -0.4, 0.3), true)
-	tube(ctx, "BowTube", 4.6, 1.4, Vector3.new(0, -0.4, -6.7), false)
-	deco(ctx, "TubeStripeL", Vector3.new(0.1, 0.3, 11), Vector3.new(-3.01, -0.4, 0.5), WHITE)
-	deco(ctx, "TubeStripeR", Vector3.new(0.1, 0.3, 11), Vector3.new(3.01, -0.4, 0.5), WHITE)
-	deco(ctx, "Console", Vector3.new(1.6, 1.4, 1.2), Vector3.new(0, 0.1, -0.9), WHITE)
+	local ctx = newCtx(spec, Vector3.new(6.2, 1.7, 22.6), Vector3.new(0, -0.85, 0.9), NAVY)
+	deco(ctx, "Keel", Vector3.new(2.2, 0.6, 21.0), Vector3.new(0, -1.5, 0.6), NAVY)
+	deco(ctx, "Deck", Vector3.new(5.6, 0.1, 19.0), Vector3.new(0, 0.02, 1.4), GREY)
+	local d = 1.65 -- tube diameter (0.55 m)
+	tube(ctx, "TubeL", 20.6, d, Vector3.new(-3.45, 0.82, 2.3), true)
+	tube(ctx, "TubeR", 20.6, d, Vector3.new(3.45, 0.82, 2.3), true)
+	local bowYaw = math.atan2(2.6, 4.0)
+	tube(ctx, "BowTubeL", 4.8, d, Vector3.new(-2.15, 0.82, -10.0), true, -bowYaw)
+	tube(ctx, "BowTubeR", 4.8, d, Vector3.new(2.15, 0.82, -10.0), true, bowYaw)
+	local cap = newPart(
+		ctx,
+		"Part",
+		"BowCap",
+		Vector3.new(d, d, d),
+		CFrame.new(0, 0.82, -11.9),
+		ORANGE
+	) :: Part
+	cap.Shape = Enum.PartType.Ball
+	deco(ctx, "RubStrakeL", Vector3.new(0.12, 0.3, 18), Vector3.new(-4.29, 0.6, 2.3), DARK)
+	deco(ctx, "RubStrakeR", Vector3.new(0.12, 0.3, 18), Vector3.new(4.29, 0.6, 2.3), DARK)
+	-- centre console (0.9 m wide, 1.0 m tall) with windscreen and grab rail
+	deco(ctx, "Console", Vector3.new(2.7, 3.0, 2.4), Vector3.new(0, 1.5, -1.2), WHITE)
 	local screen =
-		deco(ctx, "Windscreen", Vector3.new(1.6, 0.6, 0.1), Vector3.new(0, 1.1, -1.45), GLASS)
+		deco(ctx, "Windscreen", Vector3.new(2.7, 1.0, 0.1), Vector3.new(0, 3.5, -2.3), GLASS)
 	screen.Transparency = 0.4
-	deco(ctx, "Engine", Vector3.new(1.1, 1.8, 1.0), Vector3.new(0, -0.1, 7.3), DARK)
-	deco(ctx, "LightMast", Vector3.new(0.2, 2.4, 0.2), Vector3.new(0, 1.3, 6.4), DARK)
-	deco(ctx, "Beacon", Vector3.new(0.5, 0.3, 0.5), Vector3.new(0, 2.6, 6.4), ORANGE)
-	seat(ctx, true, "DriverSeat", Vector3.new(1.4, 0.6, 1.4), Vector3.new(0, -0.3, 0.9))
+	deco(ctx, "GrabRail", Vector3.new(3.1, 0.15, 0.15), Vector3.new(0, 3.2, -0.1), GREY)
+	-- jockey seats: helm behind the console, two crew behind the helm
+	deco(ctx, "HelmPedestal", Vector3.new(1.0, 1.95, 1.6), Vector3.new(0, 0.98, 1.6), GREY)
+	seat(ctx, true, "DriverSeat", Vector3.new(1.3, 0.6, 2.2), Vector3.new(0, 2.25, 1.6))
 	for i = 1, spec.seats - 1 do
 		local side = if i % 2 == 1 then -1 else 1
 		local row = math.ceil(i / 2)
+		local z = 1.6 + row * 3.2
+		deco(
+			ctx,
+			`CrewPedestal{i}`,
+			Vector3.new(1.0, 1.95, 1.6),
+			Vector3.new(side * 1.3, 0.98, z),
+			GREY
+		)
 		seat(
 			ctx,
 			false,
 			`PassengerSeat{i}`,
-			Vector3.new(1.4, 0.6, 1.4),
-			Vector3.new(side * 1.1, -0.3, 2.5 + row * 1.6)
+			Vector3.new(1.3, 0.6, 2.2),
+			Vector3.new(side * 1.3, 2.25, z)
 		)
 	end
+	-- twin outboards on the transom
+	for i, x in { -1.3, 1.3 } do
+		deco(ctx, `EngineCowl{i}`, Vector3.new(1.3, 1.9, 1.7), Vector3.new(x, 1.2, 12.3), DARK)
+		deco(ctx, `EngineLeg{i}`, Vector3.new(0.5, 2.8, 0.7), Vector3.new(x, -1.1, 12.6), DARK)
+	end
+	-- A-frame over the engines (about 2.3 m above the deck) with radar, blue beacon and lights
+	for i, x in { -2.9, 2.9 } do
+		deco(ctx, `AFrameLeg{i}`, Vector3.new(0.35, 7.0, 0.35), Vector3.new(x, 3.5, 10.0), GREY)
+	end
+	deco(ctx, "AFrameBeam", Vector3.new(6.15, 0.35, 0.35), Vector3.new(0, 7.0, 10.0), GREY)
+	local radar = newPart(
+		ctx,
+		"Part",
+		"Radar",
+		Vector3.new(0.6, 1.8, 1.8),
+		CFrame.new(0, 7.5, 10.0) * CFrame.Angles(0, 0, math.pi / 2),
+		WHITE
+	) :: Part
+	radar.Shape = Enum.PartType.Cylinder
+	local beacon =
+		deco(ctx, "Beacon", Vector3.new(0.4, 0.5, 0.4), Vector3.new(-2.3, 7.45, 10.0), BLUE_LIGHT)
+	beacon.Material = Enum.Material.Neon
+	navLight(ctx, "NavMasthead", Vector3.new(1.6, 7.45, 9.8), WHITE_LIGHT, 0, 225)
+	navLight(ctx, "NavStern", Vector3.new(0, 6.6, 10.25), WHITE_LIGHT, math.pi, 135)
+	navLight(ctx, "NavPort", Vector3.new(-1.45, 2.6, -1.6), RED_LIGHT, SIDELIGHT_YAW, 112.5)
+	navLight(ctx, "NavStarboard", Vector3.new(1.45, 2.6, -1.6), GREEN_LIGHT, -SIDELIGHT_YAW, 112.5)
+	-- casualties ride in the forward well, ahead of the console
 	local slots = {}
 	for i = 1, spec.survivorCapacity do
 		local side = if i % 2 == 1 then -1 else 1
-		table.insert(slots, Vector3.new(side * 1.0, -0.6, -3.5 - math.floor((i - 1) / 2) * 1.8))
+		table.insert(slots, Vector3.new(side * 1.3, 0.1, -5.0 - math.floor((i - 1) / 2) * 2.4))
 	end
-	return finish(ctx, spec, slots, Vector3.new(0, -0.2, 7.6), Vector3.new(0, -0.2, -7.6))
+	return finish(ctx, spec, slots, Vector3.new(0, 0.6, 11.4), Vector3.new(0, 0.6, -12.6))
 end
 
 -- Fallback for a vehicle id without a hand-built greybox: a plain box with seats in a column.

@@ -18,7 +18,7 @@
       }
     },
     "Workspace": { "$className": "Workspace" },
-    "Lighting": { "$className": "Lighting" },
+    "Lighting": { "$className": "Lighting", "$properties": { "Technology": "Future" } },
     "TextChatService": {
       "$className": "TextChatService",
       "$properties": { "ChatVersion": "TextChatService" }

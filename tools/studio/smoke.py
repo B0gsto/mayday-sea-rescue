@@ -12,6 +12,9 @@ usage: python3 tools/studio/smoke.py <command> [args]
   shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px
   close                close TestBench-mayday without saving, give focus back to the previous app
   run                  open, play, console check, one shot, stop, close (verdict on the first line)
+  ops                  open, play, then play operations end to end with the stub mechanics (PersonInWater,
+                       DisabledVessel, the cold open): the client's OpsAutoStub attribute auto-completes
+                       every stub and auto-accepts offers; checks each operation reaches its debrief
 
 Every command holds the machine-wide `studio` lock only for its own duration (keep holds short).
 Never touches any other TestBench or place window."""
@@ -170,6 +173,56 @@ def cmd_close():
     print("closed", title())
 
 
+OPS_SETUP = """
+local p = game:GetService("Players"):GetPlayers()[1]
+p:SetAttribute("OpsAutoStub", true)
+return "timescale " .. tostring(game:GetService("ServerStorage"):WaitForChild("OpsDev"):Invoke("timescale", 0.05))
+"""
+
+OPS_STATUS = """
+local s = game:GetService("ServerStorage").OpsDev:Invoke("status")
+return string.format("op=%s results=%s current=%s lastGrade=%s completed=%s", tostring(s.op), tostring(s.results),
+  tostring(s.current), tostring(s.lastGrade), tostring(s.completed))
+"""
+
+
+def cmd_ops(s):
+    """Plays operations end to end with the stub mechanics; returns a list of failures."""
+    fails = []
+    _, text = lua(s, "Server", OPS_SETUP)
+    print("setup:", text.strip()[:200])
+    for kind in ("PersonInWater", "DisabledVessel", "ColdOpen"):
+        _, before = lua(s, "Server", OPS_STATUS)
+        m = re.search(r"completed=(\w+)", before)
+        done_before = m.group(1) if m else "nil"
+        if kind == "ColdOpen":
+            code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("coldopen"))'
+        else:
+            code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("start", "%s"))' % kind
+        _, started = lua(s, "Server", code)
+        print("%s start: %s" % (kind, started.strip()[:120]))
+        end = time.time() + 150
+        status = ""
+        ok = False
+        while time.time() < end:
+            time.sleep(3)
+            _, status = lua(s, "Server", OPS_STATUS)
+            m = re.search(r"completed=(\w+)", status)
+            if m and m.group(1) != done_before and "op=nil" in status:
+                ok = True
+                break
+        print("%s %s: %s" % (kind, "DONE" if ok else "STUCK", status.strip()[:200]))
+        if not ok:
+            fails.append(kind)
+        _, ui = lua(s, "Client", 'local g = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("OpsGreybox") '
+                                 'local d = g and g:FindFirstChild("Debrief") '
+                                 'local t = {} if d then for _, c in d:GetDescendants() do '
+                                 'if c:IsA("TextLabel") then table.insert(t, c.Text) end end end '
+                                 'return "debrief visible=" .. tostring(d and d.Visible) .. " | " .. table.concat(t, " | ")')
+        print("  client:", ui.strip()[:400].replace("\n", " / "))
+    return fails
+
+
 def main():
     args = sys.argv[1:]
     if not args:
@@ -180,7 +233,7 @@ def main():
             return cmd_open()
         if cmd == "close":
             return cmd_close()
-        if cmd == "run":
+        if cmd in ("run", "ops"):
             cmd_open()
         with StudioSession() as s:
             if cmd == "play":
@@ -207,6 +260,17 @@ def main():
                     cmd_shot(s, "smoke")
                     cmd_play(s, "stop")
                     print("smoke: %s" % ("FAIL" if errs else "PASS"))
+                finally:
+                    cmd_close()
+            elif cmd == "ops":
+                try:
+                    cmd_play(s, "start")
+                    time.sleep(6)
+                    fails = cmd_ops(s)
+                    errs = cmd_console(s)
+                    cmd_shot(s, "ops")
+                    cmd_play(s, "stop")
+                    print("ops smoke: %s" % ("FAIL " + ",".join(fails) if fails or errs else "PASS"))
                 finally:
                     cmd_close()
             else:
