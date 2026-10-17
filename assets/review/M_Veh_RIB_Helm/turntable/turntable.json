@@ -1,0 +1,115 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_RIB_Helm/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_RIB_Helm_Console_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Helm_Seats_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_RIBHelm_Console",
+  "T_RIBHelm_Seats"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.287,
+    0.189,
+    0.91,
+    0.555
+   ],
+   "mannequin": [
+    0.037,
+    0.241,
+    0.23,
+    0.722
+   ]
+  },
+  "Side": {
+   "asset": [
+    0.282,
+    0.265,
+    0.963,
+    0.551
+   ],
+   "mannequin": [
+    0.064,
+    0.289,
+    0.217,
+    0.709
+   ]
+  },
+  "Rear3Q": {
+   "asset": [
+    0.285,
+    0.083,
+    0.891,
+    0.585
+   ],
+   "mannequin": [
+    0.037,
+    0.246,
+    0.226,
+    0.717
+   ]
+  },
+  "High": {
+   "asset": [
+    0.345,
+    0.21,
+    0.963,
+    0.764
+   ],
+   "mannequin": [
+    0.049,
+    0.392,
+    0.265,
+    0.753
+   ]
+  }
+ },
+ "in_frame": true,
+ "dims_m": [
+  1.2,
+  2.77,
+  1.12
+ ],
+ "validation_ok": true,
+ "seconds": 3.0
+}

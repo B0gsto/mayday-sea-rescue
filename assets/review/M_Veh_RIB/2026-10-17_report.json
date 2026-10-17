@@ -1,0 +1,3121 @@
+{
+ "asset": "M_Veh_RIB",
+ "name": "M_Veh_RIB",
+ "date": "2026-10-17",
+ "commit": "1de0044+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD0.fbx",
+   "bytes": 1347740,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_RIB_AFrame_LOD0",
+    "M_Veh_RIB_COL",
+    "M_Veh_RIB_Console_LOD0",
+    "M_Veh_RIB_Decals_LOD0",
+    "M_Veh_RIB_Deck_LOD0",
+    "M_Veh_RIB_Engines_LOD0",
+    "M_Veh_RIB_Hull_LOD0",
+    "M_Veh_RIB_Tubes_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_RIB_AFrame_LOD0.001",
+     "min": [
+      -3.1,
+      9.4861,
+      2.1
+     ],
+     "max": [
+      3.1,
+      10.8661,
+      9.03
+     ],
+     "polygons": 2420,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_COL.001",
+     "min": [
+      -4.275,
+      -12.8239,
+      0.45
+     ],
+     "max": [
+      4.275,
+      12.2261,
+      3.7
+     ],
+     "polygons": 114,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_RIB_Console_LOD0.001",
+     "min": [
+      -1.465,
+      -2.4039,
+      2.1
+     ],
+     "max": [
+      1.465,
+      0.1961,
+      6.365
+     ],
+     "polygons": 476,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Decals_LOD0.001",
+     "min": [
+      -4.3092,
+      -5.8739,
+      2.3553
+     ],
+     "max": [
+      4.3092,
+      6.4761,
+      4.05
+     ],
+     "polygons": 808,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Deck_LOD0.001",
+     "min": [
+      -2.7552,
+      -11.3239,
+      0.91
+     ],
+     "max": [
+      2.7552,
+      11.0561,
+      6.3072
+     ],
+     "polygons": 1688,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Engines_LOD0.001",
+     "min": [
+      -1.92,
+      11.0161,
+      0.0
+     ],
+     "max": [
+      1.92,
+      13.0361,
+      4.74
+     ],
+     "polygons": 3308,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Hull_LOD0.001",
+     "min": [
+      -3.13,
+      -11.4739,
+      0.47
+     ],
+     "max": [
+      3.3811,
+      12.1961,
+      2.863
+     ],
+     "polygons": 812,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Tubes_LOD0.001",
+     "min": [
+      -4.3622,
+      -13.0361,
+      1.65
+     ],
+     "max": [
+      4.3622,
+      12.1961,
+      3.7
+     ],
+     "polygons": 7962,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
+   "bytes": 578044,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_RIB_AFrame_LOD1",
+    "M_Veh_RIB_Console_LOD1",
+    "M_Veh_RIB_Decals_LOD1",
+    "M_Veh_RIB_Deck_LOD1",
+    "M_Veh_RIB_Engines_LOD1",
+    "M_Veh_RIB_Hull_LOD1",
+    "M_Veh_RIB_Tubes_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_RIB_AFrame_LOD1.001",
+     "min": [
+      -3.0955,
+      9.4855,
+      2.1045
+     ],
+     "max": [
+      3.0955,
+      10.8666,
+      9.03
+     ],
+     "polygons": 828,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Console_LOD1.001",
+     "min": [
+      -1.4635,
+      -2.4039,
+      2.1
+     ],
+     "max": [
+      1.4635,
+      0.1961,
+      6.365
+     ],
+     "polygons": 162,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Decals_LOD1.001",
+     "min": [
+      -4.3092,
+      -5.8739,
+      2.3553
+     ],
+     "max": [
+      4.3092,
+      6.4761,
+      4.05
+     ],
+     "polygons": 277,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Deck_LOD1.001",
+     "min": [
+      -2.7552,
+      -11.3239,
+      0.9098
+     ],
+     "max": [
+      2.7552,
+      11.0561,
+      6.3072
+     ],
+     "polygons": 577,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Engines_LOD1.001",
+     "min": [
+      -1.9177,
+      11.0161,
+      0.0
+     ],
+     "max": [
+      1.9176,
+      13.0361,
+      4.7418
+     ],
+     "polygons": 1134,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Hull_LOD1.001",
+     "min": [
+      -3.1306,
+      -11.4769,
+      0.47
+     ],
+     "max": [
+      3.3811,
+      12.1961,
+      2.863
+     ],
+     "polygons": 278,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Tubes_LOD1.001",
+     "min": [
+      -4.3622,
+      -13.0361,
+      1.65
+     ],
+     "max": [
+      4.3622,
+      12.1967,
+      3.7001
+     ],
+     "polygons": 2728,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
+   "bytes": 185948,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_RIB_AFrame_LOD2",
+    "M_Veh_RIB_Console_LOD2",
+    "M_Veh_RIB_Decals_LOD2",
+    "M_Veh_RIB_Deck_LOD2",
+    "M_Veh_RIB_Engines_LOD2",
+    "M_Veh_RIB_Hull_LOD2",
+    "M_Veh_RIB_Tubes_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_RIB_AFrame_LOD2.001",
+     "min": [
+      -3.1026,
+      9.5171,
+      2.1045
+     ],
+     "max": [
+      3.1026,
+      10.8817,
+      9.03
+     ],
+     "polygons": 206,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Console_LOD2.001",
+     "min": [
+      -1.4635,
+      -2.4039,
+      2.1
+     ],
+     "max": [
+      1.469,
+      0.1961,
+      6.3487
+     ],
+     "polygons": 40,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Decals_LOD2.001",
+     "min": [
+      -4.311,
+      -5.8739,
+      2.3553
+     ],
+     "max": [
+      4.311,
+      6.4761,
+      4.05
+     ],
+     "polygons": 69,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Deck_LOD2.001",
+     "min": [
+      -2.7552,
+      -11.3239,
+      0.8996
+     ],
+     "max": [
+      2.7552,
+      11.0679,
+      6.3072
+     ],
+     "polygons": 143,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Engines_LOD2.001",
+     "min": [
+      -1.8814,
+      11.0328,
+      -0.0038
+     ],
+     "max": [
+      1.8812,
+      12.9895,
+      4.7428
+     ],
+     "polygons": 282,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Hull_LOD2.001",
+     "min": [
+      -3.13,
+      -11.4805,
+      0.462
+     ],
+     "max": [
+      3.3567,
+      12.1952,
+      2.863
+     ],
+     "polygons": 69,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Tubes_LOD2.001",
+     "min": [
+      -4.3587,
+      -13.0119,
+      1.6364
+     ],
+     "max": [
+      4.33,
+      12.203,
+      3.6922
+     ],
+     "polygons": 682,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB.attachments.json",
+   "attachments": [
+    "ATT_DriverSeat",
+    "ATT_EyePoint",
+    "ATT_PassengerSeat1",
+    "ATT_PassengerSeat2",
+    "ATT_SurvivorSlot1",
+    "ATT_SurvivorSlot2",
+    "ATT_TowHitch",
+    "ATT_BowPoint",
+    "ATT_DriveAttachment",
+    "ATT_NavPort",
+    "ATT_NavStarboard",
+    "ATT_NavMasthead",
+    "ATT_NavStern",
+    "ATT_Beacon",
+    "ATT_Searchlight",
+    "ATT_Prop1",
+    "ATT_Prop2",
+    "ATT_Float1",
+    "ATT_Float2",
+    "ATT_Float3",
+    "ATT_Float4",
+    "ATT_Float5",
+    "ATT_Float6",
+    "ATT_Float7",
+    "ATT_Float8"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_RIB/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_RIB_Hull_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Tubes_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Deck_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Console_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_AFrame_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Engines_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Decals_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_RIB_Hull",
+   "T_RIB_Deck",
+   "T_RIB_Rig",
+   "T_RIB_Decals"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.161,
+     0.157,
+     0.936,
+     0.678
+    ],
+    "mannequin": [
+     0.037,
+     0.316,
+     0.121,
+     0.518
+    ]
+   },
+   "Side": {
+    "asset": [
+     0.185,
+     0.365,
+     0.963,
+     0.628
+    ],
+    "mannequin": [
+     0.049,
+     0.372,
+     0.108,
+     0.528
+    ]
+   },
+   "Rear3Q": {
+    "asset": [
+     0.173,
+     0.112,
+     0.948,
+     0.622
+    ],
+    "mannequin": [
+     0.037,
+     0.312,
+     0.123,
+     0.519
+    ]
+   },
+   "High": {
+    "asset": [
+     0.324,
+     0.182,
+     0.963,
+     0.825
+    ],
+    "mannequin": [
+     0.152,
+     0.451,
+     0.227,
+     0.577
+    ]
+   }
+  },
+  "in_frame": true,
+  "dims_m": [
+   2.85,
+   8.44,
+   3.0
+  ],
+  "validation_ok": true,
+  "seconds": 3.0
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/M_Veh_RIB.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_RIB",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "rib"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "812 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-04, 112 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 417 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "54 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Tubes_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7962 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 182 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.806, v 0.006 to 0.994"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4126 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "53 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Deck_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1688 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 252 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 930 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "101 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Console_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "476 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 44 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.817, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 286 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "99 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_AFrame_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2420 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 234 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1275 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "72 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Engines_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3308 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.40e-04, 456 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.009 to 0.992"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1894 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "73 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Decals_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "808 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.51e-02, 200 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 424 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "278 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-04, 66 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 278 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Tubes_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2728 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.90e-06, 92 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.803, v 0.007 to 0.994"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2728 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 1.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Deck_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "577 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.32e-06, 125 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 577 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Console_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "162 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.27e-03, 42 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.816, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 162 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_AFrame_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "828 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e-06, 58 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 828 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Engines_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1134 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.79e-06, 194 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.992"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1134 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 4.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Decals_LOD1"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "277 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.78e-03, 147 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 277 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "69 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.51e-03, 40 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 69 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Tubes_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "682 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.25e-06, 70 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.802, v 0.007 to 0.994"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 682 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 14.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Deck_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "143 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.43e-07, 85 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 143 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Console_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "40 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 8 loose verts, smallest face 2.02e-02, 28 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.005 to 0.813, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 40 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 11.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_AFrame_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "206 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.85e-06, 36 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.985, v 0.008 to 0.987"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 206 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.002 (max 0.02), UV area by 31.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Engines_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "282 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.25e-06, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.987, v 0.009 to 0.990"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 282 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.002 (max 0.02), UV area by 26.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Decals_LOD2"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "69 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.78e-03, 81 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 69 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Hull_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Hull_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Tubes_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Tubes_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Deck_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Deck_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Console_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Console_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_AFrame_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_AFrame_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Engines_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Engines_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Decals_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Decals_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_COL"
+  },
+  {
+   "subject": "M_Veh_RIB_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "114 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_RIB_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "114 of 1000"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "17474 of 35000 (rib, asset row)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5984 of 12000"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1491 of 3000"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 2.85 x 8.44 x 3 m, spec 2.85 x 8.44 x 3 m (art/reference/M_Veh_RIB/dims.md)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.724 studs, real 2.850 m = 8.550 studs, off 2.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "26.072 studs, real 8.440 m = 25.320 studs, off 3.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9.030 studs, real 3.000 m = 9.000 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_RIB_COL"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (3 to 4 sets)"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Deck_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Deck_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Deck_MET.png"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Rig_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Rig_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_MET.png"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Decals_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Decals_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Decals_MET.png"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavPort",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStarboard",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavMasthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Beacon",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Searchlight",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float7",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float8",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_RIB_AFrame_LOD0, M_Veh_RIB_COL, M_Veh_RIB_Console_LOD0, M_Veh_RIB_Decals_LOD0, M_Veh_RIB_Deck_LOD0, M_Veh_RIB_Engines_LOD0, M_Veh_RIB_Hull_LOD0, M_Veh_RIB_Tubes_LOD0; 17588 triangles (scene 17588)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_RIB_AFrame_LOD1, M_Veh_RIB_Console_LOD1, M_Veh_RIB_Decals_LOD1, M_Veh_RIB_Deck_LOD1, M_Veh_RIB_Engines_LOD1, M_Veh_RIB_Hull_LOD1, M_Veh_RIB_Tubes_LOD1; 5984 triangles (scene 5984)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_RIB_AFrame_LOD2, M_Veh_RIB_Console_LOD2, M_Veh_RIB_Decals_LOD2, M_Veh_RIB_Deck_LOD2, M_Veh_RIB_Engines_LOD2, M_Veh_RIB_Hull_LOD2, M_Veh_RIB_Tubes_LOD2; 1491 triangles (scene 1491)"
+  },
+  {
+   "subject": "M_Veh_RIB_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_RIB",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset and mannequin in frame; 9 renders in 3 s, maps M_Veh_RIB_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Tubes_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_AFrame_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Decals_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_RIB_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 812,
+   "texel_density": 54.1
+  },
+  {
+   "name": "M_Veh_RIB_Tubes_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 7962,
+   "texel_density": 53.3
+  },
+  {
+   "name": "M_Veh_RIB_Deck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1688,
+   "texel_density": 100.6
+  },
+  {
+   "name": "M_Veh_RIB_Console_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 476,
+   "texel_density": 99.4
+  },
+  {
+   "name": "M_Veh_RIB_AFrame_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2420,
+   "texel_density": 72.5
+  },
+  {
+   "name": "M_Veh_RIB_Engines_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3308,
+   "texel_density": 73.0
+  },
+  {
+   "name": "M_Veh_RIB_Decals_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 808,
+   "texel_density": 126.2
+  },
+  {
+   "name": "M_Veh_RIB_Hull_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1372,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Tubes_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 17428,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Deck_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 96988,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Console_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 4400,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_AFrame_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 6084,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Engines_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 6960,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Decals_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 5246,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 114,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 278,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 69,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Tubes_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2728,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Tubes_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 682,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Deck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 577,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Deck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 143,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Console_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 162,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Console_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 40,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_AFrame_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 828,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_AFrame_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 206,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Engines_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1134,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Engines_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 282,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Decals_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 277,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Decals_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 69,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  8.724348068237305,
+  26.072174072265625,
+  9.029999732971191
+ ],
+ "peak_rss_mb": 940.5
+}

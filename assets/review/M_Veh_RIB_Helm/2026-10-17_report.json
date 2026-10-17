@@ -1,0 +1,639 @@
+{
+ "asset": "M_Veh_RIB_Helm",
+ "name": "M_Veh_RIB_Helm",
+ "date": "2026-10-17",
+ "commit": "1de0044+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
+   "bytes": 730604,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_RIB_Helm_Console_LOD0",
+    "M_Veh_RIB_Helm_Seats_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_RIB_Helm_Console_LOD0.001",
+     "min": [
+      -1.54,
+      -2.6089,
+      3.1552
+     ],
+     "max": [
+      1.54,
+      0.845,
+      5.4522
+     ],
+     "polygons": 4512,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_RIB_Helm_Seats_LOD0.001",
+     "min": [
+      -1.84,
+      0.6811,
+      2.1
+     ],
+     "max": [
+      1.84,
+      5.6961,
+      4.95
+     ],
+     "polygons": 4260,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm.attachments.json",
+   "attachments": [
+    "ATT_WheelHub"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_RIB_Helm/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_RIB_Helm_Console_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_RIB_Helm_Seats_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_RIBHelm_Console",
+   "T_RIBHelm_Seats"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.287,
+     0.189,
+     0.91,
+     0.555
+    ],
+    "mannequin": [
+     0.037,
+     0.241,
+     0.23,
+     0.722
+    ]
+   },
+   "Side": {
+    "asset": [
+     0.282,
+     0.265,
+     0.963,
+     0.551
+    ],
+    "mannequin": [
+     0.064,
+     0.289,
+     0.217,
+     0.709
+    ]
+   },
+   "Rear3Q": {
+    "asset": [
+     0.285,
+     0.083,
+     0.891,
+     0.585
+    ],
+    "mannequin": [
+     0.037,
+     0.246,
+     0.226,
+     0.717
+    ]
+   },
+   "High": {
+    "asset": [
+     0.345,
+     0.21,
+     0.963,
+     0.764
+    ],
+    "mannequin": [
+     0.049,
+     0.392,
+     0.265,
+     0.753
+    ]
+   }
+  },
+  "in_frame": true,
+  "dims_m": [
+   1.2,
+   2.77,
+   1.12
+  ],
+  "validation_ok": true,
+  "seconds": 3.0
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB_Helm/M_Veh_RIB_Helm.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "helm_interior"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Helm_Console_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4512 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (Console LOD0: one zero-area sliver (collinear verts left by a clamped chamfer on a 12 mm dash part); not visible, no loose verts; the open edges are the dash cards): 0 loose verts, smallest face 0.00e+00, 324 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2412 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "310 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Helm_Seats_LOD0"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4260 of 10000"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.49e-05, 96 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.993, v 0.007 to 0.971"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2394 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "97 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Helm_Console_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Console_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_RIB_Helm_Seats_HP"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_Seats_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8772 of 15000 (helm_interior, asset row)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.2 x 2.77 x 1.12 m, spec 1.2 x 2.77 x 1.12 m (art/reference/M_Veh_RIB_Helm/dims.md)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.680 studs, real 1.200 m = 3.600 studs, off 2.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.305 studs, real 2.770 m = 8.310 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.352 studs, real 1.120 m = 3.360 studs, off 0.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (2 to 3 sets)"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_NOR.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_RGH.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_MET.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_NOR.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_MET.png"
+  },
+  {
+   "subject": "ATT_WheelHub",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_RIB_Helm_Console_LOD0, M_Veh_RIB_Helm_Seats_LOD0; 8772 triangles (scene 8772)"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Veh_RIB_Helm",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset and mannequin in frame; 9 renders in 3 s, maps M_Veh_RIB_Helm_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Helm_Seats_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_RIB_Helm_Console_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4512,
+   "texel_density": 310.1
+  },
+  {
+   "name": "M_Veh_RIB_Helm_Seats_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4260,
+   "texel_density": 96.6
+  },
+  {
+   "name": "M_Veh_RIB_Helm_Console_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 13956,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_RIB_Helm_Seats_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 8820,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.679999828338623,
+  8.305000305175781,
+  3.352200508117676
+ ],
+ "peak_rss_mb": 746.2
+}

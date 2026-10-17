@@ -1,0 +1,917 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "subject": "T_RIB_Decals",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_MET.png"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Decals_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Decals_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Decals_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Decals_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.0% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 127, 99th 226, range 30 to 240 over 100% of pixels"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.00, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 169, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.00, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Decals_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIB_Decals_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.18)"
+  },
+  {
+   "subject": "T_RIB_Decals_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 99, dry 133"
+  },
+  {
+   "subject": "T_RIB_Decals_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 64, dry 141"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_MET.png"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Deck_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Deck_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Deck_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Deck_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "1.6% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 40, 99th 217, range 30 to 240 over 93% of pixels"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 183, 99th 248, range 180 to 250 over 2% of pixels"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.09, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 163, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 186, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.09, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Deck_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIB_Deck_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.36): check the bake settings"
+  },
+  {
+   "subject": "T_RIB_Deck_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 98, dry 131"
+  },
+  {
+   "subject": "T_RIB_Deck_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 72, dry 146"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_MET.png"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Hull_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Hull_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Hull_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.2% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 46, 99th 188, range 30 to 240 over 99% of pixels"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 187, 99th 248, range 180 to 250 over 0% of pixels"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.16, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 141, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 186, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.16, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Hull_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIB_Hull_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.43): check the bake settings"
+  },
+  {
+   "subject": "T_RIB_Hull_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 66, dry 89"
+  },
+  {
+   "subject": "T_RIB_Hull_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 77, dry 153"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_ALB.png"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_NOR.png"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_RGH.png"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_MET.png"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIB_Rig_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIB_Rig_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Rig_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIB_Rig_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "3.3% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 47, 99th 217, range 30 to 240 over 85% of pixels"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 182, 99th 247, range 180 to 250 over 5% of pixels"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.12, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 163, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 186, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.12, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_RIB_Rig_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIB_Rig_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.35)"
+  },
+  {
+   "subject": "T_RIB_Rig_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 108, dry 144"
+  },
+  {
+   "subject": "T_RIB_Rig_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 27, dry 102"
+  }
+ ]
+}

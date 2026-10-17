@@ -1,0 +1,469 @@
+{
+ "ok": false,
+ "rows": [
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_ALB.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_NOR.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_RGH.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_MET.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Console_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIBHelm_Console_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Console_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Console_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "6.1% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 41, 99th 128, range 30 to 240 over 45% of pixels"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 182, 99th 233, range 180 to 250 over 35% of pixels"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.05, ceiling 0.45"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 96, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 175, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.05, ceiling 0.45"
+  },
+  {
+   "subject": "T_RIBHelm_Console_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIBHelm_Console_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.42): check the bake settings"
+  },
+  {
+   "subject": "T_RIBHelm_Console_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 107, dry 142"
+  },
+  {
+   "subject": "T_RIBHelm_Console_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 38, dry 106"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_ALB.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_NOR.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_RGH.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_MET.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_RIBHelm_Seats_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "5.2% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 44, 99th 128, range 30 to 240 over 64% of pixels"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB",
+   "check": "metal albedo",
+   "ok": false,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 180, 99th 217, range 180 to 250 over 21% of pixels"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.14, ceiling 0.45"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 96, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 164, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.13, ceiling 0.45"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.35)"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 94, dry 125"
+  },
+  {
+   "subject": "T_RIBHelm_Seats_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 42, dry 113"
+  }
+ ]
+}

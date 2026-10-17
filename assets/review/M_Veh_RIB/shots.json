@@ -1,0 +1,152 @@
+[
+ {
+  "name": "M_Veh_RIB_Clear_dry",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "M_Veh_RIB_Clear_wet",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "M_Veh_RIB_Overcast_dry",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Veh_RIB_Overcast_wet",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Veh_RIB_Storm_dry",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "M_Veh_RIB_Storm_wet",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "M_Veh_RIB_Night_dry",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "M_Veh_RIB_Night_wet",
+  "cam": [
+   24,
+   9,
+   -24
+  ],
+  "look": [
+   0,
+   1.5,
+   0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Night', true)"
+ },
+ {
+  "name": "M_Veh_RIB_Helm_Overcast_dry",
+  "cam": [
+   3.2,
+   6.2,
+   7.5
+  ],
+  "look": [
+   0,
+   2.4,
+   -1.0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({3.2, 6.2, 7.5}, {0, 2.4, -1.0}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Veh_RIB_Helm_Overcast_wet",
+  "cam": [
+   3.2,
+   6.2,
+   7.5
+  ],
+  "look": [
+   0,
+   2.4,
+   -1.0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({3.2, 6.2, 7.5}, {0, 2.4, -1.0}) return _G.LookDev.apply('Overcast', true)"
+ }
+]

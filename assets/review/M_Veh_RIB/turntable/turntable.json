@@ -1,0 +1,147 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_RIB/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_RIB_Hull_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Tubes_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Deck_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Console_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_AFrame_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Engines_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_RIB_Decals_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_RIB_Hull",
+  "T_RIB_Deck",
+  "T_RIB_Rig",
+  "T_RIB_Decals"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.161,
+    0.157,
+    0.936,
+    0.678
+   ],
+   "mannequin": [
+    0.037,
+    0.316,
+    0.121,
+    0.518
+   ]
+  },
+  "Side": {
+   "asset": [
+    0.185,
+    0.365,
+    0.963,
+    0.628
+   ],
+   "mannequin": [
+    0.049,
+    0.372,
+    0.108,
+    0.528
+   ]
+  },
+  "Rear3Q": {
+   "asset": [
+    0.173,
+    0.112,
+    0.948,
+    0.622
+   ],
+   "mannequin": [
+    0.037,
+    0.312,
+    0.123,
+    0.519
+   ]
+  },
+  "High": {
+   "asset": [
+    0.324,
+    0.182,
+    0.963,
+    0.825
+   ],
+   "mannequin": [
+    0.152,
+    0.451,
+    0.227,
+    0.577
+   ]
+  }
+ },
+ "in_frame": true,
+ "dims_m": [
+  2.85,
+  8.44,
+  3.0
+ ],
+ "validation_ok": true,
+ "seconds": 3.0
+}
