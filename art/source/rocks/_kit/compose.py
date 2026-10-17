@@ -43,6 +43,39 @@ def srgb(c):
     return np.array([int(c[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255.0
 
 
+# fix round 1 (AD): banded cream strata on these scans read sedimentary: de-band to jointed warm, rusty grey/pink granite
+REGRADE = {"M_Rock_Cliff_01", "M_Rock_Cliff_02", "M_Rock_Ledge_01"}
+WET_RGH = (0.24, 0.9)   # wet / below-waterline roughness clamp: no mirror rock (was floor 0.04 -> sun blow-out)
+
+
+def lowpass(x, cells):
+    """Smooth luma field: box-down to cells x cells then bicubic up (scale-free low-pass)."""
+    m = float(x.max()) or 1.0
+    im = Image.fromarray(np.clip(x / m * 65535, 0, 65535).astype(np.uint16), "I;16").convert("I").convert("F")
+    return np.asarray(im.resize((cells, cells), Image.BOX).resize((N, N), Image.BICUBIC), np.float32) * m / 65535
+
+
+def granite(seed, Ln, covered):
+    """Ln (luma / median) -> a granite albedo: scan strata removed, scan cracks kept, coarse feldspar / biotite grain,
+    pink-grey blotches, rusty iron stain patches, dark joint lines."""
+    band = np.maximum(lowpass(Ln, 24), 0.2)
+    hp = np.clip(Ln / band, 0.3, 2.2) ** 1.25                      # scan detail (cracks, pits) without the bands
+    blot = fbm(seed + 11, [5, 10, 20, 40])                          # pink vs grey granite blotches
+    rust = ss(0.62, 0.8, fbm(seed + 12, [6, 12, 24, 48]))           # iron staining
+    grain = fbm(seed + 13, [300, 600], [0.5, 0.5])                   # crystal grain
+    bio = ss(0.68, 0.8, fbm(seed + 14, [420, 840], [0.5, 0.5]))      # biotite / hornblende specks
+    fsp = ss(0.6, 0.75, fbm(seed + 15, [200, 400], [0.5, 0.5]))      # pink K-feldspar crystals
+    j1 = fbm(seed + 16, [10, 20, 40, 80]); j2 = fbm(seed + 17, [14, 28, 56])
+    joint = np.maximum(1 - ss(0.0, 0.025, np.abs(j1 - 0.5)), 0.7 * (1 - ss(0.0, 0.02, np.abs(j2 - 0.5))))
+    grey, pink, rusty, dark = srgb("#8C8984"), srgb("#9C8981"), srgb("#93785F"), srgb("#4C4A47")
+    base = grey * (1 - blot[..., None] * 0.6) + pink * (blot[..., None] * 0.6)
+    base = base * (1 - rust[..., None] * 0.55) + rusty * (rust[..., None] * 0.55)
+    base = base * (1 - fsp[..., None] * 0.35) + srgb("#B39A8E") * (fsp[..., None] * 0.35)
+    base = base * (1 - bio[..., None] * 0.6) + dark * (bio[..., None] * 0.6)
+    base = base * (0.92 + 0.16 * grain)[..., None] * (0.88 + 0.24 * blot)[..., None]
+    return base * hp[..., None] * (1 - 0.45 * joint)[..., None]
+
+
 def compose(asset):
     p = piece(asset)
     info = json.load(open(WORK + asset + ".json"))
@@ -67,10 +100,14 @@ def compose(asset):
     L = pbrmaps.luma(diff)
     med = np.median(L[covered]) if covered.any() else 0.5
     Ln = np.clip(L / max(med, 1e-3), 0.35, 1.9)
+    Ln = np.where(Ln > 1.0, 1.0 + 0.55 * (Ln - 1.0), Ln)          # fix 1: highlight roll-off (Clear sun blew faces white)
     chroma = diff - L[..., None]
-    alb = target[None, None, :] * Ln[..., None] ** 1.05 + 0.3 * chroma
-    grain = fbm(seed + 1, [256, 512], [0.5, 0.5])                        # feldspar / mica sparkle variation
-    alb *= (0.94 + 0.12 * grain)[..., None]
+    if asset in REGRADE:
+        alb = granite(seed, Ln, covered) + 0.06 * chroma
+    else:
+        alb = target[None, None, :] * Ln[..., None] ** 1.05 + 0.3 * chroma
+        grain = fbm(seed + 1, [256, 512], [0.5, 0.5])                    # feldspar / mica sparkle variation
+        alb *= (0.94 + 0.12 * grain)[..., None]
     rgh = np.clip(arm[..., 1] * 0.55 + 0.4, 0.55, 0.95)
     ao = arm[..., 0]
     alb *= (0.75 + 0.25 * ao)[..., None]
@@ -78,18 +115,19 @@ def compose(asset):
     patch2 = fbm(seed + 3, [12, 24, 48, 96])
     speck = fbm(seed + 4, [384, 768], [0.4, 0.6])
     upm = ss(0.35, 0.85, up)
-    xan = srgb("#BCA867"); grey_l = srgb("#A9AAA2"); black_l = srgb("#3E3D3A")
+    xan = srgb("#B27E4C"); grey_l = srgb("#959B8C"); black_l = srgb("#3E3D3A")  # AD: sparse orange + grey-green crustose
     wrack = srgb("#4B4A26") * 1.02; barn = srgb("#A29D90")
     if p["zone"] == "shore":
         wl = float(np.clip(0.4 * H, 0.3, 1.5))
         below = 1 - ss(wl - 0.05, wl + 0.05, z)
         # wet below the waterline (always, tide): darker, glossy
-        a_w, r_w = pbrmaps.wet(alb, rgh, darken=0.4, gloss=0.5)
+        a_w, r_w = pbrmaps.wet(alb, rgh, darken=0.28, gloss=0.45)
         alb = alb * (1 - below[..., None]) + a_w * below[..., None]
-        rgh = rgh * (1 - below) + r_w * below
+        rgh = rgh * (1 - below) + np.clip(r_w, *WET_RGH) * below
         # wrack: clumps below wl - 0.2 m, more toward the base
         wm = ss(0.42, 0.55, patch * 0.7 + 0.3 * (1 - ss(0, wl, z))) * (1 - ss(wl - 0.35, wl - 0.1, z))
         wcol = wrack[None, None, :] * (0.8 + 0.4 * patch2[..., None])
+        wm = wm * (0.7 if asset.startswith("M_Rock_Ledge") else 1.0)   # flat ledges: most texels sit low, keep rock showing
         alb = alb * (1 - wm[..., None]) + wcol * wm[..., None]
         rgh = rgh * (1 - wm) + 0.28 * wm
         # barnacle band: wl - 0.35 .. wl + 0.25, broken edge
@@ -106,16 +144,17 @@ def compose(asset):
     else:
         high = 0.4 + 0.6 * ss(0.0, H, z)
     # lichens on top faces above the splash zone
-    xm = 0.85 * ss(0.66, 0.76, patch * 0.6 + speck * 0.25 + upm * 0.25) * high * upm
-    gm = ss(0.55, 0.68, patch2 * 0.7 + speck * 0.3) * high * (0.3 + 0.7 * upm) * (1 - xm)
+    xm = 0.6 * ss(0.78, 0.84, patch * 0.6 + speck * 0.25 + upm * 0.25) * high * upm   # occasional orange
+    gm = 0.85 * ss(0.58, 0.7, patch2 * 0.6 + speck * 0.4) * high * (0.3 + 0.7 * upm) * (1 - xm)
     alb = alb * (1 - xm[..., None]) + (xan * (0.85 + 0.25 * speck[..., None])) * xm[..., None]
     alb = alb * (1 - gm[..., None] * 0.8) + (grey_l * (0.9 + 0.2 * speck[..., None])) * gm[..., None] * 0.8
     rgh = np.clip(rgh * (1 - xm - gm * 0.8) + 0.9 * (xm + gm * 0.8), 0.2, 0.98)
     alb = pbrmaps.limit_saturation(np.clip(alb, 0, 1), 0.42)[0]
-    alb = np.clip(alb, 34 / 255, 232 / 255)
+    alb = np.clip(alb, 34 / 255, 214 / 255)
     met = np.zeros((N, N), np.float32)
     a_wet, r_wet = pbrmaps.wet(alb, rgh, darken=0.3, gloss=0.35)
-    a_wet = np.clip(a_wet, 32 / 255, 1)
+    a_wet = np.clip(a_wet, 32 / 255, 232 / 255)      # 05 bar: albedo 20-240 sRGB
+    r_wet = np.clip(r_wet, *WET_RGH)
     stem = "T_%s_%s_" % (p["tex"], SET)
     mdir = ROOT + "art/source/rocks/%s/textures/" % asset
     edir = ROOT + "assets/textures/%s/" % asset

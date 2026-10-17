@@ -1,7 +1,7 @@
 for _, c in workspace:GetChildren() do
 	if c:IsA('Model') and string.match(c.Name, '^M_Rock_.*_LOD0$') then c.Name = string.gsub(c.Name, '_LOD0$', '') end
 end
-_G.ImportAssetConfig = {["name"] = "M_Rock_Boulder_01", ["source"] = "Workspace/M_Rock_Boulder_01", ["tier"] = "standard", ["sets"] = {["Granite"] = {["ALB"] = "83719186170688", ["NOR"] = "77192110147089", ["RGH"] = "135389252680982", ["MET"] = "140266217416485", ["Wet"] = {["ALB"] = "90520055512593", ["RGH"] = "124925889376527"}}}, ["partSets"] = {["M_Rock_Boulder_01_LOD0"] = "Granite", ["M_Rock_Boulder_01_LOD1"] = "Granite", ["M_Rock_Boulder_01_LOD2"] = "Granite"}, ["attachments"] = {}, ["cframe"] = {0, 300, 0, 0}}
+_G.ImportAssetConfig = {["name"] = "M_Rock_Boulder_01", ["source"] = "Workspace/M_Rock_Boulder_01", ["tier"] = "standard", ["sets"] = {["Granite"] = {["ALB"] = "105377411555545", ["NOR"] = "77192110147089", ["RGH"] = "78955305672449", ["MET"] = "140266217416485", ["Wet"] = {["ALB"] = "77320145132872", ["RGH"] = "87535994304982"}}}, ["partSets"] = {["M_Rock_Boulder_01_LOD0"] = "Granite", ["M_Rock_Boulder_01_LOD1"] = "Granite", ["M_Rock_Boulder_01_LOD2"] = "Granite"}, ["attachments"] = {}, ["cframe"] = {0, 300, 0, 0}}
 --!strict
 --# selene: allow(global_usage)
 --[==[

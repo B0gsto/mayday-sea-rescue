@@ -12,7 +12,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Clear', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Clear', false, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Clear_wet",
@@ -27,7 +27,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Clear', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Clear', true, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Overcast_dry",
@@ -42,7 +42,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Overcast', false, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Overcast_wet",
@@ -57,7 +57,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Overcast', true, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Storm_dry",
@@ -72,7 +72,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Storm', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Storm', false, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Storm_wet",
@@ -87,7 +87,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Storm', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Storm', true, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Night_dry",
@@ -102,7 +102,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Night', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Night', false, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Cove_Night_wet",
@@ -117,7 +117,7 @@
    15.8
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Night', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.K1Shot('Night', true, {-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8})"
  },
  {
   "name": "K1_Ledge_Overcast_dry",
@@ -132,7 +132,7 @@
    12.9
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.K1Shot('Overcast', false, {-484.7, 5, 30.6}, {-492.4, 1, 12.9})"
  },
  {
   "name": "K1_Ledge_Overcast_wet",
@@ -147,7 +147,7 @@
    12.9
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.K1Shot('Overcast', true, {-484.7, 5, 30.6}, {-492.4, 1, 12.9})"
  },
  {
   "name": "K1_Boulders_Overcast_dry",
@@ -162,7 +162,7 @@
    19.3
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.K1Shot('Overcast', false, {-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3})"
  },
  {
   "name": "K1_Boulders_Overcast_wet",
@@ -177,7 +177,7 @@
    19.3
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.K1Shot('Overcast', true, {-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3})"
  },
  {
   "name": "K1_Cliffs_Overcast_dry",
@@ -192,7 +192,7 @@
    3.0
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.K1Shot('Overcast', false, {-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0})"
  },
  {
   "name": "K1_Cliffs_Overcast_wet",
@@ -207,6 +207,6 @@
    3.0
   ],
   "settle": 3.0,
-  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.K1Shot('Overcast', true, {-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0})"
  }
 ]

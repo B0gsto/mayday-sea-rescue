@@ -1,4 +1,4 @@
-"""B02: download the CC0 Poly Haven scans in library.py and write Roblox MaterialVariant maps at EXPORT_CAP.
+"""B02: download the CC0 Poly Haven scans in library.py and write Roblox MaterialVariant maps at SHIP_SIZE.
 
 python3 art/source/materials/process.py [--only SandDry,...]
 Downloads go to build/materials/src/<polyhavenId>/ (one fresh dir each, data only). Outputs:
@@ -15,10 +15,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GAME = os.path.abspath(os.path.join(HERE, "../../.."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(GAME, "tools/blender"))
-import common  # noqa: E402  (EXPORT_CAP)
+import common  # noqa: E402  (SHIP_SIZE)
 from library import LIBRARY, TRIM  # noqa: E402
 
-CAP = common.EXPORT_CAP
+CAP = common.SHIP_SIZE  # shipped size (EXPORT_CAP is only the maximum)
 RES = {512: "1k", 1024: "1k", 2048: "2k", 4096: "4k"}[CAP] if CAP <= 4096 else "4k"
 SRC = os.path.join(GAME, "build/materials/src")
 OUT = os.path.join(GAME, "assets/textures/Materials")
@@ -114,6 +114,19 @@ def grade_albedo(rgb, desat=None, tint=None):
     return np.clip(rgb, 0, 255), notes
 
 
+# per-variant luma re-map: (target median, target p1, target p99, warm tint): dark but readable rock, contrast kept
+LIFT = {"SplashRock": (74, 46, 122, (1.04, 1.0, 0.95))}
+
+
+def lift_albedo(rgb, med, p1t, p99t, tint):
+    y = luma(rgb)
+    p1, p50, p99 = np.percentile(y, [1, 50, 99])
+    lo = (med - p1t) / max(p50 - p1, 1e-3); hi = (p99t - med) / max(p99 - p50, 1e-3)
+    ny = np.where(y < p50, med + (y - p50) * lo, med + (y - p50) * hi)
+    out = rgb * (np.clip(ny, 1, 255) / np.maximum(y, 1))[..., None] * np.array(tint, np.float32)
+    return np.clip(out, LO, HI), ["lift luma p1/p50/p99 %.0f/%.0f/%.0f -> %d/%d/%d" % (p1, p50, p99, p1t, med, p99t)]
+
+
 def wet_albedo(rgb):
     rgb = rgb.astype(np.float32) * 0.74
     y = luma(rgb)[..., None]
@@ -159,6 +172,9 @@ def build_variant(row, report):
     desat = 0.15 if name == "NonSlipDeck" else None
     tint = (1.1, 1.1, 1.1) if name == "NonSlipDeck" else None
     alb, notes = grade_albedo(alb, desat, tint)
+    if name in LIFT:   # K1 fix: dark_rock graded to a flat near-black slab (luma p50 38, p99 51; wet 28): wet lava / oil in-engine
+        alb, n2 = lift_albedo(alb, *LIFT[name])
+        notes += n2
     stem = os.path.join(OUT, "T_Mat_%s_" % name)
     save(alb, "RGB", stem + "ALB.png")
     save(nor, "RGB", stem + "NOR.png")

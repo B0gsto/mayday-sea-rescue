@@ -496,7 +496,7 @@
    "Name": "SplashRock",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://130528273325972",
+    "ColorMap": "rbxassetid://95741801877113",
     "NormalMap": "rbxassetid://139997787647669",
     "RoughnessMap": "rbxassetid://84213070157077",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -529,7 +529,7 @@
    "Name": "SplashRock_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://124191434874455",
+    "ColorMap": "rbxassetid://76054759137057",
     "NormalMap": "rbxassetid://139997787647669",
     "RoughnessMap": "rbxassetid://89941967978392",
     "MetalnessMap": "rbxassetid://88157078302939",
