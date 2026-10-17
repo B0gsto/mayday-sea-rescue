@@ -1,7 +1,8 @@
 --!strict
 -- DogController: Bosun's point-and-bark on the client (DogService fires DogPoint).
 -- On each DogPoint: his head turns toward the victim (local NeckWeld.C0), a "Woof!" bubble pops
--- over his head and a small Waypoint Green arrow hovers beside him pointing the way.
+-- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
+-- skipped while ReplicatedStorage attribute UseMapWaypoints is true (the map shows the casualty).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -132,14 +133,18 @@ local function onPoint(payload: any)
 		old:Destroy()
 	end
 	local bubble = makeBubble(head)
-	local arrow = makeArrow()
+	local arrow: Model? = if ReplicatedStorage:GetAttribute("UseMapWaypoints") == true
+		then nil
+		else makeArrow()
 	local started = os.clock()
 	local connection: RBXScriptConnection
 	connection = RunService.RenderStepped:Connect(function()
 		local t = os.clock() - started
 		if t > SHOW_SECONDS or not body.Parent or active[dog] ~= serial then
 			connection:Disconnect()
-			arrow:Destroy()
+			if arrow then
+				arrow:Destroy()
+			end
 			bubble:Destroy()
 			return
 		end
@@ -151,7 +156,9 @@ local function onPoint(payload: any)
 				dir = flat.Unit
 			end
 		end
-		placeArrow(arrow, body.Position, dir, t)
+		if arrow then
+			placeArrow(arrow, body.Position, dir, t)
+		end
 	end)
 end
 

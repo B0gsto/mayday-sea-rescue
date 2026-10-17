@@ -246,3 +246,14 @@ Design: docs 10 section 3, speeds docs 02 section 4.3. Owner: `src/shared/Car/*`
 - `GameConfig.MapRadius` = 2500. `WorldService` hides `Workspace.Zones` and `Map.WorldPoints` parts at play time (Transparency 1, no collide/query/touch, adornments removed).
 - No HUD shop or launch buttons. Port Haven Chandlery (`map/Build.luau`, `buildChandlery`, x -74..-14, z -78..-42, beside the station: the literal doc-10 offset lands on Harbour Road) has `ShopCounterPrompt` ("Browse gear") opening the counter panel (`HudShop`, BuyGear). The quay boat desk (`buildBoatDesk`) has `BoatDeskPrompt` ("Collect a boat") opening `HudLaunch` (RequestVehicle, rank locks, land vehicles hidden). Panels close with X or past 16 studs. Bay prompts unchanged.
 - Hospital: no red cross anywhere (docs/05). It shows a white "H" on blue and a "COTTAGE HOSPITAL" board; first-aid kits will use a green and white cross.
+
+## Map and blips (GTA-style map)
+
+Owner: `src/client/Controllers/MapController.luau`, `src/server/Services/MapService.luau`, `src/shared/Config/MapConfig.luau`, `tools/world/make_map_image.py`, `art/map/*`, `tests/Map.spec.luau`.
+
+- Map texture: `python3 tools/world/make_map_image.py` renders `art/map/gale_isles_map.png` (2048 px) and four 1024 px tiles from the terrain bake + WorldConfig roads; uploaded ids, the world-to-UV transform (`u = (x + 2560) / 5120`, `v = (z + 2560) / 5120`, north up), blips and zoom live in `MapConfig`. Re-render and re-upload after a terrain re-bake.
+- Minimap bottom-left (rises above bottom-left panels it would cover), full map on M / gamepad Select / tapping the minimap or the MAP button. Hidden while `CinematicPlaying`; its ScreenGui `MapHud` carries `CinematicKeep`.
+- **`ReplicatedStorage` attribute `UseMapWaypoints` (bool, MapService sets true)**: while true, do not draw 3D guidance arrows, beams, waypoint parts or billboards toward casualties / drop-offs; the map shows them. Done: DogController's Bosun arrow (the bark and head turn stay); drop-off pads `Map.DropOffs` are hidden locally (LocalTransparencyModifier). CONTRACT for the owners: RescueService / CasualtyAsset / Casualty / Boat Builder / Camera, check the flag before adding any new guidance marker.
+- Player attributes: `MapWaypoint` (Vector3?, the player's own waypoint), `MapOpen` (bool). API: `MapController.SetWaypoint`, `GetWaypoint`, `GetObjective`, `Open`, `Close`, `IsOpen`.
+- CONTRACT (storm stream): `ReplicatedStorage.Weather` attributes `StormCenter` (Vector3) + `StormRadius` (number) replace the placeholder open-sea storm area in `MapConfig.StormAreas`.
+- CONTRACT (Ops framework): the objective comes from `Ops_State` (`casualties[].position/inWater/delivered`, `current[1].mechanicId`); a `destination` field (`"Dock"`/`"Hospital"`) on the transport step view would let the map point at the chosen pad instead of the nearest one.

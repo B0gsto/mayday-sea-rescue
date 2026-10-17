@@ -109,7 +109,7 @@ local MapConfig = {
 	DropOffs = {
 		Hospital = Vector3.new(130, 0, 12),
 		Dock = Vector3.new(-125, 0, 92),
-	},
+	} :: { [string]: Vector3 },
 
 	-- Weather has no positional storm yet: while the State is Warning / Storm / Clearing the exposed
 	-- open sea beyond the breakwater is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather

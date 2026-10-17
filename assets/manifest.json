@@ -83,7 +83,7 @@
  "Image:073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29": {
   "assetId": "89602092156365",
   "imageId": "89602092156365",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Rope_NOR",
   "sha": "073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_NOR.png",
@@ -264,7 +264,7 @@
  "Image:11e974d5257d67751a3d9b86a896c908e3a515c4c559459dfd8c9185b1e4687b": {
   "assetId": "115273437194420",
   "imageId": "115273437194420",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_ALB",
   "sha": "11e974d5257d67751a3d9b86a896c908e3a515c4c559459dfd8c9185b1e4687b",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
@@ -291,7 +291,7 @@
  "Image:13d73c7135306c6fe12c15907386271e28d63ad80a20c1a3d68d2c2a0151322b": {
   "assetId": "75082472767101",
   "imageId": "75082472767101",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_RGH",
   "sha": "13d73c7135306c6fe12c15907386271e28d63ad80a20c1a3d68d2c2a0151322b",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_RGH.png",
@@ -363,7 +363,7 @@
  "Image:19e50edc3edde5c892d56742582955b1a2837ef6b75a79d989914e735455a811": {
   "assetId": "127334089446577",
   "imageId": "127334089446577",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_RGH_Wet",
   "sha": "19e50edc3edde5c892d56742582955b1a2837ef6b75a79d989914e735455a811",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH_Wet.png",
@@ -417,7 +417,7 @@
  "Image:1adea720634af678bf6e595ba43607c5626c114804a8933553ed75121a061675": {
   "assetId": "105999388453791",
   "imageId": "105999388453791",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Rope_ALB",
   "sha": "1adea720634af678bf6e595ba43607c5626c114804a8933553ed75121a061675",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_ALB.png",
@@ -426,7 +426,7 @@
  "Image:1af462c33a46707ccf652b58c1b737fa43887301eb4a4ea9b5f858e7096c7e2c": {
   "assetId": "114952564703794",
   "imageId": "114952564703794",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_NOR",
   "sha": "1af462c33a46707ccf652b58c1b737fa43887301eb4a4ea9b5f858e7096c7e2c",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
@@ -471,7 +471,7 @@
  "Image:1cf861908a19e8259f5914326bcb83d90c3c494b9ed6061f78b38cd176375e7f": {
   "assetId": "122040682702478",
   "imageId": "122040682702478",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_ALB",
   "sha": "1cf861908a19e8259f5914326bcb83d90c3c494b9ed6061f78b38cd176375e7f",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
@@ -498,7 +498,7 @@
  "Image:1e208ca6e387a82b801d08546ac8f765cb74a68412bc240b5a9e0f6fb095c320": {
   "assetId": "91462357892618",
   "imageId": "91462357892618",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_RGH",
   "sha": "1e208ca6e387a82b801d08546ac8f765cb74a68412bc240b5a9e0f6fb095c320",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_RGH.png",
@@ -711,7 +711,7 @@
  "Image:2615aca4ebc78ae6a4f3c129751d752f95fd4fe6d3e26f119ca650868a8b04ac": {
   "assetId": "98519338287215",
   "imageId": "98519338287215",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_RGH",
   "sha": "2615aca4ebc78ae6a4f3c129751d752f95fd4fe6d3e26f119ca650868a8b04ac",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
@@ -756,7 +756,7 @@
  "Image:297c1e2af5db5c6eda0ed4053d668f153b93b9a2466d271e60de219bbfa3bd73": {
   "assetId": "83519248866446",
   "imageId": "83519248866446",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_ALB",
   "sha": "297c1e2af5db5c6eda0ed4053d668f153b93b9a2466d271e60de219bbfa3bd73",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB.png",
@@ -783,7 +783,7 @@
  "Image:2b648e41fb4a09fdfe2c65ddeaec5073484e2ab36eaa32e94c09bd3b86601f2e": {
   "assetId": "120035276122390",
   "imageId": "120035276122390",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_ALB",
   "sha": "2b648e41fb4a09fdfe2c65ddeaec5073484e2ab36eaa32e94c09bd3b86601f2e",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB.png",
@@ -819,7 +819,7 @@
  "Image:2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71": {
   "assetId": "130995619446535",
   "imageId": "130995619446535",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_NOR",
   "sha": "2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_NOR.png",
@@ -927,7 +927,7 @@
  "Image:335743809efaa0e62a51a3cdae43c49c4e19a9532ca610e9aada8d4566446e14": {
   "assetId": "80677727296225",
   "imageId": "80677727296225",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_NOR",
   "sha": "335743809efaa0e62a51a3cdae43c49c4e19a9532ca610e9aada8d4566446e14",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_NOR.png",
@@ -1026,7 +1026,7 @@
  "Image:38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56": {
   "assetId": "74732836042532",
   "imageId": "74732836042532",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_RGH",
   "sha": "38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
@@ -1167,6 +1167,15 @@
   "source": "assets/textures/Materials/T_Mat_Concrete_NOR.png",
   "type": "Image"
  },
+ "Image:41852661f4861fdf04726708769e4e86fb7abdea66ea67d72cc7fb5333b32e51": {
+  "assetId": "95841555674892",
+  "imageId": "95841555674892",
+  "moderation": "Reviewing",
+  "name": "Mayday Gale Isles Map",
+  "sha": "41852661f4861fdf04726708769e4e86fb7abdea66ea67d72cc7fb5333b32e51",
+  "source": "art/map/gale_isles_map.png",
+  "type": "Image"
+ },
  "Image:43585081a1bf38d91fd731d8484e06ec8a131b357b616151196580360d947877": {
   "assetId": "86621579805576",
   "imageId": "86621579805576",
@@ -1188,7 +1197,7 @@
  "Image:43917da78921507bfabbda6b4b6617907167709c5fa67b283e2ffba5f550e028": {
   "assetId": "110938698586980",
   "imageId": "110938698586980",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_NOR",
   "sha": "43917da78921507bfabbda6b4b6617907167709c5fa67b283e2ffba5f550e028",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_NOR.png",
@@ -1206,7 +1215,7 @@
  "Image:43bfce1415762b1288d1828d99ddbbb8fb25899424c2d23d17126cfea8a1f908": {
   "assetId": "71755285482352",
   "imageId": "71755285482352",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_RGH",
   "sha": "43bfce1415762b1288d1828d99ddbbb8fb25899424c2d23d17126cfea8a1f908",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_RGH.png",
@@ -1215,7 +1224,7 @@
  "Image:440cf23ad5c86d6e29fe7db9b46aed17f1216d9b2193eed52316ac8db7467f86": {
   "assetId": "94586893341453",
   "imageId": "94586893341453",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Stone_RGH_Wet",
   "sha": "440cf23ad5c86d6e29fe7db9b46aed17f1216d9b2193eed52316ac8db7467f86",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH_Wet.png",
@@ -1302,6 +1311,15 @@
   "source": "assets/ocean/sky/Night_Rt.png",
   "type": "Image"
  },
+ "Image:49168189e4aa167379b07a8fd1edd4a861fad9d105ddb183a05ca7b3fc6f8999": {
+  "assetId": "93669797587817",
+  "imageId": "93669797587817",
+  "moderation": "Approved",
+  "name": "T_ChandleryInt_Pine_ALB",
+  "sha": "49168189e4aa167379b07a8fd1edd4a861fad9d105ddb183a05ca7b3fc6f8999",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_ALB.png",
+  "type": "Image"
+ },
  "Image:4984fd9a27a74b54b653871eab2aded44f9540aca0fbeeca2c918e107c71945e": {
   "assetId": "131159492986773",
   "imageId": "131159492986773",
@@ -1332,7 +1350,7 @@
  "Image:4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18": {
   "assetId": "88821589220060",
   "imageId": "88821589220060",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_MET",
   "sha": "4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_MET.png",
@@ -1350,7 +1368,7 @@
  "Image:4d0aae5670152d9447c36cdf5591db9427eebd3eef4fbab75a4cec5d7bdd6ea4": {
   "assetId": "139106048152461",
   "imageId": "139106048152461",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_RGH",
   "sha": "4d0aae5670152d9447c36cdf5591db9427eebd3eef4fbab75a4cec5d7bdd6ea4",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
@@ -1390,6 +1408,15 @@
   "name": "T_JetSki_Hull_ALB",
   "sha": "4ea8775ca6cc01925d19199295ee6b227c7adfd656b1a42801b69190b289c52f",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_ALB.png",
+  "type": "Image"
+ },
+ "Image:4ed76184cb23357342c6fcd06f8601864395ce5b14a0cfd0a24ca64a0ddffda5": {
+  "assetId": "131230835504645",
+  "imageId": "131230835504645",
+  "moderation": "Approved",
+  "name": "T_ChandleryStock_Atlas_MET",
+  "sha": "4ed76184cb23357342c6fcd06f8601864395ce5b14a0cfd0a24ca64a0ddffda5",
+  "source": "assets/textures/M_Prop_Chandlery_Stock/T_ChandleryStock_Atlas_MET.png",
   "type": "Image"
  },
  "Image:4faa3a4a0aab3306dd67e7e9cdb32efd8e77348e20aae7c1d0b262891e9c474d": {
@@ -1440,7 +1467,7 @@
  "Image:5286245a4da7cc94c4af82571ea4038961e644132dde9c25500d6d9de610788b": {
   "assetId": "74366216349202",
   "imageId": "74366216349202",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_ALB_Wet",
   "sha": "5286245a4da7cc94c4af82571ea4038961e644132dde9c25500d6d9de610788b",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB_Wet.png",
@@ -1458,7 +1485,7 @@
  "Image:53e64da6da6223034a2cdb7a7b8c98d8e8d0ec59af8f24cf3fa733166f8beba6": {
   "assetId": "100802801575312",
   "imageId": "100802801575312",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Bands_RGH_Wet",
   "sha": "53e64da6da6223034a2cdb7a7b8c98d8e8d0ec59af8f24cf3fa733166f8beba6",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH_Wet.png",
@@ -1548,7 +1575,7 @@
  "Image:5944856951e78a3f267741c0da6f25e7e9e913a8d24aef81b841f2c14cb16ae1": {
   "assetId": "139352543048143",
   "imageId": "139352543048143",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_ALB_Wet",
   "sha": "5944856951e78a3f267741c0da6f25e7e9e913a8d24aef81b841f2c14cb16ae1",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB_Wet.png",
@@ -1611,7 +1638,7 @@
  "Image:5c04c2b19ea5dd309ed1f25a66500aa98853f545e8479dbcb5566a8d1d3feac7": {
   "assetId": "89078940590423",
   "imageId": "89078940590423",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Pine_NOR",
   "sha": "5c04c2b19ea5dd309ed1f25a66500aa98853f545e8479dbcb5566a8d1d3feac7",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_NOR.png",
@@ -1674,7 +1701,7 @@
  "Image:6120d0a66b96f64dc79ce62034beace6f419d0e076d50bad8616d4f630bb3384": {
   "assetId": "97155378858191",
   "imageId": "97155378858191",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_RGH",
   "sha": "6120d0a66b96f64dc79ce62034beace6f419d0e076d50bad8616d4f630bb3384",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
@@ -1707,6 +1734,15 @@
   "source": "assets/textures/Materials/T_Mat_Tarmac_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:655721accd168de8478938ab662e9a0c3865fbefc39d640bceb08f42d4ef54f4": {
+  "assetId": "71253414441637",
+  "imageId": "71253414441637",
+  "moderation": "Approved",
+  "name": "T_ChandleryStock_Atlas_NOR",
+  "sha": "655721accd168de8478938ab662e9a0c3865fbefc39d640bceb08f42d4ef54f4",
+  "source": "assets/textures/M_Prop_Chandlery_Stock/T_ChandleryStock_Atlas_NOR.png",
+  "type": "Image"
+ },
  "Image:659258f444c706692df8eb7087c6855482469479fc816b59f587229d550e56cc": {
   "assetId": "115175404339979",
   "imageId": "115175404339979",
@@ -1714,6 +1750,15 @@
   "name": "Mayday_sky_Calm_Dn",
   "sha": "659258f444c706692df8eb7087c6855482469479fc816b59f587229d550e56cc",
   "source": "assets/ocean/sky/Calm_Dn.png",
+  "type": "Image"
+ },
+ "Image:65b6e4c6faa8f887e6f7a99598d9399407af3f148738397420a798d675565a5f": {
+  "assetId": "131752838378729",
+  "imageId": "131752838378729",
+  "moderation": "Approved",
+  "name": "T_ChandleryStock_Atlas_ALB",
+  "sha": "65b6e4c6faa8f887e6f7a99598d9399407af3f148738397420a798d675565a5f",
+  "source": "assets/textures/M_Prop_Chandlery_Stock/T_ChandleryStock_Atlas_ALB.png",
   "type": "Image"
  },
  "Image:663dc228e066d8c9c7504c7285e217885e3e260136d3cb65a3129bc66add7954": {
@@ -1737,7 +1782,7 @@
  "Image:66e943f8683498c6998cf3b657d19e3508e920a631153363f6a13c55e026e187": {
   "assetId": "104897708860271",
   "imageId": "104897708860271",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_MET",
   "sha": "66e943f8683498c6998cf3b657d19e3508e920a631153363f6a13c55e026e187",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_MET.png",
@@ -1797,6 +1842,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:6a208b3f796ba5b2c9c8f8ac20758f766be8aee6010e950ce53f7eb0f66a2061": {
+  "assetId": "89180774749183",
+  "imageId": "89180774749183",
+  "moderation": "Reviewing",
+  "name": "Mayday Map Tile r1c0",
+  "sha": "6a208b3f796ba5b2c9c8f8ac20758f766be8aee6010e950ce53f7eb0f66a2061",
+  "source": "art/map/gale_isles_map_r1c0.png",
+  "type": "Image"
+ },
  "Image:6aa69dccaed74e2e5433d6a63613c701be2be122a066a172d4d6b001a3329096": {
   "assetId": "102692383436117",
   "imageId": "102692383436117",
@@ -1809,7 +1863,7 @@
  "Image:6ad0bd3b3fa0b86c6a943684f55aa7838f3f6412d8362cd06ff7f4bb43bea058": {
   "assetId": "138376265885730",
   "imageId": "138376265885730",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Pine_ALB",
   "sha": "6ad0bd3b3fa0b86c6a943684f55aa7838f3f6412d8362cd06ff7f4bb43bea058",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_ALB.png",
@@ -1840,6 +1894,15 @@
   "name": "T_CasualtySwimmer_Lifejacket_RGH",
   "sha": "6ceeb5ad81b4d6e6b9b3dc806c7e974d970f8266c424826cb002ce688d8122b2",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Lifejacket_RGH.png",
+  "type": "Image"
+ },
+ "Image:6d128bb8141a00df74a7bc9dc63c555b42af418f7aa505fc0899ded411be0484": {
+  "assetId": "101112605166784",
+  "imageId": "101112605166784",
+  "moderation": "Reviewing",
+  "name": "Mayday Map Tile r1c1",
+  "sha": "6d128bb8141a00df74a7bc9dc63c555b42af418f7aa505fc0899ded411be0484",
+  "source": "art/map/gale_isles_map_r1c1.png",
   "type": "Image"
  },
  "Image:6d7fa155d464f94a808c511880d700177fd6e7bbdaefcee77ec6088beb604686": {
@@ -1935,7 +1998,7 @@
  "Image:73105c295bc85c5e3b96e03df38f27be7a515410e43c045e2e4aeead4a7c783f": {
   "assetId": "127863606733033",
   "imageId": "127863606733033",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_NOR",
   "sha": "73105c295bc85c5e3b96e03df38f27be7a515410e43c045e2e4aeead4a7c783f",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
@@ -1944,7 +2007,7 @@
  "Image:7375264229216df3ebaddf4854f5b47b848b934159c54068cffd68e0fbc07174": {
   "assetId": "107103226456779",
   "imageId": "107103226456779",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_NOR",
   "sha": "7375264229216df3ebaddf4854f5b47b848b934159c54068cffd68e0fbc07174",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_NOR.png",
@@ -1962,7 +2025,7 @@
  "Image:744d6e96ad62722894fc40119af7b8f9b83c548fd41709bd083653918d083a9c": {
   "assetId": "96847335271417",
   "imageId": "96847335271417",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_ALB",
   "sha": "744d6e96ad62722894fc40119af7b8f9b83c548fd41709bd083653918d083a9c",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_ALB.png",
@@ -1977,6 +2040,15 @@
   "source": "assets/textures/Materials/T_Mat_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:79b33eb90b731dbff513d434604b7a2193c768afc729e6220786459b7d04df42": {
+  "assetId": "116144171610880",
+  "imageId": "116144171610880",
+  "moderation": "Approved",
+  "name": "T_ChandleryInt_Pine_NOR",
+  "sha": "79b33eb90b731dbff513d434604b7a2193c768afc729e6220786459b7d04df42",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_NOR.png",
+  "type": "Image"
+ },
  "Image:79e0d5b54763f99a4a559605cef102581c290ce024f607aceb5f143c0d925042": {
   "assetId": "101264585249293",
   "imageId": "101264585249293",
@@ -1989,10 +2061,19 @@
  "Image:79ed8f416e2ed3b7f59bc2728e102beee4f428a90316274896741d8c25cf7e25": {
   "assetId": "102411696808780",
   "imageId": "102411696808780",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_NOR",
   "sha": "79ed8f416e2ed3b7f59bc2728e102beee4f428a90316274896741d8c25cf7e25",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_NOR.png",
+  "type": "Image"
+ },
+ "Image:7a1e43e95a27f30552f248302cc6d16f951931464e3ba09ca1df5a6b0a7fe503": {
+  "assetId": "135971620367742",
+  "imageId": "135971620367742",
+  "moderation": "Approved",
+  "name": "T_ChandleryStock_Atlas_RGH",
+  "sha": "7a1e43e95a27f30552f248302cc6d16f951931464e3ba09ca1df5a6b0a7fe503",
+  "source": "assets/textures/M_Prop_Chandlery_Stock/T_ChandleryStock_Atlas_RGH.png",
   "type": "Image"
  },
  "Image:7a26d4f4f1fd314e13de7d28c3f73fa6ba91a71e63f9a824c19e7e9ff70a458a": {
@@ -2016,7 +2097,7 @@
  "Image:7ab5ae93b57394543b108d0f531096a2e29cfee39a3c50878c9323f1c066491e": {
   "assetId": "106108467598566",
   "imageId": "106108467598566",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_NOR",
   "sha": "7ab5ae93b57394543b108d0f531096a2e29cfee39a3c50878c9323f1c066491e",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_NOR.png",
@@ -2052,7 +2133,7 @@
  "Image:7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f": {
   "assetId": "117483510246874",
   "imageId": "117483510246874",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_RGH",
   "sha": "7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
@@ -2061,7 +2142,7 @@
  "Image:7d8746d82c45df283a86751639004d35a19d5b368ec9ed178963771899bd241d": {
   "assetId": "133059993627264",
   "imageId": "133059993627264",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Stone_ALB",
   "sha": "7d8746d82c45df283a86751639004d35a19d5b368ec9ed178963771899bd241d",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB.png",
@@ -2196,7 +2277,7 @@
  "Image:83ec52ee6fe45de5000c261b03037109638304932c38cd2df31ec7a8e1d2dbe7": {
   "assetId": "122233115030889",
   "imageId": "122233115030889",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Bands_RGH",
   "sha": "83ec52ee6fe45de5000c261b03037109638304932c38cd2df31ec7a8e1d2dbe7",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH.png",
@@ -2223,7 +2304,7 @@
  "Image:855e9deb6e4e774dfe0758d2781a8460d0e33791aeaf1381c46844aacc0b9f0e": {
   "assetId": "76473974963286",
   "imageId": "76473974963286",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_RGH_Wet",
   "sha": "855e9deb6e4e774dfe0758d2781a8460d0e33791aeaf1381c46844aacc0b9f0e",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH_Wet.png",
@@ -2268,7 +2349,7 @@
  "Image:86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963": {
   "assetId": "102126340609881",
   "imageId": "102126340609881",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Stone_RGH",
   "sha": "86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH.png",
@@ -2295,7 +2376,7 @@
  "Image:89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca": {
   "assetId": "120584434821371",
   "imageId": "120584434821371",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Bands_ALB_Wet",
   "sha": "89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB_Wet.png",
@@ -2340,7 +2421,7 @@
  "Image:8c2d5b9341865ffd60eb46f31aef05d03b0c150b4c12179ad33111f7ab9dbb57": {
   "assetId": "76208343645762",
   "imageId": "76208343645762",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_RGH",
   "sha": "8c2d5b9341865ffd60eb46f31aef05d03b0c150b4c12179ad33111f7ab9dbb57",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_RGH.png",
@@ -2484,7 +2565,7 @@
  "Image:93b67f8fd53d673f5aef9f3dccf4ddac85911bb9018dcc8a00761989ce529b53": {
   "assetId": "91742155593291",
   "imageId": "91742155593291",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Stone_NOR",
   "sha": "93b67f8fd53d673f5aef9f3dccf4ddac85911bb9018dcc8a00761989ce529b53",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_NOR.png",
@@ -2493,7 +2574,7 @@
  "Image:93d1890454426fc7ad0b027eb47f95bd0cfb79c985feee581df02b5179012bd3": {
   "assetId": "82711825485967",
   "imageId": "82711825485967",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_NOR",
   "sha": "93d1890454426fc7ad0b027eb47f95bd0cfb79c985feee581df02b5179012bd3",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
@@ -2529,7 +2610,7 @@
  "Image:95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02": {
   "assetId": "115658512807600",
   "imageId": "115658512807600",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_ALB_Wet",
   "sha": "95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB_Wet.png",
@@ -2574,7 +2655,7 @@
  "Image:9808939a21880a08dba11a1267b5c4e6483dbe60cf13bfdf66451e8763631649": {
   "assetId": "79172190348487",
   "imageId": "79172190348487",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Rope_RGH",
   "sha": "9808939a21880a08dba11a1267b5c4e6483dbe60cf13bfdf66451e8763631649",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_RGH.png",
@@ -2628,7 +2709,7 @@
  "Image:9c7b475fca0e552fb9229bbdcefa484246e7d0f73b09db9c254deb21dad9cf5c": {
   "assetId": "91181341396446",
   "imageId": "91181341396446",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_MET",
   "sha": "9c7b475fca0e552fb9229bbdcefa484246e7d0f73b09db9c254deb21dad9cf5c",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_MET.png",
@@ -2691,7 +2772,7 @@
  "Image:9e7f637d391428cb8c9deb15d480f9636273bb7f35127add8641240a63faf215": {
   "assetId": "86948295014052",
   "imageId": "86948295014052",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_ALB",
   "sha": "9e7f637d391428cb8c9deb15d480f9636273bb7f35127add8641240a63faf215",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB.png",
@@ -2718,7 +2799,7 @@
  "Image:a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310": {
   "assetId": "123355798083948",
   "imageId": "123355798083948",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_ALB",
   "sha": "a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
@@ -2871,7 +2952,7 @@
  "Image:adf5f434f6959462f01093c3673812c4a6ab3f59cae304baf5c3520c3af10356": {
   "assetId": "90437163259317",
   "imageId": "90437163259317",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_ALB",
   "sha": "adf5f434f6959462f01093c3673812c4a6ab3f59cae304baf5c3520c3af10356",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB.png",
@@ -2925,7 +3006,7 @@
  "Image:af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a": {
   "assetId": "73511196593796",
   "imageId": "73511196593796",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_RGH",
   "sha": "af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
@@ -2961,7 +3042,7 @@
  "Image:b06a464bc1813426d861a4648451466e32906b5b9820e90c98d74a8fe904ae6a": {
   "assetId": "123749310826793",
   "imageId": "123749310826793",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_RGH",
   "sha": "b06a464bc1813426d861a4648451466e32906b5b9820e90c98d74a8fe904ae6a",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_RGH.png",
@@ -3042,7 +3123,7 @@
  "Image:b6bdf19f7cc83396d5fe12c066397d9ae385bf2cd2e5520d3d8ac145895bb114": {
   "assetId": "90296199230710",
   "imageId": "90296199230710",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_ALB_Wet",
   "sha": "b6bdf19f7cc83396d5fe12c066397d9ae385bf2cd2e5520d3d8ac145895bb114",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB_Wet.png",
@@ -3051,7 +3132,7 @@
  "Image:b91a504b4f368b23aacc4d356cc78ab7f8d2761f8058f86902cd3f958a574478": {
   "assetId": "126682138927937",
   "imageId": "126682138927937",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Bands_ALB",
   "sha": "b91a504b4f368b23aacc4d356cc78ab7f8d2761f8058f86902cd3f958a574478",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB.png",
@@ -3356,7 +3437,7 @@
  "Image:cd5a5716d7be4606bef6e376ddc62247b49d1246bdf86b1fef54f468fb4f5c5e": {
   "assetId": "133339368291517",
   "imageId": "133339368291517",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_ALB",
   "sha": "cd5a5716d7be4606bef6e376ddc62247b49d1246bdf86b1fef54f468fb4f5c5e",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_ALB.png",
@@ -3419,7 +3500,7 @@
  "Image:cf24be35e4fb71941c103a52a9d92a4cf7ac74a1bfea37444be5938d992f989b": {
   "assetId": "124356271776396",
   "imageId": "124356271776396",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_NOR",
   "sha": "cf24be35e4fb71941c103a52a9d92a4cf7ac74a1bfea37444be5938d992f989b",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_NOR.png",
@@ -3500,7 +3581,7 @@
  "Image:d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d": {
   "assetId": "71920021950811",
   "imageId": "71920021950811",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryProps_Atlas_ALB",
   "sha": "d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
@@ -3509,7 +3590,7 @@
  "Image:d32fecf05c0e8b40bffd2f6c274ed0770ba27a659c7ad4629bc5cc3df3e24297": {
   "assetId": "86235013269823",
   "imageId": "86235013269823",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_ALB",
   "sha": "d32fecf05c0e8b40bffd2f6c274ed0770ba27a659c7ad4629bc5cc3df3e24297",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_ALB.png",
@@ -3593,7 +3674,7 @@
  "Image:d89cb0f5c64ae9ccb06955c18eb789fbdfaf11ae0ec445b5f3efd35a2e0b97ea": {
   "assetId": "138288822640667",
   "imageId": "138288822640667",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_ALB",
   "sha": "d89cb0f5c64ae9ccb06955c18eb789fbdfaf11ae0ec445b5f3efd35a2e0b97ea",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_ALB.png",
@@ -3725,6 +3806,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png",
   "type": "Image"
  },
+ "Image:ddf19100b074e8646dca7f67a2347efb61ddc46baa4a0dc1fe39a64268a1adbd": {
+  "assetId": "124950466629746",
+  "imageId": "124950466629746",
+  "moderation": "Approved",
+  "name": "T_ChandleryInt_Pine_RGH",
+  "sha": "ddf19100b074e8646dca7f67a2347efb61ddc46baa4a0dc1fe39a64268a1adbd",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_RGH.png",
+  "type": "Image"
+ },
  "Image:de8d8eebb3b6fa6c10cc8419c8b60d79fa925b3429a160b90024de6763643d96": {
   "assetId": "134673607013939",
   "imageId": "134673607013939",
@@ -3755,7 +3845,7 @@
  "Image:e00748aa63d6c59d4b9f0db7d322807837ff0fbbd80d0bd5bc0bcdec2b235922": {
   "assetId": "84388384268744",
   "imageId": "84388384268744",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Pine_RGH",
   "sha": "e00748aa63d6c59d4b9f0db7d322807837ff0fbbd80d0bd5bc0bcdec2b235922",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_RGH.png",
@@ -3822,6 +3912,15 @@
   "name": "Mayday_sky_Night_Dn",
   "sha": "e4860617773a39526f1e0d38f33e0b3fbe4cc2e17ad49352e465389745295b95",
   "source": "assets/ocean/sky/Night_Dn.png",
+  "type": "Image"
+ },
+ "Image:e5bdded24288d59c4a72aeee7d4cf17413a0df8695aca51edb008d29b9e3fefb": {
+  "assetId": "98400170280559",
+  "imageId": "98400170280559",
+  "moderation": "Reviewing",
+  "name": "Mayday Map Tile r0c0",
+  "sha": "e5bdded24288d59c4a72aeee7d4cf17413a0df8695aca51edb008d29b9e3fefb",
+  "source": "art/map/gale_isles_map_r0c0.png",
   "type": "Image"
  },
  "Image:e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b": {
@@ -3893,7 +3992,7 @@
  "Image:ece67a54e82b4eacfaf65b737ac577de6b26ed80bad8482c12a6d6f1036ed0cd": {
   "assetId": "107669926382738",
   "imageId": "107669926382738",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Bands_NOR",
   "sha": "ece67a54e82b4eacfaf65b737ac577de6b26ed80bad8482c12a6d6f1036ed0cd",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_NOR.png",
@@ -3920,7 +4019,7 @@
  "Image:ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd": {
   "assetId": "105457741487761",
   "imageId": "105457741487761",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Details_RGH_Wet",
   "sha": "ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH_Wet.png",
@@ -3929,7 +4028,7 @@
  "Image:ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2": {
   "assetId": "84745109172448",
   "imageId": "84745109172448",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Slate_RGH_Wet",
   "sha": "ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH_Wet.png",
@@ -3974,7 +4073,7 @@
  "Image:f01ecb93d393cee33bf07600aa3de6f041e1338288e2a52b688d86b1b1611457": {
   "assetId": "90005849079078",
   "imageId": "90005849079078",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Details_RGH",
   "sha": "f01ecb93d393cee33bf07600aa3de6f041e1338288e2a52b688d86b1b1611457",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_RGH.png",
@@ -4046,7 +4145,7 @@
  "Image:f2162c4b16556de1f7eeb07aceb4b0e36073ac1accc1780b2ef44607945fe199": {
   "assetId": "115139993525090",
   "imageId": "115139993525090",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_Chandlery_Stone_ALB_Wet",
   "sha": "f2162c4b16556de1f7eeb07aceb4b0e36073ac1accc1780b2ef44607945fe199",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB_Wet.png",
@@ -4190,7 +4289,7 @@
  "Image:fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539": {
   "assetId": "108334098253080",
   "imageId": "108334098253080",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Joinery_NOR",
   "sha": "fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
@@ -4199,10 +4298,19 @@
  "Image:fd262c76efb1f2ea1f27b4ac850d8627097e3912c01bf1d22a3c60e2f56c1e28": {
   "assetId": "83443127469898",
   "imageId": "83443127469898",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "T_ChandleryInt_Lining_NOR",
   "sha": "fd262c76efb1f2ea1f27b4ac850d8627097e3912c01bf1d22a3c60e2f56c1e28",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_NOR.png",
+  "type": "Image"
+ },
+ "Image:fdfad49379ba9dd9ae130190dd8464ddbe1d4c287f5eae2ef9345befbbe94f99": {
+  "assetId": "73720441082997",
+  "imageId": "73720441082997",
+  "moderation": "Reviewing",
+  "name": "Mayday Map Tile r0c1",
+  "sha": "fdfad49379ba9dd9ae130190dd8464ddbe1d4c287f5eae2ef9345befbbe94f99",
+  "source": "art/map/gale_isles_map_r0c1.png",
   "type": "Image"
  },
  "Image:fe134f8bd415e2d4f3cdb9a1924162307f990105761ecfef4a99ac3b7a551d68": {
@@ -4299,6 +4407,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_TexPlane.fbx",
   "type": "Model"
  },
+ "Model:1479e183570a5df5dfa2d642265fde8ccaf9b3186c129d09b26c354d48fe8b7a": {
+  "assetId": "127622749765145",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery_Stock",
+  "rbxm": "assets/models/M_Prop_Chandlery_Stock.rbxm",
+  "route": "delivery",
+  "sha": "1479e183570a5df5dfa2d642265fde8ccaf9b3186c129d09b26c354d48fe8b7a",
+  "source": "assets/fbx/M_Prop_Chandlery_Stock/M_Prop_Chandlery_Stock_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1953f6b19a92b0fa160f438412958cafd7efb7a0a018e8e163d855affa8a029c": {
   "assetId": "83611077009853",
   "moderation": "Approved",
@@ -4327,6 +4445,26 @@
   "route": "delivery",
   "sha": "1b0deea1cb83faf8e92a58b45315d6665baa8156bf95aaa034faa1ab743d72c4",
   "source": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2112f96a25b0edf4d3e76865f8620ec8a5b5ad356f73e8ff6958ae235dac41ce": {
+  "assetId": "121645364088634",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery_Stock_LOD1",
+  "rbxm": "assets/models/M_Prop_Chandlery_Stock_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2112f96a25b0edf4d3e76865f8620ec8a5b5ad356f73e8ff6958ae235dac41ce",
+  "source": "assets/fbx/M_Prop_Chandlery_Stock/M_Prop_Chandlery_Stock_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:2540ca3dfac05691021587f57e4234d01de09f133929e45cb5bcc1fef9d94f80": {
+  "assetId": "119125465148068",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int.rbxm",
+  "route": "delivery",
+  "sha": "2540ca3dfac05691021587f57e4234d01de09f133929e45cb5bcc1fef9d94f80",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD0.fbx",
   "type": "Model"
  },
  "Model:259ea95551634fb3bd46fee49eb6007f2aedb394deb6f879a4b64157b887a03a": {
@@ -4457,6 +4595,16 @@
   "route": "delivery",
   "sha": "4aa3dd3dfc30c2c114ec5c811a680397b23edfe9029b33e6dacdbe26ef3df8ef",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:4f2be8579159ff1865c58197421886300f30b6cc54ddd77d6bf891b3b5ec76bf": {
+  "assetId": "120023603525383",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int_LOD2",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "4f2be8579159ff1865c58197421886300f30b6cc54ddd77d6bf891b3b5ec76bf",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD2.fbx",
   "type": "Model"
  },
  "Model:56e9f91086512f9f213ea813ed69fce56ca0e9760ad155fb859a7ca2ce469a50": {
@@ -4827,6 +4975,16 @@
   "route": "delivery",
   "sha": "cf6449e1a9077472355addcc244226ca2ab07f22c02e7b311b5b234d937d4fd2",
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:cfba010d4db32881684e6ab5f009e70bd3767db9a0416c00365b19b2ad8fa94e": {
+  "assetId": "96186240857669",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int_LOD1",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "cfba010d4db32881684e6ab5f009e70bd3767db9a0416c00365b19b2ad8fa94e",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx",
   "type": "Model"
  },
  "Model:d4cb1e4335c23ed1953fb535c2ffafa156338cf3f360473e88c52d2455f9159e": {
