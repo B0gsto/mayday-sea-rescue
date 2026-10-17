@@ -1058,6 +1058,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png",
   "type": "Image"
  },
+ "Image:5723510e907c9d8b0882ade172a77b45aed5045113496412406817d5ab2643b7": {
+  "assetId": "104383984523403",
+  "imageId": "104383984523403",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_RGH",
+  "sha": "5723510e907c9d8b0882ade172a77b45aed5045113496412406817d5ab2643b7",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH.png",
+  "type": "Image"
+ },
  "Image:5787e02072a5a06fb82ae3defdf68dbf992ee7ae8ea0e8ce5d27c4e815e8f6f9": {
   "assetId": "108926989495989",
   "imageId": "108926989495989",
@@ -1832,6 +1841,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_NOR.png",
   "type": "Image"
  },
+ "Image:99c12e3b4d72675228a7cb97b11d0686ee2c16260f6c6013c247e0c3bb9c9931": {
+  "assetId": "83200797500731",
+  "imageId": "83200797500731",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_ALB_Wet",
+  "sha": "99c12e3b4d72675228a7cb97b11d0686ee2c16260f6c6013c247e0c3bb9c9931",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:9b5e6060cbf10918ad8bbf3eed5afcabaaf7be72421d042453ecffbda60c963c": {
   "assetId": "138896826986645",
   "imageId": "138896826986645",
@@ -1965,6 +1983,15 @@
   "name": "Mayday_T_Mat_SplashRock_RGH",
   "sha": "a79b41f8d69a76aa4f2f662bfb6f61e0ad5b64124c87d9fd97c87e66f1e057be",
   "source": "assets/textures/Materials/T_Mat_SplashRock_RGH.png",
+  "type": "Image"
+ },
+ "Image:a81246e8899a4bab37200c8aa2304c65c3a3f494cd02572af191c02bfdd7e9a9": {
+  "assetId": "88731663285161",
+  "imageId": "88731663285161",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_NOR_Wet",
+  "sha": "a81246e8899a4bab37200c8aa2304c65c3a3f494cd02572af191c02bfdd7e9a9",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_NOR_Wet.png",
   "type": "Image"
  },
  "Image:a8a1a9119854fe28e4eca60db035bb2e3f14642ba7ba123ffb2c41dc2c85bc18": {
@@ -2337,6 +2364,15 @@
   "name": "Mayday_T_Mat_KelpRock_RGH",
   "sha": "c7f343b4634170fdc834a2474092285a53cdb1688c29ad459aa1cdbaf1e2da21",
   "source": "assets/textures/Materials/T_Mat_KelpRock_RGH.png",
+  "type": "Image"
+ },
+ "Image:c835b3b9619027fba84ce00fdb25a8a0f251840d99875c55e5bad3e97c76102d": {
+  "assetId": "107752150496614",
+  "imageId": "107752150496614",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_NOR",
+  "sha": "c835b3b9619027fba84ce00fdb25a8a0f251840d99875c55e5bad3e97c76102d",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_NOR.png",
   "type": "Image"
  },
  "Image:c8b6bb3e837f846489438b47ae42f3960b820a17095ea66df3c5fa00fcd60665": {
@@ -2899,6 +2935,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH.png",
   "type": "Image"
  },
+ "Image:f06329dd0a9a403e58de3112c432257441efa44e278d0f513b7ad3188cdb59eb": {
+  "assetId": "139849180076523",
+  "imageId": "139849180076523",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_RGH_Wet",
+  "sha": "f06329dd0a9a403e58de3112c432257441efa44e278d0f513b7ad3188cdb59eb",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:f0aea4f09bf94f16138817eb58c0f7f659fbd98679e8eae213e582d8a7ececcf": {
   "assetId": "103326040675797",
   "imageId": "103326040675797",
@@ -2906,6 +2951,15 @@
   "name": "T_RIB_Deck_ALB",
   "sha": "f0aea4f09bf94f16138817eb58c0f7f659fbd98679e8eae213e582d8a7ececcf",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453": {
+  "assetId": "123844582500467",
+  "imageId": "123844582500467",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_ALB",
+  "sha": "f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB.png",
   "type": "Image"
  },
  "Image:f1f083f9d67cd847a7670ae7d4d6dfa617f2552ab697f3ca1d5a650747b5e250": {

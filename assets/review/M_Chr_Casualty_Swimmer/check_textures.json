@@ -2,63 +2,95 @@
  "ok": true,
  "rows": [
   {
-   "subject": "T_CasualtySwimmer_Body",
+   "subject": "T_CasualtySwimmer_Atlas",
    "check": "ALB present",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Body_ALB.png"
+   "detail": "T_CasualtySwimmer_Atlas_ALB.png"
   },
   {
-   "subject": "T_CasualtySwimmer_Body",
+   "subject": "T_CasualtySwimmer_Atlas",
    "check": "NOR present",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Body_NOR.png"
+   "detail": "T_CasualtySwimmer_Atlas_NOR.png"
   },
   {
-   "subject": "T_CasualtySwimmer_Body",
+   "subject": "T_CasualtySwimmer_Atlas",
    "check": "RGH present",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Body_RGH.png"
+   "detail": "T_CasualtySwimmer_Atlas_RGH.png"
   },
   {
-   "subject": "T_CasualtySwimmer_Body",
+   "subject": "T_CasualtySwimmer_Atlas",
    "check": "MET present",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Body_MET.png"
+   "detail": "T_CasualtySwimmer_Atlas_MET.png"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_ALB.png",
+   "subject": "T_CasualtySwimmer_Atlas",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_CasualtySwimmer_Atlas_ALB_Wet.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_CasualtySwimmer_Atlas_RGH_Wet.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_ALB.png",
    "check": "size",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_ALB.png",
+   "subject": "T_CasualtySwimmer_Atlas_ALB.png",
    "check": "colour mode",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mode RGB"
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_MET.png",
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet.png",
    "check": "size",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_MET.png",
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_MET.png",
    "check": "single channel",
    "ok": true,
    "waived": false,
@@ -66,31 +98,15 @@
    "detail": "8-bit greyscale"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_NOR.png",
+   "subject": "T_CasualtySwimmer_Atlas_MET_Wet.png",
    "check": "size",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_NOR.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Body_RGH.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Body_RGH.png",
+   "subject": "T_CasualtySwimmer_Atlas_MET_Wet.png",
    "check": "single channel",
    "ok": true,
    "waived": false,
@@ -98,7 +114,71 @@
    "detail": "8-bit greyscale"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_MET",
+   "subject": "T_CasualtySwimmer_Atlas_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_NOR_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_NOR_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_MET",
    "check": "metalness mostly 0 or 1",
    "ok": true,
    "waived": false,
@@ -106,23 +186,39 @@
    "detail": "0.0% of pixels between 0.1 and 0.9"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_ALB",
+   "subject": "T_CasualtySwimmer_Atlas_ALB",
    "check": "non-metal albedo",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 52, 99th 162, range 30 to 240 over 100% of pixels"
+   "detail": "luma 1st 31, 99th 212, range 20 to 240 over 100% of pixels"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_ALB",
+   "subject": "T_CasualtySwimmer_Atlas_ALB",
    "check": "saturation",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.44, ceiling 0.45"
+   "detail": "95th percentile 0.42, ceiling 0.45 outside the signal mask"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_NOR",
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 206, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.42, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_NOR",
    "check": "tangent space",
    "ok": true,
    "waived": false,
@@ -130,420 +226,28 @@
    "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
   },
   {
-   "subject": "T_CasualtySwimmer_Body_NOR",
-   "check": "OpenGL green",
-   "ok": true,
-   "waived": false,
-   "info": true,
-   "detail": "undetermined (curl share 0.41): check the bake settings"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair",
-   "check": "ALB present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Hair_ALB.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair",
-   "check": "NOR present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Hair_NOR.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair",
-   "check": "RGH present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Hair_RGH.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair",
-   "check": "MET present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Hair_MET.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_ALB.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_ALB.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGBA"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_MET.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_MET.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_NOR.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_NOR.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_RGH.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_RGH.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_MET",
-   "check": "metalness mostly 0 or 1",
-   "ok": true,
-   "waived": false,
-   "info": true,
-   "detail": "0.0% of pixels between 0.1 and 0.9"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_ALB",
-   "check": "non-metal albedo",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "luma 1st 38, 99th 48, range 30 to 240 over 64% of pixels"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_ALB",
-   "check": "saturation",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "95th percentile 0.25, ceiling 0.45"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_NOR",
-   "check": "tangent space",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Hair_NOR",
+   "subject": "T_CasualtySwimmer_Atlas_NOR",
    "check": "OpenGL green",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.32)"
+   "detail": "OpenGL (curl share 0.29)"
   },
   {
-   "subject": "T_CasualtySwimmer_Head",
-   "check": "ALB present",
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet",
+   "check": "wet is darker",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Head_ALB.png"
+   "detail": "mean 62, dry 69"
   },
   {
-   "subject": "T_CasualtySwimmer_Head",
-   "check": "NOR present",
+   "subject": "T_CasualtySwimmer_Atlas_RGH_Wet",
+   "check": "wet is lower",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "T_CasualtySwimmer_Head_NOR.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head",
-   "check": "RGH present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Head_RGH.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head",
-   "check": "MET present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Head_MET.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_ALB.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_ALB.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_MET.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_MET.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_NOR.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_NOR.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_RGH.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_RGH.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_MET",
-   "check": "metalness mostly 0 or 1",
-   "ok": true,
-   "waived": false,
-   "info": true,
-   "detail": "0.0% of pixels between 0.1 and 0.9"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_ALB",
-   "check": "non-metal albedo",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "luma 1st 142, 99th 205, range 30 to 240 over 100% of pixels"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_ALB",
-   "check": "saturation",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "95th percentile 0.36, ceiling 0.45"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_NOR",
-   "check": "tangent space",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Head_NOR",
-   "check": "OpenGL green",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "OpenGL (curl share 0.31)"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket",
-   "check": "ALB present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Lifejacket_ALB.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket",
-   "check": "NOR present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Lifejacket_NOR.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket",
-   "check": "RGH present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Lifejacket_RGH.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket",
-   "check": "MET present",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "T_CasualtySwimmer_Lifejacket_MET.png"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_ALB.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_ALB.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_MET.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_MET.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_NOR.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_NOR.png",
-   "check": "colour mode",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "mode RGB"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_RGH.png",
-   "check": "size",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_RGH.png",
-   "check": "single channel",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "8-bit greyscale"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_MET",
-   "check": "metalness mostly 0 or 1",
-   "ok": true,
-   "waived": false,
-   "info": true,
-   "detail": "0.0% of pixels between 0.1 and 0.9"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_ALB",
-   "check": "non-metal albedo",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "luma 1st 42, 99th 207, range 30 to 240 over 100% of pixels"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_ALB",
-   "check": "saturation",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "95th percentile 0.11, ceiling 0.45 outside the signal mask"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_NOR",
-   "check": "tangent space",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
-  },
-  {
-   "subject": "T_CasualtySwimmer_Lifejacket_NOR",
-   "check": "OpenGL green",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "OpenGL (curl share 0.18)"
+   "detail": "mean 64, dry 127"
   }
  ]
 }

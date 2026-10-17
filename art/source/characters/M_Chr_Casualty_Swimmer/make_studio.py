@@ -53,12 +53,38 @@ pad.CFrame = CFrame.new(spot + Vector3.new(14, 0.5, 0)) pad.Parent = ld
 local st = sw:Clone() st.Name = "CH1_Stand" st.Parent = ld
 st:PivotTo(CFrame.new(spot + Vector3.new(14, 1, 0)))
 workspace:SetAttribute("CH1Stand", spot + Vector3.new(14, 1, 0))
+-- wash foam round the floating body: flat foam sprites on the water (Mayday_ocean_foam_alpha), topped up by an emitter
+local fp = Instance.new("Part") fp.Name = "CH1_WashFoam" fp.Anchored = true fp.CanCollide = false fp.Transparency = 1
+fp.Size = Vector3.new(2.6, 0.1, 4.2) fp.CFrame = CFrame.new(spot + Vector3.new(0, 0.05, 0.6)) fp.Parent = ld
+local pe = Instance.new("ParticleEmitter") pe.Texture = "rbxassetid://107434961132990" pe.Orientation = Enum.ParticleOrientation.VelocityPerpendicular
+pe.EmissionDirection = Enum.NormalId.Top pe.Speed = NumberRange.new(0.02, 0.06) pe.Rate = 2.5 pe.Lifetime = NumberRange.new(4, 7)
+pe.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 1.3)})
+pe.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.9), NumberSequenceKeypoint.new(0.25, 0.55), NumberSequenceKeypoint.new(1, 1)})
+pe.Rotation = NumberRange.new(0, 360) pe.RotSpeed = NumberRange.new(-6, 6) pe.Color = ColorSequence.new(Color3.fromRGB(200, 206, 204))
+pe.LightInfluence = 1 pe.LightEmission = 0 pe.Brightness = 0.8 pe.Parent = fp pe:Emit(10)
 return "spot " .. tostring(spot) .. " sea " .. sea
 """)
+# ATT_Strobe (assets/fbx/<A>/<A>.attachments.json, offset from the LOD0 bbox centre): the game adds a flashing PointLight
+# there; the shots build the same client-side (Attachment + PointLight + small Neon lens), flashing ~55/min, held ON
+# for the capture so every still shows the flash.
+_att = {a["name"]: a for a in json.load(open(G + "assets/fbx/%s/%s.attachments.json" % (A, A)))["attachments"]}
+_so = _att["ATT_Strobe"]["roblox_from_bbox_centre"]
+STROBE = ("if not _G.CH1Strobe then _G.CH1Strobe = true local ld = workspace:WaitForChild('LookDev') "
+          "for _, nm in {'%s', 'CH1_Stand'} do local mdl = ld:FindFirstChild(nm) "
+          "local mp = mdl and mdl:FindFirstChildWhichIsA('MeshPart', true) if mp then "
+          "local a = Instance.new('Attachment') a.Name = 'ATT_Strobe' a.Position = Vector3.new(%g, %g, %g) a.Parent = mp "
+          "local l = Instance.new('PointLight') l.Name = 'StrobeLight' l.Color = Color3.fromRGB(235, 245, 255) "
+          "l.Brightness = 0.9 l.Range = 4.5 l.Shadows = false l.Parent = a "
+          "local s = Instance.new('Part') s.Name = 'StrobeLens' s.Shape = Enum.PartType.Ball s.Size = Vector3.new(0.13, 0.13, 0.13) "
+          "s.Material = Enum.Material.Neon s.Color = Color3.fromRGB(240, 248, 255) s.Anchored = true s.CanCollide = false "
+          "s.CastShadow = false s.Parent = mdl "
+          "task.spawn(function() while s.Parent do local on = _G.CH1StrobeHold or (os.clock() %% 1.1) < 0.16 "
+          "l.Enabled = on s.Transparency = on and 0 or 0.7 s.CFrame = a.WorldCFrame task.wait(0.03) end end) end end end "
+          "_G.CH1StrobeHold = true " % (A, _so[0], _so[1], _so[2]))
 PRE = ("Clear", "Overcast", "Storm", "Night")
 def shot(name, base, cam, look, preset, wet, fov=50, extra=""):
     return {"name": name, "cam": [0, 0, 0], "look": [0, 0, 0], "settle": 2.0,
-            "lua": "local p = workspace:GetAttribute('%s') workspace.CurrentCamera.FieldOfView = %d %s"
+            "lua": STROBE + "local p = workspace:GetAttribute('%s') workspace.CurrentCamera.FieldOfView = %d %s"
                    "_G.LookDev.shot({p.X+%g, p.Y+%g, p.Z+%g}, {p.X+%g, p.Y+%g, p.Z+%g}) return _G.LookDev.apply('%s', %s)"
                    % (base, fov, extra, *cam, *look, preset, "true" if wet else "false")}
 FACE_F = (0, 0.95, 3.2)            # floating face (pivot tilted 40 deg back), studs from CH1Spot

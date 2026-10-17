@@ -449,7 +449,7 @@ K_SUIT, K_LJ, K_BOOT, K_SOLE, K_WEB, K_TAPE, K_HW, K_CUFF, K_SEAM = 2, 4, 5, 6, 
 ARM_DOWN = 18.0             # arms a little further from the body than v2 (8 deg): clear of the baggy torso
 TRIS = {"skin": 3600, "suit": 8400, "boots": 1100, "lj": 2600, "gloves": 1300}
 PAL = {K_SUIT: (43, 52, 69), K_LJ: (226, 88, 30), K_BOOT: (32, 33, 35), K_SOLE: (58, 55, 52), K_WEB: (30, 30, 32),
-       K_TAPE: (200, 202, 198), K_HW: (214, 196, 70), K_CUFF: (33, 35, 42), K_SEAM: (30, 37, 50)}
+       K_TAPE: (200, 202, 198), K_HW: (214, 196, 70), K_CUFF: (40, 42, 48), K_SEAM: (44, 52, 70)}
 RGH = {K_SUIT: 0.55, K_LJ: 0.48, K_BOOT: 0.32, K_SOLE: 0.85, K_WEB: 0.72, K_TAPE: 0.38, K_HW: 0.3, K_CUFF: 0.68,
        K_SEAM: 0.5}
 
@@ -1143,7 +1143,7 @@ def finish_part(hum, G, obj, region, kind, target, mode="auto", smooth=True):
 
 
 # ---------------------------------------------------------------- textures
-def compose(hum, M):
+def compose(hum, M, att=None, G=None):
     """All atlas maps (dry + wet): skin and hair as before, the gear by kind (fabric, bladder, rubber, webbing, tape)."""
     m = hum.m
     S = SIZE
@@ -1190,34 +1190,260 @@ def compose(hum, M):
     drops = (H.value_noise((S, S), 3, rng) > 0.78)
     rg_w[sk] = np.clip(rgh[sk, 0] * 0.5 - 0.06 * drops[sk], 0.08, 1.0)
     signal = np.zeros((S, S), np.uint8)
-    J = hum.J
+    J, seg = hum.J, hum.seg
+    yy, xx = np.mgrid[0:S, 0:S]
+    n1 = H.value_noise((S, S), 1, rng)                      # per-texel grain (pores, stubble, fibre slubs)
+    blot = H.fbm((S, S), 24, rng, 3)                        # patchy masks (scuffs, salt, flush)
+    weave = 0.5 + 0.5 * np.sin(xx * math.pi / 3) * np.sin(yy * math.pi / 3)        # Cordura basket weave, 6 px
+    weave = weave * 0.8 + 0.2 * n1
+    twill = 0.5 + 0.5 * np.sin((xx + yy) * math.pi / 1.5)                         # webbing / neoprene rib
+    hgt_w = np.zeros((S, S))
+    yc = seg["UpperTorso"][1][1]                            # torso centre line (front = y below it)
+    zneck, zpel = J["neck"][2], J["pelvis"][2]
+
+    def along(q, b):                                        # (t along the bone 0..1, radial distance)
+        a, c = seg[b]
+        d = c - a
+        t = ((q - a) @ d) / (d @ d)
+        return t, np.linalg.norm(q - a - np.outer(np.clip(t, 0, 1), d), axis=1)
+
+    def stitches(coord, d_edge, w):                         # dashed stitch rows either side of a seam line
+        return (np.abs(np.abs(d_edge) - w) < m(0.0012)) & (np.sin(coord / m(0.0035) * math.pi) > 0.1)
+
+    def drips(q):                                           # world-space vertical drip / salt streak columns
+        col = np.floor((q[:, 0] + 0.73 * q[:, 1]) / m(0.007)).astype(np.int64)
+        h1 = ((col * 2654435761) % 1000) / 1000.0
+        h2 = ((col * 40503 + 17) % 997) / 997.0
+        return (h1 > 0.8) & (((q[:, 2] / m(0.25) + h2) % 1.0) < 0.55)
+
+    TAPE_C, TAPE_R = np.array([214, 216, 212]) / 255.0, 0.14
+    lab_img = bpy.data.images.load(os.path.join(HERE, "textures", "label_solas.png"))
+    LW, LH = lab_img.size
+    lab = np.array(lab_img.pixels[:], np.float32).reshape(LH, LW, 4)[..., 0]      # row 0 = bottom
+    bpy.data.images.remove(lab_img)
+    lab_c = np.array([-m(0.085), 0.5 * (G["lj_zb"] + m(0.07) + zneck - m(0.3))])   # x, z centre (wearer's right)
+    lab_s = np.array([m(0.14), m(0.10)])
     for k, c in PAL.items():
         sel = K == k
         if not sel.any():
             continue
         q = Pw[sel]
+        n = sel.sum()
         base = np.array(c, float) / 255.0
-        cc = np.tile(base, (sel.sum(), 1))
-        if k == K_LJ:      # retro tape: two bands across the front panel top, a strip along the collar top
-            tape = (np.abs(q[:, 2] - (J["neck"][2] - m(0.12))) < m(0.022)) & (q[:, 1] < 0)
-            tape |= q[:, 2] > J["neck"][2] + m(0.075)
-            cc[tape] = np.array(PAL[K_TAPE]) / 255.0
-            signal[sel] = 255
-        if k == K_TAPE:
-            signal[sel] = 255
+        if k == K_SUIT:
+            base = np.array([50, 61, 88]) / 255.0           # navy lifted off black (sRGB lum p5 >= 40, mean ~55)
+        cc = np.tile(base, (n, 1))
+        aof = (0.78 + 0.22 * ao[sel, None]) if k in (K_SUIT, K_SEAM, K_CUFF) else (0.6 + 0.4 * ao[sel, None])
+        cc = cc * (0.93 + 0.12 * mid[sel, None]) * aof
+        rr = np.full(n, RGH[k]) + 0.08 * (mid[sel] - 0.5)
         ht = 0.25 * fine[sel] + 0.3 * (mid[sel] - 0.5)
+        sig = np.zeros(n, bool)
+        tape = np.zeros(n, bool)
+        wetk, wetr = 0.72, 0.25                             # wet albedo factor, wet roughness
+        if k == K_SUIT:
+            ht = 0.45 * weave[sel] + 0.15 * (mid[sel] - 0.5)
+            rr = 0.62 + 0.12 * (weave[sel] - 0.5) + 0.06 * (mid[sel] - 0.5)
+            cc *= (0.94 + 0.12 * weave[sel, None])
+            cls = seg_class(hum, q)
+            for s in ("Left", "Right"):                     # retro bands: forearms, shoulder caps, shins
+                for b, t0, t1 in (("LowerArm", 0.36, 0.52), ("UpperArm", 0.0, 0.13), ("LowerLeg", 0.42, 0.56)):
+                    t, _ = along(q, s + b)
+                    tape |= (cls == s + b) & (t > t0) & (t < t1)
+            # neck seal: top 4 cm of the suit collar (smooth rubber)
+            ztop = q[:, 2].max()
+            seal = q[:, 2] > ztop - m(0.04)
+            cc[seal] = np.array([34, 34, 37]) / 255.0 * aof[seal]
+            rr[seal] = 0.3 + 0.04 * fine[sel][seal]
+            ht[seal] = 0.1 * mid[sel][seal]
+            # diagonal front zip: wearer's left shoulder to right hip, with a stitched flap
+            front = q[:, 1] < yc
+            p0, p1 = np.array([m(0.15), zneck - m(0.06)]), np.array([-m(0.11), zpel + m(0.06)])
+            dv = p1 - p0
+            xz = q[:, [0, 2]]
+            tz = np.clip(((xz - p0) @ dv) / (dv @ dv), 0, 1)
+            dz = np.cross(dv / np.linalg.norm(dv), xz - p0)
+            onl = front & (tz > 0) & (tz < 1)
+            teeth = onl & (np.abs(dz) < m(0.005))
+            cc[teeth] = np.array([24, 24, 26]) / 255.0
+            rr[teeth] = 0.35
+            ht[teeth] = 0.5 + 0.4 * (np.sin(tz[teeth] * np.linalg.norm(dv) / m(0.0025) * math.pi) > 0)
+            flap = onl & (np.abs(dz) >= m(0.005)) & (np.abs(dz) < m(0.016))
+            ht[flap] += 0.25
+            st = onl & stitches(tz * np.linalg.norm(dv), dz, m(0.013))
+            ht[st] -= 0.35
+            cc[st] *= 0.75
+            # taped panel seams: waist and chest yoke rings, stitched both edges
+            for zs in (zpel + m(0.1), J["neck"][2] - m(0.13)):
+                d = q[:, 2] - zs
+                sb = np.abs(d) < m(0.011)
+                cc[sb] = cc[sb] * 0.7 + np.array([30, 34, 44]) / 255.0 * 0.3
+                ht[sb] = 0.75 + 0.1 * fine[sel][sb]
+                rr[sb] = 0.38
+                ht[stitches(q[:, 0] + q[:, 1], d, m(0.009))] = 0.2
+            # scuffs: knees, elbows, seat (abraded, lighter, rougher, weave flattened)
+            sc_m = np.zeros(n)
+            for b, rad in (("LeftLowerLeg", 0.08), ("RightLowerLeg", 0.08), ("LeftLowerArm", 0.06), ("RightLowerArm", 0.06)):
+                a0 = seg[b][0]
+                sc_m = np.maximum(sc_m, np.clip(1 - np.linalg.norm(q - a0, axis=1) / m(rad), 0, 1))
+            seat = (q[:, 1] > yc) & (np.abs(q[:, 2] - zpel + m(0.06)) < m(0.08))
+            sc_m = np.maximum(sc_m, seat * 0.7)
+            sc_m = np.clip(sc_m * 2.0 * np.clip((blot[sel] - 0.3) * 3, 0, 1) * (0.6 + 0.6 * n1[sel]), 0, 1)
+            grey = cc.mean(1, keepdims=True)
+            cc = cc * (1 - 0.5 * sc_m[:, None]) + (grey * 1.6 + 0.05) * 0.5 * sc_m[:, None]
+            rr += 0.12 * sc_m
+            ht = ht * (1 - 0.6 * sc_m) + 0.05 * sc_m
+        if k == K_SEAM:
+            ht = 0.3 + 0.35 * (np.sin(q[:, 2] / m(0.0035) * math.pi) > 0.2)
+            rr = 0.48 + 0.04 * fine[sel]
+        if k == K_LJ:
+            rr = 0.5 + 0.05 * (twill[sel] - 0.5) + 0.06 * (mid[sel] - 0.5)
+            ht = 0.08 * twill[sel] + 0.2 * (mid[sel] - 0.5)
+            cc *= (0.9 + 0.2 * blot[sel, None])
+            grime = np.clip(1 - (q[:, 2] - G["lj_zb"]) / m(0.05), 0, 1) * np.clip((blot[sel] - 0.3) * 2, 0, 1)
+            cc = cc * (1 - 0.35 * grime[:, None]) + np.array([70, 60, 50]) / 255.0 * 0.35 * grime[:, None]
+            rr += 0.1 * grime
+            tape = (np.abs(q[:, 2] - (zneck - m(0.12))) < m(0.022)) & (q[:, 1] < yc)
+            tape |= q[:, 2] > zneck + m(0.075)                       # pillow collar ("hood") top
+            for sx in (1, -1):                                       # over-the-shoulder strips on the yoke
+                tape |= (np.abs(q[:, 0] - sx * m(0.12)) < m(0.022)) & (q[:, 2] > zneck - m(0.06))
+            # stitched chamber seams: vertical (front + back) and the top / bottom panel hems
+            for xs in (-m(0.13), -m(0.045), m(0.045), m(0.13)):
+                d = q[:, 0] - xs
+                gr = np.abs(d) < m(0.006)
+                ht -= 0.9 * np.exp(-(d / m(0.004)) ** 2) - 0.25 * np.exp(-(d / m(0.012)) ** 2) * (np.sin(q[:, 2] / m(0.011)) > 0)
+                cc[gr] *= 0.72
+                ht[stitches(q[:, 2], d, m(0.009))] -= 0.5
+            for zs in (G["lj_zb"] + m(0.02), G["lj_zt"] - m(0.02)):
+                d = q[:, 2] - zs
+                gr = np.abs(d) < m(0.006)
+                ht -= 0.9 * np.exp(-(d / m(0.004)) ** 2) - 0.25 * np.exp(-(d / m(0.012)) ** 2) * (np.sin(q[:, 0] / m(0.011)) > 0)
+                cc[gr] *= 0.72
+                ht[stitches(q[:, 0] + q[:, 1], d, m(0.009))] -= 0.5
+            # printed SOLAS label (planar along -Y), lower front panel
+            uv = (q[:, [0, 2]] - lab_c) / lab_s + 0.5
+            inl = (q[:, 1] < yc) & (uv > 0).all(1) & (uv < 1).all(1)
+            px = lab[np.clip((uv[inl, 1] * LH).astype(int), 0, LH - 1), np.clip((uv[inl, 0] * LW).astype(int), 0, LW - 1)]
+            cc[inl] = px[:, None] * np.array([1.0, 1.0, 0.97]) * (0.85 + 0.15 * ao[sel][inl, None])
+            rr[inl] = 0.42
+            ht[inl] = 0.15
+            # grab / lifting loop on the back yoke: webbing strip with box-X stitching
+            gl = (q[:, 1] > yc) & (np.abs(q[:, 0]) < m(0.03)) & (np.abs(q[:, 2] - (G["lj_zt"] - m(0.06))) < m(0.045))
+            cc[gl] = np.array([30, 30, 32]) / 255.0 * (0.8 + 0.2 * ao[sel][gl, None])
+            rr[gl] = 0.72
+            ht[gl] = 0.35 + 0.25 * twill[sel][gl]
+            bx = gl & ((np.abs(np.abs(q[:, 0]) - m(0.024)) < m(0.0015)) | (np.abs(np.abs(q[:, 2] - (G["lj_zt"] - m(0.06))) - m(0.04)) < m(0.0015)))
+            ht[bx] -= 0.4
+            sig = ~(inl | gl)
+            wetk, wetr = 0.84, 0.28
+        if k == K_TAPE:
+            tape[:] = True
+        if k == K_BOOT:
+            toe = np.clip(1 - (q[:, 2] - m(0.02)) / m(0.06), 0, 1) * (q[:, 1] < seg["LeftFoot"][0][1] - m(0.04))
+            sc_m = np.clip(toe * np.clip((blot[sel] - 0.3) * 3, 0, 1), 0, 1)
+            cc = cc * (1 - 0.3 * sc_m[:, None]) + 0.3 * sc_m[:, None] * np.array([92, 90, 86]) / 255.0
+            rr = 0.32 + 0.06 * (mid[sel] - 0.5) + 0.25 * sc_m
+            wetk, wetr = 0.85, 0.16
         if k == K_SOLE:
             ht += 0.6 * (np.sin(q[:, 1] / m(0.012) * math.pi) > 0.2)
+            wetk, wetr = 0.85, 0.5
         if k in (K_WEB, K_CUFF):
-            ht += 0.3 * (np.sin(q[:, 2] / m(0.003) * math.pi + q[:, 0] / m(0.003)) > 0)
-        cc = cc * (0.93 + 0.12 * mid[sel, None]) * (0.6 + 0.4 * ao[sel, None])
-        salt = np.clip((mid[sel] - 0.55) * 4, 0, 1) * (1 - ao[sel]) * 0.4 * (k in (K_SUIT, K_BOOT, K_LJ))
-        alb[sel] = cc * (1 - salt[:, None] * 0.35) + np.array([150, 150, 148]) / 255.0 * salt[:, None] * 0.35
-        alb_w[sel] = cc * (0.8 if k != K_TAPE else 0.95)
-        r0 = RGH[k] + 0.08 * (mid[sel] - 0.5)
-        rg[sel] = r0
-        rg_w[sel] = np.clip(r0 * 0.5, 0.12, 1)
+            ht = ht + 0.3 * (np.sin(q[:, 2] / m(0.003) * math.pi + q[:, 0] / m(0.003)) > 0) + 0.15 * twill[sel]
+            wetr = 0.3
+        if k == K_CUFF:                                     # wrist seals: smooth latex band at the glove cuff top
+            for s in ("Left", "Right"):
+                t, rd = along(q, s + "LowerArm")
+                ws = (t > 0.78) & (t < 0.92) & (rd < m(0.08)) & (q[:, 0] * (1 if s == "Left" else -1) > 0)
+                cc[ws] = np.array([40, 38, 36]) / 255.0
+                rr[ws] = 0.28
+                ht[ws] = 0.05
+        if k == K_HW:
+            sig[:] = True
+            rr = 0.35 + 0.05 * fine[sel]
+            ht = 0.2 * fine[sel]
+            if att:
+                ds = np.linalg.norm(q - np.array(att["strobe"][:]), axis=1)
+                lens = ds < m(0.03)
+                cc[lens] = np.array([228, 232, 226]) / 255.0 * (0.85 + 0.15 * ao[sel][lens, None])
+                rr[lens] = 0.08
+                ht[lens] = 0.0
+                dw = np.linalg.norm(q - np.array(att["whistle"][:]), axis=1)
+                buckle = (ds > m(0.045)) & (dw > m(0.04))
+                cc[buckle] = np.array([28, 28, 30]) / 255.0
+                rr[buckle] = 0.38
+                ht[buckle] = 0.3 * (np.sin((q[buckle, 0] + q[buckle, 2]) / m(0.003) * math.pi) > 0.3)
+                sig &= ~buckle
+        if tape.any():                                      # retroreflective: bright, glossy, micro-prism grid
+            cc[tape] = TAPE_C * (0.9 + 0.1 * ao[sel][tape, None])
+            rr[tape] = TAPE_R + 0.16 * (n1[sel][tape] > 0.7)               # glitter: micro-prism sparkle
+            ht[tape] = 0.35 + 0.1 * (((xx[sel][tape] % 3) == 0) | ((yy[sel][tape] % 3) == 0))
+            sig |= tape
+        salt = np.clip((blot[sel] - 0.5) * 3, 0, 1) * (k in (K_SUIT, K_BOOT, K_LJ, K_WEB)) * ~tape
+        tide = np.zeros(n)
+        if k in (K_SUIT, K_BOOT):                           # dried salt tide lines (legs, boots, sleeves)
+            wob = m(0.01) * np.sin(q[:, 0] / m(0.05) + 2.0 * q[:, 1] / m(0.07)) + m(0.006) * (mid[sel] - 0.5)
+            for zl in (m(0.18), m(0.36), zpel - m(0.05)):
+                tide = np.maximum(tide, np.exp(-((q[:, 2] - zl - wob) / m(0.007)) ** 2))
+            tide *= np.clip((blot[sel] - 0.45) * 2.5, 0, 1) * (0.5 + 0.5 * n1[sel]) * ~tape
+        sw = np.clip(0.16 * salt + 0.3 * tide, 0, 0.4)
+        saltc = np.array([182, 184, 180]) / 255.0
+        alb[sel] = cc * (1 - sw[:, None]) + saltc * sw[:, None]
+        rg[sel] = np.clip(rr + 0.15 * sw, 0.06, 1)
         hgt[sel] = ht
+        dr = drips(q) & ~tape
+        cw = cc * np.where(tape, 0.97, wetk)[:, None] * (1 - 0.08 * dr[:, None])
+        alb_w[sel] = cw * (1 - 0.3 * sw[:, None]) + saltc * 0.3 * sw[:, None]
+        rg_w[sel] = np.where(tape, TAPE_R * 0.8, np.clip(wetr + 0.08 * (mid[sel] - 0.5) - 0.06 * dr + 0.05 * (rr - RGH[k]), 0.08, 1))
+        hgt_w[sel] = ht + 0.25 * dr
+        signal[sel] = np.where(sig, 255, 0)
+    # face: cold-water flush (cheeks, nose, ears), cooler lips, pores, stubble, wet eyes
+    face = sk & (R == HEAD)
+    eye = face & (dat[..., 2] > 0.5)
+    if face.any():
+        q = Pw[face]
+        n = face.sum()
+        e = Pw[eye]
+        El, Er = e[e[:, 0] > 0].mean(0), e[e[:, 0] < 0].mean(0)
+        ez, ey = 0.5 * (El[2] + Er[2]), 0.5 * (El[1] + Er[1])
+
+        def ell(c, r):
+            return np.clip(1 - (((q - np.array(c)) / np.array(r)) ** 2).sum(1), 0, 1)
+        nzone = (np.abs(q[:, 0]) < m(0.02)) & (np.abs(q[:, 2] - (ez - m(0.035))) < m(0.012))
+        ny = q[nzone, 1].min() if nzone.any() else ey - m(0.03)
+        fl = ell((0, ny + m(0.006), ez - m(0.035)), (m(0.02), m(0.02), m(0.025)))
+        for E, sx in ((El, 1), (Er, -1)):
+            fl = np.maximum(fl, ell((E[0] + sx * m(0.014), E[1] - m(0.002), E[2] - m(0.038)), (m(0.03), m(0.03), m(0.026))) * 0.9)
+            fl = np.maximum(fl, ell((sx * m(0.075), ey + m(0.075), ez - m(0.012)), (m(0.025), m(0.035), m(0.04))))
+        bridge = ell((0, ny + m(0.012), ez - m(0.018)), (m(0.035), m(0.03), m(0.04)))
+        fl = np.clip(np.maximum(fl ** 0.6 * 0.85, bridge * 0.6) * (0.55 + 0.9 * blot[face]), 0, 1)
+        mo = np.array(J["mouth"])
+        lip = ell(mo + np.array([0, -m(0.004), 0]), (m(0.026), m(0.016), m(0.011)))
+        stub = (q[:, 2] < mo[2] + m(0.017)) & (q[:, 2] > mo[2] - m(0.075)) & (q[:, 1] < ey + m(0.06)) & (lip < 0.05)
+        c0 = alb[face]
+        g = c0.mean(1, keepdims=True)
+        c0 = c0 * 0.9 + g * 0.1                                          # cold pallor (slightly desaturated)
+        c0 = c0 * (1 - 0.3 * fl[:, None]) + c0 * np.array([1.1, 0.8, 0.8]) * 0.3 * fl[:, None]
+        lip = np.clip(lip * 2.2, 0, 1)
+        c0 = c0 * (1 - 0.55 * lip[:, None]) + g * np.array([0.8, 0.68, 0.8]) * 0.55 * lip[:, None]
+        c0[stub] *= np.array([0.9, 0.9, 0.93])                          # beard shadow
+        n2 = H.value_noise((S, S), 2, rng)[face]
+        dots = stub & ((n1[face] > 0.55) | (n2 > 0.7))
+        hc0 = H.lin_to_srgb(np.array(H.hex_lin(CFG["hair"])))
+        c0[dots] = c0[dots] * 0.55 + hc0 * 0.45
+        c0[stub] *= 0.96
+        c0 *= (0.97 + 0.06 * n1[face, None])                             # pigment mottling
+        alb[face] = c0
+        alb_w[face] = c0 * 0.93
+        pore = (n2 > 0.72) * 0.7 + (n1[face] > 0.8) * 0.4 + 0.2 * fine[face]
+        ht = -0.45 * pore * (1 - lip) + 0.35 * dots - 0.1 * lip * (np.sin(q[:, 0] / m(0.0018) * math.pi) > 0.6)
+        hgt[face] = ht
+        drop = H.value_noise((S, S), 4, rng)[face] > 0.8
+        hgt_w[face] = ht + 0.5 * drop
+        rg[face] = np.clip(rg[face] - 0.06 * lip + 0.04 * stub, 0.12, 1)
+        rg_w[face] = np.clip(rg[face] * 0.5 - 0.08 * drop, 0.07, 1)
+        rg[eye] = 0.03
+        rg_w[eye] = 0.02
+        hgt[eye] = 0
+        hgt_w[eye] = 0
     hr = R == HAIR
     if hr.any():
         phi, polar = hair_coords(hum, Pw[hr])
@@ -1228,17 +1454,33 @@ def compose(hum, M):
             fs += np.sin(w * f + ph + 0.4 * np.sin(polar * 31)) * (140.0 / f)
         fs = 0.5 + 0.25 * fs
         hc = H.lin_to_srgb(np.array(H.hex_lin(CFG["hair"])))
-        c = hc[None, :] * (0.78 + 0.35 * fs[:, None]) * (0.85 + 0.3 * cl[:, None]) * (0.75 + 0.25 * ao[hr, None])
-        alb[hr] = c
-        alb_w[hr] = c * 0.82
-        rg[hr] = 0.48 - 0.08 * cl
-        rg_w[hr] = 0.2 + 0.12 * (1 - cl) - 0.05 * fs
-        hgt[hr] = 0.8 * cl + 0.35 * fs
+        c = hc[None, :] * (0.6 + 0.7 * fs[:, None]) * (0.7 + 0.6 * cl[:, None]) * (0.7 + 0.3 * ao[hr, None])
+        alb[hr] = c * 1.05                                  # always damp (in the water)
+        alb_w[hr] = c * 0.85
+        rg[hr] = 0.4 - 0.16 * cl - 0.06 * fs
+        rg_w[hr] = 0.12 + 0.2 * (1 - cl) - 0.06 * fs
+        hgt[hr] = 0.9 * cl + 0.45 * fs
+        hgt_w[hr] = 1.0 * cl + 0.55 * fs
+    # PBR saturation guard outside the signal mask (navy, skin flush): keep 95th pct below check_textures' 0.45
+    ns = cov & (signal == 0)
+    for A_ in (alb, alb_w):
+        a = A_[ns]
+        mx, mn = a.max(1), a.min(1)
+        sat = (mx - mn) / np.maximum(mx, 1e-4)
+        f = np.where(sat > 0.42, 0.42 / np.maximum(sat, 1e-4), 1.0)[:, None]
+        A_[ns] = mx[:, None] - (mx[:, None] - a) * f
     o = H.normal_from_height(hgt[::-1], 1.6).astype(np.float32) / 255.0
     o[~cov] = np.array([0.5, 0.5, 1.0])
+    ow = H.normal_from_height(hgt_w[::-1], 1.6).astype(np.float32) / 255.0
+    ow[~cov] = np.array([0.5, 0.5, 1.0])
     lo, hi = 31 / 255.0, 239 / 255.0
+    lum = H.u8(np.clip(alb, lo, hi)) @ np.array([0.2126, 0.7152, 0.0722])
+    for k in sorted(set(np.unique(K)) - {-1}):
+        s_ = (K == k)
+        print("[swimmer] kind %d: ALB lum mean %.0f p5 %.0f, RGH %.2f / wet %.2f" % (
+            k, lum[s_].mean(), np.percentile(lum[s_], 5), rg[s_].mean(), rg_w[s_].mean()))
     maps = {"ALB": H.u8(np.clip(alb, lo, hi)), "NOR": H.u8(o), "RGH": H.u8(np.clip(rg, 0.06, 1)), "MET": np.zeros((S, S), np.uint8)}
-    wet = {"ALB": H.u8(np.clip(alb_w, lo, hi)), "NOR": maps["NOR"], "RGH": H.u8(np.clip(rg_w, 0.05, 1)), "MET": maps["MET"]}
+    wet = {"ALB": H.u8(np.clip(alb_w, lo, hi)), "NOR": H.u8(ow), "RGH": H.u8(np.clip(rg_w, 0.05, 1)), "MET": maps["MET"]}
     H.write_set(ASSET, TNAME, SETN, maps)
     H.write_set(ASSET, TNAME, SETN, {k + "_Wet": v for k, v in wet.items()})
     H.write_png(os.path.join(HERE, "textures", "mask_%s_signal.png" % SETN), signal)
@@ -1327,7 +1569,7 @@ def build():
     if H.tris(M) > 20000:
         versions.decimate(M, 20000)
     if not os.environ.get("SWIMMER_FAST"):
-        compose(hum, M)
+        compose(hum, M, att, G)
     for k in ("BDist", "ArmLow", "EyeMask", "Region", "Kind"):
         if k in M.data.attributes:
             M.data.attributes.remove(M.data.attributes[k])
