@@ -1,35 +1,64 @@
-sets {'Fur': ['ALB', 'MET', 'NOR', 'RGH', 'Wet'], 'Harness': ['ALB', 'MET', 'NOR', 'RGH', 'Wet'], 'Body': ['ALB', 'MET', 'NOR', 'RGH', 'Wet']} markers ['ATT_HarnessHandle', 'ATT_TowRing', 'ATT_Mouth']
-shots 10 cam [-41.8, 6.4, -14.2] look [-46.0, 5.15, -9.2]
-17:16:39
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
-opened, studio_id: 65c2ea5f-2943-4de1-8464-9b2bb03df322
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+18:01:03
+opened, studio_id: bab9033b-bcbc-4287-b56d-11e127d26d82
 inserted M_Chr_Bosun_LOD0 into Workspace
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
 import_asset: _G.ImportAsset(config) installed
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
-{"report":{"colParts":0,"path":"Workspace.LookDev.M_Chr_Bosun","tris":"unknown","meshParts":6,"asset":"M_Chr_Bosun","attachments":["ATT_HarnessHandle -> M_Chr_Bosun_BodyFore_LOD0","ATT_TowRing -> M_Chr_Bosun_Harness_LOD0","ATT_Mouth -> M_Chr_Bosun_BodyHead_LOD0"],"surfaceAppearances":6,"warnings":[],"wetVariants":6,"castShadowOff":1,"lodHidden":0,"parts":6},"quayHit":"Workspace.Terrain","quayTop":6,"yawDeg":-0.024893498026727469,"doubleSided":["M_Chr_Bosun_FurFront_LOD0=set/true","M_Chr_
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 1 column 3996 (char 3995)
+import-b gave no JSON:
+{"feetHit":"Workspace.LookDev.BosunStage.Deck","quayTop":6,"attachments":["ATT_Mouth @ M_Chr_Bosun_BodyHead_LOD0 (-46.00, 8.30, -11.35)","ATT_HarnessHandle @ M_Chr_Bosun_Harness_LOD0 (-45.99, 8.52, -9.00)","ATT_TowRing @ M_Chr_Bosun_Harness_LOD0 (-45.98, 8.32, -8.39)"],"preload":{"allOk":false,"finished":true,"maps":48,"otherFailed":[],"surfaceAppearances":12,"failed":[{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceAppearance","id":"135572693292701","file":"T_Bosun_Body_ALB.png","status":"None","prop":"ColorMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceAppearance","id":"131093018094688","file":"T_Bosun_Body_NOR.png","status":"None","prop":"NormalMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceAppearance","id":
+preload not ready (try 1):
+{"allOk":false,"finished":true,"maps":48,"otherFailed":[],"surfaceAppearances":12,"failed":[{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"133270748415860","file":"T_Bosun_Body_ALB_Wet.png","status":"None","prop":"ColorMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"102318
+preload not ready (try 2):
+{"allOk":false,"finished":true,"maps":48,"otherFailed":[],"surfaceAppearances":12,"failed":[{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"133270748415860","file":"T_Bosun_Body_ALB_Wet.png","status":"None","prop":"ColorMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"102318
+preload not ready (try 3):
+{"allOk":false,"finished":true,"maps":48,"otherFailed":[],"surfaceAppearances":12,"failed":[{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"133270748415860","file":"T_Bosun_Body_ALB_Wet.png","status":"None","prop":"ColorMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"102318
+preload not ready (try 4):
+{"allOk":false,"finished":true,"maps":48,"otherFailed":[],"surfaceAppearances":12,"failed":[{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"133270748415860","file":"T_Bosun_Body_ALB_Wet.png","status":"None","prop":"ColorMap"},{"sa":"Workspace.LookDev.M_Chr_Bosun.M_Chr_Bosun_BodyFore_LOD0.SurfaceVariants.SurfaceAppearance_Wet","id":"102318
 setup art/lookdev/shot-setup.luau: lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 6
-shot M_Chr_Bosun_Clear_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry.png
-shot M_Chr_Bosun_Clear_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet.png
-shot M_Chr_Bosun_Overcast_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry.png
-shot M_Chr_Bosun_Overcast_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet.png
-shot M_Chr_Bosun_Storm_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry.png
-shot M_Chr_Bosun_Storm_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet.png
-shot M_Chr_Bosun_Night_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry.png
-shot M_Chr_Bosun_Night_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet.png
-shot M_Chr_Bosun_Overcast_dry_Alpha_Transparency assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_Alpha_Transparency.png
-shot M_Chr_Bosun_Overcast_dry_Alpha_Overlay assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_Alpha_Overlay.png
+shot M_Chr_Bosun_Clear_dry_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry_EVm05.png
+shot M_Chr_Bosun_Clear_dry_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry_EV0.png
+shot M_Chr_Bosun_Clear_dry_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry_EVp05.png
+shot M_Chr_Bosun_Clear_wet_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet_EVm05.png
+shot M_Chr_Bosun_Clear_wet_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet_EV0.png
+shot M_Chr_Bosun_Clear_wet_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet_EVp05.png
+shot M_Chr_Bosun_Overcast_dry_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_EVm05.png
+shot M_Chr_Bosun_Overcast_dry_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_EV0.png
+shot M_Chr_Bosun_Overcast_dry_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_EVp05.png
+shot M_Chr_Bosun_Overcast_wet_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet_EVm05.png
+shot M_Chr_Bosun_Overcast_wet_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet_EV0.png
+shot M_Chr_Bosun_Overcast_wet_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet_EVp05.png
+shot M_Chr_Bosun_Storm_dry_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry_EVm05.png
+shot M_Chr_Bosun_Storm_dry_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry_EV0.png
+shot M_Chr_Bosun_Storm_dry_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry_EVp05.png
+shot M_Chr_Bosun_Storm_wet_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet_EVm05.png
+shot M_Chr_Bosun_Storm_wet_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet_EV0.png
+shot M_Chr_Bosun_Storm_wet_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet_EVp05.png
+shot M_Chr_Bosun_Night_dry_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry_EVm05.png
+shot M_Chr_Bosun_Night_dry_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry_EV0.png
+shot M_Chr_Bosun_Night_dry_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry_EVp05.png
+shot M_Chr_Bosun_Night_wet_EVm05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet_EVm05.png
+shot M_Chr_Bosun_Night_wet_EV0 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet_EV0.png
+shot M_Chr_Bosun_Night_wet_EVp05 assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet_EVp05.png
+shot M_Chr_Bosun_Clear_dry_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry_Side.png
+shot M_Chr_Bosun_Clear_wet_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet_Side.png
+shot M_Chr_Bosun_Overcast_dry_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_Side.png
+shot M_Chr_Bosun_Overcast_wet_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet_Side.png
+shot M_Chr_Bosun_Storm_dry_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry_Side.png
+shot M_Chr_Bosun_Storm_wet_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet_Side.png
+shot M_Chr_Bosun_Night_dry_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry_Side.png
+shot M_Chr_Bosun_Night_wet_Side assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet_Side.png
+shot M_Chr_Bosun_Overcast_dry_FurClose assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_FurClose.png
+shot M_Chr_Bosun_Overcast_wet_FurClose assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet_FurClose.png
 SHEET: assets/review/M_Chr_Bosun/studio.png
-ContentId: rbxassetid://136899397603410 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://136899397603410 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
-[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+1 lines, 0 errors
+--- tail
+ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
 closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-lookdev-ch6.rbxl - Roblox Studio
-17:18:28
+18:04:10

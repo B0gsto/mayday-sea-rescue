@@ -21,7 +21,7 @@ OUT = os.path.join(REPO, "assets", "textures", "M_Chr_Bosun")
 SIZES = {"Body": 2048, "Harness": 1024, "Fur": 2048}
 
 
-def luma_clamp(rgb, lo=31.0, hi=239.0):
+def luma_clamp(rgb, lo=18.0, hi=239.0):
     f = rgb.astype(np.float32)
     lum = 0.2126 * f[..., 0] + 0.7152 * f[..., 1] + 0.0722 * f[..., 2]
     scale = np.where(lum < lo, lo / np.maximum(lum, 1.0), np.where(lum > hi, hi / lum, 1.0))

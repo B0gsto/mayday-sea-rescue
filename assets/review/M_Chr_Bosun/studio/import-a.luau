@@ -1,5 +1,5 @@
 
-local function lod0Box(model)
+local function lod0Box(model: Instance): (Vector3, Vector3)
 	local mn, mx = Vector3.one * math.huge, -Vector3.one * math.huge
 	for _, p in model:GetDescendants() do
 		if p:IsA("MeshPart") and string.find(p.Name, "_LOD0") and not string.find(p.Name, "_COL") then
@@ -14,7 +14,7 @@ local function lod0Box(model)
 end
 
 _G.ImportAssetConfig = nil
-local model
+local model: Model? = nil
 for _, c in workspace:GetChildren() do
 	if c:IsA("Model") and string.sub(c.Name, 1, 11) == "M_Chr_Bosun" then model = c end
 end
@@ -22,13 +22,39 @@ assert(model, "inserted M_Chr_Bosun model not found")
 model.Name = "M_Chr_Bosun"
 local mn, mx = lod0Box(model)
 local centre = (mn + mx) / 2
-_G.BosunPre = {centre = {centre.X, centre.Y, centre.Z}, size = {mx.X - mn.X, mx.Y - mn.Y, mx.Z - mn.Z}}
-for _, m in {{["name"] = "ATT_HarnessHandle", ["c"] = {0.0011, 1.035, -0.0065}, ["o"] = {-0.0, 2.4365, 0.1089}}, {["name"] = "ATT_TowRing", ["c"] = {0.0011, 0.8565, 0.4623}, ["o"] = {-0.0, 2.258, 0.5777}}, {["name"] = "ATT_Mouth", ["c"] = {0.0011, 0.8305, -2.5318}, ["o"] = {-0.0, 2.232, -2.4165}}} do
-	local p = Instance.new("Part")
-	p.Name = m.name; p.Size = Vector3.one * 0.1; p.Anchored = true; p.Transparency = 1
-	p.CFrame = CFrame.new(centre + Vector3.new(m.c[1], m.c[2], m.c[3]))
-	p.Parent = model
+local made, warns = {}, {}
+-- host = the LOD0 MeshPart whose name has _<host> right after the asset prefix (M_Chr_Bosun_Harness_LOD0, ..._BodyHead_LOD0)
+local function host(word: string): MeshPart?
+	local best: MeshPart? = nil
+	for _, p in model:GetDescendants() do
+		if p:IsA("MeshPart") and string.match(p.Name, "_LOD0$") and string.find(p.Name, "M_Chr_Bosun_" .. word, 1, true) then
+			if not best or p.Size.Magnitude > best.Size.Magnitude then best = p end
+		end
+	end
+	return best
 end
+for _, m in {{["name"] = "ATT_HarnessHandle", ["c"] = {0.0124, 1.0722, -0.0044}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_TowRing", ["c"] = {0.0125, 0.8681, 0.6076}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_Mouth", ["c"] = {0.0125, 0.8499, -2.3511}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "BodyHead"}} do
+	local old = model:FindFirstChild(m.name, true)
+	if old then old:Destroy() end
+	local pos = centre + Vector3.new(m.c[1], m.c[2], m.c[3])
+	local look, up = Vector3.new(m.look[1], m.look[2], m.look[3]), Vector3.new(m.up[1], m.up[2], m.up[3])
+	local cf = CFrame.lookAt(pos, pos + look, up)
+	local h = host(m.host)
+	if h then
+		local att = Instance.new("Attachment")
+		att.Name = m.name
+		att.Parent = h
+		att.WorldCFrame = cf
+		table.insert(made, m.name .. " -> " .. h.Name)
+	else -- fallback: a marker part; import_asset hosts it on the nearest visual part
+		local p = Instance.new("Part")
+		p.Name = m.name; p.Size = Vector3.one * 0.1; p.Anchored = true; p.Transparency = 1; p.CFrame = cf
+		p.Parent = model
+		table.insert(warns, "no LOD0 MeshPart M_Chr_Bosun_" .. m.host .. "*: " .. m.name .. " left to nearest-part rule")
+	end
+end
+_G.BosunPre = {centre = {centre.X, centre.Y, centre.Z}, size = {mx.X - mn.X, mx.Y - mn.Y, mx.Z - mn.Z},
+	attachments = made, warnings = warns}
 --!strict
 --# selene: allow(global_usage)
 --[==[

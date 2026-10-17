@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Fur-card atlas for M_Chr_Bosun (system python3, Pillow + numpy; no heavy slot).
+"""LEGACY fallback - superseded by fur_atlas.py (strands grown and rendered in Blender, then assembled):
+
+    ~/RobloxProjects/tools/blender-run.sh art/source/characters/M_Chr_Bosun/fur_atlas.py
+    python3 art/source/characters/M_Chr_Bosun/fur_atlas.py
+
+Running this file overwrites the rendered masters with the old line-drawn atlas; keep it only as a no-Blender
+fallback (same atlas layout and file names).
+
+Fur-card atlas for M_Chr_Bosun (system python3, Pillow + numpy; no heavy slot).
 
     python3 art/source/characters/M_Chr_Bosun/fur_textures.py [--size 4096]
 

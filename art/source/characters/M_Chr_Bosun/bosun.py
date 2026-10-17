@@ -1,17 +1,42 @@
-"""Bosun, the Newfoundland (docs/12 2.9 row M_Chr_Bosun, CH6): geometry for the body, the fur cards and the harness.
+"""Bosun, the Newfoundland (docs/12 2.9 row M_Chr_Bosun, CH6): geometry for the body and the fur cards (the harness
+geometry lives in bosun_harness.py; harness_mesh() below is the shim the pipeline calls).
 
 Built in metres on a quadruped skeleton graph (Skin modifier + Subdivision, so every limb is a clean quad tube with
-edge loops at the joints and the rest pose is a natural four-square stand, ready for RIG_Bosun in CH7), shaped by
-continuous space warps (deep chest, broad skull, square deep muzzle with flews, big webbed paws), then scaled to studs
-(1 m = 3 studs). Front is -Y, Z up, origin at the ground between the feet.
+edge loops at the joints and the rest pose is a natural four-square stand, ready for RIG_Bosun in CH7). The head and
+the paws are refined locally (the head tube cut around, then the muzzle, nose, eyes and paws cut fully), shaped by
+continuous space warps (deep heavy chest, level topline, column legs, broad skull with a defined stop, square deep
+muzzle with flews hanging below the lower jaw, big webbed paws) and fine displacements along the normal (brow ridges,
+cheeks, jowls, nose leather with nostrils and philtrum, lip crease, toes and grooves, toe pads and main pad). Separate
+pieces in the body mesh set: eyeballs, bulged cornea shells, eyelid rims, heavy triangular ears lying close to the
+head, and nails. Scaled to studs (1 m = 3 studs). Front is -Y, Z up, origin at the ground between the feet.
 
 Meshes (one material each, UVMap only):
   M_Chr_Bosun_BodyHead / _BodyFore / _BodyHind   set Body (2048)   split so each MeshPart stays under 10,000 tris;
                                                  custom normals from the unsplit body so the cuts do not show
-  M_Chr_Bosun_Harness                            set Harness (1024) Hull Orange water-rescue harness
-  M_Chr_Bosun_FurFront / _FurRear                set Fur (2048, RGBA) alpha fur cards on the silhouette
-Per-vertex attributes used by bake_bosun.py: flow (fur direction), long, short, bleach, nose, pad, lip, eye, eye_r,
-and on the harness tape, metal, plastic, grip.
+  M_Chr_Bosun_Harness                            set Harness (1024) Hull Orange water-rescue harness (bosun_harness.py)
+  M_Chr_Bosun_FurFront / _FurRear                set Fur (2048, RGBA) alpha fur cards in two layers (fur_cards)
+
+Per-vertex POINT attributes on the body parts for bake_bosun.py (FLOAT 0..1 unless noted):
+  flow     FLOAT_VECTOR groom direction, unit and tangent to the skin: head nose-to-back, body to the rear, sides and
+           legs downward, tail and ears root to tip
+  long     long-coat weight (ruff, chest, belly fringe, leg feathering, breeches, tail)
+  short    short-coat weight (muzzle, lower legs, paws; 0.6 on the ears)
+  bleach   sun-bleached brown tips on the top surfaces of the coat
+  nose     nose leather, including the nostrils
+  pad      paw pads: four toe pads and the main pad on each sole
+  lip      lip skin: the crease along the lower edge of the flews, and the philtrum
+  eye      1 on the eye geometry (eyeball and cornea shell)
+  eye_r    radians from the eye's optical axis, measured at the eyeball centre (pi off the eye): pupil and iris rings
+  nail     1 on the nails (one per toe, 16)
+  web      interdigital webbing: the skin in the grooves between the toes and between the toe pads
+  lid      1 on the eyelid rims (upper and lower lid, a tube wrapping the eye opening)
+  cornea   1 on the cornea shell, a cap bulged 1.6 mm in front of the eyeball. One opaque material in-engine, so the
+           bake paints iris and pupil onto the cornea from eye_r / iris and keeps it glossy
+  iris     1 inside the iris disc (on the eyeball and the cornea), soft edge at ~0.84 rad; the pupil is eye_r < ~0.3
+  tear     tear line / moisture: the inner eye corner, the lower-lid margin, a short streak below the inner corner
+  brow     brow ridges above the eyes
+  ear      1 on the ear leather (both ears)
+  sunfade  sun-faded coat: the back, the top of the neck and head, and the ear tops
 """
 import math
 import random
@@ -41,13 +66,13 @@ TAIL = [(0, 0.42, 0.548, 0.150), (0, 0.50, 0.553, 0.074), (0, 0.56, 0.500, 0.060
 
 
 def fore(sx):
-    return [(0, -0.28, 0.535, 0.192), (sx * 0.100, -0.290, 0.455, 0.088), (sx * 0.118, -0.240, 0.335, 0.066),
-            (sx * 0.120, -0.248, 0.215, 0.052), (sx * 0.120, -0.252, 0.110, 0.047), (sx * 0.121, -0.268, 0.058, 0.046),
-            (sx * 0.124, -0.300, 0.032, 0.050), (sx * 0.125, -0.338, 0.026, 0.043)]
+    return [(0, -0.28, 0.535, 0.192), (sx * 0.100, -0.290, 0.455, 0.090), (sx * 0.120, -0.246, 0.335, 0.068),
+            (sx * 0.121, -0.250, 0.215, 0.056), (sx * 0.121, -0.252, 0.110, 0.050), (sx * 0.122, -0.266, 0.058, 0.048),
+            (sx * 0.124, -0.300, 0.032, 0.052), (sx * 0.125, -0.340, 0.026, 0.045)]       # straight column legs
 
 
 def hind(sx):
-    return [(0, 0.32, 0.553, 0.166), (sx * 0.100, 0.330, 0.480, 0.100), (sx * 0.128, 0.265, 0.305, 0.080),
+    return [(0, 0.32, 0.553, 0.166), (sx * 0.100, 0.330, 0.480, 0.100), (sx * 0.128, 0.265, 0.305, 0.084),
             (sx * 0.126, 0.335, 0.215, 0.058), (sx * 0.124, 0.402, 0.132, 0.048), (sx * 0.123, 0.392, 0.058, 0.045),
             (sx * 0.124, 0.358, 0.032, 0.050), (sx * 0.125, 0.318, 0.026, 0.043)]
 
@@ -67,13 +92,17 @@ def smoothstep(e0, e1, x):
     return t * t * (3 - 2 * t)
 
 
-def resample(chain, spacing):
+def resample(chain, spacing, max_dr=None):
+    """Points along a chain every ~spacing; with max_dr, also no more than max_dr radius change per step (so the leg
+    and tail roots blend into the torso instead of pinching under Subsurf)."""
     pts = np.array([c[:3] for c in chain], float)
     rad = np.array([c[3] for c in chain], float)
     out = [(pts[0], rad[0])]
     for a in range(len(pts) - 1):
         seg = np.linalg.norm(pts[a + 1] - pts[a])
         n = max(1, int(round(seg / spacing)))
+        if max_dr:
+            n = max(n, int(math.ceil(abs(rad[a + 1] - rad[a]) / max_dr)))
         for k in range(1, n + 1):
             t = k / n
             out.append((pts[a] * (1 - t) + pts[a + 1] * t, rad[a] * (1 - t) + rad[a + 1] * t))
@@ -192,7 +221,17 @@ def bvh_of(me):
 
 # ------------------------------------------------------------------ body
 
-def skeleton_object(level):
+BODY_SPACING = {"spine": 0.075, "neck": 0.060, "head": 0.040, "tail": 0.100, "fl_l": 0.090, "fl_r": 0.090,
+                "hl_l": 0.090, "hl_r": 0.090}      # skeleton node spacing for the body (SPACING stays for the harness)
+EYE_A, EYE_B, EYE_R = 0.0165, 0.0102, 0.0125      # eye opening half-width / half-height, eyeball radius (m)
+TOE_X = (-0.033, -0.011, 0.011, 0.033)            # toe centres across each paw, from the paw centre line (m)
+HEADM = {}                                        # measured head landmarks (build metres)
+PAWS = []                                         # (chain, centre x, front y) per paw
+TAG_SKIN, TAG_EYEBALL, TAG_CORNEA, TAG_LID, TAG_EAR, TAG_NAIL = range(6)
+
+
+def skeleton_object(level, spacing=None, max_dr=None):
+    spacing = spacing or SPACING
     verts, edges, radii, index = [], [], [], {}
 
     def add(p, r):
@@ -206,7 +245,7 @@ def skeleton_object(level):
 
     for name, chain in CHAINS.items():
         prev = None
-        for p, r in resample(chain, SPACING[name]):
+        for p, r in resample(chain, spacing[name], max_dr):
             i = add(p, r)
             if prev is not None and prev != i:
                 edges.append((prev, i))
@@ -229,6 +268,23 @@ def skeleton_object(level):
     return obj
 
 
+def gauss(V, c, s):
+    """Gaussian blob mirrored in x (uses |x|): centre c, per-axis sigmas s (metres)."""
+    P = np.column_stack([np.abs(V[:, 0]), V[:, 1], V[:, 2]])
+    d = (P - np.asarray(c, float)) / np.asarray(s, float)
+    return np.exp(-np.sum(d * d, axis=1))
+
+
+def band(x, a, b, soft):
+    return smoothstep(a - soft, a + soft, x) * (1 - smoothstep(b - soft, b + soft, x))
+
+
+def flew_profile(V):
+    """Where the upper-lip flews hang: the lower sides of the muzzle between the nose and the mouth corner."""
+    y, ax = V[:, 1], np.abs(V[:, 0])
+    return smoothstep(-0.725, -0.770, y) * (1 - smoothstep(-0.855, -0.895, y)) * smoothstep(0.004, 0.030, ax)
+
+
 def shape(V):
     """Continuous space warps that turn the skin tubes into a Newfoundland. V in metres (N, 3), returned shaped."""
     names, w, data = chain_fields(V)
@@ -239,60 +295,45 @@ def shape(V):
         s = np.ones_like(V)
         if name == "spine":
             y = V[:, 1]
-            s[:, 0] = 1.04 + 0.04 * smoothstep(-0.45, -0.2, y) * (1 - smoothstep(0.1, 0.45, y))
+            s[:, 0] = 1.05 + 0.08 * smoothstep(-0.45, -0.2, y) * (1 - smoothstep(0.05, 0.45, y))   # barrel ribs
             below = o[:, 2] < 0
-            deep = 1.16 - 0.20 * smoothstep(-0.30, 0.42, y)            # deep brisket, little tuck-up
-            s[:, 2] = np.where(below, deep, 0.90)
+            deep = 1.21 - 0.24 * smoothstep(-0.30, 0.42, y)            # deep heavy brisket, little tuck-up
+            s[:, 2] = np.where(below, deep, 0.90)                       # flat, level topline
         elif name == "neck":
-            s[:, 0] = 1.10
+            s[:, 0] = 1.12
         elif name == "head":
             skull = 1 - smoothstep(0.35, 0.6, t)
-            s[:, 0] = 1.14 * skull + 1.10 * (1 - skull)                  # broad skull, broad square muzzle
+            s[:, 0] = 1.22 * skull + 1.12 * (1 - skull)                  # broad skull, broad square muzzle
             below = o[:, 2] < 0
             muzzle = smoothstep(0.42, 0.62, t)
             s[:, 2] = np.where(below, 1.0 + 0.42 * muzzle * (1 - smoothstep(0.9, 1.0, t) * 0.4), 0.93 - 0.08 * muzzle)
         elif name.startswith(("fl", "hl")):
             paw = smoothstep(0.74, 0.86, t)
-            s[:, 0] = 1.0 + 0.22 * paw
-            s[:, 1] = 1.0 + 0.16 * paw + (0.06 if name.startswith("hl") else 0.0) * (1 - smoothstep(0.1, 0.35, t))
+            s[:, 0] = 1.0 + 0.30 * paw                                   # big, wide paws
+            s[:, 1] = 1.0 + 0.20 * paw + (0.06 if name.startswith("hl") else 0.0) * (1 - smoothstep(0.1, 0.35, t))
         disp += w[:, ci:ci + 1] * (o * s - o)
     V = V + disp
 
-    # prosternum keel and a level topline
+    # prosternum keel
     keel = np.exp(-(((V[:, 1] + 0.44) / 0.07) ** 2 + ((V[:, 2] - 0.44) / 0.09) ** 2 + (V[:, 0] / 0.10) ** 2))
-    V[:, 1] -= 0.025 * keel
+    V[:, 1] -= 0.032 * keel
     # flat broad crown and occiput; a defined stop
     head_w = w[:, names.index("head")]
     crown = np.exp(-(((V[:, 1] + 0.665) / 0.06) ** 2)) * smoothstep(0.88, 0.93, V[:, 2]) * head_w
     V[:, 2] -= 0.012 * crown
-    stop = np.exp(-(((V[:, 1] + 0.748) / 0.016) ** 2) - ((V[:, 2] - 0.86) / 0.03) ** 2 - (V[:, 0] / 0.05) ** 2) * head_w
-    V[:, 1] += 0.010 * stop
-    V[:, 2] -= 0.012 * stop
-    # blunt square nose front
-    tip = smoothstep(-0.895, -0.915, V[:, 1]) * head_w
-    V[:, 1] = V[:, 1] * (1 - tip * 0.6) + (-0.905 + (V[:, 1] + 0.905) * 0.4) * tip * 0.6
-    # flews: the upper lips hang below the jaw line at the sides of the muzzle
-    flew = smoothstep(-0.70, -0.78, V[:, 1]) * (1 - smoothstep(-0.89, -0.91, V[:, 1])) * smoothstep(0.02, 0.05, np.abs(V[:, 0]))
-    flew *= smoothstep(0.77, 0.73, V[:, 2]) * head_w
-    V[:, 2] -= 0.022 * flew
+    stop = np.exp(-(((V[:, 1] + 0.748) / 0.018) ** 2) - ((V[:, 2] - 0.86) / 0.03) ** 2 - (V[:, 0] / 0.05) ** 2) * head_w
+    V[:, 1] += 0.016 * stop
+    V[:, 2] -= 0.016 * stop
+    # flews: the upper lips hang below the lower jaw at the sides; the chin (lower jaw) is narrower and higher
+    flew = flew_profile(V) * smoothstep(0.775, 0.720, V[:, 2]) * head_w
+    V[:, 2] -= 0.026 * flew
+    V[:, 0] += np.sign(V[:, 0]) * 0.010 * flew
+    ax = np.abs(V[:, 0])
+    chin = smoothstep(-0.76, -0.80, V[:, 1]) * (1 - smoothstep(0.012, 0.035, ax)) * smoothstep(0.72, 0.69, V[:, 2]) * head_w
+    V[:, 2] += 0.004 * chin
     # paws on the ground
     V[:, 2] = np.maximum(V[:, 2], 0.0)
     return V
-
-
-def toes(V, N, w_paw, chains_data):
-    """Four toe lobes on the front and top of each paw (webbed between: shallow grooves only)."""
-    out = V.copy()
-    for name in ("fl_l", "fl_r", "hl_l", "hl_r"):
-        d, axis, t, rad, dirs = chains_data[name]
-        sel = (t > 0.8) & (d < 0.09)
-        cx = CHAINS[name][-1][0]
-        phase = (V[:, 0] - cx) / 0.022 * math.pi
-        groove = 0.5 + 0.5 * np.cos(phase * 2)                  # 0 between toes
-        front = smoothstep(0.0, 0.5, -N[:, 1]) * smoothstep(0.015, 0.03, V[:, 2])
-        k = sel * front * (1 - groove) * (np.abs(V[:, 0] - cx) < 0.045)
-        out -= N * (0.005 * k)[:, None]
-    return out
 
 
 def bmesh_smooth(me, factor=0.4, iters=2, protect_z0=True):
@@ -306,70 +347,140 @@ def bmesh_smooth(me, factor=0.4, iters=2, protect_z0=True):
     me.update()
 
 
-def eyeball(center, axis, radius):
+def refine(me, face_mask, edge_ok=None, cuts=1):
+    """Local subdivision (smooth) of the faces in face_mask; edge_ok (per mesh edge) limits which edges are cut."""
     bm = bmesh.new()
-    bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=14, radius=radius)
-    rot = Vector((0, 0, 1)).rotation_difference(Vector(axis))
-    for v in bm.verts:
-        v.co = rot @ v.co + Vector(center)
-    return bm
-
-
-def ear(sx, head_tree):
-    """A small triangular Newfoundland ear lying close to the head, rounded tip, set back level with the brow."""
-    bm = bmesh.new()
-    rows, cols = 7, 5
-    grid = []
-    root = np.array([sx * 0.105, -0.640, 0.885])
-    tipp = np.array([sx * 0.140, -0.668, 0.770])
-    fwd = np.array([0, -1.0, 0.0])
-    for i in range(rows):
-        t = i / (rows - 1)
-        width = 0.105 * (1 - t) ** 0.8 * (1 - 0.25 * t) + 0.012
-        c = root * (1 - t) + tipp * t
-        row = []
-        for j in range(cols):
-            u = j / (cols - 1) - 0.5
-            p = c + fwd * u * width
-            row.append(bm.verts.new(p.tolist()))
-        grid.append(row)
-    for i in range(rows - 1):
-        for j in range(cols - 1):
-            f = bm.faces.new((grid[i][j], grid[i][j + 1], grid[i + 1][j + 1], grid[i + 1][j]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    # lie on the head surface, outward
-    for v in bm.verts:
-        hit = head_tree.find_nearest(v.co)
-        if hit[0] is not None:
-            loc, nrm = hit[0], hit[1]
-            if (v.co - loc).dot(nrm) < 0.010:
-                v.co = loc + nrm * 0.010
+    bm.from_mesh(me)
+    bm.faces.ensure_lookup_table()
+    bm.edges.index_update()
+    edges = set()
     for f in bm.faces:
-        if (f.calc_center_median() - Vector((0, -0.64, 0.82))).dot(f.normal) < 0:
-            f.normal_flip()
-    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=0.010)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    return bm
+        if face_mask[f.index]:
+            for e in f.edges:
+                if edge_ok is None or edge_ok[e.index]:
+                    edges.add(e)
+    if edges:
+        bmesh.ops.subdivide_edges(bm, edges=list(edges), cuts=cuts, smooth=1.0, use_grid_fill=True,
+                                  use_smooth_even=True)
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
 
 
-def build_body(level=2):
-    """Returns (body mesh in metres, skeleton object) with eyes and ears joined, attributes set."""
-    skel = skeleton_object(level)
-    me = evaluated_copy(skel, "BosunBody")
-    V = shape(mesh_arrays(me))
-    set_coords(me, V)
-    bmesh_smooth(me, 0.35, 2)
+def face_centres(me):
+    C = np.zeros(len(me.polygons) * 3)
+    me.polygons.foreach_get("center", C)
+    return C.reshape(-1, 3)
+
+
+def refine_head_and_paws(me):
+    """The skin tubes are 16 quads around: too coarse for a face. Cut the head tube around (2x), then the muzzle,
+    nose, eyes and brows fully (2x), and the paws fully (2x), before shaping."""
+    C = face_centres(me)
+    names, w, data = chain_fields(C)
+    Cs = shape(C)
+    head = (w[:, names.index("head")] > 0.45) & (Cs[:, 1] < -0.615)
     V = mesh_arrays(me)
-    N = vertex_normals(me)
-    names, w, data = chain_fields(V)
-    V = toes(V, N, None, data)
-    # coat lumps: low-frequency waves along the normal on the long coat (silhouette break-up)
-    lump = np.array([mathutils.noise.noise(Vector(p * 14.0)) for p in V])
-    longw = long_coat(V, N, names, w, data)
-    V = V + N * (0.006 * lump * longw)[:, None]
-    set_coords(me, V)
+    E = np.zeros(len(me.edges) * 2, dtype=np.int32)
+    me.edges.foreach_get("vertices", E)
+    E = E.reshape(-1, 2)
+    ev = V[E[:, 1]] - V[E[:, 0]]
+    ev /= np.maximum(np.linalg.norm(ev, axis=1, keepdims=True), 1e-9)
+    hdir = nearest_on_chain((V[E[:, 0]] + V[E[:, 1]]) / 2, HEAD)[4]
+    around = np.abs(np.sum(ev * hdir, axis=1)) < 0.55
+    refine(me, head, around)
 
-    # eye sockets
+    C = face_centres(me)
+    names, w, data = chain_fields(C)
+    Cs = shape(C)
+    hw = w[:, names.index("head")]
+    eyes = np.min([np.linalg.norm(Cs - np.array(g), axis=1) for g in EYE_GUESS], axis=0) < 0.034
+    detail = ((hw > 0.3) & (Cs[:, 1] < -0.80)) | (eyes & (hw > 0.3))
+    paws = np.zeros(len(C), bool)
+    for name in ("fl_l", "fl_r", "hl_l", "hl_r"):
+        d, axis, t, rad, dirs = data[name]
+        paws |= (t > 0.83) & (d < 0.10) & (w[:, names.index(name)] > 0.5)
+    refine(me, detail | paws)
+
+
+def head_detail(V, N, hw, masks):
+    """Fine head forms along the normal: brows, cheeks, jowls, occiput, medial furrow, nose leather with nostrils and
+    philtrum, the lip crease under the flews. Measures HEADM."""
+    x, y, z = V[:, 0], V[:, 1], V[:, 2]
+    ax = np.abs(x)
+    front = (ax < 0.03) & (z > 0.70) & (z < 0.86) & (hw > 0.5)
+    yf = float(y[front].min())
+    sel = (y < yf + 0.012) & (ax < 0.02) & (hw > 0.5)
+    ztop, zbot = float(z[sel].max()), float(z[sel].min())
+    ncz = ztop - 0.030
+    HEADM.update(y_front=yf, nose_z=ncz, z_top=ztop, z_bot=zbot)
+    print("[bosun] muzzle front y %.3f m, nose centre z %.3f, front z %.3f..%.3f" % (yf, ncz, zbot, ztop))
+    fy = smoothstep(-0.15, -0.55, N[:, 1])                      # facing forward
+    tip = (y < yf + 0.035) * hw
+    d = np.zeros(len(V))
+    brow = gauss(V, (0.050, -0.742, 0.873), (0.024, 0.013, 0.010)) * hw
+    d += 0.008 * brow
+    d += 0.008 * gauss(V, (0.088, -0.680, 0.805), (0.030, 0.040, 0.030)) * hw          # cheek muscles
+    d += 0.010 * gauss(V, (0.072, -0.718, 0.718), (0.028, 0.030, 0.024)) * hw          # heavy jowls
+    d += 0.004 * gauss(V, (0.0, -0.615, 0.935), (0.020, 0.030, 0.020)) * hw            # occiput
+    d -= 0.004 * np.exp(-(x / 0.009) ** 2) * band(y, -0.765, -0.665, 0.01) * smoothstep(0.85, 0.875, z) * hw
+    ne = (x / 0.032) ** 2 + ((z - ncz) / 0.024) ** 2
+    nose = (1 - smoothstep(0.80, 1.05, ne)) * fy * tip
+    d += 0.005 * (1 - smoothstep(0.6, 1.0, ne)) * fy * tip                            # leather stands proud
+    nostril = np.zeros(len(V))
+    for s in (1, -1):
+        nostril = np.maximum(nostril, np.exp(-(((x - s * 0.0135) / 0.0065) ** 2 + ((z - ncz + 0.003) / 0.0042) ** 2)))
+        nostril = np.maximum(nostril, 0.45 * np.exp(-(((x - s * 0.022) / 0.005) ** 2 + ((z - ncz + 0.009) / 0.003) ** 2)))
+    nostril *= fy * tip
+    d -= 0.008 * nostril
+    phil = np.exp(-(x / 0.0035) ** 2) * band(z, ncz - 0.055, ncz - 0.014, 0.004) * fy * tip
+    d -= 0.003 * phil
+    crease = flew_profile(V) * np.exp(-((N[:, 2] + 0.45) / 0.2) ** 2) * smoothstep(0.78, 0.76, z) * hw
+    d -= 0.0045 * crease
+    masks.update(brow=np.clip(brow, 0, 1), nose=np.clip(np.maximum(nose, nostril), 0, 1),
+                 lip=np.clip(np.maximum(crease * 1.4, phil), 0, 1))
+    return V + N * d[:, None]
+
+
+def paw_detail(V, N, names, w, data, masks):
+    """Four toes with grooves (webbed between), toe pads and a main pad on the sole (the rest of the sole lifted)."""
+    PAWS.clear()
+    x, y, z = V[:, 0], V[:, 1], V[:, 2]
+    disp, pad, web, rise = (np.zeros(len(V)) for _ in range(4))
+    for name in ("fl_l", "fl_r", "hl_l", "hl_r"):
+        d, axis, t, rad, dirs = data[name]
+        sel = (t > 0.78) & (d < 0.10) & (w[:, names.index(name)] > 0.5) & (z < 0.10)
+        low = sel & (z < 0.03)
+        cx = float(x[low].mean())
+        yf = float(y[low & (np.abs(x - cx) < 0.03)].min())
+        PAWS.append((name, cx, yf))
+        rel = x - cx
+        g = 0.5 + 0.5 * np.cos(2 * np.pi * rel / 0.022)          # 1 in the grooves, 0 on the toes
+        inw = 1 - smoothstep(0.040, 0.050, np.abs(rel))
+        zone = 1 - smoothstep(yf + 0.035, yf + 0.060, y)
+        face = np.clip(smoothstep(0.1, 0.5, -N[:, 1]) + smoothstep(0.3, 0.7, N[:, 2]), 0, 1)
+        m = sel * inw * zone * face * smoothstep(0.002, 0.008, z)
+        disp += m * (-0.0065 * g + 0.002 * (1 - g))
+        web = np.maximum(web, m * g * (1 - smoothstep(0.02, 0.045, z)))
+        under = sel * (z < 0.006) * (N[:, 2] < -0.3)
+        pm = np.zeros(len(V))
+        for tx in TOE_X:
+            ty = yf + 0.020 + (0.007 if abs(tx) > 0.02 else 0.0)
+            e = ((rel - tx) / 0.0095) ** 2 + ((y - ty) / 0.011) ** 2
+            pm = np.maximum(pm, 1 - smoothstep(0.6, 1.0, e))
+        e = (rel / 0.024) ** 2 + ((y - yf - 0.062) / 0.017) ** 2
+        pm = np.maximum(pm, 1 - smoothstep(0.6, 1.0, e))
+        pad = np.maximum(pad, pm * under)
+        rise += under * (1 - pm)
+        web = np.maximum(web, under * (1 - pm) * (1 - smoothstep(yf + 0.035, yf + 0.045, y)))
+    V = V + N * disp[:, None]
+    V[:, 2] += 0.004 * np.clip(rise, 0, 1)
+    masks.update(pad=pad, web=web)
+    return V
+
+
+def eye_sockets(me):
+    """Almond eye openings dented into the skin; returns the eye frames."""
     tree = bvh_of(me)
     eyes = []
     for g in EYE_GUESS:
@@ -377,41 +488,240 @@ def build_body(level=2):
         axis = (Vector((0, -1, 0)) * 0.62 + nrm * 0.38).normalized()
         axis = (axis + Vector((0, 0, 0.05))).normalized()
         centre = loc - nrm * 0.0105
-        eyes.append((centre, axis))
+        side = Vector((0, 0, 1)).cross(axis).normalized()
+        up = axis.cross(side).normalized()
         V = mesh_arrays(me)
         rel = V - np.array(loc)
-        side = np.array(Vector((0, 0, 1)).cross(axis).normalized())
-        up = np.array(axis.cross(Vector(side)).normalized())
-        a = rel @ side / 0.0175
-        b = rel @ up / 0.0105
+        a = rel @ np.array(side) / EYE_A
+        b = rel @ np.array(up) / EYE_B
         e = np.sqrt(a * a + b * b)
-        k = (1 - smoothstep(0.75, 1.25, e)) * (np.linalg.norm(rel, axis=1) < 0.04)
-        V = V - np.array(nrm) * (0.022 * k)[:, None]
+        k = (1 - smoothstep(0.8, 1.35, e)) * (np.linalg.norm(rel, axis=1) < 0.04)
+        V = V - np.array(nrm) * (0.016 * k)[:, None]
         set_coords(me, V)
+        c1, c2 = loc + side * EYE_A, loc - side * EYE_A
+        inner = c1 if abs(c1.x) < abs(c2.x) else c2
+        eyes.append({"centre": centre, "axis": axis, "loc": loc, "nrm": nrm, "side": side, "up": up, "inner": inner})
+    return eyes
+
+
+def eyeball(center, axis, radius):
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=radius)
+    rot = Vector((0, 0, 1)).rotation_difference(Vector(axis))
+    for v in bm.verts:
+        v.co = rot @ v.co + Vector(center)
+    return bm
+
+
+def cornea(eye, Rc=0.0095, bulge=0.0016, rings=4, segs=12, max_ang=1.12):
+    """A bulged cornea cap in front of the eyeball (spherical cap, smaller radius, 1.6 mm proud of the eyeball)."""
+    ax, sd, up = eye["axis"], eye["side"], eye["up"]
+    cc = eye["centre"] + ax * (EYE_R - Rc + bulge)
+    bm = bmesh.new()
+    pole = bm.verts.new(cc + ax * Rc)
+    prev = None
+    for i in range(1, rings + 1):
+        a = max_ang * i / rings
+        ring = [bm.verts.new(cc + (ax * math.cos(a) + (sd * math.cos(p) + up * math.sin(p)) * math.sin(a)) * Rc)
+                for p in np.linspace(0, 2 * math.pi, segs, endpoint=False)]
+        for j in range(segs):
+            if prev is None:
+                bm.faces.new((pole, ring[j], ring[(j + 1) % segs]))
+            else:
+                bm.faces.new((prev[j], ring[j], ring[(j + 1) % segs], prev[(j + 1) % segs]))
+        prev = ring
+    orient_out(bm, eye["centre"])
+    return bm
+
+
+def orient_out(bm, centre, axis_from=None):
+    """Flip faces so they face away from centre (or from the line centre + s * axis_from)."""
+    bm.normal_update()
+    for f in bm.faces:
+        c = f.calc_center_median()
+        q = Vector(centre)
+        if axis_from is not None:
+            q = q + axis_from * (c - q).dot(axis_from)
+        if (c - q).dot(f.normal) < 0:
+            f.normal_flip()
+    bm.normal_update()
+
+
+def lid_rims(eye, skin_tree, segs=24, around=5):
+    """Upper and lower eyelid rims: a closed tube around the almond opening, bridging the dented skin and the eyeball.
+    Returns (bm, lower) with lower = 1 on the lower-lid verts."""
+    loc, ctr, sd, up = eye["loc"], eye["centre"], eye["side"], eye["up"]
+    mids, rts, lower = [], [], []
+    for i in range(segs):
+        th = 2 * math.pi * i / segs
+        st = math.sin(th)
+        p = loc + sd * (EYE_A * 0.95 * math.cos(th)) + up * (EYE_B * 0.95 * st * (0.65 + 0.35 * abs(st)) * (1.08 if st < 0 else 1.0))
+        dirc = (p - ctr).normalized()
+        eyept = ctr + dirc * EYE_R
+        s = skin_tree.find_nearest(p)[0] or p
+        gap = (s - eyept).length
+        rt = min(max(0.35 * gap + 0.0005, 0.0013 if st < 0 else 0.0017), 0.0030)
+        mids.append(eyept * 0.65 + s * 0.35)
+        rts.append(rt)
+        lower.append(1.0 if st < -0.2 else 0.0)
+    bm = bmesh.new()
+    rings = []
+    for i in range(segs):
+        T = (mids[(i + 1) % segs] - mids[i - 1]).normalized()
+        n1 = (mids[i] - ctr).normalized()
+        n1 = (n1 - T * n1.dot(T)).normalized()
+        n2 = T.cross(n1)
+        rings.append([bm.verts.new(mids[i] + (n1 * math.cos(a) + n2 * math.sin(a)) * rts[i])
+                      for a in np.linspace(0, 2 * math.pi, around, endpoint=False)])
+    for i in range(segs):
+        r0, r1 = rings[i], rings[(i + 1) % segs]
+        for j in range(around):
+            bm.faces.new((r0[j], r1[j], r1[(j + 1) % around], r0[(j + 1) % around]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    return bm, np.repeat(lower, around)
+
+
+EAR_ROOT, EAR_TIP = (0.108, -0.645, 0.892), (0.118, -0.672, 0.752)
+
+
+def ear(sx, head_tree):
+    """A heavy triangular Newfoundland ear lying close to the head: thick at the root, thin at the rounded tip, set
+    back level with the brow and hanging beside the cheek. Returns (bm, t) with t = 0 root .. 1 tip per vertex."""
+    rows, cols = 9, 6
+    root = np.array(EAR_ROOT) * [sx, 1, 1]
+    tipp = np.array(EAR_TIP) * [sx, 1, 1]
+    axisd = tipp - root
+    L = float(np.linalg.norm(axisd))
+    axisd /= L
+    fwd = np.array([0, -1.0, 0.0])
+    fwd -= (fwd @ axisd) * axisd
+    fwd /= np.linalg.norm(fwd)
+    bm = bmesh.new()
+    outer, inner, tpar = {}, {}, []
+    for i in range(rows):
+        t = i / (rows - 1)
+        width = 0.112 * (1 - 0.93 * t) ** 0.85
+        for j in range(cols):
+            u = j / (cols - 1) - 0.5
+            p = root + axisd * L * t + fwd * u * width - axisd * (0.035 * (2 * u) ** 2 * t ** 3)
+            loc, nrm, _, _ = head_tree.find_nearest(Vector(p.tolist()))
+            loc, nrm = np.array(loc), np.array(nrm)
+            gap = -0.005 if i == 0 else 0.0015 + 0.003 * t
+            th = (0.017 * (1 - t) + 0.006) * (1 - 0.55 * (2 * u) ** 2)
+            inner[i, j] = bm.verts.new((loc + nrm * gap).tolist())
+            outer[i, j] = bm.verts.new((loc + nrm * (gap + th)).tolist())
+            tpar += [t, t]
+    for i in range(rows - 1):
+        for j in range(cols - 1):
+            bm.faces.new((outer[i, j], outer[i, j + 1], outer[i + 1, j + 1], outer[i + 1, j]))
+            bm.faces.new((inner[i + 1, j], inner[i + 1, j + 1], inner[i, j + 1], inner[i, j]))
+    loop = [(i, 0) for i in range(rows)] + [(rows - 1, j) for j in range(1, cols)] + \
+           [(i, cols - 1) for i in range(rows - 2, -1, -1)] + [(0, j) for j in range(cols - 2, 0, -1)]
+    for k in range(len(loop)):
+        a, b = loop[k], loop[(k + 1) % len(loop)]
+        bm.faces.new((outer[a], outer[b], inner[b], inner[a]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    return bm, np.array(tpar)
+
+
+def nails(skin_tree):
+    """One curved nail per toe, from the toe front down and forward to the ground."""
+    bm = bmesh.new()
+    dvec = Vector((0, -0.80, -0.60)).normalized()
+    sidev = Vector((1, 0, 0))
+    upv = dvec.cross(sidev).normalized()
+    if upv.z < 0:
+        upv = -upv
+    angs = np.linspace(0, 2 * math.pi, 6, endpoint=False)
+    for name, cx, yf in PAWS:
+        for tx in TOE_X:
+            hit = skin_tree.ray_cast(Vector((cx + tx, yf - 0.10, 0.017)), Vector((0, 1, 0)), 0.25)
+            if hit[0] is None:
+                continue
+            b = hit[0] + Vector((0, 0.003, 0))
+            L, r0 = 0.013, 0.0050
+            rings = []
+            for tt, rr in ((0.0, 1.0), (0.5, 0.8), (0.85, 0.5)):
+                c = b + dvec * (L * tt) + Vector((0, 0, -0.004 * tt * tt))
+                rings.append([bm.verts.new(c + (sidev * math.cos(a) + upv * math.sin(a) * 1.15) * (r0 * rr)) for a in angs])
+            tipv = bm.verts.new(b + dvec * L + Vector((0, 0, -0.004)))
+            new_faces = []
+            for r0_, r1_ in zip(rings[:-1], rings[1:]):
+                for j in range(6):
+                    new_faces.append(bm.faces.new((r0_[j], r0_[(j + 1) % 6], r1_[(j + 1) % 6], r1_[j])))
+            for j in range(6):
+                new_faces.append(bm.faces.new((rings[-1][j], rings[-1][(j + 1) % 6], tipv)))
+            bm.normal_update()
+            for f in new_faces:
+                c = f.calc_center_median()
+                q = b + dvec * (c - b).dot(dvec)
+                if (c - q).dot(f.normal) < 0:
+                    f.normal_flip()
+    bm.normal_update()
+    return bm
+
+
+def append_piece(bm, piece, tags, tag, extra=None, extras=None):
+    tmp = bpy.data.meshes.new("piece_tmp")
+    piece.to_mesh(tmp)
+    piece.free()
+    n = len(tmp.vertices)
+    bm.from_mesh(tmp)
+    bpy.data.meshes.remove(tmp)
+    tags.append(np.full(n, tag))
+    if extras is not None:
+        extras.append(np.zeros(n) if extra is None else np.asarray(extra, float))
+
+
+def build_body(level=2):
+    """Returns (body mesh in metres, eyes) with eyes, cornea shells, lids, ears and nails joined, attributes set."""
+    skel = skeleton_object(level, BODY_SPACING, 0.025)
+    me = evaluated_copy(skel, "BosunBody")
+    bpy.data.objects.remove(skel, do_unlink=True)
+    refine_head_and_paws(me)
+    set_coords(me, shape(mesh_arrays(me)))
+    bmesh_smooth(me, 0.35, 2)
+    V = mesh_arrays(me)
+    N = vertex_normals(me)
+    names, w, data = chain_fields(V)
+    masks = {}
+    V = head_detail(V, N, w[:, names.index("head")], masks)
+    V = paw_detail(V, N, names, w, data, masks)
+    # coat lumps: low-frequency waves along the normal on the long coat (silhouette break-up)
+    lump = np.array([mathutils.noise.noise(Vector(p * 14.0)) for p in V])
+    V = V + N * (0.006 * lump * long_coat(V, N, names, w, data))[:, None]
+    set_coords(me, V)
+    global MOUTH
+    MOUTH = (0.0, HEADM["y_front"] + 0.014, HEADM["nose_z"] - 0.050)
+
+    eyes = eye_sockets(me)
+    skin_tree = bvh_of(me)
+    n_skin = len(me.vertices)
     bm = bmesh.new()
     bm.from_mesh(me)
-    for centre, axis in eyes:
-        eb = eyeball(centre, axis, 0.0125)
-        tmp = bpy.data.meshes.new("eye_tmp")
-        eb.to_mesh(tmp)
-        eb.free()
-        bm.from_mesh(tmp)
-        bpy.data.meshes.remove(tmp)
-    tree = bvh_of(me)
+    tags, ear_t, lid_low = [np.zeros(n_skin)], [np.zeros(n_skin)], [np.zeros(n_skin)]
+
+    def add(piece, tag, et=None, ll=None):
+        append_piece(bm, piece, tags, tag)
+        n = len(tags[-1])
+        ear_t.append(np.zeros(n) if et is None else et)
+        lid_low.append(np.zeros(n) if ll is None else ll)
+
+    for e in eyes:
+        add(eyeball(e["centre"], e["axis"], EYE_R), TAG_EYEBALL)
+        add(cornea(e), TAG_CORNEA)
+        lb, low = lid_rims(e, skin_tree)
+        add(lb, TAG_LID, ll=low)
     for sx in (1, -1):
-        eb = ear(sx, tree)
-        tmp = bpy.data.meshes.new("ear_tmp")
-        eb.to_mesh(tmp)
-        eb.free()
-        bm.from_mesh(tmp)
-        bpy.data.meshes.remove(tmp)
+        eb, t = ear(sx, skin_tree)
+        add(eb, TAG_EAR, et=t)
+    add(nails(skin_tree), TAG_NAIL)
     bm.to_mesh(me)
     bm.free()
     for p in me.polygons:
         p.use_smooth = True
     me.update()
-    body_attributes(me, eyes)
-    bpy.data.objects.remove(skel, do_unlink=True)
+    body_attributes(me, eyes, masks, np.concatenate(tags), np.concatenate(ear_t), np.concatenate(lid_low))
     return me, eyes
 
 
@@ -427,59 +737,80 @@ def long_coat(V, N, names, w, data):
     return np.clip(ruff + belly + feather + tail, 0, 1)
 
 
-def body_attributes(me, eyes):
+def body_attributes(me, eyes, masks, tag, ear_t, lid_low):
     V = mesh_arrays(me)
     N = vertex_normals(me)
+    n = len(V)
+
+    def full(a):
+        out = np.zeros(n)
+        out[:len(a)] = a
+        return out
+
     names, w, data = chain_fields(V)
     wn = dict(zip(names, w.T))
     y, z = V[:, 1], V[:, 2]
-    # fur flow: root to tip of each chain, head nose-to-back, sides fall downward
+    skin = (tag == TAG_SKIN).astype(float)
+    is_ear = (tag == TAG_EAR).astype(float)
+    # fur flow: root to tip of each chain, head nose-to-back, sides fall downward; ears root to tip
     flow = np.zeros_like(V)
     for name in names:
         d, axis, t, rad, dirs = data[name]
         if name == "spine":
             f = np.tile([0, 1.0, 0], (len(V), 1))
-        elif name in ("neck",):
-            f = -dirs                                       # from the head towards the body
-        elif name == "head":
-            f = -dirs
+        elif name in ("neck", "head"):
+            f = -dirs                                       # from the nose / head towards the body
         else:
             f = dirs                                        # legs and tail: root to tip
         side = np.abs(N[:, 0:1]) + np.clip(-N[:, 2:3], 0, 1)
         f = f + np.array([0, 0, -1.0]) * (0.9 * side)
         flow += wn[name][:, None] * f
+    ear_dir = np.array(EAR_TIP) - np.array(EAR_ROOT)
+    ef = np.column_stack([np.sign(V[:, 0]) * ear_dir[0], np.full(n, ear_dir[1]), np.full(n, ear_dir[2])])
+    flow = np.where(is_ear[:, None] > 0.5, ef, flow)
     flow -= (np.sum(flow * N, axis=1, keepdims=True)) * N
     flow /= np.maximum(np.linalg.norm(flow, axis=1, keepdims=True), 1e-6)
-    longw = long_coat(V, N, names, w, data)
+    longw = long_coat(V, N, names, w, data) * skin
     head_t = data["head"][2]
-    short = np.clip(wn["head"] * smoothstep(0.38, 0.55, head_t) + sum(wn[n] * smoothstep(0.55, 0.8, data[n][2])
-                                                                       for n in ("fl_l", "fl_r", "hl_l", "hl_r")), 0, 1)
+    short = np.clip(wn["head"] * smoothstep(0.38, 0.55, head_t) + sum(wn[k] * smoothstep(0.55, 0.8, data[k][2])
+                                                                       for k in ("fl_l", "fl_r", "hl_l", "hl_r")), 0, 1)
     short *= 1 - longw * 0.7
+    short = np.where(is_ear > 0.5, 0.6, short * skin)
     bleach = np.clip(N[:, 2], 0, 1) ** 1.5 * (0.55 + 0.45 * longw) * (1 - 0.6 * short)
-    bleach *= smoothstep(0.25, 0.6, z)
-    front = (np.abs(V[:, 0]) < 0.03) & (z > 0.70) & (z < 0.86) & (wn["head"] > 0.5)
-    y_front = float(y[front].min())
-    tipc = np.array([0.0, y_front + 0.016, 0.780])
-    nose_d = np.linalg.norm(V - tipc, axis=1)
-    nose = (1 - smoothstep(0.034, 0.044, nose_d)) * smoothstep(y_front + 0.040, y_front + 0.022, y) * wn["head"]
-    print("[bosun] muzzle front y %.3f m, nose verts %d" % (y_front, int((nose > 0.5).sum())))
-    pad = smoothstep(0.012, 0.002, z) * smoothstep(-0.3, -0.7, N[:, 2])
-    # lip line along the side of the muzzle, from the nose to the corner of the mouth
-    lip_z = 0.738 + 0.010 * smoothstep(-0.74, -0.90, y)
-    lip = np.exp(-((z - lip_z) / 0.006) ** 2) * smoothstep(-0.745, -0.77, y) * (1 - nose) * smoothstep(0.015, 0.035, np.abs(V[:, 0]))
-    lip *= wn["head"]
-    eye = np.zeros(len(V))
-    eye_r = np.full(len(V), math.pi)
-    for centre, axis in eyes:
-        rel = V - np.array(centre)
+    bleach *= smoothstep(0.25, 0.6, z) * np.maximum(skin, is_ear)
+    nose, pad, lip, web, brow = (full(masks[k]) for k in ("nose", "pad", "lip", "web", "brow"))
+    print("[bosun] nose verts %d, pad verts %d, nails %d verts" % (int((nose > 0.5).sum()), int((pad > 0.5).sum()),
+                                                                   int((tag == TAG_NAIL).sum())))
+    eye = np.zeros(n)
+    eye_r = np.full(n, math.pi)
+    iris = np.zeros(n)
+    tear = np.zeros(n)
+    on_eye = (tag == TAG_EYEBALL) | (tag == TAG_CORNEA)
+    for e in eyes:
+        rel = V - np.array(e["centre"])
         dist = np.linalg.norm(rel, axis=1)
-        on = np.abs(dist - 0.0125) < 0.0015
-        ang = np.arccos(np.clip((rel @ np.array(axis)) / np.maximum(dist, 1e-9), -1, 1))
-        eye = np.where(on, 1.0, eye)
-        eye_r = np.where(on, ang, eye_r)
+        mine = on_eye & (dist < 0.02)
+        ang = np.arccos(np.clip((rel @ np.array(e["axis"])) / np.maximum(dist, 1e-9), -1, 1))
+        eye = np.where(mine, 1.0, eye)
+        eye_r = np.where(mine, ang, eye_r)
+        iris = np.where(mine, 1 - smoothstep(0.80, 0.88, ang), iris)
+        r = V - np.array(e["inner"])
+        t1 = np.exp(-(np.linalg.norm(r, axis=1) / 0.0055) ** 2)
+        t2 = np.exp(-((r[:, 0] / 0.005) ** 2 + (r[:, 1] / 0.007) ** 2 + ((r[:, 2] + 0.010) / 0.011) ** 2)) * (r[:, 2] < 0.002)
+        near = np.linalg.norm(V - np.array(e["loc"]), axis=1) < 0.03
+        tear = np.maximum(tear, np.maximum(t1, 0.8 * t2) * near)
+    tear = np.maximum(tear, 0.5 * lid_low * (tag == TAG_LID))
+    tear *= ~on_eye
+    sunfade = np.clip(N[:, 2], 0, 1) ** 1.3 * smoothstep(0.55, 0.70, z) * \
+        np.clip(wn["spine"] + wn["neck"] + 0.6 * wn["head"], 0, 1) * skin * (1 - nose)
+    sunfade = np.where(is_ear > 0.5, 0.9 * (1 - smoothstep(0.2, 0.55, ear_t)), sunfade)
+    fl = lambda k: (tag == k).astype(float)  # noqa: E731
     for name, vals, kind in (("flow", flow, "FLOAT_VECTOR"), ("long", longw, "FLOAT"), ("short", short, "FLOAT"),
                              ("bleach", bleach, "FLOAT"), ("nose", nose, "FLOAT"), ("pad", pad, "FLOAT"),
-                             ("lip", lip, "FLOAT"), ("eye", eye, "FLOAT"), ("eye_r", eye_r, "FLOAT")):
+                             ("lip", lip, "FLOAT"), ("eye", eye, "FLOAT"), ("eye_r", eye_r, "FLOAT"),
+                             ("nail", fl(TAG_NAIL), "FLOAT"), ("web", web, "FLOAT"), ("lid", fl(TAG_LID), "FLOAT"),
+                             ("cornea", fl(TAG_CORNEA), "FLOAT"), ("iris", iris, "FLOAT"), ("tear", tear, "FLOAT"),
+                             ("brow", brow, "FLOAT"), ("ear", is_ear, "FLOAT"), ("sunfade", np.clip(sunfade, 0, 1), "FLOAT")):
         set_attr(me, name, vals, kind)
 
 
@@ -488,251 +819,154 @@ def withers_height(V):
     return float(V[sel, 2].max())
 
 
-# ------------------------------------------------------------------ harness
+# ------------------------------------------------------------------ harness (geometry lives in bosun_harness.py)
 
 def harness_mesh(body_me):
-    """Hull Orange water-rescue harness: back saddle with a padded grab handle and a D-ring for the tow line, a chest
-    strap, a girth strap with side-release buckles, retroreflective tape on the saddle sides and the chest strap."""
-    skel = skeleton_object(1)
-    low = evaluated_copy(skel, "BosunLow")
-    bpy.data.objects.remove(skel, do_unlink=True)
-    set_coords(low, shape(mesh_arrays(low)))
-    tree = bvh_of(body_me)
-    Vl = mesh_arrays(low)
-    names, w, data = chain_fields(Vl)
-    torso = w[:, names.index("spine")] + w[:, names.index("neck")] * 0.6
-    bm_low = bmesh.new()
-    bm_low.from_mesh(low)
-    bm_low.faces.ensure_lookup_table()
-    bm_low.normal_update()
-
-    def region(test):
-        faces = []
-        for f in bm_low.faces:
-            c = f.calc_center_median()
-            n = f.normal
-            tw = np.mean([torso[v.index] for v in f.verts])
-            if tw > 0.6 and test(c, n):
-                faces.append(f.index)
-        return faces
-
-    saddle = region(lambda c, n: -0.22 < c.y < 0.07 and n.z > 0.10)
-    girth = region(lambda c, n: -0.135 < c.y < -0.075)
-    chest = region(lambda c, n: c.y < -0.22 and 0.425 < c.z < 0.485 and n.y < 0.15 and c.y > -0.52)
-    tape_s = region(lambda c, n: -0.19 < c.y < 0.04 and 0.30 < n.z < 0.62)
-    tape_c = region(lambda c, n: c.y < -0.33 and 0.443 < c.z < 0.468 and n.y < -0.35)
-
-    out = bmesh.new()
-    kinds = {}
-
-    def add_piece(face_ids, off, thick, kind):
-        piece = bmesh.new()
-        vmap = {}
-        for fi in face_ids:
-            f = bm_low.faces[fi]
-            vs = []
-            for v in f.verts:
-                if v.index not in vmap:
-                    loc, nrm, _, _ = tree.find_nearest(v.co)
-                    vmap[v.index] = piece.verts.new(loc + nrm * off)
-                vs.append(vmap[v.index])
-            piece.faces.new(vs)
-        bmesh.ops.recalc_face_normals(piece, faces=piece.faces)
-        piece.normal_update()
-        for f in piece.faces:
-            loc, nrm, _, _ = tree.find_nearest(f.calc_center_median())
-            if f.normal.dot(nrm) < 0:
-                f.normal_flip()
-        if thick > 0:
-            bmesh.ops.solidify(piece, geom=piece.faces[:], thickness=-thick)
-            bmesh.ops.recalc_face_normals(piece, faces=piece.faces)
-        merge(piece, kind)
-
-    def merge(piece, kind):
-        bmesh.ops.recalc_face_normals(piece, faces=piece.faces[:])
-        tmp = bpy.data.meshes.new("h_tmp")
-        piece.to_mesh(tmp)
-        piece.free()
-        start = len(out.verts)
-        out.from_mesh(tmp)
-        bpy.data.meshes.remove(tmp)
-        out.verts.ensure_lookup_table()
-        for i in range(start, len(out.verts)):
-            kinds[i] = kind
-
-    add_piece(saddle, 0.020, 0.011, "fabric")
-    add_piece(girth, 0.014, 0.008, "fabric")
-    add_piece(chest, 0.016, 0.008, "fabric")
-    add_piece(tape_s, 0.0325, 0.0, "tape")
-    add_piece(tape_c, 0.0255, 0.0, "tape")
-
-    top = tree.ray_cast(Vector((0, -0.07, 1.2)), Vector((0, 0, -1)))[0].z + 0.031
-    # grab handle: a padded strap loop along the spine, with a neoprene grip sleeve in the middle
-    def tube(path, rw, rh, segs, kind):
-        piece = bmesh.new()
-        rings = []
-        for i, p in enumerate(path):
-            p = Vector(p)
-            tdir = (Vector(path[min(i + 1, len(path) - 1)]) - Vector(path[max(i - 1, 0)])).normalized()
-            side = Vector((1, 0, 0))
-            up = tdir.cross(side).normalized()
-            ring = [piece.verts.new(p + side * (rw * math.cos(a)) + up * (rh * math.sin(a)))
-                    for a in [2 * math.pi * k / segs for k in range(segs)]]
-            rings.append(ring)
-        for a, b in zip(rings, rings[1:]):
-            for k in range(segs):
-                piece.faces.new((a[k], a[(k + 1) % segs], b[(k + 1) % segs], b[k]))
-        bmesh.ops.contextual_create(piece, geom=rings[0])
-        bmesh.ops.contextual_create(piece, geom=rings[-1])
-        bmesh.ops.recalc_face_normals(piece, faces=piece.faces)
-        merge(piece, kind)
-
-    arc = []
-    for i in range(17):
-        t = i / 16
-        y = -0.165 + 0.19 * t
-        arc.append((0.0, y, top + 0.075 * math.sin(math.pi * t) ** 0.8))
-    tube(arc, 0.021, 0.0055, 8, "fabric")
     global HANDLE_APEX, DRING_POS
-    HANDLE_APEX = arc[8]
-    grip = [p for p in arc[5:12]]
-    tube(grip, 0.026, 0.012, 10, "grip")
-    # D-ring for the tow line at the back of the saddle
-    ring = bmesh.new()
-    bmesh.ops.create_circle(ring, cap_ends=False, radius=0.022, segments=16)
-    tor = bmesh.new()
-    rc = Vector((0, 0.085, top - 0.004))
-    DRING_POS = (0.0, 0.085, top + 0.016)
-    loops = []
-    for k in range(16):
-        a = 2 * math.pi * k / 16
-        c = Vector((0.022 * math.cos(a), 0, 0.022 * math.sin(a) + 0.02))
-        loop = []
-        for m in range(6):
-            b = 2 * math.pi * m / 6
-            radial = Vector((math.cos(a), 0, math.sin(a)))
-            loop.append(tor.verts.new(rc + c + radial * (0.0042 * math.cos(b)) + Vector((0, 1, 0)) * (0.0042 * math.sin(b))))
-        loops.append(loop)
-    for k in range(16):
-        a, b = loops[k], loops[(k + 1) % 16]
-        for m in range(6):
-            tor.faces.new((a[m], a[(m + 1) % 6], b[(m + 1) % 6], b[m]))
-    bmesh.ops.recalc_face_normals(tor, faces=tor.faces)
-    ring.free()
-    merge(tor, "metal")
-    # side-release buckles on the girth strap
-    for sx in (1, -1):
-        hit = tree.ray_cast(Vector((sx * 0.6, -0.105, 0.43)), Vector((-sx, 0, 0)))
-        loc, nrm = hit[0], hit[1]
-        bx = bmesh.new()
-        bmesh.ops.create_cube(bx, size=1.0)
-        for v in bx.verts:
-            v.co = Vector((v.co.x * 0.016, v.co.y * 0.034, v.co.z * 0.052))
-        rot = Vector((1, 0, 0)).rotation_difference(nrm * sx if sx > 0 else -nrm)
-        for v in bx.verts:
-            v.co = loc + nrm * 0.022 + rot @ Vector((v.co.x * sx, v.co.y, v.co.z))
-        merge(bx, "plastic")
-    me = bpy.data.meshes.new("BosunHarness")
-    out.to_mesh(me)
-    out.free()
-    bm_low.free()
-    bpy.data.meshes.remove(low)
-    for p in me.polygons:
-        p.use_smooth = True
-    n = len(me.vertices)
-    for kind in ("tape", "metal", "plastic", "grip"):
-        set_attr(me, kind, np.array([1.0 if kinds.get(i) == kind else 0.0 for i in range(n)]))
+    import importlib
+    import bosun_harness
+    importlib.reload(bosun_harness)
+    me = bosun_harness.harness_mesh(body_me)
+    HANDLE_APEX, DRING_POS = bosun_harness.HANDLE_APEX, bosun_harness.DRING_POS
     return me
 
 
 # ------------------------------------------------------------------ fur cards
 
-CARD_TYPES = {  # atlas column: long wavy clump, medium clump, short tuft, tail plume
-    "long": 0, "medium": 1, "short": 2, "plume": 3}
-REGIONS = [  # name, count, card type, length range (m), width factor, lift (rad), droop
-    ("ruff", 560, "long", (0.095, 0.140), 0.50, 0.42, 0.55),
-    ("chest", 150, "long", (0.090, 0.125), 0.45, 0.30, 0.85),
-    ("back", 430, "medium", (0.055, 0.085), 0.55, 0.22, 0.30),
-    ("belly", 170, "long", (0.085, 0.120), 0.45, 0.25, 0.95),
-    ("feather", 160, "long", (0.060, 0.090), 0.45, 0.35, 0.75),
-    ("breeches", 250, "long", (0.085, 0.125), 0.50, 0.35, 0.80),
-    ("tail", 270, "plume", (0.100, 0.160), 0.55, 0.45, 0.70),
-    ("head", 120, "short", (0.028, 0.045), 0.60, 0.30, 0.20),
-    ("paw", 64, "short", (0.022, 0.032), 0.60, 0.50, 0.40),
+CARD_TYPES = {  # atlas column (4 x 2 cells, rows = two variants, roots at V=0): long wavy clump, medium clump,
+    "long": 0, "medium": 1, "short": 2, "plume": 3}    # short tuft, tail plume / feathering
+REGIONS = [  # name, count, card type, length range (m), width factor, lift (rad), droop, segments
+    ("under", 1800, "medium", (0.030, 0.048), 0.85, 0.10, 0.35, 1),     # inner layer: short, close to the skin, everywhere
+    ("ruff", 330, "long", (0.100, 0.145), 0.50, 0.40, 0.55, 3),
+    ("chest", 130, "long", (0.095, 0.135), 0.45, 0.28, 0.85, 3),
+    ("back", 310, "medium", (0.060, 0.090), 0.55, 0.20, 0.30, 3),
+    ("flank", 250, "medium", (0.070, 0.100), 0.50, 0.18, 0.60, 3),
+    ("belly", 120, "long", (0.090, 0.125), 0.45, 0.25, 0.95, 3),
+    ("feather", 130, "plume", (0.060, 0.095), 0.45, 0.35, 0.75, 3),
+    ("breeches", 160, "long", (0.090, 0.130), 0.50, 0.35, 0.80, 3),
+    ("tail", 190, "plume", (0.100, 0.160), 0.55, 0.45, 0.70, 3),
+    ("head", 110, "short", (0.028, 0.045), 0.60, 0.30, 0.20, 2),
+    ("ear", 50, "short", (0.030, 0.050), 0.60, 0.15, 0.50, 2),
+    ("leg", 140, "medium", (0.040, 0.060), 0.55, 0.20, 0.50, 2),
+    ("paw", 64, "short", (0.022, 0.032), 0.60, 0.50, 0.40, 2),
 ]
+FUR_TRIS = 14800                     # LOD0 card triangles (dog_fur_cards budget 15,000)
+TAPER = {1: [1.0, 0.6], 2: [1.0, 0.85, 0.5], 3: [1.0, 0.95, 0.78, 0.5]}
 
 
-def classify_points(C, N):
+def classify_points(C, N, ear):
+    """Outer-layer region per triangle centre ('' = inner layer only: muzzle, tail root)."""
     names, w, data = chain_fields(C)
     best = np.array(names)[np.argmax(w, axis=1)]
-    y, z = C[:, 1], C[:, 2]
-    reg = np.full(len(C), "", dtype=object)
+    y, z, ny, nz = C[:, 1], C[:, 2], N[:, 1], N[:, 2]
     t = {n: data[n][2] for n in names}
-    for i in range(len(C)):
-        b = best[i]
-        n = N[i]
-        if b == "neck" or (b == "spine" and y[i] < -0.33 and z[i] > 0.47):
-            reg[i] = "ruff"
-        elif b == "spine" and y[i] < -0.25 and z[i] <= 0.47 and n[2] < 0.3:
-            reg[i] = "chest"
-        elif b == "spine" and z[i] >= 0.42:
-            reg[i] = "back"
-        elif b == "spine" and z[i] < 0.42 and n[2] < -0.2:
-            reg[i] = "belly"
-        elif b in ("fl_l", "fl_r"):
-            if t[b][i] > 0.84:
-                reg[i] = "paw"
-            elif 0.15 < t[b][i] < 0.72 and n[1] > 0.15:
-                reg[i] = "feather"
-        elif b in ("hl_l", "hl_r"):
-            if t[b][i] > 0.84:
-                reg[i] = "paw"
-            elif t[b][i] < 0.58 and n[1] > -0.1:
-                reg[i] = "breeches"
-        elif b == "tail" and t[b][i] > 0.08:
-            reg[i] = "tail"
-        elif b == "head" and t[b][i] < 0.42 and n[1] > -0.55:
-            reg[i] = "head"
+    reg = np.full(len(C), "", dtype=object)
+    sp = best == "spine"
+    fl = np.isin(best, ["fl_l", "fl_r"])
+    hl = np.isin(best, ["hl_l", "hl_r"])
+    tleg = np.zeros(len(C))
+    for n in ("fl_l", "fl_r", "hl_l", "hl_r"):
+        tleg = np.where(best == n, t[n], tleg)
+
+    def put(mask, name):
+        reg[(reg == "") & mask] = name
+
+    put(ear > 0.5, "ear")
+    put((best == "neck") | (sp & (y < -0.33) & (z > 0.47)), "ruff")
+    put(sp & (y < -0.25) & (z <= 0.47) & (nz < 0.3), "chest")
+    put(sp & (nz < -0.2) & (z < 0.42), "belly")
+    put(sp & (nz >= 0.35), "back")
+    put(sp, "flank")
+    put((fl | hl) & (tleg > 0.84), "paw")
+    put(fl & (tleg > 0.15) & (tleg < 0.75) & (ny > 0.15), "feather")
+    put(hl & (tleg < 0.58) & (ny > -0.1), "breeches")
+    put(fl | hl, "leg")
+    put((best == "tail") & (t["tail"] > 0.08), "tail")
+    put((best == "head") & (t["head"] < 0.42) & (ny > -0.55), "head")
     return reg
 
 
+def sample_surface(idx, area, V, tris, count, nprng, reject):
+    """Blue-noise (dart throwing) points on the triangles idx: no clumps, no holes. Returns [(tri, bary)]."""
+    A = float(area[idx].sum())
+    r = 0.56 * math.sqrt(A / count)
+    picks = nprng.choice(idx, size=count * 12, p=area[idx] / A)
+    R = nprng.random((len(picks), 2))
+    flip = R.sum(axis=1) > 1
+    R[flip] = 1 - R[flip]
+    bary = np.column_stack([1 - R.sum(axis=1), R[:, 0], R[:, 1]])
+    P = np.einsum("ij,ijk->ik", bary, V[tris[picks]])
+    grid, out, r2 = {}, [], r * r
+    for k in range(len(picks)):
+        key = tuple(np.floor(P[k] / r).astype(int))
+        ok = True
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for dz in (-1, 0, 1):
+                    for q in grid.get((key[0] + dx, key[1] + dy, key[2] + dz), ()):
+                        if float(np.sum((q - P[k]) ** 2)) < r2:
+                            ok = False
+                            break
+                    if not ok:
+                        break
+                if not ok:
+                    break
+        if not ok or reject(P[k]):
+            continue
+        grid.setdefault(key, []).append(P[k])
+        out.append((picks[k], bary[k]))
+        if len(out) >= count:
+            break
+    return out
+
+
 def fur_cards(body_me, harness_me):
-    """Returns a list of card dicts (root, normal, verts (8,3), uv (8,2), region, front?)."""
+    """Two layers of alpha cards following the groom (flow): an inner layer of short single-quad tufts lying close to
+    the skin over every furred surface (blue-noise, so no holes), and an outer layer of longer bent cards per region
+    (ruff, chest, back, flanks, belly fringe, fore-leg feathering, breeches, tail plume, skull, ears, legs, paws).
+    Card normals are blended 70/30 toward the body normal for soft shading. Returns card dicts (root, n, verts
+    (2*(segs+1), 3), uv, nrm, region, segs, front, size)."""
     rng = random.Random(SEED)
+    nprng = np.random.default_rng(SEED)
     me = body_me
     me.calc_loop_triangles()
     V = mesh_arrays(me)
     Nv = vertex_normals(me)
     flow = get_attr(me, "flow", "FLOAT_VECTOR")
-    eye = get_attr(me, "eye")
+    at = {k: get_attr(me, k) for k in ("eye", "lid", "nose", "pad", "nail", "lip", "ear", "short")}
     tris = np.array([t.vertices[:] for t in me.loop_triangles])
-    keep = eye[tris].max(axis=1) < 0.5
-    tris = tris[keep]
     A, B, Cc = V[tris[:, 0]], V[tris[:, 1]], V[tris[:, 2]]
     area = 0.5 * np.linalg.norm(np.cross(B - A, Cc - A), axis=1)
     cent = (A + B + Cc) / 3
     fn = np.cross(B - A, Cc - A)
     fn /= np.maximum(np.linalg.norm(fn, axis=1, keepdims=True), 1e-12)
-    reg = classify_points(cent, fn)
+    bare = np.max([at[k][tris].max(axis=1) for k in ("eye", "lid", "nose", "pad", "nail")], axis=0) > 0.3
+    bare |= at["lip"][tris].max(axis=1) > 0.4
+    ear_t = at["ear"][tris].min(axis=1)
+    bare |= (ear_t > 0.5) & (fn[:, 0] * np.sign(cent[:, 0]) < 0.15)          # ear inner side lies on the head
+    bare |= at["ear"][tris].max(axis=1) - ear_t > 0.5                          # ear root seam
+    bare |= area < 1e-9
+    bare |= (cent[:, 2] < 0.008) & (fn[:, 2] < -0.3)                           # paw soles
+    reg = classify_points(cent, fn, ear_t)
     body_tree = bvh_of(me)
     harn_tree = bvh_of(harness_me)
+    eye_locs = [np.array(g) for g in EYE_GUESS]
     cards = []
-    nprng = np.random.default_rng(SEED)
-    for name, count, ctype, (l0, l1), wf, lift, droop in REGIONS:
-        idx = np.nonzero(reg == name)[0]
+    for name, count, ctype, (l0, l1), wf, lift, droop, segs in REGIONS:
+        inner = name == "under"
+        idx = np.nonzero(~bare if inner else ~bare & (reg == name))[0]
         if len(idx) == 0:
             continue
-        p = area[idx] / area[idx].sum()
-        picks = nprng.choice(idx, size=count * 2, p=p)
-        made = 0
-        for ti in picks:
-            if made >= count:
-                break
-            r1, r2 = nprng.random(2)
-            if r1 + r2 > 1:
-                r1, r2 = 1 - r1, 1 - r2
+        keep_off = 0.030 if inner else 0.040
+
+        def reject(p):
+            hn = harn_tree.find_nearest(Vector(p))
+            if hn[0] is not None and hn[3] < keep_off:
+                return True
+            return min(float(np.linalg.norm(p - e)) for e in eye_locs) < 0.026
+
+        for ti, bary in sample_surface(idx, area, V, tris, count, nprng, reject):
             a, b, c = tris[ti]
-            bary = np.array([1 - r1 - r2, r1, r2])
             root = bary @ V[[a, b, c]]
             n = bary @ Nv[[a, b, c]]
             n /= np.linalg.norm(n)
@@ -741,49 +975,75 @@ def fur_cards(body_me, harness_me):
             if np.linalg.norm(f) < 1e-4:
                 continue
             f /= np.linalg.norm(f)
-            hn = harn_tree.find_nearest(Vector(root))
-            if hn[0] is not None and hn[3] < 0.04:
-                continue
+            sh = float(bary @ at["short"][[a, b, c]])
             L = l0 + (l1 - l0) * rng.random()
+            kind = ctype
+            if inner:
+                L *= 1 - 0.45 * sh
+                kind = "short" if sh > 0.45 else "medium"
             if name == "tail":
                 L *= 0.75 + 0.5 * classify_t(root, "tail")
             W = L * wf * (0.8 + 0.4 * rng.random())
             lf = lift * (0.7 + 0.6 * rng.random())
             dr = droop * (0.6 + 0.8 * rng.random())
-            twist = rng.uniform(-0.95, 0.95)
+            twist = rng.uniform(-0.35, 0.35) if inner else rng.uniform(-0.95, 0.95)
             side = np.cross(n, f)
             side /= np.linalg.norm(side)
             wv = side * math.cos(twist) + n * math.sin(twist)
-            d0 = f * math.cos(lf) + n * math.sin(lf)
-            pts = [root - n * 0.006]
-            d = d0.copy()
-            for k in range(1, 4):
-                d = d + np.array([0, 0, -1.0]) * (dr * 0.45)
+            d = f * math.cos(lf) + n * math.sin(lf)
+            pts = [root - n * (0.004 if inner else 0.006)]
+            dirs = []
+            for k in range(segs):
+                d = d + np.array([0, 0, -1.0]) * (dr * 0.45 * math.sqrt(3.0 / segs))
                 d /= np.linalg.norm(d)
-                q = pts[-1] + d * (L / 3)
+                q = pts[-1] + d * (L / segs)
                 hit = body_tree.find_nearest(Vector(q))
                 if hit[0] is not None:
                     loc, nrm = np.array(hit[0]), np.array(hit[1])
-                    if (q - loc) @ nrm < 0.004:
-                        q = loc + nrm * 0.004
+                    if (q - loc) @ nrm < (0.003 if inner else 0.004):
+                        q = loc + nrm * (0.003 if inner else 0.004)
+                dirs.append(q - pts[-1])
                 pts.append(q)
-            taper = [1.0, 0.95, 0.78, 0.5]
-            verts, uvs = [], []
-            col = CARD_TYPES[ctype]
+            dirs = [dirs[0]] + dirs
+            taper = TAPER[segs]
+            col = CARD_TYPES[kind]
             row = rng.randint(0, 1)
             u0, u1 = col / 4 + 0.006, (col + 1) / 4 - 0.006
             v0, v1 = row / 2 + 0.004, (row + 1) / 2 - 0.004
+            verts, uvs, nrms = [], [], []
             for k, q in enumerate(pts):
                 hw = W * taper[k] / 2
                 verts += [q - wv * hw, q + wv * hw]
-                vv = v0 + (v1 - v0) * k / 3
+                vv = v0 + (v1 - v0) * k / segs
                 uvs += [(u0, vv), (u1, vv)]
+                hit = body_tree.find_nearest(Vector(q))
+                nb = np.array(hit[1]) if hit[0] is not None else n
+                cf = np.cross(wv, dirs[k])
+                cf /= max(np.linalg.norm(cf), 1e-9)
+                if cf @ nb < 0:
+                    cf = -cf
+                nk = 0.7 * nb + 0.3 * cf
+                nk /= np.linalg.norm(nk)
+                nrms += [nk, nk]
             verts = np.array(verts)
-            V3 = np.maximum(verts[:, 2], 0.0)
-            verts[:, 2] = V3
-            cards.append({"root": root, "n": n, "verts": verts, "uv": uvs, "region": name, "front": root[1] < -0.05,
-                          "size": L * W})
-            made += 1
+            verts[:, 2] = np.maximum(verts[:, 2], 0.0)
+            cards.append({"root": root, "n": n, "verts": verts, "uv": uvs, "nrm": nrms, "region": name, "segs": segs,
+                          "front": root[1] < -0.05, "size": L * W})
+    # hold the LOD0 card budget: drop the smallest inner tufts first
+    tot = sum(2 * c["segs"] for c in cards)
+    if tot > FUR_TRIS:
+        under = sorted([c for c in cards if c["region"] == "under"], key=lambda c: c["size"])
+        drop = set()
+        for c in under:
+            if tot <= FUR_TRIS:
+                break
+            drop.add(id(c))
+            tot -= 2 * c["segs"]
+        cards = [c for c in cards if id(c) not in drop]
+    counts = {}
+    for c in cards:
+        counts[c["region"]] = counts.get(c["region"], 0) + 1
+    print("[bosun] fur cards %d (%d tris): %s" % (len(cards), sum(2 * c["segs"] for c in cards), counts))
     return cards
 
 
@@ -797,16 +1057,17 @@ def cards_mesh(cards, name, width_scale=1.0, length_scale=1.0):
     normals = []
     for c in cards:
         verts = c["verts"].copy()
+        rows = len(verts) // 2
         if width_scale != 1.0 or length_scale != 1.0:
             root = (verts[0] + verts[1]) / 2
-            for k in range(4):
+            for k in range(rows):
                 mid = (verts[2 * k] + verts[2 * k + 1]) / 2
                 half = (verts[2 * k + 1] - verts[2 * k]) / 2 * width_scale
                 mid = root + (mid - root) * length_scale
                 verts[2 * k], verts[2 * k + 1] = mid - half, mid + half
-        bv = [bm.verts.new((verts[i] * S).tolist()) for i in range(8)]
-        normals += [c["n"]] * 8
-        for k in range(3):
+        bv = [bm.verts.new((verts[i] * S).tolist()) for i in range(len(verts))]
+        normals += [tuple(v) for v in c["nrm"]]
+        for k in range(rows - 1):
             quad = [2 * k, 2 * k + 1, 2 * k + 3, 2 * k + 2]
             a, b, d = verts[quad[0]], verts[quad[1]], verts[quad[3]]
             fnorm = np.cross(b - a, d - a)
@@ -821,7 +1082,7 @@ def cards_mesh(cards, name, width_scale=1.0, length_scale=1.0):
     bm.free()
     for p in me.polygons:
         p.use_smooth = True
-    me.normals_split_custom_set_from_vertices([tuple(n) for n in normals])
+    me.normals_split_custom_set_from_vertices(normals)
     return new_object(name, me)
 
 
@@ -893,6 +1154,8 @@ def split_body(obj, base, lod_suffix):
         bm.from_mesh(me)
         kill = [f for f in bm.faces if part_of(from_final(f.calc_center_median())) != part]
         bmesh.ops.delete(bm, geom=kill, context="FACES")
+        bmesh.ops.delete(bm, geom=[ed for ed in bm.edges if not ed.link_faces], context="EDGES")
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
         name = "%s_Body%s_%s" % (base, part, lod_suffix)
         pme = bpy.data.meshes.new(name)
         bm.to_mesh(pme)

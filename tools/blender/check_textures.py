@@ -6,7 +6,7 @@
 Per texture set T_<Name>_<Set>_<ALB|NOR|RGH|MET>[_Wet]:
   names        every image in the folder follows the texture name rule; all four maps present
   size         power of two on both sides, at or under the cap (EXPORT_CAP for shipping, 4096 for masters), one size a set
-  ALB          RGB 24-bit (RGBA only with --alpha); non-metal pixels sRGB luma 30 to 240, metal pixels 180 to 250
+  ALB          RGB 24-bit (RGBA only with --alpha); non-metal pixels sRGB luma 20 to 240 (docs/12 section 1.4a), metal pixels 180 to 250
                (metal = MET above 127; 1st and 99th percentiles over each mask eroded by 2 px so metal/paint seams blended by
                the downsample do not count); saturation at most 0.45
                (95th percentile) outside the signal mask
@@ -30,7 +30,7 @@ import common  # noqa: E402
 import names  # noqa: E402
 from validate import Report  # noqa: E402
 
-ALB_NONMETAL = (30, 240)
+ALB_NONMETAL = (20, 240)
 ALB_METAL = (180, 250)
 SAT_MAX = 0.45
 SAT_PCT = 95

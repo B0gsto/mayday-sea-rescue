@@ -8,7 +8,7 @@ Why not tools/blender/run.py: the docs/12 row is two budget classes in one asset
 cards under `dog_fur_cards`, 25,000 + 15,000), and run.py validates one class per spec. This driver runs the same
 validate.run on two specs, exports one FBX per LOD with every part (export.run), and the shared turntable.
 Fur-card LODs are subsets of the LOD0 cards (wider, same atlas), not decimations, so their UV area differs by design
-(waived "LOD UV layout"). Fur maps come from fur_textures.py (system python3), not from a bake.
+(waived "LOD UV layout"). Fur maps come from fur_atlas.py (Blender strand renders, then system python3 assembly), not from a bake.
 """
 import json
 import os
@@ -58,7 +58,8 @@ def stage_build():
     print("[bosun] withers %.3f m as built, scale %.3f" % (wh, k))
     harness_me = bosun.harness_mesh(body_me)           # built and fitted in build metres
     cards = bosun.fur_cards(body_me, harness_me)
-    shift = np.array([-(Vb[:, 0].min() + Vb[:, 0].max()) / 2, -(Vb[:, 1].min() + Vb[:, 1].max()) / 2, -Vb[:, 2].min()])
+    Va = np.vstack([Vb, bosun.mesh_arrays(harness_me)])          # origin: centre of the base of body + harness
+    shift = np.array([-(Va[:, 0].min() + Va[:, 0].max()) / 2, -(Va[:, 1].min() + Va[:, 1].max()) / 2, -Vb[:, 2].min()])
     bosun.XFORM.update(shift=shift, k=k)
     for me in (body_me, harness_me):
         bosun.set_coords(me, bosun.to_final(bosun.mesh_arrays(me)))
@@ -70,23 +71,12 @@ def stage_build():
     bosun.uv_unwrap(body, 0.002)
     bosun.uv_unwrap(harn, 0.004)
 
-    # LODs: decimate the unsplit body (no cracks between parts), then split every LOD the same way
-    lod_objs = {"LOD0": body}
-    body_tris = versions.triangles(body.data)
-    for lod, share in (("LOD1", 0.38), ("LOD2", 0.095)):
-        o = versions.copy_object(body, ASSET + "_Body_TMP_" + lod)
-        versions.decimate(o, int(body_tris * share))
-        lod_objs[lod] = o
-    parts = {}
-    for lod, o in lod_objs.items():
-        parts[lod] = bosun.split_body(o, ASSET, lod)
-        if lod != "LOD0":
-            for p in parts[lod].values():
-                versions.weighted_normals(p)
-        bpy.data.objects.remove(o, do_unlink=True)
-    harn_tris = versions.triangles(harn.data)
+    # LODs: the harness first (thin straps: 10% breaks them), then the unsplit body fills the rest of the LOD budget
+    # (dog: LOD1 10,000, LOD2 3,000 for body + harness), decimated before the split so the parts do not crack
     import bmesh
-    for lod, share in (("LOD1", 0.45), ("LOD2", 0.32)):      # thin straps: 10% breaks them; the asset total still fits
+    harn_tris = versions.triangles(harn.data)
+    harn_lod = {}
+    for lod, share in (("LOD1", 0.45), ("LOD2", 0.25)):
         o = versions.copy_object(harn, ASSET + "_Harness_" + lod)
         versions.decimate(o, int(harn_tris * share))
         bm = bmesh.new()
@@ -96,11 +86,36 @@ def stage_build():
         bm.to_mesh(o.data)
         bm.free()
         versions.weighted_normals(o)
+        harn_lod[lod] = versions.triangles(o.data)
+    lod_objs = {"LOD0": body}
+    body_tris = versions.triangles(body.data)
+    for lod, cap in (("LOD1", 9600), ("LOD2", 2850)):
+        o = versions.copy_object(body, ASSET + "_Body_TMP_" + lod)
+        versions.decimate(o, int(min(cap - harn_lod[lod], body_tris * 0.45)))
+        lod_objs[lod] = o
+    parts = {}
+    for lod, o in lod_objs.items():
+        parts[lod] = bosun.split_body(o, ASSET, lod)
+        if lod != "LOD0":
+            for p in parts[lod].values():
+                versions.weighted_normals(p)
+        bpy.data.objects.remove(o, do_unlink=True)
 
-    # fur cards: front and rear MeshParts; LOD1 / LOD2 keep 40% / 10% of the cards, wider
+    # fur cards: front and rear MeshParts; LOD1 / LOD2 keep ~40% / ~10% of the cards, wider, capped by triangles
+    # (dog_fur_cards: LOD1 0.4 x 15,000, LOD2 0.1 x 15,000)
     cards.sort(key=lambda c: -c["size"])
-    for lod, keep, ws, ls in (("LOD0", 1, 1.0, 1.0), ("LOD1", 2.5, 1.45, 1.05), ("LOD2", 10, 2.4, 1.1)):
-        sub = cards if lod == "LOD0" else [c for i, c in enumerate(cards) if (i % 5 in (0, 2) if lod == "LOD1" else i % 10 == 0)]
+
+    def subset(pick, cap):
+        sub, tris = [], 0
+        for i, c in enumerate(cards):
+            if pick(i) and tris + 2 * c["segs"] <= cap:
+                sub.append(c)
+                tris += 2 * c["segs"]
+        return sub
+
+    for lod, ws, ls in (("LOD0", 1.0, 1.0), ("LOD1", 1.45, 1.05), ("LOD2", 2.4, 1.1)):
+        sub = cards if lod == "LOD0" else subset(lambda i: i % 5 in (0, 2), 5900) if lod == "LOD1" else \
+            subset(lambda i: i % 10 == 0, 1480)
         for half, front in (("FurFront", True), ("FurRear", False)):
             bosun.cards_mesh([c for c in sub if c["front"] == front], "%s_%s_%s" % (ASSET, half, lod), ws, ls)
 
@@ -111,7 +126,11 @@ def stage_build():
             mat = bpy.data.materials.get("MI_Bosun_" + set_name) or bpy.data.materials.new("MI_Bosun_" + set_name)
             o.data.materials.clear()
             o.data.materials.append(mat)
-    bosun.attachments()
+    # attachments ride on their MeshParts: harness handle and tow ring on the harness, the mouth on the head
+    for e in bosun.attachments():
+        par = bpy.data.objects[ASSET + ("_BodyHead_LOD0" if e.name == "ATT_Mouth" else "_Harness_LOD0")]
+        e.parent = par
+        e.matrix_parent_inverse = par.matrix_world.inverted()
     report_counts()
     bpy.ops.wm.save_as_mainfile(filepath=BLEND, check_existing=False)
     print("[bosun] saved", BLEND)

@@ -1,152 +1,512 @@
 [
  {
-  "name": "M_Chr_Bosun_Clear_dry",
+  "name": "M_Chr_Bosun_Clear_dry_EVm05",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Clear', false)"
+  "lua": "return _G.BosunShot('Clear', false, -0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Clear_wet",
+  "name": "M_Chr_Bosun_Clear_dry_EV0",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Clear', true)"
+  "lua": "return _G.BosunShot('Clear', false, 0.0)"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_dry",
+  "name": "M_Chr_Bosun_Clear_dry_EVp05",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Overcast', false)"
+  "lua": "return _G.BosunShot('Clear', false, 0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_wet",
+  "name": "M_Chr_Bosun_Clear_wet_EVm05",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
-  "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Overcast', true)"
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Clear', true, -0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Storm_dry",
+  "name": "M_Chr_Bosun_Clear_wet_EV0",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
-  "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Storm', false)"
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Clear', true, 0.0)"
  },
  {
-  "name": "M_Chr_Bosun_Storm_wet",
+  "name": "M_Chr_Bosun_Clear_wet_EVp05",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
-  "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Storm', true)"
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Clear', true, 0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Night_dry",
+  "name": "M_Chr_Bosun_Overcast_dry_EVm05",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Night', false)"
+  "lua": "return _G.BosunShot('Overcast', false, -0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Night_wet",
+  "name": "M_Chr_Bosun_Overcast_dry_EV0",
   "cam": [
-   -41.8,
-   6.4,
-   -14.2
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.15,
-   -9.2
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "return _G.LookDev.apply('Night', true)"
+  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_dry_Alpha_Transparency",
+  "name": "M_Chr_Bosun_Overcast_dry_EVp05",
   "cam": [
-   -44.0,
-   6.3,
-   -12.6
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.7,
-   -10.3
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "local n = 0 for _, d in workspace.LookDev:GetDescendants() do if d:IsA('SurfaceAppearance') then local mp = d:FindFirstAncestorWhichIsA('MeshPart') if mp and string.find(mp.Name, '_Fur') then d.AlphaMode = Enum.AlphaMode.Transparency n += 1 end end end return _G.LookDev.apply('Overcast', false) .. ' alpha Transparency x' .. n"
+  "lua": "return _G.BosunShot('Overcast', false, 0.5)"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_dry_Alpha_Overlay",
+  "name": "M_Chr_Bosun_Overcast_wet_EVm05",
   "cam": [
-   -44.0,
-   6.3,
-   -12.6
+   -41.4,
+   10.5,
+   -13.8
   ],
   "look": [
    -46.0,
-   5.7,
-   -10.3
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, -0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_EV0",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_EVp05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, 0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_EVm05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
   ],
   "settle": 1.5,
-  "lua": "local n = 0 for _, d in workspace.LookDev:GetDescendants() do if d:IsA('SurfaceAppearance') then local mp = d:FindFirstAncestorWhichIsA('MeshPart') if mp and string.find(mp.Name, '_Fur') then d.AlphaMode = Enum.AlphaMode.Overlay n += 1 end end end return _G.LookDev.apply('Overcast', false) .. ' alpha Overlay x' .. n"
+  "lua": "return _G.BosunShot('Storm', false, -0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_EV0",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_EVp05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_EVm05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Storm', true, -0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_EV0",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Storm', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_EVp05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Storm', true, 0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_EVm05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, -0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_EV0",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_EVp05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, 0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet_EVm05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Night', true, -0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet_EV0",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Night', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet_EVp05",
+  "cam": [
+   -41.4,
+   10.5,
+   -13.8
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Night', true, 0.5)"
+ },
+ {
+  "name": "M_Chr_Bosun_Clear_dry_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Clear', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Clear_wet_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Clear', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Storm', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet_Side",
+  "cam": [
+   -39.0,
+   10.5,
+   -9.4
+  ],
+  "look": [
+   -46.0,
+   7.3,
+   -9.4
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Night', true, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry_FurClose",
+  "cam": [
+   -43.6,
+   9.6,
+   -13.2
+  ],
+  "look": [
+   -46.0,
+   8.0,
+   -10.6
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_FurClose",
+  "cam": [
+   -43.6,
+   9.6,
+   -13.2
+  ],
+  "look": [
+   -46.0,
+   8.0,
+   -10.6
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
  }
 ]
