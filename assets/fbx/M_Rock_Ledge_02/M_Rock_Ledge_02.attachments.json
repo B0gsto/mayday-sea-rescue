@@ -1,0 +1,36 @@
+{
+ "asset": "M_Rock_Ledge_02",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    1.8332
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.8332,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.4547,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

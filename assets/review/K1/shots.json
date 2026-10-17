@@ -1,0 +1,212 @@
+[
+ {
+  "name": "K1_Cove_Clear_dry",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "K1_Cove_Clear_wet",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "K1_Cove_Overcast_dry",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "K1_Cove_Overcast_wet",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "K1_Cove_Storm_dry",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "K1_Cove_Storm_wet",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "K1_Cove_Night_dry",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "K1_Cove_Night_wet",
+  "cam": [
+   -440.1,
+   26.0,
+   99.2
+  ],
+  "look": [
+   -517.9,
+   8.0,
+   15.8
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-440.1, 26.0, 99.2}, {-517.9, 8.0, 15.8}) return _G.LookDev.apply('Night', true)"
+ },
+ {
+  "name": "K1_Ledge_Overcast_dry",
+  "cam": [
+   -484.7,
+   5,
+   30.6
+  ],
+  "look": [
+   -492.4,
+   1,
+   12.9
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "K1_Ledge_Overcast_wet",
+  "cam": [
+   -484.7,
+   5,
+   30.6
+  ],
+  "look": [
+   -492.4,
+   1,
+   12.9
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-484.7, 5, 30.6}, {-492.4, 1, 12.9}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "K1_Boulders_Overcast_dry",
+  "cam": [
+   -492.4,
+   11.0,
+   25.7
+  ],
+  "look": [
+   -511.5,
+   5.0,
+   19.3
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "K1_Boulders_Overcast_wet",
+  "cam": [
+   -492.4,
+   11.0,
+   25.7
+  ],
+  "look": [
+   -511.5,
+   5.0,
+   19.3
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-492.4, 11.0, 25.7}, {-511.5, 5.0, 19.3}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "K1_Cliffs_Overcast_dry",
+  "cam": [
+   -470.5,
+   16.0,
+   51.8
+  ],
+  "look": [
+   -522.1,
+   14.0,
+   3.0
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "K1_Cliffs_Overcast_wet",
+  "cam": [
+   -470.5,
+   16.0,
+   51.8
+  ],
+  "look": [
+   -522.1,
+   14.0,
+   3.0
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-470.5, 16.0, 51.8}, {-522.1, 14.0, 3.0}) return _G.LookDev.apply('Overcast', true)"
+ }
+]
