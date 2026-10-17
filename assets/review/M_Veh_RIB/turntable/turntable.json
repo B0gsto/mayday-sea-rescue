@@ -91,7 +91,8 @@
     0.308,
     0.121,
     0.509
-   ]
+   ],
+   "fill": 0.775
   },
   "Side": {
    "asset": [
@@ -105,7 +106,8 @@
     0.367,
     0.113,
     0.521
-   ]
+   ],
+   "fill": 0.774
   },
   "Rear3Q": {
    "asset": [
@@ -119,23 +121,101 @@
     0.304,
     0.123,
     0.511
-   ]
+   ],
+   "fill": 0.775
   },
   "High": {
    "asset": [
-    0.324,
-    0.164,
-    0.963,
-    0.852
+    0.199,
+    0.037,
+    0.908,
+    0.847
    ],
    "mannequin": [
-    0.152,
-    0.447,
-    0.227,
-    0.572
-   ]
+    -0.02,
+    0.385,
+    0.082,
+    0.525
+   ],
+   "fill": 0.81
   }
  },
+ "closeups": [
+  {
+   "name": "bow_tube_seam",
+   "target": [
+    1.6,
+    -11.6,
+    3.0
+   ],
+   "dist": 6.0,
+   "az": 30.0,
+   "el": 22.0,
+   "file": "closeup_bow_tube_seam.png"
+  },
+  {
+   "name": "helm_console",
+   "target": [
+    0.0,
+    -1.2,
+    5.4
+   ],
+   "dist": 6.0,
+   "az": 190.0,
+   "el": 30.0,
+   "file": "closeup_helm_console.png"
+  },
+  {
+   "name": "outboards",
+   "target": [
+    0.0,
+    12.3,
+    2.6
+   ],
+   "dist": 6.0,
+   "az": 155.0,
+   "el": 14.0,
+   "file": "closeup_outboards.png"
+  },
+  {
+   "name": "deck_cleat",
+   "target": [
+    1.45,
+    -9.2,
+    2.2
+   ],
+   "dist": 6.0,
+   "az": 40.0,
+   "el": 50.0,
+   "file": "closeup_deck_cleat.png"
+  },
+  {
+   "name": "aframe_light_bar",
+   "target": [
+    0.0,
+    9.55,
+    8.4
+   ],
+   "dist": 6.0,
+   "az": 15.0,
+   "el": 10.0,
+   "file": "closeup_aframe_light_bar.png"
+  },
+  {
+   "name": "side_decals",
+   "target": [
+    4.2,
+    -3.2,
+    3.0
+   ],
+   "dist": 8.0,
+   "az": 90.0,
+   "el": 6.0,
+   "file": "closeup_side_decals.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.774,
  "in_frame": true,
  "dims_m": [
   2.85,
@@ -143,5 +223,5 @@
   3.0
  ],
  "validation_ok": true,
- "seconds": 3.7
+ "seconds": 6.2
 }

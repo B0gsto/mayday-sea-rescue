@@ -168,3 +168,46 @@ def map_file(directory, stem):
         if os.path.isfile(p):
             return p
     return None
+
+
+# Close-up review renders (turntable.py detail row, sheet.py). Hero distance: about 2 m = 6 studs.
+CLOSEUP_DIST = 6.0
+CLOSEUP_MAX = 6
+CLOSEUP_EL = 25.0
+
+
+def _outward_az(target, centre):
+    """Azimuth (turntable convention: 0 = camera on -Y in front, positive towards +X) looking at `target` from outside
+    the bounding box: the camera sits on the side of the target away from the box centre (front three-quarter for the
+    centre itself)."""
+    import math
+    dx, dy = target[0] - centre[0], target[1] - centre[1]
+    if abs(dx) < 1e-6 and abs(dy) < 1e-6:
+        return 35.0
+    return math.degrees(math.atan2(dx, -dy)) % 360.0
+
+
+def closeup_targets(declared, lo, hi):
+    """The close-ups to render: spec["closeups"] when declared ([{"name", "target": [x, y, z] Blender studs, "dist"
+    (default CLOSEUP_DIST), "az", "el" (degrees, turntable convention; default: from outside the box, CLOSEUP_EL)}]),
+    else the four upper bounding-box corners (front-left first) and the centre. At most CLOSEUP_MAX; names unique."""
+    centre = [(a + b) / 2.0 for a, b in zip(lo, hi)]
+    if declared:
+        items = [dict(c) for c in declared]
+    else:
+        items = [{"name": "corner_%s" % n, "target": [x, y, hi[2]]}
+                 for n, x, y in (("FL", hi[0], lo[1]), ("FR", lo[0], lo[1]), ("RL", hi[0], hi[1]), ("RR", lo[0], hi[1]))]
+        items.append({"name": "centre", "target": list(centre)})
+    out, seen = [], set()
+    for i, c in enumerate(items[:CLOSEUP_MAX]):
+        name = re.sub(r"[^A-Za-z0-9_]+", "_", str(c.get("name") or "closeup%d" % (i + 1))).strip("_") or "closeup%d" % (i + 1)
+        while name in seen:
+            name += "_"
+        seen.add(name)
+        t = [float(v) for v in c["target"]]
+        if len(t) != 3:
+            raise ValueError("closeup %s: target needs x, y, z" % name)
+        out.append({"name": name, "target": t, "dist": float(c.get("dist") or CLOSEUP_DIST),
+                    "az": float(c["az"]) if c.get("az") is not None else round(_outward_az(t, centre), 2),
+                    "el": float(c["el"]) if c.get("el") is not None else CLOSEUP_EL})
+    return out

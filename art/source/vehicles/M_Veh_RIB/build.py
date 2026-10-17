@@ -978,6 +978,15 @@ def build():
         "meshes": meshes,
         "attachments": atts,
         "bake_samples": 16,
+        # review close-ups at hero distance (turntable detail row; Blender studs, front is -Y, port is +X)
+        "closeups": [
+            {"name": "bow_tube_seam", "target": [1.6, -11.6, 3.0], "dist": 6, "az": 30, "el": 22},
+            {"name": "helm_console", "target": [0.0, -1.2, 5.4], "dist": 6, "az": 190, "el": 30},
+            {"name": "outboards", "target": [0.0, 12.3, 2.6], "dist": 6, "az": 155, "el": 14},
+            {"name": "deck_cleat", "target": [1.45, -9.2, 2.2], "dist": 6, "az": 40, "el": 50},
+            {"name": "aframe_light_bar", "target": [0.0, AF_BASE - 0.6, AF_TOP + 0.25], "dist": 6, "az": 15, "el": 10},
+            {"name": "side_decals", "target": [4.2, -3.2, 3.0], "dist": 8, "az": 90, "el": 6},
+        ],
         "waivers": {
             "LOD UV layout": "LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds "
                              "within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below "

@@ -1,0 +1,1 @@
+import_test PASS: bollard upright; RIB box 8.7 x 9.5 x 26.1

@@ -148,5 +148,50 @@
   ],
   "settle": 1.5,
   "lua": "_G.LookDev.shot({3.2, 48.25, 7.5}, {0, 44.449999999999996, -1.0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', true) return r .. \"; \" .. st"
+ },
+ {
+  "name": "M_Veh_RIB_Closeup_bow_tube_seam",
+  "cam": [
+   -4.38,
+   45.25,
+   -16.42
+  ],
+  "look": [
+   -1.6,
+   43.0,
+   -11.6
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({-4.38, 45.25, -16.42}, {-1.6, 43, -11.6}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', false) return r .. \"; \" .. st"
+ },
+ {
+  "name": "M_Veh_RIB_Closeup_helm_console",
+  "cam": [
+   1.81,
+   47.52,
+   3.98
+  ],
+  "look": [
+   -0.0,
+   44.7,
+   -1.0
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({1.81, 47.52, 3.98}, {-0, 44.7, -1}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', false) return r .. \"; \" .. st"
+ },
+ {
+  "name": "M_Veh_RIB_Closeup_outboards",
+  "cam": [
+   -2.46,
+   44.05,
+   17.58
+  ],
+  "look": [
+   -0.0,
+   42.6,
+   12.3
+  ],
+  "settle": 1.5,
+  "lua": "_G.LookDev.shot({-2.46, 44.05, 17.58}, {-0, 42.6, 12.3}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', false) return r .. \"; \" .. st"
  }
 ]

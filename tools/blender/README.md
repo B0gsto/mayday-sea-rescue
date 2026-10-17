@@ -19,7 +19,7 @@ is one run, each bake is its own run.
 ~/RobloxProjects/tools/blender-run.sh tools/blender/run.py -- --asset <Asset> --steps build,lod,validate,export,turntable
 
 # no heavy slot (system python3 + Pillow + numpy)
-python3 tools/blender/sheet.py --asset <Asset> [--out-root build/x] [--studio <dir>] [--reference <photo>]   # 768 px sheet
+python3 tools/blender/sheet.py --asset <Asset> [--out-root build/x] [--studio <dir>] [--reference <photo>]   # 1536 px sheet
 python3 tools/blender/check_textures.py assets/textures/<Asset>/ [--cap 4096] [--alpha] [--wet] [--signal-mask T_<Name>_<Set>=mask.png]
 python3 -m unittest discover -b -s tools/blender -p 'test_*.py'
 tools/blender/selftest/run_selftest.sh        # tests + the bollard end to end (2 short Blender runs) -> build/blender-selftest/
@@ -48,8 +48,8 @@ credits in `art/blender/LICENCES.md`. Report:
 | `uvlayout.py` | UV stats, texel density, LOD layout comparison, island count |
 | `texgen.py` | atlas shelf packing, bake margin, cap downsizing, texel maths |
 | `template.py` | builds `art/blender/_template.blend`: metric scale 1 (1 unit = 1 stud), collection `Template` (5.5-stud `TPL_Mannequin`, `TPL_Water` at Z 0, dock lineup of vehicle footprints, palette swatches, `CAM_Template`), worlds `WLD_Neutral` / `WLD_OvercastSea` / `WLD_OvercastCoast` (`set_world`), EEVEE 768 px AgX. Never exported: no empties, export / validate only see the spec |
-| `turntable.py` | `turntable` step: 4 angles (Front3Q, Side, Rear3Q, High) x neutral / overcast, PBR maps from the spec's sets, mannequin beside the asset, `silhouette.png`, `turntable.json` with in-frame boxes; restores the scene |
-| `sheet.py` | 768 px contact sheet (system python3): rows neutral, overcast, Studio presets (pending until shot), then reference photo, 64 px silhouette, footer (tris, sets, size check, validate) |
+| `turntable.py` | `turntable` step: 4 angles (Front3Q, Side, Rear3Q, High) x neutral / overcast framed so the asset fills 70%+ of the cell (`MIN_FILL`; the mannequin may be cropped beside small props), PBR maps from the spec's sets, mannequin beside the asset; up to 6 close-ups `closeup_<name>.png` at 1024 px, hero distance (6 studs), neutral HDRI, from `spec["closeups"]` (`[{"name", "target": [x, y, z] Blender studs, "dist", "az", "el"}]`, `common.closeup_targets`; default: the 4 upper bbox corners + centre); `silhouette.png`, `turntable.json` with in-frame boxes and fill; restores the scene |
+| `sheet.py` | 1536 px wide contact sheet (system python3): 384 px rows neutral, overcast, Studio presets (`*<Preset>*`, dry first; pending until shot), a detail row of the close-ups (3 per row, 512 px cells), then reference photo, 64 px silhouette, footer (tris, sets, size check, validate) |
 | `check_textures.py` | map content: albedo 30 to 240 (metal 180 to 250), saturation 0.45 outside signal masks, OpenGL normals (curl test), single-channel RGH / MET, size, names, wet darker / glossier |
 
 **validate** fails on: names; real size off by more than 5% of `dims_m` x 3 (up to 15% with `size_note`), or spec `dims_m`
@@ -111,3 +111,14 @@ python3 tools/blender/rope.py --trim-only --set Manila --profile three_strand --
 ~/RobloxProjects/tools/blender-run.sh tools/blender/flipbook.py -- --demo smoke|spray [--grid 4|8] --out build/b01-flipbook
 ~/RobloxProjects/tools/blender-run.sh tools/blender/flipbook.py -- --blend X.blend --name FX_<Group>_<Name> --grid 8 [--frames A B]
 ```
+
+### Import orientation (2026-10-17)
+
+The FBX export is right (`roblox = (-bx, bz, by)`): uploaded Models arrive with every MeshPart upright and the Model
+`WorldPivot` at the Blender origin. But the cloud importer keeps each FBX node's axis-conversion rotation in the MeshPart
+`PivotOffset` (Orientation 90, 0, 0). `tools/studio/import_asset.luau` set `PrimaryPart`, which makes `GetPivot()` that
+rotated part pivot, so `PivotTo(CFrame.new(x, y, z))` tipped the model 90 degrees (the RIB stood on its stern) and moved
+config attachments with it. The importer now re-points every `PivotOffset` at the authored `WorldPivot` first: assets
+land upright, forward -Z, pivot at the Blender origin. Regression: `tools/studio/import_test.luau` (synthetic B00
+bollard with the importer's rotated PivotOffset, and the imported RIB's box: length on Z, height on Y), run by
+`art/source/vehicles/M_Veh_RIB/studio_pass.sh`; `test_closeups.py` guards the fix in the source.

@@ -1,6 +1,8 @@
 """The `turntable` step (docs/12 section 1.1 preview row, 1.4 item 6): EEVEE renders of the asset's LOD0 beside the
 5.5-stud mannequin, 4 angles under the neutral studio HDRI and the overcast sea HDRI (template.WORLDS), with the
-asset's PBR maps applied when they exist, plus one alpha render of the asset alone for the 64 px silhouette.
+asset's PBR maps applied when they exist (framed so the asset fills at least MIN_FILL of the cell), close-ups at hero
+distance (spec["closeups"], default bbox corners + centre; common.closeup_targets) at CLOSEUP_SIZE, plus one alpha render
+of the asset alone for the 64 px silhouette.
 Called by run.py as turntable.run(spec, report, ok); writes <review>/<Asset>/turntable/ (8 views, silhouette.png,
 turntable.json). sheet.py (system python3 + Pillow) lays out the contact sheet from that folder and the report.
 
@@ -27,6 +29,9 @@ WORLDS = ((template.NEUTRAL, "neutral"), (template.OVERCAST, "overcast"))
 LENS_MM = 50.0
 SAMPLES = 32
 MARGIN = 1.08
+MIN_FILL = 0.70           # the asset spans at least this share of the cell (its larger screen extent); else the
+                          # mannequin is left partly out of frame so the asset can fill it
+CLOSEUP_SIZE = 1024       # detail renders (common.closeup_targets) at hero distance, neutral HDRI
 
 
 def corners(objs):
@@ -86,6 +91,11 @@ def place_mannequin(man, asset_pts, d, az):
     pos = c - right * (left_extent + gap + half)
     man.location = (pos.x, pos.y, lo.z)
     bpy.context.view_layer.update()
+
+
+def fill(box):
+    """Share of the frame the asset spans along its larger screen axis (box from frame_box)."""
+    return round(max(box[2] - box[0], box[3] - box[1]), 3)
 
 
 def frame_box(scene, cam, pts):
@@ -184,7 +194,7 @@ def run(spec, report, validation_ok):
     }
     saved["samples"] = scene.eevee.taa_render_samples
 
-    images, applied, frames = {}, {}, {}
+    images, applied, frames, closeups = {}, {}, {}, []
     restore_mats, made_mats = [], []
     try:
         template.set_eevee(scene, SAMPLES)
@@ -217,12 +227,30 @@ def run(spec, report, validation_ok):
                 d = view_dir(az, el)
                 place_mannequin(man, asset_pts, d, az)
                 fit(cam, asset_pts + corners([man]), d)
+                if fill(frame_box(scene, cam, asset_pts)) < MIN_FILL:
+                    fit(cam, asset_pts, d)          # small asset: frame it, the mannequin stays as a partial scale cue
                 if short == WORLDS[0][1]:
-                    frames[vname] = {"asset": frame_box(scene, cam, asset_pts), "mannequin": frame_box(scene, cam, corners([man]))}
+                    box = frame_box(scene, cam, asset_pts)
+                    frames[vname] = {"asset": box, "mannequin": frame_box(scene, cam, corners([man])), "fill": fill(box)}
                 fn = "%s_%s.png" % (vname, short)
                 scene.render.filepath = os.path.join(out_dir, fn)
                 bpy.ops.render.render(write_still=True)
                 images["%s_%s" % (vname, short)] = fn
+
+        # Detail row: close-ups at hero distance of the spec's points of interest (default: bbox corners and centre),
+        # asset alone under the neutral HDRI at CLOSEUP_SIZE.
+        man.hide_render = True
+        template.set_world(WORLDS[0][0])
+        scene.render.resolution_x = scene.render.resolution_y = CLOSEUP_SIZE
+        for c in common.closeup_targets(spec.get("closeups"), list(lo), list(hi)):
+            t = Vector(c["target"])
+            d = view_dir(c["az"], c["el"])
+            cam.matrix_world = template.look_matrix(-d, location=t + d * c["dist"])
+            fn = "closeup_%s.png" % c["name"]
+            scene.render.filepath = os.path.join(out_dir, fn)
+            bpy.ops.render.render(write_still=True)
+            closeups.append(dict(c, file=fn))
+        scene.render.resolution_x = scene.render.resolution_y = template.RENDER_SIZE
 
         # Silhouette: the asset alone, transparent film, side-on three-quarter view.
         man.hide_render = ground.hide_render = True
@@ -266,13 +294,14 @@ def run(spec, report, validation_ok):
         "dir": out_dir, "images": images, "views": [v[0] for v in VIEWS], "worlds": {s: w for w, s in WORLDS},
         "hdri": {s: template.WORLDS[w][0] for w, s in WORLDS}, "size_px": template.RENDER_SIZE, "samples": SAMPLES,
         "mannequin_studs": common.MANNEQUIN_STUDS, "maps_applied": applied, "sets": sets, "frames": frames,
-        "in_frame": all(0.0 <= v <= 1.0 for f in frames.values() for box in f.values() for v in box),
+        "closeups": closeups, "closeup_px": CLOSEUP_SIZE, "min_fill": min((f["fill"] for f in frames.values()), default=0.0),
+        "in_frame": all(0.0 <= v <= 1.0 for f in frames.values() for v in f["asset"]),
         "dims_m": spec.get("dims_m"), "validation_ok": bool(validation_ok), "seconds": round(time.time() - t0, 1),
     }
     with open(os.path.join(out_dir, "turntable.json"), "w", encoding="utf-8") as f:
         json.dump(result, f, indent=1, default=str)
     report.add(asset, "turntable", True, "%s; %d renders in %.0f s, maps %s" % (
-               "asset and mannequin in frame" if result["in_frame"] else "NOT ALL IN FRAME", len(images), result["seconds"],
+               ("asset in frame, fill >= %.2f" % result["min_fill"]) if result["in_frame"] else "NOT ALL IN FRAME", len(images) + len(closeups), result["seconds"],
                ", ".join("%s: %s" % (k, "/".join(v)) for k, v in applied.items()) or "none (flat materials)"), info=True)
-    print("[turntable] %d renders in %.0f s -> %s" % (len(images), result["seconds"], out_dir))
+    print("[turntable] %d renders + %d close-ups in %.0f s -> %s" % (len(images), len(closeups), result["seconds"], out_dir))
     return result
