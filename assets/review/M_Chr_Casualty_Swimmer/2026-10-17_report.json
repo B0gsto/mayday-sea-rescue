@@ -1,0 +1,646 @@
+{
+ "asset": "M_Chr_Casualty_Swimmer",
+ "name": "M_Chr_Casualty_Swimmer",
+ "date": "2026-10-17",
+ "commit": "0d8ef0d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "bytes": 1686892,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Casualty_Swimmer_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Casualty_Swimmer_LOD0.001",
+     "min": [
+      -1.1938,
+      -0.8489,
+      0.0
+     ],
+     "max": [
+      1.1938,
+      0.8489,
+      5.3704
+     ],
+     "polygons": 20000,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "bytes": 711196,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Casualty_Swimmer_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Casualty_Swimmer_LOD1.001",
+     "min": [
+      -1.1938,
+      -0.8525,
+      0.0026
+     ],
+     "max": [
+      1.1941,
+      0.8489,
+      5.3704
+     ],
+     "polygons": 7999,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "bytes": 206332,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Casualty_Swimmer_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Casualty_Swimmer_LOD2.001",
+     "min": [
+      -1.1852,
+      -0.8462,
+      0.0098
+     ],
+     "max": [
+      1.1883,
+      0.8705,
+      5.3527
+     ],
+     "polygons": 2000,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer.attachments.json",
+   "attachments": [
+    "ATT_Strobe",
+    "ATT_Whistle"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/characters/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "npc_person"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Casualty_Swimmer_LOD0"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (docs/06 2.1a: clothing merged into ONE mesh per LOD (moderation rule), so LOD0 is one MeshPart at the docs/12 2.9 row's 20,000 (Roblox cap about 20,000)): 20000 of 10000"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.79e-06, 226 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.994, v 0.003 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 20000 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "195 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Casualty_Swimmer_LOD1"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7999 of 10000"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.76e-06, 151 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.994, v 0.003 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 7999 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 6.5% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Casualty_Swimmer_LOD2"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2000 of 10000"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.11e-05, 126 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.994, v 0.004 to 0.984"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2000 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (organic LOD2 decimation moves UV island borders slightly; same atlas, same layout): UV bounds differ by 0.012 (max 0.02), UV area by 21.9% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "20000 of 20000 (npc_person, asset row)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7999 of 8000"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2000 of 2000"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Chr_Casualty_Swimmer/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.370 studs, real 1.750 m = 5.250 studs, off 2.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer",
+   "check": "texture sets",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (one MeshPart takes one SurfaceAppearance: the 2 sets + lifejacket (+ hair) of the docs/12 2.9 row are packed into one 2048 atlas (same memory as four 1024 sets)): 1 (2 to 2 sets)"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB_Wet.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_NOR.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH_Wet.png"
+  },
+  {
+   "subject": "T_CasualtySwimmer_Atlas_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_MET.png"
+  },
+  {
+   "subject": "ATT_Strobe",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Whistle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD0.fbx"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Casualty_Swimmer_LOD0; 20000 triangles (scene 20000)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD1.fbx"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Casualty_Swimmer_LOD1; 7999 triangles (scene 7999)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Casualty_Swimmer_LOD2; 2000 triangles (scene 2000)"
+  },
+  {
+   "subject": "M_Chr_Casualty_Swimmer_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Chr_Casualty_Swimmer_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 20000,
+   "texel_density": 194.6
+  },
+  {
+   "name": "M_Chr_Casualty_Swimmer_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 7999,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Casualty_Swimmer_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2000,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  2.387667179107666,
+  1.6977267265319824,
+  5.370351314544678
+ ],
+ "peak_rss_mb": 3133.7
+}

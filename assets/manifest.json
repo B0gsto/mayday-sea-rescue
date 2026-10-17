@@ -215,6 +215,15 @@
   "source": "assets/textures/Materials/T_Mat_WeedyConcrete_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:14812f0fd5e05202b4f2c682bca4b8c8ff12c2c816dec4f0c669301a84321908": {
+  "assetId": "73453177217919",
+  "imageId": "73453177217919",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_RGH_Wet",
+  "sha": "14812f0fd5e05202b4f2c682bca4b8c8ff12c2c816dec4f0c669301a84321908",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:14bda8fedf543ed01658db4f5de711d3751c55d381ba233262ac02ba93ddcb4e": {
   "assetId": "104638867096796",
   "imageId": "104638867096796",
@@ -734,6 +743,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png",
   "type": "Image"
  },
+ "Image:3dc4a3bc18ec9e6642878a57aadc218b6accacd4a4822ac210446c3864948eed": {
+  "assetId": "101058716293056",
+  "imageId": "101058716293056",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_ALB",
+  "sha": "3dc4a3bc18ec9e6642878a57aadc218b6accacd4a4822ac210446c3864948eed",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB.png",
+  "type": "Image"
+ },
  "Image:3dcf663ea4a1979864cadc1b387e798c9f9125fe7c7201b9c7c1a68094772698": {
   "assetId": "106584681481305",
   "imageId": "106584681481305",
@@ -1058,6 +1076,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB.png",
   "type": "Image"
  },
+ "Image:6262f634689246a5362c0aadb24da1debab1c7104a7154f79d00823836f2a6e4": {
+  "assetId": "129437702861432",
+  "imageId": "129437702861432",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_ALB_Wet",
+  "sha": "6262f634689246a5362c0aadb24da1debab1c7104a7154f79d00823836f2a6e4",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:62796e678cb4e697c2237a3b1b029ea7c867cfe3f7a8212ecd364295d41cca3b": {
   "assetId": "94598812354548",
   "imageId": "94598812354548",
@@ -1101,6 +1128,15 @@
   "name": "T_RIB_Deck_RGH",
   "sha": "66a6883ef7916d675298d308f2d7533b0731944e2366dbd27c9c425a7ab3d4d4",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png",
+  "type": "Image"
+ },
+ "Image:66f2f4023f124ccfcc2aaa06920d994c3c0717efbd02fd22d9e5bb8c8984f1cf": {
+  "assetId": "128252885255107",
+  "imageId": "128252885255107",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_RGH",
+  "sha": "66f2f4023f124ccfcc2aaa06920d994c3c0717efbd02fd22d9e5bb8c8984f1cf",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_RGH.png",
   "type": "Image"
  },
  "Image:675841c4faf26dc81daf8709d06ae26e55e3ceab4aeb6b573e7b5577fbdb417d": {
@@ -2281,6 +2317,18 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:d6fe7f0449886a35920e7b30b4f525e703a885f9cbfba8deaa99cc8e1fc743ce": {
+  "aliases": [
+   "T_CasualtySwimmer_Atlas_NOR_Wet"
+  ],
+  "assetId": "134091312756677",
+  "imageId": "134091312756677",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_NOR",
+  "sha": "d6fe7f0449886a35920e7b30b4f525e703a885f9cbfba8deaa99cc8e1fc743ce",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_NOR.png",
+  "type": "Image"
+ },
  "Image:d779a17b1951f09e0974b9cd2dc3019fb956c86ff75f71c842c8bb81280f0101": {
   "assetId": "90529622685444",
   "imageId": "90529622685444",
@@ -2477,6 +2525,18 @@
   "name": "Mayday_sky_Night_Dn",
   "sha": "e4860617773a39526f1e0d38f33e0b3fbe4cc2e17ad49352e465389745295b95",
   "source": "assets/ocean/sky/Night_Dn.png",
+  "type": "Image"
+ },
+ "Image:e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b": {
+  "aliases": [
+   "T_CasualtySwimmer_Atlas_MET_Wet"
+  ],
+  "assetId": "115017343888524",
+  "imageId": "115017343888524",
+  "moderation": "Approved",
+  "name": "T_CasualtySwimmer_Atlas_MET",
+  "sha": "e7e746011b4aa5eb384e36b062d5d0689172afe30d3a2e0a40cd35696ea12d0b",
+  "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_MET.png",
   "type": "Image"
  },
  "Image:e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27": {
@@ -2880,6 +2940,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris20500.fbx",
   "type": "Model"
  },
+ "Model:6c4ec867980aa2e80682b094d29fc57bde5b731890b76620101c1db4138f6272": {
+  "assetId": "77856458721407",
+  "moderation": "Approved",
+  "name": "M_Chr_Casualty_Swimmer_LOD0",
+  "rbxm": "assets/models/M_Chr_Casualty_Swimmer_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "6c4ec867980aa2e80682b094d29fc57bde5b731890b76620101c1db4138f6272",
+  "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:6f1dc2356f351763298f6843381a9382c31529043acf7d2fd353ee4e2e8d516b": {
   "assetId": "124101679376385",
   "moderation": "Approved",
@@ -2928,6 +2998,16 @@
   "route": "delivery",
   "sha": "83fe50cd2dcc2e26b9f3fb31cf87af914e1286189395ec4c8e5cbfc158d298b3",
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c": {
+  "assetId": "99233321520583",
+  "moderation": "Approved",
+  "name": "M_Chr_Casualty_Swimmer_LOD2",
+  "rbxm": "assets/models/M_Chr_Casualty_Swimmer_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "881368863450d5831e23857bc6490e4ac7db3189f1a8beea29814e930c84053c",
+  "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD2.fbx",
   "type": "Model"
  },
  "Model:8f2fd683c0ccfa6505c21fe62cd660444a6718256cd44e1be838d517e177c1be": {
@@ -3038,6 +3118,16 @@
   "route": "delivery",
   "sha": "cb333b59556c7a80beb7013eebcf544d56f05dc343a4f343df668146ad95b711",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:d4cb1e4335c23ed1953fb535c2ffafa156338cf3f360473e88c52d2455f9159e": {
+  "assetId": "139906280413380",
+  "moderation": "Approved",
+  "name": "M_Chr_Casualty_Swimmer_LOD1",
+  "rbxm": "assets/models/M_Chr_Casualty_Swimmer_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d4cb1e4335c23ed1953fb535c2ffafa156338cf3f360473e88c52d2455f9159e",
+  "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD1.fbx",
   "type": "Model"
  },
  "Model:f513c9e5e7337e9db947062ce7bc37ab890af54d46204be9cbaa5a5d839007d9": {

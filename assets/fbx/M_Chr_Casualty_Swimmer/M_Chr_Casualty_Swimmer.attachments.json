@@ -1,0 +1,65 @@
+{
+ "asset": "M_Chr_Casualty_Swimmer",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Strobe",
+   "parent": "RIG_Human",
+   "blender": [
+    0.5895,
+    -0.5675,
+    4.2106
+   ],
+   "roblox_from_origin": [
+    -0.5895,
+    4.2106,
+    -0.5675
+   ],
+   "roblox_from_bbox_centre": [
+    -0.5895,
+    1.5254,
+    -0.5675
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "ATT_Whistle",
+   "parent": "RIG_Human",
+   "blender": [
+    -0.5934,
+    -0.4179,
+    4.2106
+   ],
+   "roblox_from_origin": [
+    0.5934,
+    4.2106,
+    -0.4179
+   ],
+   "roblox_from_bbox_centre": [
+    0.5934,
+    1.5254,
+    -0.4179
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    -0.0
+   ]
+  }
+ ]
+}
