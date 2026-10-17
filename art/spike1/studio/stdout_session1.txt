@@ -1,0 +1,35 @@
+opened, studio_id: 7a8abe9a-4905-4f25-bc85-fc5fe120586a
+[ 39.2s] opened 7a8abe9a-4905-4f25-bc85-fc5fe120586a
+[ 47.3s] insert ScaleCube 0 inserted M_Spike1_ScaleCube into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 54.0s] insert RefBox 0 inserted M_Spike1_RefBox into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 60.6s] insert TexPlane 0 inserted M_Spike1_TexPlane into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 68.3s] insert Tris09990 0 inserted M_Spike1_Tris09990 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 74.9s] insert Tris19990 0 inserted M_Spike1_Tris19990 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 82.8s] insert Tris20500 0 inserted M_Spike1_Tris20500 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 90.4s] insert Tris21500 0 inserted M_Spike1_Tris21500 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 97.0s] insert Tris30000 0 inserted M_Spike1_Tris30000 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[104.8s] insert Tentacle20 0 inserted M_Spike1_Tentacle20 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[112.5s] insert Tentacle40 0 inserted M_Spike1_Tentacle40 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[137.9s] setup ok=True {"editableImage":{"1024_ALB":"1024, 1024","4096_ALB":"1024, 1024","1024_NOR":"1024, 1024","2048_NOR":"1024, 1024","4096_NOR":"1024, 1024","2048_ALB":"1024, 1024"},"errors":[],"tentacles":{"M_Spike1_Tentacle20":{"bones":20,"first":"Bone_00","center":[-20,290,-10],"size":[2,2,20]},"M_Spike1_Tentacle40
+[138.1s] importer ok=True {"colParts":0,"path":"Workspace.Spike1.M_Spike1_TexPlaneImported","tris":"unknown","meshParts":1,"asset":"M_Spike1_TexPlaneImported","attachments":[],"surfaceAppearances":1,"warnings":[],"wetVariants":1,"castShadowOff":0,"lodHidden":0,"parts":1}
+[139.0s] shot-setup edit {"load": [true, "lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 1"], "Overcast_false": [true, "LookDev Overcast dry (surfaces 0, material variants 0, terrain overrides 0); sky set", "SA=SurfaceAppearance ColorMap=rbxassetid://133497070455294 variants=[SurfaceAppearance_Wet] tagged=true"], "Storm_true": [true, "LookDev Storm wet (surfaces 1, material variants 0, terrain overrides 17); sky set", "SA=SurfaceAppearance ColorMap=rbxassetid://77900366731410 variants=[SurfaceAppearance_Dry] tagged=true"], "Night_false": [true, "
+[171.8s] tex captures 16
+[177.3s] tentacle {"Tentacle20_rest": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures/Tentacle20_rest.png", "Tentacle20_Bone_10": ["bent Workspace.Spike1.M_Spike1_Tentacle20.M_Spike1_Tentacle20.Bone_00.Bone_01.Bone_02.Bone_03.Bone_04.Bone_05.Bone_06.Bone_07.Bone_08.Bone_09.Bone_10", "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures/Tentacle20_Bone_10.png"], "Tentacle40_rest": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures/Tentacle40_rest.pn
+[177.3s] probe True probe installed
+play: True
+[221.6s] play server {"rt_ColorMapAfter":"ok","rt_NormalMap":"The current thread cannot write 'NormalMap' (lacking capability Plugin)","rt_Color":"ok","rt_NewSAColorMap":"The current thread cannot write 'ColorMap' (lacking capability Plugin)","rt_AlphaMode":"ok","rt_ColorMapContent":"The current thread cannot write 'ColorMapContent' (lacking capability Plugin)","rt_ColorMap":"The current thread cannot write 'ColorMap' (lacking capability Plugin)"}
+[223.6s] play client client SAs on Plane2048: SurfaceAppearance rbxassetid://113981166754593 1, 1, 1 | PlaneEM on client: true MeshId= size=12, 0.0010000000474974513, 12
+[228.7s] shot-setup client {"load": [true, "lookdev setup (client): frame avg 16.67 ms (60 fps), worst 17.7 ms; presets ok, skies ok, wet-capable parts 1"], "Overcast_false": [true, "LookDev Overcast dry (surfaces 0, material variants 0, terrain overrides 0); sky set"], "guis": "ScreenGuis 10, still enabled: []", "Storm_true": [true, "LookDev Storm wet (surfaces 1, material variants 0, terrain overrides 17); sky set"]}
+edit: True
+closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-spike1.rbxl - Roblox Studio
+[243.7s] closed; total 243.7 s

@@ -1,0 +1,275 @@
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_RefBox.fbx --type Model --route delivery
+uploaded Model M_Spike1_RefBox -> 124101679376385
+{
+ "assetId": "124101679376385",
+ "moderation": "Approved",
+ "name": "M_Spike1_RefBox",
+ "sha": "6f1dc2356f351763298f6843381a9382c31529043acf7d2fd353ee4e2e8d516b",
+ "source": "assets/fbx/Spike1/M_Spike1_RefBox.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_RefBox.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_ScaleCube.fbx --type Model --route delivery
+uploaded Model M_Spike1_ScaleCube -> 99212271339218
+{
+ "assetId": "99212271339218",
+ "moderation": "Approved",
+ "name": "M_Spike1_ScaleCube",
+ "sha": "9ac0550fc612f0047a7555bf91bc84906df1affbd769b88c37efa1c54f4c6a5c",
+ "source": "assets/fbx/Spike1/M_Spike1_ScaleCube.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_ScaleCube.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tentacle20.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tentacle20 -> 71211016289278
+{
+ "assetId": "71211016289278",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tentacle20",
+ "sha": "fe02247a2698a4a5f714bf6c19130f141014f334de5320076af5697f12f42956",
+ "source": "assets/fbx/Spike1/M_Spike1_Tentacle20.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tentacle20.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tentacle40.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tentacle40 -> 133379345248155
+{
+ "assetId": "133379345248155",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tentacle40",
+ "sha": "9d5dfbebbb800cc2f5286c533180047ea7d2e7102213d23699cba3e9006a4f9d",
+ "source": "assets/fbx/Spike1/M_Spike1_Tentacle40.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tentacle40.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_TexPlane.fbx --type Model --route delivery
+uploaded Model M_Spike1_TexPlane -> 134846170816032
+{
+ "assetId": "134846170816032",
+ "moderation": "Approved",
+ "name": "M_Spike1_TexPlane",
+ "sha": "0d7e119f334a5a39b0f2e252430537d53f9ac992163a4c3536e416ae0ec2c65b",
+ "source": "assets/fbx/Spike1/M_Spike1_TexPlane.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_TexPlane.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tris09990.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tris09990 -> 118575254499229
+{
+ "assetId": "118575254499229",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tris09990",
+ "sha": "360cac0b82921339422463b415051bdd8db5c29978595ffaa274c86714e0bfee",
+ "source": "assets/fbx/Spike1/M_Spike1_Tris09990.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tris09990.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tris19990.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tris19990 -> 127935384871864
+{
+ "assetId": "127935384871864",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tris19990",
+ "sha": "b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4",
+ "source": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tris19990.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tris20500.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tris20500 -> 107853799637000
+{
+ "assetId": "107853799637000",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tris20500",
+ "sha": "67a6958165d1156fded2ee481068368f8d0b20fbeec430516fc037a58d9f015b",
+ "source": "assets/fbx/Spike1/M_Spike1_Tris20500.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tris20500.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tris21500.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tris21500 -> 82241768209454
+{
+ "assetId": "82241768209454",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tris21500",
+ "sha": "259ea95551634fb3bd46fee49eb6007f2aedb394deb6f879a4b64157b887a03a",
+ "source": "assets/fbx/Spike1/M_Spike1_Tris21500.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tris21500.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/fbx/Spike1/M_Spike1_Tris30000.fbx --type Model --route delivery
+uploaded Model M_Spike1_Tris30000 -> 126935964886724
+{
+ "assetId": "126935964886724",
+ "moderation": "Approved",
+ "name": "M_Spike1_Tris30000",
+ "sha": "7cae27ec73c9b97e06f284a790eaa212309b51b6c906c09162c566e1bd3cdd5c",
+ "source": "assets/fbx/Spike1/M_Spike1_Tris30000.fbx",
+ "type": "Model",
+ "rbxm": "assets/models/M_Spike1_Tris30000.rbxm",
+ "route": "delivery"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_1024_ALB.png --type Image
+uploaded Image T_Spike1_1024_ALB -> 133497070455294 (image 133497070455294)
+{
+ "assetId": "133497070455294",
+ "type": "Image",
+ "name": "T_Spike1_1024_ALB",
+ "sha": "1063e9c38d11cd6f6ff79f354c33efebc30bea4ede72d756d0ca9312b490294f",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_1024_ALB.png",
+ "imageId": "133497070455294"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_1024_MET.png --type Image
+uploaded Image T_Spike1_1024_MET -> 108926989495989 (image 108926989495989)
+{
+ "assetId": "108926989495989",
+ "type": "Image",
+ "name": "T_Spike1_1024_MET",
+ "sha": "5787e02072a5a06fb82ae3defdf68dbf992ee7ae8ea0e8ce5d27c4e815e8f6f9",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_1024_MET.png",
+ "imageId": "108926989495989"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_1024_NOR.png --type Image
+uploaded Image T_Spike1_1024_NOR -> 71516326342804 (image 71516326342804)
+{
+ "assetId": "71516326342804",
+ "type": "Image",
+ "name": "T_Spike1_1024_NOR",
+ "sha": "d4863fbb854d37921269652d8a8e01597f24e13a4144407702eb28c71d437021",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_1024_NOR.png",
+ "imageId": "71516326342804"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_1024_RGH.png --type Image
+uploaded Image T_Spike1_1024_RGH -> 106584681481305 (image 106584681481305)
+{
+ "assetId": "106584681481305",
+ "type": "Image",
+ "name": "T_Spike1_1024_RGH",
+ "sha": "3dcf663ea4a1979864cadc1b387e798c9f9125fe7c7201b9c7c1a68094772698",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_1024_RGH.png",
+ "imageId": "106584681481305"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_2048_ALB.png --type Image
+uploaded Image T_Spike1_2048_ALB -> 113981166754593 (image 113981166754593)
+{
+ "assetId": "113981166754593",
+ "type": "Image",
+ "name": "T_Spike1_2048_ALB",
+ "sha": "6f23be07cf7e387c114f59f80a84efe698195cefe3cdef5b6ed8d10d78931a7e",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_2048_ALB.png",
+ "imageId": "113981166754593"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_2048_MET.png --type Image
+uploaded Image T_Spike1_2048_MET -> 118576858914698 (image 118576858914698)
+{
+ "assetId": "118576858914698",
+ "type": "Image",
+ "name": "T_Spike1_2048_MET",
+ "sha": "310d4932f7defd34781a5d6c84c160f91c5165e7ccbbb1f9e881023dee479160",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_2048_MET.png",
+ "imageId": "118576858914698"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_2048_NOR.png --type Image
+uploaded Image T_Spike1_2048_NOR -> 76902494683852 (image 76902494683852)
+{
+ "assetId": "76902494683852",
+ "type": "Image",
+ "name": "T_Spike1_2048_NOR",
+ "sha": "e9785278f8559b851662cface3eb598aa892a15b0626c5627c83f8a1b26de0c5",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_2048_NOR.png",
+ "imageId": "76902494683852"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_2048_RGH.png --type Image
+uploaded Image T_Spike1_2048_RGH -> 114094302637870 (image 114094302637870)
+{
+ "assetId": "114094302637870",
+ "type": "Image",
+ "name": "T_Spike1_2048_RGH",
+ "sha": "d0c8e309d30505f55b559b2313110916d1d061cca87122e4bec3601ae1324fa5",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_2048_RGH.png",
+ "imageId": "114094302637870"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_4096_ALB.png --type Image
+uploaded Image T_Spike1_4096_ALB -> 77900366731410 (image 77900366731410)
+{
+ "assetId": "77900366731410",
+ "type": "Image",
+ "name": "T_Spike1_4096_ALB",
+ "sha": "d8e5cddb817b189707604f287d435af1fd8fc148cdea1e1c9ba064f8f585d10b",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_4096_ALB.png",
+ "imageId": "77900366731410"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_4096_MET.png --type Image
+uploaded Image T_Spike1_4096_MET -> 134209066827654 (image 134209066827654)
+{
+ "assetId": "134209066827654",
+ "type": "Image",
+ "name": "T_Spike1_4096_MET",
+ "sha": "9dadc52f67a41d39c39e1f954751961bde0224cc92eaaff964b862f75c514110",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_4096_MET.png",
+ "imageId": "134209066827654"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_4096_NOR.png --type Image
+uploaded Image T_Spike1_4096_NOR -> 79130005892903 (image 79130005892903)
+{
+ "assetId": "79130005892903",
+ "type": "Image",
+ "name": "T_Spike1_4096_NOR",
+ "sha": "e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_4096_NOR.png",
+ "imageId": "79130005892903"
+}
+exit 0
+== /Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/textures/Spike1/T_Spike1_4096_RGH.png --type Image
+uploaded Image T_Spike1_4096_RGH -> 128068413526739 (image 128068413526739)
+{
+ "assetId": "128068413526739",
+ "type": "Image",
+ "name": "T_Spike1_4096_RGH",
+ "sha": "1f117ba17deb203e9f4e5db743505e45b424acbd084924fda340b77984e377a1",
+ "moderation": "Reviewing",
+ "source": "assets/textures/Spike1/T_Spike1_4096_RGH.png",
+ "imageId": "128068413526739"
+}
+exit 0
+== DONE

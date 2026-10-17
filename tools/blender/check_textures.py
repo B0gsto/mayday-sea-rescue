@@ -7,7 +7,8 @@ Per texture set T_<Name>_<Set>_<ALB|NOR|RGH|MET>[_Wet]:
   names        every image in the folder follows the texture name rule; all four maps present
   size         power of two on both sides, at or under the cap (EXPORT_CAP for shipping, 4096 for masters), one size a set
   ALB          RGB 24-bit (RGBA only with --alpha); non-metal pixels sRGB luma 30 to 240, metal pixels 180 to 250
-               (metal = MET above 127; 1st and 99th percentiles, so a few stray pixels pass); saturation at most 0.45
+               (metal = MET above 127; 1st and 99th percentiles over each mask eroded by 2 px so metal/paint seams blended by
+               the downsample do not count); saturation at most 0.45
                (95th percentile) outside the signal mask
   NOR          RGB, tangent space (blue mostly above 0.5, mean red and green near 0.5), OpenGL: the curl of the slope field
                is near zero only when green means +V (measured at 256, 128 and 64 px); a DirectX map fails, a flat or
@@ -38,6 +39,7 @@ NOR_TANGENT_TOL = 0.08          # mean red / green within this of 0.5
 NOR_BLUE_MIN_SHARE = 0.99       # share of pixels with blue above 0.5 (z positive)
 NOR_DECIDE = 0.35               # curl share below this: OpenGL; above 1 - this: DirectX
 ANALYSE_MAX = 512               # images are downsampled to this for the statistics
+MASK_ERODE = 2                  # px at the analysed size: metal / non-metal boundary pixels blend in the downsample
 
 
 def load(path):
@@ -51,6 +53,19 @@ def small(img):
         img = img.copy()
         img.thumbnail((ANALYSE_MAX, ANALYSE_MAX), Image.BILINEAR)
     return img
+
+
+def erode(mask, r=MASK_ERODE):
+    """Square-kernel erosion by r pixels (edges of the image count as inside)."""
+    out = mask.copy()
+    h, w = mask.shape
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            shifted = np.ones_like(mask)
+            shifted[max(0, -dy):h - max(0, dy), max(0, -dx):w - max(0, dx)] = \
+                mask[max(0, dy):h - max(0, -dy), max(0, dx):w - max(0, -dx)]
+            out &= shifted
+    return out
 
 
 def luma(rgb):
@@ -155,6 +170,9 @@ def check_set(key, maps, report, cap, alpha=False, want_wet=False, signal_mask=N
         for label, mask, (lo, hi) in (("non-metal", valid & ~metal, ALB_NONMETAL), ("metal", valid & metal, ALB_METAL)):
             if not mask.any():
                 continue
+            core = erode(mask)       # drop pixels blended across the metal / paint boundary
+            if core.any():          # a region thinner than the erosion is checked whole
+                mask = core
             p1, p99 = np.percentile(y[mask], 1), np.percentile(y[mask], 99)
             if wet:     # a wet albedo is darker on purpose: only the ceiling holds
                 add(stem, "%s albedo" % label, p99 <= hi, "luma 99th %.0f, ceiling %d (wet: no floor)" % (p99, hi))

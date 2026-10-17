@@ -1,9 +1,10 @@
 """Atlas rectangle maths for the shared prop, kit, street and foliage atlases and the trim sheets (docs/12 1.1).
 
 Pure Python: imports in Blender and in the system python3. Ported from Gulp's texgen.py; the creature layouts and
-placeholder stamping are dropped. Sizes are pixels at MASTER (4096) or EXPORT_CAP; UV rects are (u0, v0, u1, v1), V up.
+placeholder stamping are dropped. Sizes are pixels at MASTER (4096) or the
+shipped size (SHIP_SIZE by default, EXPORT_CAP at most); UV rects are (u0, v0, u1, v1), V up.
 """
-from common import EXPORT_CAP, MASTER
+from common import MASTER, SHIP_SIZE
 
 
 def margin_px(size):
@@ -37,7 +38,7 @@ def atlas_rects(items, atlas, cap=MASTER):
     return out
 
 
-def scale_rect_to(rect, master=MASTER, cap=EXPORT_CAP):
+def scale_rect_to(rect, master=MASTER, cap=SHIP_SIZE):
     """A cell keeps its UV rect when the atlas is downsized; this returns its pixel box at `cap` and whether its edges
     still land on whole pixels (cells should be multiples of master/cap pixels so a downsize does not bleed)."""
     u0, v0, u1, v1 = rect

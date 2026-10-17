@@ -1,0 +1,235 @@
+"""The 768 x 768 review contact sheet (docs/12 section 1.4 item 6). System python3 with Pillow; no heavy slot.
+
+    python3 tools/blender/sheet.py --asset <Asset> [--out-root build/x]      # newest <review>/<Asset>/*_report.json
+    python3 tools/blender/sheet.py --report assets/review/<Asset>/<date>_report.json [--out sheet.png]
+        [--studio <dir>] [--reference <photo or dir>]
+
+Layout, 4 x 4 cells of 192 px:
+  row 1: the 4 turntable angles under the neutral studio HDRI      (<review>/<Asset>/turntable/, turntable.py)
+  row 2: the same 4 angles under the overcast sea HDRI
+  row 3: the 4 Studio presets Clear, Overcast, Storm, Night         (<review>/<Asset>/studio/<Preset>*.png; pending until
+         the Studio pass of 1.4 item 7 writes them)
+  row 4: 1 reference photo (art/reference/<Asset>/, first image by name), the 64 px silhouette (05 10.3 step 4,
+         shown at its real size), and a footer: triangles per LOD, texture sets, the real-size check, validate result.
+Writes <review>/<Asset>/<date>_sheet.png (or --out) and prints its path.
+"""
+import argparse
+import glob
+import json
+import os
+import sys
+
+from PIL import Image, ImageDraw, ImageFont
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import common  # noqa: E402
+
+SIZE, CELL, COLS = 768, 192, 4
+SIL = 64
+VIEWS = ("Front3Q", "Side", "Rear3Q", "High")
+PRESETS = ("Clear", "Overcast", "Storm", "Night")
+IMAGE_EXTS = (".jpg", ".jpeg", ".png", ".webp")
+INK, PANEL, SHADE, PENDING = (232, 234, 235), (34, 38, 41), (24, 27, 29), (52, 56, 60)
+
+
+def font(size):
+    try:
+        return ImageFont.load_default(size=size)
+    except TypeError:
+        return ImageFont.load_default()
+
+
+def fitted(img, w, h, cover=True):
+    """Scaled to fill (cover) or fit inside w x h, centred."""
+    scale = (max if cover else min)(w / img.width, h / img.height)
+    img = img.resize((max(1, round(img.width * scale)), max(1, round(img.height * scale))), Image.LANCZOS)
+    if cover:
+        x, y = (img.width - w) // 2, (img.height - h) // 2
+        return img.crop((x, y, x + w, y + h))
+    out = Image.new("RGB", (w, h), SHADE)
+    out.paste(img, ((w - img.width) // 2, (h - img.height) // 2))
+    return out
+
+
+def tag(draw, xy, text, size=11):
+    f = font(size)
+    box = draw.textbbox(xy, text, font=f)
+    draw.rectangle((box[0] - 3, box[1] - 2, box[2] + 3, box[3] + 2), fill=(0, 0, 0))
+    draw.text(xy, text, font=f, fill=INK)
+
+
+def pending(text):
+    img = Image.new("RGB", (CELL, CELL), PENDING)
+    d = ImageDraw.Draw(img)
+    for n, line in enumerate(wrap(d, [text], font(11), CELL - 16)):
+        d.text((8, CELL // 2 - 14 + n * 14), line, font=font(11), fill=(160, 165, 168))
+    return img
+
+
+def wrap(draw, lines, f, width):
+    out = []
+    for line in lines:
+        current = ""
+        for word in line.split(" "):
+            trial = (current + " " + word).strip()
+            if current and draw.textlength(trial, font=f) > width:
+                out.append(current)
+                current = word
+            else:
+                current = trial
+        out.append(current)
+    return out
+
+
+def silhouette(path):
+    """The asset alone as black on white, fitted into 64 x 64 (from the alpha of turntable's silhouette.png)."""
+    alpha = Image.open(path).convert("RGBA").getchannel("A")
+    box = alpha.point(lambda a: 255 if a > 8 else 0).getbbox()
+    if box:
+        alpha = alpha.crop(box)
+    k = (SIL - 4) / max(alpha.width, alpha.height)
+    alpha = alpha.resize((max(1, round(alpha.width * k)), max(1, round(alpha.height * k))), Image.LANCZOS)
+    out = Image.new("RGB", (SIL, SIL), (255, 255, 255))
+    out.paste((0, 0, 0), ((SIL - alpha.width) // 2, (SIL - alpha.height) // 2), alpha)
+    return out
+
+
+def first_image(path):
+    if path and os.path.isfile(path):
+        return path
+    if path and os.path.isdir(path):
+        hits = sorted(p for p in glob.glob(os.path.join(path, "**", "*"), recursive=True) if p.lower().endswith(IMAGE_EXTS))
+        return hits[0] if hits else None
+    return None
+
+
+def studio_image(directory, preset):
+    if not directory or not os.path.isdir(directory):
+        return None
+    hits = sorted(p for p in os.listdir(directory) if p.lower().startswith(preset.lower()) and p.lower().endswith(IMAGE_EXTS))
+    return os.path.join(directory, hits[0]) if hits else None
+
+
+def footer_lines(rep, tt):
+    meshes = rep.get("meshes") or []
+    per_lod = {}
+    for m in meshes:
+        key = m.get("lod") or m.get("role") or "?"
+        per_lod[key] = per_lod.get(key, 0) + (m.get("triangles") or 0)
+    tris = ", ".join("%s %d" % (k, v) for k, v in sorted(per_lod.items()))
+    checks = rep.get("checks") or []
+    failed = sorted({c["check"] for c in checks if not c.get("ok")})
+    size_rows = [c for c in checks if c.get("check", "").startswith("real size")]
+    size_ok = all(c.get("ok") for c in size_rows) if size_rows else None
+    bbox = rep.get("bbox_studs")
+    dims = (tt or {}).get("dims_m")
+    want = " x ".join("-" if v is None else "%.2f" % (v * common.STUDS_PER_METRE) for v in dims) if dims else "?"
+    have = " x ".join("%.2f" % v for v in bbox) if bbox else "?"
+    sets = (tt or {}).get("sets") or []
+    applied = (tt or {}).get("maps_applied") or {}
+    hdri = (tt or {}).get("hdri") or {}
+    return [
+        "%s  (%s)  %s" % (rep.get("asset", "?"), rep.get("name", "?"), rep.get("date", "")),
+        "Validate: %s, %d checks%s" % ("PASS" if rep.get("ok") else "FAIL", len(checks),
+                                       "" if not failed else "; failed: " + ", ".join(failed)),
+        "Tris: " + (tris or "?"),
+        "Sets: %s; maps on render: %s" % (", ".join(sets) or "none",
+                                          "; ".join("/".join(v) for v in applied.values()) or "none"),
+        "Size: %s studs vs real %s (%s)" % (have, want, "no check" if size_ok is None else "PASS" if size_ok else "FAIL"),
+        "Mannequin 5.5 studs. HDRI %s / %s" % (hdri.get("neutral", "?"), hdri.get("overcast", "?")),
+        "Blender %s, commit %s" % (rep.get("blender", "?"), rep.get("commit", "?")),
+    ]
+
+
+def build(report_path, out=None, studio=None, reference=None, turntable_dir=None):
+    with open(report_path, "r", encoding="utf-8") as f:
+        rep = json.load(f)
+    asset = rep["asset"]
+    review = os.path.dirname(os.path.abspath(report_path))
+    tt_dir = turntable_dir or (rep.get("turntable") or {}).get("dir") or os.path.join(review, "turntable")
+    tt = rep.get("turntable")
+    if tt is None and os.path.isfile(os.path.join(tt_dir, "turntable.json")):
+        with open(os.path.join(tt_dir, "turntable.json"), "r", encoding="utf-8") as f:
+            tt = json.load(f)
+    studio = studio or os.path.join(review, "studio")
+    ref = first_image(reference or common.reference_dir(asset))
+
+    sheet = Image.new("RGB", (SIZE, SIZE), PANEL)
+    draw = ImageDraw.Draw(sheet)
+    filled = {"turntable": 0, "studio": 0, "reference": 0, "silhouette": 0}
+    for row, short in ((0, "neutral"), (1, "overcast")):
+        for col, view in enumerate(VIEWS):
+            path = os.path.join(tt_dir, "%s_%s.png" % (view, short))
+            if os.path.isfile(path):
+                img = Image.open(path).convert("RGB").resize((CELL, CELL), Image.LANCZOS)
+                filled["turntable"] += 1
+            else:
+                img = pending("turntable %s %s missing" % (view, short))
+            sheet.paste(img, (col * CELL, row * CELL))
+            tag(draw, (col * CELL + 5, row * CELL + 4), "%s %s" % (view, short))
+    for col, preset in enumerate(PRESETS):
+        path = studio_image(studio, preset)
+        if path:
+            sheet.paste(fitted(Image.open(path).convert("RGB"), CELL, CELL), (col * CELL, 2 * CELL))
+            filled["studio"] += 1
+        else:
+            sheet.paste(pending("Studio %s: pending (12 1.4 item 7)" % preset), (col * CELL, 2 * CELL))
+        tag(draw, (col * CELL + 5, 2 * CELL + 4), "Studio " + preset)
+    y = 3 * CELL
+    if ref:
+        sheet.paste(fitted(Image.open(ref).convert("RGB"), CELL, CELL, cover=False), (0, y))
+        filled["reference"] = 1
+    else:
+        sheet.paste(pending("no reference photo in art/reference/%s/" % asset), (0, y))
+    tag(draw, (5, y + 4), "Reference")
+    sil_cell = Image.new("RGB", (CELL, CELL), (255, 255, 255))
+    sil_path = os.path.join(tt_dir, "silhouette.png")
+    if os.path.isfile(sil_path):
+        sil_cell.paste(silhouette(sil_path), ((CELL - SIL) // 2, (CELL - SIL) // 2))
+        filled["silhouette"] = 1
+    sheet.paste(sil_cell, (CELL, y))
+    tag(draw, (CELL + 5, y + 4), "Silhouette 64 px")
+    fx, fw = 2 * CELL, 2 * CELL
+    draw.rectangle((fx, y, SIZE - 1, SIZE - 1), fill=SHADE)
+    f = font(11)
+    lines = wrap(draw, footer_lines(rep, tt), f, fw - 12)
+    for n, line in enumerate(lines[:13]):
+        draw.text((fx + 6, y + 5 + n * 14), line, font=f, fill=INK)
+    for i in range(1, COLS):
+        draw.line((i * CELL, 0, i * CELL, SIZE), fill=(0, 0, 0))
+        draw.line((0, i * CELL, SIZE, i * CELL), fill=(0, 0, 0))
+    out = out or os.path.join(review, "%s_sheet.png" % rep.get("date", common.today()))
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    sheet.save(out)
+    return out, filled
+
+
+def latest_report(asset):
+    hits = sorted(glob.glob(os.path.join(common.review_dir(asset), "*_report.json")))
+    if not hits:
+        raise SystemExit("no *_report.json in %s: run run.py with the turntable step first" % common.review_dir(asset))
+    return hits[-1]
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(prog="sheet.py", description=__doc__.split("\n")[0])
+    p.add_argument("--asset")
+    p.add_argument("--report")
+    p.add_argument("--out-root", help="the run.py --out-root the report was written under")
+    p.add_argument("--out")
+    p.add_argument("--studio", help="folder of Studio preset shots (Clear*, Overcast*, Storm*, Night*)")
+    p.add_argument("--reference", help="reference photo or folder (default art/reference/<Asset>/)")
+    p.add_argument("--turntable", help="turntable folder (default from the report)")
+    a = p.parse_args(argv)
+    if a.out_root:
+        common.set_out_root(a.out_root)
+    if not (a.report or a.asset):
+        p.error("--asset or --report is required")
+    out, filled = build(a.report or latest_report(a.asset), a.out, a.studio, a.reference, a.turntable)
+    print("[sheet] %s (turntable %d/8, studio %d/4, reference %d, silhouette %d)" % (
+        out, filled["turntable"], filled["studio"], filled["reference"], filled["silhouette"]))
+    return out
+
+
+if __name__ == "__main__":
+    main()

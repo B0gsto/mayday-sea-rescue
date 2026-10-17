@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ocean spike capture round: build, open TestBench-mayday, play, run shots, stop, close.
+# Ocean spike capture round: build, open TestBench-mayday-ocean (its own window), play, run shots, stop, close.
 # usage: art/ocean/capture.sh <round-number>    -> build/ocean/round<N>.png (~1200 px wide)
 # Two passes so the SERVER weather really is what the shot shows (the server StormService
 # overwrites client-side Weather overrides): "/calm" + shots.json, then "/storm now" +
@@ -10,6 +10,8 @@ GAME="$(cd "$(dirname "$0")/../.." && pwd)"
 TOOLS=~/RobloxProjects/tools
 N="${1:?round}"
 cd "$GAME"
+# Own Studio window tag (smoke.py uses mayday-smoke, lookdev mayday-lookdev): never closes another tool's window.
+export MAYDAY_STUDIO_TAG=mayday-ocean STUDIO_NAME=TestBench-mayday-ocean
 "$TOOLS/build.sh" "$GAME" 2>&1 | tail -1
 rm -rf "build/ocean/round$N"
 "$TOOLS/with-lock.sh" studio -- bash -c "

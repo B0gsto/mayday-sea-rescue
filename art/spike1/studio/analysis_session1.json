@@ -1,0 +1,295 @@
+{
+ "over1024": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 214.9,
+  "std": 26.5,
+  "p2p": 130.9,
+  "period_px": 331.0,
+  "peak": 0.0124,
+  "eff_texels_per_12studs": 5,
+  "meanRGB": [
+   218.4,
+   213.6,
+   217.9
+  ]
+ },
+ "over2048": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 218.0,
+  "std": 22.53,
+  "p2p": 113.1,
+  "period_px": 331.0,
+  "peak": 0.0158,
+  "eff_texels_per_12studs": 5,
+  "meanRGB": [
+   221.1,
+   216.8,
+   220.8
+  ]
+ },
+ "over4096": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 217.7,
+  "std": 22.45,
+  "p2p": 112.7,
+  "period_px": 331.0,
+  "peak": 0.0173,
+  "eff_texels_per_12studs": 5,
+  "meanRGB": [
+   220.9,
+   216.4,
+   220.5
+  ]
+ },
+ "overEM": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 214.9,
+  "std": 26.5,
+  "p2p": 130.9,
+  "period_px": 331.0,
+  "peak": 0.0124,
+  "eff_texels_per_12studs": 5,
+  "meanRGB": [
+   218.4,
+   213.6,
+   217.9
+  ]
+ },
+ "tex1024_z1px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 203.4,
+  "std": 39.27,
+  "p2p": 155.2,
+  "period_px": 13.01,
+  "peak": 0.0111,
+  "eff_texels_per_12studs": 1455
+ },
+ "tex1024_z2px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 188.7,
+  "std": 57.81,
+  "p2p": 197.0,
+  "period_px": 26.02,
+  "peak": 0.0248,
+  "eff_texels_per_12studs": 728
+ },
+ "tex1024_z4px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 164.2,
+  "std": 80.0,
+  "p2p": 219.6,
+  "period_px": 55.01,
+  "peak": 0.0274,
+  "eff_texels_per_12studs": 344
+ },
+ "tex2048_z1px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 205.4,
+  "std": 35.04,
+  "p2p": 141.9,
+  "period_px": 82.75,
+  "peak": 0.0098,
+  "eff_texels_per_12studs": 229
+ },
+ "tex2048_z2px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 186.8,
+  "std": 57.17,
+  "p2p": 199.1,
+  "period_px": 13.01,
+  "peak": 0.0206,
+  "eff_texels_per_12studs": 1455
+ },
+ "tex2048_z4px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 168.9,
+  "std": 75.35,
+  "p2p": 208.4,
+  "period_px": 26.02,
+  "peak": 0.0292,
+  "eff_texels_per_12studs": 728
+ },
+ "tex4096_z1px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 207.2,
+  "std": 29.95,
+  "p2p": 126.7,
+  "period_px": 36.78,
+  "peak": 0.0107,
+  "eff_texels_per_12studs": 515
+ },
+ "tex4096_z2px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 191.5,
+  "std": 45.89,
+  "p2p": 178.4,
+  "period_px": 6.5,
+  "peak": 0.0148,
+  "eff_texels_per_12studs": 2910
+ },
+ "tex4096_z4px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 165.0,
+  "std": 73.88,
+  "p2p": 219.4,
+  "period_px": 13.01,
+  "peak": 0.0249,
+  "eff_texels_per_12studs": 1455
+ },
+ "texEM_z1px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 203.4,
+  "std": 39.28,
+  "p2p": 155.3,
+  "period_px": 13.01,
+  "peak": 0.0111,
+  "eff_texels_per_12studs": 1455
+ },
+ "texEM_z2px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 188.7,
+  "std": 57.81,
+  "p2p": 197.0,
+  "period_px": 26.02,
+  "peak": 0.0248,
+  "eff_texels_per_12studs": 728
+ },
+ "texEM_z4px": {
+  "size": [
+   1472,
+   828
+  ],
+  "mean": 164.2,
+  "std": 80.0,
+  "p2p": 219.6,
+  "period_px": 55.01,
+  "peak": 0.0274,
+  "eff_texels_per_12studs": 344
+ },
+ "play_over1024.png": {
+  "meanRGB": [
+   128.7,
+   160.4,
+   176.4
+  ],
+  "r_over_g": 0.802
+ },
+ "play_over2048.png": {
+  "meanRGB": [
+   128.5,
+   160.2,
+   176.1
+  ],
+  "r_over_g": 0.802
+ },
+ "Tentacle20_Bone_10": {
+  "changed_frac": 0.0033,
+  "rows": [
+   394,
+   418
+  ],
+  "cols": [
+   477,
+   734
+  ],
+  "img": [
+   828,
+   1472
+  ]
+ },
+ "Tentacle20_rest_extent": {
+  "rows": [
+   0,
+   827
+  ],
+  "cols": [
+   0,
+   1471
+  ]
+ },
+ "Tentacle40_Bone_10": {
+  "changed_frac": 0.007,
+  "rows": [
+   386,
+   422
+  ],
+  "cols": [
+   320,
+   734
+  ],
+  "img": [
+   828,
+   1472
+  ]
+ },
+ "Tentacle40_Bone_30": {
+  "changed_frac": 0.0012,
+  "rows": [
+   400,
+   416
+  ],
+  "cols": [
+   613,
+   735
+  ],
+  "img": [
+   828,
+   1472
+  ]
+ },
+ "Tentacle40_rest_extent": {
+  "rows": [
+   0,
+   827
+  ],
+  "cols": [
+   0,
+   1471
+  ]
+ }
+}

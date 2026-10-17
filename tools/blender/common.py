@@ -65,7 +65,9 @@ STUDS_PER_METRE = 3.0
 MANNEQUIN_STUDS = 5.5
 
 # Textures: docs/12 section 1.2. One constant; re-export the library at a new cap after Spike 1.
-EXPORT_CAP = 1024
+EXPORT_CAP = 4096  # the maximum any exported map may be. Spike 1: Studio displays 2048/4096 uploads at full detail (art/spike1/RESULTS.md, item 1)
+SHIP_SIZE = 1024  # default size of an exported set / sheet / sky face when the spec or CLI gives none, until a
+                  # phone memory test (RESULTS.md) allows more; hero close-up sets may ask for 2048 or 4096 via the set's "size"
 MASTER = 4096
 MAP_KINDS = ("ALB", "NOR", "RGH", "MET")
 MAP_EXTS = (".png", ".jpg", ".jpeg", ".tga", ".bmp")

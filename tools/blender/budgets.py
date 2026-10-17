@@ -9,7 +9,7 @@ Row fields:
   per_part  ceiling per MeshPart (never above MAX_PER_MESHPART)
   lod1/lod2 LOD ceilings: an int is absolute, a float is a share of the asset's LOD0 ceiling;
             None means that LOD is not made (lod1 None: only ever close; lod2 None: culled / streamed out)
-  sets      (min, max) texture sets at EXPORT_CAP, or "atlas" (the asset uses a shared atlas or trim)
+  sets      (min, max) texture sets (each at SHIP_SIZE unless its "size" says more), or "atlas" (the asset uses a shared atlas or trim)
   col       a _COL proxy is required
 """
 

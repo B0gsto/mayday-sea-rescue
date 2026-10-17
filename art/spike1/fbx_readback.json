@@ -1,0 +1,366 @@
+{
+ "M_Spike1_ScaleCube": {
+  "file": "assets/fbx/Spike1/M_Spike1_ScaleCube.fbx",
+  "bytes": 16348,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_ScaleCube"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_ScaleCube.001",
+    "min": [
+     -1.5,
+     -1.5,
+     -1.5
+    ],
+    "max": [
+     1.5,
+     1.5,
+     1.5
+    ],
+    "polygons": 12,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_ScaleCube": 12
+  }
+ },
+ "M_Spike1_RefBox": {
+  "file": "assets/fbx/Spike1/M_Spike1_RefBox.fbx",
+  "bytes": 16348,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_RefBox"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_RefBox.001",
+    "min": [
+     -0.5,
+     -0.5,
+     -2.75
+    ],
+    "max": [
+     0.5,
+     0.5,
+     2.75
+    ],
+    "polygons": 12,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_RefBox": 12
+  }
+ },
+ "M_Spike1_TexPlane": {
+  "file": "assets/fbx/Spike1/M_Spike1_TexPlane.fbx",
+  "bytes": 16012,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_TexPlane"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_TexPlane.001",
+    "min": [
+     -6.0,
+     -6.0,
+     0.0
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.0
+    ],
+    "polygons": 2,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_TexPlane": 2
+  }
+ },
+ "M_Spike1_Tris09990": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tris09990.fbx",
+  "bytes": 765484,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tris09990"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tris09990.001",
+    "min": [
+     -6.0,
+     -6.0,
+     -0.5466
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.5475
+    ],
+    "polygons": 9990,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tris09990": 9990
+  }
+ },
+ "M_Spike1_Tris19990": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
+  "bytes": 1518460,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tris19990"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tris19990.001",
+    "min": [
+     -6.0,
+     -6.0,
+     -0.5482
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.5475
+    ],
+    "polygons": 19990,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tris19990": 19990
+  }
+ },
+ "M_Spike1_Tris20500": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tris20500.fbx",
+  "bytes": 1555388,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tris20500"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tris20500.001",
+    "min": [
+     -6.0,
+     -6.0,
+     -0.5494
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.5471
+    ],
+    "polygons": 20500,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tris20500": 20500
+  }
+ },
+ "M_Spike1_Tris21500": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tris21500.fbx",
+  "bytes": 1629356,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tris21500"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tris21500.001",
+    "min": [
+     -6.0,
+     -6.0,
+     -0.5466
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.5456
+    ],
+    "polygons": 21500,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tris21500": 21500
+  }
+ },
+ "M_Spike1_Tris30000": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tris30000.fbx",
+  "bytes": 2273756,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tris30000"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tris30000.001",
+    "min": [
+     -6.0,
+     -6.0,
+     -0.5495
+    ],
+    "max": [
+     6.0,
+     6.0,
+     0.5475
+    ],
+    "polygons": 30000,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tris30000": 30000
+  }
+ },
+ "M_Spike1_Tentacle20": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tentacle20.fbx",
+  "bytes": 203820,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tentacle20"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tentacle20.001",
+    "min": [
+     -1.0,
+     -1.0,
+     0.0
+    ],
+    "max": [
+     1.0,
+     1.0,
+     20.0
+    ],
+    "polygons": 2560,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tentacle20": 2560
+  },
+  "bones": 20,
+  "max_influences": 4
+ },
+ "M_Spike1_Tentacle40": {
+  "file": "assets/fbx/Spike1/M_Spike1_Tentacle40.fbx",
+  "bytes": 394764,
+  "fbx_version": 7400,
+  "meshes": [
+   "M_Spike1_Tentacle40"
+  ],
+  "geometry": [
+   {
+    "name": "M_Spike1_Tentacle40.001",
+    "min": [
+     -1.0,
+     -1.0,
+     0.0
+    ],
+    "max": [
+     1.0,
+     1.0,
+     20.0
+    ],
+    "polygons": 5120,
+    "all_triangles": true,
+    "uv": true
+   }
+  ],
+  "unit_scale_factor": 100.0,
+  "axes": [
+   1,
+   1,
+   2,
+   1
+  ],
+  "blender_tris": {
+   "M_Spike1_Tentacle40": 5120
+  },
+  "bones": 40,
+  "max_influences": 4
+ }
+}

@@ -234,7 +234,7 @@ def texture_size_of(spec, e):
     want = e.get("set") or (sets[0]["set"] if len(sets) == 1 else None)
     for s in sets:
         if s["set"] == want:
-            return s.get("size", common.EXPORT_CAP)
+            return s.get("size", common.SHIP_SIZE)
     return None
 
 

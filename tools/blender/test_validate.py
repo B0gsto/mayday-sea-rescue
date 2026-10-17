@@ -205,13 +205,16 @@ class Atlas(unittest.TestCase):
 
     def test_downsize_and_margin(self):
         px, clean = texgen.scale_rect_to((0.0, 0.5, 0.5, 1.0))
-        self.assertEqual((px, clean), ([0, 512, 512, 1024], True))
+        s = common.SHIP_SIZE
+        self.assertEqual((px, clean), ([0, s // 2, s // 2, s], True))
+        self.assertEqual(texgen.scale_rect_to((0.0, 0.5, 0.5, 1.0), cap=common.EXPORT_CAP)[0], [0, 2048, 2048, 4096])
         self.assertEqual(texgen.margin_px(1024), 16)
         self.assertEqual(texgen.remap_uv((0.5, 0.5), (0.0, 0.5, 0.5, 1.0)), (0.25, 0.75))
         self.assertEqual(texgen.texture_size_for(51, 25.0), 512)
 
     def test_constants(self):
-        self.assertEqual((common.EXPORT_CAP, common.MASTER, common.STUDS_PER_METRE), (1024, 4096, 3.0))
+        self.assertEqual((common.EXPORT_CAP, common.SHIP_SIZE, common.MASTER, common.STUDS_PER_METRE), (4096, 1024, 4096, 3.0))
+        self.assertLessEqual(common.SHIP_SIZE, common.EXPORT_CAP)
 
 
 if __name__ == "__main__":

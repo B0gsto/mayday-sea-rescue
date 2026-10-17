@@ -1,0 +1,252 @@
+{
+ "M_Spike1_RefBox": {
+  "rbxm": "assets/models/M_Spike1_RefBox.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 1, 5.5, 1.000001"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "96425487703284",
+    "version": "version 2.00",
+    "verts": 24,
+    "faces_all_lods": 12,
+    "lods": 1,
+    "lod0_tris": 12
+   }
+  ]
+ },
+ "M_Spike1_ScaleCube": {
+  "rbxm": "assets/models/M_Spike1_ScaleCube.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 3, 3.0000005, 3.0000005"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "132885383718595",
+    "version": "version 2.00",
+    "verts": 24,
+    "faces_all_lods": 12,
+    "lods": 1,
+    "lod0_tris": 12
+   }
+  ]
+ },
+ "M_Spike1_Tentacle20": {
+  "rbxm": "assets/models/M_Spike1_Tentacle20.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1,
+   "Bone": 20,
+   "Folder": 1,
+   "CFrameValue": 66,
+   "AnimationController": 1
+  },
+  "sizes": [
+   "Vector3 2, 20, 2"
+  ],
+  "skinned": [
+   "boolean true"
+  ],
+  "meshes": [
+   {
+    "id": "102296023185296",
+    "version": "version 4.01",
+    "verts": 7656,
+    "faces_all_lods": 2560,
+    "lods": 2,
+    "bones": 20,
+    "bone_subsets": 1,
+    "lod_offsets": [
+     0,
+     0
+    ],
+    "lod0_tris": 0
+   }
+  ]
+ },
+ "M_Spike1_Tentacle40": {
+  "rbxm": "assets/models/M_Spike1_Tentacle40.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1,
+   "Bone": 40,
+   "Folder": 1,
+   "CFrameValue": 126,
+   "AnimationController": 1
+  },
+  "sizes": [
+   "Vector3 2, 20, 2"
+  ],
+  "skinned": [
+   "boolean true"
+  ],
+  "meshes": [
+   {
+    "id": "117041847841206",
+    "version": "version 4.01",
+    "verts": 15276,
+    "faces_all_lods": 5120,
+    "lods": 2,
+    "bones": 40,
+    "bone_subsets": 2,
+    "lod_offsets": [
+     0,
+     0
+    ],
+    "lod0_tris": 0
+   }
+  ]
+ },
+ "M_Spike1_TexPlane": {
+  "rbxm": "assets/models/M_Spike1_TexPlane.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 0.001, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "96253057148279",
+    "version": "version 2.00",
+    "verts": 4,
+    "faces_all_lods": 2,
+    "lods": 1,
+    "lod0_tris": 2
+   }
+  ]
+ },
+ "M_Spike1_Tris09990": {
+  "rbxm": "assets/models/M_Spike1_Tris09990.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 1.0941123, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "107928049945595",
+    "version": "version 2.00",
+    "verts": 29970,
+    "faces_all_lods": 9990,
+    "lods": 1,
+    "lod0_tris": 9990
+   }
+  ]
+ },
+ "M_Spike1_Tris19990": {
+  "rbxm": "assets/models/M_Spike1_Tris19990.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 1.0957593, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "111232578682430",
+    "version": "version 2.00",
+    "verts": 59970,
+    "faces_all_lods": 19990,
+    "lods": 1,
+    "lod0_tris": 19990
+   }
+  ]
+ },
+ "M_Spike1_Tris20500": {
+  "rbxm": "assets/models/M_Spike1_Tris20500.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 1.0965085, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "112346365692211",
+    "version": "version 2.00",
+    "verts": 10154,
+    "faces_all_lods": 19905,
+    "lods": 1,
+    "lod0_tris": 19905
+   }
+  ]
+ },
+ "M_Spike1_Tris21500": {
+  "rbxm": "assets/models/M_Spike1_Tris21500.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 1.0922205, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "113439809237667",
+    "version": "version 2.00",
+    "verts": 10149,
+    "faces_all_lods": 19896,
+    "lods": 1,
+    "lod0_tris": 19896
+   }
+  ]
+ },
+ "M_Spike1_Tris30000": {
+  "rbxm": "assets/models/M_Spike1_Tris30000.rbxm",
+  "classes": {
+   "Model": 1,
+   "MeshPart": 1
+  },
+  "sizes": [
+   "Vector3 12, 1.097066, 12"
+  ],
+  "skinned": [
+   "boolean false"
+  ],
+  "meshes": [
+   {
+    "id": "75132549126542",
+    "version": "version 2.00",
+    "verts": 10106,
+    "faces_all_lods": 19826,
+    "lods": 1,
+    "lod0_tris": 19826
+   }
+  ]
+ }
+}

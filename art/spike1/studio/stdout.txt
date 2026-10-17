@@ -1,0 +1,18 @@
+[locks] waiting for studio: held by mayday integration-C (pid 4223, MaydaySeaRescue, held 43s); queue position 1/1
+[locks] waiting for studio: held by mayday integration-C (pid 4223, MaydaySeaRescue, held 1m13s); queue position 1/1
+opened, studio_id: 2c10a918-9cbc-40a3-9b12-82698d9a508b
+[ 46.7s] insert TexPlane 0 to Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 54.5s] insert Tentacle20 0 to Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 62.4s] insert Tentacle40 0 to Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+[ 79.0s] setup True {"GraphicsMode": "Enum.GraphicsMode.Automatic", "EditQualityLevel": "Enum.QualityLevel.Automatic", "MeshPartDetailLevel": "Enum.MeshPartDetailLevel.DistanceBased", "QualityLevel": "Enum.QualityLevel.Automatic", "setEditLevel21": "ok", "SavedQualityLevel": "Enum.SavedQualitySetting.Automatic", "EditQualityLevelAfter": "Enum.QualityLevel.Level21"}
+[ 93.8s] tex captures 15
+[ 93.9s] tentacle info {"M_Spike1_Tentacle20":{"bLast":"-20, 290, -19","b0rot":"-90, 7.0167091267055864e-15, 0","b0parent":"M_Spike1_Tentacle20","b0":"-20, 290, 0","rot":"-90, 0, 0","size":"2, 20, 2","pos":"-20, 290, -10"},"M_Spike1_Tentacle40":{"bLast":"-30, 290, -19.5","b0rot":"-90, 7.0167091267055864e-15, 0","b0parent":"M_Spike1_Tentacle40","b0":"-30, 290, 0","rot":"-90, 0, 0","size":"2, 20, 2","pos":"-30, 290, -10"}}
+play: True
+[110.9s] play server {"rt_NormalMap":"The current thread cannot write 'NormalMap' (lacking capability Plugin)","rt_Color":"ok","rt_Swap":"ok","rt_ColorMap":"The current thread cannot write 'ColorMap' (lacking capability Plugin)","rt_ReadColorMap":"The current thread cannot read 'ColorMap' (lacking capability Plugin)","rt_AlphaMode":"ok","rt_done":true,"rt_SwapColorTint":"ok","rt_NewSAColorMap":"The current thread cannot write 'ColorMap' (lacking capability Plugin)","rt_ColorMapContent":"The current thread cannot write 'ColorMapContent' (lacking capability Plugin)"}
+[113.3s] play client Swapped 1, 0.15, 0.15
+edit: True
+closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-spike1.rbxl - Roblox Studio
+[136.5s] closed; total 136.5 s

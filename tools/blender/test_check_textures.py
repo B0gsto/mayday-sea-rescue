@@ -11,6 +11,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "selftest"))
 import check_textures  # noqa: E402
 import placeholder_pbr  # noqa: E402
+import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
 warnings.simplefilter("ignore", DeprecationWarning)
@@ -69,6 +70,21 @@ class CheckTextures(unittest.TestCase):
         img.paste((90, 90, 95), (0, 0, 256, 128))           # dark "metal": below 180
         img.save(path)
         self.assertEqual(failed(self.run_check()), [("T_Test_Iron_ALB", "metal albedo")])
+
+    def test_metal_paint_seam_is_not_checked(self):
+        # 1024 set with 16 px metal stripes: the 512 downsample blends every seam column,
+        # which used to drag the metal 1st percentile below the floor
+        placeholder_pbr.write_set(self.d, "Test", "Hull", 1024)
+        cols = ((np.arange(1024) + 1) // 16) % 2 == 0    # odd offset: seams fall mid-texel at 512
+        met = np.where(cols, 255, 0).astype(np.uint8)[None, :].repeat(1024, 0)
+        alb = np.where(cols[None, :, None], 200, 60).astype(np.uint8).repeat(1024, 0).repeat(3, 2)
+        Image.fromarray(met, "L").save(os.path.join(self.d, "T_Test_Hull_MET.png"))
+        Image.fromarray(alb, "RGB").save(os.path.join(self.d, "T_Test_Hull_ALB.png"))
+        r = self.run_check()
+        self.assertTrue(r.ok, failed(r))
+        alb[:, 0:96] = np.where(cols[0:96, None], 120, 60)   # three metal stripes too dark: still fails
+        Image.fromarray(alb, "RGB").save(os.path.join(self.d, "T_Test_Hull_ALB.png"))
+        self.assertEqual(failed(self.run_check()), [("T_Test_Hull_ALB", "metal albedo")])
 
     def test_saturation_and_signal_mask(self):
         placeholder_pbr.write_set(self.d, "Test", "Jacket", 256, saturated=True)

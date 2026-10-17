@@ -1,0 +1,1269 @@
+{
+ "t0": 1792242438.543603,
+ "steps": {},
+ "setup": {
+  "editableImage": {
+   "1024_ALB": "1024, 1024",
+   "4096_ALB": "1024, 1024",
+   "1024_NOR": "1024, 1024",
+   "2048_NOR": "1024, 1024",
+   "4096_NOR": "1024, 1024",
+   "2048_ALB": "1024, 1024"
+  },
+  "errors": [],
+  "tentacles": {
+   "M_Spike1_Tentacle20": {
+    "bones": 20,
+    "first": "Bone_00",
+    "center": [
+     -20,
+     290,
+     -10
+    ],
+    "size": [
+     2,
+     2,
+     20
+    ]
+   },
+   "M_Spike1_Tentacle40": {
+    "bones": 40,
+    "first": "Bone_00",
+    "center": [
+     -30,
+     290,
+     -10
+    ],
+    "size": [
+     2,
+     2,
+     20
+    ]
+   }
+  },
+  "planeNormal": [
+   0,
+   1,
+   0
+  ],
+  "alphaModes": {
+   "Overlay": "ok",
+   "Transparency": "ok",
+   "TintMask": "ok",
+   "Opaque": "ok"
+  },
+  "uvCorners": [
+   [
+    1,
+    1,
+    [
+     -6,
+     0,
+     -6
+    ]
+   ],
+   [
+    0,
+    0,
+    [
+     6,
+     0,
+     6
+    ]
+   ],
+   [
+    0,
+    1,
+    [
+     6,
+     0,
+     -6
+    ]
+   ],
+   [
+    1,
+    1,
+    [
+     -6,
+     0,
+     -6
+    ]
+   ],
+   [
+    1,
+    0,
+    [
+     -6,
+     0,
+     6
+    ]
+   ],
+   [
+    0,
+    0,
+    [
+     6,
+     0,
+     6
+    ]
+   ]
+  ],
+  "shots": [
+   {
+    "name": "tex1024_z1px",
+    "cam": [
+     4,
+     306,
+     0.02
+    ],
+    "look": [
+     4,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex1024_z2px",
+    "cam": [
+     0,
+     306,
+     0.02
+    ],
+    "look": [
+     0,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex1024_z4px",
+    "cam": [
+     -4,
+     306,
+     0.02
+    ],
+    "look": [
+     -4,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "over1024",
+    "cam": [
+     0,
+     324,
+     0.05
+    ],
+    "look": [
+     0,
+     300,
+     0
+    ],
+    "dist": 24,
+    "fov": 30
+   },
+   {
+    "name": "tex2048_z1px",
+    "cam": [
+     24,
+     306,
+     0.02
+    ],
+    "look": [
+     24,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex2048_z2px",
+    "cam": [
+     20,
+     306,
+     0.02
+    ],
+    "look": [
+     20,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex2048_z4px",
+    "cam": [
+     16,
+     306,
+     0.02
+    ],
+    "look": [
+     16,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "over2048",
+    "cam": [
+     20,
+     324,
+     0.05
+    ],
+    "look": [
+     20,
+     300,
+     0
+    ],
+    "dist": 24,
+    "fov": 30
+   },
+   {
+    "name": "tex4096_z1px",
+    "cam": [
+     44,
+     306,
+     0.02
+    ],
+    "look": [
+     44,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex4096_z2px",
+    "cam": [
+     40,
+     306,
+     0.02
+    ],
+    "look": [
+     40,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "tex4096_z4px",
+    "cam": [
+     36,
+     306,
+     0.02
+    ],
+    "look": [
+     36,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "over4096",
+    "cam": [
+     40,
+     324,
+     0.05
+    ],
+    "look": [
+     40,
+     300,
+     0
+    ],
+    "dist": 24,
+    "fov": 30
+   },
+   {
+    "name": "texEM_z1px",
+    "cam": [
+     64,
+     306,
+     0.02
+    ],
+    "look": [
+     64,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "texEM_z2px",
+    "cam": [
+     60,
+     306,
+     0.02
+    ],
+    "look": [
+     60,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "texEM_z4px",
+    "cam": [
+     56,
+     306,
+     0.02
+    ],
+    "look": [
+     56,
+     300,
+     0
+    ],
+    "dist": 6,
+    "fov": 10
+   },
+   {
+    "name": "overEM",
+    "cam": [
+     60,
+     324,
+     0.05
+    ],
+    "look": [
+     60,
+     300,
+     0
+    ],
+    "dist": 24,
+    "fov": 30
+   }
+  ],
+  "models": {
+   "M_Spike1_ScaleCube": {
+    "part": "M_Spike1_ScaleCube",
+    "class": "Model",
+    "meshSize": [
+     3,
+     3,
+     3
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     3,
+     3,
+     3
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     -1.5,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 24,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     3,
+     3,
+     3
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 12,
+    "pos": [
+     0,
+     1.5,
+     0
+    ]
+   },
+   "M_Spike1_Tris19990": {
+    "part": "M_Spike1_Tris19990",
+    "class": "Model",
+    "meshSize": [
+     12,
+     1.096,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     1.096,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 59970,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     1.096,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 19990,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "M_Spike1_Tris20500": {
+    "part": "M_Spike1_Tris20500",
+    "class": "Model",
+    "meshSize": [
+     12,
+     1.097,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     1.096,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0.001,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 10154,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     1.097,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0.001,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 19905,
+    "pos": [
+     0,
+     -0.001,
+     0
+    ]
+   },
+   "M_Spike1_Tris09990": {
+    "part": "M_Spike1_Tris09990",
+    "class": "Model",
+    "meshSize": [
+     12,
+     1.094,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     1.094,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 29970,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     1.094,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 9990,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "M_Spike1_Tentacle20": {
+    "part": "M_Spike1_Tentacle20",
+    "class": "Model",
+    "meshSize": [
+     2,
+     20,
+     2
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     2,
+     2,
+     20
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     -10,
+     0
+    ],
+    "attNames": [],
+    "emBones": 20,
+    "emVerts": 7656,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     2,
+     20,
+     2
+    ],
+    "pivotOffset": [
+     0,
+     -10,
+     0
+    ],
+    "classes": {
+     "Folder": 1,
+     "Bone": 20,
+     "CFrameValue": 66,
+     "AnimationController": 1,
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": true,
+    "emFaces": 2560,
+    "pos": [
+     0,
+     10,
+     0
+    ]
+   },
+   "M_Spike1_RefBox": {
+    "part": "M_Spike1_RefBox",
+    "class": "Model",
+    "meshSize": [
+     1,
+     5.5,
+     1
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     1,
+     5.499,
+     1
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     -2.75,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 24,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     1,
+     5.5,
+     1
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 12,
+    "pos": [
+     0,
+     2.75,
+     0
+    ]
+   },
+   "M_Spike1_Tris21500": {
+    "part": "M_Spike1_Tris21500",
+    "class": "Model",
+    "meshSize": [
+     12,
+     1.092,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     1.092,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 10149,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     1.092,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 19896,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "M_Spike1_Tris30000": {
+    "part": "M_Spike1_Tris30000",
+    "class": "Model",
+    "meshSize": [
+     12,
+     1.097,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     1.097,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0.001,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 10106,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     1.097,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0.001,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 19826,
+    "pos": [
+     0,
+     -0.001,
+     0
+    ]
+   },
+   "M_Spike1_TexPlane": {
+    "part": "M_Spike1_TexPlane",
+    "class": "Model",
+    "meshSize": [
+     12,
+     0,
+     12
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     12,
+     0,
+     12
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     0,
+     0
+    ],
+    "attNames": [],
+    "emBones": 0,
+    "emVerts": 4,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     12,
+     0.001,
+     12
+    ],
+    "pivotOffset": [
+     0,
+     0,
+     0
+    ],
+    "classes": {
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": false,
+    "emFaces": 2,
+    "pos": [
+     0,
+     0,
+     0
+    ]
+   },
+   "M_Spike1_Tentacle40": {
+    "part": "M_Spike1_Tentacle40",
+    "class": "Model",
+    "meshSize": [
+     2,
+     20,
+     2
+    ],
+    "hasSA": false,
+    "bboxSize": [
+     2,
+     2,
+     20
+    ],
+    "pivotMinusBBoxCenter": [
+     0,
+     -10,
+     0
+    ],
+    "attNames": [],
+    "emBones": 40,
+    "emVerts": 15276,
+    "renderFidelity": "Enum.RenderFidelity.Automatic",
+    "worldPivotRot": [
+     0,
+     0,
+     0
+    ],
+    "size": [
+     2,
+     20,
+     2
+    ],
+    "pivotOffset": [
+     0,
+     -10,
+     0
+    ],
+    "classes": {
+     "Folder": 1,
+     "Bone": 40,
+     "CFrameValue": 126,
+     "AnimationController": 1,
+     "MeshPart": 1
+    },
+    "orientation": [
+     0,
+     0,
+     0
+    ],
+    "hasSkinned": true,
+    "emFaces": 5120,
+    "pos": [
+     0,
+     10,
+     0
+    ]
+   }
+  },
+  "preload": "ok",
+  "editableMeshPart": {
+   "saParent": "ok"
+  },
+  "saMapsRead": {
+   "1024": [
+    "rbxassetid://133497070455294",
+    "rbxassetid://71516326342804",
+    "rbxassetid://106584681481305",
+    "rbxassetid://108926989495989"
+   ],
+   "4096": [
+    "rbxassetid://77900366731410",
+    "rbxassetid://79130005892903",
+    "rbxassetid://128068413526739",
+    "rbxassetid://134209066827654"
+   ],
+   "2048": [
+    "rbxassetid://113981166754593",
+    "rbxassetid://76902494683852",
+    "rbxassetid://114094302637870",
+    "rbxassetid://118576858914698"
+   ]
+  },
+  "quality": {
+   "GraphicsMode": "Enum.GraphicsMode.Automatic",
+   "EditQualityLevel": "Enum.QualityLevel.Automatic",
+   "MeshPartDetailLevel": "Enum.MeshPartDetailLevel.DistanceBased",
+   "QualityLevel": "Enum.QualityLevel.Automatic",
+   "setEditLevel21": "ok",
+   "SavedQualityLevel": "Enum.SavedQualitySetting.Automatic",
+   "EditQualityLevelAfter": "Enum.QualityLevel.Level21"
+  }
+ },
+ "importer": {
+  "ok": true,
+  "out": "{\"colParts\":0,\"path\":\"Workspace.Spike1.M_Spike1_TexPlaneImported\",\"tris\":\"unknown\",\"meshParts\":1,\"asset\":\"M_Spike1_TexPlaneImported\",\"attachments\":[],\"surfaceAppearances\":1,\"warnings\":[],\"wetVariants\":1,\"castShadowOff\":0,\"lodHidden\":0,\"parts\":1}",
+  "state": "SA=SurfaceAppearance ColorMap=rbxassetid://133497070455294 variants=[SurfaceAppearance_Wet] tagged=true"
+ },
+ "shotsetup_edit": {
+  "load": [
+   true,
+   "lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 1"
+  ],
+  "Overcast_false": [
+   true,
+   "LookDev Overcast dry (surfaces 0, material variants 0, terrain overrides 0); sky set",
+   "SA=SurfaceAppearance ColorMap=rbxassetid://133497070455294 variants=[SurfaceAppearance_Wet] tagged=true"
+  ],
+  "Storm_true": [
+   true,
+   "LookDev Storm wet (surfaces 1, material variants 0, terrain overrides 17); sky set",
+   "SA=SurfaceAppearance ColorMap=rbxassetid://77900366731410 variants=[SurfaceAppearance_Dry] tagged=true"
+  ],
+  "Night_false": [
+   true,
+   "LookDev Night dry (surfaces 1, material variants 0, terrain overrides 17); sky set",
+   "SA=SurfaceAppearance ColorMap=rbxassetid://133497070455294 variants=[SurfaceAppearance_Wet] tagged=true"
+  ],
+  "Overcast_true": [
+   true,
+   "LookDev Overcast wet (surfaces 1, material variants 0, terrain overrides 17); sky set",
+   "SA=SurfaceAppearance ColorMap=rbxassetid://77900366731410 variants=[SurfaceAppearance_Dry] tagged=true"
+  ],
+  "Clear_false": [
+   true,
+   "LookDev Clear dry (surfaces 1, material variants 0, terrain overrides 17); sky set | devGui=false",
+   "SA=SurfaceAppearance ColorMap=rbxassetid://133497070455294 variants=[SurfaceAppearance_Wet] tagged=true"
+  ]
+ },
+ "captures": {
+  "tex1024_z1px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex1024_z1px.png",
+   "name": "tex1024_z1px",
+   "cam": [
+    4,
+    306,
+    0.02
+   ],
+   "look": [
+    4,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex1024_z2px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex1024_z2px.png",
+   "name": "tex1024_z2px",
+   "cam": [
+    0,
+    306,
+    0.02
+   ],
+   "look": [
+    0,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex1024_z4px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex1024_z4px.png",
+   "name": "tex1024_z4px",
+   "cam": [
+    -4,
+    306,
+    0.02
+   ],
+   "look": [
+    -4,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "over1024": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/over1024.png",
+   "name": "over1024",
+   "cam": [
+    0,
+    324,
+    0.05
+   ],
+   "look": [
+    0,
+    300,
+    0
+   ],
+   "dist": 24,
+   "fov": 30
+  },
+  "tex2048_z1px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex2048_z1px.png",
+   "name": "tex2048_z1px",
+   "cam": [
+    24,
+    306,
+    0.02
+   ],
+   "look": [
+    24,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex2048_z2px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex2048_z2px.png",
+   "name": "tex2048_z2px",
+   "cam": [
+    20,
+    306,
+    0.02
+   ],
+   "look": [
+    20,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex2048_z4px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex2048_z4px.png",
+   "name": "tex2048_z4px",
+   "cam": [
+    16,
+    306,
+    0.02
+   ],
+   "look": [
+    16,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "over2048": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/over2048.png",
+   "name": "over2048",
+   "cam": [
+    20,
+    324,
+    0.05
+   ],
+   "look": [
+    20,
+    300,
+    0
+   ],
+   "dist": 24,
+   "fov": 30
+  },
+  "tex4096_z1px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex4096_z1px.png",
+   "name": "tex4096_z1px",
+   "cam": [
+    44,
+    306,
+    0.02
+   ],
+   "look": [
+    44,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex4096_z2px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex4096_z2px.png",
+   "name": "tex4096_z2px",
+   "cam": [
+    40,
+    306,
+    0.02
+   ],
+   "look": [
+    40,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "tex4096_z4px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/tex4096_z4px.png",
+   "name": "tex4096_z4px",
+   "cam": [
+    36,
+    306,
+    0.02
+   ],
+   "look": [
+    36,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "over4096": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/over4096.png",
+   "name": "over4096",
+   "cam": [
+    40,
+    324,
+    0.05
+   ],
+   "look": [
+    40,
+    300,
+    0
+   ],
+   "dist": 24,
+   "fov": 30
+  },
+  "texEM_z1px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/texEM_z1px.png",
+   "name": "texEM_z1px",
+   "cam": [
+    64,
+    306,
+    0.02
+   ],
+   "look": [
+    64,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "texEM_z2px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/texEM_z2px.png",
+   "name": "texEM_z2px",
+   "cam": [
+    60,
+    306,
+    0.02
+   ],
+   "look": [
+    60,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "texEM_z4px": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/texEM_z4px.png",
+   "name": "texEM_z4px",
+   "cam": [
+    56,
+    306,
+    0.02
+   ],
+   "look": [
+    56,
+    300,
+    0
+   ],
+   "dist": 6,
+   "fov": 10
+  },
+  "overEM": {
+   "path": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/overEM.png",
+   "name": "overEM",
+   "cam": [
+    60,
+    324,
+    0.05
+   ],
+   "look": [
+    60,
+    300,
+    0
+   ],
+   "dist": 24,
+   "fov": 30
+  }
+ },
+ "tentacle": {
+  "Tentacle20_rest": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/Tentacle20_rest.png",
+  "Tentacle20_Bone_10": [
+   "bent Workspace.Spike1.M_Spike1_Tentacle20.M_Spike1_Tentacle20.Bone_00.Bone_01.Bone_02.Bone_03.Bone_04.Bone_05.Bone_06.Bone_07.Bone_08.Bone_09.Bone_10",
+   "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/Tentacle20_Bone_10.png"
+  ],
+  "Tentacle40_rest": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/Tentacle40_rest.png",
+  "Tentacle40_Bone_10": [
+   "bent Workspace.Spike1.M_Spike1_Tentacle40.M_Spike1_Tentacle40.Bone_00.Bone_01.Bone_02.Bone_03.Bone_04.Bone_05.Bone_06.Bone_07.Bone_08.Bone_09.Bone_10",
+   "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/Tentacle40_Bone_10.png"
+  ],
+  "Tentacle40_Bone_30": [
+   "bent Workspace.Spike1.M_Spike1_Tentacle40.M_Spike1_Tentacle40.Bone_00.Bone_01.Bone_02.Bone_03.Bone_04.Bone_05.Bone_06.Bone_07.Bone_08.Bone_09.Bone_10.Bone_11.Bone_12.Bone_13.Bone_14.Bone_15.Bone_16.Bo",
+   "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/Tentacle40_Bone_30.png"
+  ]
+ },
+ "play_server": "{\"rt_ColorMapAfter\":\"ok\",\"rt_NormalMap\":\"The current thread cannot write 'NormalMap' (lacking capability Plugin)\",\"rt_Color\":\"ok\",\"rt_NewSAColorMap\":\"The current thread cannot write 'ColorMap' (lacking capability Plugin)\",\"rt_AlphaMode\":\"ok\",\"rt_ColorMapContent\":\"The current thread cannot write 'ColorMapContent' (lacking capability Plugin)\",\"rt_ColorMap\":\"The current thread cannot write 'ColorMap' (lacking capability Plugin)\"}",
+ "play_client": "client SAs on Plane2048: SurfaceAppearance rbxassetid://113981166754593 1, 1, 1 | PlaneEM on client: true MeshId= size=12, 0.0010000000474974513, 12",
+ "play_captures": [
+  "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/play_over1024.png",
+  "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/spike1/studio/captures_session1/play_over2048.png"
+ ],
+ "shotsetup_client": {
+  "load": [
+   true,
+   "lookdev setup (client): frame avg 16.67 ms (60 fps), worst 17.7 ms; presets ok, skies ok, wet-capable parts 1"
+  ],
+  "Overcast_false": [
+   true,
+   "LookDev Overcast dry (surfaces 0, material variants 0, terrain overrides 0); sky set"
+  ],
+  "guis": "ScreenGuis 10, still enabled: []",
+  "Storm_true": [
+   true,
+   "LookDev Storm wet (surfaces 1, material variants 0, terrain overrides 17); sky set"
+  ]
+ },
+ "console_errors": []
+}
