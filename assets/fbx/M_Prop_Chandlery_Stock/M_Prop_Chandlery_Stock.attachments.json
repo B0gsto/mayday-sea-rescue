@@ -1,0 +1,36 @@
+{
+ "asset": "M_Prop_Chandlery_Stock",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Light_Till",
+   "parent": null,
+   "blender": [
+    18.1546,
+    3.12,
+    4.1248
+   ],
+   "roblox_from_origin": [
+    -18.1546,
+    4.1248,
+    3.12
+   ],
+   "roblox_from_bbox_centre": [
+    -15.846,
+    -0.5183,
+    4.3582
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

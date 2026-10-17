@@ -111,7 +111,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 46, 99th 221, range 20 to 240 over 89% of pixels"
+   "detail": "luma 1st 47, 99th 221, range 20 to 240 over 89% of pixels"
   },
   {
    "subject": "T_ChandleryInt_Details_ALB",
@@ -143,7 +143,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.11)"
+   "detail": "OpenGL (curl share 0.12)"
   },
   {
    "subject": "T_ChandleryInt_Joinery",
@@ -279,7 +279,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.10)"
+   "detail": "OpenGL (curl share 0.09)"
   },
   {
    "subject": "T_ChandleryInt_Lining",
@@ -391,7 +391,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 97, 99th 186, range 20 to 240 over 100% of pixels"
+   "detail": "luma 1st 94, 99th 185, range 20 to 240 over 100% of pixels"
   },
   {
    "subject": "T_ChandleryInt_Lining_ALB",
@@ -399,7 +399,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.19, ceiling 0.45"
+   "detail": "95th percentile 0.27, ceiling 0.45"
   },
   {
    "subject": "T_ChandleryInt_Lining_NOR",
@@ -415,7 +415,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.08)"
+   "detail": "OpenGL (curl share 0.21)"
   },
   {
    "subject": "T_ChandleryInt_Pine",
@@ -527,7 +527,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 43, 99th 140, range 20 to 240 over 100% of pixels"
+   "detail": "luma 1st 36, 99th 123, range 20 to 240 over 100% of pixels"
   },
   {
    "subject": "T_ChandleryInt_Pine_ALB",

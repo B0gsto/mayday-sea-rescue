@@ -1,1 +1,1 @@
-wet_check: Chandlery Ext parts tagged 7, WetState true 7, wet ColorMap differs from dry 7
+wet_check: Chandlery Ext parts tagged 8, WetState true 8, wet ColorMap differs from dry 8

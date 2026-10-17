@@ -1,0 +1,157 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "subject": "T_ChandleryStock_Atlas",
+   "check": "signal mask",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "art/source/props/M_Prop_Chandlery_Stock/signal_mask.png"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryStock_Atlas_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryStock_Atlas_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryStock_Atlas_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryStock_Atlas_MET.png"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.2% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 45, 99th 215, range 20 to 240 over 97% of pixels"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 189, 99th 201, range 180 to 250 over 3% of pixels"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.42, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_ChandleryStock_Atlas_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.13)"
+  }
+ ]
+}

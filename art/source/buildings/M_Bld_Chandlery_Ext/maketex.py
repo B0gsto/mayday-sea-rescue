@@ -34,8 +34,33 @@ DETAILS = {
     "Brass": (0.30, 0.22, 0.45, 0.36),
     "Pots": (0.45, 0.22, 0.70, 0.36),
     "Stain": (0.0, 0.0, 0.25, 0.22),       # drip streak, dark at the top (under the sill), fading down and to the sides
-    "Spare": (0.25, 0.0, 1.0, 0.22),
+    "Cloth": (0.25, 0.0, 0.45, 0.22),      # loft curtains: faded madder linen, sun-bleached at the folds' faces
+    "Glow": (0.45, 0.0, 0.55, 0.22),       # lamp bulbs / shade undersides (the Glow MeshPart, Neon in Studio at Night)
+    "Spare": (0.55, 0.0, 1.0, 0.22),
 }
+
+# T_Chandlery_Bands: full-width strips (u tiles every 2 m like the Stone tile), v regions = world-height bands (build.py
+# "band" UV mode: v = v0 + (b - b0) / h * (v1 - v0), b = height up the face). Rows are cut from the same ashlar / slate
+# fields as the tiles, so the seams to the tiling faces are invisible.
+BANDS = {   # name: (v0, v1, b0 m, height m)
+    "Plinth": (0.0, 0.1875, 0.0, 0.5),          # granite plinth 0 .. 0.46 m + weathering top: damp, salt, algae
+    "Base": (0.1875, 0.5625, 0.0, 1.0),         # ashlar 0 .. 1.0 m: rising-damp tide line ~0.6 m, salt bloom
+    "Eaves": (0.5625, 0.78125, 5.4, 0.6),       # ashlar 5.4 .. 6.0 m under the eaves: soot, sheltered algae, lichen
+    "SlateEaves": (0.78125, 1.0, None, 0.55),   # lowest 0.55 m of slate up-slope from the eaves edge: moss cushions
+}
+COURSES = [0.36, 0.30, 0.34, 0.28, 0.38, 0.34]   # ashlar course heights, repeating every 2 m (sum 2.0)
+
+
+def slate_eaves_b0():
+    """Up-slope coordinate b of the slate top surface at the eaves edge (same formula as geo.frame_of on the slope)."""
+    import importlib.util
+    sp = importlib.util.spec_from_file_location("chand_layout", os.path.join(os.path.dirname(os.path.abspath(__file__)), "layout.py"))
+    L = importlib.util.module_from_spec(sp)
+    sp.loader.exec_module(L)
+    S = (L.RIDGE - L.EAVES) / L.Y1
+    y = L.Y0 - 0.28                                  # build.OVH
+    z = L.EAVES + (L.Y1 - abs(y)) * S + 0.16         # build.SLAB
+    return (y + S * z) / np.sqrt(1 + S * S)
 
 
 def fbm(shape, beta=2.0, fmax=60.0, aniso=(1.0, 1.0), seed=0):
@@ -100,7 +125,9 @@ def mix(a, b, t):
 
 
 # ---------------------------------------------------------------- slate (8 courses x 5 slates per 2 m tile = 6 studs)
-def slate_set():
+def slate_fields():
+    """Slate tile arrays (alb, height, rough): per-slate tone and tint, ~8 % replaced slates (newer blue-grey or
+    weathered rusty-grey), faint lichen, salt at the tails, a few small moss tufts in the laps."""
     s = (N, N)
     courses, per = 8, 5
     ch = N // courses
@@ -112,27 +139,216 @@ def slate_set():
     k = np.minimum(sx * per // N, per - 1)
     slot = c * per + k
     r = np.random.default_rng(11)
-    tone = r.uniform(0.86, 1.1, courses * per)
-    tint = r.normal(0, 0.012, (courses * per, 3))
-    tilt = r.normal(0, 0.1, courses * per)
+    ns = courses * per
+    tone = np.clip(r.normal(1.0, 0.085, ns), 0.8, 1.2)
+    tint = r.normal(0, 0.014, (ns, 3))
+    tint[:, 2] += r.normal(0, 0.01, ns)              # some slates bluer, some greyer
+    tilt = r.normal(0, 0.1, ns)
+    kind = r.uniform(0, 1, ns)
+    newer = kind < 0.05                              # replaced: crisp, darker blue-grey
+    rusty = (kind > 0.95)                            # replaced from salvage: lighter, iron-stained grey
+    tone = np.where(newer, 0.82, np.where(rusty, 1.18, tone))
     big, mid = fbm(s, 3.0, 12, seed=1), fbm(s, 2.2, 40, seed=2)
     grain = fbm(s, 1.8, 50, aniso=(0.35, 1.0), seed=3)
-    alb = rgb((76, 82, 90))[None, None, :] * tone[slot][..., None] + tint[slot]
-    alb = alb * (0.92 + 0.1 * grain[..., None] + 0.06 * big[..., None])
+    base = np.zeros((ns, 3)) + rgb((76, 82, 90))
+    base[newer] = rgb((70, 78, 92))
+    base[rusty] = rgb((92, 88, 84))
+    alb = base[slot] * tone[slot][..., None] + tint[slot]
+    wx = np.where(newer[slot], 0.3, 1.0)[..., None]  # replaced slates carry less weathering
+    alb = alb * (0.92 + 0.1 * grain[..., None] + 0.06 * big[..., None] * wx)
     edgex = np.minimum((sx * per) % N, N - (sx * per) % N) / per        # px to the butt joint
     gap = 1 - smooth(0, 4.0, edgex)
     shade = 1 - smooth(0.0, 0.16, t)
-    lich = smooth(0.72, 0.86, fbm(s, 2.4, 30, seed=4)) * smooth(0.35, 0.6, big)
+    lich = smooth(0.72, 0.86, fbm(s, 2.4, 30, seed=4)) * smooth(0.35, 0.6, big) * (1 - 0.8 * newer[slot])
     alb = alb * (1 - 0.4 * gap[..., None]) * (1 - 0.3 * shade[..., None])
     alb = mix(alb, rgb((128, 128, 108)), 0.55 * lich)
     tailsalt = smooth(0.86, 1.0, t) * smooth(0.55, 0.8, mid)
     alb = mix(alb, rgb((128, 132, 134)), 0.12 * tailsalt)                # faint grey salt, never white
+    tufts = smooth(0.8, 0.9, fbm(s, 2.0, 60, seed=5)) * gap.clip(0.3, 1) * smooth(0.6, 0.85, big)
+    alb = mix(alb, rgb((74, 84, 52)), 0.8 * tufts)
     tail = smooth(0.0, 0.05, t) * (1 - smooth(0.96, 1.0, t))
-    h = 0.5 * t * tail + tilt[slot] * ((sx * per) % N) / N * 0.3 - gap * 0.3 + 0.05 * grain + 0.06 * lich
+    h = 0.5 * t * tail + tilt[slot] * ((sx * per) % N) / N * 0.3 - gap * 0.3 + 0.05 * grain + 0.06 * lich + 0.2 * tufts
     h = np.where(t < 0.03, h - 0.3 * (1 - t / 0.03), h)
+    rgh = 0.6 + 0.08 * grain + 0.22 * lich + 0.08 * gap - 0.04 * big + 0.25 * tufts - 0.06 * newer[slot]
+    return alb, h, rgh
+
+
+def slate_set():
+    alb, h, rgh = slate_fields()
     nor = normal_from_height(h * 6.0, 3.0)
-    rgh = 0.6 + 0.08 * grain + 0.22 * lich + 0.08 * gap - 0.04 * big
-    save("T_Chandlery_Slate", alb, nor, rgh, np.zeros(s), darken=0.35, gloss=0.5)
+    save("T_Chandlery_Slate", alb, nor, rgh, np.zeros((N, N)), darken=0.35, gloss=0.5)
+    return alb, h, rgh
+
+
+# ---------------------------------------------------------------- ashlar (Chandlery's own QuayStone): 2 m tile + bands
+STONE = (135, 122, 107)       # matches Mat QuayStone's mean so the street still reads as one quay
+MORTAR = (156, 150, 136)      # lime mortar, a touch lighter and greyer than the stone
+_ASH = {}
+
+
+def ashlar_tile():
+    """Field arrays on the 2 m x 2 m tile (1024 px, row 0 = top = z 2 m): course / stone ids, joint distance (m)."""
+    if _ASH:
+        return _ASH
+    yy, xx = np.mgrid[0:N, 0:N]
+    zm = (N - 0.5 - yy) / N * 2.0                     # 0 .. 2 m up
+    xm = (xx + 0.5) / N * 2.0
+    cb = np.concatenate([[0.0], np.cumsum(COURSES)])
+    c = np.clip(np.searchsorted(cb, zm, side="right") - 1, 0, len(COURSES) - 1)
+    dz = np.minimum(zm - cb[c], cb[c + 1] - zm)
+    r = np.random.default_rng(41)
+    sid = np.zeros((N, N), int)
+    dx = np.full((N, N), 9.0)
+    for ci in range(len(COURSES)):
+        lens = []
+        while sum(lens) < 2.0:
+            lens.append(r.uniform(0.42, 0.95))
+        lens = np.array(lens) * 2.0 / sum(lens)
+        cuts = (np.concatenate([[0.0], np.cumsum(lens)]) + r.uniform(0, 2.0)) % 2.0
+        cuts = np.sort(cuts[:-1])
+        m = c == ci
+        x = xm[m]
+        d = np.abs(x[:, None] - cuts[None, :])
+        d = np.minimum(d, 2.0 - d)
+        dx[m] = d.min(1)
+        k = np.searchsorted(cuts, x, side="right") % len(cuts)
+        sid[m] = ci * 16 + k
+    s = (N, N)
+    _ASH.update(sid=sid, d=np.minimum(dx, dz), dz=dz, c=c,
+                big=fbm(s, 3.0, 8, seed=42), mid=fbm(s, 2.2, 30, seed=43), fine=fbm(s, 1.7, 60, seed=44),
+                runs=fbm(s, 2.4, 40, aniso=(0.12, 1.6), seed=45), lich=fbm(s, 2.4, 24, seed=46))
+    r2 = np.random.default_rng(47)
+    tone = np.clip(r2.normal(1.0, 0.075, 16 * len(COURSES)), 0.84, 1.18)
+    odd = r2.uniform(0, 1, tone.size)
+    tint = r2.normal(0, 0.012, (tone.size, 3))
+    tint[odd < 0.08] += rgb((-8, -6, -2))            # a few cooler grey blocks (granite rubble re-used in repairs)
+    tint[odd > 0.92] += rgb((8, 4, -4))              # a few warmer, iron-stained blocks
+    _ASH.update(tone=tone, tint=tint)
+    return _ASH
+
+
+def ashlar(rows):
+    """Ashlar albedo / height / roughness for the given tile rows (int array, any length; each row -> 1024 px wide)."""
+    A = ashlar_tile()
+    g = lambda k: A[k][rows]
+    sid, d = g("sid"), g("d")
+    big, mid, fine, lich_n = g("big"), g("mid"), g("fine"), g("lich")
+    alb = rgb(STONE) * A["tone"][sid][..., None] + A["tint"][sid]
+    alb = alb * (0.9 + 0.12 * mid[..., None] + 0.07 * fine[..., None] + 0.05 * big[..., None])
+    joint = 1 - smooth(0.006, 0.014, d + 0.004 * (fine - 0.5))   # 1 in the mortar
+    arris = 1 - smooth(0.012, 0.045, d)                           # pitched, slightly rounded arrises
+    mort = rgb(MORTAR) * (0.9 + 0.15 * fine[..., None] + 0.05 * big[..., None])
+    mort = mix(mort, rgb((96, 92, 84)), 0.35 * smooth(0.4, 0.9, mid))   # dirt in the recess
+    alb = alb * (1 - 0.1 * arris[..., None])
+    alb = mix(alb, mort, joint)
+    lich = smooth(0.78, 0.9, lich_n) * smooth(0.45, 0.7, big)
+    alb = mix(alb, rgb((128, 130, 110)), 0.3 * lich)
+    h = 0.6 * (1 - arris) ** 0.6 + 0.35 * (1 - joint) - 0.35 * joint + 0.12 * mid + 0.05 * fine + 0.04 * lich
+    rgh = 0.8 + 0.05 * fine - 0.04 * mid + 0.06 * joint + 0.06 * lich
+    return alb, h, rgh, joint
+
+
+def stone_set():
+    alb, h, rgh, _ = ashlar(np.arange(N))
+    save("T_Chandlery_Stone", alb, normal_from_height(h * 3.0, 2.5), rgh, np.zeros((N, N)), darken=0.34, gloss=0.4)
+
+
+def band_rows(name, n_tile=N, tile_m=2.0):
+    """Region pixel rows (top .. bottom) and their world b (m) and tile rows for a BANDS strip."""
+    v0, v1, b0, hm = BANDS[name]
+    r0, r1 = int(round((1 - v1) * N)), int(round((1 - v0) * N))
+    n = r1 - r0
+    b = b0 + hm * (n - 0.5 - np.arange(n)) / n               # top row = b0 + h
+    trow = ((1 - (b / tile_m) % 1.0) * n_tile).astype(int) % n_tile
+    return r0, r1, b, trow
+
+
+def bands_set(slate):
+    alb = np.zeros((N, N, 3))
+    hgt = np.zeros((N, N))
+    rgh = np.zeros((N, N))
+    full = lambda a: a[:, None] * np.ones((1, N))
+    xs = np.arange(N)
+
+    # ---- Base: ashlar 0 .. 1 m with a rising-damp tide line (0.5 .. 0.72 m), salt bloom at and just under it
+    r0, r1, b, tr = band_rows("Base")
+    a, h, rg, joint = ashlar(tr)
+    z = full(b)
+    w1 = fbm((r1 - r0, N), 2.2, 14, aniso=(4.0, 1.0), seed=51)
+    w2 = fbm((r1 - r0, N), 2.0, 50, seed=52)
+    tide = 0.52 + 0.2 * w1[0:1, :]                                # irregular tide line along the wall
+    damp = 1 - smooth(tide - 0.16, tide + 0.02, z + 0.05 * (w2 - 0.5))
+    salt = np.exp(-((z - tide + 0.02) / 0.07) ** 2) * smooth(0.35, 0.75, w2) * (0.6 + 0.4 * joint)
+    salt += 0.5 * joint * damp * smooth(0.5, 0.8, w2)            # efflorescence in the damp joints
+    salt = np.clip(salt, 0, 1)
+    green = (1 - smooth(0.05, 0.35, z)) * smooth(0.4, 0.8, w1)
+    a = a * (1 - 0.3 * damp[..., None])
+    a = mix(a, rgb((84, 88, 70)), 0.35 * green)
+    a = mix(a, rgb((184, 182, 174)), 0.55 * salt)
+    alb[r0:r1], hgt[r0:r1] = a, h + 0.1 * salt
+    rgh[r0:r1] = rg - 0.12 * damp + 0.1 * salt
+
+    # ---- Eaves: ashlar 5.4 .. 6.0 m: soot / sheltered algae darkening toward the wall plate, drip runs, lichen
+    r0, r1, b, tr = band_rows("Eaves")
+    a, h, rg, joint = ashlar(tr)
+    z = full(b)
+    w1 = fbm((r1 - r0, N), 2.2, 16, aniso=(3.0, 1.0), seed=53)
+    runs = fbm((r1 - r0, N), 2.4, 40, aniso=(0.12, 1.6), seed=54)
+    k = smooth(5.4, 6.0, z + 0.25 * (w1 - 0.5)) * (0.55 + 0.45 * smooth(0.4, 0.8, runs))
+    lich = smooth(0.7, 0.85, fbm((r1 - r0, N), 2.4, 30, seed=55)) * smooth(5.45, 5.7, z) * (1 - smooth(5.85, 6.0, z))
+    a = mix(a, rgb((58, 60, 54)), 0.6 * k)
+    a = mix(a, rgb((142, 136, 100)), 0.45 * lich)
+    alb[r0:r1], hgt[r0:r1] = a, h + 0.05 * lich
+    rgh[r0:r1] = rg + 0.05 * k + 0.08 * lich
+
+    # ---- Plinth: weathered granite 0 .. 0.5 m, block joints, damp all over, salt at the top, algae at the foot
+    r0, r1, b, tr = band_rows("Plinth")
+    n = r1 - r0
+    z = full(b)
+    big = fbm((n, N), 3.0, 10, seed=56)
+    speck = fbm((n, N), 1.2, 60, seed=57)
+    w2 = fbm((n, N), 2.0, 50, seed=58)
+    r = np.random.default_rng(59)
+    cuts = np.sort(r.uniform(0, 2.0, 2))
+    xm = (xs + 0.5) / N * 2.0
+    dj = np.min(np.minimum(np.abs(xm[:, None] - cuts), 2.0 - np.abs(xm[:, None] - cuts)), 1)
+    blk = np.searchsorted(cuts, xm) % 2
+    tone = np.where(blk == 0, 1.0, 0.93)
+    joint = full(np.zeros(n)) + (1 - smooth(0.005, 0.012, dj))[None, :]
+    a = rgb((90, 71, 57)) * (tone[None, :, None] * (0.86 + 0.18 * big[..., None] + 0.16 * (speck[..., None] - 0.5)))
+    a = mix(a, rgb((150, 140, 128)), 0.35 * smooth(0.7, 0.85, speck))          # quartz / feldspar flecks
+    a = mix(a, rgb(MORTAR) * 0.9, joint)
+    damp = 1 - smooth(0.25, 0.48, z + 0.06 * (big - 0.5))
+    salt = smooth(0.32, 0.46, z) * smooth(0.45, 0.8, w2) * 0.7
+    green = (1 - smooth(0.0, 0.18, z)) * smooth(0.35, 0.75, big)
+    a = a * (1 - 0.22 * damp[..., None])
+    a = mix(a, rgb((80, 86, 66)), 0.4 * green)
+    a = mix(a, rgb((176, 174, 166)), 0.5 * salt)
+    alb[r0:r1] = a
+    hgt[r0:r1] = 0.3 * big + 0.08 * speck - 0.4 * joint + 0.08 * salt
+    rgh[r0:r1] = 0.82 + 0.05 * speck - 0.1 * damp + 0.08 * salt
+
+    # ---- SlateEaves: the slate tile's own rows (absolute up-slope phase), moss cushions thickest at the eaves
+    v0, v1, _, hm = BANDS["SlateEaves"]
+    BANDS["SlateEaves"] = (v0, v1, slate_eaves_b0(), hm)
+    r0, r1, b, tr = band_rows("SlateEaves")
+    sa, sh, sr = slate
+    a, h, rg = sa[tr], sh[tr], sr[tr]
+    s_up = full(b - b[-1])                                        # 0 at the eaves edge
+    m1 = fbm((r1 - r0, N), 2.2, 40, seed=60)
+    m2 = fbm((r1 - r0, N), 1.8, 60, seed=61)
+    moss = smooth(0.45, 0.6, m1 + 0.35 * (1 - smooth(0.0, 0.45, s_up))) * (1 - smooth(0.3, 0.52, s_up))
+    a = mix(a, rgb((70, 80, 46)) * (0.85 + 0.3 * m2[..., None]), 0.85 * moss)
+    a = mix(a, rgb((96, 92, 62)), 0.25 * moss * smooth(0.6, 0.9, m2))          # dry, browner tips
+    alb[r0:r1], hgt[r0:r1] = a, h + 0.35 * moss * (0.6 + 0.4 * m2)
+    rgh[r0:r1] = np.clip(rg + 0.3 * moss, 0, 0.97)
+
+    nor = np.zeros((N, N, 3))
+    for name, st in (("Plinth", 2.0), ("Base", 2.5), ("Eaves", 2.5), ("SlateEaves", 3.0)):
+        r0, r1, _, _ = band_rows(name)
+        sc = 6.0 if name == "SlateEaves" else 3.0
+        nor[r0:r1] = normal_from_height(np.pad(hgt[r0:r1] * sc, ((1, 1), (0, 0)), mode="edge"), st)[1:-1]
+    save("T_Chandlery_Bands", alb, nor, rgh, np.zeros((N, N)), darken=0.34, gloss=0.42)
 
 
 # ---------------------------------------------------------------- details atlas
@@ -369,6 +585,27 @@ def details_set():
     rgh[reg] = 0.82 - 0.1 * k
     hgt[reg] = 0.05 * big[reg]
 
+    # ---- cloth (curtains, 0.3 x 1.5 m per fold face): faded madder linen, weave, sun-bleached toward the glass side
+    r0, r1, c0, c1 = box("Cloth")
+    reg = sl("Cloth")
+    hh, ww = r1 - r0, c1 - c0
+    yy, xx = np.mgrid[0:hh, 0:ww]
+    weave = 0.5 + 0.25 * np.sin(xx * 2 * np.pi / 6.0) * np.sin(yy * 2 * np.pi / 6.0)
+    fy = 1 - (yy + 0.5) / hh
+    bleach = smooth(0.3, 1.0, fy) * 0.25 + 0.15 * smooth(0.5, 0.9, big[reg])
+    a = rgb((128, 78, 70)) * (0.88 + 0.12 * weave[..., None] + 0.1 * mid[reg][..., None])
+    a = mix(a, rgb((150, 124, 112)), bleach)
+    a = a * (1 - 0.18 * smooth(0.15, 0.0, fy)[..., None])         # hem shadow / dust at the sill
+    alb[reg] = a
+    rgh[reg] = 0.9 + 0.05 * weave
+    hgt[reg] = 0.12 * weave + 0.1 * fine[reg]
+
+    # ---- glow (bulbs, shade undersides): warm opal glass / lit enamel, stays light and plain so Neon reads clean
+    reg = sl("Glow")
+    alb[reg] = rgb((238, 214, 172)) * (0.97 + 0.03 * big[reg][..., None])
+    rgh[reg] = 0.3
+    hgt[reg] = 0
+
     # ---- spare: plain worn green paint
     reg = sl("Spare")
     a, _, g = paint(reg, GREEN, 0.0)
@@ -380,6 +617,8 @@ def details_set():
 
 
 if __name__ == "__main__":
-    slate_set()
+    sl_ = slate_set()
+    stone_set()
+    bands_set(sl_)
     details_set()
     print("ok")

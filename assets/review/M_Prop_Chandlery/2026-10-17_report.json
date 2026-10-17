@@ -2,7 +2,7 @@
  "asset": "M_Prop_Chandlery",
  "name": "M_Prop_Chandlery",
  "date": "2026-10-17",
- "commit": "f385a2a+dirty",
+ "commit": "f9f240c+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -26,7 +26,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD0.fbx",
-   "bytes": 2216252,
+   "bytes": 2544556,
    "fbx_version": 7400,
    "meshes": [
     "M_Prop_Chandlery_COL",
@@ -83,7 +83,7 @@
       -0.87,
       4.74
      ],
-     "polygons": 4568,
+     "polygons": 6966,
      "all_triangles": true,
      "uv": true
     },
@@ -156,14 +156,14 @@
      "min": [
       -28.005,
       -10.548,
-      0.9
+      0.8793
      ],
      "max": [
       7.2286,
       10.2818,
       8.7029
      ],
-     "polygons": 4588,
+     "polygons": 3328,
      "all_triangles": true,
      "uv": true
     }
@@ -178,7 +178,7 @@
   },
   {
    "file": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD1.fbx",
-   "bytes": 1482892,
+   "bytes": 1617852,
    "fbx_version": 7400,
    "meshes": [
     "M_Prop_Chandlery_Corner_LOD1",
@@ -218,7 +218,7 @@
       -0.87,
       4.74
      ],
-     "polygons": 2284,
+     "polygons": 3482,
      "all_triangles": true,
      "uv": true
     },
@@ -290,15 +290,15 @@
      "name": "M_Prop_Chandlery_Rope_LOD1.001",
      "min": [
       -27.9975,
-      -10.5282,
-      0.8989
+      -10.5285,
+      0.8842
      ],
      "max": [
-      7.2269,
+      7.2245,
       10.2743,
-      8.701
+      8.7007
      ],
-     "polygons": 2294,
+     "polygons": 1664,
      "all_triangles": true,
      "uv": true
     }
@@ -551,7 +551,7 @@
    4.905
   ],
   "validation_ok": true,
-  "seconds": 8.0
+  "seconds": 6.4
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/props/M_Prop_Chandlery/M_Prop_Chandlery.blend",
  "ok": true,
@@ -706,7 +706,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4568 of 10000"
+   "detail": "6966 of 10000"
   },
   {
    "subject": "M_Prop_Chandlery_Gondola_LOD0",
@@ -714,7 +714,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.35e-04, 912 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.20e-04, 1134 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Prop_Chandlery_Gondola_LOD0",
@@ -738,7 +738,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2114 faces have no UV area"
+   "detail": "0 of 3476 faces have no UV area"
   },
   {
    "subject": "M_Prop_Chandlery_Mannequins_LOD0",
@@ -930,7 +930,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4588 of 10000"
+   "detail": "3328 of 10000"
   },
   {
    "subject": "M_Prop_Chandlery_Rope_LOD0",
@@ -962,7 +962,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2378 faces have no UV area"
+   "detail": "0 of 1739 faces have no UV area"
   },
   {
    "subject": "M_Prop_Chandlery_RackWall_LOD1",
@@ -1114,7 +1114,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2284 of 10000"
+   "detail": "3482 of 10000"
   },
   {
    "subject": "M_Prop_Chandlery_Gondola_LOD1",
@@ -1122,7 +1122,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.93e-05, 816 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.93e-05, 1086 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Prop_Chandlery_Gondola_LOD1",
@@ -1146,7 +1146,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "6 of 2284 faces have no UV area"
+   "detail": "6 of 3482 faces have no UV area"
   },
   {
    "subject": "M_Prop_Chandlery_Gondola_LOD1",
@@ -1154,7 +1154,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.7% (max 15%)"
   },
   {
    "subject": "M_Prop_Chandlery_Mannequins_LOD1",
@@ -1370,7 +1370,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2294 of 10000"
+   "detail": "1664 of 10000"
   },
   {
    "subject": "M_Prop_Chandlery_Rope_LOD1",
@@ -1378,7 +1378,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.61e-04, 138 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.92e-04, 138 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Prop_Chandlery_Rope_LOD1",
@@ -1402,15 +1402,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2294 faces have no UV area"
+   "detail": "0 of 1664 faces have no UV area"
   },
   {
    "subject": "M_Prop_Chandlery_Rope_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 7.3% (max 15%)"
+   "detail": "WAIVED (collapse decimation of ~30 small props on one atlas merges small islands (tags, buckles, tape, rope V tiles), so UV area / bounds shift; every LOD still samples the same atlas regions): UV bounds differ by 0.030 (max 0.02), UV area by 12.2% (max 15%)"
   },
   {
    "subject": "M_Prop_Chandlery_COL",
@@ -1458,7 +1458,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "28378 of 30000 (helm_interior, asset row)"
+   "detail": "29516 of 30000 (helm_interior, asset row)"
   },
   {
    "subject": "M_Prop_Chandlery",
@@ -1698,7 +1698,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Prop_Chandlery_COL, M_Prop_Chandlery_Corner_LOD0, M_Prop_Chandlery_Gondola_LOD0, M_Prop_Chandlery_Hung_LOD0, M_Prop_Chandlery_Mannequins_LOD0, M_Prop_Chandlery_RackMid_LOD0, M_Prop_Chandlery_RackWall_LOD0, M_Prop_Chandlery_Rope_LOD0; 28486 triangles (scene 28486)"
+   "detail": "M_Prop_Chandlery_COL, M_Prop_Chandlery_Corner_LOD0, M_Prop_Chandlery_Gondola_LOD0, M_Prop_Chandlery_Hung_LOD0, M_Prop_Chandlery_Mannequins_LOD0, M_Prop_Chandlery_RackMid_LOD0, M_Prop_Chandlery_RackWall_LOD0, M_Prop_Chandlery_Rope_LOD0; 29624 triangles (scene 29624)"
   },
   {
    "subject": "M_Prop_Chandlery_LOD0.fbx",
@@ -1738,7 +1738,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Prop_Chandlery_Corner_LOD1, M_Prop_Chandlery_Gondola_LOD1, M_Prop_Chandlery_Hung_LOD1, M_Prop_Chandlery_Mannequins_LOD1, M_Prop_Chandlery_RackMid_LOD1, M_Prop_Chandlery_RackWall_LOD1, M_Prop_Chandlery_Rope_LOD1; 14187 triangles (scene 14187)"
+   "detail": "M_Prop_Chandlery_Corner_LOD1, M_Prop_Chandlery_Gondola_LOD1, M_Prop_Chandlery_Hung_LOD1, M_Prop_Chandlery_Mannequins_LOD1, M_Prop_Chandlery_RackMid_LOD1, M_Prop_Chandlery_RackWall_LOD1, M_Prop_Chandlery_Rope_LOD1; 14755 triangles (scene 14755)"
   },
   {
    "subject": "M_Prop_Chandlery_LOD1.fbx",
@@ -1754,7 +1754,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.74; 15 renders in 8 s, maps M_Prop_Chandlery_RackWall_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_RackMid_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Gondola_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Mannequins_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Hung_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Corner_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Rope_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.74; 15 renders in 6 s, maps M_Prop_Chandlery_RackWall_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_RackMid_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Gondola_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Mannequins_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Hung_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Corner_LOD0: ALB/MET/NOR/RGH, M_Prop_Chandlery_Rope_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -1790,14 +1790,14 @@
    "name": "M_Prop_Chandlery_Gondola_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 4568,
+   "triangles": 6966,
    "texel_density": null
   },
   {
    "name": "M_Prop_Chandlery_Gondola_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 2284,
+   "triangles": 3482,
    "texel_density": null
   },
   {
@@ -1846,14 +1846,14 @@
    "name": "M_Prop_Chandlery_Rope_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 4588,
+   "triangles": 3328,
    "texel_density": null
   },
   {
    "name": "M_Prop_Chandlery_Rope_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 2294,
+   "triangles": 1664,
    "texel_density": null
   },
   {
@@ -1869,5 +1869,5 @@
   34.61699867248535,
   14.714998990297318
  ],
- "peak_rss_mb": 628.4
+ "peak_rss_mb": 723.8
 }

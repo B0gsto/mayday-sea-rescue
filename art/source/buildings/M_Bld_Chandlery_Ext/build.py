@@ -35,6 +35,10 @@ D = {  # Details atlas rects (maketex.DETAILS)
     "Sign": (0.30, 0.36, 0.70, 0.62), "Chalk": (0.70, 0.22, 1.0, 0.62), "Glass": (0.0, 0.22, 0.30, 0.36),
     "Brass": (0.30, 0.22, 0.45, 0.36), "Pots": (0.45, 0.22, 0.70, 0.36), "Stain": (0.0, 0.0, 0.25, 0.22)}
 STRIP = {"Paint": (0.74, 0.80), "Iron": (0.68, 0.74), "Lead": (0.62, 0.68)}
+D.update({"Cloth": (0.25, 0.0, 0.45, 0.22), "Glow": (0.45, 0.0, 0.55, 0.22)})
+# T_Chandlery_Bands strips (maketex.BANDS): v0, v1, b0 (m, world height on walls), height (m)
+BANDS = {"Plinth": (0.0, 0.1875, 0.0, 0.5), "Base": (0.1875, 0.5625, 0.0, 1.0), "Eaves": (0.5625, 0.78125, 5.4, 0.6),
+         "SlateEaves": (0.78125, 1.0, None, 0.55)}
 
 
 def rect(name, w, h, pad=0.003):
@@ -48,6 +52,11 @@ def strip(name, metres=1.0):
 
 
 STONE = ("tile", 2.0)
+
+
+def band(name, b0=None, pad=0.004):
+    v0, v1, bb, h = BANDS[name]
+    return ("band", 2.0, v0 + pad, v1 - pad, bb if b0 is None else b0, h)
 SLATE = ("tile", 2.0)
 PAINT = strip("Paint", 2.0)
 IRON = strip("Iron", 1.0)
@@ -62,6 +71,9 @@ S = (R - E) / Y1                 # roof pitch (rise per m run), underside plane 
 SLAB = 0.16                      # slate + battens + sarking, vertical
 OVH = 0.28                       # eaves overhang
 PAR = 0.2                        # gable parapet above the slates
+KS = math.sqrt(1 + S * S)
+B_EAVES = ((Y0 - OVH) + S * (E + (Y1 - abs(Y0 - OVH)) * S + SLAB)) / KS   # up-slope b of the slate top at the eaves edge
+DY_MOSS = BANDS["SlateEaves"][3] / KS                                        # horizontal run of the mossy eaves strip
 
 
 def zu(y):
@@ -73,17 +85,20 @@ def zt(y):
     return zu(y) + SLAB
 
 
-def holed_wall(part, axis, w_out, w_in, s0, s1, t0, t1, holes, mode, ends=(True, True), top=True):
+def holed_wall(part, axis, w_out, w_in, s0, s1, t0, t1, holes, mode, ends=(True, True), top=True, bands=()):
     """Solid wall between w_out (outer face) and w_in on the wall axis ('y' front / back, 'x' sides), s along, t up,
-    with rectangular holes (s0, s1, t0, t1) through it: a conforming grid of face cells (no T-junctions) plus reveals."""
+    with rectangular holes (s0, s1, t0, t1) through it: a conforming grid of face cells (no T-junctions) plus reveals.
+    bands: (t0, t1, part, mode) height bands whose OUTER face cells go to another part / UV mode (damp, eaves soot)."""
     part.prim += 1
+    for bd in bands:
+        bd[2].prim += 1
 
     def P(s, w, t):
         return (s, w, t) if axis == "y" else (w, s, t)
 
     wm = (w_out + w_in) / 2
     ss = sorted({s0, s1, *[h[0] for h in holes], *[h[1] for h in holes]})
-    ts = sorted({t0, t1, *[h[2] for h in holes], *[h[3] for h in holes]})
+    ts = sorted({t0, t1, *[h[2] for h in holes], *[h[3] for h in holes], *[b[0] for b in bands], *[b[1] for b in bands]})
 
     def solid(s, t):
         return not any(h[0] < s < h[1] and h[2] < t < h[3] for h in holes)
@@ -93,7 +108,11 @@ def holed_wall(part, axis, w_out, w_in, s0, s1, t0, t1, holes, mode, ends=(True,
             if not solid((a + b) / 2, (c + d) / 2):
                 continue
             for w in (w_out, w_in):
-                part.face([P(a, w, c), P(b, w, c), P(b, w, d), P(a, w, d)], mode, centre=P((a + b) / 2, wm, (c + d) / 2))
+                pp, mm = part, mode
+                for bt0, bt1, bp, bmode in (bands if w == w_out else ()):
+                    if bt0 - 1e-6 <= c and d <= bt1 + 1e-6:
+                        pp, mm = bp, bmode
+                pp.face([P(a, w, c), P(b, w, c), P(b, w, d), P(a, w, d)], mm, centre=P((a + b) / 2, wm, (c + d) / 2))
     for h in holes:
         a, b, c, d = h
         sm, tm = (a + b) / 2, (c + d) / 2
@@ -141,6 +160,7 @@ def build():
     stone, gran, roof, tr, det, shop, glass, door, dglass = (Part("Stone"), Part("Granite"), Part("Roof"), Part("Trim"),
                                                             Part("Details"), Part("Shopfront"), Part("Glass"), Part("Door"),
                                                             Part("DoorGlass"))
+    bands, glowp = Part("Bands"), Part("Glow")
     atts = {}
 
     def gbox(lo, hi):          # thin glass slab (both sides render)
@@ -151,10 +171,13 @@ def build():
     DS = L.DOOR_STONE_OPENING
     holes_front = [(DS[0], DS[1], DS[2], DS[3]), (L.BAY_OPENING[0], L.BAY_OPENING[1], 0.0, L.BAY_OPENING[3])]
     holes_front += [(a, b, L.LOFT_WIN_Z[0], L.LOFT_WIN_Z[1]) for a, b in L.LOFT_WINDOWS]
-    holed_wall(stone, "y", Y0, IY0, X0, X1, 0.0, E, holes_front, STONE, top=False)
-    holed_wall(stone, "y", Y1, IY1, X0, X1, 0.0, E, [], STONE, top=False)
-    holed_wall(stone, "x", X0, IX0, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False)
-    holed_wall(stone, "x", X1, IX1, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False)
+    # own ashlar tile (T_Chandlery_Stone); outer 0 .. 1 m and 5.4 .. 6 m cells on the Bands strips (damp / eaves soot)
+    BASE_B = (0.0, 1.0, bands, band("Base"))
+    EAVE_B = (5.4, E, bands, band("Eaves"))
+    holed_wall(stone, "y", Y0, IY0, X0, X1, 0.0, E, holes_front, STONE, top=False, bands=(BASE_B, EAVE_B))
+    holed_wall(stone, "y", Y1, IY1, X0, X1, 0.0, E, [], STONE, top=False, bands=(BASE_B, EAVE_B))
+    holed_wall(stone, "x", X0, IX0, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False, bands=(BASE_B,))
+    holed_wall(stone, "x", X1, IX1, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False, bands=(BASE_B,))
     for yo, yi in ((Y0, IY0), (Y1, IY1)):        # wall heads up to the roof underside
         stone.prism([(yo, E), (yi, E), (yi, zu(yi))], "x", IX0, IX1, STONE)
     for x0, x1 in ((X0, IX0), (IX1, X1)):        # gables with parapets
@@ -163,11 +186,12 @@ def build():
     # granite plinth (sloped weathering top), quoins, kneelers, gable copings
     geo.LEVEL = 3
     pl = [(Y0, 0.0), (Y0 - 0.06, 0.0), (Y0 - 0.06, 0.4), (Y0, 0.46)]
+    PLINTH = band("Plinth")                       # granite plinth on the Bands strip: damp, salt bloom, algae at the foot
     for x0, x1 in ((X0 - 0.06, DS[0] - 0.2), (DS[1] + 0.2, -5.0), (8.4, X1 + 0.06)):
-        gran.prism(pl, "x", x0, x1, STONE)
-    gran.prism([(Y1, 0.0), (Y1 + 0.06, 0.0), (Y1 + 0.06, 0.4), (Y1, 0.46)], "x", X0 - 0.06, X1 + 0.06, STONE)
+        bands.prism(pl, "x", x0, x1, PLINTH)
+    bands.prism([(Y1, 0.0), (Y1 + 0.06, 0.0), (Y1 + 0.06, 0.4), (Y1, 0.46)], "x", X0 - 0.06, X1 + 0.06, PLINTH)
     for xw, sg in ((X0, -1), (X1, 1)):
-        gran.prism([(xw, 0.0), (xw + 0.06 * sg, 0.0), (xw + 0.06 * sg, 0.4), (xw, 0.46)], "y", Y0, Y1, STONE)
+        bands.prism([(xw, 0.0), (xw + 0.06 * sg, 0.0), (xw + 0.06 * sg, 0.4), (xw, 0.46)], "y", Y0, Y1, PLINTH)
     geo.LEVEL = 2
     z, k = 0.46, 0
     while z < E - 0.35:
@@ -176,7 +200,8 @@ def build():
                 lx, ly = (0.62, 0.32) if k % 2 == 0 else (0.32, 0.62)
                 xa, xb = sorted((xc - 0.03 * sx, xc + lx * sx))
                 ya, yb = sorted((yc - 0.03 * sy, yc + ly * sy))
-                gran.box((xa, ya, z + 0.012), (xb, yb, z + 0.318), STONE)
+                q = (k * 0.383 + xc * 0.071 + yc * 0.137) % 1.0       # each quoin block its own patch of the granite tile
+                gran.box((xa, ya, z + 0.012), (xb, yb, z + 0.318), ("tile", 2.0, q, (q * 7.31) % 1.0))
         z += 0.33
         k += 1
     for xa, xb in ((X0 - 0.05, IX0 + 0.06), (IX1 - 0.06, X1 + 0.05)):
@@ -211,13 +236,16 @@ def build():
 
     # ================================================= roof: slate slopes (skylight hole on the back), ridge tiles
     geo.LEVEL = 3
-    slope_prism(roof, Y0 - OVH, 0.0, IX0, IX1, 0.0, SLAB, SLATE)
+    yf_m, yb_m = Y0 - OVH + DY_MOSS, Y1 + OVH - DY_MOSS          # lowest 0.55 m of each slope: mossy eaves strip (Bands)
+    slope_prism(roof, yf_m, 0.0, IX0, IX1, 0.0, SLAB, SLATE)
+    slope_prism(bands, Y0 - OVH, yf_m, IX0, IX1, 0.0, SLAB, band("SlateEaves", B_EAVES))
+    slope_prism(bands, yb_m, Y1 + OVH, IX0, IX1, 0.0, SLAB, band("SlateEaves", B_EAVES))
     (sy0, _), (sy1, _) = L.SKYLIGHT_YZ           # low edge y 4.286, high edge y 3.422
     sk0, sk1 = L.SKYLIGHT[0], L.SKYLIGHT[1]
-    slope_prism(roof, 0.0, Y1 + OVH, IX0, sk0, 0.0, SLAB, SLATE)
-    slope_prism(roof, 0.0, Y1 + OVH, sk1, IX1, 0.0, SLAB, SLATE)
+    slope_prism(roof, 0.0, yb_m, IX0, sk0, 0.0, SLAB, SLATE)
+    slope_prism(roof, 0.0, yb_m, sk1, IX1, 0.0, SLAB, SLATE)
     slope_prism(roof, 0.0, sy1, sk0, sk1, 0.0, SLAB, SLATE)
-    slope_prism(roof, sy0, Y1 + OVH, sk0, sk1, 0.0, SLAB, SLATE)
+    slope_prism(roof, sy0, yb_m, sk0, sk1, 0.0, SLAB, SLATE)
     geo.LEVEL = 2
     x = IX0
     while x < IX1 - 0.05:
@@ -297,6 +325,21 @@ def build():
             geo.LEVEL = 3
             gbox((ga, (ya + yb) / 2 - 0.003, sz0), (gb, (ya + yb) / 2 + 0.003, sz1))
             geo.LEVEL = 2
+        # half-drawn curtains behind the glass: brass rod in the reveal, four gathered folds per side, tie-backs
+        geo.LEVEL = 2
+        yc, tie, CLOTH = Y0 + 0.42, z0 + 0.66, rect("Cloth", 0.3, 1.5)
+        det.tube((a + 0.005, yc, z1 - 0.05), (b - 0.005, yc, z1 - 0.05), 0.012, 6, BRASS)
+        for side in (0, 1):
+            xe, sg = (a, 1.0) if side == 0 else (b, -1.0)
+            for i in range(4):
+                dy = 0.02 if i % 2 else -0.02
+                p_top = (xe + sg * (0.045 + i * 0.07), yc + dy, z1 - 0.06)
+                p_tie = (xe + sg * (0.05 + i * 0.022), yc + dy * 0.5, tie)
+                p_bot = (xe + sg * (0.04 + i * 0.048), yc + dy, z0 + 0.05)
+                det.tube(p_top, p_tie, 0.032, 6, CLOTH)
+                det.tube(p_tie, p_bot, 0.03, 6, CLOTH)
+            xa_, xb_ = sorted((xe, xe + sg * 0.17))
+            det.box((xa_, yc - 0.05, tie - 0.025), (xb_, yc + 0.05, tie + 0.025), CLOTH)        # tie-back band
         # drip stains under the sill (only where there is wall below: the cornice runs under windows 2 and 3)
         geo.LEVEL = 1
         if b < -5.1:
@@ -469,6 +512,21 @@ def build():
         for p, q in zip(arm, arm[1:]):
             det.tube(p, q, 0.016, 6, IRON)
         frustum(det, (xl, Y0 - 1.0), 0.045, 0.14, 4.08, 3.95, 12, IRON)
+        # Glow MeshPart (Neon at Night): enamel underside just inside the shade + the bulb; LOD2: a lit disc only
+        lc, GL = (xl, Y0 - 1.0), rect("Glow", 0.3, 0.3)
+        glowp.prim += 1
+        rb = [(lc[0] + 0.131 * math.cos(2 * math.pi * j / 12), lc[1] + 0.131 * math.sin(2 * math.pi * j / 12), 3.957) for j in range(12)]
+        rt = [(lc[0] + 0.048 * math.cos(2 * math.pi * j / 12), lc[1] + 0.048 * math.sin(2 * math.pi * j / 12), 4.07) for j in range(12)]
+        for j in range(12):
+            jj = (j + 1) % 12
+            glowp.face([rb[j], rb[jj], rt[jj], rt[j]], GL, centre=(lc[0] + 50 * (rb[j][0] + rb[jj][0] - 2 * lc[0]),
+                                                                 lc[1] + 50 * (rb[j][1] + rb[jj][1] - 2 * lc[1]), 4.0))
+        glowp.tube((lc[0], lc[1], 4.06), (lc[0], lc[1], 3.975), 0.036, 8, GL)
+        geo.LEVEL = (2,)
+        glowp.prim += 1
+        glowp.face([(lc[0] + 0.12 * math.cos(2 * math.pi * j / 8), lc[1] + 0.12 * math.sin(2 * math.pi * j / 8), 3.955) for j in range(8)],
+                   GL, centre=(lc[0], lc[1], 4.5))
+        geo.LEVEL = 2
         atts["ATT_Lamp_%02d" % (i + 1)] = Vector((xl, Y0 - 1.0, 3.93))
     geo.LEVEL = 2
     for xp in (X0 + 0.8, X1 - 0.8):                    # hopper heads at the top of the front and back downpipes
@@ -507,9 +565,11 @@ def build():
     geo.LEVEL = 3
 
     # ================================================= objects, collision, attachments
-    parts = [p for p in (stone, gran, roof, tr, det, shop, glass, door, dglass) if p.faces]
+    parts = [p for p in (stone, gran, roof, tr, det, shop, glass, door, dglass, bands, glowp) if p.faces]
     mats = {
-        "Stone": ("QuayStone", geo.material("MI_Chandlery_QuayStone", (0.26, 0.24, 0.21), 0.85)),
+        "Stone": ("Stone", geo.material("MI_Chandlery_Stone", (0.24, 0.2, 0.15), 0.82)),
+        "Bands": ("Bands", geo.material("MI_Chandlery_Bands", (0.12, 0.11, 0.08), 0.8)),
+        "Glow": ("Details", geo.material("MI_Chandlery_Glow", (0.86, 0.68, 0.42), 0.3)),
         "Granite": ("Granite", geo.material("MI_Chandlery_Granite", (0.11, 0.08, 0.06), 0.85)),
         "Roof": ("Slate", geo.material("MI_Chandlery_Slate", (0.07, 0.08, 0.09), 0.6)),
         "Trim": ("Sheet", geo.material("MI_Chandlery_Trim", (0.3, 0.3, 0.3), 0.6)),
@@ -571,22 +631,29 @@ def build():
         "origin": "free",
         "tiling": True,
         "waivers": {"LOD UV layout": "world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs "
-                                     "drop small parts, so the UV bounds change; no baked layout to keep"},
+                                     "drop small parts, so the UV bounds change; no baked layout to keep",
+                    "texture sets": "6 sets, 4 of them unique to the Chandlery (Slate, Details, Stone, Bands); BldTrim Sheet "
+                                    "and Mat Granite are shared library sets already resident for the other quay "
+                                    "buildings, so the unique texture memory stays at 4 sets"},
         "sets": [
             {"name": "Chandlery", "set": "Slate", "size": 1024, "wet": True},
             {"name": "Chandlery", "set": "Details", "size": 1024, "wet": True},
+            {"name": "Chandlery", "set": "Stone", "size": 1024, "wet": True},
+            {"name": "Chandlery", "set": "Bands", "size": 1024, "wet": True},
             {"name": "BldTrim", "set": "Sheet", "size": 1024, "wet": True, "dir": tex + "M_Bld_TrimSheet"},
-            {"name": "Mat", "set": "QuayStone", "size": 1024, "wet": True, "dir": tex + "Materials"},
             {"name": "Mat", "set": "Granite", "size": 1024, "wet": True, "dir": tex + "Materials"},
         ],
         "meshes": meshes + [{"object": colobj}],
         "attachments": att_objs,
-        "closeups": [
+        "closeups": [   # first 6 render (common.CLOSEUP_MAX): the H2 fix-round views lead
             {"name": "shopfront_fascia_bay", "target": st(1.7, -6.6, 2.6), "dist": 34, "az": 12, "el": 6},
-            {"name": "hanging_sign", "target": st(sx, sy, sz), "dist": 8, "az": 60, "el": 8},
-            {"name": "door", "target": st(-7.4, Y0, 1.3), "dist": 10, "az": -15, "el": 4},
-            {"name": "eaves_gutter_downpipe", "target": st(X1 - 0.8, Y0 - 0.2, 5.3), "dist": 8, "az": 45, "el": 10},
+            {"name": "loft_curtains", "target": st(-1.0, Y0, 4.75), "dist": 9, "az": 8, "el": 4},
+            {"name": "base_damp_salt", "target": st(-5.9, Y0, 0.7), "dist": 7, "az": 10, "el": 6},
+            {"name": "eaves_moss_soot", "target": st(-6.0, Y0 - 0.3, 5.8), "dist": 8, "az": 20, "el": 16},
             {"name": "roof_chimney", "target": st(-9.6, 0.0, 9.9), "dist": 18, "az": -40, "el": 28},
+            {"name": "door", "target": st(-7.4, Y0, 1.3), "dist": 10, "az": -15, "el": 4},
+            {"name": "hanging_sign", "target": st(sx, sy, sz), "dist": 8, "az": 60, "el": 8},
+            {"name": "eaves_gutter_downpipe", "target": st(X1 - 0.8, Y0 - 0.2, 5.3), "dist": 8, "az": 45, "el": 10},
             {"name": "granite_plinth_2m", "target": st(-9.7, Y0, 0.45), "dist": 6, "az": -35, "el": 14},
         ],
     }

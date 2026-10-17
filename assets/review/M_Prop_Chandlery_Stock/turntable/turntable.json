@@ -1,0 +1,212 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Prop_Chandlery_Stock/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Prop_Chandlery_Stock_BackWall_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Stock_GearShelves_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Stock_Counter_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Stock_Floor_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Stock_Window_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_ChandleryStock_Atlas"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.184,
+    0.315,
+    0.961,
+    0.589
+   ],
+   "mannequin": [
+    0.037,
+    0.438,
+    0.07,
+    0.517
+   ],
+   "fill": 0.777
+  },
+  "Side": {
+   "asset": [
+    0.2,
+    0.372,
+    0.963,
+    0.569
+   ],
+   "mannequin": [
+    0.155,
+    0.431,
+    0.188,
+    0.522
+   ],
+   "fill": 0.763
+  },
+  "Rear3Q": {
+   "asset": [
+    0.173,
+    0.38,
+    0.948,
+    0.553
+   ],
+   "mannequin": [
+    0.037,
+    0.439,
+    0.07,
+    0.517
+   ],
+   "fill": 0.775
+  },
+  "High": {
+   "asset": [
+    0.153,
+    0.102,
+    0.951,
+    0.797
+   ],
+   "mannequin": [
+    0.037,
+    0.452,
+    0.087,
+    0.525
+   ],
+   "fill": 0.798
+  }
+ },
+ "closeups": [
+  {
+   "name": "back_wall_shelves",
+   "target": [
+    4.199999999999999,
+    15.600000000000001,
+    5.4
+   ],
+   "dist": 8.0,
+   "az": 0.0,
+   "el": 5.0,
+   "file": "closeup_back_wall_shelves.png"
+  },
+  {
+   "name": "gear_shelves",
+   "target": [
+    20.1,
+    15.600000000000001,
+    4.199999999999999
+   ],
+   "dist": 9.0,
+   "az": 0.0,
+   "el": 5.0,
+   "file": "closeup_gear_shelves.png"
+  },
+  {
+   "name": "counter_till_lamp",
+   "target": [
+    17.4,
+    2.8499999999999996,
+    3.4499999999999997
+   ],
+   "dist": 5.0,
+   "az": 20.0,
+   "el": 25.0,
+   "file": "closeup_counter_till_lamp.png"
+  },
+  {
+   "name": "counter_shelves_shopside",
+   "target": [
+    9.0,
+    3.0,
+    1.5
+   ],
+   "dist": 8.0,
+   "az": 180.0,
+   "el": 15.0,
+   "file": "closeup_counter_shelves_shopside.png"
+  },
+  {
+   "name": "window_display",
+   "target": [
+    4.5,
+    -18.0,
+    1.2000000000000002
+   ],
+   "dist": 12.0,
+   "az": 0.0,
+   "el": 15.0,
+   "file": "closeup_window_display.png"
+  },
+  {
+   "name": "barrel_anchor",
+   "target": [
+    -1.2000000000000002,
+    0.6000000000000001,
+    1.5
+   ],
+   "dist": 8.0,
+   "az": 0.0,
+   "el": 25.0,
+   "file": "closeup_barrel_anchor.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.763,
+ "in_frame": true,
+ "dims_m": [
+  14.739,
+  11.677,
+  2.8
+ ],
+ "validation_ok": true,
+ "seconds": 5.4
+}

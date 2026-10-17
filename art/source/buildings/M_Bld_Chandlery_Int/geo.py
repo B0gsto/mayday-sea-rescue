@@ -8,6 +8,7 @@ v = n x u, up the wall / up the roof slope, so slate courses and lettering never
   ("tile", metres)                       world-scale tiling (MaterialVariant-style sets, the B02 library, own tiling sets)
   ("trim", v0, v1, metres)               a trim-sheet strip: u along the face's long side (tiling), v across inside [v0, v1]
   ("rect", u0, v0, u1, v1, w_m, h_m)     an atlas rect: the face anchored at its own min, w_m x h_m fills the rect
+  ("fn", f)                              explicit UVs, f(point m, frame u, frame v) -> (u, v) (zoned floor / wall strips)
 """
 import math
 
@@ -16,7 +17,7 @@ import bpy
 from mathutils import Vector
 
 STUDS = 3.0
-LEVEL = 3          # faces added now survive in LOD0..LOD(LEVEL-1): 3 all LODs, 2 LOD0+LOD1, 1 LOD0 only
+LEVEL = 3          # faces added now survive in LOD0..LOD(LEVEL-1): 3 all LODs, 2 LOD0+LOD1, 1 LOD0 only; -3 LOD2 only
 Z = Vector((0, 0, 1))
 
 TRIM = {   # M_Bld_TrimSheet layout.json strips (v0, v1)
@@ -81,6 +82,8 @@ class Part:
         elif kind == "tile90":
             s = mode[1]
             uvs = [(y / s, -x / s) for x, y in zip(a, b)]
+        elif kind == "fn":                     # explicit per-vertex UVs: mode[1](point m, frame u, frame v) -> (u, v)
+            uvs = [tuple(mode[1](p, u, v)) for p in pts]
         elif kind == "trim":
             v0, v1, s = mode[1], mode[2], mode[3]
             ea, eb = max(a) - min(a), max(b) - min(b)
@@ -221,7 +224,7 @@ class Part:
         uvl = bm.loops.layers.uv.new("UVMap")
         groups = {}
         for pts, uvs, lv, pid in self.faces:
-            if lv <= lod:
+            if (lv > 0 and lv <= lod) or (lv < 0 and lod != -lv - 1):     # LEVEL -3: LOD2 only (stand-in)
                 continue
             vs = [bm.verts.new(((p.x + offset.x) * STUDS, (p.y + offset.y) * STUDS, (p.z + offset.z) * STUDS)) for p in pts]
             groups.setdefault(pid, []).extend(vs)

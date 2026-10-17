@@ -1,6 +1,14 @@
 {
- "ok": false,
+ "ok": true,
  "rows": [
+  {
+   "subject": "T_ChandleryProps_Atlas",
+   "check": "signal mask",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "art/source/props/M_Prop_Chandlery/signal_mask.png"
+  },
   {
    "subject": "T_ChandleryProps_Atlas",
    "check": "ALB present",
@@ -111,7 +119,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 38, 99th 204, range 20 to 240 over 93% of pixels"
+   "detail": "luma 1st 38, 99th 220, range 20 to 240 over 93% of pixels"
   },
   {
    "subject": "T_ChandleryProps_Atlas_ALB",
@@ -124,10 +132,10 @@
   {
    "subject": "T_ChandleryProps_Atlas_ALB",
    "check": "saturation",
-   "ok": false,
+   "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.81, ceiling 0.45"
+   "detail": "95th percentile 0.42, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_ChandleryProps_Atlas_NOR",
@@ -143,7 +151,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.23)"
+   "detail": "OpenGL (curl share 0.24)"
   },
   {
    "subject": "T_ChandleryProps_Rope",

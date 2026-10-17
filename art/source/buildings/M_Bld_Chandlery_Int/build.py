@@ -41,14 +41,110 @@ L = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(L)
 import geo  # noqa: E402
 from geo import Part, trim  # noqa: E402
-from atlas import DETAILS, JOINERY  # noqa: E402
+from atlas import DETAILS, JOINERY, LINING, LINING_U_M, LINING_WALL_Z, PINE_BAND_M, PINE_U_M, PINE_ZONES, POSTER_M  # noqa: E402
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 NAME = "M_Bld_Chandlery_Int"
 
-PINE = ("tile", 2.4)
-PINE90 = ("tile90", 2.4)
-TG = ("tile", 1.2)
+
+
+def _lin_wall(zfloor):
+    """T&G wall strip: u tiles 1.2 m along the wall, v = height above that storey's floor (grime, scuffs, knocks)."""
+    v0, v1 = LINING["Wall"]
+    za, zb_ = LINING_WALL_Z
+    v0, v1 = v0 + 0.003, v1 - 0.002
+    return ("fn", lambda p, u, v: (p.dot(u) / LINING_U_M, v0 + (p.z - zfloor - za) / (zb_ - za) * (v1 - v0)))
+
+
+def _lin_clean(p, u, v):
+    v0, v1 = LINING["Clean"]
+    return (p.dot(u) / LINING_U_M, (v0 + v1) / 2 + (v1 - v0) * 0.4 * math.tanh(p.dot(v) / 12.0))
+
+
+TG = ("fn", _lin_clean)                         # ceilings, roof boarding, reveals, risers (pattern constant along v)
+
+
+def lin_sill(z0, z1):
+    """Under-sash strip with the drip stains running down from the window board."""
+    v0, v1 = LINING["Sill"]
+    v0, v1 = v0 + 0.003, v1 - 0.003
+    return ("fn", lambda p, u, v: (p.dot(u) / LINING_U_M, v0 + (p.z - z0) / (z1 - z0) * (v1 - v0)))
+
+
+def zoned_floor(part, z, rects, along, zone_of):
+    """Floorboards in 0.6 m bands across the boards; along each band the wear zone (atlas PINE_ZONES strip) is picked
+    by zone_of(x, y) on a 0.2 m step, runs merged. The strips share the same boards, so only the wear changes."""
+    import random
+    rr = random.Random(11 if along == "x" else 12)
+    shifts = {}
+    for x0, x1, y0, y1 in rects:
+        a0, a1, b0, b1 = (x0, x1, y0, y1) if along == "x" else (y0, y1, x0, x1)   # a along the boards, b across
+        k0, k1 = int(math.floor(b0 / PINE_BAND_M)), int(math.ceil(b1 / PINE_BAND_M))
+        for k in range(k0, k1):
+            ba, bb = max(b0, k * PINE_BAND_M), min(b1, (k + 1) * PINE_BAND_M)
+            if bb - ba < 1e-4:
+                continue
+            sh = shifts.setdefault(k, rr.random())
+            n = max(1, int(round((a1 - a0) / 0.2)))
+            cuts = [a0 + (a1 - a0) * i / n for i in range(n + 1)]
+            zones = []
+            for i in range(n):
+                am, bm = (cuts[i] + cuts[i + 1]) / 2, (ba + bb) / 2
+                zones.append(zone_of(am, bm) if along == "x" else zone_of(bm, am))
+            i = 0
+            while i < n:
+                j = i
+                while j + 1 < n and zones[j + 1] == zones[i]:
+                    j += 1
+                zv0, zv1 = PINE_ZONES[zones[i]]
+
+                def f(p, u, v, zv0=zv0, zv1=zv1, k=k, sh=sh):
+                    pa, pb = (p.x, p.y) if along == "x" else (p.y, p.x)
+                    return (pa / PINE_U_M + sh, zv0 + (pb - k * PINE_BAND_M) / PINE_BAND_M * (zv1 - zv0))
+                if along == "x":
+                    qz(part, z, cuts[i], cuts[j + 1], ba, bb, ("fn", f), 1)
+                else:
+                    qz(part, z, ba, bb, cuts[i], cuts[j + 1], ("fn", f), 1)
+                i = j + 1
+
+
+PINE_FAR = ("fn", lambda p, u, v: (p.x / PINE_U_M, sum(PINE_ZONES["Clean"]) / 2 + 0.1 * math.tanh(p.y / 20.0)))
+
+
+def _seg_d(px, py, ax, ay, bx, by):
+    dx, dy = bx - ax, by - ay
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / max(dx * dx + dy * dy, 1e-9)))
+    return math.hypot(px - ax - t * dx, py - ay - t * dy)
+
+
+# work-wear paths: (polyline, strength, half-width m)
+GROUND_PATHS = [
+    ([(-7.4, -5.1), (-7.1, -4.0), (-6.3, -2.6), (-3.5, -2.1), (-1.0, -1.8), (1.4, -0.5), (4.0, 0.15)], 1.0, 0.55),
+    ([(0.9, 0.3), (7.1, 0.3)], 0.62, 0.32), ([(5.6, 0.3)], 1.0, 0.55), ([(2.2, 0.3)], 0.9, 0.45), ([(4.0, 0.1)], 0.9, 0.5),
+    ([(0.9, 1.6), (7.6, 1.6)], 0.7, 0.33), ([(5.6, 1.5)], 0.95, 0.45),
+    ([(7.4, 0.5), (7.8, 2.8), (8.0, 4.5), (8.5, 5.15), (9.0, 5.2)], 0.85, 0.38),
+    ([(-6.6, 0.15), (-1.0, 0.15)], 0.5, 0.32), ([(-6.6, -2.0), (-6.6, 0.15)], 0.5, 0.32), ([(-1.0, -2.0), (-1.0, 0.15)], 0.5, 0.32),
+    ([(-8.35, -3.4), (-8.35, 4.2)], 0.5, 0.35), ([(-6.0, 3.45), (-2.4, 3.45)], 0.42, 0.32), ([(-2.3, 3.0)], 0.5, 0.45),
+    ([(-7.4, -4.7)], 1.0, 0.7)]
+LOFT_PATHS = [([(9.0, -1.9), (7.6, -1.9), (4.0, -1.0), (-4.0, 0.0), (-7.5, 0.0)], 0.7, 0.5),
+              ([(-4.0, 2.7)], 0.5, 0.5), ([(-0.7, 2.7)], 0.5, 0.5), ([(-8.5, 0.0)], 0.7, 0.6)]
+
+
+def wear_zone(paths, x, y):
+    w = 0.0
+    for pts, st, hw in paths:
+        if len(pts) == 1:
+            d = math.hypot(x - pts[0][0], y - pts[0][1])
+        else:
+            d = min(_seg_d(x, y, *a, *b) for a, b in zip(pts, pts[1:]))
+        w = max(w, st * math.exp(-(d / hw) ** 2))
+    if w > 0.6:
+        return "Path"
+    if w > 0.3:
+        return "Traffic"
+    if min(x - L.IX0, L.IX1 - x, y - L.IY0, L.IY1 - y) < 0.45:
+        return "Edge"
+    return "Clean"
 
 
 def J(strip, metres=1.0):
@@ -113,13 +209,24 @@ def build():
     F = L.FLOOR
     # the floor stops at the inner wall face (IY0): Ext owns the bay display bed and the door threshold (layout.BAY_FLOOR)
     MX0, MX1, MY0, MY1 = -7.95, -6.85, L.IY0 + 0.05, L.IY0 + 0.65         # flush coir mat in a mat well inside the door
-    for x0, x1, y0, y1 in ((L.IX0, L.IX1, MY1, L.IY1), (L.IX0, L.IX1, L.IY0, MY0), (L.IX0, MX0, MY0, MY1), (MX1, L.IX1, MY0, MY1)):
-        qz(floor, F, x0, x1, y0, y1, PINE, 1)
+    ground_rects = ((L.IX0, L.IX1, MY1, L.IY1), (L.IX0, L.IX1, L.IY0, MY0), (L.IX0, MX0, MY0, MY1), (MX1, L.IX1, MY0, MY1))
+    geo.LEVEL = 2
+    zoned_floor(floor, F, ground_rects, "x", lambda x, y: wear_zone(GROUND_PATHS, x, y))
+    geo.LEVEL = -3                         # LOD2 stand-in: whole rects on the Clean strip (boards smeared, seen from afar)
+    for x0, x1, y0, y1 in ground_rects:
+        qz(floor, F, x0, x1, y0, y1, PINE_FAR, 1)
+    geo.LEVEL = 3
     # loft floor: slab A (all but the stair strip), B (east strip in front of the stairwell), trimmers
     TX0, TX1, HY0, HY1 = 8.16, 8.32, -1.56, L.STAIR[3]
     ZL, ZC = L.LOFT, 3.20
-    for x0, x1, y0, y1 in ((LX0 - 0.01, TX0, LY0 - 0.01, LY1 + 0.01), (TX0, LX1 + 0.01, LY0 - 0.01, HY0)):
-        qz(floor, ZL, x0, x1, y0, y1, PINE90, 1)
+    loft_rects = ((LX0 - 0.01, TX0, LY0 - 0.01, LY1 + 0.01), (TX0, LX1 + 0.01, LY0 - 0.01, HY0))
+    geo.LEVEL = 2
+    zoned_floor(floor, ZL, loft_rects, "y", lambda x, y: wear_zone(LOFT_PATHS, x, y))
+    geo.LEVEL = -3
+    for x0, x1, y0, y1 in loft_rects:
+        qz(floor, ZL, x0, x1, y0, y1, PINE_FAR, 1)
+    geo.LEVEL = 3
+    for x0, x1, y0, y1 in loft_rects:
         qz(lining, ZC, x0, x1, y0, y1, TG, -1)
     struct.box((TX0, HY0, 2.95), (TX1, LY1 + 0.01, ZL), PLANK, skip=("+y",))
     struct.box((TX1, HY0, 2.95), (LX1 + 0.01, HY1, ZL), PLANK, skip=("+x",))
@@ -132,30 +239,32 @@ def build():
     geo.LEVEL = 3
     G0, G1 = F - 0.01, ZC + 0.01          # ground-floor lining z range (into floor and ceiling)
     U0 = ZL - 0.01
+    WG, WL = _lin_wall(F), _lin_wall(ZL)
     dx0, dx1, dz1 = L.DOOR[0], L.DOOR[1], L.DOOR[3]
     bx0, bx1, bz1 = L.BAY[0], L.BAY[1], L.BAY[3]
     # front, ground
     for x0, x1, z0, z1 in ((LX0, dx0, G0, G1), (dx0, dx1, dz1, G1), (dx1, bx0, G0, G1), (bx0, bx1, bz1, G1), (bx1, LX1, G0, G1)):
-        qy(lining, LY0, x0, x1, z0, z1, TG, 1)
+        qy(lining, LY0, x0, x1, z0, z1, WG, 1)
     # front, loft: strips between the sashes
     wz0, wz1 = L.LOFT_WIN_Z
     top_f = zb(LY0) + 0.02
     xs = [LX0] + [v for w in L.LOFT_WINDOWS for v in w] + [LX1]
     for i in range(0, len(xs), 2):
-        qy(lining, LY0, xs[i], xs[i + 1], U0, top_f, TG, 1)
+        qy(lining, LY0, xs[i], xs[i + 1], U0, top_f, WL, 1)
     for w0, w1 in L.LOFT_WINDOWS:
-        qy(lining, LY0, w0, w1, U0, wz0, TG, 1)
-        qy(lining, LY0, w0, w1, wz1, top_f, TG, 1)
+        qy(lining, LY0, w0, w1, U0, wz0, lin_sill(U0, wz0), 1)
+        qy(lining, LY0, w0, w1, wz1, top_f, WL, 1)
     # back wall (the stairwell strip runs on up past the loft floor)
-    qy(lining, LY1, LX0, TX0, G0, G1, TG, -1)
-    qy(lining, LY1, TX0, LX1, G0, ZL + 0.01, TG, -1)
-    qy(lining, LY1, LX0, LX1, U0, zb(LY1) + 0.02, TG, -1)
+    qy(lining, LY1, LX0, TX0, G0, G1, WG, -1)
+    qy(lining, LY1, TX0, LX1, G0, ZL + 0.01, WG, -1)
+    qy(lining, LY1, LX0, LX1, U0, zb(LY1) + 0.02, WL, -1)
     # gables: ground (east: up to the loft over the stairwell) and loft pentagons up the roof line
-    qx(lining, LX0, LY0, LY1, G0, G1, TG, 1)
-    qx(lining, LX1, LY0, HY1, G0, G1, TG, -1)
-    qx(lining, LX1, HY1, LY1, G0, ZL + 0.01, TG, -1)
-    for x, sign in ((LX0, 1), (LX1, -1)):
-        pts = [(x, LY0, U0), (x, LY1, U0), (x, LY1, zb(LY1) + 0.02), (x, 0.0, zb(0) + 0.02), (x, LY0, zb(LY0) + 0.02)]
+    qx(lining, LX0, LY0, LY1, G0, G1, WG, 1)
+    qx(lining, LX1, LY0, HY1, G0, G1, WG, -1)
+    qx(lining, LX1, HY1, LY1, G0, ZL + 0.01, WG, -1)
+    for x, sign in ((LX0, 1), (LX1, -1)):          # loft gables: wall strip to the eaves line, clean boards above
+        qx(lining, x, LY0, LY1, U0, zb(LY0) + 0.02, WL, sign)
+        pts = [(x, LY1, zb(LY1) + 0.02), (x, 0.0, zb(0) + 0.02), (x, LY0, zb(LY0) + 0.02)]
         lining.face(pts, TG, centre=(x - sign, 0, 5.0))
 
     def reveal(x0, x1, z0, z1, depth, sill=True, head=True, part=lining):
@@ -346,8 +455,8 @@ def build():
         struct.prism(prof, "x", x0, x1, PAINT)
     lining.face([(stair_x[0], yb_bot, F + 0.002), (stair_x[1], yb_bot, F + 0.002), (stair_x[1], HY1, nose(HY1) - 0.28),
                  (stair_x[0], HY1, nose(HY1) - 0.28)], TG, centre=(9.0, 2.0, 9.0))
-    lining.face([(SX0 - 0.004, yb_bot, F), (SX0 - 0.004, HY1 + 0.0, F), (SX0 - 0.004, HY1, nose(HY1) - 0.28)], TG, centre=(9.5, 1.0, 1.0))
-    qy(lining, HY1 - 0.004, SX0, LX1, F, nose(HY1) - 0.28, TG, -1)
+    lining.face([(SX0 - 0.004, yb_bot, F), (SX0 - 0.004, HY1 + 0.0, F), (SX0 - 0.004, HY1, nose(HY1) - 0.28)], WG, centre=(9.5, 1.0, 1.0))
+    qy(lining, HY1 - 0.004, SX0, LX1, F, nose(HY1) - 0.28, WG, -1)
     # newels, handrail, balusters
     struct.box((SX0 - 0.04, 4.98, F), (SX0 + 0.10, 5.12, 1.28), RAIL)
     struct.box((SX0 - 0.055, 4.965, 1.28), (SX0 + 0.115, 5.135, 1.33), RAIL)
@@ -537,6 +646,13 @@ def build():
                 for j in range(2):
                     xo = ex - 0.05 - j * 0.05
                     hw.box((xo - 0.004, yh - 0.05, zr - 0.20), (xo, yh + 0.05, zr + 0.0), D(pk, 0.1, 0.2), skip=("-z", "+z"))
+                # clear blister bubble over the printed item window (atlas px 16..112 x 64..196 of the 128 x 256 card)
+                u0_, v0_, u1_, v1_ = DETAILS[pk]
+                bub = ("rect", u0_ + 18 / 2048, v1_ - 194 / 2048, u0_ + 110 / 2048, v1_ - 66 / 2048, 0.072, 0.101)
+                geo.LEVEL = 1
+                xo = ex - 0.104
+                hw.box((xo - 0.013, yh - 0.036, zr - 0.152), (xo, yh + 0.036, zr - 0.051), bub, skip=("+x",))
+                geo.LEVEL = 2
             k += 1
     geo.LEVEL = 3
 
@@ -573,7 +689,7 @@ def build():
     fx0 = LX0
     ztop = ZL + 2.2
     for yp in (fy0, fy1):
-        lining.box((fx0, yp - 0.03, ZL), (fx1, yp + 0.03, ztop), TG, skip=("-z", "-x", "+z"))
+        lining.box((fx0, yp - 0.03, ZL), (fx1, yp + 0.03, ztop), WL, skip=("-z", "-x", "+z"))
         furn.box((fx0, yp - 0.04, ztop), (fx1 + 0.02, yp + 0.04, ztop + 0.04), RAIL, skip=("-x",))
     rail_z = ztop - 0.05
     det.tube((fx1 - 0.02, fy0 + 0.03, rail_z), (fx1 - 0.02, fy1 - 0.03, rail_z), 0.014, 8, BRASS)
@@ -610,7 +726,41 @@ def build():
         det.box((xh - 0.025, fy1 - 0.035, ZL + 1.66), (xh + 0.025, fy1 - 0.03, ZL + 1.78), BRASS, skip=("+y",))
     geo.LEVEL = 3
 
+    # ================================================================ wall posters and notices (aged paper, pinned)
+    def poster(name, wall, cpos, zc, frame=False):
+        """wall 'front' (y LY0, faces +Y) or 'back' (y LY1, faces -Y); cpos = x of the centre, zc = centre height."""
+        w, h = POSTER_M[name]
+        sg = 1 if wall == "front" else -1
+        yw = LY0 if wall == "front" else LY1
+        x0, x1, z0, z1 = cpos - w / 2, cpos + w / 2, zc - h / 2, zc + h / 2
+        geo.LEVEL = 2
+        if frame:
+            fw, fd = 0.03, 0.025
+            for lo, hi in (((x0 - fw, 0, z0 - fw), (x0, fd, z1 + fw)), ((x1, 0, z0 - fw), (x1 + fw, fd, z1 + fw)),
+                           ((x0, 0, z1), (x1, fd, z1 + fw)), ((x0, 0, z0 - fw), (x1, fd, z0))):
+                ya, yb2 = sorted((yw + sg * lo[1], yw + sg * hi[1]))
+                furn.box((lo[0], ya, lo[2]), (hi[0], yb2, hi[2]), RAIL, skip=("-y" if sg > 0 else "+y",))
+            qy(det, yw + sg * 0.012, x0, x1, z0, z1, D(name, w, h), sg)
+            return
+        qy(det, yw + sg * 0.004, x0, x1, z0, z1, D(name, w, h), sg)
+        geo.LEVEL = 1
+        pins = ((x0 + 0.025, z1 - 0.025), (x1 - 0.025, z1 - 0.025)) if w < 0.4 else \
+            ((x0 + 0.025, z1 - 0.025), (x1 - 0.025, z1 - 0.025), (x0 + 0.025, z0 + 0.025), (x1 - 0.025, z0 + 0.025))
+        for px, pz in pins:
+            ya, yb2 = sorted((yw + sg * 0.004, yw + sg * 0.009))
+            det.box((px - 0.007, ya, pz - 0.007), (px + 0.007, yb2, pz + 0.007), BRASS, skip=("-y" if sg > 0 else "+y",))
+        geo.LEVEL = 3
+
+    poster("Tide", "front", -6.15, 1.55)            # door-to-bay pier, front wall
+    poster("Lifeboat", "front", -5.3, 1.55)
+    poster("Knots", "back", -2.3, 1.75, frame=True)  # over the chart table
+    poster("Notice0", "back", -0.75, 1.6)
+    poster("Notice1", "back", 8.75, 1.6)            # at the stair foot
+    geo.LEVEL = 3
+
     # ================================================================ practical lamps (geometry + ATT_Light_NN at the bulb)
+    shade_in = set()          # Glow faces of the lit shade insides: LOD0 + LOD1 only
+
     def add_light(p, kind):
         lights.append((Vector(p), kind))
         geo.LEVEL = 3
@@ -624,7 +774,9 @@ def build():
         det.lathe([(0.03, 0.09), (0.03, 0.02)], (x, y, zs), 10, BRASS, cap_top=True)
         prof = [(0.03, 0.02), (0.07, -0.005), (0.15, -0.07), (0.21, -0.13), (0.225, -0.15)]
         det.lathe(prof, (x, y, zs), 16, EN_OUT)
-        det.lathe([(p_[0] - 0.006, p_[1] - 0.004) for p_ in prof], (x, y, zs), 16, EN_IN, inside=True)
+        n0 = len(glow.faces)
+        glow.lathe([(p_[0] - 0.006, p_[1] - 0.004) for p_ in prof], (x, y, zs), 16, GLOW, inside=True)   # lit inner face
+        shade_in.update(range(n0, len(glow.faces)))
         det.lathe([(0.225, -0.15), (0.231, -0.153), (0.219, -0.153)], (x, y, zs), 16, EN_OUT)
         glow.lathe([(0.0, 0.0), (0.03, -0.01), (0.045, -0.045), (0.035, -0.08), (0.0, -0.095)], (x, y, zs), 10, GLOW)
         add_light((x, y, zs - 0.05), "pendant")
@@ -652,7 +804,9 @@ def build():
         zs = z - 0.0
         prof = [(0.025, 0.0), (0.06, -0.02), (0.12, -0.08), (0.14, -0.11)]
         det.lathe(prof, (p_end.x, p_end.y, zs), 14, EN_OUT, cap_top=True)
-        det.lathe([(p_[0] - 0.005, p_[1] - 0.004) for p_ in prof], (p_end.x, p_end.y, zs), 14, EN_IN, inside=True)
+        n0 = len(glow.faces)
+        glow.lathe([(p_[0] - 0.005, p_[1] - 0.004) for p_ in prof], (p_end.x, p_end.y, zs), 14, GLOW, inside=True)
+        shade_in.update(range(n0, len(glow.faces)))
         glow.lathe([(0.0, -0.01), (0.03, -0.02), (0.04, -0.05), (0.028, -0.08), (0.0, -0.09)], (p_end.x, p_end.y, zs), 10, GLOW)
         add_light((p_end.x, p_end.y, zs - 0.06), "wall")
 
@@ -715,7 +869,7 @@ def build():
         "Hardware": ("Details", geo.material("MI_ChandInt_Hardware", (0.3, 0.25, 0.2), 0.5)),
     }
     meshes, totals = [], [0, 0, 0]
-    glow.faces = [(f[0], f[1], 3, f[3]) for f in glow.faces]     # lamp glass stays in every LOD (lights read from afar)
+    glow.faces = [(f[0], f[1], 2 if i in shade_in else 3, f[3]) for i, f in enumerate(glow.faces)]   # lamp glass in every LOD
     for p in (floor, lining, struct, furn, trimp, det, glow, hw):
         s, mat = mats[p.name]
         counts = []
@@ -726,6 +880,8 @@ def build():
             totals[li] += counts[-1]
         print("[H2] %-10s LOD0 %5d  LOD1 %5d  LOD2 %5d" % (p.name, counts[0], counts[1], counts[2]))
     print("[H2] totals LOD0 %d  LOD1 %d  LOD2 %d tris, %d lamps" % (totals[0], totals[1], totals[2], len(lights)))
+    for i, (p, kind) in enumerate(lights):
+        print("[H2] ATT_Light_%02d %-9s (%.2f, %.2f, %.2f)" % (i + 1, kind, p.x, p.y, p.z))
 
     # ================================================================ collision: floors, loft, stair ramp, counter, walls
     col = Part("COL")

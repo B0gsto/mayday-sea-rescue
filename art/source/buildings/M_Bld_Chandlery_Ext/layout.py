@@ -95,3 +95,58 @@ SKYLIGHT_YZ = ((4.286, 7.0), (3.422, 7.504))               # roof hole on the ba
 ATT_EXT_EXTRA = {"ATT_DoorHinge": DOOR_HINGE}
 ATT_EXT_EXTRA.update({"ATT_Lamp_%02d" % (i + 1): (x, Y0 - 1.0, 3.93) for i, x in enumerate((-3.2, 1.7, 6.7))})  # gooseneck lamp shades over the fascia (point lights)
 A_BOARD = (-3.62, -2.98, -6.95)          # A-frame chalk board on the quay: x0, x1, y centre (feet +-0.25 m)
+
+
+# ---- appended by the Ext builder (H2 fix round): practical light spec for the game to place (nothing above moved)
+# Units: positions in this frame (metres, x3 = studs, world = pivot + (bx, bz, -by) studs, see the docstring); drop_studs is
+# how far below the marker the light Attachment sits (so the shade / bulb mesh does not shadow its own light);
+# brightness / range / angle are Roblox Light properties (range in studs). "face" is the SpotLight Face in the world frame.
+# "on": presets where the light is lit all day, plus "dusk" presets where it is lit only when ClockTime >= 17.0 or < 7.5.
+# Values match the look-dev rig (assets/review/M_Bld_Chandlery/studio/chandlery.luau): interior PointLights 0.55 / 15,
+# exterior 1.1 / 16, colour 2700 K. Kind brightness scales follow the Int builder's Blender energies (220/260/140/120 W).
+WARM_2700K = (255, 177, 110)
+COOL_6500K = (232, 240, 255)          # daylight fill, a touch cool against the warm practicals
+PRESETS = ("Clear", "Overcast", "Storm", "Night")
+ON_EXT = {"presets": ("Night",), "dusk": ("Clear", "Overcast", "Storm")}           # street lamps: dark hours only
+ON_INT = {"presets": ("Overcast", "Storm", "Night"), "dusk": ("Clear",)}           # shop open: lit unless a clear day
+ON_DAY = {"presets": (), "day": ("Clear", "Overcast", "Storm")}                    # daylight fills: 7.5 <= ClockTime < 17.0
+
+LIGHTS = {
+    # exterior gooseneck lamps over the fascia (M_Bld_Chandlery_Ext ATT_Lamp_01..03); their Glow part goes Neon with them
+    "ext_lamp": {"attachments": ("ATT_Lamp_01", "ATT_Lamp_02", "ATT_Lamp_03"), "type": "PointLight", "color": WARM_2700K,
+                 "brightness": 1.1, "range": 16, "shadows": True, "drop_studs": 0.6, "on": ON_EXT,
+                 "neon_part": "M_Bld_Chandlery_Ext_Glow"},
+    # interior practicals (M_Bld_Chandlery_Int ATT_Light_NN, kind exported by the Int builder); Int Glow part goes Neon
+    "int_pendant": {"match": "^ATT_Light_%d+$", "kind": "pendant", "type": "PointLight", "color": WARM_2700K,
+                    "brightness": 0.55, "range": 15, "shadows": True, "drop_studs": 0.35, "on": ON_INT,
+                    "neon_part": "M_Bld_Chandlery_Int_Glow"},
+    "int_holophane": {"match": "^ATT_Light_%d+$", "kind": "holophane", "type": "PointLight", "color": WARM_2700K,
+                      "brightness": 0.65, "range": 16, "shadows": True, "drop_studs": 0.35, "on": ON_INT,
+                      "neon_part": "M_Bld_Chandlery_Int_Glow"},
+    "int_wall": {"match": "^ATT_Light_%d+$", "kind": "wall", "type": "PointLight", "color": WARM_2700K,
+                 "brightness": 0.35, "range": 12, "shadows": True, "drop_studs": 0.35, "on": ON_INT,
+                 "neon_part": "M_Bld_Chandlery_Int_Glow"},
+    "int_bulkhead": {"match": "^ATT_Light_%d+$", "kind": "bulkhead", "type": "PointLight", "color": WARM_2700K,
+                     "brightness": 0.3, "range": 10, "shadows": False, "drop_studs": 0.2, "on": ON_INT,
+                     "neon_part": "M_Bld_Chandlery_Int_Glow"},
+    # desk lamp by the till (M_Prop_Chandlery_Stock ATT_Light_Till): warm pool on the counter
+    "till_lamp": {"attachments": ("ATT_Light_Till",), "type": "SpotLight", "face": "Bottom", "angle": 70,
+                  "color": WARM_2700K, "brightness": 0.9, "range": 7, "shadows": True, "drop_studs": 0.1, "on": ON_INT},
+    # cool daylight fill: inside the bay (between the glazing and the display bed) and under the rooflight; no shadows
+    "bay_fill": {"positions": [(-2.5, Y0 - 0.3, 2.3), (1.7, Y0 - 0.3, 2.3), (5.9, Y0 - 0.3, 2.3)], "type": "PointLight",
+                 "color": COOL_6500K, "brightness": 0.2, "range": 12, "shadows": False, "drop_studs": 0.0, "on": ON_DAY},
+    "skylight_fill": {"positions": [((SKYLIGHT[0] + SKYLIGHT[1]) / 2, 3.85, 6.6)], "type": "SpotLight", "face": "Bottom",
+                      "angle": 90, "color": COOL_6500K, "brightness": 0.35, "range": 14, "shadows": False,
+                      "drop_studs": 0.0, "on": ON_DAY},
+    # warm night glow behind the glazing so the shop windows read lit from the quay (bay behind the glass, loft behind
+    # the half-drawn curtains); no shadows (cheap), cover the window reveals only
+    "glazing_glow": {"positions": [(-2.5, Y0 + 0.35, 2.2), (1.7, Y0 + 0.35, 2.2), (5.9, Y0 + 0.35, 2.2)]
+                     + [((a + b) / 2, Y0 + 0.9, 4.9) for a, b in LOFT_WINDOWS], "type": "PointLight", "color": WARM_2700K,
+                     "brightness": 0.4, "range": 10, "shadows": False, "drop_studs": 0.0,
+                     "on": {"presets": ("Night",), "dusk": ("Clear", "Overcast", "Storm")}},
+}
+
+# ---- appended (H2 fix round): which interior ATT_Light_NN is which LIGHTS kind (Int builder's lamp order, 2026-10-17)
+LIGHT_KINDS = {"ATT_Light_%02d" % i: k for r, k in ((range(1, 8), "pendant"), (range(8, 10), "holophane"),
+                                                    (range(10, 17), "wall"), (range(17, 22), "bulkhead")) for i in r}
+LIGHT_KINDS["ATT_Light_Till"] = "till"   # M_Prop_Chandlery_Stock desk lamp by the till (warm SpotLight down)

@@ -2,7 +2,7 @@
  "asset": "M_Bld_Chandlery_Ext",
  "name": "M_Bld_Chandlery_Ext",
  "date": "2026-10-17",
- "commit": "f385a2a+dirty",
+ "commit": "f9f240c+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,14 +25,16 @@
  "exports": [
   {
    "file": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD0.fbx",
-   "bytes": 340988,
+   "bytes": 475932,
    "fbx_version": 7400,
    "meshes": [
+    "M_Bld_Chandlery_Ext_Bands_LOD0",
     "M_Bld_Chandlery_Ext_COL",
     "M_Bld_Chandlery_Ext_Details_LOD0",
     "M_Bld_Chandlery_Ext_DoorGlass_LOD0",
     "M_Bld_Chandlery_Ext_Door_LOD0",
     "M_Bld_Chandlery_Ext_Glass_LOD0",
+    "M_Bld_Chandlery_Ext_Glow_LOD0",
     "M_Bld_Chandlery_Ext_Granite_LOD0",
     "M_Bld_Chandlery_Ext_Roof_LOD0",
     "M_Bld_Chandlery_Ext_Shopfront_LOD0",
@@ -40,6 +42,22 @@
     "M_Bld_Chandlery_Ext_Trim_LOD0"
    ],
    "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Ext_Bands_LOD0.001",
+     "min": [
+      -30.18,
+      -18.84,
+      0.0
+     ],
+     "max": [
+      30.18,
+      18.84,
+      18.8214
+     ],
+     "polygons": 148,
+     "all_triangles": true,
+     "uv": true
+    },
     {
      "name": "M_Bld_Chandlery_Ext_COL.001",
      "min": [
@@ -68,7 +86,7 @@
       19.395,
       32.1
      ],
-     "polygons": 1928,
+     "polygons": 3020,
      "all_triangles": true,
      "uv": true
     },
@@ -121,6 +139,22 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Chandlery_Ext_Glow_LOD0.001",
+     "min": [
+      -9.993,
+      -21.393,
+      11.871
+     ],
+     "max": [
+      20.493,
+      -20.607,
+      12.21
+     ],
+     "polygons": 156,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Chandlery_Ext_Granite_LOD0.001",
      "min": [
       -30.33,
@@ -128,11 +162,11 @@
       0.0
      ],
      "max": [
-      30.18,
+      30.15,
       18.96,
       30.48
      ],
-     "polygons": 1070,
+     "polygons": 998,
      "all_triangles": true,
      "uv": true
     },
@@ -140,12 +174,12 @@
      "name": "M_Bld_Chandlery_Ext_Roof_LOD0.001",
      "min": [
       -28.35,
-      -18.84,
-      17.51
+      -17.4148,
+      18.3414
      ],
      "max": [
       28.35,
-      18.84,
+      17.4148,
       28.98
      ],
      "polygons": 60,
@@ -180,7 +214,7 @@
       18.0,
       30.15
      ],
-     "polygons": 286,
+     "polygons": 310,
      "all_triangles": true,
      "uv": true
     },
@@ -211,13 +245,15 @@
   },
   {
    "file": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD1.fbx",
-   "bytes": 262700,
+   "bytes": 396380,
    "fbx_version": 7400,
    "meshes": [
+    "M_Bld_Chandlery_Ext_Bands_LOD1",
     "M_Bld_Chandlery_Ext_Details_LOD1",
     "M_Bld_Chandlery_Ext_DoorGlass_LOD1",
     "M_Bld_Chandlery_Ext_Door_LOD1",
     "M_Bld_Chandlery_Ext_Glass_LOD1",
+    "M_Bld_Chandlery_Ext_Glow_LOD1",
     "M_Bld_Chandlery_Ext_Granite_LOD1",
     "M_Bld_Chandlery_Ext_Roof_LOD1",
     "M_Bld_Chandlery_Ext_Shopfront_LOD1",
@@ -225,6 +261,22 @@
     "M_Bld_Chandlery_Ext_Trim_LOD1"
    ],
    "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Ext_Bands_LOD1.001",
+     "min": [
+      -30.18,
+      -18.84,
+      0.0
+     ],
+     "max": [
+      30.18,
+      18.84,
+      18.8214
+     ],
+     "polygons": 148,
+     "all_triangles": true,
+     "uv": true
+    },
     {
      "name": "M_Bld_Chandlery_Ext_Details_LOD1.001",
      "min": [
@@ -237,7 +289,7 @@
       18.57,
       32.1
      ],
-     "polygons": 866,
+     "polygons": 1958,
      "all_triangles": true,
      "uv": true
     },
@@ -290,6 +342,22 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Chandlery_Ext_Glow_LOD1.001",
+     "min": [
+      -9.993,
+      -21.393,
+      11.871
+     ],
+     "max": [
+      20.493,
+      -20.607,
+      12.21
+     ],
+     "polygons": 156,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Chandlery_Ext_Granite_LOD1.001",
      "min": [
       -30.33,
@@ -297,11 +365,11 @@
       0.0
      ],
      "max": [
-      30.18,
+      30.15,
       18.96,
       30.48
      ],
-     "polygons": 1070,
+     "polygons": 998,
      "all_triangles": true,
      "uv": true
     },
@@ -309,12 +377,12 @@
      "name": "M_Bld_Chandlery_Ext_Roof_LOD1.001",
      "min": [
       -28.35,
-      -18.84,
-      17.51
+      -17.4148,
+      18.3414
      ],
      "max": [
       28.35,
-      18.84,
+      17.4148,
       28.98
      ],
      "polygons": 60,
@@ -349,7 +417,7 @@
       18.0,
       30.15
      ],
-     "polygons": 286,
+     "polygons": 310,
      "all_triangles": true,
      "uv": true
     },
@@ -380,13 +448,15 @@
   },
   {
    "file": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD2.fbx",
-   "bytes": 111612,
+   "bytes": 126060,
    "fbx_version": 7400,
    "meshes": [
+    "M_Bld_Chandlery_Ext_Bands_LOD2",
     "M_Bld_Chandlery_Ext_Details_LOD2",
     "M_Bld_Chandlery_Ext_DoorGlass_LOD2",
     "M_Bld_Chandlery_Ext_Door_LOD2",
     "M_Bld_Chandlery_Ext_Glass_LOD2",
+    "M_Bld_Chandlery_Ext_Glow_LOD2",
     "M_Bld_Chandlery_Ext_Granite_LOD2",
     "M_Bld_Chandlery_Ext_Roof_LOD2",
     "M_Bld_Chandlery_Ext_Shopfront_LOD2",
@@ -394,6 +464,22 @@
     "M_Bld_Chandlery_Ext_Trim_LOD2"
    ],
    "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Ext_Bands_LOD2.001",
+     "min": [
+      -30.18,
+      -18.84,
+      0.0
+     ],
+     "max": [
+      30.18,
+      18.84,
+      18.8214
+     ],
+     "polygons": 148,
+     "all_triangles": true,
+     "uv": true
+    },
     {
      "name": "M_Bld_Chandlery_Ext_Details_LOD2.001",
      "min": [
@@ -459,6 +545,22 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Chandlery_Ext_Glow_LOD2.001",
+     "min": [
+      -9.96,
+      -21.36,
+      11.865
+     ],
+     "max": [
+      20.46,
+      -20.64,
+      11.865
+     ],
+     "polygons": 18,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Chandlery_Ext_Granite_LOD2.001",
      "min": [
       -30.33,
@@ -466,11 +568,11 @@
       0.0
      ],
      "max": [
-      30.18,
-      18.18,
+      30.09,
+      18.09,
       30.48
      ],
-     "polygons": 190,
+     "polygons": 118,
      "all_triangles": true,
      "uv": true
     },
@@ -478,12 +580,12 @@
      "name": "M_Bld_Chandlery_Ext_Roof_LOD2.001",
      "min": [
       -28.35,
-      -18.84,
-      17.51
+      -17.4148,
+      18.3414
      ],
      "max": [
       28.35,
-      18.84,
+      17.4148,
       28.98
      ],
      "polygons": 60,
@@ -518,7 +620,7 @@
       18.0,
       30.15
      ],
-     "polygons": 286,
+     "polygons": 310,
      "all_triangles": true,
      "uv": true
     },
@@ -643,13 +745,26 @@
     "MET",
     "NOR",
     "RGH"
+   ],
+   "M_Bld_Chandlery_Ext_Bands_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Ext_Glow_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
    ]
   },
   "sets": [
    "T_Chandlery_Slate",
    "T_Chandlery_Details",
+   "T_Chandlery_Stone",
+   "T_Chandlery_Bands",
    "T_BldTrim_Sheet",
-   "T_Mat_QuayStone",
    "T_Mat_Granite"
   ],
   "frames": {
@@ -728,40 +843,40 @@
     "file": "closeup_shopfront_fascia_bay.png"
    },
    {
-    "name": "hanging_sign",
+    "name": "loft_curtains",
     "target": [
-     -17.4,
-     -19.65,
-     9.0
-    ],
-    "dist": 8.0,
-    "az": 60.0,
-    "el": 8.0,
-    "file": "closeup_hanging_sign.png"
-   },
-   {
-    "name": "door",
-    "target": [
-     -22.200000000000003,
+     -3.0,
      -18.0,
-     3.9000000000000004
+     14.25
     ],
-    "dist": 10.0,
-    "az": -15.0,
+    "dist": 9.0,
+    "az": 8.0,
     "el": 4.0,
-    "file": "closeup_door.png"
+    "file": "closeup_loft_curtains.png"
    },
    {
-    "name": "eaves_gutter_downpipe",
+    "name": "base_damp_salt",
     "target": [
-     27.599999999999998,
-     -18.6,
-     15.899999999999999
+     -17.700000000000003,
+     -18.0,
+     2.0999999999999996
+    ],
+    "dist": 7.0,
+    "az": 10.0,
+    "el": 6.0,
+    "file": "closeup_base_damp_salt.png"
+   },
+   {
+    "name": "eaves_moss_soot",
+    "target": [
+     -18.0,
+     -18.9,
+     17.4
     ],
     "dist": 8.0,
-    "az": 45.0,
-    "el": 10.0,
-    "file": "closeup_eaves_gutter_downpipe.png"
+    "az": 20.0,
+    "el": 16.0,
+    "file": "closeup_eaves_moss_soot.png"
    },
    {
     "name": "roof_chimney",
@@ -776,16 +891,16 @@
     "file": "closeup_roof_chimney.png"
    },
    {
-    "name": "granite_plinth_2m",
+    "name": "door",
     "target": [
-     -29.099999999999998,
+     -22.200000000000003,
      -18.0,
-     1.35
+     3.9000000000000004
     ],
-    "dist": 6.0,
-    "az": -35.0,
-    "el": 14.0,
-    "file": "closeup_granite_plinth_2m.png"
+    "dist": 10.0,
+    "az": -15.0,
+    "el": 4.0,
+    "file": "closeup_door.png"
    }
   ],
   "closeup_px": 1024,
@@ -797,7 +912,7 @@
    9.5
   ],
   "validation_ok": true,
-  "seconds": 9.9
+  "seconds": 6.6
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext.blend",
  "ok": true,
@@ -840,7 +955,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "286 of 10000"
+   "detail": "310 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD0",
@@ -848,7 +963,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.94e-01, 108 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.95e-01, 160 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD0",
@@ -872,7 +987,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 151 faces have no UV area"
+   "detail": "0 of 163 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD0",
@@ -896,7 +1011,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1070 of 10000"
+   "detail": "998 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD0",
@@ -928,7 +1043,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 535 faces have no UV area"
+   "detail": "0 of 499 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Roof_LOD0",
@@ -1064,7 +1179,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1928 of 10000"
+   "detail": "3020 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Details_LOD0",
@@ -1096,7 +1211,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1077 faces have no UV area"
+   "detail": "0 of 1827 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Shopfront_LOD0",
@@ -1323,6 +1438,118 @@
    "detail": "0 of 6 faces have no UV area"
   },
   {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Bands_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "148 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.32e-01, 62 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 74 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Glow_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "156 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.42e-03, 72 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 96 faces have no UV area"
+  },
+  {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD1",
    "check": "naming",
    "ok": true,
@@ -1344,7 +1571,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "286 of 10000"
+   "detail": "310 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD1",
@@ -1352,7 +1579,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.94e-01, 108 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.95e-01, 160 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD1",
@@ -1376,7 +1603,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 151 faces have no UV area"
+   "detail": "0 of 163 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD1",
@@ -1408,7 +1635,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1070 of 10000"
+   "detail": "998 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD1",
@@ -1440,7 +1667,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 535 faces have no UV area"
+   "detail": "0 of 499 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD1",
@@ -1600,7 +1827,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "866 of 10000"
+   "detail": "1958 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Details_LOD1",
@@ -1608,7 +1835,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 9.98e-04, 52 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.61e-04, 52 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Details_LOD1",
@@ -1632,7 +1859,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 522 faces have no UV area"
+   "detail": "0 of 1272 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Details_LOD1",
@@ -1640,7 +1867,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.220 (max 0.02), UV area by 45.2% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 41.4% (max 15%)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Shopfront_LOD1",
@@ -1899,6 +2126,134 @@
    "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Bands_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "148 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.32e-01, 62 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 74 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Glow_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "156 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.42e-03, 72 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 96 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD2",
    "check": "naming",
    "ok": true,
@@ -1920,7 +2275,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "286 of 10000"
+   "detail": "310 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD2",
@@ -1928,7 +2283,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.94e-01, 108 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.95e-01, 160 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD2",
@@ -1952,7 +2307,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 151 faces have no UV area"
+   "detail": "0 of 163 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Stone_LOD2",
@@ -1984,7 +2339,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "190 of 10000"
+   "detail": "118 of 10000"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD2",
@@ -2016,7 +2371,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 95 faces have no UV area"
+   "detail": "0 of 59 faces have no UV area"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Granite_LOD2",
@@ -2024,7 +2379,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 35.1% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.939 (max 0.02), UV area by 50.8% (max 15%)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Roof_LOD2",
@@ -2216,7 +2571,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 2.220 (max 0.02), UV area by 66.4% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 2.220 (max 0.02), UV area by 69.2% (max 15%)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_Shopfront_LOD2",
@@ -2475,6 +2830,134 @@
    "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Bands_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "148 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.32e-01, 62 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 74 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Ext_Glow_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "18 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.68e-02, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 18 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet, B02 library and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.072 (max 0.02), UV area by 60.5% (max 15%)"
+  },
+  {
    "subject": "M_Bld_Chandlery_Ext_COL",
    "check": "naming",
    "ok": true,
@@ -2520,7 +3003,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "6702 of 25000 (hero_building, asset row)"
+   "detail": "8050 of 25000 (hero_building, asset row)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext",
@@ -2528,7 +3011,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5124 of 9375"
+   "detail": "6472 of 9375"
   },
   {
    "subject": "M_Bld_Chandlery_Ext",
@@ -2536,7 +3019,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1636 of 1875"
+   "detail": "1754 of 1875"
   },
   {
    "subject": "M_Bld_Chandlery_Ext",
@@ -2582,9 +3065,9 @@
    "subject": "M_Bld_Chandlery_Ext",
    "check": "texture sets",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "5 (4 to 5 sets)"
+   "detail": "WAIVED (6 sets, 4 of them unique to the Chandlery (Slate, Details, Stone, Bands); BldTrim Sheet and Mat Granite are shared library sets already resident for the other quay buildings, so the unique texture memory stays at 4 sets): 6 (4 to 5 sets)"
   },
   {
    "subject": "T_Chandlery_Slate_ALB",
@@ -2683,6 +3166,102 @@
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_MET.png"
   },
   {
+   "subject": "T_Chandlery_Stone_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB.png"
+  },
+  {
+   "subject": "T_Chandlery_Stone_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Stone_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_NOR.png"
+  },
+  {
+   "subject": "T_Chandlery_Stone_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH.png"
+  },
+  {
+   "subject": "T_Chandlery_Stone_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Stone_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_MET.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_NOR.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Bands_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_MET.png"
+  },
+  {
    "subject": "T_BldTrim_Sheet_ALB",
    "check": "PBR map",
    "ok": true,
@@ -2729,54 +3308,6 @@
    "waived": false,
    "info": false,
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_MET.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_ALB",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_ALB.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_ALB_Wet",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_ALB_Wet.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_NOR",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_NOR.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_RGH",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_RGH.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_RGH_Wet",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_RGH_Wet.png"
-  },
-  {
-   "subject": "T_Mat_QuayStone_MET",
-   "check": "PBR map",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_MET.png"
   },
   {
    "subject": "T_Mat_Granite_ALB",
@@ -2904,7 +3435,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Chandlery_Ext_COL, M_Bld_Chandlery_Ext_Details_LOD0, M_Bld_Chandlery_Ext_DoorGlass_LOD0, M_Bld_Chandlery_Ext_Door_LOD0, M_Bld_Chandlery_Ext_Glass_LOD0, M_Bld_Chandlery_Ext_Granite_LOD0, M_Bld_Chandlery_Ext_Roof_LOD0, M_Bld_Chandlery_Ext_Shopfront_LOD0, M_Bld_Chandlery_Ext_Stone_LOD0, M_Bld_Chandlery_Ext_Trim_LOD0; 6930 triangles (scene 6930)"
+   "detail": "M_Bld_Chandlery_Ext_Bands_LOD0, M_Bld_Chandlery_Ext_COL, M_Bld_Chandlery_Ext_Details_LOD0, M_Bld_Chandlery_Ext_DoorGlass_LOD0, M_Bld_Chandlery_Ext_Door_LOD0, M_Bld_Chandlery_Ext_Glass_LOD0, M_Bld_Chandlery_Ext_Glow_LOD0, M_Bld_Chandlery_Ext_Granite_LOD0, M_Bld_Chandlery_Ext_Roof_LOD0, M_Bld_Chandlery_Ext_Shopfront_LOD0, M_Bld_Chandlery_Ext_Stone_LOD0, M_Bld_Chandlery_Ext_Trim_LOD0; 8278 triangles (scene 8278)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_LOD0.fbx",
@@ -2912,7 +3443,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 9 of 9 visual meshes"
+   "detail": "UV layer on 11 of 11 visual meshes"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_LOD1.fbx",
@@ -2944,7 +3475,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Chandlery_Ext_Details_LOD1, M_Bld_Chandlery_Ext_DoorGlass_LOD1, M_Bld_Chandlery_Ext_Door_LOD1, M_Bld_Chandlery_Ext_Glass_LOD1, M_Bld_Chandlery_Ext_Granite_LOD1, M_Bld_Chandlery_Ext_Roof_LOD1, M_Bld_Chandlery_Ext_Shopfront_LOD1, M_Bld_Chandlery_Ext_Stone_LOD1, M_Bld_Chandlery_Ext_Trim_LOD1; 5124 triangles (scene 5124)"
+   "detail": "M_Bld_Chandlery_Ext_Bands_LOD1, M_Bld_Chandlery_Ext_Details_LOD1, M_Bld_Chandlery_Ext_DoorGlass_LOD1, M_Bld_Chandlery_Ext_Door_LOD1, M_Bld_Chandlery_Ext_Glass_LOD1, M_Bld_Chandlery_Ext_Glow_LOD1, M_Bld_Chandlery_Ext_Granite_LOD1, M_Bld_Chandlery_Ext_Roof_LOD1, M_Bld_Chandlery_Ext_Shopfront_LOD1, M_Bld_Chandlery_Ext_Stone_LOD1, M_Bld_Chandlery_Ext_Trim_LOD1; 6472 triangles (scene 6472)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_LOD1.fbx",
@@ -2952,7 +3483,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 9 of 9 visual meshes"
+   "detail": "UV layer on 11 of 11 visual meshes"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_LOD2.fbx",
@@ -2984,7 +3515,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Chandlery_Ext_Details_LOD2, M_Bld_Chandlery_Ext_DoorGlass_LOD2, M_Bld_Chandlery_Ext_Door_LOD2, M_Bld_Chandlery_Ext_Glass_LOD2, M_Bld_Chandlery_Ext_Granite_LOD2, M_Bld_Chandlery_Ext_Roof_LOD2, M_Bld_Chandlery_Ext_Shopfront_LOD2, M_Bld_Chandlery_Ext_Stone_LOD2, M_Bld_Chandlery_Ext_Trim_LOD2; 1636 triangles (scene 1636)"
+   "detail": "M_Bld_Chandlery_Ext_Bands_LOD2, M_Bld_Chandlery_Ext_Details_LOD2, M_Bld_Chandlery_Ext_DoorGlass_LOD2, M_Bld_Chandlery_Ext_Door_LOD2, M_Bld_Chandlery_Ext_Glass_LOD2, M_Bld_Chandlery_Ext_Glow_LOD2, M_Bld_Chandlery_Ext_Granite_LOD2, M_Bld_Chandlery_Ext_Roof_LOD2, M_Bld_Chandlery_Ext_Shopfront_LOD2, M_Bld_Chandlery_Ext_Stone_LOD2, M_Bld_Chandlery_Ext_Trim_LOD2; 1754 triangles (scene 1754)"
   },
   {
    "subject": "M_Bld_Chandlery_Ext_LOD2.fbx",
@@ -2992,7 +3523,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 9 of 9 visual meshes"
+   "detail": "UV layer on 11 of 11 visual meshes"
   },
   {
    "subject": "M_Bld_Chandlery_Ext",
@@ -3000,7 +3531,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.78; 15 renders in 10 s, maps M_Bld_Chandlery_Ext_Stone_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Granite_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Roof_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Trim_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Details_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Shopfront_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Glass_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Door_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_DoorGlass_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.78; 15 renders in 7 s, maps M_Bld_Chandlery_Ext_Stone_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Granite_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Roof_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Trim_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Details_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Shopfront_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Glass_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Door_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_DoorGlass_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Bands_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Ext_Glow_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -3008,42 +3539,42 @@
    "name": "M_Bld_Chandlery_Ext_Stone_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 286,
+   "triangles": 310,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Stone_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 286,
+   "triangles": 310,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Stone_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 286,
+   "triangles": 310,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Granite_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1070,
+   "triangles": 998,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Granite_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1070,
+   "triangles": 998,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Granite_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 190,
+   "triangles": 118,
    "texel_density": null
   },
   {
@@ -3092,14 +3623,14 @@
    "name": "M_Bld_Chandlery_Ext_Details_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1928,
+   "triangles": 3020,
    "texel_density": null
   },
   {
    "name": "M_Bld_Chandlery_Ext_Details_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 866,
+   "triangles": 1958,
    "texel_density": null
   },
   {
@@ -3194,6 +3725,48 @@
    "texel_density": null
   },
   {
+   "name": "M_Bld_Chandlery_Ext_Bands_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 148,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Ext_Bands_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 148,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Ext_Bands_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 148,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Ext_Glow_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 156,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Ext_Glow_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 156,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Ext_Glow_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 18,
+   "texel_density": null
+  },
+  {
    "name": "M_Bld_Chandlery_Ext_COL",
    "role": "col",
    "lod": null,
@@ -3206,5 +3779,5 @@
   41.08500099182129,
   32.099998474121094
  ],
- "peak_rss_mb": 502.7
+ "peak_rss_mb": 673.1
 }

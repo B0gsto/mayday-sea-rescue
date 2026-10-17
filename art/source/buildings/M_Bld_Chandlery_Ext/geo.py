@@ -4,6 +4,9 @@ UV modes (every face gets its own planar frame: u = Z x n, horizontal and readin
 v = n x u, up the wall / up the roof slope, so slate courses and lettering never mirror):
   ("tile", metres)                       world-scale tiling (MaterialVariant-style sets, the B02 library, own tiling sets)
   ("trim", v0, v1, metres)               a trim-sheet strip: u along the face's long side (tiling), v across inside [v0, v1]
+  ("tile", metres, du, dv)               the same with a per-primitive offset (block-to-block variation on one tile)
+  ("band", metres, v0, v1, b0, h)        u tiles like "tile"; v = v0 + clamp((b - b0) / h) * (v1 - v0), b = the face's own
+                                         v coordinate (world height on walls): world-height bands (T_Chandlery_Bands)
   ("rect", u0, v0, u1, v1, w_m, h_m)     an atlas rect: the face anchored at its own min, w_m x h_m fills the rect
 """
 import math
@@ -80,7 +83,13 @@ class Part:
         kind = mode[0]
         if kind == "tile":
             s = mode[1]
-            uvs = [(x / s, y / s) for x, y in zip(a, b)]
+            du, dv = (mode[2], mode[3]) if len(mode) > 3 else (0.0, 0.0)
+            uvs = [(x / s + du, y / s + dv) for x, y in zip(a, b)]
+        elif kind == "band":
+            s, v0, v1, b0, h = mode[1:]
+            if max(b) <= b0 + 1e-4 or min(b) >= b0 + h - 1e-4:   # face wholly outside the band (caps, slab edges):
+                b0 = min(b)                                         # anchor it at its own min instead of clamping flat
+            uvs = [(x / s, v0 + min(1.0, max(0.0, (y - b0) / h)) * (v1 - v0)) for x, y in zip(a, b)]
         elif kind == "trim":
             v0, v1, s = mode[1], mode[2], mode[3]
             ea, eb = max(a) - min(a), max(b) - min(b)

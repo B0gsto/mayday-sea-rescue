@@ -82,13 +82,26 @@
    "MET",
    "NOR",
    "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Bands_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Glow_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
   ]
  },
  "sets": [
   "T_Chandlery_Slate",
   "T_Chandlery_Details",
+  "T_Chandlery_Stone",
+  "T_Chandlery_Bands",
   "T_BldTrim_Sheet",
-  "T_Mat_QuayStone",
   "T_Mat_Granite"
  ],
  "frames": {
@@ -167,40 +180,40 @@
    "file": "closeup_shopfront_fascia_bay.png"
   },
   {
-   "name": "hanging_sign",
+   "name": "loft_curtains",
    "target": [
-    -17.4,
-    -19.65,
-    9.0
-   ],
-   "dist": 8.0,
-   "az": 60.0,
-   "el": 8.0,
-   "file": "closeup_hanging_sign.png"
-  },
-  {
-   "name": "door",
-   "target": [
-    -22.200000000000003,
+    -3.0,
     -18.0,
-    3.9000000000000004
+    14.25
    ],
-   "dist": 10.0,
-   "az": -15.0,
+   "dist": 9.0,
+   "az": 8.0,
    "el": 4.0,
-   "file": "closeup_door.png"
+   "file": "closeup_loft_curtains.png"
   },
   {
-   "name": "eaves_gutter_downpipe",
+   "name": "base_damp_salt",
    "target": [
-    27.599999999999998,
-    -18.6,
-    15.899999999999999
+    -17.700000000000003,
+    -18.0,
+    2.0999999999999996
+   ],
+   "dist": 7.0,
+   "az": 10.0,
+   "el": 6.0,
+   "file": "closeup_base_damp_salt.png"
+  },
+  {
+   "name": "eaves_moss_soot",
+   "target": [
+    -18.0,
+    -18.9,
+    17.4
    ],
    "dist": 8.0,
-   "az": 45.0,
-   "el": 10.0,
-   "file": "closeup_eaves_gutter_downpipe.png"
+   "az": 20.0,
+   "el": 16.0,
+   "file": "closeup_eaves_moss_soot.png"
   },
   {
    "name": "roof_chimney",
@@ -215,16 +228,16 @@
    "file": "closeup_roof_chimney.png"
   },
   {
-   "name": "granite_plinth_2m",
+   "name": "door",
    "target": [
-    -29.099999999999998,
+    -22.200000000000003,
     -18.0,
-    1.35
+    3.9000000000000004
    ],
-   "dist": 6.0,
-   "az": -35.0,
-   "el": 14.0,
-   "file": "closeup_granite_plinth_2m.png"
+   "dist": 10.0,
+   "az": -15.0,
+   "el": 4.0,
+   "file": "closeup_door.png"
   }
  ],
  "closeup_px": 1024,
@@ -236,5 +249,5 @@
   9.5
  ],
  "validation_ok": true,
- "seconds": 9.9
+ "seconds": 6.6
 }

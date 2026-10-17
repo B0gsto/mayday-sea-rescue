@@ -28,7 +28,9 @@ STEM = "T_ChandleryInt"
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 rng = np.random.default_rng(2207)
 
-from atlas import DETAILS, JOINERY  # noqa: E402  (shared with build.py)
+from atlas import DETAILS, JOINERY, LINING, LINING_WALL_Z, PINE_ZONES, POSTER_M  # noqa: E402  (shared with build.py)
+
+L_SILL = (3.34, 4.0, 3.35)   # under-sash lining: z0 (U0), z1 (sill 4.0), loft floor (layout LOFT_WIN_Z / LOFT)
 
 LABELS = ["SHACKLES 6", "SHACKLES 8", "SNAP HOOKS", "THIMBLES", "CLEVIS PINS", "SPLIT RINGS", "SWIVELS", "EYE BOLTS",
           "PAD EYES", "BULLDOG GRIPS", "SAIL NEEDLES", "WHIPPING TWINE", "HOSE CLIPS", "SPLIT PINS", "CABLE TIES", "FUSES"]
@@ -36,8 +38,8 @@ CARDS = [("2x CASH", "Double Cash", "on every operation", "coins"),
          ("VIP CREW CARD", "Crew perks", "berth, boost, badge", "anchor"),
          ("QUICK LAUNCH", "Skip the slip", "launch from any berth", "bow"),
          ("STARTER KIT", "Gear, livery", "and a head start", "kit")]
-PACKS = [("S/S SHACKLE", "6 mm  x2", (52, 62, 84)), ("SNAP SHACKLE", "swivel eye", (98, 52, 50)),
-         ("NYLON CLEAT", "150 mm", (78, 86, 58)), ("THIMBLES", "8 mm  x4", (136, 106, 52))]
+PACKS = [("S/S SHACKLE", "6 mm  x2", (150, 54, 44), "shackle"), ("SNAP SHACKLE", "swivel eye", (176, 132, 40), "snap"),
+         ("NYLON CLEAT", "150 mm", (62, 100, 66), "cleat"), ("THIMBLES", "8 mm  x4", (186, 96, 40), "thimble")]
 
 FONT_B = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
 FONT_R = "/System/Library/Fonts/Supplemental/Arial.ttf"
@@ -136,20 +138,21 @@ def wood_grain(shape, fc, seed, stretch=0.08):
     return 0.6 * g + 0.4 * rings
 
 
-# ------------------------------------------------------------------ Pine floorboards (2.4 m tile, 142 px/stud)
+# ------------------------------------------------------------------ Pine floorboards: 4 wear-zone strips (atlas PINE_ZONES)
 def pine_set():
-    N = 1024
-    fc = 8 * 7.2 / N           # 8 cycles per stud
-    s = (N, N)
-    boards = 16
-    bh = N // boards
-    yy, xx = np.mgrid[0:N, 0:N]
-    row = yy // bh
+    """Each strip: 4 boards (0.6 m) across x 2.4 m along U (427 px/m, 142 px/stud). The same boards (joints, grain,
+    per-plank tone, knots, nails) in all four strips; the zone layers share one noise field with zone thresholds, so a
+    zone change along a board only shifts wear, never the board."""
+    N, H = 1024, 256
+    fc = 8 / 142.0               # 8 cycles per stud
+    s = (H, N)
+    boards, bh = 4, 64
+    yy, xx = np.mgrid[0:H, 0:N]
     t = (yy % bh) / bh
     r = np.random.default_rng(31)
     seg = np.zeros(s, int)
     joint = np.zeros(s)
-    for b in range(boards):                       # 1 or 2 butt joints a row (board lengths 1.2 .. 2.4 m), wrapped
+    for b in range(boards):                       # 1 or 2 butt joints a board (board lengths 1.2 .. 2.4 m), wrapped
         n = 1 + int(r.random() < 0.6)
         cuts = np.sort(r.uniform(0, N, n)).astype(int)
         rr = slice(b * bh, (b + 1) * bh)
@@ -159,90 +162,192 @@ def pine_set():
             d = np.minimum((np.arange(N) - c) % N, (c - np.arange(N)) % N)
             joint[rr] = np.maximum(joint[rr], (1 - smooth(0, 3.5, d))[None, :])
         seg[rr] = idx[None, :]
-    tone = r.uniform(0.84, 1.12, boards * 4 + 4)
-    warm = r.normal(0, 0.035, boards * 4 + 4)
+    nseg = boards * 4 + 4
+    tone = r.uniform(0.80, 1.16, nseg)            # per-plank tone (reclaimed boards, some replaced)
+    warm = r.normal(0, 0.05, nseg)
+    grey = (r.random(nseg) < 0.2) * r.uniform(0.1, 0.25, nseg)   # a few weathered greyer planks
     grain = wood_grain(s, fc, 5)
     big = fbm(s, 3.0, fc * 0.3, seed=7)
     mid = fbm(s, 2.4, fc * 0.6, seed=8)
+    blot = fbm(s, 2.6, fc * 0.45, seed=10)
     base = rgb((150, 116, 86))
-    alb = base[None, None, :] * tone[seg][..., None] * (0.86 + 0.24 * grain[..., None])
-    alb[..., 0] *= 1 + warm[seg]
-    alb[..., 2] *= 1 - warm[seg]
-    # knots
+    alb0 = base[None, None, :] * tone[seg][..., None] * (0.86 + 0.24 * grain[..., None])
+    alb0[..., 0] *= 1 + warm[seg]
+    alb0[..., 2] *= 1 - warm[seg]
+    g = grey[seg][..., None]
+    alb0 = alb0 * (1 - g) + alb0.mean(-1, keepdims=True) * g
     knot = np.zeros(s)
-    for _ in range(9):
-        cx, cy, rx, ry = r.uniform(0, N), r.uniform(0, N), r.uniform(8, 16), r.uniform(5, 9)
+    for _ in range(4):
+        cx, cy, rx, ry = r.uniform(0, N), r.uniform(8, H - 8), r.uniform(8, 16), r.uniform(5, 9)
         dx = (xx - cx + N / 2) % N - N / 2
-        dy = (yy - cy + N / 2) % N - N / 2
-        knot = np.maximum(knot, 1 - smooth(0.4, 1.0, np.sqrt((dx / rx) ** 2 + (dy / ry) ** 2)))
-    alb = alb * (1 - 0.45 * knot[..., None]) + rgb((86, 58, 40)) * 0.45 * knot[..., None]
-    # gaps and edge grime (soft, 4 px), worn varnish (traffic), scuffs
+        knot = np.maximum(knot, 1 - smooth(0.4, 1.0, np.sqrt((dx / rx) ** 2 + ((yy - cy) / ry) ** 2)))
+    alb0 = alb0 * (1 - 0.45 * knot[..., None]) + rgb((86, 58, 40)) * 0.45 * knot[..., None]
     edge = np.minimum(t, 1 - t) * bh
-    gap = 1 - smooth(0.0, 4.0, edge)
-    gap = np.maximum(gap, joint)
-    grime = (1 - smooth(0.0, 10.0, edge)) * (0.5 + 0.5 * mid)
-    worn = smooth(0.48, 0.72, big * 0.7 + mid * 0.3)
-    alb = alb * (1 - 0.18 * worn[..., None]) + rgb((168, 150, 126)) * 0.18 * worn[..., None]
-    scuff = smooth(0.7, 0.85, fbm(s, 2.2, fc * 0.8, seed=9)) * 0.6
-    alb = alb * (1 - 0.2 * scuff[..., None]) + rgb((92, 80, 66)) * 0.2 * scuff[..., None]
-    alb = alb * (1 - 0.35 * grime[..., None]) * (1 - 0.6 * gap[..., None])
-    # nail pairs on joist lines every 0.4 m (6 a tile), 2 a board, dark iron heads with a rust halo
+    gap = np.maximum(1 - smooth(0.0, 4.0, edge), joint)
     nails = np.zeros(s)
     halo = np.zeros(s)
-    for jx in range(6):
+    for jx in range(6):                           # joists every 0.4 m, 2 nails a board
         cx = (jx + 0.5) * N / 6 + 9
         for b in range(boards):
             for f in (0.27, 0.73):
                 cy = (b + f) * bh
-                d = np.sqrt(((xx - cx + N / 2) % N - N / 2) ** 2 + ((yy - cy + N / 2) % N - N / 2) ** 2)
+                d = np.sqrt(((xx - cx + N / 2) % N - N / 2) ** 2 + (yy - cy) ** 2)
                 nails = np.maximum(nails, 1 - smooth(2.5, 4.5, d))
                 halo = np.maximum(halo, 1 - smooth(3.0, 9.0, d))
-    alb = alb * (1 - 0.18 * halo[..., None]) + rgb((96, 70, 50)) * 0.18 * halo[..., None]
-    alb = alb * (1 - nails[..., None]) + rgb((58, 54, 50)) * nails[..., None]
-    h = 0.6 * (1 - gap) + 0.08 * grain + 0.15 * mid - 0.25 * worn * 0.3 - 0.2 * nails + 0.1 * np.sin(np.pi * t)
-    h = blur(h, 1)
-    nor = normal_from_height(h * 3.0, 3.0)
-    rgh = 0.46 + 0.28 * worn + 0.12 * scuff + 0.2 * gap + 0.05 * grain
-    rgh = np.where(nails > 0.5, 0.55, rgh)
-    save(STEM + "_Pine", alb, nor, rgh, np.zeros(s))
+    wearf = big * 0.65 + mid * 0.35               # shared wear field
+    scuf = fbm(s, 2.2, fc * 0.8, seed=9)
+    # zone: (varnish wear lo/hi, ground-in dirt, gap grime, scuff threshold, edge dust/grime)
+    Z = {"Clean": (0.66, 0.84, 0.0, 0.35, 0.80, 0.0), "Traffic": (0.44, 0.66, 0.28, 0.45, 0.70, 0.0),
+         "Path": (0.22, 0.48, 0.55, 0.7, 0.60, 0.0), "Edge": (0.70, 0.88, 0.04, 0.6, 0.86, 1.0)}
+    alb = np.zeros((N, N, 3))
+    rgh = np.zeros((N, N))
+    hgt = np.zeros((N, N))
+    for zone, (w0, w1, dirt, gg, sc0, dust) in Z.items():
+        v0, v1 = PINE_ZONES[zone]
+        r0, r1 = int(round((1 - v1) * N)), int(round((1 - v0) * N))
+        worn = smooth(w0, w1, wearf)
+        a = alb0 * (1 - 0.2 * worn[..., None]) + rgb((172, 152, 126)) * 0.2 * worn[..., None]   # varnish gone, pale
+        # ground-in work-wear: dark grey-brown dirt in the worn grain, blotchy
+        dd = dirt * (0.55 + 0.45 * smooth(0.3, 0.7, blot)) * (0.5 + 0.5 * worn)
+        a = a * (1 - dd[..., None]) + rgb((70, 60, 50)) * dd[..., None]
+        scuff = smooth(sc0, sc0 + 0.14, scuf) * (0.5 + 0.6 * dirt)
+        a = a * (1 - 0.25 * scuff[..., None]) + rgb((60, 54, 48)) * 0.25 * scuff[..., None]
+        grime = (1 - smooth(0.0, 10.0, edge)) * (0.5 + 0.5 * mid) * (1 + gg)
+        # wall edge: dust grey in the gaps, dark blotches of old spills and mop water
+        eg = dust * smooth(0.45, 0.75, blot) * 0.3
+        a = a * (1 - eg[..., None]) + rgb((64, 54, 44)) * eg[..., None]
+        dg = dust * (1 - smooth(0.0, 7.0, edge)) * 0.35
+        a = a * (1 - dg[..., None]) + rgb((128, 120, 106)) * dg[..., None]
+        a = a * (1 - np.clip(0.33 * grime, 0, 0.6)[..., None]) * (1 - (0.6 - 0.25 * dust * 0) * gap[..., None])
+        a = a * (1 - 0.18 * halo[..., None]) + rgb((96, 70, 50)) * 0.18 * halo[..., None]
+        a = a * (1 - nails[..., None]) + rgb((58, 54, 50)) * nails[..., None]
+        alb[r0:r1] = a
+        hgt[r0:r1] = 0.6 * (1 - gap) + 0.08 * grain + 0.15 * mid - 0.08 * worn - 0.2 * nails + 0.1 * np.sin(np.pi * t) \
+            - 0.08 * scuff
+        polish = dirt * smooth(0.55, 0.8, mid) * worn          # foot-polished patches inside the paths
+        rgh[r0:r1] = 0.46 + 0.26 * worn + 0.12 * scuff + 0.2 * gap + 0.05 * grain + 0.14 * dd - 0.2 * polish + 0.1 * eg
+        rgh[r0:r1] = np.where(nails > 0.5, 0.55, rgh[r0:r1])
+    hgt = blur(hgt, 1)
+    nor = normal_from_height(hgt * 3.0, 3.0)
+    save(STEM + "_Pine", alb, nor, rgh, np.zeros((N, N)))
 
 
-# ------------------------------------------------------------------ painted tongue-and-groove (1.2 m tile, 284 px/stud)
+# ------------------------------------------------------------------ painted tongue-and-groove (atlas LINING strips)
 def lining_set():
+    """10 boards of 0.12 m across U (1.2 m, 853 px/m). Strips in V: Wall = one storey, z above that storey's floor
+    LINING_WALL_Z (236 px/m in V: noise is generated stretched 3.6 x in U so marks are round in metres); Clean = the
+    board pattern constant along V (ceilings, roof); Sill = under the loft sashes, drip stains from the window board."""
     N = 1024
-    fc = 8 * 3.6 / N
-    s = (N, N)
+    fc = 8 * 3.6 / N              # 8 cycles per stud along U
     boards = 10
     bw = N / boards
-    yy, xx = np.mgrid[0:N, 0:N]
-    col = (xx // bw).astype(int)
-    t = (xx % bw) / bw
     r = np.random.default_rng(41)
-    tone = r.uniform(0.96, 1.04, boards)
-    brush = fbm(s, 2.0, fc, aniso=(0.08, 1.0), seed=12)        # vertical drag
-    big = fbm(s, 3.2, fc * 0.25, seed=13)
+    tone = r.uniform(0.93, 1.06, boards)                       # board-to-board: repainted, different batches
+    hue = r.normal(0, 0.025, boards)
+    za, zb_ = LINING_WALL_Z
     paint = rgb((190, 180, 156))
-    alb = paint[None, None, :] * tone[col][..., None] * (0.95 + 0.07 * brush[..., None])
+    alb = np.zeros((N, N, 3))
+    rgh = np.zeros((N, N))
+    hgt = np.zeros((N, N))
+
+    def rows(name):
+        v0, v1 = LINING[name]
+        return int(round((1 - v1) * N)), int(round((1 - v0) * N))
+
+    def boards_base(h, seed):
+        yy, xx = np.mgrid[0:h, 0:N]
+        col = (xx // bw).astype(int)
+        t = (xx % bw) / bw
+        brush = fbm((h, N), 2.0, fc, aniso=(0.08, 1.0), seed=seed)
+        a = paint[None, None, :] * tone[col][..., None] * (0.95 + 0.07 * brush[..., None])
+        a[..., 0] *= 1 + hue[col]
+        a[..., 2] *= 1 - 1.5 * hue[col]
+        e = np.minimum(t, 1 - t) * bw
+        vj = 1 - smooth(0.0, 6.0, e)
+        a = a * (1 - 0.42 * vj[..., None]) * (1 - 0.1 * (1 - smooth(0, 14, e))[..., None])
+        return a, brush, vj, e, yy, xx
+
+    # ---- Wall strip
+    r0, r1 = rows("Wall")
+    h = r1 - r0
+    a, brush, vj, e, yy, xx = boards_base(h, 12)
+    zr = za + (zb_ - za) * (1 - (yy + 0.5) / h)               # metres above the storey floor
+    ppm_v = h / (zb_ - za)
+    ani = (1.0, 853.0 / ppm_v)                                 # metric-round noise
+    big = fbm((h, N), 3.2, fc * 0.25, aniso=ani, seed=13)
+    mid = fbm((h, N), 2.6, fc * 0.5, aniso=ani, seed=15)
+    fine = fbm((h, N), 2.0, fc * 0.9, aniso=ani, seed=16)
     yellow = smooth(0.5, 0.85, big)[..., None]
-    alb = alb * (1 - 0.1 * yellow) + rgb((176, 160, 122)) * 0.1 * yellow
-    edge = np.minimum(t, 1 - t) * bw
-    vj = 1 - smooth(0.0, 6.0, edge)
-    alb = alb * (1 - 0.42 * vj[..., None])
-    alb = alb * (1 - 0.1 * (1 - smooth(0, 14, edge))[..., None])
-    # filled nail punches (secret-nailed through the tongue: shallow dimples near one edge every 0.6 m)
-    punch = np.zeros(s)
+    a = a * (1 - 0.1 * yellow) + rgb((176, 160, 122)) * 0.1 * yellow
+    # floor grime: dust and mop splash up from the skirting, darkest into the V-joints
+    fl = (1 - smooth(0.12, 0.55, zr)) * (0.55 + 0.45 * mid)
+    a = a * (1 - 0.28 * fl[..., None]) + rgb((96, 84, 66)) * 0.28 * fl[..., None]
+    a = a * (1 - 0.25 * (fl * vj)[..., None])
+    # boot height (0.18 .. 0.55 m): black rubber scuffs (short streaks along U) and knocks showing undercoat/wood
+    boot = smooth(0.16, 0.24, zr) * (1 - smooth(0.42, 0.6, zr))
+    sc = fbm((h, N), 2.0, fc * 0.8, aniso=(1.0, ani[1] * 0.35), seed=17)
+    scuff = smooth(0.70, 0.80, sc) * boot
+    a = a * (1 - 0.45 * scuff[..., None]) + rgb((44, 42, 40)) * 0.45 * scuff[..., None]
+    kn = smooth(0.84, 0.88, fine) * smooth(0.45, 0.65, mid) * (boot + 0.5 * smooth(0.75, 0.9, zr) * (1 - smooth(1.0, 1.15, zr)))
+    a = a * (1 - kn[..., None]) + rgb((150, 128, 98)) * kn[..., None]
+    # hand height (0.85 .. 1.45 m): greasy smudges, a touch darker and glossier
+    hand = smooth(0.8, 1.0, zr) * (1 - smooth(1.3, 1.5, zr)) * smooth(0.5, 0.8, mid)
+    a = a * (1 - 0.1 * hand[..., None]) + rgb((130, 116, 92)) * 0.1 * hand[..., None]
+    # ceiling corner: smoke and cobweb dust toward the top (ground ceiling 3.05 m, loft eaves 2.67 m)
+    top = smooth(2.2, 3.05, zr) * 0.14 + smooth(2.8, 3.05, zr) * 0.1
+    a = a * (1 - top[..., None]) + rgb((120, 108, 88)) * 0.4 * top[..., None]
+    stains = smooth(0.72, 0.9, fbm((h, N), 2.6, fc * 0.4, aniso=ani, seed=14))
+    a = a * (1 - 0.1 * stains[..., None]) + rgb((140, 126, 100)) * 0.1 * stains[..., None]
+    punch = np.zeros((h, N))                                    # filled nail punches near one board edge
     for b in range(boards):
-        for k in range(2):
-            cx, cy = (b + 0.86) * bw, (k + 0.3 + 0.2 * r.random()) * N / 2
-            d = np.sqrt(((xx - cx + N / 2) % N - N / 2) ** 2 + ((yy - cy + N / 2) % N - N / 2) ** 2)
+        for zz in (0.4, 1.0, 1.6, 2.2, 2.8):
+            cx = (b + 0.86) * bw
+            cy = h * (1 - (zz + 0.1 * r.random() - za) / (zb_ - za))
+            d = np.sqrt((((xx - cx + N / 2) % N - N / 2) / 1.0) ** 2 + ((yy - cy) * 853.0 / ppm_v) ** 2)
             punch = np.maximum(punch, 1 - smooth(2.0, 5.0, d))
-    alb = alb * (1 - 0.12 * punch[..., None])
-    stains = smooth(0.72, 0.9, fbm(s, 2.6, fc * 0.4, seed=14))
-    alb = alb * (1 - 0.1 * stains[..., None]) + rgb((140, 126, 100)) * 0.1 * stains[..., None]
-    h = -vj * 1.0 + 0.04 * brush - 0.3 * punch
-    nor = normal_from_height(blur(h, 1) * 3.0, 3.0)
-    rgh = 0.56 + 0.06 * brush + 0.2 * vj + 0.06 * stains
-    save(STEM + "_Lining", alb, nor, rgh, np.zeros(s))
+    a = a * (1 - 0.12 * punch[..., None])
+    alb[r0:r1] = a
+    hgt[r0:r1] = -vj + 0.04 * brush - 0.3 * punch - 0.5 * kn - 0.05 * scuff
+    rgh[r0:r1] = 0.56 + 0.06 * brush + 0.2 * vj + 0.06 * stains + 0.12 * fl + 0.1 * kn - 0.12 * hand
+    # ---- Clean strip: column profile only (constant along V; stretched over ceilings and roof boarding)
+    r0, r1 = rows("Clean")
+    h = r1 - r0
+    a, brush, vj, e, yy, xx = boards_base(h, 18)
+    a = np.repeat(a.mean(0, keepdims=True), h, 0)
+    alb[r0:r1] = a * (1 - 0.06 * smooth(0.5, 0.9, fbm((h, N), 3.0, 0.004, aniso=(0.05, 1.0), seed=19))[..., None])
+    hgt[r0:r1] = -vj
+    rgh[r0:r1] = 0.58 + 0.2 * vj
+    # ---- Sill strip: under the loft sashes (0.66 m: z U0 at the bottom row, the window board at the top row)
+    r0, r1 = rows("Sill")
+    h = r1 - r0
+    a, brush, vj, e, yy, xx = boards_base(h, 20)
+    zr = (L_SILL[1] - L_SILL[0]) * (1 - (yy + 0.5) / h) + L_SILL[0] - L_SILL[2]
+    ppm_v = h / (L_SILL[1] - L_SILL[0])
+    ani = (1.0, 853.0 / ppm_v)
+    mid = fbm((h, N), 2.6, fc * 0.5, aniso=ani, seed=21)
+    fl = (1 - smooth(0.12, 0.55, zr)) * (0.55 + 0.45 * mid)
+    a = a * (1 - 0.28 * fl[..., None]) + rgb((96, 84, 66)) * 0.28 * fl[..., None]
+    a = a * (1 - 0.25 * (fl * vj)[..., None])
+    drip = np.zeros((h, N))
+    tide = np.zeros((h, N))
+    for _ in range(26):                                         # condensation runs from the window board
+        cx, wpx = r.uniform(0, N), r.uniform(2.5, 7.0)
+        ln = r.uniform(0.25, 0.95) * h
+        dx = np.abs((xx - cx + N / 2) % N - N / 2)
+        prof = (1 - smooth(wpx * 0.5, wpx, dx)) * (1 - smooth(ln * 0.6, ln, yy)) * r.uniform(0.5, 1.0)
+        drip = np.maximum(drip, prof)
+        tide = np.maximum(tide, (1 - smooth(wpx * 0.6, wpx * 1.2, dx)) * np.exp(-((yy - ln * 0.8) / 2.5) ** 2) * 0.8)
+    band = (1 - smooth(0.0, 0.25 * h, yy)) * smooth(0.4, 0.7, mid)     # wet band just under the board, flaking
+    a = a * (1 - 0.22 * drip[..., None]) + rgb((150, 120, 82)) * 0.22 * drip[..., None]
+    a = a * (1 - 0.3 * tide[..., None]) + rgb((120, 92, 62)) * 0.3 * tide[..., None]
+    a = a * (1 - 0.2 * band[..., None]) + rgb((136, 112, 84)) * 0.2 * band[..., None]
+    flake = smooth(0.82, 0.88, fbm((h, N), 2.0, fc * 0.9, aniso=ani, seed=22)) * band
+    a = a * (1 - flake[..., None]) + rgb((156, 132, 100)) * flake[..., None]
+    alb[r0:r1] = a
+    hgt[r0:r1] = -vj + 0.04 * brush - 0.4 * flake + 0.1 * drip
+    rgh[r0:r1] = 0.56 + 0.2 * vj - 0.1 * drip + 0.2 * flake + 0.1 * fl
+    nor = normal_from_height(blur(hgt, 1) * 3.0, 3.0)
+    save(STEM + "_Lining", alb, nor, rgh, np.zeros((N, N)))
 
 
 # ------------------------------------------------------------------ joinery trim sheet (strips along U)
@@ -311,9 +416,15 @@ def joinery_set():
     a = a * (1 - 0.35 * np.clip(groove, 0, 1)[..., None])
     kick = smooth(0.8, 1.0, fy) * (0.4 + 0.6 * fbm(sh, 2.2, fc * 0.6, seed=73))
     a = a * (1 - 0.25 * kick[..., None]) + rgb((84, 70, 58)) * 0.25 * kick[..., None]
+    bscuff = smooth(0.7, 0.8, fbm(sh, 2.0, fc * 0.8, aniso=(1.0, 0.3), seed=74)) * smooth(0.72, 0.85, fy)
+    a = a * (1 - 0.4 * bscuff[..., None]) + rgb((46, 42, 38)) * 0.4 * bscuff[..., None]
+    dent = smooth(0.85, 0.9, fbm(sh, 2.0, fc, seed=75)) * smooth(0.6, 0.9, fy)
+    a = a * (1 - 0.5 * dent[..., None]) + rgb((168, 134, 96)) * 0.5 * dent[..., None]
+    handr = (1 - smooth(0.0, 0.16, fy)) * smooth(0.5, 0.8, fbm(sh, 2.6, fc * 0.4, seed=76))
+    a = a * (1 - 0.12 * handr[..., None])
     alb[r0:r1] = a
-    hgt[r0:r1] = 0.9 * raise_ + 0.25 * field - 0.6 * np.clip(groove, 0, 1) + 0.05 * g
-    rgh[r0:r1] = 0.38 + 0.25 * kick + 0.05 * g
+    hgt[r0:r1] = 0.9 * raise_ + 0.25 * field - 0.6 * np.clip(groove, 0, 1) + 0.05 * g - 0.5 * dent
+    rgh[r0:r1] = 0.38 + 0.25 * kick + 0.05 * g + 0.15 * bscuff + 0.2 * dent - 0.06 * handr
     # Rail: polished mahogany
     r0, r1 = rows("Rail")
     sh = (r1 - r0, N)
@@ -328,7 +439,9 @@ def joinery_set():
     r0, r1 = rows("Painted")
     sh = (r1 - r0, N)
     br = fbm(sh, 2.0, fc, aniso=(1.0, 0.1), seed=91)
-    chip = smooth(0.78, 0.84, fbm(sh, 2.0, fc * 0.8, seed=92)) * smooth(0.4, 0.7, fbm(sh, 3.0, fc * 0.3, seed=93))
+    chip = smooth(0.74, 0.80, fbm(sh, 2.0, fc * 0.8, seed=92)) * smooth(0.35, 0.65, fbm(sh, 3.0, fc * 0.3, seed=93))
+    yy = np.arange(r1 - r0)[:, None] / (r1 - r0)
+    chip = np.maximum(chip, smooth(0.8, 0.86, fbm(sh, 2.0, fc, seed=94)) * (1 - smooth(0.0, 0.2, np.minimum(yy, 1 - yy))))  # arris knocks
     a = rgb((58, 78, 66)) * (0.94 + 0.1 * br[..., None])
     a = a * (1 - chip[..., None]) + rgb((132, 108, 82)) * chip[..., None]
     alb[r0:r1] = a
@@ -655,27 +768,300 @@ def details_set():
     rgh[r0:r1, c0:c1] = 0.55 + 0.2 * slot
     hgt[r0:r1, c0:c1] = -slot
 
-    # blister packs (0.1 x 0.2 m backing cards)
-    for i, (t1, t2, col) in enumerate(PACKS):
+    # blister packs (0.1 x 0.2 m printed backing cards, 128 x 256 px): colour header with the hang slot, printed panel
+    # behind a clear blister (window px 16..112 x 64..196: glossy, highlight streaks, the item inside), item icon, barcode
+    def metal(d, pts_or_fn, w, ss):
+        for col, ww_ in (((66, 66, 68), w + 3), ((168, 170, 172), w), ((228, 228, 224), max(1, w // 3))):
+            pts_or_fn(d, col, ww_ * ss)
+
+    def item_draw(kind, d, ss, cx, cy, sc=1.0, flat=None):
+        def L_(pts, col, w):
+            d.line([((cx + x * sc) * ss, (cy + y * sc) * ss) for x, y in pts], fill=col, width=int(w), joint="curve")
+
+        def A(box, a0, a1, col, w):
+            x0, y0, x1, y1 = box
+            d.arc(((cx + x0 * sc) * ss, (cy + y0 * sc) * ss, (cx + x1 * sc) * ss, (cy + y1 * sc) * ss), a0, a1, fill=col, width=int(w))
+        styles = [((66, 66, 68), 3), ((168, 170, 172), 0), ((226, 226, 222), -3)] if flat is None else [(flat, 0)]
+        for col, dw in styles:
+            w = lambda base: max(2, (base + dw) * ss * sc) if flat is None else base * ss * sc
+            if kind == "shackle":
+                A((-26, -20, 26, 50), 0, 180, col, w(8))
+                L_([(-26, 15), (-26, -30)], col, w(8))
+                L_([(26, 15), (26, -30)], col, w(8))
+                L_([(-36, -34), (36, -34)], col, w(7))
+            elif kind == "snap":
+                L_([(0, -50), (0, -30)], col, w(6))
+                A((-10, -62, 10, -42), 0, 360, col, w(5))
+                L_([(-12, -30), (-12, 30)], col, w(9))
+                A((-12, 6, 28, 50), 0, 200, col, w(8))
+                L_([(28, 28), (10, -10)], col, w(4))
+            elif kind == "cleat":
+                L_([(-44, 0), (44, 0)], col, w(9))
+                A((-60, -22, -24, 8), 200, 340, col, w(7))
+                A((24, -22, 60, 8), 200, 340, col, w(7))
+                L_([(-14, 0), (-18, 22)], col, w(9))
+                L_([(14, 0), (18, 22)], col, w(9))
+            else:
+                for ox, oy in ((-18, -26), (18, -26), (-18, 26), (18, 26)):
+                    A((ox - 13, oy - 18, ox + 13, oy + 14), 0, 360, col, w(5))
+                    L_([(ox, oy - 18), (ox, oy - 26)], col, w(4))
+
+    for i, (t1, t2, col, kind) in enumerate(PACKS):
         r0, r1, c0, c1 = box("Pack%d" % i)
         hh, ww = r1 - r0, c1 - c0
+        pale = tuple(int(c * 0.35 + 214 * 0.65) for c in col)
 
-        def pfn(d, ss, t1=t1, t2=t2, col=col):
+        def pfn(d, ss, t1=t1, t2=t2, col=col, kind=kind, pale=pale):
             w, h = ww * ss, hh * ss
-            d.rectangle((0, 0, w, h), fill=(208, 202, 188))
-            d.rectangle((0, 0, w, 54 * ss), fill=col)
-            d.ellipse((w / 2 - 8 * ss, 12 * ss, w / 2 + 8 * ss, 28 * ss), fill=(30, 30, 30))
+            d.rectangle((0, 0, w, h), fill=(214, 206, 186))
+            d.rectangle((0, 0, w, 56 * ss), fill=col)
+            d.polygon([(0, 56 * ss), (w, 44 * ss), (w, 60 * ss), (0, 64 * ss)], fill=tuple(int(c * 0.75) for c in col))
+            d.rounded_rectangle((w / 2 - 14 * ss, 8 * ss, w / 2 + 14 * ss, 18 * ss), radius=5 * ss, fill=(44, 42, 40))
+            fs = font(FONT_R, 9 * ss)
+            d.text(((w - d.textlength("HARBOUR LINE", font=fs)) / 2, 22 * ss), "HARBOUR LINE", fill=(226, 220, 204), font=fs)
             f = font(FONT_B, 12 * ss)
-            d.text(((w - d.textlength(t1, font=f)) / 2, 34 * ss), t1, fill=(226, 220, 204), font=f)
-            d.rounded_rectangle((14 * ss, 70 * ss, w - 14 * ss, 200 * ss), radius=12 * ss, fill=(170, 172, 170), outline=(120, 120, 120), width=2 * ss)
-            f2 = font(FONT_R, 12 * ss)
-            d.text(((w - d.textlength(t2, font=f2)) / 2, 216 * ss), t2, fill=(50, 50, 50), font=f2)
+            while d.textlength(t1, font=f) > w - 10 * ss:
+                f = font(FONT_B, int(f.size * 0.9))
+            d.text(((w - d.textlength(t1, font=f)) / 2, 34 * ss), t1, fill=(230, 224, 210), font=f)
+            d.rectangle((16 * ss, 64 * ss, 112 * ss, 196 * ss), fill=pale)
+            for k in range(5):                                       # printed rays behind the item
+                d.line((64 * ss, 130 * ss, (16 + k * 24) * ss, 64 * ss), fill=tuple(int(c * 0.93) for c in pale), width=6 * ss)
+            item_draw(kind, d, ss, 64, 132, 0.95)
+            f2 = font(FONT_B, 13 * ss)
+            d.text(((w - d.textlength(t2, font=f2)) / 2, 202 * ss), t2, fill=col, font=f2)
+            item_draw(kind, d, ss, 22, 236, 0.22, flat=col)          # small printed icon
+            rb = np.random.default_rng(len(t1))
+            x = 50
+            while x < 116:                                           # barcode
+                bwid = rb.choice([1, 1, 2, 3])
+                d.rectangle((x * ss, 226 * ss, (x + bwid) * ss, 246 * ss), fill=(46, 44, 42))
+                x += bwid + rb.choice([1, 2])
+        img = np.asarray(Image.new("RGB", (1, 1)))
         img = text_img(ww, hh, pfn)
         yy, xx = np.mgrid[0:hh, 0:ww]
-        bl = ((xx > 14) & (xx < ww - 14) & (yy > 70) & (yy < 200)).astype(float)
-        alb[r0:r1, c0:c1] = img
-        rgh[r0:r1, c0:c1] = np.where(bl > 0.5, 0.12, 0.7)
-        hgt[r0:r1, c0:c1] = 0.8 * blur(bl, 3)
+        bl = ((xx >= 16) & (xx < 112) & (yy >= 64) & (yy < 196)).astype(float)
+        dome = blur(bl, 5) * bl
+        # clear plastic: a faint milky film, two soft highlight streaks, a bright moulded rim
+        streak = np.exp(-((xx - 30 - 0.15 * (yy - 64)) / 4.0) ** 2) * 0.55 + np.exp(-((xx - 44 - 0.15 * (yy - 64)) / 2.0) ** 2) * 0.3
+        rim = bl * (1 - smooth(1.0, 4.0, np.minimum(np.minimum(xx - 16, 111 - xx), np.minimum(yy - 64, 195 - yy))))
+        film = bl * (0.08 + 0.5 * streak * smooth(70, 120, yy) * (1 - smooth(150, 196, yy)) + 0.5 * rim)
+        a = img * (1 - film[..., None]) + rgb((224, 226, 224)) * film[..., None]
+        wear = smooth(0.6, 0.8, reg("Pack%d" % i, mid))[..., None] * (1 - bl[..., None])
+        alb[r0:r1, c0:c1] = a * (1 - 0.06 * wear)
+        rgh[r0:r1, c0:c1] = np.where(bl > 0.5, 0.07 + 0.08 * rim, 0.72 - 0.1 * (img.mean(-1) < 0.5))
+        hgt[r0:r1, c0:c1] = 0.9 * dome - 0.6 * (1 - smooth(0, 1.5, np.abs(xx - 63.5) - 13)) * ((yy > 8) & (yy < 18))
+
+    # ---- wall posters and notices: aged paper, faded ink, foxing, curled corners (height), cockling
+    def paper_img(w, h, fn, ss=2):
+        img = Image.new("RGB", (w * ss, h * ss), (255, 255, 255))
+        fn(ImageDraw.Draw(img), ss, w * ss, h * ss)
+        return np.asarray(img.resize((w, h), Image.LANCZOS), dtype=np.float64) / 255.0
+
+    def age_poster(name, ink, seed, fade=0.8, curl=(0.9, 0.7, 1.0, 1.3)):
+        r0, r1, c0, c1 = box(name)
+        hh, ww = r1 - r0, c1 - c0
+        rp = np.random.default_rng(seed)
+        yy, xx = np.mgrid[0:hh, 0:ww]
+        e = np.minimum(np.minimum(yy, hh - 1 - yy), np.minimum(xx, ww - 1 - xx)) / min(hh, ww)
+        lf = fbm((hh, ww), 3.0, 0.02, seed=seed)
+        mf = fbm((hh, ww), 2.2, 0.06, seed=seed + 1)
+        paperc = rgb((222, 212, 186)) * (0.97 + 0.05 * mf[..., None])
+        yel = (1 - smooth(0.0, 0.18, e)) * 0.5 + smooth(0.5, 0.9, lf) * 0.4
+        paperc = paperc * (1 - 0.18 * yel[..., None]) + rgb((196, 170, 118)) * 0.18 * yel[..., None]
+        sun = (xx / ww * 0.6 + (1 - yy / hh) * 0.4)
+        ink_s = 1 - (1 - ink) * (fade - 0.15 * sun[..., None])        # faded ink, more where the light falls
+        g = ink_s.mean(-1, keepdims=True)
+        ink_s = ink_s * 0.8 + g * 0.2
+        a = paperc * ink_s
+        fox = np.zeros((hh, ww))
+        for _ in range(int(ww * hh / 6000)):
+            cx, cy, rr_ = rp.uniform(0, ww), rp.uniform(0, hh), rp.uniform(1.5, 4.5)
+            fox = np.maximum(fox, (1 - smooth(rr_ * 0.4, rr_, np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2))) * rp.uniform(0.3, 0.8))
+        fox *= smooth(0.4, 0.7, lf + 0.3 * (1 - smooth(0, 0.2, e)))
+        a = a * (1 - 0.35 * fox[..., None]) + rgb((150, 112, 70)) * 0.35 * fox[..., None]
+        ring_c = (rp.uniform(0.2, 0.8) * ww, rp.uniform(0.6, 0.9) * hh)
+        ring = np.exp(-((np.sqrt((xx - ring_c[0]) ** 2 + (yy - ring_c[1]) ** 2) - ww * 0.07) / 1.8) ** 2) * 0.5 * (seed % 2)
+        a = a * (1 - 0.3 * ring[..., None]) + rgb((150, 118, 76)) * 0.3 * ring[..., None]
+        # curled corners: lift ramps over a corner triangle; a soft crease shadow at the curl line
+        lift = np.zeros((hh, ww))
+        crease = np.zeros((hh, ww))
+        for (cxp, cyp), k in zip(((0, 0), (ww - 1, 0), (0, hh - 1), (ww - 1, hh - 1)), curl):
+            dd = (np.abs(xx - cxp) + np.abs(yy - cyp)) / (0.16 * min(ww, hh) * k)
+            lift = np.maximum(lift, (1 - np.clip(dd, 0, 1)) ** 2)
+            crease = np.maximum(crease, np.exp(-((dd - 1.0) / 0.08) ** 2))
+        a = a * (1 - 0.12 * crease[..., None]) * (1 + 0.05 * lift[..., None])
+        alb[r0:r1, c0:c1] = a
+        rgh[r0:r1, c0:c1] = 0.84 - 0.08 * (ink.mean(-1) < 0.6) + 0.04 * fox
+        hgt[r0:r1, c0:c1] = 3.0 * lift + 0.25 * fbm((hh, ww), 3.0, 0.03, seed=seed + 2) - 0.6 * crease * 0
+
+    NAVY, MAROON, INKC = (36, 52, 84), (120, 40, 36), (40, 38, 36)
+
+    def ctext(d, txt, f, y, w, fill, x0=0):
+        d.text((x0 + (w - x0 - d.textlength(txt, font=f)) / 2 if x0 == 0 else x0, y), txt, fill=fill, font=f)
+
+    # tide table: a month of high and low water
+    def tide_fn(d, ss, w, h):
+        d.rectangle((6 * ss, 6 * ss, w - 6 * ss, h - 6 * ss), outline=NAVY, width=3 * ss)
+        ctext(d, "PORT HAVEN", font(FONT_S, 16 * ss), 14 * ss, w, MAROON)
+        ctext(d, "TIDE TABLES", font(FONT_B, 34 * ss), 32 * ss, w, NAVY)
+        ctext(d, "OCTOBER  -  heights in metres above chart datum", font(FONT_R, 10 * ss), 72 * ss, w, INKC)
+        d.line((14 * ss, 88 * ss, w - 14 * ss, 88 * ss), fill=NAVY, width=2 * ss)
+        fh, fr = font(FONT_B, 10 * ss), font(FONT_R, 10 * ss)
+        colx = [16, 200]
+        for c, x0 in enumerate(colx):
+            for j, lab in enumerate(("DAY", "HIGH", "m", "HIGH", "m")):
+                d.text(((x0 + [0, 34, 82, 110, 158][j]) * ss, 94 * ss), lab, fill=MAROON, font=fh)
+        for day in range(31):
+            c, k = (0, day) if day < 16 else (1, day - 16)
+            x0, y = colx[c], (110 + k * 22.5) * ss
+            if k % 2 == 0:
+                d.rectangle(((x0 - 4) * ss, y - 2 * ss, (x0 + 180) * ss, y + 18 * ss), fill=(232, 234, 240))
+            m0 = (4 * 60 + 12 + day * 50) % (12 * 60 + 25)
+            hgt_ = 4.3 + 0.9 * np.cos(2 * np.pi * (day - 3) / 14.8)
+            dow = "MTWTFSS"[(day + 3) % 7]
+            vals = ["%2d %s" % (day + 1, dow), "%02d:%02d" % (m0 // 60, m0 % 60), "%.1f" % hgt_,
+                    "%02d:%02d" % ((m0 + 745) // 60 % 24, (m0 + 745) % 60), "%.1f" % (hgt_ - 0.2)]
+            for j, v in enumerate(vals):
+                d.text(((x0 + [0, 34, 82, 110, 158][j]) * ss, y), v, fill=INKC, font=fr)
+        d.line((14 * ss, 474 * ss, w - 14 * ss, 474 * ss), fill=NAVY, width=2 * ss)
+        ctext(d, "Free from Port Haven Chandlery - mind the Bar", font(FONT_S, 11 * ss), 482 * ss, w, NAVY)
+        for k in range(3):
+            d.arc((w - 60 * ss, (16 + k * 6) * ss, w - 20 * ss, (40 + k * 6) * ss), 200, 340, fill=NAVY, width=2 * ss)
+
+    # knots chart: nine knots drawn as rope with over-under crossings
+    def catmull(pts, n=10):
+        P = np.array(pts, float)
+        P = np.vstack([P[:1], P, P[-1:]])
+        out = []
+        for i in range(1, len(P) - 2):
+            p0, p1, p2, p3 = P[i - 1], P[i], P[i + 1], P[i + 2]
+            for t in np.linspace(0, 1, n, endpoint=False):
+                out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
+        out.append(P[-2])
+        return out
+
+    def knots_fn(d, ss, w, h):
+        d.rectangle((0, 0, w, h), fill=(236, 230, 214))
+        d.rectangle((8 * ss, 8 * ss, w - 8 * ss, h - 8 * ss), outline=NAVY, width=3 * ss)
+        ctext(d, "KNOTS EVERY HAND SHOULD KNOW", font(FONT_B, 24 * ss), 20 * ss, w, NAVY)
+        ctext(d, "practise them on the quay before you need them at sea", font(FONT_S, 12 * ss), 50 * ss, w, MAROON)
+        names = ["BOWLINE", "CLOVE HITCH", "REEF KNOT", "FIGURE OF EIGHT", "SHEET BEND", "ROUND TURN & 2 HALF HITCHES",
+                 "CLEAT HITCH", "ROLLING HITCH", "FISHERMAN'S BEND"]
+        cw, chh, oy = (w / ss - 32) / 3, (h / ss - 90) / 3, 76
+        fl = font(FONT_B, 10 * ss)
+
+        def rope(pts, cx, cy, col=(196, 160, 104)):
+            q = [((cx + x) * ss, (cy + y) * ss) for x, y in catmull(pts)]
+            d.line(q, fill=(70, 52, 34), width=11 * ss, joint="curve")
+            d.line(q, fill=col, width=7 * ss, joint="curve")
+            d.line(q, fill=tuple(min(255, c + 40) for c in col), width=2 * ss, joint="curve")
+
+        def spar(cx, cy, vertical=True):
+            if vertical:
+                d.rectangle(((cx - 9) * ss, (cy - 52) * ss, (cx + 9) * ss, (cy + 52) * ss), fill=(132, 96, 64), outline=(70, 52, 34), width=2 * ss)
+            else:
+                d.rectangle(((cx - 60) * ss, (cy - 36) * ss, (cx + 60) * ss, (cy - 22) * ss), fill=(132, 96, 64), outline=(70, 52, 34), width=2 * ss)
+        for i, nm in enumerate(names):
+            c, r_ = i % 3, i // 3
+            x0, y0 = 16 + c * cw, oy + r_ * chh
+            cx, cy = x0 + cw / 2, y0 + chh / 2 - 8
+            d.rectangle((x0 * ss, y0 * ss, (x0 + cw - 4) * ss, (y0 + chh - 4) * ss), outline=(160, 150, 130), width=ss)
+            if nm == "BOWLINE":
+                rope([(-50, 50), (-20, 20), (-30, -10), (0, -30), (25, -10), (5, 10), (-20, 0)], cx, cy)
+                rope([(40, 50), (30, 0), (0, -45), (-25, -20)], cx, cy)
+                rope([(-30, -10), (-30, 30), (0, 48), (30, 30), (30, 0)], cx, cy)
+            elif nm in ("CLOVE HITCH", "ROLLING HITCH"):
+                spar(cx, cy)
+                wraps = 2 if nm == "CLOVE HITCH" else 3
+                rope([(-60, -40), (-12, -30), (12, -18)], cx, cy)
+                for k in range(wraps):
+                    rope([(-12, -22 + k * 18), (12, -10 + k * 18)], cx, cy)
+                rope([(12, -10 + (wraps - 1) * 18), (40, 10 + wraps * 6), (60, 40)], cx, cy)
+            elif nm == "REEF KNOT":
+                rope([(-60, -12), (-10, -12), (14, -6), (14, 6), (-10, 12), (-60, 12)], cx, cy, (196, 160, 104))
+                rope([(60, 12), (10, 12), (-14, 6), (-14, -6), (10, -12), (60, -12)], cx, cy, (110, 120, 140))
+                rope([(-10, -12), (14, -6)], cx, cy, (196, 160, 104))
+            elif nm == "FIGURE OF EIGHT":
+                rope([(-60, 30), (-20, 30), (20, -20), (40, -20), (40, 10), (20, 20), (-10, -20), (-30, -20), (-30, 10), (0, 30), (60, 30)], cx, cy)
+                rope([(20, -20), (40, -20)], cx, cy)
+            elif nm == "SHEET BEND":
+                rope([(60, -16), (0, -16), (-24, 0), (0, 16), (60, 16)], cx, cy, (110, 120, 140))
+                rope([(-60, 30), (-10, 22), (14, 0), (-6, -24), (-30, -10), (-10, 10), (40, 34)], cx, cy)
+            elif nm.startswith("ROUND TURN"):
+                spar(cx, cy, vertical=False)
+                rope([(-20, -40), (-26, -20), (-14, -18), (-6, -40), (0, -20), (6, -14)], cx, cy)
+                rope([(6, -14), (10, 10), (0, 26), (16, 34), (20, 14), (30, 30), (40, 50)], cx, cy)
+                rope([(-14, -18), (-20, 50)], cx, cy)
+            elif nm == "CLEAT HITCH":
+                d.rounded_rectangle(((cx - 58) * ss, (cy - 8) * ss, (cx + 58) * ss, (cy + 8) * ss), radius=8 * ss, fill=(150, 150, 146), outline=(70, 70, 70), width=2 * ss)
+                d.rectangle(((cx - 16) * ss, (cy + 8) * ss, (cx + 16) * ss, (cy + 22) * ss), fill=(130, 130, 126), outline=(70, 70, 70), width=2 * ss)
+                rope([(-60, 50), (-20, 20), (30, -14), (40, 10), (-30, -12), (-44, 10), (30, 14), (50, 40)], cx, cy)
+            else:
+                d.ellipse(((cx - 30) * ss, (cy - 50) * ss, (cx + 30) * ss, (cy + 10) * ss), outline=(150, 150, 146), width=7 * ss)
+                rope([(-10, 50), (-8, 8), (-14, -14), (0, 16), (8, -12), (12, 10), (30, 30), (60, 40)], cx, cy)
+            ctext(d, nm, fl if len(nm) < 18 else font(FONT_B, 8 * ss), (y0 + chh - 22) * ss, (x0 + cw) * ss, INKC, x0=0) \
+                if False else d.text((x0 * ss + ((cw - 4) * ss - d.textlength(nm, font=fl if len(nm) < 18 else font(FONT_B, 8 * ss))) / 2,
+                                      (y0 + chh - 22) * ss), nm, fill=INKC, font=fl if len(nm) < 18 else font(FONT_B, 8 * ss))
+        ctext(d, "PORT HAVEN CHANDLERY  -  rope cut to length", font(FONT_S, 11 * ss), h - 26 * ss, w, NAVY)
+
+    # lifeboat day poster
+    def lifeboat_fn(d, ss, w, h):
+        d.rectangle((0, 0, w, 150 * ss), fill=(200, 216, 222))
+        d.line((0, 18 * ss, w, 26 * ss), fill=INKC, width=ss)
+        cols = [(178, 56, 44), (36, 52, 84), (232, 226, 210), (214, 120, 40)]
+        for k in range(9):
+            x = k * 44 * ss
+            yb = (18 + 8 * k / 9) * ss
+            d.polygon([(x, yb), (x + 40 * ss, yb + ss), (x + 20 * ss, yb + 34 * ss)], fill=cols[k % 4])
+        ctext(d, "PORT HAVEN", font(FONT_B, 30 * ss), 62 * ss, w, NAVY)
+        ctext(d, "LIFEBOAT DAY", font(FONT_B, 40 * ss), 96 * ss, w, MAROON)
+        # sea, boat, flag
+        d.rectangle((0, 150 * ss, w, 300 * ss), fill=(64, 98, 120))
+        for k in range(6):
+            d.arc((-20 * ss + k * 70 * ss, 268 * ss, 60 * ss + k * 70 * ss, 300 * ss), 200, 340, fill=(220, 230, 232), width=3 * ss)
+        cx = w / 2
+        d.polygon([(cx - 130 * ss, 236 * ss), (cx + 150 * ss, 230 * ss), (cx + 120 * ss, 276 * ss), (cx - 110 * ss, 276 * ss)], fill=(36, 52, 84))
+        d.rectangle((cx - 110 * ss, 254 * ss, cx + 130 * ss, 262 * ss), fill=(232, 226, 210))
+        d.polygon([(cx - 70 * ss, 236 * ss), (cx - 60 * ss, 196 * ss), (cx + 50 * ss, 196 * ss), (cx + 70 * ss, 236 * ss)], fill=(214, 120, 40))
+        for k in range(4):
+            d.rectangle((cx + (-52 + k * 26) * ss, 204 * ss, cx + (-36 + k * 26) * ss, 218 * ss), fill=(40, 46, 54))
+        d.line((cx - 10 * ss, 196 * ss, cx - 10 * ss, 160 * ss), fill=INKC, width=3 * ss)
+        d.polygon([(cx - 8 * ss, 160 * ss), (cx + 40 * ss, 168 * ss), (cx - 8 * ss, 178 * ss)], fill=(232, 226, 210))
+        d.line((cx - 8 * ss, 169 * ss, cx + 30 * ss, 169 * ss), fill=(178, 56, 44), width=4 * ss)
+        ctext(d, "SATURDAY 15th AUGUST", font(FONT_B, 22 * ss), 312 * ss, w, NAVY)
+        fr = font(FONT_R, 14 * ss)
+        for k, line in enumerate(("Boathouse open from 10am", "Launch demonstration 11.30", "Raft race  -  crab-line contest",
+                                  "Teas, cakes and tombola")):
+            ctext(d, line, fr, (346 + k * 24) * ss, w, INKC)
+        d.line((30 * ss, 452 * ss, w - 30 * ss, 452 * ss), fill=MAROON, width=2 * ss)
+        ctext(d, "All proceeds to the Port Haven Sea Rescue crew", font(FONT_S, 12 * ss), 462 * ss, w, MAROON)
+        ctext(d, "volunteers welcome - ask at the counter", font(FONT_S, 11 * ss), 482 * ss, w, INKC)
+
+    def notice0_fn(d, ss, w, h):
+        d.line((0, 34 * ss, w, 34 * ss), fill=(178, 56, 44), width=2 * ss)
+        for k in range(1, 9):
+            d.line((0, (34 + k * 24) * ss, w, (34 + k * 24) * ss), fill=(150, 170, 200), width=ss)
+        fh = font(FONT_H, 22 * ss)
+        ctext(d, "SEA SAFETY TALK", fh, 6 * ss, w, NAVY)
+        f2 = font(FONT_H, 16 * ss)
+        for k, line in enumerate(("Thursdays 7pm", "at the boathouse", "lifejackets, flares, VHF", "kettle on - all welcome", "free!")):
+            ctext(d, line, f2, (40 + k * 24) * ss, w, (40, 44, 70) if k < 4 else MAROON)
+
+    def notice1_fn(d, ss, w, h):
+        d.rectangle((10 * ss, 10 * ss, w - 10 * ss, h - 10 * ss), outline=INKC, width=2 * ss)
+        ctext(d, "LOFT", font(FONT_B, 48 * ss), 20 * ss, w, MAROON)
+        cx = w / 2
+        d.polygon([(cx - 22 * ss, 108 * ss), (cx, 80 * ss), (cx + 22 * ss, 108 * ss)], fill=MAROON)
+        d.rectangle((cx - 7 * ss, 106 * ss, cx + 7 * ss, 126 * ss), fill=MAROON)
+        fr = font(FONT_R, 16 * ss)
+        for k, line in enumerate(("Fitting room", "Foul-weather gear", "Please mind the stairs")):
+            ctext(d, line, fr if k < 2 else font(FONT_B, 14 * ss), (140 + k * 26) * ss, w, INKC)
+
+    for k, (name, fn) in enumerate((("Tide", tide_fn), ("Lifeboat", lifeboat_fn), ("Knots", knots_fn),
+                                    ("Notice0", notice0_fn), ("Notice1", notice1_fn))):
+        r0, r1, c0, c1 = box(name)
+        age_poster(name, paper_img(c1 - c0, r1 - r0, fn), 300 + k, fade=(0.78, 0.66, 0.85, 0.9, 0.82)[k],
+                   curl=((0.8, 1.1, 1.3, 0.9), (1.0, 0.7, 1.4, 1.2), (0.4, 0.4, 0.4, 0.4), (0.9, 1.0, 1.6, 1.3), (0.8, 0.8, 1.4, 1.5))[k])
 
     # curtain: heavy cotton canvas (no weave bump), teal-grey, slight sun fade at the top, hem darker
     r0, r1, c0, c1 = box("Curtain")
@@ -692,7 +1078,7 @@ def details_set():
     hh, ww = r1 - r0, c1 - c0
     yy, xx = np.mgrid[0:hh, 0:ww]
     e = np.minimum(np.minimum(yy, hh - 1 - yy), np.minimum(xx, ww - 1 - xx))
-    border = 1 - smooth(18, 26, e)
+    border = 1 - smooth(9, 13, e)
     fib = fbm((hh, ww), 1.6, 0.05, aniso=(1.0, 0.5), seed=141)
     a = rgb((124, 100, 72)) * (0.82 + 0.3 * fib[..., None])
     a = a * (1 - 0.45 * border[..., None])
