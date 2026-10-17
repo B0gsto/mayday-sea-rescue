@@ -17,6 +17,15 @@
   "source": "assets/textures/Materials/T_Mat_KelpRock_ALB.png",
   "type": "Image"
  },
+ "Image:00bd40fd057686d5dcca5fc227e4cdd2774b65191542b24c2f110e0b2efc7a5b": {
+  "assetId": "76481561034582",
+  "imageId": "76481561034582",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_RGH_Wet",
+  "sha": "00bd40fd057686d5dcca5fc227e4cdd2774b65191542b24c2f110e0b2efc7a5b",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:00d65786219280e66aa33e75e2c458ada62c21b1848a78d5f99c1ec814428d99": {
   "assetId": "136447875634247",
   "imageId": "136447875634247",
@@ -69,6 +78,15 @@
   "name": "Mayday_T_Mat_Tarmac_RGH",
   "sha": "06aeb7ecafd647cedd192b1ea9eeb5e617e15e2fd6aa028823397c8992bdbb08",
   "source": "assets/textures/Materials/T_Mat_Tarmac_RGH.png",
+  "type": "Image"
+ },
+ "Image:073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29": {
+  "assetId": "89602092156365",
+  "imageId": "89602092156365",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Rope_NOR",
+  "sha": "073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_NOR.png",
   "type": "Image"
  },
  "Image:078644f527a510528ac005a4aadb3435b3944e4d2530191a0e21cd48a706c04e": {
@@ -181,7 +199,12 @@
  },
  "Image:0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91": {
   "aliases": [
-   "T_Station_Slate_MET"
+   "T_Station_Slate_MET",
+   "T_Chandlery_Slate_MET",
+   "T_ChandleryProps_Rope_MET",
+   "T_ChandleryInt_Joinery_MET",
+   "T_ChandleryInt_Lining_MET",
+   "T_ChandleryInt_Pine_MET"
   ],
   "assetId": "74679138706162",
   "imageId": "74679138706162",
@@ -236,6 +259,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:11e974d5257d67751a3d9b86a896c908e3a515c4c559459dfd8c9185b1e4687b": {
+  "assetId": "115273437194420",
+  "imageId": "115273437194420",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_ALB",
+  "sha": "11e974d5257d67751a3d9b86a896c908e3a515c4c559459dfd8c9185b1e4687b",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
+  "type": "Image"
+ },
  "Image:1304afaba38fa42fed50c01533fff909c71366a646d8ad619a1ce696b61f0d83": {
   "assetId": "72591590113233",
   "imageId": "72591590113233",
@@ -252,6 +284,15 @@
   "name": "T_RIB_Deck_NOR",
   "sha": "135e10a3c497d721cd6e1f8adb6e7adff5c968cb5bc5e3e774c14f63e9e9ce31",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_NOR.png",
+  "type": "Image"
+ },
+ "Image:13d73c7135306c6fe12c15907386271e28d63ad80a20c1a3d68d2c2a0151322b": {
+  "assetId": "75082472767101",
+  "imageId": "75082472767101",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_RGH",
+  "sha": "13d73c7135306c6fe12c15907386271e28d63ad80a20c1a3d68d2c2a0151322b",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_RGH.png",
   "type": "Image"
  },
  "Image:140bd5fdb0667836b6ac9c6edf705aa01cb549b93fbbff543053248d335dd05b": {
@@ -362,6 +403,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:1adea720634af678bf6e595ba43607c5626c114804a8933553ed75121a061675": {
+  "assetId": "105999388453791",
+  "imageId": "105999388453791",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Rope_ALB",
+  "sha": "1adea720634af678bf6e595ba43607c5626c114804a8933553ed75121a061675",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_ALB.png",
+  "type": "Image"
+ },
  "Image:1bae7b204da0e9005ccd5ac1e2cf63ab7f9a9ce9e05865c003d37daffa61bdf0": {
   "assetId": "79216311407133",
   "imageId": "79216311407133",
@@ -414,6 +464,15 @@
   "name": "Mayday_T_Mat_KelpRock_ALB_Wet",
   "sha": "1e1134e3285cfbb2fa0bd23ad910d911e3eb07760668c349c540820a7e49caba",
   "source": "assets/textures/Materials/T_Mat_KelpRock_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:1e208ca6e387a82b801d08546ac8f765cb74a68412bc240b5a9e0f6fb095c320": {
+  "assetId": "91462357892618",
+  "imageId": "91462357892618",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_RGH",
+  "sha": "1e208ca6e387a82b801d08546ac8f765cb74a68412bc240b5a9e0f6fb095c320",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_RGH.png",
   "type": "Image"
  },
  "Image:1e3e63e9cfd51159d158db7a10637bb152abed8f8b1fa66c3ad920a3a1f734f1": {
@@ -498,6 +557,15 @@
   "name": "Mayday_T_Bosun_Body_ALB_Wet",
   "sha": "1fb982c86fcb80871dd6b2d3d56f03d16547049ec561ca0127b322932f826471",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:2012015832e9ba79f545f37b2600c441c78574c7432da0174db75b772d16ff4a": {
+  "assetId": "99246344685636",
+  "imageId": "99246344685636",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_MET",
+  "sha": "2012015832e9ba79f545f37b2600c441c78574c7432da0174db75b772d16ff4a",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_MET.png",
   "type": "Image"
  },
  "Image:201452e9d21170d0d31066be0736ac95ae7bc0f53309d7686fffa23e09734d6b": {
@@ -665,6 +733,15 @@
   "source": "assets/textures/Materials/T_Mat_Shingle_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:2b648e41fb4a09fdfe2c65ddeaec5073484e2ab36eaa32e94c09bd3b86601f2e": {
+  "assetId": "120035276122390",
+  "imageId": "120035276122390",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_ALB",
+  "sha": "2b648e41fb4a09fdfe2c65ddeaec5073484e2ab36eaa32e94c09bd3b86601f2e",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB.png",
+  "type": "Image"
+ },
  "Image:2cb414aac6ba7f9b113dee19dc8615eaa53ad62b8c3a57946072b77c9c5501d3": {
   "assetId": "111430771828541",
   "imageId": "111430771828541",
@@ -791,6 +868,15 @@
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH.png",
   "type": "Image"
  },
+ "Image:335743809efaa0e62a51a3cdae43c49c4e19a9532ca610e9aada8d4566446e14": {
+  "assetId": "80677727296225",
+  "imageId": "80677727296225",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_NOR",
+  "sha": "335743809efaa0e62a51a3cdae43c49c4e19a9532ca610e9aada8d4566446e14",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_NOR.png",
+  "type": "Image"
+ },
  "Image:33b2d5959f2ee75a4b4483517fcd2274bf71264a35115760c5c52ad1975ab2ee": {
   "assetId": "99041436984011",
   "imageId": "99041436984011",
@@ -852,6 +938,15 @@
   "name": "T_JetSkiCloseUp_CloseUp_NOR",
   "sha": "34d79f1c6578ab05f317bbe4e54bce12fd114efe556b220759549049e2bedc72",
   "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_NOR.png",
+  "type": "Image"
+ },
+ "Image:352958b8df1bcf5219a1618dfd227ddea637f81acc8bb36a74ca1a595583e7db": {
+  "assetId": "132298762972239",
+  "imageId": "132298762972239",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_RGH",
+  "sha": "352958b8df1bcf5219a1618dfd227ddea637f81acc8bb36a74ca1a595583e7db",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH.png",
   "type": "Image"
  },
  "Image:35ca31028376daba85147fcd8920b8ba3bfad3ab33d9028bcb91e126638cdb26": {
@@ -962,6 +1057,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Slate_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:3ef7a6821ccd2696ab8446f3256539b0fbed405d1f00dc45d36a9ca26a8c9465": {
+  "assetId": "84531118895566",
+  "imageId": "84531118895566",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_ALB_Wet",
+  "sha": "3ef7a6821ccd2696ab8446f3256539b0fbed405d1f00dc45d36a9ca26a8c9465",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:3f49e03b00ba84da5be5247920639ff7bcd1d2f5fe29a39edb14c00860db7f1b": {
   "assetId": "112308644811840",
   "imageId": "112308644811840",
@@ -1032,6 +1136,15 @@
   "name": "Mayday_T_Mat_Earth_RGH",
   "sha": "44906574a49fcd6b9f9a1b16ce676751092e27dc4527e3a0fa374f1af8687137",
   "source": "assets/textures/Materials/T_Mat_Earth_RGH.png",
+  "type": "Image"
+ },
+ "Image:45560ca665996828387e5936a737c17f7c819f33bf573b23622b0cf1a02a8c73": {
+  "assetId": "76214454506343",
+  "imageId": "76214454506343",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_ALB_Wet",
+  "sha": "45560ca665996828387e5936a737c17f7c819f33bf573b23622b0cf1a02a8c73",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_ALB_Wet.png",
   "type": "Image"
  },
  "Image:4777f053a5bc2595805690e0b4af256bfe2a3cac4c258b062530b3224341aa10": {
@@ -1124,6 +1237,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB.png",
   "type": "Image"
  },
+ "Image:4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18": {
+  "assetId": "88821589220060",
+  "imageId": "88821589220060",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_MET",
+  "sha": "4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_MET.png",
+  "type": "Image"
+ },
  "Image:4ccef3bf66a356c5edecff972b00cd00b52c672d63a8fb02bacc10400420c665": {
   "assetId": "108290419678390",
   "imageId": "108290419678390",
@@ -1131,6 +1253,15 @@
   "name": "Mayday_T_Mat_Turf_RGH",
   "sha": "4ccef3bf66a356c5edecff972b00cd00b52c672d63a8fb02bacc10400420c665",
   "source": "assets/textures/Materials/T_Mat_Turf_RGH.png",
+  "type": "Image"
+ },
+ "Image:4d0aae5670152d9447c36cdf5591db9427eebd3eef4fbab75a4cec5d7bdd6ea4": {
+  "assetId": "139106048152461",
+  "imageId": "139106048152461",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_RGH",
+  "sha": "4d0aae5670152d9447c36cdf5591db9427eebd3eef4fbab75a4cec5d7bdd6ea4",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
   "type": "Image"
  },
  "Image:4e225d6aa041983606c6e3d378ed077e93c3a14bd5b081b401a4a65ffc27b928": {
@@ -1160,6 +1291,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH.png",
   "type": "Image"
  },
+ "Image:4ea8775ca6cc01925d19199295ee6b227c7adfd656b1a42801b69190b289c52f": {
+  "assetId": "70581610864570",
+  "imageId": "70581610864570",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_ALB",
+  "sha": "4ea8775ca6cc01925d19199295ee6b227c7adfd656b1a42801b69190b289c52f",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_ALB.png",
+  "type": "Image"
+ },
  "Image:4faa3a4a0aab3306dd67e7e9cdb32efd8e77348e20aae7c1d0b262891e9c474d": {
   "assetId": "109816502215544",
   "imageId": "109816502215544",
@@ -1185,6 +1325,15 @@
   "name": "T_Station_Render_RGH",
   "sha": "51ff264df3eec63dc40c3e3770a1904fd0d1dca66c12558f66db78d1885bdc91",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
+  "type": "Image"
+ },
+ "Image:5211bf520f8d34949fa933d2aba08f459d7d6a8c8b6c7064116675761f198ebd": {
+  "assetId": "73993923872681",
+  "imageId": "73993923872681",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_RGH",
+  "sha": "5211bf520f8d34949fa933d2aba08f459d7d6a8c8b6c7064116675761f198ebd",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH.png",
   "type": "Image"
  },
  "Image:528413e7cfe5c4314a75a5aa5234d1df8520aa8ada0c7ee78f776a11cb3e255b": {
@@ -1286,6 +1435,15 @@
   "source": "assets/textures/Materials/T_Mat_SeabedSand_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:5944856951e78a3f267741c0da6f25e7e9e913a8d24aef81b841f2c14cb16ae1": {
+  "assetId": "139352543048143",
+  "imageId": "139352543048143",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_ALB_Wet",
+  "sha": "5944856951e78a3f267741c0da6f25e7e9e913a8d24aef81b841f2c14cb16ae1",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:59591cbd77cd5934e280de436ebf728257b37b1f139c26002b62572002dfe0a9": {
   "assetId": "95139001979523",
   "imageId": "95139001979523",
@@ -1338,6 +1496,15 @@
   "name": "Mayday_T_Mat_Turf_ALB_Wet",
   "sha": "5b5d7c8bf9a3db0665d0c7b6f13cd2c4f6d0d8b1c1e640f52f918c29c2372027",
   "source": "assets/textures/Materials/T_Mat_Turf_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:5c04c2b19ea5dd309ed1f25a66500aa98853f545e8479dbcb5566a8d1d3feac7": {
+  "assetId": "89078940590423",
+  "imageId": "89078940590423",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Pine_NOR",
+  "sha": "5c04c2b19ea5dd309ed1f25a66500aa98853f545e8479dbcb5566a8d1d3feac7",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_NOR.png",
   "type": "Image"
  },
  "Image:5c9dc0718b182c10451368d9e27c41e5e246aead76be6243f77f7e5e07c5c25c": {
@@ -1394,6 +1561,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB.png",
   "type": "Image"
  },
+ "Image:6120d0a66b96f64dc79ce62034beace6f419d0e076d50bad8616d4f630bb3384": {
+  "assetId": "97155378858191",
+  "imageId": "97155378858191",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_RGH",
+  "sha": "6120d0a66b96f64dc79ce62034beace6f419d0e076d50bad8616d4f630bb3384",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
+  "type": "Image"
+ },
  "Image:6262f634689246a5362c0aadb24da1debab1c7104a7154f79d00823836f2a6e4": {
   "assetId": "129437702861432",
   "imageId": "129437702861432",
@@ -1446,6 +1622,15 @@
   "name": "T_RIB_Deck_RGH",
   "sha": "66a6883ef7916d675298d308f2d7533b0731944e2366dbd27c9c425a7ab3d4d4",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png",
+  "type": "Image"
+ },
+ "Image:66e943f8683498c6998cf3b657d19e3508e920a631153363f6a13c55e026e187": {
+  "assetId": "104897708860271",
+  "imageId": "104897708860271",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_MET",
+  "sha": "66e943f8683498c6998cf3b657d19e3508e920a631153363f6a13c55e026e187",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_MET.png",
   "type": "Image"
  },
  "Image:66f2f4023f124ccfcc2aaa06920d994c3c0717efbd02fd22d9e5bb8c8984f1cf": {
@@ -1511,6 +1696,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:6ad0bd3b3fa0b86c6a943684f55aa7838f3f6412d8362cd06ff7f4bb43bea058": {
+  "assetId": "138376265885730",
+  "imageId": "138376265885730",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Pine_ALB",
+  "sha": "6ad0bd3b3fa0b86c6a943684f55aa7838f3f6412d8362cd06ff7f4bb43bea058",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_ALB.png",
+  "type": "Image"
+ },
  "Image:6c35fc66b84f02a951c5f8d116d7fe1ddd8f1a0aff38aa09bdc76e3c7df2e1a3": {
   "assetId": "87072717602725",
   "imageId": "87072717602725",
@@ -1536,6 +1730,15 @@
   "name": "T_CasualtySwimmer_Lifejacket_RGH",
   "sha": "6ceeb5ad81b4d6e6b9b3dc806c7e974d970f8266c424826cb002ce688d8122b2",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Lifejacket_RGH.png",
+  "type": "Image"
+ },
+ "Image:6d7fa155d464f94a808c511880d700177fd6e7bbdaefcee77ec6088beb604686": {
+  "assetId": "108522799467501",
+  "imageId": "108522799467501",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_ALB",
+  "sha": "6d7fa155d464f94a808c511880d700177fd6e7bbdaefcee77ec6088beb604686",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB.png",
   "type": "Image"
  },
  "Image:6e5aa454117f561c90521014db7777c5c6f40e84a2452ae6d3c563dc7e937dec": {
@@ -1619,6 +1822,24 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_NOR.png",
   "type": "Image"
  },
+ "Image:73105c295bc85c5e3b96e03df38f27be7a515410e43c045e2e4aeead4a7c783f": {
+  "assetId": "127863606733033",
+  "imageId": "127863606733033",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_NOR",
+  "sha": "73105c295bc85c5e3b96e03df38f27be7a515410e43c045e2e4aeead4a7c783f",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
+  "type": "Image"
+ },
+ "Image:7375264229216df3ebaddf4854f5b47b848b934159c54068cffd68e0fbc07174": {
+  "assetId": "107103226456779",
+  "imageId": "107103226456779",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_NOR",
+  "sha": "7375264229216df3ebaddf4854f5b47b848b934159c54068cffd68e0fbc07174",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_NOR.png",
+  "type": "Image"
+ },
  "Image:7434b011b03376283f5909caf77315a7fcb9108542c254b7c2060ef5bbf180e0": {
   "assetId": "129470959054504",
   "imageId": "129470959054504",
@@ -1646,6 +1867,15 @@
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Body_RGH.png",
   "type": "Image"
  },
+ "Image:79ed8f416e2ed3b7f59bc2728e102beee4f428a90316274896741d8c25cf7e25": {
+  "assetId": "102411696808780",
+  "imageId": "102411696808780",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_NOR",
+  "sha": "79ed8f416e2ed3b7f59bc2728e102beee4f428a90316274896741d8c25cf7e25",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_NOR.png",
+  "type": "Image"
+ },
  "Image:7a26d4f4f1fd314e13de7d28c3f73fa6ba91a71e63f9a824c19e7e9ff70a458a": {
   "assetId": "137511949615333",
   "imageId": "137511949615333",
@@ -1662,6 +1892,15 @@
   "name": "Mayday_T_Mat_Mud_ALB_Wet",
   "sha": "7a79864f15fe2d6fc10e4fa149a97e52c110cb02ce42062e26628f5366a1937f",
   "source": "assets/textures/Materials/T_Mat_Mud_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:7ab5ae93b57394543b108d0f531096a2e29cfee39a3c50878c9323f1c066491e": {
+  "assetId": "106108467598566",
+  "imageId": "106108467598566",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_NOR",
+  "sha": "7ab5ae93b57394543b108d0f531096a2e29cfee39a3c50878c9323f1c066491e",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_NOR.png",
   "type": "Image"
  },
  "Image:7b07830e98fe899498fb440be6e80b1d2fb349869759bfffca67400a5cb2113c": {
@@ -1689,6 +1928,15 @@
   "name": "T_Station_Render_RGH_Wet",
   "sha": "7c236155ba611f4ce8054ccb22289f60331415106b02f8a7d6dcda39b09e942a",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f": {
+  "assetId": "117483510246874",
+  "imageId": "117483510246874",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_RGH",
+  "sha": "7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
   "type": "Image"
  },
  "Image:7da685e58d02e3ba238156d2d702d4ef5c85112fe6377035f8fad712c6004aed": {
@@ -1754,6 +2002,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:8133ad236b933c684fc34e4cde0d7cda1f8e87a4b2575cd761ad5acd37be7952": {
+  "assetId": "79648716365190",
+  "imageId": "79648716365190",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_NOR",
+  "sha": "8133ad236b933c684fc34e4cde0d7cda1f8e87a4b2575cd761ad5acd37be7952",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_NOR.png",
+  "type": "Image"
+ },
  "Image:81db2b581b1a66df58b50356e61934d09c2fa9a82548d30904026476f52a9dd5": {
   "assetId": "102318804896381",
   "imageId": "102318804896381",
@@ -1799,6 +2056,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
   "type": "Image"
  },
+ "Image:83d4426448f8f7e8d3cc4e87108875e952704d3c7622a0a5a84e5533b591b0b1": {
+  "assetId": "100069689205449",
+  "imageId": "100069689205449",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_ALB",
+  "sha": "83d4426448f8f7e8d3cc4e87108875e952704d3c7622a0a5a84e5533b591b0b1",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_ALB.png",
+  "type": "Image"
+ },
  "Image:8406b3e96fd73aaa7bd9edd00312edf32121db4f4b70ff531e7c9259712b36a5": {
   "assetId": "130427434959650",
   "imageId": "130427434959650",
@@ -1842,6 +2108,15 @@
   "name": "Mayday_sky_Overcast_Up",
   "sha": "85cce040b6f772c6c7955a652b7613c779d8d58794e13162323f71ea532edcc2",
   "source": "assets/ocean/sky/Overcast_Up.png",
+  "type": "Image"
+ },
+ "Image:861aa1ddeb283d2c9e1bcd555b0f316cbff19c7854512987374d6cd831eda216": {
+  "assetId": "94775411869752",
+  "imageId": "94775411869752",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_MET",
+  "sha": "861aa1ddeb283d2c9e1bcd555b0f316cbff19c7854512987374d6cd831eda216",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
  "Image:87deafdc473a4ad986f3df22d0ec19fe5e0467f29ef104e6c28ca5b9d2371afd": {
@@ -2060,6 +2335,15 @@
   "source": "assets/textures/Materials/T_Mat_SplashRock_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02": {
+  "assetId": "115658512807600",
+  "imageId": "115658512807600",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_ALB_Wet",
+  "sha": "95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:95b6cb4baaabc8b75aaf59b31e2f816ec789322a588125b5d2ef7f0cceb4154d": {
   "assetId": "127578886417365",
   "imageId": "127578886417365",
@@ -2078,6 +2362,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
+ "Image:966178bf88be2ba93145655ba0b678200ff5ee38643463b7f25260d28368f087": {
+  "assetId": "84802728167462",
+  "imageId": "84802728167462",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_RGH_Wet",
+  "sha": "966178bf88be2ba93145655ba0b678200ff5ee38643463b7f25260d28368f087",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:96cd98860d4a7f62f31d76f5df2a83ff9f51a90fa951d1e547d0aa1fd82d1f3e": {
   "assetId": "127541415964683",
   "imageId": "127541415964683",
@@ -2085,6 +2378,15 @@
   "name": "T_JetSki_Sled_RGH_Wet",
   "sha": "96cd98860d4a7f62f31d76f5df2a83ff9f51a90fa951d1e547d0aa1fd82d1f3e",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:9808939a21880a08dba11a1267b5c4e6483dbe60cf13bfdf66451e8763631649": {
+  "assetId": "79172190348487",
+  "imageId": "79172190348487",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Rope_RGH",
+  "sha": "9808939a21880a08dba11a1267b5c4e6483dbe60cf13bfdf66451e8763631649",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_RGH.png",
   "type": "Image"
  },
  "Image:983f7bef19344084bba1729f01c1e3376a515ff33dfd5b49f2168f1354fedf03": {
@@ -2130,6 +2432,15 @@
   "name": "T_Station_Details_ALB",
   "sha": "9befa3772c681e4f25877c4b1d5c94fe67de87519e34fb4abd52877e6c35c912",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_ALB.png",
+  "type": "Image"
+ },
+ "Image:9c7b475fca0e552fb9229bbdcefa484246e7d0f73b09db9c254deb21dad9cf5c": {
+  "assetId": "91181341396446",
+  "imageId": "91181341396446",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_MET",
+  "sha": "9c7b475fca0e552fb9229bbdcefa484246e7d0f73b09db9c254deb21dad9cf5c",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_MET.png",
   "type": "Image"
  },
  "Image:9c9699c2ca314bfc6b039c0a489f9c9de7625fd7b16d6fe75052e898d62d5f4f": {
@@ -2184,6 +2495,15 @@
   "name": "Mayday_T_Mat_Asphalt_NOR",
   "sha": "9e5479220b35f04981043edec7db1301768ae267600fe47e6919ee349fbb974f",
   "source": "assets/textures/Materials/T_Mat_Asphalt_NOR.png",
+  "type": "Image"
+ },
+ "Image:9e7f637d391428cb8c9deb15d480f9636273bb7f35127add8641240a63faf215": {
+  "assetId": "86948295014052",
+  "imageId": "86948295014052",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_ALB",
+  "sha": "9e7f637d391428cb8c9deb15d480f9636273bb7f35127add8641240a63faf215",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB.png",
   "type": "Image"
  },
  "Image:9f02cd37bc079768ec98db3d5fe75c673224384ad6080e4fb14fe7cc3b94d3e9": {
@@ -2713,6 +3033,15 @@
   "source": "assets/textures/M_Chr_HumanBase_M/T_HumanBaseM_Body_MET.png",
   "type": "Image"
  },
+ "Image:c900eb733f9a5b3c9d6348273d00167819ace926638ba3227ce53a795d1de489": {
+  "assetId": "131963329407593",
+  "imageId": "131963329407593",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_NOR",
+  "sha": "c900eb733f9a5b3c9d6348273d00167819ace926638ba3227ce53a795d1de489",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_NOR.png",
+  "type": "Image"
+ },
  "Image:c907ba4be0efb624e1cb2ca9d8ac3b3e5e01b35ff0aeb97859bedeb6ff7ff995": {
   "assetId": "93699434802635",
   "imageId": "93699434802635",
@@ -2720,6 +3049,15 @@
   "name": "Mayday_T_Mat_Asphalt_ALB",
   "sha": "c907ba4be0efb624e1cb2ca9d8ac3b3e5e01b35ff0aeb97859bedeb6ff7ff995",
   "source": "assets/textures/Materials/T_Mat_Asphalt_ALB.png",
+  "type": "Image"
+ },
+ "Image:c98d8c8fa4f162d2047b2ad90c7fc777840f64f6846e7dfcd9856a007c8663be": {
+  "assetId": "87581147490496",
+  "imageId": "87581147490496",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_MET",
+  "sha": "c98d8c8fa4f162d2047b2ad90c7fc777840f64f6846e7dfcd9856a007c8663be",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_MET.png",
   "type": "Image"
  },
  "Image:c9f9e7132eb4d9072be2326b785518e504c6ca07f43bf0f049f4d190466418c2": {
@@ -2768,6 +3106,15 @@
   "name": "T_CasualtySwimmer_Hair_NOR",
   "sha": "cd054d8d23c458b7ef0eaf83ef5ee86715c21ec118986243ddd35cdea53f0358",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Hair_NOR.png",
+  "type": "Image"
+ },
+ "Image:cd5a5716d7be4606bef6e376ddc62247b49d1246bdf86b1fef54f468fb4f5c5e": {
+  "assetId": "133339368291517",
+  "imageId": "133339368291517",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_ALB",
+  "sha": "cd5a5716d7be4606bef6e376ddc62247b49d1246bdf86b1fef54f468fb4f5c5e",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_ALB.png",
   "type": "Image"
  },
  "Image:cd6c35a9e3dae73cb890b59bad1843301ac43529ca0b4ab20447c12085627ea9": {
@@ -2833,6 +3180,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_NOR.png",
   "type": "Image"
  },
+ "Image:cfb37906f215212956eff046ba889cbd0674f2872f131603aeeb926c883127d0": {
+  "assetId": "92172556810788",
+  "imageId": "92172556810788",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_ALB_Wet",
+  "sha": "cfb37906f215212956eff046ba889cbd0674f2872f131603aeeb926c883127d0",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:d036808ff2d1f6a8d0e380cee7f4b2af4f75224005d61ad15c24de414b07c67e": {
   "assetId": "130981403101613",
   "imageId": "130981403101613",
@@ -2876,6 +3232,24 @@
   "name": "T_RIBHelm_Console_ALB_Wet",
   "sha": "d1bb8f731795c1742d21e7f70b399d0e45c9867a3079060ea12eb7dcf6d2bfb1",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:d20ea351fc5e6b57c9eaa6fb4a16951f8359efec60d18c074e3aa3d4dee33554": {
+  "assetId": "107429793348262",
+  "imageId": "107429793348262",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_RGH_Wet",
+  "sha": "d20ea351fc5e6b57c9eaa6fb4a16951f8359efec60d18c074e3aa3d4dee33554",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d": {
+  "assetId": "71920021950811",
+  "imageId": "71920021950811",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_ALB",
+  "sha": "d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
   "type": "Image"
  },
  "Image:d414d1aec9fb8126794d6686186c9b8b6b2cdf6a498a06f189141d194d5071e7": {
@@ -2951,6 +3325,15 @@
   "name": "T_RIBHelm_Console_ALB",
   "sha": "d7c4cea685fe0480073141394974869ccb65f36644589f59fef6fc6d1d9e12f9",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png",
+  "type": "Image"
+ },
+ "Image:d89cb0f5c64ae9ccb06955c18eb789fbdfaf11ae0ec445b5f3efd35a2e0b97ea": {
+  "assetId": "138288822640667",
+  "imageId": "138288822640667",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_ALB",
+  "sha": "d89cb0f5c64ae9ccb06955c18eb789fbdfaf11ae0ec445b5f3efd35a2e0b97ea",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_ALB.png",
   "type": "Image"
  },
  "Image:d8dc7bd8f8bbc3c742a9200664f48681c17ede8fde470fe13c5543068afd547b": {
@@ -3095,6 +3478,24 @@
   "name": "Mayday_sky_Storm_Ft",
   "sha": "dee081cc616aa2d32628bf7c87b1f852fed9a9c9b6be6f76c0438c1c2ab1e305",
   "source": "assets/ocean/sky/Storm_Ft.png",
+  "type": "Image"
+ },
+ "Image:e00110ddedf9f9b1739dd3957104abcb6490c9b9700bddb4747aafe29d876d7b": {
+  "assetId": "127535253992608",
+  "imageId": "127535253992608",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_RGH",
+  "sha": "e00110ddedf9f9b1739dd3957104abcb6490c9b9700bddb4747aafe29d876d7b",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH.png",
+  "type": "Image"
+ },
+ "Image:e00748aa63d6c59d4b9f0db7d322807837ff0fbbd80d0bd5bc0bcdec2b235922": {
+  "assetId": "84388384268744",
+  "imageId": "84388384268744",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Pine_RGH",
+  "sha": "e00748aa63d6c59d4b9f0db7d322807837ff0fbbd80d0bd5bc0bcdec2b235922",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_RGH.png",
   "type": "Image"
  },
  "Image:e0857e466a7e22e823d8d3f6250e73e6129b0a76d0760ea1167d2b0b63127773": {
@@ -3244,6 +3645,24 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd": {
+  "assetId": "105457741487761",
+  "imageId": "105457741487761",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_RGH_Wet",
+  "sha": "ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2": {
+  "assetId": "84745109172448",
+  "imageId": "84745109172448",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_RGH_Wet",
+  "sha": "ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:eec568a25d99c7ca653875962e01e2787c80bf6bc3de9a5d53791e6e58159d0f": {
   "assetId": "93078427746275",
   "imageId": "93078427746275",
@@ -3280,6 +3699,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH.png",
   "type": "Image"
  },
+ "Image:f01ecb93d393cee33bf07600aa3de6f041e1338288e2a52b688d86b1b1611457": {
+  "assetId": "90005849079078",
+  "imageId": "90005849079078",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_RGH",
+  "sha": "f01ecb93d393cee33bf07600aa3de6f041e1338288e2a52b688d86b1b1611457",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_RGH.png",
+  "type": "Image"
+ },
  "Image:f06329dd0a9a403e58de3112c432257441efa44e278d0f513b7ad3188cdb59eb": {
   "assetId": "139849180076523",
   "imageId": "139849180076523",
@@ -3305,6 +3733,15 @@
   "name": "T_CasualtySwimmer_Atlas_ALB",
   "sha": "f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB.png",
+  "type": "Image"
+ },
+ "Image:f1c7f10a31ed2b4d92c97f3ae8539bc3e95f3e380bc6db6a2272502a8dfde270": {
+  "assetId": "103167454466070",
+  "imageId": "103167454466070",
+  "moderation": "Approved",
+  "name": "T_JetSkiCloseUp_CloseUp_NOR",
+  "sha": "f1c7f10a31ed2b4d92c97f3ae8539bc3e95f3e380bc6db6a2272502a8dfde270",
+  "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_NOR.png",
   "type": "Image"
  },
  "Image:f1f083f9d67cd847a7670ae7d4d6dfa617f2552ab697f3ca1d5a650747b5e250": {
@@ -3469,6 +3906,15 @@
   "source": "assets/textures/Materials/T_Mat_WeedyConcrete_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539": {
+  "assetId": "108334098253080",
+  "imageId": "108334098253080",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_NOR",
+  "sha": "fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
+  "type": "Image"
+ },
  "Image:fe134f8bd415e2d4f3cdb9a1924162307f990105761ecfef4a99ac3b7a551d68": {
   "assetId": "78342227262600",
   "imageId": "78342227262600",
@@ -3533,6 +3979,16 @@
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD0.fbx",
   "type": "Model"
  },
+ "Model:0378e58a4db7a7cfba212d20f966f4a0a17d07463c039db2f5e6092624b8c99a": {
+  "assetId": "124944465956160",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery",
+  "rbxm": "assets/models/M_Prop_Chandlery.rbxm",
+  "route": "delivery",
+  "sha": "0378e58a4db7a7cfba212d20f966f4a0a17d07463c039db2f5e6092624b8c99a",
+  "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:0781b6aa35216fe943986d222de46284efa4666a41a8892299a6f445b1a949eb": {
   "assetId": "119463124015968",
   "moderation": "Approved",
@@ -3563,6 +4019,16 @@
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD1.fbx",
   "type": "Model"
  },
+ "Model:1af41559afda456812ec5dc41e984c515f33b46ba31cbb573b662251cf0d99b7": {
+  "assetId": "90406652098221",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int_LOD2",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "1af41559afda456812ec5dc41e984c515f33b46ba31cbb573b662251cf0d99b7",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:1b0deea1cb83faf8e92a58b45315d6665baa8156bf95aaa034faa1ab743d72c4": {
   "assetId": "139752697951923",
   "moderation": "Approved",
@@ -3581,6 +4047,16 @@
   "route": "delivery",
   "sha": "259ea95551634fb3bd46fee49eb6007f2aedb394deb6f879a4b64157b887a03a",
   "source": "assets/fbx/Spike1/M_Spike1_Tris21500.fbx",
+  "type": "Model"
+ },
+ "Model:29571f13705b50ee1151407c16438880d1d25109481b659547eb61fdc1d3b212": {
+  "assetId": "72528639536242",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int.rbxm",
+  "route": "delivery",
+  "sha": "29571f13705b50ee1151407c16438880d1d25109481b659547eb61fdc1d3b212",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD0.fbx",
   "type": "Model"
  },
  "Model:2c5441c9afb4ee4149cc952e07ac988dd32f0581bfe3671f2ea21da0317e4f5d": {
@@ -3621,6 +4097,16 @@
   "route": "delivery",
   "sha": "360cac0b82921339422463b415051bdd8db5c29978595ffaa274c86714e0bfee",
   "source": "assets/fbx/Spike1/M_Spike1_Tris09990.fbx",
+  "type": "Model"
+ },
+ "Model:3dfd7cc6314494fe4ff9c49818a90495416706194b782f019409f372d46e18a5": {
+  "assetId": "117090188851926",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki_LOD1",
+  "rbxm": "assets/models/M_Veh_JetSki_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3dfd7cc6314494fe4ff9c49818a90495416706194b782f019409f372d46e18a5",
+  "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD1.fbx",
   "type": "Model"
  },
  "Model:3e173b5fe0e77d8b00047c5825cc1bce3daf9902b96f6a4c6eb11d5cdc08e217": {
@@ -3681,6 +4167,26 @@
   "route": "delivery",
   "sha": "4aa3dd3dfc30c2c114ec5c811a680397b23edfe9029b33e6dacdbe26ef3df8ef",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:56e9f91086512f9f213ea813ed69fce56ca0e9760ad155fb859a7ca2ce469a50": {
+  "assetId": "139043023346846",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext.rbxm",
+  "route": "delivery",
+  "sha": "56e9f91086512f9f213ea813ed69fce56ca0e9760ad155fb859a7ca2ce469a50",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:5f60a476eb290bf80d59e3f11030cff86c04a2b8534e2131e62695ade390a622": {
+  "assetId": "75458231561618",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki_LOD2",
+  "rbxm": "assets/models/M_Veh_JetSki_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5f60a476eb290bf80d59e3f11030cff86c04a2b8534e2131e62695ade390a622",
+  "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD2.fbx",
   "type": "Model"
  },
  "Model:678c97ddf9129a58052244ba1f1dbfeda1e9932f5dcc161e16db5f1e56721f8a": {
@@ -3813,6 +4319,16 @@
   "source": "assets/fbx/M_Chr_HumanBase_F/M_Chr_HumanBase_F_LOD2.fbx",
   "type": "Model"
  },
+ "Model:9402855a36663e2bbf4d9003868a28834fbe96ee0ed8565f20ca5859d3b2e60b": {
+  "assetId": "95987279523296",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext_LOD1",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9402855a36663e2bbf4d9003868a28834fbe96ee0ed8565f20ca5859d3b2e60b",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:947f0896dffe5ecf428c87d270308c5e005d989dd05cb29d0be844e45ff62d4d": {
   "assetId": "108059392862310",
   "moderation": "Approved",
@@ -3863,6 +4379,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tentacle40.fbx",
   "type": "Model"
  },
+ "Model:9f4595664bf245578faa0af9372a3c745352e457345bcbe3ba5ee1cc9bc87b4d": {
+  "assetId": "127259503125880",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery_LOD1",
+  "rbxm": "assets/models/M_Prop_Chandlery_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9f4595664bf245578faa0af9372a3c745352e457345bcbe3ba5ee1cc9bc87b4d",
+  "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a87140e6c5a3563eeaeec70c778abe357c7dca4c5852e8bb99d0fe95e0f5a1c5": {
   "assetId": "123942813236301",
   "moderation": "Approved",
@@ -3901,6 +4427,16 @@
   "route": "delivery",
   "sha": "abc3bb5c9decbcc1c6544a275faa926c187f4c753e111c5c24c4ad49212f5b47",
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:abfdfa2beb89c61593eb3cbbcbfbdf3b18f37b93a83ebaba893fbe71a0d45c9d": {
+  "assetId": "96904954993392",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki_CloseUp",
+  "rbxm": "assets/models/M_Veh_JetSki_CloseUp.rbxm",
+  "route": "delivery",
+  "sha": "abfdfa2beb89c61593eb3cbbcbfbdf3b18f37b93a83ebaba893fbe71a0d45c9d",
+  "source": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp_LOD0.fbx",
   "type": "Model"
  },
  "Model:b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4": {
@@ -3953,6 +4489,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
   "type": "Model"
  },
+ "Model:cf6449e1a9077472355addcc244226ca2ab07f22c02e7b311b5b234d937d4fd2": {
+  "assetId": "77535739244028",
+  "moderation": "Approved",
+  "name": "M_Veh_JetSki",
+  "rbxm": "assets/models/M_Veh_JetSki.rbxm",
+  "route": "delivery",
+  "sha": "cf6449e1a9077472355addcc244226ca2ab07f22c02e7b311b5b234d937d4fd2",
+  "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:d4cb1e4335c23ed1953fb535c2ffafa156338cf3f360473e88c52d2455f9159e": {
   "assetId": "139906280413380",
   "moderation": "Approved",
@@ -3971,6 +4517,26 @@
   "route": "delivery",
   "sha": "dc8ede36235914631ad78777ea4ee1fad7883f5d096cfffa3ccd89c20fe0473e",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:e5e2ac1989240ef0e522e1cdcce42a0923a330c0d029a429925c1413eb21e7f7": {
+  "assetId": "79006856545686",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Int_LOD1",
+  "rbxm": "assets/models/M_Bld_Chandlery_Int_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e5e2ac1989240ef0e522e1cdcce42a0923a330c0d029a429925c1413eb21e7f7",
+  "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ecbc785cd9be22c09e68237d9bb87deee70bbcdb2d86875c500282c2427d2cc9": {
+  "assetId": "135207525204755",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext_LOD2",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ecbc785cd9be22c09e68237d9bb87deee70bbcdb2d86875c500282c2427d2cc9",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD2.fbx",
   "type": "Model"
  },
  "Model:eccae9d36055557d08edca9713cc69a546b4fa0a79948f097ca7d4dcb2cbeed6": {

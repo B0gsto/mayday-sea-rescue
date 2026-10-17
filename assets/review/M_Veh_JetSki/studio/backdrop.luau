@@ -90,9 +90,10 @@ spot.Enabled = false
 spot.Parent = rig
 rig.CFrame = CFrame.lookAt(Vector3.new(9, 54, -11), Vector3.new(0, 41.8, 0))
 local navSpec = {
-	ATT_NavPort = { Color3.fromRGB(255, 40, 30), 0.6, 2.5 },
-	ATT_NavStarboard = { Color3.fromRGB(40, 255, 90), 0.6, 2.5 },
-	ATT_NavMasthead = { Color3.fromRGB(255, 246, 230), 0.7, 3 },
+	-- V1 fix round (AD: Night unreadable): nav glow a little stronger with a 1-1.5 m reach, still practical-level
+	ATT_NavPort = { Color3.fromRGB(255, 40, 30), 1.0, 2.8 },
+	ATT_NavStarboard = { Color3.fromRGB(40, 255, 90), 1.0, 2.8 },
+	ATT_NavMasthead = { Color3.fromRGB(255, 246, 230), 1.0, 4 },
 	ATT_NavStern = { Color3.fromRGB(255, 246, 230), 0.5, 2.5 },
 	ATT_Beacon = { Color3.fromRGB(60, 110, 255), 0.8, 3 },
 }
@@ -115,6 +116,10 @@ local function ensureNav()
 	end
 end
 _G.JetSpot = function(on: boolean)
+	-- V1 fix round: the "floating white lines" were Studio's selection box round the inserted models; clear it
+	pcall(function()
+		game:GetService("Selection"):Set({})
+	end)
 	workspace.CurrentCamera.FieldOfView = 40
 	spot.Enabled = on
 	ensureNav()
@@ -122,4 +127,49 @@ _G.JetSpot = function(on: boolean)
 		l.Enabled = on
 	end
 end
-return "backdrop ok"
+-- V1 fix round: find and hide line-like visuals that are not part of the jet ski (Beams, Trails, rope / rod / spring
+-- constraint visuals, adornments, selection boxes, highlights) and report them, so the shots carry no stray lines
+local hiddenKinds = {}
+local function note(k)
+	hiddenKinds[k] = (hiddenKinds[k] or 0) + 1
+end
+for _, d in workspace:GetDescendants() do
+	if d:IsA("Beam") or d:IsA("Trail") then
+		d.Enabled = false
+		note(d.ClassName)
+	elseif d:IsA("Constraint") then
+		pcall(function() d.Visible = false end)
+		note(d.ClassName)
+	elseif d:IsA("PVAdornment") or d:IsA("SelectionBox") or d:IsA("SelectionSphere") or d:IsA("Highlight")
+		or d:IsA("HandlesBase") then
+		pcall(function() d.Visible = false end)
+		pcall(function() d.Enabled = false end)
+		note(d.ClassName)
+	end
+end
+-- the place's Map / Zones (poles, wires and zone volumes near the stand) showed as thin floating lines round the jet
+-- ski: park them outside the DataModel for the look-dev session (the session is never saved)
+_G.JetParked = _G.JetParked or {}
+for _, n in { "Map", "Zones" } do
+	local c = workspace:FindFirstChild(n)
+	if c then
+		table.insert(_G.JetParked, c)
+		c.Parent = nil
+		note("parked " .. n)
+	end
+end
+local sel = 0
+pcall(function()
+	local S = game:GetService("Selection")
+	sel = #S:Get()
+	S:Set({})
+end)
+local kinds = {}
+for k, n in hiddenKinds do
+	table.insert(kinds, k .. "=" .. n)
+end
+local top = {}
+for _, c in workspace:GetChildren() do
+	table.insert(top, c.Name .. ":" .. c.ClassName)
+end
+return "backdrop ok; selection was " .. sel .. "; hidden " .. table.concat(kinds, ",") .. "; workspace " .. table.concat(top, ",")

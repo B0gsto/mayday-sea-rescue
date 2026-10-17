@@ -192,7 +192,7 @@ def tide_set():
     kerbweed = kerbs * smooth(0.36, 0.55, tp) * smooth(0.3, 0.55, mid) * edge
     weed = np.clip(np.maximum.reduce([kelp, joint * smooth(0.3, 0.5, tp) * edge, railweed, kerbweed]), 0, 1)
     kelp_col = mix(rgb((50, 56, 36)), rgb((62, 54, 38)), smooth(0.4, 0.6, mid)) * (0.85 + 0.3 * fine[..., None])
-    barn_col = rgb((176, 172, 160)) * (0.85 + 0.2 * fine[..., None])
+    barn_col = rgb((160, 156, 146)) * (0.85 + 0.2 * fine[..., None])
     # height gradient: blend the two source normals, add barnacles, weed ridges, slight algae mounds
     ch = barn_h = bh * 1.0 + weed * 0.35 * runs
     bgx = (np.roll(ch, -1, 1) - np.roll(ch, 1, 1)) * 0.5 * 2.2

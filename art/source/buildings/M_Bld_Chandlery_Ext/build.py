@@ -123,6 +123,20 @@ def slope_prism(part, y0, y1, x0, x1, dz0, dz1, mode, caps=True):
     part.prism(prof, "x", x0, x1, mode, caps=caps)
 
 
+def frustum(part, c, r_top, r_bot, z_top, z_bot, segs, mode):
+    """Open-bottomed lamp shade: a cone frustum around vertical axis at c = (x, y), closed at the top."""
+    part.prim += 1
+    ring = lambda r, z: [(c[0] + r * math.cos(2 * math.pi * i / segs), c[1] + r * math.sin(2 * math.pi * i / segs), z) for i in range(segs)]
+    top, bot = ring(r_top, z_top), ring(r_bot, z_bot)
+    cen = (c[0], c[1], (z_top + z_bot) / 2)
+    for i in range(segs):
+        j = (i + 1) % segs
+        q = [bot[i], bot[j], top[j], top[i]]
+        part.face(q, mode, centre=cen)
+        part.face(list(reversed(q)), mode, centre=(c[0] + 50 * (bot[i][0] + bot[j][0] - 2 * c[0]), c[1] + 50 * (bot[i][1] + bot[j][1] - 2 * c[1]), cen[2]))
+    part.face(top, mode, centre=(c[0], c[1], z_top - 1))
+
+
 def build():
     stone, gran, roof, tr, det, shop, glass, door, dglass = (Part("Stone"), Part("Granite"), Part("Roof"), Part("Trim"),
                                                             Part("Details"), Part("Shopfront"), Part("Glass"), Part("Door"),
@@ -137,12 +151,12 @@ def build():
     DS = L.DOOR_STONE_OPENING
     holes_front = [(DS[0], DS[1], DS[2], DS[3]), (L.BAY_OPENING[0], L.BAY_OPENING[1], 0.0, L.BAY_OPENING[3])]
     holes_front += [(a, b, L.LOFT_WIN_Z[0], L.LOFT_WIN_Z[1]) for a, b in L.LOFT_WINDOWS]
-    holed_wall(stone, "y", Y0, IY0, X0, X1, 0.0, E, holes_front, STONE)
-    holed_wall(stone, "y", Y1, IY1, X0, X1, 0.0, E, [], STONE)
-    holed_wall(stone, "x", X0, IX0, IY0, IY1, 0.0, E, [], STONE, ends=(False, False))
-    holed_wall(stone, "x", X1, IX1, IY0, IY1, 0.0, E, [], STONE, ends=(False, False))
+    holed_wall(stone, "y", Y0, IY0, X0, X1, 0.0, E, holes_front, STONE, top=False)
+    holed_wall(stone, "y", Y1, IY1, X0, X1, 0.0, E, [], STONE, top=False)
+    holed_wall(stone, "x", X0, IX0, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False)
+    holed_wall(stone, "x", X1, IX1, IY0, IY1, 0.0, E, [], STONE, ends=(False, False), top=False)
     for yo, yi in ((Y0, IY0), (Y1, IY1)):        # wall heads up to the roof underside
-        stone.prism([(yo, E), (yi, E), (yi, zu(yi))], "x", X0, X1, STONE)
+        stone.prism([(yo, E), (yi, E), (yi, zu(yi))], "x", IX0, IX1, STONE)
     for x0, x1 in ((X0, IX0), (IX1, X1)):        # gables with parapets
         stone.prism([(Y0, E), (Y1, E), (Y1, zt(Y1) + PAR), (0.0, zt(0) + PAR), (Y0, zt(Y0) + PAR)], "x", x0, x1, STONE)
 
@@ -229,20 +243,20 @@ def build():
     for sg in (-1, 1):
         ye = sg * (Y1 + OVH)
         geo.LEVEL = 3
-        tr.box((X0 - 0.04, min(ye, ye + sg * 0.03), zo - 0.2), (X1 + 0.04, max(ye, ye + sg * 0.03), zo + 0.06), trim("Fascia"))
+        tr.box((IX0 + 0.06, min(ye, ye + sg * 0.03), zo - 0.2), (IX1 - 0.06, max(ye, ye + sg * 0.03), zo + 0.06), trim("Fascia"))
         geo.LEVEL = 2
-        tr.box((X0, min(ye, sg * Y1), zo - 0.06), (X1, max(ye, sg * Y1), zo - 0.03), trim("Fascia"))
+        tr.box((IX0 + 0.06, min(ye, sg * Y1), zo - 0.06), (IX1 - 0.06, max(ye, sg * Y1), zo - 0.03), trim("Fascia"))
         yg, r = ye + sg * 0.11, 0.075
         prof = [(yg - r, zo - 0.04), (yg + r, zo - 0.04), (yg + r * 0.7, zo - 0.04 - r * 0.7), (yg, zo - 0.04 - r),
                 (yg - r * 0.7, zo - 0.04 - r * 0.7)]
-        tr.prism(prof, "x", X0 - 0.08, X1 + 0.08, trim("Gutter"))
+        tr.prism(prof, "x", IX0 + 0.06, IX1 - 0.06, trim("Gutter"))
         geo.LEVEL = 1
-        xb = X0 + 0.3
-        while xb < X1:
+        xb = IX0 + 0.2
+        while xb < IX1 - 0.1:
             det.box((xb - 0.015, min(ye, yg + sg * r), zo - 0.06), (xb + 0.015, max(ye, yg + sg * r), zo - 0.04), IRON)
             xb += 0.9
-        yw = sg * (Y1 + 0.09)
-        for xp in (X0 + 0.32, X1 - 0.32):
+        yw = sg * (Y1 + 0.11)
+        for xp in (X0 + 0.8, X1 - 0.8):
             geo.LEVEL = 3
             tr.tube((xp, yw, 0.2), (xp, yw, zo - 0.55), 0.045, 8, trim("Downpipe"))
             geo.LEVEL = 2
@@ -252,7 +266,7 @@ def build():
             zz = 0.9
             while zz < zo - 0.8:
                 det.box((xp - 0.065, min(yw - sg * 0.065, sg * Y1), zz), (xp + 0.065, max(yw - sg * 0.065, sg * Y1), zz + 0.05), IRON)
-                det.box((xp - 0.06, min(yw + sg * 0.03, yw + sg * 0.06), zz), (xp + 0.06, max(yw + sg * 0.03, yw + sg * 0.06), zz + 0.05), IRON)
+                det.box((xp - 0.058, yw - 0.058, zz), (xp + 0.058, yw + 0.058, zz + 0.05), IRON)
                 zz += 1.5
     geo.LEVEL = 3
 
@@ -354,7 +368,7 @@ def build():
         shop.box((p0, yF - 0.1, 0.42), (p1, Y0, 2.8), PAINT, skip=("-z", "+y"))
         shop.box((p0 - 0.03, yF - 0.13, 2.8), (p1 + 0.03, Y0, 3.0), PAINT, skip=("+y",))
         shop.prism([(Y0, 3.0), (Y0, 3.78), (yF - 0.26, 3.78), (yF - 0.26, 3.6), (yF - 0.14, 3.05), (yF - 0.1, 3.0)],
-                   "x", p0 + 0.03, p1 - 0.03, PAINT)
+                   "x", p0 + 0.01, p1 - 0.01, PAINT)
         geo.LEVEL = 1
         for xs in (p0 + 0.07, p1 - 0.1):
             shop.box((xs, yF - 0.12, 0.55), (xs + 0.03, yF - 0.1, 2.68), PAINT, skip=("+y",))
@@ -400,8 +414,6 @@ def build():
     c0, c1 = L.FASCIA[0] - 0.08, L.FASCIA[1] + 0.08
     shop.box((c0, yF - 0.34, 3.71), (c1, Y0, 3.8), PAINT, skip=("+y",))
     shop.prism([(yF - 0.36, 3.8), (Y0, 3.8), (Y0, 3.88), (yF - 0.36, 3.815)], "x", c0 - 0.02, c1 + 0.02, LEAD)
-    geo.LEVEL = (2,)
-    shop.box((bx0, yF + 0.02, sill + 0.08), (bx1, yF + 0.03, head - 0.1), PAINT, skip=("+y",))   # LOD2: bars as a frame tone
 
     # ================================================= hanging sign on a wrought-iron bracket (double-sided)
     geo.LEVEL = 3
@@ -419,7 +431,7 @@ def build():
     for yh in (sy - 0.35, sy + 0.35):
         det.tube((sx, yh, bar_z - 0.016), (sx, yh, sz + 0.32), 0.008, 4, IRON)
     geo.LEVEL = 1
-    ccy, ccz, rr = Y0 - 0.32, bar_z + 0.13, 0.1          # scroll between bar and brace
+    ccy, ccz, rr = Y0 - 0.32, bar_z + 0.136, 0.12          # scroll between bar and brace
     pts = [(ccy + rr * math.cos(2 * math.pi * i / 10), ccz + rr * math.sin(2 * math.pi * i / 10)) for i in range(10)]
     for i in range(10):
         p, q = pts[i], pts[(i + 1) % 10]
@@ -430,7 +442,7 @@ def build():
     atts["ATT_Sign"] = Vector(L.ATT["ATT_Sign"])
 
     # ================================================= A-frame chalk board on the quay
-    ax0, ax1, ayc, top_z = -3.62, -2.98, -7.0, 0.95
+    ax0, ax1, ayc, top_z = -3.62, -2.98, -6.95, 0.95
     for sg in (-1, 1):
         yb, yt = ayc + sg * 0.25, ayc + sg * 0.02
         def board(z0, z1, d0, d1):
@@ -447,6 +459,51 @@ def build():
     geo.LEVEL = 1
     det.tube((ax0 + 0.02, ayc - 0.14, 0.45), (ax0 + 0.02, ayc + 0.14, 0.45), 0.005, 4, IRON)
     det.tube((ax1 - 0.02, ayc - 0.14, 0.45), (ax1 - 0.02, ayc + 0.14, 0.45), 0.005, 4, IRON)
+    geo.LEVEL = 3
+
+    # ================================================= shopfront lamps (goosenecks over the cornice), blind windows, stains
+    geo.LEVEL = 2
+    for i, xl in enumerate((-3.2, 1.7, 6.7)):
+        det.box((xl - 0.05, Y0 - 0.025, 4.04), (xl + 0.05, Y0, 4.26), IRON, skip=("+y",))
+        arm = [(xl, Y0 - 0.025, 4.15), (xl, Y0 - 0.3, 4.32), (xl, Y0 - 0.72, 4.28), (xl, Y0 - 0.95, 4.08)]
+        for p, q in zip(arm, arm[1:]):
+            det.tube(p, q, 0.016, 6, IRON)
+        frustum(det, (xl, Y0 - 1.0), 0.045, 0.14, 4.08, 3.95, 12, IRON)
+        atts["ATT_Lamp_%02d" % (i + 1)] = Vector((xl, Y0 - 1.0, 3.93))
+    geo.LEVEL = 2
+    for xp in (X0 + 0.8, X1 - 0.8):                    # hopper heads at the top of the front and back downpipes
+        for sg in (-1, 1):
+            yw = sg * (Y1 + 0.11)
+            det.box((xp - 0.1, yw - 0.08, zu(Y1 + OVH) - 0.7), (xp + 0.1, yw + 0.08, zu(Y1 + OVH) - 0.5), IRON)
+    # blind (blocked-up) windows: granite infill, lintel, sill, stains below
+    blind = [("y", 1, Y1, -4.0, 4.0, 5.3), ("y", 1, Y1, 4.0, 4.0, 5.3), ("y", 1, Y1, -6.0, 1.0, 2.3), ("x", 1, X1, 0.0, 4.0, 5.3)]
+    for ax, sg, wf, c, z0, z1 in blind:
+        def B(part, s0, s1, o0, o1, t0, t1, mode):
+            if ax == "y":
+                part.box((c + s0, wf + sg * o0, t0), (c + s1, wf + sg * o1, t1), mode)
+            else:
+                part.box((wf + sg * o0, c + s0, t0), (wf + sg * o1, c + s1, t1), mode)
+        geo.LEVEL = 2
+        B(gran, -0.56, 0.56, 0.0, 0.014, z0, z1, STONE)
+        B(gran, -0.72, 0.72, 0.0, 0.035, z1, z1 + 0.28, STONE)
+        B(tr, -0.66, 0.66, 0.0, 0.075, z0 - 0.08, z0, trim("Sill"))
+        geo.LEVEL = 1
+        for ds, w, ln in ((-0.5, 0.07, 0.55), (-0.12, 0.05, 0.35), (0.3, 0.08, 0.7), (0.62, 0.05, 0.42)):
+            zt0 = z0 - 0.08
+            o = wf + sg * 0.012
+            if ax == "y":
+                q = [(c + ds - w / 2, o, zt0), (c + ds + w / 2, o, zt0), (c + ds + w * 0.1, o, zt0 - ln), (c + ds - w * 0.1, o, zt0 - ln)]
+                cen = (c + ds, wf - sg, zt0 - ln / 2)
+            else:
+                q = [(o, c + ds - w / 2, zt0), (o, c + ds + w / 2, zt0), (o, c + ds + w * 0.1, zt0 - ln), (o, c + ds - w * 0.1, zt0 - ln)]
+                cen = (wf - sg, c + ds, zt0 - ln / 2)
+            det.face(q, rect("Stain", 0.1, 0.8), centre=cen)
+    geo.LEVEL = 1
+    for yf, sg in ((-cy, -1), (cy, 1)):                # chimney stack: drips under the oversail course
+        for xc, w, ln in ((-9.9, 0.08, 0.5), (-9.62, 0.06, 0.32), (-9.32, 0.09, 0.42)):
+            o = yf + sg * 0.012
+            det.face([(xc - w / 2, o, 10.05), (xc + w / 2, o, 10.05), (xc + w * 0.1, o, 10.05 - ln), (xc - w * 0.1, o, 10.05 - ln)],
+                     rect("Stain", 0.1, 0.8), centre=(xc, yf - sg, 10.0))
     geo.LEVEL = 3
 
     # ================================================= objects, collision, attachments
@@ -528,7 +585,7 @@ def build():
             {"name": "shopfront_fascia_bay", "target": st(1.7, -6.6, 2.6), "dist": 34, "az": 12, "el": 6},
             {"name": "hanging_sign", "target": st(sx, sy, sz), "dist": 8, "az": 60, "el": 8},
             {"name": "door", "target": st(-7.4, Y0, 1.3), "dist": 10, "az": -15, "el": 4},
-            {"name": "eaves_gutter_downpipe", "target": st(X1 - 0.32, Y0 - 0.2, 5.3), "dist": 8, "az": 45, "el": 10},
+            {"name": "eaves_gutter_downpipe", "target": st(X1 - 0.8, Y0 - 0.2, 5.3), "dist": 8, "az": 45, "el": 10},
             {"name": "roof_chimney", "target": st(-9.6, 0.0, 9.9), "dist": 18, "az": -40, "el": 28},
             {"name": "granite_plinth_2m", "target": st(-9.7, Y0, 0.45), "dist": 6, "az": -35, "el": 14},
         ],

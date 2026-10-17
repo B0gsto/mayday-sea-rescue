@@ -100,7 +100,7 @@ def build():
     sled_set = R.build_set("Sled", [(NAME + "_Sled_LOD0", P.sled), (NAME + "_Fittings_LOD0", P.fittings),
                                     (NAME + "_Bars_LOD0", P.base_bars)], rbxkit.smart_uv, "MI_JetSki_Sled")
     hps = [
-        R.build_hp(NAME + "_Hull_HP", [P.hull]),
+        R.build_hp(NAME + "_Hull_HP", [P.hull, P.foredeck]),
         R.build_hp(NAME + "_Seat_HP", [P.seat]),
         R.build_hp(NAME + "_Decals_HP", [P.decals]),
         R.build_hp(NAME + "_Sled_HP", [P.sled, P.rescue_text], bevel=dict(width=0.012, segments=2, angle=40)),
@@ -125,14 +125,16 @@ def build():
         e.location = e.location + off
     with open(os.path.join(HERE, "frame_offset.json"), "w") as f:
         json.dump({"offset": list(off), "bbox_studs": [h - l for l, h in zip(lo, hi)],
-                   "eye": list(P.EYE + off), "display": list(P.DISPLAY_C + off)}, f)
+                   "eye": list(P.EYE + off), "eye_pitch_deg": P.EYE_PITCH,
+                   "display": list(P.DISPLAY_C + off)}, f)
     print("[M_Veh_JetSki] offset %s bbox %s" % (tuple(round(c, 3) for c in off), [round(h - l, 3) for l, h in zip(lo, hi)]))
 
     meshes = [{"object": o, "set": "Hull"} for o in hull_set] + [{"object": o, "set": "Sled"} for o in sled_set]
     meshes += [{"object": h} for h in hps] + [{"object": col}]
     streak = {"rust": 0.08, "rust_color": (0.28, 0.26, 0.24), "rust_rough": 0.7, "rust_length": 0.4, "rust_fingers": 5,
               "salt": 0.12, "salt_range": (0.35, 0.8), "salt_color": (0.6, 0.59, 0.56), "edge_color": (0.56, 0.56, 0.55)}
-    wet = {"wet": True, "wet_darken": 0.35, "wet_gloss": 0.2,   # Studio pass 1: 0.5 made Clear wet a sky mirror (wet_rough.py fixed the shipped maps)
+    wet = {"wet": True, "wet_darken": 0.45, "wet_gloss": 0.2,   # V1 fix round: darker wet read in daylight
+             # Studio pass 1: 0.5 made Clear wet a sky mirror (wet_rough.py fixed the shipped maps)
            "wet_streaks": 0.45, "cage_extrusion": 0.05,
            "max_ray_distance": 0.12}
     sets = [

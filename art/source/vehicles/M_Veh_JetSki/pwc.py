@@ -33,10 +33,21 @@ R.PALETTE.update({
     "LanyardRed": ("#9E2E28", 0.45, 0.0),
     "GripRubber": ("#2A2C2D", 0.86, 0.0),
     "HandsetGrey": ("#3A3E42", 0.50, 0.0),
+    # V1 fix round (AD): worn foredeck gelcoat, dark mirror glass, muted SOLAS tape (the full-length light retro
+    # strip read as floating white lines), hatch seam groove
+    "PWCDeck": ("#C85A28", 0.42, 0.0),
+    "MirrorGlass": ("#1E2428", 0.05, 0.0),
+    "Reflective": ("#9EA3A6", 0.42, 0.0),
+    "HatchSeam": ("#3A2A22", 0.70, 0.0),
 })
 R.PROC.update({
     "PWCOrange": dict(mottle=(0.8, 0.05), grime=("#8A4426", 0.25), streak=("#A85A3E", 0.16), salt=("#B9A698", 0.18),
-                      scuff=("#9A5034", 0.30), zgrime=("#5A3A2A", 0.45, 0.85, 1.2), rough_var=0.10, bump=("peel", 0.03, 6)),
+                      scuff=("#9A5034", 0.30), zgrime=("#5A3A2A", 0.45, 0.85, 1.2), zsalt=("#C4B6A8", 0.30, 1.15, 1.5),
+                      rough_var=0.10, bump=("peel", 0.03, 6)),
+    # V1 fix: the foredeck fills the first-person frame: heavy grime, scuffs, salt streaks, strong roughness variation
+    "PWCDeck": dict(mottle=(1.2, 0.07), grime=("#7E4024", 0.34), streak=("#A55A3C", 0.26), salt=("#BFAE9F", 0.32),
+                    scuff=("#8A4A30", 0.45), rough_var=0.16, bump=("peel", 0.04, 6)),
+    "HatchSeam": dict(mottle=(4, 0.05), grime=("#2A2018", 0.30), rough_var=0.05),
     "PWCOrangeDark": dict(mottle=(1.5, 0.06), grime=("#6A3A24", 0.30), rough_var=0.10, bump=("peel", 0.03, 8)),
     "DeckGrey": dict(mottle=(2, 0.06), grime=("#3A3C3A", 0.30), salt=("#8C8E8A", 0.12), rough_var=0.08, bump=("peel", 0.04, 8)),
     "RubBlack": dict(mottle=(2, 0.08), grime=("#4A4A46", 0.30), scuff=("#55585A", 0.35), rough_var=0.10, bump=("grain", 0.12, 20)),
@@ -45,14 +56,18 @@ R.PROC.update({
                        zgrime=("#5A3A2A", 0.5, 1.05, 1.25), rough_var=0.10, bump=("peel", 0.04, 6)),
     "SledHull": dict(mottle=(1.5, 0.08), grime=("#2E3236", 0.35), scuff=("#5A5E62", 0.30), rough_var=0.10, bump=("peel", 0.05, 8)),
     "HoseBlack": dict(mottle=(4, 0.08), grime=("#3E3C38", 0.25), rough_var=0.08, bump=("grain", 0.12, 80)),
-    "GripRubber": dict(mottle=(5, 0.06), grime=("#3E3C38", 0.20), rough_var=0.06, bump=("diamond", 0.6, 9)),
+    "GripRubber": dict(mottle=(5, 0.08), grime=("#4A4744", 0.30), salt=("#77756F", 0.22), scuff=("#55524E", 0.40),
+                       rough_var=0.14, bump=("diamond", 0.6, 9)),   # V1 fix: worn grips (palm wear, salt, grime)
     "HandsetGrey": dict(mottle=(4, 0.04), grime=("#2E3236", 0.20), rough_var=0.06),
 })
 
 NOSE, TRANSOM = -5.05, 5.05
 ZF = 1.5                                   # footwell floor
 SLED_Y0, SLED_Y1, SLED_Z0, SLED_Z1, SLED_HX = 5.35, 9.75, 1.0, 1.36, 1.62
-EYE = Vector((0.0, 1.0, 6.2))              # greybox DriverSeat (0, 1.1, 1.4) + EyePoint (0, 4.0, -0.4)
+# V1 fix round: seated rider eye (was 6.2 high / standing: the bars fell out of the bottom of the FOV 40 frame);
+# the first-person camera looks EYE_PITCH below level so bars, display and kill cord sit in the lower-middle
+EYE = Vector((0.0, 0.9, 5.2))
+EYE_PITCH = -30.0
 BAR_Y, BAR_Z = -1.2, 3.32
 DISPLAY_C = Vector((0.0, -1.66, 3.3))
 DISPLAY_N = (EYE - DISPLAY_C).normalized()
@@ -75,7 +90,7 @@ def _u(y):
 def half_beam(y):
     u = _u(y)
     a = min(u / 0.55, 1.0)
-    b = 1.86 * math.sqrt(max(0.0, 1 - (1 - a) ** 2.2))
+    b = 1.86 * max(0.0, 1 - (1 - a) ** 2.0) ** 0.65   # V1 fix: finer bow entry (was a round sqrt entry)
     return max(b - 0.14 * max(0.0, (u - 0.62) / 0.38) ** 2, 0.06)
 
 
@@ -111,8 +126,8 @@ def profile(y):
     zr = max(zr, z3 + 0.12)
     x10, x11 = b - min(0.2, 0.1 * b), b - min(0.28, 0.15 * b)
     f = footwell(y)
-    pts = [(0.0, zk), (0.42 * b, zk + 0.42 * b * t), (0.8 * b, zk + 0.8 * b * t), (0.87 * b, z3),
-           (0.94 * b, z3 + 0.3 * (zr - z3)), (b, zr), (b + 0.05, zr + 0.06), (b + 0.05, zr + 0.14), (b, zr + 0.2),
+    pts = [(0.0, zk), (0.42 * b, zk + 0.42 * b * t), (0.8 * b, zk + 0.8 * b * t), (0.9 * b, z3),   # V1 fix: hard chine
+           (0.92 * b, z3 + 0.22 * (zr - z3)), (b, zr), (b + 0.08, zr + 0.05), (b + 0.08, zr + 0.15), (b, zr + 0.2),
            (b - 0.03, zg), (x10, zg + 0.05)]
     hood11 = top_z(x11, y)
     pts.append((x11, hood11 + (ZF - hood11) * f))
@@ -140,12 +155,12 @@ def _seg_mat(k, y):
     if k in (5, 6, 7):
         return "RubBlack"
     if k == 8:
-        return "Reflective" if -0.8 < y < 4.7 else "PWCOrange"
+        return "Reflective" if (0.6 < y < 1.7 or 3.0 < y < 4.2) else "PWCOrange"   # short SOLAS tape blocks
     if k == 9:
         return "PWCOrange"
     if k == 10:
         return "DeckGrey" if f > 0.5 else "PWCOrange"
-    return "NonSlip" if f > 0.5 else "PWCOrange"
+    return "NonSlip" if f > 0.5 else "PWCDeck"
 
 
 def stations(hi):
@@ -375,7 +390,82 @@ def fittings(g):
         b = half_beam(4.3)
         R.box(g, (sx * (b * 0.9), 4.3, 0.78), (0.12, 0.9, 0.18), M(g, "HullCharcoal"),
               rot=Matrix.Rotation(sx * math.radians(-28), 3, "Y"))
+    # V1 fix: stainless mooring cleats on the aft gunwales and a bow cleat on the foredeck centreline
+    for c, yaw in [((sx * (half_beam(4.55) - 0.16), 4.55, gunwale_z(4.55) + 0.05), 0.0) for sx in (1, -1)] + \
+            [((0.0, -4.35, top_z(0.0, -4.35) - 0.005), 0.0)]:
+        cleat(g, Vector(c))
     # base kill-cord lanyard (coiled) is part of base_bars
+
+
+def cleat(g, c):
+    R.box(g, tuple(c + Vector((0, 0, 0.02))), (0.08, 0.16, 0.04), M(g, "Stainless"))
+    for dy in (-0.05, 0.05):
+        R.box(g, tuple(c + Vector((0, dy, 0.06))), (0.045, 0.045, 0.06), M(g, "Stainless"))
+    R.box(g, tuple(c + Vector((0, 0, 0.1))), (0.055, 0.36, 0.035), M(g, "Stainless"), bev=0.01 if g.hi else None)
+    bolts(g, [tuple(c + Vector((0, dy, 0.04))) for dy in (-0.11, 0.11)], (0, 0, 1))
+
+
+def _deck(x, y, h=0.0):
+    return Vector((x, y, top_z(x, y) + h))
+
+
+def _deck_n(x, y, e=0.01):
+    dx = (top_z(x + e, y) - top_z(x - e, y)) / (2 * e)
+    dy = (top_z(x, y + e) - top_z(x, y - e)) / (2 * e)
+    return Vector((-dx, -dy, 1.0)).normalized()
+
+
+SCREW = [(0.018, 0.0), (0.018, 0.008), (0.012, 0.013), (0.0, 0.014)]
+HATCH = (-4.15, -2.55, 0.6)     # y0, y1, half width as a fraction of the beam
+
+
+def foredeck(g):
+    """V1 fix (HP only, baked into the Hull set): the foredeck the rider sees: a moulded hatch seam with fasteners and
+    a textured non-slip pad on the hatch lid."""
+    if not g.hi:
+        return
+    y0, y1, fw = HATCH
+    n = 28
+    side = [(fw * half_beam(y0 + (y1 - y0) * i / n), y0 + (y1 - y0) * i / n) for i in range(n + 1)]
+    loop = side + [(-x, y) for x, y in reversed(side)]          # port side bow -> aft, starboard aft -> bow
+    m = len(loop)
+    faces, outer = [], []
+    for i in range(m):
+        x, y = loop[i]
+        xa, ya = loop[(i + 1) % m]
+        xb, yb = loop[i - 1]
+        t = Vector((xa - xb, ya - yb, 0)).normalized()
+        o = Vector((t.y, -t.x, 0))                               # outward in plan (loop runs clockwise from above)
+        if o.x * x < 0 and abs(x) > 0.05:
+            o = -o
+        outer.append((o, x, y))
+    vin = [g.bm.verts.new(_deck(x - o.x * 0.018, y - o.y * 0.018, 0.006)) for o, x, y in outer]
+    vout = [g.bm.verts.new(_deck(x + o.x * 0.018, y + o.y * 0.018, 0.006)) for o, x, y in outer]
+    for i in range(m):
+        f = g.face((vin[i], vout[i], vout[(i + 1) % m], vin[(i + 1) % m]), "HatchSeam")
+        if f:
+            faces.append(f)
+    g.orient(faces, lambda c: Vector((0, 0, 1)))
+    # fasteners just outside the seam, about every 0.3 studs
+    for i in range(0, m, 3):
+        o, x, y = outer[i]
+        px, py = x + o.x * 0.07, y + o.y * 0.07
+        R.lathe(g, _deck(px, py, 0.0), tuple(_deck_n(px, py)), SCREW, 8, "Bolt")
+    # non-slip pad on the lid
+    nu, nv = 18, 10
+    py0, py1 = y0 + 0.25, y1 - 0.25
+    grid = []
+    for i in range(nu + 1):
+        yy = py0 + (py1 - py0) * i / nu
+        w = fw * half_beam(yy) - 0.16
+        grid.append([g.bm.verts.new(_deck(-w + 2 * w * j / nv, yy, 0.008)) for j in range(nv + 1)])
+    pad = []
+    for i in range(nu):
+        for j in range(nv):
+            f = g.face((grid[i][j], grid[i][j + 1], grid[i + 1][j + 1], grid[i + 1][j]), "NonSlip")
+            if f:
+                pad.append(f)
+    g.orient(pad, lambda c: Vector((0, 0, 1)))
 
 
 # =========================================================================== bars (base) and the close-up set
@@ -385,6 +475,17 @@ def pod(g, hi_detail):
     R.loft(g, [(0, -1.38, zb, 0.52, 0.42), (0, -1.38, 3.05, 0.5, 0.42), (0, -1.36, 3.22, 0.46, 0.38),
                (0, -1.34, 3.27, 0.36, 0.3), (0, -1.33, 3.285, 0.2, 0.18)], seg, M(g, "BlackPlastic"), cap0=False, p=3.0,
            matfn=(lambda i, j: "PWCOrangeDark" if i == 0 else "BlackPlastic") if g.hi else None)
+    if hi_detail and g.hi:   # V1 fix: lid hinge seam, hinge barrel and screws on the console tub
+        R.loft(g, [(0, -1.36, 3.19, 0.472, 0.392), (0, -1.36, 3.205, 0.47, 0.39)], seg, "HatchSeam", cap0=False,
+               cap1=False, p=3.0)
+        R.lathe(g, (0.22, -0.962, 3.212), (-1, 0, 0), [(0.0, 0.0), (0.016, 0.0), (0.016, 0.44), (0.0, 0.44)], 10,
+                "Aluminium")
+        for x in (-0.3, -0.12, 0.12, 0.3):
+            y = -1.37 + 0.404 * max(0.0, 1 - abs(x / 0.484) ** 3) ** (1 / 3)
+            R.lathe(g, (x, y, 3.12), (0, 1, 0), SCREW, 8, "Bolt")
+        for sx in (1, -1):
+            for y in (-1.6, -1.15):
+                R.lathe(g, (sx * 0.487, y, 3.1), (sx, 0, 0), SCREW, 8, "Bolt")
 
 
 def bar(g, hi_detail):
@@ -411,6 +512,11 @@ def bar(g, hi_detail):
                 matfn=(lambda i, j, n=n: "BlackPlastic" if i in (0, 1, n + 1, n + 2) else "GripRubber") if g.hi else None)
 
 
+MIRROR_Z = top_z(0.92, -2.1) + 0.42
+# V1 fix: dark glossy (non-metal) mirror glass with a subtle sky gradient baked in, instead of a white metal mirror
+R.PROC["MirrorGlass"] = dict(mottle=(3, 0.02), zgrad=("#5A6874", MIRROR_Z - 0.09, MIRROR_Z + 0.11), rough_var=0.02)
+
+
 def mirrors(g, hi_detail):
     for sx in (1, -1):
         base = Vector((sx * 0.92, -2.1, top_z(0.92, -2.1)))
@@ -420,7 +526,12 @@ def mirrors(g, hi_detail):
                0.03, M(g, "BlackPlastic"), 10 if hi_detail else 6, fillet=0.08, fseg=2)
         rot = Matrix.Rotation(sx * math.radians(-12), 3, "Z")
         R.box(g, tuple(head), (0.46, 0.1, 0.24), M(g, "BlackPlastic"), rot=rot, bev=0.04)
-        R.box(g, tuple(head + rot @ Vector((0, 0.052, 0))), (0.40, 0.006, 0.19), M(g, "Mirror"), rot=rot, bev=0.0)
+        R.box(g, tuple(head + rot @ Vector((0, 0.052, 0))), (0.40, 0.006, 0.19), M(g, "MirrorGlass"), rot=rot, bev=0.0)
+        if hi_detail and g.hi:   # V1 fix: rubber bezel round the dark glass and a visible fastener
+            for c, sz in (((0.21, 0, 0), (0.024, 0.014, 0.214)), ((-0.21, 0, 0), (0.024, 0.014, 0.214)),
+                          ((0, 0, 0.104), (0.444, 0.014, 0.024)), ((0, 0, -0.104), (0.444, 0.014, 0.024))):
+                R.box(g, tuple(head + rot @ Vector((c[0], 0.056, c[2]))), sz, "Rubber", rot=rot)
+            R.lathe(g, tuple(head + rot @ Vector((0, 0.062, -0.104))), tuple(rot @ Vector((0, 1, 0))), SCREW, 8, "Bolt")
         bolts(g, [tuple(base + Vector((dx, dy, 0.07))) for dx in (-0.05, 0.05) for dy in (-0.08, 0.08)] if hi_detail else [],
               (0, 0, 1))
 

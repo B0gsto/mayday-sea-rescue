@@ -204,8 +204,10 @@ class Part:
         """A thin sheet seen from both sides (curtain, chart sheet edge): the face and its reverse."""
         self.prim += 1
         pts = [Vector(p) for p in pts]
+        n = newell(pts).normalized()
         self.face(pts, mode)
-        self.face(list(reversed(pts)), mode_back or mode)
+        self.prim += 1          # own shell: the back face must not weld onto the front one
+        self.face([p - n * 0.002 for p in reversed(pts)], mode_back or mode)
 
     # ------------------------------------------------------------ output
     def bbox(self):

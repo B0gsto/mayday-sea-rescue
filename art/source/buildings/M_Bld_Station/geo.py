@@ -5,6 +5,8 @@ v = n x u, up the wall / up the roof slope, so slate courses and lettering never
   ("tile", metres)                       world-scale tiling (MaterialVariant-style sets, the B02 library, own tiling sets)
   ("trim", v0, v1, metres)               a trim-sheet strip: u along the face's long side (tiling), v across inside [v0, v1]
   ("rect", u0, v0, u1, v1, w_m, h_m)     an atlas rect: the face anchored at its own min, w_m x h_m fills the rect
+  ("fn", f)                              explicit: f(Vector world point, metres) -> (u, v), e.g. one rect over many faces
+LEVEL may also be a tuple of LOD indices (e.g. (2,) = LOD2 only, (0, 1) = LOD0 and LOD1 only).
 """
 import math
 
@@ -54,15 +56,18 @@ class Part:
         self.smooth_angle = smooth_angle
         self.prim = 0
 
-    def tris(self):
-        return sum(len(f[0]) - 2 for f in self.faces)
+    def tris(self, lod=None):
+        return sum(len(f[0]) - 2 for f in self.faces if lod is None or _keep(f[2], lod))
 
     # ------------------------------------------------------------ faces
-    def face(self, pts, mode, centre=None):
+    def face(self, pts, mode, centre=None, outward=None):
         pts = [Vector(p) for p in pts]
         n = newell(pts)
         if n.length < 1e-10:
             return
+        if outward is not None and n.dot(Vector(outward)) < 0:
+            pts.reverse()
+            n = -n
         if centre is not None:
             c = sum(pts, Vector()) / len(pts)
             if n.dot(c - Vector(centre)) < 0:
@@ -72,7 +77,9 @@ class Part:
         a = [p.dot(u) for p in pts]
         b = [p.dot(v) for p in pts]
         kind = mode[0]
-        if kind == "tile":
+        if kind == "fn":
+            uvs = [tuple(mode[1](p)) for p in pts]
+        elif kind == "tile":
             s = mode[1]
             uvs = [(x / s, y / s) for x, y in zip(a, b)]
         elif kind == "trim":
@@ -138,6 +145,55 @@ class Part:
             for p in (p0, p1):
                 self.face([p + q for q in ring], mode, centre=c)
 
+    def extrude(self, profile, axis, a0, a1, mode, caps=True, cap_mode=None):
+        """Extrude any simple 2D profile (convex or not, either winding) along axis 'x' | 'y' | 'z' from a0 to a1.
+        mode: a UV mode, a list of modes (one per profile edge i -> i+1) or a callable(i) -> mode. Faces are oriented
+        by the edge's outward normal, so concave profiles (sawtooth, channels, gutters) come out right."""
+        self.prim += 1
+
+        def P(s, t, a):
+            return {"x": (a, s, t), "y": (s, a, t), "z": (s, t, a)}[axis]
+        prof = [tuple(p) for p in profile]
+        sg = 1.0 if area2d(prof) > 0 else -1.0
+        n = len(prof)
+        for i in range(n):
+            p, q = prof[i], prof[(i + 1) % n]
+            ds, dt = q[0] - p[0], q[1] - p[1]
+            if abs(ds) + abs(dt) < 1e-9:
+                continue
+            m = mode(i) if callable(mode) else (mode[i] if isinstance(mode, list) else mode)
+            self.face([P(p[0], p[1], a0), P(q[0], q[1], a0), P(q[0], q[1], a1), P(p[0], p[1], a1)], m,
+                      outward=P(dt * sg, -ds * sg, 0.0))
+        if caps:
+            for a, sa in ((a0, -1.0 if a1 > a0 else 1.0), (a1, 1.0 if a1 > a0 else -1.0)):
+                self.face([P(p[0], p[1], a) for p in prof], cap_mode or (mode if isinstance(mode, tuple) else ("tile", 1.0)),
+                          outward=P(0.0, 0.0, sa))
+
+    def pierced(self, poly, axis, a0, a1, holes, mode, eps=1e-4):
+        """A wall slab: convex profile `poly` (in the two non-axis coords, second = up) extruded along `axis` from a0 to
+        a1, with rectangular holes (h0, h1, z0, z1) through it, split into convex prisms (vertical strips)."""
+        hmin, hmax = min(p[0] for p in poly), max(p[0] for p in poly)
+        hs = sorted(set([hmin, hmax] + [min(max(h, hmin), hmax) for hole in holes for h in hole[:2]]))
+        for ha, hb in zip(hs, hs[1:]):
+            if hb - ha < eps:
+                continue
+            hm = (ha + hb) / 2
+            cut = sorted((hole[2], hole[3]) for hole in holes if hole[0] < hm < hole[1])
+            bands, z = [], -1e9
+            for z0, z1 in cut:
+                bands.append((z, z0))
+                z = max(z, z1)
+            bands.append((z, 1e9))
+            for za, zb in bands:
+                if zb - za < eps:
+                    continue
+                pc = poly
+                for k, val, ge in ((0, ha, True), (0, hb, False), (1, za, True), (1, zb, False)):
+                    pc = clip2d(pc, k, val, ge)
+                pc = dedupe2d(pc)
+                if len(pc) >= 3 and abs(area2d(pc)) > 1e-6:
+                    self.prism(pc, axis, a0, a1, mode)
+
     # ------------------------------------------------------------ output
     def bbox(self):
         pts = [p for f in self.faces for p in f[0]]
@@ -150,7 +206,7 @@ class Part:
         uvl = bm.loops.layers.uv.new("UVMap")
         groups = {}
         for pts, uvs, lv, pid in self.faces:
-            if lv <= lod:
+            if not _keep(lv, lod):
                 continue
             vs = [bm.verts.new(((p.x + offset.x) * STUDS, (p.y + offset.y) * STUDS, (p.z + offset.z) * STUDS)) for p in pts]
             groups.setdefault(pid, []).extend(vs)
@@ -174,6 +230,39 @@ class Part:
         obj = bpy.data.objects.new(obj_name, mesh)
         bpy.context.scene.collection.objects.link(obj)
         return obj
+
+
+def _keep(lv, lod):
+    return (lod in lv) if isinstance(lv, (tuple, list, set, frozenset)) else lv > lod
+
+
+def area2d(poly):
+    return 0.5 * sum(p[0] * q[1] - q[0] * p[1] for p, q in zip(poly, poly[1:] + poly[:1]))
+
+
+def clip2d(poly, k, val, keep_ge):
+    out = []
+    n = len(poly)
+    for i in range(n):
+        p, q = poly[i], poly[(i + 1) % n]
+        pin = p[k] >= val if keep_ge else p[k] <= val
+        qin = q[k] >= val if keep_ge else q[k] <= val
+        if pin:
+            out.append(p)
+        if pin != qin:
+            t = (val - p[k]) / (q[k] - p[k])
+            out.append((p[0] + t * (q[0] - p[0]), p[1] + t * (q[1] - p[1])))
+    return out
+
+
+def dedupe2d(poly, eps=1e-6):
+    out = []
+    for p in poly:
+        if not out or abs(p[0] - out[-1][0]) + abs(p[1] - out[-1][1]) > eps:
+            out.append(p)
+    while len(out) > 1 and abs(out[0][0] - out[-1][0]) + abs(out[0][1] - out[-1][1]) <= eps:
+        out.pop()
+    return out
 
 
 def material(name, rgb, rough=0.8, metal=0.0):
@@ -216,3 +305,23 @@ class Wall:
     def quad(self, part, s0, s1, o, t0, t1, mode):
         pts = [self.world(s0, o, t0), self.world(s1, o, t0), self.world(s1, o, t1), self.world(s0, o, t1)]
         part.face(pts, mode, centre=self.world((s0 + s1) / 2, o - 1.0, (t0 + t1) / 2))
+
+    def h(self, s):
+        """World coordinate along the wall (x for walls facing +-Y, y for walls facing +-X) of frame position s."""
+        return (self.a.x if abs(self.n.y) > 0.5 else self.a.y) * s
+
+    def prism(self, part, s0, s1, prof, mode, caps=True, cap_mode=None):
+        """Extrude a profile of (o, t) points along the wall from s0 to s1 (concave profiles allowed)."""
+        p0, p1 = self.world(s0, 0, 0), self.world(s1, 0, 0)
+        if abs(self.n.y) > 0.5:
+            axis, a0, a1, w = "x", min(p0.x, p1.x), max(p0.x, p1.x), [(self.f + self.n.y * o, t) for o, t in prof]
+        else:
+            axis, a0, a1, w = "y", min(p0.y, p1.y), max(p0.y, p1.y), [(self.f + self.n.x * o, t) for o, t in prof]
+        part.extrude(w, axis, a0, a1, mode, caps, cap_mode)
+
+    def plate(self, part, poly, o0, o1, mode):
+        """Extrude a (s, t) outline out of the wall from o0 to o1 (keystones, brackets)."""
+        nn = self.n.y if abs(self.n.y) > 0.5 else self.n.x
+        axis = "y" if abs(self.n.y) > 0.5 else "x"
+        part.extrude([(self.h(s), t) for s, t in poly], axis, min(self.f + nn * o0, self.f + nn * o1),
+                     max(self.f + nn * o0, self.f + nn * o1), mode)

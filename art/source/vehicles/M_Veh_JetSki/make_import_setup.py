@@ -103,9 +103,13 @@ shots = []
 for pre_, cam in views.items():
     for wet in (False, True):
         shots.append(shot("M_Veh_JetSki_%s_%s" % (pre_, "wet" if wet else "dry"), cam, C, pre_, wet,
-                          night=(pre_ == "Night"), settle=3.0 if not shots else 2.0))
+                          night=(pre_ == "Night"), settle=4.0 if len(shots) < 2 else 2.0))   # first wet swap needs time to fetch
 eye, disp = fo["eye"], fo["display"]
-ahead = [disp[0], disp[1] - 1.6, disp[2] + 0.25]       # a little ahead of the display: bars, hood, mirrors in frame
+# V1 fix round: look along the rider's view (forward -Y, EYE_PITCH below level, pwc.py) so the bars, display and kill
+# cord sit in the lower-middle of the frame; the game's first-person camera should use the same pitch at ATT_EyePoint
+import math  # noqa: E402
+pitch = math.radians(fo.get("eye_pitch_deg", -30.0))
+ahead = [eye[0], eye[1] - 4.0 * math.cos(pitch), eye[2] + 4.0 * math.sin(pitch)]
 for wet in (False, True):
     shots.append(shot("M_Veh_JetSki_CloseUp_FirstPerson_%s" % ("wet" if wet else "dry"), rb(eye), rb(ahead), "Overcast", wet))
 shots.append(shot("M_Veh_JetSki_Closeup_sled", [-4.5, FLOOR + 4.8, 11.0], [0, FLOOR + 1.2, 5.2], "Overcast", False))

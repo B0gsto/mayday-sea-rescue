@@ -17,6 +17,7 @@ Noise is band-limited to at most 8 cycles per stud at the set's texel density (V
 albedo kept 32..236 sRGB (metal 184..244), saturation clamped to 0.43.
 """
 import os
+import sys
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -24,28 +25,10 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 OUT = G + "assets/textures/M_Bld_Chandlery_Int"
 STEM = "T_ChandleryInt"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 rng = np.random.default_rng(2207)
 
-JOINERY = {"Beam": (0.0, 0.25), "Plank": (0.25, 0.45), "Panel": (0.45, 0.75), "Rail": (0.75, 0.875), "Painted": (0.875, 1.0)}
-
-DETAILS = {
-    "Brass": (0.0, 0.875, 0.125, 1.0), "EnamelOut": (0.125, 0.875, 0.25, 1.0), "EnamelIn": (0.25, 0.875, 0.375, 1.0),
-    "Iron": (0.375, 0.875, 0.5, 1.0), "Glow": (0.5, 0.875, 0.625, 1.0), "Flex": (0.625, 0.875, 0.6875, 1.0),
-    "Rope": (0.6875, 0.875, 0.75, 1.0), "Mirror": (0.75, 0.875, 0.875, 1.0), "Hook": (0.875, 0.875, 1.0, 1.0),
-    "CounterTop": (0.0, 0.75, 1.0, 0.875),
-    "Chart": (0.0, 0.5, 0.5, 0.75),
-    "Card0": (0.5, 0.5, 0.625, 0.75), "Card1": (0.625, 0.5, 0.75, 0.75), "Card2": (0.75, 0.5, 0.875, 0.75),
-    "Card3": (0.875, 0.5, 1.0, 0.75),
-    "Logbook": (0.5, 0.375, 0.75, 0.5), "TillKeys": (0.75, 0.375, 0.875, 0.5), "TillSign": (0.875, 0.375, 1.0, 0.5),
-    "Slatwall": (0.5, 0.25, 0.75, 0.375),
-    "Pack0": (0.75, 0.25, 0.8125, 0.375), "Pack1": (0.8125, 0.25, 0.875, 0.375), "Pack2": (0.875, 0.25, 0.9375, 0.375),
-    "Pack3": (0.9375, 0.25, 1.0, 0.375),
-    "Curtain": (0.0, 0.0, 0.25, 0.25), "Mat": (0.25, 0.0, 0.5, 0.25), "Paper": (0.5, 0.125, 0.625, 0.25),
-    "Cloth": (0.625, 0.125, 0.75, 0.25), "Rubber": (0.75, 0.125, 0.875, 0.25),
-}
-for i in range(16):   # drawer label fronts, 4 x 4 grid in (0, 0.25) .. (0.5, 0.5)
-    c, r = i % 4, i // 4
-    DETAILS["Drawer%d" % i] = (c * 0.125, 0.25 + r * 0.0625, (c + 1) * 0.125, 0.25 + (r + 1) * 0.0625)
+from atlas import DETAILS, JOINERY  # noqa: E402  (shared with build.py)
 
 LABELS = ["SHACKLES 6", "SHACKLES 8", "SNAP HOOKS", "THIMBLES", "CLEVIS PINS", "SPLIT RINGS", "SWIVELS", "EYE BOLTS",
           "PAD EYES", "BULLDOG GRIPS", "SAIL NEEDLES", "WHIPPING TWINE", "HOSE CLIPS", "SPLIT PINS", "CABLE TIES", "FUSES"]

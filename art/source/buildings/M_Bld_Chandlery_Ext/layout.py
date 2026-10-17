@@ -93,3 +93,5 @@ SHOPFRONT_PILASTERS = [(-5.0, -4.6), (8.0, 8.4)]          # x ranges, projecting
 ROOF_SLOPE = (RIDGE - EAVES) / (Y1)                       # rise per metre run (underside plane through the wall plate)
 SKYLIGHT_YZ = ((4.286, 7.0), (3.422, 7.504))               # roof hole on the back slope, (y, z underside) low and high edge
 ATT_EXT_EXTRA = {"ATT_DoorHinge": DOOR_HINGE}
+ATT_EXT_EXTRA.update({"ATT_Lamp_%02d" % (i + 1): (x, Y0 - 1.0, 3.93) for i, x in enumerate((-3.2, 1.7, 6.7))})  # gooseneck lamp shades over the fascia (point lights)
+A_BOARD = (-3.62, -2.98, -6.95)          # A-frame chalk board on the quay: x0, x1, y centre (feet +-0.25 m)

@@ -225,6 +225,21 @@ def _proc_sockets(nt, name, hexc, rough, coord):
     L(dark.outputs[0], _ci(mott, 0))
     L(lite.outputs[0], _ci(mott, 1))
     col = _co(mott)
+    if "zgrad" in spec:   # V1 fix (mirror glass): vertical sky gradient, base colour at z0 -> top colour at z1 (object z)
+        cc, z0, z1 = spec["zgrad"]
+        sep = N("ShaderNodeSeparateXYZ")
+        L(coord, sep.inputs[0])
+        mr = N("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = z0, z1
+        L(sep.outputs["Z"], mr.inputs["Value"])
+        gcol = N("ShaderNodeRGB")
+        gcol.outputs[0].default_value = _hex_srgb(cc) + (1.0,)
+        mx = N("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        L(mr.outputs[0], mx.inputs["Factor"])
+        L(col, _ci(mx, 0))
+        L(gcol.outputs[0], _ci(mx, 1))
+        col = _co(mx)
     for key, scale, rng in (("grime", None, (0.52, 0.72)), ("streak", (9.0, 9.0, 0.35), (0.55, 0.75))):
         if key not in spec:
             continue
@@ -280,8 +295,10 @@ def _proc_sockets(nt, name, hexc, rough, coord):
         L(gcol.outputs[0], _ci(mx, 1))
         col = _co(mx)
         rough_mods.append((mr.outputs[0], 0.2 if key == "salt" else 0.12))
-    if "zgrime" in spec:   # dark grime band from z0 (full) fading to z1 (none): waterline scum on the tube undersides
-        cc, amt, z0, z1 = spec["zgrime"]
+    for zkey in ("zgrime", "zsalt"):   # zgrime: dark band from z0 (full) fading to z1 (none), waterline scum; zsalt: V1 fix, pale salt line
+        if zkey not in spec:
+            continue
+        cc, amt, z0, z1 = spec[zkey]
         sep = N("ShaderNodeSeparateXYZ")
         L(coord, sep.inputs[0])
         zn = N("ShaderNodeTexNoise")
@@ -305,7 +322,7 @@ def _proc_sockets(nt, name, hexc, rough, coord):
         L(col, _ci(mx, 0))
         L(gcol.outputs[0], _ci(mx, 1))
         col = _co(mx)
-        rough_mods.append((mr.outputs[0], 0.12))
+        rough_mods.append((mr.outputs[0], 0.12 if zkey == "zgrime" else 0.18))
     rv = spec.get("rough_var", 0.0)
     rn = N("ShaderNodeTexNoise")
     rn.inputs["Scale"].default_value = 2.5
