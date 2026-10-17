@@ -1,0 +1,453 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_ALB.png"
+  },
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_NOR.png"
+  },
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_RGH.png"
+  },
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_MET.png"
+  },
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Details",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Details_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_Chandlery_Details_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Details_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Chandlery_Details_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Details_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Details_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Details_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.1% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 40, 99th 168, range 20 to 240 over 98% of pixels"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 192, 99th 202, range 180 to 250 over 2% of pixels"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.39, ceiling 0.45"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 112, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 182, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.36, ceiling 0.45"
+  },
+  {
+   "subject": "T_Chandlery_Details_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_Chandlery_Details_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.17)"
+  },
+  {
+   "subject": "T_Chandlery_Details_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 51, dry 74"
+  },
+  {
+   "subject": "T_Chandlery_Details_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 51, dry 136"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_ALB.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_NOR.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_RGH.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_MET.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Chandlery_Slate_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_Chandlery_Slate_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Slate_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Chandlery_Slate_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Slate_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Chandlery_Slate_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Chandlery_Slate_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.0% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 52, 99th 97, range 20 to 240 over 100% of pixels"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.25, ceiling 0.45"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 63, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.25, ceiling 0.45"
+  },
+  {
+   "subject": "T_Chandlery_Slate_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.53"
+  },
+  {
+   "subject": "T_Chandlery_Slate_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.36): check the bake settings"
+  },
+  {
+   "subject": "T_Chandlery_Slate_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 50, dry 77"
+  },
+  {
+   "subject": "T_Chandlery_Slate_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 51, dry 159"
+  }
+ ]
+}

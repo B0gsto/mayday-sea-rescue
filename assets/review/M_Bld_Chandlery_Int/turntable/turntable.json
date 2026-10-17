@@ -1,0 +1,234 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_Chandlery_Int/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_Chandlery_Int_Floor_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Lining_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Structure_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Joinery_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Trim_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Details_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Glow_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Int_Hardware_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_ChandleryInt_Pine",
+  "T_ChandleryInt_Lining",
+  "T_ChandleryInt_Joinery",
+  "T_ChandleryInt_Details",
+  "T_BldTrim_Sheet"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.191,
+    0.219,
+    0.963,
+    0.685
+   ],
+   "mannequin": [
+    0.064,
+    0.353,
+    0.09,
+    0.415
+   ],
+   "fill": 0.772
+  },
+  "Side": {
+   "asset": [
+    0.19,
+    0.152,
+    0.963,
+    0.75
+   ],
+   "mannequin": [
+    0.186,
+    0.293,
+    0.216,
+    0.378
+   ],
+   "fill": 0.773
+  },
+  "Rear3Q": {
+   "asset": [
+    0.192,
+    0.219,
+    0.963,
+    0.685
+   ],
+   "mannequin": [
+    0.064,
+    0.353,
+    0.09,
+    0.415
+   ],
+   "fill": 0.771
+  },
+  "High": {
+   "asset": [
+    0.173,
+    0.111,
+    0.963,
+    0.806
+   ],
+   "mannequin": [
+    0.089,
+    0.388,
+    0.12,
+    0.433
+   ],
+   "fill": 0.79
+  }
+ },
+ "closeups": [
+  {
+   "name": "counter_till_chart",
+   "target": [
+    13.200000000000001,
+    2.7,
+    3.3000000000000003
+   ],
+   "dist": 10.0,
+   "az": -15.0,
+   "el": 28.0,
+   "file": "closeup_counter_till_chart.png"
+  },
+  {
+   "name": "loft_stairs",
+   "target": [
+    26.549999999999997,
+    4.800000000000001,
+    5.699999999999999
+   ],
+   "dist": 16.0,
+   "az": -70.0,
+   "el": 12.0,
+   "file": "closeup_loft_stairs.png"
+  },
+  {
+   "name": "hardware_wall_drawers",
+   "target": [
+    27.599999999999998,
+    -9.899999999999999,
+    4.199999999999999
+   ],
+   "dist": 11.0,
+   "az": -95.0,
+   "el": 6.0,
+   "file": "closeup_hardware_wall_drawers.png"
+  },
+  {
+   "name": "fitting_room_mirror",
+   "target": [
+    -27.599999999999998,
+    0.8999999999999999,
+    13.5
+   ],
+   "dist": 9.0,
+   "az": 90.0,
+   "el": 3.0,
+   "file": "closeup_fitting_room_mirror.png"
+  },
+  {
+   "name": "pendant_lamp",
+   "target": [
+    -7.199999999999999,
+    -8.7,
+    6.75
+   ],
+   "dist": 3.5,
+   "az": 25.0,
+   "el": -12.0,
+   "file": "closeup_pendant_lamp.png"
+  },
+  {
+   "name": "floorboard_wear",
+   "target": [
+    -12.0,
+    -10.8,
+    0.44999999999999996
+   ],
+   "dist": 6.0,
+   "az": 30.0,
+   "el": 48.0,
+   "file": "closeup_floorboard_wear.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.771,
+ "in_frame": true,
+ "dims_m": [
+  18.9,
+  11.45,
+  null
+ ],
+ "validation_ok": true,
+ "seconds": 6.0
+}

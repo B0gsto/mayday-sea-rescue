@@ -1,0 +1,240 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_Chandlery_Ext/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_Chandlery_Ext_Stone_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Granite_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Roof_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Trim_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Details_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Shopfront_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Glass_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_Door_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_Chandlery_Ext_DoorGlass_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Chandlery_Slate",
+  "T_Chandlery_Details",
+  "T_BldTrim_Sheet",
+  "T_Mat_QuayStone",
+  "T_Mat_Granite"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.18,
+    0.192,
+    0.963,
+    0.695
+   ],
+   "mannequin": [
+    0.059,
+    0.338,
+    0.083,
+    0.395
+   ],
+   "fill": 0.783
+  },
+  "Side": {
+   "asset": [
+    0.186,
+    0.16,
+    0.963,
+    0.753
+   ],
+   "mannequin": [
+    0.177,
+    0.289,
+    0.203,
+    0.363
+   ],
+   "fill": 0.777
+  },
+  "Rear3Q": {
+   "asset": [
+    0.178,
+    0.19,
+    0.963,
+    0.696
+   ],
+   "mannequin": [
+    0.055,
+    0.338,
+    0.079,
+    0.395
+   ],
+   "fill": 0.785
+  },
+  "High": {
+   "asset": [
+    0.178,
+    0.112,
+    0.963,
+    0.821
+   ],
+   "mannequin": [
+    0.097,
+    0.39,
+    0.124,
+    0.43
+   ],
+   "fill": 0.785
+  }
+ },
+ "closeups": [
+  {
+   "name": "shopfront_fascia_bay",
+   "target": [
+    5.1,
+    -19.799999999999997,
+    7.800000000000001
+   ],
+   "dist": 34.0,
+   "az": 12.0,
+   "el": 6.0,
+   "file": "closeup_shopfront_fascia_bay.png"
+  },
+  {
+   "name": "hanging_sign",
+   "target": [
+    -17.4,
+    -19.65,
+    9.0
+   ],
+   "dist": 8.0,
+   "az": 60.0,
+   "el": 8.0,
+   "file": "closeup_hanging_sign.png"
+  },
+  {
+   "name": "door",
+   "target": [
+    -22.200000000000003,
+    -18.0,
+    3.9000000000000004
+   ],
+   "dist": 10.0,
+   "az": -15.0,
+   "el": 4.0,
+   "file": "closeup_door.png"
+  },
+  {
+   "name": "eaves_gutter_downpipe",
+   "target": [
+    27.599999999999998,
+    -18.6,
+    15.899999999999999
+   ],
+   "dist": 8.0,
+   "az": 45.0,
+   "el": 10.0,
+   "file": "closeup_eaves_gutter_downpipe.png"
+  },
+  {
+   "name": "roof_chimney",
+   "target": [
+    -28.799999999999997,
+    0.0,
+    29.700000000000003
+   ],
+   "dist": 18.0,
+   "az": -40.0,
+   "el": 28.0,
+   "file": "closeup_roof_chimney.png"
+  },
+  {
+   "name": "granite_plinth_2m",
+   "target": [
+    -29.099999999999998,
+    -18.0,
+    1.35
+   ],
+   "dist": 6.0,
+   "az": -35.0,
+   "el": 14.0,
+   "file": "closeup_granite_plinth_2m.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.777,
+ "in_frame": true,
+ "dims_m": [
+  20.0,
+  12.0,
+  9.5
+ ],
+ "validation_ok": true,
+ "seconds": 9.9
+}

@@ -1,0 +1,285 @@
+{
+ "ok": false,
+ "rows": [
+  {
+   "subject": "T_ChandleryProps_Atlas",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Atlas_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Atlas_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Atlas_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Atlas_MET.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.4% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 38, 99th 204, range 20 to 240 over 93% of pixels"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 191, 99th 227, range 180 to 250 over 6% of pixels"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_ALB",
+   "check": "saturation",
+   "ok": false,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.81, ceiling 0.45"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_ChandleryProps_Atlas_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.23)"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Rope_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Rope_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Rope_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_ChandleryProps_Rope_MET.png"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB; RGBA needs --alpha (foliage, cards, decals)"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.0% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 44, 99th 192, range 20 to 240 over 100% of pixels"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.44, ceiling 0.45"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_ChandleryProps_Rope_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "OpenGL (curl share 0.02)"
+  }
+ ]
+}

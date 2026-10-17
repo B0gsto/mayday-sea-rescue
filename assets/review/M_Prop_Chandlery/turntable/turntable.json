@@ -1,0 +1,225 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Prop_Chandlery/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Prop_Chandlery_RackWall_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_RackMid_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Gondola_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Mannequins_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Hung_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Corner_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Prop_Chandlery_Rope_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_ChandleryProps_Atlas",
+  "T_ChandleryProps_Rope"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.191,
+    0.304,
+    0.963,
+    0.621
+   ],
+   "mannequin": [
+    0.043,
+    0.409,
+    0.073,
+    0.479
+   ],
+   "fill": 0.772
+  },
+  "Side": {
+   "asset": [
+    0.222,
+    0.287,
+    0.963,
+    0.617
+   ],
+   "mannequin": [
+    0.171,
+    0.384,
+    0.203,
+    0.471
+   ],
+   "fill": 0.741
+  },
+  "Rear3Q": {
+   "asset": [
+    0.18,
+    0.308,
+    0.961,
+    0.63
+   ],
+   "mannequin": [
+    0.037,
+    0.41,
+    0.067,
+    0.479
+   ],
+   "fill": 0.781
+  },
+  "High": {
+   "asset": [
+    0.157,
+    0.146,
+    0.918,
+    0.742
+   ],
+   "mannequin": [
+    0.037,
+    0.425,
+    0.077,
+    0.482
+   ],
+   "fill": 0.761
+  }
+ },
+ "closeups": [
+  {
+   "name": "lifejacket_rack",
+   "target": [
+    -27.299999999999997,
+    -4.800000000000001,
+    4.050000000000001
+   ],
+   "dist": 8.0,
+   "az": 70.0,
+   "el": 5.0,
+   "file": "closeup_lifejacket_rack.png"
+  },
+  {
+   "name": "mannequin_foulweather",
+   "target": [
+    -7.800000000000001,
+    -17.549999999999997,
+    3.0
+   ],
+   "dist": 8.0,
+   "az": 0.0,
+   "el": 5.0,
+   "file": "closeup_mannequin_foulweather.png"
+  },
+  {
+   "name": "gondola_rope_shackles",
+   "target": [
+    -13.799999999999999,
+    -4.5,
+    3.0
+   ],
+   "dist": 7.0,
+   "az": 10.0,
+   "el": 18.0,
+   "file": "closeup_gondola_rope_shackles.png"
+  },
+  {
+   "name": "fenders_beam",
+   "target": [
+    -14.399999999999999,
+    -5.699999999999999,
+    7.5
+   ],
+   "dist": 8.0,
+   "az": 60.0,
+   "el": 5.0,
+   "file": "closeup_fenders_beam.png"
+  },
+  {
+   "name": "dog_basket",
+   "target": [
+    -1.2000000000000002,
+    8.7,
+    1.5
+   ],
+   "dist": 8.0,
+   "az": 20.0,
+   "el": 30.0,
+   "file": "closeup_dog_basket.png"
+  },
+  {
+   "name": "horn_board",
+   "target": [
+    -27.0,
+    -13.799999999999999,
+    4.5
+   ],
+   "dist": 6.0,
+   "az": 90.0,
+   "el": 5.0,
+   "file": "closeup_horn_board.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.741,
+ "in_frame": true,
+ "dims_m": [
+  17.38,
+  11.539,
+  4.905
+ ],
+ "validation_ok": true,
+ "seconds": 8.0
+}

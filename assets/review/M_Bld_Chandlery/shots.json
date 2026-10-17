@@ -1,0 +1,197 @@
+[
+ {
+  "name": "M_Bld_Chandlery_Ext_Clear_dry",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(false, false) local r = _G.LookDev.apply('Clear', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Clear_wet",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(false, false) local r = _G.LookDev.apply('Clear', true) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Overcast_dry",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(false, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Overcast_wet",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(false, false) local r = _G.LookDev.apply('Overcast', true) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Storm_dry",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Storm', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Storm_wet",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Storm', true) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Night_dry",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(true, true) local r = _G.LookDev.apply('Night', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Ext_Night_wet",
+  "cam": [
+   38,
+   47.5,
+   -70
+  ],
+  "look": [
+   1,
+   52,
+   -6
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 47.5, -70}, {1, 52, -6}) local li = _G.ChandLights(true, true) local r = _G.LookDev.apply('Night', true) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Int_Overcast_counter_from_door",
+  "cam": [
+   20,
+   45.6,
+   -12.5
+  ],
+  "look": [
+   -12,
+   44,
+   1
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({20, 45.6, -12.5}, {-12, 44, 1}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Int_Overcast_racks_mannequins",
+  "cam": [
+   -8,
+   46,
+   12
+  ],
+  "look": [
+   16,
+   43.5,
+   -5
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-8, 46, 12}, {16, 43.5, -5}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Int_Overcast_loft_stairs",
+  "cam": [
+   -8,
+   46,
+   -10
+  ],
+  "look": [
+   -26,
+   47,
+   7
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-8, 46, -10}, {-26, 47, 7}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Closeup_sign",
+  "cam": [
+   6,
+   47.5,
+   -33
+  ],
+  "look": [
+   17.4,
+   49,
+   -19.6
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({6, 47.5, -33}, {17.4, 49, -19.6}) local li = _G.ChandLights(false, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ },
+ {
+  "name": "M_Bld_Chandlery_Closeup_counter",
+  "cam": [
+   -12,
+   47.5,
+   -8.5
+  ],
+  "look": [
+   -12,
+   44.5,
+   1.5
+  ],
+  "settle": 2.5,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-12, 47.5, -8.5}, {-12, 44.5, 1.5}) local li = _G.ChandLights(true, false) local r = _G.LookDev.apply('Overcast', false) workspace.CurrentCamera.FieldOfView = 40 return r .. '; ' .. li"
+ }
+]

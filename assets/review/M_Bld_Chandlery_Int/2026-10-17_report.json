@@ -1,0 +1,3085 @@
+{
+ "asset": "M_Bld_Chandlery_Int",
+ "name": "M_Bld_Chandlery_Int",
+ "date": "2026-10-17",
+ "commit": "f385a2a+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD0.fbx",
+   "bytes": 904892,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Chandlery_Int_COL",
+    "M_Bld_Chandlery_Int_Details_LOD0",
+    "M_Bld_Chandlery_Int_Floor_LOD0",
+    "M_Bld_Chandlery_Int_Glow_LOD0",
+    "M_Bld_Chandlery_Int_Hardware_LOD0",
+    "M_Bld_Chandlery_Int_Joinery_LOD0",
+    "M_Bld_Chandlery_Int_Lining_LOD0",
+    "M_Bld_Chandlery_Int_Structure_LOD0",
+    "M_Bld_Chandlery_Int_Trim_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Int_COL.001",
+     "min": [
+      -28.71,
+      -16.71,
+      -0.6
+     ],
+     "max": [
+      28.71,
+      16.71,
+      28.5
+     ],
+     "polygons": 164,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Details_LOD0.001",
+     "min": [
+      -28.26,
+      -16.2758,
+      0.36
+     ],
+     "max": [
+      28.26,
+      16.2758,
+      22.695
+     ],
+     "polygons": 7922,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Floor_LOD0.001",
+     "min": [
+      -28.35,
+      -16.35,
+      0.45
+     ],
+     "max": [
+      28.35,
+      16.35,
+      10.05
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Glow_LOD0.001",
+     "min": [
+      -28.14,
+      -15.3541,
+      5.895
+     ],
+     "max": [
+      28.14,
+      16.14,
+      16.005
+     ],
+     "polygons": 1468,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Hardware_LOD0.001",
+     "min": [
+      26.79,
+      -15.342,
+      0.768
+     ],
+     "max": [
+      28.26,
+      -5.1,
+      7.95
+     ],
+     "polygons": 2394,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Joinery_LOD0.001",
+     "min": [
+      -28.26,
+      -15.54,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      16.77
+     ],
+     "polygons": 794,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Lining_LOD0.001",
+     "min": [
+      -28.29,
+      -18.0,
+      0.42
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.6
+     ],
+     "polygons": 143,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Structure_LOD0.001",
+     "min": [
+      -28.26,
+      -16.29,
+      0.45
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.57
+     ],
+     "polygons": 2154,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Trim_LOD0.001",
+     "min": [
+      -28.26,
+      -17.55,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      16.71
+     ],
+     "polygons": 236,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx",
+   "bytes": 780348,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Chandlery_Int_Details_LOD1",
+    "M_Bld_Chandlery_Int_Floor_LOD1",
+    "M_Bld_Chandlery_Int_Glow_LOD1",
+    "M_Bld_Chandlery_Int_Hardware_LOD1",
+    "M_Bld_Chandlery_Int_Joinery_LOD1",
+    "M_Bld_Chandlery_Int_Lining_LOD1",
+    "M_Bld_Chandlery_Int_Structure_LOD1",
+    "M_Bld_Chandlery_Int_Trim_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Int_Details_LOD1.001",
+     "min": [
+      -28.26,
+      -16.2758,
+      0.36
+     ],
+     "max": [
+      28.26,
+      16.2758,
+      16.542
+     ],
+     "polygons": 5182,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Floor_LOD1.001",
+     "min": [
+      -28.35,
+      -16.35,
+      0.45
+     ],
+     "max": [
+      28.35,
+      16.35,
+      10.05
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Glow_LOD1.001",
+     "min": [
+      -28.14,
+      -15.3541,
+      5.895
+     ],
+     "max": [
+      28.14,
+      16.14,
+      16.005
+     ],
+     "polygons": 1468,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Hardware_LOD1.001",
+     "min": [
+      26.85,
+      -15.342,
+      0.768
+     ],
+     "max": [
+      28.26,
+      -5.1,
+      7.95
+     ],
+     "polygons": 1434,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Joinery_LOD1.001",
+     "min": [
+      -28.26,
+      -15.54,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      16.77
+     ],
+     "polygons": 794,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Lining_LOD1.001",
+     "min": [
+      -28.29,
+      -18.0,
+      0.42
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.6
+     ],
+     "polygons": 143,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Structure_LOD1.001",
+     "min": [
+      -28.26,
+      -16.29,
+      0.45
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.57
+     ],
+     "polygons": 2154,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Trim_LOD1.001",
+     "min": [
+      -28.26,
+      -17.55,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      16.71
+     ],
+     "polygons": 236,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD2.fbx",
+   "bytes": 225900,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Chandlery_Int_Details_LOD2",
+    "M_Bld_Chandlery_Int_Floor_LOD2",
+    "M_Bld_Chandlery_Int_Glow_LOD2",
+    "M_Bld_Chandlery_Int_Hardware_LOD2",
+    "M_Bld_Chandlery_Int_Joinery_LOD2",
+    "M_Bld_Chandlery_Int_Lining_LOD2",
+    "M_Bld_Chandlery_Int_Structure_LOD2",
+    "M_Bld_Chandlery_Int_Trim_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Chandlery_Int_Details_LOD2.001",
+     "min": [
+      -28.155,
+      -4.23,
+      2.559
+     ],
+     "max": [
+      28.02,
+      16.224,
+      16.542
+     ],
+     "polygons": 54,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Floor_LOD2.001",
+     "min": [
+      -28.35,
+      -16.35,
+      0.45
+     ],
+     "max": [
+      28.35,
+      16.35,
+      10.05
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Glow_LOD2.001",
+     "min": [
+      -28.14,
+      -15.3541,
+      5.895
+     ],
+     "max": [
+      28.14,
+      16.14,
+      16.005
+     ],
+     "polygons": 1468,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Hardware_LOD2.001",
+     "min": [
+      28.194,
+      -9.6,
+      1.65
+     ],
+     "max": [
+      28.26,
+      -5.1,
+      7.95
+     ],
+     "polygons": 10,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Joinery_LOD2.001",
+     "min": [
+      -28.26,
+      -15.54,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      16.77
+     ],
+     "polygons": 574,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Lining_LOD2.001",
+     "min": [
+      -28.29,
+      -18.0,
+      0.42
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.6
+     ],
+     "polygons": 143,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Structure_LOD2.001",
+     "min": [
+      -28.26,
+      -16.29,
+      0.45
+     ],
+     "max": [
+      28.29,
+      16.29,
+      27.57
+     ],
+     "polygons": 396,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Chandlery_Int_Trim_LOD2.001",
+     "min": [
+      -28.26,
+      -16.26,
+      0.45
+     ],
+     "max": [
+      28.26,
+      16.26,
+      10.59
+     ],
+     "polygons": 80,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int.attachments.json",
+   "attachments": [
+    "ATT_DoorInside",
+    "ATT_Counter",
+    "ATT_Till",
+    "ATT_Logbook",
+    "ATT_ServiceCards",
+    "ATT_ChartTable",
+    "ATT_StairBottom",
+    "ATT_StairTop",
+    "ATT_Mirror",
+    "ATT_FittingRoom",
+    "ATT_Light_01",
+    "ATT_Light_02",
+    "ATT_Light_03",
+    "ATT_Light_04",
+    "ATT_Light_05",
+    "ATT_Light_06",
+    "ATT_Light_07",
+    "ATT_Light_08",
+    "ATT_Light_09",
+    "ATT_Light_10",
+    "ATT_Light_11",
+    "ATT_Light_12",
+    "ATT_Light_13",
+    "ATT_Light_14",
+    "ATT_Light_15",
+    "ATT_Light_16",
+    "ATT_Light_17",
+    "ATT_Light_18",
+    "ATT_Light_19",
+    "ATT_Light_20",
+    "ATT_Light_21"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_Chandlery_Int/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Bld_Chandlery_Int_Floor_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Lining_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Structure_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Joinery_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Trim_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Details_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Glow_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_Chandlery_Int_Hardware_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_ChandleryInt_Pine",
+   "T_ChandleryInt_Lining",
+   "T_ChandleryInt_Joinery",
+   "T_ChandleryInt_Details",
+   "T_BldTrim_Sheet"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.191,
+     0.219,
+     0.963,
+     0.685
+    ],
+    "mannequin": [
+     0.064,
+     0.353,
+     0.09,
+     0.415
+    ],
+    "fill": 0.772
+   },
+   "Side": {
+    "asset": [
+     0.19,
+     0.152,
+     0.963,
+     0.75
+    ],
+    "mannequin": [
+     0.186,
+     0.293,
+     0.216,
+     0.378
+    ],
+    "fill": 0.773
+   },
+   "Rear3Q": {
+    "asset": [
+     0.192,
+     0.219,
+     0.963,
+     0.685
+    ],
+    "mannequin": [
+     0.064,
+     0.353,
+     0.09,
+     0.415
+    ],
+    "fill": 0.771
+   },
+   "High": {
+    "asset": [
+     0.173,
+     0.111,
+     0.963,
+     0.806
+    ],
+    "mannequin": [
+     0.089,
+     0.388,
+     0.12,
+     0.433
+    ],
+    "fill": 0.79
+   }
+  },
+  "closeups": [
+   {
+    "name": "counter_till_chart",
+    "target": [
+     13.200000000000001,
+     2.7,
+     3.3000000000000003
+    ],
+    "dist": 10.0,
+    "az": -15.0,
+    "el": 28.0,
+    "file": "closeup_counter_till_chart.png"
+   },
+   {
+    "name": "loft_stairs",
+    "target": [
+     26.549999999999997,
+     4.800000000000001,
+     5.699999999999999
+    ],
+    "dist": 16.0,
+    "az": -70.0,
+    "el": 12.0,
+    "file": "closeup_loft_stairs.png"
+   },
+   {
+    "name": "hardware_wall_drawers",
+    "target": [
+     27.599999999999998,
+     -9.899999999999999,
+     4.199999999999999
+    ],
+    "dist": 11.0,
+    "az": -95.0,
+    "el": 6.0,
+    "file": "closeup_hardware_wall_drawers.png"
+   },
+   {
+    "name": "fitting_room_mirror",
+    "target": [
+     -27.599999999999998,
+     0.8999999999999999,
+     13.5
+    ],
+    "dist": 9.0,
+    "az": 90.0,
+    "el": 3.0,
+    "file": "closeup_fitting_room_mirror.png"
+   },
+   {
+    "name": "pendant_lamp",
+    "target": [
+     -7.199999999999999,
+     -8.7,
+     6.75
+    ],
+    "dist": 3.5,
+    "az": 25.0,
+    "el": -12.0,
+    "file": "closeup_pendant_lamp.png"
+   },
+   {
+    "name": "floorboard_wear",
+    "target": [
+     -12.0,
+     -10.8,
+     0.44999999999999996
+    ],
+    "dist": 6.0,
+    "az": 30.0,
+    "el": 48.0,
+    "file": "closeup_floorboard_wear.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.771,
+  "in_frame": true,
+  "dims_m": [
+   18.9,
+   11.45,
+   null
+  ],
+  "validation_ok": true,
+  "seconds": 6.0
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "hero_building"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Floor_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Lining_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "143 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.19e+00, 249 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 75 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Structure_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2154 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e-03, 1808 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1091 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Joinery_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "794 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.17e-04, 368 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 402 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Trim_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "236 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.39e-02, 108 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 118 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Details_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7922 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.74e-05, 2756 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4168 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Glow_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1468 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.39e-03, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 920 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Hardware_LOD0"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2394 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.76e-04, 996 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1197 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Floor_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Lining_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "143 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.19e+00, 249 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 75 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Structure_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2154 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e-03, 1808 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1091 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Joinery_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "794 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.17e-04, 368 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 402 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Trim_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "236 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.39e-02, 108 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 118 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Details_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5182 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.55e-04, 1876 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2783 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 31.8% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Glow_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1468 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.39e-03, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 920 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Hardware_LOD1"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1434 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.76e-04, 612 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 717 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.8% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Floor_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Lining_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "143 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.19e+00, 249 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 75 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Structure_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "396 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.78e-02, 292 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 204 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 66.7% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Joinery_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "574 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.17e-04, 280 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 292 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 22.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Trim_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "80 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.56e-02, 60 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 40 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.688 (max 0.02), UV area by 31.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Details_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "54 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.65e-04, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 33 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Details_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 7.452 (max 0.02), UV area by 91.4% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Glow_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1468 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.39e-03, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 920 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_Hardware_LOD2"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "10 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.97e-01, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 5 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (pine, T&G, joinery and building trim sheets): the decimated LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.577 (max 0.02), UV area by 98.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Chandlery_Int_COL"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "164 of 10000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "164 of 1000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15123 of 40000 (hero_building, asset row)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11423 of 15000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2737 of 3000"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Bld_Chandlery_Int/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56.700 studs, real 18.900 m = 56.700 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "34.350 studs, real 11.450 m = 34.350 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Chandlery_Int_COL"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5 (4 to 5 sets)"
+  },
+  {
+   "subject": "T_ChandleryInt_Pine_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Pine_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Pine_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Pine_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_MET.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Lining_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Lining_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Lining_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Lining_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_MET.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Joinery_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Joinery_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Joinery_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Joinery_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_MET.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Details_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_ALB.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Details_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_NOR.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Details_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_RGH.png"
+  },
+  {
+   "subject": "T_ChandleryInt_Details_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_MET.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_ALB.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_NOR.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_RGH.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_MET.png"
+  },
+  {
+   "subject": "ATT_DoorInside",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Counter",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Till",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Logbook",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ServiceCards",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ChartTable",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_StairBottom",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_StairTop",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mirror",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_FittingRoom",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_05",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_06",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_07",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_08",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_09",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_10",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_11",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_12",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_13",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_14",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_15",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_16",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_17",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_18",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_19",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_20",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light_21",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD0.fbx"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Chandlery_Int_COL, M_Bld_Chandlery_Int_Details_LOD0, M_Bld_Chandlery_Int_Floor_LOD0, M_Bld_Chandlery_Int_Glow_LOD0, M_Bld_Chandlery_Int_Hardware_LOD0, M_Bld_Chandlery_Int_Joinery_LOD0, M_Bld_Chandlery_Int_Lining_LOD0, M_Bld_Chandlery_Int_Structure_LOD0, M_Bld_Chandlery_Int_Trim_LOD0; 15287 triangles (scene 15287)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 8 of 8 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Chandlery_Int_Details_LOD1, M_Bld_Chandlery_Int_Floor_LOD1, M_Bld_Chandlery_Int_Glow_LOD1, M_Bld_Chandlery_Int_Hardware_LOD1, M_Bld_Chandlery_Int_Joinery_LOD1, M_Bld_Chandlery_Int_Lining_LOD1, M_Bld_Chandlery_Int_Structure_LOD1, M_Bld_Chandlery_Int_Trim_LOD1; 11423 triangles (scene 11423)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 8 of 8 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD2.fbx"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Chandlery_Int_Details_LOD2, M_Bld_Chandlery_Int_Floor_LOD2, M_Bld_Chandlery_Int_Glow_LOD2, M_Bld_Chandlery_Int_Hardware_LOD2, M_Bld_Chandlery_Int_Joinery_LOD2, M_Bld_Chandlery_Int_Lining_LOD2, M_Bld_Chandlery_Int_Structure_LOD2, M_Bld_Chandlery_Int_Trim_LOD2; 2737 triangles (scene 2737)"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 8 of 8 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Chandlery_Int",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.77; 15 renders in 6 s, maps M_Bld_Chandlery_Int_Floor_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Lining_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Structure_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Joinery_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Trim_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Details_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Glow_LOD0: ALB/MET/NOR/RGH, M_Bld_Chandlery_Int_Hardware_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Bld_Chandlery_Int_Floor_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Floor_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Floor_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Lining_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 143,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Lining_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 143,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Lining_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 143,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Structure_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2154,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Structure_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2154,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Structure_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 396,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Joinery_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 794,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Joinery_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 794,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Joinery_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 574,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Trim_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 236,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Trim_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 236,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Trim_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 80,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Details_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 7922,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Details_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 5182,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Details_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 54,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Glow_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1468,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Glow_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1468,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Glow_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1468,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Hardware_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2394,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Hardware_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1434,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_Hardware_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 10,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Chandlery_Int_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 164,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  56.69999694824219,
+  34.349998474121094,
+  27.2399984896183
+ ],
+ "peak_rss_mb": 762.8
+}

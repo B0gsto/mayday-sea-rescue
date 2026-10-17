@@ -1,0 +1,181 @@
+{
+ "asset": "M_Bld_Chandlery_Ext",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Door",
+   "parent": null,
+   "blender": [
+    -22.2,
+    -19.8,
+    3.6
+   ],
+   "roblox_from_origin": [
+    22.2,
+    3.6,
+    -19.8
+   ],
+   "roblox_from_bbox_centre": [
+    22.1475,
+    -12.45,
+    -18.6525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DoorHinge",
+   "parent": null,
+   "blender": [
+    -24.0,
+    -17.4,
+    0.45
+   ],
+   "roblox_from_origin": [
+    24.0,
+    0.45,
+    -17.4
+   ],
+   "roblox_from_bbox_centre": [
+    23.9475,
+    -15.6,
+    -16.2525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign",
+   "parent": null,
+   "blender": [
+    -17.4,
+    -19.65,
+    9.0
+   ],
+   "roblox_from_origin": [
+    17.4,
+    9.0,
+    -19.65
+   ],
+   "roblox_from_bbox_centre": [
+    17.3475,
+    -7.05,
+    -18.5025
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_01",
+   "parent": null,
+   "blender": [
+    -9.6,
+    -21.0,
+    11.79
+   ],
+   "roblox_from_origin": [
+    9.6,
+    11.79,
+    -21.0
+   ],
+   "roblox_from_bbox_centre": [
+    9.5475,
+    -4.26,
+    -19.8525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_02",
+   "parent": null,
+   "blender": [
+    5.1,
+    -21.0,
+    11.79
+   ],
+   "roblox_from_origin": [
+    -5.1,
+    11.79,
+    -21.0
+   ],
+   "roblox_from_bbox_centre": [
+    -5.1525,
+    -4.26,
+    -19.8525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_03",
+   "parent": null,
+   "blender": [
+    20.1,
+    -21.0,
+    11.79
+   ],
+   "roblox_from_origin": [
+    -20.1,
+    11.79,
+    -21.0
+   ],
+   "roblox_from_bbox_centre": [
+    -20.1525,
+    -4.26,
+    -19.8525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

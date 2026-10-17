@@ -1,0 +1,326 @@
+{
+ "asset": "M_Prop_Chandlery",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Rack_01",
+   "parent": null,
+   "blender": [
+    -25.8,
+    1.2,
+    4.2
+   ],
+   "roblox_from_origin": [
+    25.8,
+    4.2,
+    1.2
+   ],
+   "roblox_from_bbox_centre": [
+    23.49,
+    -3.6075,
+    2.1615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Rack_02",
+   "parent": null,
+   "blender": [
+    -12.6,
+    10.8,
+    4.2
+   ],
+   "roblox_from_origin": [
+    12.6,
+    4.2,
+    10.8
+   ],
+   "roblox_from_bbox_centre": [
+    10.29,
+    -3.6075,
+    11.7615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Rack_03",
+   "parent": null,
+   "blender": [
+    -11.4,
+    -5.7,
+    3.6
+   ],
+   "roblox_from_origin": [
+    11.4,
+    3.6,
+    -5.7
+   ],
+   "roblox_from_bbox_centre": [
+    9.09,
+    -4.2075,
+    -4.7385
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mannequin_01",
+   "parent": null,
+   "blender": [
+    -7.8,
+    -15.9,
+    3.9
+   ],
+   "roblox_from_origin": [
+    7.8,
+    3.9,
+    -15.9
+   ],
+   "roblox_from_bbox_centre": [
+    5.49,
+    -3.9075,
+    -14.9385
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mannequin_02",
+   "parent": null,
+   "blender": [
+    15.0,
+    -15.9,
+    3.9
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    3.9,
+    -15.9
+   ],
+   "roblox_from_bbox_centre": [
+    -17.31,
+    -3.9075,
+    -14.9385
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mannequin_03",
+   "parent": null,
+   "blender": [
+    -12.0,
+    9.9,
+    13.65
+   ],
+   "roblox_from_origin": [
+    12.0,
+    13.65,
+    9.9
+   ],
+   "roblox_from_bbox_centre": [
+    9.69,
+    5.8425,
+    10.8615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mannequin_04",
+   "parent": null,
+   "blender": [
+    -2.1,
+    9.9,
+    13.65
+   ],
+   "roblox_from_origin": [
+    2.1,
+    13.65,
+    9.9
+   ],
+   "roblox_from_bbox_centre": [
+    -0.21,
+    5.8425,
+    10.8615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DogBasket",
+   "parent": null,
+   "blender": [
+    -1.2,
+    6.0,
+    1.8
+   ],
+   "roblox_from_origin": [
+    1.2,
+    1.8,
+    6.0
+   ],
+   "roblox_from_bbox_centre": [
+    -1.11,
+    -6.0075,
+    6.9615
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_HornBoard",
+   "parent": null,
+   "blender": [
+    -27.0,
+    -13.8,
+    4.5
+   ],
+   "roblox_from_origin": [
+    27.0,
+    4.5,
+    -13.8
+   ],
+   "roblox_from_bbox_centre": [
+    24.69,
+    -3.3075,
+    -12.8385
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SwatchBoard",
+   "parent": null,
+   "blender": [
+    -18.0,
+    15.15,
+    4.5
+   ],
+   "roblox_from_origin": [
+    18.0,
+    4.5,
+    15.15
+   ],
+   "roblox_from_bbox_centre": [
+    15.69,
+    -3.3075,
+    16.1115
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RadioShelf",
+   "parent": null,
+   "blender": [
+    22.8,
+    15.15,
+    4.8
+   ],
+   "roblox_from_origin": [
+    -22.8,
+    4.8,
+    15.15
+   ],
+   "roblox_from_bbox_centre": [
+    -25.11,
+    -3.0075,
+    16.1115
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

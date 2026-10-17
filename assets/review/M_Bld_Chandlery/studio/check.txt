@@ -1,0 +1,1 @@
+chandlery rig: glass visible 2, door weld 1, glow visible 1, interior lights 21, exterior lamps 3; pivots M_Bld_Chandlery_Ext 0.00,40.00,0.00 | M_Bld_Chandlery_Int 0.00,40.00,0.00 | M_Prop_Chandlery 0.00,40.00,0.00
