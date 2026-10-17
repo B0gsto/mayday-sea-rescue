@@ -122,3 +122,24 @@ config attachments with it. The importer now re-points every `PivotOffset` at th
 land upright, forward -Z, pivot at the Blender origin. Regression: `tools/studio/import_test.luau` (synthetic B00
 bollard with the importer's rotated PivotOffset, and the imported RIB's box: length on Z, height on Y), run by
 `art/source/vehicles/M_Veh_RIB/studio_pass.sh`; `test_closeups.py` guards the fix in the source.
+
+## Studio pass (map preload + white check)
+
+Every batch's Studio look-dev pass (`art/source/<kind>/<Batch>/studio_pass.sh`) runs
+`studio-shot.py --setup art/lookdev/shot-setup.luau ... --white-check` inside `with-lock.sh studio` + `with-heavy.sh`.
+
+- **Preload (automatic).** At the end of `art/lookdev/shot-setup.luau`, `_G.LookDev.preload()` collects every
+  SurfaceAppearance map in workspace (the active SA and the stored `SurfaceAppearance_Dry` / `_Wet` in each
+  `SurfaceVariants`), every MaterialVariant map in MaterialService (dry and `_Wet` twins) and MeshPart TextureIDs; puts the
+  stored SAs on hidden 0.05-stud carrier clones (workspace `LookDevPreload`, removed by `restore()`) so they get processed;
+  `ContentProvider:PreloadAsync`es them (3 tries) and waits until all report Success (timeout 120 s, workspace attribute
+  `LookDevPreloadTimeout` to change it). The setup line printed by studio-shot.py ends with
+  `preload: N maps (...), F failed in T s`; failed ids are listed there and `warn`ed in the Output. Insert the assets
+  **before** the setup runs (or call `_G.LookDev.preload()` again). Opt out: workspace attribute `LookDevNoPreload = true`.
+  This replaces the RIB's local `assets/review/M_Veh_RIB/studio/preload.luau`.
+- **White check (opt-in flag, `~/RobloxProjects/tools/studio-shot.py --white-check [PCT]`).** After each capture it
+  measures near-white pixels (luma > 245, `--white-luma`) in the asset area (shot key `white_box` [x0, y0, x1, y1] fractions,
+  default [0.15, 0.15, 0.85, 0.9]); above PCT (default 8 %) it waits `--white-wait` s (default 8) and re-captures once.
+  Lines `WHITE <shot>: ...` and a final `WHITE-CHECK: n re-captured, m still white` go to stdout, details to
+  `<keep>/white_check.json`. **Still white after the retry = the maps themselves** (wet ALB near-white, wet ALB lost its
+  alpha so AlphaMode Transparency cards render opaque, wrong id in the wet set), not loading: fix the textures.

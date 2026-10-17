@@ -413,6 +413,10 @@ function LookDev.apply(presetName: string, wet: boolean?): string
 end
 
 function LookDev.restore()
+	local preloadFolder = workspace:FindFirstChild("LookDevPreload")
+	if preloadFolder then
+		preloadFolder:Destroy()
+	end
 	pcall(function()
 		RunService:UnbindFromRenderStep(lightStep)
 	end)
@@ -460,11 +464,207 @@ function LookDev.restore()
 	end
 end
 
+--------------------------------------------------------------------------------------------------
+-- Map preload (generalises assets/review/M_Veh_RIB/studio/preload.luau)
+--
+-- Freshly uploaded maps that are first needed mid-pass (the wet SurfaceAppearance swapped in by
+-- apply(_, true), a "_Wet" MaterialVariant) are still downloading / processing at capture time and
+-- render flat white. preload() runs before the first capture:
+--   1. collects every map id of every SurfaceAppearance in workspace (the active one and the stored
+--      SurfaceAppearance_Dry / _Wet in each "SurfaceVariants" Configuration) and of every MaterialVariant
+--      in MaterialService (dry and "_Wet" twins), plus the MeshPart TextureIDs;
+--   2. pre-creates the stored (not attached) SurfaceAppearances as hidden clones: a 0.05-stud copy of the
+--      part, centred inside the original (CastShadow / CanQuery off), wearing the stored SA, so the
+--      renderer loads and processes those maps too. They stay until restore();
+--   3. ContentProvider:PreloadAsync on all ids (as Decals, the RIB fix) and on the SA / MaterialVariant
+--      instances themselves, up to 3 tries per failed id, then waits until every id reports
+--      ContentProvider:GetAssetFetchStatus Success (or the timeout) and an extra settle for processing.
+-- Returns "preload: N maps (S SAs, V variants, C hidden clones), F failed in T s" and logs failures by id.
+-- Runs automatically at the end of this setup unless workspace attribute LookDevNoPreload = true; call
+-- _G.LookDev.preload(timeoutSeconds?) again after inserting more assets.
+
+local ContentProvider = game:GetService("ContentProvider")
+local MAP_PROPS = { "ColorMap", "NormalMap", "RoughnessMap", "MetalnessMap" }
+local PRELOAD_FOLDER = "LookDevPreload"
+
+local function contentString(inst: Instance, prop: string): string?
+	local ok, v = pcall(function()
+		return (inst :: any)[prop]
+	end)
+	if ok and type(v) == "string" and v ~= "" then
+		return v
+	end
+	-- Content-typed twins (ColorMapContent ...) on newer engines
+	local ok2, c = pcall(function()
+		return (inst :: any)[prop .. "Content"]
+	end)
+	if ok2 and typeof(c) == "Content" then
+		local uri = (c :: any).Uri
+		if type(uri) == "string" and uri ~= "" then
+			return uri
+		end
+	end
+	return nil
+end
+
+function LookDev.preload(timeoutSeconds: number?): string
+	local t0 = os.clock()
+	local timeout = timeoutSeconds or 120
+	local ids: { string } = {}
+	local seen: { [string]: boolean } = {}
+	local function add(id: string?)
+		if
+			id
+			and not seen[id]
+			and (string.find(id, "rbxassetid://", 1, true) or string.find(id, "http", 1, true))
+		then
+			seen[id] = true
+			table.insert(ids, id)
+		end
+	end
+	local instances: { Instance } = {}
+	local nSA, nMV, nClones = 0, 0, 0
+
+	local old = workspace:FindFirstChild(PRELOAD_FOLDER)
+	if old then
+		old:Destroy()
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = PRELOAD_FOLDER
+
+	for _, d in workspace:GetDescendants() do
+		if d:IsA("SurfaceAppearance") then
+			nSA += 1
+			table.insert(instances, d)
+			for _, k in MAP_PROPS do
+				add(contentString(d, k))
+			end
+			local holder = d.Parent
+			local part = holder and holder.Parent
+			if holder and holder.Name == "SurfaceVariants" and part and part:IsA("MeshPart") then
+				-- stored, not attached: give it a hidden carrier so the renderer processes it
+				local ok = pcall(function()
+					local carrier = (part :: MeshPart):Clone()
+					carrier:ClearAllChildren()
+					for _, tag in CollectionService:GetTags(carrier) do
+						CollectionService:RemoveTag(carrier, tag)
+					end
+					carrier.Name = part.Name .. "_" .. d.Name
+					carrier.Anchored = true
+					carrier.CanCollide = false
+					carrier.CanQuery = false
+					carrier.CanTouch = false
+					carrier.CastShadow = false
+					carrier.Size = Vector3.new(0.05, 0.05, 0.05)
+					carrier.CFrame = (part :: MeshPart).CFrame
+					d:Clone().Parent = carrier
+					carrier.Parent = folder
+				end)
+				if ok then
+					nClones += 1
+				end
+			end
+		elseif d:IsA("MeshPart") then
+			add(contentString(d, "TextureID"))
+		end
+	end
+	for _, mv in MaterialService:GetDescendants() do
+		if mv:IsA("MaterialVariant") then
+			nMV += 1
+			table.insert(instances, mv)
+			for _, k in MAP_PROPS do
+				add(contentString(mv, k))
+			end
+		end
+	end
+	folder.Parent = workspace
+	table.insert(instances, folder)
+
+	local status: { [string]: Enum.AssetFetchStatus } = {}
+	local function preloadIds(list: { string })
+		local decals = {}
+		for _, id in list do
+			local dec = Instance.new("Decal")
+			dec.Texture = id
+			table.insert(decals, dec)
+		end
+		pcall(function()
+			ContentProvider:PreloadAsync(decals, function(id, st)
+				status[id] = st
+			end)
+		end)
+		for _, dec in decals do
+			dec:Destroy()
+		end
+	end
+	local done = false
+	task.spawn(function()
+		pcall(function()
+			ContentProvider:PreloadAsync(instances)
+		end)
+		local pending = ids
+		for _ = 1, 3 do
+			preloadIds(pending)
+			local again = {}
+			for _, id in pending do
+				if status[id] ~= Enum.AssetFetchStatus.Success then
+					table.insert(again, id)
+				end
+			end
+			pending = again
+			if #pending == 0 or os.clock() - t0 > timeout then
+				break
+			end
+			task.wait(3)
+		end
+		done = true
+	end)
+	while not done and os.clock() - t0 < timeout do
+		task.wait(0.25)
+	end
+	-- final word from the fetch cache (also covers ids PreloadAsync never called back for)
+	local failed: { string } = {}
+	for _, id in ids do
+		local ok, st = pcall(function()
+			return ContentProvider:GetAssetFetchStatus(id)
+		end)
+		local s = if ok then st else status[id]
+		if s ~= Enum.AssetFetchStatus.Success and status[id] ~= Enum.AssetFetchStatus.Success then
+			table.insert(failed, id .. "=" .. tostring(s or status[id] or "no status"))
+		end
+	end
+	if #failed > 0 then
+		warn(
+			"[LookDev.preload] " .. #failed .. " map(s) not loaded: " .. table.concat(failed, ", ")
+		)
+	end
+	task.wait(2) -- GPU-side processing of the just-fetched maps
+	return string.format(
+		"preload: %d maps (%d SAs, %d variants, %d hidden clones), %d failed%s in %.1f s%s",
+		#ids,
+		nSA,
+		nMV,
+		nClones,
+		#failed,
+		if #failed > 0 then " [" .. table.concat(failed, ", ") .. "]" else "",
+		os.clock() - t0,
+		if done then "" else " (TIMEOUT)"
+	)
+end
+
+local preloadInfo = "preload off (LookDevNoPreload)"
+if workspace:GetAttribute("LookDevNoPreload") ~= true then
+	local ok, res =
+		pcall(LookDev.preload, workspace:GetAttribute("LookDevPreloadTimeout") :: number?)
+	preloadInfo = if ok then res else "preload error: " .. tostring(res)
+end
+
 return string.format(
-	"lookdev setup (%s): %s; presets %s, skies %s, wet-capable parts %d",
+	"lookdev setup (%s): %s; presets %s, skies %s, wet-capable parts %d; %s",
 	if isClient then "client" else "edit",
 	stats,
 	if Presets then "ok" else "MISSING",
 	if SkyAssets then "ok" else "MISSING",
-	#CollectionService:GetTagged("HasWetVariant")
+	#CollectionService:GetTagged("HasWetVariant"),
+	preloadInfo
 )
