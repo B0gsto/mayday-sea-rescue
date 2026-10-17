@@ -10,7 +10,9 @@
 --           (BoatController) runs buoyancy and controls. The server only sanity-checks speed and
 --           position every CHECK_INTERVAL and pulls cheaters back to the last good spot.
 --   Drift   nobody driving, away from the dock: unanchored, server-owned, the server runs buoyancy.
--- Tows: AttachTow ropes TowHitch to the target's BowPoint and hands the target's ownership to the
+-- Tows: AttachTow ropes TowHitch to the target's BowPoint. An anchored non-vehicle target is a
+-- scripted tow (TowScripted attribute): it stays anchored and its own script moves it, the rope is
+-- a slack visual and nobody gets ownership. Otherwise the target's ownership goes to the
 -- tower's driver (attribute TowedBy = that UserId, tag VehicleTowed) so the same client simulates
 -- both hulls. With no driver, the server simulates the tow.
 --
@@ -43,7 +45,7 @@ type Record = {
 	survivors: { [number]: Survivor },
 	mode: Mode,
 	driver: Player?,
-	tow: { rope: RopeConstraint, target: Model }?,
+	tow: { rope: RopeConstraint, target: Model, scripted: boolean }?,
 	lastGood: CFrame,
 	strikes: number,
 	resetting: boolean,
@@ -60,6 +62,7 @@ local STRIKES_TO_RESET = 2
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
 local TOW_MIN_LENGTH = 12
+local SCRIPTED_TOW_SLACK = 10 -- extra rope on scripted tows so latency never makes it bind
 
 local VehicleService = {}
 VehicleService.Priority = 50
@@ -163,7 +166,7 @@ end
 -- Network ownership of a tow target follows the tower's driver (nil = server).
 local function updateTowOwnership(record: Record)
 	local tow = record.tow
-	if not tow then
+	if not tow or tow.scripted then
 		return
 	end
 	local targetRoot = rootOf(tow.target)
@@ -434,7 +437,11 @@ local function simulateServerOwned()
 	for target, tower in towTargets do
 		if not target.Parent then
 			VehicleService.DetachTow(tower.model)
-		elseif not records[target] and not tower.driver then
+		elseif
+			not records[target]
+			and not tower.driver
+			and not (tower.tow and tower.tow.scripted)
+		then
 			Simulator.step(target, 0, 0, now)
 		end
 	end
@@ -637,7 +644,7 @@ function VehicleService.RemoveSurvivors(model: Model): { Model }
 end
 
 -- Ropes the target's BowPoint to this vehicle's TowHitch. Targets need a PrimaryPart (or any
--- BasePart) and should be welded into one assembly; anchored parts are unanchored.
+-- BasePart) and should be welded into one assembly. Anchored non-vehicle targets are scripted tows.
 -- CONTRACT: CallService stops moving a towed NPC boat by script while it has the VehicleTowed tag;
 -- DetachTow re-anchors non-vehicle targets so script motion can resume.
 function VehicleService.AttachTow(model: Model, targetModel: Model): boolean
@@ -666,32 +673,43 @@ function VehicleService.AttachTow(model: Model, targetModel: Model): boolean
 		bow = created
 	end
 	assert(bow and bow:IsA("Attachment"), "unreachable")
-	if not targetRecord then
-		Simulator.ensureRig(targetModel)
-	end
-	for _, d in targetModel:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.Anchored = false
+	-- Scripted tow: an anchored non-vehicle target (RescueService's NPC boats) stays anchored and is
+	-- moved by its own script along the line. The rope is only a visual with slack (ScriptedLength
+	-- is the nominal length the script keeps), and there is no ownership handoff.
+	local scripted = targetRecord == nil and targetRoot.Anchored
+	if not scripted then
+		if not targetRecord then
+			Simulator.ensureRig(targetModel)
+		end
+		for _, d in targetModel:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.Anchored = false
+			end
+		end
+		if targetRecord then
+			targetRecord.mode = "Drift"
 		end
 	end
-	if targetRecord then
-		targetRecord.mode = "Drift"
-	end
 
+	local nominal =
+		math.max(TOW_MIN_LENGTH, (hitch.WorldPosition - bow.WorldPosition).Magnitude + 0.5)
 	local rope = Instance.new("RopeConstraint")
 	rope.Name = "TowRope"
 	rope.Attachment0 = hitch
 	rope.Attachment1 = bow
-	rope.Length =
-		math.max(TOW_MIN_LENGTH, (hitch.WorldPosition - bow.WorldPosition).Magnitude + 0.5)
+	rope.Length = if scripted then nominal + SCRIPTED_TOW_SLACK else nominal
+	if scripted then
+		rope:SetAttribute("ScriptedLength", nominal)
+	end
 	rope.Visible = true
 	rope.Thickness = 0.25
 	rope.Color = BrickColor.new("Institutional white")
 	rope.Parent = record.root
 
-	record.tow = { rope = rope, target = targetModel }
+	record.tow = { rope = rope, target = targetModel, scripted = scripted }
 	towTargets[targetModel] = record
 	targetModel:SetAttribute("TowVehicle", model.Name)
+	targetModel:SetAttribute("TowScripted", if scripted then true else nil)
 	CollectionService:AddTag(targetModel, TOW_TAG)
 	updateTowOwnership(record)
 	return true
@@ -709,8 +727,9 @@ function VehicleService.DetachTow(model: Model)
 	towTargets[target] = nil
 	target:SetAttribute("TowedBy", nil)
 	target:SetAttribute("TowVehicle", nil)
+	target:SetAttribute("TowScripted", nil)
 	CollectionService:RemoveTag(target, TOW_TAG)
-	if not target.Parent then
+	if not target.Parent or tow.scripted then
 		return
 	end
 	local targetRoot = rootOf(target)

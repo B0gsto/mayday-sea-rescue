@@ -134,6 +134,15 @@ local function setupDevCommands()
 	if not RunService:IsStudio() then
 		return
 	end
+	-- Studio-only hook for play-test scripts (execute_luau runs in its own module cache, so it
+	-- can't call this service directly): ServerStorage.Storm_DevCommand:Invoke("/storm now").
+	local devHook = Instance.new("BindableFunction")
+	devHook.Name = "Storm_DevCommand"
+	devHook.OnInvoke = function(text: string)
+		runCommand(nil, text)
+		return Weather.getState()
+	end
+	devHook.Parent = game:GetService("ServerStorage")
 	if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
 		local parent = TextChatService:FindFirstChild("TextChatCommands") or TextChatService
 		for _, alias in { "/storm", "/greatstorm", "/calm" } do

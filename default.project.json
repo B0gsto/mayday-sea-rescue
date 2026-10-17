@@ -18,6 +18,10 @@
       }
     },
     "Workspace": { "$className": "Workspace" },
-    "Lighting": { "$className": "Lighting" }
+    "Lighting": { "$className": "Lighting" },
+    "TextChatService": {
+      "$className": "TextChatService",
+      "$properties": { "ChatVersion": "TextChatService" }
+    }
   }
 }

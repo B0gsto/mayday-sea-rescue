@@ -7,6 +7,7 @@
 -- CONTRACT: the towed NPC boat stays anchored and is moved by this script along the tow line.
 -- VehicleService.AttachTow is still called (rope visual and hitch) inside pcall; if it errors or is
 -- missing, a Beam stands in for the rope.
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -45,6 +46,7 @@ type Floater = {
 	parentOffset: CFrame?,
 	cf: CFrame,
 	active: boolean,
+	model: Model?, -- owning model, resolved lazily from parts[1]
 }
 
 local floaters: { Floater } = {}
@@ -681,6 +683,11 @@ end
 
 local function towLength(vehicle: Model): number
 	local rope = vehicle:FindFirstChildWhichIsA("RopeConstraint", true)
+	-- scripted tows: the rope is given extra slack so it never binds; ScriptedLength is the nominal
+	local nominal = rope and rope:GetAttribute("ScriptedLength")
+	if type(nominal) == "number" then
+		return nominal
+	end
 	return if rope then rope.Length else TOW_LENGTH
 end
 
@@ -728,6 +735,25 @@ local function stepFloaters(now: number)
 	table.clear(bulkParts)
 	table.clear(bulkCFrames)
 	for _, f in floaters do
+		-- VehicleService owns anything welded aboard (OnVehicle) or physically towed (VehicleTowed
+		-- without TowScripted); scripted tows stay ours.
+		local owner = f.model
+		if not owner and f.parts[1] then
+			owner = f.parts[1]:FindFirstAncestorWhichIsA("Model")
+			f.model = owner
+		end
+		if
+			owner
+			and (
+				owner:GetAttribute("OnVehicle") ~= nil
+				or (
+					CollectionService:HasTag(owner, "VehicleTowed")
+					and owner:GetAttribute("TowScripted") ~= true
+				)
+			)
+		then
+			continue
+		end
 		if f.parent then
 			f.cf = f.parent.cf * (f.parentOffset or CFrame.identity)
 		else
