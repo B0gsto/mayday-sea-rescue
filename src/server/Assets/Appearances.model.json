@@ -1119,7 +1119,10 @@
         "ColorMap": "rbxassetid://108926413774179",
         "NormalMap": "rbxassetid://115536868537189",
         "RoughnessMap": "rbxassetid://101449066842394",
-        "MetalnessMap": "rbxassetid://87872063083227"
+        "MetalnessMap": "rbxassetid://87872063083227",
+        "AlphaMode": {
+         "Enum": 1
+        }
        }
       },
       {
@@ -1129,7 +1132,10 @@
         "ColorMap": "rbxassetid://80392929167799",
         "NormalMap": "rbxassetid://115536868537189",
         "RoughnessMap": "rbxassetid://132660770674454",
-        "MetalnessMap": "rbxassetid://87872063083227"
+        "MetalnessMap": "rbxassetid://87872063083227",
+        "AlphaMode": {
+         "Enum": 1
+        }
        }
       }
      ]

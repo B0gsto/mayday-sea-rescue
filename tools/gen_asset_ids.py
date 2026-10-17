@@ -33,6 +33,9 @@ MANIFEST = os.path.join(ROOT, "assets", "manifest.json")
 OUT_LUAU = os.path.join(ROOT, "src", "shared", "Config", "AssetIds.luau")
 OUT_APPEAR = os.path.join(ROOT, "src", "server", "Assets", "Appearances.model.json")
 MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "MetalnessMap"}
+# Texture folders whose ALB alpha is a cutout (docs/12 2.8 alpha cards): AlphaMode Transparency (Enum 1).
+# The default, Overlay, shows the part Color through alpha 0, so the G1 plant cards rendered flat white.
+ALPHA_TRANSPARENCY = ("M_Veg_",)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
 RIG_SETS = ("Atlas",)  # texture sets a rigged (single skinned MeshPart) asset keeps
@@ -160,17 +163,19 @@ def main():
     if stylua:  # check.sh runs stylua --check on src
         subprocess.run([stylua, OUT_LUAU], check=False)
 
-    def appearance(name, maps):
+    def appearance(name, maps, asset):
         props = {MAPS[k]: f"rbxassetid://{maps[k]}" for k in MAPS if k in maps}
+        if asset.startswith(ALPHA_TRANSPARENCY):
+            props["AlphaMode"] = {"Enum": 1}  # Enum.AlphaMode.Transparency
         return {"Name": name, "ClassName": "SurfaceAppearance", "Properties": props}
 
     folders = []
     for asset in sorted(textures):
         sets = []
         for name, s in sorted(textures[asset].items()):
-            kids = [appearance("Dry", s)]
+            kids = [appearance("Dry", s, asset)]
             if s.get("Wet"):
-                kids.append(appearance("Wet", {**{k: v for k, v in s.items() if k != "Wet"}, **s["Wet"]}))
+                kids.append(appearance("Wet", {**{k: v for k, v in s.items() if k != "Wet"}, **s["Wet"]}, asset))
             sets.append({"Name": name, "ClassName": "Folder", "Children": kids})
         folders.append({"Name": asset, "ClassName": "Folder", "Children": sets})
     os.makedirs(os.path.dirname(OUT_APPEAR), exist_ok=True)
