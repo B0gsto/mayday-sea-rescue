@@ -50,12 +50,24 @@ R = {
     # decals
     "Tags":       (0, 4, 4, 1, "fit", None, (214, 204, 178), 0.90, 0, "tags", False),
     "Radio":      (4, 4, 2, 1, "fit", None, (50, 52, 54), 0.45, 0, "radio", False),
+    "Kraft":      (6, 4, 1, 1, "tile", 0.70, (152, 126, 96), 0.88, 0, "paper", False),
+    "StockBox":   (7, 4, 1, 1, "fit", None, (152, 126, 96), 0.86, 0, "stockbox", False),
+    "BinLabels":  (0, 5, 4, 1, "fit", None, (222, 216, 202), 0.80, 0, "binlabels", False),
+    "FenderBox":  (4, 5, 2, 1, "fit", None, (152, 126, 96), 0.86, 0, "fenderbox", False),
     "HornBoard":  (0, 6, 4, 2, "fit", None, (52, 76, 70), 0.60, 0, "hornboard", False),
     "SwatchBoard": (4, 6, 4, 2, "fit", None, (52, 76, 70), 0.55, 0, "swatch", False),
 }
 N_TAGS = 8            # tags in the Tags strip, each 128 x 256 px (0.045 x 0.09 m)
 TAG_M = (0.045, 0.09)
 RADIO_M = (0.26, 0.13)
+N_BIN_LABELS = 8      # parts-bin labels in the BinLabels strip, 4 x 2 of 256 x 128 px (0.08 x 0.04 m on the bin front)
+BIN_LABEL_M = (0.08, 0.04)
+BIN_LABELS = [        # (line 1, line 2, item) : item drawn in the bin heap by build.py
+    ("BOW SHACKLE", "8 MM  S/S", "bow"), ("D-SHACKLE", "10 MM  GALV", "dee"), ("SNAP SHACKLE", "70 MM  S/S", "snap"),
+    ("SWIVEL", "EYE-EYE 8 MM", "swivel"), ("BOW SHACKLE", "10 MM  GALV", "bow"), ("D-SHACKLE", "6 MM  S/S", "dee"),
+    ("SWIVEL", "JAW-EYE 10 MM", "swivel"), ("SNAP SHACKLE", "90 MM  S/S", "snap")]
+FENDER_BOX_M = (0.60, 0.15)     # printed long face of a boxed fender
+STOCK_BOX_M = (0.15, 0.15)      # printed front of a back-stock box
 BOARD_M = (1.2, 0.6)
 PAD_PX = 3
 
@@ -86,6 +98,14 @@ def tag_rect(i):
     w = (u1 - u0) / N_TAGS
     p = 2.0 / ATLAS
     return (u0 + i * w + p, v0 + p, u0 + (i + 1) * w - p, v1 - p)
+
+
+def bin_label_rect(i):
+    u0, v0, u1, v1 = rect("BinLabels")
+    c, r = i % 4, 1 - i // 4             # label 0 top-left; image rows run down, V up
+    w, h = (u1 - u0) / 4, (v1 - v0) / 2
+    p = 2.0 / ATLAS
+    return (u0 + c * w + p, v0 + r * h + p, u0 + (c + 1) * w - p, v0 + (r + 1) * h - p)
 
 
 def strip(i):

@@ -1,7 +1,10 @@
 """PBR map checks outside Blender (docs/06 2.1 step 13, docs/12 1.1): system python3 with Pillow and numpy, no heavy slot.
 
     python3 tools/blender/check_textures.py assets/textures/<Asset>/ [--cap 1024] [--alpha] [--wet]
-        [--signal-mask T_<Name>_<Set>=mask.png] [--json report.json]
+        [--signal-mask T_<Name>_<Set>=mask.png] [--no-auto-mask] [--json report.json]
+
+Signal masks are also picked up by convention from art/source/<kind>/<Asset>/ (see auto_signal_masks):
+T_<Name>_<Set>_signal.png for one set, signal_mask.png for every set whose ALB matches its pixel size.
 
 Per texture set T_<Name>_<Set>_<ALB|NOR|RGH|MET>[_Wet]:
   names        every image in the folder follows the texture name rule; all four maps present
@@ -211,9 +214,36 @@ def check_set(key, maps, report, cap, alpha=False, want_wet=False, signal_mask=N
             add(names.texture_stem(key[0], key[1], kind, True), "wet is %s" % rule, ok, "mean %.0f, dry %.0f" % (wetv, dry))
 
 
-def check_folder(folder, cap=common.EXPORT_CAP, alpha=False, want_wet=False, signal_masks=None):
+def auto_signal_masks(folder, sets):
+    """Signal masks by convention, so every runner (CLI, maketex, review scripts) applies the same ones without flags.
+    For a map folder named <Asset> (assets/textures/<Asset>/), in art/source/<kind>/<Asset>/:
+      T_<Name>_<Set>_signal.png   mask for that set (also looked for in textures/masks/)
+      signal_mask.png             mask for every set in the folder whose ALB has exactly the mask's pixel size"""
+    asset = os.path.basename(os.path.normpath(folder))
+    src = [root for root, dirs, files in os.walk(common.SOURCE_DIR) if os.path.basename(root) == asset]
+    if len(src) != 1:
+        return {}
+    found = {}
+    shared = os.path.join(src[0], "signal_mask.png")
+    shared_size = Image.open(shared).size if os.path.isfile(shared) else None
+    for key, maps in sets.items():
+        prefix = "T_%s_%s" % key
+        own = [os.path.join(src[0], sub, prefix + "_signal.png") for sub in ("", "textures/masks")]
+        own = [o for o in own if os.path.isfile(o)]
+        if own:
+            found[prefix] = own[0]
+        elif shared_size and ("ALB", False) in maps and Image.open(maps[("ALB", False)]).size == shared_size:
+            found[prefix] = shared
+    return found
+
+
+def check_folder(folder, cap=common.EXPORT_CAP, alpha=False, want_wet=False, signal_masks=None, auto_masks=True):
     report = Report()
     sets, bad = group_sets(folder)
+    if auto_masks:
+        signal_masks = dict(auto_signal_masks(folder, sets), **(signal_masks or {}))
+        for prefix, path in sorted(signal_masks.items()):
+            report.add(prefix, "signal mask", True, os.path.relpath(path, common.REPO_DIR), info=True)
     for fn, why in bad:
         report.add(fn, "naming", False, why)
     if not sets:
@@ -230,12 +260,13 @@ def main(argv=None):
     ap.add_argument("--alpha", action="store_true", help="albedo may carry alpha (foliage, cards, decals)")
     ap.add_argument("--wet", action="store_true", help="require _Wet ALB and RGH for every set")
     ap.add_argument("--signal-mask", action="append", default=[], metavar="T_<Name>_<Set>=mask.png")
+    ap.add_argument("--no-auto-mask", action="store_true", help="ignore art/source/<kind>/<Asset>/signal_mask.png and *_signal.png")
     ap.add_argument("--json", help="write the rows to this file")
     args = ap.parse_args(argv)
     masks = dict(m.split("=", 1) for m in args.signal_mask)
     rows, ok = [], True
     for folder in args.folders:
-        report = check_folder(folder, args.cap, args.alpha, args.wet, masks)
+        report = check_folder(folder, args.cap, args.alpha, args.wet, masks, not args.no_auto_mask)
         report.print("textures")
         rows += report.rows
         ok = ok and report.ok

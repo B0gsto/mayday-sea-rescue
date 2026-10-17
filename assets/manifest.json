@@ -204,7 +204,9 @@
    "T_ChandleryProps_Rope_MET",
    "T_ChandleryInt_Joinery_MET",
    "T_ChandleryInt_Lining_MET",
-   "T_ChandleryInt_Pine_MET"
+   "T_ChandleryInt_Pine_MET",
+   "T_Chandlery_Bands_MET",
+   "T_Chandlery_Stone_MET"
   ],
   "assetId": "74679138706162",
   "imageId": "74679138706162",
@@ -358,6 +360,15 @@
   "source": "assets/textures/M_Chr_HumanBase_F/T_HumanBaseF_Head_ALB.png",
   "type": "Image"
  },
+ "Image:19e50edc3edde5c892d56742582955b1a2837ef6b75a79d989914e735455a811": {
+  "assetId": "127334089446577",
+  "imageId": "127334089446577",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_RGH_Wet",
+  "sha": "19e50edc3edde5c892d56742582955b1a2837ef6b75a79d989914e735455a811",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:19f99648dbdd40cc71aa9d40dd6408c5042f8dff74f131dc57b871854fb82645": {
   "assetId": "132726315315453",
   "imageId": "132726315315453",
@@ -412,6 +423,15 @@
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_ALB.png",
   "type": "Image"
  },
+ "Image:1af462c33a46707ccf652b58c1b737fa43887301eb4a4ea9b5f858e7096c7e2c": {
+  "assetId": "114952564703794",
+  "imageId": "114952564703794",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_NOR",
+  "sha": "1af462c33a46707ccf652b58c1b737fa43887301eb4a4ea9b5f858e7096c7e2c",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
+  "type": "Image"
+ },
  "Image:1bae7b204da0e9005ccd5ac1e2cf63ab7f9a9ce9e05865c003d37daffa61bdf0": {
   "assetId": "79216311407133",
   "imageId": "79216311407133",
@@ -446,6 +466,15 @@
   "name": "T_JetSki_Hull_ALB",
   "sha": "1cf13b066df3c9505ca72ce39f77ee07b91898114ab1d1dcda4ebcd8552c941c",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_ALB.png",
+  "type": "Image"
+ },
+ "Image:1cf861908a19e8259f5914326bcb83d90c3c494b9ed6061f78b38cd176375e7f": {
+  "assetId": "122040682702478",
+  "imageId": "122040682702478",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_ALB",
+  "sha": "1cf861908a19e8259f5914326bcb83d90c3c494b9ed6061f78b38cd176375e7f",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
   "type": "Image"
  },
  "Image:1d2a3db9a5ed12a8b86be6e45cbf71417810a73a5ca3dfd9147722ae7011818e": {
@@ -679,6 +708,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH.png",
   "type": "Image"
  },
+ "Image:2615aca4ebc78ae6a4f3c129751d752f95fd4fe6d3e26f119ca650868a8b04ac": {
+  "assetId": "98519338287215",
+  "imageId": "98519338287215",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_RGH",
+  "sha": "2615aca4ebc78ae6a4f3c129751d752f95fd4fe6d3e26f119ca650868a8b04ac",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
+  "type": "Image"
+ },
  "Image:26e6fcd8f278a0d43444f4a66efa7c20bd349b979a3e12bcbb61bf746977ff2e": {
   "assetId": "90292908839121",
   "imageId": "90292908839121",
@@ -713,6 +751,15 @@
   "name": "Mayday_T_Mat_Concrete_RGH_Wet",
   "sha": "2947fe81572b9032df12cc23ed12efe702e8e6755ae71c797f19dd41f42b1cee",
   "source": "assets/textures/Materials/T_Mat_Concrete_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:297c1e2af5db5c6eda0ed4053d668f153b93b9a2466d271e60de219bbfa3bd73": {
+  "assetId": "83519248866446",
+  "imageId": "83519248866446",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_ALB",
+  "sha": "297c1e2af5db5c6eda0ed4053d668f153b93b9a2466d271e60de219bbfa3bd73",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB.png",
   "type": "Image"
  },
  "Image:2aed4565a3324b625af72f217b940b386abcd411cceadeb97bc07ffb6f4ef983": {
@@ -767,6 +814,15 @@
   "name": "Mayday_ocean_normal_ms",
   "sha": "2cdb837a40063e379c141d3e12b4f947765156c6ea775f6b2caaff6e647679be",
   "source": "assets/ocean/ocean_normal_ms.png",
+  "type": "Image"
+ },
+ "Image:2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71": {
+  "assetId": "130995619446535",
+  "imageId": "130995619446535",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_NOR",
+  "sha": "2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_NOR.png",
   "type": "Image"
  },
  "Image:2d786c230c1b473d67287fd7037e61b05161335f4156afdbe5145ab53cebf50b": {
@@ -967,6 +1023,15 @@
   "source": "assets/ocean/ocean_foam_alpha.png",
   "type": "Image"
  },
+ "Image:38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56": {
+  "assetId": "74732836042532",
+  "imageId": "74732836042532",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_RGH",
+  "sha": "38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
+  "type": "Image"
+ },
  "Image:39bb7b3cec72ec48ee5283db3b39e53d65ec541e3e3104cd5bcfe0040c180df9": {
   "assetId": "139997787647669",
   "imageId": "139997787647669",
@@ -1120,6 +1185,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png",
   "type": "Image"
  },
+ "Image:43917da78921507bfabbda6b4b6617907167709c5fa67b283e2ffba5f550e028": {
+  "assetId": "110938698586980",
+  "imageId": "110938698586980",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_NOR",
+  "sha": "43917da78921507bfabbda6b4b6617907167709c5fa67b283e2ffba5f550e028",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_NOR.png",
+  "type": "Image"
+ },
  "Image:43a1e2ce8a7ff008bb83355325509d0e80c9fe86274d3844c0761d9c7865d11a": {
   "assetId": "75498296548188",
   "imageId": "75498296548188",
@@ -1127,6 +1201,24 @@
   "name": "Mayday_T_Mat_SandWet_ALB_Wet",
   "sha": "43a1e2ce8a7ff008bb83355325509d0e80c9fe86274d3844c0761d9c7865d11a",
   "source": "assets/textures/Materials/T_Mat_SandWet_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:43bfce1415762b1288d1828d99ddbbb8fb25899424c2d23d17126cfea8a1f908": {
+  "assetId": "71755285482352",
+  "imageId": "71755285482352",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryProps_Atlas_RGH",
+  "sha": "43bfce1415762b1288d1828d99ddbbb8fb25899424c2d23d17126cfea8a1f908",
+  "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_RGH.png",
+  "type": "Image"
+ },
+ "Image:440cf23ad5c86d6e29fe7db9b46aed17f1216d9b2193eed52316ac8db7467f86": {
+  "assetId": "94586893341453",
+  "imageId": "94586893341453",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Stone_RGH_Wet",
+  "sha": "440cf23ad5c86d6e29fe7db9b46aed17f1216d9b2193eed52316ac8db7467f86",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH_Wet.png",
   "type": "Image"
  },
  "Image:44906574a49fcd6b9f9a1b16ce676751092e27dc4527e3a0fa374f1af8687137": {
@@ -1345,6 +1437,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png",
   "type": "Image"
  },
+ "Image:5286245a4da7cc94c4af82571ea4038961e644132dde9c25500d6d9de610788b": {
+  "assetId": "74366216349202",
+  "imageId": "74366216349202",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_ALB_Wet",
+  "sha": "5286245a4da7cc94c4af82571ea4038961e644132dde9c25500d6d9de610788b",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:52cfc505790e0374cd3e715aa79c765bf82d4fca2aeb11aba5bf621d726a770e": {
   "assetId": "76867737081380",
   "imageId": "76867737081380",
@@ -1352,6 +1453,15 @@
   "name": "Mayday_T_Mat_Asphalt_RGH_Wet",
   "sha": "52cfc505790e0374cd3e715aa79c765bf82d4fca2aeb11aba5bf621d726a770e",
   "source": "assets/textures/Materials/T_Mat_Asphalt_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:53e64da6da6223034a2cdb7a7b8c98d8e8d0ec59af8f24cf3fa733166f8beba6": {
+  "assetId": "100802801575312",
+  "imageId": "100802801575312",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Bands_RGH_Wet",
+  "sha": "53e64da6da6223034a2cdb7a7b8c98d8e8d0ec59af8f24cf3fa733166f8beba6",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH_Wet.png",
   "type": "Image"
  },
  "Image:54edfd029e65fbca26c41f2b92e96260879c3189235bef7b6440f3006c581b03": {
@@ -1849,6 +1959,15 @@
   "source": "assets/textures/M_Chr_HumanBase_F/T_HumanBaseF_Head_NOR.png",
   "type": "Image"
  },
+ "Image:744d6e96ad62722894fc40119af7b8f9b83c548fd41709bd083653918d083a9c": {
+  "assetId": "96847335271417",
+  "imageId": "96847335271417",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_ALB",
+  "sha": "744d6e96ad62722894fc40119af7b8f9b83c548fd41709bd083653918d083a9c",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_ALB.png",
+  "type": "Image"
+ },
  "Image:7468955f1d0caf7a56a547fa29c7103790652a1ba4ab37d8cee4eec0ce75d684": {
   "assetId": "85466455016244",
   "imageId": "85466455016244",
@@ -1937,6 +2056,15 @@
   "name": "T_Chandlery_Slate_RGH",
   "sha": "7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
+  "type": "Image"
+ },
+ "Image:7d8746d82c45df283a86751639004d35a19d5b368ec9ed178963771899bd241d": {
+  "assetId": "133059993627264",
+  "imageId": "133059993627264",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Stone_ALB",
+  "sha": "7d8746d82c45df283a86751639004d35a19d5b368ec9ed178963771899bd241d",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB.png",
   "type": "Image"
  },
  "Image:7da685e58d02e3ba238156d2d702d4ef5c85112fe6377035f8fad712c6004aed": {
@@ -2065,6 +2193,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_ALB.png",
   "type": "Image"
  },
+ "Image:83ec52ee6fe45de5000c261b03037109638304932c38cd2df31ec7a8e1d2dbe7": {
+  "assetId": "122233115030889",
+  "imageId": "122233115030889",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Bands_RGH",
+  "sha": "83ec52ee6fe45de5000c261b03037109638304932c38cd2df31ec7a8e1d2dbe7",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_RGH.png",
+  "type": "Image"
+ },
  "Image:8406b3e96fd73aaa7bd9edd00312edf32121db4f4b70ff531e7c9259712b36a5": {
   "assetId": "130427434959650",
   "imageId": "130427434959650",
@@ -2081,6 +2218,15 @@
   "name": "T_JetSkiCloseUp_CloseUp_RGH_Wet",
   "sha": "84236e4ed5b0abbe6f97b094d0a659f67e2ce4a620966e0792a82794d757fc78",
   "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:855e9deb6e4e774dfe0758d2781a8460d0e33791aeaf1381c46844aacc0b9f0e": {
+  "assetId": "76473974963286",
+  "imageId": "76473974963286",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_RGH_Wet",
+  "sha": "855e9deb6e4e774dfe0758d2781a8460d0e33791aeaf1381c46844aacc0b9f0e",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH_Wet.png",
   "type": "Image"
  },
  "Image:8561abbd9ebd980de32a93ada5ef61d85446a88552d8c4b24de4ce483a2f00fe": {
@@ -2119,6 +2265,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
+ "Image:86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963": {
+  "assetId": "102126340609881",
+  "imageId": "102126340609881",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Stone_RGH",
+  "sha": "86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH.png",
+  "type": "Image"
+ },
  "Image:87deafdc473a4ad986f3df22d0ec19fe5e0467f29ef104e6c28ca5b9d2371afd": {
   "assetId": "80342858122314",
   "imageId": "80342858122314",
@@ -2135,6 +2290,15 @@
   "name": "T_RIBHelm_Seats_RGH",
   "sha": "87df9a38d6fdfe85022bbf766ea21115303b9063c6a99769dd17620323abbb60",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH.png",
+  "type": "Image"
+ },
+ "Image:89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca": {
+  "assetId": "120584434821371",
+  "imageId": "120584434821371",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Bands_ALB_Wet",
+  "sha": "89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB_Wet.png",
   "type": "Image"
  },
  "Image:8a280216ce09b4ae710f2332d80ab62053404475687068d739e0f7fe6655ca34": {
@@ -2171,6 +2335,15 @@
   "name": "T_RIB_Deck_ALB",
   "sha": "8af6f1228e5e977910659c63ee52b641c7d9a2d31c652fd147682ef2ab43ae67",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:8c2d5b9341865ffd60eb46f31aef05d03b0c150b4c12179ad33111f7ab9dbb57": {
+  "assetId": "76208343645762",
+  "imageId": "76208343645762",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_RGH",
+  "sha": "8c2d5b9341865ffd60eb46f31aef05d03b0c150b4c12179ad33111f7ab9dbb57",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_RGH.png",
   "type": "Image"
  },
  "Image:8c78af407ef5763ead080581296a6e6e20947f2b94cf6604eaabfe01ee353a0f": {
@@ -2306,6 +2479,24 @@
   "name": "Mayday_ocean_albedo_storm",
   "sha": "936e4058cf76703ec32c64389d4fe679431098bc51fc59c34c2c71a181ab0292",
   "source": "assets/ocean/ocean_albedo_storm.png",
+  "type": "Image"
+ },
+ "Image:93b67f8fd53d673f5aef9f3dccf4ddac85911bb9018dcc8a00761989ce529b53": {
+  "assetId": "91742155593291",
+  "imageId": "91742155593291",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Stone_NOR",
+  "sha": "93b67f8fd53d673f5aef9f3dccf4ddac85911bb9018dcc8a00761989ce529b53",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_NOR.png",
+  "type": "Image"
+ },
+ "Image:93d1890454426fc7ad0b027eb47f95bd0cfb79c985feee581df02b5179012bd3": {
+  "assetId": "82711825485967",
+  "imageId": "82711825485967",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_NOR",
+  "sha": "93d1890454426fc7ad0b027eb47f95bd0cfb79c985feee581df02b5179012bd3",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
   "type": "Image"
  },
  "Image:93fef13cd6902769620a50729be5ea3265e21e2c4aa9223f942eb47f9bfd0781": {
@@ -2524,6 +2715,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB.png",
   "type": "Image"
  },
+ "Image:a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310": {
+  "assetId": "123355798083948",
+  "imageId": "123355798083948",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Joinery_ALB",
+  "sha": "a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
+  "type": "Image"
+ },
  "Image:a21a72c4afad274107541ceec9ff534f40f74516a8b3079cadcf8d18068439c7": {
   "assetId": "103483290268754",
   "imageId": "103483290268754",
@@ -2668,6 +2868,15 @@
   "source": "assets/ocean/sky/Overcast_Lf.png",
   "type": "Image"
  },
+ "Image:adf5f434f6959462f01093c3673812c4a6ab3f59cae304baf5c3520c3af10356": {
+  "assetId": "90437163259317",
+  "imageId": "90437163259317",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Slate_ALB",
+  "sha": "adf5f434f6959462f01093c3673812c4a6ab3f59cae304baf5c3520c3af10356",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_ALB.png",
+  "type": "Image"
+ },
  "Image:ae19440076a837be292b6e0cd80bd3dc71cb471169b90c63492cf5e3207ea896": {
   "assetId": "114422933757856",
   "imageId": "114422933757856",
@@ -2713,6 +2922,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
   "type": "Image"
  },
+ "Image:af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a": {
+  "assetId": "73511196593796",
+  "imageId": "73511196593796",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_RGH",
+  "sha": "af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
+  "type": "Image"
+ },
  "Image:b0037f87fb3bc66c39fab45f2b968c230bddf47517254c3407a6fea825f35837": {
   "assetId": "138869603370468",
   "imageId": "138869603370468",
@@ -2738,6 +2956,15 @@
   "name": "T_RIBHelm_Seats_ALB",
   "sha": "b04ce80a700dcda0799b970d61b2686677f5e775a2bee9cd9ac09332de6b8d3e",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB.png",
+  "type": "Image"
+ },
+ "Image:b06a464bc1813426d861a4648451466e32906b5b9820e90c98d74a8fe904ae6a": {
+  "assetId": "123749310826793",
+  "imageId": "123749310826793",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_RGH",
+  "sha": "b06a464bc1813426d861a4648451466e32906b5b9820e90c98d74a8fe904ae6a",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_RGH.png",
   "type": "Image"
  },
  "Image:b0a2ba1a2dde875d0e763918a6bd75c9ab161e328c5b9b7cb7e0632570e9dcf1": {
@@ -2810,6 +3037,24 @@
   "name": "T_RIB_Decals_RGH_Wet",
   "sha": "b6b82f6dcd6174bbd0670677f75e54e67fd8c8146b4d06503369b0249a06370a",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:b6bdf19f7cc83396d5fe12c066397d9ae385bf2cd2e5520d3d8ac145895bb114": {
+  "assetId": "90296199230710",
+  "imageId": "90296199230710",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Details_ALB_Wet",
+  "sha": "b6bdf19f7cc83396d5fe12c066397d9ae385bf2cd2e5520d3d8ac145895bb114",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:b91a504b4f368b23aacc4d356cc78ab7f8d2761f8058f86902cd3f958a574478": {
+  "assetId": "126682138927937",
+  "imageId": "126682138927937",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Bands_ALB",
+  "sha": "b91a504b4f368b23aacc4d356cc78ab7f8d2761f8058f86902cd3f958a574478",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB.png",
   "type": "Image"
  },
  "Image:b9f202990d15d64b1808d0d3901ef58951af11537ed35023d2f88a2af1d915f4": {
@@ -3171,6 +3416,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:cf24be35e4fb71941c103a52a9d92a4cf7ac74a1bfea37444be5938d992f989b": {
+  "assetId": "124356271776396",
+  "imageId": "124356271776396",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Details_NOR",
+  "sha": "cf24be35e4fb71941c103a52a9d92a4cf7ac74a1bfea37444be5938d992f989b",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Details_NOR.png",
+  "type": "Image"
+ },
  "Image:cf4f2f7b538a352db4381a8e5a79eb91bef39adaf2a44a60589ea2bf037c52d8": {
   "assetId": "115469432642233",
   "imageId": "115469432642233",
@@ -3250,6 +3504,15 @@
   "name": "T_ChandleryProps_Atlas_ALB",
   "sha": "d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Atlas_ALB.png",
+  "type": "Image"
+ },
+ "Image:d32fecf05c0e8b40bffd2f6c274ed0770ba27a659c7ad4629bc5cc3df3e24297": {
+  "assetId": "86235013269823",
+  "imageId": "86235013269823",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_ALB",
+  "sha": "d32fecf05c0e8b40bffd2f6c274ed0770ba27a659c7ad4629bc5cc3df3e24297",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_ALB.png",
   "type": "Image"
  },
  "Image:d414d1aec9fb8126794d6686186c9b8b6b2cdf6a498a06f189141d194d5071e7": {
@@ -3627,6 +3890,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png",
   "type": "Image"
  },
+ "Image:ece67a54e82b4eacfaf65b737ac577de6b26ed80bad8482c12a6d6f1036ed0cd": {
+  "assetId": "107669926382738",
+  "imageId": "107669926382738",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Bands_NOR",
+  "sha": "ece67a54e82b4eacfaf65b737ac577de6b26ed80bad8482c12a6d6f1036ed0cd",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_NOR.png",
+  "type": "Image"
+ },
  "Image:ed45b2c818b1c3b118faf3777f1b151cc10e330bdd2ba0abff255bc787db6ff6": {
   "assetId": "132859274049976",
   "imageId": "132859274049976",
@@ -3771,6 +4043,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH.png",
   "type": "Image"
  },
+ "Image:f2162c4b16556de1f7eeb07aceb4b0e36073ac1accc1780b2ef44607945fe199": {
+  "assetId": "115139993525090",
+  "imageId": "115139993525090",
+  "moderation": "Reviewing",
+  "name": "T_Chandlery_Stone_ALB_Wet",
+  "sha": "f2162c4b16556de1f7eeb07aceb4b0e36073ac1accc1780b2ef44607945fe199",
+  "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:f29bff19053588efe20443129cec0e40c4099150768b7dd533673315f8f59d79": {
   "assetId": "108842386394704",
   "imageId": "108842386394704",
@@ -3913,6 +4194,15 @@
   "name": "T_ChandleryInt_Joinery_NOR",
   "sha": "fce51609ff218e9d5128c0c070ea41006c25723623cc72994bfa12225855b539",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
+  "type": "Image"
+ },
+ "Image:fd262c76efb1f2ea1f27b4ac850d8627097e3912c01bf1d22a3c60e2f56c1e28": {
+  "assetId": "83443127469898",
+  "imageId": "83443127469898",
+  "moderation": "Reviewing",
+  "name": "T_ChandleryInt_Lining_NOR",
+  "sha": "fd262c76efb1f2ea1f27b4ac850d8627097e3912c01bf1d22a3c60e2f56c1e28",
+  "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Lining_NOR.png",
   "type": "Image"
  },
  "Image:fe134f8bd415e2d4f3cdb9a1924162307f990105761ecfef4a99ac3b7a551d68": {
@@ -4219,6 +4509,16 @@
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD0.fbx",
   "type": "Model"
  },
+ "Model:6dd385691323521357b238c7c20ef9ec08ec49d8109ffd235158ef64591f0083": {
+  "assetId": "131566199014360",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext_LOD1",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6dd385691323521357b238c7c20ef9ec08ec49d8109ffd235158ef64591f0083",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:6f1dc2356f351763298f6843381a9382c31529043acf7d2fd353ee4e2e8d516b": {
   "assetId": "124101679376385",
   "moderation": "Approved",
@@ -4449,6 +4749,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
   "type": "Model"
  },
+ "Model:bcb8ac00ffc62d13e7b7f6ec8f8545e3d9d4dc1c16b5956fb894308c9746b071": {
+  "assetId": "118094905660470",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery",
+  "rbxm": "assets/models/M_Prop_Chandlery.rbxm",
+  "route": "delivery",
+  "sha": "bcb8ac00ffc62d13e7b7f6ec8f8545e3d9d4dc1c16b5956fb894308c9746b071",
+  "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:bd422ecf9a67d13fb508b6a39e205f0cdcdcbda2afa8dad38eec56b5d3f046f0": {
   "assetId": "131399458395573",
   "moderation": "Approved",
@@ -4469,6 +4779,16 @@
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
   "type": "Model"
  },
+ "Model:c100a51504998c79185523328f9b94916b364e3bb9a0240e605172de178090ba": {
+  "assetId": "72439322758230",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext.rbxm",
+  "route": "delivery",
+  "sha": "c100a51504998c79185523328f9b94916b364e3bb9a0240e605172de178090ba",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:c474a45157c1084c3a656dc62c193fe1cb5ea8eb71dca8523805e4c041e0ff94": {
   "assetId": "105577070931078",
   "moderation": "Approved",
@@ -4477,6 +4797,16 @@
   "route": "delivery",
   "sha": "c474a45157c1084c3a656dc62c193fe1cb5ea8eb71dca8523805e4c041e0ff94",
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c7e32f739c5df923250ed30098ea06e7973bdd02d6b5e305abdcae24f865baf1": {
+  "assetId": "98721125234902",
+  "moderation": "Approved",
+  "name": "M_Bld_Chandlery_Ext_LOD2",
+  "rbxm": "assets/models/M_Bld_Chandlery_Ext_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "c7e32f739c5df923250ed30098ea06e7973bdd02d6b5e305abdcae24f865baf1",
+  "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD2.fbx",
   "type": "Model"
  },
  "Model:cb333b59556c7a80beb7013eebcf544d56f05dc343a4f343df668146ad95b711": {
@@ -4569,6 +4899,16 @@
   "source": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
   "type": "Model"
  },
+ "Model:fa29130901c0c429a58864845a5353c87d7431dd3e10d168477447ed35189f04": {
+  "assetId": "110265683503505",
+  "moderation": "Approved",
+  "name": "M_Prop_Chandlery_LOD1",
+  "rbxm": "assets/models/M_Prop_Chandlery_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "fa29130901c0c429a58864845a5353c87d7431dd3e10d168477447ed35189f04",
+  "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:fe02247a2698a4a5f714bf6c19130f141014f334de5320076af5697f12f42956": {
   "assetId": "71211016289278",
   "moderation": "Approved",
@@ -4577,6 +4917,18 @@
   "route": "delivery",
   "sha": "fe02247a2698a4a5f714bf6c19130f141014f334de5320076af5697f12f42956",
   "source": "assets/fbx/Spike1/M_Spike1_Tentacle20.fbx",
+  "type": "Model"
+ },
+ "Model:ff178f1b737a8c88bf1ebf59254aec9583c2c9abc9ef9c8884c727621fa44106": {
+  "assetId": "77856458721407",
+  "moderation": "Approved",
+  "name": "M_Chr_Casualty_Swimmer_RigRaw",
+  "note": "new version (PATCH) of M_Chr_Casualty_Swimmer_LOD0: same geometry + R15 skeleton",
+  "rbxm": "build/ch1/rig/M_Chr_Casualty_Swimmer_RigRaw.rbxm",
+  "revisionId": "2",
+  "route": "delivery",
+  "sha": "ff178f1b737a8c88bf1ebf59254aec9583c2c9abc9ef9c8884c727621fa44106",
+  "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_Rig.fbx",
   "type": "Model"
  }
 }

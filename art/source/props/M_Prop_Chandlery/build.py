@@ -9,7 +9,8 @@ MeshParts (one material each, all on the shared atlas T_ChandleryProps_Atlas_* e
   RackWall   west wall rail: inflatable lifejackets and foam buoyancy aids face-out on hangers, 3 SOLAS ring buoys above,
              the horn board (4 horns, push buttons, plaques)
   RackMid    free-standing rail: foul-weather jackets and salopettes on hangers, sea boots on the floor
-  Gondola    double-sided shelf unit: bins of shackles, D-shackles on pegs, blocks, horn cleats, shelf-edge price tags
+  Gondola    double-sided shelf unit: labelled parts bins heaped with shackles, snap shackles and swivels, back-stock
+             trade packs, D-shackles on pegs, blocks, horn cleats, boxed F2 fenders, shelf-edge price tags
   Mannequins 4 faceless dress-form mannequins (no body mesh: garments merged into the same mesh) on bases:
              foul-weather red, Hi-Vis, crew drysuit + lifejacket, navy offshore
   Hung       fenders and mooring buoys on eyebolts under the beams
@@ -283,16 +284,99 @@ def cleat(P, M, region="Stainless"):
     P.cyl(W(M, (-0.09, 0, 0.032)), W(M, (0.09, 0, 0.032)), 0.011, 5, region, r1=0.011)
 
 
-def bin_(P, x0, y0, z0, w, d, h, ti, contents="Stainless"):
-    t = 0.004
-    P.box((x0, y0, z0), (x0 + w, y0 + d, z0 + h), "Plastic", skip=("+z",))
-    P.box((x0 + t, y0 + t, z0 + t), (x0 + w - t, y0 + d - t, z0 + h), "Plastic", skip=("+z",))
-    P.f[-5:] = [(list(reversed(f[0])), f[1], f[2]) for f in P.f[-5:]]
-    a = 0
-    Ms = frame(x0 + w * 0.5, y0 + d * 0.3, z0 + h * 0.62, 30, 70, 15)
-    shackle(P, Ms, 1.5, contents)
-    P.box((x0 + 0.01, y0 + 0.01, z0 + t), (x0 + w - 0.01, y0 + d - 0.01, z0 + h * 0.45), contents)
-    return a
+def printed_box(P, M, w, d, h, side, decal, rc):
+    """Box centred on local x / y, z 0..h, its -y face printed with decal rect rc (the rest in tile region `side`)."""
+    R3 = M.to_3x3()
+    fit = (decal, fit_frame(W(M, (-w / 2, -d / 2, 0)), R3 @ Vector((1, 0, 0)), R3 @ Vector((0, 0, 1)), w, h, rc))
+    P.box((-w / 2, -d / 2, 0), (w / 2, d / 2, h), side, M, fits={"-y": fit})
+
+
+# bin stock: low-poly hardware for the heaps (local: shape in the XZ plane, about 0.04 m across at size 1)
+def bin_shackle(P, M, s, region, dee=False):
+    R, leg = 0.016 * s, 0.018 * s
+    if dee:
+        pts = [(-R * 0.75, 0, -leg), (-R * 0.75, 0, R * 0.5), (0, 0, R * 1.05), (R * 0.75, 0, R * 0.5), (R * 0.75, 0, -leg)]
+    else:
+        pts = [(-R * 0.8, 0, -leg), (-R * 1.05, 0, R * 0.35), (0, 0, R * 1.15), (R * 1.05, 0, R * 0.35), (R * 0.8, 0, -leg)]
+    P.sweep(Ws(M, pts), 0.0038 * s, 3, region)
+    xr = (0.75 if dee else 0.8) * R
+    P.cyl(W(M, (-xr - 0.005 * s, 0, -leg)), W(M, (xr + 0.008 * s, 0, -leg)), 0.0042 * s, 3, region, caps=False, split=1)
+
+
+def bin_snap(P, M, s, region):
+    P.cyl(W(M, (0, 0, 0.012 * s)), W(M, (0, 0, -0.022 * s)), 0.007 * s, 4, region, r1=0.0105 * s, split=1)
+    P.sweep(Ws(M, [(-0.008 * s, 0, -0.02 * s), (-0.016 * s, 0, -0.04 * s), (0, 0, -0.052 * s), (0.016 * s, 0, -0.04 * s),
+                   (0.009 * s, 0, -0.024 * s)]), 0.0032 * s, 3, region)
+    P.sweep(Ws(M, [(-0.004 * s, 0, 0.012 * s), (-0.011 * s, 0, 0.022 * s), (0, 0, 0.032 * s), (0.011 * s, 0, 0.022 * s),
+                   (0.004 * s, 0, 0.012 * s)]), 0.0028 * s, 3, region, caps=False)
+
+
+def bin_swivel(P, M, s, region):
+    P.cyl(W(M, (0, 0, -0.008 * s)), W(M, (0, 0, 0.008 * s)), 0.0065 * s, 4, region, split=1)
+    for sz in (-1, 1):
+        P.sweep(Ws(M, [(-0.004 * s, 0, sz * 0.008 * s), (-0.011 * s, 0, sz * 0.017 * s), (0, 0, sz * 0.027 * s),
+                       (0.011 * s, 0, sz * 0.017 * s), (0.004 * s, 0, sz * 0.008 * s)]), 0.0028 * s, 3, region, caps=False)
+
+
+BIN_ITEMS = {"bow": (lambda P, M, s, r: bin_shackle(P, M, s, r), 10), "dee": (lambda P, M, s, r: bin_shackle(P, M, s, r, True), 10),
+             "snap": (bin_snap, 5), "swivel": (bin_swivel, 5)}
+
+
+def bin_(P, x0, y0, z0, w, d, label, front, seed):
+    """Stacking parts bin (Linbin style: low sloped front with a label holder, high back) heaped with one kind of
+    hardware; label = index into atlas.BIN_LABELS; front = -1 (front face at y0) or +1 (at y0 + d)."""
+    t, hf, hb = 0.004, 0.075, 0.13
+    for inset, flipf in ((0.0, False), (t, True)):
+        b = len(P.v)
+        P.box((x0 + inset, y0 + inset, z0 + (inset and t)), (x0 + w - inset, y0 + d - inset, z0 + hb), "Plastic", skip=("+z",))
+        for xi in (0, 1):           # drop the front top edge: the scoop
+            P.v[b + 4 + (0 if front < 0 else 2) + xi].z = z0 + hf
+        if flipf:
+            P.f[-5:] = [(list(reversed(f[0])), f[1], f[2]) for f in P.f[-5:]]
+    yfr = y0 if front < 0 else y0 + d
+    lw, lh = atlas.BIN_LABEL_M
+    xc = x0 + w / 2
+    printed_box(P, frame(xc, yfr + front * 0.0009, z0 + hf - lh - 0.008, 0 if front < 0 else 180), lw, 0.0018, lh,
+                "BlackPlastic", "BinLabels", atlas.bin_label_rect(label))
+    kind = atlas.BIN_LABELS[label][2]
+    fn, n = BIN_ITEMS[kind]
+    region = "Galv" if "GALV" in atlas.BIN_LABELS[label][1] else "Stainless"
+    size = 1.25 if any(c in atlas.BIN_LABELS[label][1] for c in ("10", "90")) else 1.0
+    rng = np.random.default_rng(seed)
+    for k in range(n):
+        # a heap: higher at the back-centre, spilling to the low front
+        u = rng.uniform(0.18, 0.82)
+        v = rng.uniform(0.15, 0.85)
+        heap = max(0.0, 1.0 - ((u - 0.5) / 0.5) ** 2 - ((v - 0.6) / 0.6) ** 2)
+        layer = k / max(1, n - 1)
+        z = z0 + t + 0.006 * size + (0.012 + 0.03 * heap) * layer
+        yy = y0 + d * (v if front > 0 else 1 - v)
+        fn(P, frame(x0 + w * u, yy, z, rng.uniform(0, 360), 90 + rng.uniform(-40, 40), rng.uniform(-35, 35)), size, region)
+    return 0
+
+
+def fender_box_stack(P, x, yfront, z, sgn, n, yaw=0.0, loose=False):
+    """n boxed F2 fenders stacked on the deck, printed face out (sgn -1: facing -y); optional loose fender on top."""
+    bw, bh = atlas.FENDER_BOX_M
+    bd = 0.25
+    for k in range(n):
+        yawk = yaw + (3.0 if k % 2 else -1.5)
+        M = frame(x + 0.012 * (k % 2), yfront - sgn * bd / 2, z + k * bh, (0 if sgn < 0 else 180) + yawk)
+        printed_box(P, M, bw, bd, bh, "Kraft", "FenderBox", atlas.rect("FenderBox"))
+    if loose:
+        L_, r = 0.56, 0.095
+        prof = [(0.028, 0.0), (0.075, 0.025), (r, 0.085), (r, L_ - 0.085), (0.075, L_ - 0.025), (0.028, L_)]
+        M = (frame(x, yfront - sgn * bd / 2, z + n * bh + r * 0.92, 20.0) @ Matrix.Translation((-L_ / 2, 0, 0))
+             @ Matrix.Rotation(math.radians(90), 4, 'Y'))
+        P.lathe(prof, 8, "FenderPVC", M)
+
+
+def stock_box(P, x, yback, z, sgn, k):
+    """Back-stock trade pack behind a bin, printed front towards the aisle (sgn -1: aisle at -y)."""
+    w, h = atlas.STOCK_BOX_M
+    d = 0.17
+    printed_box(P, frame(x, yback - sgn * d / 2, z, (0 if sgn < 0 else 180) + (4.0 if k % 2 else -3.0)), w, d, h,
+                "Kraft", "StockBox", atlas.rect("StockBox"))
 
 
 def gondola():
@@ -330,15 +414,19 @@ def gondola():
                 block(P, frame(xx, ymid, zs + 0.05, 0, 0, 0))
             else:
                 cleat(P, frame(xx, ymid + sgn * 0.05, zs, 90 * (side == "N") + 10), "Stainless" if k == 1 else "BlackPlastic")
-        # middle shelf: bins of shackles with tags on the shelf lip
+        # middle shelf: labelled parts bins heaped with shackles, snap shackles and swivels; price tags on the shelf
+        # lip, trade packs of back stock behind the bins
         zm = shelves[1] + 0.025
         for k, xx in enumerate(np.linspace(x0 + 0.1, x1 - 0.42, 6)):
-            dd = abs(yf - yc) - 0.06
-            yb0 = yc + 0.03 if side == "N" else yf + 0.02
-            bin_(P, xx, yb0, zm, 0.3, dd, 0.14, ti, "Stainless" if k % 2 else "Galv")
+            dd = 0.30
+            yb0 = yf + 0.02 if side == "S" else yf - 0.02 - dd
+            lab = (k + 2 * (side == "N")) % atlas.N_BIN_LABELS
+            bin_(P, xx, yb0, zm, 0.3, dd, lab, sgn, 40 + k + 10 * (side == "N"))
             yl = yf + sgn * 0.009
             tag(P, frame(xx + 0.15, yl, zm + 0.016, 0 if side == "S" else 180), ti)
             ti = (ti + 1) % 5 + 2
+            yback = (yb0 + dd + 0.02) if side == "S" else (yb0 - 0.02)
+            stock_box(P, xx + 0.15, yback, zm, sgn, k)
         # bottom deck: big hanks west bay, shackles on pegs above the middle shelf east bay
         zb = shelves[0] + 0.025
         holder.append((x0 + 0.5, ymid, zb, "NavyHank" if side == "S" else "ManilaHank"))
@@ -350,9 +438,9 @@ def gondola():
             for j in range(2):
                 shackle(P, frame(xx, ys + sgn * (0.06 + 0.06 * j), zp + 0.012 + 0.008 * j), 1.6, "Galv" if k == 1 else "Stainless")
             tag(P, frame(xx, ys + sgn * 0.165, zp + 0.01, 0 if side == "S" else 180), 4)
-        # bottom deck east bay: boxed fenders stand-in = blocks laid out
-        for k, xx in enumerate(np.linspace(xm + 0.3, x1 - 0.35, 3)):
-            block(P, frame(xx, ymid, zb + 0.04, 0, 90, 0))
+        # bottom deck east bay: boxed F2 fenders stacked two high, one box opened with its fender on top
+        for k, xx in enumerate(np.linspace(xm + 0.36, x1 - 0.38, 3)):
+            fender_box_stack(P, xx, yf - sgn * 0.05, zb, sgn, 1 if k == 2 else 2, yaw=2.0 * (k - 1), loose=k == 2)
     return P, holder
 
 
@@ -537,7 +625,8 @@ def hanks(holder):
         big = z < L.FLOOR + 0.3
         R, r = (0.17, 0.05) if big else (0.12, 0.034)
         M = frame(x, y, z + r * 0.85, 15 * k) @ Matrix.Diagonal((1, 1, 0.85, 1))
-        ROPE.hank((x, y, z), R, r, strip, segs=16 if big else 14, rsegs=8 if big else 7, M=M, binds=2, rope_mod=rope,
+        # 12 x 6 sections: the bottom-deck hanks sit at knee height, the top ones read by their trim strip (budget H2 fix)
+        ROPE.hank((x, y, z), R, r, strip, segs=12, rsegs=6, M=M, binds=2, rope_mod=rope,
                   tail=strip != "GreenHank")
 
 

@@ -231,6 +231,93 @@ def draw_tags(w, hgt):
     return img
 
 
+def kraft(w, hgt, seed):
+    mul, _, _ = pattern("paper", 256, seed)
+    base = np.array(atlas.R["Kraft"][6], float)
+    fib = noise(256, 8, seed + 5, (1.0, 0.25))
+    tile = np.clip(base * (mul * (0.94 + 0.1 * fib))[..., None], 0, 255)
+    return np.tile(tile, (hgt // 256 + 1, w // 256 + 1, 1))[:hgt, :w]
+
+
+def pict(d, kind, cx, cy, s, ink, wd):
+    """Line pictogram of a bin item, centred at (cx, cy), half-size s px."""
+    if kind in ("bow", "dee"):
+        if kind == "bow":
+            d.arc([cx - s, cy - s, cx + s, cy + s * 0.9], 180, 360, fill=ink, width=wd)
+            d.arc([cx - s * 0.9, cy - s * 0.6, cx + s * 0.9, cy + s * 0.6], 160, 200, fill=ink, width=wd)
+            d.arc([cx - s * 0.9, cy - s * 0.6, cx + s * 0.9, cy + s * 0.6], 340, 20, fill=ink, width=wd)
+        else:
+            d.arc([cx - s * 0.7, cy - s, cx + s * 0.7, cy + s * 0.4], 180, 360, fill=ink, width=wd)
+            for sx in (-1, 1):
+                d.line([cx + sx * s * 0.7, cy - s * 0.3, cx + sx * s * 0.7, cy + s * 0.6], fill=ink, width=wd)
+        d.line([cx - s * 1.05, cy + s * 0.65, cx + s * 1.05, cy + s * 0.65], fill=ink, width=wd + 2)
+    elif kind == "snap":
+        d.ellipse([cx - s * 0.4, cy - s * 1.1, cx + s * 0.4, cy - s * 0.45], outline=ink, width=wd)
+        d.polygon([(cx - s * 0.3, cy - s * 0.4), (cx + s * 0.3, cy - s * 0.4), (cx + s * 0.45, cy + s * 0.3),
+                   (cx - s * 0.45, cy + s * 0.3)], fill=ink)
+        d.arc([cx - s * 0.6, cy - s * 0.1, cx + s * 0.6, cy + s * 1.1], 0, 200, fill=ink, width=wd)
+    else:
+        for sy in (-1, 1):
+            d.ellipse([cx - s * 0.38, cy + sy * s * 0.62 - s * 0.38, cx + s * 0.38, cy + sy * s * 0.62 + s * 0.38],
+                      outline=ink, width=wd)
+        d.rectangle([cx - s * 0.2, cy - s * 0.28, cx + s * 0.2, cy + s * 0.28], fill=ink)
+
+
+def draw_bin_labels(w, hgt):
+    img = Image.new("RGB", (w, hgt), (222, 216, 202))
+    d = ImageDraw.Draw(img)
+    bands = [(66, 82, 110), (96, 90, 84), (66, 96, 76), (128, 72, 64)]
+    lw, lh = w // 4, hgt // 2
+    ink = (40, 40, 42)
+    for i, (a, b, kind) in enumerate(atlas.BIN_LABELS):
+        x0, y0 = (i % 4) * lw, (i // 4) * lh
+        d.rectangle([x0, y0, x0 + lw - 1, y0 + lh - 1], fill=(56, 58, 62))          # black label holder rim
+        d.rectangle([x0 + 7, y0 + 7, x0 + lw - 8, y0 + lh - 8], fill=(226 - 3 * (i % 3), 220 - 2 * (i % 2), 204))
+        d.rectangle([x0 + 7, y0 + 7, x0 + lw - 8, y0 + 30], fill=bands[i % 4])
+        d.text((x0 + lw // 2, y0 + 19), "PORT HAVEN CHANDLERY", fill=(214, 206, 184), font=font(FONT_N, 14), anchor="mm")
+        pict(d, kind, x0 + 44, y0 + 78, 22, ink, 5)
+        d.text((x0 + 160, y0 + 58), a, fill=ink, font=font(FONT_N, 24), anchor="mm")
+        d.text((x0 + 160, y0 + 86), b, fill=(70, 66, 60), font=font(FONT_N, 20), anchor="mm")
+        d.text((x0 + 160, y0 + 108), "%d.%02d EACH" % (2 + 3 * i % 9, (15 * i) % 100), fill=(110, 52, 44), font=font(FONT_B, 15),
+               anchor="mm")
+    return img
+
+
+def draw_fender_box(w, hgt):
+    img = Image.fromarray(kraft(w, hgt, 71).astype(np.uint8))
+    d = ImageDraw.Draw(img)
+    ink, navy = (54, 46, 40), (56, 66, 92)
+    d.rectangle([10, 10, w - 11, hgt - 11], outline=ink, width=4)
+    d.rectangle([w - 182, 10, w - 11, hgt - 11], fill=(214, 206, 186))                  # white end panel
+    d.text((w - 96, 54), "F2", fill=navy, font=font(FONT_K, 60), anchor="mm")
+    d.text((w - 96, 112), "NAVY", fill=ink, font=font(FONT_B, 28), anchor="mm")
+    d.text((w - 96, 150), "220 x 600 MM", fill=ink, font=font(FONT_N, 22), anchor="mm")
+    for k in range(9):                                                                   # barcode
+        d.rectangle([w - 160 + 16 * k, 184, w - 160 + 16 * k + 4 + 4 * (k % 3), 228], fill=ink)
+    d.text((166, 48), "PORT HAVEN", fill=ink, font=font(FONT_K, 40), anchor="mm")
+    d.text((166, 88), "MARINE FENDERS", fill=ink, font=font(FONT_B, 22), anchor="mm")
+    d.rounded_rectangle([40, 128, 292, 206], 36, fill=navy)                              # fender silhouette
+    for sx in (24, 308):
+        d.ellipse([sx - 12, 155, sx + 12, 179], outline=navy, width=6)
+    d.line([60, 136, 272, 136], fill=(88, 98, 124), width=6)
+    return img
+
+
+def draw_stock_box(w, hgt):
+    img = Image.fromarray(kraft(w, hgt, 83).astype(np.uint8))
+    d = ImageDraw.Draw(img)
+    ink = (54, 46, 40)
+    d.rectangle([8, 8, w - 9, hgt - 9], outline=ink, width=3)
+    d.rectangle([28, 60, w - 29, 196], fill=(216, 208, 188))
+    d.text((w // 2, 32), "PORT HAVEN", fill=ink, font=font(FONT_K, 26), anchor="mm")
+    pict(d, "bow", 70, 128, 26, ink, 5)
+    d.text((168, 100), "SHACKLES", fill=ink, font=font(FONT_N, 24), anchor="mm")
+    d.text((168, 130), "S/S  A4", fill=ink, font=font(FONT_N, 22), anchor="mm")
+    d.text((168, 166), "x 25", fill=(110, 52, 44), font=font(FONT_K, 26), anchor="mm")
+    d.text((w // 2, 224), "TRADE PACK", fill=ink, font=font(FONT_B, 18), anchor="mm")
+    return img
+
+
 def draw_radio(w, hgt):
     img = Image.new("RGB", (w, hgt), (54, 56, 58))
     d = ImageDraw.Draw(img)
@@ -316,6 +403,12 @@ def main():
                 im, m = draw_tags(w, h), None
             elif pat == "radio":
                 im, m = draw_radio(w, h), None
+            elif pat == "binlabels":
+                im, m = draw_bin_labels(w, h), None
+            elif pat == "fenderbox":
+                im, m = draw_fender_box(w, h), None
+            elif pat == "stockbox":
+                im, m = draw_stock_box(w, h), None
             else:
                 im, m = draw_board(w, h, pat, 300 + i)
             a = np.asarray(im, float)
@@ -374,7 +467,13 @@ def main():
     Image.fromarray(np.round(rrgh * 255).astype(np.uint8)).save(stem + "RGH.png")
     Image.fromarray(np.zeros((S, S), np.uint8)).save(stem + "MET.png")
     print("wrote", OUT)
+    # map checks; signal_mask.png next to this script is picked up by check_textures' convention (auto_signal_masks)
+    sys.path.insert(0, os.path.join(G, "tools/blender"))
+    import check_textures
+    rep = os.path.join(G, "assets/review", os.path.basename(OUT))
+    os.makedirs(rep, exist_ok=True)
+    return check_textures.main([OUT, "--json", os.path.join(rep, "check_textures.json")])
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

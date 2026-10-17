@@ -283,7 +283,7 @@ class RopePart:
             radial = Vector((math.cos(t), math.sin(t), 0))
             ring = [M @ (c + (radial * math.cos(a) + Vector((0, 0, 1)) * math.sin(a)) * (r + 0.004))
                     for a in np.linspace(0, 2 * math.pi, 9)]
-            self.tube(rope_mod, [tuple(p) for p in ring], 0.007, single, "plain", sides=4, max_tris=48, caps=False)
+            self.tube(rope_mod, [tuple(p) for p in ring], 0.007, single, "plain", sides=4, max_tris=32, caps=False)
         if tail:
             t = 2 * math.pi * 0.62
             a = Vector(((R + r * 0.6) * math.cos(t), (R + r * 0.6) * math.sin(t), r * 0.5))
@@ -291,7 +291,7 @@ class RopePart:
             side = Vector((-math.sin(t), math.cos(t), 0))
             pts = [M @ (a + out * (0.05 * k) + side * (0.03 * math.sin(k)) - Vector((0, 0, min(k, 2) * r * 0.45)))
                    for k in range(5)]
-            self.tube(rope_mod, [tuple(p) for p in pts], 2 * r / 3.2, single, "plain", sides=6, max_tris=60)
+            self.tube(rope_mod, [tuple(p) for p in pts], 2 * r / 3.2, single, "plain", sides=5, max_tris=40)
 
     def to_object(self, rope_mod, obj_name):
         return rope_mod._object(obj_name, self.parts, "ChandleryProps")

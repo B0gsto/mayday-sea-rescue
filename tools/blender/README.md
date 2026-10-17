@@ -20,7 +20,7 @@ is one run, each bake is its own run.
 
 # no heavy slot (system python3 + Pillow + numpy)
 python3 tools/blender/sheet.py --asset <Asset> [--out-root build/x] [--studio <dir>] [--reference <photo>]   # 1536 px sheet
-python3 tools/blender/check_textures.py assets/textures/<Asset>/ [--cap 4096] [--alpha] [--wet] [--signal-mask T_<Name>_<Set>=mask.png]
+python3 tools/blender/check_textures.py assets/textures/<Asset>/ [--cap 4096] [--alpha] [--wet] [--signal-mask T_<Name>_<Set>=mask.png] (auto: art/source/<kind>/<Asset>/signal_mask.png or T_<Name>_<Set>_signal.png)
 python3 -m unittest discover -b -s tools/blender -p 'test_*.py'
 tools/blender/selftest/run_selftest.sh        # tests + the bollard end to end (2 short Blender runs) -> build/blender-selftest/
 # bake one set fast (B01): masters at 512 instead of 4096
