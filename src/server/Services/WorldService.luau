@@ -92,6 +92,9 @@ local function addStorePrompts(map: Instance)
 	end
 end
 
+-- Adds the store prompts under `root` (WorldDressingService calls it after moving a marker onto a Package).
+WorldService.addStorePrompts = addStorePrompts
+
 function WorldService.Start()
 	hideMarkers(Workspace:FindFirstChild("Zones"))
 	local map = Workspace:FindFirstChild("Map")

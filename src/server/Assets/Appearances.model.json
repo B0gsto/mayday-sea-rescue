@@ -6,6 +6,30 @@
    "ClassName": "Folder",
    "Children": [
     {
+     "Name": "Bands",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://126682138927937",
+        "NormalMap": "rbxassetid://107669926382738",
+        "RoughnessMap": "rbxassetid://122233115030889"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://120584434821371",
+        "NormalMap": "rbxassetid://107669926382738",
+        "RoughnessMap": "rbxassetid://100802801575312"
+       }
+      }
+     ]
+    },
+    {
      "Name": "Details",
      "ClassName": "Folder",
      "Children": [
@@ -13,9 +37,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://120035276122390",
-        "NormalMap": "rbxassetid://102411696808780",
-        "RoughnessMap": "rbxassetid://139106048152461",
+        "ColorMap": "rbxassetid://83519248866446",
+        "NormalMap": "rbxassetid://110938698586980",
+        "RoughnessMap": "rbxassetid://73511196593796",
         "MetalnessMap": "rbxassetid://104897708860271"
        }
       },
@@ -23,9 +47,9 @@
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://115658512807600",
-        "NormalMap": "rbxassetid://102411696808780",
-        "RoughnessMap": "rbxassetid://105457741487761",
+        "ColorMap": "rbxassetid://90296199230710",
+        "NormalMap": "rbxassetid://110938698586980",
+        "RoughnessMap": "rbxassetid://76473974963286",
         "MetalnessMap": "rbxassetid://104897708860271"
        }
       }
@@ -39,18 +63,42 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://86948295014052",
-        "NormalMap": "rbxassetid://127863606733033",
-        "RoughnessMap": "rbxassetid://117483510246874"
+        "ColorMap": "rbxassetid://90437163259317",
+        "NormalMap": "rbxassetid://114952564703794",
+        "RoughnessMap": "rbxassetid://74732836042532"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://139352543048143",
-        "NormalMap": "rbxassetid://127863606733033",
-        "RoughnessMap": "rbxassetid://84745109172448"
+        "ColorMap": "rbxassetid://74366216349202",
+        "NormalMap": "rbxassetid://114952564703794",
+        "RoughnessMap": "rbxassetid://127334089446577"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Stone",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://133059993627264",
+        "NormalMap": "rbxassetid://91742155593291",
+        "RoughnessMap": "rbxassetid://102126340609881"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://115139993525090",
+        "NormalMap": "rbxassetid://91742155593291",
+        "RoughnessMap": "rbxassetid://94586893341453"
        }
       }
      ]
@@ -69,9 +117,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://133339368291517",
-        "NormalMap": "rbxassetid://107103226456779",
-        "RoughnessMap": "rbxassetid://90005849079078",
+        "ColorMap": "rbxassetid://96847335271417",
+        "NormalMap": "rbxassetid://124356271776396",
+        "RoughnessMap": "rbxassetid://76208343645762",
         "MetalnessMap": "rbxassetid://91181341396446"
        }
       }
@@ -85,9 +133,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://115273437194420",
-        "NormalMap": "rbxassetid://108334098253080",
-        "RoughnessMap": "rbxassetid://97155378858191"
+        "ColorMap": "rbxassetid://123355798083948",
+        "NormalMap": "rbxassetid://82711825485967",
+        "RoughnessMap": "rbxassetid://98519338287215"
        }
       }
      ]
@@ -100,9 +148,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://138288822640667",
-        "NormalMap": "rbxassetid://106108467598566",
-        "RoughnessMap": "rbxassetid://75082472767101"
+        "ColorMap": "rbxassetid://86235013269823",
+        "NormalMap": "rbxassetid://83443127469898",
+        "RoughnessMap": "rbxassetid://123749310826793"
        }
       }
      ]
@@ -115,9 +163,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://138376265885730",
-        "NormalMap": "rbxassetid://89078940590423",
-        "RoughnessMap": "rbxassetid://84388384268744"
+        "ColorMap": "rbxassetid://93669797587817",
+        "NormalMap": "rbxassetid://116144171610880",
+        "RoughnessMap": "rbxassetid://124950466629746"
        }
       }
      ]
@@ -589,9 +637,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://71920021950811",
-        "NormalMap": "rbxassetid://80677727296225",
-        "RoughnessMap": "rbxassetid://91462357892618",
+        "ColorMap": "rbxassetid://122040682702478",
+        "NormalMap": "rbxassetid://130995619446535",
+        "RoughnessMap": "rbxassetid://71755285482352",
         "MetalnessMap": "rbxassetid://88821589220060"
        }
       }
@@ -608,6 +656,480 @@
         "ColorMap": "rbxassetid://105999388453791",
         "NormalMap": "rbxassetid://89602092156365",
         "RoughnessMap": "rbxassetid://79172190348487"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Prop_Chandlery_Stock",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Atlas",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://131752838378729",
+        "NormalMap": "rbxassetid://71253414441637",
+        "RoughnessMap": "rbxassetid://135971620367742",
+        "MetalnessMap": "rbxassetid://131230835504645"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_01",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://105377411555545",
+        "NormalMap": "rbxassetid://77192110147089",
+        "RoughnessMap": "rbxassetid://78955305672449"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://77320145132872",
+        "NormalMap": "rbxassetid://77192110147089",
+        "RoughnessMap": "rbxassetid://87535994304982"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_02",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://86849873686508",
+        "NormalMap": "rbxassetid://108269341455600",
+        "RoughnessMap": "rbxassetid://93922833196411"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://76759123193096",
+        "NormalMap": "rbxassetid://108269341455600",
+        "RoughnessMap": "rbxassetid://71151702200503"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_03",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://104600883358990",
+        "NormalMap": "rbxassetid://123998954863178",
+        "RoughnessMap": "rbxassetid://97265162267160"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://76180140321220",
+        "NormalMap": "rbxassetid://123998954863178",
+        "RoughnessMap": "rbxassetid://75875110907213"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_04",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://90020565088514",
+        "NormalMap": "rbxassetid://134326219269988",
+        "RoughnessMap": "rbxassetid://97443639842175"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://139634144331209",
+        "NormalMap": "rbxassetid://134326219269988",
+        "RoughnessMap": "rbxassetid://138343087923112"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_05",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://85855670324349",
+        "NormalMap": "rbxassetid://79738791111924",
+        "RoughnessMap": "rbxassetid://121585588731038"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://85299473793000",
+        "NormalMap": "rbxassetid://79738791111924",
+        "RoughnessMap": "rbxassetid://113089408048886"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Boulder_06",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://98373353263985",
+        "NormalMap": "rbxassetid://102607780918145",
+        "RoughnessMap": "rbxassetid://117525887031775"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://70439985229253",
+        "NormalMap": "rbxassetid://102607780918145",
+        "RoughnessMap": "rbxassetid://116301557643830"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Cliff_01",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://134603804359577",
+        "NormalMap": "rbxassetid://123981129089477",
+        "RoughnessMap": "rbxassetid://83844821718003"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://100944158548172",
+        "NormalMap": "rbxassetid://123981129089477",
+        "RoughnessMap": "rbxassetid://128739377990009"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Cliff_02",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://124254426798757",
+        "NormalMap": "rbxassetid://137666019441071",
+        "RoughnessMap": "rbxassetid://121880347905156"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://73610620316145",
+        "NormalMap": "rbxassetid://137666019441071",
+        "RoughnessMap": "rbxassetid://82464006994708"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Cliff_03",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71390742807256",
+        "NormalMap": "rbxassetid://137556948430666",
+        "RoughnessMap": "rbxassetid://72330000729118"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://112807913962755",
+        "NormalMap": "rbxassetid://137556948430666",
+        "RoughnessMap": "rbxassetid://126318620648184"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Cliff_04",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132160330731478",
+        "NormalMap": "rbxassetid://124155620934453",
+        "RoughnessMap": "rbxassetid://73329084813786"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132146210047204",
+        "NormalMap": "rbxassetid://124155620934453",
+        "RoughnessMap": "rbxassetid://90000085623174"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Cliff_05",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://96190320515465",
+        "NormalMap": "rbxassetid://129277136018010",
+        "RoughnessMap": "rbxassetid://81532639387999"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://81193051288396",
+        "NormalMap": "rbxassetid://129277136018010",
+        "RoughnessMap": "rbxassetid://119020745615725"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Ledge_01",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://99131954796306",
+        "NormalMap": "rbxassetid://86491673662595",
+        "RoughnessMap": "rbxassetid://107779867564384"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132065214329783",
+        "NormalMap": "rbxassetid://86491673662595",
+        "RoughnessMap": "rbxassetid://107460080020637"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Ledge_02",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://72173813808751",
+        "NormalMap": "rbxassetid://87610574661777",
+        "RoughnessMap": "rbxassetid://86744316595762"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://125453869134573",
+        "NormalMap": "rbxassetid://87610574661777",
+        "RoughnessMap": "rbxassetid://113968357106199"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Rock_Ledge_03",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Granite",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://127047371968205",
+        "NormalMap": "rbxassetid://95518186690593",
+        "RoughnessMap": "rbxassetid://127624915750614"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://131685386322309",
+        "NormalMap": "rbxassetid://95518186690593",
+        "RoughnessMap": "rbxassetid://76525759925242"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veg_FoliageLand",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Main",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://108926413774179",
+        "NormalMap": "rbxassetid://115536868537189",
+        "RoughnessMap": "rbxassetid://101449066842394",
+        "MetalnessMap": "rbxassetid://87872063083227"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://80392929167799",
+        "NormalMap": "rbxassetid://115536868537189",
+        "RoughnessMap": "rbxassetid://132660770674454",
+        "MetalnessMap": "rbxassetid://87872063083227"
        }
       }
      ]

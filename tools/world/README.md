@@ -44,3 +44,16 @@ Mud (harbour bed). Asphalt, Concrete (slipway), Cobblestone (quayside) under the
 
 **Open.** The shore bake for `Waves.luau` (doc 10 section 6.4), MaterialVariants, the doc 10 harbour re-lay (mouth
 at about 900 studs; gameplay code and tests still use z = 368), `GameConfig.MapRadius` 2,000 vs WorldConfig's 2,500.
+
+**Props (rocks + vegetation).** `python3 tools/world/scatter_props.py [--seed N] [--preview build/world/props_preview.png]`
+reads the bake + layout.py and writes `map/generated/props.json` (compact, deterministic; seed defaults to
+`layout.SEED`): `assets` (names), `rocks` and `plants` as `[a, x, y, z, yaw, tx, tz, s, b]` rows (a = 1-based asset
+index; y = bilinear terrain height; the consumer does `CFrame.new(x,y,z) * CFrame.Angles(rad(tx), 0, rad(tz)) *
+CFrame.Angles(0, rad(yaw), 0)`, scales by s and sinks b of the scaled height; `b = -1` = waterline mode: the asset's
+`ATT_Waterline` goes to y = 0 +- 0.6 tide jitter). Rocks (K1, about 800): waterline ledges + Boulder_04/05 on rocky and
+cliff shores, boulders at cliff feet and on the shallow reef tops, Cliff chunks on slopes over 40 deg, weighted
+Poisson-disk by footprint. Plants (G1, cap 3,500 in the MVP radius): clustered (centres + gaussian offsets) by
+material, slope, hollows and coast distance, per-kind per-region budgets in `PLANT_BUDGET`. Excluded: roads + 8 studs
+verge, slipways (12), car parks (10), harbour basin + quay + arms, the town platform (turf allowed on its 20-stud rim),
+station / Chandlery box, Harbour Cove, the beach sand strip (marram only on the dunes behind it), points (30), POIs
+(25), paved materials, and anything under water except reef boulders and the waterline pieces.

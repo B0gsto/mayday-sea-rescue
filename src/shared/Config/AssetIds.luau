@@ -7,14 +7,14 @@ local AssetIds = {}
 
 AssetIds.Models = {
 	M_Bld_Chandlery_Ext = {
-		LOD0 = "rbxassetid://139043023346846",
-		LOD1 = "rbxassetid://95987279523296",
-		LOD2 = "rbxassetid://135207525204755",
+		LOD0 = "rbxassetid://72439322758230",
+		LOD1 = "rbxassetid://131566199014360",
+		LOD2 = "rbxassetid://98721125234902",
 	},
 	M_Bld_Chandlery_Int = {
-		LOD0 = "rbxassetid://72528639536242",
-		LOD1 = "rbxassetid://79006856545686",
-		LOD2 = "rbxassetid://90406652098221",
+		LOD0 = "rbxassetid://119125465148068",
+		LOD1 = "rbxassetid://96186240857669",
+		LOD2 = "rbxassetid://120023603525383",
 	},
 	M_Bld_Slipway = {
 		LOD0 = "rbxassetid://110694739174939",
@@ -48,8 +48,82 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://88269285714718",
 	},
 	M_Prop_Chandlery = {
-		LOD0 = "rbxassetid://124944465956160",
-		LOD1 = "rbxassetid://127259503125880",
+		LOD0 = "rbxassetid://118094905660470",
+		LOD1 = "rbxassetid://110265683503505",
+	},
+	M_Prop_Chandlery_Stock = {
+		LOD0 = "rbxassetid://127622749765145",
+		LOD1 = "rbxassetid://121645364088634",
+	},
+	M_Rock_Boulder_01 = {
+		LOD0 = "rbxassetid://83907500439876",
+		LOD1 = "rbxassetid://72304120830687",
+		LOD2 = "rbxassetid://80136095818992",
+	},
+	M_Rock_Boulder_02 = {
+		LOD0 = "rbxassetid://93010005445160",
+		LOD1 = "rbxassetid://78467639544173",
+		LOD2 = "rbxassetid://129373570973629",
+	},
+	M_Rock_Boulder_03 = {
+		LOD0 = "rbxassetid://137585261451050",
+		LOD1 = "rbxassetid://122796022528665",
+		LOD2 = "rbxassetid://79223643831609",
+	},
+	M_Rock_Boulder_04 = {
+		LOD0 = "rbxassetid://98478587782175",
+		LOD1 = "rbxassetid://135191363772066",
+		LOD2 = "rbxassetid://79371803607247",
+	},
+	M_Rock_Boulder_05 = {
+		LOD0 = "rbxassetid://83666637582184",
+		LOD1 = "rbxassetid://84047907221347",
+		LOD2 = "rbxassetid://107877096234774",
+	},
+	M_Rock_Boulder_06 = {
+		LOD0 = "rbxassetid://140177599201280",
+		LOD1 = "rbxassetid://115018441516219",
+		LOD2 = "rbxassetid://97277798547278",
+	},
+	M_Rock_Cliff_01 = {
+		LOD0 = "rbxassetid://79365588290764",
+		LOD1 = "rbxassetid://80738560461166",
+		LOD2 = "rbxassetid://103052794082398",
+	},
+	M_Rock_Cliff_02 = {
+		LOD0 = "rbxassetid://138994256988411",
+		LOD1 = "rbxassetid://103824145377362",
+		LOD2 = "rbxassetid://84466269428374",
+	},
+	M_Rock_Cliff_03 = {
+		LOD0 = "rbxassetid://99348752127648",
+		LOD1 = "rbxassetid://129010410542632",
+		LOD2 = "rbxassetid://108076273398799",
+	},
+	M_Rock_Cliff_04 = {
+		LOD0 = "rbxassetid://80584816308761",
+		LOD1 = "rbxassetid://129705068203536",
+		LOD2 = "rbxassetid://97380489569882",
+	},
+	M_Rock_Cliff_05 = {
+		LOD0 = "rbxassetid://125141081980396",
+		LOD1 = "rbxassetid://76407131967795",
+		LOD2 = "rbxassetid://105832506452479",
+	},
+	M_Rock_Ledge_01 = {
+		LOD0 = "rbxassetid://96285751406797",
+		LOD1 = "rbxassetid://96620941280351",
+		LOD2 = "rbxassetid://127857774066170",
+	},
+	M_Rock_Ledge_02 = {
+		LOD0 = "rbxassetid://130071977508618",
+		LOD1 = "rbxassetid://131492053121256",
+		LOD2 = "rbxassetid://74221688508572",
+	},
+	M_Rock_Ledge_03 = {
+		LOD0 = "rbxassetid://126582160918791",
+		LOD1 = "rbxassetid://93376645434934",
+		LOD2 = "rbxassetid://86655587525303",
 	},
 	M_Spike1_RefBox = { LOD0 = "rbxassetid://124101679376385" },
 	M_Spike1_ScaleCube = { LOD0 = "rbxassetid://99212271339218" },
@@ -61,6 +135,86 @@ AssetIds.Models = {
 	M_Spike1_Tris20500 = { LOD0 = "rbxassetid://107853799637000" },
 	M_Spike1_Tris21500 = { LOD0 = "rbxassetid://82241768209454" },
 	M_Spike1_Tris30000 = { LOD0 = "rbxassetid://126935964886724" },
+	M_Veg_Bracken_01 = {
+		LOD0 = "rbxassetid://136398955303344",
+		LOD1 = "rbxassetid://113163488855775",
+		LOD2 = "rbxassetid://88753609120895",
+	},
+	M_Veg_Bracken_02 = {
+		LOD0 = "rbxassetid://140688297994335",
+		LOD1 = "rbxassetid://84859696800150",
+		LOD2 = "rbxassetid://127815882704069",
+	},
+	M_Veg_Gorse_01 = {
+		LOD0 = "rbxassetid://79408245587993",
+		LOD1 = "rbxassetid://77311668525204",
+		LOD2 = "rbxassetid://97121692051821",
+	},
+	M_Veg_Gorse_02 = {
+		LOD0 = "rbxassetid://131408756831385",
+		LOD1 = "rbxassetid://85517251256139",
+		LOD2 = "rbxassetid://87949100107125",
+	},
+	M_Veg_Gorse_03 = {
+		LOD0 = "rbxassetid://120252476684933",
+		LOD1 = "rbxassetid://87866282048172",
+		LOD2 = "rbxassetid://75100498178238",
+	},
+	M_Veg_Grass_Marram_01 = {
+		LOD0 = "rbxassetid://87056082580259",
+		LOD1 = "rbxassetid://108259645669293",
+		LOD2 = "rbxassetid://75210104168899",
+	},
+	M_Veg_Grass_Marram_02 = {
+		LOD0 = "rbxassetid://120967714183435",
+		LOD1 = "rbxassetid://78411862812186",
+		LOD2 = "rbxassetid://129579954615120",
+	},
+	M_Veg_Grass_Turf_01 = {
+		LOD0 = "rbxassetid://100707792355149",
+		LOD1 = "rbxassetid://83817342474472",
+		LOD2 = "rbxassetid://74551486403332",
+	},
+	M_Veg_Grass_Turf_02 = {
+		LOD0 = "rbxassetid://131751588845221",
+		LOD1 = "rbxassetid://94023499987248",
+		LOD2 = "rbxassetid://134584279768058",
+	},
+	M_Veg_Hawthorn_01 = {
+		LOD0 = "rbxassetid://86012163550269",
+		LOD1 = "rbxassetid://123199620543977",
+		LOD2 = "rbxassetid://131893958823104",
+	},
+	M_Veg_Hawthorn_02 = {
+		LOD0 = "rbxassetid://127220253153162",
+		LOD1 = "rbxassetid://118520456489774",
+		LOD2 = "rbxassetid://95212941804066",
+	},
+	M_Veg_Heather_01 = {
+		LOD0 = "rbxassetid://79170620536933",
+		LOD1 = "rbxassetid://73225826652277",
+		LOD2 = "rbxassetid://71737891662709",
+	},
+	M_Veg_Heather_02 = {
+		LOD0 = "rbxassetid://77321997178647",
+		LOD1 = "rbxassetid://122301443292304",
+		LOD2 = "rbxassetid://109614224417360",
+	},
+	M_Veg_Heather_03 = {
+		LOD0 = "rbxassetid://91151224196831",
+		LOD1 = "rbxassetid://71741826428719",
+		LOD2 = "rbxassetid://101024845817143",
+	},
+	M_Veg_SeaThrift_01 = {
+		LOD0 = "rbxassetid://92653786168784",
+		LOD1 = "rbxassetid://80676401232727",
+		LOD2 = "rbxassetid://129095553696507",
+	},
+	M_Veg_SeaThrift_02 = {
+		LOD0 = "rbxassetid://90802487731087",
+		LOD1 = "rbxassetid://78374601463088",
+		LOD2 = "rbxassetid://121670539551659",
+	},
 	M_Veh_JetSki = {
 		LOD0 = "rbxassetid://77535739244028",
 		LOD1 = "rbxassetid://117090188851926",
@@ -77,41 +231,53 @@ AssetIds.Models = {
 
 AssetIds.Textures = {
 	M_Bld_Chandlery_Ext = {
+		Bands = {
+			ALB = "rbxassetid://126682138927937",
+			NOR = "rbxassetid://107669926382738",
+			RGH = "rbxassetid://122233115030889",
+			Wet = { ALB = "rbxassetid://120584434821371", RGH = "rbxassetid://100802801575312" },
+		},
 		Details = {
-			ALB = "rbxassetid://120035276122390",
-			NOR = "rbxassetid://102411696808780",
-			RGH = "rbxassetid://139106048152461",
+			ALB = "rbxassetid://83519248866446",
+			NOR = "rbxassetid://110938698586980",
+			RGH = "rbxassetid://73511196593796",
 			MET = "rbxassetid://104897708860271",
-			Wet = { ALB = "rbxassetid://115658512807600", RGH = "rbxassetid://105457741487761" },
+			Wet = { ALB = "rbxassetid://90296199230710", RGH = "rbxassetid://76473974963286" },
 		},
 		Slate = {
-			ALB = "rbxassetid://86948295014052",
-			NOR = "rbxassetid://127863606733033",
-			RGH = "rbxassetid://117483510246874",
-			Wet = { ALB = "rbxassetid://139352543048143", RGH = "rbxassetid://84745109172448" },
+			ALB = "rbxassetid://90437163259317",
+			NOR = "rbxassetid://114952564703794",
+			RGH = "rbxassetid://74732836042532",
+			Wet = { ALB = "rbxassetid://74366216349202", RGH = "rbxassetid://127334089446577" },
+		},
+		Stone = {
+			ALB = "rbxassetid://133059993627264",
+			NOR = "rbxassetid://91742155593291",
+			RGH = "rbxassetid://102126340609881",
+			Wet = { ALB = "rbxassetid://115139993525090", RGH = "rbxassetid://94586893341453" },
 		},
 	},
 	M_Bld_Chandlery_Int = {
 		Details = {
-			ALB = "rbxassetid://133339368291517",
-			NOR = "rbxassetid://107103226456779",
-			RGH = "rbxassetid://90005849079078",
+			ALB = "rbxassetid://96847335271417",
+			NOR = "rbxassetid://124356271776396",
+			RGH = "rbxassetid://76208343645762",
 			MET = "rbxassetid://91181341396446",
 		},
 		Joinery = {
-			ALB = "rbxassetid://115273437194420",
-			NOR = "rbxassetid://108334098253080",
-			RGH = "rbxassetid://97155378858191",
+			ALB = "rbxassetid://123355798083948",
+			NOR = "rbxassetid://82711825485967",
+			RGH = "rbxassetid://98519338287215",
 		},
 		Lining = {
-			ALB = "rbxassetid://138288822640667",
-			NOR = "rbxassetid://106108467598566",
-			RGH = "rbxassetid://75082472767101",
+			ALB = "rbxassetid://86235013269823",
+			NOR = "rbxassetid://83443127469898",
+			RGH = "rbxassetid://123749310826793",
 		},
 		Pine = {
-			ALB = "rbxassetid://138376265885730",
-			NOR = "rbxassetid://89078940590423",
-			RGH = "rbxassetid://84388384268744",
+			ALB = "rbxassetid://93669797587817",
+			NOR = "rbxassetid://116144171610880",
+			RGH = "rbxassetid://124950466629746",
 		},
 	},
 	M_Bld_Slipway = {
@@ -267,15 +433,144 @@ AssetIds.Textures = {
 	},
 	M_Prop_Chandlery = {
 		Atlas = {
-			ALB = "rbxassetid://71920021950811",
-			NOR = "rbxassetid://80677727296225",
-			RGH = "rbxassetid://91462357892618",
+			ALB = "rbxassetid://122040682702478",
+			NOR = "rbxassetid://130995619446535",
+			RGH = "rbxassetid://71755285482352",
 			MET = "rbxassetid://88821589220060",
 		},
 		Rope = {
 			ALB = "rbxassetid://105999388453791",
 			NOR = "rbxassetid://89602092156365",
 			RGH = "rbxassetid://79172190348487",
+		},
+	},
+	M_Prop_Chandlery_Stock = {
+		Atlas = {
+			ALB = "rbxassetid://131752838378729",
+			NOR = "rbxassetid://71253414441637",
+			RGH = "rbxassetid://135971620367742",
+			MET = "rbxassetid://131230835504645",
+		},
+	},
+	M_Rock_Boulder_01 = {
+		Granite = {
+			ALB = "rbxassetid://105377411555545",
+			NOR = "rbxassetid://77192110147089",
+			RGH = "rbxassetid://78955305672449",
+			Wet = { ALB = "rbxassetid://77320145132872", RGH = "rbxassetid://87535994304982" },
+		},
+	},
+	M_Rock_Boulder_02 = {
+		Granite = {
+			ALB = "rbxassetid://86849873686508",
+			NOR = "rbxassetid://108269341455600",
+			RGH = "rbxassetid://93922833196411",
+			Wet = { ALB = "rbxassetid://76759123193096", RGH = "rbxassetid://71151702200503" },
+		},
+	},
+	M_Rock_Boulder_03 = {
+		Granite = {
+			ALB = "rbxassetid://104600883358990",
+			NOR = "rbxassetid://123998954863178",
+			RGH = "rbxassetid://97265162267160",
+			Wet = { ALB = "rbxassetid://76180140321220", RGH = "rbxassetid://75875110907213" },
+		},
+	},
+	M_Rock_Boulder_04 = {
+		Granite = {
+			ALB = "rbxassetid://90020565088514",
+			NOR = "rbxassetid://134326219269988",
+			RGH = "rbxassetid://97443639842175",
+			Wet = { ALB = "rbxassetid://139634144331209", RGH = "rbxassetid://138343087923112" },
+		},
+	},
+	M_Rock_Boulder_05 = {
+		Granite = {
+			ALB = "rbxassetid://85855670324349",
+			NOR = "rbxassetid://79738791111924",
+			RGH = "rbxassetid://121585588731038",
+			Wet = { ALB = "rbxassetid://85299473793000", RGH = "rbxassetid://113089408048886" },
+		},
+	},
+	M_Rock_Boulder_06 = {
+		Granite = {
+			ALB = "rbxassetid://98373353263985",
+			NOR = "rbxassetid://102607780918145",
+			RGH = "rbxassetid://117525887031775",
+			Wet = { ALB = "rbxassetid://70439985229253", RGH = "rbxassetid://116301557643830" },
+		},
+	},
+	M_Rock_Cliff_01 = {
+		Granite = {
+			ALB = "rbxassetid://134603804359577",
+			NOR = "rbxassetid://123981129089477",
+			RGH = "rbxassetid://83844821718003",
+			Wet = { ALB = "rbxassetid://100944158548172", RGH = "rbxassetid://128739377990009" },
+		},
+	},
+	M_Rock_Cliff_02 = {
+		Granite = {
+			ALB = "rbxassetid://124254426798757",
+			NOR = "rbxassetid://137666019441071",
+			RGH = "rbxassetid://121880347905156",
+			Wet = { ALB = "rbxassetid://73610620316145", RGH = "rbxassetid://82464006994708" },
+		},
+	},
+	M_Rock_Cliff_03 = {
+		Granite = {
+			ALB = "rbxassetid://71390742807256",
+			NOR = "rbxassetid://137556948430666",
+			RGH = "rbxassetid://72330000729118",
+			Wet = { ALB = "rbxassetid://112807913962755", RGH = "rbxassetid://126318620648184" },
+		},
+	},
+	M_Rock_Cliff_04 = {
+		Granite = {
+			ALB = "rbxassetid://132160330731478",
+			NOR = "rbxassetid://124155620934453",
+			RGH = "rbxassetid://73329084813786",
+			Wet = { ALB = "rbxassetid://132146210047204", RGH = "rbxassetid://90000085623174" },
+		},
+	},
+	M_Rock_Cliff_05 = {
+		Granite = {
+			ALB = "rbxassetid://96190320515465",
+			NOR = "rbxassetid://129277136018010",
+			RGH = "rbxassetid://81532639387999",
+			Wet = { ALB = "rbxassetid://81193051288396", RGH = "rbxassetid://119020745615725" },
+		},
+	},
+	M_Rock_Ledge_01 = {
+		Granite = {
+			ALB = "rbxassetid://99131954796306",
+			NOR = "rbxassetid://86491673662595",
+			RGH = "rbxassetid://107779867564384",
+			Wet = { ALB = "rbxassetid://132065214329783", RGH = "rbxassetid://107460080020637" },
+		},
+	},
+	M_Rock_Ledge_02 = {
+		Granite = {
+			ALB = "rbxassetid://72173813808751",
+			NOR = "rbxassetid://87610574661777",
+			RGH = "rbxassetid://86744316595762",
+			Wet = { ALB = "rbxassetid://125453869134573", RGH = "rbxassetid://113968357106199" },
+		},
+	},
+	M_Rock_Ledge_03 = {
+		Granite = {
+			ALB = "rbxassetid://127047371968205",
+			NOR = "rbxassetid://95518186690593",
+			RGH = "rbxassetid://127624915750614",
+			Wet = { ALB = "rbxassetid://131685386322309", RGH = "rbxassetid://76525759925242" },
+		},
+	},
+	M_Veg_FoliageLand = {
+		Main = {
+			ALB = "rbxassetid://108926413774179",
+			NOR = "rbxassetid://115536868537189",
+			RGH = "rbxassetid://101449066842394",
+			MET = "rbxassetid://87872063083227",
+			Wet = { ALB = "rbxassetid://80392929167799", RGH = "rbxassetid://132660770674454" },
 		},
 	},
 	M_Veh_JetSki = {
@@ -441,6 +736,53 @@ AssetIds.Attachments = {
 		ATT_SwatchBoard = Vector3.new(18, 4.5, 15.15),
 		ATT_RadioShelf = Vector3.new(-22.8, 4.8, 15.15),
 	},
+	M_Prop_Chandlery_Stock = {
+		ATT_Light_Till = Vector3.new(-18.1546, 4.1248, 3.12),
+	},
+	M_Rock_Boulder_01 = {},
+	M_Rock_Boulder_02 = {},
+	M_Rock_Boulder_03 = {},
+	M_Rock_Boulder_04 = {
+		ATT_Waterline = Vector3.new(0, 1.0592, 0),
+	},
+	M_Rock_Boulder_05 = {
+		ATT_Waterline = Vector3.new(0, 1.7678, 0),
+	},
+	M_Rock_Boulder_06 = {},
+	M_Rock_Cliff_01 = {},
+	M_Rock_Cliff_02 = {},
+	M_Rock_Cliff_03 = {},
+	M_Rock_Cliff_04 = {
+		ATT_Waterline = Vector3.new(0, 4.5, 0),
+	},
+	M_Rock_Cliff_05 = {
+		ATT_Waterline = Vector3.new(0, 4.5, 0),
+	},
+	M_Rock_Ledge_01 = {
+		ATT_Waterline = Vector3.new(0, 1.677, 0),
+	},
+	M_Rock_Ledge_02 = {
+		ATT_Waterline = Vector3.new(0, 1.8332, 0),
+	},
+	M_Rock_Ledge_03 = {
+		ATT_Waterline = Vector3.new(0, 1.5968, 0),
+	},
+	M_Veg_Bracken_01 = {},
+	M_Veg_Bracken_02 = {},
+	M_Veg_Gorse_01 = {},
+	M_Veg_Gorse_02 = {},
+	M_Veg_Gorse_03 = {},
+	M_Veg_Grass_Marram_01 = {},
+	M_Veg_Grass_Marram_02 = {},
+	M_Veg_Grass_Turf_01 = {},
+	M_Veg_Grass_Turf_02 = {},
+	M_Veg_Hawthorn_01 = {},
+	M_Veg_Hawthorn_02 = {},
+	M_Veg_Heather_01 = {},
+	M_Veg_Heather_02 = {},
+	M_Veg_Heather_03 = {},
+	M_Veg_SeaThrift_01 = {},
+	M_Veg_SeaThrift_02 = {},
 	M_Veh_JetSki = {
 		ATT_DriverSeat = Vector3.new(0, 2.62, -0.9213),
 		ATT_EyePoint = Vector3.new(0, 5.2, -1.4213),

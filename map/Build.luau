@@ -1133,6 +1133,10 @@ end
 -- The gear counter carries PromptAnchor = "ShopCounter" (WorldService adds the ProximityPrompt).
 local function buildChandlery(parent: Instance, g: number)
 	local shop = folder(parent, "Chandlery", "Model")
+	-- greybox: the server's WorldDressingService swaps it for the H2 Packages (src/server/World/Swaps.luau)
+	-- once they load; it stays (and works) when they fail
+	shop:AddTag("GREYBOX")
+	shop:SetAttribute("AssetSwap", "Chandlery")
 	local render = rgb(234, 230, 216) -- painted render
 	local navy = rgb(28, 50, 86)
 	local slate = rgb(62, 66, 74)
@@ -1617,6 +1621,32 @@ local function buildBoatDesk(parent: Instance, g: number)
 	return desk
 end
 
+-- Instance streaming (I1): the gameplay map (Map, Zones) stays Persistent, so every client script that reads
+-- Workspace.Map works as before; the run-time dressing (WorldDressingService: the Chandlery Packages, the K1 rocks and
+-- G1 plants from map/generated/props.json) lives in Workspace.Dressing as Atomic models that stream by distance.
+-- Every greybox model that remains carries the CollectionService tag GREYBOX.
+local function setupStreaming(ws: any, map: Instance, zones: Instance)
+	ws.StreamingEnabled = true
+	ws.StreamingMinRadius = 384
+	ws.StreamingTargetRadius = 2048 -- the cliffs and the town stay visible from the sea
+	ws.StreamOutBehavior = Enum.StreamOutBehavior.LowMemory
+	map.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+	zones.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+	for _, d in map:GetDescendants() do
+		if d:IsA("Model") then
+			d.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+		end
+	end
+	local town = map:FindFirstChild("PortHaven")
+	for _, root in { town, map:FindFirstChild("HarbourLight"), map:FindFirstChild("Breakwater") } do
+		for _, child in if root then root:GetChildren() else {} do
+			if child:IsA("Model") or child:IsA("Folder") then
+				child:AddTag("GREYBOX")
+			end
+		end
+	end
+end
+
 return function(place: any, ctx: any)
 	local GameConfig = ctx.require("Config/GameConfig")
 	local WorldConfig = ctx.require("Config/WorldConfig")
@@ -1626,7 +1656,7 @@ return function(place: any, ctx: any)
 	ws:SetAttribute("SeaLevel", GameConfig.SeaLevel)
 	local hasTerrain = loadTerrain(ws, ctx)
 	ws:SetAttribute("WorldTerrain", hasTerrain)
-	local map = folder(ws, "Map")
+	local map = folder(ws, "Map", "Model")
 	if not hasTerrain then
 		buildOceanFloor(map, floorY)
 	end
@@ -1642,5 +1672,7 @@ return function(place: any, ctx: any)
 	local points = folder(map, "WorldPoints")
 	buildShore(map, points, WorldConfig)
 	buildSeabed(map, points, WorldConfig)
-	buildZones(folder(ws, "Zones"), GameConfig.Zones)
+	local zones = folder(ws, "Zones", "Model")
+	buildZones(zones, GameConfig.Zones)
+	setupStreaming(ws, map, zones)
 end

@@ -29,6 +29,7 @@ local AssetIds = require(
 local AssetLoader = {}
 
 AssetLoader.WET_TAG = "HasWetVariant"
+AssetLoader.COLLISION_TAG = "AssetCollision" -- kept _COL hulls (static assets)
 AssetLoader.RETRY_AFTER = 30 -- seconds before a failed load is tried again
 local SMALL_PART = 1.5 -- studs; largest axis below this -> CastShadow off
 
@@ -79,8 +80,28 @@ local function numericId(uri: string): number?
 	return tonumber(string.match(uri, "(%d+)$"))
 end
 
+-- Asset name prefix -> shared texture folder in Appearances (kits that share one atlas, e.g. G1's
+-- T_FoliageLand_Main for every M_Veg_* plant)
+AssetLoader.SHARED_SETS = { M_Veg_ = "M_Veg_FoliageLand" } :: { [string]: string }
+
+local function appearanceFolder(asset: string): Instance?
+	if not appearances then
+		return nil
+	end
+	local own = (appearances :: Instance):FindFirstChild(asset)
+	if own then
+		return own
+	end
+	for prefix, shared in AssetLoader.SHARED_SETS do
+		if string.sub(asset, 1, #prefix) == prefix then
+			return (appearances :: Instance):FindFirstChild(shared)
+		end
+	end
+	return nil
+end
+
 local function setFor(asset: string, partName: string): string?
-	local sets = appearances and appearances:FindFirstChild(asset)
+	local sets = appearanceFolder(asset)
 	if not sets then
 		return nil
 	end
@@ -113,7 +134,7 @@ end
 
 local function applyAppearance(asset: string, part: MeshPart)
 	local setName = setFor(asset, part.Name)
-	local set = setName and appearances and (appearances :: Instance):FindFirstChild(asset)
+	local set = setName and appearanceFolder(asset)
 	set = set and set:FindFirstChild(setName :: string)
 	if not set then
 		warn(`[AssetLoader] {asset}: no texture set for {part.Name}`)
@@ -143,6 +164,13 @@ local function applyAppearance(asset: string, part: MeshPart)
 	end
 end
 
+-- Vehicles and characters are welded, unanchored assemblies: their _COL hulls are dropped (the greybox
+-- body collides). Buildings, rocks and props keep them for cloneStatic.
+local function keepCollision(asset: string): boolean
+	local kind = string.sub(asset, 1, 6)
+	return kind ~= "M_Veh_" and kind ~= "M_Chr_"
+end
+
 local function prepare(asset: string, lod: string, model: Model): Model
 	model.Name = `{asset}_{lod}`
 	-- the authored pivot (the upload has no PrimaryPart, so WorldPivot is stored, not derived)
@@ -160,6 +188,21 @@ local function prepare(asset: string, lod: string, model: Model): Model
 			if string.sub(name, 1, 4) == "ATT_" then
 				table.insert(markers, { name = name, cf = d.CFrame })
 				d:Destroy()
+			elseif string.match(name, "_COL$") and keepCollision(asset) then
+				-- static assets keep their collision hull: invisible and inert here, cloneStatic turns it on
+				d.Transparency = 1
+				d.Anchored = false
+				d.CanCollide = false
+				d.CanTouch = false
+				d.CanQuery = false
+				d.CastShadow = false
+				d.Massless = true
+				d:AddTag(AssetLoader.COLLISION_TAG)
+				for _, k in d:GetChildren() do
+					if k:IsA("SurfaceAppearance") then
+						k:Destroy()
+					end
+				end
 			elseif string.match(name, "_COL$") or (otherLod and otherLod ~= lod) then
 				d:Destroy()
 			else
@@ -192,6 +235,17 @@ local function prepare(asset: string, lod: string, model: Model): Model
 			a.Name = m.name
 			a.CFrame = primary.CFrame:ToObjectSpace(m.cf)
 			a.Parent = primary
+		end
+		-- Roblox's FBX import drops empties, so most uploads carry no ATT_ markers: add the ones
+		-- gen_asset_ids.py read from the export (AssetIds.Attachments, studs from the authored pivot)
+		local listed = (AssetIds :: any).Attachments and (AssetIds :: any).Attachments[asset]
+		for name, offset in listed or {} do
+			if typeof(offset) == "Vector3" and not primary:FindFirstChild(name) then
+				local a = Instance.new("Attachment")
+				a.Name = name
+				a.CFrame = primary.CFrame:ToObjectSpace(authored * CFrame.new(offset))
+				a.Parent = primary
+			end
 		end
 		-- sanity: a vessel is never tallest along its up axis (the box is in pivot space)
 		local _, size = model:GetBoundingBox()
@@ -272,6 +326,37 @@ end
 function AssetLoader.clone(asset: string, lod: string?): Model?
 	local template = AssetLoader.getTemplate(asset, lod)
 	return if template then template:Clone() else nil
+end
+
+-- A copy for static world placement (buildings, rocks, plants): every part Anchored; the _COL hull (when
+-- the upload has one) collides and is queryable; when `collide` is false (plants) nothing collides.
+-- With no _COL hull and collide true, the visual parts collide instead (Automatic fidelity).
+function AssetLoader.cloneStatic(asset: string, lod: string?, collide: boolean?): Model?
+	local copy = AssetLoader.clone(asset, lod)
+	if not copy then
+		return nil
+	end
+	local solid = collide ~= false
+	local hasHull = false
+	for _, d in copy:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+			if d:HasTag(AssetLoader.COLLISION_TAG) then
+				hasHull = true
+				d.CanCollide = solid
+				d.CanQuery = solid
+			end
+		end
+	end
+	if solid and not hasHull then
+		for _, d in copy:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.CanCollide = true
+				d.CanQuery = true
+			end
+		end
+	end
+	return copy
 end
 
 -- Loads templates in the background (call at server start so the first spawn doesn't wait).
