@@ -3172,6 +3172,15 @@
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_MET.png",
   "type": "Image"
  },
+ "Image:e8165eaa3c85981b84c6856354757c255213ad6322693041d1473197651d935d": {
+  "assetId": "96875288866652",
+  "imageId": "96875288866652",
+  "moderation": "Approved",
+  "name": "T_JetSki_Hull_RGH_Wet",
+  "sha": "e8165eaa3c85981b84c6856354757c255213ad6322693041d1473197651d935d",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27": {
   "assetId": "79130005892903",
   "imageId": "79130005892903",
@@ -3323,6 +3332,15 @@
   "name": "T_Station_Details_RGH",
   "sha": "f20714739f6db28e9add7af0d10d708e45472165ec607d1e6033b29648d6d62e",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH.png",
+  "type": "Image"
+ },
+ "Image:f29bff19053588efe20443129cec0e40c4099150768b7dd533673315f8f59d79": {
+  "assetId": "108842386394704",
+  "imageId": "108842386394704",
+  "moderation": "Approved",
+  "name": "T_JetSki_Sled_RGH_Wet",
+  "sha": "f29bff19053588efe20443129cec0e40c4099150768b7dd533673315f8f59d79",
+  "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
   "type": "Image"
  },
  "Image:f2c0727ca43c2ca7ac9063e3f2d7a1547946ac3a6c7679c7adffa5f76127f67a": {

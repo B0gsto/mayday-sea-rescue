@@ -1,0 +1,210 @@
+{
+ "asset": "M_Veh_JetSki_CloseUp",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_EyePoint",
+   "parent": null,
+   "blender": [
+    0.0,
+    -1.3213,
+    6.2
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    6.2,
+    -1.3213
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    3.0658,
+    2.285
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_KillCord",
+   "parent": null,
+   "blender": [
+    0.2,
+    -3.5213,
+    3.42
+   ],
+   "roblox_from_origin": [
+    -0.2,
+    3.42,
+    -3.5213
+   ],
+   "roblox_from_bbox_centre": [
+    -0.2,
+    0.2858,
+    0.085
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Display",
+   "parent": null,
+   "blender": [
+    0.0,
+    -3.9813,
+    3.3
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    3.3,
+    -3.9813
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.1658,
+    -0.375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_GripLeft",
+   "parent": null,
+   "blender": [
+    0.9,
+    -3.3913,
+    3.36
+   ],
+   "roblox_from_origin": [
+    -0.9,
+    3.36,
+    -3.3913
+   ],
+   "roblox_from_bbox_centre": [
+    -0.9,
+    0.2258,
+    0.215
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_GripRight",
+   "parent": null,
+   "blender": [
+    -0.9,
+    -3.3913,
+    3.36
+   ],
+   "roblox_from_origin": [
+    0.9,
+    3.36,
+    -3.3913
+   ],
+   "roblox_from_bbox_centre": [
+    0.9,
+    0.2258,
+    0.215
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Throttle",
+   "parent": null,
+   "blender": [
+    -0.85,
+    -3.6713,
+    3.3
+   ],
+   "roblox_from_origin": [
+    0.85,
+    3.3,
+    -3.6713
+   ],
+   "roblox_from_bbox_centre": [
+    0.85,
+    0.1658,
+    -0.065
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_VHF",
+   "parent": null,
+   "blender": [
+    0.62,
+    -3.8213,
+    3.2519
+   ],
+   "roblox_from_origin": [
+    -0.62,
+    3.2519,
+    -3.8213
+   ],
+   "roblox_from_bbox_centre": [
+    -0.62,
+    0.1177,
+    -0.215
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,200 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_CloseUp/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_JetSki_CloseUp_Bars_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_CloseUp_Console_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_CloseUp_Display_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_JetSkiCloseUp_CloseUp"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.037,
+    0.178,
+    0.96,
+    0.672
+   ],
+   "mannequin": [
+    -1.337,
+    0.304,
+    -0.202,
+    2.478
+   ],
+   "fill": 0.923
+  },
+  "Side": {
+   "asset": [
+    0.037,
+    0.195,
+    0.963,
+    0.688
+   ],
+   "mannequin": [
+    -1.106,
+    0.281,
+    -0.093,
+    2.673
+   ],
+   "fill": 0.926
+  },
+  "Rear3Q": {
+   "asset": [
+    0.037,
+    0.178,
+    0.96,
+    0.672
+   ],
+   "mannequin": [
+    -1.337,
+    0.304,
+    -0.202,
+    2.478
+   ],
+   "fill": 0.923
+  },
+  "High": {
+   "asset": [
+    0.039,
+    0.052,
+    0.963,
+    0.832
+   ],
+   "mannequin": [
+    -4.437,
+    0.289,
+    -0.153,
+    3.981
+   ],
+   "fill": 0.924
+  }
+ },
+ "closeups": [
+  {
+   "name": "rider_eye",
+   "target": [
+    0.0,
+    -3.981,
+    3.3
+   ],
+   "dist": 3.935,
+   "az": 180.0,
+   "el": 47.47,
+   "file": "closeup_rider_eye.png"
+  },
+  {
+   "name": "display",
+   "target": [
+    0.0,
+    -3.981,
+    3.3
+   ],
+   "dist": 1.3,
+   "az": 180.0,
+   "el": 47.47,
+   "file": "closeup_display.png"
+  },
+  {
+   "name": "throttle_grip",
+   "target": [
+    -0.85,
+    -3.521,
+    3.32
+   ],
+   "dist": 1.6,
+   "az": 215.0,
+   "el": 35.0,
+   "file": "closeup_throttle_grip.png"
+  },
+  {
+   "name": "kill_cord",
+   "target": [
+    0.25,
+    -3.221,
+    3.1
+   ],
+   "dist": 1.8,
+   "az": 120.0,
+   "el": 30.0,
+   "file": "closeup_kill_cord.png"
+  },
+  {
+   "name": "mirror",
+   "target": [
+    1.08,
+    -4.401,
+    3.25
+   ],
+   "dist": 1.6,
+   "az": 160.0,
+   "el": 15.0,
+   "file": "closeup_mirror.png"
+  },
+  {
+   "name": "vhf_clip",
+   "target": [
+    0.62,
+    -3.821,
+    3.25
+   ],
+   "dist": 1.6,
+   "az": 120.0,
+   "el": 20.0,
+   "file": "closeup_vhf_clip.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.923,
+ "in_frame": true,
+ "dims_m": [
+  0.871,
+  0.623,
+  0.348
+ ],
+ "validation_ok": true,
+ "seconds": 15.5
+}

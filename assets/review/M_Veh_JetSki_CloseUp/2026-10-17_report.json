@@ -1,0 +1,919 @@
+{
+ "asset": "M_Veh_JetSki_CloseUp",
+ "name": "M_Veh_JetSki_CloseUp",
+ "date": "2026-10-17",
+ "commit": "30d89bd+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "CloseUp",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+      "hp": "M_Veh_JetSki_CloseUp_Bars_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_CloseUp_Console_LOD0",
+      "hp": "M_Veh_JetSki_CloseUp_Console_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_CloseUp_Display_LOD0",
+      "hp": "M_Veh_JetSki_CloseUp_Display_HP"
+     }
+    ],
+    "coverage": 0.5747,
+    "seconds": 173.3,
+    "timings": {
+     "nor": 18.6,
+     "mask": 48.4,
+     "pos": 18.7,
+     "wn": 17.8,
+     "base": 20.4,
+     "mr": 20.0,
+     "compose_write": 20.6
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_ALB.png",
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_NOR.png",
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_RGH.png",
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_CloseUp/textures/T_JetSkiCloseUp_CloseUp_MET.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB_Wet.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_NOR.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH_Wet.png",
+     "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_CloseUp/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "bytes": 440892,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_CloseUp_Bars_LOD0",
+    "M_Veh_JetSki_CloseUp_Console_LOD0",
+    "M_Veh_JetSki_CloseUp_Display_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_CloseUp_Bars_LOD0.001",
+     "min": [
+      -1.3071,
+      -4.5413,
+      2.6116
+     ],
+     "max": [
+      1.3071,
+      -2.6713,
+      3.6119
+     ],
+     "polygons": 3832,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_CloseUp_Console_LOD0.001",
+     "min": [
+      -0.31,
+      -4.1821,
+      2.69
+     ],
+     "max": [
+      0.75,
+      -2.6713,
+      3.6569
+     ],
+     "polygons": 504,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_CloseUp_Display_LOD0.001",
+     "min": [
+      -0.23,
+      -4.0591,
+      3.2457
+     ],
+     "max": [
+      0.23,
+      -3.8735,
+      3.4164
+     ],
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp.attachments.json",
+   "attachments": [
+    "ATT_EyePoint",
+    "ATT_KillCord",
+    "ATT_Display",
+    "ATT_GripLeft",
+    "ATT_GripRight",
+    "ATT_Throttle",
+    "ATT_VHF"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_CloseUp/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_JetSki_CloseUp_Bars_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_CloseUp_Console_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_CloseUp_Display_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_JetSkiCloseUp_CloseUp"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.037,
+     0.178,
+     0.96,
+     0.672
+    ],
+    "mannequin": [
+     -1.337,
+     0.304,
+     -0.202,
+     2.478
+    ],
+    "fill": 0.923
+   },
+   "Side": {
+    "asset": [
+     0.037,
+     0.195,
+     0.963,
+     0.688
+    ],
+    "mannequin": [
+     -1.106,
+     0.281,
+     -0.093,
+     2.673
+    ],
+    "fill": 0.926
+   },
+   "Rear3Q": {
+    "asset": [
+     0.037,
+     0.178,
+     0.96,
+     0.672
+    ],
+    "mannequin": [
+     -1.337,
+     0.304,
+     -0.202,
+     2.478
+    ],
+    "fill": 0.923
+   },
+   "High": {
+    "asset": [
+     0.039,
+     0.052,
+     0.963,
+     0.832
+    ],
+    "mannequin": [
+     -4.437,
+     0.289,
+     -0.153,
+     3.981
+    ],
+    "fill": 0.924
+   }
+  },
+  "closeups": [
+   {
+    "name": "rider_eye",
+    "target": [
+     0.0,
+     -3.981,
+     3.3
+    ],
+    "dist": 3.935,
+    "az": 180.0,
+    "el": 47.47,
+    "file": "closeup_rider_eye.png"
+   },
+   {
+    "name": "display",
+    "target": [
+     0.0,
+     -3.981,
+     3.3
+    ],
+    "dist": 1.3,
+    "az": 180.0,
+    "el": 47.47,
+    "file": "closeup_display.png"
+   },
+   {
+    "name": "throttle_grip",
+    "target": [
+     -0.85,
+     -3.521,
+     3.32
+    ],
+    "dist": 1.6,
+    "az": 215.0,
+    "el": 35.0,
+    "file": "closeup_throttle_grip.png"
+   },
+   {
+    "name": "kill_cord",
+    "target": [
+     0.25,
+     -3.221,
+     3.1
+    ],
+    "dist": 1.8,
+    "az": 120.0,
+    "el": 30.0,
+    "file": "closeup_kill_cord.png"
+   },
+   {
+    "name": "mirror",
+    "target": [
+     1.08,
+     -4.401,
+     3.25
+    ],
+    "dist": 1.6,
+    "az": 160.0,
+    "el": 15.0,
+    "file": "closeup_mirror.png"
+   },
+   {
+    "name": "vhf_clip",
+    "target": [
+     0.62,
+     -3.821,
+     3.25
+    ],
+    "dist": 1.6,
+    "az": 120.0,
+    "el": 20.0,
+    "file": "closeup_vhf_clip.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.923,
+  "in_frame": true,
+  "dims_m": [
+   0.871,
+   0.623,
+   0.348
+  ],
+  "validation_ok": true,
+  "seconds": 15.5
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "57.5% of texels at 4096 px from M_Veh_JetSki_CloseUp_Bars_LOD0<-M_Veh_JetSki_CloseUp_Bars_HP, M_Veh_JetSki_CloseUp_Console_LOD0<-M_Veh_JetSki_CloseUp_Console_HP, M_Veh_JetSki_CloseUp_Display_LOD0<-M_Veh_JetSki_CloseUp_Display_HP"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 173 s"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "jetski_closeup"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Bars_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3832 of 8000"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.16e-05, 270 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.005 to 0.994, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2018 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "490 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Console_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "504 of 8000"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.59e-05, 42 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.993, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 288 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "510 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Display_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 8000"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.46e-06, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.543, v 0.004 to 0.584"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 26 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1616 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Bars_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Bars_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Console_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Console_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_CloseUp_Display_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_Display_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4380 of 8000 (jetski_closeup)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.871 x 0.623 x 0.348 m, spec 0.871 x 0.623 x 0.348 m (art/reference/M_Veh_JetSki_CloseUp/dims.md)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.614 studs, real 0.871 m = 2.613 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.870 studs, real 0.623 m = 1.869 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.045 studs, real 0.348 m = 1.044 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 1 sets)"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB.png"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB_Wet.png"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_NOR.png"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH.png"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH_Wet.png"
+  },
+  {
+   "subject": "T_JetSkiCloseUp_CloseUp_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_MET.png"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_KillCord",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Display",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_GripLeft",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_GripRight",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Throttle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_VHF",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_CloseUp_Bars_LOD0, M_Veh_JetSki_CloseUp_Console_LOD0, M_Veh_JetSki_CloseUp_Display_LOD0; 4380 triangles (scene 4380)"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_CloseUp",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.92; 15 renders in 16 s, maps M_Veh_JetSki_CloseUp_Bars_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_CloseUp_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_CloseUp_Display_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_JetSki_CloseUp_Bars_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3832,
+   "texel_density": 490.0
+  },
+  {
+   "name": "M_Veh_JetSki_CloseUp_Console_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 504,
+   "texel_density": 510.4
+  },
+  {
+   "name": "M_Veh_JetSki_CloseUp_Display_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 44,
+   "texel_density": 1615.7
+  },
+  {
+   "name": "M_Veh_JetSki_CloseUp_Bars_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 26656,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_CloseUp_Console_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 2856,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_CloseUp_Display_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 2244,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  2.6141061782836914,
+  1.869999885559082,
+  1.0453002452850342
+ ],
+ "peak_rss_mb": 6549.5
+}
