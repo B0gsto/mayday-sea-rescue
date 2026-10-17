@@ -73,7 +73,7 @@ Inspiration only. We copy no designs, names or assets. Each reference lends one 
 | Storm Steel | `#5B6B7A` | Storm sky, storm water mid-tone. |
 | Storm Slate | `#2F3A45` | Storm cloud base, storm water troughs. |
 | Rain Grey | `#9AA8B3` | Rain streaks, mist, distant storm haze. |
-| Beacon Yellow | `#FFE27A` | Lighthouse beams, lamps. |
+| Beacon White | `#FFF6E5` | Lighthouse beams, lamps. A warm white, kept far from Survivor Yellow in saturation (it was Beacon Yellow `#FFE27A`, too close to `#FFD23F`). |
 
 ### 3.2 Reserved signal colours
 
@@ -88,6 +88,8 @@ These carry gameplay meaning. Do not use them anywhere else.
 
 Survivor yellow and rescue orange sit close on the colour wheel. Keep them apart by value and context: survivors are always paired with a pulsing beacon icon, players never are. Check both colours with a colour-blind simulator (protanopia and deuteranopia) before locking them (tune).
 
+Survivor Yellow must also read under golden hour, when the warm `ColorShift_Top`, Golden Hour light and Sunset Coral sky push everything toward yellow-orange. Check: a survivor at 150 studs on Calm Bay water in the Calm preset is found by a reviewer in under 2 seconds on a phone-size screenshot (tune). If it fails, raise the life jacket's value contrast (a white reflective band) before changing the hue.
+
 ### 3.3 Port Haven and zone palettes
 
 | Area | Key colours | Mood |
@@ -96,7 +98,7 @@ Survivor yellow and rescue orange sit close on the colour wheel. Keep them apart
 | Calm Bay | Shallow Aqua, Golden Hour, Sand | Safe, sunny, tutorial-friendly |
 | Coral Reef | Turquoise `#2EC4B6`, Coral Pink `#FF7F8A`, Reef Purple `#7B5EA7` | Bright, playful, slightly dangerous rocks |
 | Open Sea | Deep Teal, Abyss Navy, Foam | Big, open, confident |
-| Storm Front | Storm Steel, Storm Slate, Foam, flashes of Beacon Yellow | Loud, dramatic, heroic |
+| Storm Front | Storm Steel, Storm Slate, Foam, flashes of Beacon White | Loud, dramatic, heroic |
 | Iceberg North (later) | Ice `#CFEFF7`, Glacier Blue `#7CC4E0`, Abyss Navy | Crisp, cold, quiet |
 
 Each zone must be nameable from a hidden-UI screenshot by colour alone. That is a review check (section 10).
@@ -150,11 +152,11 @@ A "set" is colour plus normal plus roughness plus metalness. Scene target: no mo
 
 ## 6. Lighting presets
 
-Three presets live as data in `src/shared/LightingPresets` and are tweened by the weather controller ([document 06](06-tools-and-pipeline.md)). Values are starting points (tune). Lighting technology: start with Future and fall back to ShadowMap if night lighthouse beams or boat lights cost too much on mobile. Research could not confirm Future's 2026 status (verify).
+Three presets live as data in `src/shared/LightingPresets` and are tweened by the weather controller ([document 06](06-tools-and-pipeline.md)). Values are starting points (tune). Lighting technology: Future (live on Roblox for years). Fall back to ShadowMap only if night lighthouse beams or boat lights cost too much on mobile.
 
 | Property | Calm (golden hour) | Storm | Night |
 |---|---|---|---|
-| `ClockTime` | 17.3 | 14.5 | 21.5 |
+| `ClockTime` | 17.3 | Unchanged (holds the current time) | 21.5 |
 | `Brightness` | 2.6 | 1.2 | 0.4 |
 | `Ambient` | `#3A3F4A` | `#3A4450` | `#141C28` |
 | `OutdoorAmbient` | `#8A7F70` | `#6F7C88` | `#28344A` |
@@ -169,10 +171,11 @@ Three presets live as data in `src/shared/LightingPresets` and are tweened by th
 | ColorCorrection tint | `#FFF4E6` | `#E6F0F7` | `#DDE6FF` |
 | Bloom intensity | 0.4 | 0.2 | 0.6 |
 | SunRays | on, low | off | off |
-| Terrain or ocean water tint | Deep Teal | Storm Steel | Abyss Navy |
+| Ocean mesh tint (vertex colours) | Deep Teal | Storm Steel | Abyss Navy |
 
 Rules:
 - Golden hour is the default calm state. The day cycle may move through morning and noon, but most play time sits near warm afternoon light (tune).
+- `ClockTime` only moves forward with the day cycle. A storm never changes it: the storm look comes from `Brightness`, clouds, atmosphere and colour correction, so the sun never runs backwards when a storm rolls in.
 - Storm lighting must still keep survivors readable. Survivor beacons get a small emissive boost during storms.
 - Night is for lighthouse play and atmosphere. Boats have working spotlights and nav lights (red port, green starboard; the starboard green is a slightly different shade from Waypoint Green).
 - A Roblox staff post mentions a Clouds rendering upgrade; tuned clouds may need retuning after engine updates (research section 4).
@@ -187,7 +190,7 @@ All effects use built-in `ParticleEmitter`, `Beam` and `Trail`, with flipbook te
 |---|---|---|
 | Bow spray | ParticleEmitter at bow attachment, rate scaled by speed and wave impact | Foam colour, short life, chunky droplets |
 | Wake | Trail from stern attachments plus a foam ribbon mesh | Fades over 3 s (tune); wider on jet ski and lifeboat |
-| Wave crest foam | Ocean shader colour plus sparse ParticleEmitters near the camera | Storm Front only for particles |
+| Wave crest foam | Ocean vertex colour by height (no custom shaders exist; [document 06](06-tools-and-pipeline.md), section 3.1) plus sparse ParticleEmitters near the camera | Storm Front only for particles |
 | Rotor downwash | Ring of spray particles on the water below the helicopter, radius by altitude | Key "helicopter is here" signal |
 | Rain | Camera-attached ParticleEmitter with streak flipbook, plus splash particles on the water | Off under cover (raycast up) |
 | Lightning | Jagged `Beam` segments regenerated per strike, plus a Lighting flash | Flash under 0.15 s, no strobing (accessibility) |
@@ -248,7 +251,7 @@ Before an asset is approved:
 
 1. Silhouette test at 64 px (black fill).
 2. Palette check: colours sampled from a screenshot fall within the palette or within one step of it; no signal colour misused.
-3. Three-preset test: screenshot in Calm, Storm and Night.
+3. Three-preset test: screenshot in Calm, Storm and Night. Survivor art also passes the golden-hour find test (section 3.2).
 4. Phone test: device emulator at a phone resolution and low graphics quality.
 5. Scale test: next to the standard avatar and the reference lineup (a dock with every vehicle).
 6. Budget test: triangles and texture count within section 5.2.

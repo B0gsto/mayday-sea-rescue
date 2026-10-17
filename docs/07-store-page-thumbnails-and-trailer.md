@@ -65,15 +65,17 @@ All captured at 1920 x 1080 in-game with free camera, highest graphics quality, 
 |---|---|---|---|---|---|
 | 1 | Storm rescue | Low angle from the water: the lifeboat climbing a storm wave toward a capsized ferry, lightning fork top right, survivors in yellow on the hull | Lifeboat bow and the survivors | "STORMS HIT EVERY 15 MINUTES" (only while true) | Thrill, heroism |
 | 2 | Helicopter winch | Three-quarter view from above: helicopter top left, winch line diagonal to a survivor in the water, downwash ring on the waves | The basket meeting the survivor | None | Tension, competence |
-| 3 | Rescue dog | Water-level close shot: the Newfoundland swimming, towing a waving survivor toward an orange RIB | The dog's face | None | Warmth, humour |
+| 3 | Rescue dog | Water-level close shot: the Newfoundland swimming, towing a waving survivor toward an orange jet ski in Calm Bay | The dog's face | None | Warmth, humour |
 | 4 | Squad on the RIB | Three players in orange on a RIB pulling a survivor aboard, call card UI visible on screen | The pull-aboard moment | None (the in-game call card is the text) | Teamwork |
 | 5 | Port Haven fleet | Golden-hour wide shot of the station dock with the unlocked vehicles lined up, lighthouse behind | The lineup | "UNLOCK RESCUE VEHICLES" | Aspiration, collection |
 | 6 | Relight the lighthouse | Night shot: a player at the top of a lighthouse as the beam sweeps across the bay, town lights below | The beam | None | Wonder, accomplishment |
 | 7 | Cruise ship aground | Wide storm shot: a giant cruise ship on rocks, many player boats and a helicopter around it | The scale of the ship versus the boats | "SERVER-WIDE RESCUES" | Spectacle, community |
 | 8 | Calm reef | Bright daytime jet ski skimming the Coral Reef with a small survivor beacon ahead | Jet ski and spray | None | Fun, freedom |
+| 9 | Harbour mouth storm | Low angle from the water: a jet ski launching off a storm wave in the harbour mouth toward a waving survivor, the harbour wall and Harbor Light behind, rain streaks | The jet ski in the air and the survivor's raised arms | None (thumbnail 1 carries the storm line) | Thrill, "I can do that now" |
 
 Rules:
-- Only show vehicles, zones and events that are live. Thumbnails 5 and 7 wait until the fleet and the cruise ship call exist.
+- Only show vehicles, zones and events that are live. Thumbnail 5 waits until the launch fleet is in; thumbnail 7 waits for the Cruise Ship Aground big call ([P1]).
+- **Session-1 content:** thumbnails 3, 8 and 9 show only what a new player does in their first 25-minute session (jet ski, Bosun, Calm Bay or Coral Reef, a storm at the harbour mouth). At least 2 of the active thumbnails must always be session-1 content, so the page never promises only late-game play.
 - No stretched or artificial effects. "Minor post-processing" means light levels and contrast, not added fire, glow or fake depth of field.
 - Add alt text to every thumbnail (supported on the page).
 - Faces and bright contrast are common creator advice, not official (unverified); we test it rather than assume it.
@@ -86,8 +88,8 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 
 | Phase | Active set | Question |
 |---|---|---|
-| Launch | 1 Storm rescue, 2 Helicopter winch, 3 Rescue dog, 4 Squad on the RIB | Which promise pulls players: action, rescue, warmth or co-op? |
-| After 2 weeks or the first update | Keep the top 2; add 2 variants of the winner (different angle or time of day) | What makes the winning idea work? |
+| Launch | 1 Storm rescue, 2 Helicopter winch, 3 Rescue dog, 9 Harbour mouth storm (3 and 9 are session-1 content) | Which promise pulls players: big storm action, the helicopter, warmth, or a storm rescue they can do right away? |
+| After 2 weeks or the first update | Keep the top 2; add 2 variants of the winner (different angle or time of day); keep 2 session-1 thumbnails in the set | What makes the winning idea work? |
 | Each major update | Add 1 to 2 thumbnails showing the new content; keep at least 2 proven ones | Does new content beat the proven set? |
 
 - Keep several thumbnails active; Roblox advises against picking one winner. Change the set only with major updates, then hold it.
@@ -115,8 +117,8 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 | Time | Shot | Camera | UI |
 |---|---|---|---|
 | 0:00 to 0:02 | Golden-hour Port Haven, the station siren light spins, a call card slides in: "MAYDAY: swimmer in Calm Bay" | Slow push-in on the station | Call card only |
-| 0:02 to 0:05 | Player sprints down the dock and jumps onto the RIB; it launches with bow spray | Follow cam, low behind | Hidden |
-| 0:05 to 0:08 | RIB cuts across Calm Bay; the dog stands at the bow, ears flapping | Side tracking shot at water level | Hidden |
+| 0:02 to 0:05 | Player sprints down the dock and jumps onto the jet ski; it launches with bow spray | Follow cam, low behind | Hidden |
+| 0:05 to 0:08 | Jet ski cuts across Calm Bay; the dog rides the rescue sled, ears flapping | Side tracking shot at water level | Hidden |
 | 0:08 to 0:10 | The dog dives in, swims to a waving survivor, tows them back; survivor cheers | Close, water level | Hidden |
 | 0:10 to 0:12 | Jet ski weaves through Coral Reef rocks | Fast low pass | Hidden |
 | 0:12 to 0:14 | Sky shifts from gold to steel grey; storm warning card appears; rain starts | Wide, high, sky dominant | Storm warning card |
@@ -127,7 +129,7 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 | 0:25 to 0:27 | Back at the dock: survivors dropped off, rank-up banner, the crew salutes, the dog shakes off water | Medium, front | Rank-up banner |
 | 0:27 to 0:30 | Logo over the harbour at golden hour | Slow pull-back | Logo overlay |
 
-Cut on wave impacts and lightning so the music lines up. Each shot shows something a new player can do in the first session or during the first storm, so the page does not overpromise.
+Cut on wave impacts and lightning so the music lines up. The first half (0:00 to 0:14: the call, the jet ski, Bosun, Coral Reef, the storm rolling in) is first-session play. The second half shows what players grow into (lifeboat, helicopter, big calls, lighthouses); a new player can reach the helicopter's winch early through the station helicopter ride-along on big calls, but most of it comes later. Everything shown is in the live build, so the page does not overpromise.
 
 ### 5.3 How to capture
 
@@ -151,7 +153,7 @@ No official Roblox guidance exists for short-form; this plan is our judgment. De
   - "Storm in 3, 2, 1": calm-to-storm transition in one shot.
   - "Dog saves the day": the Newfoundland's best rescues and shake-offs.
   - "Worst captain": funny capsizes and helicopter bumps.
-  - "Can we save the cruise ship?": a big call from start to finish, sped up.
+  - "Can we save the ferry?": a big call from start to finish, sped up (the cruise ship from [P1]).
   - "Relit": before and after a lighthouse is relit.
   - Dev logs: ocean tech, building the lifeboat in Blender.
 - **Rules:** short-form is off-platform, so Roblox thumbnail rules do not apply, but we stay honest: real gameplay, no fake features. Voice-over is fine here.
@@ -163,7 +165,7 @@ No official Roblox guidance exists for short-form; this plan is our judgment. De
 
 ## 7. Game description draft
 
-Roblox research (section 5) shows the first 3 minutes decide discovery, so the description promises exactly what the first session delivers.
+Roblox research (section 5) shows the first 3 minutes decide discovery, so the description leads with what the first session delivers and labels the rest as things to unlock.
 
 ```
 Answer mayday calls and save people at sea! Race out in rescue boats,
@@ -171,11 +173,11 @@ jet skis and a helicopter, pull survivors from the waves, and bring them
 home to Port Haven.
 
 Every 15 minutes a storm sweeps the Gale Isles. Waves rise, lightning
-strikes, and big calls come in: a capsized ferry, a cruise ship on the
+strikes, and big calls come in: a capsized ferry, a trawler on the
 rocks. Team up with everyone on the server to save them all.
 
-- Drive the rescue board, jet ski, RIB and lifeboat, then unlock the
-  hovercraft, rescue helicopter and patrol cutter
+- Start on the jet ski, then unlock the RIB, lifeboat and rescue
+  helicopter
 - Rescue with Bosun, your Newfoundland rescue dog
 - Explore Calm Bay, Coral Reef, the Open Sea and the Storm Front
 - Relight the dark lighthouses of the Gale Isles
