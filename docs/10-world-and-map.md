@@ -31,9 +31,11 @@ North is up. The sketch is schematic; the coordinates in section 1.2 are the ref
      \___ Westgate ___      |                      Coast Road /   sea cave
   Tempest  \___West Arm___\===== PORT HAVEN =================/ Haven Head
   Point [L]  cliff-top road   station* town  hospital   Haven Sands [MVP]
-  Light, 70 m cliffs          fuel dock  CALM BAY [MVP]  (beach, tower, car park)
+  Light, 70 m cliffs          chandlery, harbourmaster   (beach, tower, car park)
+                              fuel dock + boatyard  CALM BAY [MVP]
   Wreckers' Cove (cave)       wall ========  mouth  ======== wall + Harbor Light
                                       HARBOUR MOUTH [MVP] (900 studs)
+                                                 Sandy Point [MVP] (spit, cold open)
  STORM FRONT [L]                                 THE SKERRIES [L]
  west and south-west,                              Skerry Isle + outpost (2,500)
  6,000-7,000 studs                                 reefs, kelp, seals
@@ -52,9 +54,12 @@ North is up. The sketch is schematic; the coordinates in section 1.2 are the ref
 | **Port Haven station and slipway** | 0, 0 | Compound about 120 x 80 m | Road, sea, helicopter [L] | Calm Bay | [MVP] |
 | Port Haven town (crescent around the inner harbour) | +100, -400 | About 600 x 250 m | Road, foot | Calm Bay | [MVP] |
 | Cottage Hospital (pontoon, ambulance bay, helipad [L]) | +150, -150 | | Road, sea | Calm Bay | [MVP] |
-| Fuel dock and boatyard | +200, -50 | | Road, sea | Calm Bay | [MVP] |
+| **Port Haven Chandlery** (marine outfitter: the walk-in store for gear, uniforms, cosmetics and passes) | +40, -20 | About 20 x 12 m, two floors (shop and fitting loft) | Road, foot | Calm Bay | [MVP] building and Cash gear; [L] Robux items |
+| Harbourmaster's office (Storm Summon desk, storm queue board) | +65, -20 | About 10 x 8 m | Road, foot | Calm Bay | [L] |
+| Fuel dock and **boatyard** (boats bought, fitted and collected; slipway, cradles, a travel hoist) | +200, -50 | About 80 x 50 m yard | Road, sea | Calm Bay | [MVP] |
 | **Calm Bay** (inside the harbour wall) | +700, +450 | About 500 x 300 m of sheltered water | Sea | Calm Bay | [MVP] |
 | **Harbour mouth** (gap in the wall) and Harbor Light on the east wall head | +330, +920 | Gap about 50 m (tune) | Sea | Calm Bay (storm-exposed) | [MVP] |
+| **Sandy Point** (a low sandy spit at the outer foot of the east harbour wall; the cold open's casualty is found about 300 m south of it, [document 09](09-rescue-operations.md), section 9.1) | +550, +950 | About 150 x 40 m of sand and shingle (tune) | Foot along the wall, sea | Calm Bay (storm-exposed) | [MVP] |
 | **Haven Sands** (beach, lifeguard tower, car park, dunes, rock pools) | +1,000, +400 | About 370 m of sand | Road, sea | Calm Bay | [MVP] |
 | Haven Head (headland, viewpoint) | +1,600, +800 | 40 m high | Road, foot | Calm Bay | [MVP] |
 | Gull Cove (small cove, steep track, sea cave) | +2,600, +600 | About 120 m of sand | Track, sea | The Skerries | [L] |
@@ -144,7 +149,7 @@ Real, specific, never generic: white and yellow road lines with cat's eyes, pass
 
 The crescent harbour from [document 01](01-game-canon.md), section 4, laid out for driving and walking:
 
-- **Waterfront (Harbour Road):** the station at the west end of the harbour wall, the fuel dock and boatyard, granite quays with fishing boats on moorings, the fish market, Nell's bait shop on the pier, the ferry pier with Hazel's ticket booth and the *Gale Queen*'s berth, a chandlery.
+- **Waterfront (Harbour Road):** the station at the west end of the harbour wall; right next to it on the quay the **Port Haven Chandlery** (the in-world store, [document 04](04-monetization.md), section 1.1; its door about 30 studs from the station door and the spawn point, tune) and the harbourmaster's office; the fuel dock and the **boatyard** (boats on stands, a price board, the collection pontoon), granite quays with fishing boats on moorings, the fish market, Nell's bait shop on the pier, the ferry pier with Hazel's ticket booth and the *Gale Queen*'s berth.
 - **Up the hill:** painted terraces in stepped lanes (foot only), a chapel, a small shop, the Cottage Hospital with its ambulance bay, the hospital pontoon on the water below and a helipad [L].
 - **Edges:** Westgate and Eastgate, where Harbour Road becomes the Coast Road; a public car park at each.
 
@@ -202,7 +207,7 @@ All land vehicles are station pool vehicles: free, gated by rank (and a certific
 - **In-house raycast chassis, no free models.** One rigid body per vehicle with real mass (a pickup about 2,200 kg, tune) and four raycast wheels, each a spring-damper with rest length, stiffness, damping (ratio about 0.3 to 0.5, tune) and an anti-roll bar. Tyre forces come from a simple slip curve with grip per surface (section 2.2, read from the raycast result's material; check what it returns for Terrain with MaterialVariants, verify). Visual wheels are separate meshes placed each frame. The client that drives owns the physics; the server checks speed against [document 02](02-core-loop-and-mechanics.md)'s table ([document 06](06-tools-and-pipeline.md), section 3.2). A constraint-based chassis (hinge wheels on springs) is the fallback if raycasting misbehaves on Terrain. Community kits such as A-Chassis are not used: their licence is unchecked and free models can hide backdoors ([`research/tools-and-assets.md`](research/tools-and-assets.md), sections 3 and 5).
 - **Tune at our gravity.** With `workspace.Gravity` at about 29.4 studs/s² ([document 02](02-core-loop-and-mechanics.md#42-gravity-and-scale)), springs, damping and weight transfer must be set for real-world motion: body roll in corners, nose dive under braking, squat on launch, a pickup that feels two tonnes, an ATV that feels light.
 - **Drivetrain:** a torque curve, a six-speed automatic, four-wheel drive with low range for sand and slipways, engine braking downhill, brake assist and traction control that the Pro setting can switch off.
-- **Phone first:** steering slider, throttle and brake pedals, auto-throttle on a full push like the boats, a chase camera with lag and a cab camera.
+- **Phone first:** steering slider, throttle and brake pedals, auto-throttle on a full push like the boats, a chase camera with lag (default) and an optional cab view ([document 02](02-core-loop-and-mechanics.md), section 11).
 - **Sound and life:** RPM-based engine loops, tyre roar by surface, gravel spatter, indicator ticks, wipers in rain, the siren and blue lights only on a tasking.
 - **Trailer:** a second raycast body on a ball joint at the hitch, so reversing is real (and hard), with the reversing guide in Assist.
 - **Nothing breaks** ([document 02](02-core-loop-and-mechanics.md), section 4.1): bumps, scrapes and a stuck-in-sand step, never damage.
@@ -348,6 +353,8 @@ From the radio panel when no operation step is active: the UI hides, the camera 
 ### 6.2 StreamingEnabled and spawning
 
 Starting values (all tune, all property names verify):
+
+**Cold-open spawn.** A first-time player does not spawn at the station: the server streams the area around the Sandy Point datum (`Player:RequestStreamAroundAsync`, verify) behind a short spray fade, seats them on a jet ski already moving, and only then shows the first frame ([document 09](09-rescue-operations.md), section 9.1). The arrival cinematic's path into the harbour is streamed during the rescue. Returning players spawn at the station by the Chandlery.
 
 | Setting | Value | Why |
 |---|---|---|

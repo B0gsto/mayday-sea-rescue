@@ -398,6 +398,7 @@ CGD_NUMBER_N40_E,CG_DAY,number,E,forty.,[MVP] ctx_prev=Launch to a position thre
 CGD_NUMBER_N40_M,CG_DAY,number,M,forty,"[MVP] ctx_prev=Launch to a position | ctx_next=, informant reports an adult swimmer."
 CGD_ONBOARDING_FIRST_ACK,CG_DAY,onboarding,FULL,"One-One, Coastguard, roger. Datum is on your chart. Out.",[MVP]
 CGD_ONBOARDING_FIRST_MAYDAY,CG_DAY,onboarding,FULL,"Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water, three hundred metres south of Sandy Point. Informant on the beach reports an adult swimmer, no lifejacket, waving for help. Wind south-west, light. Over.",[MVP]
+CGD_ONBOARDING_FIRST_MAYDAY_STORM,CG_DAY,onboarding,FULL,"Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water just inside the harbour wall, off Sandy Point. Gale outside the wall, stay inside the harbour. Informant reports an adult swimmer, no lifejacket, waving for help. Over.",[MVP]
 CGD_ONBOARDING_FIRST_SITREP_ACK,CG_DAY,onboarding,FULL,"Roger, one recovered. Ambulance is waiting at the slipway. Out.",[MVP]
 CGD_ONBOARDING_FIRST_STAND_DOWN,CG_DAY,onboarding,FULL,"One-One, Coastguard. Casualty handed over. Welcome back to the water, Port Haven. Good work. Out.",[MVP]
 CGD_ONBOARDING_NUDGE,CG_DAY,onboarding,FULL,"One-One, Coastguard, do you copy? Over.",[MVP]
@@ -994,6 +995,7 @@ CGN_NUMBER_N40_E,CG_NIGHT,number,E,forty.,[MVP] ctx_prev=Launch to a position th
 CGN_NUMBER_N40_M,CG_NIGHT,number,M,forty,"[MVP] ctx_prev=Launch to a position | ctx_next=, informant reports an adult swimmer."
 CGN_ONBOARDING_FIRST_ACK,CG_NIGHT,onboarding,FULL,"One-One, Coastguard, roger. Datum is on your chart. Out.",[MVP]
 CGN_ONBOARDING_FIRST_MAYDAY,CG_NIGHT,onboarding,FULL,"Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water, three hundred metres south of Sandy Point. Informant on the beach reports an adult swimmer, no lifejacket, waving for help. Wind south-west, light. Over.",[MVP]
+CGN_ONBOARDING_FIRST_MAYDAY_STORM,CG_NIGHT,onboarding,FULL,"Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water just inside the harbour wall, off Sandy Point. Gale outside the wall, stay inside the harbour. Informant reports an adult swimmer, no lifejacket, waving for help. Over.",[MVP]
 CGN_ONBOARDING_FIRST_SITREP_ACK,CG_NIGHT,onboarding,FULL,"Roger, one recovered. Ambulance is waiting at the slipway. Out.",[MVP]
 CGN_ONBOARDING_FIRST_STAND_DOWN,CG_NIGHT,onboarding,FULL,"One-One, Coastguard. Casualty handed over. Welcome back to the water, Port Haven. Good work. Out.",[MVP]
 CGN_ONBOARDING_NUDGE,CG_NIGHT,onboarding,FULL,"One-One, Coastguard, do you copy? Over.",[MVP]

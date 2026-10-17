@@ -50,7 +50,7 @@ Every feature serves at least one pillar. A feature that serves none is cut.
 
 The isles are **one big open map at real scale** (about 5 km across at launch): the main island, **Great Gale**, with Port Haven on its south coast, a coast road to beaches, cliffs and lighthouse headlands, outlying islands reached only by boat or helicopter, and a real seabed of reefs, kelp forests and wrecks to explore. Players drive to the beach and back to the station, launch boats from slipways, and roam freely between operations. The layout, land vehicles, seabed and exploration are in [document 10](10-world-and-map.md).
 
-**Port Haven** is the main town: a crescent harbor, painted houses up the hill, a fish market, a bait shop, a ferry pier, a fuel dock, the Cottage Hospital, and at the end of the harbor wall, the old **Port Haven Coast Guard Station** with its slipway and vehicle yard. The Coast Road leaves town east to **Haven Sands** beach and west to **Long Strand** and **Tempest Point**.
+**Port Haven** is the main town: a crescent harbor, painted houses up the hill, a fish market, a bait shop, a ferry pier, a fuel dock and boatyard, the harbourmaster's office, the Cottage Hospital, and at the end of the harbor wall, the old **Port Haven Coast Guard Station** with its slipway and vehicle yard. Next door to the station on the quay is the **Port Haven Chandlery**, the marine outfitter where players buy gear, uniforms and cosmetics; there is no shop button, only shops ([document 04](04-monetization.md), section 1.1). The Coast Road leaves town east to **Haven Sands** beach and west to **Long Strand** and **Tempest Point**.
 
 **The Long Storm.** Years ago a storm sat over the isles for a whole season. The station was damaged, its crews moved away, and one by one the lighthouses went dark. Without the station, the town has made do with Vance Sterling's private salvage boats, which charge a fortune and arrive late.
 
@@ -107,7 +107,7 @@ A light story told through Chief Aggie's radio, Tobias's lighthouse missions and
 
 | Chapter | Beat | Unlocks | Scope |
 |---|---|---|---|
-| **0. Reopening Day** | A throw-bag drill with the Chief, the first MAYDAY from Gale Isles Coastguard, the first rescue, Bosun joins. | Calm Bay calls | [MVP] |
+| **0. Reopening Day** | The cold open: the first MAYDAY from Gale Isles Coastguard and the first rescue from a moving jet ski off Sandy Point, then the ride into Port Haven at golden hour, Chief Aggie on the slipway, Bosun joins. The throw-bag drill is an optional exercise afterward. | Calm Bay calls | [MVP] |
 | **1. Harbor Light** | Tobias needs a ride to the pier light. Relighting it is the player's Lifeguard promotion. | Crew joining; Skerries calls [L] | [MVP] |
 | **2. Skerry Light** | The Skerry light's lens is in pieces around Skerry Isle. Find and carry them back. Vance tries to sell the lens back to the town. | Reef wildlife and rock calls | [L] |
 | **3. Gannet Rock Light** | A fog bank has swallowed the shipping lane. Relight the light in the fog so the ferry can find its way home. | Open Sea | [L] |
@@ -145,6 +145,9 @@ A light story told through Chief Aggie's radio, Tobias's lighthouse missions and
 | An open world to explore | A real-scale island and seabed: drive the coast road to the beach and back, snorkel wrecks, spot seals and basking sharks, fill a logbook, go On watch or Off duty ([document 10](10-world-and-map.md)). | [MVP] the south coast, Haven Sands, Calm Bay and three seabed finds; [L] the full island, the Skerries and two outer islands |
 | Land vehicles | Lifeguard 4x4, beach ATV, coastguard response vehicle with a boat trailer, ambulance, lifeboat launch tractor, each with a real job in operations ([document 10](10-world-and-map.md), section 3). | [MVP] the 4x4; [L] the rest |
 | Storm Summon (paid, server-wide) | A social "admin abuse" style event the whole server enjoys. | [L] |
+| First-person rescues | On foot and on the jet ski the camera is locked in first person, with the player's own gloved hands doing every rescue action (throw, haul, grab, radio, CPR, knock). The RIB, larger boats and cars use a third-person chase camera with an optional helm or cab view ([document 02](02-core-loop-and-mechanics.md), section 11). | [MVP] foot, jet ski, RIB and 4x4 cameras, comfort options; [L] cockpit views for the lifeboat and helicopter |
+| A cold open, then cinematics | A new player's first second is already a rescue: riding a moving jet ski at the harbor mouth toward a Person in the Water. Only after it does a short third-person film-style cinematic bring them into Port Haven. Short, skippable cinematics also mark slipway launches, the storm rolling in and rank-ups ([document 02](02-core-loop-and-mechanics.md), sections 2 and 12). | [MVP] cold open, arrival and storm cinematics; [L] the rest |
+| An in-world store | No shop button on the HUD. Gear, uniforms, cosmetics and passes are bought by walking into the Port Haven Chandlery and handling the real items; vehicles are bought and collected at the station or the boatyard ([document 04](04-monetization.md), section 1.1). | [MVP] the Chandlery with Cash gear; [L] Robux items in it |
 
 ## 9. Scope tags
 
@@ -172,12 +175,14 @@ The MVP proves one thing: a first session of real, step-by-step rescue operation
 | Radio wheel with Gale Isles Coastguard taskings, ETA, POB and handover | Optional voice lines [L] |
 | Crew roles Helm, Navigator/Radio, Crew/Swimmer, Medic, with NPC crew filling empty seats | Player-flown helicopter and the Pilot role [L] |
 | Per-step grading and the debrief screen; Assist and Pro settings | AED, oxygen variants beyond one mask [L] |
-| Reopening Day drill and the Helm, Casualty Care and Rescue Swimmer exercises and certifications | Coxswain, Winch Operator and Pilot certifications [L] |
+| The cold open (a Person in the Water from a moving jet ski in the first second) and the arrival cinematic; the Reopening Day drill as an optional exercise; the Helm, Casualty Care and Rescue Swimmer exercises and certifications | Coxswain, Winch Operator and Pilot certifications [L] |
 | A real storm: full cycle, big waves at the harbor mouth, rain, tasking burst | Radio Room, Kennel and the other station upgrades [L] |
 | Bosun as a follower who barks and points | Most badges [L]; Bosun swimming or towing [L] |
 | Three ranks: Recruit, Lifeguard, Rescue Swimmer | Binoculars [L] |
 | Two or three gear items | Patrol cutter, hovercraft [P1] |
 | Mesh ocean only (no Terrain water) | |
+| First person on foot and on the jet ski with visible hands; the chase camera and helm view on the RIB and 4x4; comfort options | Lifeboat and helicopter cockpit views [L] |
+| The Port Haven Chandlery and the boatyard as walk-in stores (Cash gear and vehicles) | Robux items on the Chandlery shelves and the harbourmaster's Storm Summon desk [L] |
 | Helicopter as a tech spike, flown only by NPC on the ferry call | |
 
 Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progression.md); mechanics are in [document 02](02-core-loop-and-mechanics.md).
@@ -212,3 +217,6 @@ Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progr
 | **Ride-along** | A trainee seat (Winch Operator or Winchman) in the NPC-flown Coastguard helicopter on a big call, offered to players below Rescue Pilot. |
 | **Grade** | Gold, Silver or Bronze for each step and for the whole operation, based mostly on care and technique, a little on speed. |
 | **Crew** | Up to four players sharing a vehicle and a call. |
+| **Cold open** | A new player's first operation: they spawn already riding a jet ski toward a Person in the Water, before any menu, drill or cinematic. |
+| **Chandlery** | The Port Haven Chandlery, the marine outfitter next to the station: the walk-in store for gear, uniforms, cosmetics and passes. |
+| **Cinematic** | A short third-person, film-style shot sequence (arrival, slipway launch, storm, rank-up), skippable after the first view. |

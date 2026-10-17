@@ -348,6 +348,7 @@ CG_FIXED = {
     ],
     "onboarding": [
         ("FIRST_MAYDAY", "Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water, three hundred metres south of Sandy Point. Informant on the beach reports an adult swimmer, no lifejacket, waving for help. Wind south-west, light. Over."),
+        ("FIRST_MAYDAY_STORM", "Haven Rescue One-One, Haven Rescue One-One, this is Gale Isles Coastguard. Launch to a report of one person in the water just inside the harbour wall, off Sandy Point. Gale outside the wall, stay inside the harbour. Informant reports an adult swimmer, no lifejacket, waving for help. Over."),
         ("FIRST_ACK", "One-One, Coastguard, roger. Datum is on your chart. Out."),
         ("FIRST_SITREP_ACK", "Roger, one recovered. Ambulance is waiting at the slipway. Out."),
         ("FIRST_STAND_DOWN", "One-One, Coastguard. Casualty handed over. Welcome back to the water, Port Haven. Good work. Out."),

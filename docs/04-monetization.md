@@ -12,9 +12,34 @@ Rules for every item:
 2. **No paid random items at launch.** Every purchase gives exactly what it says.
 3. **Paid vehicles do not exist.** Rank gates every vehicle and zone, and Reputation is never sold. Robux only shortens the Cash grind (Cash packs, 2x Cash, which can speed up stat upgrades) and buys cosmetics.
 4. **State the effect in numbers.** Every product card says exactly what it gives ("Doubles Cash from operations and challenges. Does not affect Reputation or grades.") before the Roblox prompt opens.
-5. **The player opens every prompt.** A purchase prompt opens only after the player taps a button that shows the Robux price. The game never pops a prompt by itself.
-6. **Nothing priced in the first three operations.** A new player sees no shop, no prices and no offers until the tutorial chain is three operations in.
+5. **The player opens every prompt.** A purchase prompt opens only after the player walks up to a real item or counter, opens its product card and taps a Buy button that shows the Robux price (section 1.1). The game never pops a prompt by itself.
+6. **Nothing priced in the first three operations.** A new player sees no prices and no offers until the tutorial chain is three operations in; until then the Chandlery's priced shelves are curtained off (section 1.1).
 7. **No pressure.** No countdown timers, no "last chance", no fake scarcity, no messages that shame a player for saying no.
+
+### 1.1 Where things are sold: no shop button, only shops
+
+There is **no shop button and no store menu on the HUD**. Every pass, product and Cash item is offered at a real place in Port Haven, and the purchase starts from handling a real item or walking up to a counter ([document 02](02-core-loop-and-mechanics.md), section 13). The places are on the map in [document 10](10-world-and-map.md), sections 1.2 and 2.4.
+
+**The purchase flow.** Walk up to an item and interact (a ProximityPrompt: hold E, tap, or press X on gamepad). In first person the player lifts the item and turns it in their hands, and a **product card** appears beside it: what it is, the exact effect in numbers, the price read live from MarketplaceService (section 8), and a **Buy** button showing that price. Only tapping Buy opens the Roblox purchase prompt (rule 5). Owned items show an "Owned" tag on the shelf and are equipped at the station locker or the Chandlery mirror.
+
+| Place | What is offered there | How it is shown |
+|---|---|---|
+| **Port Haven Chandlery**, gear counter | Gear and gear upgrades (Cash, [document 03](03-progression.md), section 5) | Fins, the radio direction finder, tow ropes and later gear on the shelves behind the counter, each with a paper tag showing level and Cash price |
+| Chandlery, uniform racks and mannequins | Captain's Locker, the Storm Chaser uniform, Season Logbook uniforms (as previews) | Mannequins in the window and by the racks wear each set; a full-length mirror lets the player try a set on before buying |
+| Chandlery, the dog corner | Bosun's Wardrobe, Water Dog Friends | Coats and bandanas on a low rail; the shop's own Labrador and Portuguese Water Dog asleep in a basket (interact to see them as companions) |
+| Chandlery, the livery and fittings wall | Storm Chaser Liveries, Horn Pack, Siren Pack, Light Bars, Wake Trails, the Starter Kit livery | Swatch boards and a scale jet ski model wearing each livery; a horn board with real horns to press and hear; a light bar on the wall cycling its colour sets; framed wake-trail photos |
+| Chandlery, the radio shelf | Sea Shanty Radio | A marine VHF-style set on the shelf playing a track when picked up |
+| Chandlery, behind the counter | 2x Cash, VIP Crew Card, Quick Launch, Starter Kit, the Season Logbook | Framed service cards on the wall for the passes; the season's logbook lying open on the counter, showing both tracks |
+| Chandlery, the till | Cash packs, Cash Boost, Crew Boost, Challenge Reroll, gifting (section 3.3) | The shopkeeper at the till; every card opened here has the Gift button |
+| **Harbourmaster's office** (on the quay, next to the Chandlery) | Call the Storm, Call the Great Storm (section 5) | The harbourmaster's desk with a storm barometer; a chalkboard by the door shows the server's storm queue |
+| **Boatyard** | Boats (Cash, [document 03](03-progression.md), section 4) and boat upgrades; paid boat liveries shown on boats in the yard | Boats on stands and in the water with a price board; buy, then collect at the pontoon or have it delivered to the bay |
+| **Station garage and helipad** | Land vehicles (free, rank-gated), the helicopter (Cash) [L], vehicle upgrades | Vehicles on their marked bays with a board each |
+| **Your bay** at the station | Bay upgrades (Cash), rewarded video ads (section 4.3), the Season Logbook's tracks (read and claim) | Boards at each upgrade's spot; the bay terminal |
+| **Nell's bait shop** | Challenge Reroll (also at the Chandlery till) | On the challenge board |
+
+**Short walks, including on mobile (tune).** The Chandlery is the building next to the station on the quay: its door is about 30 studs from the station's main door and the spawn and respawn point, and the harbourmaster's office is the next door along (about 60 studs). Every Robux item is sold inside those two buildings (some also elsewhere, as listed above), so a phone player reaches any of them in under 10 seconds of walking. The HUD's "next thing" line and the debrief name the place to go, and tapping either sets a waypoint (never a purchase prompt). Liveries and horns can also be bought at the boatyard and the garage on the vehicle itself, so nobody has to walk back to town to dress a boat.
+
+**Discovery without pop-ups.** Until three operations are done the Chandlery's priced shelves are behind a "Restocking for Reopening Day" curtain and only the Cash gear counter is open (rule 6). After that, Chief Aggie mentions it once on the radio, the window display changes with each season, and new items get a small "New" tag on the shelf. No item ever calls the player over, and no card opens by itself.
 
 ## 2. Price anchors from the research
 
@@ -68,7 +93,7 @@ Single horns and trails also come from the Season Logbook and Service Stars ([do
 
 ### 3.3 Gifting
 
-Every pass and cosmetic card has a **Gift** button. The buyer picks a friend in the same server; the friend gets the item and a thank-you note with a Bosun paw print. Items the friend already owns are greyed out. Gifts are developer products that grant the item to the chosen player, because game passes themselves cannot be transferred (verify current Roblox rules for gifting and any age limits before launch). [L]
+Every pass and cosmetic card opened in the Chandlery (or at the harbourmaster's desk for storms) has a **Gift** button. The buyer picks a friend in the same server; the friend gets the item and a thank-you note with a Bosun paw print. Items the friend already owns are greyed out. Gifts are developer products that grant the item to the chosen player, because game passes themselves cannot be transferred (verify current Roblox rules for gifting and any age limits before launch). [L]
 
 ## 4. Developer products
 
@@ -117,7 +142,7 @@ Rules (tune):
 
 1. **Rep is never boosted by a paid storm.** The extra operations still give normal Rep, but the x1.5 storm bonus applies to Cash only. This keeps "never sell Reputation" strict. Natural storms keep the full bonus.
 2. **Queue, never stack.** Summons wait in a server queue. At least 8 minutes between summoned storms, and none within 2 minutes of a natural storm. The natural storm clock is not reset.
-3. **Max queue of two.** When the queue is full, the button greys out with "Storm queue full, try again soon". It never takes Robux for a storm that cannot run.
+3. **Max queue of two.** Storms are summoned at the harbourmaster's office (section 1.1). When the queue is full, the chalkboard and the product card say "Storm queue full, try again soon" and the Buy button greys out. It never takes Robux for a storm that cannot run.
 4. **Calm Bay stays sheltered**, so new players are not swamped by someone else's purchase.
 5. **Anonymous option.** A buyer can turn off the name announcement.
 6. **Works in private servers** with the same rules.
@@ -166,6 +191,7 @@ Subscriptions are regionalized automatically and excluded from price optimizatio
 |---|---|---|---|
 | **Paid random items** | Random items bought with Robux need every outcome and its odds shown before purchase, totalling 100%; luck boosts must show their effect; restricted users must be blocked or given an unpaid path. | None at launch. If ever added, follow the full rule and use PolicyService `ArePaidRandomItemsRestricted`. Free daily gifts are fixed, not random. | https://create.roblox.com/docs/en-us/production/monetization/paid-random-items |
 | **Gambling** | Playable or simulated gambling is not allowed. | No spins, no wagers, no chance games of any kind. | https://create.roblox.com/docs/production/promotion/experience-guidelines |
+| **Purchase prompts from the world** | Prompts are opened with MarketplaceService from a client action. | Every prompt follows an explicit Buy tap on a product card opened from a ProximityPrompt, never from walking into a trigger zone (verify current MarketplaceService prompt rules). | https://create.roblox.com/docs/production/monetization |
 | **Misleading thumbnails and claims** | Show only mechanics, UI and visuals that exist in game; no subjective claims or ads in text overlays; no real-life footage or voice-over. | Store art is real in-game captures of real calls. No "best rescue game" text. Product cards state exact effects. | https://create.roblox.com/docs/production/promotion/promotional-thumbnails and https://create.roblox.com/docs/en-us/production/publishing/thumbnails |
 | **Age and maturity** | The maturity label decides who can play: Minimal and Mild reach Roblox Kids (5 to 8) and Select (9 to 15). Kids and Select have extra publishing requirements. | Target Minimal or Mild. Complete the questionnaire before launch. Read the Kids/Select requirements page (not yet fetched). | https://create.roblox.com/docs/production/promotion/experience-guidelines |
 | **Regional pricing** | Passes are regionalized by default (30% to 100% of the default price). Developer products are opt-in and need `GetUsersPriceLevelsAsync` (verify). Hard-coded prices in UI do not update. | Read every price from MarketplaceService at runtime. Opt Cash packs and boosts in only after the price-level check is built. Storm Summons opt in last, since they affect the whole server. | https://create.roblox.com/docs/production/monetization/managed-pricing |

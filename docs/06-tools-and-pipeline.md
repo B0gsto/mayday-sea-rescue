@@ -227,6 +227,24 @@ The tier comes from the client's graphics quality level (an official quality-swi
 
 **Other budgets:** scene triangles and texture sets per [document 05](05-art-direction.md), section 5.6. Profile with the Studio MicroProfiler before and after each hero asset lands.
 
+### 3.6 Camera, viewmodel and cinematics
+
+The rules (which camera where, the hands, comfort defaults) are in [document 02](02-core-loop-and-mechanics.md), sections 11 and 12; the art is in [document 05](05-art-direction.md), section 8.5. `CameraController` owns `Workspace.CurrentCamera` (`CameraType` Scriptable) and picks one mode at a time from the player's state (on foot, seat type, step in progress, cinematic). Its modules live in `src/client/Camera/`:
+
+| Module | Job |
+|---|---|
+| `FirstPerson` | Locked first person on foot and on the jet ski (`LocalTransparencyModifier` hides the avatar's own head and body, verify per accessory); head position from the character's head or the seat's eye attachment; mouse, touch-drag and right-stick look with per-seat yaw and pitch limits; a Look Back glance on the jet ski. The view follows the vehicle's real motion on the shared wave function, then `Comfort` filters it. |
+| `Chase` | Third-person chase for the RIB, larger boats, cars and the helicopter: a spring-damped follow with lag, look-ahead in the direction of travel, terrain and hull collision pull-in, and a toggle to the **helm or cab view** (a first-person anchor at the wheel). Steps that need the hands switch to `FirstPerson` and back. |
+| `Viewmodel` | The client-only arms rig (never replicated), parented to the camera and posed per action (`ViewmodelActions`: grip bars, throw, haul, grab, radio, CPR, knock). It sways with a small lag and wave-slam offsets, is hidden in chase view, and swaps the jet ski's close-up console set in for the rider only. Rendered with the world (no separate viewmodel pass exists in Roblox, verify), so it is kept short enough not to clip into nearby geometry. |
+| `Comfort` | Horizon stabilisation (blends the camera's roll and some pitch toward level, 0 to 100%), field of view (70° to 100°), head-bob and camera-shake scales. Saved per player in their data; defaults in [document 02](02-core-loop-and-mechanics.md), section 11. |
+| `Cinematic` | Plays authored shots (camera path keyframes and focal lengths, a `DepthOfFieldEffect` per shot), hides the HUD, offers hold-to-skip from the second view (seen flags saved per player), and hands control back to the mode the player left. For the arrival it applies a client-side golden-hour lighting override and blends back to the server's preset when the shot ends (verify that client-side `Lighting` changes stay local and are not overwritten mid-shot by the server's weather updates). Cinematics never run during an operation step. |
+
+**Cold-open spawn.** On a first join the server seats the player on a moving jet ski near the Sandy Point datum before the first frame, after streaming that area ([document 10](10-world-and-map.md), section 6.2); `CameraController` starts directly in `FirstPerson` on the seat, so there is no third-person frame at all before the arrival cinematic.
+
+### 3.7 In-world store
+
+No store UI is opened from the HUD ([document 04](04-monetization.md), section 1.1). Each shelf item, mannequin, counter and desk carries a `ProximityPrompt` and a product id attribute; triggering it opens the product card (client UI) with the price read from MarketplaceService at runtime. Only the card's Buy button calls `PromptGamePassPurchase` or `PromptProductPurchase`. The server grants developer products in `ProcessReceipt` and checks pass ownership on join, as for any Roblox purchase (verify current API names before building). Cash items (gear, boats, upgrades) use the same prompts and cards but go through a server remote that checks rank and Cash.
+
 ---
 
 ## 4. Repo layout
@@ -243,7 +261,8 @@ MaydaySeaRescue/
     client/               Controllers: OceanRenderer, BoatController,
                           HeliController, SwimController, WeatherController,
                           WetnessController, LodController, QualityController,
-                          CameraController, CinematicCamera (dev only), UI
+                          CameraController (Camera/: FirstPerson, Chase,
+                          Cinematic, Viewmodel, Comfort), UI
     shared/               Waves, LightingPresets, QualityTiers, VehicleConfig,
                           CallTypes, Net (remotes), AssetIds (generated), Types
   tests/                  Lune unit tests for pure shared modules
@@ -298,6 +317,8 @@ MaydaySeaRescue/
 | Importer limits differ from research | Spike 1 before any production art |
 | Licence problems with scans, mocap or models | Licence recorded per asset; Quixel, Sketchfab paid licences and Mixamo blocked until checked ([document 05](05-art-direction.md), section 11) |
 | Moon Animator unavailable | Animation Editor plus a scripted camera path module |
+| First person on a rolling jet ski causes motion sickness | Horizon stabilisation on by default, FOV, head-bob and shake settings (section 3.6); playtest the cold open with players prone to sickness |
+| Viewmodel arms clip into hulls, casualties or the console | Short arms rig, per-action poses, a near-plane check in playtests (section 3.6) |
 | Physics differs between devices | One shared wave function; physics never reads the visual mesh; tiers never touch physics |
 
 ---

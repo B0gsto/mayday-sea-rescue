@@ -305,6 +305,6 @@ The two official pages disagree on the quota. Plan for the stricter Open Cloud f
 
 ## 7. Open issues
 
-- *Sandy Point* (onboarding, [document 09](09-rescue-operations.md), section 9.1) is not on [document 10](10-world-and-map.md)'s map yet; either add it or change the onboarding to Haven Sands and regenerate the onboarding lines.
+- *Sandy Point* is on [document 10](10-world-and-map.md)'s map (the spit at the outer foot of the east harbour wall). If a storm is running when a new player joins, the cold open uses `ONBOARDING_FIRST_MAYDAY_STORM` (just inside the harbour wall) instead of `ONBOARDING_FIRST_MAYDAY`.
 - Tobias, Vance, Nell and Ingrid have no voices yet; Chapter 1 (Harbor Light) in the MVP is covered by Aggie and the Coastguard only.
 - Verify: whether `previous_text`/`next_text` are billed; whether `eleven_v3` supports them; the true Open Cloud audio quota for the uploading account; AudioPlayer `PlaybackRegion` seek accuracy on low-end mobile (test 30 stitched calls on a phone before committing to banks; fallback: smaller banks or single files for the Coastguard's most common stems).

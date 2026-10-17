@@ -188,6 +188,7 @@ Each vehicle is modelled on a real class type and its proportions, but it is **n
 ### 4.3 Buildings, rocks and terrain
 
 - **Buildings** follow real vernacular: granite and slate cottages, a pilot's lookout, a fish market, a chandlery, a boathouse-style lifeboat station with a slipway. Modular kits with real wall thickness, window reveals, gutters, downpipes and weathering streaks.
+- **The Port Haven Chandlery is a hero location** (the in-world store, [document 04](04-monetization.md), section 1.1), lit and dressed to the station's standard because every buyer stands inside it in first person. Exterior: a granite and slate shopfront on the quay with a painted fascia, a deep bay window holding mannequins in the season's uniforms, a hanging sign and a chalk board. Interior: worn pine floorboards, tongue-and-groove walls, coils of real rope (three-strand and braid), shackles and blocks in labelled drawers, fenders and buoys hung from the beams, lifejackets and drysuits on rails, a long counter with a brass till and a chart table, a loft fitting room with a full-length mirror, the dog basket. Warm practical lights (brass lamps, a skylight) against blue harbour light through the window. Every product display (section 9 readability, product tags on paper labels, swatch boards, the horn board) is a real prop, not a floating panel. Budget as a hero building (section 5.6), streamed as its own interior.
 - **Lighthouses** are real types (round granite towers, white-painted towers, a small pier light), each with its own real light characteristic (section 6.3).
 - **Rocks and cliffs** are scan-based (CC0 scans, section 11) or sculpted and baked from scans, with tiling detail and macro variation so no two cliffs repeat.
 
@@ -253,7 +254,10 @@ The per-MeshPart triangle cap is reported at about 20,000 to 21,000 (vendor sour
 | NPC person (casualty, crew) | 20,000 | 10,000 | 8,000 | 2,000 | 2 (body, head) plus hair cards |
 | Newfoundland dog | 25,000 plus fur cards up to 15,000 | 10,000 | 10,000 | 3,000 | 2 to 3 (body, fur cards, harness) |
 | Player crew kit (layered clothing, accessories) | Within Roblox layered clothing and accessory limits (verify) | n/a | n/a | n/a | 1 to 2 per item |
-| Hero building (station, lighthouse) | 40,000 | 10,000 | 15,000 | 3,000 | 4 plus trim sheet |
+| Hero building (station, lighthouse, Chandlery interior) | 40,000 | 10,000 | 15,000 | 3,000 | 4 plus trim sheet |
+| First-person viewmodel (arms, gloves, sleeves, the handset) | 12,000 | 10,000 | n/a (only ever close) | n/a | 2 (arms and gloves, sleeves), 2048 if the texture spike allows (verify) |
+| Jet ski close-up set (bars, console, mirrors) | 8,000 on top of the jet ski | 8,000 | Swapped for the base jet ski mesh beyond the rider | n/a | 1 |
+| Helm or cockpit interior (RIB console, lifeboat wheelhouse, helicopter cockpit [L]) | 15,000 to 30,000 | 10,000 | Base vehicle mesh | n/a | 2 to 3 |
 | Building module | 3,000 to 8,000 | 8,000 | 50% | Streamed out or LOD mesh | Shared trim sheet plus MaterialVariants |
 | Rock or cliff piece | 5,000 to 15,000 | 10,000 | 40% | 15% | 1 unique plus tiling detail |
 | Small prop (buoy, fender, crate, ring) | 500 to 3,000 | 3,000 | 50% | Cull | Shared prop atlas |
@@ -420,7 +424,19 @@ All built with `ParticleEmitter`, `Beam` and `Trail`, using flipbooks rendered i
   - Our own capture: video reference of real tasks keyframed in Blender or the Animation Editor.
   - The dog: keyframed from real Newfoundland water-rescue footage in Blender, or licensed quadruped mocap.
 - Roblox R6 and R15 animations do not transfer cleanly (research section 5); author for R15.
-- **Camera:** gentle follow lag on boats, real-feeling shake on slams and nearby lightning, a "reduce motion" setting.
+- **Camera:** first person on foot and on the jet ski, a chase camera with gentle follow lag on larger boats and cars ([document 02](02-core-loop-and-mechanics.md), section 11); real-feeling shake on slams and nearby lightning, scaled by the comfort settings (camera shake, head-bob, horizon stabilisation).
+- **Cinematics** are shot like film: real focal lengths (24 to 85 mm equivalent), slow dollies and cranes, depth of field, a few motivated cuts, no spinning orbits ([document 02](02-core-loop-and-mechanics.md), section 12). Golden hour for the arrival is a variant of the Clear day preset (section 6.2): a sun about 6° above the horizon, a warmer `ColorShift_Top` and longer shadows (values tune), applied on the client for the shot only and blended back to the server's weather afterward ([document 06](06-tools-and-pipeline.md), section 3.6). They reuse the game's animation; only Chief Aggie's slipway walk, the rank-up badge pinning and crowd reactions are authored for them.
+
+### 8.5 First-person viewmodel and close-up detail
+
+In first person the player looks at their own arms and their vehicle from less than a metre for most of a session, so these are the highest-detail assets per pixel in the game.
+
+- **Arms and gloves.** A dedicated viewmodel rig (not the avatar's arms, which avatar scaling and blocky bodies would break): forearms and hands at real proportions, wearing neoprene rescue gloves with palm grip texture, reinforced fingertips, wrist straps with velcro tabs and a little wear. Gloves darken and glisten when wet and drip after a dunk (section 5.4).
+- **Drysuit sleeves.** Hi-Vis Yellow or navy drysuit fabric (the player's uniform cosmetic shows here too) with latex wrist seals, the cuff of a fleece undersuit at rest, retroreflective tape on the forearm, water beading and darkening in rain and spray. Uniforms bought in the Chandlery must have a sleeve and glove variant, or they do not ship.
+- **Hand poses.** Authored per action: gripping the bars (thumb on the throttle), the throw-bag swing, hand-over-hand hauling with the line running between the fingers, grabbing a lifejacket strap, lifting the handset with the curly cord, interlocked CPR hands, a gloved fist knocking on a hull, a flat palm to say "stop". Real weight: the arms lag the head slightly and absorb wave slams.
+- **The jet ski up close.** The handlebar with grips, kill-switch lanyard clipped to the lifejacket, throttle lever, mirrors with a real reflection or a convincing probe (verify cost), the console (a small screen with speed, fuel and a compass, a rescue VHF handset in a clip), spray on the windscreen lip, scuffs and sticker wear. It replaces the base jet ski mesh only for the rider ([document 06](06-tools-and-pipeline.md), section 3.6).
+- **Helm and cockpit views.** The RIB console (wheel, throttle, compass, chartplotter, VHF), the lifeboat wheelhouse [L] and the helicopter cockpit [L] are modelled as interiors with working gauges, rain on the glass and wipers, at the budgets in section 5.6.
+- **Avoid:** floating hands with no sleeves, mittens without fingers, toy-like plastic gloves, a console that is a flat texture.
 
 ---
 

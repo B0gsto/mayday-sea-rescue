@@ -61,7 +61,7 @@ Research source: [`research/store-page-and-monetization.md`](research/store-page
 
 ## 3. Thumbnails
 
-All captured at 1920 x 1080 in-game with the cinematic camera or free camera, highest graphics quality, exported under 3 MB. Bottom 15% of the frame kept free of key subjects and text (player-count overlay). Text overlays, when used, are short gameplay descriptions in the UI font (Builder Sans), top-left or top-centre.
+All captured at 1920 x 1080 in-game with the cinematic camera or free camera. Thumbnails may use frames from the game's own third-person cinematics (arrival, storm, slipway launch, rank-up), which every player sees, as well as capture-camera shots; at least one test thumbnail is a first-person frame (gloved hands on the throw bag or the jet ski bars) to sell the point of view. Shoot at the highest graphics quality, exported under 3 MB. Bottom 15% of the frame kept free of key subjects and text (player-count overlay). Text overlays, when used, are short gameplay descriptions in the UI font (Builder Sans), top-left or top-centre.
 
 Shot language: real camera positions (a chase boat at water level, the helicopter door, a cliff with a long lens, a deck-mounted camera), focal lengths set with `Camera.FieldOfView` (wide about 70, normal about 40, long lens 15 to 25) (tune), and the horizon level unless the boat is rolling.
 
@@ -119,26 +119,31 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 
 ### 5.2 Shot list (30 seconds)
 
+The trailer is mostly **first-person gameplay** (what a player actually sees: their gloved hands, the jet ski bars, the casualty in the swell), cut with the game's own **third-person cinematics** (arrival, storm rolling in, slipway launch, rank-up, [document 02](02-core-loop-and-mechanics.md), section 12) and a few chase-camera shots. All three are real views a player sees in game, so the honesty rule in section 1 holds. About 16 of the 30 seconds are first person.
+
 | Time | Shot | Camera | UI |
 |---|---|---|---|
-| 0:00 to 0:02 | Overcast morning, Port Haven harbour: the station doors open, a call card slides in: "MAYDAY: swimmer in Calm Bay" | Long lens from across the harbour, slow push-in | Call card only |
-| 0:02 to 0:05 | A player in a drysuit runs down the slipway and launches the jet ski; spray off the bow | Low follow from behind, handheld feel | Hidden |
-| 0:05 to 0:08 | Jet ski crosses the bay; Bosun rides the rescue sled, ears and fur blown back | Chase boat at water level, side on | Hidden |
-| 0:08 to 0:10 | Bosun leaps in, swims to a waving survivor, tows them back; wet fur, strobe flashing | Water-level close, camera bobbing on the swell | Hidden |
-| 0:10 to 0:12 | Jet ski threads between rocks with white water breaking | Fast low pass, wide lens | Hidden |
-| 0:12 to 0:14 | Cloud thickens, light drops, rain curtains move across the sea; storm warning card | Wide, high, sky dominant, long lens compression | Storm warning card |
-| 0:14 to 0:17 | All-weather lifeboat climbs and slams through a huge wave, green water over the bow, spindrift | Long lens from the trough, chase boat | Hidden |
-| 0:17 to 0:20 | Helicopter hovers in rain with its searchlight on; crew winches down beside a capsized ferry | From the helicopter door, looking down the hoist line | Hidden |
-| 0:20 to 0:23 | Players' boats around the ferry pulling survivors aboard, red flares and orange smoke | Wide slow orbit | Hidden |
-| 0:23 to 0:25 | Night after the storm: a player relights a lighthouse; the beam sweeps through drizzle | Low, looking up at the lantern | Hidden |
-| 0:25 to 0:27 | Back at the station: survivors handed over in blankets, rank-up banner, Bosun shakes off water | Medium, front, warm station floods | Rank-up banner |
-| 0:27 to 0:30 | Logo over the harbour at dawn | Slow pull-back | Logo overlay |
+| 0:00 to 0:03 | Gloved hands on the jet ski bars at speed, spray over the console, the Harbour Mouth ahead; the tasking card slides in: "MAYDAY: person in the water, Sandy Point" | First person (game camera) | Tasking card only |
+| 0:03 to 0:05 | Keep eyes on: an orange hood rises on a swell; a flare arcs up from the harbour wall | First person | Lookout reticle |
+| 0:05 to 0:08 | The hand reaches down, grabs the lifejacket strap, hand-over-hand haul onto the sled | First person | Hidden |
+| 0:08 to 0:11 | The jet ski runs in past the Harbor Light at golden hour; Chief Aggie walks down the slipway | Arrival cinematic (third person) | Hidden |
+| 0:11 to 0:13 | Bosun leaps off the footwell and swims to a waving survivor, seen over the bars | First person | Hidden |
+| 0:13 to 0:15 | Clouds stack over Tempest Point, the Harbor Light comes on, boats pitch at their moorings | Storm cinematic (third person) | Storm warning card |
+| 0:15 to 0:17 | Boathouse doors open, the all-weather lifeboat runs down the slipway and hits the water | Slipway launch cinematic (third person) | Hidden |
+| 0:17 to 0:20 | The lifeboat climbs and slams through a huge wave, green water over the bow, spindrift | Chase camera (game) | Hidden |
+| 0:20 to 0:22 | From the helicopter door: looking down the hoist line at a capsized ferry in rain | First person (Winch Operator) | Hidden |
+| 0:22 to 0:24 | A gloved fist knocks on the upturned hull; taps answer from inside | First person | Hidden |
+| 0:24 to 0:26 | Both hands swing a throw bag out to a survivor in SOLAS orange among red flares | First person | Hidden |
+| 0:26 to 0:28 | Back at the station: Aggie pins the rank badge, Bosun shakes off water | Rank-up cinematic (third person) | Rank-up banner |
+| 0:28 to 0:30 | Logo over the harbour at dusk, the lighthouse beam sweeping | Capture camera, slow pull-back | Logo overlay |
 
-Cut on wave impacts and lightning so the music lines up. The first half (0:00 to 0:14: the call, the jet ski, Bosun, the rocks, the storm rolling in) is first-session play. The second half shows what players grow into (lifeboat, helicopter, big calls, lighthouses); a new player can reach the winch early through the station helicopter ride-along on big calls, but most of it comes later. Everything shown is in the live build, so the page does not overpromise. The night shot follows the day cycle's real `ClockTime`; we wait for night on the capture server rather than forcing a storm to change the time ([document 05](05-art-direction.md), section 6).
+Cut on wave impacts and knocks so the music lines up. The first 13 seconds are the real first session (the cold open and the arrival, [document 09](09-rescue-operations.md), section 9.1); the rest shows what players grow into (storms, the lifeboat, the helicopter, big calls, rank). Lifeboat and helicopter shots need the [L] build; until then, an MVP cut swaps them for the RIB launch and the Capsized Ferry from the RIB.
 
 ### 5.3 How to capture
 
-- **Cinematic camera:** a dev-only `CinematicCamera` client module ([document 06](06-tools-and-pipeline.md), section 4) plays CFrame keyframe paths with easing, triggered by a dev chat command. It sets `FieldOfView` per shot for lens choice, adds a light handheld or boat-mounted sway (tune), and may raise the preset's DepthOfField for a shallow-focus look on close shots. It only moves the camera and focus; everything on screen is live gameplay. Moon Animator camera paths are an alternative (verify plugin status). Free camera (Left Shift + P) for quick handheld shots.
+- **First-person shots:** recorded with the shipped first-person camera and viewmodel at the default comfort settings (horizon stabilisation on, FOV 80°), so they match what players see ([document 06](06-tools-and-pipeline.md), section 3.6). Play each beat several times and keep the cleanest take; never add hands or motion in the edit.
+- **Game cinematics:** the arrival, storm, slipway launch and rank-up shots are the shipped `Cinematic` module's own shots, triggered on cue by a dev command.
+- **Capture camera:** for anything else, the `Cinematic` module in a dev-only mode plays CFrame keyframe paths with easing, triggered by a dev chat command. It sets `FieldOfView` per shot for lens choice, adds a light handheld or boat-mounted sway (tune), and may raise the preset's DepthOfField for a shallow-focus look on close shots. It only moves the camera and focus; everything on screen is live gameplay. Moon Animator camera paths are an alternative (verify plugin status). Free camera (Left Shift + P) for quick handheld shots.
 - **Realistic camera rules:** cameras sit where a real camera could be (chase boat, helicopter door, cliff, deck mount, quay). No flying through hulls or waves. Keep the 180-degree rule within a sequence. Let the camera ride the swell at water level instead of floating dead still.
 - **Capture server:** a private server with 4 to 6 team members playing roles in full crew kit, plus debug flags to force a storm, a lighting preset at the current time of day and a big call on cue.
 - **Settings:** graphics quality at maximum, window at 1920 x 1080, Roblox core UI hidden through a dev flag (`SetCoreGuiEnabled` off), our HUD hidden except where the shot list keeps it.

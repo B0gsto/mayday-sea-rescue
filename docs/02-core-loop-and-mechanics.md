@@ -22,13 +22,13 @@ flowchart LR
 
 XP and Reputation are the same number. The UI calls it Reputation; "XP" appears only in the debrief as "+135 Rep".
 
-## 2. The first three minutes
+## 2. The first two minutes: the cold open
 
-The research says discovery punishes players who leave in the first 60 and 180 seconds ([`research/store-page-and-monetization.md`](research/store-page-and-monetization.md), section 5, https://create.roblox.com/docs/discovery.md). So: no menus, no text walls, a hands-on drill inside 10 seconds, the first rescue handed over inside 3 minutes, and nothing for sale on screen.
+The research says discovery punishes players who leave in the first 60 and 180 seconds ([`research/store-page-and-monetization.md`](research/store-page-and-monetization.md), section 5, https://create.roblox.com/docs/discovery.md). So: no menus, no text walls, no drill and no cinematic first. The first frame is already a rescue: the new player spawns in first person, riding a moving jet ski just outside the Harbour Mouth off Sandy Point, and Gale Isles Coastguard tasks them to a Person in the Water. They rescue the casualty in about 90 seconds with Assist on and a forgiving condition meter. Nothing is for sale anywhere in sight.
 
-The minute-by-minute script (throw-bag drill with Chief Aggie, the first MAYDAY, jet ski passage, keep eyes on, downwind approach, throw bag, three-card survey, thermal blanket, smooth ride home, three-card handover at about 2:50) is in [document 09](09-rescue-operations.md), section 9.1.
+Only then comes the **arrival**: a short third-person cinematic (section 12) as they ride into Port Haven at golden hour, past the Harbor Light, while Chief Aggie walks down the slipway. Control returns in first person on the slipway for the handover and the first debrief, and the open world opens. The second-by-second script and the softened rules are in [document 09](09-rescue-operations.md), section 9.1. The old throw-bag drill is now an optional exercise on the station board ([document 09](09-rescue-operations.md), section 9.2).
 
-Rules for the first session (tune): the first three operations are a fixed tutorial chain, each adding one new kind of step (operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew; operation 3 adds the full survey and a swimmer recovery as a trainee); nothing with a Robux price is shown until three operations are done; if a storm is active on join, the tutorial operations happen inside the sheltered harbor where waves stay small. The storm clock is per server, so the first storm reaches a new player within about 15 minutes, inside a 25-minute session. When it hits, the Coastguard tasks the player to a beginner storm operation at the **harbor mouth**: full storm waves, a short ride from the station, a small search area and a casualty who starts in the Stable band. If the Capsized Ferry rolls, players below Rescue Pilot are also offered a ride-along seat in the Coastguard helicopter (section 3.1). Every first session should end with a storm rescue. After the tutorial chain the player is **On watch** by default and can switch to **Off duty** to explore with no taskings ([document 10](10-world-and-map.md), section 5.1).
+Rules for the first session (tune): the first three operations are a fixed tutorial chain, each adding one new kind of step (operation 1 is the cold open; operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew, which also introduces the chase camera; operation 3 adds the full survey and a swimmer recovery as a trainee); nothing with a Robux price is shown until three operations are done, and the Chandlery's priced shelves stay curtained until then ([document 04](04-monetization.md), section 1.1); if a storm is active on join, the cold open happens inside the sheltered harbor where waves stay small. A returning player skips the cold open and spawns at their bay. The storm clock is per server, so the first storm reaches a new player within about 15 minutes, inside a 25-minute session, with a short storm-rolling-in cinematic the first time (section 12). When it hits, the Coastguard tasks the player to a beginner storm operation at the **harbor mouth**: full storm waves, a short ride from the station, a small search area and a casualty who starts in the Stable band. If the Capsized Ferry rolls, players below Rescue Pilot are also offered a ride-along seat in the Coastguard helicopter (section 3.1). Every first session should end with a storm rescue. After the tutorial chain the player is **On watch** by default and can switch to **Off duty** to explore with no taskings ([document 10](10-world-and-map.md), section 5.1).
 
 ## 3. Operations
 
@@ -193,7 +193,7 @@ An operation is now the unit of play: about 4 to 7 minutes from tasking to hando
 | Loop | What a player does | Hook to the next loop |
 |---|---|---|
 | **5 to 7 minutes (one operation)** | Tasking, the steps, a handover and a debrief with step grades and one tip. | The weak step to do better next time, a certification step "1 of 2", the storm clock. |
-| **25 minutes (one session)** | One to two storm cycles: about four operations, at least one of them in a storm (often the Capsized Ferry), an exercise or certification step, a trip to the bay to spend Cash. In the first two hours, an unlock every 10 to 15 minutes ([document 03](03-progression.md), section 10). | Next storm in a few minutes; a rank, certification or vehicle "almost there" on the HUD. |
+| **25 minutes (one session)** | One to two storm cycles: about four operations, at least one of them in a storm (often the Capsized Ferry), an exercise or certification step, a walk to the Chandlery, the boatyard or the bay to spend Cash (section 13). In the first two hours, an unlock every 10 to 15 minutes ([document 03](03-progression.md), section 10). | Next storm in a few minutes; a rank, certification or vehicle "almost there" on the HUD. |
 | **Daily** | Three daily challenges from Nell's board, a daily login gift (Cash and a Bosun treat), two or three storms with friends. | Weekly challenges, the next certification, the next vehicle, the season finale count. |
 | **Weekly** | Weekly challenges, a new rank, certification or vehicle, a lighthouse relit. Updates add operations and liveries. | Season arc and the next zone. |
 
@@ -217,3 +217,44 @@ The sea is the opponent, never other players.
 10. **AFK farming.** Payouts need completed steps. An idle player stops getting taskings after 5 minutes and is moved to the station after 15 (tune). Off-duty players get no taskings by choice, and a player who is moving is exploring, not idle ([document 10](10-world-and-map.md), section 5.1).
 11. **Chat.** Roblox filtered chat plus the radio wheel ([document 09](09-rescue-operations.md), section 3.3), which also carries crew lines ("On my way", "Need the winch", "Thanks, crew") so players can coordinate without typing.
 12. **Storm Summon limits.** Summons queue, never stack, and never start within 2 minutes of a natural storm, so nobody can make the server permanently stormy.
+
+## 11. Camera
+
+First person is the game's point of view: the player sees a rescue through their own eyes and their own gloved hands. Art for the hands and the close-up vehicle detail is in [document 05](05-art-direction.md), section 8.5; the tech (`CameraController` and its modules) is in [document 06](06-tools-and-pipeline.md), section 3.6.
+
+| Situation | Camera | Notes |
+|---|---|---|
+| **On foot** (station, town, beaches, swimming, snorkelling, on scene aboard any vessel) | First person, **locked** | No zoom-out, no shoulder camera. Swimming and duck dives stay first person. |
+| **Jet ski** | First person, **locked** | Hands on the bars, the console and mirrors in view. The rescue sled is checked with a glance back (hold Look Back or swipe). |
+| **RIB, lifeboat, cutter, hovercraft** | Third-person **chase camera** (default) or an optional **helm view** | The helm view is first person at the wheel or tiller with the console in front. Leaving the helm to work on deck (crew, swimmer, medic steps) is always first person. |
+| **Cars** (4x4, ATV, response vehicle, ambulance, tractor) | Chase camera (default) or an optional **cab view** | The ATV, being ridden like the jet ski, still offers the chase camera, because it carries a casualty on a towed sled behind it (tune). |
+| **Helicopter** [L] | Chase camera or cockpit view; the Winch Operator's door is first person | |
+| **Cinematics** | Third person, film-style (section 12) | Never during a step. |
+| **Photo mode** [L] | Free camera ([document 10](10-world-and-map.md), section 5.4) | |
+
+**Hands.** Every rescue action is shown with the player's hands in first person: throw (the bag swings back and out), haul (hand over hand on the line), grab (a lifejacket strap or a wrist), radio (the handset or the chest-mounted radio comes up), CPR (interlocked hands, [document 09](09-rescue-operations.md), section 5.6), knock (a fist on a capsized hull). Choice cards (survey, kit, ATMIST) appear beside the hands, not over them. In chase-camera vehicles a step that needs the hands switches to first person for that step and back after it.
+
+**Comfort options** (settings menu, all free, none affect grades):
+
+| Option | Default (tune) | Range |
+|---|---|---|
+| **Horizon stabilisation** | On: the view's roll follows the boat at 30% of its real roll | 0% (locked horizon) to 100% (full boat roll) |
+| **Field of view** | 80° | 70° to 100° |
+| **Head-bob** | Medium | Off, low, medium, full |
+| **Camera shake** (waves, engine, storm, helicopter downwash) | Medium | Off, low, medium, full |
+
+## 12. Cinematics
+
+Cinematics are allowed when they mark a moment, never as a wall in front of play. They are shot third-person and film-style (real lenses, slow dollies, a few cuts), last about 8 to 25 seconds (tune), never run during an operation step, and are skippable (hold to skip) from the second time a player sees them. Each one hands control back in the same first-person or chase view the player left.
+
+| Cinematic | When | Length (tune) | Scope |
+|---|---|---|---|
+| **Arrival** | Right after the cold open's recovery: riding into Port Haven at golden hour, past the Harbor Light, Chief Aggie walking down the slipway, the ambulance waiting | About 20 s | [MVP] |
+| **The storm rolling in** | The storm warning (section 8): clouds stacking over Tempest Point, the Harbor Light coming on, boats pitching at their moorings | About 10 s, played to everyone ashore; players at sea or on a step get a radio call instead | [MVP] |
+| **Slipway launch** | Launching the lifeboat (and the RIB from the boathouse): doors open, the boat runs down the slip and hits the water | About 8 s; the first launch of each vehicle, then on request | [MVP] RIB; [L] lifeboat |
+| **Rank-up** | A promotion: Aggie pins the badge on the slipway, the crew room claps, Bosun barks | About 12 s | [MVP] |
+| **Lighthouse relit** | A lighthouse mission's end: the lens turns and the beam sweeps the sea | About 15 s | [MVP] Harbor Light; [L] the rest |
+
+## 13. Shopping in the world
+
+There is **no shop button on the HUD**. Everything that costs Cash or Robux is bought by walking up to the real thing in the world: gear, uniforms, cosmetics and passes at the **Port Haven Chandlery** on the quay next to the station; vehicles at the station (bay and garage) or the **boatyard**; the Storm Summon at the **harbourmaster's office**. The HUD's "next thing" line ([document 03](03-progression.md), section 1) says where to go ("RIB: Rescue Swimmer, 2,400 Cash, at the boatyard"), and tapping it sets a waypoint. Where every product is offered, and the rules that keep mobile players from long walks, are in [document 04](04-monetization.md), section 1.1; the buildings are on the map in [document 10](10-world-and-map.md), section 2.4.

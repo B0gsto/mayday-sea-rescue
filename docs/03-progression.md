@@ -7,7 +7,7 @@ This file owns every progression number: payouts, rank thresholds, prices in Cas
 1. **Reputation is earned only by playing.** Operations, exercises, challenges and big calls give it. Nothing sold for Robux adds it, including Cash packs and 2x Cash.
 2. **Rank and certification open doors, Cash buys the key.** A rank (plus, for some, a certification) unlocks the right to buy a vehicle or relight a lighthouse. Cash pays for it. So a player who buys Cash still has to earn the rank and pass the certification.
 3. **Skill is earned, never bought.** Grades, certifications and Pro mode come only from how a player performs. Gear upgrades change what a player can do (range, speed, capacity), never how a step is graded: grade bands are measured against the kit in use (for example, tow tension is graded as a share of the line's own rating), so a better rope does not make a careless tow Gold.
-4. **Always one next thing.** At every point the HUD shows the next unlock and how far away it is (in Rep, Cash or certification steps).
+4. **Always one next thing.** At every point the HUD shows the next unlock, how far away it is (in Rep, Cash or certification steps) and where in the world to get it ("at the boatyard", "at the Chandlery"); tapping it sets a waypoint. There is no shop button: everything is bought in person ([document 02](02-core-loop-and-mechanics.md), section 13).
 5. **Early unlocks are fast, late ones are slow.** First rank in about 10 minutes, an unlock every 10 to 15 minutes for the first 2 hours, the helicopter in week 1, Admiral in about six weeks, then endless Service Stars. The model assumes 25-minute sessions, two a day (section 10).
 6. **No streak resets, no losses.** A takeover never costs Cash, Rep or a certification. Missing a day never resets anything.
 
@@ -29,7 +29,7 @@ Zones are areas on the map ([document 10](10-world-and-map.md), section 1.2): be
 
 Other payout rules (tune):
 
-- **Tutorial chain.** Operation 1 (Reopening Day, under 3 minutes) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash and 160 Rep each.
+- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash and 160 Rep each.
 - **Exercises** ([document 09](09-rescue-operations.md), section 9.2) pay 200 Cash and 50 Rep the first time each is passed, nothing on repeats.
 - **Crew members** are paid only if they completed a step on the operation ([document 02](02-core-loop-and-mechanics.md), section 7); otherwise they get the 10% share.
 - **By the Book** [L] (flew or drove the full expanding square or sector search): +10% Rep.
@@ -89,6 +89,8 @@ Each certification is a Roblox badge (section 8) and a small badge on the namepl
 
 ## 4. Vehicle ladder
 
+Boats are bought and collected at the **boatyard** on the waterfront (and the jet ski and RIB are also on show in the station boathouse); land vehicles and the helicopter are bought at the station garage and helipad. A bought vehicle is delivered to the player's bay ([document 10](10-world-and-map.md), section 2.4).
+
 | Vehicle | Unlock rank | Cash price (tune) | Seats (crew + casualties) | Scope |
 |---|---|---|---|---|
 | Jet ski | Recruit | Free (first vehicle) | 1 + 1 | [MVP] |
@@ -113,7 +115,7 @@ The station loaner RIB (tutorial operation 2, with an NPC Helm instructor) is fr
 
 ### 4.1 Vehicle upgrades
 
-Each vehicle has three upgrade levels. Prices are a share of the vehicle's price; the free vehicles (jet ski, rescue board) use fixed prices.
+Upgrades are fitted at the boatyard (boats) or the station garage (land vehicles), by walking up to the vehicle on its stand. Each vehicle has three upgrade levels. Prices are a share of the vehicle's price; the free vehicles (jet ski, rescue board) use fixed prices.
 
 | Level | Cost (tune) | Effect |
 |---|---|---|
@@ -125,7 +127,7 @@ Each vehicle has three upgrade levels. Prices are a share of the vehicle's price
 
 ## 5. Gear upgrades
 
-Gear is personal and works on every vehicle. Each item has five levels. Gear improves numbers (range, speed, capacity) but never widens a grade band (principle 3): a step's Gold criteria are always measured against the kit in use. The MVP has three items (Fins, Radio direction finder, Tow rope) at levels 1 to 3.
+Gear is personal and works on every vehicle. It is bought and upgraded at the **Port Haven Chandlery** counter by picking up the real item from its shelf. Each item has five levels. Gear improves numbers (range, speed, capacity) but never widens a grade band (principle 3): a step's Gold criteria are always measured against the kit in use. The MVP has three items (Fins, Radio direction finder, Tow rope) at levels 1 to 3.
 
 | Level | Cash cost (tune) | Rank needed |
 |---|---|---|
@@ -150,7 +152,7 @@ Gear is personal and works on every vehicle. Each item has five levels. Gear imp
 
 ## 6. Station upgrades (your bay)
 
-Every player has their own bay at Port Haven Station: a berth, a locker, a kennel and a trophy wall. Upgrades are personal and show on the bay for others to see.
+Every player has their own bay at Port Haven Station: a berth, a locker, a kennel and a trophy wall. Upgrades are personal and show on the bay for others to see. They are bought at the bay itself, on the board by each upgrade's spot.
 
 | Upgrade | Levels and Cash cost (tune) | Effect | Scope |
 |---|---|---|---|
@@ -251,7 +253,7 @@ Rough targets for a player who plays the game's way: takes operations in Assist 
 
 | Time | Session | Unlock | Paid with |
 |---|---|---|---|
-| 0:03 | 1 | First rescue (under 3 minutes); the jet ski and Bosun are yours | Free |
+| 0:03 | 1 | First rescue (the cold open, about 90 seconds); the jet ski and Bosun are yours | Free |
 | 0:13 | 1 | Helm certification, then Lifeguard: Harbor Light relit, crew joining, the Skerries | Exercise + tutorial chain, 400 Rep |
 | 0:15 | 1 | First storm, beginner operation at the harbor mouth (or a ferry ride-along) | (storm clock) |
 | 0:18 | 1 | First gear level | 300 Cash |
@@ -290,7 +292,7 @@ Rough targets for a player who plays the game's way: takes operations in Assist 
 
 ### 10.2 Watch list for tuning
 
-- **First rescue in under 3 minutes** for at least 90% of new players, and **first rank in under 15 minutes** for at least 80% (tune).
+- **First rescue in under 2 minutes** (the cold open) for at least 90% of new players, and **first rank in under 15 minutes** for at least 80% (tune).
 - **Operation length.** Standard operations should land at 4 to 7 minutes. If one runs long, cut a step's length (section 10 of [document 09](09-rescue-operations.md)) before raising its pay.
 - **Certification friction.** If more than 30% of players reach a rank's Rep without its certification, make the certification's exercise easier or let more operation types count; never lower the procedure bar.
 - **Unlock cadence.** No gap over 20 minutes in the first 2 hours. If a gap opens, move a price or threshold before raising payouts.

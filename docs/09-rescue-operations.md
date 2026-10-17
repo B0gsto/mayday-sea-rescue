@@ -21,7 +21,7 @@ Numbers marked **(tune)** are first guesses for playtests. Procedure details com
 
 4. **Graded per step.** Every step gets Gold, Silver or Bronze. The step grades make the operation grade (section 2.4), which feeds Reputation and a debrief screen with one tip per weak step.
 5. **Failure is never grim.** All ages play this. No gore, no injury close-ups, no drowning, no death on screen or in text. The casualty's **condition meter** drops instead, and if it reaches Critical, the harbour patrol or the Coastguard helicopter takes over and the casualty is safe (section 2.5). The radio stays kind.
-6. **Short and punchy.** No step runs longer than about 45 seconds of the same input, choices show 2 to 4 options with an icon and at most six words each, and the camera moves to the next step by itself (section 10).
+6. **Short and punchy.** No step runs longer than about 45 seconds of the same input, choices show 2 to 4 options with an icon and at most six words each, and the next step is cued by itself (section 10): in first person a sound and a glance cue turn the player's head toward it, never a camera cut; in chase-camera vehicles the camera eases to it.
 7. **Simplify the physics, never the procedure.** Stud distances, meters and timings are game values. The sequence, the kit and the reasons are real.
 
 ## 2. Shared systems
@@ -292,7 +292,7 @@ On the jet ski the survey is three cards (Response, Breathing, Cold) because the
 
 **CPR mechanic (Casualty Care certification, gated by the casualty's state).** Offered only when the survey's Breathing card was "Not breathing normally". Drowning CPR starts with rescue breaths, then compressions and breaths in cycles ([research](research/rescue-procedures.md), 3d; verify: Resuscitation Council UK and ERC drowning guidance: expected 5 initial breaths, then 30:2 for adults; for a child, 5 breaths then 15:2 for trained rescuers; rate 100 to 120 per minute). The game sets the ratio and beat from the casualty's age band, which the Response card showed.
 
-- Shown as a calm, clothed casualty from a high camera with a heartbeat bar and a metronome, never a close-up of the body.
+- Shown in first person: the player's interlocked gloved hands on a calm, clothed casualty's chest, the view raised so the face is never in close-up, with a heartbeat bar and a metronome. In a chase-camera vehicle the camera switches to the same first-person framing for the step (verify the framing against the maturity questionnaire, [document 04](04-monetization.md), section 8).
 - Tap compressions to the beat with the two-hand rhythm; a ring shows depth as "push hard enough" (hold-and-release timing); breaths are a two-tap prompt.
 - After a number of good cycles (tune) the casualty coughs, starts breathing and is rolled into the recovery position. If the rhythm is poor, the condition holds steady instead of rising, and the helicopter or the ambulance takes over at handover. CPR never ends in a death state.
 - An **AED** [L] is used only out of the water with the chest dried ([research](research/rescue-procedures.md), 3d): drag the pads to their outlined places, stand clear on the prompt.
@@ -416,22 +416,24 @@ A crew member on *Northern Dawn* or a cruise ship is ill. Steps: PAN-PAN medical
 
 ## 9. Onboarding: training exercises, Assist and Pro
 
-### 9.1 Reopening Day: the first rescue in under 3 minutes
+### 9.1 The cold open: the first rescue in about 90 seconds
+
+A new player skips any drill, menu or cinematic. Their first frame is a rescue already under way: first person, gloved hands on the bars of a moving jet ski, just outside the Harbour Mouth off **Sandy Point** (the sandy spit at the outer foot of the east harbour wall, [document 10](10-world-and-map.md), section 1.2), with a Person in the Water tasking coming over the radio. The camera rules are in [document 02](02-core-loop-and-mechanics.md), section 11; the dispatcher's lines are owned by [document 11](11-dispatcher-and-voice.md).
 
 | Time | What happens |
 |---|---|
-| 0:00 | Spawn on the slipway. Chief Aggie: "Quick drill before the paint dries, Recruit." A training manikin floats on a line 15 studs off the slipway. |
-| 0:05 | **Throw-bag drill**: aim with the wind (an arrow shows it), throw, haul with the two-hand rhythm. 25 s. The manikin cannot fail; the drill only teaches. |
-| 0:30 | A real MAYDAY from Gale Isles Coastguard: a swimmer off Sandy Point. First radio wheel, with one glowing reply. |
-| 0:40 | Chief hands over a two-card kit (throw bag, thermal blanket) already chosen. Launch the jet ski. |
-| 0:45 | Passage, about 35 s, gentle sea, the beach informant waving toward the swimmer. |
-| 1:20 | Spot and keep eyes on (10 s), then the approach: an Assist cone from downwind, the slow mark, neutral (15 s). |
-| 1:45 | Throw bag and haul, as drilled (20 s). Casualty onto the sled, lying flat. |
-| 2:05 | Three-card survey (Response, Breathing, Cold) (15 s), then drag the thermal blanket on (5 s). |
-| 2:25 | Smooth ride to the slipway (25 s), the ambulance waiting. |
-| 2:50 | Three-card handover (Age, Time, Treatment). "Thank you!" Then the debrief with the first step grades and the **First Rescue** badge. |
+| 0:00 | Join. Fade up from spray, already riding at about half throttle (auto-throttle held for the first 10 s, tune), about 250 studs (tune) short of the datum. The Coastguard tasks Haven Rescue to one person in the water three hundred metres south of Sandy Point. The radio wheel opens by itself with one glowing reply; the player's left hand lifts the handset on the console as they pick it. |
+| 0:10 | The informant on Sandy Point waves and points; a fisherman on the wall fires a flare. **Keep eyes on** (5 s): the orange hood rises and falls in the swell. A small hint by the right hand shows steer and neutral. |
+| 0:20 | **Approach**: the Assist cone from downwind, the slow mark, neutral (about 15 s). |
+| 0:35 | **Sled recovery** (section 5.3): the sled passes beside them, the player's hand reaches down and grabs the lifejacket shoulder strap, then the two-hand rhythm hauls them flat onto the sled (about 20 s). |
+| 0:55 | **Two-card check** (Response, Cold), then drag the thermal blanket over them with both hands (about 15 s). |
+| 1:10 | "Casualty aboard" on the radio wheel. A smooth turn for home, Assist on, sea held gentle (about 20 s); the cinematic covers the rest of the passage. |
+| 1:30 | **Arrival cinematic** ([document 02](02-core-loop-and-mechanics.md), section 12): third person, golden hour, the jet ski runs in past the Harbor Light into Port Haven; Chief Aggie walks down the slipway, the ambulance waits. About 20 s (tune). |
+| 1:50 | Back in first person on the slipway: a two-card handover (Age, Treatment) to the paramedic, Aggie's "Not bad for your first minute, Recruit", then the debrief with the first step grades and the **First Rescue** badge. The open world opens. |
 
-The rest of the tutorial chain teaches one new step each (tune): operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew (assessment, heaving line, tension); operation 3 is a tired swimmer far out (full survey, swimmer recovery as a trainee). Nothing for sale shows until three operations are done ([document 04](04-monetization.md), section 1).
+**Cold-open rules (tune).** Assist is on and cannot be switched off. The casualty starts high in Stable, the condition meter drains at half the normal rate and cannot fall below Concern, so the operation cannot fail; a missed approach simply loops the jet ski round for another pass with a softer cone. Grades are real but Bronze at worst. Only this operation is softened. The datum (about +550, +1,850 studs) lies just past the Calm Bay ring, but the cold open always plays with Calm Bay difficulty and a gentle sea held around it. If a storm is running on join, the cold open happens just inside the wall in Calm Bay instead, where the waves stay small (this needs a matching tasking line in document 11). Players who join at the same moment each get their own casualty, spaced along the Sandy Point shore (soft collisions, [document 02](02-core-loop-and-mechanics.md), section 10). A returning player never sees the cold open again; they spawn at their bay.
+
+**After the debrief.** Aggie points out three things and nothing more: the exercise board (the **Reopening Day drill** is now an optional exercise, section 9.2), the Port Haven Chandlery next door (nothing priced shows in it yet), and the radio, where the next tasking arrives within about a minute. The rest of the tutorial chain teaches one new step each (tune): operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew (assessment, heaving line, tension, and the first chase camera); operation 3 is a tired swimmer far out (full survey, swimmer recovery as a trainee). Nothing for sale shows until three operations are done ([document 04](04-monetization.md), section 1).
 
 ### 9.2 Training exercises
 
@@ -439,6 +441,7 @@ The station runs **exercises** with Chief Aggie and the training manikin, launch
 
 | Exercise | Teaches | Certification |
 |---|---|---|
+| Reopening Day drill (optional) | The old first-minute drill, moved after the cold open: throw bag at a manikin on a line off the slipway, aimed with the wind, then the two-hand haul (about 25 s). It cannot be failed. | None |
 | Boat handling | Approach a buoy from downwind, neutral, come alongside the pontoon, a man-overboard turn ([research](research/rescue-procedures.md), 2a) | Helm |
 | Casualty care | DR ABCDE on the manikin, recovery position, oxygen, CPR rhythm | Casualty Care |
 | Swim test | Arm's-length approach, talking down a "panicking" instructor, breaking free, tube tow | Rescue Swimmer |
@@ -463,7 +466,7 @@ A player can drop from Pro to Assist mid-operation (losing the Pro bonus) but no
 
 ## 10. Pacing
 
-- **First rescue:** under 3 minutes for a new player (section 9.1).
+- **First rescue:** about 90 seconds for a new player, from the first frame (the cold open, section 9.1).
 - **Standard operation:** about 4 to 7 minutes from tasking to handover (tune). Big calls run 8 to 10 minutes.
 
 | Person in the Water (standard, Calm Bay) | Target time (tune) |
@@ -485,7 +488,7 @@ How steps stay short and punchy:
 1. **One skill per step, one goal on screen.** The step card names the goal ("Come in from downwind, slowly") and disappears when the step starts.
 2. **Hard caps.** No single step runs over 45 s of the same input; if the player struggles, Assist hints arrive sooner and the NPC crew offers to take over (Silver at most).
 3. **No dead travel.** Passage times follow the 45-second budget in [document 02](02-core-loop-and-mechanics.md), section 4.1, measured from the nearest dock, car park or rescue point. Long transits use outposts, beach and cliff operations use the land vehicles, and the Medic works during the passage. Taskings offered to a player who is exploring favour what they can reach from where they are, and Return to Station is always available on land ([document 10](10-world-and-map.md), sections 1.3 and 5.1).
-4. **Cut on success.** When a step ends, the camera eases straight to the next one; no confirmation screens until the debrief.
+4. **Cut on success.** When a step ends, the next one starts at once: on foot and on the jet ski (locked first person) a sound, a hand gesture from the crew and a glance cue turn the view toward it; on the RIB and larger vehicles the chase camera eases to it. No confirmation screens until the debrief.
 5. **Choices are cards, not menus.** 2 to 4 cards, icons first, six words or fewer.
 6. **Variety by casualty, not by length.** The same operation plays differently because the casualty's state, the wind and the sea change which method and treatment are right.
 
@@ -543,7 +546,7 @@ Each vehicle has **kit slots** (tune): jet ski sled 2, RIB 5, lifeboat 8, helico
 The greybox ([`CONTRACT.md`](../CONTRACT.md)) has `CallService` and `RescueService` with call kinds `Swimmer`, `DriftingCraft`, `Tow` and `CapsizedFerry`. The rework this chapter implies, for the build streams to plan:
 
 - An **operation** is a data-driven list of steps (`src/shared/Calls/*` becomes the step definitions), each with a role, a mechanic id, grade bands and a weight. The server runs the state machine and validates each step's result; the client plays the mechanic.
-- Kinds become `PersonInWater` (absorbs `Swimmer` and `DriftingCraft` as variants), `DisabledVessel` (was `Tow`) and `CapsizedFerry`.
+- Kinds become `PersonInWater` (absorbs `Swimmer` and `DriftingCraft` as variants), `DisabledVessel` (was `Tow`) and `CapsizedFerry`. The cold open (section 9.1) is a `PersonInWater` variant with the softened condition rules, started by the server at a first join with the player already seated on a moving jet ski.
 - Each casualty carries its condition value and state; the condition clock replaces `expiresAt` for standard operations (keep a hard cap for cleanup).
 - `CrewService.RecordRoleAction` is called once per step a player completes, so crew pay follows real work.
 - NPC crew are server-side actors filling empty seats, with the slower timing and Silver cap from section 4.2.
