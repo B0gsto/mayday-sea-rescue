@@ -1,4 +1,5 @@
 # M_Chr_Casualty_Swimmer
+dims_m: n/a
 Reference: adult swimmer in a SOLAS lifejacket, strobe and retro tape.
 - Height as the base (1.6 to 1.9 m).
 - Lifejacket chest band about 0.1 m (verify).

@@ -1,4 +1,5 @@
 # M_Veh_RIB
+dims_m: 8.44 x 3.0 x 2.85
 Reference: Atlantic 85-class inshore lifeboat (generic details, not a replica).
 - Length overall 8.44 m (RNLI page says nearly 8.5 m); beam 2.85 m; draught about 0.53 m.
 - Displacement about 1.8 t (mass); crew 4; top speed about 35 kn.

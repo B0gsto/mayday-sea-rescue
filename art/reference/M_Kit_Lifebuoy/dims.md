@@ -1,4 +1,5 @@
 # M_Kit_Lifebuoy
+dims_m: 0.75 x 0.12 x 0.75
 Reference: lifebuoy 0.75 m OD (05 section 4.1) with light and retro tape.
 - Outside diameter 0.75 m; inside diameter about 0.435 m; buoyancy 180 N (UK supplier).
 - Ring cross-section about 0.12 m (verify).

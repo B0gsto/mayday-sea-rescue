@@ -1,4 +1,5 @@
 # M_Sea_AdmiraltyAnchor
+dims_m: n/a
 Reference: 1840s Admiralty-pattern anchor (Parker 1841 design; wooden stock later iron).
 - A circa 1750 example at the National Maritime Museum: about 4.9 m long, just under 3 m across flukes (large ship anchor).
 - Mass for that size about 2,000 to 2,300 kg (Big Anchor project tables, 41 to 45 cwt).

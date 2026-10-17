@@ -1,4 +1,5 @@
 # M_Chr_Bosun (+ fur cards, harness) and RIG_Bosun
+dims_m: n/a
 Reference: Newfoundland dog, black coat, 66 to 71 cm at the shoulder (05 section 4.1, row).
 - AKC breed standard average height: 28 in (71 cm) male, 26 in (66 cm) female.
 - Wikipedia height range 56 to 76 cm.

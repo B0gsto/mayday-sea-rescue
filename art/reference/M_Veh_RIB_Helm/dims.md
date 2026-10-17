@@ -1,4 +1,5 @@
 # M_Veh_RIB_Helm
+dims_m: n/a
 Reference: Atlantic 85 helm console, wheel, throttles, compass, chartplotter, VHF, grab handles, jockey-pod seats.
 - Console footprint about 0.8 m wide x 0.5 m deep, top about 1.2 m above the deck (verify).
 - Helm wheel diameter about 0.35 m (verify).

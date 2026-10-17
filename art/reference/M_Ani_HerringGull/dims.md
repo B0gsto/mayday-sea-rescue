@@ -1,4 +1,5 @@
 # M_Ani_HerringGull (+ clips)
+dims_m: n/a
 Reference: herring gull (Larus argentatus).
 - Length 55 to 67 cm (Wildlife Trusts); 54 to 60 cm (Southend Pier, Marlin up to 60 cm).
 - Wingspan 130 to 150 cm (Wildlife Trusts); 120 to 155 cm (Southend Pier); 1.48 m (Marlin).

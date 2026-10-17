@@ -1,4 +1,5 @@
 # M_Veh_LifeguardPickup
+dims_m: 5.33 x 1.815 x 1.855
 Reference: double-cab pickup, Hilux class (invented livery).
 - Length 5.33 m (Hilux double cab, current generation 5,325 mm); width 1.855 m; height 1.815 m (vehicle figures from listing).
 - Wheelbase about 3.085 m (current generation).
