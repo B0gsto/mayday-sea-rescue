@@ -1,0 +1,254 @@
+{
+ "master": 4096,
+ "export_cap": 1024,
+ "uv": "u0, v0, u1, v1 (v up, Blender)",
+ "atlases": {
+  "HarbourProp": {
+   "note": "docs/12 2.6: all small harbour props share it, 2 sets",
+   "sets": {
+    "Metal": {
+     "M_Hbr_Ladder": [
+      0.0,
+      0.5,
+      0.25,
+      1.0
+     ],
+     "Spare": [
+      0.25,
+      0.75,
+      0.75,
+      1.0
+     ],
+     "M_Hbr_Bollard": [
+      0.75,
+      0.75,
+      1.0,
+      1.0
+     ],
+     "M_Hbr_LifebuoyStation": [
+      0.0,
+      0.25,
+      0.25,
+      0.5
+     ],
+     "M_Hbr_LobsterPot_Frame": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+     ],
+     "M_Hbr_MooringChain": [
+      0.5,
+      0.25,
+      0.625,
+      0.5
+     ],
+     "M_Hbr_Cleat": [
+      0.625,
+      0.375,
+      0.75,
+      0.5
+     ],
+     "M_Hbr_FishBox_Handles": [
+      0.75,
+      0.375,
+      0.875,
+      0.5
+     ],
+     "M_Hbr_Shackles": [
+      0.875,
+      0.375,
+      1.0,
+      0.5
+     ]
+    },
+    "RopePlastic": {
+     "M_Hbr_NetPile_Cards": [
+      0.0,
+      0.75,
+      0.5,
+      1.0
+     ],
+     "M_Hbr_Fender": [
+      0.5,
+      0.75,
+      0.75,
+      1.0
+     ],
+     "M_Hbr_FishBox": [
+      0.75,
+      0.75,
+      1.0,
+      1.0
+     ],
+     "M_Hbr_LobsterPot_Net": [
+      0.0,
+      0.5,
+      0.25,
+      0.75
+     ],
+     "M_Hbr_MooringBuoy": [
+      0.25,
+      0.5,
+      0.5,
+      0.75
+     ],
+     "M_Hbr_Rope_Trim": [
+      0.5,
+      0.625,
+      1.0,
+      0.75
+     ],
+     "Spare": [
+      0.0,
+      0.375,
+      0.5,
+      0.5
+     ],
+     "M_Hbr_Lifebuoy_Ring": [
+      0.5,
+      0.375,
+      0.75,
+      0.5
+     ],
+     "M_Hbr_PickupBuoy": [
+      0.75,
+      0.375,
+      0.875,
+      0.5
+     ]
+    }
+   },
+   "textures": [
+    "T_HarbourProp_Metal_{ALB,NOR,RGH,MET}",
+    "T_HarbourProp_RopePlastic_{ALB,NOR,RGH,MET}"
+   ]
+  },
+  "Street": {
+   "note": "docs/12 2.7 road furniture",
+   "sets": {
+    "Main": {
+     "M_Road_StreetLamp": [
+      0.0,
+      0.5,
+      0.25,
+      1.0
+     ],
+     "Spare": [
+      0.25,
+      0.75,
+      0.75,
+      1.0
+     ],
+     "M_Road_BeachFlags": [
+      0.75,
+      0.75,
+      1.0,
+      1.0
+     ],
+     "M_Road_Bench": [
+      0.0,
+      0.25,
+      0.25,
+      0.5
+     ],
+     "M_Road_Bin": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+     ],
+     "M_Road_Bollard": [
+      0.5,
+      0.25,
+      0.625,
+      0.5
+     ]
+    }
+   },
+   "textures": [
+    "T_Street_Main_{ALB,NOR,RGH,MET}"
+   ]
+  },
+  "FoliageLand": {
+   "note": "docs/12 2.8 alpha cards (AlphaMode Transparency)",
+   "sets": {
+    "Main": {
+     "M_Veg_Grass_Marram": [
+      0.0,
+      0.5,
+      0.25,
+      1.0
+     ],
+     "M_Veg_Gorse": [
+      0.25,
+      0.75,
+      0.75,
+      1.0
+     ],
+     "M_Veg_Grass_Turf": [
+      0.75,
+      0.75,
+      1.0,
+      1.0
+     ],
+     "M_Veg_Heather": [
+      0.0,
+      0.25,
+      0.25,
+      0.5
+     ],
+     "Spare": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+     ],
+     "M_Veg_SeaThrift": [
+      0.5,
+      0.375,
+      0.625,
+      0.5
+     ]
+    }
+   },
+   "textures": [
+    "T_FoliageLand_Main_{ALB,NOR,RGH,MET}"
+   ]
+  },
+  "FoliageMarine": {
+   "note": "docs/12 2.8 marine alpha cards",
+   "sets": {
+    "Main": {
+     "M_Veg_Kelp": [
+      0.0,
+      0.5,
+      0.25,
+      1.0
+     ],
+     "M_Veg_Wrack": [
+      0.25,
+      0.75,
+      0.75,
+      1.0
+     ],
+     "M_Veg_Eelgrass": [
+      0.75,
+      0.75,
+      1.0,
+      1.0
+     ],
+     "Spare": [
+      0.0,
+      0.25,
+      0.25,
+      0.5
+     ]
+    }
+   },
+   "textures": [
+    "T_FoliageMarine_Main_{ALB,NOR,RGH,MET}"
+   ]
+  }
+ }
+}

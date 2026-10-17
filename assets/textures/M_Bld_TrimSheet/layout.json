@@ -1,0 +1,95 @@
+{
+ "size": 1024,
+ "strips": [
+  {
+   "strip": "WindowFrame",
+   "v0": 0.0,
+   "v1": 0.125,
+   "source": "wood_peeling_paint_weathered",
+   "url": "https://polyhaven.com/a/wood_peeling_paint_weathered",
+   "profile": "bevel2",
+   "metal": false
+  },
+  {
+   "strip": "GlazingBar",
+   "v0": 0.125,
+   "v1": 0.1875,
+   "source": "wood_peeling_paint_weathered",
+   "url": "https://polyhaven.com/a/wood_peeling_paint_weathered",
+   "profile": "round",
+   "metal": false
+  },
+  {
+   "strip": "Sill",
+   "v0": 0.1875,
+   "v1": 0.3125,
+   "source": "granite_tile",
+   "url": "https://polyhaven.com/a/granite_tile",
+   "profile": "sill",
+   "metal": false
+  },
+  {
+   "strip": "Gutter",
+   "v0": 0.3125,
+   "v1": 0.4375,
+   "source": "rusty_painted_metal",
+   "url": "https://polyhaven.com/a/rusty_painted_metal",
+   "profile": "round",
+   "metal": false
+  },
+  {
+   "strip": "Downpipe",
+   "v0": 0.4375,
+   "v1": 0.5,
+   "source": "rusty_painted_metal",
+   "url": "https://polyhaven.com/a/rusty_painted_metal",
+   "profile": "round",
+   "metal": false
+  },
+  {
+   "strip": "RenderBand",
+   "v0": 0.5,
+   "v1": 0.625,
+   "source": "white_plaster_rough_01",
+   "url": "https://polyhaven.com/a/white_plaster_rough_01",
+   "profile": "bevel1",
+   "metal": false
+  },
+  {
+   "strip": "Flashing",
+   "v0": 0.625,
+   "v1": 0.6875,
+   "source": "metal_plate",
+   "url": "https://polyhaven.com/a/metal_plate",
+   "profile": "flat",
+   "metal": true
+  },
+  {
+   "strip": "Fascia",
+   "v0": 0.6875,
+   "v1": 0.8125,
+   "source": "wood_peeling_paint_weathered",
+   "url": "https://polyhaven.com/a/wood_peeling_paint_weathered",
+   "profile": "bevel1",
+   "metal": false
+  },
+  {
+   "strip": "DoorPanel",
+   "v0": 0.8125,
+   "v1": 0.9375,
+   "source": "wood_peeling_paint_weathered",
+   "url": "https://polyhaven.com/a/wood_peeling_paint_weathered",
+   "profile": "panel",
+   "metal": false
+  },
+  {
+   "strip": "Coping",
+   "v0": 0.9375,
+   "v1": 1.0,
+   "source": "granite_tile",
+   "url": "https://polyhaven.com/a/granite_tile",
+   "profile": "round",
+   "metal": false
+  }
+ ]
+}

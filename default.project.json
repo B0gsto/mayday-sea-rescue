@@ -19,6 +19,7 @@
     },
     "Workspace": { "$className": "Workspace" },
     "Lighting": { "$className": "Lighting", "$properties": { "Technology": "Future" } },
+    "MaterialService": { "$path": "src/materials/MaterialService.model.json" },
     "TextChatService": {
       "$className": "TextChatService",
       "$properties": { "ChatVersion": "TextChatService" }

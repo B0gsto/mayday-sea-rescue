@@ -1,0 +1,167 @@
+[
+ {
+  "name": "overview_overcast",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Overcast', 13) local g = _G.B02.ground(990, 360) _G.B02.shoot(Vector3.new(760, g + 160, 600), Vector3.new(990, g, 360))"
+ },
+ {
+  "name": "terrain_close_overcast",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.preset('Overcast', 13) local p = _G.B02.landPoint() _G.B02.shoot(p + Vector3.new(-14, 6, -14), p + Vector3.new(10, 0, 10))"
+ },
+ {
+  "name": "overview_wet_storm",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(true) _G.B02.preset('Storm', 13) local g = _G.B02.ground(990, 360) _G.B02.shoot(Vector3.new(760, g + 160, 600), Vector3.new(990, g, 360))"
+ },
+ {
+  "name": "board_clear",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Clear', 12) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(66, 42, -38), o + Vector3.new(66, 0, 26))"
+ },
+ {
+  "name": "close_clear",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Clear', 12) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(30, 9, -14), o + Vector3.new(36, 0, 12))"
+ },
+ {
+  "name": "board_overcast",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Overcast', 13) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(66, 42, -38), o + Vector3.new(66, 0, 26))"
+ },
+ {
+  "name": "close_overcast",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Overcast', 13) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(30, 9, -14), o + Vector3.new(36, 0, 12))"
+ },
+ {
+  "name": "board_storm",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Storm', 13) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(66, 42, -38), o + Vector3.new(66, 0, 26))"
+ },
+ {
+  "name": "close_storm",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Storm', 13) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(30, 9, -14), o + Vector3.new(36, 0, 12))"
+ },
+ {
+  "name": "board_night",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Night', 23) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(66, 42, -38), o + Vector3.new(66, 0, 26))"
+ },
+ {
+  "name": "close_night",
+  "cam": [
+   0,
+   0,
+   0
+  ],
+  "look": [
+   0,
+   0,
+   1
+  ],
+  "settle": 4,
+  "lua": "_G.B02.wetTerrain(false) _G.B02.preset('Night', 23) local o = _G.B02.origin _G.B02.shoot(o + Vector3.new(30, 9, -14), o + Vector3.new(36, 0, 12))"
+ }
+]
