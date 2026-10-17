@@ -110,15 +110,25 @@ function MeshGrid.new(
 				nid[n] = em:AddNormal(Vector3.yAxis)
 			end
 		end) and #nid == #vid
+		-- The underside faces get their own static downward normal. Sharing the top surface's
+		-- (upward) normals made every visible back face lit from behind, i.e. pure black: a large
+		-- black patch of sea wherever the near patch's underside was in view (shore shot).
+		local downNid: number? = nil
+		if backFaces and hasNormals then
+			local okDown, idOrErr = pcall(em.AddNormal, em, -Vector3.yAxis)
+			downNid = if okDown then idOrErr else nil
+		end
 		hasUVs = pcall(function()
 			for n = 1, #vid do
 				uid[n] = em:AddUV(Vector2.new(lx[n] / tile, lz[n] / tile))
 			end
 		end) and #uid == #vid
 
-		local function triangle(a: number, b: number, c: number)
+		local function triangle(a: number, b: number, c: number, under: boolean?)
 			local face = em:AddTriangle(vid[a], vid[b], vid[c])
-			if hasNormals then
+			if under and downNid then
+				pcall(em.SetFaceNormals, em, face, { downNid, downNid, downNid })
+			elseif hasNormals and not under then
 				hasNormals = pcall(em.SetFaceNormals, em, face, { nid[a], nid[b], nid[c] })
 			end
 			if hasUVs then
@@ -136,8 +146,8 @@ function MeshGrid.new(
 					triangle(v10, v01, v11)
 					if backFaces then
 						-- Underside, so the surface is visible from below (underwater view).
-						triangle(v00, v10, v01)
-						triangle(v10, v11, v01)
+						triangle(v00, v10, v01, true)
+						triangle(v10, v11, v01, true)
 					end
 				end
 			end
