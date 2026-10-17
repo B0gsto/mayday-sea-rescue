@@ -1,15 +1,22 @@
--- Build-time greybox map, run by tools/build-map.luau under Lune (NOT shipped as a script).
--- Called as build(game, ctx); ctx.require loads shared modules (GameConfig) through the require shim.
+-- Build-time map, run by tools/build-map.luau under Lune (NOT shipped as a script).
+-- Called as build(game, ctx); ctx.require loads shared modules (GameConfig, WorldConfig) through the require shim.
 -- Globals: Instance, Vector3, CFrame, Color3, Enum, game, workspace.
 -- Lune limits: no physics, no Terrain editing, no Model:PivotTo. New Parts default to Studs
 -- surfaces and Anchored = false, so the part() helper sets both.
 --
--- Builds Workspace.Map (sea level Y = 0, no water yet: a mesh ocean comes later):
---   OceanFloor   sand base, top at Y = -40 (4 tiles of 2048 studs)
---   PortHaven    land, quay, station, dock with launch bays Bay1..Bay4, hospital, houses, hill
+-- Terrain: Lune cannot write voxels, but it can move a whole Terrain instance. map/terrain/Terrain.rbxm (written in
+-- Studio by tools/world/studio_terrain.py from the bake in map/generated, see tools/world/README.md) is parented into
+-- Workspace as-is (SmoothGrid + PhysicsGrid). Without it the old part-built OceanFloor and land are built instead.
+--
+-- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
+--   OceanFloor   (fallback only) sand base, top at Y = -40
+--   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback)
 --   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
 --   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
---   Beach        sloped sand inside the breakwater (east side)
+--   Slipways     the station slipway (concrete ramp into the harbour)
+--   HavenSands   lifeguard tower, parked NPC ambulance (handover), car park sign
+--   Seabed       wrecks and finds from WorldConfig.POIs (Morwenna, the mail seaplane, the Admiralty anchor)
+--   WorldPoints  invisible markers with attributes: launch, vehicle spawn, handover, discoveries (Discoverable)
 --   HarbourLight lighthouse greybox on the east breakwater head
 -- and Workspace.Zones (invisible, non-collide cylinders with attribute Zone = "<id>", from GameConfig).
 -- Spawn is on the quay.
@@ -146,11 +153,12 @@ local function buildHouse(
 	)
 end
 
-local function buildPortHaven(map: Instance, landTop: number, floorY: number)
+local function buildPortHaven(map: Instance, landTop: number, floorY: number, hasTerrain: boolean)
 	local town = folder(map, "PortHaven", "Model")
-	-- land the town sits on (north of the quay) and a hill behind it
+	-- land the town sits on (north of the quay) and a hill behind it: Terrain when it is baked
+	local land = if hasTerrain then Instance.new("Folder") else town
 	box(
-		town,
+		land,
 		"Land",
 		Vector3.new(-600, floorY, -500),
 		Vector3.new(600, landTop, -20),
@@ -158,7 +166,7 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number)
 		M.Grass
 	)
 	box(
-		town,
+		land,
 		"Hill",
 		Vector3.new(-600, landTop, -500),
 		Vector3.new(600, landTop + 30, -360),
@@ -173,7 +181,7 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number)
 		CFrame = CFrame.new(0, landTop + 15, -330) * CFrame.Angles(0, math.pi, 0),
 		Color = COLORS.grass,
 		Material = M.Grass,
-		Parent = town,
+		Parent = land,
 	})
 
 	-- quay: concrete harbour front, z -20..4
@@ -456,18 +464,564 @@ local function buildZones(zonesFolder: Instance, zones: { any })
 	end
 end
 
+local function loadTerrain(ws: Instance, ctx: any): boolean
+	local path = "map/terrain/Terrain.rbxm"
+	if not (ctx.exists and ctx.exists(path)) then
+		return false
+	end
+	local terrain = ctx.readModel(path)[1]
+	assert(terrain and terrain.ClassName == "Terrain", `{path} must hold one Terrain instance`)
+	local old = ws:FindFirstChildOfClass("Terrain")
+	if old then
+		old:Destroy()
+	end
+	terrain.Name = "Terrain"
+	terrain.Parent = ws
+	return true
+end
+
+-- An invisible, non-colliding marker part carrying attributes (for code and the logbook).
+local function marker(
+	parent: Instance,
+	name: string,
+	pos: Vector3,
+	attributes: { [string]: any }
+): Part
+	return part({
+		Name = name,
+		Size = Vector3.new(4, 4, 4),
+		CFrame = CFrame.new(pos),
+		Transparency = 1,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		CastShadow = false,
+		Parent = parent,
+		Attributes = attributes,
+	})
+end
+
+-- A part placed in a local frame (origin, yaw) given its centre offset, size and extra rotation.
+local function piece(
+	parent: Instance,
+	frame: CFrame,
+	name: string,
+	offset: Vector3,
+	size: Vector3,
+	rot: CFrame?,
+	color: Color3,
+	material: any,
+	shape: any?
+): Part
+	return part({
+		Name = name,
+		Shape = shape or Enum.PartType.Block,
+		Size = size,
+		CFrame = frame * CFrame.new(offset) * (rot or CFrame.new()),
+		Color = color,
+		Material = material,
+		Parent = parent,
+	})
+end
+
+local OAK, RUST, HULL = rgb(66, 56, 44), rgb(96, 62, 44), rgb(128, 134, 126)
+
+-- Morwenna (1902 trading schooner, 28 x 7 m): keel, broken oak ribs, stem and stern posts, a few strakes,
+-- the windlass with its anchor chain and the ship's bell (attribute Bell).
+local function buildSchooner(model: Instance, frame: CFrame, length: number, beam: number)
+	local half = length / 2
+	piece(
+		model,
+		frame,
+		"Keel",
+		Vector3.new(0, 0.2, 0),
+		Vector3.new(2, 2, length - 6),
+		nil,
+		OAK,
+		M.Wood
+	)
+	local k = 0
+	for z = -half + 5, half - 5, 5.2 do
+		k += 1
+		local w = beam / 2 * math.sqrt(math.max(1 - (z / half) ^ 2, 0.05))
+		for side = -1, 1, 2 do
+			local broken = (k * 7 + side * 3) % 5 == 0
+			local ribH = (if broken then 3 else 8 - math.abs(z) / 12) + (k % 3)
+			piece(
+				model,
+				frame,
+				"Floor",
+				Vector3.new(side * w * 0.45, 0.8, z),
+				Vector3.new(w * 0.9, 1, 1.2),
+				nil,
+				OAK,
+				M.Wood
+			)
+			if not (k % 6 == 0 and side == 1) then
+				piece(
+					model,
+					frame,
+					"Rib",
+					Vector3.new(side * (w - 0.6), ribH / 2 + 0.6, z),
+					Vector3.new(1.2, ribH, 1.2),
+					CFrame.Angles(0, 0, -side * 0.28),
+					OAK,
+					M.Wood
+				)
+			end
+		end
+	end
+	piece(
+		model,
+		frame,
+		"Stem",
+		Vector3.new(0, 5, half - 2),
+		Vector3.new(1.6, 11, 1.6),
+		CFrame.Angles(0.35, 0, 0),
+		OAK,
+		M.Wood
+	)
+	piece(
+		model,
+		frame,
+		"Sternpost",
+		Vector3.new(0, 4, -half + 2),
+		Vector3.new(1.6, 9, 1.6),
+		CFrame.Angles(-0.15, 0, 0),
+		OAK,
+		M.Wood
+	)
+	for i = 0, 3 do
+		piece(
+			model,
+			frame,
+			"Strake",
+			Vector3.new(-beam / 2 + 1.5 + i * 0.4, 1.5 + i * 1.8, -4 + i * 3),
+			Vector3.new(0.5, 1.6, length * (0.55 - i * 0.08)),
+			CFrame.Angles(0, 0, 0.3),
+			rgb(78, 66, 52),
+			M.WoodPlanks
+		)
+	end
+	piece(
+		model,
+		frame,
+		"Windlass",
+		Vector3.new(0, 3, half - 10),
+		Vector3.new(9, 2.6, 2.6),
+		nil,
+		OAK,
+		M.Wood,
+		Enum.PartType.Cylinder
+	)
+	for side = -1, 1, 2 do
+		piece(
+			model,
+			frame,
+			"Bitt",
+			Vector3.new(side * 5, 2.5, half - 10),
+			Vector3.new(1.4, 5, 1.4),
+			nil,
+			OAK,
+			M.Wood
+		)
+	end
+	for i = 0, 15 do
+		piece(
+			model,
+			frame,
+			"ChainLink",
+			Vector3.new(1.5 + math.sin(i * 0.5) * 2, 0.4, half - 8 + i * 1.5),
+			Vector3.new(0.5, if i % 2 == 0 then 1 else 0.5, 1.7),
+			nil,
+			RUST,
+			M.CorrodedMetal
+		)
+	end
+	local bell = piece(
+		model,
+		frame,
+		"Bell",
+		Vector3.new(3.5, 0.9, 14),
+		Vector3.new(1.6, 1.6, 1.6),
+		nil,
+		rgb(92, 112, 84),
+		M.Metal,
+		Enum.PartType.Ball
+	)
+	bell:SetAttribute("Bell", true)
+end
+
+-- The 1960s mail seaplane (an Otter-sized single-engine floatplane, 13 x 17.7 m): fuselage, high wing with a
+-- broken tip, tail, engine and propeller, one float on its struts and the other torn off beside it.
+local function buildSeaplane(model: Instance, frame: CFrame, length: number, span: number)
+	local f = frame * CFrame.new(0, 6.5, 0) * CFrame.Angles(0, 0, 0.12)
+	piece(
+		model,
+		f,
+		"Fuselage",
+		Vector3.new(0, 0, 2),
+		Vector3.new(5.5, 6.5, length * 0.58),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"TailCone",
+		Vector3.new(0, 0.8, -length * 0.36),
+		Vector3.new(3, 4, length * 0.3),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"Windscreen",
+		Vector3.new(0, 2, length * 0.3 - 1),
+		Vector3.new(5, 2, 0.3),
+		CFrame.Angles(-0.5, 0, 0),
+		rgb(40, 50, 52),
+		M.Glass
+	)
+	piece(
+		model,
+		f,
+		"Cowling",
+		Vector3.new(0, 0, length * 0.33 + 2),
+		Vector3.new(4, 5.5, 5.5),
+		CFrame.Angles(0, math.pi / 2, 0),
+		rgb(70, 72, 70),
+		M.CorrodedMetal,
+		Enum.PartType.Cylinder
+	)
+	for b = 0, 2 do
+		piece(
+			model,
+			f,
+			"Blade",
+			Vector3.new(0, 0, length * 0.33 + 4.3),
+			Vector3.new(0.6, 9, 0.3),
+			CFrame.Angles(0, 0, b * 2.094),
+			rgb(50, 50, 50),
+			M.Metal
+		)
+	end
+	piece(
+		model,
+		f,
+		"WingLeft",
+		Vector3.new(-span / 4 - 1, 3.6, 4),
+		Vector3.new(span / 2 - 2, 0.8, 7),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"WingRight",
+		Vector3.new(span / 4 - 3, 3.6, 4),
+		Vector3.new(span / 2 - 6, 0.8, 7),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		frame,
+		"WingTip",
+		Vector3.new(span / 2 - 2, 1, 3),
+		Vector3.new(6, 0.8, 6),
+		CFrame.Angles(0.2, 0.4, 0.5),
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"Fin",
+		Vector3.new(0, 4.5, -length * 0.46),
+		Vector3.new(0.5, 7, 5),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"Tailplane",
+		Vector3.new(0, 2, -length * 0.46),
+		Vector3.new(15, 0.5, 4),
+		nil,
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"FloatLeft",
+		Vector3.new(-6, -5.6, 3),
+		Vector3.new(3, 3, length * 0.66),
+		nil,
+		rgb(150, 150, 140),
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"StrutFront",
+		Vector3.new(-4, -2.8, 9),
+		Vector3.new(0.5, 5, 0.5),
+		CFrame.Angles(0, 0, -0.4),
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		f,
+		"StrutRear",
+		Vector3.new(-4, -2.8, -3),
+		Vector3.new(0.5, 5, 0.5),
+		CFrame.Angles(0, 0, -0.4),
+		HULL,
+		M.Metal
+	)
+	piece(
+		model,
+		frame,
+		"FloatRight",
+		Vector3.new(14, 1.4, -6),
+		Vector3.new(3, 3, length * 0.66),
+		CFrame.Angles(0.05, 0.6, 1.2),
+		rgb(150, 150, 140),
+		M.Metal
+	)
+end
+
+-- An Admiralty-pattern anchor lying on its side: shank, stock, arms, flukes and ring.
+local function buildAnchor(model: Instance, frame: CFrame, length: number)
+	local f = frame * CFrame.new(0, 0.9, 0)
+	piece(
+		model,
+		f,
+		"Shank",
+		Vector3.new(0, 0, 0),
+		Vector3.new(1.2, 1.2, length),
+		nil,
+		RUST,
+		M.CorrodedMetal
+	)
+	piece(
+		model,
+		f,
+		"Stock",
+		Vector3.new(0, 0.4, length / 2 - 1.2),
+		Vector3.new(length * 0.85, 0.9, 0.9),
+		CFrame.Angles(0, 0, 0.08),
+		RUST,
+		M.CorrodedMetal
+	)
+	piece(
+		model,
+		f,
+		"Ring",
+		Vector3.new(0, 0, length / 2 + 0.8),
+		Vector3.new(0.4, 2.4, 2.4),
+		nil,
+		RUST,
+		M.CorrodedMetal,
+		Enum.PartType.Cylinder
+	)
+	for side = -1, 1, 2 do
+		local arm = CFrame.new(side * 2.4, 0, -length / 2 + 2.2) * CFrame.Angles(0, side * 0.9, 0)
+		piece(
+			model,
+			f * arm,
+			"Arm",
+			Vector3.new(0, 0, 0),
+			Vector3.new(1, 1, 6),
+			nil,
+			RUST,
+			M.CorrodedMetal
+		)
+		piece(
+			model,
+			f * arm,
+			"Fluke",
+			Vector3.new(0, 0, 3),
+			Vector3.new(2.8, 0.4, 2.4),
+			nil,
+			RUST,
+			M.CorrodedMetal
+		)
+	end
+end
+
+local function buildSeabed(map: Instance, points: Instance, world: any)
+	local seabed = folder(map, "Seabed")
+	for _, poi in world.POIs do
+		local frame = CFrame.new(poi.position) * CFrame.Angles(0, math.rad(poi.yaw), 0)
+		local model: Instance? = nil
+		if poi.id == "Morwenna" then
+			model = folder(seabed, poi.id, "Model")
+			buildSchooner(
+				model :: Instance,
+				frame * CFrame.new(0, -1, 0) * CFrame.Angles(0, 0, -0.14),
+				poi.length,
+				poi.beam
+			)
+		elseif poi.id == "MailSeaplane" then
+			model = folder(seabed, poi.id, "Model")
+			buildSeaplane(model :: Instance, frame * CFrame.new(0, -1.5, 0), poi.length, poi.beam)
+		elseif poi.id == "AdmiraltyAnchor" then
+			model = folder(seabed, poi.id, "Model")
+			buildAnchor(model :: Instance, frame * CFrame.new(0, -0.4, 0), poi.length)
+		end
+		local attrs = {
+			Discoverable = true,
+			DiscoveryId = poi.id,
+			DisplayName = poi.name,
+			Kind = poi.kind,
+			Era = poi.era,
+			Blurb = poi.blurb,
+			DiscoverRadius = math.max(poi.length, 40),
+		}
+		if model then
+			for k, v in attrs do
+				model:SetAttribute(k, v)
+			end
+		end
+		marker(points, `Discovery_{poi.id}`, poi.position + Vector3.new(0, 2, 0), attrs)
+	end
+end
+
+local function buildShore(map: Instance, points: Instance, world: any)
+	local slips = folder(map, "Slipways", "Model")
+	-- station slipway: 20-stud concrete ramp from the quay (Y 4) down to 2 m under water
+	local run, drop = 66, 10
+	part({
+		Name = "StationSlipway",
+		Size = Vector3.new(20, 1, math.sqrt(run * run + drop * drop)),
+		CFrame = CFrame.new(-165, (4 - 6) / 2 - 0.5, 4 + run / 2)
+			* CFrame.Angles(math.atan2(drop, run), 0, 0),
+		Color = COLORS.concrete,
+		Material = M.Concrete,
+		Parent = slips,
+		Attributes = { Slipway = "Station" },
+	})
+	local sands = folder(map, "HavenSands", "Model")
+	for _, pt in world.Points do
+		marker(
+			points,
+			pt.id,
+			pt.position + Vector3.new(0, 2, 0),
+			{ PointKind = pt.kind, PointId = pt.id }
+		)
+		if pt.kind == "LifeguardTower" then
+			local base = pt.position
+			for _, c in
+				{
+					Vector3.new(-3.5, 0, -3.5),
+					Vector3.new(3.5, 0, -3.5),
+					Vector3.new(-3.5, 0, 3.5),
+					Vector3.new(3.5, 0, 3.5),
+				}
+			do
+				box(
+					sands,
+					"Leg",
+					base + c - Vector3.new(0.4, 2, 0.4),
+					base + c + Vector3.new(0.4, 9, 0.4),
+					COLORS.white
+				)
+			end
+			box(
+				sands,
+				"LifeguardHut",
+				base + Vector3.new(-5, 9, -5),
+				base + Vector3.new(5, 17, 5),
+				COLORS.red
+			)
+			box(
+				sands,
+				"Roof",
+				base + Vector3.new(-5.5, 17, -5.5),
+				base + Vector3.new(5.5, 17.6, 5.5),
+				COLORS.white
+			)
+			box(
+				sands,
+				"FlagPole",
+				base + Vector3.new(6, 0, 0),
+				base + Vector3.new(6.4, 24, 0.4),
+				COLORS.white
+			)
+			box(
+				sands,
+				"FlagRed",
+				base + Vector3.new(6.4, 21.5, 0),
+				base + Vector3.new(10.4, 23.5, 0.2),
+				COLORS.red
+			)
+			box(
+				sands,
+				"FlagYellow",
+				base + Vector3.new(6.4, 19.5, 0),
+				base + Vector3.new(10.4, 21.5, 0.2),
+				COLORS.bay
+			)
+		elseif pt.kind == "Handover" then
+			box(
+				sands,
+				"Ambulance",
+				pt.position + Vector3.new(-3.5, 0, -8),
+				pt.position + Vector3.new(3.5, 8, 8),
+				COLORS.white
+			)
+			box(
+				sands,
+				"AmbulanceStripe",
+				pt.position + Vector3.new(-3.6, 3, -8),
+				pt.position + Vector3.new(3.6, 4, 8),
+				rgb(40, 200, 60)
+			)
+		end
+	end
+	for _, cp in world.CarParks do
+		marker(
+			points,
+			cp.id,
+			cp.center + Vector3.new(0, 2, 0),
+			{ PointKind = "CarPark", PointId = cp.id, DisplayName = cp.name }
+		)
+	end
+end
+
 return function(place: any, ctx: any)
 	local GameConfig = ctx.require("Config/GameConfig")
+	local WorldConfig = ctx.require("Config/WorldConfig")
 	local ws = place:GetService("Workspace")
 	local landTop, floorY = GameConfig.LandTopY, GameConfig.OceanFloorY
 
 	ws:SetAttribute("SeaLevel", GameConfig.SeaLevel)
+	local hasTerrain = loadTerrain(ws, ctx)
+	ws:SetAttribute("WorldTerrain", hasTerrain)
 	local map = folder(ws, "Map")
-	buildOceanFloor(map, floorY)
-	buildPortHaven(map, landTop, floorY)
+	if not hasTerrain then
+		buildOceanFloor(map, floorY)
+	end
+	buildPortHaven(map, landTop, floorY, hasTerrain)
 	buildDropOffs(map)
 	local wallTop, wallFar = buildBreakwater(map, floorY, 30)
-	buildBeach(map, landTop)
+	if not hasTerrain then
+		buildBeach(map, landTop)
+	end
 	buildLighthouse(map, Vector3.new(44, wallTop, wallFar))
+	local points = folder(map, "WorldPoints")
+	buildShore(map, points, WorldConfig)
+	buildSeabed(map, points, WorldConfig)
 	buildZones(folder(ws, "Zones"), GameConfig.Zones)
 end

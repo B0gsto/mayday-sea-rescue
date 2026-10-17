@@ -1,0 +1,52 @@
+{
+ "generator": "tools/world/gen_terrain.py",
+ "seed": 1871,
+ "cell": 4,
+ "originX": -2560.0,
+ "originZ": -2560.0,
+ "nx": 1281,
+ "nz": 1281,
+ "heightScale": 8,
+ "height": "terrain_height.i16",
+ "material": "terrain_material.u8",
+ "materials": [
+  "Air",
+  "Sand",
+  "Sandstone",
+  "Salt",
+  "Limestone",
+  "Rock",
+  "Slate",
+  "Basalt",
+  "Grass",
+  "LeafyGrass",
+  "Mud",
+  "Ground",
+  "Asphalt",
+  "Cobblestone",
+  "Concrete",
+  "Pavement"
+ ],
+ "shellLand": 40,
+ "shellSea": 20,
+ "stats": {
+  "minY": -165.0,
+  "maxY": 325.5,
+  "landFraction": 0.554,
+  "cells": {
+   "Sand": 522157,
+   "Sandstone": 18997,
+   "Limestone": 135386,
+   "Rock": 165077,
+   "Slate": 50755,
+   "Basalt": 10050,
+   "Grass": 411344,
+   "LeafyGrass": 273009,
+   "Mud": 8732,
+   "Ground": 40726,
+   "Asphalt": 4158,
+   "Cobblestone": 424,
+   "Concrete": 146
+  }
+ }
+}
