@@ -34,6 +34,7 @@ local HudController = {}
 HudController.Priority = 50
 
 local gui: ScreenGui
+local PANEL_DISPLAY_ORDER = 35 -- above Ops (15-22) and the radio wheel (30), below Cinematic (50)
 local cashLabel: TextLabel
 local rankLabel: TextLabel
 local repLabel: TextLabel
@@ -377,6 +378,15 @@ function HudController.Init()
 	buildCrewChip(gui)
 	shop = HudShop.build(gui, buy)
 	launch = HudLaunch.build(gui, requestLaunch, buy)
+	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder
+	-- 15-22) so a Buy/Collect click never lands on "Accept - Launch" behind it; below Cinematic (50)
+	for _, panel in { shop, launch } do
+		local setOpen = panel.setOpen
+		panel.setOpen = function(value: boolean)
+			setOpen(value)
+			gui.DisplayOrder = if shop.isOpen() or launch.isOpen() then PANEL_DISPLAY_ORDER else 0
+		end
+	end
 
 	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
 	for _, inst in Workspace:GetDescendants() do

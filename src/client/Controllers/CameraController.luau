@@ -58,6 +58,9 @@ local current: {
 
 local STATION = Vector3.new(-95, 0, 50)
 local arrivalPending = false
+local arrivalPendingSince = 0
+local coldOpenModel: Model? = nil
+local ARRIVAL_WINDOW = 90 -- s after ColdOpenDone the arrival shot may still start -- tune
 local rodeColdOpen = false -- seated in a vehicle before the cold open finished
 
 -- Arrival handoff: when the arrival cinematic ends the server (VehicleService,
@@ -375,6 +378,7 @@ local function onHandoff(data: any)
 		char:PivotTo(data.stand)
 	end
 	current = nil
+	arrivalPending = false
 	handoffLook = if typeof(data.look) == "Vector3" then data.look else nil
 	handoffFrames = 3
 	handoffHoldUntil = 0
@@ -404,6 +408,7 @@ local function update(dt: number)
 		exitMode(mode)
 		mode = want :: Mode
 		enterMode(mode)
+		player:SetAttribute("CameraMode", mode) -- play tests read it
 	end
 	local camera = Workspace.CurrentCamera
 	local char, hum, root = character()
@@ -465,7 +470,26 @@ local function update(dt: number)
 	if current and player:GetAttribute("ColdOpenDone") ~= true then
 		rodeColdOpen = true
 	end
-	if arrivalPending and root and (root.Position - STATION).Magnitude < 230 then
+	-- the arrival shot plays once, only while still riding in (a teleport on foot into range, a
+	-- late ColdOpenDone flip or a server-side handoff never replays it)
+	if
+		arrivalPending
+		and (
+			Cinematic.hasPlayed("arrival")
+			or player:GetAttribute("ArrivalOnFoot") == true
+			or os.clock() - arrivalPendingSince > ARRIVAL_WINDOW
+		)
+	then
+		arrivalPending = false
+	end
+	if
+		arrivalPending
+		and root
+		and current
+		and current.model ~= nil
+		and (current.model == coldOpenModel or current.model:GetAttribute("ColdOpen") == true)
+		and (root.Position - STATION).Magnitude < 230
+	then
 		arrivalPending = false
 		Cinematic.play(Cinematic.Lists.arrival(), { id = "arrival", onDone = requestHandoff })
 	end
@@ -483,6 +507,9 @@ local function busy(): boolean
 	return false
 end
 
+local STORM_GAP = 120 -- seconds between storm-warning shots -- tune
+local lastStormShot = -math.huge
+
 local function connectTriggers()
 	task.spawn(function()
 		local net = ReplicatedStorage:WaitForChild("Net", 30)
@@ -497,8 +524,10 @@ local function connectTriggers()
 			player:GetAttribute("ColdOpenDone") == true
 			and (current ~= nil or rodeColdOpen)
 			and not Comfort.hasSeen("arrival")
+			and not Cinematic.hasPlayed("arrival")
 		then
 			arrivalPending = true
+			arrivalPendingSince = os.clock()
 		end
 	end)
 	task.spawn(function()
@@ -509,11 +538,19 @@ local function connectTriggers()
 				if typeof(model) ~= "Instance" or not model:IsA("Model") then
 					return
 				end
-				if model:GetAttribute("Owner") ~= player.UserId or reason == "ColdOpen" then
+				if model:GetAttribute("Owner") ~= player.UserId then
+					return
+				end
+				if reason == "ColdOpen" then
+					coldOpenModel = model -- the arrival shot only plays while riding this craft
 					return
 				end
 				-- the first launch gets the full shot; later launches go straight to the helm
-				if not Comfort.hasSeen("launch") and not busy() then
+				if
+					not Comfort.hasSeen("launch")
+					and not Cinematic.hasPlayed("launch")
+					and not busy()
+				then
 					task.wait(0.4)
 					Cinematic.play(Cinematic.Lists.launch(model), { id = "launch" })
 				end
@@ -525,13 +562,18 @@ local function connectTriggers()
 			if state ~= "Warning" or busy() then
 				return
 			end
+			-- once per Warning transition, never over another cinematic, at most every STORM_GAP s
+			if Cinematic.isPlaying() or os.clock() - lastStormShot < STORM_GAP then
+				return
+			end
 			local _, _, root = character()
 			-- never take the camera from someone at speed
 			if current and current.root.AssemblyLinearVelocity.Magnitude > 8 then
 				return
 			end
 			local subject: Instance? = if current and current.model then current.model else root
-			Cinematic.play(Cinematic.Lists.storm(subject), { id = "storm" })
+			lastStormShot = os.clock()
+			Cinematic.play(Cinematic.Lists.storm(subject), { id = "storm", repeatable = true })
 		end)
 	end
 end

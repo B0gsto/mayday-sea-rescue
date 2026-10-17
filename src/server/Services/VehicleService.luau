@@ -585,7 +585,7 @@ end
 local HANDOFF_REMOTE = "Vehicle_ArrivalHandoff"
 local SLIPWAY_STAND = 10 -- studs down the ramp from its top edge (dry, above the waterline) -- tune
 local AGGIE_POINT_NAMES = { "ChiefAggie", "AggieSpot", "Aggie" }
-local coldOpenRiders: { [Player]: boolean } = {}
+local coldOpenRiders: { [Player]: Model } = {} -- the cold-open vehicle, until the handoff
 local handoffRemote: RemoteEvent? = nil
 
 local function worldPoint(names: { string }, kind: string?): BasePart?
@@ -704,7 +704,16 @@ local function arrivalHandoff(player: Player)
 	if not character or not character.PrimaryPart then
 		return
 	end
+	local coldOpenModel = coldOpenRiders[player]
 	coldOpenRiders[player] = nil
+	-- only while still in (or just off) the cold-open craft: a player already in another boat
+	-- (collected at the desk) or a car is never yanked out by a late handoff (integration-D)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	if seat and not seat:IsDescendantOf(coldOpenModel) then
+		player:SetAttribute("ArrivalHandoff", "Skipped")
+		return
+	end
 	unseat(character)
 	local vehicle = stowVehicle(player)
 	local stand, look = slipwaySpots()
@@ -832,7 +841,8 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 		VehicleService.ColdOpenSpeed
 	)
 	if model then
-		coldOpenRiders[player] = true -- arms the arrival handoff (Vehicle_ArrivalHandoff)
+		coldOpenRiders[player] = model -- arms the arrival handoff (Vehicle_ArrivalHandoff)
+		model:SetAttribute("ColdOpen", true) -- the client's arrival shot keys on this craft
 		player:SetAttribute("ArrivalHandoff", nil)
 	end
 	return model

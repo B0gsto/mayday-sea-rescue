@@ -140,6 +140,8 @@ local function ensureGui()
 	end)
 end
 
+local playedIds: { [string]: boolean } = {} -- ids started this session
+
 local function finish()
 	local c = current
 	current = nil
@@ -160,12 +162,40 @@ end
 
 function Cinematic.play(
 	shots: { Shot },
-	opts: { id: string?, skippable: boolean?, onDone: (() -> ())? }?
+	opts: {
+		id: string?,
+		skippable: boolean?,
+		onDone: (() -> ())?,
+		repeatable: boolean?,
+	}?
 ): Handle
-	local o: { id: string?, skippable: boolean?, onDone: (() -> ())? } = opts or {}
+	local o: { id: string?, skippable: boolean?, onDone: (() -> ())?, repeatable: boolean? } = opts
+		or {}
+	-- a cinematic with an id plays once per session unless it is repeatable (the storm warning):
+	-- a second trigger (a late attribute flip, a teleport into range, a respawned vehicle) is a no-op
+	if o.id and o.repeatable ~= true and playedIds[o.id :: string] then
+		return {
+			stop = function() end,
+			isDone = function()
+				return true
+			end,
+		}
+	end
+	-- never cut into a cinematic that is still playing for a repeatable one
+	if current and o.repeatable == true then
+		return {
+			stop = function() end,
+			isDone = function()
+				return true
+			end,
+		}
+	end
 	ensureGui()
 	if current then
 		finish()
+	end
+	if o.id then
+		playedIds[o.id :: string] = true
 	end
 	local entry = { shots = shots, index = 1, t = 0, id = o.id, onDone = o.onDone, done = false }
 	current = entry
@@ -191,6 +221,10 @@ end
 
 function Cinematic.stop()
 	finish()
+end
+
+function Cinematic.hasPlayed(id: string): boolean
+	return playedIds[id] == true
 end
 
 function Cinematic.isPlaying(): boolean
