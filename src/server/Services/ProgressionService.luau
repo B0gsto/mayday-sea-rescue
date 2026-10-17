@@ -207,6 +207,28 @@ local function buy(player: Player, itemId: any): (boolean, string)
 end
 
 function ProgressionService.Init()
+	if game:GetService("RunService"):IsStudio() then
+		-- Studio dev hook for play tests: ServerStorage.ProgressionDev:Invoke("award", cash, rep)
+		-- or ("data") (execute_luau's own require gets a separate module instance).
+		local dev = Instance.new("BindableFunction")
+		dev.Name = "ProgressionDev"
+		dev.OnInvoke = function(cmd: string, cash: any, rep: any): any
+			local p = Players:GetPlayers()[1]
+			if not p then
+				return nil
+			end
+			if cmd == "award" then
+				ProgressionService.Award(
+					p,
+					tonumber(cash) or 0,
+					tonumber(rep) or 0,
+					"Studio dev grant"
+				)
+			end
+			return ProgressionService.GetData(p)
+		end
+		dev.Parent = game:GetService("ServerStorage")
+	end
 	Net.event("PlayerDataChanged")
 	Net.func("BuyGear").OnServerInvoke = function(player: Player, itemId: any)
 		return buy(player, itemId)

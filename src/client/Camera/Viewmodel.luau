@@ -6,7 +6,8 @@
 --
 -- API (for mechanics: require(script.Parent.Parent.Camera.Viewmodel) from src/client/Mechanics):
 --   Viewmodel.playAction(name, opts?) -> Handle
---       name: "throw" | "haul" | "grab" | "radio" | "cpr" | "knock" | "point" | "steer"
+--       name: any key of ViewmodelActions.Defs (listed in Viewmodel.Actions), e.g. "throw",
+--       "haul", "grab", "radio", "cpr", "point", "steer", "wave_off", "reach_casualty"
 --       opts: { speed: number?, loop: boolean?, onDone: (() -> ())? }
 --       Handle: { name, duration, stop: () -> (), isDone: () -> boolean, wait: () -> () }
 --       Looping actions (haul, cpr, steer) run until stop() or another playAction.
@@ -54,6 +55,18 @@ type Arm = {
 	thumb: BasePart,
 	shoulder: Vector3,
 	side: number,
+}
+
+-- where each prop sits: which hand (1 right, 2 left) and its offset from that palm
+local PROP_HOLD: { [string]: { arm: number, offset: CFrame } } = {
+	throwbag = { arm = 1, offset = CFrame.new(0, -0.3, -0.1) },
+	radio = {
+		arm = 2,
+		offset = CFrame.new(0.05, 0.05, -0.05) * CFrame.Angles(math.rad(80), 0, 0),
+	},
+	torch = { arm = 1, offset = CFrame.new(0, 0.02, -0.12) },
+	tube = { arm = 1, offset = CFrame.new(0, -0.05, -0.1) * CFrame.Angles(0, math.rad(80), 0) },
+	marker = { arm = 1, offset = CFrame.new(0, -0.2, -0.12) },
 }
 
 local rig: Model? = nil
@@ -161,6 +174,37 @@ local function build()
 		"HandheldVHF",
 		Vector3.new(0.2, 0.42, 0.11),
 		Color3.fromRGB(35, 35, 38),
+		Enum.Material.SmoothPlastic
+	)
+	-- waterproof torch (yellow body, lens forward) with a real beam for night searches
+	local torch = part(
+		"Torch",
+		Vector3.new(0.17, 0.17, 0.62),
+		Color3.fromRGB(240, 196, 20),
+		Enum.Material.SmoothPlastic
+	)
+	local beam = Instance.new("SpotLight")
+	beam.Face = Enum.NormalId.Front
+	beam.Angle = 35
+	beam.Range = 45
+	beam.Brightness = 3
+	beam.Color = Color3.fromRGB(255, 244, 220)
+	beam.Enabled = false
+	beam.Parent = torch
+	props.torch = torch
+	-- rescue tube (closed-cell foam, rescue orange), held across the hand
+	props.tube = part(
+		"RescueTube",
+		Vector3.new(0.3, 0.3, 1.9),
+		Color3.fromRGB(235, 70, 25),
+		Enum.Material.SmoothPlastic
+	)
+	rounded(props.tube)
+	-- orange smoke / marker canister
+	props.marker = part(
+		"Marker",
+		Vector3.new(0.26, 0.5, 0.26),
+		Color3.fromRGB(250, 120, 20),
 		Enum.Material.SmoothPlastic
 	)
 	model.Parent = nil
@@ -336,15 +380,17 @@ function Viewmodel.update(dt: number, cam: CFrame)
 	rig.Parent = Workspace.CurrentCamera
 	poseArm(arms[1], cam, smoothR, grip)
 	poseArm(arms[2], cam, smoothL, grip)
-	local bag, radio = props.throwbag, props.radio
-	bag.Transparency = if prop == "throwbag" then 0 else 1
-	radio.Transparency = if prop == "radio" then 0 else 1
-	if prop == "throwbag" then
-		bag.CFrame = arms[1].palm.CFrame * CFrame.new(0, -0.3, -0.1)
-	elseif prop == "radio" then
-		radio.CFrame = arms[2].palm.CFrame
-			* CFrame.new(0.05, 0.05, -0.05)
-			* CFrame.Angles(math.rad(80), 0, 0)
+	for name, p in props do
+		local hold = PROP_HOLD[name]
+		local shown = prop == name and hold ~= nil
+		p.Transparency = if shown then 0 else 1
+		local light = p:FindFirstChildOfClass("SpotLight")
+		if light then
+			light.Enabled = shown
+		end
+		if shown and hold then
+			p.CFrame = arms[hold.arm].palm.CFrame * hold.offset
+		end
 	end
 end
 

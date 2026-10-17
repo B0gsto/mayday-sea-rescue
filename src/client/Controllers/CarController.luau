@@ -13,6 +13,9 @@
 -- Touch gets ContextActionService buttons for the same actions.
 -- Assists (ABS, traction control) are on unless the player's CarAssistsOff attribute is true
 -- (TODO(settings): a Pro toggle in the settings UI).
+-- Shoreline (Car/Wading): past half the wading depth a notice line says "Water too deep - turn
+-- back"; at the rated depth (or while the server's Flooded attribute is set) the engine is flooded:
+-- throttle cut and brakes on until LandVehicleService restarts or recovers the car.
 -- Camera: the model has CameraMode = "Chase" and DriverSeat.EyePoint; the camera stream
 -- implements the chase cam and the cockpit view (CONTRACT, Land vehicles).
 local ContextActionService = game:GetService("ContextActionService")
@@ -24,9 +27,12 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CarFolder = Shared:WaitForChild("Car")
+local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local LightBar = require(CarFolder:WaitForChild("LightBar"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
+local Wading = require(CarFolder:WaitForChild("Wading"))
+local Weather = require(Shared:WaitForChild("Weather"))
 
 local player = Players.LocalPlayer
 
@@ -61,6 +67,7 @@ local handbrake = false
 local lowRange = false
 local triggerThrottle, triggerBrake = 0, 0
 local hud: TextLabel? = nil
+local notice: TextLabel? = nil
 local excludeAt = 0
 
 local function send(action: string, value: any)
@@ -267,8 +274,21 @@ local function makeHud()
 	label.Font = Enum.Font.GothamMedium
 	label.TextSize = 18
 	label.Parent = gui
+	local line = Instance.new("TextLabel")
+	line.Name = "Notice"
+	line.AnchorPoint = Vector2.new(0.5, 1)
+	line.Position = UDim2.new(0.5, 0, 1, -48)
+	line.Size = UDim2.fromOffset(360, 28)
+	line.BackgroundTransparency = 0.25
+	line.BackgroundColor3 = Color3.fromRGB(190, 120, 0)
+	line.TextColor3 = Color3.new(1, 1, 1)
+	line.Font = Enum.Font.GothamBold
+	line.TextSize = 18
+	line.Visible = false
+	line.Parent = gui
 	gui.Parent = player:WaitForChild("PlayerGui")
 	hud = label
+	notice = line
 end
 
 -- Driving -----------------------------------------------------------------------------------------
@@ -298,6 +318,9 @@ local function stopDriving()
 	bindInputs(false)
 	if hud and hud.Parent then
 		(hud.Parent :: ScreenGui).Enabled = false
+	end
+	if notice then
+		notice.Visible = false
 	end
 	player:SetAttribute("CarCockpit", nil)
 end
@@ -373,15 +396,41 @@ local function drive(dt: number)
 	if triggerThrottle > 0.05 or triggerBrake > 0.05 then
 		throttle = triggerThrottle - triggerBrake
 	end
+	-- shoreline: the local depth reacts at once; the server's Flooded attribute holds the stall
+	local spec = sim.derived.spec
+	local okWater, waterY = pcall(Weather.heightAt, sim.root.Position)
+	local depth = Wading.depth(
+		if okWater and type(waterY) == "number" then waterY else 0,
+		sim.root.Position.Y,
+		Builder.rideHeight(spec)
+	)
+	local level = Wading.level(depth, spec.id)
+	local flooded = driving:GetAttribute("Flooded") == true or level == "Flood"
+	if flooded then
+		throttle = 0
+	end
 	local towing = trailerSim ~= nil
 	local telemetry = Physics.step(sim, {
 		throttle = throttle,
 		steer = seat.SteerFloat,
-		handbrake = handbrake,
+		handbrake = handbrake or flooded,
 		lowRange = lowRange,
 		assists = player:GetAttribute("CarAssistsOff") ~= true,
 		towing = towing,
+		brakeOverride = if flooded then 1 else nil,
 	}, dt)
+	if notice then
+		local untilAt = driving:GetAttribute("FloodedUntil")
+		local left = if type(untilAt) == "number"
+			then untilAt - Workspace:GetServerTimeNow()
+			else nil
+		local text = Wading.notice(level, flooded, left)
+		notice.Visible = text ~= ""
+		notice.Text = text
+		notice.BackgroundColor3 = if flooded
+			then Color3.fromRGB(170, 30, 30)
+			else Color3.fromRGB(190, 120, 0)
+	end
 	if trailerSim then
 		Physics.step(trailerSim, {
 			throttle = 0,
@@ -400,7 +449,9 @@ local function drive(dt: number)
 	setLamps(driving, "Headlamp", headlights, Color3.fromRGB(245, 245, 230))
 	local v = visuals[driving]
 	local engine = v and v.sounds.Engine
-	if engine then
+	if engine and flooded then
+		engine:Stop() -- stalled
+	elseif engine then
 		local redline = if sim.derived.spec.engine then sim.derived.spec.engine.redlineRpm else 4000
 		engine.PlaybackSpeed = 0.55 + telemetry.rpm / redline
 		engine.Volume = 0.35 + 0.4 * telemetry.drive
@@ -417,6 +468,9 @@ local function drive(dt: number)
 		end
 		if handbrake then
 			table.insert(extras, "P")
+		end
+		if flooded then
+			table.insert(extras, "STALLED")
 		end
 		if driving:GetAttribute("CanLaunch") == true then
 			table.insert(extras, "LAUNCH: B")

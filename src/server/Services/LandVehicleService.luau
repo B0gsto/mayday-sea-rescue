@@ -14,7 +14,9 @@
 -- States: Parked (anchored, nobody driving), Driven (owner in DriverSeat: unanchored, network
 -- owner = driver), Coast (left while moving: the server runs the chassis with the handbrake on
 -- until it stops, then parks). Model attributes: VehicleId, Owner, LandVehicle, CameraMode
--- ("Chase"), CockpitView, Headlights, LightBar, Siren, Horn, CanLaunch, Towing, ExtraMassKg.
+-- ("Chase"), CockpitView, Headlights, LightBar, Siren, Horn, CanLaunch, Towing, ExtraMassKg,
+-- WaterDepth (studs over the tyres, 0.1 steps), Flooded, FloodedUntil (server time; Car/Wading).
+-- Spawns face along the nearest WorldConfig road, away from the water (Car/RoadHeading).
 -- A towing car holds an ObjectValue "Trailer"; the trailer is a separate model on a
 -- BallSocketConstraint (TowHitch -> Coupler) with its own raycast wheels.
 local CollectionService = game:GetService("CollectionService")
@@ -30,9 +32,11 @@ local CarFolder = Shared:WaitForChild("Car")
 local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
+local RoadHeading = require(CarFolder:WaitForChild("RoadHeading"))
 local Trailer = require(CarFolder:WaitForChild("Trailer"))
 local Tyre = require(CarFolder:WaitForChild("Tyre"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local Wading = require(CarFolder:WaitForChild("Wading"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 type Spec = LandVehicleConfig.Spec
@@ -54,6 +58,7 @@ type Record = {
 	lastGood: CFrame,
 	strikes: number,
 	resetting: boolean,
+	wade: Wading.State,
 }
 
 local GROUP = "LandVehicle"
@@ -65,7 +70,7 @@ local SPEED_SLACK = 10 -- studs/s (downhill, airborne off a dune) -- tune
 local TELEPORT_SLACK = 14
 local STRIKES_TO_RESET = 2
 local MAX_Y, MIN_Y = 400, -45
-local DROWN_DEPTH = 4.5 -- studs of water over the floor (1.5 m) before a reset to dry land
+local RESCUE_BACKOFF = 8 -- studs further inland than the last dry spot when a flooded car is recovered
 local HORN_MAX = 4 -- seconds a horn press can last
 local CONTROL_GAP = 0.08 -- seconds between control messages per player
 local BYPASS_ATTRIBUTE = "StudioBypassChecks"
@@ -228,7 +233,59 @@ end
 -- Spawning --------------------------------------------------------------------------------------
 
 -- WorldConfig.LandVehicleSpawns (terrain stream, same SpawnPoint shape) wins when it holds valid
--- points; otherwise the placeholder LandVehicleConfig.SpawnPoints stay.
+-- points. Otherwise the LandVehicleConfig.SpawnPoints keep their vehicles / bays, take their
+-- position from the WorldConfig point with the same id, and face along the nearest road toward
+-- HEAD_TOWARD (so W drives up the road, not into the harbour; Studio play test, integration-B 6).
+local HEAD_TOWARD: { [string]: string } = {
+	StationYard = "HavenSandsCarPark", -- east along Harbour Road, toward Haven Sands
+	Boatyard = "HavenSandsCarPark", -- east along Harbour Road
+	HavenSandsCarPark = "StationYard", -- west back up the Coast Road, away from the beach
+	HavenSandsTower = "HavenSandsCarPark", -- up the Haven Sands slipway, away from the sea
+	HavenSands = "StationYard", -- the parked ambulance (HavenSandsAmbulance)
+}
+local WORLD_POINT: { [string]: string } = { HavenSands = "HavenSandsAmbulance" }
+local TOWER_CLEARANCE = 16 -- studs landward of a lifeguard tower (its hut would catch the raycast)
+
+local world: any = nil -- WorldConfig, when present
+
+local function worldPoint(id: string): any
+	if not world or type(world.Points) ~= "table" then
+		return nil
+	end
+	for _, p in world.Points do
+		if type(p) == "table" and p.id == id and typeof(p.position) == "Vector3" then
+			return p
+		end
+	end
+	return nil
+end
+
+-- The placeholder point `id` moved onto the world map and turned along its road.
+local function alignedCFrame(id: string, cframe: CFrame): CFrame
+	if not world or type(world.Roads) ~= "table" then
+		return cframe
+	end
+	local wp = worldPoint(WORLD_POINT[id] or id)
+	local target = HEAD_TOWARD[id] and worldPoint(HEAD_TOWARD[id])
+	local toward: Vector3? = if target then target.position else nil
+	local pos = if wp then wp.position :: Vector3 else cframe.Position
+	if wp and wp.kind == "LifeguardTower" and toward then
+		local away = Vector3.new(toward.X - pos.X, 0, toward.Z - pos.Z)
+		if away.Magnitude > 1 then
+			pos += away.Unit * TOWER_CLEARANCE
+		end
+	end
+	local cf, hit = RoadHeading.spawnCFrame(world.Roads, pos, toward, { seaLevel = world.SeaLevel })
+	local look = cf.LookVector
+	print(
+		`[LandVehicleService] point {id} at ({math.floor(pos.X)}, {math.floor(pos.Z)}) faces ({string.format(
+			"%.2f, %.2f",
+			look.X,
+			look.Z
+		)}) along {if hit then hit.roadId else "no road"}`
+	)
+	return cf
+end
 local function validPoint(point: any): boolean
 	return type(point) == "table"
 		and type(point.id) == "string"
@@ -242,9 +299,17 @@ local function loadWorldSpawns()
 	if not (module and module:IsA("ModuleScript")) then
 		return
 	end
-	local ok, world = pcall(require, module)
-	local list = if ok and type(world) == "table" then (world :: any).LandVehicleSpawns else nil
+	local ok, loaded = pcall(require, module)
+	world = if ok and type(loaded) == "table" then loaded else nil
+	local list = if world then world.LandVehicleSpawns else nil
 	if type(list) ~= "table" then
+		local aligned: { SpawnPoint } = {}
+		for _, point in LandVehicleConfig.SpawnPoints do
+			local copy = table.clone(point)
+			copy.cframe = alignedCFrame(point.id, point.cframe)
+			table.insert(aligned, copy)
+		end
+		spawnPoints = aligned
 		return
 	end
 	local valid: { SpawnPoint } = {}
@@ -472,6 +537,7 @@ local function spawnVehicle(
 		lastGood = cf,
 		strikes = 0,
 		resetting = false,
+		wade = Wading.newState(),
 	}
 	records[model] = record
 	byPlayer[player] = record
@@ -483,6 +549,8 @@ local function spawnVehicle(
 	model:SetAttribute("Siren", false)
 	model:SetAttribute("Horn", false)
 	model:SetAttribute("CanLaunch", false)
+	model:SetAttribute("Flooded", false)
+	model:SetAttribute("WaterDepth", 0)
 
 	for _, d in model:GetDescendants() do
 		if d:IsA("Seat") or d:IsA("VehicleSeat") then
@@ -635,6 +703,54 @@ local function resetTo(record: Record, cf: CFrame, reason: string)
 	end)
 end
 
+-- Shoreline guard (Car/Wading): warn past half the wading depth (CarController), flood the engine
+-- at the rated depth (the driver's throttle is cut), then after a short wait restart or recover
+-- once to dry land. One "reset ... too deep" line per flood, never a reset per check.
+local function setFlooded(record: Record, on: boolean, depth: number?)
+	local model = record.model
+	model:SetAttribute("Flooded", on)
+	model:SetAttribute(
+		"FloodedUntil",
+		if on then Workspace:GetServerTimeNow() + Wading.FLOOD_SECONDS else nil
+	)
+	if on then
+		print(
+			`[LandVehicleService] {model.Name}: engine flooded at {string.format("%.1f", depth or 0)} studs of water`
+		)
+	end
+end
+
+local function rescue(record: Record, from: Vector3)
+	local good = record.lastGood
+	local away = Vector3.new(good.Position.X - from.X, 0, good.Position.Z - from.Z)
+	if away.Magnitude < 1 then
+		away = Vector3.new(-good.LookVector.X, 0, -good.LookVector.Z)
+	end
+	away = if away.Magnitude > 1e-3 then away.Unit else RoadHeading.INLAND
+	local rideHeight = Builder.rideHeight(record.spec)
+	local target = good.Position
+	local ignore: { Instance } = characters()
+	table.insert(ignore, folder)
+	local back = good.Position + away * RESCUE_BACKOFF
+	local y = groundY(back, ignore)
+	local backRoot = y + rideHeight + 0.15
+	if
+		Wading.depth(waterAt(back), backRoot, rideHeight) < 0
+		and math.abs(backRoot - good.Position.Y) < 4
+	then
+		target = Vector3.new(back.X, backRoot, back.Z)
+	end
+	-- facing away from the water, so W drives back up the shore
+	resetTo(record, CFrame.lookAt(target, target + away), "too deep (engine flooded)")
+end
+
+local function setDepth(model: Model, depth: number)
+	local shown = math.max(0, math.floor(depth * 10 + 0.5) / 10)
+	if model:GetAttribute("WaterDepth") ~= shown then
+		model:SetAttribute("WaterDepth", shown)
+	end
+end
+
 local function check(record: Record, dt: number)
 	local model = record.model
 	local root = record.root
@@ -645,7 +761,24 @@ local function check(record: Record, dt: number)
 			Trailer.canLaunch(launchDepth(record), flat(root.AssemblyLinearVelocity))
 		)
 	end
-	if record.mode ~= "Driven" or record.resetting then
+	local pos = root.Position
+	local depth = Wading.depth(waterAt(pos), pos.Y, Builder.rideHeight(record.spec))
+	setDepth(model, depth)
+	if record.resetting then
+		return
+	end
+	if record.wade.flooded then
+		-- stalled: wait out FLOOD_SECONDS (also if the driver got out), then restart or recover
+		local action = Wading.step(record.wade, depth, record.spec.id, os.clock())
+		if action then
+			setFlooded(record, false)
+			if action == "Rescue" then
+				rescue(record, pos)
+			end
+		end
+		return
+	end
+	if record.mode ~= "Driven" then
 		return
 	end
 	if
@@ -658,20 +791,18 @@ local function check(record: Record, dt: number)
 		record.lastGood = root.CFrame
 		return
 	end
-	local pos = root.Position
 	local speed = flat(root.AssemblyLinearVelocity)
 	local top = if record.trailer and record.spec.topSpeedTowing
 		then record.spec.topSpeedTowing
 		else record.spec.topSpeed
 	local limit = top * SPEED_TOLERANCE + SPEED_SLACK
 	local moved = flat(pos - record.lastGood.Position)
-	local floor = pos.Y - record.spec.cgHeight * 3
-	local drowned = waterAt(pos) - floor > DROWN_DEPTH
 	if pos.Y > MAX_Y or pos.Y < MIN_Y then
 		resetTo(record, record.lastGood, "out of bounds")
-	elseif drowned then
-		-- nothing breaks (docs 02 section 4.1): back to the last dry spot
-		resetTo(record, record.lastGood, "too deep")
+	elseif Wading.step(record.wade, depth, record.spec.id, os.clock()) == "Flood" then
+		-- nothing breaks (docs 02 section 4.1): the engine stalls, then the car is recovered
+		setFlooded(record, true, depth)
+		record.strikes = 0
 	elseif speed > limit or moved > limit * dt + TELEPORT_SLACK then
 		record.strikes += 1
 		if record.strikes >= STRIKES_TO_RESET then
@@ -679,7 +810,7 @@ local function check(record: Record, dt: number)
 		end
 	else
 		record.strikes = 0
-		if waterAt(pos) < floor and root.CFrame.UpVector.Y > 0.7 then
+		if depth < 0 and root.CFrame.UpVector.Y > 0.7 then
 			record.lastGood = root.CFrame
 		end
 	end
@@ -819,13 +950,11 @@ local function placeAmbulances()
 		local spec = LandVehicleConfig.Ambulance
 		local model = Builder.build(spec)
 		model.Name = `Ambulance_{point.id}`
-		local y = groundY(point.cframe.Position, { folder })
+		local at = alignedCFrame(point.id, point.cframe)
+		local y = groundY(at.Position, { folder })
 		model:PivotTo(
-			CFrame.new(
-				point.cframe.Position.X,
-				y + Builder.rideHeight(spec) + 0.1,
-				point.cframe.Position.Z
-			) * point.cframe.Rotation
+			CFrame.new(at.Position.X, y + Builder.rideHeight(spec) + 0.1, at.Position.Z)
+				* at.Rotation
 		)
 		local root = model.PrimaryPart :: BasePart
 		root.Anchored = true
@@ -854,6 +983,7 @@ local function placeSigns()
 		post.Material = Enum.Material.Metal
 		post.CFrame = point.cframe * CFrame.new(-8, 3, 4)
 		post:SetAttribute("SpawnPoint", point.id)
+		post:SetAttribute("SpawnFacing", point.cframe.LookVector) -- Studio check: along the road
 		post.Parent = signs
 		local function prompt(vehicleId: string, withTrailer: boolean)
 			local spec = LandVehicleConfig.get(vehicleId)

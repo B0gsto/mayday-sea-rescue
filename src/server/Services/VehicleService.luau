@@ -3,6 +3,7 @@
 --
 --   RequestVehicle (RemoteFunction, Net)  client asks for a vehicleId -> (ok, reasonOrVehicle)
 --   Bay ProximityPrompts                 temporary launch UI until the HUD exists ("Launch Jet Ski")
+--   Vehicle_ArrivalHandoff (RemoteEvent) after the arrival cinematic: unseat, dock, stand on the slipway
 --
 -- Vehicle states:
 --   Dock    nobody driving and the hull is at a bay: HullRoot anchored (clients bob it visually)
@@ -573,11 +574,171 @@ local function addPrompts()
 	end
 end
 
+-- Arrival handoff (after the cold open's arrival cinematic) -----------------------------------
+-- Vehicle_ArrivalHandoff (RemoteEvent, ReplicatedStorage.Net):
+--   C->S ()                            the arrival cinematic ended (or was skipped)
+--   S->C { stand: CFrame, look: Vector3, vehicle: string }   where the player now stands
+-- Once per cold open (SpawnColdOpen arms it, ColdOpenDone must be true): the server unseats the
+-- player, docks the jet ski at their bay (despawns it when the bay is busy or missing), and
+-- pivots the character onto the station slipway facing Chief Aggie's spot. Player attribute
+-- ArrivalHandoff = "Docked:<bay>" / "Despawned" / "NoVehicle" for Studio tests.
+local HANDOFF_REMOTE = "Vehicle_ArrivalHandoff"
+local SLIPWAY_STAND = 10 -- studs down the ramp from its top edge (dry, above the waterline) -- tune
+local AGGIE_POINT_NAMES = { "ChiefAggie", "AggieSpot", "Aggie" }
+local coldOpenRiders: { [Player]: boolean } = {}
+local handoffRemote: RemoteEvent? = nil
+
+local function worldPoint(names: { string }, kind: string?): BasePart?
+	local map = Workspace:FindFirstChild("Map")
+	local points = map and map:FindFirstChild("WorldPoints")
+	if not points then
+		return nil
+	end
+	for _, name in names do
+		local p = points:FindFirstChild(name)
+		if p and p:IsA("BasePart") then
+			return p
+		end
+	end
+	if kind then
+		for _, p in points:GetChildren() do
+			if p:IsA("BasePart") and p:GetAttribute("PointKind") == kind then
+				return p
+			end
+		end
+	end
+	return nil
+end
+
+-- (stand position on the ramp, Aggie's spot) from the slipway geometry in map/Build.luau, the
+-- WorldPoints "StationSlipway" marker (WorldConfig.Points) as a fallback.
+local function slipwaySpots(): (Vector3?, Vector3?)
+	local map = Workspace:FindFirstChild("Map")
+	local slips = map and map:FindFirstChild("Slipways")
+	local ramp = slips and slips:FindFirstChild("StationSlipway")
+	local stand: Vector3?, top: Vector3? = nil, nil
+	if ramp and ramp:IsA("BasePart") then
+		local half = ramp.Size / 2
+		-- the ramp's local -Z end is the top, at the quay
+		top = (ramp.CFrame * CFrame.new(0, half.Y, -half.Z)).Position
+		stand = (ramp.CFrame * CFrame.new(0, half.Y, -half.Z + SLIPWAY_STAND)).Position
+	else
+		local marker = worldPoint({ "StationSlipway" }, nil)
+		if marker then
+			stand = marker.Position
+			top = marker.Position + Vector3.new(0, 0, -SLIPWAY_STAND * 2)
+		end
+	end
+	local aggie = worldPoint(AGGIE_POINT_NAMES, "Aggie")
+	local look: Vector3? = if aggie then aggie.Position else nil
+	if not look and top and stand then
+		look = top + (top - stand) * Vector3.new(0.6, 0, 0.6) -- just onto the quay
+	end
+	return stand, look
+end
+
+local function standOnGround(character: Model, at: Vector3): Vector3
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	local exclude: { Instance } = { folder }
+	for _, p in Players:GetPlayers() do
+		if p.Character then
+			table.insert(exclude, p.Character)
+		end
+	end
+	params.FilterDescendantsInstances = exclude
+	local hit = Workspace:Raycast(at + Vector3.new(0, 12, 0), Vector3.new(0, -30, 0), params)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local lift = (if humanoid then humanoid.HipHeight else 2)
+		+ (if root then root.Size.Y / 2 else 1)
+		+ 0.2
+	return (if hit then hit.Position else at) + Vector3.new(0, lift, 0)
+end
+
+local function unseat(character: Model)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		return
+	end
+	local seat = humanoid.SeatPart
+	if seat then
+		local weld = seat:FindFirstChild("SeatWeld")
+		if weld then
+			weld:Destroy()
+		end
+	end
+	humanoid.Sit = false
+end
+
+-- Docks the player's vehicle at their bay; despawns it when that is not possible.
+local function stowVehicle(player: Player): string
+	local record = byPlayer[player]
+	if not record then
+		return "NoVehicle"
+	end
+	VehicleService.DetachTow(record.model)
+	local bay = bayFor(player)
+	if bay and bayAllows(bay, record.spec.id) and not bayBusy(bay, player) then
+		record.model:PivotTo(
+			Simulator.restCFrame(
+				record.model,
+				bay.Position.X,
+				bay.Position.Z,
+				bay.CFrame.LookVector
+			)
+		)
+		dock(record)
+		record.model:SetAttribute("EngineRunning", false)
+		return `Docked:{bay.Name}`
+	end
+	despawnModel(record.model)
+	return "Despawned"
+end
+
+local function arrivalHandoff(player: Player)
+	if not coldOpenRiders[player] or player:GetAttribute("ColdOpenDone") ~= true then
+		return
+	end
+	local character = player.Character
+	if not character or not character.PrimaryPart then
+		return
+	end
+	coldOpenRiders[player] = nil
+	unseat(character)
+	local vehicle = stowVehicle(player)
+	local stand, look = slipwaySpots()
+	if not stand then
+		warn("[VehicleService] arrival handoff: no StationSlipway found, player left in place")
+		player:SetAttribute("ArrivalHandoff", vehicle)
+		return
+	end
+	local pos = standOnGround(character, stand)
+	local face = look or (pos + Vector3.new(0, 0, -1))
+	local cf = CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z))
+	local root = character.PrimaryPart :: BasePart
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
+	character:PivotTo(cf)
+	player:SetAttribute("ArrivalHandoff", vehicle)
+	print(`[VehicleService] arrival handoff: {player.Name} on foot at slipway, vehicle {vehicle}`)
+	if handoffRemote then
+		handoffRemote:FireClient(player, { stand = cf, look = face, vehicle = vehicle })
+	end
+end
+
 function VehicleService.Init()
 	local f = Instance.new("Folder")
 	f.Name = "Vehicles"
 	f.Parent = Workspace
 	folder = f
+
+	local net = ReplicatedStorage:WaitForChild("Net")
+	local remote = Instance.new("RemoteEvent")
+	remote.Name = HANDOFF_REMOTE
+	remote.Parent = net
+	handoffRemote = remote
+	remote.OnServerEvent:Connect(arrivalHandoff)
 
 	Net.func("RequestVehicle").OnServerInvoke = function(player: Player, vehicleId: unknown)
 		if type(vehicleId) ~= "string" then
@@ -597,6 +758,7 @@ function VehicleService.Init()
 		end
 		playerBay[player] = nil
 		lastSpawn[player] = nil
+		coldOpenRiders[player] = nil
 	end)
 end
 
@@ -656,17 +818,24 @@ function VehicleService.SpawnSeated(
 end
 
 -- Cold open (CONTRACT: Operations v2): a jet ski at `cframe`, the player seated, already running
--- at about 25 knots. A thin wrapper over SpawnSeated; OperationService calls it through pcall.
+-- at about 20 knots, the speed BoatController's cold-open auto-throttle then holds until it hands
+-- over (shared/Boat/ColdOpen.AUTO_SPEED). A thin wrapper over SpawnSeated; OperationService calls
+-- it through pcall and then marks the jet ski (ColdOpen* attributes).
 VehicleService.ColdOpenVehicle = "JetSki"
-VehicleService.ColdOpenSpeed = 25 * VehicleConfig.KNOT -- 38.6 studs/s
+VehicleService.ColdOpenSpeed = 20 * VehicleConfig.KNOT -- 30.9 studs/s
 
 function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
-	return VehicleService.SpawnSeated(
+	local model = VehicleService.SpawnSeated(
 		player,
 		VehicleService.ColdOpenVehicle,
 		cframe,
 		VehicleService.ColdOpenSpeed
 	)
+	if model then
+		coldOpenRiders[player] = true -- arms the arrival handoff (Vehicle_ArrivalHandoff)
+		player:SetAttribute("ArrivalHandoff", nil)
+	end
+	return model
 end
 
 function VehicleService.GetVehicle(player: Player): Model?

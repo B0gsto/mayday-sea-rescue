@@ -17,6 +17,16 @@
 --    the server stops the engine (EngineRunning = false, see VehicleService).
 --    Telemetry from Simulator.step is kept for the HUD and test scripts (GetTelemetry).
 --
+-- 1b2. Cold open (docs 09 9.1, shared/Boat/ColdOpen). OperationService marks the cold-open jet
+--    ski: ColdOpenOpId, ColdOpenTarget (Vector3, the datum), ColdOpenStart (server time) and
+--    ColdOpenAutoThrottle = true. Here the auto-throttle holds about 20 knots until AUTO_HOLD s,
+--    HANDOVER_DISTANCE studs from the casualty or the player's first throttle input, then sets
+--    ColdOpenAutoThrottle = false (locally) and the throttle is the player's (W released coasts).
+--    While ColdOpenApproach is true (server: the approach step is current) and the player is in
+--    Assist (OpsPro ~= true), a hull still fast near the casualty is braked to approach speed;
+--    AssistEase (bool) is true while that ease acts and AssistEaseCount counts its engagements
+--    (Mechanics/approach reports it; the server caps the grade at Silver).
+--
 -- 1c. Nav lights. Every NAV_INTERVAL each vehicle's lights follow NavLights.shouldBeOn (night or
 --    storm). Visual only, so each client decides for itself.
 --
@@ -40,6 +50,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
+local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -63,6 +74,9 @@ local telemetry: Simulator.Telemetry? = nil
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
 local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
+-- cold open helm state per jet ski: auto-throttle still holding, Assist ease acting
+type ColdOpenState = { auto: boolean, easing: boolean }
+local coldOpens: { [Model]: ColdOpenState } = setmetatable({}, { __mode = "k" }) :: any
 
 -- CONTRACT: OceanController.GetVisualHeight(x, z) from stream A, if it exists.
 local ocean: any = nil
@@ -185,6 +199,82 @@ local function setApproachBinding(on: boolean)
 	end
 end
 
+-- The cold-open casualty: its Victim model (it drifts and gets pushed), else the datum.
+local function coldOpenCasualty(model: Model): Vector3?
+	local opId = model:GetAttribute("ColdOpenOpId")
+	local props = Workspace:FindFirstChild("CallProps")
+	if opId ~= nil and props then
+		for _, m in props:GetChildren() do
+			if m:IsA("Model") and m.Name == "Victim" and m:GetAttribute("CallId") == opId then
+				local part = m.PrimaryPart
+				if part then
+					return part.Position
+				end
+			end
+		end
+	end
+	local target = model:GetAttribute("ColdOpenTarget")
+	return if typeof(target) == "Vector3" then target else nil
+end
+
+-- The throttle the cold-open jet ski really gets (auto-throttle, then the player's, eased).
+local function coldOpenThrottle(model: Model, input: number, now: number): number
+	local root = model.PrimaryPart
+	if not root then
+		return input
+	end
+	local st = coldOpens[model]
+	if not st then
+		if model:GetAttribute("ColdOpenAutoThrottle") ~= true then
+			return input
+		end
+		st = { auto = true, easing = false }
+		coldOpens[model] = st
+	end
+	local cas = coldOpenCasualty(model)
+	local flat = Vector3.new(1, 0, 1)
+	local distance = if cas then ((cas - root.Position) * flat).Magnitude else math.huge
+	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
+	local forwardSpeed = root.AssemblyLinearVelocity:Dot(forward)
+	local id = model:GetAttribute("VehicleId")
+	local spec: any = if type(id) == "string" then VehicleConfig.get(id) else nil
+	local throttle = input
+	if st.auto then
+		local started = model:GetAttribute("ColdOpenStart")
+		local elapsed = if type(started) == "number" then now - started else 0
+		st.auto = model:GetAttribute("ColdOpenAutoThrottle") == true
+			and spec ~= nil
+			and ColdOpen.autoActive(elapsed, distance, input)
+		if st.auto then
+			throttle = ColdOpen.autoThrottle(spec, forwardSpeed)
+		else
+			model:SetAttribute("ColdOpenAutoThrottle", false) -- handed over (verification hook)
+		end
+	end
+	local assist = localPlayer:GetAttribute("OpsPro") ~= true
+	local onApproach = model:GetAttribute("ColdOpenApproach") == true
+	local wasEasing = st.easing
+	st.easing = onApproach
+		and ColdOpen.updateEase(
+			st.easing,
+			assist,
+			distance,
+			forwardSpeed,
+			if spec then spec.brakeDecel else nil
+		)
+	if st.easing then
+		throttle = ColdOpen.easeThrottle(forwardSpeed, throttle)
+		if not wasEasing then
+			local n = model:GetAttribute("AssistEaseCount")
+			model:SetAttribute("AssistEaseCount", (if type(n) == "number" then n else 0) + 1)
+		end
+	end
+	if model:GetAttribute("AssistEase") ~= st.easing then
+		model:SetAttribute("AssistEase", st.easing)
+	end
+	return throttle
+end
+
 local function stopSimulating(model: Model)
 	simulated[model] = nil
 	if model.Parent then
@@ -220,7 +310,8 @@ local function step(dt: number)
 						child.PrimaryPart.AssemblyLinearVelocity = Vector3.new(look.X, 0, look.Z).Unit
 							* launchSpeed
 					end
-					telemetry = Simulator.step(child, seat.ThrottleFloat, seat.SteerFloat, now)
+					local throttle = coldOpenThrottle(child, seat.ThrottleFloat, now)
+					telemetry = Simulator.step(child, throttle, seat.SteerFloat, now)
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
 				elseif isLocalTow(child) then

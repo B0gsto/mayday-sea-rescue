@@ -3,21 +3,22 @@
 
 usage: python3 tools/studio/smoke.py <command> [args]
 
-  open                 build (tools/build.sh) and open build/MaydaySeaRescue.rbxl as TestBench-mayday (an old
+  open                 build (tools/build.sh) and open build/MaydaySeaRescue.rbxl as TestBench-<tag> (an old
                        window of that tag is closed first); the studio_id is kept in build/smoke/.sid
   play start|stop      start/stop the play test (waits for the mode), Studio brought to the front
   lua <Server|Client|Edit> <file.luau | -> [--quiet]  run Luau, print its output
   keys <key> <ms>      hold a key on the client (e.g. keys W 2000)
   console              save the console to build/smoke/console.txt; print error lines and the last 25 lines
   shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px
-  close                close TestBench-mayday without saving, give focus back to the previous app
+  close                close TestBench-<tag> without saving, give focus back to the previous app
   run                  open, play, console check, one shot, stop, close (verdict on the first line)
   ops                  open, play, then play operations end to end with the stub mechanics (PersonInWater,
                        DisabledVessel, the cold open): the client's OpsAutoStub attribute auto-completes
                        every stub and auto-accepts offers; checks each operation reaches its debrief
 
 Every command holds the machine-wide `studio` lock only for its own duration (keep holds short).
-Never touches any other TestBench or place window."""
+Never touches any other TestBench or place window. The tag is $MAYDAY_STUDIO_TAG (default "mayday-smoke").
+"""
 import base64, os, re, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -27,11 +28,13 @@ sys.path.insert(0, TOOLS)
 import studio_window as sw  # noqa: E402
 from studio import StudioSession, studio_lock  # noqa: E402
 
-TAG = "mayday"
-OWNER = "mayday-smoke"
+# Each tool opens its own TestBench window so one never closes another's: smoke.py "mayday-smoke"
+# (default), art/ocean/capture.sh "mayday-ocean", lookdev captures "mayday-lookdev" (set MAYDAY_STUDIO_TAG).
+TAG = os.environ.get("MAYDAY_STUDIO_TAG", "mayday-smoke")
+OWNER = TAG
 OUT = os.path.join(REPO, "build", "smoke")
-SID_FILE = os.path.join(OUT, ".sid")
-PREV_FILE = os.path.join(OUT, ".previous_app")
+SID_FILE = os.path.join(OUT, ".sid-" + TAG)
+PREV_FILE = os.path.join(OUT, ".previous_app-" + TAG)
 PLACE = os.path.join(REPO, "build", "MaydaySeaRescue.rbxl")
 ENV = dict(os.environ, PATH=os.path.expanduser("~/.rokit/bin") + ":" + os.environ.get("PATH", ""))
 LOG_ERROR = re.compile(r"\] ERROR: |failed: ")
@@ -53,7 +56,7 @@ def sid():
 
 
 def title():
-    path = os.path.join(OUT, ".title")
+    path = os.path.join(OUT, ".title-" + TAG)
     return open(path).read().strip() if os.path.exists(path) else "TestBench-%s" % TAG
 
 
@@ -109,7 +112,7 @@ def cmd_open():
     with open(SID_FILE, "w") as f:
         f.write(m.group(1))
     t = re.search(r"^title: (.*)$", r.stdout, re.M)
-    with open(os.path.join(OUT, ".title"), "w") as f:
+    with open(os.path.join(OUT, ".title-" + TAG), "w") as f:
         f.write(t.group(1).strip() if t else "TestBench-%s" % TAG)
     print("opened, studio_id:", m.group(1))
 

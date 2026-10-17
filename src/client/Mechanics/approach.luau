@@ -4,7 +4,9 @@
 -- alongside or at the bow, forward of the propeller. The boat's own wake (shared/Boat/Wake)
 -- pushes the casualty away and washes over them when you come in fast. Coming down on them
 -- from upwind, or putting them near the propeller, makes the crew call "Abort, go round".
--- Metrics: overSpeedSec, neutralDistance (studs), fromDownwind (bool); events: wash (cap 2).
+-- Metrics: overSpeedSec, neutralDistance (studs), fromDownwind (bool), assistEase (true when the
+-- cold open's Assist ease braked the hull: BoatController's AssistEase attribute; the server
+-- caps the grade at Silver); events: wash (cap 2).
 -- Controls: normal driving (W/S A/D, stick, RT/LT), neutral X / B / the slider's neutral notch.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -50,6 +52,7 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 	local washes = 0
 	local lastCall = math.huge
 	local coneParts: { Part } = {}
+	local eased = false
 
 	-- Assist: the approach cone on the water, from the casualty downwind (no glow; thin lines)
 	local function drawCone(cas: Vector3, wind: number)
@@ -88,6 +91,9 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 		if not h then
 			info.Text = "Get aboard your boat."
 			return
+		end
+		if vehicle and vehicle:GetAttribute("AssistEase") == true then
+			eased = true
 		end
 		local wind = windNow(ctx)
 		local base = World.casualtyPos(ctx, victim)
@@ -165,8 +171,12 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 						then 'Crew: "At the bow, got them."'
 						else 'Crew: "Alongside, got them."'
 				)
+				local metrics: { [string]: any } = Approach.metrics(state)
+				if eased then
+					metrics.assistEase = true
+				end
 				Step.finish(s, {
-					metrics = Approach.metrics(state),
+					metrics = metrics,
 					events = if washes > 0 then { wash = washes } else nil,
 				})
 			end

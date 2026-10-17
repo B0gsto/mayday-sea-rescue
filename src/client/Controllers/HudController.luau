@@ -7,6 +7,9 @@
 --     ShopCounter  the Chandlery gear counter (HudShop: BuyGear)
 --     BoatDesk     the boatyard collection desk (HudLaunch: RequestVehicle, rank locks, or BuyGear)
 --   A panel closes from its X button, or when the player walks away from the prompt.
+--   The engine only shows (and so only triggers) a prompt that is on screen; a player standing at
+--   the counter but looking past it (or teleported there) pressed E and nothing happened. Fallback:
+--   an unprocessed E / ButtonX within a store prompt's range opens the nearest store panel.
 --   Left: crew chip with a Leave button while in a crew (CrewJoin / CrewLeave echoes).
 -- Data arrives as PlayerDataChanged snapshots; the first one is pulled via Progression_GetData.
 local Players = game:GetService("Players")
@@ -14,6 +17,8 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
@@ -189,6 +194,59 @@ local function onPromptTriggered(prompt: ProximityPrompt)
 	end
 end
 
+-- E / ButtonX that no shown prompt consumed: open the nearest store panel in range (see header).
+local storePrompts: { ProximityPrompt } = {}
+
+local function trackStorePrompt(inst: Instance)
+	if inst:IsA("ProximityPrompt") then
+		local panel = inst:GetAttribute("Panel")
+		if panel == "ShopCounter" or panel == "BoatDesk" then
+			table.insert(storePrompts, inst)
+		end
+	end
+end
+
+local function onStoreKey(input: InputObject, processed: boolean)
+	if processed then
+		return
+	end
+	if input.KeyCode ~= Enum.KeyCode.E and input.KeyCode ~= Enum.KeyCode.ButtonX then
+		return
+	end
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if
+		not (root and root:IsA("BasePart") and humanoid)
+		or humanoid.SeatPart
+		or humanoid.Health <= 0
+	then
+		return
+	end
+	local best: ProximityPrompt? = nil
+	local bestDistance = math.huge
+	for _, prompt in storePrompts do
+		local anchor = prompt.Parent
+		if
+			prompt.Enabled
+			and anchor
+			and anchor:IsA("BasePart")
+			and anchor:IsDescendantOf(Workspace)
+		then
+			local distance = (anchor.Position - root.Position).Magnitude
+			if distance <= prompt.MaxActivationDistance and distance < bestDistance then
+				best, bestDistance = prompt, distance
+			end
+		end
+	end
+	if
+		best
+		and not (openPanel == best:GetAttribute("Panel") and (shop.isOpen() or launch.isOpen()))
+	then
+		onPromptTriggered(best)
+	end
+end
+
 -- Walking away (or dying) closes the open panel; a closed X clears the tracking.
 local function watchPanel()
 	if not openPanel then
@@ -321,6 +379,11 @@ function HudController.Init()
 	launch = HudLaunch.build(gui, requestLaunch, buy)
 
 	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
+	for _, inst in Workspace:GetDescendants() do
+		trackStorePrompt(inst)
+	end
+	Workspace.DescendantAdded:Connect(trackStorePrompt)
+	UserInputService.InputBegan:Connect(onStoreKey)
 	RunService.Heartbeat:Connect(watchPanel)
 
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)

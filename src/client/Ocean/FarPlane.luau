@@ -2,7 +2,8 @@
 -- FarPlane: flat sea from the edge of the wave rings out towards the horizon.
 -- Ocean spike: each strip is a 4-vertex EditableMesh MeshPart with the same SurfaceAppearance as
 -- the wave mesh (OceanSurface) and world-locked UVs, so the ripple normal map and its specular
--- glitter carry on to the horizon. Falls back to a plain Part per strip if EditableMesh fails.
+-- glitter carry on to the horizon. Falls back to plain Parts if EditableMesh fails (memory budget,
+-- permissions): after the first failed strip the rest skip EditableMesh, and it is warned once.
 -- Four thin Parts in a pinwheel around a square hole, so the plane never shows through wave
 -- troughs inside the rings. Parts are capped at 2048 studs per axis, so each strip is at most
 -- 2048 long and the plane reaches (2048 - innerHalf) studs from the camera; Atmosphere haze
@@ -17,6 +18,8 @@ local MAX_PART = 2048
 local OVERLAP = 4 -- studs the plane tucks under the flat outer edge of the ring -- tune
 local DROP = 0.15 -- top surface sits this far below sea level to avoid z-fighting -- tune
 local THICKNESS = 1
+
+local warned = false
 
 export type FarPlane = {
 	parts: { BasePart },
@@ -64,8 +67,10 @@ function FarPlane.new(
 	local offsets: { Vector3 } = {}
 	local meshes: { EditableMesh } = {}
 	local uvs: { { number } } = {}
+	local useMesh = true
 	for n, entry in layout do
-		local part, em, uv = FarPlane._strip(entry.size, entry.offset, surface)
+		local part, em, uv = FarPlane._strip(entry.size, entry.offset, surface, useMesh)
+		useMesh = em ~= nil
 		part.Name = `OceanFar{n}`
 		part.CFrame = CFrame.new(entry.offset + Vector3.new(0, seaLevel, 0))
 		part.Parent = parent
@@ -92,12 +97,21 @@ end
 function FarPlane._strip(
 	size: Vector3,
 	offset: Vector3,
-	surface: string
+	surface: string,
+	useMesh: boolean?
 ): (BasePart, EditableMesh?, { number })
 	local hx, hz = size.X / 2, size.Z / 2
 	local uv: { number } = {}
+	local made: EditableMesh? = nil
 	local ok, result = pcall(function()
+		if useMesh == false then
+			error("skipped after an earlier failure")
+		end
 		local em = AssetService:CreateEditableMesh()
+		if em == nil then
+			error("CreateEditableMesh returned nil (memory budget?)")
+		end
+		made = em
 		local corners = {
 			Vector3.new(-hx, 0, -hz),
 			Vector3.new(hx, 0, -hz),
@@ -126,6 +140,9 @@ function FarPlane._strip(
 			)
 		end
 		local part = AssetService:CreateMeshPartAsync(Content.fromObject(em))
+		if part == nil then
+			error("CreateMeshPartAsync returned nil")
+		end
 		return { part = part, em = em }
 	end)
 	local part: BasePart
@@ -135,7 +152,13 @@ function FarPlane._strip(
 		em = result.em
 		OceanSurface.attach(part, surface)
 	else
-		warn(`[Ocean] far plane mesh unavailable ({result}); flat Part`)
+		if made then
+			made:Destroy()
+		end
+		if not warned and useMesh ~= false then
+			warned = true
+			warn(`[Ocean] far plane mesh unavailable ({result}); flat Parts`)
+		end
 		local p = Instance.new("Part")
 		p.Size = Vector3.new(size.X, 0.2, size.Z)
 		p.Material = Enum.Material.SmoothPlastic

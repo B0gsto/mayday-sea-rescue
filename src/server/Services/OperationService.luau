@@ -19,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Condition = require(OpsFolder:WaitForChild("Condition"))
 local Grading = require(OpsFolder:WaitForChild("Grading"))
@@ -33,6 +34,7 @@ local FerryValidate = require(
 ) :: any
 local SceneBoard = require(Shared:WaitForChild("Ferry"):WaitForChild("SceneBoard")) :: any
 -- Person in the Water: onPattern and destinationRight, measured on the server.
+local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local PiwMetrics = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("PiwMetrics"))
 
 type StepDef = Types.StepDef
@@ -603,6 +605,8 @@ local function record(op: any, track: Track, inst: StepInst, grade: Grade, by: P
 		userId = if by then by.UserId else nil,
 		trackId = track.id,
 		at = now() - op.acceptedAt,
+		-- the cold open's Assist ease braked the hull on this step (grade capped at Silver)
+		assistEase = if (inst :: any).assistEase then true else nil,
 	})
 	if by then
 		op.helpers[by] = true
@@ -992,6 +996,11 @@ finish = function(op: any, reason: string)
 		end
 		if op.coldOpen then
 			markColdOpenDone(p)
+			local boat = vehicleOf(p)
+			if boat then
+				boat:SetAttribute("ColdOpenApproach", false)
+				boat:SetAttribute("ColdOpenAutoThrottle", false)
+			end
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
@@ -1106,6 +1115,62 @@ local function samplePiw(op: any, dt: number)
 					Condition.band(c.condition)
 				),
 			}
+		end
+	end
+end
+
+-- Cold open (docs 09 9.1): tell the jet ski when the approach step is current (BoatController's
+-- Assist ease only acts then) and watch the replicated motion for an ease the client must have
+-- made, so the Silver cap holds even if a client leaves its assistEase flag out.
+local coldOpenEase: { [any]: boolean } = setmetatable({}, { __mode = "k" }) :: any
+
+local function sampleColdOpen(op: any)
+	if not op.coldOpen then
+		return
+	end
+	for _, track in op.tracks do
+		local inst = track.current
+		local player = track.owner
+		local boat = player and vehicleOf(player)
+		if not boat then
+			continue
+		end
+		local onApproach = inst ~= nil and not inst.npc and inst.mechanicId == "approach"
+		if boat:GetAttribute("ColdOpenApproach") ~= onApproach then
+			boat:SetAttribute("ColdOpenApproach", onApproach)
+		end
+		local root = boat.PrimaryPart
+		local started = boat:GetAttribute("ColdOpenStart")
+		if
+			root
+			and boat:GetAttribute("ColdOpenAutoThrottle") == true
+			and type(started) == "number"
+		then
+			-- mirror the client's time / distance hand-over (it also hands over on input)
+			local d = ((op.position - root.Position) * Vector3.new(1, 0, 1)).Magnitude
+			if not BoatColdOpen.autoActive(Workspace:GetServerTimeNow() - started, d, 0) then
+				boat:SetAttribute("ColdOpenAutoThrottle", false)
+			end
+		end
+		if onApproach and root and not coldOpenEase[inst] then
+			local cas = casualtyPosition(op, inst.casualtyIndex or 1)
+			local distance = ((cas - root.Position) * Vector3.new(1, 0, 1)).Magnitude
+			local look = root.CFrame.LookVector * Vector3.new(1, 0, 1)
+			local speed = if look.Magnitude > 1e-3
+				then root.AssemblyLinearVelocity:Dot(look.Unit)
+				else 0
+			local spec = VehicleConfig.get(tostring(boat:GetAttribute("VehicleId")))
+			local assist = player:GetAttribute("OpsPro") ~= true
+			if
+				BoatColdOpen.serverSawEase(
+					assist,
+					distance,
+					speed,
+					if spec then spec.brakeDecel else nil
+				)
+			then
+				coldOpenEase[inst] = true
+			end
 		end
 	end
 end
@@ -1284,6 +1349,16 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 			Grading.stepGrade(inst.def, metrics, present),
 			Types.Rules.StubGradeCap :: any
 		) :: any
+	end
+	if
+		op.coldOpen
+		and inst.mechanicId == "approach"
+		and (metrics.assistEase == true or coldOpenEase[inst])
+	then
+		-- an Assist ease did part of the approach: Silver at best (docs 09 9.1, honest grades)
+		metrics.assistEase = true
+		(inst :: any).assistEase = true
+		grade = BoatColdOpen.capGrade(grade, true) :: any
 	end
 	if rawTag == "Red" or rawTag == "Yellow" or rawTag == "Green" then
 		inst.tag = rawTag
@@ -1631,6 +1706,7 @@ local function tickOp(op: any, dt: number, t: number)
 		return
 	end
 	samplePiw(op, dt)
+	sampleColdOpen(op)
 	local env = { storm = op.storm or weatherState() == "Storm", coldWater = false }
 	local ferry = op.kind == "CapsizedFerry"
 	for _, c in op.casualties do
@@ -1788,7 +1864,9 @@ end
 -- Plan: tasking (auto, Gold) -> approach -> recovery; Assist on; condition drift x0.5.
 OperationService.ColdOpenPlan = { "tasking", "approach", "recovery" }
 OperationService.ColdOpenDriftScale = 0.5
-OperationService.ColdOpenDistance = { 150, 250 } -- studs ahead of the spawn CFrame (tune)
+-- studs ahead of the spawn CFrame (tune). The jet ski runs in at ColdOpen.AUTO_SPEED (20 kn)
+-- and hands the throttle over ColdOpen.HANDOVER_DISTANCE (170) studs short, so it coasts in.
+OperationService.ColdOpenDistance = { 220, 260 }
 
 -- Starts the cold open for `player`. `spawnCFrame` is where the jet ski starts (default: the
 -- Harbour Mouth zone centre, facing out to sea). Returns the operation id.
@@ -1828,6 +1906,15 @@ function OperationService.StartColdOpen(player: Player, spawnCFrame: CFrame?): s
 	table.insert(op.members, player)
 	table.insert(op.casualties, Condition.new(`{op.id}-1`, "Alert", true, 85))
 	op.casualties[1].driftScale = OperationService.ColdOpenDriftScale
+	-- BoatController's cold-open helm (shared/Boat/ColdOpen): auto-throttle, then hand-over
+	local boat = vehicleOf(player)
+	if boat then
+		boat:SetAttribute("ColdOpenOpId", op.id)
+		boat:SetAttribute("ColdOpenTarget", pos)
+		boat:SetAttribute("ColdOpenStart", Workspace:GetServerTimeNow())
+		boat:SetAttribute("ColdOpenApproach", false)
+		boat:SetAttribute("ColdOpenAutoThrottle", true)
+	end
 	RescueService.SpawnCall(op.scene)
 	local track = newTrack(op, player, { player })
 	-- the radio ack is auto-done: record it as the player's (Gold) and go straight to the approach

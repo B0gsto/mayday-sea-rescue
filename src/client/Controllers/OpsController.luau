@@ -12,6 +12,7 @@
 --   OpsController.TakeStep(stepKey)       swap station: take the step an NPC is doing
 --   OpsController.GetState(): snapshot?   the last Ops_State
 --   OpsController.GetMechanic(mechanicId) the module that would play it (Default if missing)
+-- While a cinematic plays (LocalPlayer attribute CinematicPlaying) the Ops ScreenGuis are hidden.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -289,6 +290,79 @@ end
 
 ---------------------------------------------------------------- API
 
+---------------------------------------------------------------- cinematics hide the Ops UI
+-- While the LocalPlayer attribute CinematicPlaying is true (Camera/Cinematic sets it), every Ops
+-- ScreenGui is disabled and afterwards only the ones that were enabled (or that opened mid-shot,
+-- e.g. a debrief arriving) come back. Every game ScreenGui counts (see KEEP_GUIS). HIDE_ONLY guis follow
+-- held input and are never re-opened. LocalPlayer attribute OpsUiHidden mirrors the state.
+local HIDE_ONLY: { [string]: boolean } = { RadioWheel = true }
+type Hidden = { wanted: boolean, conn: RBXScriptConnection? }
+local hidden: { [ScreenGui]: Hidden } = {}
+local cinematicOn = false
+
+-- The integration-C play test still showed a PIW mechanic panel and the HUD over the arrival
+-- shot: every game ScreenGui hides during a cinematic except the cinematic's own and the
+-- Studio Freecam (or one with attribute CinematicKeep = true).
+local KEEP_GUIS: { [string]: boolean } = { Cinematic = true, Freecam = true }
+
+local function isOpsGui(g: Instance): boolean
+	return g:IsA("ScreenGui") and not KEEP_GUIS[g.Name] and g:GetAttribute("CinematicKeep") ~= true
+end
+
+local function hideGui(g: ScreenGui)
+	if hidden[g] then
+		return
+	end
+	local entry: Hidden = { wanted = g.Enabled and not HIDE_ONLY[g.Name], conn = nil }
+	hidden[g] = entry
+	g.Enabled = false
+	entry.conn = g:GetPropertyChangedSignal("Enabled"):Connect(function()
+		if g.Enabled and cinematicOn then
+			entry.wanted = not HIDE_ONLY[g.Name] -- opened mid-shot: show it after
+			g.Enabled = false
+		end
+	end)
+end
+
+local function restoreGuis()
+	for g, entry in hidden do
+		if entry.conn then
+			entry.conn:Disconnect()
+		end
+		if g.Parent then
+			g.Enabled = entry.wanted
+		end
+	end
+	table.clear(hidden)
+end
+
+local function watchCinematics(playerGui: Instance)
+	local function apply()
+		local on = player:GetAttribute("CinematicPlaying") == true
+		if on == cinematicOn then
+			return
+		end
+		cinematicOn = on
+		if on then
+			for _, g in playerGui:GetChildren() do
+				if isOpsGui(g) then
+					hideGui(g :: ScreenGui)
+				end
+			end
+		else
+			restoreGuis()
+		end
+		player:SetAttribute("OpsUiHidden", on)
+	end
+	player:GetAttributeChangedSignal("CinematicPlaying"):Connect(apply)
+	playerGui.ChildAdded:Connect(function(g)
+		if cinematicOn and isOpsGui(g) then
+			hideGui(g :: ScreenGui)
+		end
+	end)
+	apply()
+end
+
 function OpsController.Accept(opId: string)
 	offerFrame.Visible = false
 	Remotes.event("Ops_Accept"):FireServer(opId)
@@ -328,6 +402,7 @@ function OpsController.Init()
 	radioLabel.BackgroundColor3 = HudTheme.Colors.panel
 	radioLabel.Visible = false
 	gui.Parent = player:WaitForChild("PlayerGui")
+	watchCinematics(gui.Parent :: Instance)
 
 	Remotes.event("Ops_Offered").OnClientEvent:Connect(function(data)
 		OpsController.OnOffer:Fire(data)

@@ -7,6 +7,7 @@
 --   Cinematic.isPlaying(): boolean
 --   Cinematic.update(dt): boolean               (CameraController each frame; true while playing)
 --   Cinematic.stop()
+--   LocalPlayer attribute CinematicPlaying (bool) while one plays (the Ops UI hides on it)
 --   Cinematic.Lists.arrival() / .launch(model) / .storm(subject)   stub shot lists
 --
 -- Shot = { from: CFrame | Pose, to: (CFrame | Pose)?, duration: number, fov: number?,
@@ -33,6 +34,10 @@ export type Shot = {
 export type Handle = { stop: () -> (), isDone: () -> boolean }
 
 local Cinematic = {}
+-- LocalPlayer attribute (client only) true while a cinematic plays; OpsController hides the Ops
+-- UI on it. CinematicId is the id of the last one started.
+local PLAYING_ATTRIBUTE = "CinematicPlaying"
+Cinematic.PlayingAttribute = PLAYING_ATTRIBUTE
 
 local current: { shots: { Shot }, index: number, t: number, id: string?, onDone: (() -> ())?, done: boolean }? =
 	nil
@@ -138,6 +143,7 @@ end
 local function finish()
 	local c = current
 	current = nil
+	Players.LocalPlayer:SetAttribute(PLAYING_ATTRIBUTE, false)
 	if c and not c.done then
 		c.done = true
 		if c.id then
@@ -163,6 +169,8 @@ function Cinematic.play(
 	end
 	local entry = { shots = shots, index = 1, t = 0, id = o.id, onDone = o.onDone, done = false }
 	current = entry
+	Players.LocalPlayer:SetAttribute(PLAYING_ATTRIBUTE, true)
+	Players.LocalPlayer:SetAttribute("CinematicId", o.id or "")
 	local skippable = if o.skippable ~= nil
 		then o.skippable
 		else (o.id ~= nil and Comfort.hasSeen(o.id :: string))

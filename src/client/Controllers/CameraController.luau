@@ -60,6 +60,19 @@ local STATION = Vector3.new(-95, 0, 50)
 local arrivalPending = false
 local rodeColdOpen = false -- seated in a vehicle before the cold open finished
 
+-- Arrival handoff: when the arrival cinematic ends the server (VehicleService,
+-- Vehicle_ArrivalHandoff) unseats the player, docks the jet ski and stands them on the station
+-- slipway. The camera holds the last cinematic frame until the reply (or HANDOFF_HOLD seconds),
+-- then enters Foot facing Chief Aggie's spot. LocalPlayer attribute ArrivalOnFoot = true and the
+-- print "[CameraController] arrival handoff: on foot at slipway" mark it done.
+local HANDOFF_REMOTE = "Vehicle_ArrivalHandoff"
+local HANDOFF_HOLD = 2.5 -- seconds -- tune
+local EYE_HEIGHT = 4.5 -- studs above Aggie's spot to look at -- tune
+local handoffHoldUntil = 0
+local handoffLook: Vector3? = nil
+local handoffFrames = 0
+local requestHandoff: () -> ()
+
 -- look input gathered between frames
 local gamepadLook = Vector2.zero
 local touchLook = Vector2.zero
@@ -169,7 +182,7 @@ end
 ---------------------------------------------------------------- mode switching
 
 local function wantedMode(): Mode
-	if Cinematic.isPlaying() then
+	if Cinematic.isPlaying() or os.clock() < handoffHoldUntil then
 		return "Cinematic"
 	end
 	local _, hum = character()
@@ -332,6 +345,41 @@ local function connectInput()
 	end)
 end
 
+---------------------------------------------------------------- arrival handoff
+
+local function handoffRemote(): RemoteEvent?
+	local net = ReplicatedStorage:FindFirstChild("Net")
+	local remote = net and net:FindFirstChild(HANDOFF_REMOTE)
+	return if remote and remote:IsA("RemoteEvent") then remote else nil
+end
+
+-- The arrival cinematic ended (played out or skipped): ask the server to bring us ashore.
+requestHandoff = function()
+	local remote = handoffRemote()
+	if not remote then
+		warn("[CameraController] arrival handoff: no Vehicle_ArrivalHandoff remote")
+		return
+	end
+	handoffHoldUntil = os.clock() + HANDOFF_HOLD
+	remote:FireServer()
+end
+
+local function onHandoff(data: any)
+	if type(data) ~= "table" or typeof(data.stand) ~= "CFrame" then
+		return
+	end
+	local char, hum = character()
+	if char and hum then
+		hum.Sit = false
+		-- the client owns its character: pivot here too so physics does not pull it back
+		char:PivotTo(data.stand)
+	end
+	current = nil
+	handoffLook = if typeof(data.look) == "Vector3" then data.look else nil
+	handoffFrames = 3
+	handoffHoldUntil = 0
+end
+
 ---------------------------------------------------------------- per frame
 
 local function telemetry(): any
@@ -365,6 +413,18 @@ local function update(dt: number)
 	end
 	Cinematic.update(dt) -- fades the letterbox out
 	if mode == "Foot" and char and hum and root then
+		local look = handoffLook
+		if look and handoffFrames > 0 then
+			-- the default camera reads its look vector from camera.CFrame, so this sticks
+			handoffFrames -= 1
+			local head = camera.CFrame.Position
+			camera.CFrame = CFrame.lookAt(head, look + Vector3.new(0, EYE_HEIGHT, 0))
+			if handoffFrames == 0 then
+				handoffLook = nil
+				player:SetAttribute("ArrivalOnFoot", true)
+				print("[CameraController] arrival handoff: on foot at slipway")
+			end
+		end
 		FirstPerson.foot(dt, hum, root)
 		FirstPerson.applyBodyVisibility(char, Viewmodel.isPlaying())
 	elseif mode == "VehicleFP" and current then
@@ -407,7 +467,7 @@ local function update(dt: number)
 	end
 	if arrivalPending and root and (root.Position - STATION).Magnitude < 230 then
 		arrivalPending = false
-		Cinematic.play(Cinematic.Lists.arrival(), { id = "arrival" })
+		Cinematic.play(Cinematic.Lists.arrival(), { id = "arrival", onDone = requestHandoff })
 	end
 end
 
@@ -424,6 +484,13 @@ local function busy(): boolean
 end
 
 local function connectTriggers()
+	task.spawn(function()
+		local net = ReplicatedStorage:WaitForChild("Net", 30)
+		local remote = net and net:WaitForChild(HANDOFF_REMOTE, 30)
+		if remote and remote:IsA("RemoteEvent") then
+			remote.OnClientEvent:Connect(onHandoff)
+		end
+	end)
 	player:GetAttributeChangedSignal("ColdOpenDone"):Connect(function()
 		-- only when it flips at the end of the cold open (still riding), not on a profile load
 		if
@@ -513,6 +580,8 @@ function CameraController.Start()
 		exitMode(mode)
 		mode = "None"
 		current = nil
+		handoffHoldUntil = 0
+		handoffLook = nil
 	end)
 end
 
