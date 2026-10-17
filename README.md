@@ -17,7 +17,7 @@ This repository holds the design bible and a working greybox (the first rescue l
 
 - **The demand is proven.** *Firefighting Sim* (Blackbox Express) is a fast-rising rescue sim (34.8K peak CCU, Oct 2026), with 92% likes (unverified). Its creation date is unknown. Rescue on land is working.
 - **The water is empty.** The sea rescue niche on Roblox is 8 to 10 small games, none we found above a few thousand concurrent players. Nobody has made a polished one.
-- **The fantasy is big and has room to grow.** Boats, jet skis, helicopters, storms, sharks, icebergs and cruise ships all fit, solo or as a crew.
+- **The fantasy is big and has room to grow.** Boats, jet skis, helicopters, storms, icebergs and cruise ships all fit, solo or as a crew, on a big open island map with cars, beaches and a seabed to explore.
 
 Full evidence: [`docs/research/reference-games.md`](docs/research/reference-games.md).
 
@@ -34,6 +34,7 @@ Full evidence: [`docs/research/reference-games.md`](docs/research/reference-game
 | 07 | [Store page, thumbnails and trailer](docs/07-store-page-thumbnails-and-trailer.md) | Icon, thumbnails, gameplay video shot list, description |
 | 08 | [References](docs/08-references.md) | Games, real-world references, tutorials, links |
 | 09 | [Rescue operations](docs/09-rescue-operations.md) | Every operation step by step: real procedure, player mechanic, crew role, failure, grading; radio; certifications |
+| 10 | [World and map](docs/10-world-and-map.md) | The Gale Isles map, roads and beaches, land vehicles, seabed and wrecks, free exploration and the logbook, Terrain and streaming tech |
 
 Raw research notes: [`docs/research/`](docs/research/).
 
@@ -42,7 +43,7 @@ Raw research notes: [`docs/research/`](docs/research/).
 - Scope tags: `[MVP]` first playable (the cut list is in [chapter 01, section 9.1](docs/01-game-canon.md#91-mvp-scope)), `[L]` public launch, `[P1]` first update window, `[P2]` later.
 - `(tune)` marks a starting number we expect to change after playtests.
 - `(unverified)` marks a fact we could not confirm from a primary source.
-- Ownership: [chapter 02](docs/02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [chapter 03](docs/03-progression.md) owns numbers (Rep, Cash, thresholds, pacing), [chapter 04](docs/04-monetization.md) owns Robux prices, and [chapter 06](docs/06-tools-and-pipeline.md) owns tech. Other chapters link to them.
+- Ownership: [chapter 02](docs/02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [chapter 03](docs/03-progression.md) owns numbers (Rep, Cash, thresholds, pacing), [chapter 04](docs/04-monetization.md) owns Robux prices, [chapter 06](docs/06-tools-and-pipeline.md) owns tech, and [chapter 10](docs/10-world-and-map.md) owns the world layout (geography, roads, seabed, discoverables). Other chapters link to them.
 
 ## Code
 

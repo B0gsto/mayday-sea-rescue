@@ -42,7 +42,7 @@ flowchart LR
     H --> D[Debrief<br/>step grades, Rep]
 ```
 
-Tow and fire operations swap the middle steps for their own (sections 6 and 8), but every operation starts with a tasking and ends with a handover and a debrief. Steps can overlap in a crew: the Medic treats during the passage home while the Helm drives.
+Tow and fire operations swap the middle steps for their own (sections 6 and 8), but every operation starts with a tasking and ends with a handover and a debrief. Steps can overlap in a crew: the Medic treats during the passage home while the Helm drives. For beach and cliff operations the passage can be a drive: the lifeguard 4x4 or ATV to the tower, the coastguard response vehicle to a cliff-top rescue point, or a boat towed on its trailer to a public slipway ([document 10](10-world-and-map.md), section 3).
 
 ### 2.2 Casualty condition meter
 
@@ -153,7 +153,7 @@ The wheel holds four to six replies that fit the current step. Each reply shows 
 
 | Phase | Replies offered (one is right; some are wrong on purpose) | What the game checks |
 |---|---|---|
-| Tasking | "Copy, launching", "Say again", "Unable" | Acknowledged within 15 s (tune). "Say again" repeats the message at no cost. |
+| Tasking | "Copy, launching", "Say again", "Unable" | Acknowledged within 15 s (tune). "Say again" repeats the message at no cost. A player On watch while exploring gets taskings as offers: "Unable" declines at no cost and the Coastguard tasks another unit; Off duty, no offers arrive except the storm and big-call broadcasts ([document 10](10-world-and-map.md), section 5.1). |
 | Launch | "Launched, [POB aboard]" | Correct crew count in the boat |
 | Passage | "ETA [3 options]" | Chosen ETA within 25% of the real arrival time (the Navigator can read the chart) |
 | On scene | "On scene", "Casualty sighted", "Searching" | Said at the right moment |
@@ -397,6 +397,7 @@ The player-flown version of Op 3, step 7, for Pilots with a Winch Operator and a
 
 | Step | Real procedure | Player mechanic | Role | Failure mode | Gold |
 |---|---|---|---|---|---|
+| Respond | Lifeguards drive the beach in a 4x4 or ATV and park above the tide line, clear of the launch lane (verify: RNLI lifeguard vehicle use) | Drive from the station or tower to the nearest point on the beach; blue lights on; soft sand slows you | Lifeguard (driver) | Stuck in soft sand: a short dig-out, lost time | Parked clear, on firm sand, fast |
 | Spot the rip | A gap in the breaking waves, a foam line streaming out, darker or murkier water ([research](research/rescue-procedures.md), 9a) | From the lifeguard tower, binoculars; pick the rip from three gaps | Lookout | Wrong gap: lost time | Right first time |
 | Enter with a float | Never go in without flotation ([research](research/rescue-procedures.md), 9c) | Kit card: rescue tube or rescue board | Swimmer | No float: the lifeguard turns back (grade) | Float taken |
 | Use the rip | Lifeguards use the rip's outflow to reach the casualty fast, then come back across it, parallel to the beach (verify: USLA) | Swim or paddle with the outflow, then turn parallel to the shore; the current arrows are real flow | Swimmer | Fighting the current straight in: you tire, slow | Out with it, back across it |
@@ -406,6 +407,8 @@ The player-flown version of Op 3, step 7, for Pilots with a Winch Operator and a
 ### 8.5 Cliff casualty [L]
 
 Walkers cut off by the tide, or a climber on a ledge. Boats cannot go into breaking surf at the cliff foot; a swimmer swims a line in, or the helicopter lifts (verify: RNLI, HM Coastguard cliff rescue). Steps: assess the swell sets from offshore (count waves to find the lull, a timing read); anchor or hold off outside the break; swimmer swims a line in during a lull; casualties come out one at a time on the line or are lifted by helicopter (Op 8.3); then Op 1 care. Fail mode: a wave set catches the swimmer, who resets on the line (never hurt).
+
+**Shore team [L].** A player in the coastguard response vehicle drives to the cliff-top rescue point (Kittiwake Cliffs, Tempest Point; [document 10](10-world-and-map.md), section 3), finds and lights the casualty from above, and cons the boat or helicopter in on the radio ("casualty two zero metres left of the gully"); real coastguard rescue teams work cliffs from the top this way (verify: HM Coastguard rescue teams). A rope technician lowering from the cliff top is [P1]. The shore team is graded like the Navigator/Radio seat.
 
 ### 8.6 Medical evacuation from a ship [P1]
 
@@ -481,7 +484,7 @@ How steps stay short and punchy:
 
 1. **One skill per step, one goal on screen.** The step card names the goal ("Come in from downwind, slowly") and disappears when the step starts.
 2. **Hard caps.** No single step runs over 45 s of the same input; if the player struggles, Assist hints arrive sooner and the NPC crew offers to take over (Silver at most).
-3. **No dead travel.** Passage times follow the 45-second budget in [document 02](02-core-loop-and-mechanics.md), section 4.1. Long transits use outposts, and the Medic works during the passage.
+3. **No dead travel.** Passage times follow the 45-second budget in [document 02](02-core-loop-and-mechanics.md), section 4.1, measured from the nearest dock, car park or rescue point. Long transits use outposts, beach and cliff operations use the land vehicles, and the Medic works during the passage. Taskings offered to a player who is exploring favour what they can reach from where they are, and Return to Station is always available on land ([document 10](10-world-and-map.md), sections 1.3 and 5.1).
 4. **Cut on success.** When a step ends, the camera eases straight to the next one; no confirmation screens until the debrief.
 5. **Choices are cards, not menus.** 2 to 4 cards, icons first, six words or fewer.
 6. **Variety by casualty, not by length.** The same operation plays differently because the casualty's state, the wind and the sea change which method and treatment are right.
@@ -497,6 +500,7 @@ Certifications are the realistic progression: real crews are assessed and signed
 | **Rescue Swimmer** | Lifeboat or helicopter rescue swimmer | Swim test + 1 swimmer recovery at Silver or better; needs Casualty Care. **Air-pocket endorsement**: the hull and dive part of the command exercise + one ferry hull-team step | Entering the water from boats; Winchman seat as lead; air pocket (endorsement); Rescue Swimmer rank | [MVP] (endorsement [MVP]) |
 | **Coxswain** | Lifeboat coxswain | Tow and command exercises + lead 3 operations as Helm with Silver or better overall, including one tow and one storm operation; needs Helm and Casualty Care | Lifeboat; On Scene Coordinator on big calls; expanding square and sector search; Coxswain rank | [L] |
 | **Winch Operator** | Winch operator, flight mechanic | Winch exercise + 3 helicopter lifts at Silver or better (one double lift, one stretcher); ride-along lifts count | Winch Operator seat as lead in player helicopters | [L] (trainee seat in the ride-along [MVP]) |
+| **Rescue Diver** | Rescue or public safety diver | Dive school (buddy check, controlled ascent, line signals) + 2 dive tasks at Silver or better; needs Rescue Swimmer and Coxswain rank. Dive tasks: air-pocket dives, clearing a fouled propeller, checking a hull before a tow, freeing entangled wildlife, recovering lost gear; never a search for a person underwater (verify: HSE diving ACoP) | Scuba to about 30 m; the Rescue Diver role ([document 10](10-world-and-map.md), section 4.5) | [P1] |
 | **Pilot** | SAR helicopter pilot | Flight school + 2 hoist operations flown with a Winch Operator (human or NPC) with the hover at Silver or better; needs Coxswain rank and Winch Operator | Flying the helicopter; Rescue Pilot rank | [L] |
 
 Certificates show on the player's nameplate as small badges and on the station's crew board, and a Roblox badge is awarded for each ([document 03](03-progression.md), section 8).
@@ -525,6 +529,7 @@ Each vehicle has **kit slots** (tune): jet ski sled 2, RIB 5, lifeboat 8, helico
 | **Knife** | Line knife | Clearing a fouled propeller, cutting nets | Always aboard |
 | **Salvage pump and plugs** | Portable salvage pump, wooden plugs and wedges ([research](research/rescue-procedures.md), 5; verify) | Op 8.1 | One slot [L] |
 | **Fire pump and foam** | Portable fire pump, foam branch (verify) | Op 8.2 | One slot [L] |
+| **Mask and snorkel** | Snorkel mask | Looking below, duck dives, exploring ([document 10](10-world-and-map.md), section 4.5) | Always worn in the water; no slot |
 | **Hull hammer and guideline** | Tapping hammer, diver's guideline and reel | Op 3 steps 5 and 6 | Hull team kit |
 | **Dive set and spare masks** | Short-duration breathing set and spare masks for survivors (verify) | Op 3 step 6 | Air-pocket endorsement |
 | **Hand flares and parachute illuminating flares** | Red hand flares (casualties), white illuminating flares (crew) (verify: RNLI ILB kit) | Search, night search [P1] | Casualties carry red; crew white one slot |
@@ -560,6 +565,7 @@ Every "(verify: source)" above, grouped by the source to check:
 | USLA | Rip use, rescue tube and board technique |
 | ITU-R M.1171, ITU Radio Regulations | Phonetics, spoken numbers, MAYDAY RELAY |
 | UK SAR helicopter SOPs, ICS helicopter/ship guide | Conning patter, hi-line, double lift, ship course for a lift |
-| HSE diving ACoP or equivalent | Line signals, tender and standby diver |
+| HSE diving ACoP or equivalent | Line signals, tender and standby diver, Rescue Diver tasks |
+| HM Coastguard rescue teams; RNLI lifeguards | Cliff-top shore team, beach vehicle use |
 | Fire service marine guidance | Upwind approach, boundary cooling, foam use, capsized-hull tapping, air-pocket hazards |
 | Roblox audio and TTS policy | Voice line method |

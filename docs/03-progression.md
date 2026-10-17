@@ -23,6 +23,8 @@ Base payout per operation, before the operation's weight ([document 02](02-core-
 | Storm Front [L] | 2,400 | 390 | Captain (Tempest Point Light) |
 | Iceberg North [P1] | 3,300 | 500 | Commodore (Northlight) |
 
+Zones are areas on the map ([document 10](10-world-and-map.md), section 1.2): beach and cliff operations at Long Strand, Gull Cove, Kittiwake Cliffs and the Saltings pay at the Skerries rate.
+
 **Final payout** = base x operation weight x grade (Gold 1.25, Silver 1.0, Bronze 0.75) x storm (1.5 for operations tasked in the Storm phase; 2 for Cash in a Great Storm; paid storms boost Cash only, Rep stays at the normal rate) x crew bonus (1.0 to 1.3, human crew only) x Pro mode (Rep x1.2, tune) x 2x Cash pass (Cash only).
 
 Other payout rules (tune):
@@ -53,10 +55,10 @@ A player can always take operations in any zone they have opened. Higher zones p
 
 | # | Rank | Total Rep (tune) | Certification needed | Main unlocks | Scope |
 |---|---|---|---|---|---|
-| 1 | **Recruit** | 0 | None | Jet ski (free), Bosun, Calm Bay and harbor mouth operations, radio | [MVP] |
-| 2 | **Lifeguard** | 400 | Helm | Harbor Light relit, crew joining; Skerries operations and binoculars [L] | [MVP] |
-| 3 | **Rescue Swimmer** | 900 | Rescue Swimmer (which needs Casualty Care) | RIB (buy), gear level 3; Skerry Light mission and wildlife operations [L] | [MVP] |
-| 4 | **Coxswain** | 3,000 | Coxswain | Lifeboat (buy), Gannet Rock Light mission, Open Sea, gear level 4; hovercraft [P1] | [L] |
+| 1 | **Recruit** | 0 | None | Jet ski (free), lifeguard 4x4 (free), Bosun, Calm Bay and harbor mouth operations, radio | [MVP] |
+| 2 | **Lifeguard** | 400 | Helm | Harbor Light relit, crew joining; Skerries operations, binoculars and the beach ATV [L] | [MVP] |
+| 3 | **Rescue Swimmer** | 900 | Rescue Swimmer (which needs Casualty Care) | RIB (buy), gear level 3; Skerry Light mission, wildlife operations and the response vehicle with boat trailer [L] | [MVP] |
+| 4 | **Coxswain** | 3,000 | Coxswain | Lifeboat (buy), the Long Strand launch tractor, Gannet Rock Light mission, Open Sea, gear level 4; hovercraft [P1] | [L] |
 | 5 | **Rescue Pilot** | 9,000 | Pilot (which needs Winch Operator) | Rescue helicopter (buy), free helipad on your bay, winch operations, gear level 5 | [L] |
 | 6 | **Captain** | 22,000 | None new | Tempest Point Light mission, Storm Front, Captain's cap; patrol cutter [P1] | [L] |
 | 7 | **Commodore** | 55,000 | None new | Commodore liveries (Cash), radio title; Northlight mission and Iceberg North [P1] | [L] |
@@ -81,6 +83,7 @@ Certifications are the realistic half of progression: real crews are assessed fo
 | **Coxswain** | Tow and command exercises + lead 3 operations as Helm at Silver or better overall, including one tow and one storm operation; needs Helm and Casualty Care | ~1:10 | Coxswain rank; lifeboat; On Scene Coordinator; search patterns | [L] |
 | **Winch Operator** | Winch exercise + 3 helicopter lifts at Silver or better (one double lift, one stretcher); ride-along lifts count | Days 2 to 4 (storm big calls) | Leading the Winch Operator seat in player helicopters | [L] (ride-along trainee seat [MVP]) |
 | **Pilot** | Flight school + 2 winch operations flown with the hover at Silver or better; needs Coxswain rank and Winch Operator | Day 4 (~2.7 hours) | Rescue Pilot rank; flying the helicopter | [L] |
+| **Rescue Diver** | Dive school (buddy check, ascent, line signals) + 2 dive tasks at Silver or better; needs Rescue Swimmer and Coxswain rank | Week 1 | Scuba to about 30 m; the Rescue Diver role (air-pocket dives as lead, propeller and hull work, entangled wildlife) ([document 10](10-world-and-map.md), section 4.5) | [P1] |
 
 Each certification is a Roblox badge (section 8) and a small badge on the nameplate. The HUD's "next thing" counts certification steps ("Casualty Care: 1 of 2 operations").
 
@@ -97,6 +100,16 @@ Each certification is a Roblox badge (section 8) and a small badge on the namepl
 | Patrol cutter | Captain | 150,000 | 4 + 20 (plus up to 4 other players as passengers) | [P1] |
 
 The station loaner RIB (tutorial operation 2, with an NPC Helm instructor) is free for one operation only.
+
+**Land vehicles** are free station pool vehicles, gated by rank only, so they never compete with boats for Cash ([document 10](10-world-and-map.md), section 3). Their liveries are Cash cosmetics like any other.
+
+| Land vehicle | Unlock | Seats | Scope |
+|---|---|---|---|
+| Lifeguard 4x4 pickup | Recruit | 5 | [MVP] |
+| Beach ATV | Lifeguard | 1 + beach sled | [L] |
+| Coastguard response vehicle and boat trailer | Rescue Swimmer (and Helm) | 5 | [L] |
+| Lifeboat launch tractor (Long Strand) | Coxswain | 1 | [L] |
+| Ambulance (volunteer shift) | Rescue Swimmer and Casualty Care | 2 + 1 casualty | [P1] (NPC only at [L]) |
 
 ### 4.1 Vehicle upgrades
 
@@ -194,7 +207,27 @@ Roblox badges, awarded once each. Players see them on their trophy wall.
 | Thousand Saves | 1,000 people rescued | [L] |
 | Every Craft | Own every vehicle in the game (five at launch, seven from [P1]) | [L] |
 | Just a Little Stuck | Rescue Barnaby 10 times | [L] |
+| First Wreck | Find the *Morwenna* in Calm Bay | [MVP] |
+| Wreck Hunter | Find every wreck in the logbook | [L] |
+| Keeper's Tales | Complete every lighthouse history | [L] |
+| Seal Code | Log grey seals, dolphins and a basking shark from a respectful distance | [L] |
+| Every Cove | Find every hidden cove and cave | [L] |
+| Shutterbug | Log 10 sightings in photo mode | [L] |
+| Island Explorer | Complete the whole logbook | [L] |
 | The Long Storm | Take part in the Season 1 finale | [P1] |
+
+### 8.1 Exploration rewards
+
+Exploration ([document 10](10-world-and-map.md), section 5) pays **no Reputation**, so the pacing model in section 10 is unchanged by it. Rewards are one-time (tune):
+
+| Find | Reward |
+|---|---|
+| A discovery (point of interest, viewpoint, cove, rock pool, wildlife sighting) | 100 Cash and a logbook entry |
+| A wreck | 250 Cash and its story page |
+| A lighthouse history | 150 Cash (the relight itself is the story mission, section 7) |
+| A completed logbook page (all wrecks, all wildlife, all coves and so on) | 1,000 to 2,500 Cash and a cosmetic: a wreck-hunter mask pattern, a seal plush for the bay, a lighthouse model for the trophy wall, an explorer's jacket |
+
+All launch discoveries together pay about 15,000 Cash (tune), about two and a half hours of Calm Bay operations, once. Exploring never pays per minute, so it cannot be farmed.
 
 ## 9. Daily and weekly challenges
 
@@ -212,7 +245,7 @@ Station boards and an in-game panel show weekly and all-time **people rescued**,
 
 ## 10. Pacing model
 
-Rough targets for a player who plays the game's way: takes operations in Assist mode with Silver grades, does dailies, and joins crews sometimes. The model uses **25-minute sessions, two a day** (tune), one daily set per day, and one weekly set by day 7. "Hours" means active playtime. Built from the rates in section 2.1. All [L] unless tagged.
+Rough targets for a player who plays the game's way: takes operations in Assist mode with Silver grades, does dailies, and joins crews sometimes. The model uses **25-minute sessions, two a day** (tune), one daily set per day, and one weekly set by day 7. "Hours" means active playtime on operations; time spent exploring is extra and earns no Rep. Built from the rates in section 2.1. All [L] unless tagged.
 
 **First two hours: an unlock every 10 to 15 minutes.**
 

@@ -48,7 +48,9 @@ Every feature serves at least one pillar. A feature that serves none is cut.
 
 **The Gale Isles** are a chain of green, rocky islands in a cold North Atlantic sea, drawn as realistically as Roblox allows ([document 05](05-art-direction.md)). The weather turns fast. Fishermen, ferries, tourists, surfers and the occasional cruise ship all share the water.
 
-**Port Haven** is the main town: a crescent harbor, painted houses up the hill, a fish market, a bait shop, a ferry pier, the Cottage Hospital, and at the end of the harbor wall, the old **Port Haven Coast Guard Station**.
+The isles are **one big open map at real scale** (about 5 km across at launch): the main island, **Great Gale**, with Port Haven on its south coast, a coast road to beaches, cliffs and lighthouse headlands, outlying islands reached only by boat or helicopter, and a real seabed of reefs, kelp forests and wrecks to explore. Players drive to the beach and back to the station, launch boats from slipways, and roam freely between operations. The layout, land vehicles, seabed and exploration are in [document 10](10-world-and-map.md).
+
+**Port Haven** is the main town: a crescent harbor, painted houses up the hill, a fish market, a bait shop, a ferry pier, a fuel dock, the Cottage Hospital, and at the end of the harbor wall, the old **Port Haven Coast Guard Station** with its slipway and vehicle yard. The Coast Road leaves town east to **Haven Sands** beach and west to **Long Strand** and **Tempest Point**.
 
 **The Long Storm.** Years ago a storm sat over the isles for a whole season. The station was damaged, its crews moved away, and one by one the lighthouses went dark. Without the station, the town has made do with Vance Sterling's private salvage boats, which charge a fortune and arrive late.
 
@@ -64,7 +66,7 @@ Every feature serves at least one pillar. A feature that serves none is cut.
 | **Storm Front** | Tempest Point Light | Dark water, sea cliffs, permanent rough weather, wrecks | Huge waves, gusts, lightning, cliffs | [L] |
 | **Iceberg North** | Northlight | Pale water, ice floes, research station, seals | Ice, cold (needs drysuit), drifting bergs | [P1] |
 
-Zones are rings outward from Port Haven (map scale in [document 02](02-core-loop-and-mechanics.md), section 4.1). Calm Bay sits inside the harbor wall and stays sheltered even during storms, so a new player's first call is never in a storm. The **harbor mouth**, the gap in the harbor wall a short ride from the station, is the exception: it takes full storm waves and gets beginner storm calls, so a player sees the hook (a real storm rescue) in their first session without leaving the harbor. Skerry Isle and Gannet Rock have **outposts** with free delivery docks, so long trips stay short.
+Zones are rings outward from Port Haven, measured at sea (map scale in [document 02](02-core-loop-and-mechanics.md), section 4.1); the main island fills their northern half, so on the map each zone is an area ([document 10](10-world-and-map.md), section 1.2). Beyond the Skerries lie two outer islands, **Puffin Isle** and **Gannet Rock**, reachable only by boat or helicopter [L]. Calm Bay sits inside the harbor wall and stays sheltered even during storms, so a new player's first call is never in a storm. The **harbor mouth**, the gap in the harbor wall a short ride from the station, is the exception: it takes full storm waves and gets beginner storm calls, so a player sees the hook (a real storm rescue) in their first session without leaving the harbor. Skerry Isle and Gannet Rock have **outposts** with free delivery docks, so long trips stay short.
 
 ## 5. Characters
 
@@ -140,6 +142,8 @@ A light story told through Chief Aggie's radio, Tobias's lighthouse missions and
 | Rescue helicopter with hoist | The headline vehicle and the hero shot for the store page. | [MVP] tech spike only, [L] |
 | Station helicopter ride-along | On big calls, low-rank players can take a seat in the NPC-flown Coastguard helicopter as trainee Winch Operator or Winchman, so the hero vehicle shows up long before they can own it. | [MVP] on the Capsized Ferry if the helicopter spike is ready, else [L] |
 | Lighthouses relit island by island | Visible, permanent progress on the map. | [MVP] Harbor Light, [L] four |
+| An open world to explore | A real-scale island and seabed: drive the coast road to the beach and back, snorkel wrecks, spot seals and basking sharks, fill a logbook, go On watch or Off duty ([document 10](10-world-and-map.md)). | [MVP] the south coast, Haven Sands, Calm Bay and three seabed finds; [L] the full island, the Skerries and two outer islands |
+| Land vehicles | Lifeguard 4x4, beach ATV, coastguard response vehicle with a boat trailer, ambulance, lifeboat launch tractor, each with a real job in operations ([document 10](10-world-and-map.md), section 3). | [MVP] the 4x4; [L] the rest |
 | Storm Summon (paid, server-wide) | A social "admin abuse" style event the whole server enjoys. | [L] |
 
 ## 9. Scope tags
@@ -149,8 +153,8 @@ Used in every design document.
 | Tag | Meaning | Contents in short |
 |---|---|---|
 | **[MVP]** | The vertical slice we playtest first. | See section 9.1. |
-| **[L]** | Public launch. | Everything deferred from the MVP (section 9.1), plus Open Sea and Storm Front, rescue board, lifeboat, player helicopter and the Pilot role, sinking, fire, winch, rip-current and cliff operations, Coxswain, Winch Operator and Pilot certifications, Trawler on the Rocks, all eight ranks and Service Stars, badges, daily and weekly challenges, leaderboards, game passes, Storm Summon. |
-| **[P1]** | First post-launch update (about 4 to 6 weeks after launch). | Iceberg North, medical evacuation from a ship, night searches, patrol cutter, hovercraft, Cruise Ship Aground big call, Season 1 finale event, drysuit, night calls with searchlights, more liveries. |
+| **[L]** | Public launch. | Everything deferred from the MVP (section 9.1), plus the full main island, the Skerries and two outer islands (Puffin Isle, Gannet Rock), all land vehicles, the exploration logbook and photo mode, Open Sea and Storm Front, rescue board, lifeboat, player helicopter and the Pilot role, sinking, fire, winch, rip-current and cliff operations, Coxswain, Winch Operator and Pilot certifications, Trawler on the Rocks, all eight ranks and Service Stars, badges, daily and weekly challenges, leaderboards, game passes, Storm Summon. |
+| **[P1]** | First post-launch update (about 4 to 6 weeks after launch). | Iceberg North and North Quay, tides, the Rescue Diver certification and scuba, medical evacuation from a ship, night searches, patrol cutter, hovercraft, Cruise Ship Aground big call, Season 1 finale event, drysuit, night calls with searchlights, more liveries. |
 | **[P2]** | Later. | Station decoration, dog tricks, a second island town, seasonal events. |
 
 ### 9.1 MVP scope
@@ -159,7 +163,8 @@ The MVP proves one thing: a first session of real, step-by-step rescue operation
 
 | Keep in the MVP | Defer |
 |---|---|
-| Port Haven and Calm Bay, with a storm-exposed harbor mouth | The Skerries and the Skerry Light lens hunt [L] |
+| Port Haven and the main island's south coast (Harbour Road and the Coast Road to Haven Sands beach), Calm Bay, with a storm-exposed harbor mouth | The Skerries and the Skerry Light lens hunt [L]; the rest of the island, the outer islands and the other land vehicles [L] |
+| The lifeguard 4x4; a Terrain seabed with three points of interest, snorkelling and duck dives; On watch and Off duty ([document 10](10-world-and-map.md), section 7) | Photo mode, freediving and the full logbook [L]; tides and scuba [P1] |
 | Jet ski with rescue sled (first vehicle, free) and RIB | Sinking, fire, winch, rip-current and cliff operations [L]; medevac from a ship [P1] |
 | **Person in the Water**: tasking, datum and drift search, downwind approach, throw bag, swimmer, horizontal lift, panicking casualty, DR ABCDE survey, treatment, CPR (gated), transport, ATMIST handover | Expanding square and sector search patterns [L] |
 | **Disabled Vessel**: assessment, heaving line, tow line and bridle, tension and snatch loads, alongside tow, berthing | The two-casualty Drifting Craft variant and Person Overboard from a ferry [L] |
@@ -201,6 +206,9 @@ Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progr
 | **Service Star** | An endless prestige level after Admiral. Each one pays a cosmetic. |
 | **Harbor mouth** | The gap in the harbor wall. Sheltered in calm weather, full storm waves in a storm, with beginner storm calls. |
 | **Outpost** | A small dock at Skerry Isle or Gannet Rock. Free handover point for nearby operations. |
+| **Great Gale** | The main island of the Gale Isles, with Port Haven on its south coast. |
+| **On watch / Off duty** | The radio switch: On watch receives tasking offers (accept or decline freely); Off duty explores with no taskings. |
+| **Logbook** | The record of everything a player has discovered: wrecks, wildlife, coves, viewpoints, lighthouse histories. |
 | **Ride-along** | A trainee seat (Winch Operator or Winchman) in the NPC-flown Coastguard helicopter on a big call, offered to players below Rescue Pilot. |
 | **Grade** | Gold, Silver or Bronze for each step and for the whole operation, based mostly on care and technique, a little on speed. |
 | **Crew** | Up to four players sharing a vehicle and a call. |

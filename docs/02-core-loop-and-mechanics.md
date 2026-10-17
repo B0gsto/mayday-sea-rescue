@@ -1,6 +1,6 @@
 # 02 · Core loop and mechanics
 
-How Mayday plays, from the first second to the daily habit. Names and rules come from [`01-game-canon.md`](01-game-canon.md). Progression numbers (payouts, prices, thresholds, calls per hour) live in [`03-progression.md`](03-progression.md); this file only uses relative values such as "x1.5", plus the map scale and vehicle speeds in section 4.1, which it owns. Tech lives in [`06-tools-and-pipeline.md`](06-tools-and-pipeline.md). The rescue operations themselves (steps, radio, crew roles on scene, grading, certifications, kit) live in [`09-rescue-operations.md`](09-rescue-operations.md); this file links into it. MVP scope is in [`01-game-canon.md`](01-game-canon.md), section 9.1. Numbers marked **(tune)** are first guesses.
+How Mayday plays, from the first second to the daily habit. Names and rules come from [`01-game-canon.md`](01-game-canon.md). Progression numbers (payouts, prices, thresholds, calls per hour) live in [`03-progression.md`](03-progression.md); this file only uses relative values such as "x1.5", plus the map scale and vehicle speeds in section 4.1, which it owns. Tech lives in [`06-tools-and-pipeline.md`](06-tools-and-pipeline.md). The rescue operations themselves (steps, radio, crew roles on scene, grading, certifications, kit) live in [`09-rescue-operations.md`](09-rescue-operations.md); this file links into it. The world layout (the island, roads, beaches, seabed, discoverables, free exploration) lives in [`10-world-and-map.md`](10-world-and-map.md), which works its travel times from the speeds here. MVP scope is in [`01-game-canon.md`](01-game-canon.md), section 9.1. Numbers marked **(tune)** are first guesses.
 
 ## 1. Core loop
 
@@ -28,7 +28,7 @@ The research says discovery punishes players who leave in the first 60 and 180 s
 
 The minute-by-minute script (throw-bag drill with Chief Aggie, the first MAYDAY, jet ski passage, keep eyes on, downwind approach, throw bag, three-card survey, thermal blanket, smooth ride home, three-card handover at about 2:50) is in [document 09](09-rescue-operations.md), section 9.1.
 
-Rules for the first session (tune): the first three operations are a fixed tutorial chain, each adding one new kind of step (operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew; operation 3 adds the full survey and a swimmer recovery as a trainee); nothing with a Robux price is shown until three operations are done; if a storm is active on join, the tutorial operations happen inside the sheltered harbor where waves stay small. The storm clock is per server, so the first storm reaches a new player within about 15 minutes, inside a 25-minute session. When it hits, the Coastguard tasks the player to a beginner storm operation at the **harbor mouth**: full storm waves, a short ride from the station, a small search area and a casualty who starts in the Stable band. If the Capsized Ferry rolls, players below Rescue Pilot are also offered a ride-along seat in the Coastguard helicopter (section 3.1). Every first session should end with a storm rescue.
+Rules for the first session (tune): the first three operations are a fixed tutorial chain, each adding one new kind of step (operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew; operation 3 adds the full survey and a swimmer recovery as a trainee); nothing with a Robux price is shown until three operations are done; if a storm is active on join, the tutorial operations happen inside the sheltered harbor where waves stay small. The storm clock is per server, so the first storm reaches a new player within about 15 minutes, inside a 25-minute session. When it hits, the Coastguard tasks the player to a beginner storm operation at the **harbor mouth**: full storm waves, a short ride from the station, a small search area and a casualty who starts in the Stable band. If the Capsized Ferry rolls, players below Rescue Pilot are also offered a ride-along seat in the Coastguard helicopter (section 3.1). Every first session should end with a storm rescue. After the tutorial chain the player is **On watch** by default and can switch to **Off duty** to explore with no taskings ([document 10](10-world-and-map.md), section 5.1).
 
 ## 3. Operations
 
@@ -90,7 +90,7 @@ All water vehicles ride one wave height function: a few summed sine waves, cheap
 
 ### 4.1 Map scale and travel budget
 
-Every operation's passage should take about **45 seconds out and 45 seconds back** with the vehicle a zone is meant for (tune). Taskings spawn only where that holds, measured from the nearest open dock. Distances are from the Port Haven slipway; all numbers (tune).
+Every operation's passage should take about **45 seconds out and 45 seconds back** with the vehicle a zone is meant for (tune). Taskings spawn only where that holds, measured from the nearest open dock (or, for beach and cliff operations, the nearest car park or rescue point). Distances are from the Port Haven slipway; all numbers (tune). The rings are measured at sea: the main island, Great Gale, fills their northern half, so on the map each zone is an area ([document 10](10-world-and-map.md), section 1.2).
 
 | Zone | Ring (studs from the station) | Nearest delivery dock | Intended vehicle |
 |---|---|---|---|
@@ -100,7 +100,7 @@ Every operation's passage should take about **45 seconds out and 45 seconds back
 | Storm Front | 6,000 to 7,000 | Gannet Rock outpost | Lifeboat, helicopter |
 | Iceberg North [P1] | A northern sector, 6,000 to 9,000 | Northlight dock | Hovercraft, cutter |
 
-**Map radius:** about 7,500 studs at launch, 9,000 with Iceberg North; the MVP map is Calm Bay only, about 1,500 (tune). The Skerry Isle and Gannet Rock outposts are **free handover points** for everyone once their zone is open (an ambulance boat takes casualties on to the hospital, at full pay). Launching from an outpost is what the Slipway upgrade and Quick Launch add ([document 03](03-progression.md), section 6).
+**Map radius:** about 7,500 studs (2.5 km) at launch, 9,000 with Iceberg North; the MVP map is the main island's south coast, Calm Bay and the harbour mouth, about 2,500 (tune). Drives from the station stay under about 2 minutes, and under 1:30 to any beach ([document 10](10-world-and-map.md), section 1.3). The Skerry Isle and Gannet Rock outposts are **free handover points** for everyone once their zone is open (an ambulance boat takes casualties on to the hospital, at full pay). Launching from an outpost is what the Slipway upgrade and Quick Launch add ([document 03](03-progression.md), section 6).
 
 | Vehicle | Top speed, studs/s (tune) | Cruise in waves (about 75%) | 45 s covers about |
 |---|---|---|---|
@@ -111,6 +111,8 @@ Every operation's passage should take about **45 seconds out and 45 seconds back
 | Hovercraft [P1] | 55 | 40 | 1,800 |
 | Rescue helicopter | 110 | 110 (ignores waves) | 5,000 |
 | Patrol cutter [P1] | 40 | 35 | 1,600 |
+
+Land vehicles (section 4.3): lifeguard 4x4 top 75 studs/s, coastguard response vehicle 70 (50 towing a trailer), ambulance 75, beach ATV 45, launch tractor 10.
 
 Storm waves cut boat cruise speed by about 20% (lifeboat 5%) (tune). The server rejects speeds above a vehicle's top speed plus upgrades ([document 06](06-tools-and-pipeline.md), section 3.2). Operations per hour per zone follow from this budget and live in [document 03](03-progression.md), section 2.1.
 
@@ -129,6 +131,18 @@ Side effects to handle in the same spike:
 - **Character jumping.** At default jump settings a character would jump about 14 m. Set the jump height to a real step-up of about 1.5 studs (0.5 m) and keep climbing onto boats and pontoons as an animated climb, not a jump (tune).
 - **Walking speed.** The default 16 studs/s is about 5.3 m/s, a jog. Walk near 4 to 5 studs/s and run near 12 studs/s on decks and slipways (tune).
 - **Falls and ropes.** Things fall more slowly and look heavier, which suits heaving lines, tow lines and the winch hook, but every physics-driven rope, buoyancy and suspension value tuned at default gravity must be retuned. Wave-following casualties and NPC boats are scripted, not physics, so they are unaffected ([CONTRACT](../CONTRACT.md)).
+
+### 4.3 Land vehicles
+
+Cars, the ATV and the launch tractor get players to beaches, cliff tops and slipways ([document 10](10-world-and-map.md), section 3, owns their roles, unlocks and spawn points). They use an in-house raycast chassis tuned at the gravity in section 4.2, with grip per surface (asphalt, gravel, sand, mud, grass, wet variants). Like boats, they never break, never hit pedestrians and pass through other players' vehicles (section 10). Speeds (tune; 1 m = 3 studs):
+
+| Vehicle | Top speed, studs/s (km/h) | Typical cruise, studs/s | Scope |
+|---|---|---|---|
+| Lifeguard 4x4 pickup | 75 (90) | Town 25, coast road 55, single track 40, gravel 30, soft sand 20 | [MVP] |
+| Coastguard response vehicle | 70 (84); 50 (60) towing a trailer | As the 4x4, slower on tracks with a trailer | [L] |
+| Ambulance (NPC; player [P1]) | 75 (90) | As the 4x4 on roads | [L] |
+| Beach ATV | 45 (54) | Hard sand 40, soft sand 35; beaches, tracks and car parks only | [L] |
+| Lifeboat launch tractor | 10 (12) (verify against the real launch tractor) | Beach and surf only | [L] |
 
 ## 5. Search mechanics
 
@@ -185,6 +199,8 @@ An operation is now the unit of play: about 4 to 7 minutes from tasking to hando
 
 There are no streaks that reset. A missed day never costs a player anything.
 
+Between operations the world is open: players drive the coast, snorkel the wrecks, fill the logbook and take photos, Off duty or On watch ([document 10](10-world-and-map.md), section 5). Exploring pays Cash, cosmetics and badges, never Reputation, so the pacing above does not depend on it.
+
 ## 10. Anti-grief rules
 
 The sea is the opponent, never other players.
@@ -194,10 +210,10 @@ The sea is the opponent, never other players.
 3. **Tasking claims.** The first crew to accept a tasking owns the operation. Other players can see it but cannot recover its casualties, unless the owner invites them into the crew. An unclaimed or abandoned operation (owner more than 600 studs away for 45 s, tune) is released to everyone.
 4. **No stealing handovers.** A casualty belongs to the crew that recovered them until the handover.
 5. **Big calls are shared.** Anyone can rescue any casualty in a big call, and the On Scene Coordinator assigns tasks but cannot block anyone. Whoever hands over a casualty gets its pay, and everyone who helped gets the completion bonus, so there is nothing to fight over.
-6. **One vehicle per player** on the water. Empty vehicles despawn after 60 s (tune). The station slipway gives each bay its own launch lane, so no queue.
+6. **One vehicle per player** on the water, plus one land vehicle. Empty vehicles despawn after 60 s (tune). The station slipway gives each bay its own launch lane, so no queue.
 7. **Crew kicks.** The vehicle owner can remove a crew member, who is moved to the nearest dock, keeping any payout earned so far.
 8. **No griefing with Bosun.** Dogs pass through players and vehicles and cannot block a slipway or dock.
 9. **Helicopter downwash** is visual only. It never pushes players or boats.
-10. **AFK farming.** Payouts need completed steps. An idle player stops getting taskings after 5 minutes and is moved to the station after 15 (tune).
+10. **AFK farming.** Payouts need completed steps. An idle player stops getting taskings after 5 minutes and is moved to the station after 15 (tune). Off-duty players get no taskings by choice, and a player who is moving is exploring, not idle ([document 10](10-world-and-map.md), section 5.1).
 11. **Chat.** Roblox filtered chat plus the radio wheel ([document 09](09-rescue-operations.md), section 3.3), which also carries crew lines ("On my way", "Need the winch", "Thanks, crew") so players can coordinate without typing.
 12. **Storm Summon limits.** Summons queue, never stack, and never start within 2 minutes of a natural storm, so nobody can make the server permanently stormy.
