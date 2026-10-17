@@ -78,6 +78,18 @@ Research found the official 3D Importer and mesh-limit pages unavailable, vendor
 
 **Skyboxes:** `scripts/blender/cubemap.py` renders a CC0 HDRI into six `Sky` faces at the verified cap, one set per lighting preset.
 
+### 2.1a Character uploads: moderation rule (mandatory)
+
+Roblox moderates every uploaded mesh **on its own**, without its textures or clothing. On 2026-10-17 two realistic, unclothed body meshes were removed for "Sexual Content", and each removal is a strike on the owner's account. So, from now on:
+
+- **Never upload a bare human body mesh.** Clothing is real geometry, merged into the **same mesh** as the body before export: swimsuit or wetsuit plus lifejacket for the swimmer, oilskins, drysuits, crew kit and so on for the others. Painted-on clothing and clothing in a separate mesh do not count.
+- **No anatomical detail on any skin area.** Exposed skin is limited to the head, neck, hands and (where the outfit really shows them) forearms and lower legs.
+- **Base bodies stay local.** `M_Chr_HumanBase_M` and `_F` (and any other naked base) are Blender sources only. They are never exported to `assets/fbx/` and never uploaded, on their own or inside a Model.
+- **No skin-body textures on their own.** Do not upload body albedo, normal or roughness maps of a naked base. Upload only the textures of the final clothed character.
+- **Proper asset names.** Every upload is named after its asset (`M_Chr_Casualty_Swimmer_LOD0`), never a generic name such as "mesh".
+- **Before any character upload:** a clothed-silhouette check (front, side and back renders reviewed by a person or a reviewer agent) and the `validate` character rule must pass.
+- If Roblox removes any asset, **stop all character uploads** and tell the owner before doing anything else.
+
 ### 2.2 Limits to verify in the first spike
 
 | Item | Research says | Our working rule |

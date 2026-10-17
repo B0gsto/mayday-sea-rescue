@@ -105,6 +105,15 @@ def attachments_table(spec):
 
 def run(spec, report):
     asset = spec.get("asset", spec["name"])
+    # Moderation rule (docs/06 section 2.1a): naked base bodies are local Blender sources only and are never
+    # exported, and every other human character must declare that its clothing is merged geometry.
+    if asset.startswith("M_Chr_HumanBase"):
+        report.add(asset, "character moderation rule", False, "base bodies are local only: never exported or uploaded")
+        return []
+    if asset.startswith("M_Chr_") and spec.get("species", "human") == "human" and not spec.get("clothing_merged"):
+        report.add(asset, "character moderation rule", False,
+                   "set clothing_merged = True only after clothing is real geometry merged into the body mesh")
+        return []
     out = common.fbx_dir(asset)
     files = []
     groups = {}

@@ -3,3 +3,11 @@ build/
 *.rbxl.lock
 sourcemap.json
 Packages/
+
+# Moderation rule (docs/06 section 2.1a): naked base bodies stay local, never in this public repo
+art/source/characters/M_Chr_HumanBase_*/
+assets/fbx/M_Chr_HumanBase_*/
+assets/models/M_Chr_HumanBase_*
+assets/textures/M_Chr_HumanBase_*/
+assets/textures/T_HumanBase*
+assets/review/M_Chr_HumanBase_*/

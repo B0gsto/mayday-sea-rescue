@@ -248,6 +248,8 @@ Seen in first person within 1 m, so hand-held kit is **hero close-up** texel den
 
 ### 2.9 Characters
 
+> **Moderation rule for every CH batch (CH1 to CH5), from 2026-10-17.** Never upload a bare human body mesh: Roblox moderates each mesh alone, and two unclothed body meshes were removed for "Sexual Content" (account strikes). Clothing is real geometry merged into the same mesh as the body; no anatomical detail on skin areas; `M_Chr_HumanBase_M`/`_F` stay local Blender sources and are never exported or uploaded; no naked-body texture sets are uploaded; every upload has its real asset name, never "mesh". The full rule is in [document 06, section 2.1a](06-tools-and-pipeline.md#21a-character-uploads-moderation-rule-mandatory). The `M_Chr_HumanBase_*` row below is a **local source**, not an upload.
+
 Human NPCs are realistic skinned meshes on an **R15-compatible skeleton** so they share avatar animations (verify skinned realistic meshes on R15 and the bone cap, Spike 1). No injuries, no blood (05 section 8.2).
 
 | Asset | Real-world reference | Source | Budget | Pri | Batch |
@@ -305,7 +307,7 @@ All flipbooks rendered from real Blender simulations with `flipbook.py`, lit par
 | 0 | **R0** Reference dimensions | `art/reference/<Asset>/dims.md` for every row in section 2 with source links, (verify) where none is found | Haiku (web research) | none |
 | 0 | **AU1** Audio search | Candidate ids for section 4 from `audio-search.py`, verified public; Freesound CC0 candidates with URLs | Haiku | none |
 | 1 | **V2** RIB + helm | The first production asset: **its sign-off sets the fidelity bar** for all later batches | Opus | B00, B01, B02, Spike 1 result |
-| 1 | **CH1** Human base + swimmer casualty | The readability test case | Opus | B00, B01 |
+| 1 | **CH1** Human base (local only) + swimmer casualty | The readability test case. Only the clothed swimmer is uploaded (06 section 2.1a) | Opus | B00, B01 |
 | 1 | **CH6** Bosun model, fur, harness | Static model at LOD0 to LOD2 | Opus | B00, B01 |
 | 1 | Fidelity-bar sign-off | One Sonnet sign-off of V2, CH1 and CH6 together, side by side with reference photos | Sonnet | wave 1 |
 | 2a | P0 places and craft | V1 jet ski + close-up · H1 station + slipway · H2 Chandlery (ext, int, props) · H3 cottage kit + 6 variants · H6 Harbor Light + lifeguard tower · HP1 quay kit, pontoons, ladders · HP2 harbour props · C1 *The Optimist*, kayak, paddleboard | Opus each | wave 1 sign-off |
