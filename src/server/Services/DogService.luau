@@ -47,6 +47,8 @@ type Dog = {
 	alignRot: AlignOrientation,
 	rideWeld: WeldConstraint?,
 	rideModel: Model?,
+	waitAt: Vector3?, -- set while the player rides a first-person craft (jet ski): Bosun waits ashore
+	waitFace: Vector3?,
 	pointUntil: number,
 	pointDir: Vector3?,
 }
@@ -263,6 +265,8 @@ local function makeDog(player: Player, character: Model)
 		alignRot = alignRot,
 		rideWeld = nil,
 		rideModel = nil,
+		waitAt = nil,
+		waitFace = nil,
 		pointUntil = 0,
 		pointDir = nil,
 	}
@@ -280,7 +284,8 @@ local function vehicleOf(seat: BasePart?): Model?
 end
 
 -- Where Bosun rides: a DogSlot attachment if the vehicle has one (CONTRACT: optional, stream B),
--- else the jet ski's rescue sled at the stern, or the bow on bigger boats.
+-- else the stern of bigger boats (behind the helm, out of the driver's view). He never rides a
+-- first-person craft (canRide).
 local function rideOffset(model: Model, root: BasePart): CFrame
 	local slot = model:FindFirstChild("DogSlot", true)
 	if slot and slot:IsA("Attachment") then
@@ -290,10 +295,7 @@ local function rideOffset(model: Model, root: BasePart): CFrame
 	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
 	local hull = if spec then spec.hullSize else root.Size
 	local top = hull.Y / 2 + LEG_HEIGHT - 0.2
-	if spec and spec.seats <= 1 then
-		return CFrame.new(0, top, hull.Z / 2 - 1.6) -- rescue sled, facing forward
-	end
-	return CFrame.new(0, top, -hull.Z / 2 + 2.6) -- bow lookout
+	return CFrame.new(0, top, hull.Z / 2 - 4) -- aft deck, behind the helm
 end
 
 local function stopRiding(dog: Dog)
@@ -343,6 +345,62 @@ local function groundY(position: Vector3, character: Model): number
 	return sea
 end
 
+-- A Newfoundland can't ride a jet ski: no dog on first-person craft (cameraMode "FirstPerson"),
+-- whose rider's eye is right over the seat and sled. He rides the RIB and bigger boats.
+local function canRide(model: Model): boolean
+	local id = model:GetAttribute("VehicleId")
+	if id == "JetSki" then
+		return false
+	end
+	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+	return not (spec and spec.cameraMode == "FirstPerson")
+end
+
+local WAIT_SIDE = 4 -- studs beside the slipway's top, clear of the launching lane
+
+-- The top of the station slipway (Map.Slipways.StationSlipway, its local -Z end at the quay).
+local function slipwayTop(): (Vector3?, Vector3?)
+	local map = Workspace:FindFirstChild("Map")
+	local slips = map and map:FindFirstChild("Slipways")
+	local ramp = slips and slips:FindFirstChild("StationSlipway")
+	if ramp and ramp:IsA("BasePart") then
+		local half = ramp.Size / 2
+		local top = ramp.CFrame * CFrame.new(half.X + WAIT_SIDE, half.Y, -half.Z + 3)
+		return top.Position, ramp.CFrame.LookVector * -1
+	end
+	return nil, nil
+end
+
+-- Where Bosun sits while the player is out on a jet ski: where he stands if that is dry land,
+-- else beside the station slipway's top.
+local function waitSpot(dog: Dog, character: Model): (Vector3, Vector3)
+	local pos = dog.body.Position
+	rayParams.FilterDescendantsInstances =
+		{ folder, character, Workspace:FindFirstChild("Vehicles") }
+	local hit = Workspace:Raycast(pos + Vector3.new(0, 4, 0), Vector3.new(0, -30, 0), rayParams)
+	local face = dog.body.CFrame.LookVector
+	if hit and hit.Position.Y > seaHeight(hit.Position) + 0.5 then
+		return Vector3.new(pos.X, hit.Position.Y + LEG_HEIGHT, pos.Z), face
+	end
+	local top, look = slipwayTop()
+	if top then
+		return Vector3.new(top.X, groundY(top, character), top.Z), look :: Vector3
+	end
+	return Vector3.new(pos.X, groundY(pos, character), pos.Z), face
+end
+
+local function hold(dog: Dog, at: Vector3, face: Vector3)
+	if (dog.body.Position - at).Magnitude > TELEPORT_DISTANCE then
+		dog.body.CFrame = CFrame.lookAt(at, at + face)
+		dog.body.AssemblyLinearVelocity = Vector3.zero
+	end
+	dog.alignPos.Position = at
+	local flat = Vector3.new(face.X, 0, face.Z)
+	if flat.Magnitude > 1e-3 then
+		dog.alignRot.CFrame = CFrame.lookAt(Vector3.zero, flat.Unit)
+	end
+end
+
 local function step(dog: Dog, now: number)
 	local character = dog.player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -351,6 +409,21 @@ local function step(dog: Dog, now: number)
 		return
 	end
 	local vehicle = vehicleOf(humanoid.SeatPart)
+	if vehicle and not canRide(vehicle) then
+		if dog.rideModel then
+			stopRiding(dog)
+		end
+		if not dog.waitAt then
+			dog.waitAt, dog.waitFace = waitSpot(dog, character)
+			dog.model:SetAttribute("Waiting", true)
+		end
+		hold(dog, dog.waitAt :: Vector3, dog.waitFace :: Vector3)
+		return
+	elseif dog.waitAt then
+		-- back on foot (or aboard a boat he can ride): rejoin
+		dog.waitAt, dog.waitFace = nil, nil
+		dog.model:SetAttribute("Waiting", nil)
+	end
 	if vehicle then
 		if dog.rideModel ~= vehicle or not (dog.rideWeld and dog.rideWeld.Parent) then
 			startRiding(dog, vehicle)

@@ -21,11 +21,13 @@
 -- Real dimensions at 1 m = 3 studs (docs 05 section 4.1): PWC 3.3 x 1.2 m, Atlantic 85 8.4 x 2.85 m.
 -- Colour scheme: rescue orange with white; the RIB has an RNLI navy hull and orange tubes.
 --
--- Real models: Builder.build(spec, visuals) with the RIB's uploaded models (M_Veh_RIB + M_Veh_RIB_Helm,
--- cloned by the server's AssetLoader at their authored pivot) keeps the same invisible physics
--- (HullRoot, mass, float points, forces) and an invisible Body, welds every visual part to Body and
--- puts the seats, lights and attachments at the model's ATT_* points (AssetIds.Attachments). Without
--- visuals (asset failed to load) the greybox is built as before. Attribute Visual = asset name or
+-- Real models: Builder.build(spec, visuals) with the uploaded models (RIB: M_Veh_RIB +
+-- M_Veh_RIB_Helm; jet ski: M_Veh_JetSki + the rider-only first-person set M_Veh_JetSki_CloseUp, see
+-- buildJetSkiAsset), cloned by the server's AssetLoader at their authored pivot, keeps the same
+-- invisible physics (HullRoot, mass, float points, forces) and an invisible Body, welds every visual
+-- part to Body and puts the seats, lights and attachments at the model's ATT_* points
+-- (AssetIds.Attachments). Without visuals (asset failed to load) the greybox is built as before.
+-- Attribute Visual = asset name or
 -- "Greybox".
 
 local AssetIds = require(script.Parent.Parent.Config.AssetIds)
@@ -393,21 +395,10 @@ local function buildRIB(spec: VehicleSpec): Model
 	return finish(ctx, spec, slots, Vector3.new(0, 0.6, 11.4), Vector3.new(0, 0.6, -12.6))
 end
 
--- The RIB asset's authored pivot (Blender origin: skeg base, midships) in HullRoot space. Its ATT_*
--- layout matches the greybox: ATT_DriverSeat (0, 4.35, 1.6761) is the greybox seat (0, 2.25, 1.6),
--- ATT_Float1 (-2.2, 0.45, -8.9239) is floatPoints[1] (-2.2, -1.65, -9).
-Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
-
-local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
-	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
+-- Pivots the real models to `origin` (HullRoot space) and welds every part to the invisible Body.
+local function weldVisuals(ctx: Ctx, visuals: { Model }, origin: Vector3)
 	ctx.body.Transparency = 1
 	ctx.body.CastShadow = false
-	local origin = Builder.RIB_ORIGIN
-	local atts = AssetIds.Attachments.M_Veh_RIB or {}
-	local function at(name: string, fallback: Vector3): Vector3
-		local p = atts[name]
-		return if p then p + origin else fallback
-	end
 	for _, visual in visuals do
 		visual:PivotTo(CFrame.new(origin))
 		for _, d in visual:GetDescendants() do
@@ -425,6 +416,22 @@ local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
 		end
 		visual.Parent = ctx.model
 	end
+end
+
+-- The RIB asset's authored pivot (Blender origin: skeg base, midships) in HullRoot space. Its ATT_*
+-- layout matches the greybox: ATT_DriverSeat (0, 4.35, 1.6761) is the greybox seat (0, 2.25, 1.6),
+-- ATT_Float1 (-2.2, 0.45, -8.9239) is floatPoints[1] (-2.2, -1.65, -9).
+Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
+
+local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
+	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
+	local origin = Builder.RIB_ORIGIN
+	local atts = AssetIds.Attachments.M_Veh_RIB or {}
+	local function at(name: string, fallback: Vector3): Vector3
+		local p = atts[name]
+		return if p then p + origin else fallback
+	end
+	weldVisuals(ctx, visuals, origin)
 	-- functional seats, invisible inside the modelled jockey seats
 	local function hidden(part: BasePart)
 		part.Transparency = 1
@@ -437,6 +444,8 @@ local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
 		local fallback = Vector3.new(side * 1.3, 2.25, 1.6 + math.ceil(i / 2) * 3.2)
 		hidden(seat(ctx, false, `PassengerSeat{i}`, seatSize, at(`ATT_PassengerSeat{i}`, fallback)))
 	end
+	-- Bosun's spot (DogService): on the aft deck behind the jockey seats, out of the helm's view
+	attach(ctx.root, "DogSlot", at("ATT_DogSlot", Vector3.new(0, 0.3, 7.4)))
 	-- nav lights: small lamps in the modelled housings (they glow when NavLights switches them on)
 	type Lamp = { name: string, pos: Vector3, color: Color3, yaw: number, sector: number }
 	local lamps: { Lamp } = {
@@ -491,6 +500,89 @@ local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
 	return model
 end
 
+-- The jet ski asset's authored pivot in HullRoot space: ATT_Float1..6 (y 0.05) sit on the
+-- greybox floatPoints (y -1.05), e.g. ATT_Float3 (-1.4, 0.05, -2.3213) = floatPoints[3] (-1.4, -1.05, 0).
+Builder.JETSKI_ORIGIN = Vector3.new(0, -1.1, 2.3213)
+-- First-person rest pitch at the rider's seated eye (frame_offset.json eye_pitch_deg): looks down
+-- over the bars, display and kill cord. EyePoint attribute EyePitch (degrees), read by FirstPerson.
+Builder.JETSKI_EYE_PITCH = -30
+local NAV_RANGE = 3.5 -- studs: a small glow on the housing, not a pool of colour on deck and water
+local NAV_BRIGHTNESS = 1
+
+-- Real jet ski: M_Veh_JetSki (seen by everyone) plus M_Veh_JetSki_CloseUp, the first-person set
+-- (bars, grips, throttle, kill cord, mirrors, display, VHF). The close-up set is built hidden
+-- (Transparency 1, attribute RiderOnly, each part's authored Transparency in RiderTransparency);
+-- the rider's client shows it locally and hides the base model's Bars (attribute HideForRider,
+-- LocalTransparencyModifier) so the two sets of bars don't double up (FirstPerson.setRider).
+local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
+	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, ORANGE)
+	local origin = Builder.JETSKI_ORIGIN
+	local atts = AssetIds.Attachments.M_Veh_JetSki or {}
+	local function at(name: string, fallback: Vector3): Vector3
+		local p = atts[name]
+		return if p then p + origin else fallback
+	end
+	weldVisuals(ctx, visuals, origin)
+	for _, visual in visuals do
+		local closeUp = string.find(visual.Name, "CloseUp", 1, true) ~= nil
+		if closeUp then
+			visual.Name = "CloseUp"
+			visual:SetAttribute("RiderOnly", true)
+		end
+		for _, d in visual:GetDescendants() do
+			if not d:IsA("BasePart") then
+				continue
+			end
+			if closeUp then
+				d:SetAttribute("RiderTransparency", d.Transparency)
+				d.Transparency = 1
+				d.CastShadow = false
+			elseif string.find(d.Name, "_Bars_", 1, true) or string.match(d.Name, "_Bars$") then
+				d:SetAttribute("HideForRider", true)
+			end
+		end
+	end
+	local function hidden(part: BasePart)
+		part.Transparency = 1
+		part.CastShadow = false
+	end
+	local seatPos = at("ATT_DriverSeat", Vector3.new(0, 1.1, 1.4))
+	local driver = seat(ctx, true, "DriverSeat", Vector3.new(1.35, 0.5, 3.0), seatPos)
+	hidden(driver)
+	-- nav lights: tiny lamps in the modelled housings with short-range PointLights
+	type Lamp = { name: string, pos: Vector3, color: Color3 }
+	local lamps: { Lamp } = {
+		{ name = "NavPort", pos = Vector3.new(-0.9, 0.5, -3.9), color = RED_LIGHT },
+		{ name = "NavStarboard", pos = Vector3.new(0.9, 0.5, -3.9), color = GREEN_LIGHT },
+		{ name = "NavMasthead", pos = Vector3.new(0, 2.7, 4.3), color = WHITE_LIGHT },
+	}
+	for _, l in lamps do
+		local lamp = navLight(ctx, l.name, at(`ATT_{l.name}`, l.pos), l.color, 0, nil)
+		lamp.Size = Vector3.new(0.12, 0.12, 0.12)
+		lamp.CastShadow = false
+		local light = lamp:FindFirstChild("NavLight") :: PointLight
+		light.Range = NAV_RANGE
+		light.Brightness = NAV_BRIGHTNESS
+	end
+	-- gameplay attachments on the hull: the kill cord clip and the display (TODO: live speed on
+	-- the display, e.g. a SurfaceGui on the CloseUp Display part fed from the hull speed)
+	attach(ctx.root, "KillCord", at("ATT_KillCord", Vector3.new(-0.2, 2.3, -1.2)))
+	attach(ctx.root, "Display", at("ATT_Display", Vector3.new(0, 2.2, -1.66)))
+	local model = finish(
+		ctx,
+		spec,
+		{ at("ATT_SurvivorSlot1", Vector3.new(0, -0.45, 7.3)) },
+		at("ATT_TowHitch", Vector3.new(0, -0.3, 4.95)),
+		at("ATT_BowPoint", Vector3.new(0, -0.3, -4.95))
+	)
+	-- the rider's seated eye (ATT_EyePoint), relative to the seat
+	local eye = driver:FindFirstChild("EyePoint") :: Attachment
+	eye.Position = at("ATT_EyePoint", seatPos + spec.eyePoint) - seatPos
+	eye:SetAttribute("EyePitch", Builder.JETSKI_EYE_PITCH)
+	model:SetAttribute("Visual", visuals[1].Name)
+	return model
+end
+
 -- Fallback for a vehicle id without a hand-built greybox: a plain box with seats in a column.
 local function buildGeneric(spec: VehicleSpec): Model
 	local size = spec.hullSize
@@ -514,10 +606,13 @@ local function buildGeneric(spec: VehicleSpec): Model
 end
 
 -- Builds a vehicle at the origin with its HullRoot anchored. The caller pivots and parents it.
--- visuals: the real models for the RIB (see the header); nil or empty builds the greybox.
+-- visuals: the real models for the RIB or the jet ski (see the header); nil or empty builds the greybox.
 function Builder.build(spec: VehicleSpec, visuals: { Model }?): Model
 	local model = if spec.id == "JetSki"
-		then buildJetSki(spec)
+			and visuals
+			and #visuals > 0
+		then buildJetSkiAsset(spec, visuals)
+		elseif spec.id == "JetSki" then buildJetSki(spec)
 		elseif spec.id == "RIB" and visuals and #visuals > 0 then buildRIBAsset(spec, visuals)
 		elseif spec.id == "RIB" then buildRIB(spec)
 		else buildGeneric(spec)

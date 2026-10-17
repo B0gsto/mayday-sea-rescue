@@ -256,6 +256,7 @@ local function exitMode(old: Mode)
 	if old == "Foot" then
 		FirstPerson.exitFoot(hum)
 	elseif old == "VehicleFP" then
+		FirstPerson.setRider(nil)
 		FirstPerson.exitVehicle()
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 	elseif old == "Chase" then
@@ -279,6 +280,7 @@ local function enterMode(new: Mode)
 		)
 		if current and current.driver then
 			Viewmodel.setBasePose("steer")
+			FirstPerson.setRider(current.model)
 		end
 	elseif new == "Chase" and current then
 		player.CameraMode = Enum.CameraMode.Classic

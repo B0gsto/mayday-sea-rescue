@@ -2,6 +2,243 @@
  "ClassName": "Folder",
  "Children": [
   {
+   "Name": "M_Bld_Chandlery_Ext",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Details",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://120035276122390",
+        "NormalMap": "rbxassetid://102411696808780",
+        "RoughnessMap": "rbxassetid://139106048152461",
+        "MetalnessMap": "rbxassetid://104897708860271"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://115658512807600",
+        "NormalMap": "rbxassetid://102411696808780",
+        "RoughnessMap": "rbxassetid://105457741487761",
+        "MetalnessMap": "rbxassetid://104897708860271"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Slate",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://86948295014052",
+        "NormalMap": "rbxassetid://127863606733033",
+        "RoughnessMap": "rbxassetid://117483510246874"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://139352543048143",
+        "NormalMap": "rbxassetid://127863606733033",
+        "RoughnessMap": "rbxassetid://84745109172448"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Bld_Chandlery_Int",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Details",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://133339368291517",
+        "NormalMap": "rbxassetid://107103226456779",
+        "RoughnessMap": "rbxassetid://90005849079078",
+        "MetalnessMap": "rbxassetid://91181341396446"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Joinery",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://115273437194420",
+        "NormalMap": "rbxassetid://108334098253080",
+        "RoughnessMap": "rbxassetid://97155378858191"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Lining",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://138288822640667",
+        "NormalMap": "rbxassetid://106108467598566",
+        "RoughnessMap": "rbxassetid://75082472767101"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Pine",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://138376265885730",
+        "NormalMap": "rbxassetid://89078940590423",
+        "RoughnessMap": "rbxassetid://84388384268744"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Bld_Slipway",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Steel",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://96820587616164",
+        "NormalMap": "rbxassetid://121193914077620",
+        "RoughnessMap": "rbxassetid://99041436984011",
+        "MetalnessMap": "rbxassetid://119495712786815"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://103966904844767",
+        "NormalMap": "rbxassetid://121193914077620",
+        "RoughnessMap": "rbxassetid://95990890725058",
+        "MetalnessMap": "rbxassetid://119495712786815"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Bld_Station",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Details",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://108626486995655",
+        "NormalMap": "rbxassetid://114725982770733",
+        "RoughnessMap": "rbxassetid://100059530284039",
+        "MetalnessMap": "rbxassetid://132835996057162"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://140549462600161",
+        "NormalMap": "rbxassetid://114725982770733",
+        "RoughnessMap": "rbxassetid://83956732894568",
+        "MetalnessMap": "rbxassetid://132835996057162"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Render",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://95641730235175",
+        "NormalMap": "rbxassetid://114400106245938",
+        "RoughnessMap": "rbxassetid://79743842917043",
+        "MetalnessMap": "rbxassetid://74679138706162"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://117560069199301",
+        "NormalMap": "rbxassetid://114400106245938",
+        "RoughnessMap": "rbxassetid://133509138515771",
+        "MetalnessMap": "rbxassetid://74679138706162"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Slate",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://113501608701663",
+        "NormalMap": "rbxassetid://96384930153174",
+        "RoughnessMap": "rbxassetid://77115037512624"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://74160272627587",
+        "NormalMap": "rbxassetid://96384930153174",
+        "RoughnessMap": "rbxassetid://126030262252752"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_TrimSheet",
    "ClassName": "Folder",
    "Children": [
@@ -127,9 +364,9 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://101058716293056",
-        "NormalMap": "rbxassetid://134091312756677",
-        "RoughnessMap": "rbxassetid://128252885255107",
+        "ColorMap": "rbxassetid://123844582500467",
+        "NormalMap": "rbxassetid://107752150496614",
+        "RoughnessMap": "rbxassetid://104383984523403",
         "MetalnessMap": "rbxassetid://115017343888524"
        }
       },
@@ -137,9 +374,9 @@
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://129437702861432",
-        "NormalMap": "rbxassetid://134091312756677",
-        "RoughnessMap": "rbxassetid://73453177217919",
+        "ColorMap": "rbxassetid://83200797500731",
+        "NormalMap": "rbxassetid://88731663285161",
+        "RoughnessMap": "rbxassetid://139849180076523",
         "MetalnessMap": "rbxassetid://115017343888524"
        }
       }
@@ -201,6 +438,38 @@
         "ColorMap": "rbxassetid://139329459848716",
         "NormalMap": "rbxassetid://95139001979523",
         "RoughnessMap": "rbxassetid://138754958400083"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Chr_Casualty_Swimmer_Rig",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Atlas",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://123844582500467",
+        "NormalMap": "rbxassetid://107752150496614",
+        "RoughnessMap": "rbxassetid://104383984523403",
+        "MetalnessMap": "rbxassetid://115017343888524"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://83200797500731",
+        "NormalMap": "rbxassetid://88731663285161",
+        "RoughnessMap": "rbxassetid://139849180076523",
+        "MetalnessMap": "rbxassetid://115017343888524"
        }
       }
      ]
@@ -302,6 +571,133 @@
         "ColorMap": "rbxassetid://100156547849195",
         "NormalMap": "rbxassetid://132859274049976",
         "RoughnessMap": "rbxassetid://105779975233277"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Prop_Chandlery",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Atlas",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71920021950811",
+        "NormalMap": "rbxassetid://80677727296225",
+        "RoughnessMap": "rbxassetid://91462357892618",
+        "MetalnessMap": "rbxassetid://88821589220060"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Rope",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://105999388453791",
+        "NormalMap": "rbxassetid://89602092156365",
+        "RoughnessMap": "rbxassetid://79172190348487"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_JetSki",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://70581610864570",
+        "NormalMap": "rbxassetid://79648716365190",
+        "RoughnessMap": "rbxassetid://132298762972239",
+        "MetalnessMap": "rbxassetid://87581147490496"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://92172556810788",
+        "NormalMap": "rbxassetid://79648716365190",
+        "RoughnessMap": "rbxassetid://107429793348262",
+        "MetalnessMap": "rbxassetid://87581147490496"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Sled",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://100069689205449",
+        "NormalMap": "rbxassetid://131963329407593",
+        "RoughnessMap": "rbxassetid://127535253992608",
+        "MetalnessMap": "rbxassetid://94775411869752"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://76214454506343",
+        "NormalMap": "rbxassetid://131963329407593",
+        "RoughnessMap": "rbxassetid://84802728167462",
+        "MetalnessMap": "rbxassetid://94775411869752"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_JetSki_CloseUp",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "CloseUp",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://108522799467501",
+        "NormalMap": "rbxassetid://103167454466070",
+        "RoughnessMap": "rbxassetid://73993923872681",
+        "MetalnessMap": "rbxassetid://99246344685636"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://84531118895566",
+        "NormalMap": "rbxassetid://103167454466070",
+        "RoughnessMap": "rbxassetid://76481561034582",
+        "MetalnessMap": "rbxassetid://99246344685636"
        }
       }
      ]

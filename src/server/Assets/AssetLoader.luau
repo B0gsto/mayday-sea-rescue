@@ -33,7 +33,7 @@ AssetLoader.RETRY_AFTER = 30 -- seconds before a failed load is tried again
 local SMALL_PART = 1.5 -- studs; largest axis below this -> CastShadow off
 
 -- Part name token -> texture set, where the set name is not in the part name (from the asset's
--- build spec: art/source/vehicles/M_Veh_RIB/make_import_setup.py). Default: the longest set name
+-- build specs: art/source/vehicles/<asset>/make_import_setup.py). Default: the longest set name
 -- found in the part name, else the only set.
 AssetLoader.PART_SETS = {
 	M_Veh_RIB = {
@@ -44,6 +44,15 @@ AssetLoader.PART_SETS = {
 		AFrame = "Rig",
 		Engines = "Rig",
 		Decals = "Decals",
+	},
+	-- art/source/vehicles/M_Veh_JetSki/make_import_setup.py (the close-up set has one set, CloseUp)
+	M_Veh_JetSki = {
+		Hull = "Hull",
+		Seat = "Hull",
+		Decals = "Hull",
+		Sled = "Sled",
+		Fittings = "Sled",
+		Bars = "Sled",
 	},
 } :: { [string]: { [string]: string } }
 

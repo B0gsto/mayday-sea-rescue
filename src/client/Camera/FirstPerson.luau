@@ -40,10 +40,15 @@ local ARM_PARTS = {
 
 -- Shows the torso and legs, hides the head, the accessories and (when the viewmodel is drawn)
 -- the arms. Call after the default camera's transparency pass.
+-- The vehicle the local player rides with a rider-only close-up set (see FirstPerson.setRider). Its
+-- seated eye is inside the rider's own head and torso, so the whole body is hidden.
+local riderModel: Model? = nil
+
 function FirstPerson.applyBodyVisibility(character: Model, hideArms: boolean)
 	for _, d in character:GetDescendants() do
 		if d:IsA("BasePart") then
-			local hide = d.Name == "Head"
+			local hide = riderModel ~= nil
+				or d.Name == "Head"
 				or d:FindFirstAncestorWhichIsA("Accessory") ~= nil
 				or (hideArms and ARM_PARTS[d.Name] == true)
 			d.LocalTransparencyModifier = if hide then 1 else 0
@@ -138,10 +143,55 @@ local blur: BlurEffect? = nil
 local YAW_LIMIT = math.rad(150)
 local PITCH_MIN, PITCH_MAX = math.rad(-70), math.rad(60)
 
+local DEFAULT_PITCH = math.rad(-6)
+local restPitch = DEFAULT_PITCH -- the EyePoint's EyePitch attribute (degrees), else DEFAULT_PITCH
+local freshEye = true -- the first vehicle frame snaps the look pitch to restPitch
+
+-- Rider-only first-person set (Builder.buildJetSkiAsset): the close-up model (attribute RiderOnly)
+-- is built hidden for everyone; the rider's client shows it locally (Transparency is not
+-- replicated back) and hides the parts tagged HideForRider (the base model's Bars) with
+-- LocalTransparencyModifier so the two sets don't double up. Re-applied while riding, for parts
+-- that stream in late.
+local riderCheckAt = 0
+
+local function applyRider(model: Model, on: boolean)
+	for _, d in model:GetDescendants() do
+		if not d:IsA("BasePart") then
+			continue
+		end
+		if d:GetAttribute("HideForRider") == true then
+			d.LocalTransparencyModifier = if on then 1 else 0
+		end
+		local shown = d:GetAttribute("RiderTransparency")
+		if typeof(shown) == "number" then
+			local parent = d:FindFirstAncestorWhichIsA("Model")
+			if parent and parent:GetAttribute("RiderOnly") == true then
+				d.Transparency = if on then shown else 1
+			end
+		end
+	end
+end
+
+-- model: the vehicle the local player drives in first person, or nil to put everything back.
+function FirstPerson.setRider(model: Model?)
+	if riderModel == model then
+		return
+	end
+	if riderModel and riderModel.Parent then
+		applyRider(riderModel, false)
+	end
+	riderModel = model
+	riderCheckAt = 0
+	if model then
+		applyRider(model, true)
+	end
+end
+
 function FirstPerson.enterVehicle()
 	local camera = Workspace.CurrentCamera
 	camera.CameraType = Enum.CameraType.Scriptable
-	look.yaw, look.pitch, look.idle = 0, math.rad(-6), 0
+	freshEye = true
+	look.yaw, look.pitch, look.idle = 0, DEFAULT_PITCH, 0
 	baseRot = nil
 	prevVel = nil
 	accel = Vector3.zero
@@ -245,11 +295,24 @@ function FirstPerson.vehicle(dt: number, ctx: VehicleCtx, lookDelta: Vector2): C
 	else
 		look.idle += dt
 	end
+	if freshEye then
+		freshEye = false
+		local deg = if ctx.eye then ctx.eye:GetAttribute("EyePitch") else nil
+		restPitch = if typeof(deg) == "number" then math.rad(deg) else DEFAULT_PITCH
+		look.pitch = restPitch
+	end
+	if riderModel then
+		riderCheckAt -= dt
+		if riderCheckAt <= 0 then
+			riderCheckAt = 1
+			applyRider(riderModel, true)
+		end
+	end
 	look.yaw = math.clamp(look.yaw + lookDelta.X, -YAW_LIMIT, YAW_LIMIT)
 	look.pitch = math.clamp(look.pitch + lookDelta.Y, PITCH_MIN, PITCH_MAX)
 	if look.idle > 1.2 and speed > 4 then
 		look.yaw = CameraMath.damp(look.yaw, 0, 0.6, dt)
-		look.pitch = CameraMath.damp(look.pitch, math.rad(-6), 0.8, dt)
+		look.pitch = CameraMath.damp(look.pitch, restPitch, 0.8, dt)
 	end
 
 	-- head stabilisation: blend hull and horizon, then a short low-pass for engine/chop jitter

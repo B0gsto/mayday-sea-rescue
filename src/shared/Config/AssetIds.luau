@@ -6,6 +6,26 @@
 local AssetIds = {}
 
 AssetIds.Models = {
+	M_Bld_Chandlery_Ext = {
+		LOD0 = "rbxassetid://139043023346846",
+		LOD1 = "rbxassetid://95987279523296",
+		LOD2 = "rbxassetid://135207525204755",
+	},
+	M_Bld_Chandlery_Int = {
+		LOD0 = "rbxassetid://72528639536242",
+		LOD1 = "rbxassetid://79006856545686",
+		LOD2 = "rbxassetid://90406652098221",
+	},
+	M_Bld_Slipway = {
+		LOD0 = "rbxassetid://110694739174939",
+		LOD1 = "rbxassetid://126793909051758",
+		LOD2 = "rbxassetid://123942813236301",
+	},
+	M_Bld_Station = {
+		LOD0 = "rbxassetid://100622202580937",
+		LOD1 = "rbxassetid://111645440823151",
+		LOD2 = "rbxassetid://131498698131836",
+	},
 	M_Chr_Bosun = {
 		LOD0 = "rbxassetid://111240610269958",
 		LOD1 = "rbxassetid://134065090240875",
@@ -16,6 +36,7 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://139906280413380",
 		LOD2 = "rbxassetid://99233321520583",
 	},
+	M_Chr_Casualty_Swimmer_Rig = { LOD0 = "rbxassetid://77856458721407" },
 	M_Chr_HumanBase_F = {
 		LOD0 = "rbxassetid://134175689008960",
 		LOD1 = "rbxassetid://80528380818535",
@@ -25,6 +46,10 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://102922744814435",
 		LOD1 = "rbxassetid://128829373189723",
 		LOD2 = "rbxassetid://88269285714718",
+	},
+	M_Prop_Chandlery = {
+		LOD0 = "rbxassetid://124944465956160",
+		LOD1 = "rbxassetid://127259503125880",
 	},
 	M_Spike1_RefBox = { LOD0 = "rbxassetid://124101679376385" },
 	M_Spike1_ScaleCube = { LOD0 = "rbxassetid://99212271339218" },
@@ -36,6 +61,12 @@ AssetIds.Models = {
 	M_Spike1_Tris20500 = { LOD0 = "rbxassetid://107853799637000" },
 	M_Spike1_Tris21500 = { LOD0 = "rbxassetid://82241768209454" },
 	M_Spike1_Tris30000 = { LOD0 = "rbxassetid://126935964886724" },
+	M_Veh_JetSki = {
+		LOD0 = "rbxassetid://77535739244028",
+		LOD1 = "rbxassetid://117090188851926",
+		LOD2 = "rbxassetid://75458231561618",
+	},
+	M_Veh_JetSki_CloseUp = { LOD0 = "rbxassetid://96904954993392" },
 	M_Veh_RIB = {
 		LOD0 = "rbxassetid://127799273605450",
 		LOD1 = "rbxassetid://75676810929994",
@@ -45,6 +76,75 @@ AssetIds.Models = {
 } :: { [string]: { [string]: string } }
 
 AssetIds.Textures = {
+	M_Bld_Chandlery_Ext = {
+		Details = {
+			ALB = "rbxassetid://120035276122390",
+			NOR = "rbxassetid://102411696808780",
+			RGH = "rbxassetid://139106048152461",
+			MET = "rbxassetid://104897708860271",
+			Wet = { ALB = "rbxassetid://115658512807600", RGH = "rbxassetid://105457741487761" },
+		},
+		Slate = {
+			ALB = "rbxassetid://86948295014052",
+			NOR = "rbxassetid://127863606733033",
+			RGH = "rbxassetid://117483510246874",
+			Wet = { ALB = "rbxassetid://139352543048143", RGH = "rbxassetid://84745109172448" },
+		},
+	},
+	M_Bld_Chandlery_Int = {
+		Details = {
+			ALB = "rbxassetid://133339368291517",
+			NOR = "rbxassetid://107103226456779",
+			RGH = "rbxassetid://90005849079078",
+			MET = "rbxassetid://91181341396446",
+		},
+		Joinery = {
+			ALB = "rbxassetid://115273437194420",
+			NOR = "rbxassetid://108334098253080",
+			RGH = "rbxassetid://97155378858191",
+		},
+		Lining = {
+			ALB = "rbxassetid://138288822640667",
+			NOR = "rbxassetid://106108467598566",
+			RGH = "rbxassetid://75082472767101",
+		},
+		Pine = {
+			ALB = "rbxassetid://138376265885730",
+			NOR = "rbxassetid://89078940590423",
+			RGH = "rbxassetid://84388384268744",
+		},
+	},
+	M_Bld_Slipway = {
+		Steel = {
+			ALB = "rbxassetid://96820587616164",
+			NOR = "rbxassetid://121193914077620",
+			RGH = "rbxassetid://99041436984011",
+			MET = "rbxassetid://119495712786815",
+			Wet = { ALB = "rbxassetid://103966904844767", RGH = "rbxassetid://95990890725058" },
+		},
+	},
+	M_Bld_Station = {
+		Details = {
+			ALB = "rbxassetid://108626486995655",
+			NOR = "rbxassetid://114725982770733",
+			RGH = "rbxassetid://100059530284039",
+			MET = "rbxassetid://132835996057162",
+			Wet = { ALB = "rbxassetid://140549462600161", RGH = "rbxassetid://83956732894568" },
+		},
+		Render = {
+			ALB = "rbxassetid://95641730235175",
+			NOR = "rbxassetid://114400106245938",
+			RGH = "rbxassetid://79743842917043",
+			MET = "rbxassetid://74679138706162",
+			Wet = { ALB = "rbxassetid://117560069199301", RGH = "rbxassetid://133509138515771" },
+		},
+		Slate = {
+			ALB = "rbxassetid://113501608701663",
+			NOR = "rbxassetid://96384930153174",
+			RGH = "rbxassetid://77115037512624",
+			Wet = { ALB = "rbxassetid://74160272627587", RGH = "rbxassetid://126030262252752" },
+		},
+	},
 	M_Bld_TrimSheet = {
 		Sheet = {
 			ALB = "rbxassetid://83542899500867",
@@ -90,11 +190,15 @@ AssetIds.Textures = {
 	},
 	M_Chr_Casualty_Swimmer = {
 		Atlas = {
-			ALB = "rbxassetid://101058716293056",
-			NOR = "rbxassetid://134091312756677",
-			RGH = "rbxassetid://128252885255107",
+			ALB = "rbxassetid://123844582500467",
+			NOR = "rbxassetid://107752150496614",
+			RGH = "rbxassetid://104383984523403",
 			MET = "rbxassetid://115017343888524",
-			Wet = { ALB = "rbxassetid://129437702861432", RGH = "rbxassetid://73453177217919" },
+			Wet = {
+				ALB = "rbxassetid://83200797500731",
+				NOR = "rbxassetid://88731663285161",
+				RGH = "rbxassetid://139849180076523",
+			},
 		},
 		Body = {
 			ALB = "rbxassetid://73868470957751",
@@ -115,6 +219,19 @@ AssetIds.Textures = {
 			ALB = "rbxassetid://139329459848716",
 			NOR = "rbxassetid://95139001979523",
 			RGH = "rbxassetid://138754958400083",
+		},
+	},
+	M_Chr_Casualty_Swimmer_Rig = {
+		Atlas = {
+			ALB = "rbxassetid://123844582500467",
+			NOR = "rbxassetid://107752150496614",
+			RGH = "rbxassetid://104383984523403",
+			MET = "rbxassetid://115017343888524",
+			Wet = {
+				ALB = "rbxassetid://83200797500731",
+				NOR = "rbxassetid://88731663285161",
+				RGH = "rbxassetid://139849180076523",
+			},
 		},
 	},
 	M_Chr_HumanBase_F = {
@@ -146,6 +263,44 @@ AssetIds.Textures = {
 			ALB = "rbxassetid://100156547849195",
 			NOR = "rbxassetid://132859274049976",
 			RGH = "rbxassetid://105779975233277",
+		},
+	},
+	M_Prop_Chandlery = {
+		Atlas = {
+			ALB = "rbxassetid://71920021950811",
+			NOR = "rbxassetid://80677727296225",
+			RGH = "rbxassetid://91462357892618",
+			MET = "rbxassetid://88821589220060",
+		},
+		Rope = {
+			ALB = "rbxassetid://105999388453791",
+			NOR = "rbxassetid://89602092156365",
+			RGH = "rbxassetid://79172190348487",
+		},
+	},
+	M_Veh_JetSki = {
+		Hull = {
+			ALB = "rbxassetid://70581610864570",
+			NOR = "rbxassetid://79648716365190",
+			RGH = "rbxassetid://132298762972239",
+			MET = "rbxassetid://87581147490496",
+			Wet = { ALB = "rbxassetid://92172556810788", RGH = "rbxassetid://107429793348262" },
+		},
+		Sled = {
+			ALB = "rbxassetid://100069689205449",
+			NOR = "rbxassetid://131963329407593",
+			RGH = "rbxassetid://127535253992608",
+			MET = "rbxassetid://94775411869752",
+			Wet = { ALB = "rbxassetid://76214454506343", RGH = "rbxassetid://84802728167462" },
+		},
+	},
+	M_Veh_JetSki_CloseUp = {
+		CloseUp = {
+			ALB = "rbxassetid://108522799467501",
+			NOR = "rbxassetid://103167454466070",
+			RGH = "rbxassetid://73993923872681",
+			MET = "rbxassetid://99246344685636",
+			Wet = { ALB = "rbxassetid://84531118895566", RGH = "rbxassetid://76481561034582" },
 		},
 	},
 	M_Veh_RIB = {
@@ -197,6 +352,69 @@ AssetIds.Textures = {
 } :: { [string]: { [string]: any } }
 
 AssetIds.Attachments = {
+	M_Bld_Chandlery_Ext = {
+		ATT_Door = Vector3.new(22.2, 3.6, -19.8),
+		ATT_DoorHinge = Vector3.new(24, 0.45, -17.4),
+		ATT_Sign = Vector3.new(17.4, 9, -19.65),
+		ATT_Lamp_01 = Vector3.new(9.6, 11.79, -21),
+		ATT_Lamp_02 = Vector3.new(-5.1, 11.79, -21),
+		ATT_Lamp_03 = Vector3.new(-20.1, 11.79, -21),
+	},
+	M_Bld_Chandlery_Int = {
+		ATT_DoorInside = Vector3.new(22.2, 3.6, -14.25),
+		ATT_Counter = Vector3.new(-12, 4.5, 0.6),
+		ATT_Till = Vector3.new(-16.8, 3.3, 2.85),
+		ATT_Logbook = Vector3.new(-6.6, 3.15, 2.7),
+		ATT_ServiceCards = Vector3.new(-12, 5.7, 16.2),
+		ATT_ChartTable = Vector3.new(6.9, 3, 10.2),
+		ATT_StairBottom = Vector3.new(-26.7, 0.75, 15.6),
+		ATT_StairTop = Vector3.new(-26.7, 10.35, -5.4),
+		ATT_Mirror = Vector3.new(27, 13.65, 0),
+		ATT_FittingRoom = Vector3.new(25.5, 13.05, 0),
+		ATT_Light_01 = Vector3.new(21.6, 6.84, -7.8),
+		ATT_Light_02 = Vector3.new(14.4, 6.84, 3.9),
+		ATT_Light_03 = Vector3.new(7.2, 6.84, -8.7),
+		ATT_Light_04 = Vector3.new(7.2, 6.15, 12.3),
+		ATT_Light_05 = Vector3.new(0, 6.84, -3),
+		ATT_Light_06 = Vector3.new(0, 6.84, 9),
+		ATT_Light_07 = Vector3.new(-21.6, 6.84, -7.8),
+		ATT_Light_08 = Vector3.new(-7.2, 6.33, 2.775),
+		ATT_Light_09 = Vector3.new(-14.4, 6.33, 2.775),
+		ATT_Light_10 = Vector3.new(15, 15.72, 15.24),
+		ATT_Light_11 = Vector3.new(0, 15.72, 15.24),
+		ATT_Light_12 = Vector3.new(-15, 15.72, 15.24),
+		ATT_Light_13 = Vector3.new(9.9, 15.72, -15.24),
+		ATT_Light_14 = Vector3.new(-6.9, 15.72, -15.24),
+		ATT_Light_15 = Vector3.new(-19.8, 15.72, -15.24),
+		ATT_Light_16 = Vector3.new(25.5, 15.72, 2.49),
+		ATT_Light_17 = Vector3.new(27.99, 7.35, -13.8),
+		ATT_Light_18 = Vector3.new(27.99, 7.35, 3),
+		ATT_Light_19 = Vector3.new(-27.99, 8.46, -7.35),
+		ATT_Light_20 = Vector3.new(3.6, 7.5, 15.99),
+		ATT_Light_21 = Vector3.new(-27.99, 15.75, -9),
+	},
+	M_Bld_Slipway = {
+		ATT_SlipwayTop = Vector3.new(0, 0, 0),
+		ATT_SlipwayBottom = Vector3.new(0, -10, -66),
+		ATT_WaterLine = Vector3.new(0, -3.999, -26.3934),
+		ATT_WeedLine = Vector3.new(0, -2.7273, -18),
+		ATT_Winch = Vector3.new(0, 1.8, 8.4),
+		ATT_WinchHouseDoor = Vector3.new(-2.4, 0, 10.5),
+	},
+	M_Bld_Station = {
+		ATT_HallBackDoor = Vector3.new(22.5, 0.0474, 26.055),
+		ATT_CrewDoor = Vector3.new(-3.6, 0.0474, -24.345),
+		ATT_WingBackDoor = Vector3.new(-6, 0.0474, 26.055),
+		ATT_WatchRoom = Vector3.new(-15, 15.6474, -19.845),
+		ATT_BayDoor = Vector3.new(15.75, 0.0474, -24.945),
+		ATT_BayDoorTop = Vector3.new(15.75, 13.8474, -22.665),
+		ATT_BoatHall = Vector3.new(15.75, 0.2874, 0.855),
+		ATT_Sign = Vector3.new(15.75, 17.4474, -24.105),
+		ATT_Bay_01 = Vector3.new(-15, -3.8, -83),
+		ATT_Bay_02 = Vector3.new(-15, -3.8, -105),
+		ATT_Bay_03 = Vector3.new(-15, -3.8, -127),
+		ATT_Bay_04 = Vector3.new(-15, -3.8, -149),
+	},
 	M_Chr_Bosun = {
 		ATT_HarnessHandle = Vector3.new(0.0417, 2.4704, 0.0746),
 		ATT_TowRing = Vector3.new(0.0418, 2.2663, 0.6866),
@@ -205,6 +423,52 @@ AssetIds.Attachments = {
 	M_Chr_Casualty_Swimmer = {
 		ATT_Strobe = Vector3.new(-0.5895, 4.2106, -0.5675),
 		ATT_Whistle = Vector3.new(0.5934, 4.2106, -0.4179),
+	},
+	M_Chr_Casualty_Swimmer_Rig = {
+		ATT_Strobe = Vector3.new(-0.5895, 4.2106, -0.5675),
+		ATT_Whistle = Vector3.new(0.5934, 4.2106, -0.4179),
+	},
+	M_Prop_Chandlery = {
+		ATT_Rack_01 = Vector3.new(25.8, 4.2, 1.2),
+		ATT_Rack_02 = Vector3.new(12.6, 4.2, 10.8),
+		ATT_Rack_03 = Vector3.new(11.4, 3.6, -5.7),
+		ATT_Mannequin_01 = Vector3.new(7.8, 3.9, -15.9),
+		ATT_Mannequin_02 = Vector3.new(-15, 3.9, -15.9),
+		ATT_Mannequin_03 = Vector3.new(12, 13.65, 9.9),
+		ATT_Mannequin_04 = Vector3.new(2.1, 13.65, 9.9),
+		ATT_DogBasket = Vector3.new(1.2, 1.8, 6),
+		ATT_HornBoard = Vector3.new(27, 4.5, -13.8),
+		ATT_SwatchBoard = Vector3.new(18, 4.5, 15.15),
+		ATT_RadioShelf = Vector3.new(-22.8, 4.8, 15.15),
+	},
+	M_Veh_JetSki = {
+		ATT_DriverSeat = Vector3.new(0, 2.62, -0.9213),
+		ATT_EyePoint = Vector3.new(0, 5.2, -1.4213),
+		ATT_SurvivorSlot1 = Vector3.new(0, 1.41, 5.0787),
+		ATT_TowHitch = Vector3.new(0, 1.18, 2.8687),
+		ATT_BowPoint = Vector3.new(0, 1.62, -7.4713),
+		ATT_DriveAttachment = Vector3.new(0, 1.1, -2.3213),
+		ATT_NavPort = Vector3.new(-0.9567, 2.3315, -6.2513),
+		ATT_NavStarboard = Vector3.new(0.9567, 2.3315, -6.2513),
+		ATT_NavMasthead = Vector3.new(0, 3.52, 2.5287),
+		ATT_KillCord = Vector3.new(-0.2, 3.42, -3.5213),
+		ATT_Display = Vector3.new(0, 3.3, -3.9813),
+		ATT_Prop1 = Vector3.new(0, 0.5, 3.2787),
+		ATT_Float1 = Vector3.new(-0.8, 0.05, -5.9213),
+		ATT_Float2 = Vector3.new(0.8, 0.05, -5.9213),
+		ATT_Float3 = Vector3.new(-1.4, 0.05, -2.3213),
+		ATT_Float4 = Vector3.new(1.4, 0.05, -2.3213),
+		ATT_Float5 = Vector3.new(-1.5, 0.05, 1.2787),
+		ATT_Float6 = Vector3.new(1.5, 0.05, 1.2787),
+	},
+	M_Veh_JetSki_CloseUp = {
+		ATT_EyePoint = Vector3.new(0, 5.2, -1.4213),
+		ATT_KillCord = Vector3.new(-0.2, 3.42, -3.5213),
+		ATT_Display = Vector3.new(0, 3.3, -3.9813),
+		ATT_GripLeft = Vector3.new(-0.9, 3.36, -3.3913),
+		ATT_GripRight = Vector3.new(0.9, 3.36, -3.3913),
+		ATT_Throttle = Vector3.new(0.85, 3.3, -3.6713),
+		ATT_VHF = Vector3.new(-0.62, 3.2469, -3.8213),
 	},
 	M_Veh_RIB = {
 		ATT_DriverSeat = Vector3.new(0, 4.35, 1.6761),

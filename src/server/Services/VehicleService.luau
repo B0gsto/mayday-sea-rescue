@@ -63,6 +63,8 @@ local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
 -- vehicle whose first model fails to load is built as the greybox.
 local VISUAL_ASSETS: { [string]: { string } } = {
 	RIB = { "M_Veh_RIB", "M_Veh_RIB_Helm" },
+	-- the close-up (first-person) set is built in hidden; the rider's client shows it (FirstPerson)
+	JetSki = { "M_Veh_JetSki", "M_Veh_JetSki_CloseUp" },
 }
 -- Wet look (SurfaceAppearance _Wet, attribute Wet on the model): rain/storm at or over this
 -- intensity, spray while running at planing speed, or a SprayHit attribute set by any system;
@@ -303,8 +305,23 @@ local function sitDriver(player: Player, seat: VehicleSeat)
 			weld:Destroy()
 		end
 	end
-	character:PivotTo(seat.CFrame * CFrame.new(0, 3, 0))
-	seat:Sit(humanoid)
+	local function place()
+		for _, d in character:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.AssemblyLinearVelocity = Vector3.zero
+				d.AssemblyAngularVelocity = Vector3.zero
+			end
+		end
+		character:PivotTo(seat.CFrame * CFrame.new(0, 3, 0))
+		seat:Sit(humanoid)
+	end
+	place()
+	-- a character just taken off another seat can miss the first Sit: check and retry once
+	task.delay(0.5, function()
+		if seat.Parent and humanoid.Parent and humanoid.Health > 0 and seat.Occupant == nil then
+			place()
+		end
+	end)
 end
 
 -- Seated players ride massless: VehicleConfig.massHint already includes the crew at real weight
@@ -425,6 +442,19 @@ local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Mo
 	local visuals = visualsFor(spec)
 	local old = byPlayer[player]
 	if old then
+		-- unseat the driver first: destroying the craft under a seated character leaves the client
+		-- holding a stale seat weld, and the replacement's seat:Sit fails (rider flung, camera in
+		-- the sea, a runaway speed reading)
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local seatPart = humanoid and humanoid.SeatPart
+		if humanoid and seatPart and seatPart:IsDescendantOf(old.model) then
+			local weld = seatPart:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+			humanoid.Sit = false
+		end
 		despawnModel(old.model)
 	end
 
