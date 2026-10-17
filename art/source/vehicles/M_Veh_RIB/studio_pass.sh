@@ -1,5 +1,5 @@
 #!/bin/bash
-# V2 Studio pass (docs/12 3.3; shots.json ends with 3 close-ups at 6 studs; import_test.luau checks the RIB lands upright; fix batch: neutral backdrop at hero distance, Night with a spotlight): studio lock, then one heavy slot; own TestBench window (mayday-lookdev-v2), closed at the end.
+# V2 Studio pass (fix round 3: FOV 40, heroes at 24 studs / close-ups at 6, capped Night key + nav PointLights, wet_check.luau; docs/12 3.3; shots.json ends with 3 close-ups at 6 studs; import_test.luau checks the RIB lands upright; fix batch: neutral backdrop at hero distance, Night with a spotlight): studio lock, then one heavy slot; own TestBench window (mayday-lookdev-v2), closed at the end.
 set -uo pipefail
 GAME=/Users/bogdan/RobloxProjects/MaydaySeaRescue
 T=~/RobloxProjects/tools
@@ -11,9 +11,10 @@ export MAYDAY_STUDIO_TAG=mayday-lookdev-v2
 python3 tools/studio/smoke.py open &&
 python3 $T/studio-insert.py assets/models/M_Veh_RIB.rbxm auto Workspace --replace --game MaydaySeaRescue &&
 python3 $T/studio-insert.py assets/models/M_Veh_RIB_Helm.rbxm auto Workspace --replace --game MaydaySeaRescue &&
-python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --setup $R/studio/import-setup.luau --setup $R/studio/import-helm.luau --setup $R/studio/backdrop.luau \
+python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --setup $R/studio/import-setup.luau --setup $R/studio/import-helm.luau --setup $R/studio/backdrop.luau --setup $R/studio/preload.luau \
   --shots $R/shots.json --out $R/studio-raw.png --keep $R/studio --cols 4;
 python3 tools/studio/smoke.py lua Edit tools/studio/import_test.luau | tee $R/studio/import_test.txt;
+python3 tools/studio/smoke.py lua Edit $R/studio/wet_check.luau | tee $R/studio/wet_check.txt;
 python3 tools/studio/smoke.py console 2>&1 | tail -8; python3 tools/studio/smoke.py close"
 python3 - <<'PY'
 import json, os

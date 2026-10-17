@@ -9,9 +9,25 @@ import os
 CF = [0, float(os.environ.get("MAYDAY_RIB_Y", "-2.05")), 0, 0]
 
 
+def _sha(path):
+    import hashlib
+    try:
+        return hashlib.sha256(open(G + path, "rb").read()).hexdigest()
+    except OSError:
+        return ""
+
+
 def sets_for(asset):
+    """Image ids per set; fix round 3: the manifest keeps every upload of a source (keyed by content hash), so the id
+    is the entry whose sha matches the file on disk (last entry was an older upload)."""
     sets = {}
+    cur = {}
     for e in m.values():
+        src = e.get("source", "")
+        if src not in cur:
+            cur[src] = _sha(src)
+        if cur[src] and e.get("sha") and not cur[src].startswith(e["sha"]) and not e["sha"].startswith(cur[src][:40]):
+            continue
         r = re.match(rf"assets/textures/{asset}/T_\w+?_([A-Za-z][A-Za-z0-9]*)_(ALB|NOR|RGH|MET)(_Wet)?\.png$", e.get("source", ""))
         if r and e.get("imageId"):
             s = sets.setdefault(r[1], {})

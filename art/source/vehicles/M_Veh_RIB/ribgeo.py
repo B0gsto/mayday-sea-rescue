@@ -39,21 +39,21 @@ PALETTE = {
     "HullBody": ("#1F2836", 0.36, 0.0),         # z-banded: antifoul / waterline stripe / navy (HULL_BANDS)     # dark navy gelcoat (name kept for the slot layout)
     "HullOrange": ("#F2620F", 0.36, 0.0),
     "BootStripe": ("#D9DBD7", 0.38, 0.0),       # white waterline stripe
-    "TubeGrey": ("#EE6A1A", 0.66, 0.0),         # orange Hypalon (name kept)
-    "TubeWear": ("#B85A26", 0.74, 0.0),         # scuffed underside / chafe patches
-    "TubeSeam": ("#9C4A1E", 0.70, 0.0),         # welded overlap seams, dirt in the step
+    "TubeGrey": ("#C8522C", 0.62, 0.0),         # red-orange Hypalon (fix round 3: less saturated, darker; name kept)
+    "TubeWear": ("#9C4A2C", 0.74, 0.0),         # scuffed underside / chafe patches
+    "TubeSeam": ("#6E3522", 0.70, 0.0),         # welded overlap seams, dirt in the step
     "TubeFillet": ("#2E3135", 0.72, 0.0),       # tube-to-hull fillet tape
     "TubeEndCap": ("#383B3F", 0.70, 0.0),
     "Reflective": ("#C4C8CA", 0.28, 0.0),
     "RubStrake": ("#7B8085", 0.72, 0.0),        # grey rub strake
     "Rope": ("#4A5058", 0.88, 0.0),
     "Webbing": ("#2F3842", 0.85, 0.0),
-    "NonSlip": ("#5E6468", 0.90, 0.0),
-    "Gelcoat": ("#A4A9AB", 0.40, 0.0),
+    "NonSlip": ("#4A5054", 0.88, 0.0),
+    "Gelcoat": ("#9DA2A4", 0.42, 0.0),
     "GelcoatWhite": ("#D9DBD7", 0.38, 0.0),
     "Acrylic": ("#23292D", 0.06, 0.0),
     "Stainless": ("#DCDFE0", 0.20, 1.0),
-    "Aluminium": ("#C2C6C8", 0.38, 1.0),        # anodised
+    "Aluminium": ("#C2C6C8", 0.46, 1.0),        # anodised
     "Bolt": ("#D6D9DA", 0.28, 1.0),
     "BlackPlastic": ("#2A2C2E", 0.55, 0.0),
     "Rubber": ("#2D2F31", 0.82, 0.0),
@@ -62,8 +62,8 @@ PALETTE = {
     "LensGreen": ("#1F8A4C", 0.10, 0.0),
     "LensWhite": ("#D6D8D6", 0.10, 0.0),
     "LensBlue": ("#2D5BC4", 0.10, 0.0),
-    "CowlGrey": ("#3B3F43", 0.30, 0.0),
-    "CowlLight": ("#B9BDBE", 0.34, 0.0),
+    "CowlGrey": ("#26292C", 0.24, 0.0),
+    "CowlLight": ("#4A4F53", 0.26, 0.0),     # fix round 3: dark gunmetal cowl paint (gloss) vs satin metal
     "Vent": ("#232527", 0.60, 0.0),
     "Antifoul": ("#5B2B26", 0.82, 0.0),         # oxblood ablative antifoul
     "KeelStrip": ("#B4B8BA", 0.45, 1.0),        # stainless keel band
@@ -72,7 +72,7 @@ PALETTE = {
     "Vinyl": ("#2C2F33", 0.58, 0.0),
     "PodGrey": ("#6B7074", 0.45, 0.0),
     "Strap": ("#2B3440", 0.86, 0.0),
-    "PanelOrange": ("#EE6A1A", 0.62, 0.0),       # matches the tube orange (lettering sits on it)
+    "PanelOrange": ("#C8522C", 0.60, 0.0),       # matches the tube orange (lettering sits on it)
     "PanelConsole": ("#F2620F", 0.40, 0.0),     # matches the console Hull Orange
     "PanelNavy": ("#1F2836", 0.45, 0.0),
     "LetterWhite": ("#E6E7E3", 0.45, 0.0),
@@ -87,27 +87,29 @@ PALETTE = {
 # mottle (noise scale, amount), grime (colour, amount), streak (colour, amount: vertical water streaks),
 # rough_var, bump (kind, strength, scale)
 PROC = {
-    "HullCharcoal": dict(mottle=(6, 0.10), grime=("#3A3F44", 0.30), streak=("#4B5257", 0.35), rough_var=0.14, bump=("peel", 0.05, 60)),
-    "Antifoul": dict(mottle=(4, 0.16), grime=("#3A2826", 0.35), streak=("#6E5A4E", 0.25), rough_var=0.10, bump=("peel", 0.12, 40)),
+    "HullCharcoal": dict(mottle=(2, 0.06), grime=("#2A3442", 0.25), streak=("#3C4654", 0.30), rough_var=0.10, bump=("peel", 0.04, 10)),
+    "Antifoul": dict(mottle=(3, 0.12), grime=("#3A2826", 0.35), streak=("#6E5A4E", 0.25), rough_var=0.10, bump=("peel", 0.08, 10)),
     "BootStripe": dict(mottle=(5, 0.06), grime=("#9EA19A", 0.30), streak=("#8E918A", 0.30), rough_var=0.10),
-    "HullOrange": dict(mottle=(5, 0.06), grime=("#A85A2C", 0.22), streak=("#C06A38", 0.25), rough_var=0.12, bump=("peel", 0.04, 60)),
-    "TubeGrey": dict(mottle=(3, 0.10), grime=("#A65A2E", 0.30), streak=("#C77A4A", 0.22), rough_var=0.12, bump=("weave", 0.22, 70)),
-    "TubeWear": dict(mottle=(4, 0.14), grime=("#6E4A34", 0.40), rough_var=0.10, bump=("weave", 0.25, 70)),
-    "TubeSeam": dict(mottle=(4, 0.10), grime=("#5A4032", 0.45), rough_var=0.08, bump=("weave", 0.2, 70)),
-    "TubeFillet": dict(mottle=(4, 0.10), grime=("#4A4640", 0.30), rough_var=0.08, bump=("weave", 0.15, 70)),
-    "RubStrake": dict(mottle=(5, 0.10), grime=("#55585B", 0.40), rough_var=0.12, bump=("grain", 0.18, 90)),
+    "HullOrange": dict(mottle=(2, 0.05), grime=("#A85A2C", 0.20), streak=("#C06A38", 0.22), rough_var=0.10, bump=("peel", 0.03, 10)),
+    # fix round 3: no fabric weave (read as carpet); low-frequency salt stains, waterline / seam grime, scuffs
+    "TubeGrey": dict(mottle=(0.8, 0.06), grime=("#7A3A24", 0.30), streak=("#A85A3E", 0.18), salt=("#C9B6A6", 0.32),
+                     scuff=("#A0583E", 0.35), zgrime=("#4A2E24", 0.55, 1.65, 2.05), rough_var=0.10, bump=("peel", 0.03, 6)),
+    "TubeWear": dict(mottle=(1.5, 0.10), grime=("#5A3A2A", 0.40), salt=("#BDAA9A", 0.25), zgrime=("#4A2E24", 0.5, 1.65, 2.05), rough_var=0.10, bump=("peel", 0.05, 8)),
+    "TubeSeam": dict(mottle=(2, 0.08), grime=("#3A2A22", 0.55), rough_var=0.08, bump=("peel", 0.04, 8)),
+    "TubeFillet": dict(mottle=(2, 0.08), grime=("#4A4640", 0.30), rough_var=0.08, bump=("peel", 0.04, 8)),
+    "RubStrake": dict(mottle=(2, 0.08), grime=("#55585B", 0.35), rough_var=0.10, bump=("grain", 0.12, 20)),
     "Rubber": dict(mottle=(5, 0.08), grime=("#3E3C38", 0.30), rough_var=0.08, bump=("grain", 0.15, 120)),
-    "NonSlip": dict(mottle=(3, 0.10), grime=("#4A4C48", 0.40), rough_var=0.06, bump=("diamond", 0.9, 30)),
-    "Gelcoat": dict(mottle=(4, 0.08), grime=("#7E817C", 0.35), rough_var=0.12, bump=("peel", 0.05, 60)),
-    "GelcoatWhite": dict(mottle=(4, 0.05), grime=("#AEB0A8", 0.30), streak=("#A3A59E", 0.25), rough_var=0.10, bump=("peel", 0.04, 60)),
+    "NonSlip": dict(mottle=(1.5, 0.08), grime=("#3A3C3A", 0.35), rough_var=0.06, bump=("diamond", 0.7, 6)),   # 6/stud: resolvable at 1024 (30 aliased into streaks)
+    "Gelcoat": dict(mottle=(2, 0.05), grime=("#7E817C", 0.25), rough_var=0.08, bump=("peel", 0.03, 10)),
+    "GelcoatWhite": dict(mottle=(2, 0.04), grime=("#AEB0A8", 0.25), streak=("#A3A59E", 0.20), rough_var=0.08, bump=("peel", 0.03, 10)),
     "Webbing": dict(mottle=(6, 0.08), grime=("#3E4144", 0.25), rough_var=0.05, bump=("weave", 0.35, 140)),
     "Strap": dict(mottle=(6, 0.08), grime=("#3E4144", 0.25), rough_var=0.05, bump=("weave", 0.35, 140)),
     "Rope": dict(mottle=(8, 0.10), rough_var=0.05, bump=("grain", 0.3, 160)),
     "Vinyl": dict(mottle=(5, 0.06), grime=("#45484A", 0.25), rough_var=0.10, bump=("grain", 0.12, 140)),
-    "PodGrey": dict(mottle=(5, 0.06), grime=("#55595C", 0.30), rough_var=0.10, bump=("peel", 0.05, 60)),
-    "CowlGrey": dict(mottle=(5, 0.05), grime=("#4E5256", 0.25), streak=("#5E6468", 0.25), rough_var=0.10),
-    "CowlLight": dict(mottle=(5, 0.05), grime=("#8E918E", 0.30), streak=("#9A9D99", 0.25), rough_var=0.10),
-    "PanelOrange": dict(mottle=(3, 0.10), grime=("#A65A2E", 0.30), rough_var=0.10),
+    "PodGrey": dict(mottle=(2, 0.05), grime=("#55595C", 0.25), rough_var=0.08, bump=("peel", 0.04, 10)),
+    "CowlGrey": dict(mottle=(2, 0.04), grime=("#1E2022", 0.20), streak=("#3A3E42", 0.20), rough_var=0.05),
+    "CowlLight": dict(mottle=(2, 0.04), grime=("#33373A", 0.22), streak=("#5E6468", 0.20), salt=("#8A8E8E", 0.15), rough_var=0.05),
+    "PanelOrange": dict(mottle=(0.8, 0.06), grime=("#7A3A24", 0.25), salt=("#C9B6A6", 0.22), rough_var=0.10),
     "PanelConsole": dict(mottle=(5, 0.06), grime=("#A85A2C", 0.22), rough_var=0.10),
     "PanelNavy": dict(mottle=(4, 0.05), grime=("#3A3F44", 0.18), rough_var=0.08),
     "LetterWhite": dict(mottle=(4, 0.04), grime=("#B4B5AE", 0.25), rough_var=0.08),
@@ -250,6 +252,60 @@ def _proc_sockets(nt, name, hexc, rough, coord):
         L(col, _ci(mx, 0))
         L(gcol.outputs[0], _ci(mx, 1))
         col = _co(mx)
+    rough_mods = []
+    for key, sc, rng in (("salt", 0.7, (0.58, 0.74)), ("scuff", 2.2, (0.62, 0.74))):
+        if key not in spec:
+            continue
+        cc, amt = spec[key]
+        g = N("ShaderNodeTexNoise")
+        g.inputs["Scale"].default_value = sc
+        g.inputs["Detail"].default_value = 2.0
+        g.inputs["Roughness"].default_value = 0.45
+        try:   # 4D noise with a per-key W so salt and scuffs do not share a pattern
+            g.noise_dimensions = "4D"
+            g.inputs["W"].default_value = 3.7 if key == "salt" else 8.1
+        except (AttributeError, TypeError, KeyError):
+            pass
+        L(coord, g.inputs["Vector"])
+        mr = N("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = rng
+        mr.inputs["To Max"].default_value = amt
+        L(g.outputs["Fac"], mr.inputs["Value"])
+        gcol = N("ShaderNodeRGB")
+        gcol.outputs[0].default_value = _hex_srgb(cc) + (1.0,)
+        mx = N("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        L(mr.outputs[0], mx.inputs["Factor"])
+        L(col, _ci(mx, 0))
+        L(gcol.outputs[0], _ci(mx, 1))
+        col = _co(mx)
+        rough_mods.append((mr.outputs[0], 0.2 if key == "salt" else 0.12))
+    if "zgrime" in spec:   # dark grime band from z0 (full) fading to z1 (none): waterline scum on the tube undersides
+        cc, amt, z0, z1 = spec["zgrime"]
+        sep = N("ShaderNodeSeparateXYZ")
+        L(coord, sep.inputs[0])
+        zn = N("ShaderNodeTexNoise")
+        zn.inputs["Scale"].default_value = 1.2
+        zn.inputs["Detail"].default_value = 2.0
+        L(coord, zn.inputs["Vector"])
+        zj = N("ShaderNodeMath")
+        zj.operation = "MULTIPLY_ADD"
+        L(zn.outputs["Fac"], zj.inputs[0])
+        zj.inputs[1].default_value = 0.35
+        L(sep.outputs["Z"], zj.inputs[2])
+        mr = N("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = z1 + 0.175, z0 + 0.175
+        mr.inputs["To Max"].default_value = amt
+        L(zj.outputs[0], mr.inputs["Value"])
+        gcol = N("ShaderNodeRGB")
+        gcol.outputs[0].default_value = _hex_srgb(cc) + (1.0,)
+        mx = N("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        L(mr.outputs[0], mx.inputs["Factor"])
+        L(col, _ci(mx, 0))
+        L(gcol.outputs[0], _ci(mx, 1))
+        col = _co(mx)
+        rough_mods.append((mr.outputs[0], 0.12))
     rv = spec.get("rough_var", 0.0)
     rn = N("ShaderNodeTexNoise")
     rn.inputs["Scale"].default_value = 2.5
@@ -260,7 +316,16 @@ def _proc_sockets(nt, name, hexc, rough, coord):
     rr.inputs["To Min"].default_value = max(0.02, rough - rv)
     rr.inputs["To Max"].default_value = min(1.0, rough + rv)
     L(rn.outputs["Fac"], rr.inputs["Value"])
-    return col, rr.outputs[0]
+    rgh = rr.outputs[0]
+    for fac, d in rough_mods:   # salt crust / scuffs / scum are matt
+        ad = N("ShaderNodeMath")
+        ad.operation = "MULTIPLY_ADD"
+        L(fac, ad.inputs[0])
+        ad.inputs[1].default_value = d
+        L(rgh, ad.inputs[2])
+        ad.use_clamp = True
+        rgh = ad.outputs[0]
+    return col, rgh
 
 
 def _proc_tree(mat, name, bsdf, hexc, rough, metal, bump=True):
@@ -286,7 +351,7 @@ def _proc_tree(mat, name, bsdf, hexc, rough, metal, bump=True):
         L(_bump_tree(nt, bmp[0], bmp[1], bmp[2], coord), bsdf.inputs["Normal"])
 
 
-HULL_BANDS = ((1.60, "Antifoul"), (1.74, "BootStripe"), (99.0, "HullCharcoal"))   # object z (studs) upper bounds
+HULL_BANDS = ((1.00, "Antifoul"), (1.13, "BootStripe"), (99.0, "HullCharcoal"))   # fix round 3: waterline lowered so the navy topsides show   # object z (studs) upper bounds
 
 
 def _band_tree(mat, bsdf):
@@ -332,7 +397,7 @@ def _band_tree(mat, bsdf):
     c.inputs["X"].default_value = 0.0
     L(rgh, c.inputs["Y"])
     mat["bake_custom"] = 1
-    L(_bump_tree(nt, "peel", 0.06, 50, tc.outputs["Object"]), bsdf.inputs["Normal"])
+    L(_bump_tree(nt, "peel", 0.04, 10, tc.outputs["Object"]), bsdf.inputs["Normal"])
 
 
 def material(name):

@@ -376,6 +376,17 @@ def deck(g):
                 z += 0.012 + R.grit(Vector((x, y, 0.0)), 40.0, 0.004)
             vr.append(g.bm.verts.new(Vector((x, y, z))))
         verts.append(vr)
+    if g.hi:   # fix round 3: pad fasteners (HP only, baked): screws along each pad's fore / aft edges
+        yy = y0
+        while yy < y1:
+            for yp in (yy + 0.32, yy + 2.0):
+                h = deck_half(yp)
+                if h < 0.6:
+                    continue
+                for sx in (1, -1):
+                    for xp in (0.25, (h - 0.28) * 0.5 + 0.1, h - 0.4):
+                        bolts(g, [(sx * xp, yp, R.DECK + 0.012)], (0, 0, 1))
+            yy += 2.1
     faces = []
     for i in range(ny):
         for j in range(nx):
@@ -953,17 +964,24 @@ def build():
         meshes.append({"object": h})
     meshes.append({"object": col})
 
-    streak = {"rust": 0.3, "rust_color": (0.47, 0.49, 0.49), "rust_rough": 0.75, "rust_length": 0.5, "rust_fingers": 14,
-              "salt": 0.5, "salt_range": (0.25, 0.7), "salt_color": (0.82, 0.81, 0.77), "edge_color": (0.66, 0.66, 0.63)}
+    # fix round 3: the bright salt crust (0.82 near-white) and grey rust streaks read as white / grey blotches and
+    # streaks on the deck and console in Studio: salt is a faint warm grey, streaks are dark water grime, few fingers
+    streak = {"rust": 0.12, "rust_color": (0.28, 0.26, 0.24), "rust_rough": 0.7, "rust_length": 0.45, "rust_fingers": 5,
+              "salt": 0.15, "salt_range": (0.35, 0.8), "salt_color": (0.62, 0.61, 0.58), "edge_color": (0.58, 0.58, 0.56)}
+    # wet: roughness ~0.15-0.25 on tubes / deck (dry 0.62-0.88 minus wet_gloss), albedo about -35%
     sets = [
-        {"name": TEX, "set": "Hull", "size": 2048, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
-         "wear": dict(streak, edge=0.3, edge_color=(0.62, 0.6, 0.56))},
-        {"name": TEX, "set": "Deck", "size": 2048, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
-         "wear": dict(streak, edge=0.4, rust=0.18)},
-        {"name": TEX, "set": "Rig", "size": 2048, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
-         "wear": dict(streak, edge=0.4, rust=0.15, salt=0.4, edge_color=(0.74, 0.74, 0.72))},
-        {"name": TEX, "set": "Decals", "size": 1024, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
-         "wear": dict(streak, edge=0.0, salt=0.25, rust=0.12)},
+        {"name": TEX, "set": "Hull", "size": 2048, "wet": True, "wet_darken": 0.35, "wet_gloss": 0.45,
+         "wet_streaks": 0.5, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
+         "wear": dict(streak, edge=0.15, edge_color=(0.5, 0.42, 0.38))},
+        {"name": TEX, "set": "Deck", "size": 2048, "wet": True, "wet_darken": 0.35, "wet_gloss": 0.62,
+         "wet_streaks": 0.4, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
+         "wear": dict(streak, edge=0.15, rust=0.05, salt=0.1)},
+        {"name": TEX, "set": "Rig", "size": 2048, "wet": True, "wet_darken": 0.3, "wet_gloss": 0.4,
+         "wet_streaks": 0.4, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
+         "wear": dict(streak, edge=0.25, rust=0.08, salt=0.15, edge_color=(0.66, 0.66, 0.64))},
+        {"name": TEX, "set": "Decals", "size": 1024, "wet": True, "wet_darken": 0.35, "wet_gloss": 0.45,
+         "wet_streaks": 0.5, "cage_extrusion": 0.06, "max_ray_distance": 0.15,
+         "wear": dict(streak, edge=0.0, salt=0.08, rust=0.05)},
     ]
     return {
         "name": NAME,

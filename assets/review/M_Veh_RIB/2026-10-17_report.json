@@ -2,11 +2,12 @@
  "asset": "M_Veh_RIB",
  "name": "M_Veh_RIB",
  "date": "2026-10-17",
- "commit": "a98befb+dirty",
+ "commit": "0d8ef0d+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
   "lod",
+  "bake",
   "validate",
   "export",
   "turntable"
@@ -23,10 +24,181 @@
   "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
   "roblox_tri_limit": 20000
  },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Hull",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_RIB_Hull_LOD0",
+      "hp": "M_Veh_RIB_Hull_HP"
+     },
+     {
+      "lod0": "M_Veh_RIB_Tubes_LOD0",
+      "hp": "M_Veh_RIB_Tubes_HP"
+     }
+    ],
+    "coverage": 0.2673,
+    "seconds": 102.1,
+    "timings": {
+     "nor": 9.7,
+     "mask": 21.1,
+     "pos": 8.6,
+     "wn": 9.5,
+     "base": 12.1,
+     "mr": 11.9,
+     "compose_write": 24.7
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_ALB.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_NOR.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_RGH.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Hull_MET.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_NOR.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_RGH.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_RGH_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/textures"
+   },
+   {
+    "set": "Deck",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_RIB_Deck_LOD0",
+      "hp": "M_Veh_RIB_Deck_HP"
+     },
+     {
+      "lod0": "M_Veh_RIB_Console_LOD0",
+      "hp": "M_Veh_RIB_Console_HP"
+     }
+    ],
+    "coverage": 0.4495,
+    "seconds": 107.4,
+    "timings": {
+     "nor": 9.2,
+     "mask": 32.7,
+     "pos": 8.2,
+     "wn": 6.4,
+     "base": 7.3,
+     "mr": 10.0,
+     "compose_write": 28.7
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_ALB.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_NOR.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_RGH.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Deck_MET.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_NOR.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Deck_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/textures"
+   },
+   {
+    "set": "Rig",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_RIB_AFrame_LOD0",
+      "hp": "M_Veh_RIB_AFrame_HP"
+     },
+     {
+      "lod0": "M_Veh_RIB_Engines_LOD0",
+      "hp": "M_Veh_RIB_Engines_HP"
+     }
+    ],
+    "coverage": 0.1193,
+    "seconds": 69.1,
+    "timings": {
+     "nor": 8.3,
+     "mask": 12.6,
+     "pos": 7.5,
+     "wn": 7.2,
+     "base": 7.0,
+     "mr": 8.3,
+     "compose_write": 14.7
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_ALB.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_NOR.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_RGH.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Rig_MET.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_ALB.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_ALB_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Rig_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/textures"
+   },
+   {
+    "set": "Decals",
+    "ok": true,
+    "size": 4096,
+    "export": 1024,
+    "pairs": [
+     {
+      "lod0": "M_Veh_RIB_Decals_LOD0",
+      "hp": "M_Veh_RIB_Decals_HP"
+     }
+    ],
+    "coverage": 0.3639,
+    "seconds": 65.6,
+    "timings": {
+     "nor": 5.2,
+     "mask": 19.2,
+     "pos": 5.5,
+     "wn": 5.1,
+     "base": 5.1,
+     "mr": 5.6,
+     "compose_write": 16.6
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_ALB.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_NOR.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_RGH.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_RIB/textures/T_RIB_Decals_MET.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH_Wet.png",
+     "assets/textures/M_Veh_RIB/T_RIB_Decals_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/textures"
+   }
+  ]
+ },
  "exports": [
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD0.fbx",
-   "bytes": 1907436,
+   "bytes": 1907340,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD0",
@@ -177,7 +349,7 @@
   },
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
-   "bytes": 845788,
+   "bytes": 845404,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD1",
@@ -312,7 +484,7 @@
   },
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
-   "bytes": 249852,
+   "bytes": 249964,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD2",
@@ -352,7 +524,7 @@
       11.058,
       6.3675
      ],
-     "polygons": 39,
+     "polygons": 40,
      "all_triangles": true,
      "uv": true
     },
@@ -382,9 +554,9 @@
      "max": [
       2.7552,
       11.0679,
-      6.2976
+      6.3024
      ],
-     "polygons": 346,
+     "polygons": 345,
      "all_triangles": true,
      "uv": true
     },
@@ -701,11 +873,75 @@
    3.0
   ],
   "validation_ok": true,
-  "seconds": 6.2
+  "seconds": 12.5
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/M_Veh_RIB.blend",
  "ok": true,
  "checks": [
+  {
+   "subject": "T_RIB_Hull",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "26.7% of texels at 4096 px from M_Veh_RIB_Hull_LOD0<-M_Veh_RIB_Hull_HP, M_Veh_RIB_Tubes_LOD0<-M_Veh_RIB_Tubes_HP"
+  },
+  {
+   "subject": "T_RIB_Hull",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 102 s"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "45.0% of texels at 4096 px from M_Veh_RIB_Deck_LOD0<-M_Veh_RIB_Deck_HP, M_Veh_RIB_Console_LOD0<-M_Veh_RIB_Console_HP"
+  },
+  {
+   "subject": "T_RIB_Deck",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 107 s"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11.9% of texels at 4096 px from M_Veh_RIB_AFrame_LOD0<-M_Veh_RIB_AFrame_HP, M_Veh_RIB_Engines_LOD0<-M_Veh_RIB_Engines_HP"
+  },
+  {
+   "subject": "T_RIB_Rig",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 69 s"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36.4% of texels at 4096 px from M_Veh_RIB_Decals_LOD0<-M_Veh_RIB_Decals_HP"
+  },
+  {
+   "subject": "T_RIB_Decals",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 1024, 66 s"
+  },
   {
    "subject": "M_Veh_RIB",
    "check": "scene units",
@@ -896,7 +1132,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-05, 301 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.12e-05, 303 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -968,7 +1204,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-05, 37 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.12e-05, 39 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD0",
@@ -1400,7 +1636,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.32e-06, 148 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.32e-06, 150 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1472,7 +1708,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.27e-03, 37 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.27e-03, 39 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1896,7 +2132,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "346 of 10000"
+   "detail": "345 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1904,7 +2140,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 1 loose verts, smallest face 4.43e-07, 92 open edges (open edges allowed on cards and decals)"
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 1 loose verts, smallest face 4.43e-07, 95 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1936,7 +2172,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 346 faces have no UV area"
+   "detail": "0 of 345 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1968,7 +2204,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "39 of 10000"
+   "detail": "40 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -1976,7 +2212,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 8 loose verts, smallest face 1.29e-02, 20 open edges (open edges allowed on cards and decals)"
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 8 loose verts, smallest face 9.97e-03, 23 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -2000,7 +2236,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.006 to 0.876, v 0.005 to 0.680"
+   "detail": "u 0.005 to 0.876, v 0.005 to 0.680"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -2008,7 +2244,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 39 faces have no UV area"
+   "detail": "0 of 40 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -2984,7 +3220,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset and mannequin in frame; 9 renders in 4 s, maps M_Veh_RIB_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Tubes_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_AFrame_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Decals_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.77; 15 renders in 12 s, maps M_Veh_RIB_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Tubes_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_AFrame_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Decals_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -3055,7 +3291,7 @@
    "name": "M_Veh_RIB_Deck_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 108040,
+   "triangles": 112792,
    "texel_density": null
   },
   {
@@ -3132,7 +3368,7 @@
    "name": "M_Veh_RIB_Deck_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 346,
+   "triangles": 345,
    "texel_density": null
   },
   {
@@ -3146,7 +3382,7 @@
    "name": "M_Veh_RIB_Console_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 39,
+   "triangles": 40,
    "texel_density": null
   },
   {
@@ -3197,5 +3433,5 @@
   26.072174072265625,
   9.511707305908203
  ],
- "peak_rss_mb": 1050.4
+ "peak_rss_mb": 5998.2
 }

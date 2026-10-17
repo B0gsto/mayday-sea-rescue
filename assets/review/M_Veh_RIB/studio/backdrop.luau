@@ -66,16 +66,50 @@ rig.Transparency = 1
 rig.Size = Vector3.new(1, 1, 1)
 rig.CFrame = CFrame.lookAt(Vector3.new(16, 62, -18), Vector3.new(0, 43, 0))
 rig.Parent = f
+-- fix round 3 (Night blew the orange tubes out to yellow and left a white pool on the floor): a soft practical-level
+-- key (Brightness 1.2, narrow range so it falls off before the floor around the hull), plus small nav / light-bar
+-- PointLights at the RIB's light attachments with realistic reach (1-3 studs), only on for Night.
 local spot = Instance.new("SpotLight")
 spot.Face = Enum.NormalId.Front
-spot.Angle = 55
-spot.Range = 60
-spot.Brightness = 6
-spot.Color = Color3.fromRGB(255, 244, 228)
+spot.Angle = 40
+spot.Range = 34
+spot.Brightness = 1.2
+spot.Color = Color3.fromRGB(255, 236, 214)
 spot.Shadows = true
 spot.Enabled = false
 spot.Parent = rig
+rig.CFrame = CFrame.lookAt(Vector3.new(14, 64, -16), Vector3.new(0, 45.5, 0))
+local navSpec = {
+	ATT_NavPort = { Color3.fromRGB(255, 40, 30), 0.6, 2.5 },
+	ATT_NavStarboard = { Color3.fromRGB(40, 255, 90), 0.6, 2.5 },
+	ATT_NavMasthead = { Color3.fromRGB(255, 246, 230), 0.7, 3 },
+	ATT_NavStern = { Color3.fromRGB(255, 246, 230), 0.5, 2.5 },
+	ATT_Beacon = { Color3.fromRGB(60, 110, 255), 0.8, 3 },
+}
+local navLights = {}
+local function ensureNav()
+	if #navLights > 0 then
+		return
+	end
+	for _, d in workspace:GetDescendants() do
+		local spec = d:IsA("Attachment") and navSpec[d.Name]
+		if spec and not d:FindFirstAncestor("M_Veh_RIB_Helm") then
+			local l = Instance.new("PointLight")
+			l.Name = "LookDevNav"
+			l.Color, l.Brightness, l.Range = spec[1], spec[2], spec[3]
+			l.Shadows = false
+			l.Enabled = false
+			l.Parent = d
+			table.insert(navLights, l)
+		end
+	end
+end
 _G.RIBSpot = function(on: boolean)
+	workspace.CurrentCamera.FieldOfView = 40
 	spot.Enabled = on
+	ensureNav()
+	for _, l in navLights do
+		l.Enabled = on
+	end
 end
 return "backdrop ok"

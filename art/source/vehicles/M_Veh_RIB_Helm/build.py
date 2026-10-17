@@ -214,7 +214,7 @@ def build():
     att.location = att.location + off
     meshes = [{"object": o, "set": "Console"} for o in con] + [{"object": o, "set": "Seats"} for o in sea]
     meshes += [{"object": h} for h in hps]
-    wear = {"rust": 0.0, "edge": 0.3, "salt": 0.3, "edge_color": (0.62, 0.62, 0.6), "ao_strength": 0.2}
+    wear = {"rust": 0.0, "edge": 0.2, "salt": 0.1, "salt_color": (0.6, 0.6, 0.58), "edge_color": (0.56, 0.56, 0.55), "ao_strength": 0.2}   # fix round 3: no white salt blotches
     return {
         "name": NAME,
         "budget": "helm_interior",
@@ -222,8 +222,8 @@ def build():
         "tier": "hero",
         "dims_m": (1.2, 2.77, 1.12),
         "origin": "free",
-        "sets": [{"name": TEX, "set": "Console", "size": 2048, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15, "wear": wear},
-                 {"name": TEX, "set": "Seats", "size": 1024, "wet": True, "cage_extrusion": 0.06, "max_ray_distance": 0.15, "wear": dict(wear, edge=0.2, ao_strength=0.12),
+        "sets": [{"name": TEX, "set": "Console", "size": 2048, "wet": True, "wet_darken": 0.35, "wet_gloss": 0.45, "wet_streaks": 0.35, "cage_extrusion": 0.06, "max_ray_distance": 0.15, "wear": wear},
+                 {"name": TEX, "set": "Seats", "size": 1024, "wet": True, "wet_darken": 0.35, "wet_gloss": 0.5, "wet_streaks": 0.35, "cage_extrusion": 0.06, "max_ray_distance": 0.15, "wear": dict(wear, edge=0.2, ao_strength=0.12),
                   "slots": {"Stainless": {"base_color": "#DCDFE0"}}}],
         "meshes": meshes,
         "attachments": [att],

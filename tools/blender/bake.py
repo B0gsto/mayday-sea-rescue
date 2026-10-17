@@ -35,7 +35,7 @@ Set fields: name, set, size, wet, dir (as validate), plus
   ao_distance  AO ray length in studs (default 4% of the bbox diagonal, at least 0.05)
   bevel_radius curvature bevel radius in studs (default 2.5% of the bbox diagonal)
   cage_extrusion, max_ray_distance   selected-to-active ray settings (default 2% / 4% of the bbox diagonal)
-  wet_darken (0.25), wet_gloss (0.3)
+  wet_darken (0.25), wet_gloss (0.3), wet_streaks (0: off; 0..1 running-water streaks on the _Wet maps)
 """
 import os
 import time
@@ -120,6 +120,15 @@ def finish_maps(baked, covered, size, set_spec):
     maps = {("ALB", False): out["alb"], ("NOR", False): nor, ("RGH", False): out["rgh"], ("MET", False): out["met"]}
     if set_spec.get("wet"):
         wa, wr = pbrmaps.wet(out["alb"], out["rgh"], set_spec.get("wet_darken", 0.25), set_spec.get("wet_gloss", 0.3))
+        ws = float(set_spec.get("wet_streaks", 0.0))   # opt-in: running-water streaks (darker, glossier) on the _Wet maps
+        if ws > 0:
+            sp = pbrmaps.wear_params({"rust_length": 0.6, "rust_fingers": 7})
+            src = np.maximum(pbrmaps.edge_mask(curv, sp), 0.35)
+            st = pbrmaps.rust_streaks(p["pos"], p["wn"] * 2.0 - 1.0, src, grown, sp) * ws
+            wa = wa * (1.0 - 0.3 * st[..., None])
+            wr = np.clip(wr - 0.12 * st, 0.04, 1.0)
+            yl = pbrmaps.luma(np.clip(wa, 0.0, 1.0)) * 255.0   # keep the non-metal albedo floor (check_textures 30)
+            wa = np.clip(wa * np.where(yl < 31.0, 31.0 / np.maximum(yl, 1e-3), 1.0)[..., None], 0.0, 1.0)
         maps[("ALB", True)], maps[("RGH", True)] = wa, wr
     masks = {"AO": ao, "Curv": curv, "Thick": thick, "Edge": out["edge"], "Salt": out["salt"], "Rust": out["rust"]}
     return maps, masks
