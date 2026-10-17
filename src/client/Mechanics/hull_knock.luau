@@ -1,0 +1,295 @@
+--!strict
+-- Mechanic "hull_knock" (docs/09 section 7 step 5): the hull team works along the upturned hull of
+-- the Gale Queen, knocks a pattern of three, then stays still and listens. Survivors in the air
+-- pocket answer with taps from inside: loud right over their compartment, faint one compartment
+-- away (with a direction), nothing further off. Every reply is a 3D sound, a subtitle and a
+-- visual ripple on the hull. The team marks the compartment and radios it.
+-- First person on foot: the player's own position along the hull picks the compartment; when the
+-- character is not on the hull (greybox ferry, or still climbing) A/D walk a cursor along it.
+-- Result metrics: rightCompartment (bool), compartment (number, the server can recheck it with
+-- HullKnock.pocketCompartment), knocks (patterns knocked), listens.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local FerryUi = require(script.Parent:WaitForChild("Ferry"):WaitForChild("FerryUi"))
+local HullKnock = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ferry"):WaitForChild("HullKnock")
+)
+
+local C = FerryUi.Theme.Colors
+
+local hull_knock = {}
+
+function hull_knock.start(
+	ctx: { [string]: any },
+	finish: (result: { [string]: any }) -> ()
+): (() -> ())?
+	local bin = FerryUi.bin()
+	local assist = ctx.isAssist == true
+	local opId: string = ctx.operation.id
+	local pocket = HullKnock.pocketCompartment(opId)
+
+	-- hull frame: centre, length axis, up face
+	local ferry = FerryUi.findFerry(opId)
+	local hullPart = ferry and ferry:FindFirstChild("Hull")
+	local length = 60
+	local function hullCFrame(): CFrame
+		if hullPart and hullPart:IsA("BasePart") then
+			return hullPart.CFrame
+		end
+		return CFrame.new(ctx.operation.position + Vector3.new(0, 3, 0))
+	end
+	if hullPart and hullPart:IsA("BasePart") then
+		length = hullPart.Size.Z
+	end
+	local function compartmentPos(i: number): Vector3
+		return (hullCFrame() * CFrame.new(0, 0, HullKnock.offsetAlong(i, length))).Position
+			+ Vector3.new(0, 3, 0)
+	end
+
+	local cursor = 0 -- studs along the hull when the character is off it
+	local function along(): (number, boolean)
+		local _, root = FerryUi.character()
+		if root then
+			local rel = hullCFrame():PointToObjectSpace(root.Position)
+			if
+				math.abs(rel.Z) <= length / 2 + 4
+				and Vector3.new(rel.X, rel.Y, 0).Magnitude < 16
+			then
+				return rel.Z, true
+			end
+		end
+		return cursor, false
+	end
+
+	---------------------------------------------------------------- UI
+
+	local gui = bin.add(FerryUi.screen("FerryHullKnock"))
+	local panel = FerryUi.frame(gui, UDim2.fromOffset(460, 150), UDim2.new(0.5, -230, 1, -200))
+	FerryUi.corner(panel)
+	FerryUi.text(
+		panel,
+		"HULL SEARCH · knock three, then listen",
+		UDim2.new(1, -24, 0, 24),
+		UDim2.fromOffset(12, 8),
+		20,
+		C.text,
+		FerryUi.Theme.HeaderFont
+	)
+	local where =
+		FerryUi.text(panel, "", UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, 36), 17, C.textDim)
+	local strip =
+		FerryUi.frame(panel, UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, 62), C.locked, 0)
+	FerryUi.corner(strip, 6)
+	local cells: { Frame } = {}
+	for i = 1, HullKnock.Count do
+		local cell = FerryUi.frame(
+			strip,
+			UDim2.new(1 / HullKnock.Count, -4, 1, -4),
+			UDim2.new((i - 1) / HullKnock.Count, 2, 0, 2),
+			C.panelLight,
+			0.4
+		)
+		FerryUi.corner(cell, 4)
+		FerryUi.text(
+			cell,
+			HullKnock.Compartments[i].short,
+			UDim2.fromScale(1, 1),
+			UDim2.new(),
+			12,
+			C.text
+		).TextXAlignment =
+			Enum.TextXAlignment.Center
+		cells[i] = cell
+	end
+	local status =
+		FerryUi.text(panel, "", UDim2.new(1, -24, 0, 20), UDim2.fromOffset(12, 90), 16, C.text)
+	local keysHint = FerryUi.text(
+		panel,
+		"Click / A: knock    F / X: mark here    A/D: move (off the hull)",
+		UDim2.new(1, -24, 0, 18),
+		UDim2.fromOffset(12, 118),
+		14,
+		C.textDim
+	)
+	keysHint.Visible = true
+
+	---------------------------------------------------------------- knock and listen
+
+	local knockTimes: { number } = {}
+	local listeningUntil = 0
+	local patterns, listens = 0, 0
+	local heard: { [number]: string } = {}
+	local done = false
+
+	local function current(): number
+		local a = along()
+		return HullKnock.compartmentAt(a, length)
+	end
+
+	local function listen(at: number)
+		listens += 1
+		listeningUntil = os.clock() + HullKnock.ListenSeconds
+		status.Text = "Listening... keep still."
+		local _, root = FerryUi.character()
+		local startPos = if root then root.Position else nil
+		task.delay(1.1, function()
+			if done then
+				return
+			end
+			local _, r2 = FerryUi.character()
+			if startPos and r2 and (r2.Position - startPos).Magnitude > 3 then
+				status.Text = "You moved: your boots drowned out any answer. Knock again."
+				return
+			end
+			local reply = HullKnock.reply(at, pocket)
+			if reply.strength > 0 then
+				local src = compartmentPos(pocket)
+				for k = 0, 2 do
+					task.delay(k * 0.45, function()
+						if done then
+							return
+						end
+						FerryUi.sound(FerryUi.Sounds.replyTap, src, 0.3 + 0.7 * reply.strength)
+						FerryUi.ripple(src, reply.strength, Color3.fromRGB(255, 220, 140))
+					end)
+				end
+			end
+			FerryUi.subtitle(gui, HullKnock.subtitle(reply), 3)
+			heard[at] = reply.kind
+			if assist then
+				cells[at].BackgroundColor3 = if reply.kind == "Loud"
+					then C.ready
+					elseif reply.kind == "Faint" then C.gold
+					else C.locked
+			end
+			status.Text = if reply.kind == "Loud"
+				then "They're answering here. Mark it (F) and radio it."
+				else "Move along and try again."
+		end)
+	end
+
+	local function knock()
+		if done or os.clock() < listeningUntil then
+			return
+		end
+		local at = current()
+		FerryUi.playAction("hull_knock")
+		local p = compartmentPos(at)
+		FerryUi.sound(FerryUi.Sounds.knock, p, 0.9)
+		FerryUi.ripple(p, 0.3, Color3.fromRGB(200, 220, 240))
+		table.insert(knockTimes, os.clock())
+		while #knockTimes > 3 do
+			table.remove(knockTimes, 1)
+		end
+		if #knockTimes < 3 then
+			status.Text = string.rep("KNOCK  ", #knockTimes)
+			return
+		end
+		local ok, why = HullKnock.rhythm(knockTimes)
+		table.clear(knockTimes)
+		if not ok then
+			status.Text = if assist then why or "" else "No clear pattern."
+			return
+		end
+		patterns += 1
+		listen(at)
+	end
+
+	local function markHere()
+		if done then
+			return
+		end
+		done = true
+		local at = current()
+		local right = at == pocket
+		FerryUi.playAction("hull_mark_chalk")
+		local name = HullKnock.Compartments[at].name
+		FerryUi.sound(FerryUi.Sounds.radioClick, nil, 0.5)
+		FerryUi.subtitle(
+			gui,
+			`"Coastguard, hull team. Survivors answering under the {name}, compartment {at}. Marked. Over."`,
+			3
+		)
+		task.delay(1.2, function()
+			bin.clean()
+			finish({
+				metrics = {
+					rightCompartment = right,
+					compartment = at,
+					knocks = patterns,
+					listens = listens,
+				},
+			})
+		end)
+	end
+
+	bin.add(UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+		if
+			input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.KeyCode == Enum.KeyCode.ButtonA
+		then
+			knock()
+		elseif input.KeyCode == Enum.KeyCode.F or input.KeyCode == Enum.KeyCode.ButtonX then
+			markHere()
+		end
+	end))
+	if UserInputService.TouchEnabled then
+		FerryUi.button(
+			panel,
+			"Knock",
+			UDim2.fromOffset(110, 52),
+			UDim2.new(1, -240, 0, -60),
+			C.accent,
+			knock
+		)
+		FerryUi.button(
+			panel,
+			"Mark here",
+			UDim2.fromOffset(110, 52),
+			UDim2.new(1, -120, 0, -60),
+			C.panelLight,
+			markHere
+		)
+	end
+
+	bin.add(RunService.RenderStepped:Connect(function(dt)
+		local a, onHull = along()
+		if not onHull then
+			local dir = 0
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+				dir -= 1
+			end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+				dir += 1
+			end
+			cursor = math.clamp(cursor + dir * 9 * dt, -length / 2, length / 2)
+			a = cursor
+		end
+		local at = HullKnock.compartmentAt(a, length)
+		where.Text = `Over: {HullKnock.Compartments[at].name}`
+			.. (if onHull then "" else "  (cursor)")
+		for i, cell in cells do
+			cell.BackgroundTransparency = if i == at then 0 else 0.4
+		end
+	end))
+
+	if Players.LocalPlayer:GetAttribute("OpsAutoStub") == true then
+		task.delay(1, function()
+			cursor = HullKnock.offsetAlong(pocket, length)
+			markHere()
+		end)
+	end
+
+	return function()
+		done = true
+		bin.clean()
+	end
+end
+
+return hull_knock

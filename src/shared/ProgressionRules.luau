@@ -11,6 +11,10 @@ export type PlayerData = {
 	gear: { [string]: number },
 	vehicles: { [string]: boolean },
 	totalRescues: number,
+	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
+	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
+	-- number, a short string or a flat table of those (for example `cameraSettings`).
+	flags: { [string]: any },
 }
 
 local Rules = {}
@@ -165,6 +169,8 @@ function Rules.defaultData(): PlayerData
 		gear = {},
 		vehicles = {},
 		totalRescues = 0,
+		coldOpenDone = false,
+		flags = {},
 	}
 end
 
@@ -180,7 +186,50 @@ local function num(value: any, default: number): number
 	return default
 end
 
+local MAX_FLAGS = 32
+local MAX_FLAG_FIELDS = 24
+
+local function flagScalar(value: any): any
+	local kind = type(value)
+	if kind == "boolean" then
+		return value
+	elseif kind == "number" then
+		if value ~= value or value == math.huge or value == -math.huge then
+			return nil
+		end
+		return math.clamp(value, -1e6, 1e6)
+	elseif kind == "string" then
+		return string.sub(value, 1, 64)
+	end
+	return nil
+end
+
+-- Cleans one flag value (scalar, or a flat table of string keys to scalars); nil when invalid.
+function Rules.sanitizeFlag(value: any): any
+	if type(value) ~= "table" then
+		return flagScalar(value)
+	end
+	local out = {}
+	local n = 0
+	for k, v in value do
+		if type(k) == "string" and #k <= 32 and n < MAX_FLAG_FIELDS then
+			local clean = flagScalar(v)
+			if clean ~= nil then
+				out[k] = clean
+				n += 1
+			end
+		end
+	end
+	return out
+end
+
+function Rules.validFlagName(name: any): boolean
+	return type(name) == "string" and #name > 0 and #name <= 32
+end
+
 -- Fills missing fields and upgrades old versions. Accepts anything (corrupt saves included).
+Rules.MAX_FLAGS = MAX_FLAGS
+
 function Rules.migrate(raw: any): PlayerData
 	local data = Rules.defaultData()
 	if type(raw) ~= "table" then
@@ -203,6 +252,19 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	data.coldOpenDone = raw.coldOpenDone == true
+	if type(raw.flags) == "table" then
+		local n = 0
+		for name, value in raw.flags do
+			if Rules.validFlagName(name) and n < MAX_FLAGS then
+				local clean = Rules.sanitizeFlag(value)
+				if clean ~= nil then
+					data.flags[name] = clean
+					n += 1
+				end
+			end
+		end
+	end
 	-- version 1 is current; future migrations go here, keyed on raw.version
 	data.version = ProgressionConfig.SchemaVersion
 	return data
@@ -221,6 +283,8 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		rankProgress = progress,
 		gear = table.clone(data.gear),
 		vehicles = table.clone(data.vehicles),
+		coldOpenDone = data.coldOpenDone,
+		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 	}
 end
 

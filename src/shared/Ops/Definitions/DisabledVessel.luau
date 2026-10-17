@@ -23,7 +23,10 @@ local def: Types.OperationDef = {
 			realTerm = "Tasking",
 			role = "Navigator",
 			mechanicId = "radio_ack",
-			gradeBands = { { metric = "elapsed", gold = 15, silver = 25, bronze = 40 } },
+			gradeBands = {
+				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
+				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
+			},
 			serverMetrics = { "elapsed" },
 			weight = 1,
 			timeoutSec = 45,
@@ -214,6 +217,7 @@ local def: Types.OperationDef = {
 			role = "Navigator",
 			mechanicId = "radio_closeout",
 			gradeBands = {
+				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
 				{ metric = "pobRight", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
 			},
 			weight = 1,

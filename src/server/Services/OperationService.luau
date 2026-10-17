@@ -187,13 +187,17 @@ local function stateOf(player: Player): PlayerState
 	return st
 end
 
-local function coldOpenDone(player: Player): boolean
+-- true / false, or nil while the player's profile is still loading (wait: a returning player
+-- must not be dropped into the cold open again because their save was slow to load).
+local function coldOpenDone(player: Player): boolean?
 	if player:GetAttribute("ColdOpenDone") == true then
 		return true
 	end
-	-- TODO(ProgressionService/DataService, stream E): persist `coldOpenDone` in the profile and
-	-- return it from GetData; until then the flag lives on the player attribute for the session.
+	-- ProgressionService.GetData returns coldOpenDone from the profile (nil until it loads).
 	local ok, data = try("ProgressionService", "GetData", player)
+	if ok and data == nil then
+		return nil
+	end
 	return ok and type(data) == "table" and data.coldOpenDone == true
 end
 
@@ -1443,11 +1447,14 @@ local function tick()
 	for _, player in Players:GetPlayers() do
 		local st = stateOf(player)
 		if not st.activeOpId and not st.offerOpId and t >= st.nextOfferAt and player.Character then
-			if OperationService.ColdOpenAuto and st.completed == 0 and not coldOpenDone(player) then
+			local done = if OperationService.ColdOpenAuto and st.completed == 0
+				then coldOpenDone(player)
+				else true
+			if done == false then
 				OperationService.StartColdOpen(player)
-			else
+			elseif done == true then
 				offerTo(player)
-			end
+			end -- nil: the profile is still loading, ask again next tick
 		end
 	end
 end

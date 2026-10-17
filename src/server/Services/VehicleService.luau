@@ -655,6 +655,20 @@ function VehicleService.SpawnSeated(
 	return model
 end
 
+-- Cold open (CONTRACT: Operations v2): a jet ski at `cframe`, the player seated, already running
+-- at about 25 knots. A thin wrapper over SpawnSeated; OperationService calls it through pcall.
+VehicleService.ColdOpenVehicle = "JetSki"
+VehicleService.ColdOpenSpeed = 25 * VehicleConfig.KNOT -- 38.6 studs/s
+
+function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
+	return VehicleService.SpawnSeated(
+		player,
+		VehicleService.ColdOpenVehicle,
+		cframe,
+		VehicleService.ColdOpenSpeed
+	)
+end
+
 function VehicleService.GetVehicle(player: Player): Model?
 	local record = byPlayer[player]
 	return if record then record.model else nil

@@ -6,10 +6,14 @@
 --   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, gear, vehicles, ... }?
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason)
 --   ProgressionService.GetGearBonus(player, stat) -> multiplier (1 by default)
+--   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
+--     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
 -- Remotes: BuyGear (Net, function: itemId = gear id or vehicle id -> ok, reason),
 --   PlayerDataChanged (Net, S->C full snapshot plus optional rankUp / award fields),
 --   Progression_GetData (own RemoteFunction under ReplicatedStorage.Net: pull the snapshot).
+--   Camera_SaveSettings (own RemoteEvent under ReplicatedStorage.Net, C->S: the camera stream's
+--     comfort settings table, sanitised, stored as flags.cameraSettings; rate limited).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -28,6 +32,7 @@ ProgressionService.RankChanged = rankChanged.Event
 
 local lastBuy: { [Player]: number } = {}
 local BUY_COOLDOWN = 0.25
+local lastSettings: { [Player]: number } = {}
 
 -- Weather (stream D) is required lazily; until it exists, read the folder attributes directly.
 local weatherModule: any = nil
@@ -123,6 +128,35 @@ function ProgressionService.GetData(player: Player): { [string]: any }?
 	return if data then Rules.snapshot(data) else nil
 end
 
+-- Persists a small flag or setting on the profile (CONTRACT: Operations v2, cold open).
+function ProgressionService.SetFlag(player: Player, name: string, value: any): boolean
+	local data = DataService.Get(player)
+	if not data or not Rules.validFlagName(name) then
+		return false
+	end
+	if name == "coldOpenDone" then
+		data.coldOpenDone = value == true
+		DataService.MarkDirty(player)
+		task.spawn(DataService.Save, player, false) -- a milestone: save it right away
+		return true
+	else
+		local clean = if value == nil then nil else Rules.sanitizeFlag(value)
+		if value ~= nil and clean == nil then
+			return false
+		end
+		local count = 0
+		for _ in data.flags do
+			count += 1
+		end
+		if data.flags[name] == nil and clean ~= nil and count >= Rules.MAX_FLAGS then
+			return false
+		end
+		data.flags[name] = clean
+	end
+	DataService.MarkDirty(player)
+	return true
+end
+
 function ProgressionService.CanUseVehicle(player: Player, vehicleId: string): (boolean, string)
 	local data = DataService.Get(player)
 	if not data then
@@ -189,10 +223,30 @@ function ProgressionService.Init()
 	(getData :: RemoteFunction).OnServerInvoke = function(player: Player)
 		return ProgressionService.GetData(player)
 	end
+	local saveSettings = netFolder:FindFirstChild("Camera_SaveSettings") :: RemoteEvent?
+	if not saveSettings then
+		local created = Instance.new("RemoteEvent")
+		created.Name = "Camera_SaveSettings"
+		created.Parent = netFolder
+		saveSettings = created
+	end
+	assert(saveSettings, "unreachable");
+	(saveSettings :: RemoteEvent).OnServerEvent:Connect(function(player: Player, settings: any)
+		local t = os.clock()
+		if type(settings) ~= "table" or t - (lastSettings[player] or -math.huge) < 2 then
+			return
+		end
+		lastSettings[player] = t
+		ProgressionService.SetFlag(player, "cameraSettings", settings)
+	end)
 	Players.PlayerRemoving:Connect(function(player)
 		lastBuy[player] = nil
+		lastSettings[player] = nil
 	end)
 	DataService.OnLoaded(function(player, data)
+		if data.coldOpenDone then
+			player:SetAttribute("ColdOpenDone", true) -- OperationService and the client read it
+		end
 		push(player, data)
 	end)
 end

@@ -25,7 +25,10 @@ local def: Types.OperationDef = {
 			realTerm = "MAYDAY RELAY",
 			role = "Navigator",
 			mechanicId = "radio_ack",
-			gradeBands = { { metric = "elapsed", gold = 15, silver = 25, bronze = 40 } },
+			gradeBands = {
+				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
+				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
+			},
 			serverMetrics = { "elapsed" },
 			weight = 1,
 			timeoutSec = 45,
@@ -100,7 +103,7 @@ local def: Types.OperationDef = {
 				{ metric = "signalMistakes", gold = 0, silver = 1, bronze = 3 },
 			},
 			weight = 2,
-			timeoutSec = 120,
+			timeoutSec = 150, -- two trips in and out, about 70 to 100 s (tune)
 			onFail = "npc", -- the mainland dive team takes over (fail-safe), always safe
 			npcSeconds = 70,
 			tip = "Answer every pull signal on the line: one pull, all OK; two, slack; three, take in.",
@@ -138,11 +141,12 @@ local def: Types.OperationDef = {
 			perCasualty = true,
 			gradeBands = {
 				{ metric = "tagRight", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
-				{ metric = "elapsed", gold = 12, silver = 18, bronze = 30 },
+				-- the full sieve with a 15 s breath count (run at 3x) takes about 12 s (tune)
+				{ metric = "elapsed", gold = 15, silver = 22, bronze = 35 },
 			},
 			serverMetrics = { "elapsed", "tagRight" },
 			weight = 1,
-			timeoutSec = 30,
+			timeoutSec = 40,
 			onFail = "npc",
 			npcSeconds = 12,
 			effect = "triage",
@@ -188,6 +192,7 @@ local def: Types.OperationDef = {
 			mechanicId = "radio_closeout",
 			shared = true,
 			gradeBands = {
+				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
 				{ metric = "pobRight", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
 			},
 			serverMetrics = { "pobRight" },

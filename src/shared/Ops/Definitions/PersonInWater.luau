@@ -22,7 +22,9 @@ local def: Types.OperationDef = {
 			realTerm = "Tasking",
 			role = "Navigator",
 			mechanicId = "radio_ack",
-			gradeBands = { { metric = "elapsed", gold = 15, silver = 25, bronze = 40 } },
+			gradeBands = {
+				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
+			},
 			serverMetrics = { "elapsed" },
 			weight = 1,
 			timeoutSec = 45,
@@ -86,7 +88,8 @@ local def: Types.OperationDef = {
 			role = "Helm",
 			mechanicId = "approach",
 			gradeBands = {
-				{ metric = "overSpeedSec", gold = 0, silver = 2, bronze = 5 },
+				-- s over 3 knots in the last 30 m (0.5 s grace for a wave surge)
+				{ metric = "overSpeedSec", gold = 0.5, silver = 2, bronze = 5 },
 				{ metric = "neutralDistance", gold = 8, silver = 12, bronze = 20 },
 				{
 					metric = "fromDownwind",
@@ -111,8 +114,9 @@ local def: Types.OperationDef = {
 			mechanicId = "panic_calm",
 			when = "Panicking",
 			gradeBands = {
-				{ metric = "calmSeconds", gold = 12, silver = 20, bronze = 35 },
-				{ metric = "grabbed", gold = 0, silver = 0, bronze = 1 },
+				-- docs 09 5.4: Gold no grab and under 20 s, Silver one grab, Bronze more
+				{ metric = "calmSeconds", gold = 20, silver = 30, bronze = 45 },
+				{ metric = "grabbed", gold = 0, silver = 1, bronze = 3 },
 			},
 			weight = 1,
 			timeoutSec = 45,
