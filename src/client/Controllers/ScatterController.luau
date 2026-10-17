@@ -219,6 +219,39 @@ function ScatterController.Start()
 		warn("[Scatter] WorldPlacements / ScatterTemplates missing; no rocks or plants drawn")
 		return
 	end
+	-- The folder arrives before all its templates (and their parts) have replicated: wait for the full set,
+	-- or itemFor drops every row whose template is not in yet (whole regions went undrawn).
+	local function complete(): boolean
+		local count = folder:GetAttribute("Count") :: number?
+		local kids = folder:GetChildren()
+		if not count or #kids < count then
+			return false
+		end
+		for _, m in kids do
+			local want = m:GetAttribute("Parts") :: number?
+			if want then
+				local n = 0
+				for _, d in m:GetDescendants() do
+					if d:IsA("BasePart") then
+						n += 1
+					end
+				end
+				if n < want then
+					return false
+				end
+			end
+		end
+		return true
+	end
+	local t0 = os.clock()
+	while not complete() and os.clock() - t0 < 60 do
+		task.wait(0.2)
+	end
+	if not complete() then
+		warn(
+			`[Scatter] only {#folder:GetChildren()} of {folder:GetAttribute("Count")} templates replicated`
+		)
+	end
 	templates = folder
 	local props = (require :: any)(data)
 	tierName = pickTier()

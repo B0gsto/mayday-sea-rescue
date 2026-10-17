@@ -45,6 +45,7 @@ ASSETS = list(ROCKS) + list(PLANTS)
 AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
 
+SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
 PLANT_CAP = 3500
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
@@ -97,6 +98,10 @@ def load_terrain():
     meta = json.load(open(os.path.join(gd, "terrain.json")))
     nx, nz = meta["nx"], meta["nz"]
     h = np.fromfile(os.path.join(gd, meta["height"]), dtype="<i2").reshape(nz, nx).astype(np.float64) / meta["heightScale"]
+    # The voxel writer (write_terrain.luau) renders the surface about half a voxel above the bake height
+    # (Studio raycasts: +1.9 +-0.25 studs over dunes, clifftop and shore); place on the rendered surface,
+    # or every plant (0.6-2.4 studs tall at 2-8% bury) ends up under the sand.
+    h = h + SURFACE_BIAS
     mat = np.fromfile(os.path.join(gd, meta["material"]), dtype=np.uint8).reshape(nz, nx)
     return meta, h, mat
 

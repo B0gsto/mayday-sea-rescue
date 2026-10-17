@@ -281,6 +281,13 @@ local function publish(asset: string, lod: string, folder: Folder, base: Model?)
 	m:SetAttribute("BaseMinY", cf.Position.Y - size.Y / 2)
 	m:SetAttribute("BaseSizeY", size.Y)
 	m:SetAttribute("WaterlineY", if att then att.WorldPosition.Y else 0)
+	local parts = 0
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			parts += 1
+		end
+	end
+	m:SetAttribute("Parts", parts) -- the client waits until every part has replicated
 	m.Parent = folder
 	return m
 end
@@ -296,16 +303,21 @@ local function publishTemplates(assets: { string }, used: { [number]: boolean })
 			task.spawn(AssetLoader.getTemplate, assets[i], lod)
 		end
 	end
-	local n = 0
+	local n, count = 0, 0
 	for i in used do
 		local base = publish(assets[i], "LOD0", folder, nil)
-		for k = 2, #LODS do
-			publish(assets[i], LODS[k], folder, base)
-		end
 		if base then
 			n += 1
+			count += 1
+		end
+		for k = 2, #LODS do
+			if publish(assets[i], LODS[k], folder, base) then
+				count += 1
+			end
 		end
 	end
+	-- a big folder reaches the client over several frames: it waits for Count templates before drawing
+	folder:SetAttribute("Count", count)
 	folder.Parent = ReplicatedStorage -- parented last: the client starts once every template is in
 	return n
 end
