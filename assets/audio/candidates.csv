@@ -1,0 +1,103 @@
+sfx_name,source,id_or_url,title,duration_s,licence,notes
+SFX_Wave_OpenSwell,RL,9126201576,Waves Long Rolling In Constantly Heavy Surf (SFX),13.0,Roblox licensed (PSE),Verified public. Heavy surf loop candidate
+SFX_Wave_BeachStorm,RL,9119677305,Surf Ocean Wave Impact On Zuma Beach 4 (SFX),40.0,Roblox licensed (PSE),Verified public
+SFX_Wave_BeachCalm,RL,9119677135,Surf Ocean Wave Impact On Zuma Beach 1 (SFX),8.0,Roblox licensed (PSE),Verified public. Short;needs loop work
+SFX_Wave_Harbour,RL,9113665479,Calm Water Lap 1 (SFX),44.0,Roblox licensed (PSE),Verified public
+SFX_Wave_RockBreak,NONE,,no suitable candidate,,,Roblox search gave no rock-break match; try RC or further search
+SFX_Wave_BlowHole,RL,9120548819,Water Explosion Bubbling Surf 1 (SFX),10.0,Roblox licensed (PSE),Verified public. Weak match
+SFX_Bell_Buoy,RL,9113420681,Bell Rings 3 (SFX),6.0,Roblox licensed (PSE),Verified public
+SFX_Bell_Buoy,RL,9113583822,Brass Hand Bell 1 (SFX),15.0,Roblox licensed (PSE),Verified public. Alt
+SFX_Wind_Gale,FS,https://freesound.org/people/LanDub/sounds/181935/,Gale Wind.wav,59.1,CC0 (verified on page),Window-crack gale recording
+SFX_Wind_Strong,FS,https://freesound.org/people/DBlover/sounds/405601/,Howling Wind Ambience,85.4,CC0 (verified on page),Arctic wind ambience
+SFX_Wind_Light,NONE,,no suitable candidate,,,No CC0 light wind found yet
+SFX_Wind_RiggingWhistle,NONE,,no suitable candidate,,,Not found in either source
+SFX_Wind_Halyard,NONE,,no suitable candidate,,,Not found in either source
+SFX_Rain_Light,RL,9120020741,Thunder Light Rain 1 (SFX),53.0,Roblox licensed (PSE),Verified public. Contains thunder; weak
+SFX_Rain_Heavy,FS,https://freesound.org/people/SpaceJoe/sounds/505469/,Heavy Rain and Wind.wav,65.3,CC0 (verified on page),Heavy rain with wind
+SFX_Rain_Heavy,FS,https://freesound.org/people/FrostCP/sounds/587000/,Heavy rain outside window,59.9,CC0 (verified on page),Alt
+SFX_Rain_OnRoof,RL,9112853422,Rain Heavy Rainfall Grass Wooden Roof 1 (SFX),46.0,Roblox licensed (PSE),Verified public
+SFX_Rain_OnWater,RL,9112854469,Rain On Water 1 (SFX),61.0,Roblox licensed (PSE),Verified public
+SFX_Rain_OnHood,NONE,,no suitable candidate,,,Not found yet
+SFX_Thunder_Crack,RL,9120016241,Thunder Cracks Big Rumbling Blasts Booming 4 (SFX),12.0,Roblox licensed (PSE),Verified public
+SFX_Thunder_Near,RL,9120021794,Thunder Sharp Booming Strikes Rumbling 4 (SFX),11.0,Roblox licensed (PSE),Verified public
+SFX_Thunder_Roll_01,RL,9120021237,Thunder Rumbling 1 (SFX),24.0,Roblox licensed (PSE),Verified public
+SFX_Thunder_Roll_02,RL,9120018695,Thunder Distant Rumble 2 (SFX),136.0,Roblox licensed (PSE),Verified public. Long;trim
+SFX_Radio_Static,RL,9125774208,Police Radio Line Feed Radio Voices Static 1 (SFX),41.0,Roblox licensed (PSE),Verified public. Has voices; fallback only
+SFX_Radio_Burst,RL,9125773804,Police Radio Call Male Voice Scratchy Static (SFX),2.0,Roblox licensed (PSE),Verified public. Has voice;weak
+SFX_Radio_DSCAlarm,RL,9125937251,Shortwave Bleep Beeps Radio Staticky Telemetry (SFX),2.0,Roblox licensed (PSE),Verified public. Not checked against DSC tone; verify
+SFX_Rope_Creak_Low,RL,9118714001,Rope Creaks Handling Various Creaks 1 (SFX),13.0,Roblox licensed (PSE),Verified public
+SFX_Rope_Creak_High,RL,9118714213,Rope Creaks Handling Various Creaks 2 (SFX),5.0,Roblox licensed (PSE),Verified public
+SFX_Rope_PayOut,RL,9118714210,Rope Creaks Handling Various Creaks 3 (SFX),13.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Rope_Coil,RL,9120956562,Wood Ratchet Creaks Constant 1 (SFX),7.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Line_Snap,NONE,,no suitable candidate,,,Not found in either source
+SFX_Line_Splash,RL,9119479417,Splashes Large Objects Thrown In Water 6 (SFX),4.0,Roblox licensed (PSE),Verified public
+SFX_ThrowBag_Throw,NONE,,no suitable candidate,,,RC foley needed
+SFX_ThrowBag_Land,NONE,,no suitable candidate,,,RC foley needed
+SFX_Gull_Call_01,RL,9118858259,Seagull Squawks 3 (SFX),4.0,Roblox licensed (PSE),Verified public
+SFX_Gull_Call_02,RL,9118858279,Seagull Squawks 1 (SFX),6.0,Roblox licensed (PSE),Verified public
+SFX_Gull_Call_03,NONE,,no suitable candidate,,,Only two squawk clips found
+SFX_Gull_Call_04,NONE,,no suitable candidate,,,Only two squawk clips found
+SFX_Gull_Flock,RL,9112870623,Seagulls 1 (SFX),34.0,Roblox licensed (PSE),Verified public
+SFX_Gull_Flock,RL,9118858027,Seagulls 2 (SFX),47.0,Roblox licensed (PSE),Verified public. Alt
+SFX_Seal_Grunt,RL,9125919816,Seal Bark Human Like Grunt Heaving Rhythmic (SFX),8.0,Roblox licensed (PSE),Verified public
+SFX_Seal_Moan,NONE,,no CC0 seal moan found,,,Freesound search returned only non-CC0 or non-seal hits
+SFX_Seal_Splash,NONE,,no suitable candidate,,,Not found in either source
+SFX_Dog_Bark,FS,https://freesound.org/people/nick121087/sounds/274471/,Dog Barking,18.8,CC0 (verified on page),Clean bark
+SFX_Dog_Bark,FS,https://freesound.org/people/sadc0415/sounds/236967/,Dog bark.wav,1.2,CC0 (verified on page),Very short;alt
+SFX_Dog_Bark,RL,9114370190,Farm Animals Dog Barking Rooster Crows 2 (SFX),52.0,Roblox licensed (PSE),Verified public. Mixed farm;fallback only
+SFX_Dog_Whine,NONE,,no suitable candidate,,,Not found in either source
+SFX_Dog_Pant,NONE,,no suitable candidate,,,Not found in either source
+SFX_Dog_ShakeOff,NONE,,no suitable candidate,,,RC recording needed
+SFX_Dog_SplashIn,NONE,,no suitable candidate,,,RC recording needed
+SFX_Dog_SwimPaddle,NONE,,no suitable candidate,,,RC recording needed
+SFX_Dog_WoofAlert,NONE,,no suitable candidate,,,RC recording needed
+SFX_Eng_JetSki_Idle,NONE,,no CC0 jet ski engine found,,,Freesound returned jet and aircraft engines only
+SFX_Eng_JetSki_Low,NONE,,no CC0 jet ski engine found,,,See above
+SFX_Eng_JetSki_High,NONE,,no CC0 jet ski engine found,,,See above
+SFX_Eng_JetSki_Cavitate,NONE,,no suitable candidate,,,See above
+SFX_Eng_JetSki_Start,NONE,,no suitable candidate,,,See above
+SFX_Eng_JetSki_Stop,NONE,,no suitable candidate,,,See above
+SFX_Eng_RIB_Idle,FS,https://freesound.org/people/Bansemer/sounds/35499/,Diesel motor on Fishing Boat.MP3,40.4,CC0 (verified on page),Diesel fishing boat;not outboard. Fallback only
+SFX_Eng_RIB_Mid,NONE,,no suitable candidate,,,Outboard idle not found in CC0 set
+SFX_Eng_RIB_Plane,FS,https://freesound.org/people/kyles/sounds/637744/,outboard motor boat onboard high speed.flac,127.4,CC0 (verified on page),Outboard at high speed;onboard. Good for Plane or High
+SFX_Eng_RIB_Trim,NONE,,no suitable candidate,,,Not found
+SFX_Eng_Pickup_Idle,RL,9112736299,1995 Peterbilt Semi Truck 1 (SFX),46.0,Roblox licensed (PSE),Verified public. Truck diesel;weak for pickup
+SFX_Eng_Pickup_Rev,RL,9112973073,1982 Diesel Dump Truck 1 (SFX),23.0,Roblox licensed (PSE),Verified public. Diesel truck;weak
+SFX_Eng_Pickup_Load,NONE,,no suitable candidate,,,Not found
+SFX_Eng_Optimist_Idle,NONE,,no suitable candidate,,,Owned recording needed
+SFX_Eng_Optimist_Cough,NONE,,no suitable candidate,,,Owned recording needed
+SFX_Eng_Optimist_Die,NONE,,no suitable candidate,,,Owned recording needed
+SFX_Hull_Slap,RL,9119479417,Splashes Large Objects Thrown In Water 6 (SFX),4.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Hull_Slam,RL,9116887596,Metal Tank Impact 1 (SFX),2.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Hull_SprayHiss,RL,9120502958,Water Burst Boom Blast Hissing Spray 1 (SFX),3.0,Roblox licensed (PSE),Verified public
+SFX_Tyre_Gravel,RL,9126157444,Vehicle Gravel Tires Crunch Constant Over Rough (SFX),22.0,Roblox licensed (PSE),Verified public
+SFX_Tyre_Asphalt,RL,9112887004,Tires Constant On Bridge 2 (SFX),32.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Tyre_Cobble,NONE,,no suitable candidate,,,Not found
+SFX_Tyre_Sand,NONE,,no suitable candidate,,,Not found
+SFX_Trailer_Winch,RL,9116796332,Metal Rattle Rotate Constant 1 (SFX),6.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Radio_Open,NONE,,no suitable candidate,,,Designed from RC noise per 11 section 3
+SFX_Radio_Tail,NONE,,no suitable candidate,,,Designed from RC noise per 11 section 3
+SFX_Splash_Entry,RL,9119479417,Splashes Large Objects Thrown In Water 6 (SFX),4.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Splash_Climb,NONE,,no suitable candidate,,,Not found
+SFX_Step_Wood,RL,9125816969,Robot Footsteps On Wood Various Constant Spe (SFX),1.0,Roblox licensed (PSE),Verified public. Robot;fallback only
+SFX_Step_Cobble,NONE,,no suitable candidate,,,Not found
+SFX_Step_Sand,NONE,,no suitable candidate,,,Not found
+SFX_Step_WetDeck,NONE,,no suitable candidate,,,Not found
+SFX_Step_Grating,NONE,,no suitable candidate,,,Not found
+SFX_Drysuit_Rustle,RL,9118743092,Rubber Stretch 6 (SFX),2.0,Roblox licensed (PSE),Verified public. Weak
+SFX_Casualty_Whistle,RL,9117258228,Pealess Whistle Referee Fox 40 2 (SFX),1.0,Roblox licensed (PSE),Verified public. Very short;check
+SFX_Flare_Ignite,NONE,,no suitable candidate,,,Not found
+SFX_Flare_Burn,NONE,,no suitable candidate,,,Not found
+SFX_Under_Ambience,RL,9112889917,Underwater Ambience 1 (SFX),59.0,Roblox licensed (PSE),Verified public
+SFX_Under_Muffle,RL,9112889907,Underwater Ambience 2 (SFX),28.0,Roblox licensed (PSE),Verified public. Unsure it is a muffle
+SFX_Under_Bubbles,RL,9125409816,Bubbles Small Underwater Above Water Quality (SFX),4.0,Roblox licensed (PSE),Verified public
+SFX_Amb_Harbour,RL,9112829678,Marina Ambience 5 (SFX),62.0,Roblox licensed (PSE),Verified public
+SFX_Amb_Town,RL,9112874053,Small Town Ambience 1 (SFX),36.0,Roblox licensed (PSE),Verified public
+SFX_Amb_Chandlery,NONE,,no suitable candidate,,,RC recording needed
+SFX_Amb_Station,NONE,,no suitable candidate,,,Not found
+SFX_Chandlery_DoorBell,RL,9114134646,Door Chime Various Two Three Note Melodies 1 (SFX),5.0,Roblox licensed (PSE),Verified public
+SFX_Chandlery_Till,NONE,,no suitable candidate,,,Not found
+SFX_Chandlery_Floorboard,RL,9125563505,Floor Creaks Wood Floorboard Cu Many Version (SFX),2.0,Roblox licensed (PSE),Verified public
+SFX_Station_RollerDoor,NONE,,no suitable candidate,,,Not found
+SFX_Station_LaunchPager,NONE,,no suitable candidate,,,Not found
+SFX_Station_Winch,NONE,,no suitable candidate,,,Not found
