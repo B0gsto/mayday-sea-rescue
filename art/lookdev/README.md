@@ -33,7 +33,9 @@ without `--white-check`.
 Edit-mode captures have no sea: the game's client mesh ocean (OceanController + src/client/Ocean) only runs in play
 mode, so shorelines show the bare dark seabed. Write the batch's shots.json as an object
 `{"ocean": true, "storm_wait": 6, "shots": [...]}` (or pass `--ocean` to studio-shot.py). Then studio-shot.py:
-runs every `--setup` in Edit (insert / import / set dressing), starts play, waits for the Client character, sends the
+starts play, waits for the Client character, then runs every `--insert` .rbxm and every `--setup` in the SERVER
+datamodel (Edit-time inserts and terrain edits did not reliably reach the play session; server-side they replicate), polls
+the Client until every `"expect"` model of shots.json is there with the server's part count (`SYNC ok` / `SYNC FAIL`), sends the
 server `/calm` (Studio-only `ServerStorage.Storm_DevCommand`), runs every `--look-setup` in the Client datamodel (put
 `art/lookdev/shot-setup.luau` and the batch's shot driver there: it unbinds the CameraController and locks the camera
 to workspace `ShotCF`), sets `ShotCF` from each shot's cam / look, switches the real storm per shot (`"storm": true`
@@ -41,5 +43,5 @@ sends `/storm now`, false `/calm`, then waits `storm_wait` s) and reads `ShotCF`
 camera (K1's `_G.K1Aim`). Play is stopped at the end, also on errors. Preload and `--white-check` work as above (the
 preload runs on the Client). Pin the window with `STUDIO_ID` (art/source/rocks/_kit/studio_pass.sh) so play never
 starts in another Studio window. Without the flag nothing changes (`--look-setup` then runs in Edit after `--setup`).
-Open issue (K1, 2026-10-17): Edit-time set dressing did not reliably reach the play session (see the K1 pass log);
-verify with the shot driver's probe line (`... missing`) before trusting a sheet.
+Fixed (K1, 2026-10-17): Edit-time set dressing did not reliably reach the play session; inserts, import and set
+dressing now run on the Server after play starts. Check the `SYNC` line before trusting a sheet.

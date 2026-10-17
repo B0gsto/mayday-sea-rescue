@@ -113,4 +113,20 @@ for i, o in { Vector3.new(-14, 0, -20), Vector3.new(-18, 0, 6), Vector3.new(-12,
 end
 for _, m in workspace:GetDescendants() do if m:IsA("Model") and string.match(m.Name, "^M_Rock_") then pcall(function() m.ModelStreamingMode = Enum.ModelStreamingMode.Persistent end) end end
 local lf = workspace:FindFirstChild("LookDev") if lf and lf:IsA("Model") then pcall(function() lf.ModelStreamingMode = Enum.ModelStreamingMode.Persistent end) end
-return string.format("K1 cove: placed %d | probe %s", n, probeReport)
+local function noSA(): string
+	local out, total, hidden = {}, 0, 0
+	for _, root in { workspace, game:GetService("ServerStorage") } do
+		for _, d in root:GetDescendants() do
+			if d:IsA("MeshPart") and string.find(d:GetFullName(), "M_Rock_", 1, true) and not d:FindFirstAncestor("LookDevPreload") then
+				total += 1
+				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
+				if not sa then
+					if d.Transparency >= 1 then hidden += 1 else table.insert(out, d:GetFullName()) end
+				end
+			end
+		end
+	end
+	return string.format("%d visible of %d MeshParts (+%d hidden _COL/LOD without SA, by design)%s", #out, total, hidden,
+		if #out > 0 then ": " .. table.concat(out, ", ") else "")
+end
+return string.format("K1 cove: placed %d | probe %s | no-SA %s", n, probeReport, noSA())

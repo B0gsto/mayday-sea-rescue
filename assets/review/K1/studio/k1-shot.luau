@@ -124,14 +124,42 @@ local function k1Aim(names: {string}, sea: number?, side: number?): ({number}, {
 		end
 	end
 	if not best then return {0, 0, 0}, {0, 0, 1}, "no target" end
-	local c = bestCf.Position
-	local r = math.max(bestSize.X, bestSize.Z) * 0.5
-	local dist = r * 2.2 + 8
 	local right = Vector3.new(-D.Z, 0, D.X)
-	local look = c + Vector3.new(0, bestSize.Y * 0.1, 0)
-	local cam = c + D * dist * (sea or 0.85) + right * dist * (side or 0.35) + Vector3.new(0, math.max(bestSize.Y, 3) + 3, 0)
+	local cands = {}
+	for _, nm in names do
+		local m = workspace:FindFirstChild(nm, true)
+		if m and m:IsA("Model") then
+			local cf, size = m:GetBoundingBox()
+			local hit = workspace:Raycast(cf.Position + Vector3.new(0, size.Y + 60, 0), Vector3.new(0, -(size.Y + 140), 0), rp)
+			table.insert(cands, { m = m, cf = cf, size = size, up = cf.Position.Y + size.Y / 2 - math.max(if hit then hit.Position.Y else -100, 0) })
+		end
+	end
+	table.sort(cands, function(a, b) return a.up > b.up end)
+	local cam, look, hitName, tries = nil, nil, "none", 0
+	local seaward = math.atan2(D.Z, D.X)
+	for _, cd in cands do
+		local c = cd.cf.Position
+		local r = math.max(cd.size.X, cd.size.Z) * 0.5
+		local dist = r * 2.2 + 8
+		local lk = c + Vector3.new(0, cd.size.Y * 0.1, 0)
+		for _, hm in { 1, 2 } do
+			for k = 0, 7 do
+				local az = seaward + math.rad(({ 20, -20, 60, -60, 100, -100, 150, -150 })[k + 1])
+				local cnd = c + Vector3.new(math.cos(az), 0, math.sin(az)) * dist + Vector3.new(0, (math.max(cd.size.Y, 3) + 3) * hm, 0)
+				local hit = workspace:Raycast(cnd, (lk - cnd) * 1.02)
+				tries += 1
+				if not cam then cam, look, best = cnd, lk, cd.m end
+				if hit and hit.Instance:IsDescendantOf(cd.m) then
+					cam, look, best, hitName = cnd, lk, cd.m, hit.Instance:GetFullName()
+					break
+				end
+			end
+			if hitName ~= "none" then break end
+		end
+		if hitName ~= "none" then break end
+	end
 	workspace:SetAttribute("ShotCF", CFrame.lookAt(cam, look))
-	return {cam.X, cam.Y, cam.Z}, {look.X, look.Y, look.Z}, best.Name .. " | " .. table.concat(info, "; ")
+	return {cam.X, cam.Y, cam.Z}, {look.X, look.Y, look.Z}, best.Name .. " ray-> " .. hitName .. " (" .. tries .. " tries) | " .. table.concat(info, "; ")
 end
 _G.K1Aim = k1Aim
 local ni, nu, bad = k1Preload(60)

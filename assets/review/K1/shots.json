@@ -1,6 +1,22 @@
 {
  "ocean": true,
  "storm_wait": 6,
+ "expect": [
+  "M_Rock_Boulder_01",
+  "M_Rock_Boulder_02",
+  "M_Rock_Boulder_03",
+  "M_Rock_Boulder_04",
+  "M_Rock_Boulder_05",
+  "M_Rock_Boulder_06",
+  "M_Rock_Cliff_01",
+  "M_Rock_Cliff_02",
+  "M_Rock_Cliff_03",
+  "M_Rock_Cliff_04",
+  "M_Rock_Cliff_05",
+  "M_Rock_Ledge_01",
+  "M_Rock_Ledge_02",
+  "M_Rock_Ledge_03"
+ ],
  "shots": [
   {
    "name": "K1_Cove_Clear_dry",
