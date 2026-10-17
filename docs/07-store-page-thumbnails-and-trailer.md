@@ -4,7 +4,7 @@ How Mayday: Sea Rescue presents itself on its Roblox page and on short-form vide
 
 Marks: **(verify)** means check the upload dialog or an official page before relying on it. **(unverified)** means secondary source only. **(tune)** means a starting value.
 
-Research source: [`research/store-page-and-monetization.md`](research/store-page-and-monetization.md) (section numbers below refer to it). Visual rules come from [document 05](05-art-direction.md).
+Research source: [`research/store-page-and-monetization.md`](research/store-page-and-monetization.md) (section numbers below refer to it). Visual rules come from [document 05](05-art-direction.md), the photoreal art bible.
 
 ---
 
@@ -26,7 +26,9 @@ Research source: [`research/store-page-and-monetization.md`](research/store-page
 | Video length, format, resolution and file size limits | Not stated (verify in upload dialog) |
 | Free camera in solo playtest: Left Shift + P | Thumbnails page |
 
-**What this means for us:** every thumbnail and every second of the video is captured in-game, in the current build, with real lighting presets. No Blender renders on the store page. If a vehicle or zone is not in the live game yet, it does not appear.
+**What this means for us:** every thumbnail and every second of the video is a **photoreal in-engine shot**, captured in the current build with the shipped lighting presets ([document 05](05-art-direction.md), section 6). We shoot it like film: a cinematic camera, real lenses, motivated movement, real weather. But nothing is added that players do not see: no Blender renders, no paint-overs, no composited spray, rain, fire or lens effects. If a vehicle, zone or effect is not in the live game yet, it does not appear.
+
+**Honesty check for photoreal:** shots are captured at the highest graphics quality, which is what desktop players on High see. Before upload, capture the same shot at Medium. If the shot's main idea (the spray sheet, the searchlight in rain, the wave face) disappears at Medium, pick a different shot, so the store page never relies on a look most players cannot get.
 
 ---
 
@@ -37,21 +39,21 @@ Research source: [`research/store-page-and-monetization.md`](research/store-page
 - Author at 1024 x 1024 PNG, upload at that size (meets the 512 minimum).
 - Preview at 150 x 150 and at about 110 x 110 (a third-party article suggests phones show tiles near that size (unverified)) before every upload.
 - One large subject, one clear silhouette, high contrast against both light and dark Roblox themes.
-- Palette: Rescue Orange and Hull White on Deep Teal. Warm subject on cool background.
-- Built from the real game models, posed in Studio or rendered in Blender from the shipped meshes and textures. The icon page asks only that the icon be unique and relevant, but we hold it to the same "matches the game" rule as thumbnails to be safe.
+- Palette: a Hull Orange or SOLAS orange subject against grey-green or slate sea and sky ([document 05](05-art-direction.md), section 3). Warm, saturated subject on a cool, desaturated background, which is also how real rescue photos read.
+- Captured in Studio from the shipped models, materials and lighting, with the cinematic camera. The icon page asks only that the icon be unique and relevant, but we hold it to the same "matches the game" rule as thumbnails to be safe. Only crop, exposure and contrast are adjusted.
 - No text, or the short "MAYDAY" wordmark at most. Small text is unreadable at 150 px.
-- Survives the moderation check: no real logos, no real coast guard insignia, no flags of real countries.
+- Survives the moderation check: no real logos, no RNLI or USCG marks, no real coast guard insignia, no flags of real countries. Our invented Gale Isles Coastguard livery only ([document 05](05-art-direction.md), section 4.2).
 
 ### 2.2 Three concepts
 
 | | A: The dog | B: The winch | C: The wave |
 |---|---|---|---|
-| Subject | The Newfoundland in its orange vest, head and front paws, holding a life ring in its mouth | The rescue helicopter seen from below at an angle, a rescuer on the winch line reaching down | The orange-and-white lifeboat cresting a huge teal wave, bow up |
-| Background | Deep Teal water with a single foam crest | Storm Steel sky, a crescent of downwash spray | Storm Slate sky, a lighthouse beam behind, one lightning fork |
-| Focal point | The dog's eyes and the ring | The rescuer's outstretched hand | The bow and the wave crest |
-| Emotion | Warm, cute, trustworthy | Heroic, tense | Thrilling, bold |
-| Strength | Unique on Roblox; reads at tiny sizes; appeals to all ages | Says "rescue" instantly | Says "storms" and "ocean" instantly |
-| Risk | May read as a pet game | Busy at 150 px; a helicopter can look like Blackhawk Rescue | Boat-on-wave icons are common |
+| Subject | Bosun, the realistic Newfoundland, head and shoulders out of the water, wet fur, orange harness, a lifebuoy in his mouth | The rescue helicopter from below at an angle in rain, searchlight on, a crew member on the hoist line reaching down | The all-weather lifeboat punching through a breaking wave, bow up, green water off the deck |
+| Background | Overcast grey-green sea, one foam crest, spray drops | Storm cloud base, a ring of downwash spray | Slate storm sky, spindrift, a lighthouse beam behind |
+| Focal point | The dog's eyes and the lifebuoy | The outstretched gloved hand | The bow and the crest |
+| Emotion | Warm, trustworthy | Heroic, tense | Thrilling, bold |
+| Strength | Unique on Roblox; a photoreal dog face reads at tiny sizes; all ages | Says "rescue" instantly | Says "storms" and "ocean" instantly; shows off the ocean |
+| Risk | May read as a pet game; fur must hold up close (the dog's hero LOD) | Busy at 150 px; a helicopter can look like Blackhawk Rescue | Boat-on-wave icons are common; depends on the ocean passing spike O3 |
 
 **Recommendation:** start with A as the main icon (distinct and warm), keep C ready for storm-focused updates. Roblox has no built-in icon split test in our research, so compare icons by swapping them between updates and watching play-through rate, knowing the comparison is rough.
 
@@ -59,24 +61,27 @@ Research source: [`research/store-page-and-monetization.md`](research/store-page
 
 ## 3. Thumbnails
 
-All captured at 1920 x 1080 in-game with free camera, highest graphics quality, exported under 3 MB. Bottom 15% of the frame kept free of key subjects and text (player-count overlay). Text overlays, when used, are short gameplay descriptions in the UI font, top-left or top-centre.
+All captured at 1920 x 1080 in-game with the cinematic camera or free camera, highest graphics quality, exported under 3 MB. Bottom 15% of the frame kept free of key subjects and text (player-count overlay). Text overlays, when used, are short gameplay descriptions in the UI font (Builder Sans), top-left or top-centre.
+
+Shot language: real camera positions (a chase boat at water level, the helicopter door, a cliff with a long lens, a deck-mounted camera), focal lengths set with `Camera.FieldOfView` (wide about 70, normal about 40, long lens 15 to 25) (tune), and the horizon level unless the boat is rolling.
 
 | # | Name | Composition | Focal point | Text overlay | Emotion |
 |---|---|---|---|---|---|
-| 1 | Storm rescue | Low angle from the water: the lifeboat climbing a storm wave toward a capsized ferry, lightning fork top right, survivors in yellow on the hull | Lifeboat bow and the survivors | "STORMS HIT EVERY 15 MINUTES" (only while true) | Thrill, heroism |
-| 2 | Helicopter winch | Three-quarter view from above: helicopter top left, winch line diagonal to a survivor in the water, downwash ring on the waves | The basket meeting the survivor | None | Tension, competence |
-| 3 | Rescue dog | Water-level close shot: the Newfoundland swimming, towing a waving survivor toward an orange jet ski in Calm Bay | The dog's face | None | Warmth, humour |
-| 4 | Squad on the RIB | Three players in orange on a RIB pulling a survivor aboard, call card UI visible on screen | The pull-aboard moment | None (the in-game call card is the text) | Teamwork |
-| 5 | Port Haven fleet | Golden-hour wide shot of the station dock with the unlocked vehicles lined up, lighthouse behind | The lineup | "UNLOCK RESCUE VEHICLES" | Aspiration, collection |
-| 6 | Relight the lighthouse | Night shot: a player at the top of a lighthouse as the beam sweeps across the bay, town lights below | The beam | None | Wonder, accomplishment |
-| 7 | Cruise ship aground | Wide storm shot: a giant cruise ship on rocks, many player boats and a helicopter around it | The scale of the ship versus the boats | "SERVER-WIDE RESCUES" | Spectacle, community |
-| 8 | Calm reef | Bright daytime jet ski skimming the Coral Reef with a small survivor beacon ahead | Jet ski and spray | None | Fun, freedom |
+| 1 | Storm rescue | Long lens from a chase boat: the all-weather lifeboat climbing a storm wave toward a capsized ferry, spindrift and rain, survivors in SOLAS orange on the hull with strobes flashing | Lifeboat bow and the survivors | "STORMS HIT EVERY 15 MINUTES" (only while true) | Thrill, heroism |
+| 2 | Helicopter winch | From the helicopter door looking down: the hoist line diagonal to a survivor in the water, downwash flattening the sea into a spray ring | The crew member meeting the survivor | None | Tension, competence |
+| 3 | Rescue dog | Water-level close shot in overcast light: Bosun swimming, towing a waving survivor toward the jet ski in the sheltered bay | The dog's face | None | Warmth |
+| 4 | Squad on the RIB | Three players in drysuits and hi-vis helmets on a RIB pulling a survivor aboard, wet deck, call card UI visible | The pull-aboard moment | None (the in-game call card is the text) | Teamwork |
+| 5 | Port Haven fleet | Clear-day wide shot from the quay: the station, slipway and the unlocked vehicles, granite harbour and lighthouse behind | The lineup | "UNLOCK RESCUE VEHICLES" | Aspiration, collection |
+| 6 | Relight the lighthouse | Night shot: a player at the lantern gallery as the beam sweeps across the bay through drizzle, town lights below | The beam | None | Wonder, accomplishment |
+| 7 | Cruise ship aground | Long-lens storm shot: a cruise ship on rocks, searchlights, boats and a helicopter around it | The scale of the ship versus the boats | "SERVER-WIDE RESCUES" | Spectacle, community |
+| 8 | Reef run | Clear-day jet ski skimming green water over white sand between granite skerries, a survivor's orange smoke ahead (zone per [document 01](01-game-canon.md)) | Jet ski and spray | None | Fun, freedom |
 | 9 | Harbour mouth storm | Low angle from the water: a jet ski launching off a storm wave in the harbour mouth toward a waving survivor, the harbour wall and Harbor Light behind, rain streaks | The jet ski in the air and the survivor's raised arms | None (thumbnail 1 carries the storm line) | Thrill, "I can do that now" |
 
 Rules:
 - Only show vehicles, zones and events that are live. Thumbnail 5 waits until the launch fleet is in; thumbnail 7 waits for the Cruise Ship Aground big call ([P1]).
-- **Session-1 content:** thumbnails 3, 8 and 9 show only what a new player does in their first 25-minute session (jet ski, Bosun, Calm Bay or Coral Reef, a storm at the harbour mouth). At least 2 of the active thumbnails must always be session-1 content, so the page never promises only late-game play.
-- No stretched or artificial effects. "Minor post-processing" means light levels and contrast, not added fire, glow or fake depth of field.
+- **Session-1 content:** thumbnails 3, 8 and 9 show only what a new player does in their first 25-minute session. At least 2 of the active thumbnails must always be session-1 content, so the page never promises only late-game play.
+- **Post-processing:** only exposure, contrast and crop in the editor ("minor post-processing"). DepthOfField, Bloom and grading come from the in-engine presets and the cinematic camera, never added afterwards. No added fire, glow, spray, rain or lens flares.
+- **No mixed fidelity in frame:** every asset in a thumbnail must have passed the [document 05](05-art-direction.md) checks; greybox or placeholder parts disqualify the shot.
 - Add alt text to every thumbnail (supported on the page).
 - Faces and bright contrast are common creator advice, not official (unverified); we test it rather than assume it.
 
@@ -105,10 +110,10 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 
 ### 5.1 Spec
 
-- Real gameplay from the live build only. Roblox reviews it before distribution, so we treat it as a gameplay preview, not a cinematic trailer.
+- Real gameplay from the live build only, filmed cinematically. Roblox reviews it before distribution and forbids anything players do not see, so cinematic means camera work, not added effects: every frame is the real game, with the shipped presets.
 - Length: 30 seconds target. The limit is not stated on the official pages (verify in the upload dialog before editing to length).
 - 1920 x 1080, 60 fps, H.264 MP4 (verify accepted format and size).
-- Music: instrumental catalog music from the Roblox Creator Store, or our own commissioned instrumental track. No lyrics, no voice-over, no voice chat.
+- Music: instrumental catalog music from the Roblox Creator Store, or our own commissioned instrumental track. No lyrics, no voice-over, no voice chat. Game audio (sea, wind, engines, radio) carries a lot of the realism; mix it high.
 - Text: only the logo overlay and in-game UI text (call cards, rank-up banners). No claims.
 - Budget: 3 uploads per month, rejections count, so review against section 1 before each upload.
 
@@ -116,29 +121,30 @@ Roblox's Home page personalization shows each active thumbnail to random user gr
 
 | Time | Shot | Camera | UI |
 |---|---|---|---|
-| 0:00 to 0:02 | Golden-hour Port Haven, the station siren light spins, a call card slides in: "MAYDAY: swimmer in Calm Bay" | Slow push-in on the station | Call card only |
-| 0:02 to 0:05 | Player sprints down the dock and jumps onto the jet ski; it launches with bow spray | Follow cam, low behind | Hidden |
-| 0:05 to 0:08 | Jet ski cuts across Calm Bay; the dog rides the rescue sled, ears flapping | Side tracking shot at water level | Hidden |
-| 0:08 to 0:10 | The dog dives in, swims to a waving survivor, tows them back; survivor cheers | Close, water level | Hidden |
-| 0:10 to 0:12 | Jet ski weaves through Coral Reef rocks | Fast low pass | Hidden |
-| 0:12 to 0:14 | Sky shifts from gold to steel grey; storm warning card appears; rain starts | Wide, high, sky dominant | Storm warning card |
-| 0:14 to 0:17 | Lifeboat climbs and slams over a huge wave in the Storm Front; lightning | Low angle from the trough | Hidden |
-| 0:17 to 0:20 | Helicopter hovers; rescuer winches down to a survivor beside a capsized ferry | Three-quarter from above | Hidden |
-| 0:20 to 0:23 | Several players' boats circle the ferry pulling survivors aboard | Wide orbit | Hidden |
-| 0:23 to 0:25 | Storm clears; a player relights a lighthouse; the beam sweeps out | Low, looking up at the lamp | Hidden |
-| 0:25 to 0:27 | Back at the dock: survivors dropped off, rank-up banner, the crew salutes, the dog shakes off water | Medium, front | Rank-up banner |
-| 0:27 to 0:30 | Logo over the harbour at golden hour | Slow pull-back | Logo overlay |
+| 0:00 to 0:02 | Overcast morning, Port Haven harbour: the station doors open, a call card slides in: "MAYDAY: swimmer in Calm Bay" | Long lens from across the harbour, slow push-in | Call card only |
+| 0:02 to 0:05 | A player in a drysuit runs down the slipway and launches the jet ski; spray off the bow | Low follow from behind, handheld feel | Hidden |
+| 0:05 to 0:08 | Jet ski crosses the bay; Bosun rides the rescue sled, ears and fur blown back | Chase boat at water level, side on | Hidden |
+| 0:08 to 0:10 | Bosun leaps in, swims to a waving survivor, tows them back; wet fur, strobe flashing | Water-level close, camera bobbing on the swell | Hidden |
+| 0:10 to 0:12 | Jet ski threads between rocks with white water breaking | Fast low pass, wide lens | Hidden |
+| 0:12 to 0:14 | Cloud thickens, light drops, rain curtains move across the sea; storm warning card | Wide, high, sky dominant, long lens compression | Storm warning card |
+| 0:14 to 0:17 | All-weather lifeboat climbs and slams through a huge wave, green water over the bow, spindrift | Long lens from the trough, chase boat | Hidden |
+| 0:17 to 0:20 | Helicopter hovers in rain with its searchlight on; crew winches down beside a capsized ferry | From the helicopter door, looking down the hoist line | Hidden |
+| 0:20 to 0:23 | Players' boats around the ferry pulling survivors aboard, red flares and orange smoke | Wide slow orbit | Hidden |
+| 0:23 to 0:25 | Night after the storm: a player relights a lighthouse; the beam sweeps through drizzle | Low, looking up at the lantern | Hidden |
+| 0:25 to 0:27 | Back at the station: survivors handed over in blankets, rank-up banner, Bosun shakes off water | Medium, front, warm station floods | Rank-up banner |
+| 0:27 to 0:30 | Logo over the harbour at dawn | Slow pull-back | Logo overlay |
 
-Cut on wave impacts and lightning so the music lines up. The first half (0:00 to 0:14: the call, the jet ski, Bosun, Coral Reef, the storm rolling in) is first-session play. The second half shows what players grow into (lifeboat, helicopter, big calls, lighthouses); a new player can reach the helicopter's winch early through the station helicopter ride-along on big calls, but most of it comes later. Everything shown is in the live build, so the page does not overpromise.
+Cut on wave impacts and lightning so the music lines up. The first half (0:00 to 0:14: the call, the jet ski, Bosun, the rocks, the storm rolling in) is first-session play. The second half shows what players grow into (lifeboat, helicopter, big calls, lighthouses); a new player can reach the winch early through the station helicopter ride-along on big calls, but most of it comes later. Everything shown is in the live build, so the page does not overpromise. The night shot follows the day cycle's real `ClockTime`; we wait for night on the capture server rather than forcing a storm to change the time ([document 05](05-art-direction.md), section 6).
 
 ### 5.3 How to capture
 
-- **Cinematic camera:** a dev-only `CinematicCamera` client module ([document 06](06-tools-and-pipeline.md)) plays CFrame keyframe paths with easing, triggered by a dev chat command. It only moves the camera; everything on screen is live gameplay. Moon Animator camera paths are an alternative (verify plugin status). Free camera (Left Shift + P) for quick handheld shots.
-- **Capture server:** a private server with 4 to 6 team members playing roles, plus debug flags to force a storm and a big call on cue.
+- **Cinematic camera:** a dev-only `CinematicCamera` client module ([document 06](06-tools-and-pipeline.md), section 4) plays CFrame keyframe paths with easing, triggered by a dev chat command. It sets `FieldOfView` per shot for lens choice, adds a light handheld or boat-mounted sway (tune), and may raise the preset's DepthOfField for a shallow-focus look on close shots. It only moves the camera and focus; everything on screen is live gameplay. Moon Animator camera paths are an alternative (verify plugin status). Free camera (Left Shift + P) for quick handheld shots.
+- **Realistic camera rules:** cameras sit where a real camera could be (chase boat, helicopter door, cliff, deck mount, quay). No flying through hulls or waves. Keep the 180-degree rule within a sequence. Let the camera ride the swell at water level instead of floating dead still.
+- **Capture server:** a private server with 4 to 6 team members playing roles in full crew kit, plus debug flags to force a storm, a lighting preset at the current time of day and a big call on cue.
 - **Settings:** graphics quality at maximum, window at 1920 x 1080, Roblox core UI hidden through a dev flag (`SetCoreGuiEnabled` off), our HUD hidden except where the shot list keeps it.
-- **OBS:** canvas and output 1920 x 1080, 60 fps, recording format MKV (remux to MP4 after), hardware H.264 or HEVC encoder, high-quality constant quality (CQP around 16 to 18) or a high bitrate around 40 to 50 Mbps for the master (tune). Game audio on its own track; no microphone.
-- **Edit:** cut in a video editor, add music and the logo, export H.264 MP4 at 1080p60.
-- **Check:** compare frames against in-game screenshots; any grading must stay minor.
+- **OBS:** canvas and output 1920 x 1080, 60 fps, recording format MKV (remux to MP4 after), hardware H.264 or HEVC encoder, high-quality constant quality (CQP around 16 to 18) or a high bitrate around 40 to 50 Mbps for the master (tune). Game audio on its own track; no microphone. Spray, rain and foam are hard on encoders; check the master for blocking.
+- **Edit:** cut in a video editor, add music and the logo, export H.264 MP4 at 1080p60. Grading is limited to exposure, contrast and a light match between shots.
+- **Check:** compare frames against in-game screenshots at the same quality level; any grading must stay minor. Run the Medium-quality honesty check from section 1.
 
 ---
 
@@ -155,7 +161,7 @@ No official Roblox guidance exists for short-form; this plan is our judgment. De
   - "Worst captain": funny capsizes and helicopter bumps.
   - "Can we save the ferry?": a big call from start to finish, sped up (the cruise ship from [P1]).
   - "Relit": before and after a lighthouse is relit.
-  - Dev logs: ocean tech, building the lifeboat in Blender.
+  - Dev logs: the photoreal ocean, building the lifeboat in Blender from real reference.
 - **Rules:** short-form is off-platform, so Roblox thumbnail rules do not apply, but we stay honest: real gameplay, no fake features. Voice-over is fine here.
 - **Music:** Roblox Creator Store audio is licensed for use on Roblox; whether it covers off-platform social video is not confirmed (unverified). Use commissioned music or the platform's own licensed sound library for shorts.
 - **Paid creators:** any paid or gifted creator post must be disclosed. Undisclosed paid promotion can break platform rules and advertising law.
@@ -179,7 +185,7 @@ rocks. Team up with everyone on the server to save them all.
 - Start on the jet ski, then unlock the RIB, lifeboat and rescue
   helicopter
 - Rescue with Bosun, your Newfoundland rescue dog
-- Explore Calm Bay, Coral Reef, the Open Sea and the Storm Front
+- Explore Calm Bay, The Skerries, the Open Sea and the Storm Front
 - Relight the dark lighthouses of the Gale Isles
 - Rank up from Recruit to Admiral
 
@@ -187,6 +193,7 @@ Credits: see the in-game credits board.
 ```
 
 Notes:
+- Zone names in the draft must match [document 01](01-game-canon.md) when it changes (the photoreal bible assumes a cold-water reef, [document 05](05-art-direction.md), section 3.4).
 - Rank names and the dog's name (Bosun) come from [`01-game-canon.md`](01-game-canon.md) and [`03-progression.md`](03-progression.md).
 - Keep the vehicle list honest at launch: list only what is in the build.
 - No emoji walls, no repeated keywords, no "best game" claims. Read the character counter in the dashboard (limit not in our research).

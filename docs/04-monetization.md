@@ -4,16 +4,16 @@ This file owns every Robux price. Cash prices and progression live in [`03-progr
 
 ## 1. Stance
 
-Fair, cosmetic or convenience first. A player who never pays can reach every rank, vehicle, zone and badge at the pace in [document 03](03-progression.md).
+Fair, cosmetic or convenience first. A player who never pays can reach every rank, certification, vehicle, zone and badge at the pace in [document 03](03-progression.md).
 
 Rules for every item:
 
-1. **Never sell Reputation directly.** No Robux item adds Rep, multiplies it or skips a rank gate. Mayday is PvE, so convenience that saves time (Cash, launches, boosts) is fair: it never takes anything from another player.
+1. **Never sell Reputation, skill, grades or certifications.** No Robux item adds Rep, multiplies it, skips a rank gate, passes or shortens a certification, raises a step grade, widens a timing window, adds a hint or makes an operation step easier. A rescue goes exactly as well as the crew performs it ([document 09](09-rescue-operations.md)). Mayday is PvE, so convenience that saves time (Cash, launches, boosts) is fair: it never takes anything from another player.
 2. **No paid random items at launch.** Every purchase gives exactly what it says.
 3. **Paid vehicles do not exist.** Rank gates every vehicle and zone, and Reputation is never sold. Robux only shortens the Cash grind (Cash packs, 2x Cash, which can speed up stat upgrades) and buys cosmetics.
-4. **State the effect in numbers.** Every product card says exactly what it gives ("Doubles Cash from calls and challenges. Does not affect Reputation.") before the Roblox prompt opens.
+4. **State the effect in numbers.** Every product card says exactly what it gives ("Doubles Cash from operations and challenges. Does not affect Reputation or grades.") before the Roblox prompt opens.
 5. **The player opens every prompt.** A purchase prompt opens only after the player taps a button that shows the Robux price. The game never pops a prompt by itself.
-6. **Nothing priced in the first three calls.** A new player sees no shop, no prices and no offers until the tutorial chain is three calls in.
+6. **Nothing priced in the first three operations.** A new player sees no shop, no prices and no offers until the tutorial chain is three operations in.
 7. **No pressure.** No countdown timers, no "last chance", no fake scarcity, no messages that shame a player for saying no.
 
 ## 2. Price anchors from the research
@@ -34,9 +34,9 @@ One-time purchases, permanent. All are [L] unless marked.
 
 | Pass | Price (tune) | What it gives | Why this price and why it is fair |
 |---|---|---|---|
-| **2x Cash** | 199 R$ | Doubles Cash from calls, big calls and challenges. Does not touch Reputation. | The genre's best-known pass; 199 matches a real 2x listing. Convenience only: rank still gates every vehicle ([document 03](03-progression.md), section 10.2). |
+| **2x Cash** | 199 R$ | Doubles Cash from operations, big calls and challenges. Does not touch Reputation. | The genre's best-known pass; 199 matches a real 2x listing. Convenience only: rank still gates every vehicle ([document 03](03-progression.md), section 10.2). |
 | **VIP Crew Card** | 299 R$ | Gold nameplate and radio tag, VIP Gold livery for every vehicle, access to the VIP deck on the station roof, one free daily challenge reroll. | Status and social, the classic VIP bundle. The reroll is a small convenience, also sold separately for 19 R$. |
-| **Quick Launch** | 149 R$ | Skips the launch cooldown and the walk to your bay: launch any owned vehicle straight from the station or an outpost you have opened. Never affects call timers or grades. | Convenience only. Free players reach the same through Slipway upgrades (no cooldown and outpost launches at level 3, [document 03](03-progression.md), section 6). |
+| **Quick Launch** | 149 R$ | Skips the launch cooldown and the walk to your bay: launch any owned vehicle straight from the station or an outpost you have opened. Never affects a casualty's condition, step grades or the order of steps. | Convenience only. Free players reach the same through Slipway upgrades (no cooldown and outpost launches at level 3, [document 03](03-progression.md), section 6). |
 | **Bosun's Wardrobe** | 129 R$ | Three Newfoundland coat colours (Landseer black-and-white, brown, grey), six bandanas, a dog life jacket, a tiny captain's hat. | Pure cosmetic on the game's most loved character. Small-perk band. |
 | **Water Dog Friends** | 199 R$ | Two extra companions to swap with Bosun: a Labrador and a Portuguese Water Dog (both real water working breeds). Same abilities as Bosun. | Cosmetic variety. Abilities are identical, so no advantage. |
 | **Storm Chaser Liveries** | 249 R$ | Animated lightning-stripe liveries for every vehicle (new vehicles included), plus a storm-blue uniform. | Premium cosmetic. Shows well in storm screenshots and in the server's top-crews board. |
@@ -49,7 +49,7 @@ One-time purchases, permanent. All are [L] unless marked.
 | | |
 |---|---|
 | Price | 399 R$ per season (tune; stays in the 299 to 499 band). A developer product bought once per season. [L] |
-| What it is | A cosmetic-only reward track for each season (about 8 weeks). Every player earns logbook stamps from normal play (calls, storms, big calls, challenges). The free track pays a cosmetic every few stamps; the paid track adds a cosmetic on every stamp: liveries, uniforms, Bosun coats, horns, wake trails, a season trophy for the bay. |
+| What it is | A cosmetic-only reward track for each season (about 8 weeks). Every player earns logbook stamps from normal play (operations, storms, big calls, challenges). The free track pays a cosmetic every few stamps; the paid track adds a cosmetic on every stamp: liveries, uniforms, Bosun coats, horns, wake trails, a season trophy for the bay. |
 | Never gives | Cash, Rep, gear, vehicles or anything with stats. |
 | Fairness | Buying late unlocks every paid tier already stamped, so there is no reason to rush. The season end date is shown plainly on the logbook page, never as a countdown banner. |
 
@@ -99,11 +99,11 @@ Limit: five Cash pack purchases per account per day (tune). Cash packs do not gi
 
 ### 4.3 Rewarded video ads
 
-Where Roblox allows them, a player can choose to watch a rewarded video ad from a **Watch for a bonus** button on the bay terminal: +50% Cash for 15 minutes of playtime or one challenge reroll (tune), up to three a day. Never Rep, never during a call, never shown automatically. The button appears only for players and regions Roblox marks eligible. Verify the current rules before building: viewer age and region eligibility, experience eligibility, the API, and what rewards are allowed. [L]
+Where Roblox allows them, a player can choose to watch a rewarded video ad from a **Watch for a bonus** button on the bay terminal: +50% Cash for 15 minutes of playtime or one challenge reroll (tune), up to three a day. Never Rep, never during an operation, never shown automatically. The button appears only for players and regions Roblox marks eligible. Verify the current rules before building: viewer age and region eligibility, experience eligibility, the API, and what rewards are allowed. [L]
 
 ## 5. Storm Summon (server-wide social event)
 
-The paid storm is our version of an "admin abuse" event: one player pays, the whole server gets the fun, and the buyer gets the credit. It fits pillar 2 (the sea is the opponent) and the discovery signal for intentional co-play (research, section 5, https://create.roblox.com/docs/discovery.md).
+The paid storm is our version of an "admin abuse" event: one player pays, the whole server gets the fun, and the buyer gets the credit. It fits pillar 4 (the sea is the opponent) and the discovery signal for intentional co-play (research, section 5, https://create.roblox.com/docs/discovery.md).
 
 | | Call the Storm (249 R$) | Call the Great Storm (699 R$) |
 |---|---|---|
@@ -115,7 +115,7 @@ The paid storm is our version of an "admin abuse" event: one player pays, the wh
 
 Rules (tune):
 
-1. **Rep is never boosted by a paid storm.** The extra calls still give normal Rep, but the x1.5 storm bonus applies to Cash only. This keeps "never sell Reputation" strict. Natural storms keep the full bonus.
+1. **Rep is never boosted by a paid storm.** The extra operations still give normal Rep, but the x1.5 storm bonus applies to Cash only. This keeps "never sell Reputation" strict. Natural storms keep the full bonus.
 2. **Queue, never stack.** Summons wait in a server queue. At least 8 minutes between summoned storms, and none within 2 minutes of a natural storm. The natural storm clock is not reset.
 3. **Max queue of two.** When the queue is full, the button greys out with "Storm queue full, try again soon". It never takes Robux for a storm that cannot run.
 4. **Calm Bay stays sheltered**, so new players are not swamped by someone else's purchase.
@@ -150,7 +150,11 @@ Subscriptions are regionalized automatically and excluded from price optimizatio
 | Reputation, ranks, rank skips | Rank is the proof a player did the work. Canon rule. |
 | Zone or lighthouse access | Lighthouses need the rank and the mission. |
 | Vehicles with better stats | Every vehicle is gated by rank, which Robux cannot buy. Robux only shortens the Cash grind toward vehicles and upgrades, and buys cosmetics. |
-| Rescue success | No "auto-rescue", no skipping a mini-task, no instant finish, no victim location reveal. |
+| Rescue success | No "auto-rescue", no skipping a step, no instant finish, no casualty location reveal, no paid takeover rescue. |
+| Grades, step results and Pro mode | Grades measure how the crew performed. Nothing paid changes a grade band, a timing window, the condition meter or the Pro bonus. |
+| Certifications and exercises | Earned only by passing the exercise and the live operations ([document 09](09-rescue-operations.md), section 11). No paid pass, retake skip or shortcut. |
+| Better NPC crew or paid hints | NPC crew are the same for everyone and cannot be upgraded with Robux or Cash; Assist prompts are free and Pro is a free setting. |
+| Kit that grades better | Paid cosmetics can change how kit looks, never what it does. Gear upgrades are Cash-only and never widen a grade band ([document 03](03-progression.md), section 1). |
 | Paid random items | No crates, eggs, wheels or luck boosts at launch. |
 | Protection or advantage over other players | There is no PvP, and nothing paid can block, push or out-claim another player. |
 | Bosun himself | Every player gets Bosun free. Paid dogs are cosmetic swaps. |

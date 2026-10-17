@@ -2,11 +2,16 @@
 
 **Answer the call. Brave the storm. Bring them home.**
 
-A Roblox coast guard and sea rescue game. You join the reopened rescue station in Port Haven, answer Mayday calls over the radio, and race out by jet ski, lifeboat or helicopter to pull people out of the sea. Every few minutes a storm rolls over the whole server and the big calls come in.
+A photoreal Roblox coast guard and sea rescue game. You join the reopened lifeboat station in Port Haven on the North Atlantic, take Mayday taskings over the radio, and run real rescue operations: search, approach, recovery, casualty care, towing and handover, done by a crew or solo with NPC crew. Every few minutes a storm rolls over the whole server and the big calls come in.
 
-The one-line pitch: *Firefighting Sim, but on the ocean, with storms.*
+The one-line pitch: *Firefighting Sim, but on the ocean, with storms, and every rescue done the real way.*
 
-This repository holds the design bible for now. Code and art come next.
+Two rules shape everything:
+
+- **Mega realistic.** Photoreal PBR art, a real-looking ocean and weather, and vehicles and kit modelled on real lifeboats, RIBs and rescue helicopters ([chapter 05](docs/05-art-direction.md)).
+- **Real operations, not "go there, press a button, go back".** Every rescue is a chain of real procedure steps with skill, decisions and consequences ([chapter 09](docs/09-rescue-operations.md)).
+
+This repository holds the design bible and a working greybox (the first rescue loop runs in Studio). Photoreal art and the full operations come next.
 
 ## Why this game
 
@@ -28,6 +33,7 @@ Full evidence: [`docs/research/reference-games.md`](docs/research/reference-game
 | 06 | [Tools and pipeline](docs/06-tools-and-pipeline.md) | Toolchain, Blender to Studio, ocean/boat/helicopter tech, repo layout |
 | 07 | [Store page, thumbnails and trailer](docs/07-store-page-thumbnails-and-trailer.md) | Icon, thumbnails, gameplay video shot list, description |
 | 08 | [References](docs/08-references.md) | Games, real-world references, tutorials, links |
+| 09 | [Rescue operations](docs/09-rescue-operations.md) | Every operation step by step: real procedure, player mechanic, crew role, failure, grading; radio; certifications |
 
 Raw research notes: [`docs/research/`](docs/research/).
 
@@ -37,6 +43,14 @@ Raw research notes: [`docs/research/`](docs/research/).
 - `(tune)` marks a starting number we expect to change after playtests.
 - `(unverified)` marks a fact we could not confirm from a primary source.
 - Ownership: [chapter 02](docs/02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [chapter 03](docs/03-progression.md) owns numbers (Rep, Cash, thresholds, pacing), [chapter 04](docs/04-monetization.md) owns Robux prices, and [chapter 06](docs/06-tools-and-pipeline.md) owns tech. Other chapters link to them.
+
+## Code
+
+Greybox code lives in `src/` (Rojo). Module ownership and service APIs: [`CONTRACT.md`](CONTRACT.md).
+
+- Checks: `~/RobloxProjects/tools/check.sh .` (types, lint, format, Lune unit tests)
+- Build: `~/RobloxProjects/tools/build.sh .` writes `build/MaydaySeaRescue.rbxl`
+- Studio smoke test: `python3 tools/studio/smoke.py`
 
 ## Toolchain
 
