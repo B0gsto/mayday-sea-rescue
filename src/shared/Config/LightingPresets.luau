@@ -3,7 +3,8 @@
 -- docs/05-art-direction.md section 6, as data. WeatherController picks a day base (Clear, Calm
 -- or Overcast; Overcast is the default weather), blends it toward Night by the sun elevation and
 -- toward Storm by Weather.getIntensity(), and swaps the matching Sky (src/client/Ocean/SkyAssets).
--- WaterColor is published to the ocean (North Atlantic grey-green, darker in storm).
+-- WaterColor is published to the ocean (North Atlantic grey-green, darker in storm). Keep it
+-- desaturated (S <= ~0.25): sunlight and specular push it toward saturated cyan on screen (round 3).
 -- Values are starting points (-- tune). Colours use palette hex codes from docs 05 section 3.
 --
 -- ClockTime is listed for reference and for setting the scene once; the controller never moves
@@ -82,9 +83,9 @@ local Calm: Preset = table.freeze({
 	TintColor = hex("#FFF0E0"),
 	BloomIntensity = 0.3,
 	BloomSize = 24,
-	BloomThreshold = 1.5,
-	SunRaysIntensity = 0.06, -- on, low
-	WaterColor = hex("#2F4A4F"),
+	BloomThreshold = 1.1, -- glitter blooms (round 3)
+	SunRaysIntensity = 0.12, -- golden shafts
+	WaterColor = hex("#36463F"),
 })
 
 local Storm: Preset = table.freeze({
@@ -111,34 +112,34 @@ local Storm: Preset = table.freeze({
 	BloomSize = 28,
 	BloomThreshold = 1.8,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#1F2E31"),
+	WaterColor = hex("#232C2B"),
 })
 
 local Night: Preset = table.freeze({
 	ClockTime = 21.5,
-	Brightness = 0.45,
-	ExposureCompensation = 0.5,
-	Ambient = hex("#0E1218"),
-	OutdoorAmbient = hex("#2A3850"),
+	Brightness = 0.9,
+	ExposureCompensation = 1.1,
+	Ambient = hex("#232B39"),
+	OutdoorAmbient = hex("#48597A"),
 	ColorShift_Top = hex("#6B7FA0"),
 	EnvironmentDiffuseScale = 0.8,
 	EnvironmentSpecularScale = 1,
-	AtmosphereDensity = 0.32,
-	AtmosphereHaze = 1.0,
-	AtmosphereColor = hex("#1A2230"),
-	AtmosphereDecay = hex("#0C1018"),
+	AtmosphereDensity = 0.26,
+	AtmosphereHaze = 0.5,
+	AtmosphereColor = hex("#2C3850"),
+	AtmosphereDecay = hex("#1A2236"),
 	AtmosphereGlare = 0,
-	CloudsCover = 0.60,
+	CloudsCover = 0.35,
 	CloudsDensity = 0.40,
 	CloudsColor = hex("#2A3038"),
-	Saturation = -0.20,
+	Saturation = -0.12,
 	Contrast = 0.10,
 	TintColor = hex("#DCE4F0"),
 	BloomIntensity = 0.6,
 	BloomSize = 32,
 	BloomThreshold = 1.0,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#13222A"),
+	WaterColor = hex("#1E2A30"),
 })
 
 -- Clear noon and bright overcast (docs 05 section 6.2). -- tune
@@ -164,9 +165,9 @@ local Clear: Preset = table.freeze({
 	TintColor = hex("#FFFFFF"),
 	BloomIntensity = 0.3,
 	BloomSize = 24,
-	BloomThreshold = 1.6,
-	SunRaysIntensity = 0.05,
-	WaterColor = hex("#2C4E55"),
+	BloomThreshold = 1.2, -- glitter blooms (round 3)
+	SunRaysIntensity = 0.08,
+	WaterColor = hex("#364846"),
 })
 
 local Overcast: Preset = table.freeze({
@@ -193,7 +194,7 @@ local Overcast: Preset = table.freeze({
 	BloomSize = 24,
 	BloomThreshold = 1.8,
 	SunRaysIntensity = 0,
-	WaterColor = hex("#2B4448"),
+	WaterColor = hex("#34423F"),
 })
 
 -- Lightning flash: added on top of the blend for a moment. -- tune

@@ -50,6 +50,7 @@ local OceanSurface = require(Ocean:WaitForChild("OceanSurface"))
 local PartGrid = require(Ocean:WaitForChild("PartGrid"))
 local Seabed = require(Ocean:WaitForChild("Seabed"))
 local Underwater = require(Ocean:WaitForChild("Underwater"))
+local Wake = require(Ocean:WaitForChild("Wake"))
 local WaveField = require(Ocean:WaitForChild("WaveField"))
 
 local SEA = WaveField.SEA_LEVEL
@@ -62,15 +63,15 @@ local FOAM_SINK = -0.9 -- foam overlay offset where there is no foam (hidden und
 local FOAM_LIFT = 0.06 -- foam overlay offset on full-foam crests -- tune
 -- See-through shallows: surface transparency from the seabed depth under the camera. -- tune
 -- The Seabed depth slices carry the depth colour, so the surface itself can be clearer.
-local CLEAR_DEPTH, OPAQUE_DEPTH, MAX_CLEAR = 4, 30, 0.62
+local CLEAR_DEPTH, OPAQUE_DEPTH, MAX_CLEAR = 4, 30, 0.72
 local SPRAY_RATE = 70 -- spindrift particles/s at full storm (High) -- tune
 -- Water albedo tints (part.Color under the Overlay SurfaceAppearance). WeatherController publishes
 -- the blended preset's WaterColor and Atmosphere colour as Lighting attributes OceanWaterColor /
 -- OceanHazeColor; these are the fallbacks. North Atlantic grey-green, darker in storm. -- tune
-local TINT_CALM = Color3.fromHex("#2F4A4F")
-local TINT_STORM = Color3.fromHex("#1F2E31")
+local TINT_CALM = Color3.fromHex("#36463F")
+local TINT_STORM = Color3.fromHex("#232C2B")
 local HAZE_DEFAULT = Color3.fromHex("#A9B0B4")
-local SHALLOW_TINT = Color3.fromHex("#4E6F66") -- greener and lighter over sand -- tune
+local SHALLOW_TINT = Color3.fromHex("#56695E") -- greener and lighter over sand -- tune
 
 local OceanController = {}
 OceanController.Priority = 50
@@ -88,6 +89,12 @@ local ring: MeshGrid.Grid? = nil
 local far: FarPlane.FarPlane? = nil
 local foam: MeshGrid.Grid? = nil
 local foamLift: { number } = {}
+-- Crest-top positions from the last foam pass; spindrift is emitted only from these.
+local MAX_CRESTS = 48
+local crestPos: { Vector3 } = table.create(MAX_CRESTS)
+local crestCount = 0
+local sprayBudget = 0
+local sprayAt = os.clock()
 local spray: Part? = nil
 local sprayEmitter: ParticleEmitter? = nil
 local underwater: Underwater.Underwater? = nil
@@ -266,7 +273,7 @@ local function buildMesh(parent: Instance): boolean
 	sprayPart.CanQuery = false
 	sprayPart.CanTouch = false
 	sprayPart.Transparency = 1
-	sprayPart.Size = Vector3.new(nearGrid.half * 1.6, 1, nearGrid.half * 1.6)
+	sprayPart.Size = Vector3.new(3, 0.5, 3) -- one crest's lip; moved to a crest per burst
 	local emitter = Instance.new("ParticleEmitter")
 	emitter.Texture = "rbxasset://textures/particles/smoke_main.dds"
 	emitter.Color = ColorSequence.new(Color3.fromHex("#DCE2E1"))
@@ -347,20 +354,27 @@ local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: num
 	local foamGrid = foam
 	if foamGrid then
 		local intensity = WaveField.intensity()
-		local visible = intensity > 0.05
-		foamGrid.part.Transparency = if visible then 0 else 1
+		-- Whitecaps in every weather (the North Atlantic is never glassy): sparse on calm swell,
+		-- most crests breaking in a storm. Crest vertices feed the spindrift (crests only).
+		local visible = true
+		foamGrid.part.Transparency = 0
+		crestCount = 0
 		if visible then
 			local amp = math.max(WaveField.maxAmplitude(), 0.1)
 			local heights, gxs, gzs, lx, lz =
 				foamGrid.heights, foamGrid.gx, foamGrid.gz, foamGrid.lx, foamGrid.lz
 			local edge = foamGrid.half - foamGrid.cellSize * 0.5
 			-- Crest threshold drops as the storm builds: more of each crest breaks. -- tune
-			local lo = 0.72 - 0.30 * intensity
+			local lo = 0.80 - 0.38 * intensity
+			local cover = 0.28 + 0.72 * math.min(intensity * 1.6, 1)
 			for n = 1, foamGrid.count do
 				local h, gx, gz = WaveField.gradientAt(centreX + lx[n], centreZ + lz[n], t)
-				local f = smoothstep(lo, lo + 0.22, (h - SEA) / amp) * math.min(intensity * 1.6, 1)
+				local f = smoothstep(lo, lo + 0.22, (h - SEA) / amp) * cover
 				if math.abs(lx[n]) > edge or math.abs(lz[n]) > edge then
 					f = 0 -- keep the overlay's border under the water
+				elseif f > 0.6 and crestCount < MAX_CRESTS and (n % 3 == 0) then
+					crestCount += 1
+					crestPos[crestCount] = Vector3.new(centreX + lx[n], h + 0.4, centreZ + lz[n])
 				end
 				heights[n], gxs[n], gzs[n] = h, gx, gz
 				foamLift[n] = FOAM_SINK + (FOAM_LIFT - FOAM_SINK) * math.min(f * 2.2, 1)
@@ -450,9 +464,23 @@ local function updateLook()
 			then 1
 			elseif tier.name == "Medium" then 0.5
 			else 0.25
-		emitter.Rate = SPRAY_RATE * s * s * tierScale
+		-- Manual emission from crest tops only (the part hops to a crest per burst).
+		emitter.Rate = 0
+		local now2 = os.clock()
+		sprayBudget = math.min(sprayBudget + SPRAY_RATE * s * s * tierScale * (now2 - sprayAt), 40)
+		sprayAt = now2
 		local wx, wz = WaveField.windDirection()
 		emitter.Acceleration = Vector3.new(wx * 38, -29.4, wz * 38)
+		local sprayP = spray
+		if sprayP and crestCount > 0 then
+			while sprayBudget >= 1 do
+				sprayBudget -= 1
+				sprayP.CFrame = CFrame.new(crestPos[math.random(1, crestCount)])
+				emitter:Emit(1)
+			end
+		elseif crestCount == 0 then
+			sprayBudget = 0
+		end
 	end
 end
 
@@ -571,6 +599,7 @@ function OceanController.Start()
 	OceanQuality.onChanged(function()
 		task.spawn(build)
 	end)
+	Wake.start(SEA) -- hull foam and wake trails behind boats (Ocean/Wake)
 	build() -- yields (CreateMeshPartAsync)
 end
 

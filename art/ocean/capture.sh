@@ -43,3 +43,4 @@ sheet.resize((1200, int(sheet.height * 1200 / sheet.width)), Image.LANCZOS).save
 print("cells", len(cells), "of", len(names))
 EOF
 echo "SHEET build/ocean/round$N.png"
+python3 art/ocean/shot_stats.py "build/ocean/round$N"

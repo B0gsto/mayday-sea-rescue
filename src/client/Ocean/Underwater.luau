@@ -12,10 +12,10 @@ local Lighting = game:GetService("Lighting")
 
 local FOG_DISTANCES = { 12, 25, 45, 80, 150 } -- studs -- tune
 local FOG_TRANSPARENCY = 0.72 -- per slice -- tune
-local FOG_COLOUR = Color3.fromHex("#0F3A40") -- palette deep water, a touch greener -- tune
+local FOG_COLOUR = Color3.fromHex("#1E3A38") -- palette deep water, a touch greener -- tune
 local SHAFTS = 7
-local DEEP_TINT = Color3.fromHex("#7FC4BC")
-local DARK_TINT = Color3.fromHex("#3E6E6C")
+local DEEP_TINT = Color3.fromHex("#9DB8AE")
+local DARK_TINT = Color3.fromHex("#4C625A") -- green-grey, not teal (round 3)
 
 export type Underwater = {
 	folder: Folder,
@@ -62,7 +62,7 @@ function Underwater.new(parent: Instance): Underwater
 	end
 	local cc = Instance.new("ColorCorrectionEffect")
 	cc.Name = "OceanUnderwaterGrade"
-	cc.TintColor = Color3.fromHex("#7FC4BC")
+	cc.TintColor = DEEP_TINT
 	cc.Saturation = -0.15
 	cc.Contrast = 0.08
 	cc.Brightness = -0.04
@@ -122,7 +122,7 @@ function Underwater.new(parent: Instance): Underwater
 	local window = basePart("SurfaceWindow", folder)
 	window.Shape = Enum.PartType.Cylinder
 	window.Material = Enum.Material.Neon
-	window.Color = Color3.fromHex("#9FD3C9")
+	window.Color = Color3.fromHex("#B4CCC2")
 	window.Size = Vector3.new(0.05, 20, 20)
 	window.Transparency = 1
 	return {

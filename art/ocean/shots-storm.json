@@ -12,7 +12,7 @@
    -680
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,9,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(640,1,-680))"
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,9,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(640,1,-680)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
  },
  {
   "name": "jetski_storm",
@@ -27,6 +27,6 @@
    -700
   ],
   "settle": 4,
-  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,4.5,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(560,3,-700))"
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 14.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,4.5,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(560,3,-700)) workspace:SetAttribute(\"ShotCF\", workspace.CurrentCamera.CFrame)"
  }
 ]

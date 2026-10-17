@@ -22,7 +22,7 @@ local CAUSTIC_SPEED = { Vector2.new(0.9, 0.5), Vector2.new(-0.6, 0.8) } -- studs
 local CAUSTIC_MAX_DEPTH = 40 -- studs -- tune
 local SLICES = 8
 local SLICE_STEP = 2.6 -- studs between depth slices -- tune
-local SLICE_TRANSPARENCY = 0.8 -- per slice -- tune
+local SLICE_TRANSPARENCY = 0.9 -- per slice; 0.8 hid the sand at 8 studs (round 3) -- tune
 local SLICE_SIZE = 360
 
 export type Seabed = {

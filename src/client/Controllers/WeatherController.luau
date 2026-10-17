@@ -542,6 +542,12 @@ function WeatherController.Init()
 	sky = findOrCreate(Lighting, "Sky", "Sky")
 	sky.StarCount = 3000 -- Roblox only draws stars at night
 	sky.MoonAngularSize = 13 -- tune
+	-- Visible sun and moon discs (round 3): the built-in textures, set explicitly so an empty
+	-- id from an older place file can't hide them. The sun disc drives the water's sun glitter.
+	sky.SunTextureId = "rbxasset://sky/sun.jpg"
+	sky.MoonTextureId = "rbxasset://sky/moon.jpg"
+	sky.SunAngularSize = 14 -- tune
+	sky.CelestialBodiesShown = true
 	atmosphere.Offset = 0.15
 	sunRays.Spread = 0.6
 	clouds.Enabled = true
