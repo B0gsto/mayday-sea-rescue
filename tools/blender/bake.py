@@ -330,6 +330,25 @@ def make_material(label, emit_mode, values, ctx, image=None):
     return mat
 
 
+def custom_material(m, mode):
+    """Opt-in procedural slot (material custom property "bake_custom"): a copy of the source material whose node named
+    BAKE_BASE (colour output, sRGB values like the constant base pass) or BAKE_MR (vector: X metal, Y roughness) is
+    emitted instead of the constant slot value. None when the material has no such node (constant path)."""
+    if m is None or not m.get("bake_custom") or not m.use_nodes:
+        return None
+    key = "BAKE_BASE" if mode == "base" else "BAKE_MR"
+    if m.node_tree.nodes.get(key) is None:
+        return None
+    c = m.copy()
+    c.name = "_bake_custom_%s" % mode
+    nt = c.node_tree
+    out = next((n for n in nt.nodes if n.type == "OUTPUT_MATERIAL"), None) or nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(nt.nodes[key].outputs[0], em.inputs["Color"])
+    nt.links.new(em.outputs[0], out.inputs["Surface"])
+    return c
+
+
 def select(objs, active):
     for o in bpy.context.view_layer.objects:
         o.select_set(False)
@@ -351,7 +370,8 @@ def bake_pass(mode, target, source, image, set_spec, ctx):
         elif same:
             pm.swap(target, lambda m: make_material(mode, mode, values_for(m), ctx, image))
         else:
-            pm.swap(source, lambda m: make_material(mode, mode, values_for(m), ctx))
+            pm.swap(source, lambda m: (custom_material(m, mode) if mode in ("base", "mr") else None)
+                    or make_material(mode, mode, values_for(m), ctx))
             pm.swap(target, lambda m: make_material("target", None, None, ctx, image))
         select([target] if same else [source, target], target)
         b = bpy.context.scene.render.bake

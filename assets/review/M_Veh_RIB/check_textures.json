@@ -1,5 +1,5 @@
 {
- "ok": true,
+ "ok": false,
  "rows": [
   {
    "subject": "T_RIB_Decals",
@@ -159,7 +159,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 127, 99th 226, range 30 to 240 over 100% of pixels"
+   "detail": "luma 1st 38, 99th 151, range 30 to 240 over 100% of pixels"
   },
   {
    "subject": "T_RIB_Decals_ALB",
@@ -167,7 +167,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.00, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.42, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Decals_ALB_Wet",
@@ -175,7 +175,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 169, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 113, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_RIB_Decals_ALB_Wet",
@@ -183,7 +183,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.00, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.43, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Decals_NOR",
@@ -199,7 +199,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.18)"
+   "detail": "OpenGL (curl share 0.23)"
   },
   {
    "subject": "T_RIB_Decals_ALB_Wet",
@@ -207,7 +207,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 99, dry 133"
+   "detail": "mean 87, dry 116"
   },
   {
    "subject": "T_RIB_Decals_RGH_Wet",
@@ -215,7 +215,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 64, dry 141"
+   "detail": "mean 70, dry 147"
   },
   {
    "subject": "T_RIB_Deck",
@@ -367,7 +367,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "1.6% of pixels between 0.1 and 0.9"
+   "detail": "5.4% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_RIB_Deck_ALB",
@@ -375,7 +375,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 40, 99th 217, range 30 to 240 over 93% of pixels"
+   "detail": "luma 1st 71, 99th 207, range 30 to 240 over 79% of pixels"
   },
   {
    "subject": "T_RIB_Deck_ALB",
@@ -383,7 +383,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 183, 99th 248, range 180 to 250 over 2% of pixels"
+   "detail": "luma 1st 186, 99th 247, range 180 to 250 over 5% of pixels"
   },
   {
    "subject": "T_RIB_Deck_ALB",
@@ -391,7 +391,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.09, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.10, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Deck_ALB_Wet",
@@ -399,7 +399,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 163, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 156, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_RIB_Deck_ALB_Wet",
@@ -415,7 +415,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.09, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.10, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Deck_NOR",
@@ -431,7 +431,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "undetermined (curl share 0.36): check the bake settings"
+   "detail": "undetermined (curl share 0.42): check the bake settings"
   },
   {
    "subject": "T_RIB_Deck_ALB_Wet",
@@ -439,7 +439,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 98, dry 131"
+   "detail": "mean 106, dry 138"
   },
   {
    "subject": "T_RIB_Deck_RGH_Wet",
@@ -447,7 +447,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 72, dry 146"
+   "detail": "mean 64, dry 138"
   },
   {
    "subject": "T_RIB_Hull",
@@ -599,7 +599,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "0.2% of pixels between 0.1 and 0.9"
+   "detail": "2.5% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_RIB_Hull_ALB",
@@ -607,15 +607,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 46, 99th 188, range 30 to 240 over 99% of pixels"
+   "detail": "luma 1st 41, 99th 199, range 30 to 240 over 91% of pixels"
   },
   {
    "subject": "T_RIB_Hull_ALB",
    "check": "metal albedo",
-   "ok": true,
+   "ok": false,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 187, 99th 248, range 180 to 250 over 0% of pixels"
+   "detail": "luma 1st 157, 99th 220, range 180 to 250 over 3% of pixels"
   },
   {
    "subject": "T_RIB_Hull_ALB",
@@ -623,7 +623,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.16, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.36, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Hull_ALB_Wet",
@@ -631,7 +631,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 141, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 150, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_RIB_Hull_ALB_Wet",
@@ -647,7 +647,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.16, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.36, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIB_Hull_NOR",
@@ -663,7 +663,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "undetermined (curl share 0.43): check the bake settings"
+   "detail": "undetermined (curl share 0.39): check the bake settings"
   },
   {
    "subject": "T_RIB_Hull_ALB_Wet",
@@ -671,7 +671,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 66, dry 89"
+   "detail": "mean 93, dry 121"
   },
   {
    "subject": "T_RIB_Hull_RGH_Wet",
@@ -679,7 +679,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 77, dry 153"
+   "detail": "mean 82, dry 159"
   },
   {
    "subject": "T_RIB_Rig",
@@ -735,7 +735,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_ALB.png",
@@ -751,7 +751,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_ALB_Wet.png",
@@ -767,7 +767,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_MET.png",
@@ -783,7 +783,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_NOR.png",
@@ -799,7 +799,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_RGH.png",
@@ -815,7 +815,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_RIB_Rig_RGH_Wet.png",
@@ -831,7 +831,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "3.3% of pixels between 0.1 and 0.9"
+   "detail": "7.3% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_RIB_Rig_ALB",
@@ -839,7 +839,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 47, 99th 217, range 30 to 240 over 85% of pixels"
+   "detail": "luma 1st 60, 99th 205, range 30 to 240 over 71% of pixels"
   },
   {
    "subject": "T_RIB_Rig_ALB",
@@ -847,7 +847,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 182, 99th 247, range 180 to 250 over 5% of pixels"
+   "detail": "luma 1st 183, 99th 248, range 180 to 250 over 5% of pixels"
   },
   {
    "subject": "T_RIB_Rig_ALB",
@@ -863,7 +863,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 163, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 154, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_RIB_Rig_ALB_Wet",
@@ -894,8 +894,8 @@
    "check": "OpenGL green",
    "ok": true,
    "waived": false,
-   "info": false,
-   "detail": "OpenGL (curl share 0.35)"
+   "info": true,
+   "detail": "undetermined (curl share 0.48): check the bake settings"
   },
   {
    "subject": "T_RIB_Rig_ALB_Wet",
@@ -903,7 +903,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 108, dry 144"
+   "detail": "mean 111, dry 143"
   },
   {
    "subject": "T_RIB_Rig_RGH_Wet",
@@ -911,7 +911,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 27, dry 102"
+   "detail": "mean 37, dry 112"
   }
  ]
 }

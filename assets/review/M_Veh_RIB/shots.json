@@ -2,151 +2,151 @@
  {
   "name": "M_Veh_RIB_Clear_dry",
   "cam": [
-   24,
-   9,
-   -24
+   21,
+   50,
+   -21
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Clear', false)"
+  "lua": "_G.LookDev.shot({21, 50, -21}, {0, 43.2, 0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Clear', false) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Clear_wet",
   "cam": [
-   24,
-   9,
-   -24
+   21,
+   50,
+   -21
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Clear', true)"
+  "lua": "_G.LookDev.shot({21, 50, -21}, {0, 43.2, 0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Clear', true) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Overcast_dry",
   "cam": [
-   24,
-   9,
-   -24
+   -24,
+   48.5,
+   -12
   ],
   "look": [
    0,
-   1.5,
-   0
+   43.2,
+   0.5
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "_G.LookDev.shot({-24, 48.5, -12}, {0, 43.2, 0.5}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', false) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Overcast_wet",
   "cam": [
-   24,
-   9,
-   -24
+   -24,
+   48.5,
+   -12
   ],
   "look": [
    0,
-   1.5,
-   0
+   43.2,
+   0.5
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "_G.LookDev.shot({-24, 48.5, -12}, {0, 43.2, 0.5}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', true) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Storm_dry",
   "cam": [
-   24,
-   9,
-   -24
+   -20,
+   49,
+   19
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Storm', false)"
+  "lua": "_G.LookDev.shot({-20, 49, 19}, {0, 43.2, 0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Storm', false) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Storm_wet",
   "cam": [
-   24,
-   9,
-   -24
+   -20,
+   49,
+   19
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Storm', true)"
+  "lua": "_G.LookDev.shot({-20, 49, 19}, {0, 43.2, 0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Storm', true) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Night_dry",
   "cam": [
-   24,
-   9,
-   -24
+   19,
+   47.5,
+   -19
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Night', false)"
+  "lua": "_G.LookDev.shot({19, 47.5, -19}, {0, 43.2, 0}) _G.RIBSpot(true) local st = _G.RIBStand() local r = _G.LookDev.apply('Night', false) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Night_wet",
   "cam": [
-   24,
-   9,
-   -24
+   19,
+   47.5,
+   -19
   ],
   "look": [
    0,
-   1.5,
+   43.2,
    0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({24, 9, -24}, {0, 1.5, 0}) return _G.LookDev.apply('Night', true)"
+  "lua": "_G.LookDev.shot({19, 47.5, -19}, {0, 43.2, 0}) _G.RIBSpot(true) local st = _G.RIBStand() local r = _G.LookDev.apply('Night', true) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Helm_Overcast_dry",
   "cam": [
    3.2,
-   6.2,
+   48.25,
    7.5
   ],
   "look": [
    0,
-   2.4,
+   44.449999999999996,
    -1.0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({3.2, 6.2, 7.5}, {0, 2.4, -1.0}) return _G.LookDev.apply('Overcast', false)"
+  "lua": "_G.LookDev.shot({3.2, 48.25, 7.5}, {0, 44.449999999999996, -1.0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', false) return r .. \"; \" .. st"
  },
  {
   "name": "M_Veh_RIB_Helm_Overcast_wet",
   "cam": [
    3.2,
-   6.2,
+   48.25,
    7.5
   ],
   "look": [
    0,
-   2.4,
+   44.449999999999996,
    -1.0
   ],
   "settle": 1.5,
-  "lua": "_G.LookDev.shot({3.2, 6.2, 7.5}, {0, 2.4, -1.0}) return _G.LookDev.apply('Overcast', true)"
+  "lua": "_G.LookDev.shot({3.2, 48.25, 7.5}, {0, 44.449999999999996, -1.0}) _G.RIBSpot(false) local st = _G.RIBStand() local r = _G.LookDev.apply('Overcast', true) return r .. \"; \" .. st"
  }
 ]

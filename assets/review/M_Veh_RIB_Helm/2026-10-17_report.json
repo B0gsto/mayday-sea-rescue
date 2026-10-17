@@ -2,7 +2,7 @@
  "asset": "M_Veh_RIB_Helm",
  "name": "M_Veh_RIB_Helm",
  "date": "2026-10-17",
- "commit": "1de0044+dirty",
+ "commit": "a98befb+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -26,7 +26,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
-   "bytes": 730604,
+   "bytes": 809308,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_Helm_Console_LOD0",
@@ -45,7 +45,7 @@
       0.845,
       5.4522
      ],
-     "polygons": 4512,
+     "polygons": 5140,
      "all_triangles": true,
      "uv": true
     },
@@ -237,7 +237,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4512 of 10000"
+   "detail": "5140 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Helm_Console_LOD0",
@@ -277,7 +277,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2412 faces have no UV area"
+   "detail": "0 of 2761 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Helm_Console_LOD0",
@@ -285,7 +285,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "310 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "274 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Veh_RIB_Helm_Seats_LOD0",
@@ -397,7 +397,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "8772 of 15000 (helm_interior, asset row)"
+   "detail": "9400 of 15000 (helm_interior, asset row)"
   },
   {
    "subject": "M_Veh_RIB_Helm",
@@ -581,7 +581,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Veh_RIB_Helm_Console_LOD0, M_Veh_RIB_Helm_Seats_LOD0; 8772 triangles (scene 8772)"
+   "detail": "M_Veh_RIB_Helm_Console_LOD0, M_Veh_RIB_Helm_Seats_LOD0; 9400 triangles (scene 9400)"
   },
   {
    "subject": "M_Veh_RIB_Helm_LOD0.fbx",
@@ -605,8 +605,8 @@
    "name": "M_Veh_RIB_Helm_Console_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 4512,
-   "texel_density": 310.1
+   "triangles": 5140,
+   "texel_density": 273.8
   },
   {
    "name": "M_Veh_RIB_Helm_Seats_LOD0",
@@ -619,14 +619,14 @@
    "name": "M_Veh_RIB_Helm_Console_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 13956,
+   "triangles": 27392,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Helm_Seats_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 8820,
+   "triangles": 13956,
    "texel_density": null
   }
  ],
@@ -635,5 +635,5 @@
   8.305000305175781,
   3.352200508117676
  ],
- "peak_rss_mb": 746.2
+ "peak_rss_mb": 744.0
 }

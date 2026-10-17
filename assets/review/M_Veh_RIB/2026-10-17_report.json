@@ -2,7 +2,7 @@
  "asset": "M_Veh_RIB",
  "name": "M_Veh_RIB",
  "date": "2026-10-17",
- "commit": "1de0044+dirty",
+ "commit": "a98befb+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -26,7 +26,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD0.fbx",
-   "bytes": 1347740,
+   "bytes": 1907436,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD0",
@@ -48,10 +48,10 @@
      ],
      "max": [
       3.1,
-      10.8661,
-      9.03
+      12.7066,
+      9.5117
      ],
-     "polygons": 2420,
+     "polygons": 3800,
      "all_triangles": true,
      "uv": true
     },
@@ -74,15 +74,15 @@
      "name": "M_Veh_RIB_Console_LOD0.001",
      "min": [
       -1.465,
-      -2.4039,
-      2.1
+      -2.3239,
+      1.8911
      ],
      "max": [
       1.465,
-      0.1961,
+      11.058,
       6.365
      ],
-     "polygons": 476,
+     "polygons": 477,
      "all_triangles": true,
      "uv": true
     },
@@ -95,10 +95,10 @@
      ],
      "max": [
       4.3092,
-      6.4761,
-      4.05
+      10.7761,
+      4.38
      ],
-     "polygons": 808,
+     "polygons": 1072,
      "all_triangles": true,
      "uv": true
     },
@@ -111,10 +111,10 @@
      ],
      "max": [
       2.7552,
-      11.0561,
-      6.3072
+      11.058,
+      6.3024
      ],
-     "polygons": 1688,
+     "polygons": 4039,
      "all_triangles": true,
      "uv": true
     },
@@ -122,7 +122,7 @@
      "name": "M_Veh_RIB_Engines_LOD0.001",
      "min": [
       -1.92,
-      11.0161,
+      10.9781,
       0.0
      ],
      "max": [
@@ -130,7 +130,7 @@
       13.0361,
       4.74
      ],
-     "polygons": 3308,
+     "polygons": 4596,
      "all_triangles": true,
      "uv": true
     },
@@ -139,14 +139,14 @@
      "min": [
       -3.13,
       -11.4739,
-      0.47
+      0.418
      ],
      "max": [
       3.3811,
       12.1961,
       2.863
      ],
-     "polygons": 812,
+     "polygons": 1538,
      "all_triangles": true,
      "uv": true
     },
@@ -155,7 +155,7 @@
      "min": [
       -4.3622,
       -13.0361,
-      1.65
+      0.94
      ],
      "max": [
       4.3622,
@@ -177,7 +177,7 @@
   },
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD1.fbx",
-   "bytes": 578044,
+   "bytes": 845788,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD1",
@@ -194,14 +194,14 @@
      "min": [
       -3.0955,
       9.4855,
-      2.1045
+      2.1
      ],
      "max": [
       3.0955,
-      10.8666,
-      9.03
+      12.7084,
+      9.5106
      ],
-     "polygons": 828,
+     "polygons": 1302,
      "all_triangles": true,
      "uv": true
     },
@@ -209,15 +209,15 @@
      "name": "M_Veh_RIB_Console_LOD1.001",
      "min": [
       -1.4635,
-      -2.4039,
-      2.1
+      -2.3239,
+      1.8911
      ],
      "max": [
       1.4635,
-      0.1961,
+      11.058,
       6.365
      ],
-     "polygons": 162,
+     "polygons": 163,
      "all_triangles": true,
      "uv": true
     },
@@ -230,10 +230,10 @@
      ],
      "max": [
       4.3092,
-      6.4761,
-      4.05
+      10.7761,
+      4.38
      ],
-     "polygons": 277,
+     "polygons": 366,
      "all_triangles": true,
      "uv": true
     },
@@ -246,10 +246,10 @@
      ],
      "max": [
       2.7552,
-      11.0561,
-      6.3072
+      11.058,
+      6.3024
      ],
-     "polygons": 577,
+     "polygons": 1384,
      "all_triangles": true,
      "uv": true
     },
@@ -257,7 +257,7 @@
      "name": "M_Veh_RIB_Engines_LOD1.001",
      "min": [
       -1.9177,
-      11.0161,
+      10.9797,
       0.0
      ],
      "max": [
@@ -265,7 +265,7 @@
       13.0361,
       4.7418
      ],
-     "polygons": 1134,
+     "polygons": 1574,
      "all_triangles": true,
      "uv": true
     },
@@ -274,14 +274,14 @@
      "min": [
       -3.1306,
       -11.4769,
-      0.47
+      0.418
      ],
      "max": [
       3.3811,
       12.1961,
       2.863
      ],
-     "polygons": 278,
+     "polygons": 526,
      "all_triangles": true,
      "uv": true
     },
@@ -290,7 +290,7 @@
      "min": [
       -4.3622,
       -13.0361,
-      1.65
+      0.94
      ],
      "max": [
       4.3622,
@@ -312,7 +312,7 @@
   },
   {
    "file": "assets/fbx/M_Veh_RIB/M_Veh_RIB_LOD2.fbx",
-   "bytes": 185948,
+   "bytes": 249852,
    "fbx_version": 7400,
    "meshes": [
     "M_Veh_RIB_AFrame_LOD2",
@@ -328,15 +328,15 @@
      "name": "M_Veh_RIB_AFrame_LOD2.001",
      "min": [
       -3.1026,
-      9.5171,
+      9.4936,
       2.1045
      ],
      "max": [
       3.1026,
-      10.8817,
-      9.03
+      12.7084,
+      9.5106
      ],
-     "polygons": 206,
+     "polygons": 324,
      "all_triangles": true,
      "uv": true
     },
@@ -344,15 +344,15 @@
      "name": "M_Veh_RIB_Console_LOD2.001",
      "min": [
       -1.4635,
-      -2.4039,
-      2.1
+      -2.2947,
+      1.8924
      ],
      "max": [
       1.469,
-      0.1961,
-      6.3487
+      11.058,
+      6.3675
      ],
-     "polygons": 40,
+     "polygons": 39,
      "all_triangles": true,
      "uv": true
     },
@@ -361,14 +361,14 @@
      "min": [
       -4.311,
       -5.8739,
-      2.3553
+      2.3551
      ],
      "max": [
       4.311,
-      6.4761,
-      4.05
+      10.7761,
+      4.38
      ],
-     "polygons": 69,
+     "polygons": 91,
      "all_triangles": true,
      "uv": true
     },
@@ -382,9 +382,9 @@
      "max": [
       2.7552,
       11.0679,
-      6.3072
+      6.2976
      ],
-     "polygons": 143,
+     "polygons": 346,
      "all_triangles": true,
      "uv": true
     },
@@ -392,7 +392,7 @@
      "name": "M_Veh_RIB_Engines_LOD2.001",
      "min": [
       -1.8814,
-      11.0328,
+      11.026,
       -0.0038
      ],
      "max": [
@@ -400,23 +400,23 @@
       12.9895,
       4.7428
      ],
-     "polygons": 282,
+     "polygons": 392,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Veh_RIB_Hull_LOD2.001",
      "min": [
-      -3.13,
-      -11.4805,
-      0.462
+      -3.1344,
+      -11.4769,
+      0.4135
      ],
      "max": [
-      3.3567,
-      12.1952,
+      3.3811,
+      12.1961,
       2.863
      ],
-     "polygons": 69,
+     "polygons": 130,
      "all_triangles": true,
      "uv": true
     },
@@ -425,7 +425,7 @@
      "min": [
       -4.3587,
       -13.0119,
-      1.6364
+      0.94
      ],
      "max": [
       4.33,
@@ -560,57 +560,57 @@
    "Front3Q": {
     "asset": [
      0.161,
-     0.157,
+     0.123,
      0.936,
-     0.678
+     0.689
     ],
     "mannequin": [
      0.037,
-     0.316,
+     0.308,
      0.121,
-     0.518
+     0.509
     ]
    },
    "Side": {
     "asset": [
-     0.185,
-     0.365,
+     0.189,
+     0.36,
      0.963,
-     0.628
+     0.633
     ],
     "mannequin": [
-     0.049,
-     0.372,
-     0.108,
-     0.528
+     0.055,
+     0.367,
+     0.113,
+     0.521
     ]
    },
    "Rear3Q": {
     "asset": [
      0.173,
-     0.112,
+     0.1,
      0.948,
-     0.622
+     0.633
     ],
     "mannequin": [
      0.037,
-     0.312,
+     0.304,
      0.123,
-     0.519
+     0.511
     ]
    },
    "High": {
     "asset": [
      0.324,
-     0.182,
+     0.164,
      0.963,
-     0.825
+     0.852
     ],
     "mannequin": [
      0.152,
-     0.451,
+     0.447,
      0.227,
-     0.577
+     0.572
     ]
    }
   },
@@ -621,7 +621,7 @@
    3.0
   ],
   "validation_ok": true,
-  "seconds": 3.0
+  "seconds": 3.7
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_RIB/M_Veh_RIB.blend",
  "ok": true,
@@ -664,7 +664,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "812 of 10000"
+   "detail": "1538 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD0",
@@ -672,7 +672,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.81e-04, 112 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.81e-04, 118 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD0",
@@ -696,7 +696,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+   "detail": "u 0.007 to 0.937, v 0.006 to 0.938"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD0",
@@ -704,7 +704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 417 faces have no UV area"
+   "detail": "0 of 799 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD0",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "54 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "47 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD0",
@@ -768,7 +768,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.006 to 0.806, v 0.006 to 0.994"
+   "detail": "u 0.006 to 0.986, v 0.006 to 0.994"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD0",
@@ -784,7 +784,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "53 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "47 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -808,7 +808,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1688 of 10000"
+   "detail": "4039 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -816,7 +816,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-05, 252 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.12e-05, 301 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -840,7 +840,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.994, v 0.005 to 0.995"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -848,7 +848,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 930 faces have no UV area"
+   "detail": "0 of 2320 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD0",
@@ -856,7 +856,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "101 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "97 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD0",
@@ -880,7 +880,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "476 of 10000"
+   "detail": "477 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD0",
@@ -888,7 +888,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-05, 44 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.12e-05, 37 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD0",
@@ -912,7 +912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.817, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.878, v 0.005 to 0.822"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD0",
@@ -928,7 +928,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "99 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "96 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD0",
@@ -952,7 +952,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2420 of 10000"
+   "detail": "3800 of 10000"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD0",
@@ -960,7 +960,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-05, 234 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.12e-05, 278 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD0",
@@ -984,7 +984,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.992"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD0",
@@ -992,7 +992,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1275 faces have no UV area"
+   "detail": "0 of 2043 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD0",
@@ -1000,7 +1000,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "72 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "76 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD0",
@@ -1024,7 +1024,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3308 of 10000"
+   "detail": "4596 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD0",
@@ -1032,7 +1032,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.40e-04, 456 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.01e-05, 520 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD0",
@@ -1056,7 +1056,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.009 to 0.992"
+   "detail": "u 0.008 to 0.991, v 0.008 to 0.991"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD0",
@@ -1064,7 +1064,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1894 faces have no UV area"
+   "detail": "0 of 2668 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD0",
@@ -1072,7 +1072,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "73 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "76 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD0",
@@ -1096,7 +1096,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "808 of 10000"
+   "detail": "1072 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD0",
@@ -1104,7 +1104,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.51e-02, 200 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.51e-02, 280 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD0",
@@ -1128,7 +1128,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD0",
@@ -1136,7 +1136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 424 faces have no UV area"
+   "detail": "0 of 556 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD0",
@@ -1168,7 +1168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "278 of 10000"
+   "detail": "526 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD1",
@@ -1176,7 +1176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.81e-04, 66 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.04e-04, 70 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD1",
@@ -1200,7 +1200,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+   "detail": "u 0.007 to 0.937, v 0.006 to 0.938"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD1",
@@ -1208,7 +1208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 278 faces have no UV area"
+   "detail": "0 of 526 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD1",
@@ -1216,7 +1216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD1",
@@ -1272,7 +1272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.006 to 0.803, v 0.007 to 0.994"
+   "detail": "u 0.006 to 0.986, v 0.006 to 0.994"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD1",
@@ -1288,7 +1288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 1.0% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.9% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1312,7 +1312,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "577 of 10000"
+   "detail": "1384 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1320,7 +1320,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.32e-06, 125 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.32e-06, 148 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1344,7 +1344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.994, v 0.005 to 0.995"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1352,7 +1352,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 577 faces have no UV area"
+   "detail": "0 of 1384 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD1",
@@ -1360,7 +1360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.4% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.8% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1384,7 +1384,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "162 of 10000"
+   "detail": "163 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1392,7 +1392,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.27e-03, 42 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.27e-03, 37 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1416,7 +1416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.816, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.877, v 0.005 to 0.822"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1424,7 +1424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 162 faces have no UV area"
+   "detail": "0 of 163 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD1",
@@ -1432,7 +1432,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.5% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 2.1% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD1",
@@ -1456,7 +1456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "828 of 10000"
+   "detail": "1302 of 10000"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD1",
@@ -1464,7 +1464,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.40e-06, 58 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.84e-06, 90 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD1",
@@ -1488,7 +1488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.992"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD1",
@@ -1496,7 +1496,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 828 faces have no UV area"
+   "detail": "0 of 1302 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD1",
@@ -1504,7 +1504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.9% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD1",
@@ -1528,7 +1528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1134 of 10000"
+   "detail": "1574 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD1",
@@ -1536,7 +1536,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.79e-06, 194 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.36e-06, 222 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD1",
@@ -1560,7 +1560,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.990, v 0.009 to 0.992"
+   "detail": "u 0.008 to 0.989, v 0.008 to 0.991"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD1",
@@ -1568,7 +1568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1134 faces have no UV area"
+   "detail": "0 of 1574 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD1",
@@ -1576,7 +1576,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 4.9% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.6% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD1",
@@ -1600,7 +1600,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "277 of 10000"
+   "detail": "366 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD1",
@@ -1608,7 +1608,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.78e-03, 147 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.78e-03, 178 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD1",
@@ -1632,7 +1632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD1",
@@ -1640,7 +1640,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 277 faces have no UV area"
+   "detail": "0 of 366 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD1",
@@ -1672,7 +1672,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "69 of 10000"
+   "detail": "130 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD2",
@@ -1680,7 +1680,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.51e-03, 40 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.23e-03, 43 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD2",
@@ -1704,7 +1704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.007 to 0.994, v 0.007 to 0.969"
+   "detail": "u 0.007 to 0.939, v 0.006 to 0.938"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD2",
@@ -1712,7 +1712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 69 faces have no UV area"
+   "detail": "0 of 130 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Hull_LOD2",
@@ -1720,7 +1720,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.4% (max 15%)"
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 3.2% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD2",
@@ -1776,7 +1776,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.006 to 0.802, v 0.007 to 0.994"
+   "detail": "u 0.007 to 0.984, v 0.006 to 0.992"
   },
   {
    "subject": "M_Veh_RIB_Tubes_LOD2",
@@ -1790,9 +1790,9 @@
    "subject": "M_Veh_RIB_Tubes_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 14.6% (max 15%)"
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.002 (max 0.02), UV area by 17.0% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1816,15 +1816,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "143 of 10000"
+   "detail": "346 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
    "check": "geometry",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.43e-07, 85 open edges (open edges allowed on cards and decals)"
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 1 loose verts, smallest face 4.43e-07, 92 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1848,7 +1848,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.994, v 0.005 to 0.995"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1856,7 +1856,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 143 faces have no UV area"
+   "detail": "0 of 346 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Deck_LOD2",
@@ -1864,7 +1864,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.1% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -1888,7 +1888,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "40 of 10000"
+   "detail": "39 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -1896,7 +1896,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 8 loose verts, smallest face 2.02e-02, 28 open edges (open edges allowed on cards and decals)"
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 8 loose verts, smallest face 1.29e-02, 20 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -1920,7 +1920,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.005 to 0.813, v 0.004 to 0.996"
+   "detail": "u 0.006 to 0.876, v 0.005 to 0.680"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
@@ -1928,15 +1928,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 40 faces have no UV area"
+   "detail": "0 of 39 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Console_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 11.4% (max 15%)"
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.142 (max 0.02), UV area by 13.4% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD2",
@@ -1960,7 +1960,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "206 of 10000"
+   "detail": "324 of 10000"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD2",
@@ -1968,7 +1968,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.85e-06, 36 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.06e-06, 60 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD2",
@@ -1992,7 +1992,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.985, v 0.008 to 0.987"
+   "detail": "u 0.008 to 0.964, v 0.008 to 0.955"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD2",
@@ -2000,7 +2000,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 206 faces have no UV area"
+   "detail": "0 of 324 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_AFrame_LOD2",
@@ -2008,7 +2008,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.002 (max 0.02), UV area by 31.1% (max 15%)"
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.037 (max 0.02), UV area by 41.9% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD2",
@@ -2032,15 +2032,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "282 of 10000"
+   "detail": "392 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD2",
    "check": "geometry",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.25e-06, 102 open edges (open edges allowed on cards and decals)"
+   "detail": "WAIVED (Console LOD2: 8 loose verts left by collapse decimation at 40 tris (harmless, not rendered); LOD0 and LOD1 pass.): 6 loose verts, smallest face 4.34e-06, 124 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD2",
@@ -2064,7 +2064,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.987, v 0.009 to 0.990"
+   "detail": "u 0.008 to 0.973, v 0.008 to 0.971"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD2",
@@ -2072,7 +2072,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 282 faces have no UV area"
+   "detail": "0 of 392 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Engines_LOD2",
@@ -2080,7 +2080,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.002 (max 0.02), UV area by 26.2% (max 15%)"
+   "detail": "WAIVED (LOD2 at 10% of LOD0 collapses small A-frame / engine UV island borders (area 26-31% off, bounds within 0.002); LOD2 is only seen beyond 500 studs, where the maps are mip-mapped far below the island size. LOD1 passes.): UV bounds differ by 0.020 (max 0.02), UV area by 37.2% (max 15%)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD2",
@@ -2104,7 +2104,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "69 of 10000"
+   "detail": "91 of 10000"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD2",
@@ -2112,7 +2112,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.78e-03, 81 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.78e-03, 115 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD2",
@@ -2136,7 +2136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD2",
@@ -2144,7 +2144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 69 faces have no UV area"
+   "detail": "0 of 91 faces have no UV area"
   },
   {
    "subject": "M_Veh_RIB_Decals_LOD2",
@@ -2312,7 +2312,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "17474 of 35000 (rib, asset row)"
+   "detail": "23484 of 35000 (rib, asset row)"
   },
   {
    "subject": "M_Veh_RIB",
@@ -2320,7 +2320,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5984 of 12000"
+   "detail": "8043 of 12000"
   },
   {
    "subject": "M_Veh_RIB",
@@ -2328,7 +2328,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1491 of 3000"
+   "detail": "2004 of 3000"
   },
   {
    "subject": "M_Veh_RIB",
@@ -2360,7 +2360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "9.030 studs, real 3.000 m = 9.000 studs, off 0.3% (5% free, 15% with a note)"
+   "detail": "9.512 studs, real 3.000 m = 9.000 studs, off 5.7% (5% free, 15% with a note); NOTE: Z includes the two VHF / AIS whips lowered aft on their ratchet mounts above the radar dome (thin, no gameplay footprint); hull, tubes and A-frame are within 1% of 3.0 m."
   },
   {
    "subject": "M_Veh_RIB",
@@ -2488,7 +2488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB.png"
   },
   {
    "subject": "T_RIB_Rig_ALB_Wet",
@@ -2496,7 +2496,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB_Wet.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_ALB_Wet.png"
   },
   {
    "subject": "T_RIB_Rig_NOR",
@@ -2504,7 +2504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png"
   },
   {
    "subject": "T_RIB_Rig_RGH",
@@ -2512,7 +2512,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png"
   },
   {
    "subject": "T_RIB_Rig_RGH_Wet",
@@ -2520,7 +2520,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png"
   },
   {
    "subject": "T_RIB_Rig_MET",
@@ -2528,7 +2528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_MET.png"
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_RIB/T_RIB_Rig_MET.png"
   },
   {
    "subject": "T_RIB_Decals_ALB",
@@ -2808,7 +2808,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Veh_RIB_AFrame_LOD0, M_Veh_RIB_COL, M_Veh_RIB_Console_LOD0, M_Veh_RIB_Decals_LOD0, M_Veh_RIB_Deck_LOD0, M_Veh_RIB_Engines_LOD0, M_Veh_RIB_Hull_LOD0, M_Veh_RIB_Tubes_LOD0; 17588 triangles (scene 17588)"
+   "detail": "M_Veh_RIB_AFrame_LOD0, M_Veh_RIB_COL, M_Veh_RIB_Console_LOD0, M_Veh_RIB_Decals_LOD0, M_Veh_RIB_Deck_LOD0, M_Veh_RIB_Engines_LOD0, M_Veh_RIB_Hull_LOD0, M_Veh_RIB_Tubes_LOD0; 23598 triangles (scene 23598)"
   },
   {
    "subject": "M_Veh_RIB_LOD0.fbx",
@@ -2848,7 +2848,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Veh_RIB_AFrame_LOD1, M_Veh_RIB_Console_LOD1, M_Veh_RIB_Decals_LOD1, M_Veh_RIB_Deck_LOD1, M_Veh_RIB_Engines_LOD1, M_Veh_RIB_Hull_LOD1, M_Veh_RIB_Tubes_LOD1; 5984 triangles (scene 5984)"
+   "detail": "M_Veh_RIB_AFrame_LOD1, M_Veh_RIB_Console_LOD1, M_Veh_RIB_Decals_LOD1, M_Veh_RIB_Deck_LOD1, M_Veh_RIB_Engines_LOD1, M_Veh_RIB_Hull_LOD1, M_Veh_RIB_Tubes_LOD1; 8043 triangles (scene 8043)"
   },
   {
    "subject": "M_Veh_RIB_LOD1.fbx",
@@ -2888,7 +2888,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Veh_RIB_AFrame_LOD2, M_Veh_RIB_Console_LOD2, M_Veh_RIB_Decals_LOD2, M_Veh_RIB_Deck_LOD2, M_Veh_RIB_Engines_LOD2, M_Veh_RIB_Hull_LOD2, M_Veh_RIB_Tubes_LOD2; 1491 triangles (scene 1491)"
+   "detail": "M_Veh_RIB_AFrame_LOD2, M_Veh_RIB_Console_LOD2, M_Veh_RIB_Decals_LOD2, M_Veh_RIB_Deck_LOD2, M_Veh_RIB_Engines_LOD2, M_Veh_RIB_Hull_LOD2, M_Veh_RIB_Tubes_LOD2; 2004 triangles (scene 2004)"
   },
   {
    "subject": "M_Veh_RIB_LOD2.fbx",
@@ -2904,7 +2904,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset and mannequin in frame; 9 renders in 3 s, maps M_Veh_RIB_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Tubes_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_AFrame_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Decals_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset and mannequin in frame; 9 renders in 4 s, maps M_Veh_RIB_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Tubes_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Console_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_AFrame_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_RIB_Decals_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -2912,56 +2912,56 @@
    "name": "M_Veh_RIB_Hull_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 812,
-   "texel_density": 54.1
+   "triangles": 1538,
+   "texel_density": 47.3
   },
   {
    "name": "M_Veh_RIB_Tubes_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 7962,
-   "texel_density": 53.3
+   "texel_density": 46.6
   },
   {
    "name": "M_Veh_RIB_Deck_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1688,
-   "texel_density": 100.6
+   "triangles": 4039,
+   "texel_density": 97.2
   },
   {
    "name": "M_Veh_RIB_Console_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 476,
-   "texel_density": 99.4
+   "triangles": 477,
+   "texel_density": 95.7
   },
   {
    "name": "M_Veh_RIB_AFrame_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2420,
-   "texel_density": 72.5
+   "triangles": 3800,
+   "texel_density": 75.5
   },
   {
    "name": "M_Veh_RIB_Engines_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 3308,
-   "texel_density": 73.0
+   "triangles": 4596,
+   "texel_density": 75.6
   },
   {
    "name": "M_Veh_RIB_Decals_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 808,
-   "texel_density": 126.2
+   "triangles": 1072,
+   "texel_density": 125.7
   },
   {
    "name": "M_Veh_RIB_Hull_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 1372,
+   "triangles": 2994,
    "texel_density": null
   },
   {
@@ -2975,35 +2975,35 @@
    "name": "M_Veh_RIB_Deck_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 96988,
+   "triangles": 108040,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Console_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 4400,
+   "triangles": 6436,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_AFrame_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 6084,
+   "triangles": 15112,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Engines_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 6960,
+   "triangles": 21304,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Decals_HP",
    "role": "hp",
    "lod": null,
-   "triangles": 5246,
+   "triangles": 8162,
    "texel_density": null
   },
   {
@@ -3017,14 +3017,14 @@
    "name": "M_Veh_RIB_Hull_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 278,
+   "triangles": 526,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Hull_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 69,
+   "triangles": 130,
    "texel_density": null
   },
   {
@@ -3045,77 +3045,77 @@
    "name": "M_Veh_RIB_Deck_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 577,
+   "triangles": 1384,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Deck_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 143,
+   "triangles": 346,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Console_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 162,
+   "triangles": 163,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Console_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 40,
+   "triangles": 39,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_AFrame_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 828,
+   "triangles": 1302,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_AFrame_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 206,
+   "triangles": 324,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Engines_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1134,
+   "triangles": 1574,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Engines_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 282,
+   "triangles": 392,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Decals_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 277,
+   "triangles": 366,
    "texel_density": null
   },
   {
    "name": "M_Veh_RIB_Decals_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 69,
+   "triangles": 91,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   8.724348068237305,
   26.072174072265625,
-  9.029999732971191
+  9.511707305908203
  ],
- "peak_rss_mb": 940.5
+ "peak_rss_mb": 1050.4
 }

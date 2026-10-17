@@ -1,5 +1,5 @@
 {
- "ok": false,
+ "ok": true,
  "rows": [
   {
    "subject": "T_RIBHelm_Console",
@@ -151,7 +151,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "6.1% of pixels between 0.1 and 0.9"
+   "detail": "5.9% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_RIBHelm_Console_ALB",
@@ -159,7 +159,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 41, 99th 128, range 30 to 240 over 45% of pixels"
+   "detail": "luma 1st 43, 99th 128, range 30 to 240 over 49% of pixels"
   },
   {
    "subject": "T_RIBHelm_Console_ALB",
@@ -167,7 +167,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 182, 99th 233, range 180 to 250 over 35% of pixels"
+   "detail": "luma 1st 190, 99th 245, range 180 to 250 over 30% of pixels"
   },
   {
    "subject": "T_RIBHelm_Console_ALB",
@@ -175,7 +175,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.05, ceiling 0.45"
+   "detail": "95th percentile 0.03, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIBHelm_Console_ALB_Wet",
@@ -191,7 +191,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 175, ceiling 250 (wet: no floor)"
+   "detail": "luma 99th 186, ceiling 250 (wet: no floor)"
   },
   {
    "subject": "T_RIBHelm_Console_ALB_Wet",
@@ -199,7 +199,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.05, ceiling 0.45"
+   "detail": "95th percentile 0.04, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIBHelm_Console_NOR",
@@ -215,7 +215,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "undetermined (curl share 0.42): check the bake settings"
+   "detail": "undetermined (curl share 0.43): check the bake settings"
   },
   {
    "subject": "T_RIBHelm_Console_ALB_Wet",
@@ -223,7 +223,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 107, dry 142"
+   "detail": "mean 112, dry 138"
   },
   {
    "subject": "T_RIBHelm_Console_RGH_Wet",
@@ -231,7 +231,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 38, dry 106"
+   "detail": "mean 41, dry 109"
   },
   {
    "subject": "T_RIBHelm_Seats",
@@ -383,7 +383,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "5.2% of pixels between 0.1 and 0.9"
+   "detail": "5.0% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_RIBHelm_Seats_ALB",
@@ -396,10 +396,10 @@
   {
    "subject": "T_RIBHelm_Seats_ALB",
    "check": "metal albedo",
-   "ok": false,
+   "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 180, 99th 217, range 180 to 250 over 21% of pixels"
+   "detail": "luma 1st 188, 99th 217, range 180 to 250 over 21% of pixels"
   },
   {
    "subject": "T_RIBHelm_Seats_ALB",
@@ -407,7 +407,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.14, ceiling 0.45"
+   "detail": "95th percentile 0.14, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIBHelm_Seats_ALB_Wet",
@@ -423,7 +423,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 164, ceiling 250 (wet: no floor)"
+   "detail": "luma 99th 186, ceiling 250 (wet: no floor)"
   },
   {
    "subject": "T_RIBHelm_Seats_ALB_Wet",
@@ -431,7 +431,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.13, ceiling 0.45"
+   "detail": "95th percentile 0.14, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_RIBHelm_Seats_NOR",
@@ -447,7 +447,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "OpenGL (curl share 0.35)"
+   "detail": "OpenGL (curl share 0.34)"
   },
   {
    "subject": "T_RIBHelm_Seats_ALB_Wet",
@@ -455,7 +455,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 94, dry 125"
+   "detail": "mean 102, dry 124"
   },
   {
    "subject": "T_RIBHelm_Seats_RGH_Wet",
@@ -463,7 +463,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 42, dry 113"
+   "detail": "mean 44, dry 113"
   }
  ]
 }

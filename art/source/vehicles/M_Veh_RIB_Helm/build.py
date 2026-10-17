@@ -115,6 +115,64 @@ def console_kit(g):
             R.box(g, (sx * 1.39, y, z), (0.14, 0.2, 0.2), M(g, "Stainless"))
     R.tube(g, [(1.2, -2.42, 3.2), (1.2, -2.62, 3.4), (1.2, -2.62, 4.15), (-1.2, -2.62, 4.15), (-1.2, -2.62, 3.4),
                (-1.2, -2.42, 3.2)], 0.065, M(g, "Stainless"), rseg, fillet=0.2, fseg=5)
+    # bolted brackets: rail feet, binnacle, throttle box, kill cord
+    for sx in (1, -1):
+        bolts(g, [(sx * 1.46, y + dy, z + dz) for y, z in ((0.12, 4.0), (-2.25, 4.3)) for dy in (-0.06, 0.06)
+                  for dz in (-0.06, 0.06)], (sx, 0, 0))
+    bolts(g, [(0.24 * math.cos(a), -1.15 + 0.24 * math.sin(a), 5.12) for a in (0.5, 2.6, 4.7)], (0, 0, 1))
+    bolts(g, [(-0.88 + dx, 0.35, 4.32 + dz) for dx in (-0.15, 0.15) for dz in (-0.12, 0.12)], (0, 1, 0))
+    bolts(g, [(0.7 + 0.05 * k, 0.18 - 0.03 * k, 4.24) for k in range(0)], (0, 1, 0))
+    for (u, v) in ((0.45 - 0.36, 0.04 - 0.24), (0.45 + 0.36, 0.04 - 0.24), (0.45 - 0.36, 0.04 + 0.24), (0.45 + 0.36, 0.04 + 0.24)):
+        bolts(g, [tuple(on_dash(u, v, 0.13))], tuple(DASH_N))
+    cables(g)
+
+
+BOLT = [(0.03, 0.0), (0.03, 0.02), (0.022, 0.028), (0.0, 0.03)]
+
+
+def bolts(g, pts, axis):
+    if g.hi:
+        for p in pts:
+            R.lathe(g, p, axis, BOLT, 6, "Bolt")
+
+
+def cables(g):
+    """Cable runs from the dash electronics over the console top edge, down the aft face into a gland; VHF coil cord."""
+    for k, u in enumerate((0.75, 0.85, 0.95)):
+        top = on_dash(u, -0.4, 0.02)
+        R.tube(g, [tuple(top), (u, -0.02, 4.58), (u + 0.02, 0.1, 4.4), (u + 0.04, 0.1, 3.7)], 0.018 + 0.004 * k,
+               M(g, "Cable"), 8 if g.hi else 5, fillet=0.08, fseg=3)
+        R.box(g, (u + 0.04, 0.09, 3.95), (0.07, 0.04, 0.05), M(g, "BlackPlastic"))
+    R.box(g, (0.9, 0.09, 3.66), (0.34, 0.06, 0.12), M(g, "BlackPlastic"))
+    bolts(g, [(x, 0.13, 3.66) for x in (0.76, 1.04)], (0, 1, 0))
+    # VHF handset coil cord (helix) from the radio to the handset clip
+    a, b = on_dash(-0.8, 0.1, 0.06), on_dash(-0.98, 0.0, 0.12)
+    n = 60 if g.hi else 18
+    pts = []
+    d = (b - a)
+    t1 = d.normalized()
+    t2 = t1.cross(DASH_N).normalized()
+    for i in range(n + 1):
+        t = i / n
+        ang = t * 2 * math.pi * 7
+        sag = Vector((0, 0.06, -0.12)) * math.sin(math.pi * t)
+        pts.append(a + d * t + sag + (t2 * math.cos(ang) + DASH_N * math.sin(ang)) * 0.022)
+    R.sweep(g, pts, R.circle_profile(0.007, 6 if g.hi else 4), M(g, "Cable"), cap0=True, cap1=True)
+
+
+def seat_kit(g):
+    """Webbing straps over the saddle cushions with buckles; bolts on the base plates and foot bars."""
+    for x, y, bar in SEATS:
+        if g.hi:
+            for ys in (y - 0.3, y + 0.32):
+                prof = [(0.5, 3.96), (0.5, 4.3), (0.47, 4.5), (0.36, 4.62), (0.2, 4.665), (0.0, 4.68)]
+                path = [Vector((x - dx, ys, z)) for dx, z in prof] + [Vector((x + dx, ys, z)) for dx, z in reversed(prof[:-1])]
+                w = 0.06
+                fs = g.rings([[p + Vector((0, -w, 0)) for p in path], [p + Vector((0, w, 0)) for p in path]], "Strap",
+                             closed=False, recalc=False)
+                g.orient(fs, lambda c, x=x: Vector((c.x - x, 0, c.z - 4.1)))
+                R.box(g, (x + 0.505, ys, 4.12), (0.025, 0.14, 0.1), "Stainless")
+        bolts(g, [(x + dx, y + dy, D + 0.045) for dx in (-0.45, 0.45) for dy in (-0.7, 0.0, 0.7)], (0, 0, 1))
 
 
 SEATS = [(0.0, 1.6, False), (1.3, 4.8, True), (-1.3, 4.8, True)]
@@ -138,6 +196,7 @@ def seats(g):
                        (x - 0.32, y - 0.86, 4.9), (x - 0.38, y - 0.78, 4.55), (x - 0.36, y - 0.62, 3.9)], 0.05,
                    M(g, "Stainless"), tseg, fillet=0.18, fseg=5)
         R.box(g, (x, y, D + 0.02), (1.08, 1.64, 0.04), M(g, "Stainless"))
+    seat_kit(g)
 
 
 def build():

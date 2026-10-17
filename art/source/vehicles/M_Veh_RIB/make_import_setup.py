@@ -3,7 +3,10 @@ with tools/studio/import_asset.luau (explicit partSets), both pivoted at the sam
 import json, re
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 m = json.load(open(G + "assets/manifest.json"))
-CF = [0, -2.05, 0, 0]   # base of the skegs 2.05 studs under sea level: keel 0.45 + 0.53 m draught
+import os
+# in the sea: base of the skegs 2.05 studs under sea level (keel 0.45 + 0.53 m draught); the V2 fix pass shoots on a
+# neutral dry stand instead (MAYDAY_RIB_Y=40: skeg base on the backdrop floor top, studio/backdrop.luau)
+CF = [0, float(os.environ.get("MAYDAY_RIB_Y", "-2.05")), 0, 0]
 
 
 def sets_for(asset):
@@ -28,7 +31,9 @@ def lua(v):
 
 def atts(asset):
     try:
-        return json.load(open(G + "assets/fbx/%s/%s.attachments.json" % (asset, asset)))
+        d = json.load(open(G + "assets/fbx/%s/%s.attachments.json" % (asset, asset)))
+        # import_asset.luau wants a list of {name, pos} in pivot space (the export file is a dict with "attachments")
+        return [{"name": a["name"], "pos": a["roblox_from_origin"]} for a in d.get("attachments", [])]
     except OSError:
         return []
 

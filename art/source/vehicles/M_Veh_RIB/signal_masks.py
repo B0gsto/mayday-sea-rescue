@@ -16,7 +16,7 @@ for stem in sys.argv[3:]:
     sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
     hue = (np.degrees(np.arctan2(np.sqrt(3) * (g - b), 2 * r - g - b)) + 360) % 360
-    m = ((hue < 45) | (hue > 345)) & (sat > 0.45) | ((hue > 190) & (hue < 260) & (sat > 0.45))   # orange livery, blue beacon lens
+    m = ((hue < 72) | (hue > 345)) & (sat > 0.45) | ((hue > 190) & (hue < 260) & (sat > 0.45))   # orange livery, yellow retro chevrons, blue lenses
     img = Image.fromarray((m * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(7))
     img.save(os.path.join(out, stem + "_signal.png"))
     print(stem, "signal share %.1f%%" % (100 * np.asarray(img).mean() / 255))

@@ -33,39 +33,306 @@ def hexcol(h):
 
 
 PALETTE = {
-    # name: (sRGB hex, roughness, metal)
-    "HullCharcoal": ("#2B2F33", 0.42, 0.0),
-    "HullOrange": ("#FF6600", 0.38, 0.0),
-    "BootStripe": ("#FF6600", 0.40, 0.0),
-    "TubeGrey": ("#5C6166", 0.62, 0.0),
-    "TubeWear": ("#4D5256", 0.70, 0.0),
-    "Reflective": ("#B8BDC0", 0.30, 0.0),
-    "RubStrake": ("#303336", 0.78, 0.0),
+    # name: (sRGB hex, roughness, metal). V2 fix batch livery: saturated orange Hypalon tubes, dark navy GRP hull,
+    # grey rub strakes, white waterline stripe, oxblood antifoul, Hull Orange console / A-frame.
+    "HullCharcoal": ("#1F2836", 0.36, 0.0),
+    "HullBody": ("#1F2836", 0.36, 0.0),         # z-banded: antifoul / waterline stripe / navy (HULL_BANDS)     # dark navy gelcoat (name kept for the slot layout)
+    "HullOrange": ("#F2620F", 0.36, 0.0),
+    "BootStripe": ("#D9DBD7", 0.38, 0.0),       # white waterline stripe
+    "TubeGrey": ("#EE6A1A", 0.66, 0.0),         # orange Hypalon (name kept)
+    "TubeWear": ("#B85A26", 0.74, 0.0),         # scuffed underside / chafe patches
+    "TubeSeam": ("#9C4A1E", 0.70, 0.0),         # welded overlap seams, dirt in the step
+    "TubeFillet": ("#2E3135", 0.72, 0.0),       # tube-to-hull fillet tape
+    "TubeEndCap": ("#383B3F", 0.70, 0.0),
+    "Reflective": ("#C4C8CA", 0.28, 0.0),
+    "RubStrake": ("#7B8085", 0.72, 0.0),        # grey rub strake
+    "Rope": ("#4A5058", 0.88, 0.0),
     "Webbing": ("#2F3842", 0.85, 0.0),
-    "NonSlip": ("#61676B", 0.88, 0.0),
-    "Gelcoat": ("#A4A9AB", 0.42, 0.0),
-    "GelcoatWhite": ("#D9DBD7", 0.40, 0.0),
+    "NonSlip": ("#5E6468", 0.90, 0.0),
+    "Gelcoat": ("#A4A9AB", 0.40, 0.0),
+    "GelcoatWhite": ("#D9DBD7", 0.38, 0.0),
     "Acrylic": ("#23292D", 0.06, 0.0),
-    "Stainless": ("#C9CCCD", 0.22, 1.0),
-    "Aluminium": ("#BDC1C3", 0.40, 1.0),
+    "Stainless": ("#DCDFE0", 0.20, 1.0),
+    "Aluminium": ("#C2C6C8", 0.38, 1.0),        # anodised
+    "Bolt": ("#D6D9DA", 0.28, 1.0),
     "BlackPlastic": ("#2A2C2E", 0.55, 0.0),
-    "Rubber": ("#2D2F31", 0.80, 0.0),
+    "Rubber": ("#2D2F31", 0.82, 0.0),
+    "Cable": ("#26282A", 0.60, 0.0),
     "LensRed": ("#B3262A", 0.10, 0.0),
     "LensGreen": ("#1F8A4C", 0.10, 0.0),
     "LensWhite": ("#D6D8D6", 0.10, 0.0),
     "LensBlue": ("#2D5BC4", 0.10, 0.0),
-    "CowlGrey": ("#3B3F43", 0.32, 0.0),
-    "CowlLight": ("#B9BDBE", 0.36, 0.0),
-    "Antifoul": ("#34383B", 0.70, 0.0),
+    "CowlGrey": ("#3B3F43", 0.30, 0.0),
+    "CowlLight": ("#B9BDBE", 0.34, 0.0),
+    "Vent": ("#232527", 0.60, 0.0),
+    "Antifoul": ("#5B2B26", 0.82, 0.0),         # oxblood ablative antifoul
+    "KeelStrip": ("#B4B8BA", 0.45, 1.0),        # stainless keel band
     "Screen": ("#1C2830", 0.08, 0.0),
     "ScreenChart": ("#3E5866", 0.10, 0.0),
     "Vinyl": ("#2C2F33", 0.58, 0.0),
     "PodGrey": ("#6B7074", 0.45, 0.0),
-    "PanelOrange": ("#FF6600", 0.45, 0.0),
+    "Strap": ("#2B3440", 0.86, 0.0),
+    "PanelOrange": ("#EE6A1A", 0.62, 0.0),       # matches the tube orange (lettering sits on it)
+    "PanelConsole": ("#F2620F", 0.40, 0.0),     # matches the console Hull Orange
+    "PanelNavy": ("#1F2836", 0.45, 0.0),
     "LetterWhite": ("#E6E7E3", 0.45, 0.0),
+    "LetterNavy": ("#1F2836", 0.45, 0.0),
+    "ChevronYellow": ("#E8D21C", 0.32, 0.0),    # retroreflective yellow
+    "ChevronSilver": ("#C9CDCF", 0.26, 0.0),
     "CrestCharcoal": ("#2B2F33", 0.45, 0.0),
     "Dial": ("#E2E3DF", 0.20, 0.0),
 }
+
+# procedural slots (baked through bake.custom_material; bump goes into the NOR through the _HP shading normal):
+# mottle (noise scale, amount), grime (colour, amount), streak (colour, amount: vertical water streaks),
+# rough_var, bump (kind, strength, scale)
+PROC = {
+    "HullCharcoal": dict(mottle=(6, 0.10), grime=("#3A3F44", 0.30), streak=("#4B5257", 0.35), rough_var=0.14, bump=("peel", 0.05, 60)),
+    "Antifoul": dict(mottle=(4, 0.16), grime=("#3A2826", 0.35), streak=("#6E5A4E", 0.25), rough_var=0.10, bump=("peel", 0.12, 40)),
+    "BootStripe": dict(mottle=(5, 0.06), grime=("#9EA19A", 0.30), streak=("#8E918A", 0.30), rough_var=0.10),
+    "HullOrange": dict(mottle=(5, 0.06), grime=("#A85A2C", 0.22), streak=("#C06A38", 0.25), rough_var=0.12, bump=("peel", 0.04, 60)),
+    "TubeGrey": dict(mottle=(3, 0.10), grime=("#A65A2E", 0.30), streak=("#C77A4A", 0.22), rough_var=0.12, bump=("weave", 0.22, 70)),
+    "TubeWear": dict(mottle=(4, 0.14), grime=("#6E4A34", 0.40), rough_var=0.10, bump=("weave", 0.25, 70)),
+    "TubeSeam": dict(mottle=(4, 0.10), grime=("#5A4032", 0.45), rough_var=0.08, bump=("weave", 0.2, 70)),
+    "TubeFillet": dict(mottle=(4, 0.10), grime=("#4A4640", 0.30), rough_var=0.08, bump=("weave", 0.15, 70)),
+    "RubStrake": dict(mottle=(5, 0.10), grime=("#55585B", 0.40), rough_var=0.12, bump=("grain", 0.18, 90)),
+    "Rubber": dict(mottle=(5, 0.08), grime=("#3E3C38", 0.30), rough_var=0.08, bump=("grain", 0.15, 120)),
+    "NonSlip": dict(mottle=(3, 0.10), grime=("#4A4C48", 0.40), rough_var=0.06, bump=("diamond", 0.9, 30)),
+    "Gelcoat": dict(mottle=(4, 0.08), grime=("#7E817C", 0.35), rough_var=0.12, bump=("peel", 0.05, 60)),
+    "GelcoatWhite": dict(mottle=(4, 0.05), grime=("#AEB0A8", 0.30), streak=("#A3A59E", 0.25), rough_var=0.10, bump=("peel", 0.04, 60)),
+    "Webbing": dict(mottle=(6, 0.08), grime=("#3E4144", 0.25), rough_var=0.05, bump=("weave", 0.35, 140)),
+    "Strap": dict(mottle=(6, 0.08), grime=("#3E4144", 0.25), rough_var=0.05, bump=("weave", 0.35, 140)),
+    "Rope": dict(mottle=(8, 0.10), rough_var=0.05, bump=("grain", 0.3, 160)),
+    "Vinyl": dict(mottle=(5, 0.06), grime=("#45484A", 0.25), rough_var=0.10, bump=("grain", 0.12, 140)),
+    "PodGrey": dict(mottle=(5, 0.06), grime=("#55595C", 0.30), rough_var=0.10, bump=("peel", 0.05, 60)),
+    "CowlGrey": dict(mottle=(5, 0.05), grime=("#4E5256", 0.25), streak=("#5E6468", 0.25), rough_var=0.10),
+    "CowlLight": dict(mottle=(5, 0.05), grime=("#8E918E", 0.30), streak=("#9A9D99", 0.25), rough_var=0.10),
+    "PanelOrange": dict(mottle=(3, 0.10), grime=("#A65A2E", 0.30), rough_var=0.10),
+    "PanelConsole": dict(mottle=(5, 0.06), grime=("#A85A2C", 0.22), rough_var=0.10),
+    "PanelNavy": dict(mottle=(4, 0.05), grime=("#3A3F44", 0.18), rough_var=0.08),
+    "LetterWhite": dict(mottle=(4, 0.04), grime=("#B4B5AE", 0.25), rough_var=0.08),
+}
+# bump only (constant base / roughness; metals keep a clean 180-250 albedo)
+BUMP_ONLY = {"Stainless": ("brushed", 0.06, 200), "Aluminium": ("brushed", 0.05, 160), "KeelStrip": ("brushed", 0.08, 120),
+             "Bolt": ("grain", 0.1, 200)}
+
+
+def _ci(node, k):
+    return [i for i in node.inputs if i.type == "RGBA"][k]
+
+
+def _co(node):
+    return [o for o in node.outputs if o.type == "RGBA"][0]
+
+
+def deform(g, start, fn):
+    """Moves every bmesh vert added since index `start` through fn(co) -> co."""
+    g.bm.verts.ensure_lookup_table()
+    for v in g.bm.verts[start:]:
+        v.co = fn(v.co.copy())
+
+
+def _hex_srgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+
+
+def _bump_tree(nt, kind, strength, scale, coord):
+    """Height pattern in object space (studs); returns a Bump node output (normal)."""
+    L = nt.links.new
+    N = nt.nodes.new
+    mp = N("ShaderNodeMapping")
+    L(coord, mp.inputs["Vector"])
+    mp.inputs["Scale"].default_value = (scale, scale, scale)
+    if kind == "diamond":
+        mp.inputs["Rotation"].default_value = (0.0, 0.0, math.radians(45))
+        hs = []
+        for axis in ("X", "Y"):
+            w = N("ShaderNodeTexWave")
+            w.wave_type, w.bands_direction, w.wave_profile = "BANDS", axis, "TRI"
+            w.inputs["Scale"].default_value = 1.0
+            w.inputs["Distortion"].default_value = 0.0
+            L(mp.outputs[0], w.inputs["Vector"])
+            hs.append(w.outputs["Fac"])
+        h = N("ShaderNodeMath")
+        h.operation = "MINIMUM"
+        L(hs[0], h.inputs[0])
+        L(hs[1], h.inputs[1])
+        g = N("ShaderNodeTexNoise")
+        g.inputs["Scale"].default_value = 3.0
+        L(mp.outputs[0], g.inputs["Vector"])
+        mix = N("ShaderNodeMath")
+        mix.operation = "MULTIPLY_ADD"
+        mix.inputs[1].default_value = 0.15
+        L(g.outputs["Fac"], mix.inputs[0])
+        L(h.outputs[0], mix.inputs[2])
+        height = mix.outputs[0]
+    elif kind == "weave":
+        hs = []
+        for axis in ("X", "Z"):
+            w = N("ShaderNodeTexWave")
+            w.wave_type, w.bands_direction, w.wave_profile = "BANDS", axis, "SIN"
+            w.inputs["Scale"].default_value = 1.0
+            w.inputs["Distortion"].default_value = 0.4
+            L(mp.outputs[0], w.inputs["Vector"])
+            hs.append(w.outputs["Fac"])
+        h = N("ShaderNodeMath")
+        h.operation = "MULTIPLY"
+        L(hs[0], h.inputs[0])
+        L(hs[1], h.inputs[1])
+        height = h.outputs[0]
+    elif kind == "brushed":
+        mp.inputs["Scale"].default_value = (scale * 0.02, scale, scale)
+        n = N("ShaderNodeTexNoise")
+        n.inputs["Scale"].default_value = 1.0
+        n.inputs["Detail"].default_value = 4.0
+        L(mp.outputs[0], n.inputs["Vector"])
+        height = n.outputs["Fac"]
+    else:  # peel / grain: fine noise
+        n = N("ShaderNodeTexNoise")
+        n.inputs["Scale"].default_value = 1.0
+        n.inputs["Detail"].default_value = 6.0 if kind == "grain" else 2.0
+        n.inputs["Roughness"].default_value = 0.6
+        L(mp.outputs[0], n.inputs["Vector"])
+        height = n.outputs["Fac"]
+    bump = N("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = strength
+    bump.inputs["Distance"].default_value = 0.02
+    L(height, bump.inputs["Height"])
+    return bump.outputs["Normal"]
+
+
+def _proc_sockets(nt, name, hexc, rough, coord):
+    """(colour socket, roughness socket) for a PROC slot."""
+    L = nt.links.new
+    N = nt.nodes.new
+    spec = PROC[name]
+    base = _hex_srgb(hexc)
+    ms, ma = spec.get("mottle", (4, 0.0))
+    nz = N("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = ms
+    nz.inputs["Detail"].default_value = 5.0
+    L(coord, nz.inputs["Vector"])
+    dark = N("ShaderNodeRGB")
+    dark.outputs[0].default_value = tuple(c * (1 - ma * 2.0) for c in base) + (1.0,)
+    lite = N("ShaderNodeRGB")
+    lite.outputs[0].default_value = tuple(min(1.0, c * (1 + ma)) for c in base) + (1.0,)
+    mott = N("ShaderNodeMix")
+    mott.data_type = "RGBA"
+    L(nz.outputs["Fac"], mott.inputs["Factor"])
+    L(dark.outputs[0], _ci(mott, 0))
+    L(lite.outputs[0], _ci(mott, 1))
+    col = _co(mott)
+    for key, scale, rng in (("grime", None, (0.52, 0.72)), ("streak", (9.0, 9.0, 0.35), (0.55, 0.75))):
+        if key not in spec:
+            continue
+        cc, amt = spec[key]
+        vec = coord
+        if scale:
+            mp = N("ShaderNodeMapping")
+            mp.inputs["Scale"].default_value = scale
+            L(coord, mp.inputs["Vector"])
+            vec = mp.outputs[0]
+        g = N("ShaderNodeTexNoise")
+        g.inputs["Scale"].default_value = 1.6 if key == "grime" else 1.0
+        g.inputs["Detail"].default_value = 8.0 if key == "grime" else 3.0
+        g.inputs["Roughness"].default_value = 0.65
+        L(vec, g.inputs["Vector"])
+        mr = N("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = rng
+        mr.inputs["To Max"].default_value = amt
+        L(g.outputs["Fac"], mr.inputs["Value"])
+        gcol = N("ShaderNodeRGB")
+        gcol.outputs[0].default_value = _hex_srgb(cc) + (1.0,)
+        mx = N("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        L(mr.outputs[0], mx.inputs["Factor"])
+        L(col, _ci(mx, 0))
+        L(gcol.outputs[0], _ci(mx, 1))
+        col = _co(mx)
+    rv = spec.get("rough_var", 0.0)
+    rn = N("ShaderNodeTexNoise")
+    rn.inputs["Scale"].default_value = 2.5
+    rn.inputs["Detail"].default_value = 6.0
+    L(coord, rn.inputs["Vector"])
+    rr = N("ShaderNodeMapRange")
+    rr.inputs["From Min"].default_value, rr.inputs["From Max"].default_value = 0.3, 0.7
+    rr.inputs["To Min"].default_value = max(0.02, rough - rv)
+    rr.inputs["To Max"].default_value = min(1.0, rough + rv)
+    L(rn.outputs["Fac"], rr.inputs["Value"])
+    return col, rr.outputs[0]
+
+
+def _proc_tree(mat, name, bsdf, hexc, rough, metal, bump=True):
+    nt = mat.node_tree
+    L = nt.links.new
+    N = nt.nodes.new
+    tc = N("ShaderNodeTexCoord")
+    coord = tc.outputs["Object"]
+    spec = PROC.get(name)
+    if spec:
+        col, rgh = _proc_sockets(nt, name, hexc, rough, coord)
+        out = N("ShaderNodeGamma")        # BAKE_BASE: single colour output (gamma 1 pass-through)
+        out.name = "BAKE_BASE"
+        out.inputs["Gamma"].default_value = 1.0
+        L(col, out.inputs["Color"])
+        c = N("ShaderNodeCombineXYZ")
+        c.name = "BAKE_MR"
+        c.inputs["X"].default_value = metal
+        L(rgh, c.inputs["Y"])
+        mat["bake_custom"] = 1
+    bmp = spec.get("bump") if spec else BUMP_ONLY.get(name)
+    if bmp and bump:
+        L(_bump_tree(nt, bmp[0], bmp[1], bmp[2], coord), bsdf.inputs["Normal"])
+
+
+HULL_BANDS = ((1.60, "Antifoul"), (1.74, "BootStripe"), (99.0, "HullCharcoal"))   # object z (studs) upper bounds
+
+
+def _band_tree(mat, bsdf):
+    """HullBody: one slot whose colour / roughness switch by object Z (antifoul, waterline stripe, navy topsides)."""
+    nt = mat.node_tree
+    L = nt.links.new
+    N = nt.nodes.new
+    tc = N("ShaderNodeTexCoord")
+    sep = N("ShaderNodeSeparateXYZ")
+    L(tc.outputs["Object"], sep.inputs[0])
+    col = rgh = None
+    for zmax, name in HULL_BANDS:
+        hexc, rough, metal = PALETTE[name]
+        c, r = _proc_sockets(nt, name, hexc, rough, tc.outputs["Object"])
+        if col is None:
+            col, rgh, prev = c, r, zmax
+            continue
+        lo = prev
+        st = N("ShaderNodeMath")
+        st.operation = "GREATER_THAN"
+        st.inputs[1].default_value = lo
+        L(sep.outputs["Z"], st.inputs[0])
+        mx = N("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        L(st.outputs[0], mx.inputs["Factor"])
+        L(col, _ci(mx, 0))
+        L(c, _ci(mx, 1))
+        col = _co(mx)
+        mr = N("ShaderNodeMix")
+        mr.data_type = "FLOAT"
+        L(st.outputs[0], mr.inputs["Factor"])
+        L(rgh, [i for i in mr.inputs if i.type == "VALUE" and i.name == "A"][0])
+        L(r, [i for i in mr.inputs if i.type == "VALUE" and i.name == "B"][0])
+        rgh = [o for o in mr.outputs if o.type == "VALUE"][0]
+        prev = zmax
+        continue
+    out = N("ShaderNodeGamma")
+    out.name = "BAKE_BASE"
+    out.inputs["Gamma"].default_value = 1.0
+    L(col, out.inputs["Color"])
+    c = N("ShaderNodeCombineXYZ")
+    c.name = "BAKE_MR"
+    c.inputs["X"].default_value = 0.0
+    L(rgh, c.inputs["Y"])
+    mat["bake_custom"] = 1
+    L(_bump_tree(nt, "peel", 0.06, 50, tc.outputs["Object"]), bsdf.inputs["Normal"])
 
 
 def material(name):
@@ -79,6 +346,10 @@ def material(name):
     bsdf.inputs["Base Color"].default_value = (*hexcol(hexc), 1.0)
     bsdf.inputs["Roughness"].default_value = rough
     bsdf.inputs["Metallic"].default_value = metal
+    if name == "HullBody":
+        _band_tree(mat, bsdf)
+    elif name in PROC or name in BUMP_ONLY:
+        _proc_tree(mat, name, bsdf, hexc, rough, metal)
     return mat
 
 
