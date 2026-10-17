@@ -1,0 +1,152 @@
+[
+ {
+  "name": "M_Chr_Bosun_Clear_dry",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "M_Chr_Bosun_Clear_wet",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet",
+  "cam": [
+   -41.8,
+   6.4,
+   -14.2
+  ],
+  "look": [
+   -46.0,
+   5.15,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.LookDev.apply('Night', true)"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry_Alpha_Transparency",
+  "cam": [
+   -44.0,
+   6.3,
+   -12.6
+  ],
+  "look": [
+   -46.0,
+   5.7,
+   -10.3
+  ],
+  "settle": 1.5,
+  "lua": "local n = 0 for _, d in workspace.LookDev:GetDescendants() do if d:IsA('SurfaceAppearance') then local mp = d:FindFirstAncestorWhichIsA('MeshPart') if mp and string.find(mp.Name, '_Fur') then d.AlphaMode = Enum.AlphaMode.Transparency n += 1 end end end return _G.LookDev.apply('Overcast', false) .. ' alpha Transparency x' .. n"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry_Alpha_Overlay",
+  "cam": [
+   -44.0,
+   6.3,
+   -12.6
+  ],
+  "look": [
+   -46.0,
+   5.7,
+   -10.3
+  ],
+  "settle": 1.5,
+  "lua": "local n = 0 for _, d in workspace.LookDev:GetDescendants() do if d:IsA('SurfaceAppearance') then local mp = d:FindFirstAncestorWhichIsA('MeshPart') if mp and string.find(mp.Name, '_Fur') then d.AlphaMode = Enum.AlphaMode.Overlay n += 1 end end end return _G.LookDev.apply('Overcast', false) .. ' alpha Overlay x' .. n"
+ }
+]

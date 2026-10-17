@@ -1,0 +1,54 @@
+{
+ "report": {
+  "colParts": 0,
+  "path": "Workspace.LookDev.M_Chr_Bosun",
+  "tris": "unknown",
+  "meshParts": 6,
+  "asset": "M_Chr_Bosun",
+  "attachments": [
+   "ATT_HarnessHandle -> M_Chr_Bosun_BodyFore_LOD0",
+   "ATT_TowRing -> M_Chr_Bosun_Harness_LOD0",
+   "ATT_Mouth -> M_Chr_Bosun_BodyHead_LOD0"
+  ],
+  "surfaceAppearances": 6,
+  "warnings": [],
+  "wetVariants": 6,
+  "castShadowOff": 1,
+  "lodHidden": 0,
+  "parts": 6
+ },
+ "quayHit": "Workspace.Terrain",
+ "quayTop": 6,
+ "yawDeg": -0.024893498026727467,
+ "doubleSided": [
+  "M_Chr_Bosun_FurFront_LOD0=set/true",
+  "M_Chr_Bosun_FurRear_LOD0=set/true"
+ ],
+ "pre": {
+  "centre": [
+   -0.001133561134338379,
+   1.4014794826507568,
+   0.11533606052398682
+  ],
+  "size": [
+   1.418381690979004,
+   2.80295991897583,
+   4.850628614425659
+  ]
+ },
+ "mouth": [
+  -46,
+  8.231980323791504,
+  -11.531800270080566
+ ],
+ "bboxMax": [
+  -45.290550231933594,
+  8.802959442138672,
+  -6.574393272399902
+ ],
+ "bboxMin": [
+  -46.709869384765625,
+  6,
+  -11.425507545471191
+ ]
+}

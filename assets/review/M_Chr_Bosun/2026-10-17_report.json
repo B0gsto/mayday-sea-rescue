@@ -1,0 +1,2420 @@
+{
+ "asset": "M_Chr_Bosun",
+ "name": "M_Chr_Bosun",
+ "date": "2026-10-17",
+ "commit": "6ba3c4b+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/source/characters/M_Chr_Bosun/M_Chr_Bosun.blend",
+ "driver": "pipeline.py",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
+   "bytes": 3196012,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Bosun_BodyFore_LOD0",
+    "M_Chr_Bosun_BodyHead_LOD0",
+    "M_Chr_Bosun_BodyHind_LOD0",
+    "M_Chr_Bosun_FurFront_LOD0",
+    "M_Chr_Bosun_FurRear_LOD0",
+    "M_Chr_Bosun_Harness_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Bosun_BodyFore_LOD0.001",
+     "min": [
+      -0.6237,
+      -1.6116,
+      0.0
+     ],
+     "max": [
+      0.6237,
+      0.5201,
+      2.4876
+     ],
+     "polygons": 7608,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHead_LOD0.001",
+     "min": [
+      -0.4432,
+      -2.31,
+      1.7004
+     ],
+     "max": [
+      0.4386,
+      -1.1246,
+      2.7643
+     ],
+     "polygons": 4016,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHind_LOD0.001",
+     "min": [
+      -0.616,
+      0.3437,
+      0.0
+     ],
+     "max": [
+      0.616,
+      2.31,
+      2.1613
+     ],
+     "polygons": 9512,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurFront_LOD0.001",
+     "min": [
+      -0.694,
+      -1.9687,
+      0.0
+     ],
+     "max": [
+      0.6934,
+      -0.0605,
+      2.803
+     ],
+     "polygons": 6150,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurRear_LOD0.001",
+     "min": [
+      -0.6807,
+      0.2932,
+      0.0
+     ],
+     "max": [
+      0.6737,
+      2.5407,
+      2.1239
+     ],
+     "polygons": 6360,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_Harness_LOD0.001",
+     "min": [
+      -0.7081,
+      -1.4472,
+      0.8979
+     ],
+     "max": [
+      0.7103,
+      0.7056,
+      2.471
+     ],
+     "polygons": 1480,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
+   "bytes": 1314924,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Bosun_BodyFore_LOD1",
+    "M_Chr_Bosun_BodyHead_LOD1",
+    "M_Chr_Bosun_BodyHind_LOD1",
+    "M_Chr_Bosun_FurFront_LOD1",
+    "M_Chr_Bosun_FurRear_LOD1",
+    "M_Chr_Bosun_Harness_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Bosun_BodyFore_LOD1.001",
+     "min": [
+      -0.6237,
+      -1.6028,
+      -0.0002
+     ],
+     "max": [
+      0.6237,
+      0.5201,
+      2.487
+     ],
+     "polygons": 3236,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHead_LOD1.001",
+     "min": [
+      -0.4426,
+      -2.3103,
+      1.7187
+     ],
+     "max": [
+      0.4384,
+      -1.1132,
+      2.7649
+     ],
+     "polygons": 1198,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHind_LOD1.001",
+     "min": [
+      -0.616,
+      0.189,
+      -0.0002
+     ],
+     "max": [
+      0.616,
+      2.3088,
+      2.1613
+     ],
+     "polygons": 3596,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurFront_LOD1.001",
+     "min": [
+      -0.7211,
+      -1.9718,
+      -0.0076
+     ],
+     "max": [
+      0.7074,
+      -0.1004,
+      2.7923
+     ],
+     "polygons": 2484,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurRear_LOD1.001",
+     "min": [
+      -0.6891,
+      0.2951,
+      -0.0286
+     ],
+     "max": [
+      0.6919,
+      2.579,
+      2.1328
+     ],
+     "polygons": 2520,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_Harness_LOD1.001",
+     "min": [
+      -0.6907,
+      -1.4472,
+      0.8979
+     ],
+     "max": [
+      0.6917,
+      0.7031,
+      2.4731
+     ],
+     "polygons": 665,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
+   "bytes": 366188,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Chr_Bosun_BodyFore_LOD2",
+    "M_Chr_Bosun_BodyHead_LOD2",
+    "M_Chr_Bosun_BodyHind_LOD2",
+    "M_Chr_Bosun_FurFront_LOD2",
+    "M_Chr_Bosun_FurRear_LOD2",
+    "M_Chr_Bosun_Harness_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Chr_Bosun_BodyFore_LOD2.001",
+     "min": [
+      -0.622,
+      -1.6739,
+      0.0006
+     ],
+     "max": [
+      0.6179,
+      0.7353,
+      2.6175
+     ],
+     "polygons": 859,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHead_LOD2.001",
+     "min": [
+      -0.4444,
+      -2.3011,
+      1.6942
+     ],
+     "max": [
+      0.4435,
+      -1.0484,
+      2.7621
+     ],
+     "polygons": 259,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_BodyHind_LOD2.001",
+     "min": [
+      -0.61,
+      0.0858,
+      0.001
+     ],
+     "max": [
+      0.61,
+      2.3106,
+      2.1447
+     ],
+     "polygons": 888,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurFront_LOD2.001",
+     "min": [
+      -0.6469,
+      -1.9493,
+      -0.0218
+     ],
+     "max": [
+      0.6859,
+      -0.086,
+      2.8033
+     ],
+     "polygons": 648,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_FurRear_LOD2.001",
+     "min": [
+      -0.733,
+      0.2428,
+      -0.0687
+     ],
+     "max": [
+      0.7208,
+      2.5932,
+      2.1296
+     ],
+     "polygons": 606,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Chr_Bosun_Harness_LOD2.001",
+     "min": [
+      -0.6907,
+      -1.4472,
+      0.8979
+     ],
+     "max": [
+      0.6969,
+      0.7002,
+      2.4818
+     ],
+     "polygons": 472,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun.attachments.json",
+   "attachments": [
+    "ATT_HarnessHandle",
+    "ATT_TowRing",
+    "ATT_Mouth"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Chr_Bosun/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Chr_Bosun_BodyFore_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Chr_Bosun_BodyHead_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Chr_Bosun_BodyHind_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Chr_Bosun_Harness_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Chr_Bosun_FurFront_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Chr_Bosun_FurRear_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Bosun_Body",
+   "T_Bosun_Harness",
+   "T_Bosun_Fur"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.465,
+     0.037,
+     0.87,
+     0.496
+    ],
+    "mannequin": [
+     0.081,
+     0.137,
+     0.345,
+     0.834
+    ]
+   },
+   "Side": {
+    "asset": [
+     0.372,
+     0.167,
+     0.955,
+     0.512
+    ],
+    "mannequin": [
+     0.037,
+     0.171,
+     0.273,
+     0.83
+    ]
+   },
+   "Rear3Q": {
+    "asset": [
+     0.454,
+     0.037,
+     0.86,
+     0.536
+    ],
+    "mannequin": [
+     0.087,
+     0.151,
+     0.34,
+     0.82
+    ]
+   },
+   "High": {
+    "asset": [
+     0.464,
+     0.173,
+     0.941,
+     0.678
+    ],
+    "mannequin": [
+     0.037,
+     0.312,
+     0.356,
+     0.876
+    ]
+   }
+  },
+  "in_frame": true,
+  "dims_m": null,
+  "validation_ok": true,
+  "seconds": 4.3
+ },
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dog"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyFore_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7608 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.57e-04, 138 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.994"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3804 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "274 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHead_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4016 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.22e-06, 90 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.968, v 0.002 to 0.977"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2056 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "272 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHind_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9512 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.20e-05, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4756 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "273 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_Harness_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1480 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-04, 66 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 730 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "174 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyFore_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3236 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.94e-05, 76 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.994"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3236 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.4% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHead_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1198 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.51e-05, 26 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.968, v 0.002 to 0.977"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1198 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.5% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHind_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3596 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.93e-05, 50 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3596 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.5% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_Harness_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "665 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.71e-04, 61 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 665 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.1% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyFore_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "859 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.08e-03, 59 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.996, v 0.003 to 0.994"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 859 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyFore_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 14.6% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHead_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "259 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.86e-04, 21 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.968, v 0.002 to 0.976"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 259 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHead_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 11.6% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_BodyHind_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "888 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.19e-04, 38 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.998, v 0.003 to 0.998"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 888 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_BodyHind_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 7.0% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_Harness_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "472 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.71e-04, 52 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 472 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_Harness_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.8% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "22616 of 25000 (dog)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8695 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2478 of 3000"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Chr_Bosun/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.001, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (2 to 3 sets)"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Body_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Body_MET.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Harness_MET.png"
+  },
+  {
+   "subject": "ATT_HarnessHandle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowRing",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mouth",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "real size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "withers 2.100 studs, want 2.10 (0.70 m x 3) +-5%: 0.0% off"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dog_fur_cards"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurFront_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6150 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-05, 8200 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.744, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6150 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3639 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurRear_LOD0"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6360 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.62e-05, 8480 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6360 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3524 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurFront_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2484 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-05, 3312 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.744, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2484 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 59.6% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurRear_LOD1"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2520 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.03e-05, 3360 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2520 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 60.4% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurFront_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "648 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.52e-05, 864 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.744, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 648 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurFront_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 89.5% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Chr_Bosun_FurRear_LOD2"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "606 of 10000"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.21e-04, 808 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.004 to 0.996"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 606 faces have no UV area"
+  },
+  {
+   "subject": "M_Chr_Bosun_FurRear_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 90.5% (max 15%)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12510 of 15000 (dog_fur_cards)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5004 of 6000"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1254 of 1500"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Chr_Bosun/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 1 sets)"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Chr_Bosun/T_Bosun_Fur_MET.png"
+  },
+  {
+   "subject": "ATT_HarnessHandle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowRing",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mouth",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Bosun_BodyFore_LOD0, M_Chr_Bosun_BodyHead_LOD0, M_Chr_Bosun_BodyHind_LOD0, M_Chr_Bosun_FurFront_LOD0, M_Chr_Bosun_FurRear_LOD0, M_Chr_Bosun_Harness_LOD0; 35126 triangles (scene 35126)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Bosun_BodyFore_LOD1, M_Chr_Bosun_BodyHead_LOD1, M_Chr_Bosun_BodyHind_LOD1, M_Chr_Bosun_FurFront_LOD1, M_Chr_Bosun_FurRear_LOD1, M_Chr_Bosun_Harness_LOD1; 13699 triangles (scene 13699)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Chr_Bosun_BodyFore_LOD2, M_Chr_Bosun_BodyHead_LOD2, M_Chr_Bosun_BodyHind_LOD2, M_Chr_Bosun_FurFront_LOD2, M_Chr_Bosun_FurRear_LOD2, M_Chr_Bosun_Harness_LOD2; 3732 triangles (scene 3732)"
+  },
+  {
+   "subject": "M_Chr_Bosun_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Chr_Bosun",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset and mannequin in frame; 9 renders in 4 s, maps M_Chr_Bosun_BodyFore_LOD0: ALB/MET/NOR/RGH, M_Chr_Bosun_BodyHead_LOD0: ALB/MET/NOR/RGH, M_Chr_Bosun_BodyHind_LOD0: ALB/MET/NOR/RGH, M_Chr_Bosun_Harness_LOD0: ALB/MET/NOR/RGH, M_Chr_Bosun_FurFront_LOD0: ALB/MET/NOR/RGH, M_Chr_Bosun_FurRear_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Chr_Bosun_BodyFore_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 7608,
+   "texel_density": 273.5
+  },
+  {
+   "name": "M_Chr_Bosun_BodyFore_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3236,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_BodyFore_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 859,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHead_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4016,
+   "texel_density": 272.1
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHead_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1198,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHead_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 259,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHind_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 9512,
+   "texel_density": 273.4
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHind_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3596,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_BodyHind_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 888,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_Harness_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1480,
+   "texel_density": 173.9
+  },
+  {
+   "name": "M_Chr_Bosun_Harness_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 665,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_Harness_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 472,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_FurFront_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6150,
+   "texel_density": 3638.8
+  },
+  {
+   "name": "M_Chr_Bosun_FurFront_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2484,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_FurFront_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 648,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_FurRear_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6360,
+   "texel_density": 3524.4
+  },
+  {
+   "name": "M_Chr_Bosun_FurRear_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2520,
+   "texel_density": null
+  },
+  {
+   "name": "M_Chr_Bosun_FurRear_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 606,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.418381690979004,
+  4.619957447052002,
+  2.7643320560455322
+ ]
+}

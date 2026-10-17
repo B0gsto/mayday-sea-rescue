@@ -1,0 +1,35 @@
+sets {'Fur': ['ALB', 'MET', 'NOR', 'RGH', 'Wet'], 'Harness': ['ALB', 'MET', 'NOR', 'RGH', 'Wet'], 'Body': ['ALB', 'MET', 'NOR', 'RGH', 'Wet']} markers ['ATT_HarnessHandle', 'ATT_TowRing', 'ATT_Mouth']
+shots 10 cam [-41.8, 6.4, -14.2] look [-46.0, 5.15, -9.2]
+17:16:39
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+opened, studio_id: 65c2ea5f-2943-4de1-8464-9b2bb03df322
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+inserted M_Chr_Bosun_LOD0 into Workspace
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+import_asset: _G.ImportAsset(config) installed
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+{"report":{"colParts":0,"path":"Workspace.LookDev.M_Chr_Bosun","tris":"unknown","meshParts":6,"asset":"M_Chr_Bosun","attachments":["ATT_HarnessHandle -> M_Chr_Bosun_BodyFore_LOD0","ATT_TowRing -> M_Chr_Bosun_Harness_LOD0","ATT_Mouth -> M_Chr_Bosun_BodyHead_LOD0"],"surfaceAppearances":6,"warnings":[],"wetVariants":6,"castShadowOff":1,"lodHidden":0,"parts":6},"quayHit":"Workspace.Terrain","quayTop":6,"yawDeg":-0.024893498026727469,"doubleSided":["M_Chr_Bosun_FurFront_LOD0=set/true","M_Chr_
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+setup art/lookdev/shot-setup.luau: lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 6
+shot M_Chr_Bosun_Clear_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_dry.png
+shot M_Chr_Bosun_Clear_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Clear_wet.png
+shot M_Chr_Bosun_Overcast_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry.png
+shot M_Chr_Bosun_Overcast_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_wet.png
+shot M_Chr_Bosun_Storm_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_dry.png
+shot M_Chr_Bosun_Storm_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Storm_wet.png
+shot M_Chr_Bosun_Night_dry assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_dry.png
+shot M_Chr_Bosun_Night_wet assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Night_wet.png
+shot M_Chr_Bosun_Overcast_dry_Alpha_Transparency assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_Alpha_Transparency.png
+shot M_Chr_Bosun_Overcast_dry_Alpha_Overlay assets/review/M_Chr_Bosun/studio/M_Chr_Bosun_Overcast_dry_Alpha_Overlay.png
+SHEET: assets/review/M_Chr_Bosun/studio.png
+ContentId: rbxassetid://136899397603410 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://136899397603410 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://84097518970543 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
+ContentId: rbxassetid://119557613423000 failed due to: Asset content representation is being generated
+[locks] WARNING lock order inversion: taking studio while holding heavy (order: studio, heavy, assets, gen)
+closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-lookdev-ch6.rbxl - Roblox Studio
+17:18:28

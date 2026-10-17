@@ -1,0 +1,21 @@
+{
+ "size": [
+  1472,
+  828
+ ],
+ "changed_px_frac": 0.0484,
+ "region_frac": 0.066,
+ "Transparency": {
+  "mean_lum": 0.2111,
+  "var_lum": 0.02909,
+  "edge_frac": 0.0524,
+  "straight_edge_frac": 0.1332
+ },
+ "Overlay": {
+  "mean_lum": 0.5154,
+  "var_lum": 0.04416,
+  "edge_frac": 0.1112,
+  "straight_edge_frac": 0.176
+ },
+ "choice": "Transparency"
+}

@@ -1,0 +1,136 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Chr_Bosun/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Chr_Bosun_BodyFore_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Chr_Bosun_BodyHead_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Chr_Bosun_BodyHind_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Chr_Bosun_Harness_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Chr_Bosun_FurFront_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Chr_Bosun_FurRear_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Bosun_Body",
+  "T_Bosun_Harness",
+  "T_Bosun_Fur"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.465,
+    0.037,
+    0.87,
+    0.496
+   ],
+   "mannequin": [
+    0.081,
+    0.137,
+    0.345,
+    0.834
+   ]
+  },
+  "Side": {
+   "asset": [
+    0.372,
+    0.167,
+    0.955,
+    0.512
+   ],
+   "mannequin": [
+    0.037,
+    0.171,
+    0.273,
+    0.83
+   ]
+  },
+  "Rear3Q": {
+   "asset": [
+    0.454,
+    0.037,
+    0.86,
+    0.536
+   ],
+   "mannequin": [
+    0.087,
+    0.151,
+    0.34,
+    0.82
+   ]
+  },
+  "High": {
+   "asset": [
+    0.464,
+    0.173,
+    0.941,
+    0.678
+   ],
+   "mannequin": [
+    0.037,
+    0.312,
+    0.356,
+    0.876
+   ]
+  }
+ },
+ "in_frame": true,
+ "dims_m": null,
+ "validation_ok": true,
+ "seconds": 4.3
+}

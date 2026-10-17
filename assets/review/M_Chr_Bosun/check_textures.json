@@ -1,0 +1,717 @@
+{
+ "ok": true,
+ "rows": [
+  {
+   "subject": "T_Bosun_Body",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Body",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Body",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Body",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_MET.png"
+  },
+  {
+   "subject": "T_Bosun_Body",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Body",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Body_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Body_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Body_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.0% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 38, 99th 44, range 30 to 240 over 100% of pixels"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.15, ceiling 0.45"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 33, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.06, ceiling 0.45"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_Bosun_Body_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.48): check the bake settings"
+  },
+  {
+   "subject": "T_Bosun_Body_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 32, dry 41"
+  },
+  {
+   "subject": "T_Bosun_Body_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 66, dry 158"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_MET.png"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Fur",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Fur_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGBA"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGBA"
+  },
+  {
+   "subject": "T_Bosun_Fur_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Fur_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.0% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 33, 99th 43, range 30 to 240 over 7% of pixels"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.09, ceiling 0.45"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 34, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.00, ceiling 0.45"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_Bosun_Fur_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.40): check the bake settings"
+  },
+  {
+   "subject": "T_Bosun_Fur_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 13, dry 19"
+  },
+  {
+   "subject": "T_Bosun_Fur_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 63, dry 153"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "ALB present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_ALB.png"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "NOR present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_NOR.png"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "RGH present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_RGH.png"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "MET present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_MET.png"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "ALB_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "RGH_Wet present",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "T_Bosun_Harness_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Harness_MET.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_MET.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR_Wet.png",
+   "check": "colour mode",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mode RGB"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH_Wet.png",
+   "check": "size",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH_Wet.png",
+   "check": "single channel",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8-bit greyscale"
+  },
+  {
+   "subject": "T_Bosun_Harness_MET",
+   "check": "metalness mostly 0 or 1",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "0.3% of pixels between 0.1 and 0.9"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 40, 99th 215, range 30 to 240 over 99% of pixels"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 1st 207, 99th 207, range 180 to 250 over 0% of pixels"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.25, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet",
+   "check": "non-metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 203, ceiling 240 (wet: no floor)"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet",
+   "check": "metal albedo",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "luma 99th 207, ceiling 250 (wet: no floor)"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet",
+   "check": "saturation",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "95th percentile 0.23, ceiling 0.45 outside the signal mask"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR",
+   "check": "tangent space",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "blue above 0.5 on 100.0%, mean red 0.50, green 0.50"
+  },
+  {
+   "subject": "T_Bosun_Harness_NOR",
+   "check": "OpenGL green",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "undetermined (curl share 0.48): check the bake settings"
+  },
+  {
+   "subject": "T_Bosun_Harness_ALB_Wet",
+   "check": "wet is darker",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 93, dry 124"
+  },
+  {
+   "subject": "T_Bosun_Harness_RGH_Wet",
+   "check": "wet is lower",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "mean 101, dry 188"
+  }
+ ]
+}
