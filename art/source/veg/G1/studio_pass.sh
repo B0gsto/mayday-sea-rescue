@@ -20,5 +20,5 @@ python3 tools/studio/smoke.py lua Edit tools/studio/import_asset.luau 2>&1 | tai
 python3 tools/studio/smoke.py lua Edit $R/studio/plant.luau > $R/studio/plant-result.txt 2>&1
 python3 art/source/veg/G1/make_studio_g1.py shots $R/studio/plant-result.txt || { head -c 1500 $R/studio/plant-result.txt; python3 tools/studio/smoke.py close; exit 1; }
 sleep 20
-python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --shots $R/shots.json --out $R/studio_dune.png --keep $R/studio --cols 3 --cell 640x360
+python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --shots $R/shots.json --out $R/studio.png --keep $R/studio --cols 3 --white-check --cell 640x360
 python3 tools/studio/smoke.py console 2>&1 | tail -6; python3 tools/studio/smoke.py close; date +%T" 2>&1 | tee $R/studio/session.log

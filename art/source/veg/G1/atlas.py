@@ -288,6 +288,51 @@ def bark(w, h, rng):
     return rgb, fiss * 0.7 + lmask * 0.4
 
 
+# ---------------------------------------------------------------------------------------------------- shading
+# base-to-tip shading per cell (round 2 art-director fix): (AO at the base, tip lift, soil fade at the base,
+# along u instead of v). Ground-rooted cells fade into soil colour at the bottom so card bases melt into the ground.
+SHADE = {"Turf": (0.62, 0.10, True, False), "Marram": (0.66, 0.08, True, False), "ThriftCushion": (0.64, 0.08, True, False),
+         "ThriftHeads": (0.7, 0.06, True, False), "Ling": (0.64, 0.08, True, False), "BellHeather": (0.64, 0.08, True, False),
+         "GorseSprig": (0.74, 0.10, False, False), "GorseDense": (0.8, 0.06, False, False),
+         "HawthornLeaves": (0.8, 0.06, False, False), "BrackenGreen": (0.76, 0.08, False, True),
+         "BrackenRusset": (0.76, 0.08, False, True)}
+SOIL = np.array([88, 72, 52], np.float32)
+
+
+def smooth(e0, e1, x):
+    t = np.clip((x - e0) / (e1 - e0), 0, 1)
+    return t * t * (3 - 2 * t)
+
+
+def shade_cell(name, c, al):
+    h, w = al.shape
+    ao, tip, soil, along_u = SHADE.get(name, (1.0, 0.0, False, False))
+    t = np.linspace(0, 1, w, dtype=np.float32)[None, :].repeat(h, 0) if along_u else \
+        np.linspace(1, 0, h, dtype=np.float32)[:, None].repeat(w, 1)  # 0 at the plant base, 1 at the tip
+    k = (ao + (1 - ao) * smooth(0.0, 0.6, t)) * (1 + tip * smooth(0.55, 1.0, t))
+    c = c * k[..., None]
+    if soil:
+        s = (1 - smooth(0.0, 0.16, t)) * 0.75
+        c = c * (1 - s[..., None]) + SOIL * s[..., None]
+        al = al * smooth(0.0, 0.03, t)  # the very bottom row fades out: no flat cut at the card base
+    # soft falloff at the left / right / top borders so no blade is cut off by a straight card edge
+    u = np.linspace(0, 1, w, dtype=np.float32)[None, :]
+    v = np.linspace(0, 1, h, dtype=np.float32)[:, None]
+    edge = smooth(0.0, 0.05, np.minimum(u, 1 - u)) * (smooth(0.0, 0.04, v) if not along_u else smooth(0.0, 0.05, np.minimum(v, 1 - v)))
+    if along_u:
+        edge = edge * smooth(0.0, 0.03, 1 - u)
+    return c, al * edge
+
+
+def wetify(rgb):
+    """wet albedo: darker (about -35% linear), slightly more saturated, kept in the 1.4a window 20-240"""
+    lin = (np.clip(rgb, 0, 255) / 255.0) ** 2.2 * 0.62
+    out = lin ** (1 / 2.2) * 255.0
+    grey = out.mean(2, keepdims=True)
+    out = grey + (out - grey) * 1.15
+    return np.clip(out, 20, 240)
+
+
 # ---------------------------------------------------------------------------------------------------- maps
 def pad_colour(rgb, a):
     """push-pull: fill transparent texels with the average of nearby opaque colour"""
@@ -367,8 +412,11 @@ def main():
         col = cv.col.resize((w, h), Image.LANCZOS)
         a = cv.a.resize((w, h), Image.LANCZOS)
         ht = cv.ht.resize((w, h), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.6 * sc))
-        rgb[y0:y0 + h, x0:x0 + w] = np.asarray(col, np.float32)
-        alpha[y0:y0 + h, x0:x0 + w] = np.asarray(a, np.float32) / 255.0
+        if name in ("Turf", "Marram", "ThriftCushion"):  # soft blade edges: no hard card silhouettes
+            a = a.filter(ImageFilter.GaussianBlur(1.1 * sc))
+        c, al = shade_cell(name, np.asarray(col, np.float32), np.asarray(a, np.float32) / 255.0)
+        rgb[y0:y0 + h, x0:x0 + w] = c
+        alpha[y0:y0 + h, x0:x0 + w] = al
         hgt[y0:y0 + h, x0:x0 + w] = np.asarray(ht, np.float32)
         r = RGH[name] + (np.asarray(ht, np.float32) / 255.0 - 0.5) * -0.12
         rough[y0:y0 + h, x0:x0 + w] = r
@@ -383,6 +431,7 @@ def main():
     knee = np.where(sat > 0.38, 0.38 + (sat - 0.38) * 0.35, sat)
     grey = mx[..., None]
     rgb = grey - (grey - rgb) * (knee / np.maximum(sat, 1e-3))[..., None]
+    rgb = 255.0 * (np.clip(rgb, 0, 255) / 255.0) ** 0.9  # a little emissive-free lift so Night / Storm keep form
     rgb = np.clip(rgb, 34, 238)
     nor = normal_from_height(hgt / 255.0, 18.0 * S / 4096.0)
     nor[alpha < 0.02] = (128, 128, 255)
@@ -393,21 +442,26 @@ def main():
         "RGH": (rough * 255).astype(np.uint8),
         "MET": np.zeros((S, S), np.uint8),
     }
-    wet_rgb = rgb * 0.8  # wet: darker, glossier (05 wet look); luma kept above the floor
-    wet_rgb = np.maximum(wet_rgb, 28)
-    out["ALB_Wet"] = np.dstack([wet_rgb, alpha * 255]).astype(np.uint8)
     out["RGH_Wet"] = (np.clip(rough * 0.55, 0.05, 1) * 255).astype(np.uint8)
-    out["NOR_Wet"] = nor
-    out["MET_Wet"] = out["MET"]
     os.makedirs(MASTER_DIR, exist_ok=True)
     os.makedirs(SHIP_DIR, exist_ok=True)
-    for k, arr in out.items():
-        kind, wet = (k.split("_") + [""])[:2]
-        fn = "T_FoliageLand_Main_%s%s.png" % (kind, "_Wet" if wet else "")
-        mode = "RGBA" if arr.ndim == 3 and arr.shape[2] == 4 else ("RGB" if arr.ndim == 3 else "L")
-        im = Image.fromarray(arr, mode)
-        im.save(os.path.join(MASTER_DIR, fn))
-        im.resize((args.ship, args.ship), Image.LANCZOS).save(os.path.join(SHIP_DIR, fn))
+
+    def save(arrs, d, size):
+        for k, arr in arrs.items():
+            mode = "RGBA" if arr.ndim == 3 and arr.shape[2] == 4 else ("RGB" if arr.ndim == 3 else "L")
+            im = Image.fromarray(arr, mode)
+            if size != im.width:
+                im = im.resize((size, size), Image.LANCZOS)
+            a = np.asarray(im)
+            if k == "ALB":  # Lanczos rings past the window: clip after the resize too
+                a = a.copy(); a[..., :3] = np.clip(a[..., :3], 34, 238)
+                wet = a.copy(); wet[..., :3] = wetify(a[..., :3].astype(np.float32)).astype(np.uint8)  # alpha byte-identical
+                Image.fromarray(wet, "RGBA").save(os.path.join(d, "T_FoliageLand_Main_ALB_Wet.png"))
+            Image.fromarray(a, mode).save(os.path.join(d, "T_FoliageLand_Main_%s.png" % k))
+            if k in ("NOR", "MET"):
+                Image.fromarray(a, mode).save(os.path.join(d, "T_FoliageLand_Main_%s_Wet.png" % k))
+    save(out, MASTER_DIR, S)
+    save(out, SHIP_DIR, args.ship)
     json.dump({"master": S, "ship": args.ship, "uv": "u0, v0, u1, v1 (v up)", "cells": cells_uv},
               open(os.path.join(HERE, "cells.json"), "w"), indent=1)
     print("atlas ok", S, "->", args.ship, SHIP_DIR)

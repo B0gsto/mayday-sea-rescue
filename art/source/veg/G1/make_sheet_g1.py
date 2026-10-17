@@ -20,6 +20,29 @@ def tris(asset):
     f = sorted(glob.glob(os.path.join(GAME, "assets/review", asset, "*_report.json")))[-1]
     t = {m["lod"]: m["triangles"] for m in json.load(open(f))["meshes"]}
     return "%d/%d/%d" % (t["LOD0"], t["LOD1"], t["LOD2"])
+def reference_cell():
+    """one CC photo per species group (first file logged in art/reference/M_Veg_<group>/SOURCES.md), credit line under
+    each -> assets/review/G1/reference_cell.png. Unlogged photos are never used."""
+    import re
+    groups = ["Grass", "Gorse", "Heather", "SeaThrift", "Bracken", "Hawthorn"]
+    cw, ch = W // len(groups), 300
+    out = Image.new("RGB", (W, ch + 34), (20, 20, 20)); d = ImageDraw.Draw(out)
+    for i, g in enumerate(groups):
+        src = os.path.join(GAME, "art/reference/M_Veg_" + g, "SOURCES.md")
+        if not os.path.exists(src):
+            continue
+        rows = [r for r in re.findall(r"^\| (ref_\d+\.jpg) \| (\S+) \| ([^|]+) \| ([^|]+) \|", open(src).read(), re.M)]
+        if not rows:
+            continue
+        f, url, author, lic = rows[0]
+        im = Image.open(os.path.join(os.path.dirname(src), f)).convert("RGB")
+        s = max(cw / im.width, ch / im.height); im = im.resize((int(im.width * s) + 1, int(im.height * s) + 1))
+        l, t = (im.width - cw) // 2, (im.height - ch) // 2
+        out.paste(im.crop((l, t, l + cw, t + ch)), (i * cw, 0))
+        d.text((i * cw + 4, ch + 3), "%s  %s" % (g, f), fill=(235, 235, 235))
+        d.text((i * cw + 4, ch + 18), ("%s, %s" % (author.strip(), lic.strip()))[:40], fill=(190, 190, 190))
+    p = os.path.join(R, "reference_cell.png"); out.save(p); return p
+reference_cell()
 heroes = sorted(glob.glob(RD + "/hero_*.png"))
 rows.append(grid(heroes, 8, 192, 192))
 rows.append(grid(sorted(glob.glob(RD + "/close_*.png")), 6, 256, 256))

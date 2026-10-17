@@ -6,8 +6,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "vegkit.py")).read()
 V = eval(src[src.index("VARIANTS = {") + 11: src.index("}\n", src.index("VARIANTS = {")) + 1])
 man = json.load(open(os.path.join(GAME, "assets/manifest.json"))).values()
+import hashlib
+def cur(e):  # the manifest entry for the file's current bytes (older uploads of the same source stay in the manifest)
+    p = os.path.join(GAME, e["source"])
+    return os.path.exists(p) and hashlib.sha256(open(p, "rb").read()).hexdigest().startswith(e.get("sha") or "-")
 def ids(stem):
-    return {e["source"].rsplit("/", 1)[-1]: (e.get("assetId"), e.get("moderation")) for e in man if stem in e.get("source", "")}
+    return {e["source"].rsplit("/", 1)[-1]: (e.get("assetId"), e.get("moderation")) for e in man if stem in e.get("source", "") and cur(e)}
 status, extra = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "")
 atlas = ids("/M_Veg_FoliageLand/")
 rows = [["asset", "priority", "status", "assetId", "source", "licence", "ai_used", "reviewer", "notes"]]

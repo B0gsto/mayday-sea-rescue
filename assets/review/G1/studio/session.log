@@ -1,5 +1,12 @@
-22:14:42
-opened, studio_id: 6fe58f9d-e288-40df-90ee-e973745e3c19
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 1m11s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 1m41s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 2m11s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 2m42s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 3m12s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 3m42s); queue position 1/1
+[locks] waiting for studio: held by K1 shots (pid 64025, MaydaySeaRescue, held 4m12s); queue position 1/1
+22:55:06
+opened, studio_id: 4f20335e-1451-4d77-9bc6-80f57ab494a8
 inserted M_Veg_Bracken_01_LOD0 into Workspace
 inserted M_Veg_Bracken_02_LOD0 into Workspace
 inserted M_Veg_Gorse_01_LOD0 into Workspace
@@ -17,8 +24,17 @@ inserted M_Veg_Heather_03_LOD0 into Workspace
 inserted M_Veg_SeaThrift_01_LOD0 into Workspace
 inserted M_Veg_SeaThrift_02_LOD0 into Workspace
 import_asset: _G.ImportAsset(config) installed
-shots 9 {'bracken': 5, 'thrift': 24, 'duneTurf': 18, 'duneGorse': 2, 'duneBracken': 3, 'turf': 76, 'heather': 15, 'marram': 90, 'hawthorn': 2, 'gorse': 5} {'cliff': [1732, 119.203125, 840, 'LeafyGrass'], 'dune': [1013.3300170898438, 21.31463623046875, 171.8800048828125, 'Sand']} warnings [] doubleSided {True}
-setup art/lookdev/shot-setup.luau: lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 256
+shots 18 {'bracken': 9, 'thrift': 26, 'duneTurf': 18, 'duneGorse': 2, 'duneBracken': 3, 'gorse': 3, 'turf': 80, 'heather': 13, 'marram': 90, 'hawthorn': 2, 'fill': 112} {'cliff': [1732, 119.203125, 840, 'LeafyGrass'], 'dune': [1013.3300170898438, 21.31463623046875, 171.8800048828125, 'Sand']} warnings [] doubleSided {True}
+setup art/lookdev/shot-setup.luau: lookdev setup (edit): edit datamodel (no frame stats); presets ok, skies ok, wet-capable parts 374; preload: 107 maps (716 SAs, 40 variants, 358 hidden clones), 0 failed in 3.9 s
+shot G1_cliff_Clear_dry assets/review/G1/studio/G1_cliff_Clear_dry.png
+shot G1_cliff_Clear_wet assets/review/G1/studio/G1_cliff_Clear_wet.png
+shot G1_cliff_Overcast_dry assets/review/G1/studio/G1_cliff_Overcast_dry.png
+shot G1_cliff_Overcast_wet assets/review/G1/studio/G1_cliff_Overcast_wet.png
+shot G1_cliff_Storm_dry assets/review/G1/studio/G1_cliff_Storm_dry.png
+shot G1_cliff_Storm_wet assets/review/G1/studio/G1_cliff_Storm_wet.png
+shot G1_cliff_Night_dry assets/review/G1/studio/G1_cliff_Night_dry.png
+shot G1_cliff_Night_wet assets/review/G1/studio/G1_cliff_Night_wet.png
+shot G1_cliff_Overcast_close assets/review/G1/studio/G1_cliff_Overcast_close.png
 shot G1_dune_Clear_dry assets/review/G1/studio/G1_dune_Clear_dry.png
 shot G1_dune_Clear_wet assets/review/G1/studio/G1_dune_Clear_wet.png
 shot G1_dune_Overcast_dry assets/review/G1/studio/G1_dune_Overcast_dry.png
@@ -28,12 +44,13 @@ shot G1_dune_Storm_wet assets/review/G1/studio/G1_dune_Storm_wet.png
 shot G1_dune_Night_dry assets/review/G1/studio/G1_dune_Night_dry.png
 shot G1_dune_Night_wet assets/review/G1/studio/G1_dune_Night_wet.png
 shot G1_dune_Overcast_close assets/review/G1/studio/G1_dune_Overcast_close.png
-SHEET: assets/review/G1/studio_dune.png
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
-ContentId: rbxassetid://115424902489033 failed due to: Asset content representation is being generated
+WHITE-CHECK: 0 re-captured, 0 still white
+SHEET: assets/review/G1/studio.png
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
+Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info:  HTTP StatusCode: 429, Message: ). PBR textures may not be visible in game. Change a TextureId property to retry.
 closed /Users/bogdan/RobloxProjects/.testbench/TestBench-mayday-lookdev-g1.rbxl - Roblox Studio
-22:18:36
+23:00:32

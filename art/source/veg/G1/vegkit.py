@@ -116,38 +116,49 @@ def tube_geo(t, lod):
 
 
 def make_mesh(name, prims, lod, centre, up_blend):
-    bm = bmesh.new()
-    uvl = bm.loops.layers.uv.new("UVMap")
-    loop_normals = []
+    """cards are emitted twice (front + reversed back face, separate verts) with the SAME hemisphere normal, so they
+    light like one volume from either side (DoubleSided off in Roblox: no flipped back-face normals, no dark windward
+    cards). Hemisphere ("foliage normal" transfer): normal = direction from a point below the plant's base centre,
+    measured in the plant's own extents, blended towards +Z by up_blend; tubes keep smooth normals."""
+    geo = []
     keep = (1.0, 0.5, 0.25)[lod]
     for pr in prims:
         if isinstance(pr, Card):
             if pr.rank > keep:
                 continue
-            vs, fs, uvs = card_geo(pr, lod)
-            kind = pr.normal
+            geo.append((card_geo(pr, lod), pr.normal))
         else:
             if lod == 2 and pr.level > 1 or lod == 1 and pr.level > 2:
                 continue
-            vs, fs, uvs = tube_geo(pr, lod)
-            kind = "tube"
-        bv = [bm.verts.new(v) for v in vs]
-        for f in fs:
-            face = bm.faces.new([bv[i] for i in f])
-            for lp, vi in zip(face.loops, f):
-                lp[uvl].uv = uvs[vi]
-                if kind == "tube":
-                    loop_normals.append(None)
-                else:
-                    radial = (vs[vi] - centre)
-                    radial.z = max(radial.z, 0) + 0.25 * radial.length
-                    radial = radial.normalized() if radial.length > 1e-6 else Vector((0, 0, 1))
-                    ub = up_blend if kind == "dome" else 0.9
-                    loop_normals.append((radial * (1 - ub) + Vector((0, 0, 1)) * ub).normalized())
+            geo.append((tube_geo(pr, lod), "tube"))
+    allv = [v for (vs, fs, uvs), k in geo if k != "tube" for v in vs] or [Vector((0, 0, 0)), Vector((1, 1, 1))]
+    lo = Vector((min(v.x for v in allv), min(v.y for v in allv), min(v.z for v in allv)))
+    hi = Vector((max(v.x for v in allv), max(v.y for v in allv), max(v.z for v in allv)))
+    ext = Vector((max(hi.x - lo.x, 1e-3) / 2, max(hi.y - lo.y, 1e-3) / 2, max(hi.z - lo.z, 1e-3)))
+    hc = Vector((centre.x, centre.y, lo.z - 0.35 * ext.z))  # hemisphere centre: below the base
+
+    def hemi(v, kind):
+        d = v - hc
+        d = Vector((d.x / ext.x, d.y / ext.y, d.z / (ext.z * 1.35)))
+        d = d.normalized() if d.length > 1e-6 else Vector((0, 0, 1))
+        ub = up_blend if kind == "dome" else max(up_blend, 0.7)
+        return (d * (1 - ub) + Vector((0, 0, 1)) * ub).normalized()
+
+    bm = bmesh.new()
+    uvl = bm.loops.layers.uv.new("UVMap")
+    loop_normals = []
+    for (vs, fs, uvs), kind in geo:
+        for back in ((False,) if kind == "tube" else (False, True)):
+            bv = [bm.verts.new(v) for v in vs]
+            for f in fs:
+                f = tuple(reversed(f)) if back else f
+                face = bm.faces.new([bv[i] for i in f])
+                for lp, vi in zip(face.loops, f):
+                    lp[uvl].uv = uvs[vi]
+                    loop_normals.append(None if kind == "tube" else hemi(vs[vi], kind))
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me)
     bm.free()
-    # tube loops get their face-smooth normals
     me.update()
     final = []
     for poly in me.polygons:
@@ -173,7 +184,9 @@ def tuft(prims, rng, centre, n, radius, hmin, hmax, wcard, cellname, lean, splay
         r = radius * math.sqrt(rng.random())
         base = centre + d * r
         out = (d * (splay * (0.4 + r / max(radius, 1e-6))) + WIND * lean + Vector((0, 0, 1))).normalized()
-        side = Vector((0, 0, 1)).cross(d).normalized() if rng.random() < 0.5 else d.copy()
+        out = (out + Vector((rng.gauss(0, 0.12), rng.gauss(0, 0.12), 0))).normalized()
+        q = rng.random()
+        side = Vector((0, 0, 1)).cross(d).normalized() if q < 0.4 else (d.copy() if q < 0.75 else rand_dir_xy(rng))
         side = (side - out * side.dot(out)).normalized()
         h = rng.uniform(hmin, hmax)
         prims.append(Card(base, out, side, wcard * rng.uniform(0.8, 1.2), h, cellname, segs=segs,
@@ -181,7 +194,7 @@ def tuft(prims, rng, centre, n, radius, hmin, hmax, wcard, cellname, lean, splay
 
 
 def dome_cards(prims, rng, centre, rx, ry, rz, n, size, cellname, segs=1, out_tilt=0.55, clip=0.0, shear=0.0,
-               normal="dome", top_only=False, wmul=1.0):
+               normal="dome", top_only=False, wmul=1.0, jitter=0.0):
     """cards on a wind-shaped ellipsoid: windward side clipped flat (clip), crown streamed leeward (shear)"""
     for k in range(n):
         while True:
@@ -195,6 +208,8 @@ def dome_cards(prims, rng, centre, rx, ry, rz, n, size, cellname, segs=1, out_ti
         p.x += shear * p.z / max(rz, 1e-6) * rx  # crown streams leeward
         n_out = Vector((v.x / rx, v.y / ry, v.z / rz)).normalized()
         up = (n_out * out_tilt + Vector((0, 0, 1)) * (1 - out_tilt) + WIND * 0.15).normalized()
+        if jitter:
+            up = (up + Vector((rng.gauss(0, jitter), rng.gauss(0, jitter), rng.gauss(0, jitter * 0.5)))).normalized()
         side = up.cross(Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), 0.2))).normalized()
         if side.length < 0.1:
             side = Vector((1, 0, 0))
@@ -226,8 +241,14 @@ def branchy(prims, rng, start, d, length, radius, level, max_level, leaves, leaf
 def species(kind, rng):
     prims, centre, up_blend = [], Vector((0, 0, 0)), 0.35
     if kind == "turf":
-        tuft(prims, rng, centre, 46, 0.5, 0.45, 1.0, 0.55, "Turf", 0.12, 0.6, 3, 0.35)
-        up_blend = 0.6
+        tuft(prims, rng, centre, 72, 0.55, 0.45, 1.0, 0.55, "Turf", 0.12, 0.6, 3, 0.35)
+        for k in range(12):  # crossed short core cards at varied yaw fill the tuft's middle
+            a = rng.uniform(0, math.pi)
+            for s2 in (0, math.pi / 2):
+                prims.append(Card(centre + rand_dir_xy(rng) * rng.uniform(0, 0.2), (Vector((0, 0, 1)) + WIND * 0.1).normalized(),
+                                  Vector((math.cos(a + s2), math.sin(a + s2), 0)), 0.5, rng.uniform(0.35, 0.6), "Turf", segs=2,
+                                  bend=0.2, rng=rng))
+        up_blend = 0.55
     elif kind == "marram":
         tuft(prims, rng, centre, 46, 0.9, 1.6, 2.7, 0.75, "Marram", 0.35, 0.45, 5, 0.75)
         for k in range(8):  # spent dead blades lying over at the base
@@ -243,10 +264,13 @@ def species(kind, rng):
                 pts.append(pts[-1] + (d + Vector((rng.gauss(0, 0.2), rng.gauss(0, 0.2), 0))).normalized() * rng.uniform(0.7, 1.1))
             prims.append(Tube(pts, [0.12, 0.09, 0.06, 0.03], 1 if k > 2 else 0, sides=5))
         rx, ry, rz = 2.4, 2.1, 3.0
-        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx * 0.7, ry * 0.7, rz * 0.7, 230, 1.5, "GorseDense", segs=1, clip=0.3, shear=0.2)
-        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx, ry, rz, 380, 1.45, "GorseDense", segs=1, clip=0.35, shear=0.28)
-        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx * 1.05, ry * 1.05, rz * 1.05, 380, 1.5, "GorseSprig", segs=2, out_tilt=0.8,
-                   clip=0.35, shear=0.3, wmul=2.0)
+        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx * 0.7, ry * 0.7, rz * 0.7, 140, 1.7, "GorseDense", segs=1, clip=0.3, shear=0.2,
+                   jitter=0.4)
+        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx, ry, rz, 320, 1.45, "GorseDense", segs=1, clip=0.35, shear=0.28, jitter=0.35)
+        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx * 1.05, ry * 1.05, rz * 1.05, 280, 1.5, "GorseSprig", segs=2, out_tilt=0.8,
+                   clip=0.35, shear=0.3, wmul=2.0, jitter=0.25)
+        dome_cards(prims, rng, Vector((0, 0, 0.2)), rx * 1.1, ry * 1.1, rz * 1.08, 220, 1.2, "GorseSprig", segs=1, out_tilt=0.5,
+                   clip=0.35, shear=0.3, wmul=1.6, jitter=0.9)  # sprigs poking out at random angles break the shell
         up_blend = 0.3
     elif kind in ("ling", "bell", "heathmix"):
         cells = {"ling": ["Ling"], "bell": ["BellHeather"], "heathmix": ["Ling", "Ling", "BellHeather"]}[kind]
@@ -256,10 +280,11 @@ def species(kind, rng):
             up = (Vector((base.x * 0.6, base.y * 0.6, 1.0)) + WIND * 0.25).normalized()
             side = Vector((0, 0, 1)).cross(rand_dir_xy(rng)).normalized()
             h = rng.uniform(0.6, 1.1) * (1.0 - 0.45 * base.length)
-            prims.append(Card(base, up, side, rng.uniform(0.55, 0.8), h, rng.choice(cells), segs=3, bend=0.3, rng=rng, normal="dome"))
+            prims.append(Card(base, up, side, rng.uniform(0.55, 0.8), h, rng.choice(cells), segs=2, bend=0.3, rng=rng, normal="dome"))
         up_blend = 0.45
     elif kind == "thrift":
-        dome_cards(prims, rng, Vector((0, 0, -0.05)), 0.45, 0.42, 0.3, 80, 0.32, "ThriftCushion", segs=2, out_tilt=0.75, normal="dome", top_only=True)
+        dome_cards(prims, rng, Vector((0, 0, -0.05)), 0.45, 0.42, 0.3, 74, 0.32, "ThriftCushion", segs=2, out_tilt=0.75, normal="dome", top_only=True,
+                   jitter=0.3)
         for k in range(10):
             d = rand_dir_xy(rng) * rng.uniform(0, 0.25)
             up = (Vector((d.x, d.y, 1)) + WIND * 0.15).normalized()
@@ -269,7 +294,23 @@ def species(kind, rng):
                                   segs=2, bend=0.1, rng=rng, rank=(k / 10.0) * 0.9, normal="dome"))
         up_blend = 0.5
     elif kind in ("bracken", "bracken_russet"):
-        n = 26
+        n = 32
+        for k in range(14):  # low skirt: short stipes, fronds arching out near the ground (fills the dark cone)
+            d = rand_dir_xy(rng)
+            base = d * rng.uniform(0, 0.4)
+            top = base + (d * 0.5 + Vector((0, 0, 1))).normalized() * rng.uniform(0.2, 0.55)
+            out = (d + Vector((0, 0, rng.uniform(0.3, 0.7))) + WIND * 0.2).normalized()
+            cellname = "BrackenGreen" if kind == "bracken" or rng.random() < 0.15 else "BrackenRusset"
+            prims.append(Card(top, out, Vector((0, 0, 1)).cross(out).normalized(), rng.uniform(0.8, 1.05), rng.uniform(1.1, 1.6),
+                              cellname, segs=4, bend=-0.5, bend_dir=Vector((0, 0, 1)), rng=rng, rank=rng.uniform(0.2, 1.0),
+                              horizontal=True, normal="up"))
+        for k in range(6):  # young upright fronds in the middle
+            a = rng.uniform(0, 2 * math.pi)
+            up = (Vector((math.cos(a) * 0.35, math.sin(a) * 0.35, 1)) + WIND * 0.15).normalized()
+            cellname = "BrackenGreen" if kind == "bracken" or rng.random() < 0.3 else "BrackenRusset"
+            prims.append(Card(Vector((math.cos(a), math.sin(a), 0)) * 0.15, up, Vector((-math.sin(a), math.cos(a), 0)),
+                              rng.uniform(0.8, 1.0), rng.uniform(1.4, 1.9), cellname, segs=4, bend=0.3, rng=rng,
+                              rank=rng.uniform(0.3, 1.0), horizontal=True, normal="up"))
         for k in range(n):
             d = rand_dir_xy(rng)
             base = d * rng.uniform(0, 0.9)

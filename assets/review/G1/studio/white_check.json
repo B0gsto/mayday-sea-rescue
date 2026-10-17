@@ -1,0 +1,79 @@
+{
+ "limit_pct": 8.0,
+ "luma": 245.0,
+ "wait_s": 8.0,
+ "shots": [
+  {
+   "name": "G1_cliff_Clear_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Clear_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Overcast_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Storm_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Storm_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Night_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Night_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_cliff_Overcast_close",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Clear_dry",
+   "white_pct": 0.1
+  },
+  {
+   "name": "G1_dune_Clear_wet",
+   "white_pct": 0.1
+  },
+  {
+   "name": "G1_dune_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Overcast_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Storm_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Storm_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Night_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Night_wet",
+   "white_pct": 0.0
+  },
+  {
+   "name": "G1_dune_Overcast_close",
+   "white_pct": 0.0
+  }
+ ]
+}
