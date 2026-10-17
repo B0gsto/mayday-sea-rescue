@@ -1,0 +1,107 @@
+[
+ {
+  "name": "golden_low_sunward",
+  "cam": [
+   600,
+   7,
+   -600
+  ],
+  "look": [
+   600,
+   7,
+   -700
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) local d = game.Lighting:GetSunDirection() local f = Vector3.new(d.X, 0, d.Z).Unit local pitch = -0.03 c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0))"
+ },
+ {
+  "name": "golden_low_away",
+  "cam": [
+   600,
+   7,
+   -600
+  ],
+  "look": [
+   600,
+   7,
+   -700
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Calm\") game.Lighting.ClockTime = 17.3 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) local d = game.Lighting:GetSunDirection() local f = -Vector3.new(d.X, 0, d.Z).Unit local pitch = -0.03 c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0))"
+ },
+ {
+  "name": "noon_high_clear",
+  "cam": [
+   600,
+   90,
+   -600
+  ],
+  "look": [
+   600,
+   0,
+   -760
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 12.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,90,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(600,0,-760))"
+ },
+ {
+  "name": "overcast_low",
+  "cam": [
+   600,
+   7,
+   -600
+  ],
+  "look": [
+   900,
+   0,
+   -560
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Overcast\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,7,-600) c.CFrame = CFrame.lookAt(p, Vector3.new(900,0,-560))"
+ },
+ {
+  "name": "night_moon",
+  "cam": [
+   600,
+   8,
+   -600
+  ],
+  "look": [
+   600,
+   8,
+   -700
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 22.5 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,8,-600) local d = game.Lighting:GetMoonDirection() local f = Vector3.new(d.X, 0, d.Z).Unit local pitch = math.clamp(math.asin(d.Y) - 0.42, -0.2, 0.25) c.CFrame = CFrame.lookAt(p, p + f * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0))"
+ },
+ {
+  "name": "shallow_sand_rock",
+  "cam": [
+   600,
+   14,
+   -330
+  ],
+  "look": [
+   600,
+   -8,
+   -410
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,14,-330) c.CFrame = CFrame.lookAt(p, Vector3.new(600,-8,-410))"
+ },
+ {
+  "name": "underwater",
+  "cam": [
+   600,
+   -4,
+   -330
+  ],
+  "look": [
+   600,
+   -9,
+   -420
+  ],
+  "settle": 4,
+  "lua": "game.Lighting:SetAttribute(\"WeatherBase\", \"Clear\") game.Lighting.ClockTime = 13 local c = workspace.CurrentCamera c.CameraType = Enum.CameraType.Scriptable local p = Vector3.new(600,-4,-330) c.CFrame = CFrame.lookAt(p, Vector3.new(600,-9,-420))"
+ }
+]

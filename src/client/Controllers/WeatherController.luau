@@ -1,8 +1,16 @@
 --!strict
 -- WeatherController: the client side of the storm (docs 06 section 3.4, docs 05 section 6).
---   * Blends the Calm preset toward the Storm preset by Weather.getIntensity() at 10 Hz
---     (Lighting, Atmosphere, Clouds, ColorCorrection, Bloom, SunRays; creates missing effects).
---     ClockTime is set once from the base preset and never moves during a storm.
+--   * At 10 Hz blends a day base preset (Clear, Calm golden hour or Overcast, the default)
+--     toward Night by the sun's elevation (so a day cycle moving ClockTime just works) and toward
+--     Storm by Weather.getIntensity() (Lighting, Atmosphere, Clouds, ColorCorrection, Bloom,
+--     SunRays; creates missing effects). ClockTime is set once from the base preset and never
+--     moves during a storm.
+--   * Sky: swaps the Sky cube faces (src/client/Ocean/SkyAssets) to the dominant preset (Storm
+--     above intensity 0.5, Night when the sun is down, else the base) - Roblox can't blend skies.
+--   * Publishes the blended water and haze colours to the ocean as Lighting attributes
+--     OceanWaterColor / OceanHazeColor.
+--   * Dev override (Studio shots, separate module cache): the Lighting attribute WeatherBase
+--     ("Clear" | "Calm" | "Overcast") replaces the base preset while it is set.
 --   * Rain: a camera-following ParticleEmitter, rate scaled by intensity and graphics quality,
 --     off while a raycast straight up hits a roof.
 --   * Lightning in Storm: strikes come from WeatherMath.lightningStrikes(StormId), so every
@@ -11,7 +19,8 @@
 --     strobe) and thunder delayed by the distance to the camera.
 --   * A "Storm incoming!" banner (and siren cue) when the Warning phase begins.
 --
--- API: WeatherController.SetBasePreset("Calm" | "Night") picks the non-storm look.
+-- API: WeatherController.SetBasePreset("Clear" | "Calm" | "Overcast" | "Night"): a day base, or
+-- "Night" to move the clock to night (the Night look itself follows the sun).
 
 local Debris = game:GetService("Debris")
 local GuiService = game:GetService("GuiService")
@@ -54,13 +63,32 @@ local BANNER_HOLD_SECONDS = 4.5
 
 local WeatherController = {}
 
-local basePreset: Preset = LightingPresets.Calm
+local DAY_PRESETS: { [string]: Preset } = {
+	Clear = LightingPresets.Clear,
+	Calm = LightingPresets.Calm,
+	Overcast = LightingPresets.Overcast,
+}
+local basePresetName = "Overcast" -- docs 05 section 6.2: Overcast is the default weather
+local basePreset: Preset = LightingPresets.Overcast
+local sky: Sky
+local skyKey = ""
+local SkyAssets: { [string]: { [string]: string } }? = nil
+do
+	local ocean = script.Parent.Parent:FindFirstChild("Ocean")
+	local module = ocean and ocean:FindFirstChild("SkyAssets")
+	if module and module:IsA("ModuleScript") then
+		local ok, result = pcall(require, module)
+		if ok and type(result) == "table" then
+			SkyAssets = result :: any
+		end
+	end
+end
 local atmosphere: Atmosphere
 local clouds: Clouds
 local colorCorrection: ColorCorrectionEffect
 local bloom: BloomEffect
 local sunRays: SunRaysEffect
-local current: Preset = LightingPresets.Calm
+local current: Preset = LightingPresets.Overcast
 
 local rainPart: Part
 local rainEmitter: ParticleEmitter
@@ -132,6 +160,7 @@ end
 
 local function applyBlend(p: Preset)
 	Lighting.Ambient = p.Ambient
+	Lighting.ExposureCompensation = p.ExposureCompensation
 	Lighting.OutdoorAmbient = p.OutdoorAmbient
 	Lighting.ColorShift_Top = p.ColorShift_Top
 	Lighting.EnvironmentDiffuseScale = p.EnvironmentDiffuseScale
@@ -168,9 +197,66 @@ local function applyFlash(now: number)
 	colorCorrection.TintColor = current.TintColor:Lerp(LightingPresets.Flash.TintColor, flash)
 end
 
-function WeatherController.SetBasePreset(name: "Calm" | "Night")
-	basePreset = if name == "Night" then LightingPresets.Night else LightingPresets.Calm
-	Lighting.ClockTime = basePreset.ClockTime
+function WeatherController.SetBasePreset(name: string)
+	if name == "Night" then
+		Lighting.ClockTime = LightingPresets.Night.ClockTime
+		return
+	end
+	local preset = DAY_PRESETS[name]
+	if preset then
+		basePresetName, basePreset = name, preset
+		Lighting.ClockTime = preset.ClockTime
+	end
+end
+
+local function smoothstep(e0: number, e1: number, x: number): number
+	local t = math.clamp((x - e0) / (e1 - e0), 0, 1)
+	return t * t * (3 - 2 * t)
+end
+
+-- 0 by day .. 1 once the sun is well below the horizon.
+local function nightFactor(): number
+	return 1 - smoothstep(-0.1, 0.08, Lighting:GetSunDirection().Y)
+end
+
+local function applySky(key: string)
+	if key == skyKey then
+		return
+	end
+	skyKey = key
+	local faces = SkyAssets and SkyAssets[key]
+	if faces then
+		sky.SkyboxBk = faces.Bk
+		sky.SkyboxDn = faces.Dn
+		sky.SkyboxFt = faces.Ft
+		sky.SkyboxLf = faces.Lf
+		sky.SkyboxRt = faces.Rt
+		sky.SkyboxUp = faces.Up
+	end
+	-- No sun or moon disc behind a solid cloud deck.
+	sky.CelestialBodiesShown = key ~= "Storm" and key ~= "Overcast"
+end
+
+-- The full blend for this moment: day base -> Night by the sun, -> Storm by intensity.
+local function computeBlend(intensity: number): Preset
+	local override = Lighting:GetAttribute("WeatherBase")
+	local name = basePresetName
+	if type(override) == "string" and DAY_PRESETS[override] then
+		name = override
+	end
+	local day = DAY_PRESETS[name]
+	local n = nightFactor()
+	local dayMix = if n > 0.001 then LightingPresets.blend(day, LightingPresets.Night, n) else day
+	local stormMix = if n > 0.001
+		then LightingPresets.blend(LightingPresets.Storm, LightingPresets.Night, n * 0.8)
+		else LightingPresets.Storm
+	applySky(if intensity >= 0.5 then "Storm" elseif n >= 0.5 then "Night" else name)
+	local p = if intensity > 0.001
+		then LightingPresets.blend(dayMix, stormMix, intensity)
+		else dayMix
+	Lighting:SetAttribute("OceanWaterColor", p.WaterColor)
+	Lighting:SetAttribute("OceanHazeColor", p.AtmosphereColor)
+	return p
 end
 
 --------------------------------------------------------------------------------------------------
@@ -453,6 +539,9 @@ function WeatherController.Init()
 	colorCorrection = findOrCreate(Lighting, "ColorCorrectionEffect", "WeatherColorCorrection")
 	bloom = findOrCreate(Lighting, "BloomEffect", "WeatherBloom")
 	sunRays = findOrCreate(Lighting, "SunRaysEffect", "WeatherSunRays")
+	sky = findOrCreate(Lighting, "Sky", "Sky")
+	sky.StarCount = 3000 -- Roblox only draws stars at night
+	sky.MoonAngularSize = 13 -- tune
 	atmosphere.Offset = 0.15
 	sunRays.Spread = 0.6
 	clouds.Enabled = true
@@ -476,7 +565,7 @@ end
 function WeatherController.Start()
 	Lighting.ClockTime = basePreset.ClockTime -- once; storms never move the sun
 	local intensity = Weather.getIntensity()
-	current = LightingPresets.blend(basePreset, LightingPresets.Storm, intensity)
+	current = computeBlend(intensity)
 	applyBlend(current)
 	if Weather.getState() == "Warning" then
 		onStateChanged("Warning") -- joined during the warning
@@ -494,7 +583,7 @@ function WeatherController.Start()
 		if sinceBlend >= 1 / BLEND_HZ then
 			sinceBlend = 0
 			intensity = Weather.getIntensity(now)
-			current = LightingPresets.blend(basePreset, LightingPresets.Storm, intensity)
+			current = computeBlend(intensity)
 			applyBlend(current)
 		end
 		sinceRoof += dt

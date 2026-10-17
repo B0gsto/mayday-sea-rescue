@@ -25,6 +25,7 @@ local weatherOk = false -- valid for the current frame (set by beginFrame)
 local nextRetry = 0
 local warned = false
 local calmParams = Waves.paramsFor(0, 0, 0)
+local frameParams: Waves.WaveParams = calmParams -- params at the camera for the current frame
 
 local function tryLoadWeather()
 	local module = Shared:FindFirstChild("Weather")
@@ -45,22 +46,40 @@ local function tryLoadWeather()
 end
 
 -- Call once per update before sampling. One pcall per frame guards the per-vertex calls below.
-function WaveField.beginFrame(t: number)
+function WaveField.beginFrame(t: number, at: Vector3?)
 	if weather == nil and os.clock() >= nextRetry then
 		nextRetry = os.clock() + RETRY_SECONDS
 		tryLoadWeather()
 	end
 	local api = weather
 	if api then
-		local ok, err = pcall(api.getWaveParams, Vector3.zero, t)
+		local ok, result = pcall(api.getWaveParams, at or Vector3.zero, t)
 		weatherOk = ok
+		frameParams = if ok then result else calmParams
+		local err = result
 		if not ok and not warned then
 			warned = true
 			warn(`[Ocean] Weather.getWaveParams failed ({err}); drawing calm sea`)
 		end
 	else
 		weatherOk = false
+		frameParams = calmParams
 	end
+end
+
+-- Effective storm intensity (0..1, after zone shelter) at the frame's sample point.
+function WaveField.intensity(): number
+	return frameParams.intensity
+end
+
+-- Sum of wave amplitudes at the frame's sample point (crest height bound, studs).
+function WaveField.maxAmplitude(): number
+	return Waves.maxAmplitude(frameParams)
+end
+
+-- Unit wind direction (the first, largest wave travels along the wind).
+function WaveField.windDirection(): (number, number)
+	return frameParams.dirX[1], frameParams.dirZ[1]
 end
 
 -- World Y of the water at (x, z) at time t. Allocation-free (Vector3 is a value type in Luau);

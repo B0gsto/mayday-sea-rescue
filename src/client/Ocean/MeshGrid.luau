@@ -1,22 +1,27 @@
 --!strict
 -- MeshGrid: one square EditableMesh lattice (optionally with a square hole in the middle) shown
--- through a MeshPart. The controller writes world heights into grid.heights, then calls apply().
+-- through a MeshPart. The controller writes world heights and slopes into grid.heights / gx / gz,
+-- then calls apply().
 --
--- API used (current Roblox EditableMesh API, 2024+ "new" API):
---   AssetService:CreateEditableMesh()                     -> EditableMesh (may be nil / error)
---   em:AddVertex / AddTriangle / AddColor / AddNormal / SetFaceColors / SetFaceNormals
---   AssetService:CreateMeshPartAsync(Content.fromObject(em), options) -> MeshPart (yields)
---   em:SetPosition / SetColor each update; the linked MeshPart re-renders automatically.
+-- Look (ocean spike, round 1): the MeshPart carries a SurfaceAppearance (OceanSurface) with a
+-- tiling FFT chop normal map, low roughness and a tinted albedo; the probe showed that
+-- SurfaceAppearance renders on EditableMesh MeshParts but ignores EditableMesh vertex colours, so
+-- colour is a per-preset tint (SurfaceAppearance.Color), not per vertex. Per-vertex normals are
+-- written explicitly from the analytic wave gradient so the swell shades smoothly under Future
+-- lighting (no faceting from engine-computed normals). UVs are world-locked: u = (x + ou) / TILE.
+--
+-- API used (current Roblox EditableMesh API):
+--   AssetService:CreateEditableMesh(), em:AddVertex / AddTriangle / AddNormal / AddUV /
+--   SetFaceNormals / SetFaceUVs, AssetService:CreateMeshPartAsync(Content.fromObject(em)),
+--   em:SetPosition / SetNormal / SetUV each update.
 -- Everything that can fail is pcall'd; new() returns nil plus a reason so the caller can fall back.
 --
--- Bounds: a MeshPart scales its mesh to fit Part.Size, so if the vertex bounds changed as waves
--- moved, the whole mesh would visibly rescale. Two sub-millimetre "anchor" triangles pin the
--- bounding box at (+-half, +-BOUNDS_Y, +-half) for the mesh's lifetime, and heights are clamped
--- inside it. The box is symmetric, so mesh-local origin == part position.
+-- Bounds: a MeshPart scales its mesh to fit Part.Size, so two sub-millimetre "anchor" triangles pin
+-- the bounding box at (+-half, +-BOUNDS_Y, +-half) and heights are clamped inside it.
 
 local AssetService = game:GetService("AssetService")
 
-local OceanPalette = require(script.Parent.OceanPalette)
+local OceanSurface = require(script.Parent.OceanSurface)
 
 local BOUNDS_Y = 10 -- studs above and below sea level; storm crests are about 3.4 -- tune
 local CLAMP_Y = BOUNDS_Y - 0.1
@@ -32,11 +37,14 @@ export type Grid = {
 	lx: { number }, -- local X per vertex
 	lz: { number }, -- local Z per vertex
 	vid: { number }, -- EditableMesh vertex id per vertex
-	cid: { number }, -- EditableMesh colour id per vertex (empty when colours are unsupported)
-	bucket: { number }, -- current palette bucket per vertex
+	nid: { number }, -- EditableMesh normal id per vertex (empty when normals are unsupported)
+	uid: { number }, -- EditableMesh UV id per vertex (empty when UVs are unsupported)
 	heights: { number }, -- world Y per vertex, written by the caller before apply()
+	gx: { number }, -- dY/dX per vertex, written by the caller before apply()
+	gz: { number }, -- dY/dZ per vertex
 	index: { number }, -- lattice key i * (cells + 1) + j + 1 -> vertex index (0 when in the hole)
-	hasColours: boolean,
+	uvU: number, -- current UV offset (studs), NaN until first apply
+	uvV: number,
 }
 
 local MeshGrid = {}
@@ -46,12 +54,15 @@ function MeshGrid.latticeKey(grid: Grid, i: number, j: number): number
 end
 
 -- cells: lattice width in cells; holeCells: hole width in cells (0 = none, same parity as cells).
+-- surface: OceanSurface kind for the SurfaceAppearance ("Calm" | "Storm" | "Foam").
 function MeshGrid.new(
 	name: string,
 	parent: Instance,
 	cells: number,
 	cellSize: number,
-	holeCells: number
+	holeCells: number,
+	surface: string,
+	backFaces: boolean?
 ): (Grid?, string?)
 	local okCreate, emOrErr = pcall(function()
 		return AssetService:CreateEditableMesh()
@@ -75,12 +86,12 @@ function MeshGrid.new(
 	local lx: { number } = {}
 	local lz: { number } = {}
 	local vid: { number } = {}
-	local cid: { number } = {}
 	local nid: { number } = {}
+	local uid: { number } = {}
 	local index: { number } = table.create(side * side, 0)
-	local hasColours = true
 	local hasNormals = true
-	local teal = OceanPalette.colours[OceanPalette.SEA_BUCKET]
+	local hasUVs = true
+	local tile = OceanSurface.TILE_STUDS
 
 	local okBuild, buildErr = pcall(function()
 		for i = 0, cells do
@@ -94,27 +105,24 @@ function MeshGrid.new(
 				end
 			end
 		end
-		-- Optional attributes: per-vertex colour and auto-computed normals.
-		local okColours = pcall(function()
+		hasNormals = pcall(function()
 			for n = 1, #vid do
-				cid[n] = em:AddColor(teal, 1)
+				nid[n] = em:AddNormal(Vector3.yAxis)
 			end
-		end)
-		hasColours = okColours and #cid == #vid
-		local okNormals = pcall(function()
+		end) and #nid == #vid
+		hasUVs = pcall(function()
 			for n = 1, #vid do
-				nid[n] = em:AddNormal() -- no argument: computed by the engine as vertices move
+				uid[n] = em:AddUV(Vector2.new(lx[n] / tile, lz[n] / tile))
 			end
-		end)
-		hasNormals = okNormals and #nid == #vid
+		end) and #uid == #vid
 
 		local function triangle(a: number, b: number, c: number)
 			local face = em:AddTriangle(vid[a], vid[b], vid[c])
-			if hasColours then
-				hasColours = pcall(em.SetFaceColors, em, face, { cid[a], cid[b], cid[c] })
-			end
 			if hasNormals then
 				hasNormals = pcall(em.SetFaceNormals, em, face, { nid[a], nid[b], nid[c] })
+			end
+			if hasUVs then
+				hasUVs = pcall(em.SetFaceUVs, em, face, { uid[a], uid[b], uid[c] })
 			end
 		end
 		for i = 0, cells - 1 do
@@ -124,15 +132,17 @@ function MeshGrid.new(
 					local v10 = index[(i + 1) * side + j + 1]
 					local v01 = index[i * side + j + 2]
 					local v11 = index[(i + 1) * side + j + 2]
-					-- Winding gives a +Y face normal (right-hand rule). If the sea is invisible
-					-- from above in Studio, swap the last two vertices of both triangles.
 					triangle(v00, v01, v10)
 					triangle(v10, v01, v11)
+					if backFaces then
+						-- Underside, so the surface is visible from below (underwater view).
+						triangle(v00, v10, v01)
+						triangle(v10, v11, v01)
+					end
 				end
 			end
 		end
 
-		-- Bounds anchors (see header): tiny triangles at the two opposite corners of the box.
 		local function anchor(p: Vector3)
 			local a = em:AddVertex(p)
 			local b = em:AddVertex(p + Vector3.new(ANCHOR_SIZE, 0, 0))
@@ -146,8 +156,11 @@ function MeshGrid.new(
 		em:Destroy()
 		return nil, `building the grid failed: {buildErr}`
 	end
-	if not hasColours then
-		warn("[Ocean] EditableMesh vertex colours unavailable; using flat Deep Teal")
+	if not hasNormals then
+		warn("[Ocean] EditableMesh normals unavailable; engine normals")
+	end
+	if not hasUVs then
+		warn("[Ocean] EditableMesh UVs unavailable; the ripple normal map will not tile")
 	end
 
 	local okPart, partOrErr = pcall(function()
@@ -174,11 +187,8 @@ function MeshGrid.new(
 	part.CanQuery = false
 	part.CanTouch = false
 	part.CastShadow = false
-	part.Material = Enum.Material.SmoothPlastic
-	-- Vertex colours multiply the part colour, so keep it white when they work.
-	part.Color = if hasColours then Color3.new(1, 1, 1) else OceanPalette.DEEP_TEAL
-	part.Reflectance = 0.05 -- tune
 	part.CFrame = CFrame.identity
+	OceanSurface.attach(part, surface)
 	part.Parent = parent
 
 	local count = #vid
@@ -192,32 +202,43 @@ function MeshGrid.new(
 		lx = lx,
 		lz = lz,
 		vid = vid,
-		cid = if hasColours then cid else {},
-		bucket = table.create(count, OceanPalette.SEA_BUCKET),
+		nid = if hasNormals then nid else {},
+		uid = if hasUVs then uid else {},
 		heights = table.create(count, 0),
+		gx = table.create(count, 0),
+		gz = table.create(count, 0),
 		index = index,
-		hasColours = hasColours,
+		uvU = 0 / 0,
+		uvV = 0 / 0,
 	},
 		nil
 end
 
--- Pushes grid.heights (world Y, sea level is part Y) into the mesh. Allocation-free:
--- one SetPosition per vertex, one SetColor only when a vertex changes palette bucket.
--- Cost at High: about 1665 SetPosition calls per frame across both rings (budget ~0.5 ms).
-function MeshGrid.apply(grid: Grid, seaLevel: number)
+-- Pushes grid.heights (world Y; sea level is part Y) and slopes into the mesh, and moves the UVs
+-- when the world-locked offset (ou, ov) changes (grid snap or ripple drift). Allocation-free.
+-- lift: optional per-vertex lift table (foam overlay), nil for the water surface.
+function MeshGrid.apply(grid: Grid, seaLevel: number, ou: number, ov: number, lift: { number }?)
 	local em, vid, lx, lz, heights = grid.em, grid.vid, grid.lx, grid.lz, grid.heights
-	local colours = OceanPalette.colours
-	local bucketFor = OceanPalette.bucketFor
-	local hasColours, cid, bucket = grid.hasColours, grid.cid, grid.bucket
+	local nid, gx, gz = grid.nid, grid.gx, grid.gz
+	local hasNormals = #nid > 0
 	for n = 1, grid.count do
-		local y = math.clamp(heights[n] - seaLevel, -CLAMP_Y, CLAMP_Y)
-		em:SetPosition(vid[n], Vector3.new(lx[n], y, lz[n]))
-		if hasColours then
-			local b = bucketFor(y)
-			if b ~= bucket[n] then
-				bucket[n] = b
-				em:SetColor(cid[n], colours[b])
-			end
+		local y = heights[n] - seaLevel
+		if lift then
+			y += lift[n]
+		end
+		em:SetPosition(vid[n], Vector3.new(lx[n], math.clamp(y, -CLAMP_Y, CLAMP_Y), lz[n]))
+		if hasNormals then
+			local sx, sz = gx[n], gz[n]
+			local inv = 1 / math.sqrt(sx * sx + 1 + sz * sz)
+			em:SetNormal(nid[n], Vector3.new(-sx * inv, inv, -sz * inv))
+		end
+	end
+	local uid = grid.uid
+	if #uid > 0 and (ou ~= grid.uvU or ov ~= grid.uvV) then
+		grid.uvU, grid.uvV = ou, ov
+		local inv = 1 / OceanSurface.TILE_STUDS
+		for n = 1, grid.count do
+			em:SetUV(uid[n], Vector2.new((lx[n] + ou) * inv, (lz[n] + ov) * inv))
 		end
 	end
 end
