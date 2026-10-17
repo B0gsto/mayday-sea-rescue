@@ -127,6 +127,50 @@ def lift_albedo(rgb, med, p1t, p99t, tint):
     return np.clip(out, LO, HI), ["lift luma p1/p50/p99 %.0f/%.0f/%.0f -> %d/%d/%d" % (p1, p50, p99, p1t, med, p99t)]
 
 
+def band_noise(shape, f0, f1, seed):
+    """Tileable noise: white noise band-passed to f0..f1 cycles per tile in the Fourier domain (periodic by
+    construction, so the map still tiles), normalised to unit std."""
+    rng = np.random.default_rng(seed)
+    F = np.fft.fft2(rng.standard_normal(shape))
+    fy = np.fft.fftfreq(shape[0]) * shape[0]
+    fx = np.fft.fftfreq(shape[1]) * shape[1]
+    r = np.hypot(fy[:, None], fx[None, :])
+    n = np.real(np.fft.ifft2(F * ((r >= f0) & (r <= f1))))
+    return (n / max(n.std(), 1e-6)).astype(np.float32)
+
+
+def sstep(e0, e1, x):
+    t = np.clip((x - e0) / (e1 - e0), 0, 1)
+    return t * t * (3 - 2 * t)
+
+
+# Terrain look-dev (round 2): colour variation baked into the big terrain variants. Mid-frequency only (3-20
+# cycles per tile, several blobs per tile, never one distinctive blob per repeat, which would show the tiling);
+# the island-scale variation comes from gen_terrain.py dithering Grass / LeafyGrass / Ground. Per name:
+# (base tint, clump darkening, straw amount, straw tint, seed, overall gain)
+MACRO = {
+    "Turf": ((0.80, 1.0, 0.70), 0.22, 0.34, (1.22, 1.06, 0.78), 11, 0.94),   # olive turf, dark clumps, dead-grass straw
+    "Moor": ((0.97, 0.96, 0.93), 0.20, 0.0, (1, 1, 1), 12, 0.88),           # withered grass / heath: darker tussocks
+    "Earth": ((1.0, 0.98, 0.95), 0.20, 0.18, (0.82, 0.86, 0.70), 13, 1.0),  # dirt: damp dark organic patches, moss tinge
+}
+
+
+def macro_albedo(rgb, name):
+    tint, dark, straw, stint, seed, gain = MACRO[name]
+    y0 = luma(rgb)
+    med0 = np.percentile(y0, 50)
+    out = rgb * np.array(tint, np.float32)
+    out *= gain * (med0 / max(np.percentile(luma(out), 50), 1e-3))
+    big = band_noise(y0.shape, 2.5, 5, seed)
+    clump = band_noise(y0.shape, 9, 22, seed + 1)
+    out *= (1 - dark * sstep(0.2, 1.6, clump) * (0.6 + 0.4 * sstep(-1, 1, -big)))[..., None]
+    w = (straw * sstep(0.1, 1.4, big) * (0.55 + 0.45 * sstep(-0.5, 1, -clump)))[..., None]
+    out = out * (1 - w) + out * np.array(stint, np.float32) * w
+    out = np.clip(out, LO, HI)
+    return out, ["macro %s: tint %s, clumps -%d%%, straw %d%%, luma p50 %.0f -> %.0f"
+                 % (name, tint, dark * 100, straw * 100, med0, np.percentile(luma(out), 50))]
+
+
 def wet_albedo(rgb):
     rgb = rgb.astype(np.float32) * 0.74
     y = luma(rgb)[..., None]
@@ -175,6 +219,9 @@ def build_variant(row, report):
     if name in LIFT:   # K1 fix: dark_rock graded to a flat near-black slab (luma p50 38, p99 51; wet 28): wet lava / oil in-engine
         alb, n2 = lift_albedo(alb, *LIFT[name])
         notes += n2
+    if name in MACRO:  # terrain look-dev round 2: baked colour variation (no flat colours)
+        alb, n3 = macro_albedo(alb, name)
+        notes += n3
     stem = os.path.join(OUT, "T_Mat_%s_" % name)
     save(alb, "RGB", stem + "ALB.png")
     save(nor, "RGB", stem + "NOR.png")

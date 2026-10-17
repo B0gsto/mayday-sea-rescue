@@ -562,14 +562,14 @@
    "Name": "Turf",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://87017808772865",
+    "ColorMap": "rbxassetid://93667695174873",
     "NormalMap": "rbxassetid://132329802120448",
     "RoughnessMap": "rbxassetid://108290419678390",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 7.5,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -595,14 +595,14 @@
    "Name": "Turf_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://101197105777761",
+    "ColorMap": "rbxassetid://121197227768454",
     "NormalMap": "rbxassetid://132329802120448",
     "RoughnessMap": "rbxassetid://103483290268754",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 7.5,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -628,14 +628,14 @@
    "Name": "Moor",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://133725100257610",
+    "ColorMap": "rbxassetid://92062472041856",
     "NormalMap": "rbxassetid://140443130129563",
     "RoughnessMap": "rbxassetid://114903343309758",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 8.4,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -661,14 +661,14 @@
    "Name": "Moor_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://105190256366804",
+    "ColorMap": "rbxassetid://137877416569687",
     "NormalMap": "rbxassetid://140443130129563",
     "RoughnessMap": "rbxassetid://89288332356106",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 8.4,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -760,14 +760,14 @@
    "Name": "Earth",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://80565230450818",
+    "ColorMap": "rbxassetid://104059519068999",
     "NormalMap": "rbxassetid://72621540984653",
     "RoughnessMap": "rbxassetid://115805251925556",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 6.51,
+    "StudsPerTile": 7.8,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -793,14 +793,14 @@
    "Name": "Earth_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://87637852544683",
+    "ColorMap": "rbxassetid://74858834705134",
     "NormalMap": "rbxassetid://72621540984653",
     "RoughnessMap": "rbxassetid://73982198309599",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 6.51,
+    "StudsPerTile": 7.8,
     "MaterialPattern": {
      "Enum": 1
     },

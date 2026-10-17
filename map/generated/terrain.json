@@ -34,19 +34,21 @@
   "maxY": 325.5,
   "landFraction": 0.554,
   "cells": {
-   "Sand": 522157,
-   "Sandstone": 18997,
-   "Limestone": 135386,
-   "Rock": 165077,
-   "Slate": 50755,
-   "Basalt": 10050,
-   "Grass": 411344,
-   "LeafyGrass": 273009,
-   "Mud": 8732,
-   "Ground": 40726,
-   "Asphalt": 4158,
-   "Cobblestone": 424,
-   "Concrete": 146
+   "Sand": 12456,
+   "Sandstone": 19633,
+   "Salt": 501947,
+   "Limestone": 137771,
+   "Rock": 126436,
+   "Slate": 51842,
+   "Basalt": 8282,
+   "Grass": 404328,
+   "LeafyGrass": 338455,
+   "Mud": 10868,
+   "Ground": 23265,
+   "Asphalt": 3811,
+   "Cobblestone": 890,
+   "Concrete": 146,
+   "Pavement": 831
   }
  }
 }

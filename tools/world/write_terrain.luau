@@ -87,8 +87,12 @@ if ARGS.mode == "write" then
 		j = math.clamp(j, 0, NV - 1)
 		local b = (j * nx + i) * 2
 		local r = (j + 1) * nx * 2 + i * 2
-		return (buffer.readi16(hb, b) + buffer.readi16(hb, b + 2) + buffer.readi16(hb, r) + buffer.readi16(hb, r + 2))
-			/ (4 * scale)
+		return (
+			buffer.readi16(hb, b)
+			+ buffer.readi16(hb, b + 2)
+			+ buffer.readi16(hb, r)
+			+ buffer.readi16(hb, r + 2)
+		) / (4 * scale)
 	end
 	if ARGS.row0 == 0 then
 		Terrain:Clear()
@@ -104,7 +108,8 @@ if ARGS.mode == "write" then
 				for c = 0, TILE - 1 do
 					local i, j = i0 + a, j0 + c
 					local h = colH(i, j)
-					local low = math.min(colH(i - 1, j), colH(i + 1, j), colH(i, j - 1), colH(i, j + 1))
+					local low =
+						math.min(colH(i - 1, j), colH(i + 1, j), colH(i, j - 1), colH(i, j + 1))
 					local b = math.min(h - (if h > 0 then shellLand else shellSea), low - 4)
 					hrow[c + 1], brow[c + 1] = h, b
 					ymin, ymax = math.min(ymin, b), math.max(ymax, h)
@@ -153,33 +158,59 @@ elseif ARGS.mode == "arch" then
 	local across = Vector3.new(arch.ax, 0, arch.az).Unit
 	for k = 0, 24 do
 		local t = math.pi * k / 24
-		local p = c + across * (arch.radius * math.cos(t)) + Vector3.new(0, arch.radius * 0.8 * math.sin(t), 0)
+		local p = c
+			+ across * (arch.radius * math.cos(t))
+			+ Vector3.new(0, arch.radius * 0.8 * math.sin(t), 0)
 		local r = arch.thick * (1 + 0.25 * math.sin(k * 1.7))
 		Terrain:FillBall(p, r, if k % 3 == 0 then Enum.Material.Rock else Enum.Material.Slate)
 	end
 	for side = -1, 1, 2 do
-		Terrain:FillBall(c + across * (arch.radius * side) - Vector3.new(0, 6, 0), arch.thick * 1.6, Enum.Material.Slate)
+		Terrain:FillBall(
+			c + across * (arch.radius * side) - Vector3.new(0, 6, 0),
+			arch.thick * 1.6,
+			Enum.Material.Slate
+		)
 	end
 	return "arch ok"
 elseif ARGS.mode == "colors" then
-	-- Tints per base material (docs/05 palette) until the MaterialVariants land; saved in Terrain.MaterialColors.
-	local tints = {
-		Sand = { 205, 187, 152 }, -- dry beach sand
-		Sandstone = { 140, 123, 98 }, -- wet sand
-		Salt = { 172, 160, 128 }, -- rippled seabed sand
-		Limestone = { 184, 176, 154 }, -- shell and maerl gravel
-		Rock = { 124, 121, 114 }, -- granite
-		Slate = { 88, 86, 56 }, -- kelp-covered rock
-		Basalt = { 60, 60, 62 }, -- dark wet splash-zone rock
-		Grass = { 96, 122, 64 }, -- machair and cliff-top turf
-		LeafyGrass = { 108, 96, 82 }, -- heather and gorse moor
-		Mud = { 88, 76, 60 },
-		Ground = { 110, 92, 70 },
-	}
+	-- Terrain.MaterialColors multiply the MaterialVariant colour maps too (look-dev round 2: the old docs/05 tints
+	-- turned Turf / Moor near-black), so every slot with a B02 MaterialVariant is neutral white and the albedo maps
+	-- carry the colour. (Decoration grass blades take the Grass colour: decoration stays off, see
+	-- terrain_decoration.luau.)
+	local tints = {}
+	for _, name in
+		{
+			"Sand",
+			"Sandstone",
+			"Salt",
+			"Limestone",
+			"Rock",
+			"Slate",
+			"Basalt",
+			"Grass",
+			"LeafyGrass",
+			"Mud",
+			"Ground",
+		}
+	do
+		tints[name] = { 255, 255, 255 }
+	end
+	for _, name in { "Pavement", "Asphalt", "Cobblestone", "Concrete" } do
+		tints[name] = { 255, 255, 255 }
+	end
 	for name, c in tints do
 		Terrain:SetMaterialColor((Enum.Material :: any)[name], Color3.fromRGB(c[1], c[2], c[3]))
 	end
-	return "colors ok"
+	-- Wind-animated grass decoration on Grass (terrain look-dev round 2): short coastal turf, not meadow
+	-- (Decoration is not scriptable from execute_luau: "not a valid member"; tools/world/terrain_decoration.luau
+	-- sets it in the exported Terrain.rbxm with Lune instead)
+	local okD = pcall(function()
+		(Terrain :: any).Decoration = ARGS.decoration ~= false
+	end)
+	local okG = pcall(function()
+		(Terrain :: any).GrassLength = ARGS.grassLength or 0.55
+	end)
+	return `colors ok, decoration set {okD}, grass length set {okG}`
 elseif ARGS.mode == "export" then
 	local g = _G :: any
 	if ARGS.offset == 0 or not g.__WorldTerrainExport then
@@ -193,7 +224,8 @@ elseif ARGS.mode == "export" then
 	return `{buffer.len(raw)}|{encode(raw, ARGS.offset, ARGS.length)}`
 else
 	local ok, mat = pcall(function()
-		local m = Terrain:ReadVoxels(Region3.new(Vector3.new(0, -40, 600), Vector3.new(4, 8, 604)), 4)
+		local m =
+			Terrain:ReadVoxels(Region3.new(Vector3.new(0, -40, 600), Vector3.new(4, 8, 604)), 4)
 		local out = {}
 		for y = 1, m.Size.Y do
 			out[#out + 1] = m[1][y][1].Name

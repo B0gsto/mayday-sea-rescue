@@ -1,0 +1,125 @@
+{
+ "ocean": true,
+ "shots": [
+  {
+   "name": "Aerial_Overcast",
+   "cam": [
+    1900,
+    520,
+    1300
+   ],
+   "look": [
+    700,
+    40,
+    200
+   ],
+   "settle": 4,
+   "lua": "_G.LookDev.shot({1900, 520, 1300}, {700, 40, 200}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "CliffTop_Overcast",
+   "cam": [
+    1575,
+    83,
+    630
+   ],
+   "look": [
+    1730,
+    35,
+    990
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1575, 83, 630}, {1730, 35, 990}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "HavenSands_Overcast",
+   "cam": [
+    925,
+    20,
+    190
+   ],
+   "look": [
+    1010,
+    2,
+    360
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({925, 20, 190}, {1010, 2, 360}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "Station_Overcast",
+   "cam": [
+    -420,
+    11,
+    -38
+   ],
+   "look": [
+    -170,
+    8,
+    20
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({-420, 11, -38}, {-170, 8, 20}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "Aerial_Clear",
+   "cam": [
+    1900,
+    520,
+    1300
+   ],
+   "look": [
+    700,
+    40,
+    200
+   ],
+   "settle": 4,
+   "lua": "_G.LookDev.shot({1900, 520, 1300}, {700, 40, 200}) return _G.LookDev.apply('Clear', false)"
+  },
+  {
+   "name": "CliffTop_Clear",
+   "cam": [
+    1575,
+    83,
+    630
+   ],
+   "look": [
+    1730,
+    35,
+    990
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1575, 83, 630}, {1730, 35, 990}) return _G.LookDev.apply('Clear', false)"
+  },
+  {
+   "name": "HavenSands_Clear",
+   "cam": [
+    925,
+    20,
+    190
+   ],
+   "look": [
+    1010,
+    2,
+    360
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({925, 20, 190}, {1010, 2, 360}) return _G.LookDev.apply('Clear', false)"
+  },
+  {
+   "name": "Station_Clear",
+   "cam": [
+    -420,
+    11,
+    -38
+   ],
+   "look": [
+    -170,
+    8,
+    20
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({-420, 11, -38}, {-170, 8, 20}) return _G.LookDev.apply('Clear', false)"
+  }
+ ]
+}

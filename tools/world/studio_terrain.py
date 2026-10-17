@@ -81,6 +81,7 @@ def main():
     with open(out_path, "wb") as f:
         f.write(raw)
     print(f"wrote {out_path} ({len(raw)} bytes) in {time.time() - t0:.0f}s under the Studio lock")
+    subprocess.run(["lune", "run", os.path.join(HERE, "terrain_decoration.luau"), out_path, "false"], check=True)
     if "--no-close" not in sys.argv:
         subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), "--close", TAG], check=False)
 

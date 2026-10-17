@@ -453,6 +453,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_NOR.png",
   "type": "Image"
  },
+ "Image:136dd779ef1ca3d3f23be8ae369365f8d92a10c07c46584f8aada75f2bec8119": {
+  "assetId": "74858834705134",
+  "imageId": "74858834705134",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Earth_ALB_Wet",
+  "sha": "136dd779ef1ca3d3f23be8ae369365f8d92a10c07c46584f8aada75f2bec8119",
+  "source": "assets/textures/Materials/T_Mat_Earth_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:13d73c7135306c6fe12c15907386271e28d63ad80a20c1a3d68d2c2a0151322b": {
   "assetId": "75082472767101",
   "imageId": "75082472767101",
@@ -2320,6 +2329,15 @@
   "source": "assets/ocean/sky/Clear_Ft.png",
   "type": "Image"
  },
+ "Image:5e361324671a7e4ec55efbcd0784c7bf67afb2881f6b25a1af21bfffb9b33083": {
+  "assetId": "92062472041856",
+  "imageId": "92062472041856",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Moor_ALB",
+  "sha": "5e361324671a7e4ec55efbcd0784c7bf67afb2881f6b25a1af21bfffb9b33083",
+  "source": "assets/textures/Materials/T_Mat_Moor_ALB.png",
+  "type": "Image"
+ },
  "Image:5ebcf246ffac3fe7006ed8ce9e0aa7ee266926b79cfad23e0e709e5533db5d0a": {
   "assetId": "134207293911067",
   "imageId": "134207293911067",
@@ -2390,6 +2408,15 @@
   "name": "T_Cliff04_Granite_ALB",
   "sha": "635fe2e84727b436fe377dcc8d60c35b0e010b7e53a055b298a74e59fb2a73df",
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:63fdcb24c572cae959201098623550bf74d18fef32b6ccf61844f619d35a5f38": {
+  "assetId": "104059519068999",
+  "imageId": "104059519068999",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Earth_ALB",
+  "sha": "63fdcb24c572cae959201098623550bf74d18fef32b6ccf61844f619d35a5f38",
+  "source": "assets/textures/Materials/T_Mat_Earth_ALB.png",
   "type": "Image"
  },
  "Image:64fb3f7063907b5eeeac30a111e8a1b8d33b1e93b1c0ea681e58d8aecf5dacac": {
@@ -2849,6 +2876,15 @@
   "name": "T_Ledge02_Granite_ALB_Wet",
   "sha": "75294fefd79f2112dac20e997b54dd57d5d7cd6c2b24b7d0346dc05199c8205b",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:76205c2c43d9eef1658d2665db5a45a8442ff1fbe8031bd2421c54a4b9f9c91c": {
+  "assetId": "137877416569687",
+  "imageId": "137877416569687",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Moor_ALB_Wet",
+  "sha": "76205c2c43d9eef1658d2665db5a45a8442ff1fbe8031bd2421c54a4b9f9c91c",
+  "source": "assets/textures/Materials/T_Mat_Moor_ALB_Wet.png",
   "type": "Image"
  },
  "Image:782cdd8d0d5e879782b143bae64e8d36d55e75fde71a3d3789a6660cc525972c": {
@@ -4501,6 +4537,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:c475ee49e7a660aebeff83c252dfaf16517a5e724f215527eeeb49fe5e2da3f2": {
+  "assetId": "93667695174873",
+  "imageId": "93667695174873",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Turf_ALB",
+  "sha": "c475ee49e7a660aebeff83c252dfaf16517a5e724f215527eeeb49fe5e2da3f2",
+  "source": "assets/textures/Materials/T_Mat_Turf_ALB.png",
+  "type": "Image"
+ },
  "Image:c535734cb6a42febbbdd19a59bc5aa6e551777e9ca0c9b44c0aec2dae7f9dbdf": {
   "assetId": "91370810531563",
   "imageId": "91370810531563",
@@ -5392,6 +5437,15 @@
   "name": "T_Spike1_4096_NOR",
   "sha": "e846f037df8b1fcce1f2d39b6d3c689b6531a9a94954991cda7fee182eeaaf27",
   "source": "assets/textures/Spike1/T_Spike1_4096_NOR.png",
+  "type": "Image"
+ },
+ "Image:e9432be719d985b7578f4b6a76d2d660081e2d7888db7ff59dc0a25f1f9c1b40": {
+  "assetId": "121197227768454",
+  "imageId": "121197227768454",
+  "moderation": "Reviewing",
+  "name": "Mayday_T_Mat_Turf_ALB_Wet",
+  "sha": "e9432be719d985b7578f4b6a76d2d660081e2d7888db7ff59dc0a25f1f9c1b40",
+  "source": "assets/textures/Materials/T_Mat_Turf_ALB_Wet.png",
   "type": "Image"
  },
  "Image:e9785278f8559b851662cface3eb598aa892a15b0626c5627c83f8a1b26de0c5": {
