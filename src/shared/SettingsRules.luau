@@ -12,7 +12,7 @@
 --   resolvePro(want, current, inOp, coldOpenDone)  the OpsPro attribute the server sets
 --
 -- Everything is saved in the profile's flags.cameraSettings table (ProgressionRules keeps up to
--- 24 fields there, together with the cinematic "seen_<id>" flags; this model uses 17).
+-- 24 fields there, together with the cinematic "seen_<id>" flags; this model uses 20).
 
 local SettingsRules = {}
 
@@ -38,6 +38,10 @@ local DEFAULTS = {
 	volRadio = 1,
 	volMusic = 0.6,
 	voice = true, -- voiced radio clips (subtitles always show)
+	-- other players' cosmetic sounds (RP-M5, CosmeticsController ctx.muted)
+	muteHorns = false,
+	muteSirens = false,
+	muteRadios = false,
 	-- gameplay
 	pro = false, -- Assist (false, default) or Pro (docs 09 section 9.3)
 }

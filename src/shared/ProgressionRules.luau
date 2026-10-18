@@ -22,6 +22,9 @@ export type PlayerData = {
 	certLive: { [string]: number },
 	-- Exercise id -> best passing grade ("Gold" | "Silver" | "Bronze"); present means passed.
 	exercises: { [string]: string },
+	-- Equipped cosmetics, slot -> option id (RP-M5, src/shared/Cosmetics; CosmeticsService checks
+	-- ownership, this only keeps short strings).
+	cosmetics: { [string]: string },
 }
 
 -- One step of a finished operation, as the debrief timeline has it (OperationService record()).
@@ -628,6 +631,7 @@ function Rules.defaultData(): PlayerData
 		certs = {},
 		certLive = {},
 		exercises = {},
+		cosmetics = {},
 	}
 end
 
@@ -761,6 +765,21 @@ function Rules.migrate(raw: any): PlayerData
 		for id, grade in raw.exercises do
 			if type(id) == "string" and #id <= 40 and Rules.gradeAtLeast(grade, "Bronze") then
 				data.exercises[id] = grade
+			end
+		end
+	end
+	if type(raw.cosmetics) == "table" then
+		local n = 0
+		for slot, id in raw.cosmetics do
+			if
+				type(slot) == "string"
+				and #slot <= 24
+				and type(id) == "string"
+				and #id <= 40
+				and n < 32
+			then
+				data.cosmetics[slot] = id
+				n += 1
 			end
 		end
 	end

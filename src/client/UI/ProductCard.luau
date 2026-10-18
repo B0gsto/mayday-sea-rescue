@@ -11,6 +11,8 @@
 -- walking away closes it. Rules and copy live in src/shared/ProductShelves.luau (tested).
 -- Quick Launch owners get the BoatDesk card as a use card instead (src/shared/QuickLaunchCard.luau):
 -- one page per boat they may take out, "Launch now" calls Vehicle_QuickLaunch (VehicleService, RP-M2).
+-- An owned game pass with cosmetic slots (src/shared/Cosmetics) shows a CosmeticPicker per slot under
+-- the OWNED tag instead of the effect text: the in-world equip at the Chandlery (RP-M5).
 --
 --   ProductCard.mount(onOpen?) -> Card   once, from HudShop.build
 --   card.setSnapshot(snapshot)            PlayerDataChanged snapshots (rule 6 gate)
@@ -25,6 +27,8 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local CosmeticPicker = require(script.Parent.CosmeticPicker)
+local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
@@ -143,6 +147,26 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	effect.TextTruncate = Enum.TextTruncate.None
 	effect.TextYAlignment = Enum.TextYAlignment.Top
 
+	-- an owned cosmetic pass: its slot cyclers replace the effect text (equip here, RP-M5)
+	local cosmeticBox = Instance.new("ScrollingFrame")
+	cosmeticBox.Name = "Cosmetics"
+	cosmeticBox.Position = UDim2.fromOffset(0, 52)
+	cosmeticBox.Size = UDim2.new(1, 0, 1, -(52 + HudTheme.MinButtonHeight + 8))
+	cosmeticBox.BackgroundTransparency = 1
+	cosmeticBox.BorderSizePixel = 0
+	cosmeticBox.ScrollBarThickness = 4
+	cosmeticBox.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	cosmeticBox.CanvasSize = UDim2.new()
+	cosmeticBox.Selectable = false
+	cosmeticBox.Visible = false
+	cosmeticBox.Parent = frame
+	local cosmeticList = Instance.new("UIListLayout")
+	cosmeticList.SortOrder = Enum.SortOrder.LayoutOrder
+	cosmeticList.Padding = UDim.new(0, 6)
+	cosmeticList.Parent = cosmeticBox
+	local cosmeticPickers: { CosmeticPicker.Picker } = {}
+	local cosmeticPass: string? = nil
+
 	local note = HudTheme.label(
 		"Note",
 		"",
@@ -191,6 +215,27 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	local launchBusy: string? = nil
 	local launchToken = 0
 	local launchFailure: { [string]: string } = {}
+
+	local function showCosmetics(passKey: string?)
+		if passKey ~= cosmeticPass then
+			for _, picker in cosmeticPickers do
+				picker.destroy()
+			end
+			table.clear(cosmeticPickers)
+			cosmeticPass = passKey
+			if passKey then
+				for i, slot in Cosmetics.slotsForPass(passKey) do
+					local picker =
+						CosmeticPicker.new(cosmeticBox, slot, { height = 40, layoutOrder = i })
+					table.insert(cosmeticPickers, picker)
+				end
+			end
+		end
+		local shown = #cosmeticPickers > 0
+		cosmeticBox.Visible = shown
+		effect.Visible = not shown
+		note.Visible = not shown
+	end
 
 	local function keyOf(ref: ProductShelves.ItemRef): string
 		return `{ref.kind}/{ref.key}`
@@ -342,6 +387,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 		tag.Text = "OWNED"
 		tag.TextColor3 = C.ready
 		setButton(st.canLaunch, st.buttonText)
+		showCosmetics(nil)
 		frame.Visible = true
 	end
 
@@ -381,6 +427,13 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			else ""
 		tag.TextColor3 = if st.status == "owned" then C.ready else C.textDim
 		setButton(st.canBuy, st.buyText)
+		showCosmetics(
+			if st.status == "owned"
+					and ref.kind == "GamePasses"
+					and #Cosmetics.slotsForPass(ref.key) > 0
+				then ref.key
+				else nil
+		)
 		frame.Visible = true
 	end
 
@@ -406,6 +459,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 		openShelf = nil
 		openAnchor = nil
 		frame.Visible = false
+		showCosmetics(nil)
 		ContextActionService:UnbindAction(ACTION_CLOSE)
 		ContextActionService:UnbindAction(ACTION_PAGE)
 		local sel = GuiService.SelectedObject

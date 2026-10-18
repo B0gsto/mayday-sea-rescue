@@ -2,7 +2,8 @@
 -- SettingsPanel: the settings menu (docs 13 RP-S1). Camera comfort (horizon stabilisation, FOV,
 -- head bob, shake, G-force lean, look sensitivity, speed FOV, motion blur, lens spray), a
 -- "Seasick-safe" preset, a graphics override (ocean and scatter detail), volumes (master,
--- effects, radio, music), radio voices on/off, and Assist / Pro.
+-- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, Assist /
+-- Pro, and "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
 -- Opens from a gear button beside the HUD status strip (hidden in the cold open, like the rest of
 -- the status HUD) and from the gamepad Start button; closes on the X, gamepad B or Start again.
@@ -25,6 +26,8 @@ local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local CosmeticPicker = require(script.Parent:WaitForChild("CosmeticPicker"))
+local Cosmetics = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Cosmetics"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local SettingsRules =
@@ -530,6 +533,9 @@ local function build(statusRegion: Frame)
 	slider(s, "volRadio", "Radio", 0.05, pct)
 	slider(s, "volMusic", "Music", 0.05, pct)
 	toggle(s, "voice", "Radio voices")
+	toggle(s, "muteHorns", "Mute other players' horns")
+	toggle(s, "muteSirens", "Mute other players' sirens")
+	toggle(s, "muteRadios", "Mute other players' radios")
 
 	section(s, "Operations")
 	segmented(s, "pro", "Mode", { { "Assist", false }, { "Pro", true } })
@@ -548,6 +554,46 @@ local function build(statusRegion: Frame)
 	table.insert(extraRefresh, updateProNote)
 	player:GetAttributeChangedSignal("OpsPro"):Connect(updateProNote)
 	updateProNote()
+
+	-- Owned items (RP-M5): one cycler per cosmetic slot whose game pass the player owns
+	section(s, "Owned items")
+	order += 1
+	local owned = Instance.new("Frame")
+	owned.Name = "OwnedItems"
+	owned.Size = UDim2.fromScale(1, 0)
+	owned.AutomaticSize = Enum.AutomaticSize.Y
+	owned.BackgroundTransparency = 1
+	owned.LayoutOrder = order
+	owned.Parent = s
+	local ownedList = Instance.new("UIListLayout")
+	ownedList.SortOrder = Enum.SortOrder.LayoutOrder
+	ownedList.Padding = UDim.new(0, 8)
+	ownedList.Parent = owned
+	local ownedNote = note(s, "")
+	local pickers: { CosmeticPicker.Picker } = {}
+	local function ownsPass(key: string): boolean
+		return player:GetAttribute("Pass_" .. key) == true
+	end
+	local function rebuildOwned()
+		for _, picker in pickers do
+			picker.destroy()
+		end
+		table.clear(pickers)
+		for i, slot in Cosmetics.slots() do
+			if Cosmetics.ownsSlot(slot, ownsPass) then
+				table.insert(pickers, CosmeticPicker.new(owned, slot, { layoutOrder = i }))
+			end
+		end
+		ownedNote.Text = if #pickers == 0
+			then "Liveries, horns, uniforms and dog kit you buy at the Chandlery appear here."
+			else "Also at the station locker and the Chandlery mirror."
+	end
+	rebuildOwned()
+	player.AttributeChanged:Connect(function(attr: string)
+		if string.sub(attr, 1, 5) == "Pass_" then
+			rebuildOwned()
+		end
+	end)
 	for _, fn in extraRefresh do
 		fn()
 	end
