@@ -35,6 +35,8 @@ local FerryValidate = require(
 local SceneBoard = require(Shared:WaitForChild("Ferry"):WaitForChild("SceneBoard")) :: any
 -- Person in the Water: onPattern and destinationRight, measured on the server.
 local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+-- the cold open's per-player lifecycle: runs at most once, never restarts by itself
+local ColdOpenFlow = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpenFlow"))
 local PiwMetrics = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("PiwMetrics"))
 
 type StepDef = Types.StepDef
@@ -132,6 +134,10 @@ OperationService.OperationCompleted = {
 
 local ops: { [string]: any } = {}
 local playerState: { [Player]: PlayerState } = {}
+local coldOpenFlow: { [Player]: ColdOpenFlow.Entry } = {} -- this session's cold-open state
+local stationOnSpawn: { [Player]: boolean } = {} -- died in the cold open: next spawn at station
+local coldOpenBegunAt: { [Player]: number } = {} -- StartColdOpen may yield (SpawnColdOpen)
+local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
 local nextId = 0
 local bigOp: any = nil
 local lastWeatherState = "Calm"
@@ -221,6 +227,91 @@ local function fire(name: Remotes.EventName, player: Player, data: any)
 	if player.Parent then
 		Remotes.event(name):FireClient(player, data)
 	end
+end
+
+local function coldOpenEntry(player: Player): ColdOpenFlow.Entry
+	local e = coldOpenFlow[player]
+	if not e then
+		e = ColdOpenFlow.new()
+		coldOpenFlow[player] = e
+	end
+	return e
+end
+
+-- (alive, seated on the cold-open jet ski)
+local function coldOpenRiderStatus(player: Player): (boolean, boolean)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then
+		return false, false
+	end
+	local seat = humanoid.SeatPart
+	local ok, v = try("VehicleService", "GetVehicle", player)
+	local boat = if ok and typeof(v) == "Instance" and v:IsA("Model") then v else nil
+	return true,
+		seat ~= nil
+			and boat ~= nil
+			and boat:GetAttribute("ColdOpen") == true
+			and seat:IsDescendantOf(boat)
+end
+
+-- On foot at the top of the station slipway (Map.Slipways.StationSlipway, its local -Z end is at
+-- the quay), or by the station when the map has none. A player seated in anything is left alone.
+local function sendToStation(player: Player)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not character or not humanoid or humanoid.SeatPart or humanoid.Health <= 0 then
+		return
+	end
+	local map = Workspace:FindFirstChild("Map")
+	local slips = map and map:FindFirstChild("Slipways")
+	local ramp = slips and slips:FindFirstChild("StationSlipway")
+	local pos = CallTypes.STATION + Vector3.new(0, 6, 0)
+	if ramp and ramp:IsA("BasePart") then
+		local half = ramp.Size / 2
+		pos = (ramp.CFrame * CFrame.new(0, half.Y + 4, -half.Z + 10)).Position
+	end
+	local face = CallTypes.STATION
+	if (face - pos).Magnitude < 1 then
+		face = pos + Vector3.new(0, 0, -1)
+	end
+	local root = character.PrimaryPart
+	if root then
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+	end
+	character:PivotTo(CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z)))
+end
+
+-- The cold open ended for any reason: persist ColdOpenDone, radio the outcome (on anything but
+-- a rescue the lifeboat has picked the casualty up) and hand the player over to the station.
+-- Runs once per cold open; ColdOpenFlow never lets it start again.
+local function endColdOpen(player: Player, reason: string)
+	local e = coldOpenFlow[player]
+	if not e then
+		return
+	end
+	local opId = e.opId
+	if not ColdOpenFlow.finish(e, reason) then
+		return
+	end
+	markColdOpenDone(player)
+	local ok, v = try("VehicleService", "GetVehicle", player)
+	if ok and typeof(v) == "Instance" and v:IsA("Model") then
+		v:SetAttribute("ColdOpenApproach", false)
+		v:SetAttribute("ColdOpenAutoThrottle", false)
+	end
+	local msg = ColdOpenFlow.radioFor(reason)
+	fire("Ops_Radio", player, { opId = opId or "", from = msg.from, text = msg.text })
+	local alive, onCraft = coldOpenRiderStatus(player)
+	local how = ColdOpenFlow.handover(alive, onCraft)
+	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
+	player:SetAttribute("ColdOpenHandover", how)
+	if how == "Station" then
+		sendToStation(player)
+	elseif how == "Respawn" then
+		stationOnSpawn[player] = true
+	end -- "Ride": the client's arrival shot and Vehicle_ArrivalHandoff dock them at the station
 end
 
 local function everyone(op: any): { Player }
@@ -1025,6 +1116,9 @@ finish = function(op: any, reason: string)
 		})
 	end
 	closeOp(op)
+	if op.coldOpen and op.owner then
+		endColdOpen(op.owner, reason)
+	end
 	local snap = info(op)
 	for _, fn in table.clone(handlers) do
 		task.spawn(fn, snap, helpers)
@@ -1798,7 +1892,18 @@ local function tick()
 		if op.state == "Offered" and t > op.offerExpiresAt then
 			withdrawOffer(op)
 		else
-			tickOp(op, dt, t)
+			-- the cold open ends (never restarts) when its rider dies or leaves the jet ski
+			local e = op.coldOpen and op.owner and coldOpenFlow[op.owner]
+			local why = nil
+			if e and op.state == "Active" then
+				local alive, onCraft = coldOpenRiderStatus(op.owner)
+				why = ColdOpenFlow.watch(e, t, alive, onCraft)
+			end
+			if why then
+				finish(op, why)
+			else
+				tickOp(op, dt, t)
+			end
 		end
 	end
 	-- live HUD: condition values every ~1 s
@@ -1812,14 +1917,22 @@ local function tick()
 	for _, player in Players:GetPlayers() do
 		local st = stateOf(player)
 		if not st.activeOpId and not st.offerOpId and t >= st.nextOfferAt and player.Character then
-			local done = if OperationService.ColdOpenAuto and st.completed == 0
-				then coldOpenDone(player)
-				else true
-			if done == false then
+			local e = coldOpenEntry(player)
+			local decision = if e.phase == "NotStarted"
+					and OperationService.ColdOpenAuto
+					and st.completed == 0
+				then ColdOpenFlow.decide(e, true, 0, coldOpenDone(player))
+				else ColdOpenFlow.decide(e, OperationService.ColdOpenAuto, st.completed, true)
+			if decision == "Start" then
 				OperationService.StartColdOpen(player)
-			elseif done == true then
+			elseif decision == "Abandon" then
+				-- its op is gone (a start error, closed without finish): hand over, never replay
+				if t - (coldOpenBegunAt[player] or -math.huge) > COLD_OPEN_START_GRACE then
+					endColdOpen(player, "Lost")
+				end
+			elseif decision == "Offer" then
 				offerTo(player)
-			end -- nil: the profile is still loading, ask again next tick
+			end -- "Wait": the profile is still loading, ask again next tick
 		end
 	end
 end
@@ -1870,13 +1983,28 @@ OperationService.ColdOpenDriftScale = 0.5
 -- and hands the throttle over ColdOpen.HANDOVER_DISTANCE (170) studs short, so it coasts in.
 OperationService.ColdOpenDistance = { 220, 260 }
 
--- Starts the cold open for `player`. `spawnCFrame` is where the jet ski starts (default: the
--- Harbour Mouth zone centre, facing out to sea). Returns the operation id.
-function OperationService.StartColdOpen(player: Player, spawnCFrame: CFrame?): string?
+-- Starts the cold open for `player`, at most once per session (ColdOpenFlow): nil once it has
+-- run, whatever the outcome. `spawnCFrame` is where the jet ski starts (default: the Harbour
+-- Mouth zone centre, facing out to sea). `replay` (Studio dev only) runs it again. Returns the
+-- operation id.
+function OperationService.StartColdOpen(
+	player: Player,
+	spawnCFrame: CFrame?,
+	replay: boolean?
+): string?
 	local st = stateOf(player)
 	if st.activeOpId and ops[st.activeOpId] then
 		return st.activeOpId
 	end
+	local flow = coldOpenEntry(player)
+	if replay and flow.phase == "Finished" then
+		ColdOpenFlow.reset(flow)
+	end
+	-- Running from here: if anything below throws, the tick abandons it instead of replaying
+	if not ColdOpenFlow.begin(flow) then
+		return nil
+	end
+	coldOpenBegunAt[player] = now()
 	if st.offerOpId and ops[st.offerOpId] then
 		withdrawOffer(ops[st.offerOpId])
 	end
@@ -1898,6 +2026,7 @@ function OperationService.StartColdOpen(player: Player, spawnCFrame: CFrame?): s
 	local pos = cf.Position * Vector3.new(1, 0, 1) + ahead * rng:NextNumber(d[1], d[2])
 	local op = newOp("PersonInWater", "Swimmer", "HarbourMouth", pos)
 	op.coldOpen = true
+	flow.opId = op.id
 	op.planIds = OperationService.ColdOpenPlan
 	op.offeredTo = { player }
 	player:SetAttribute("OpsPro", false) -- Assist mode
@@ -1976,6 +2105,22 @@ end
 
 local function onPlayerAdded(player: Player)
 	stateOf(player)
+	coldOpenEntry(player)
+	-- died during the cold open: the next character starts at the station
+	player.CharacterAdded:Connect(function(character)
+		if not stationOnSpawn[player] then
+			return
+		end
+		stationOnSpawn[player] = nil
+		task.defer(function()
+			if
+				character.Parent
+				and (character.PrimaryPart or character:WaitForChild("HumanoidRootPart", 5))
+			then
+				sendToStation(player)
+			end
+		end)
+	end)
 	if bigOp then
 		task.delay(5, function()
 			if bigOp and player.Parent then
@@ -1999,6 +2144,9 @@ end
 
 local function onPlayerRemoving(player: Player)
 	playerState[player] = nil
+	coldOpenFlow[player] = nil
+	stationOnSpawn[player] = nil
+	coldOpenBegunAt[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
 		if j then
@@ -2052,7 +2200,7 @@ function OperationService.Init()
 				return if p then OperationService.DevStart(p, a) else nil
 			elseif cmd == "coldopen" then
 				local p = Players:GetPlayers()[1]
-				return if p then OperationService.StartColdOpen(p) else nil
+				return if p then OperationService.StartColdOpen(p, nil, true) else nil
 			elseif cmd == "status" then
 				local p = Players:GetPlayers()[1]
 				local op = if p then OperationService.GetOperationOf(p) else nil
