@@ -76,7 +76,7 @@ Tyre.MaterialSurface = {
 	Metal = "Metal",
 	DiamondPlate = "Metal",
 	CorrodedMetal = "Metal",
-	Snow = "Snow",
+	Snow = "Grass", -- terrain T3: the Snow slot carries the TurfStraw turf variant (no snow on the isles)
 	Ice = "Ice",
 	Glacier = "Ice",
 }

@@ -10,7 +10,7 @@ STUDS_PER_M = 3
 # grid at landscape range, so the big natural terrain variants get larger tiles (macro variation then comes from the
 # generator's patch blending between Turf / Moor / Earth / Granite). Others keep dims_m x 3.
 STUDS_PER_TILE = {"Turf": 18, "Moor": 20, "Granite": 22, "SplashRock": 16, "KelpRock": 13, "Earth": 14,
-                  "SandDry": 12, "SandWet": 12, "SeabedSand": 11, "ShellGravel": 12, "Mud": 9}
+                  "TurfStraw": 20, "TurfOlive": 17, "SandDry": 12, "SandWet": 12, "SeabedSand": 11, "ShellGravel": 12, "Mud": 9}
 
 
 def studs_per_tile(name, dims_m):
@@ -28,6 +28,9 @@ LIBRARY = [
     ("SplashRock",   "dark_rock",            2.42, "Basalt",      "Basalt",      "Organic", "dark wet rock in the splash zone"),
     ("Turf",         "leafy_grass",          2.50, "Grass",       "Grass",       "Organic", "machair and cliff-top turf"),
     ("Moor",         "withered_grass",       2.80, "LeafyGrass",  "LeafyGrass",  "Organic", "heather and gorse moor (dry turf base)"),
+    # T3 turf macro patches (gen_terrain.py STRAW / OLIVE) on otherwise unused Terrain slots (Snow grips like turf)
+    ("TurfStraw",    "withered_grass",       2.80, "Snow",        "Snow",        "Organic", "straw / dead-grass coastal turf (Snow slot)"),
+    ("TurfOlive",    "leafy_grass",          2.50, "WoodPlanks",  "WoodPlanks",  "Organic", "dark olive lush sward in hollows (WoodPlanks slot)"),
     ("Mud",          "brown_mud_02",         1.30, "Mud",         "Mud",         "Organic", "estuary and track mud"),
     ("Earth",        "stony_dirt_path",      2.60, "Ground",      "Ground",      "Organic", "bare earth and paths"),
     ("Gravel",       "gravel_road",          2.00, "Pavement",    "Pavement",    "Organic", "gravel tracks and cliff-top car parks (Pavement slot: proposed, not in 10 6.1)"),

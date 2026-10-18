@@ -52,6 +52,19 @@ at range); run `art/source/materials/wire.py` after changing it (no re-upload). 
 sets the MaterialColors (white, except an olive LeafyGrass multiplier that matches Moor's luma to Turf's) and
 `Terrain.Decoration` / `GrassLength`. Look-dev capture: `tools/world/lookdev_capture.sh <round>` (play mode, `tools/world/lookdev-shots.json`).
 
+**Terrain pass T3.** Turf is split into three macro-patch variants: Turf (olive, Grass slot), TurfStraw (straw /
+dead grass, `STRAW` = the Snow slot) and TurfOlive (dark lush sward in hollows, `OLIVE` = the WoodPlanks slot), driven
+by 110-150 stud domain-warped fields (straw on exposed, convex, cliff-top ground; olive in hollows). `choose()` adds a
+6-stud value-noise dither and stronger per-cell jitter, so every border with comparable weights dithers at voxel scale
+over a wide fringe (blown sand 80 studs onto the back-dune turf, gravel grit up to 7 studs and worn ground 16 studs off
+the road edge, a patchy shingle strand instead of a continuous dark berm). Relief: 5-15 stud hummocks in patchy
+fields, granite outcrops 2-6 studs proud on ridges and knolls (forced Rock), and a sea-cut dune front (a 3-5 stud
+scarp at the dune toe plus a second step 15-20 studs behind). `flat_keep()` masks all T3 relief off roads (+16 studs),
+car parks (+12) and points / POIs (30), so road profiles, pads and the station keep their heights. Materials use a
+20-stud slope so hummocks do not trip the rock threshold. Albedos re-graded in `process.py` MACRO (target medians +
+tileable blend layers): Turf, TurfStraw, TurfOlive, Moor (the olive LeafyGrass MaterialColor is now white), Earth,
+Mud (peat), KelpRock (slate), Shingle. Before / after: `assets/review/terrain/t3_contact.png` (`t3_shots.json`).
+
 **Open.** The shore bake for `Waves.luau` (doc 10 section 6.4), MaterialVariants, the doc 10 harbour re-lay (mouth
 at about 900 studs; gameplay code and tests still use z = 368), `GameConfig.MapRadius` 2,000 vs WorldConfig's 2,500.
 

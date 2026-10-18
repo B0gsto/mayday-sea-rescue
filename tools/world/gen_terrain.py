@@ -18,13 +18,17 @@ sys.path.insert(0, HERE)
 import layout as L  # noqa: E402
 
 MATERIALS = ["Air", "Sand", "Sandstone", "Salt", "Limestone", "Rock", "Slate", "Basalt", "Grass", "LeafyGrass",
-             "Mud", "Ground", "Asphalt", "Cobblestone", "Concrete", "Pavement", "CrackedLava"]
+             "Mud", "Ground", "Asphalt", "Cobblestone", "Concrete", "Pavement", "CrackedLava", "Snow", "WoodPlanks"]
 MI = {name: i for i, name in enumerate(MATERIALS)}
 # Rippled seabed sand: doc 10's Salt slot (stock Salt renders near-white; B02's SeabedSand MaterialVariant fixes it).
 SEABED_SAND = "Salt"
 # Shingle (pebbles): Pebble is not a Terrain material, so the Shingle MaterialVariant overrides the unused CrackedLava
 # slot (art/source/materials/library.py; Tyre.luau already grips it as Rock).
 SHINGLE = "CrackedLava"
+# Terrain pass T3: two more turf variants as island-scale macro patches on unused Terrain slots (library.py):
+# TurfStraw (dry straw / dead-grass sward) on Snow, TurfOlive (dark lush sward in hollows and lee slopes) on WoodPlanks.
+STRAW = "Snow"
+OLIVE = "WoodPlanks"
 
 # ---------------------------------------------------------------- noise (seeded integer-hash value noise)
 
@@ -109,7 +113,30 @@ def coast_field(X, Z):
     return best_d, best_H, best_w
 
 
-def micro_relief(X, Z, hl, dl, wb, s):
+def flat_keep(X, Z):
+    """T3: 0 on and within ~16 studs of every road centre line, car park (+12 studs) and point / POI (30 studs), fading to
+    1 over the next ~20 studs. The T3 relief (hummocks, outcrops, dune banks) is multiplied by it, so the paved road
+    profiles, the quay, pads and the station keep their T2 heights."""
+    x0 = X[0, 0]
+    m = np.zeros(X.shape)
+    for road in L.ROADS:
+        for x, z in catmull(road["points"], 2.0):
+            i, j = int(round((z - x0) / L.CELL)), int(round((x - x0) / L.CELL))
+            if 0 <= i < m.shape[0] and 0 <= j < m.shape[1]:
+                m[i, j] = 1
+    near = box_blur(m, 4) > 0
+    for cp in L.CAR_PARKS:
+        cx, cz = cp["center"]
+        a = math.radians(cp["yaw"])
+        lx = (X - cx) * math.cos(a) + (Z - cz) * math.sin(a)
+        lz = -(X - cx) * math.sin(a) + (Z - cz) * math.cos(a)
+        near |= (np.abs(lx) < cp["size"][0] / 2 + 12) & (np.abs(lz) < cp["size"][1] / 2 + 12)
+    for p in list(L.POINTS) + list(L.POIS):
+        near |= np.hypot(X - p["pos"][0], Z - p["pos"][2]) < 30
+    return 1 - np.clip(box_blur(near.astype(np.float64), 5) * 2, 0, 1)
+
+
+def micro_relief(X, Z, hl, dl, wb, s, fk=1.0):
     """Land micro-relief: hummocks (0.5-1 stud), sheep-track terracettes along the contours of moderate slopes, and
     erosion gullies (up to 2 studs deep) running down the fall line of steeper banks. Masked off the beach, the dunes
     and the waterline, the town platform and harbour, and 25-45 studs round every point and POI; roads and car parks
@@ -128,6 +155,16 @@ def micro_relief(X, Z, hl, dl, wb, s):
         px, _, pz = p["pos"]
         keep = keep * smoothstep(25, 45, np.hypot(X - px, Z - pz))
     bump = 1.3 * fbm(Xw, Zw, 34, s + 510, 3) + 0.35 * vnoise(X, Z, 10, s + 511)
+    # T3: mid-scale hummocks (5-15 studs) in patchy fields, stronger on gentle turf than on banks
+    field = 0.35 + 0.65 * smoothstep(-0.35, 0.35, fbm(X, Z, 170, s + 522, 2))
+    hum = field * (1.1 * fbm(Xw, Zw, 13, s + 520, 2) + 0.55 * vnoise(X + 3.7, Z - 1.3, 7, s + 521)) \
+        * smoothstep(0.75, 0.35, slope)
+    # T3: rock outcrops: knuckles of granite breaking the turf on ridges and knolls (convex ground), 2-6 studs proud
+    convex = smoothstep(0.05, 0.6, hl - box_blur(hl, 6))
+    rid = ridged(Xw, Zw, 55, s + 530, 3)
+    outc = smoothstep(0.9, 0.975, rid + 0.12 * convex) * (0.35 + 0.65 * convex) * smoothstep(0.06, 0.18, slope) \
+        * smoothstep(0.95, 0.7, slope) * smoothstep(12, 26, hl) * smoothstep(-0.2, 0.25, fbm(X, Z, 260, s + 532, 2))
+    rock_h = outc * (2.0 + 3.5 * ridged(X, Z, 9, s + 531, 2) + 1.2 * vnoise(X, Z, 5, s + 533))
     phase = 2 * np.pi * (box_blur(hl, 2) + 1.2 * fbm(Xw, Zw, 50, s + 512, 2)) / 2.6
     terr = 0.32 * np.sin(phase) * smoothstep(0.14, 0.3, slope) * smoothstep(0.6, 0.42, slope) \
         * smoothstep(0.0, 0.3, fbm(Xw, Zw, 140, s + 513, 2))
@@ -135,7 +172,8 @@ def micro_relief(X, Z, hl, dl, wb, s):
     v = smoothstep(0.8, 1.0, np.cos(across / 9 + 2.5 * fbm(Xw, Zw, 90, s + 514, 2)))
     gully = v * smoothstep(0.22, 0.4, slope) * smoothstep(1.1, 0.8, slope) \
         * smoothstep(-0.1, 0.3, fbm(X, Z, 200, s + 515, 2)) * smoothstep(8, 22, hl) * keep
-    return hl + (bump + terr) * keep - 2.0 * gully, gully
+    outc = outc * keep * fk
+    return hl + (bump + terr) * keep + (hum + rock_h) * keep * fk - 2.0 * gully, (gully, smoothstep(0.15, 0.45, outc))
 
 
 # ---------------------------------------------------------------- bake
@@ -164,11 +202,17 @@ def bake():
     dune_t = np.clip((dl - bw) / dw, 0, 1)
     dunes = (7 + 9 * (0.5 + 0.5 * fbm(X, Z, 70, s + 6))) * np.sin(np.pi * dune_t) ** 0.8 * (dl > bw)
     dunes = dunes + 3 * np.abs(vnoise(X, Z, 26, s + 7)) * (dl > bw) * (dune_t < 1)
-    beach_l = np.minimum(dl, bw) / 28 + dunes + 0.9 * rise_d(np.maximum(dl - bw - dw, 0)) + 1.0 * dune_t
+    # T3: sea-cut dune front: a 3-5 stud scarp at the dune toe and a second, lower step behind it (storm cut terraces),
+    # falling back off behind the second step
+    cut = (3.0 + 1.6 * fbm(X, Z, 90, s + 8)) * smoothstep(bw - 3, bw + 3, dl + 5 * fbm(X, Z, 36, s + 9)) \
+        + (1.6 + 1.0 * fbm(X, Z, 70, s + 10)) * smoothstep(bw + 15, bw + 20, dl + 7 * fbm(X, Z, 44, s + 17))
+    cut = cut * smoothstep(bw + 52, bw + 30, dl)  # a bank behind the dune toe; the hinterland (roads, pads) keeps its height
+    fk = flat_keep(X, Z)
+    beach_l = np.minimum(dl, bw) / 28 + dunes + cut * fk + 0.9 * rise_d(np.maximum(dl - bw - dw, 0)) + 1.0 * dune_t
     harb_l = 4 + rise_d(np.maximum(dl - 200, 0))
     mud_l = dl / 90 + 0.5 * rise_d(dl)
     h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + beacon * smoothstep(0, 400, dl)
-    h_land, gully = micro_relief(X, Z, h_land, dl, wb, s)
+    h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s, fk)
 
     # ---- sea
     shelf = np.where(ds < 600, ds / 30, np.where(ds < 1600, 20 + (ds - 600) / 20, 70 + (ds - 1600) / 9))
@@ -254,7 +298,7 @@ def bake():
 
     # ---- paving first (heights only change here), then materials on the final surface
     h, road_mat, road_edge, road_surf = pave(X, Z, h)
-    mat = materials(X, Z, h, d, W, feat, road_edge, road_surf, np.where(land, gully, 0))
+    mat = materials(X, Z, h, d, W, feat, road_edge, road_surf, np.where(land, gully, 0), np.where(land, outc, 0))
     mat = np.where(road_mat != 255, road_mat, mat).astype(np.uint8)
     mat[(X > -180) & (X < 180) & (Z > -62) & (Z < -20)] = MI["Cobblestone"]  # quayside setts
     return xs, h, mat, d
@@ -274,7 +318,7 @@ def warp(X, Z, s, amp=48.0, scale=180.0):
     return X + amp * fbm(X, Z, scale, s + 60, 3), Z + amp * fbm(X, Z, scale, s + 61, 3)
 
 
-def choose(weights, Xw, Zw, ix, iz, seed, patch=None, jitter=0.35):
+def choose(weights, Xw, Zw, ix, iz, seed, patch=None, jitter=0.6, dither=0.55):
     """Soft argmax per cell: log(weight) + a smooth multi-octave patch noise per material (domain-warped coords; scale,
     amplitude in `patch`) + a little per-cell white noise. Where weights compete the noise decides, so materials form
     coherent organic patches 10-200 studs across whose borders feather over 1-2 cells (Roblox's voxel blending then
@@ -285,7 +329,10 @@ def choose(weights, Xw, Zw, ix, iz, seed, patch=None, jitter=0.35):
     for k, name in enumerate(names):
         w = np.maximum(np.broadcast_to(weights[name], ix.shape), 0)
         sc, amp = patch.get(name, (60, 1.0))
-        score = np.log(w + 1e-6) + amp * fbm(Xw, Zw, sc, seed + 7 * k, 4) + jitter * (_hash(ix, iz, seed + 7 * k + 3) - 0.5)
+        # T3: + a fine 6-stud value noise and per-cell jitter: where two weights are within about a log unit the
+        # border dithers at voxel scale over the whole fringe (wide weight gradients = wide fringes), no hard edge
+        score = np.log(w + 1e-6) + amp * fbm(Xw, Zw, sc, seed + 7 * k, 4) + jitter * (_hash(ix, iz, seed + 7 * k + 3) - 0.5) \
+            + dither * vnoise(ix + 0.5, iz + 0.5, 6, seed + 7 * k + 5)
         if best is None:
             best, idx = score, np.zeros(ix.shape, dtype=np.int64)
         else:
@@ -294,7 +341,12 @@ def choose(weights, Xw, Zw, ix, iz, seed, patch=None, jitter=0.35):
     return np.array([MI[n] for n in names], dtype=np.uint8)[idx]
 
 
-def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully):
+def turf(w, straw, olive):
+    """Split a turf weight into Turf / TurfStraw / TurfOlive by the macro fields (0..1)."""
+    return {"Grass": w * (1 - 0.7 * straw) * (1 - 0.6 * olive) + 1e-4, STRAW: 1.05 * w * straw, OLIVE: 0.95 * w * olive}
+
+
+def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     """Coastal material layering (docs/05 terrain, docs/10 6.1). Weights by slope, height, curvature, distance to the
     sea and to the roads; a soft argmax with domain-warped multi-octave patch noise per material (choose()) on land,
     hard zones under the sea. Land: turf with heather / gorse (Moor) patches, more on cliff tops and the Beacon,
@@ -303,7 +355,7 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully):
     sand blowouts) -> turf. Rocky coves: shingle at the back. Harbour foreshore: mud and shingle."""
     s = L.SEED
     wc, wr, wb, wh, wm = W
-    gz_, gx_ = np.gradient(box_blur(h, 1), L.CELL)  # 12-stud slope: ignores the micro-relief ripples
+    gz_, gx_ = np.gradient(box_blur(h, 2), L.CELL)  # 20-stud slope: ignores the micro-relief hummocks (T3)
     slope = np.hypot(gx_, gz_)
     hollow = box_blur(h, 6) - h  # > 0 in hollows and gullies, < 0 on knolls and ridges
     dl, ds = np.maximum(d, 0), np.maximum(-d, 0)
@@ -325,15 +377,20 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully):
         * smoothstep(14, 32, h) * smoothstep(0.08, 0.2, slope)
     wet_hollow = smoothstep(0.35, 1.3, hollow) * smoothstep(0.22, 0.06, slope) * smoothstep(90, 50, h) * (h > 2.5)
     bank = smoothstep(0.3, 0.5, slope) * (1 - crag)
+    # T3 macro colour: straw on exposed, dry, convex ground; olive in hollows, lee slopes and near water courses
+    straw = smoothstep(-0.3, 0.45, fbm(Xw, Zw, 150, s + 600, 3) + 0.45 * exposure + 0.35 * cliff_top
+                       - 0.6 * smoothstep(0, 1.0, hollow) + 0.25 * smoothstep(0.2, 0.5, slope))
+    olive = smoothstep(-0.15, 0.5, fbm(Xw, Zw, 120, s + 601, 3) + 0.8 * smoothstep(0, 1.2, hollow) - 0.3 * exposure)
     lw = {
-        "Grass": 1.0 * (1 - steep) * (1 - 0.65 * cliff_top) * (1 - 0.7 * upland) * (1 - 0.35 * exposure),
+        **turf(1.0 * (1 - steep) * (1 - 0.65 * cliff_top) * (1 - 0.7 * upland) * (1 - 0.35 * exposure), straw, olive),
         "LeafyGrass": (0.42 + 0.9 * cliff_top + 1.6 * upland + 0.35 * exposure + 0.4 * bank) * (1 - steep),
         "Ground": (0.01 + 0.18 * bank + 1.4 * gully * smoothstep(0.2, 0.4, slope)) * (1 - 0.7 * wet_hollow) * (1 - crag),
         "Mud": 2.4 * wet_hollow + 0.6 * smoothstep(0.5, 0.8, wm) * smoothstep(60, 5, dl),
-        "Rock": 6.0 * steep + 4.0 * outcrop + 6.0 * crag + 1e-3,
+        "Rock": 6.0 * steep + 4.0 * outcrop + 6.0 * crag + 9.0 * outc + 1e-3,
         "Basalt": 2.0 * steep * smoothstep(0.1, 0.5, n_mid) * smoothstep(60, 15, h),
     }
-    mat = choose(lw, Xw, Zw, ix, iz, s + 200, {"Grass": (150, 1.6), "LeafyGrass": (85, 1.8), "Ground": (26, 1.2),
+    mat = choose(lw, Xw, Zw, ix, iz, s + 200, {"Grass": (150, 1.6), STRAW: (110, 1.5), OLIVE: (90, 1.4),
+                                                "LeafyGrass": (85, 1.8), "Ground": (26, 1.2),
                                                 "Mud": (30, 0.8), "Rock": (40, 0.9), "Basalt": (30, 0.8)})
 
     # rocky / cliff shore above the sea: splash-zone rock, kelp rock at the tide line, shingle at the cove backs
@@ -350,18 +407,22 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully):
     berm = smoothstep(bw - 30, bw - 14, dl + 8 * n_mid) * smoothstep(bw + 4, bw - 6, dl)
     rocky_end = smoothstep(0.75, 0.55, wb)  # beach ends grading into the rocky coast
     bwts = {"Sandstone": 4.0 * tide + 1e-3, "Sand": (1.0 - tide) * (1 - 0.6 * berm) + 0.02,
-            SHINGLE: 0.8 * berm + 0.7 * rocky_end * (1 - tide),
+            SHINGLE: 0.8 * berm * smoothstep(-0.35, 0.45, fbm(Xw, Zw, 55, s + 302, 3)) + 0.7 * rocky_end * (1 - tide),
             "Slate": tide * (0.05 + 1.6 * rocky_end) * smoothstep(0.35, 0.7, n_mid + 0.5),
             "Rock": 0.5 * rocky_end * smoothstep(0.2, 0.6, n_mid)}
     mat = np.where(on_sand, choose(bwts, Xw, Zw, ix, iz, s + 300, {"Sandstone": (40, 0.6), "Sand": (40, 0.6),
                                                                    SHINGLE: (14, 1.2), "Slate": (20, 1.0)}), mat)
-    duney = beachy & (dl >= bw) & (dl < bw + dw + 30)
+    # T3: the dune zone reaches 80 studs past the dunes so blown sand fringes onto the turf; marram is mostly straw
+    duney = beachy & (dl >= bw) & (dl < bw + dw + 80) & ((dl < bw + dw + 30) | (slope < 0.45))
     dt = np.clip((dl - bw) / (dw + 30), 0, 1)
     marram = smoothstep(0.08, 0.7, dt + 0.25 * fbm(Xw, Zw, 60, s + 23))
-    dwts = {"Sand": 1.6 * (1 - marram) + 0.12 + 0.35 * smoothstep(0.3, 0.6, slope),
-            "Grass": 1.5 * marram, "LeafyGrass": 0.9 * marram * smoothstep(0.55, 1.0, dt), "Ground": 0.01 * marram}
+    fringe = smoothstep(bw + dw + 80, bw + dw - 20, dl + 25 * fbm(Xw, Zw, 40, s + 24))
+    dwts = {"Sand": 1.6 * (1 - marram) + 0.05 + 0.9 * smoothstep(0.3, 0.6, slope) + 0.4 * fringe,
+            "Grass": 0.7 * marram, STRAW: 1.0 * marram, OLIVE: 0.15 * marram * (1 - fringe),
+            "LeafyGrass": 0.9 * marram * smoothstep(0.55, 1.0, dt), "Ground": 0.01 * marram}
     mat = np.where(duney & (slope < 0.9), choose(dwts, Xw, Zw, ix, iz, s + 340, {"Sand": (22, 1.4), "Grass": (30, 1.2),
-                                                                                  "LeafyGrass": (50, 1.2)}), mat)
+                                                                                  STRAW: (40, 1.2), "LeafyGrass": (50, 1.2)},
+                                                 jitter=0.8, dither=0.8), mat)
 
     # ---- harbour foreshore: mud and shingle between the tides outside the quay and the cove
     hb = L.HARBOUR
@@ -373,13 +434,14 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully):
     # ---- road verges: gravel and worn earth along the asphalt and the track, worn ground fading into the grass
     land_nat = (h > 0.5) & ~on_sand & ~shore & (slope < 0.8)
     e = road_edge + 2.5 * fbm(Xw, Zw, 14, s + 43, 3)
-    gravel = smoothstep(3.5, 0.5, e) * (road_surf == 1)
-    trackside = smoothstep(6, 1.5, e) * (road_surf == 2)
-    wear = smoothstep(10, 2, e)
-    verge = land_nat & (road_edge < 14)
-    vw = {"Pavement": 3.0 * gravel + 0.6 * trackside, "Ground": 0.4 * gravel + 1.8 * trackside + 0.35 * wear,
-          "Grass": 1.0 - 0.6 * wear, "LeafyGrass": 0.2 + 0.2 * wear}
-    mat = np.where(verge, choose(vw, Xw, Zw, ix, iz, s + 420, {"Ground": (12, 1.0), "Grass": (40, 0.8)}), mat)
+    gravel = smoothstep(7, 0.5, e) * (road_surf == 1)
+    trackside = smoothstep(8, 1.0, e) * (road_surf == 2)
+    wear = smoothstep(16, 2, e)
+    verge = land_nat & (road_edge < 20)
+    vw = {"Pavement": 2.4 * gravel ** 1.5 + 0.9 * trackside, "Ground": 0.3 * gravel + 1.1 * trackside + 0.3 * wear,
+          **turf(1.0 - 0.6 * wear, np.clip(straw + 0.4 * wear, 0, 1), olive * (1 - wear)), "LeafyGrass": 0.2 + 0.15 * wear}
+    mat = np.where(verge, choose(vw, Xw, Zw, ix, iz, s + 420, {"Ground": (12, 1.0), "Grass": (40, 0.8)},
+                                 jitter=0.9, dither=0.8), mat)
     mat = np.where(verge & (slope > 0.7), MI["Rock"], mat)  # road cuttings: rock, not grass
 
     # ---- seabed (under the mesh ocean)
@@ -586,7 +648,7 @@ def preview(h, mat, path):
     colors = {"Sand": (205, 187, 152), "Sandstone": (140, 123, 98), "Salt": (170, 160, 130), "Limestone": (190, 185, 170),
               "Rock": (120, 118, 112), "Slate": (75, 74, 38), "Basalt": (55, 55, 58), "Grass": (96, 128, 70),
               "LeafyGrass": (110, 90, 100), "Mud": (90, 75, 60), "Ground": (120, 100, 75), "Asphalt": (40, 40, 42),
-              "Cobblestone": (110, 105, 100), "Concrete": (180, 180, 175), "Pavement": (150, 150, 150), "Air": (0, 0, 0),
+              "Cobblestone": (110, 105, 100), "Concrete": (180, 180, 175), "Pavement": (150, 150, 150), "Air": (0, 0, 0), "Snow": (150, 135, 90), "WoodPlanks": (80, 95, 55),
               SHINGLE: (105, 98, 90)}
     lut = np.array([colors[m] for m in MATERIALS], dtype=np.float64)
     rgb = lut[mat]

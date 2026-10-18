@@ -26,31 +26,35 @@
   "Cobblestone",
   "Concrete",
   "Pavement",
-  "CrackedLava"
+  "CrackedLava",
+  "Snow",
+  "WoodPlanks"
  ],
  "shellLand": 40,
  "shellSea": 20,
  "stats": {
   "minY": -165.0,
-  "maxY": 325.6,
+  "maxY": 325.7,
   "landFraction": 0.554,
   "cells": {
-   "Sand": 12824,
-   "Sandstone": 19674,
-   "Salt": 502200,
-   "Limestone": 135409,
-   "Rock": 79883,
-   "Slate": 52352,
-   "Basalt": 7851,
-   "Grass": 428798,
-   "LeafyGrass": 379368,
-   "Mud": 11771,
-   "Ground": 1575,
+   "Sand": 14804,
+   "Sandstone": 19675,
+   "Salt": 502502,
+   "Limestone": 135418,
+   "Rock": 114669,
+   "Slate": 52258,
+   "Basalt": 7624,
+   "Grass": 140875,
+   "LeafyGrass": 377039,
+   "Mud": 14347,
+   "Ground": 1802,
    "Asphalt": 3811,
    "Cobblestone": 890,
    "Concrete": 146,
-   "Pavement": 1256,
-   "CrackedLava": 3153
+   "Pavement": 1949,
+   "CrackedLava": 2118,
+   "Snow": 149707,
+   "WoodPlanks": 101327
   }
  }
 }

@@ -144,31 +144,44 @@ def sstep(e0, e1, x):
     return t * t * (3 - 2 * t)
 
 
-# Terrain look-dev (round 2): colour variation baked into the big terrain variants. Mid-frequency only (3-20
-# cycles per tile, several blobs per tile, never one distinctive blob per repeat, which would show the tiling);
-# the island-scale variation comes from gen_terrain.py dithering Grass / LeafyGrass / Ground. Per name:
-# (base tint, clump darkening, straw amount, straw tint, seed, overall gain)
+# Terrain look-dev: colour variation baked into the big terrain variants. Mid-frequency only (3-20 cycles per tile,
+# several blobs per tile, never one distinctive blob per repeat, which would show the tiling); the island-scale
+# variation comes from gen_terrain.py's macro patches (Turf / TurfStraw / TurfOlive / Moor / Earth).
+# T3 re-grade toward Cornish coastal turf (olive, ochre, straw, dead-grass blends; the T2 Turf read as lime in-engine)
+# and real variation in earth, peat (Mud), slate (KelpRock) and shingle instead of flat tones.
+# Per name: (target median sRGB, clump darkening, [(amount, tint, band f0, f1), ...] blend layers, seed)
+STRAW_T, OCHRE_T, DEAD_T = (1.30, 1.12, 0.78), (1.22, 1.0, 0.70), (1.12, 1.04, 0.92)
 MACRO = {
-    "Turf": ((0.80, 1.0, 0.70), 0.22, 0.34, (1.22, 1.06, 0.78), 11, 0.94),   # olive turf, dark clumps, dead-grass straw
-    "Moor": ((0.97, 0.96, 0.93), 0.20, 0.0, (1, 1, 1), 12, 0.88),           # withered grass / heath: darker tussocks
-    "Earth": ((1.0, 0.98, 0.95), 0.20, 0.18, (0.82, 0.86, 0.70), 13, 1.0),  # dirt: damp dark organic patches, moss tinge
+    "Turf": ((100, 104, 64), 0.22, [(0.42, STRAW_T, 2.5, 5), (0.30, DEAD_T, 6, 14), (0.18, OCHRE_T, 3, 7)], 11),
+    "TurfStraw": ((140, 124, 84), 0.24, [(0.35, (0.80, 0.95, 0.78), 3, 7), (0.30, OCHRE_T, 2.5, 5),
+                                         (0.25, (0.85, 0.83, 0.86), 8, 18)], 14),
+    "TurfOlive": ((82, 88, 54), 0.26, [(0.30, STRAW_T, 3, 7), (0.25, (0.86, 0.92, 0.80), 2.5, 5)], 15),
+    "Moor": ((118, 104, 76), 0.24, [(0.30, (1.06, 0.86, 0.98), 3, 8), (0.28, (0.92, 1.05, 0.84), 2.5, 5)], 12),
+    "Earth": ((92, 76, 58), 0.24, [(0.35, (1.22, 1.05, 0.82), 2.5, 5), (0.30, (0.82, 0.86, 0.72), 4, 9),
+                                   (0.25, (1.10, 1.08, 1.06), 9, 20)], 13),
+    "Mud": ((86, 72, 56), 0.26, [(0.40, (1.25, 1.16, 1.02), 2.5, 5), (0.28, (0.92, 0.96, 0.80), 4, 10)], 16),
+    "KelpRock": ((98, 94, 86), 0.20, [(0.35, (0.88, 0.96, 1.08), 2.5, 5), (0.25, (1.18, 1.10, 0.82), 4, 10),
+                                      (0.20, (0.90, 0.98, 0.80), 8, 18)], 17),
+    "Shingle": ((106, 98, 88), 0.18, [(0.35, (1.12, 1.04, 0.92), 2.5, 6), (0.25, (0.88, 0.93, 1.02), 5, 12)], 18),
 }
 
 
 def macro_albedo(rgb, name):
-    tint, dark, straw, stint, seed, gain = MACRO[name]
+    target, dark, layers, seed = MACRO[name]
     y0 = luma(rgb)
-    med0 = np.percentile(y0, 50)
-    out = rgb * np.array(tint, np.float32)
-    out *= gain * (med0 / max(np.percentile(luma(out), 50), 1e-3))
+    med0 = np.median(rgb.reshape(-1, 3), 0)
+    out = rgb * (np.array(target, np.float32) / np.maximum(med0, 1))
     big = band_noise(y0.shape, 2.5, 5, seed)
     clump = band_noise(y0.shape, 9, 22, seed + 1)
     out *= (1 - dark * sstep(0.2, 1.6, clump) * (0.6 + 0.4 * sstep(-1, 1, -big)))[..., None]
-    w = (straw * sstep(0.1, 1.4, big) * (0.55 + 0.45 * sstep(-0.5, 1, -clump)))[..., None]
-    out = out * (1 - w) + out * np.array(stint, np.float32) * w
-    out = np.clip(out, LO, HI)
-    return out, ["macro %s: tint %s, clumps -%d%%, straw %d%%, luma p50 %.0f -> %.0f"
-                 % (name, tint, dark * 100, straw * 100, med0, np.percentile(luma(out), 50))]
+    for k, (amt, tint, f0, f1) in enumerate(layers):
+        w = (amt * sstep(0.1, 1.4, band_noise(y0.shape, f0, f1, seed + 10 + k)))[..., None]
+        out = out * (1 - w) + out * np.array(tint, np.float32) * w
+    out *= luma(np.array([target], np.float32))[0] / max(np.percentile(luma(out), 50), 1e-3)  # keep the target luma
+    out, notes = grade_albedo(np.clip(out, 0, 255))   # saturation ceiling + luma range again after the blends
+    med1 = np.median(out.reshape(-1, 3), 0)
+    return out, ["macro %s: median %s -> #%02X%02X%02X, clumps -%d%%, %d blend layers"
+                 % (name, tuple(int(v) for v in med0), *(int(v) for v in med1), dark * 100, len(layers))] + notes
 
 
 def wet_albedo(rgb):
