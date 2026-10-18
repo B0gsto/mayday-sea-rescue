@@ -43,7 +43,7 @@ local MonetizationConfig = {
 			description = "Cash equal to 15 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
 			price = 39,
 			order = 1,
-			ready = false,
+			ready = true,
 			cashMinutes = 15,
 			valueBonus = 0,
 		},
@@ -53,7 +53,7 @@ local MonetizationConfig = {
 			description = "Cash equal to 45 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
 			price = 99,
 			order = 2,
-			ready = false,
+			ready = true,
 			cashMinutes = 45,
 			valueBonus = 0,
 		},
@@ -63,7 +63,7 @@ local MonetizationConfig = {
 			description = "Cash equal to 2.5 hours of your top open zone's Cash rate, plus 10%. Cash only, no Reputation.",
 			price = 249,
 			order = 3,
-			ready = false,
+			ready = true,
 			cashMinutes = 150,
 			valueBonus = 0.1,
 		},
@@ -73,7 +73,7 @@ local MonetizationConfig = {
 			description = "Cash equal to 7 hours of your top open zone's Cash rate, plus 20%. Cash only, no Reputation.",
 			price = 599,
 			order = 4,
-			ready = false,
+			ready = true,
 			cashMinutes = 420,
 			valueBonus = 0.2,
 		},
@@ -84,7 +84,7 @@ local MonetizationConfig = {
 			description = "2x Cash for 30 minutes of playtime. The timer pauses while you are away. Does not stack with the 2x Cash pass.",
 			price = 49,
 			order = 5,
-			ready = false,
+			ready = true,
 			cashMultiplier = 2,
 			boostMinutes = 30,
 		},
@@ -94,7 +94,7 @@ local MonetizationConfig = {
 			description = "+50% Cash for you and everyone in your crew for 20 minutes of playtime. One active per crew. Cash only.",
 			price = 49,
 			order = 6,
-			ready = false,
+			ready = true,
 			cashMultiplier = 1.5,
 			boostMinutes = 20,
 		},
@@ -113,7 +113,7 @@ local MonetizationConfig = {
 			description = "Brings a server-wide storm to the Gale Isles for everyone in the server. Joins the server's storm queue.",
 			price = 249,
 			order = 8,
-			ready = false,
+			ready = true,
 			stormTier = "Storm",
 		},
 		CallTheGreatStorm = {
@@ -122,7 +122,7 @@ local MonetizationConfig = {
 			description = "Brings a bigger server-wide storm with a guaranteed big call for everyone in the server. Joins the server's storm queue.",
 			price = 699,
 			order = 9,
-			ready = false,
+			ready = true,
 			stormTier = "GreatStorm",
 		},
 		-- 3.1 Season Logbook: a developer product bought once per season (post-launch, needs the season track)
@@ -143,7 +143,7 @@ local MonetizationConfig = {
 			description = "Doubles Cash from operations, big calls and challenges. Does not change Reputation or rank.",
 			price = 199,
 			order = 1,
-			ready = false,
+			ready = true,
 			cashMultiplier = 2,
 		},
 		VipCrewCard = {
@@ -165,10 +165,10 @@ local MonetizationConfig = {
 		StarterKit = {
 			id = 0,
 			name = "Starter Kit",
-			description = "3,000 Cash once, the Station Orange livery for the board, jet ski and RIB, and a Bosun bandana.",
+			description = "3,000 Cash, paid once. Owners also get the Station Orange livery and a Bosun bandana when they arrive in a later update.",
 			price = 99,
 			order = 4,
-			ready = false,
+			ready = true,
 			cashOnce = 3000,
 		},
 		BosunsWardrobe = {
@@ -249,6 +249,16 @@ local MonetizationConfig = {
 	-- docs/04 section 4.1: five Cash pack purchases per account per day (tune). Enforced by the shelf (RP-M3).
 	CashPackDailyLimit = 5,
 	CashPacks = { "SmallBonus", "CrewPayroll", "StationBudget", "HarborFund" },
+
+	-- docs/03 section 2.1 Cash per hour by zone; Cash packs pay minutes of the top `live` zone the
+	-- player's rank has opened (docs/03 section 3). Flip `live` when a zone's operations ship.
+	CashPackZones = {
+		{ id = "CalmBay", rankIndex = 1, cashPerHour = 6000, live = true },
+		{ id = "Skerries", rankIndex = 2, cashPerHour = 8700, live = false },
+		{ id = "OpenSea", rankIndex = 4, cashPerHour = 12700, live = false },
+		{ id = "StormFront", rankIndex = 6, cashPerHour = 17300, live = false },
+		{ id = "IcebergNorth", rankIndex = 7, cashPerHour = 21800, live = false },
+	},
 }
 
 return MonetizationConfig

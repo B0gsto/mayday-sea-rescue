@@ -88,10 +88,16 @@ return function(t)
 	end)
 
 	t.test("unfinished items are listed only in Studio; ready items show even with id 0", function()
-		-- today's config: everything ready = false
-		t.expect(Shelves.shelfVisible(Config, "Till", false, true)).toBe(false)
-		t.expect(Shelves.shelfVisible(Config, "Till", true, true)).toBe(true)
-		t.expect(#Shelves.shelfItems(Config, "Till", true)).toBe(7)
+		-- a config with everything ready = false (RP-M2 has since flipped the built effects)
+		local unready = clone(Config)
+		for _, kind in { "Products", "GamePasses" } do
+			for _, it in unready[kind] do
+				it.ready = false
+			end
+		end
+		t.expect(Shelves.shelfVisible(unready, "Till", false, true)).toBe(false)
+		t.expect(Shelves.shelfVisible(unready, "Till", true, true)).toBe(true)
+		t.expect(#Shelves.shelfItems(unready, "Till", true)).toBe(7)
 		local c = clone(Config)
 		c.GamePasses.QuickLaunch.ready = true -- RP-M2 done, RP-M4 not yet: id 0
 		t.expect(Shelves.shelfVisible(c, "BoatDeskQuickLaunch", false, true)).toBe(true)

@@ -2,7 +2,9 @@
 -- ProgressionService: Cash, Rep, rank, gear and vehicle ownership on top of DataService.
 --
 -- API (server, see CONTRACT.md):
---   ProgressionService.Award(player, cash, rep, reason)   applies the storm Cash multiplier
+--   ProgressionService.Award(player, cash, rep, reason)   applies the storm and paid Cash multipliers
+--     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; Rep is never multiplied)
+--   ProgressionService.Refresh(player, extra?)  re-push the snapshot (after a purchase grant)
 --   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, gear, vehicles, ... }?
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason)
 --   ProgressionService.GetGearBonus(player, stat) -> multiplier (1 by default)
@@ -25,6 +27,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 
+local CashEffects = require(script.Parent:WaitForChild("Monetization"):WaitForChild("CashEffects"))
 local DataService = require(script.Parent.DataService)
 
 local ProgressionService = {}
@@ -111,7 +114,9 @@ function ProgressionService.Award(player: Player, cash: number, rep: number, rea
 		return
 	end
 	local state, isGreat = weatherState()
-	local finalCash, finalRep, mult = Rules.applyAward(cash, rep, state, isGreat)
+	local paid = CashEffects.multiplier(player) -- Cash only (docs/04 sections 3 and 4.2)
+	local finalCash, finalRep, mult = Rules.applyAward(cash * paid, rep, state, isGreat)
+	mult *= paid
 	local oldRank = Rules.rankIndex(data)
 	data.cash += finalCash
 	data.rep += finalRep
@@ -149,6 +154,15 @@ function ProgressionService.RecordTraining(
 	local result = if isExercise
 		then Rules.recordExercise(data, kind, grade, steps, player.UserId, cannotFail)
 		else Rules.recordOperation(data, kind, steps, player.UserId)
+	if not isExercise and (grade == "Gold" or grade == "Silver" or grade == "Bronze") then
+		-- saved count of finished operations (the Chandlery's priced shelves open after 3, docs/04 rule 6)
+		local done = (
+			if type(data.flags.opsCompleted) == "number" then data.flags.opsCompleted else 0
+		) + 1
+		data.flags.opsCompleted = math.min(done, 1e6)
+		player:SetAttribute("OpsCompletedTotal", data.flags.opsCompleted)
+		DataService.MarkDirty(player)
+	end
 	if #result.counted == 0 and #result.earned == 0 and not result.passed then
 		return result
 	end
@@ -191,6 +205,13 @@ function ProgressionService.RecordTraining(
 		end
 	end
 	return result
+end
+
+function ProgressionService.Refresh(player: Player, extra: { [string]: any }?)
+	local data = DataService.Get(player)
+	if data then
+		push(player, data, extra)
+	end
 end
 
 function ProgressionService.GetData(player: Player): { [string]: any }?
@@ -339,8 +360,16 @@ function ProgressionService.Init()
 		if data.coldOpenDone then
 			player:SetAttribute("ColdOpenDone", true) -- OperationService and the client read it
 		end
+		if type(data.flags.opsCompleted) == "number" then
+			player:SetAttribute("OpsCompletedTotal", data.flags.opsCompleted)
+		end
 		push(player, data)
 	end)
+	CashEffects.init(ProgressionService.Refresh)
+end
+
+function ProgressionService.Start()
+	CashEffects.start()
 end
 
 return ProgressionService

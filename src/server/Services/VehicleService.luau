@@ -4,6 +4,9 @@
 --   RequestVehicle (RemoteFunction, Net)  client asks for a vehicleId -> (ok, reasonOrVehicle)
 --   Bay ProximityPrompts                 temporary launch UI until the HUD exists ("Launch Jet Ski")
 --   Vehicle_ArrivalHandoff (RemoteEvent) after the arrival cinematic: unseat, dock, stand on the slipway
+--   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
+--     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere at the station (QUICK_LAUNCH_RADIUS
+--     of the player's bay), no launch cooldown, seated at the helm. Same rank and occupancy checks.
 --
 -- Vehicle states:
 --   Dock    nobody driving and the hull is at a bay: HullRoot anchored (clients bob it visually)
@@ -30,6 +33,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
+local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
@@ -60,6 +64,7 @@ type Record = {
 
 local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
+local QUICK_LAUNCH_RADIUS = 150 -- studs from the player's bay that count as "at the station" -- tune
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
 local SWEEP_INTERVAL = 5 -- seconds between idle / wreck sweeps (RespawnPolicy)
@@ -623,14 +628,15 @@ end
 local function spawnVehicle(
 	player: Player,
 	vehicleId: string,
-	bay: BasePart?
+	bay: BasePart?,
+	quick: boolean?
 ): (boolean, string | Model)
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
 		return false, "UnknownVehicle"
 	end
 	local now = os.clock()
-	if lastSpawn[player] and now - lastSpawn[player] < SPAWN_COOLDOWN then
+	if not quick and lastSpawn[player] and now - lastSpawn[player] < SPAWN_COOLDOWN then
 		return false, "Cooldown"
 	end
 	if not canUse(player, vehicleId) then
@@ -974,6 +980,16 @@ function VehicleService.Init()
 		return spawnVehicle(player, vehicleId, nil)
 	end
 
+	local quickRemote = Instance.new("RemoteFunction")
+	quickRemote.Name = "Vehicle_QuickLaunch"
+	quickRemote.OnServerInvoke = function(player: Player, vehicleId: unknown)
+		if type(vehicleId) ~= "string" then
+			return false, "BadRequest"
+		end
+		return VehicleService.QuickLaunch(player, vehicleId)
+	end
+	quickRemote.Parent = net
+
 	Players.PlayerAdded:Connect(assignBay)
 	for _, player in Players:GetPlayers() do
 		assignBay(player)
@@ -1105,6 +1121,33 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 		player:SetAttribute("ArrivalHandoff", nil)
 	end
 	return model
+end
+
+-- Quick Launch (docs/04 section 3): convenience only. It skips the walk and the launch cooldown; it never
+-- touches a casualty, a step or a grade, and rank still gates every vehicle (canUse in spawnVehicle).
+function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean, string | Model)
+	local owns = false
+	local module = script.Parent:FindFirstChild("MonetizationService")
+	if module and module:IsA("ModuleScript") then
+		local ok, monetization = pcall(require, module)
+		if ok and type(monetization) == "table" then
+			owns = (monetization :: any).OwnsPass(player, "QuickLaunch") == true
+		end
+	end
+	local bay = bayFor(player)
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local distance = if bay and root then flatDistance(root.Position, bay.Position) else nil
+	local allowed, why = MonetizationEffects.quickLaunchAllowed(
+		owns,
+		distance,
+		QUICK_LAUNCH_RADIUS,
+		player:GetAttribute("ColdOpenDone") == true
+	)
+	if not allowed then
+		return false, why
+	end
+	return spawnVehicle(player, vehicleId, bay, true)
 end
 
 function VehicleService.GetVehicle(player: Player): Model?

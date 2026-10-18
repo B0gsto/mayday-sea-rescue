@@ -7,7 +7,19 @@
 -- API:
 --   StormService.ForceStorm(isGreat: boolean?, skipWarning: boolean?)  -- start a storm now
 --   StormService.ForceCalm()                                           -- end any storm now
+--   StormService.QueueSummon(player, tier) -> (ok, reason)  use one of the player's Storm Tickets
 -- Dev chat commands (Studio only): /storm, /storm now, /greatstorm, /calm.
+--
+-- Storm Summon (RP-M2, docs/04 section 5): the Call the Storm / Call the Great Storm products grant a
+-- Storm Ticket on the profile (flag shop.ticketStorm / ticketGreat) and queue it. The ticket is used up
+-- only when its storm starts, so a storm that never runs (queue full, buyer left, server shut down)
+-- stays a ticket the player can use in any server. Queue of two; at least 8 minutes between summoned
+-- storms and none within 2 minutes of a natural storm; the natural storm clock is never reset.
+-- Weather attributes: SummonQueue (number queued), SummonedBy (display name, "" when anonymous or
+-- natural), GreatStormCallers (names, comma separated, for the station board). Player attribute
+-- StormCaller = true for 24 hours after their storm starts. Remotes (ReplicatedStorage.Net):
+--   Storm_UseTicket   C->S function (tier: "Storm" | "GreatStorm") -> (ok, reason)
+--   Storm_SetAnonymous C->S event (boolean) hide the buyer's name in announcements
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,8 +28,12 @@ local TextChatService = game:GetService("TextChatService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local DataService = require(script.Parent:WaitForChild("DataService"))
+local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
+local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
+local OpsRemotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 
@@ -34,6 +50,15 @@ local stateDuration = 0
 local stormId = 0
 local isGreat = false
 local wind = 0
+
+-- Storm Summon state (docs/04 section 5)
+type Summon = { player: Player, tier: string }
+local queue: { Summon } = {}
+local current: Summon? = nil -- the summoned storm now running (nil for a natural storm)
+local naturalEnd = -math.huge -- when the last natural storm cleared
+local naturalWarningAt = 0 -- the natural clock: when the next natural storm is due
+local lastSummonEnd = -math.huge
+local greatCallers: { string } = {}
 
 local function publish()
 	-- State last: clients fire Weather.changed on it, and the rest should already be in place.
@@ -72,9 +97,21 @@ local function enter(nextState: string, now: number?)
 	elseif nextState == "Calm" then
 		isGreat = false
 	end
+	local wasSummoned = current ~= nil
 	state = nextState
 	stateStart = now or Workspace:GetServerTimeNow()
 	stateDuration = WeatherMath.durationFor(state, isGreat, GameConfig.Storm)
+	if nextState == "Calm" then
+		if wasSummoned then
+			-- back to the natural clock where it was (docs/04 section 5 rule 2)
+			current = nil
+			lastSummonEnd = stateStart
+			stateDuration = math.max(Effects.Summon.NaturalBuffer, naturalWarningAt - stateStart)
+		else
+			naturalEnd = stateStart
+		end
+		naturalWarningAt = stateStart + stateDuration
+	end
 	publish()
 	cue()
 	print(
@@ -91,6 +128,7 @@ function StormService.ForceStorm(great: boolean?, skipWarning: boolean?)
 	local wantGreat = great == true
 	if state == "Calm" or state == "Clearing" then
 		isGreat = wantGreat
+		current = nil
 		enter("Warning")
 		if skipWarning then
 			enter("Storm")
@@ -114,6 +152,224 @@ function StormService.ForceCalm()
 	if state ~= "Calm" then
 		enter("Calm")
 	end
+end
+
+local function radioAll(from: string, text: string)
+	OpsRemotes.event("Ops_Radio"):FireAllClients({ opId = "", from = from, text = text })
+end
+
+local function radioTo(player: Player, from: string, text: string)
+	if player.Parent then
+		OpsRemotes.event("Ops_Radio"):FireClient(player, { opId = "", from = from, text = text })
+	end
+end
+
+local function shopOf(player: Player): { [string]: any }?
+	local data = DataService.Get(player)
+	if not data then
+		return nil
+	end
+	local shop = data.flags.shop
+	if type(shop) ~= "table" then
+		shop = {}
+		data.flags.shop = shop
+	end
+	return shop
+end
+
+local function publishQueue()
+	if folder then
+		folder:SetAttribute("SummonQueue", #queue)
+	end
+end
+
+local function queuedBy(player: Player, tier: string): number
+	local n = 0
+	for _, entry in queue do
+		if entry.player == player and entry.tier == tier then
+			n += 1
+		end
+	end
+	return n
+end
+
+-- Queues one of the player's unused Storm Tickets. Never takes a ticket here: it is used up only
+-- when the storm starts.
+function StormService.QueueSummon(player: Player, tier: string): (boolean, string)
+	if not Effects.ticketField(tier) then
+		return false, "BadTier"
+	end
+	local shop = shopOf(player)
+	if not shop then
+		return false, "NoData"
+	end
+	if Effects.tickets(shop, tier) <= queuedBy(player, tier) then
+		return false, "NoTicket"
+	end
+	if #queue >= Effects.Summon.QueueMax then
+		return false, "QueueFull"
+	end
+	table.insert(queue, { player = player, tier = tier })
+	publishQueue()
+	return true, "ok"
+end
+
+local function displayName(player: Player): string
+	local shop = shopOf(player)
+	return if shop and shop.anon == true then "" else player.DisplayName
+end
+
+local function startSummon(entry: Summon, pushNatural: boolean)
+	local shop = shopOf(entry.player)
+	if not shop or not Effects.takeTicket(shop, entry.tier) then
+		return -- the ticket is gone (used elsewhere): nothing to run
+	end
+	DataService.MarkDirty(entry.player)
+	task.spawn(DataService.Save, entry.player, false)
+	local great = entry.tier == "GreatStorm"
+	local now = Workspace:GetServerTimeNow()
+	if pushNatural then
+		naturalWarningAt = now
+			+ Effects.summonSeconds(entry.tier, GameConfig.Storm :: any)
+			+ Effects.Summon.NaturalBuffer
+	end
+	shop.callerHour = math.floor(os.time() / 3600) + Effects.Summon.CallerTitleHours
+	entry.player:SetAttribute("StormCaller", true)
+	local name = displayName(entry.player)
+	folder:SetAttribute("SummonedBy", name)
+	if great and name ~= "" then
+		table.insert(greatCallers, name)
+		folder:SetAttribute("GreatStormCallers", table.concat(greatCallers, ", "))
+	end
+	isGreat = great
+	current = entry
+	enter("Warning", now)
+	local what = if great then "A Great Storm" else "A storm"
+	radioAll(
+		"Gale Isles Coastguard",
+		if name ~= ""
+			then `{what} has been called in by {name}. All stations, storm warning for the Gale Isles.`
+			else `{what} has been called in. All stations, storm warning for the Gale Isles.`
+	)
+end
+
+local function stepSummons(now: number)
+	if #queue == 0 or state ~= "Calm" then
+		return
+	end
+	local head = queue[1]
+	local decision = Effects.summonDecision({
+		state = state,
+		now = now,
+		naturalEnd = naturalEnd,
+		naturalWarningAt = naturalWarningAt,
+		lastSummonEnd = lastSummonEnd,
+		total = Effects.summonSeconds(head.tier, GameConfig.Storm :: any),
+	})
+	if decision == "Wait" then
+		return
+	end
+	table.remove(queue, 1)
+	publishQueue()
+	startSummon(head, decision == "StartPushNatural")
+end
+
+-- The Great Storm's guaranteed big call (docs/04 section 5), once its storm phase begins.
+local function bigCallForGreatSummon()
+	local module = script.Parent:FindFirstChild("OperationService")
+	if not module then
+		return
+	end
+	local ok, ops = pcall(require, module :: ModuleScript)
+	if ok and type(ops) == "table" and type((ops :: any).ForceBigCall) == "function" then
+		local fine, err = pcall((ops :: any).ForceBigCall)
+		if not fine then
+			warn(`[StormService] Great Storm big call failed: {err}`)
+		end
+	end
+end
+
+local function refreshCallerTitles()
+	local hour = math.floor(os.time() / 3600)
+	for _, player in Players:GetPlayers() do
+		local data = DataService.Get(player)
+		local shop = data and data.flags.shop
+		local untilHour = if type(shop) == "table" and type(shop.callerHour) == "number"
+			then shop.callerHour
+			else 0
+		player:SetAttribute("StormCaller", if untilHour > hour then true else nil)
+	end
+end
+
+local function grantTicket(tier: string)
+	return function(_player: Player, data: any): boolean?
+		local shop = data.flags.shop
+		if type(shop) ~= "table" then
+			shop = {}
+			data.flags.shop = shop
+		end
+		return Effects.addTicket(shop, tier)
+	end
+end
+
+local function afterTicket(tier: string)
+	return function(player: Player, _receipt: any, _fresh: boolean)
+		local ok, reason = StormService.QueueSummon(player, tier)
+		if ok then
+			radioTo(
+				player,
+				"Haven Harbourmaster",
+				`Your storm is in the queue ({#queue} of {Effects.Summon.QueueMax}). The whole server will hear it called in.`
+			)
+		elseif reason == "QueueFull" then
+			radioTo(
+				player,
+				"Haven Harbourmaster",
+				"Storm queue full. Your Storm Ticket is saved: use it at my desk when the queue has room, in any server."
+			)
+		end
+	end
+end
+
+local function setupSummons()
+	MonetizationService.OnProduct("CallTheStorm", grantTicket("Storm"), afterTicket("Storm"))
+	MonetizationService.OnProduct(
+		"CallTheGreatStorm",
+		grantTicket("GreatStorm"),
+		afterTicket("GreatStorm")
+	)
+	local net = ReplicatedStorage:WaitForChild("Net")
+	local use = Instance.new("RemoteFunction")
+	use.Name = "Storm_UseTicket"
+	use.OnServerInvoke = function(player: Player, tier: any)
+		if type(tier) ~= "string" then
+			return false, "BadTier"
+		end
+		return StormService.QueueSummon(player, tier)
+	end
+	use.Parent = net
+	local anon = Instance.new("RemoteEvent")
+	anon.Name = "Storm_SetAnonymous"
+	anon.OnServerEvent:Connect(function(player: Player, value: any)
+		local shop = shopOf(player)
+		if shop and type(value) == "boolean" then
+			shop.anon = if value then true else nil
+			DataService.MarkDirty(player)
+		end
+	end)
+	anon.Parent = net
+	Players.PlayerRemoving:Connect(function(player: Player)
+		-- a queued storm whose buyer left does not run; their ticket stays saved
+		for i = #queue, 1, -1 do
+			if queue[i].player == player then
+				table.remove(queue, i)
+			end
+		end
+		publishQueue()
+	end)
+	DataService.OnLoaded(function()
+		refreshCallerTitles()
+	end)
 end
 
 local function runCommand(player: Player?, text: string)
@@ -179,21 +435,38 @@ function StormService.Init()
 	stateStart = Workspace:GetServerTimeNow()
 	stateDuration = WeatherMath.durationFor("Calm", false, GameConfig.Storm)
 	wind = WeatherMath.windForStorm(0)
+	naturalWarningAt = stateStart + stateDuration
 	publish()
 	folder:SetAttribute("Intensity", 0)
+	folder:SetAttribute("SummonQueue", 0)
+	folder:SetAttribute("SummonedBy", "")
+	folder:SetAttribute("GreatStormCallers", "")
 	folder.Parent = ReplicatedStorage -- parent after the attributes so clients see a full set
 	setupDevCommands()
+	setupSummons()
 end
 
 function StormService.Start()
 	local sinceIntensity = 0
 	local lastIntensity = -1
+	local sinceTitles = 0
 	while true do
 		local dt = task.wait(TICK_SECONDS)
 		local now = Workspace:GetServerTimeNow()
 		if now >= stateStart + stateDuration then
 			-- Chain from the scheduled end, so a slow tick never drifts the cycle.
 			enter(WeatherMath.nextState(state), math.min(now, stateStart + stateDuration))
+			if state == "Storm" and current and current.tier == "GreatStorm" then
+				task.spawn(bigCallForGreatSummon)
+			elseif state == "Calm" then
+				folder:SetAttribute("SummonedBy", "")
+			end
+		end
+		stepSummons(now)
+		sinceTitles += dt
+		if sinceTitles >= 30 then
+			sinceTitles = 0
+			refreshCallerTitles()
 		end
 		sinceIntensity += dt
 		if sinceIntensity >= INTENSITY_PUBLISH_SECONDS then
