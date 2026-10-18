@@ -1,0 +1,727 @@
+{
+  "_meta": {
+    "doc": "docs/11-dispatcher-and-voice.md section 1 (briefs and settings)",
+    "date": "2026-10-18",
+    "tier_at_casting": "free (library voices and Voice Design are API-blocked on free)",
+    "audition_credits_used": 2934,
+    "duplicates": {
+      "Lily": [
+        "AGGIE",
+        "DR_OSEI"
+      ],
+      "Matilda": [
+        "HAZEL",
+        "CASUALTY_F"
+      ],
+      "Liam": [
+        "INFORMANT_M",
+        "TEEN_M"
+      ]
+    },
+    "licence": "Free-tier audio has no commercial licence: regenerate everything on a paid plan before shipping.",
+    "used_by": "tools/voice/tts.py (reads roles.<SPEAKER>.voice_id / model_id / settings)"
+  },
+  "roles": {
+    "CG_DAY": {
+      "voice_name": "Alice",
+      "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.72,
+        "similarity_boost": 0.8,
+        "style": 0.05,
+        "use_speaker_boost": true,
+        "speed": 0.95
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CG_DAY--Alice/CGD_CHATTER_RADIO_CHECK_REPLY.mp3",
+        "assets/voice/auditions/CG_DAY--Alice/CGD_FERRY_MANIFEST_MISMATCH.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Lily",
+          "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+          "source": "premade",
+          "description": "British F, middle-aged, velvety",
+          "auditions": [
+            "assets/voice/auditions/CG_DAY--Lily/CGD_CHATTER_RADIO_CHECK_REPLY.mp3",
+            "assets/voice/auditions/CG_DAY--Lily/CGD_FERRY_MANIFEST_MISMATCH.mp3"
+          ]
+        },
+        {
+          "name": "Isla Skye",
+          "voice_id": "TVmbglAk3F1GkiCoOq47",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CG_DAY--Isla_Skye.mp3"
+        },
+        {
+          "name": "Lynda",
+          "voice_id": "SB13jgWjPxi4e4JoTT1H",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CG_DAY--Lynda.mp3"
+        }
+      ]
+    },
+    "CG_NIGHT": {
+      "voice_name": "Daniel",
+      "voice_id": "onwK4e9ZLuTAKqWW03F9",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.72,
+        "similarity_boost": 0.8,
+        "style": 0.05,
+        "use_speaker_boost": true,
+        "speed": 0.93
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CG_NIGHT--Daniel/CGN_CHATTER_RADIO_CHECK_REPLY.mp3",
+        "assets/voice/auditions/CG_NIGHT--Daniel/CGN_FERRY_MANIFEST_MISMATCH.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "George",
+          "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+          "source": "premade",
+          "description": "British M, middle-aged, warm storyteller",
+          "auditions": [
+            "assets/voice/auditions/CG_NIGHT--George/CGN_CHATTER_RADIO_CHECK_REPLY.mp3",
+            "assets/voice/auditions/CG_NIGHT--George/CGN_FERRY_MANIFEST_MISMATCH.mp3"
+          ]
+        },
+        {
+          "name": "Liam Dale",
+          "voice_id": "w2ZdKT3ghAOcMRbpjC3u",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CG_NIGHT--Liam_Dale.mp3"
+        },
+        {
+          "name": "Peter Baker",
+          "voice_id": "Ix8C14HEHgIQkJswik2o",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CG_NIGHT--Peter_Baker.mp3"
+        }
+      ],
+      "note": "Every Coastguard line exists in both CG_DAY and CG_NIGHT voices (docs/11 section 1)."
+    },
+    "AGGIE": {
+      "voice_name": "Lily",
+      "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.8,
+        "style": 0.2,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/AGGIE--Lily/AGG_ADVICE_IDLE_2.mp3",
+        "assets/voice/auditions/AGGIE--Lily/AGG_ADVICE_RANK_UP.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Alice",
+          "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+          "source": "premade",
+          "description": "British F, middle-aged, clear educator",
+          "auditions": [
+            "assets/voice/auditions/AGGIE--Alice/AGG_ADVICE_IDLE_2.mp3",
+            "assets/voice/auditions/AGGIE--Alice/AGG_ADVICE_RANK_UP.mp3"
+          ]
+        },
+        {
+          "name": "Beatrice",
+          "voice_id": "kkPJzQOWz2Oz9cUaEaQd",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/AGGIE--Beatrice.mp3"
+        },
+        {
+          "name": "Eleanor",
+          "voice_id": "2qQJWjw5XdG80GreshqG",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/AGGIE--Eleanor.mp3"
+        }
+      ]
+    },
+    "CREW_FINN": {
+      "voice_name": "Charlie",
+      "voice_id": "IKne3meq5aSn9XLyUdCD",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.75,
+        "style": 0.25,
+        "use_speaker_boost": true,
+        "speed": 1.05
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CREW_FINN--Charlie/FIN_CALLOUT_LOST.mp3",
+        "assets/voice/auditions/CREW_FINN--Charlie/FIN_CHATTER_C2.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Liam",
+          "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+          "source": "premade",
+          "description": "American M, young, energetic",
+          "auditions": [
+            "assets/voice/auditions/CREW_FINN--Liam/FIN_CALLOUT_LOST.mp3",
+            "assets/voice/auditions/CREW_FINN--Liam/FIN_CHATTER_C2.mp3"
+          ]
+        },
+        {
+          "name": "Bren",
+          "voice_id": "RlSVB64yXMZJjq67jbB1",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CREW_FINN--Bren.mp3"
+        },
+        {
+          "name": "Cillian",
+          "voice_id": "B5jEZPqk2OJ2vkPw3wBM",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CREW_FINN--Cillian.mp3"
+        }
+      ]
+    },
+    "CREW_DEE": {
+      "voice_name": "Sarah",
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0.2,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CREW_DEE--Sarah/DEE_CALLOUT_BIG_SET.mp3",
+        "assets/voice/auditions/CREW_DEE--Sarah/DEE_CHATTER_C1.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Matilda",
+          "voice_id": "XrExE9yKIg1WjnnlVkGX",
+          "source": "premade",
+          "description": "American F, middle-aged, professional",
+          "auditions": [
+            "assets/voice/auditions/CREW_DEE--Matilda/DEE_CALLOUT_BIG_SET.mp3",
+            "assets/voice/auditions/CREW_DEE--Matilda/DEE_CHATTER_C1.mp3"
+          ]
+        }
+      ]
+    },
+    "PLAYER_M": {
+      "voice_name": "Will",
+      "voice_id": "bIHbv24MWmeRgasZH58o",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.62,
+        "similarity_boost": 0.8,
+        "style": 0.1,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/PLAYER_M--Will/PLM_CALM_NEARLY_THERE.mp3",
+        "assets/voice/auditions/PLAYER_M--Will/PLM_FERRY_ALL_ACCOUNTED.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Liam",
+          "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+          "source": "premade",
+          "description": "American M, young, energetic",
+          "auditions": [
+            "assets/voice/auditions/PLAYER_M--Liam/PLM_CALM_NEARLY_THERE.mp3",
+            "assets/voice/auditions/PLAYER_M--Liam/PLM_FERRY_ALL_ACCOUNTED.mp3"
+          ]
+        },
+        {
+          "name": "Lewis",
+          "voice_id": "gUbIduqGzBP438teh4ZA",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/PLAYER_M--Lewis.mp3"
+        }
+      ]
+    },
+    "PLAYER_F": {
+      "voice_name": "Jessica",
+      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.62,
+        "similarity_boost": 0.8,
+        "style": 0.1,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/PLAYER_F--Jessica/PLF_CALM_NEARLY_THERE.mp3",
+        "assets/voice/auditions/PLAYER_F--Jessica/PLF_FERRY_ALL_ACCOUNTED.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Sarah",
+          "voice_id": "EXAVITQu4vr4xnSDxMaL",
+          "source": "premade",
+          "description": "American F, young, mature and confident",
+          "auditions": [
+            "assets/voice/auditions/PLAYER_F--Sarah/PLF_CALM_NEARLY_THERE.mp3",
+            "assets/voice/auditions/PLAYER_F--Sarah/PLF_FERRY_ALL_ACCOUNTED.mp3"
+          ]
+        },
+        {
+          "name": "Sarah",
+          "voice_id": "Lny4bN2CTZWgKZAgIHKa",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/PLAYER_F--Sarah.mp3"
+        }
+      ]
+    },
+    "HELI_PILOT": {
+      "voice_name": "Brian",
+      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.75,
+        "similarity_boost": 0.8,
+        "style": 0.05,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/HELI_PILOT--Brian/HEL_HELO_ON_SCENE.mp3",
+        "assets/voice/auditions/HELI_PILOT--Brian/HEL_HELO_FUEL.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Daniel",
+          "voice_id": "onwK4e9ZLuTAKqWW03F9",
+          "source": "premade",
+          "description": "British M, middle-aged, steady broadcaster",
+          "auditions": [
+            "assets/voice/auditions/HELI_PILOT--Daniel/HEL_HELO_ON_SCENE.mp3",
+            "assets/voice/auditions/HELI_PILOT--Daniel/HEL_HELO_FUEL.mp3"
+          ]
+        },
+        {
+          "name": "Adam",
+          "voice_id": "U5UjeJMsOvyhYhXfZdvZ",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/HELI_PILOT--Adam.mp3"
+        },
+        {
+          "name": "David",
+          "voice_id": "1N4VgTBW1ZGBv5IHWRAf",
+          "source": "voice_library",
+          "accent": "scottish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/HELI_PILOT--David.mp3"
+        }
+      ]
+    },
+    "BARNABY": {
+      "voice_name": "George",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.75,
+        "style": 0.45,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/BARNABY--George/BAR_CALLER_ANCHOR_OK.mp3",
+        "assets/voice/auditions/BARNABY--George/BAR_CALLER_LIFEJACKETS.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Bill",
+          "voice_id": "pqHfZKP75CvOlQylNhV4",
+          "source": "premade",
+          "description": "American M, old, wise and balanced",
+          "auditions": [
+            "assets/voice/auditions/BARNABY--Bill/BAR_CALLER_ANCHOR_OK.mp3",
+            "assets/voice/auditions/BARNABY--Bill/BAR_CALLER_LIFEJACKETS.mp3"
+          ]
+        },
+        {
+          "name": "Grandfather Joe",
+          "voice_id": "0lp4RIz96WD1RUtvEu3Q",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/BARNABY--Grandfather_Joe.mp3"
+        }
+      ]
+    },
+    "LOU": {
+      "voice_name": "Bill",
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.8,
+        "style": 0.35,
+        "use_speaker_boost": true,
+        "speed": 1.05
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/LOU--Bill/LOU_CALLER_ARRIVE.mp3",
+        "assets/voice/auditions/LOU--Bill/LOU_CALLER_CAPTAIN_THANKS.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Brian",
+          "voice_id": "nPczCjzI2devNBz1zQrb",
+          "source": "premade",
+          "description": "American M, middle-aged, deep and resonant",
+          "auditions": [
+            "assets/voice/auditions/LOU--Brian/LOU_CALLER_ARRIVE.mp3",
+            "assets/voice/auditions/LOU--Brian/LOU_CALLER_CAPTAIN_THANKS.mp3"
+          ]
+        }
+      ]
+    },
+    "DR_OSEI": {
+      "voice_name": "Lily",
+      "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.65,
+        "similarity_boost": 0.8,
+        "style": 0.15,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/DR_OSEI--Lily/OSE_HANDOVER_RECEIVE.mp3",
+        "assets/voice/auditions/DR_OSEI--Lily/OSE_HANDOVER_THANKS_3.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Alice",
+          "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+          "source": "premade",
+          "description": "British F, middle-aged, clear educator",
+          "auditions": [
+            "assets/voice/auditions/DR_OSEI--Alice/OSE_HANDOVER_RECEIVE.mp3",
+            "assets/voice/auditions/DR_OSEI--Alice/OSE_HANDOVER_THANKS_3.mp3"
+          ]
+        }
+      ]
+    },
+    "PATROL": {
+      "voice_name": "Chris",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.65,
+        "similarity_boost": 0.8,
+        "style": 0.1,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/PATROL--Chris/PAT_CALLER_RADIO_CHECK.mp3",
+        "assets/voice/auditions/PATROL--Chris/PAT_CALLER_COVER_SECTOR.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Roger",
+          "voice_id": "CwhRBWXzGAHq8TQ4Fs17",
+          "source": "premade",
+          "description": "American M, middle-aged, laid-back",
+          "auditions": [
+            "assets/voice/auditions/PATROL--Roger/PAT_CALLER_RADIO_CHECK.mp3",
+            "assets/voice/auditions/PATROL--Roger/PAT_CALLER_COVER_SECTOR.mp3"
+          ]
+        }
+      ]
+    },
+    "HAZEL": {
+      "voice_name": "Matilda",
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.75,
+        "style": 0.4,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/HAZEL--Matilda/HAZ_CALLER_STORM.mp3",
+        "assets/voice/auditions/HAZEL--Matilda/HAZ_CALLER_GOSSIP_2.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Alice",
+          "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+          "source": "premade",
+          "description": "British F, middle-aged, clear educator",
+          "auditions": [
+            "assets/voice/auditions/HAZEL--Alice/HAZ_CALLER_STORM.mp3",
+            "assets/voice/auditions/HAZEL--Alice/HAZ_CALLER_GOSSIP_2.mp3"
+          ]
+        },
+        {
+          "name": "Jane",
+          "voice_id": "RILOU7YmBhvwJGDGjNmP",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/HAZEL--Jane.mp3"
+        }
+      ]
+    },
+    "CASUALTY_M": {
+      "voice_name": "Callum",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.75,
+        "style": 0.45,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CASUALTY_M--Callum/CSM_CASUALTY_AIR_POCKET_2.mp3",
+        "assets/voice/auditions/CASUALTY_M--Callum/CSM_CASUALTY_COUGH_OK.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Chris",
+          "voice_id": "iP95p4xoKVk53GoZ742B",
+          "source": "premade",
+          "description": "American M, middle-aged, down-to-earth",
+          "auditions": [
+            "assets/voice/auditions/CASUALTY_M--Chris/CSM_CASUALTY_AIR_POCKET_2.mp3",
+            "assets/voice/auditions/CASUALTY_M--Chris/CSM_CASUALTY_COUGH_OK.mp3"
+          ]
+        },
+        {
+          "name": "Darren",
+          "voice_id": "9TYDukkUVpJPDSIuv3ir",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/CASUALTY_M--Darren.mp3"
+        }
+      ]
+    },
+    "CASUALTY_F": {
+      "voice_name": "Matilda",
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.3,
+        "similarity_boost": 0.75,
+        "style": 0.45,
+        "use_speaker_boost": true,
+        "speed": 1.0
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/CASUALTY_F--Matilda/CSF_CASUALTY_AIR_POCKET_2.mp3",
+        "assets/voice/auditions/CASUALTY_F--Matilda/CSF_CASUALTY_COUGH_OK.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Bella",
+          "voice_id": "hpp4J3VqNfWAUOO0d1Us",
+          "source": "premade",
+          "description": "American F, middle-aged, professional and warm",
+          "auditions": [
+            "assets/voice/auditions/CASUALTY_F--Bella/CSF_CASUALTY_AIR_POCKET_2.mp3",
+            "assets/voice/auditions/CASUALTY_F--Bella/CSF_CASUALTY_COUGH_OK.mp3"
+          ]
+        }
+      ]
+    },
+    "PARENT_F": {
+      "voice_name": "Bella",
+      "voice_id": "hpp4J3VqNfWAUOO0d1Us",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.35,
+        "similarity_boost": 0.75,
+        "style": 0.4,
+        "use_speaker_boost": true,
+        "speed": 1.05
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/PARENT_F--Bella/PAR_CALLER_ASK.mp3",
+        "assets/voice/auditions/PARENT_F--Bella/PAR_CALLER_RELIEF.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Jessica",
+          "voice_id": "cgSgspJ2msm6clMCkdW9",
+          "source": "premade",
+          "description": "American F, young, bright and warm",
+          "auditions": [
+            "assets/voice/auditions/PARENT_F--Jessica/PAR_CALLER_ASK.mp3",
+            "assets/voice/auditions/PARENT_F--Jessica/PAR_CALLER_RELIEF.mp3"
+          ]
+        },
+        {
+          "name": "Laura",
+          "voice_id": "3b8fXc91YHS1i2DYAlBQ",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/PARENT_F--Laura.mp3"
+        },
+        {
+          "name": "Michelle",
+          "voice_id": "C92s6vssSLlabgIln1iY",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/PARENT_F--Michelle.mp3"
+        }
+      ]
+    },
+    "INFORMANT_M": {
+      "voice_name": "Liam",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.35,
+        "similarity_boost": 0.75,
+        "style": 0.4,
+        "use_speaker_boost": true,
+        "speed": 1.1
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/INFORMANT_M--Liam/INF_CALLER_STILL_THERE.mp3",
+        "assets/voice/auditions/INFORMANT_M--Liam/INF_CALLER_WAVE_2.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Callum",
+          "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+          "source": "premade",
+          "description": "American M, middle-aged, husky",
+          "auditions": [
+            "assets/voice/auditions/INFORMANT_M--Callum/INF_CALLER_STILL_THERE.mp3",
+            "assets/voice/auditions/INFORMANT_M--Callum/INF_CALLER_WAVE_2.mp3"
+          ]
+        },
+        {
+          "name": "Patrick",
+          "voice_id": "qwaVDEGNsBllYcZO1ZOJ",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/INFORMANT_M--Patrick.mp3"
+        },
+        {
+          "name": "Richie",
+          "voice_id": "73JgZZFYmivaO9TzZpzc",
+          "source": "voice_library",
+          "accent": "irish",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/INFORMANT_M--Richie.mp3"
+        }
+      ]
+    },
+    "TEEN_M": {
+      "voice_name": "Liam",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.75,
+        "style": 0.35,
+        "use_speaker_boost": true,
+        "speed": 1.05
+      },
+      "source": "premade",
+      "status": "provisional: free-tier premade, pick by ear before the paid run",
+      "auditions": [
+        "assets/voice/auditions/TEEN_M--Liam/TEN_CALLER_IN_WATER_2.mp3",
+        "assets/voice/auditions/TEEN_M--Liam/TEN_CALLER_THANKS.mp3"
+      ],
+      "alternates": [
+        {
+          "name": "Will",
+          "voice_id": "bIHbv24MWmeRgasZH58o",
+          "source": "premade",
+          "description": "American M, young, relaxed",
+          "auditions": [
+            "assets/voice/auditions/TEEN_M--Will/TEN_CALLER_IN_WATER_2.mp3",
+            "assets/voice/auditions/TEEN_M--Will/TEN_CALLER_THANKS.mp3"
+          ]
+        },
+        {
+          "name": "Toby",
+          "voice_id": "pYDLV125o4CgqP8i49Lg",
+          "source": "voice_library",
+          "accent": "british",
+          "note": "needs a paid plan for API use; check the voice's library terms for commercial use",
+          "preview": "assets/voice/auditions/library/TEEN_M--Toby.mp3"
+        }
+      ]
+    }
+  }
+}
