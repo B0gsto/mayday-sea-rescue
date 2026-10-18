@@ -15,13 +15,15 @@ try:
     FB = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 18)
 except OSError:
     F = FB = ImageFont.load_default()
-closes = sorted(f for f in os.listdir(R) if f.startswith("closeup_"))
+sys.path.insert(0, HERE)
+import render_list  # noqa: E402
+closes = [f for c in render_list.CLOSEUPS for f in ("closeup_%s.png" % c[1], "closeup_%s_WET.png" % c[1]) if os.path.exists(os.path.join(R, f))]
 rows = (len(ASSETS) * 2 + COLS - 1) // COLS
 CC = W // 4
 H = 40 + rows * (CELL + 18) + 24 + ((len(closes) + 3) // 4) * (CC + 18)
 sheet = Image.new("RGB", (W, H), (32, 33, 35))
 d = ImageDraw.Draw(sheet)
-d.text((10, 10), "E1 hand-held rescue kit, shared kit atlas (Soft + Hard sets). Each item DRY | WET, overcast-sea HDRI, Blender EEVEE",
+d.text((10, 10), "E1b hand-held rescue kit, M_Kit_Atlas (Cloth + Soft + Foil + Hard sets, 1024 ship). Each item DRY | WET, overcast-sea HDRI, EEVEE",
        font=FB, fill=(230, 230, 230))
 y0 = 40
 for i, a in enumerate(ASSETS):
@@ -33,12 +35,12 @@ for i, a in enumerate(ASSETS):
             sheet.paste(Image.open(f).convert("RGB").resize((CELL, CELL), Image.LANCZOS), (x, y))
         d.text((x + 3, y + CELL + 2), "%s %s" % (a.replace("M_Kit_", ""), state.upper()), font=F, fill=(200, 200, 200))
 yc = y0 + rows * (CELL + 18)
-d.text((10, yc + 2), "Close-ups at hero (first-person) distance, dry", font=FB, fill=(230, 230, 230))
+d.text((10, yc + 2), "First-person close-ups, camera 0.3 to 1.0 m from the item (dry)", font=FB, fill=(230, 230, 230))
 yc += 24
 for j, c in enumerate(closes):
     x, yy = (j % 4) * CC, yc + (j // 4) * (CC + 18)
     sheet.paste(Image.open(os.path.join(R, c)).convert("RGB").resize((CC, CC), Image.LANCZOS), (x, yy))
     d.text((x + 3, yy + CC + 2), c[8:-4], font=F, fill=(200, 200, 200))
 os.makedirs(OUT, exist_ok=True)
-sheet.save(os.path.join(OUT, "contact.png"), optimize=True)
-print("sheet", sheet.size, os.path.join(OUT, "contact.png"))
+sheet.save(os.path.join(OUT, "contact_b.png"), optimize=True)
+print("sheet", sheet.size, os.path.join(OUT, "contact_b.png"))

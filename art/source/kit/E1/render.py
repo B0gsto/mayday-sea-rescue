@@ -24,12 +24,10 @@ from kitgeo import KIT as REFS  # noqa: E402
 OUT = os.path.join(G, "build/e1/renders")
 TEX = os.path.join(G, "assets/textures", atlas.ATLAS_ASSET)
 CELL = 400
-CLOSE = 600
+CLOSE = 560
 # kit close-ups: asset, (az, el), target height fraction, distance factor of the bbox size
-CLOSEUPS = {"M_Kit_ThrowBag": ("throwbag_mouth_line", 30, 20, 0.75, 1.1),
-            "M_Kit_Lifebuoy": ("lifebuoy_tape_light", 20, 35, 0.5, 0.55),
-            "M_Kit_VHFHandset": ("vhf_face_keys", 15, 10, 0.35, 1.6),
-            "M_Kit_OxygenBag": ("oxygen_cylinder_label_mask", 25, 25, 0.4, 0.9)}
+# 1 m first-person close-ups: (asset, name, authored target (m), az, el, distance (m))
+from render_list import CLOSEUPS, WET_CLOSE  # noqa: E402
 
 
 def material(set_name, wet):
@@ -44,7 +42,7 @@ def material(set_name, wet):
     sfx = "_Wet" if wet else ""
     for k in ("ALB", "NOR", "RGH", "MET"):
         t = nt.nodes.new("ShaderNodeTexImage")
-        t.image = bpy.data.images.load(os.path.join(TEX, "T_%s_%s_%s%s.png" % (atlas.NAME, set_name, k, sfx if k in ("ALB", "RGH") else "")), check_existing=True)
+        t.image = bpy.data.images.load(os.path.join(TEX, "T_%s_%s_%s%s.png" % (atlas.NAME, set_name, k, sfx if k in ("ALB", "RGH", "NOR") else "")), check_existing=True)
         t.image.colorspace_settings.name = "sRGB" if k == "ALB" else "Non-Color"
         if k == "ALB":
             nt.links.new(t.outputs["Color"], b.inputs["Base Color"])
@@ -63,7 +61,7 @@ def material(set_name, wet):
         m.surface_render_method = "DITHERED"
     except Exception:
         pass
-    m.use_backface_culling = False
+    m.use_backface_culling = True   # Roblox MeshParts are single sided (two-layer foil)
     return m
 
 
@@ -124,15 +122,20 @@ def main():
                 o.data.materials.clear()
                 o.data.materials.append(material(e["set"], wet))
             shoot(scene, cam, pts, 35, 22, os.path.join(OUT, "%s_%s.png" % (asset, "wet" if wet else "dry")), CELL)
-        if asset in CLOSEUPS:
-            name, az, el, hf, df = CLOSEUPS[asset]
+        for (a_, name, p, az, el, dm) in CLOSEUPS:
+            if a_ != asset:
+                continue
             for e in vis:
                 e["object"].data.materials.clear()
                 e["object"].data.materials.append(material(e["set"], False))
-            lo, hi = turntable.bounds(pts)
-            size = max((hi - lo).x, (hi - lo).y, (hi - lo).z)
-            tgt = ((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z + (hi.z - lo.z) * hf)
-            shoot(scene, cam, pts, az, el, os.path.join(OUT, "closeup_%s.png" % name), CLOSE, tgt, max(size * df, 1.6))
+            off = Vector(spec.get("e1_offset", (0, 0, 0)))
+            tgt = (Vector(p) + off) * 3.0
+            shoot(scene, cam, pts, az, el, os.path.join(OUT, "closeup_%s.png" % name), CLOSE, tgt, dm * 3.0)
+            if name in WET_CLOSE:
+                for e in vis:
+                    e["object"].data.materials.clear()
+                    e["object"].data.materials.append(material(e["set"], True))
+                shoot(scene, cam, pts, az, el, os.path.join(OUT, "closeup_%s_WET.png" % name), CLOSE, tgt, dm * 3.0)
         print("[E1] rendered", asset, flush=True)
 
 
