@@ -238,5 +238,38 @@ def main():
         furniture_scene("M_Road_Bollard", wet, (0.75, -1.05, 0.85), (0.0, 0.0, 0.46), 40)
 
 
+def tile_plane(stem, wet, name):
+    """6 m x 6 m of a 2 m tile set (as a MaterialVariant lays it), from y = 0 forward."""
+    m = pbr(name + ("_Wet" if wet else ""), stem, wet)
+    for i, x0 in enumerate((-3.0, -1.0, 1.0)):
+        strip("%s%d" % (name, i), 2.0, 6.0, 2.0, m, x0=x0, steps=3)
+
+
+def pol1(outdir):
+    """POL1-B review shots: cobbles / gravel strips dry + wet, and low grazing close-ups of the 2 m tiles (~1.7 m)."""
+    global OUT
+    OUT = outdir
+    for wet in (False, True):
+        sfx = "_wet" if wet else "_dry"
+        for stem, width, label in (("T_Road_Cobbles", 6.0, "cobbles"), ("T_Road_Gravel", 3.333, "gravel")):
+            surface_scene(stem, width, wet, "Strip")
+            os.replace(os.path.join(OUT, "strip" + ("_Wet" if wet else "") + ".png"), os.path.join(OUT, label + sfx + ".png"))
+            for f in os.listdir(OUT):
+                if f.startswith("closeup_strip"):
+                    os.remove(os.path.join(OUT, f))
+        reset()
+        tile_plane("T_Road_CobblesTile", wet, "Setts")
+        camera((0.15, -0.3, 0.42), (0.0, 1.3, 0.0), 40)
+        shot("closeup_cobbles" + sfx)
+        reset()
+        tile_plane("T_Road_GravelTile", wet, "Grav")
+        camera((0.1, -0.3, 0.75), (0.0, 1.1, 0.0), 40)
+        shot("closeup_gravel" + sfx)
+
+
 if __name__ == "__main__":
-    main()
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    if argv[:1] == ["pol1"]:
+        pol1(os.path.join(GAME, argv[1]))
+    else:
+        main()
