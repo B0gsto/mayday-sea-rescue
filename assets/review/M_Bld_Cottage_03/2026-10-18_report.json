@@ -2,7 +2,7 @@
  "asset": "M_Bld_Cottage_03",
  "name": "M_Bld_Cottage_03",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "a4860576+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,13 +24,14 @@
  "exports": [
   {
    "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD0.fbx",
-   "bytes": 128956,
+   "bytes": 300924,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Cottage_03_COL",
     "M_Bld_Cottage_Details_03_LOD0",
     "M_Bld_Cottage_GlassLit_03_LOD0",
     "M_Bld_Cottage_Glass_03_LOD0",
+    "M_Bld_Cottage_Grime_03_LOD0",
     "M_Bld_Cottage_Roof_03_LOD0",
     "M_Bld_Cottage_Stone_03_LOD0",
     "M_Bld_Cottage_Trim_03_LOD0"
@@ -39,14 +40,14 @@
     {
      "name": "M_Bld_Cottage_03_COL.001",
      "min": [
-      -9.18,
+      -9.81,
       -8.96,
       -1.2
      ],
      "max": [
-      9.18,
+      9.75,
       8.66,
-      27.66
+      27.42
      ],
      "polygons": 44,
      "all_triangles": true,
@@ -55,16 +56,16 @@
     {
      "name": "M_Bld_Cottage_Details_03_LOD0.001",
      "min": [
-      -9.18,
-      -9.05,
+      -10.14,
+      -9.5,
       0.0
      ],
      "max": [
-      9.93,
-      8.795,
-      29.16
+      9.72,
+      8.987,
+      30.18
      ],
-     "polygons": 1580,
+     "polygons": 3216,
      "all_triangles": true,
      "uv": true
     },
@@ -77,7 +78,7 @@
      ],
      "max": [
       4.155,
-      7.475,
+      7.505,
       16.005
      ],
      "polygons": 16,
@@ -93,7 +94,7 @@
      ],
      "max": [
       4.605,
-      7.535,
+      7.565,
       16.005
      ],
      "polygons": 20,
@@ -101,50 +102,66 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Cottage_Grime_03_LOD0.001",
+     "min": [
+      -9.819,
+      -8.159,
+      0.0
+     ],
+     "max": [
+      9.75,
+      8.66,
+      26.76
+     ],
+     "polygons": 68,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Cottage_Roof_03_LOD0.001",
      "min": [
-      -9.18,
+      -9.75,
       -8.66,
       17.4852
      ],
      "max": [
-      9.18,
+      9.75,
       8.66,
-      24.66
+      24.42
      ],
-     "polygons": 24,
+     "polygons": 248,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Cottage_Stone_03_LOD0.001",
      "min": [
-      -9.27,
-      -8.09,
+      -10.05,
+      -8.15,
       -1.2
      ],
      "max": [
-      9.0,
-      8.09,
-      27.36
+      9.15,
+      8.15,
+      27.24
      ],
-     "polygons": 338,
+     "polygons": 380,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Cottage_Trim_03_LOD0.001",
      "min": [
-      -9.18,
-      -8.99,
-      0.1145
+      -9.72,
+      -8.9774,
+      0.2301
      ],
      "max": [
-      9.18,
-      8.99,
-      17.4252
+      9.72,
+      8.9774,
+      24.27
      ],
-     "polygons": 264,
+     "polygons": 1338,
      "all_triangles": true,
      "uv": true
     }
@@ -159,12 +176,13 @@
   },
   {
    "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD1.fbx",
-   "bytes": 99276,
+   "bytes": 184524,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Cottage_Details_03_LOD1",
     "M_Bld_Cottage_GlassLit_03_LOD1",
     "M_Bld_Cottage_Glass_03_LOD1",
+    "M_Bld_Cottage_Grime_03_LOD1",
     "M_Bld_Cottage_Roof_03_LOD1",
     "M_Bld_Cottage_Stone_03_LOD1",
     "M_Bld_Cottage_Trim_03_LOD1"
@@ -173,16 +191,16 @@
     {
      "name": "M_Bld_Cottage_Details_03_LOD1.001",
      "min": [
-      -9.18,
-      -9.05,
+      -10.14,
+      -9.5,
       0.0
      ],
      "max": [
-      9.18,
-      8.66,
-      29.16
+      9.72,
+      8.855,
+      30.18
      ],
-     "polygons": 884,
+     "polygons": 1332,
      "all_triangles": true,
      "uv": true
     },
@@ -195,7 +213,7 @@
      ],
      "max": [
       4.155,
-      7.475,
+      7.505,
       16.005
      ],
      "polygons": 16,
@@ -211,7 +229,7 @@
      ],
      "max": [
       4.605,
-      7.535,
+      7.565,
       16.005
      ],
      "polygons": 20,
@@ -219,50 +237,66 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Cottage_Grime_03_LOD1.001",
+     "min": [
+      -9.819,
+      -8.159,
+      0.0
+     ],
+     "max": [
+      9.75,
+      8.66,
+      26.76
+     ],
+     "polygons": 68,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Cottage_Roof_03_LOD1.001",
      "min": [
-      -9.18,
+      -9.75,
       -8.66,
       17.4852
      ],
      "max": [
-      9.18,
+      9.75,
       8.66,
-      24.66
+      24.42
      ],
-     "polygons": 24,
+     "polygons": 248,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Cottage_Stone_03_LOD1.001",
      "min": [
-      -9.27,
-      -8.09,
+      -10.05,
+      -8.15,
       -1.2
      ],
      "max": [
-      9.0,
-      8.09,
-      27.36
+      9.15,
+      8.15,
+      27.24
      ],
-     "polygons": 338,
+     "polygons": 380,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Cottage_Trim_03_LOD1.001",
      "min": [
-      -9.18,
-      -8.99,
-      0.1145
+      -9.72,
+      -8.96,
+      0.2301
      ],
      "max": [
-      9.18,
-      8.99,
-      17.4252
+      9.72,
+      8.96,
+      24.27
      ],
-     "polygons": 264,
+     "polygons": 866,
      "all_triangles": true,
      "uv": true
     }
@@ -277,12 +311,13 @@
   },
   {
    "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD2.fbx",
-   "bytes": 54956,
+   "bytes": 66684,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Cottage_Details_03_LOD2",
     "M_Bld_Cottage_GlassLit_03_LOD2",
     "M_Bld_Cottage_Glass_03_LOD2",
+    "M_Bld_Cottage_Grime_03_LOD2",
     "M_Bld_Cottage_Roof_03_LOD2",
     "M_Bld_Cottage_Stone_03_LOD2",
     "M_Bld_Cottage_Trim_03_LOD2"
@@ -291,16 +326,16 @@
     {
      "name": "M_Bld_Cottage_Details_03_LOD2.001",
      "min": [
-      -9.18,
-      -8.96,
+      -10.14,
+      -9.5,
       0.0
      ],
      "max": [
-      9.12,
+      9.72,
       8.018,
-      28.95
+      30.18
      ],
-     "polygons": 114,
+     "polygons": 134,
      "all_triangles": true,
      "uv": true
     },
@@ -337,16 +372,32 @@
      "uv": true
     },
     {
+     "name": "M_Bld_Cottage_Grime_03_LOD2.001",
+     "min": [
+      -9.75,
+      0.3807,
+      17.7222
+     ],
+     "max": [
+      9.75,
+      8.66,
+      24.135
+     ],
+     "polygons": 16,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
      "name": "M_Bld_Cottage_Roof_03_LOD2.001",
      "min": [
-      -9.18,
+      -9.75,
       -8.66,
       17.4852
      ],
      "max": [
-      9.18,
+      9.75,
       8.66,
-      24.66
+      24.42
      ],
      "polygons": 24,
      "all_triangles": true,
@@ -355,32 +406,32 @@
     {
      "name": "M_Bld_Cottage_Stone_03_LOD2.001",
      "min": [
-      -9.27,
-      -8.09,
+      -10.05,
+      -8.0,
       -1.2
      ],
      "max": [
       9.0,
-      8.09,
-      27.36
+      8.0,
+      27.24
      ],
-     "polygons": 146,
+     "polygons": 128,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Cottage_Trim_03_LOD2.001",
      "min": [
-      -9.18,
-      -8.99,
-      2.175
+      -9.72,
+      -8.96,
+      2.205
      ],
      "max": [
-      9.18,
-      8.99,
-      17.4252
+      9.72,
+      8.96,
+      24.27
      ],
-     "polygons": 88,
+     "polygons": 220,
      "all_triangles": true,
      "uv": true
     }
@@ -446,7 +497,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "338 of 10000"
+   "detail": "380 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD0",
@@ -454,7 +505,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.29e-02, 16 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD0",
@@ -478,7 +529,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 171 faces have no UV area"
+   "detail": "0 of 192 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD0",
@@ -502,7 +553,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "24 of 10000"
+   "detail": "248 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD0",
@@ -510,7 +561,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.57e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD0",
@@ -534,7 +585,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 12 faces have no UV area"
+   "detail": "0 of 184 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD0",
@@ -558,7 +609,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "264 of 10000"
+   "detail": "1338 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD0",
@@ -566,7 +617,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.55e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.16e-04, 60 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD0",
@@ -590,7 +641,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 178 faces have no UV area"
+   "detail": "0 of 913 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD0",
@@ -614,7 +665,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1580 of 10000"
+   "detail": "3216 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD0",
@@ -622,7 +673,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.60e-03, 56 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 9.09e-04, 88 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD0",
@@ -646,7 +697,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 861 faces have no UV area"
+   "detail": "0 of 1899 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Glass_03_LOD0",
@@ -761,6 +812,62 @@
    "detail": "0 of 8 faces have no UV area"
   },
   {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Grime_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.05e-01, 136 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 34 faces have no UV area"
+  },
+  {
    "subject": "M_Bld_Cottage_Stone_03_LOD1",
    "check": "naming",
    "ok": true,
@@ -782,7 +889,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "338 of 10000"
+   "detail": "380 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD1",
@@ -790,7 +897,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.29e-02, 16 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD1",
@@ -814,7 +921,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 171 faces have no UV area"
+   "detail": "0 of 192 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD1",
@@ -846,7 +953,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "24 of 10000"
+   "detail": "248 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD1",
@@ -854,7 +961,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.57e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD1",
@@ -878,7 +985,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 12 faces have no UV area"
+   "detail": "0 of 184 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD1",
@@ -910,7 +1017,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "264 of 10000"
+   "detail": "866 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD1",
@@ -918,7 +1025,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.55e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.10e-04, 60 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD1",
@@ -942,7 +1049,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 178 faces have no UV area"
+   "detail": "0 of 573 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD1",
@@ -950,7 +1057,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 12.3% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD1",
@@ -974,7 +1081,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "884 of 10000"
+   "detail": "1332 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD1",
@@ -982,7 +1089,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.18e-02, 24 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.88e-03, 64 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD1",
@@ -1006,7 +1113,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 471 faces have no UV area"
+   "detail": "0 of 691 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD1",
@@ -1014,7 +1121,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 1.444 (max 0.02), UV area by 19.6% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 7.016 (max 0.02), UV area by 22.8% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Glass_03_LOD1",
@@ -1145,6 +1252,70 @@
    "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Grime_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.05e-01, 136 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 34 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
    "subject": "M_Bld_Cottage_Stone_03_LOD2",
    "check": "naming",
    "ok": true,
@@ -1166,7 +1337,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "146 of 10000"
+   "detail": "128 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD2",
@@ -1174,7 +1345,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.29e-02, 16 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD2",
@@ -1198,7 +1369,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 75 faces have no UV area"
+   "detail": "0 of 66 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Stone_03_LOD2",
@@ -1206,7 +1377,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.4% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 13.9% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD2",
@@ -1238,7 +1409,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.75e+00, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Roof_03_LOD2",
@@ -1268,9 +1439,9 @@
    "subject": "M_Bld_Cottage_Roof_03_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 12.210 (max 0.02), UV area by 23.6% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD2",
@@ -1294,7 +1465,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "88 of 10000"
+   "detail": "220 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD2",
@@ -1302,7 +1473,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.55e-03, 16 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.55e-03, 40 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD2",
@@ -1326,7 +1497,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 54 faces have no UV area"
+   "detail": "0 of 120 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Trim_03_LOD2",
@@ -1334,7 +1505,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 2.668 (max 0.02), UV area by 44.3% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 1.072 (max 0.02), UV area by 59.9% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD2",
@@ -1358,7 +1529,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "114 of 10000"
+   "detail": "134 of 10000"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD2",
@@ -1366,7 +1537,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.18e-02, 20 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.10e-02, 20 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD2",
@@ -1390,7 +1561,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 74 faces have no UV area"
+   "detail": "0 of 80 faces have no UV area"
   },
   {
    "subject": "M_Bld_Cottage_Details_03_LOD2",
@@ -1398,7 +1569,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 2.048 (max 0.02), UV area by 73.9% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 2.500 (max 0.02), UV area by 67.8% (max 15%)"
   },
   {
    "subject": "M_Bld_Cottage_Glass_03_LOD2",
@@ -1529,6 +1700,70 @@
    "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 0.625 (max 0.02), UV area by 83.9% (max 15%)"
   },
   {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Grime_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "16 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.41e+01, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Grime_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 0.600 (max 0.02), UV area by 78.2% (max 15%)"
+  },
+  {
    "subject": "M_Bld_Cottage_03_COL",
    "check": "naming",
    "ok": true,
@@ -1574,7 +1809,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2242 of 40000 (hero_building, asset row)"
+   "detail": "5286 of 40000 (hero_building, asset row)"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1582,7 +1817,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1546 of 15000"
+   "detail": "2930 of 15000"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1590,7 +1825,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "384 of 3000"
+   "detail": "534 of 3000"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1598,7 +1833,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 6.12 x - x 10.12 m, spec 6.12 x - x 10.12 m (art/reference/M_Bld_Cottage_03/dims.md)"
+   "detail": "dims.md 6.63 x - x 10.44 m, spec 6.63 x - x 10.44 m (art/reference/M_Bld_Cottage_03/dims.md)"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1606,7 +1841,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "19.200 studs, real 6.120 m = 18.360 studs, off 4.6% (5% free, 15% with a note)"
+   "detail": "19.890 studs, real 6.630 m = 19.890 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1614,7 +1849,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "30.360 studs, real 10.120 m = 30.360 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "31.380 studs, real 10.440 m = 31.320 studs, off 0.2% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Bld_Cottage_03",
@@ -1630,7 +1865,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4 (4 to 5 sets)"
+   "detail": "5 (4 to 5 sets)"
   },
   {
    "subject": "T_Cottage_Details_ALB",
@@ -1679,6 +1914,54 @@
    "waived": false,
    "info": false,
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_MET.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_ALB.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_NOR.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_RGH.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Grime_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_MET.png"
   },
   {
    "subject": "T_BldTrim_Sheet_ALB",
@@ -1902,7 +2185,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Cottage_03_COL, M_Bld_Cottage_Details_03_LOD0, M_Bld_Cottage_GlassLit_03_LOD0, M_Bld_Cottage_Glass_03_LOD0, M_Bld_Cottage_Roof_03_LOD0, M_Bld_Cottage_Stone_03_LOD0, M_Bld_Cottage_Trim_03_LOD0; 2286 triangles (scene 2286)"
+   "detail": "M_Bld_Cottage_03_COL, M_Bld_Cottage_Details_03_LOD0, M_Bld_Cottage_GlassLit_03_LOD0, M_Bld_Cottage_Glass_03_LOD0, M_Bld_Cottage_Grime_03_LOD0, M_Bld_Cottage_Roof_03_LOD0, M_Bld_Cottage_Stone_03_LOD0, M_Bld_Cottage_Trim_03_LOD0; 5330 triangles (scene 5330)"
   },
   {
    "subject": "M_Bld_Cottage_03_LOD0.fbx",
@@ -1910,7 +2193,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 6 of 6 visual meshes"
+   "detail": "UV layer on 7 of 7 visual meshes"
   },
   {
    "subject": "M_Bld_Cottage_03_LOD1.fbx",
@@ -1942,7 +2225,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Cottage_Details_03_LOD1, M_Bld_Cottage_GlassLit_03_LOD1, M_Bld_Cottage_Glass_03_LOD1, M_Bld_Cottage_Roof_03_LOD1, M_Bld_Cottage_Stone_03_LOD1, M_Bld_Cottage_Trim_03_LOD1; 1546 triangles (scene 1546)"
+   "detail": "M_Bld_Cottage_Details_03_LOD1, M_Bld_Cottage_GlassLit_03_LOD1, M_Bld_Cottage_Glass_03_LOD1, M_Bld_Cottage_Grime_03_LOD1, M_Bld_Cottage_Roof_03_LOD1, M_Bld_Cottage_Stone_03_LOD1, M_Bld_Cottage_Trim_03_LOD1; 2930 triangles (scene 2930)"
   },
   {
    "subject": "M_Bld_Cottage_03_LOD1.fbx",
@@ -1950,7 +2233,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 6 of 6 visual meshes"
+   "detail": "UV layer on 7 of 7 visual meshes"
   },
   {
    "subject": "M_Bld_Cottage_03_LOD2.fbx",
@@ -1982,7 +2265,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Cottage_Details_03_LOD2, M_Bld_Cottage_GlassLit_03_LOD2, M_Bld_Cottage_Glass_03_LOD2, M_Bld_Cottage_Roof_03_LOD2, M_Bld_Cottage_Stone_03_LOD2, M_Bld_Cottage_Trim_03_LOD2; 384 triangles (scene 384)"
+   "detail": "M_Bld_Cottage_Details_03_LOD2, M_Bld_Cottage_GlassLit_03_LOD2, M_Bld_Cottage_Glass_03_LOD2, M_Bld_Cottage_Grime_03_LOD2, M_Bld_Cottage_Roof_03_LOD2, M_Bld_Cottage_Stone_03_LOD2, M_Bld_Cottage_Trim_03_LOD2; 534 triangles (scene 534)"
   },
   {
    "subject": "M_Bld_Cottage_03_LOD2.fbx",
@@ -1990,7 +2273,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 6 of 6 visual meshes"
+   "detail": "UV layer on 7 of 7 visual meshes"
   }
  ],
  "meshes": [
@@ -1998,35 +2281,35 @@
    "name": "M_Bld_Cottage_Stone_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 338,
+   "triangles": 380,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Stone_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 338,
+   "triangles": 380,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Stone_03_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 146,
+   "triangles": 128,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Roof_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 24,
+   "triangles": 248,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Roof_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 24,
+   "triangles": 248,
    "texel_density": null
   },
   {
@@ -2040,42 +2323,42 @@
    "name": "M_Bld_Cottage_Trim_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 264,
+   "triangles": 1338,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Trim_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 264,
+   "triangles": 866,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Trim_03_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 88,
+   "triangles": 220,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Details_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1580,
+   "triangles": 3216,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Details_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 884,
+   "triangles": 1332,
    "texel_density": null
   },
   {
    "name": "M_Bld_Cottage_Details_03_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 114,
+   "triangles": 134,
    "texel_density": null
   },
   {
@@ -2121,6 +2404,27 @@
    "texel_density": null
   },
   {
+   "name": "M_Bld_Cottage_Grime_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 68,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Grime_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 68,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Grime_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 16,
+   "texel_density": null
+  },
+  {
    "name": "M_Bld_Cottage_03_COL",
    "role": "col",
    "lod": null,
@@ -2129,9 +2433,9 @@
   }
  ],
  "bbox_studs": [
-  19.199999809265137,
-  18.039999961853027,
-  30.359999895095825
+  19.890000343322754,
+  18.487000465393066,
+  31.380000352859497
  ],
- "peak_rss_mb": 294.8
+ "peak_rss_mb": 304.4
 }

@@ -63,22 +63,27 @@ class Part:
     # ------------------------------------------------------------ faces
     def face(self, pts, mode, centre=None, outward=None):
         pts = [Vector(p) for p in pts]
+        uvx = list(mode[1]) if mode[0] == "uv" else None      # H3b: explicit per-vertex UVs (lathed pots)
         n = newell(pts)
         if n.length < 1e-10:
             return
         if outward is not None and n.dot(Vector(outward)) < 0:
             pts.reverse()
+            uvx and uvx.reverse()
             n = -n
         if centre is not None:
             c = sum(pts, Vector()) / len(pts)
             if n.dot(c - Vector(centre)) < 0:
                 pts.reverse()
+                uvx and uvx.reverse()
                 n = -n
         u, v = frame_of(n)
         a = [p.dot(u) for p in pts]
         b = [p.dot(v) for p in pts]
         kind = mode[0]
-        if kind == "fn":
+        if kind == "uv":
+            uvs = uvx
+        elif kind == "fn":
             uvs = [tuple(mode[1](p)) for p in pts]
         elif kind == "tile":
             s = mode[1]

@@ -11,10 +11,19 @@ D = 16 / 3.0
 T = 0.5            # wall slab (the reveal depth reads 0.5 m)
 PITCH = 0.78       # rise per metre run (about 38 degrees)
 OVH = 0.22         # eaves overhang (horizontal)
-VERGE = 0.06       # slate overhang at the gables
-SLAB = 0.14        # slate + battens, vertical thickness
+VERGE = 0.25       # H3b: verge overhang at the gables (bargeboards under it)
+SLAB = 0.06        # H3b: slate layer, vertical thickness (edge reads 6 to 7.5 cm with the course tails)
 STACK_UP = 1.0     # chimney stack above the ridge
-POT_H = 0.5
+POT_H = 0.5        # (H1 value; H3b pots are pot_h())
+STEP = 0.015       # H3b: slate course tail lift (vertical)
+COURSE = 0.25      # H3b: slate course gauge along the slope (matches the Slate texture: 8 courses per 2 m)
+STACK_OUT = 0.02   # gable stack outer face beyond the verge edge
+CAP_OVER = 0.11    # cap slab oversail beyond the stack body
+
+
+def pot_h(i, c, q):
+    """H3b: irregular chimney pot heights (0.55 to 0.9 m), deterministic per house / stack / pot."""
+    return 0.55 + ((i * 37 + c * 17 + q * 29) % 8) * 0.05
 SKIRT = 0.4        # granite skirt below the pivot (sloping ground)
 
 
@@ -90,8 +99,12 @@ def dims(i):
     """Real outer size (metres): X across incl. the verge slates, Y None (free: sills, steps, porch), Z from the
     granite skirt bottom (-SKIRT) to the top of the tallest chimney pot."""
     E = E_of(i)
-    top = ridge(E) + SLAB + STACK_UP + POT_H
-    return (round(W_of(i) + 2 * VERGE, 3), None, round(top + SKIRT, 3))
+    n = {"gable": 2, "ridge": 3}
+    ph = max(pot_h(i, c, q) for c, ch in enumerate(V[i]["chimneys"]) for q in range(n[ch[1]]))
+    top = ridge(E) + SLAB + STACK_UP + ph
+    sides = set(1 if c[0] > 0 else -1 for c in V[i]["chimneys"] if c[1] == "gable")
+    x = W_of(i) + 2 * VERGE + (STACK_OUT + CAP_OVER) * len(sides)      # gable stacks: proud of the verge + cap oversail
+    return (round(x, 3), None, round(top + SKIRT, 3))
 
 
 def greybox(i):
@@ -109,7 +122,7 @@ if __name__ == "__main__":
             f.write("# M_Bld_Cottage_%02d\ndims_m: %.3f x - x %.3f\n" % (i, x, z))
             f.write("Reference: %s (assembled from M_Bld_Cottage_Kit, H3).\n" % v["title"])
             f.write("- Footprint matches the greybox %s in map/Build.luau: %d x %d x %d studs (X frontage x eaves height x "
-                    "depth) = %.2f x %.2f m, eaves %.2f m; ridge %.2f m; X here adds the 0.06 m verge slates each side; "
+                    "depth) = %.2f x %.2f m, eaves %.2f m; ridge %.2f m; X here adds the 0.25 m verges each side (+0.13 m where a gable stack and its cap stand proud of the verge); "
                     "Z runs from the 0.4 m granite skirt below ground to the chimney pot tops.\n"
                     % (g["house"], g["size_studs"][0], g["size_studs"][1], g["size_studs"][2], W_of(i), D, E_of(i),
                        ridge(E_of(i))))

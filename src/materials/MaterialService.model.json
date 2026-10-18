@@ -39,9 +39,9 @@
    "Name": "SandDry",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://95962344907990",
-    "NormalMap": "rbxassetid://71125281928407",
-    "RoughnessMap": "rbxassetid://107837014471966",
+    "ColorMap": "rbxassetid://79771984433894",
+    "NormalMap": "rbxassetid://110275848718137",
+    "RoughnessMap": "rbxassetid://82861835851939",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1296
@@ -72,9 +72,9 @@
    "Name": "SandDry_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://102604601628768",
-    "NormalMap": "rbxassetid://71125281928407",
-    "RoughnessMap": "rbxassetid://99240790846447",
+    "ColorMap": "rbxassetid://110399575329167",
+    "NormalMap": "rbxassetid://110275848718137",
+    "RoughnessMap": "rbxassetid://109934380088769",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1296
@@ -105,9 +105,9 @@
    "Name": "SandWet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://100379806189311",
-    "NormalMap": "rbxassetid://73479968303129",
-    "RoughnessMap": "rbxassetid://117619800814011",
+    "ColorMap": "rbxassetid://138400115743627",
+    "NormalMap": "rbxassetid://92124847559987",
+    "RoughnessMap": "rbxassetid://105819523123955",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 912
@@ -138,9 +138,9 @@
    "Name": "SandWet_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://75498296548188",
-    "NormalMap": "rbxassetid://73479968303129",
-    "RoughnessMap": "rbxassetid://120367606086407",
+    "ColorMap": "rbxassetid://109571928646986",
+    "NormalMap": "rbxassetid://92124847559987",
+    "RoughnessMap": "rbxassetid://86029462000133",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 912
@@ -303,9 +303,9 @@
    "Name": "Shingle",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://134317979634094",
-    "NormalMap": "rbxassetid://125390777802135",
-    "RoughnessMap": "rbxassetid://82972536664554",
+    "ColorMap": "rbxassetid://93648095384671",
+    "NormalMap": "rbxassetid://106262346107346",
+    "RoughnessMap": "rbxassetid://129502495498688",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 804
@@ -336,9 +336,9 @@
    "Name": "Shingle_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://83583867277811",
-    "NormalMap": "rbxassetid://125390777802135",
-    "RoughnessMap": "rbxassetid://79541159091547",
+    "ColorMap": "rbxassetid://96917869301974",
+    "NormalMap": "rbxassetid://106262346107346",
+    "RoughnessMap": "rbxassetid://82347112880416",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 804
@@ -567,7 +567,7 @@
    "Name": "Turf",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://112224653926074",
+    "ColorMap": "rbxassetid://123994999408737",
     "NormalMap": "rbxassetid://84967752986722",
     "RoughnessMap": "rbxassetid://108290419678390",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -600,7 +600,7 @@
    "Name": "Turf_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://82796658719111",
+    "ColorMap": "rbxassetid://87140348861387",
     "NormalMap": "rbxassetid://84967752986722",
     "RoughnessMap": "rbxassetid://103483290268754",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -765,7 +765,7 @@
    "Name": "TurfOlive",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://77063098207304",
+    "ColorMap": "rbxassetid://97854521630346",
     "NormalMap": "rbxassetid://109934808122953",
     "RoughnessMap": "rbxassetid://108290419678390",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -798,7 +798,7 @@
    "Name": "TurfOlive_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://137713780609754",
+    "ColorMap": "rbxassetid://119651059409836",
     "NormalMap": "rbxassetid://109934808122953",
     "RoughnessMap": "rbxassetid://103483290268754",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -897,9 +897,9 @@
    "Name": "SandRipple",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://107956371717436",
-    "NormalMap": "rbxassetid://84349693818625",
-    "RoughnessMap": "rbxassetid://107837014471966",
+    "ColorMap": "rbxassetid://80408405709079",
+    "NormalMap": "rbxassetid://89456034463407",
+    "RoughnessMap": "rbxassetid://97614640232961",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1552
@@ -930,9 +930,9 @@
    "Name": "SandRipple_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://92409420143779",
-    "NormalMap": "rbxassetid://84349693818625",
-    "RoughnessMap": "rbxassetid://99240790846447",
+    "ColorMap": "rbxassetid://136586461427812",
+    "NormalMap": "rbxassetid://89456034463407",
+    "RoughnessMap": "rbxassetid://105207393627962",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1552
@@ -963,9 +963,9 @@
    "Name": "Wrack",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://115298267856981",
-    "NormalMap": "rbxassetid://70558803615320",
-    "RoughnessMap": "rbxassetid://76736534583876",
+    "ColorMap": "rbxassetid://114664786431792",
+    "NormalMap": "rbxassetid://72700376874001",
+    "RoughnessMap": "rbxassetid://85358421529034",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1536
@@ -996,9 +996,9 @@
    "Name": "Wrack_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://124662096018464",
-    "NormalMap": "rbxassetid://70558803615320",
-    "RoughnessMap": "rbxassetid://81194385775781",
+    "ColorMap": "rbxassetid://79329120321627",
+    "NormalMap": "rbxassetid://72700376874001",
+    "RoughnessMap": "rbxassetid://104986741210742",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1536

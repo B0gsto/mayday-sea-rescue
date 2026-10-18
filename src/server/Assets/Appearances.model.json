@@ -184,18 +184,18 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://81586856864367",
+        "ColorMap": "rbxassetid://134511618664918",
         "NormalMap": "rbxassetid://102639812664676",
-        "RoughnessMap": "rbxassetid://82421763885457"
+        "RoughnessMap": "rbxassetid://99678820371664"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://105052792974323",
+        "ColorMap": "rbxassetid://100683213964328",
         "NormalMap": "rbxassetid://102639812664676",
-        "RoughnessMap": "rbxassetid://105933064106785"
+        "RoughnessMap": "rbxassetid://72098427278716"
        }
       }
      ]
@@ -225,6 +225,36 @@
      ]
     },
     {
+     "Name": "Grime",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://93117053825563",
+        "NormalMap": "rbxassetid://104306322111787",
+        "RoughnessMap": "rbxassetid://77811983849815",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://74101055629647",
+        "NormalMap": "rbxassetid://104306322111787",
+        "RoughnessMap": "rbxassetid://138534444710499",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      }
+     ]
+    },
+    {
      "Name": "Ochre",
      "ClassName": "Folder",
      "Children": [
@@ -232,14 +262,14 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://122386287443021"
+        "ColorMap": "rbxassetid://98561178724408"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://105187263774581"
+        "ColorMap": "rbxassetid://130075942129580"
        }
       }
      ]
@@ -252,14 +282,14 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://137217957067970"
+        "ColorMap": "rbxassetid://78811708397351"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://125981706390679"
+        "ColorMap": "rbxassetid://104365238519717"
        }
       }
      ]
@@ -272,14 +302,14 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://116799494523715"
+        "ColorMap": "rbxassetid://97997176693423"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://87918620647800"
+        "ColorMap": "rbxassetid://137009431414972"
        }
       }
      ]
@@ -292,18 +322,18 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://74942840148068",
+        "ColorMap": "rbxassetid://115056667587961",
         "NormalMap": "rbxassetid://134578680931382",
-        "RoughnessMap": "rbxassetid://112493591682937"
+        "RoughnessMap": "rbxassetid://101968635685048"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://109811250979150",
+        "ColorMap": "rbxassetid://83234362756386",
         "NormalMap": "rbxassetid://134578680931382",
-        "RoughnessMap": "rbxassetid://103673953136434"
+        "RoughnessMap": "rbxassetid://94450469986978"
        }
       }
      ]
@@ -340,14 +370,14 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://109153490395503"
+        "ColorMap": "rbxassetid://131552050825504"
        }
       },
       {
        "Name": "Wet",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://113031194878227"
+        "ColorMap": "rbxassetid://92932348266875"
        }
       }
      ]

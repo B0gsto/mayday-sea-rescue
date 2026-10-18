@@ -449,7 +449,15 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
           SHINGLE: 4.0 * cove_back * smoothstep(0.8, 1.8, hs) * (1 - 0.6 * smoothstep(3.6, 4.6, hs)),
           WRACK: 3.4 * cove_back * smoothstep(2.6, 3.4, hs) * smoothstep(4.8, 3.9, hs),
           WORN: 2.0 * cove_back * smoothstep(4.2, 5.6, hs)}
-    mat = np.where(shore, choose(sz, Xw, Zw, ix, iz, s + 260, {SHINGLE: (24, 1.0), WRACK: (16, 1.0)}), mat)
+    # T5: break the single brown: damp dark patches (seepage) up into the shingle, pale dry sand pockets between
+    # the shingle and the wrack, a little sand blown up into the worn turf
+    cpatch = smoothstep(-0.1, 0.5, fbm(Xw, Zw, 18, s + 262, 3))
+    sz["Sandstone"] = sz["Sandstone"] + 1.6 * cove_back * cpatch * smoothstep(3.4, 1.4, hs)
+    sz[RIPPLE] = 1.5 * cove_back * (1 - cpatch) * smoothstep(1.2, 2.0, hs) * smoothstep(4.4, 3.2, hs) \
+        * smoothstep(-0.2, 0.4, fbm(Xw, Zw, 24, s + 263, 3))
+    sz["Sand"] = 0.9 * cove_back * smoothstep(3.6, 4.6, hs) * smoothstep(-0.1, 0.5, fbm(Xw, Zw, 20, s + 264, 3))
+    mat = np.where(shore, choose(sz, Xw, Zw, ix, iz, s + 260, {SHINGLE: (24, 1.0), WRACK: (16, 1.0), "Sandstone": (18, 0.9),
+                                                               RIPPLE: (16, 0.9), "Sand": (14, 0.9)}), mat)
 
     # ---- beaches and dunes: wet sand + kelp rock at the tide line, dry sand, a shingle strand line at the dune toe,
     # then marram (Turf, with sand blowouts) taking over the dunes and heath on the back dunes
@@ -466,6 +474,13 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
             SHINGLE: 0.8 * berm * smoothstep(-0.35, 0.45, fbm(Xw, Zw, 55, s + 302, 3)) + 0.7 * rocky_end * (1 - tide),
             "Slate": tide * (0.05 + 1.6 * rocky_end) * smoothstep(0.35, 0.7, n_mid + 0.5),
             "Rock": 0.5 * rocky_end * smoothstep(0.2, 0.6, n_mid)}
+    # T5: macro variation on the open beach: damp dark patches and runnels on the mid / lower beach, pale dry
+    # (rippled) pockets above them, so the beach is no longer one brown between the tide line and the berm
+    damp = smoothstep(0.1, 0.55, fbm(Xw, Zw, 26, s + 306, 3)) * smoothstep(bw * 0.75, bw * 0.25, dl + 6 * n_fine)
+    pale = smoothstep(0.15, 0.6, fbm(Xw, Zw, 34, s + 307, 3)) * (1 - damp)
+    bwts["Sandstone"] = bwts["Sandstone"] + 1.5 * damp * (1 - tide)
+    bwts[RIPPLE] = bwts[RIPPLE] + 0.9 * pale * (1.0 - tide) * (1 - upper)
+    bwts[WRACK] = bwts[WRACK] + 0.25 * damp * smoothstep(-0.2, 0.5, fbm(Xw, Zw, 12, s + 308, 3))
     mat = np.where(on_sand, choose(bwts, Xw, Zw, ix, iz, s + 300, {"Sandstone": (40, 0.6), "Sand": (40, 0.6),
                                                                    SHINGLE: (14, 1.2), "Slate": (20, 1.0),
                                                                    RIPPLE: (30, 0.8), WRACK: (12, 1.0)}), mat)
@@ -478,8 +493,11 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     dwts = {RIPPLE: 1.3 * (1 - marram) * smoothstep(0.7, 0.3, slope) + 0.03,
             "Sand": 0.5 * (1 - marram) + 0.05 + 0.9 * smoothstep(0.3, 0.6, slope) + 0.4 * fringe,
             "Grass": 0.7 * marram, STRAW: 1.0 * marram, OLIVE: 0.15 * marram * (1 - fringe),
-            "LeafyGrass": 0.9 * marram * smoothstep(0.55, 1.0, dt), "Ground": 0.01 * marram}
-    mat = np.where(duney & (slope < 0.9), choose(dwts, Xw, Zw, ix, iz, s + 340, {"Sand": (22, 1.4), RIPPLE: (26, 1.2), "Grass": (30, 1.2),
+            "LeafyGrass": 0.9 * marram * smoothstep(0.55, 1.0, dt), "Ground": 0.01 * marram,
+            # T5: damp dune slacks (dark sand in the hollows) and darker blown-sand drifts on the open faces
+            "Sandstone": (1 - marram) * (0.9 * smoothstep(0.2, 1.0, hollow) + 0.35 * smoothstep(0.2, 0.6, fbm(Xw, Zw, 22, s + 342, 3)))
+            * smoothstep(0.6, 0.25, slope) + 1e-4}
+    mat = np.where(duney & (slope < 0.9), choose(dwts, Xw, Zw, ix, iz, s + 340, {"Sand": (22, 1.4), RIPPLE: (26, 1.2), "Grass": (30, 1.2), "Sandstone": (16, 1.0),
                                                                                   STRAW: (40, 1.2), "LeafyGrass": (50, 1.2)},
                                                  jitter=0.8, dither=0.8), mat)
 
@@ -497,7 +515,12 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     trackside = smoothstep(8, 1.0, e) * (road_surf == 2)
     wear = smoothstep(16, 2, e)
     verge = land_nat & (road_edge < 20)
-    vw = {"Pavement": 2.4 * gravel ** 1.5 + 0.9 * trackside, "Ground": 0.3 * gravel + 1.1 * trackside + 0.3 * wear,
+    # T5: a near-solid 2-4 stud gravel / soil fringe right at the edge (the T4 dither let the turf touch the road),
+    # soil spilling a little further in clumpy fingers
+    lip = smoothstep(4.5, 1.0, road_edge + 1.2 * fbm(Xw, Zw, 8, s + 44, 2))
+    spill = smoothstep(8, 2.5, e) * smoothstep(-0.2, 0.4, fbm(Xw, Zw, 10, s + 45, 3))
+    vw = {"Pavement": 2.4 * gravel ** 1.5 + 0.9 * trackside + 5.0 * lip * (road_surf == 1),
+          "Ground": 0.3 * gravel + 1.1 * trackside + 0.3 * wear + 1.6 * lip + 1.2 * spill,
           **turf(1.0 - 0.6 * wear, np.clip(straw + 0.4 * wear, 0, 1), olive * (1 - wear)), "LeafyGrass": 0.2 + 0.15 * wear}
     mat = np.where(verge, choose(vw, Xw, Zw, ix, iz, s + 420, {"Ground": (12, 1.0), "Grass": (40, 0.8)},
                                  jitter=0.9, dither=0.8), mat)
@@ -535,8 +558,12 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     # the wrack line along the top of the shingle
     cw6 = {"Sandstone": smoothstep(2.0, 1.0, hc) + 1e-3, "Sand": smoothstep(1.0, 1.8, hc) * smoothstep(3.4, 2.6, hc),
            SHINGLE: 1.2 * smoothstep(2.6, 3.4, hc), WRACK: 1.8 * smoothstep(3.3, 3.8, hc) * smoothstep(4.8, 4.0, hc)}
+    # T5: damp patches up the beach and pale dry pockets under the shingle
+    c6p = smoothstep(-0.1, 0.5, fbm(X, Z, 16, s + 462, 3))
+    cw6["Sandstone"] = cw6["Sandstone"] + 1.2 * c6p * smoothstep(3.0, 1.4, hc)
+    cw6[RIPPLE] = 1.0 * (1 - c6p) * smoothstep(1.4, 2.0, hc) * smoothstep(3.6, 2.8, hc)
     ixc, izc = np.round(X).astype(np.int64), np.round(Z).astype(np.int64)
-    m6 = choose(cw6, X, Z, ixc, izc, s + 460, {SHINGLE: (16, 0.8), WRACK: (12, 0.8)})
+    m6 = choose(cw6, X, Z, ixc, izc, s + 460, {SHINGLE: (16, 0.8), WRACK: (12, 0.8), "Sandstone": (14, 0.8), RIPPLE: (14, 0.8)})
     mat[c6] = m6[c6]
     return mat
 

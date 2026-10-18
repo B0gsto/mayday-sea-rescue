@@ -151,11 +151,15 @@ def sstep(e0, e1, x):
 # and real variation in earth, peat (Mud), slate (KelpRock) and shingle instead of flat tones.
 # Per name: (target median sRGB, clump darkening, [(amount, tint, band f0, f1), ...] blend layers, seed)
 STRAW_T, OCHRE_T, DEAD_T = (1.30, 1.12, 0.78), (1.22, 1.0, 0.70), (1.12, 1.04, 0.92)
+HEATHER_T, GORSE_T, BRACKEN_T = (0.98, 0.80, 0.96), (1.22, 1.16, 0.58), (1.30, 0.94, 0.62)  # T5 heath tones
 MACRO = {
-    "Turf": ((100, 104, 64), 0.22, [(0.42, STRAW_T, 2.5, 5), (0.30, DEAD_T, 6, 14), (0.18, OCHRE_T, 3, 7)], 11),
+    # T5: + sparse heather (purple-brown), gorse (yellow-olive) and bracken (rust) tones in the sward
+    "Turf": ((100, 104, 64), 0.22, [(0.42, STRAW_T, 2.5, 5), (0.30, DEAD_T, 6, 14), (0.18, OCHRE_T, 3, 7),
+                                    (0.22, HEATHER_T, 5, 11), (0.16, GORSE_T, 8, 18), (0.20, BRACKEN_T, 4, 9)], 11),
     "TurfStraw": ((140, 124, 84), 0.24, [(0.35, (0.80, 0.95, 0.78), 3, 7), (0.30, OCHRE_T, 2.5, 5),
                                          (0.25, (0.85, 0.83, 0.86), 8, 18)], 14),
-    "TurfOlive": ((82, 88, 54), 0.26, [(0.30, STRAW_T, 3, 7), (0.25, (0.86, 0.92, 0.80), 2.5, 5)], 15),
+    "TurfOlive": ((82, 88, 54), 0.26, [(0.30, STRAW_T, 3, 7), (0.25, (0.86, 0.92, 0.80), 2.5, 5),
+                                       (0.22, BRACKEN_T, 4, 9), (0.18, HEATHER_T, 6, 13)], 15),
     # T4: heather / gorse / bracken patches tinted into the turf: lichen grey, dark heather and a turf-green layer
     "Moor": ((112, 102, 76), 0.28, [(0.30, (1.06, 0.86, 0.98), 3, 8), (0.30, (0.88, 1.06, 0.82), 2.5, 5),
                                     (0.26, (0.92, 0.95, 0.98), 6, 14), (0.24, (0.70, 0.70, 0.74), 9, 20)], 12),
@@ -185,6 +189,48 @@ def macro_albedo(rgb, name):
     med1 = np.median(out.reshape(-1, 3), 0)
     return out, ["macro %s: median %s -> #%02X%02X%02X, clumps -%d%%, %d blend layers"
                  % (name, tuple(int(v) for v in med0), *(int(v) for v in med1), dark * 100, len(layers))] + notes
+
+
+# T5 sand / strand macro detail: damp dark patches (darker, glossier), pale dry patches, then shell and pebble
+# speckle (cream shell grit, dark pebbles, a few pink / blue-grey shell fragments with a little relief).
+# Per name: (damp amount, dry amount, shell density, pebble density, seed)
+# T5 also splits the tones (T4 dry, wet and rippled sand all sat at median ~#6C604E: one brown everywhere): dry sand
+# paler and warmer, rippled dune sand palest, wet sand darker and cooler. SANDTONE = median multiplier.
+SANDFX = {"SandDry": (0.22, 0.20, 1.0, 0.8, 41), "SandRipple": (0.12, 0.22, 0.6, 0.5, 42),
+          "SandWet": (0.26, 0.10, 0.8, 1.0, 43), "Wrack": (0.18, 0.08, 1.4, 1.2, 44), "Shingle": (0.0, 0.12, 0.8, 0.0, 45)}
+SANDTONE = {"SandDry": (1.20, 1.17, 1.10), "SandRipple": (1.28, 1.25, 1.18), "SandWet": (0.76, 0.78, 0.83)}
+
+
+def sand_fx(alb, nor, rgh, name):
+    damp, dry, shell, peb, seed = SANDFX[name]
+    shp = alb.shape[:2]
+    y0 = float(np.median(luma(alb)))
+    md = sstep(0.2, 1.3, band_noise(shp, 2.5, 6, seed) + 0.5 * band_noise(shp, 8, 20, seed + 1))
+    mp = sstep(0.3, 1.4, band_noise(shp, 3, 7, seed + 2) + 0.4 * band_noise(shp, 10, 24, seed + 3)) * (1 - md)
+    alb = alb * (1 - damp * md[..., None] * np.array([1.0, 1.04, 1.12], np.float32) * 1.0)
+    alb = alb * (1 + dry * mp[..., None] * np.array([1.0, 0.97, 0.90], np.float32))
+    rgh = rgh * (1 - 0.35 * damp / 0.26 * md) if damp else rgh
+    rng = np.random.default_rng(seed + 9)
+    def specks(dens, f0, f1, thr):
+        n = band_noise(shp, f0, f1, int(rng.integers(1 << 30)))
+        return sstep(thr, thr + 0.5, n) * sstep(-0.6, 0.6, band_noise(shp, 3, 9, int(rng.integers(1 << 30))) + dens - 1)
+    cream = specks(shell, 180, 320, 1.6)
+    frag = specks(shell, 90, 180, 2.1)
+    pebble = specks(peb, 110, 220, 1.8)
+    tone = np.where(band_noise(shp, 40, 90, seed + 5)[..., None] > 0.3, np.array([226, 196, 188], np.float32),
+                    np.array([232, 226, 210], np.float32))
+    alb = alb * (1 - cream[..., None] * 0.85) + np.array([236, 228, 206], np.float32) * cream[..., None] * 0.85
+    alb = alb * (1 - frag[..., None] * 0.8) + tone * frag[..., None] * 0.8
+    pcol = np.where(band_noise(shp, 30, 70, seed + 6)[..., None] > 0, np.array([70, 66, 62], np.float32),
+                    np.array([104, 96, 86], np.float32))
+    alb = alb * (1 - pebble[..., None] * 0.9) + pcol * pebble[..., None] * 0.9
+    nor = (blend_n(nor / 127.5 - 1, h2n((frag + pebble) * 3.0, 1.0)) + 1) * 127.5
+    rgh = np.clip(rgh * (1 - 0.3 * pebble) + 25 * cream, 0, 255)
+    alb = alb * (y0 / max(float(np.median(luma(alb))), 1e-3))  # keep the graded median luma
+    alb = alb * np.array(SANDTONE.get(name, (1, 1, 1)), np.float32)
+    return np.clip(alb, 0, 255), nor, rgh, ["sandfx %s: damp %.0f%%, dry %.0f%%, shell %.1f%%, pebble %.1f%%"
+                                         % (name, 100 * float((md > 0.5).mean()), 100 * float((mp > 0.5).mean()),
+                                            100 * float(((cream + frag) > 0.5).mean()), 100 * float((pebble > 0.5).mean()))]
 
 
 # T4 detail: (normal gain on the scan's own normal, fine detail-normal strength, detail band in cycles per tile). The
@@ -317,6 +363,9 @@ def build_variant(row, report):
     if name in MACRO:  # terrain look-dev round 2: baked colour variation (no flat colours)
         alb, n3 = macro_albedo(alb, name)
         notes += n3
+    if name in SANDFX:
+        alb, nor, rgh, n6 = sand_fx(alb, nor, rgh, name)
+        notes += n6
     if name in DETAIL:
         nor, n5 = detail_normal(nor, name, seed)
         notes += n5

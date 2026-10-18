@@ -51,7 +51,10 @@ PLANT_CAP = 4400  # T4: +900 turf / marram clumps (small, low-poly; ScatterContr
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
 # rock stage budgets (target 500-900 total)
-ROCK_BUDGET = {"waterline": 280, "clifffoot": 170, "reef": 200, "cliffchunk": 220}
+ROCK_BUDGET = {"waterline": 280, "clifffoot": 170, "reef": 200, "cliffchunk": 220, "verge": 260, "strand": 420}
+# T5 debris stages: small stones along the road verges and pebbles / cobbles on the strand lines and cove backs
+# (boulder scans at 0.08-0.35 scale, kept by thin() below the ROCK_MIN_STUDS cut). stage: (scale range, bury range)
+DEBRIS = {"verge": ((0.14, 0.35), (0.25, 0.45)), "strand": ((0.07, 0.2), (0.2, 0.4))}
 
 # plant budgets per kind and region (sum = PLANT_CAP; regions without suitable ground simply fall short)
 PLANT_BUDGET = {
@@ -200,7 +203,7 @@ def in_box(X, Z, box):
 def exclusions(T):
     """(excl_all, excl_turf): cells where nothing may go; turf additionally may use the town platform's rim."""
     X, Z = T.X, T.Z
-    ex = (T.road_edge < ROAD_VERGE) | (T.slip_edge < SLIPWAY_MARGIN) | (T.park_edge < CARPARK_MARGIN)
+    ex = (T.slip_edge < SLIPWAY_MARGIN) | (T.park_edge < CARPARK_MARGIN)
     ex |= in_box(X, Z, HARBOUR_BOX) | in_box(X, Z, STATION_BOX)
     cv = L.HARBOUR_COVE
     ex |= in_box(X, Z, (cv["minX"] - 10, cv["maxX"] + 30, cv["topZ"] - 10, cv["toeZ"] + 80))
@@ -212,7 +215,11 @@ def exclusions(T):
     beach_sand = (wb > 0.5) & (T.d < L.BEACH_WIDTH + 8) & (T.d > -40)  # the sand strip used by beach rescues
     ex |= beach_sand
     paving = np.isin(T.mat, [T.MI[n] for n in ("Asphalt", "Cobblestone", "Concrete", "Pavement")])
-    ex |= paving
+    tp0 = L.TOWN_PLATFORM
+    # T5: the verge debris stage may use the road verge itself (not the asphalt, the platform or anything else excluded)
+    T.ex_verge = ex | np.isin(T.mat, [T.MI[n] for n in ("Asphalt", "Cobblestone", "Concrete")]) \
+        | in_box(X, Z, (tp0["minX"], tp0["maxX"], tp0["minZ"], tp0["maxZ"]))
+    ex |= paving | (T.road_edge < ROAD_VERGE)
     tp = L.TOWN_PLATFORM
     platform = in_box(X, Z, (tp["minX"], tp["maxX"], tp["minZ"], tp["maxZ"]))
     rim = platform & ~in_box(X, Z, (tp["minX"] + 20, tp["maxX"] - 20, tp["minZ"] + 20, tp["maxZ"] - 20))
@@ -257,7 +264,8 @@ def plant_weights(T, seed):
     w["marram"] = dune * dry * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.9, "Sand": 0.55, "Glacier": 0.45, "Ground": 0.3, "Brick": 0.5}) \
         * (0.35 + 0.65 * smooth(0.0, 0.5, dt)) * (0.25 + 0.75 * patch(60, 1))
     w["turf"] = dry * (slope < 0.6) * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.35, "Brick": 0.6, "Ground": 0.15}) \
-        * (0.1 + 0.9 * patch(90, 2)) * (1 - 0.7 * dune)
+        * (0.1 + 0.9 * patch(90, 2)) * (1 - 0.7 * dune) \
+        * (0.04 + 0.96 * smooth(0.05, 0.5, G.fbm(X, Z, 28, seed + 520, 3)) ** 2)  # T5: dense clumps, bare between
     w["gorse"] = dry * (slope < 0.75) * (dl > 14) * (h > 4) * cliff_top \
         * mw({"LeafyGrass": 1.0, "Grass": 0.6, "Snow": 0.6, "WoodPlanks": 0.6, "Ground": 0.3, "Brick": 0.3}) * (0.1 + 0.9 * patch(120, 3))
     w["heather"] = dry * (slope < 0.7) * (h > 4) * np.maximum(cliff_top * smooth(25, 80, dl), 0.8 * upland) \
@@ -358,6 +366,13 @@ def scatter_rocks(T, ex_all, reg, seed, space):
          (0.2 + noise) * smooth(0.84, 1.3, slope + 0.2),
          {"M_Rock_Cliff_01": 3, "M_Rock_Cliff_02": 3, "M_Rock_Cliff_03": 1.5, "M_Rock_Cliff_04": 2,
           "M_Rock_Cliff_05": 1}, False, 0.8, 15.0, 0.7),
+        ("verge", (T.road_edge > 1.5) & (T.road_edge < 6) & (h > 1) & (slope < 0.5) & inside & ~T.ex_verge,
+         0.2 + noise * smooth(-0.1, 0.4, G.fbm(X, Z, 20, seed + 330)),
+         {"M_Rock_Boulder_02": 3, "M_Rock_Boulder_03": 3, "M_Rock_Boulder_01": 1}, False, 0.9, 20.0, 0.6),
+        ("strand", (h > 0.6) & (h < 7) & (slope < 0.35) & np.isin(mat, [M[n] for n in ("Ice", "CrackedLava", "Sand", "Sandstone")])
+         & ((wb > 0.5) | (T.near_shore & rocky)) & inside & ~ex_all,
+         (0.1 + noise) * (1.0 + 2.0 * np.isin(mat, [M["Ice"], M["CrackedLava"]])),
+         {"M_Rock_Boulder_02": 3, "M_Rock_Boulder_03": 3, "M_Rock_Boulder_04": 1}, False, 0.9, 25.0, 0.6),
     ]
     out, meta = [], []
     for k, (name, cand, wgt, assets, waterline, follow, cap, fac) in enumerate(stages):
@@ -377,7 +392,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
             x = float(T.X[j, i]) + rng.uniform(-1.8, 1.8)
             z = float(T.Z[j, i]) + rng.uniform(-1.8, 1.8)
             asset = pick_asset(rng, assets)
-            s = rng.uniform(0.8, 1.4)
+            s = rng.uniform(*DEBRIS[name][0]) if name in DEBRIS else rng.uniform(0.8, 1.4)
             r = FOOT[asset] * s
             if not space.ok(x, z, r, fac):
                 continue
@@ -389,7 +404,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
                 n = T.normal(x, z)
                 tx, tz = tilt_angles(n, 0.15 if "Ledge" in asset else 0.5, cap if "Ledge" in asset else 10.0)
             else:
-                y, b = T.height(x, z), rng.uniform(0.15, 0.30)
+                y, b = T.height(x, z), rng.uniform(*DEBRIS[name][1]) if name in DEBRIS else rng.uniform(0.15, 0.30)
                 tx, tz = tilt_angles(T.normal(x, z), follow, cap)
             space.add(x, z, r)
             out.append(row(asset, x, y, z, yaw, tx, tz, s, b))
@@ -698,7 +713,8 @@ def thin(T, rocks, rmeta, plants, pmeta, seed):
     """Drops tiny rocks; keeps plants at full density only where they are seen (roads, paths, beaches, the
     station, the land points and viewpoints), UNSEEN_KEEP of them elsewhere. Plant rows gain a 10th column:
     1 = seen (the client keeps these first on low graphics quality), 0 = filler."""
-    kr = [i for i, r in enumerate(rocks) if max(ROCKS[ASSETS[r[0] - 1]]) * 3 * r[7] >= ROCK_MIN_STUDS]
+    kr = [i for i, r in enumerate(rocks) if max(ROCKS[ASSETS[r[0] - 1]]) * 3 * r[7] >= ROCK_MIN_STUDS
+          or r[7] < 0.4]  # T5: verge / strand debris stages (scale < 0.4) are deliberately small
     rng = np.random.default_rng([seed, 99])
     kp, flags = [], []
     for i, r in enumerate(plants):

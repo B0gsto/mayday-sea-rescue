@@ -93,3 +93,16 @@ material, slope, hollows and coast distance, per-kind per-region budgets in `PLA
 verge, slipways (12), car parks (10), harbour basin + quay + arms, the town platform (turf allowed on its 20-stud rim),
 station / Chandlery box, Harbour Cove, the beach sand strip (marram only on the dunes behind it), points (30), POIs
 (25), paved materials, and anything under water except reef boulders and the waterline pieces.
+
+**Terrain pass T5.** Sand and cove macro variation: damp dark patches and pale dry (rippled) pockets on the open beach,
+damp dune slacks (wet sand in dune hollows), damp seepage / dry pockets / blown sand at the cove backs and in Harbour
+Cove; `process.py` SANDFX bakes damp / dry patches plus shell grit, shell fragments and pebble speckle into SandDry,
+SandWet, SandRipple, Wrack and Shingle, and SANDTONE splits the tones (dry paler and warmer, ripple palest, wet darker
+and cooler; T4 had all three at one brown). Road verges: a near-solid 2-4 stud gravel (Pavement) / soil lip at the
+asphalt edge plus soil spill fingers. Turf heath tones: sparse heather, gorse and bracken blend layers in the Turf and
+TurfOlive albedos. Scatter: turf clumps x a 28-stud patch noise (dense clumps, bare between), and two debris rock
+stages (boulder scans at 0.07-0.35 scale, kept by `thin()`): `verge` stones 1.5-6 studs off the asphalt and `strand`
+pebbles / cobbles on the wrack, shingle and sand at the cove backs (the beach-rescue sand strip stays clear).
+LightingPresets Clear / Overcast: less haze (Overcast Density 0.31, Haze 1.3; Clear 0.24 / 0.45), slight saturation and
+contrast (Overcast +0.02 / 0.14, Clear +0.06 / 0.12); Storm unchanged. DuneBank, CoveBack and RoadVerge re-framed at
+1.7 m eye height (`t5_shots.json`), plus a HarbourOcean grade check. `assets/review/terrain/t5_contact.png` (T4 row, T5 row).

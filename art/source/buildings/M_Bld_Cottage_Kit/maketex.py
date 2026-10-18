@@ -18,7 +18,7 @@ from PIL import Image, ImageFilter
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 sys.path.insert(0, G + "art/source/buildings/M_Bld_Chandlery_Ext")
 import maketex as CH  # noqa: E402
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  (fbm, smooth, normal_from_height, rgb, mix, slate_fields)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 fbm, smooth, nfh, rgb, mix = CH.fbm, CH.smooth, CH.normal_from_height, CH.rgb, CH.mix
 OUT = G + "assets/textures/M_Bld_Cottage_Kit"
@@ -65,9 +65,11 @@ def render_fields():
     trowel = fbm(s, 2.6, 18, aniso=(3.0, 1.0), seed=24)
     streak_n = fbm(s, 1.9, 90, aniso=(0.12, 1.0), seed=25)     # long vertical streaks
     streak = smooth(0.55, 0.85, streak_n) * (0.35 + 0.65 * smooth(1.2, 4.8, zz)) * smooth(0.25, 0.65, big)
-    damp = 1 - smooth(0.18, 0.75 + 0.25 * mid, zz)              # rising damp / splash-back, ragged top edge
+    damp = 1 - smooth(0.3, 0.95 + 0.3 * mid, zz)                # H3b: heavier rising damp / splash-back to ~1 m, ragged top
     algae = damp * smooth(0.45, 0.7, mid) + 0.4 * (1 - smooth(0.0, 0.25, zz))
     salt = smooth(0.62, 0.8, fbm(s, 2.0, 30, aniso=(3.0, 1.0), seed=26)) * smooth(0.4, 1.0, zz) * (1 - smooth(2.5, 3.6, zz))
+    tide = np.abs(zz - (0.9 + 0.25 * (mid - 0.5))) < 0.05 + 0.04 * fine                 # H3b: salt tide line atop the damp
+    salt = np.clip(salt + 0.8 * tide * smooth(0.35, 0.6, big) + 0.5 * smooth(0.55, 0.75, fine) * (1 - smooth(0.6, 1.0, zz)), 0, 1)
     cr = fbm(s, 1.2, 200, aniso=(3.0, 1.0), seed=27)
     crack = (np.abs(cr - 0.5) < 0.004) * smooth(0.6, 0.8, big)   # hairline cracks in patches
     patch = smooth(0.78, 0.86, fbm(s, 2.4, 14, aniso=(3.0, 1.0), seed=28))   # newer limewash patches (cleaner)
@@ -82,8 +84,8 @@ def render_set(colour, F):
     alb = base[None, None, :] * F["bright"][..., None]
     alb = mix(alb, alb * rgb((150, 150, 140)) / 0.72, 0.5 * F["streak"])      # grey-brown rain dirt
     alb = mix(alb, rgb((96, 104, 78)), 0.55 * np.clip(F["algae"], 0, 1))     # green algae at the base
-    alb = mix(alb, alb * 0.82, 0.6 * F["damp"])
-    alb = mix(alb, rgb((222, 220, 212)), 0.35 * F["salt"])                   # salt bloom (efflorescence)
+    alb = mix(alb, alb * 0.74, 0.75 * F["damp"])
+    alb = mix(alb, rgb((222, 220, 212)), 0.5 * F["salt"])                    # salt bloom (efflorescence)
     alb = alb * (1 - 0.35 * F["crack"][..., None])
     save("T_Cottage_Render_%s" % colour, alb, nfh(F["h"], 3.0), F["rgh"], zero(), darken=0.3, gloss=0.4)
 
@@ -149,6 +151,23 @@ def stone_set():
 def slate_set():
     alb, h, rgh = CH.slate_fields()
     s = (N, N)
+    # H3b: stronger per-slate tint (same slot grid as CH.slate_fields: 8 courses x 5 slates, alternate courses offset)
+    courses, per = 8, 5
+    yy, xx = np.mgrid[0:N, 0:N]
+    c = yy // (N // courses)
+    k = np.minimum(((xx + np.where(c % 2 == 0, 0, N // (2 * per))) % N) * per // N, per - 1)
+    slot = c * per + k
+    r = np.random.default_rng(141)
+    ns = courses * per
+    tone = np.clip(r.normal(1.0, 0.09, ns), 0.8, 1.22)
+    hue = np.zeros((ns, 3))
+    kind = r.uniform(0, 1, ns)
+    hue[kind < 0.18] = (0.018, -0.006, 0.02)            # purple-grey Delabole
+    hue[(kind >= 0.18) & (kind < 0.36)] = (-0.012, 0.012, -0.004)   # green-grey
+    hue[(kind >= 0.36) & (kind < 0.44)] = (0.03, 0.012, -0.022)     # iron-stained
+    hue[(kind >= 0.44) & (kind < 0.56)] = (-0.012, -0.004, 0.022)   # blue-black
+    alb = np.clip(alb * tone[slot][..., None] + hue[slot], 0, 1)
+    rgh = rgh + 0.06 * (r.uniform(-1, 1, ns))[slot]
     big = fbm(s, 3.0, 9, seed=41)
     xan = smooth(0.80, 0.9, fbm(s, 2.2, 55, seed=42)) * smooth(0.45, 0.75, big)     # orange Xanthoria rosettes
     crust = smooth(0.7, 0.82, fbm(s, 2.4, 35, seed=43)) * smooth(0.3, 0.6, big)     # grey-green crusts
@@ -355,10 +374,116 @@ def details_set():
     save("T_Cottage_Details", alb, nfh(hh, 3.0, wrap=False), rg, met, darken=0.3, gloss=0.4, wet_mask=wet)
 
 
+# ---------------------------------------------------------------- H3b grime decals (RGBA, AlphaMode Transparency)
+def grime_set():
+    from atlas import GRIME_BANDS, STREAKS, LACE, BLIND
+    alb = np.zeros((N, N, 3)) + rgb((90, 88, 80))
+    a, hg, rg = np.zeros((N, N)), np.zeros((N, N)), np.full((N, N), 0.85)
+
+    def band(name):
+        v0, v1 = GRIME_BANDS[name]
+        y0, y1 = int(round((1 - v1) * N)), int(round((1 - v0) * N))
+        h = y1 - y0
+        t = 1 - (np.arange(h)[:, None] + 0.5) / h * np.ones((1, N))      # 0 bottom .. 1 top of the band
+        return slice(y0, y1), (h, N), t
+
+    sl, sh, t = band("Damp")        # rising damp tide, salt line, algae splash: v 0 = ground, 1 = 1.15 m
+    big, mid, fine = fbm(sh, 3.0, 8, seed=201), fbm(sh, 2.2, 40, seed=202), fbm(sh, 1.7, 220, seed=203)
+    top = 0.62 + 0.22 * big + 0.08 * (mid - 0.5)
+    dmp = 1 - smooth(top - 0.18, top, t)
+    tide = np.exp(-((t - top + 0.02) / 0.025) ** 2) * smooth(0.35, 0.65, mid)
+    alg = (1 - smooth(0.05, 0.3 + 0.1 * mid, t)) * smooth(0.3, 0.6, big + 0.2 * fine)
+    col = mix(np.zeros(sh + (3,)) + rgb((70, 66, 56)), rgb((78, 90, 58)), np.clip(alg * 1.2, 0, 1))
+    col = mix(col, rgb((222, 220, 210)), np.clip(tide * 1.4 + 0.5 * smooth(0.7, 0.85, fine) * dmp, 0, 1))
+    alb[sl] = col * (0.85 + 0.3 * fine[..., None])
+    a[sl] = np.clip(0.55 * dmp * (0.75 + 0.5 * mid) + 0.7 * tide + 0.35 * alg, 0, 0.92) * smooth(0, 0.02, 1 - t)
+    rg[sl] = 0.7 + 0.2 * tide
+    hg[sl] = 0.3 * tide + 0.2 * alg * fine
+
+    sl, sh, t = band("Moss")        # roof moss cushions on the laps: band covers 6 slate courses (tails at t = k / 6)
+    big, mid, fine = fbm(sh, 3.0, 10, seed=211), fbm(sh, 2.2, 50, seed=212), fbm(sh, 1.6, 300, seed=213)
+    lap = (t * 6) % 1.0
+    near_tail = 1 - smooth(0.0, 0.45, lap)
+    dens = (1 - smooth(0.1, 1.0, t) * 0.7) * smooth(0.35, 0.7, big)
+    cush = smooth(0.5, 0.62, mid * 0.7 + fine * 0.3 + 0.25 * near_tail * dens)
+    mo = cush * dens * (0.6 + 0.4 * near_tail)
+    li = smooth(0.8, 0.86, fbm(sh, 2.3, 70, seed=214)) * 0.8
+    mcol = mix(np.zeros(sh + (3,)) + rgb((66, 82, 36)), rgb((112, 116, 54)), smooth(0.4, 0.7, fine))
+    alb[sl] = mix(mcol, rgb((172, 136, 64)), li * (1 - mo)) * (0.8 + 0.4 * fine[..., None])
+    a[sl] = np.clip(np.maximum(smooth(0.25, 0.5, mo) * 0.95, li * 0.85), 0, 0.95)
+    rg[sl] = 0.95
+    hg[sl] = mo * (0.5 + 0.5 * fine)
+
+    sl, sh, t = band("Soot")        # chimney soot, v 1 = under the cap, streaking down
+    st = fbm(sh, 1.9, 60, aniso=(0.1, 1.0), seed=221)
+    fine = fbm(sh, 1.7, 200, seed=222)
+    so = smooth(0.0, 0.9, t) ** 1.4 * (0.6 + 0.6 * st) + 0.25 * smooth(0.55, 0.8, st) * t
+    alb[sl] = (np.zeros(sh + (3,)) + rgb((40, 36, 32))) * (0.8 + 0.4 * fine[..., None])
+    a[sl] = np.clip(so, 0, 0.9) * smooth(0, 0.03, 1 - t)
+    rg[sl] = 0.9
+
+    for k, rect in enumerate(STREAKS):   # streaks hanging from a sill: v 1 = sill, fading down with drip fingers
+        x0, y0, x1, y1 = px(rect)
+        w, h = x1 - x0, y1 - y0
+        yy, xx = np.mgrid[0:h, 0:w]
+        u, t = (xx + 0.5) / w, 1 - (yy + 0.5) / h
+        fing = fbm((h, w), 1.8, 40, aniso=(0.06, 1.0), seed=231 + k)
+        reach = 0.25 + 0.75 * smooth(0.3, 0.8, fing)
+        env = smooth(0.0, 0.18, u) * smooth(0.0, 0.18, 1 - u)
+        s_ = env * smooth(1 - reach, 1 - reach + 0.35, t) * (0.55 + 0.45 * smooth(0.4, 0.7, fing))
+        cc = rgb((118, 76, 44)) if k < 2 else rgb((66, 74, 58))
+        alb[y0:y1, x0:x1] = cc * (0.85 + 0.3 * fbm((h, w), 1.7, 120, seed=241 + k))[..., None]
+        a[y0:y1, x0:x1] = np.clip(s_ * (0.85 if k < 2 else 0.7), 0, 0.9)
+        rg[y0:y1, x0:x1] = 0.75
+
+    x0, y0, x1, y1 = px(LACE)            # net curtain: lace grid + scalloped hem
+    w, h = x1 - x0, y1 - y0
+    yy, xx = np.mgrid[0:h, 0:w]
+    u, t = xx / w, 1 - yy / h
+    lace = 0.5 + 0.25 * np.cos(u * 2 * np.pi * 22) * np.cos(t * 2 * np.pi * 14) + 0.25 * np.cos((u + t) * 2 * np.pi * 30)
+    hem = t > 0.06 + 0.04 * np.abs(np.sin(u * np.pi * 9))
+    alb[y0:y1, x0:x1] = rgb((222, 220, 210)) * (0.9 + 0.1 * lace[..., None])
+    a[y0:y1, x0:x1] = np.where(hem, 0.35 + 0.45 * smooth(0.5, 0.8, lace), 0.0) * smooth(0, 0.01, 1 - t)
+    rg[y0:y1, x0:x1] = 0.9
+
+    x0, y0, x1, y1 = px(BLIND)           # roller blind: cream linen, bottom bar, pull ring
+    w, h = x1 - x0, y1 - y0
+    yy, xx = np.mgrid[0:h, 0:w]
+    u, t = xx / w, 1 - yy / h
+    fab = fbm((h, w), 1.6, 150, aniso=(1.0, 0.15), seed=251)
+    bc = rgb((196, 184, 156)) * (0.9 + 0.12 * fab)[..., None] * (0.85 + 0.15 * t)[..., None]
+    bc[t < 0.05] = rgb((120, 100, 72))
+    ring = np.abs(np.hypot((u - 0.5) * w, (t - 0.02) * h * 0.5) - 6) < 1.5
+    bc[ring] = rgb((150, 128, 80))
+    alb[y0:y1, x0:x1] = bc
+    a[y0:y1, x0:x1] = np.where((t < 0.02) & ~ring, 0.0, 1.0)
+    rg[y0:y1, x0:x1] = 0.85
+
+    alb = np.clip(alb, 26 / 255, 236 / 255)
+    stem = OUT + "/T_Cottage_Grime"
+    w8 = lambda x: (np.clip(x, 0, 1) * 255 + 0.5).astype(np.uint8)
+    rgba = lambda c: Image.fromarray(np.dstack([w8(c), w8(a)]), "RGBA")
+    rgba(alb).save(stem + "_ALB.png")
+    lum = alb.mean(-1, keepdims=True)
+    rgba(np.clip((lum + (alb - lum) * 1.1) * 0.62, 22 / 255, 236 / 255)).save(stem + "_ALB_Wet.png")
+    Image.fromarray(w8(nfh(hg, 3.0, wrap=False))).save(stem + "_NOR.png")
+    Image.fromarray(w8(np.clip(rg, 0.04, 1))).save(stem + "_RGH.png")
+    Image.fromarray(w8(np.clip(rg - 0.45, 0.06, 1))).save(stem + "_RGH_Wet.png")
+    Image.fromarray(w8(np.zeros((N, N)))).save(stem + "_MET.png")
+    print("[maketex] T_Cottage_Grime alpha cover %.3f" % (a > 0.05).mean())
+
+
 if __name__ == "__main__":
-    F = render_fields()
-    for c in RENDER:
-        render_set(c, F)
-    stone_set()
-    slate_set()
-    details_set()
+    want = sys.argv[1:] or ["render", "stone", "slate", "details", "grime"]
+    if "render" in want:
+        F = render_fields()
+        for c in RENDER:
+            render_set(c, F)
+    if "stone" in want:
+        stone_set()
+    if "slate" in want:
+        slate_set()
+    if "details" in want:
+        details_set()
+    if "grime" in want:
+        grime_set()
