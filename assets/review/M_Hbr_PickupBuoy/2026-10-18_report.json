@@ -2,7 +2,7 @@
  "asset": "M_Hbr_PickupBuoy",
  "name": "M_Hbr_PickupBuoy",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -722,5 +722,5 @@
   1.7635436058044434,
   7.007781267166138
  ],
- "peak_rss_mb": 3467.3
+ "peak_rss_mb": 2785.5
 }

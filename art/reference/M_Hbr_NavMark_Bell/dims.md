@@ -1,11 +1,11 @@
 # M_Hbr_NavMark_Bell
 Bell buoy (port hand lateral, IALA A), IALA Region A pillar buoy (batch HP2b, docs/12 2.3).
 
-dims_m: 1.88 x 1.88 x 6.61
+dims_m: 1.88 x 1.88 x 6.80
 
 - Float 1.80 m diameter, rubbing fender 1.88 m, freeboard 0.56 m (deck); counterweight tail to 2.05 m below the waterline,
-  mooring eye and chain stub to 2.67 m below. Pillar column, 4-leg cage, platform at 2.62 m, solar LED lantern
-  (focal plane 2.90 m, ATT_Light), octahedral radar reflector, topmark to 3.94 m above the waterline.
+  mooring eye and chain stub to 2.67 m below. Solid tapered pillar column (0.80 m at the deck to 0.48 m), 4-leg cage, platform at 2.62 m, solar LED lantern
+  (focal plane 2.90 m, ATT_Light), octahedral radar reflector, topmark to 4.13 m above the waterline.
 - Paint: red pillar with a wave-rung bell and four hanging clappers, red can topmark; own rhythm so it reads apart from the plain port buoy.
 - Topmark: can (red).
 

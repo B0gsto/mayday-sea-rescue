@@ -112,6 +112,15 @@
   "source": "art/map/gale_isles_map_r1c0.png",
   "type": "Image"
  },
+ "Image:019781918cf0437fe9b9fbc35642a85cb875b45d8a314717477191d8c40d31a9": {
+  "assetId": "92516974227141",
+  "imageId": "92516974227141",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_MET",
+  "sha": "019781918cf0437fe9b9fbc35642a85cb875b45d8a314717477191d8c40d31a9",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_MET.png",
+  "type": "Image"
+ },
  "Image:0219bcaa72151bd3d6fcd8b5f1d465dd7b7df3e245df902a1d388592b14aa145": {
   "assetId": "94961069619621",
   "imageId": "94961069619621",
@@ -212,6 +221,15 @@
   "name": "T_Boulder06_Granite_RGH_Wet",
   "sha": "061bcf6fb05dff44afdada4953e576fdb8c2263f28dbdb1d66d1e4dbda15e536",
   "source": "assets/textures/M_Rock_Boulder_06/T_Boulder06_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0650475baef3ee64e77ad1d7ae188a4184d01bc9b5f830db8e14aa0d5cf6a7ff": {
+  "assetId": "77295274210836",
+  "imageId": "77295274210836",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_RGH_Wet",
+  "sha": "0650475baef3ee64e77ad1d7ae188a4184d01bc9b5f830db8e14aa0d5cf6a7ff",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH_Wet.png",
   "type": "Image"
  },
  "Image:067acf2c9ab8fcc337568aa84cdb86f27fb8f729e78c3bde37c3919b8ca446d9": {
@@ -347,6 +365,15 @@
   "name": "Mayday_T_Bosun_Fur_NOR_Wet",
   "sha": "095db41267c4adcad9dc5506021d6d750746c8a2bd7bb833cdf2535b29589f8b",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR_Wet.png",
+  "type": "Image"
+ },
+ "Image:097cb2900021a07748569ca556625921061d5d758138aa3854eff6123c8d886d": {
+  "assetId": "101476086371689",
+  "imageId": "101476086371689",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_MET",
+  "sha": "097cb2900021a07748569ca556625921061d5d758138aa3854eff6123c8d886d",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_MET.png",
   "type": "Image"
  },
  "Image:098f9b8400906b2b804fb405b53c5f24648cac8acd2eb0353448ac5d43f74205": {
@@ -520,6 +547,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_ALB.png",
   "type": "Image"
  },
+ "Image:0da1f0685e6d92918b806d540b80e034dfba3f1e63dadad0297226ff70a29186": {
+  "assetId": "134723809531913",
+  "imageId": "134723809531913",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_ALB",
+  "sha": "0da1f0685e6d92918b806d540b80e034dfba3f1e63dadad0297226ff70a29186",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:0dba31accfb7eb5a5143526a2e32f6730f9478ab91f271cc3a20e74d185f1710": {
   "assetId": "133060338459456",
   "imageId": "133060338459456",
@@ -630,7 +666,8 @@
    "T_Morwenna_Silt_MET",
    "T_Morwenna_Wood_MET",
    "T_AdmiraltyAnchor_Iron_MET",
-   "T_Cottage_Grime_MET"
+   "T_Cottage_Grime_MET",
+   "T_QuayKit_Armour_MET"
   ],
   "assetId": "74679138706162",
   "imageId": "74679138706162",
@@ -710,6 +747,33 @@
   "name": "Mayday_ocean_albedo_calm",
   "sha": "10a2af428278f04a2027ff9f6d5fc95ae6669ce45a9e6a688acf84ba28a3e1db",
   "source": "assets/ocean/ocean_albedo_calm.png",
+  "type": "Image"
+ },
+ "Image:10ad77cf6f57079272a491d1ad172af893c3ee17fedfd42e65e2d847e60f0f17": {
+  "assetId": "85680569938329",
+  "imageId": "85680569938329",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Tide_NOR",
+  "sha": "10ad77cf6f57079272a491d1ad172af893c3ee17fedfd42e65e2d847e60f0f17",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_NOR.png",
+  "type": "Image"
+ },
+ "Image:10eaca9868a40b52112e96110b24d5f9fdae16659e233517642a19cda6346fb0": {
+  "assetId": "104965812436327",
+  "imageId": "104965812436327",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_RGH_Wet",
+  "sha": "10eaca9868a40b52112e96110b24d5f9fdae16659e233517642a19cda6346fb0",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:11bd34d94f062ac1432235ab31c8c3bf97bd07b4b2e74a7e47df70c83685e35c": {
+  "assetId": "95975147940426",
+  "imageId": "95975147940426",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_MET",
+  "sha": "11bd34d94f062ac1432235ab31c8c3bf97bd07b4b2e74a7e47df70c83685e35c",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_MET.png",
   "type": "Image"
  },
  "Image:11c15a8017b524c24f1dbcc53504d0f2f262b783af13b7457809b56d908f6bb0": {
@@ -838,6 +902,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_MET.png",
   "type": "Image"
  },
+ "Image:15c1f3abe30313313b1d36a74504bcdc7f88fbe5d7f1598327704b750b4f7ed3": {
+  "assetId": "101003518363929",
+  "imageId": "101003518363929",
+  "moderation": "Reviewing",
+  "name": "T_PickupBuoy_Buoy_RGH",
+  "sha": "15c1f3abe30313313b1d36a74504bcdc7f88fbe5d7f1598327704b750b4f7ed3",
+  "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:15cb6efcf0f5bc2cf2c27cbe57b8ba7ecb5a5d9707e111f056a2c6751429e5f6": {
   "assetId": "76525759925242",
   "imageId": "76525759925242",
@@ -917,6 +990,15 @@
   "name": "T_Ledge01_Granite_ALB",
   "sha": "170c80adc723c0f7c4b5f184ea6fb8563d5d51c9f5e1f67f4ebb198db80ad4d0",
   "source": "assets/textures/M_Rock_Ledge_01/T_Ledge01_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:17307c249369d2b985fda8bb517056e94715956174e34e3bd80a21e33a204a49": {
+  "assetId": "103265369691460",
+  "imageId": "103265369691460",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_ALB_Wet",
+  "sha": "17307c249369d2b985fda8bb517056e94715956174e34e3bd80a21e33a204a49",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:17547d0e51fe890b214228a6c036c037473950ab722eaaf2086c947b494e36e3": {
@@ -1090,6 +1172,24 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
   "type": "Image"
  },
+ "Image:1b58233d8a3e41580d24f09d4f63f8834c3c1d460e215f4138cb23d08f282934": {
+  "assetId": "138086043869323",
+  "imageId": "138086043869323",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_NOR",
+  "sha": "1b58233d8a3e41580d24f09d4f63f8834c3c1d460e215f4138cb23d08f282934",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_NOR.png",
+  "type": "Image"
+ },
+ "Image:1b5a8bc85ff71ea40c98dc4caf2474ddc99a2fa6b747e87743b3941d9f700370": {
+  "assetId": "105117111655631",
+  "imageId": "105117111655631",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_RGH",
+  "sha": "1b5a8bc85ff71ea40c98dc4caf2474ddc99a2fa6b747e87743b3941d9f700370",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:1b8f307c12c5af49bb4fb1a361acb2973ea7db1d900b158c1bc3df6541d118b4": {
   "assetId": "82347112880416",
   "imageId": "82347112880416",
@@ -1115,6 +1215,24 @@
   "name": "Mayday_T_Bosun_Body_RGH_Wet",
   "sha": "1c3720e84c5a8c4a90ae16c312026902ea3b9f43dc8c88afe3ab83819ac65d8d",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:1c42a63c13211cdb1a99e971a700d1b354625a8f027237aa27a695eea1507966": {
+  "assetId": "78818609026591",
+  "imageId": "78818609026591",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_NOR",
+  "sha": "1c42a63c13211cdb1a99e971a700d1b354625a8f027237aa27a695eea1507966",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_NOR.png",
+  "type": "Image"
+ },
+ "Image:1c7bb6637b1de3960f5340d5d3d06a4ed4fd9275e5b2d56b64634da0ba1033aa": {
+  "assetId": "127020843086988",
+  "imageId": "127020843086988",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_MET",
+  "sha": "1c7bb6637b1de3960f5340d5d3d06a4ed4fd9275e5b2d56b64634da0ba1033aa",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_MET.png",
   "type": "Image"
  },
  "Image:1cc8d3821e9e1f00ce05810d5e58331b72582d6e288f8a3be041251ac7284e01": {
@@ -1286,6 +1404,15 @@
   "name": "Mayday_T_Bosun_Body_ALB_Wet",
   "sha": "1fb982c86fcb80871dd6b2d3d56f03d16547049ec561ca0127b322932f826471",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:1ff62cc856db7ed04f95a4c7b43c32f3932ff63eee6fe347fd578a118f4f7848": {
+  "assetId": "77266691840087",
+  "imageId": "77266691840087",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_RGH",
+  "sha": "1ff62cc856db7ed04f95a4c7b43c32f3932ff63eee6fe347fd578a118f4f7848",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_RGH.png",
   "type": "Image"
  },
  "Image:2012015832e9ba79f545f37b2600c441c78574c7432da0174db75b772d16ff4a": {
@@ -1473,6 +1600,15 @@
   "name": "T_NavMarkNorth_Buoy_ALB_Wet",
   "sha": "246bb03de46fe5051a0b611aeebeb4a8a657e8dd235df2a7b19fe9282ae01114",
   "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:2489d6fd8875793571a6874ab4e1f2bb721a32933c1a8ba10145d737a2417646": {
+  "assetId": "106626872867761",
+  "imageId": "106626872867761",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_ALB",
+  "sha": "2489d6fd8875793571a6874ab4e1f2bb721a32933c1a8ba10145d737a2417646",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB.png",
   "type": "Image"
  },
  "Image:24ea4ec36a09d2dc89ba6be83aeb40dcf1ab59741d90cc852b0c275aa22ea7d9": {
@@ -1799,6 +1935,24 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB.png",
   "type": "Image"
  },
+ "Image:2b7e778ac9fde2c16a929c72346989303d9ca971131e3ed67c2578eb21e6e098": {
+  "assetId": "106774324662951",
+  "imageId": "106774324662951",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_ALB_Wet",
+  "sha": "2b7e778ac9fde2c16a929c72346989303d9ca971131e3ed67c2578eb21e6e098",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:2ca028eaea58fbf899ffdd841ce88884af025022cc583a6d2b5f6d9fe0b1917f": {
+  "assetId": "112345644271709",
+  "imageId": "112345644271709",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Stone_RGH_Wet",
+  "sha": "2ca028eaea58fbf899ffdd841ce88884af025022cc583a6d2b5f6d9fe0b1917f",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:2cb414aac6ba7f9b113dee19dc8615eaa53ad62b8c3a57946072b77c9c5501d3": {
   "assetId": "111430771828541",
   "imageId": "111430771828541",
@@ -1878,6 +2032,15 @@
   "name": "T_Street_Main_RGH",
   "sha": "2dbf47181c14ca61fb74b4f1d8f095ed56f81f0917b7bed2ad722e969ea383aa",
   "source": "assets/textures/M_Road_StreetLamp/T_Street_Main_RGH.png",
+  "type": "Image"
+ },
+ "Image:2e07eea8705d69aa8b71d67bcdb3c70b8d43f2cbd01a8ba7cb6d05d4e004e624": {
+  "assetId": "131215895369356",
+  "imageId": "131215895369356",
+  "moderation": "Reviewing",
+  "name": "T_PickupBuoy_Buoy_ALB_Wet",
+  "sha": "2e07eea8705d69aa8b71d67bcdb3c70b8d43f2cbd01a8ba7cb6d05d4e004e624",
+  "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:2e330e7f2551706c28163d3cd3fe34f9e76f28598fade993f40538aadc4585a0": {
@@ -2004,6 +2167,15 @@
   "name": "T_RIBHelm_Console_NOR",
   "sha": "31bc463585c7d70ed41575621fd688eace69b86daa8c9e7a2d32c0e2a05212f4",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_NOR.png",
+  "type": "Image"
+ },
+ "Image:31c1a9e2677656df6c42c2cc354040f910deb83e8f1a0fea1744d0b95fed0c9a": {
+  "assetId": "86664714105461",
+  "imageId": "86664714105461",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_RGH_Wet",
+  "sha": "31c1a9e2677656df6c42c2cc354040f910deb83e8f1a0fea1744d0b95fed0c9a",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_RGH_Wet.png",
   "type": "Image"
  },
  "Image:31d8c3bc1118f5aedb5b0b82023ae7c74a8b7f56813a0ab30814dbab2c74803c": {
@@ -2225,6 +2397,24 @@
   "source": "assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:385967df263a4daff3c2639c0bd5269d902e8efdb5d0b85b94261a68081dbc60": {
+  "assetId": "105043016850786",
+  "imageId": "105043016850786",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_MET",
+  "sha": "385967df263a4daff3c2639c0bd5269d902e8efdb5d0b85b94261a68081dbc60",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_MET.png",
+  "type": "Image"
+ },
+ "Image:38616d0439add9ec9943b37710cb5f7c64cce3cfc8eb27d3e133a6b219bdc451": {
+  "assetId": "94142498318573",
+  "imageId": "94142498318573",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Armour_NOR",
+  "sha": "38616d0439add9ec9943b37710cb5f7c64cce3cfc8eb27d3e133a6b219bdc451",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_NOR.png",
+  "type": "Image"
+ },
  "Image:3861b019052834352102e51b4e08200ffe884281d167a4752f40ac160ace0e87": {
   "assetId": "107434961132990",
   "imageId": "107434961132990",
@@ -2261,6 +2451,15 @@
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_ALB.png",
   "type": "Image"
  },
+ "Image:38d383f4a49c125bda15a32ec741990fcdb8fe8aea95657f74615c638f89b936": {
+  "assetId": "137803806099109",
+  "imageId": "137803806099109",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_RGH_Wet",
+  "sha": "38d383f4a49c125bda15a32ec741990fcdb8fe8aea95657f74615c638f89b936",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56": {
   "assetId": "74732836042532",
   "imageId": "74732836042532",
@@ -2268,6 +2467,15 @@
   "name": "T_Chandlery_Slate_RGH",
   "sha": "38d4965fc6d13a32449ed2b97f0cb85b163ff94d5f22a74e54ccb0aa673efc56",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH.png",
+  "type": "Image"
+ },
+ "Image:391c7ea1c23a1f29394f7cf20f3e8ae993aebd44a1928bdf09d92c7596558289": {
+  "assetId": "91571352321737",
+  "imageId": "91571352321737",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_MET",
+  "sha": "391c7ea1c23a1f29394f7cf20f3e8ae993aebd44a1928bdf09d92c7596558289",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_MET.png",
   "type": "Image"
  },
  "Image:391f26273db7ff50390ccf4071b6dbd5da24bead4fd6c13c83c9eb844aaf7fe5": {
@@ -2357,6 +2565,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:3a69aea43b3e5d83f4778b727a9fc54d2a735c5e2b174975602b778507cc4278": {
+  "assetId": "125458337529805",
+  "imageId": "125458337529805",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_RGH",
+  "sha": "3a69aea43b3e5d83f4778b727a9fc54d2a735c5e2b174975602b778507cc4278",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH.png",
+  "type": "Image"
+ },
  "Image:3a771565c6994ae972194088336125fda6b5276d740a28881bde2fad76b111e0": {
   "assetId": "95962344907990",
   "imageId": "95962344907990",
@@ -2373,6 +2590,15 @@
   "name": "T_Ledge02_Granite_NOR",
   "sha": "3a7ae1dde95f26dcdb3fbb5e6dac9dcd3d99a507eb2c8cb0b5e07515b8e273f3",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_NOR.png",
+  "type": "Image"
+ },
+ "Image:3ae958c9987f368025d604fd43ef4a48edd8bf753db6dd9c917301a004712fda": {
+  "assetId": "71664420872754",
+  "imageId": "71664420872754",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Armour_ALB_Wet",
+  "sha": "3ae958c9987f368025d604fd43ef4a48edd8bf753db6dd9c917301a004712fda",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_ALB_Wet.png",
   "type": "Image"
  },
  "Image:3b440cc688c1f60a6f2978aec440bbc6845bcfc9752c6afa1a9c8f9eed77f5e1": {
@@ -2441,6 +2667,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_NOR.png",
   "type": "Image"
  },
+ "Image:3caf472afe4bc3d54afda07b6f389aca19bed984a9bc7070c149b4f4daa85699": {
+  "assetId": "98233291723220",
+  "imageId": "98233291723220",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_ALB_Wet",
+  "sha": "3caf472afe4bc3d54afda07b6f389aca19bed984a9bc7070c149b4f4daa85699",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:3cf938c4c3a5f4f72aee0622e9a969cc6632c0f7ace02db9d251bae2ada0b2a5": {
   "assetId": "90621469202600",
   "imageId": "90621469202600",
@@ -2450,6 +2685,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_NOR.png",
   "type": "Image"
  },
+ "Image:3d542721c27a209aaeb99955bacdc3bfa340b696079fb6ba17cfd85f6a581063": {
+  "assetId": "128506982395627",
+  "imageId": "128506982395627",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_RGH_Wet",
+  "sha": "3d542721c27a209aaeb99955bacdc3bfa340b696079fb6ba17cfd85f6a581063",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:3d73747a3e523d53974d08920ea287513c99f887077908d22614ae1dce4d6ab1": {
   "assetId": "111232227064833",
   "imageId": "111232227064833",
@@ -2457,6 +2701,15 @@
   "name": "T_Boulder05_Granite_ALB_Wet",
   "sha": "3d73747a3e523d53974d08920ea287513c99f887077908d22614ae1dce4d6ab1",
   "source": "assets/textures/M_Rock_Boulder_05/T_Boulder05_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:3d7ac655d367608be04d3df15766e2f638e7fab0984457a936a20ae68e508bbe": {
+  "assetId": "112392156303887",
+  "imageId": "112392156303887",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Armour_RGH_Wet",
+  "sha": "3d7ac655d367608be04d3df15766e2f638e7fab0984457a936a20ae68e508bbe",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_RGH_Wet.png",
   "type": "Image"
  },
  "Image:3dc4a3bc18ec9e6642878a57aadc218b6accacd4a4822ac210446c3864948eed": {
@@ -2486,6 +2739,15 @@
   "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_ALB.png",
   "type": "Image"
  },
+ "Image:3ddec3e25bafbd0db61d01b33416a37673ec1265e8eb04559157b1b14f7ab179": {
+  "assetId": "120380982475637",
+  "imageId": "120380982475637",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_RGH",
+  "sha": "3ddec3e25bafbd0db61d01b33416a37673ec1265e8eb04559157b1b14f7ab179",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:3e75950399cf92fcfcd2152a14a381315019def20d8bc44ed5079a138b6a8818": {
   "assetId": "115298267856981",
   "imageId": "115298267856981",
@@ -2493,6 +2755,15 @@
   "name": "Mayday_T_Mat_Wrack_ALB",
   "sha": "3e75950399cf92fcfcd2152a14a381315019def20d8bc44ed5079a138b6a8818",
   "source": "assets/textures/Materials/T_Mat_Wrack_ALB.png",
+  "type": "Image"
+ },
+ "Image:3ed343a89f650cc179ee0e433079caf8b710148fd8b17cd29a82c89f5fd0b47a": {
+  "assetId": "82473380348161",
+  "imageId": "82473380348161",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_NOR",
+  "sha": "3ed343a89f650cc179ee0e433079caf8b710148fd8b17cd29a82c89f5fd0b47a",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:3edbad9c6efd1fb52d75fa43eb136901883c317b60b0dd4fbcff452c866c379c": {
@@ -2520,6 +2791,15 @@
   "name": "Mayday_sky_Storm_Bk",
   "sha": "3f49e03b00ba84da5be5247920639ff7bcd1d2f5fe29a39edb14c00860db7f1b",
   "source": "assets/ocean/sky/Storm_Bk.png",
+  "type": "Image"
+ },
+ "Image:3fad6d460d6c3e85d40c908833666add647c84fe52d61293a5c14290eab3648c": {
+  "assetId": "82061316738927",
+  "imageId": "82061316738927",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_ALB",
+  "sha": "3fad6d460d6c3e85d40c908833666add647c84fe52d61293a5c14290eab3648c",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_ALB.png",
   "type": "Image"
  },
  "Image:3fec1c234a438f8bc34144b002831fa345b5d4f170d91e8672846478bb14393d": {
@@ -2637,6 +2917,15 @@
   "name": "Mayday Gale Isles Map",
   "sha": "41852661f4861fdf04726708769e4e86fb7abdea66ea67d72cc7fb5333b32e51",
   "source": "art/map/gale_isles_map.png",
+  "type": "Image"
+ },
+ "Image:41ab891b7d1d9d824c8a6984c85fab4e520313049a14b94f32cbbe1493cbc146": {
+  "assetId": "72788065746871",
+  "imageId": "72788065746871",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_RGH",
+  "sha": "41ab891b7d1d9d824c8a6984c85fab4e520313049a14b94f32cbbe1493cbc146",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_RGH.png",
   "type": "Image"
  },
  "Image:420f6195a283af24715f0b27b8866774560c4edf50980c97da0032ab3290fe6a": {
@@ -2808,6 +3097,15 @@
   "name": "T_Cottage_Render_Sage_ALB_Wet",
   "sha": "44d6ef8f9014ada3b04085ea841b6bff09b8bd64d80b00203be1ffd75d3762d5",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Sage_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:44e0eeffcb5b502ccee1afd5e5a3deb93b73de29d50b4fdbd15f976d5c0e8e2f": {
+  "assetId": "95561382567272",
+  "imageId": "95561382567272",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_ALB",
+  "sha": "44e0eeffcb5b502ccee1afd5e5a3deb93b73de29d50b4fdbd15f976d5c0e8e2f",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_ALB.png",
   "type": "Image"
  },
  "Image:45560ca665996828387e5936a737c17f7c819f33bf573b23622b0cf1a02a8c73": {
@@ -3068,6 +3366,24 @@
   "source": "assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB.png",
   "type": "Image"
  },
+ "Image:4aea2818e64478d226de7b71c6f910962de50bf8ee613f406bfd7f39ae20c119": {
+  "assetId": "87945102507517",
+  "imageId": "87945102507517",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Stone_ALB",
+  "sha": "4aea2818e64478d226de7b71c6f910962de50bf8ee613f406bfd7f39ae20c119",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB.png",
+  "type": "Image"
+ },
+ "Image:4b0f82ef8c3a7e885e0e238a9678c46ed26ad272e7d69742bbd7852e9d6739ee": {
+  "assetId": "109890955107677",
+  "imageId": "109890955107677",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_ALB",
+  "sha": "4b0f82ef8c3a7e885e0e238a9678c46ed26ad272e7d69742bbd7852e9d6739ee",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB.png",
+  "type": "Image"
+ },
  "Image:4b7accce9cde4347d0fdc72860ca4072485751c1107200de874d17032874e20b": {
   "assetId": "100291769636759",
   "imageId": "100291769636759",
@@ -3120,6 +3436,15 @@
   "name": "Mayday_T_Bosun_Body_ALB",
   "sha": "4c804fb77b592563fbef70ed0dea43a70b9dbe0a46e99ead078a7e693813e8ab",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB.png",
+  "type": "Image"
+ },
+ "Image:4ca30d5612f1477bcf94a9f6aa8eeda23c9dd59bec4be0745879dcbffaef967f": {
+  "assetId": "88045144460005",
+  "imageId": "88045144460005",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_NOR",
+  "sha": "4ca30d5612f1477bcf94a9f6aa8eeda23c9dd59bec4be0745879dcbffaef967f",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:4cb0dd7b542d8086d7b18897cf4bc2f0cb967bd477443ee0515bdb073590ed18": {
@@ -3200,6 +3525,15 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_RGH.png",
   "type": "Image"
  },
+ "Image:4e7f99d0bf05046fdcb7025c8e2b19c367a2a2cdd36f2ed0393096c76fc315c4": {
+  "assetId": "119240854551332",
+  "imageId": "119240854551332",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Armour_ALB",
+  "sha": "4e7f99d0bf05046fdcb7025c8e2b19c367a2a2cdd36f2ed0393096c76fc315c4",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_ALB.png",
+  "type": "Image"
+ },
  "Image:4e80ece2ea0f0a38f840e7ee94da905adae5e4c91051edb885506160652a7091": {
   "assetId": "98839118896001",
   "imageId": "98839118896001",
@@ -3270,6 +3604,15 @@
   "name": "Mayday_T_Bosun_Fur_NOR_Wet",
   "sha": "50a06bf74d25642aeafe3b6a1ee5aae47ec65ff8b8daaa71ecb1dced37f7842b",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR_Wet.png",
+  "type": "Image"
+ },
+ "Image:50a470be2d7208809bd1f279813156320496749bb36b857dce63fe9482315b2c": {
+  "assetId": "112952918440605",
+  "imageId": "112952918440605",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_RGH",
+  "sha": "50a470be2d7208809bd1f279813156320496749bb36b857dce63fe9482315b2c",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH.png",
   "type": "Image"
  },
  "Image:50d9dd5a708c442f0d25b0c2f714f73b88d5d15567bc6c08d24be6c9db10f805": {
@@ -3569,6 +3912,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:57070803e0d5213e4aa522d873daf06b31525a4ccfa80d1422efd9ba67d5af4d": {
+  "assetId": "112631603171171",
+  "imageId": "112631603171171",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_RGH",
+  "sha": "57070803e0d5213e4aa522d873daf06b31525a4ccfa80d1422efd9ba67d5af4d",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:5711a4a8565a8d86a8b08201c0f6304e1f9ab7e97487c3e54b495345c5ac16c9": {
   "assetId": "140245939434222",
   "imageId": "140245939434222",
@@ -3785,6 +4137,15 @@
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Body_NOR.png",
   "type": "Image"
  },
+ "Image:5d17b4cf1f9247bf89f0e80561f295c91212fa97d33a348cabecab1e4fbbae67": {
+  "assetId": "71426938343260",
+  "imageId": "71426938343260",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkStarboard_Buoy_RGH_Wet",
+  "sha": "5d17b4cf1f9247bf89f0e80561f295c91212fa97d33a348cabecab1e4fbbae67",
+  "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:5d588d23e821ddafd05a49f403d24d9d24bc73c177b6e96abfc1beebebe7713e": {
   "assetId": "71997081960782",
   "imageId": "71997081960782",
@@ -3866,6 +4227,15 @@
   "source": "assets/textures/Materials/T_Mat_SeabedSand_ALB.png",
   "type": "Image"
  },
+ "Image:60721a2df2f5fd55b4ea70f41f33114ecc58291482e600056541c3d6aff34e7f": {
+  "assetId": "138165780700675",
+  "imageId": "138165780700675",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_ALB",
+  "sha": "60721a2df2f5fd55b4ea70f41f33114ecc58291482e600056541c3d6aff34e7f",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:60c5b164b2fc255d3661c5a487a464d93aa63cd1c7964bd7f79a4de85dae2609": {
   "assetId": "118451973228908",
   "imageId": "118451973228908",
@@ -3945,6 +4315,15 @@
   "name": "Mayday_T_Mat_Earth_ALB",
   "sha": "63fdcb24c572cae959201098623550bf74d18fef32b6ccf61844f619d35a5f38",
   "source": "assets/textures/Materials/T_Mat_Earth_ALB.png",
+  "type": "Image"
+ },
+ "Image:642410a5630cc43708d105f78e806b3d639ed03256c1e7b5e3b5ac1b833cd2dc": {
+  "assetId": "90544299140402",
+  "imageId": "90544299140402",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_RGH",
+  "sha": "642410a5630cc43708d105f78e806b3d639ed03256c1e7b5e3b5ac1b833cd2dc",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_RGH.png",
   "type": "Image"
  },
  "Image:64fb3f7063907b5eeeac30a111e8a1b8d33b1e93b1c0ea681e58d8aecf5dacac": {
@@ -4208,6 +4587,24 @@
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_ALB.png",
   "type": "Image"
  },
+ "Image:6bb228d574a988c29cf2e7045ce82c196d696f35d5e8653996d18769fc5741f7": {
+  "assetId": "104556382184284",
+  "imageId": "104556382184284",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_RGH",
+  "sha": "6bb228d574a988c29cf2e7045ce82c196d696f35d5e8653996d18769fc5741f7",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_RGH.png",
+  "type": "Image"
+ },
+ "Image:6be2fa6def441479bfd9030ce1737a0ba0f8ae83bc27a4110d02060435188e6f": {
+  "assetId": "108294870463598",
+  "imageId": "108294870463598",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_NOR",
+  "sha": "6be2fa6def441479bfd9030ce1737a0ba0f8ae83bc27a4110d02060435188e6f",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_NOR.png",
+  "type": "Image"
+ },
  "Image:6be382c26c014924802c3e47ed60ab20b851424b35768d36631f48dc49295bbc": {
   "assetId": "116466049372801",
   "imageId": "116466049372801",
@@ -4260,6 +4657,15 @@
   "name": "T_Station_Granite_NOR",
   "sha": "6cb8a890cac4a37437437635da485fc31ba1e2c81b7e4b125515d8e9bd636fec",
   "source": "assets/textures/M_Bld_Station/T_Station_Granite_NOR.png",
+  "type": "Image"
+ },
+ "Image:6cd4ad2ff6e1ce08ca635c6af46d3c2f7276ac597636d5cd3f89ccff1caf7463": {
+  "assetId": "80293039930095",
+  "imageId": "80293039930095",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Tide_RGH_Wet",
+  "sha": "6cd4ad2ff6e1ce08ca635c6af46d3c2f7276ac597636d5cd3f89ccff1caf7463",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH_Wet.png",
   "type": "Image"
  },
  "Image:6ceeb5ad81b4d6e6b9b3dc806c7e974d970f8266c424826cb002ce688d8122b2": {
@@ -4368,6 +4774,15 @@
   "name": "T_Spike1_2048_ALB",
   "sha": "6f23be07cf7e387c114f59f80a84efe698195cefe3cdef5b6ed8d10d78931a7e",
   "source": "assets/textures/Spike1/T_Spike1_2048_ALB.png",
+  "type": "Image"
+ },
+ "Image:6f3ca6dbd6f34f6530be18bed668dd800d0b445c3ee37891d68835096c56ce31": {
+  "assetId": "134909340817808",
+  "imageId": "134909340817808",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_NOR",
+  "sha": "6f3ca6dbd6f34f6530be18bed668dd800d0b445c3ee37891d68835096c56ce31",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:6fa289182968152b6b6baee2246be058689671dd13d15c99abd681e77231fd38": {
@@ -4607,6 +5022,15 @@
   "source": "assets/textures/Materials/T_Mat_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:7500eb22cab7cd957d0904235a615bac07dbe35f9ba37a8374e2885150518120": {
+  "assetId": "82067158326108",
+  "imageId": "82067158326108",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_ALB_Wet",
+  "sha": "7500eb22cab7cd957d0904235a615bac07dbe35f9ba37a8374e2885150518120",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:75294fefd79f2112dac20e997b54dd57d5d7cd6c2b24b7d0346dc05199c8205b": {
   "assetId": "125453869134573",
   "imageId": "125453869134573",
@@ -4614,6 +5038,15 @@
   "name": "T_Ledge02_Granite_ALB_Wet",
   "sha": "75294fefd79f2112dac20e997b54dd57d5d7cd6c2b24b7d0346dc05199c8205b",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:753cd0e847bf97a8535022613e81edb4c73f0c389b54fd8be5f31aba9fa5aa17": {
+  "assetId": "77833180983691",
+  "imageId": "77833180983691",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_MET",
+  "sha": "753cd0e847bf97a8535022613e81edb4c73f0c389b54fd8be5f31aba9fa5aa17",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_MET.png",
   "type": "Image"
  },
  "Image:753e2a55a916891f5dec7f97b13d817d2eadf1874464e4e6c93cfc6c38308bca": {
@@ -4652,6 +5085,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_RGH.png",
   "type": "Image"
  },
+ "Image:76ff94816adcceb76382ea9005f8b36bcd0ce21361157a2bb53f94b54a969e08": {
+  "assetId": "117496571459700",
+  "imageId": "117496571459700",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_NOR",
+  "sha": "76ff94816adcceb76382ea9005f8b36bcd0ce21361157a2bb53f94b54a969e08",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_NOR.png",
+  "type": "Image"
+ },
  "Image:778b838868ebe2945a7d3027ed99a7bac962bf249e998244bb333254fccc8f0f": {
   "assetId": "84459242463519",
   "imageId": "84459242463519",
@@ -4686,6 +5128,15 @@
   "name": "T_Cottage_Details_ALB",
   "sha": "787b0eb8ea9b1d54d0a8df2ae928467ff3e372782b5ce7e004ca205473806e89",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_ALB.png",
+  "type": "Image"
+ },
+ "Image:7884c5235e806f7f38d684a586ce77d3a10791c36b25f8b58ebb2d43c34403d6": {
+  "assetId": "79099359283356",
+  "imageId": "79099359283356",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_RGH_Wet",
+  "sha": "7884c5235e806f7f38d684a586ce77d3a10791c36b25f8b58ebb2d43c34403d6",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_RGH_Wet.png",
   "type": "Image"
  },
  "Image:78859fc0fa6184be93049b24ec76fbf032b2395f393486f4fafb796e7622f357": {
@@ -5012,6 +5463,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Markings_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:808c6a8297fbdc6a67f3067370b0a2bb94a9f790ee6dd565296d674854cceba8": {
+  "assetId": "126275668500447",
+  "imageId": "126275668500447",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_RGH",
+  "sha": "808c6a8297fbdc6a67f3067370b0a2bb94a9f790ee6dd565296d674854cceba8",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:80aa5ffe658dcf5c4c040e76f17ce436432e24014977d6225484d0b7b9a526a2": {
   "assetId": "73610620316145",
   "imageId": "73610620316145",
@@ -5057,6 +5517,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_NOR.png",
   "type": "Image"
  },
+ "Image:817b9e5a269037215fd5d2faf9c1b2df98bbf823470b3388e5597ac655a96c69": {
+  "assetId": "116724975070631",
+  "imageId": "116724975070631",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_NOR",
+  "sha": "817b9e5a269037215fd5d2faf9c1b2df98bbf823470b3388e5597ac655a96c69",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_NOR.png",
+  "type": "Image"
+ },
  "Image:81a7cc68e2e072b1d46a193900182dc73cdc316305e10f1ad067b35f1c3322a8": {
   "assetId": "126814126223836",
   "imageId": "126814126223836",
@@ -5084,6 +5553,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png",
   "type": "Image"
  },
+ "Image:827a5c6085eaf532a79403612d947391b41fc169ad7bbd2fd2450e3c47f22bba": {
+  "assetId": "85030548053955",
+  "imageId": "85030548053955",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_MET",
+  "sha": "827a5c6085eaf532a79403612d947391b41fc169ad7bbd2fd2450e3c47f22bba",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_MET.png",
+  "type": "Image"
+ },
  "Image:828e646a22175c95060af58f05c4514c4b639e441d467e3404d5a2d2e427eeac": {
   "assetId": "102607780918145",
   "imageId": "102607780918145",
@@ -5100,6 +5578,15 @@
   "name": "T_Ledge02_Granite_RGH_Wet",
   "sha": "828f1c01b1516f0ba351a2cf0c971c677cb5923832d13b4bc9450179981bf41d",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:82da512a8d9a5be42eed9343f2f1415928c358132c542196ac9c9bc0d72aef19": {
+  "assetId": "80100619796149",
+  "imageId": "80100619796149",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSouth_Buoy_ALB",
+  "sha": "82da512a8d9a5be42eed9343f2f1415928c358132c542196ac9c9bc0d72aef19",
+  "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_ALB.png",
   "type": "Image"
  },
  "Image:832f2d5fc005677c58c477ac16033ca0ed14f8c509dfdd7e595e2801844bbf81": {
@@ -5127,6 +5614,15 @@
   "name": "T_RIB_Hull_MET",
   "sha": "8391f725d3c4126dedd9aaabbd8d83b91d89616e5492b73a3fb49121b146f8e9",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
+  "type": "Image"
+ },
+ "Image:83cf996774524a0d410f6b1c55ab6bf0b7111afef3091c066ca5692a415cfa39": {
+  "assetId": "117827980281322",
+  "imageId": "117827980281322",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_MET",
+  "sha": "83cf996774524a0d410f6b1c55ab6bf0b7111afef3091c066ca5692a415cfa39",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_MET.png",
   "type": "Image"
  },
  "Image:83d4426448f8f7e8d3cc4e87108875e952704d3c7622a0a5a84e5533b591b0b1": {
@@ -5282,6 +5778,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
+ "Image:867c3bb72902cf7997aba6e207349c468c551c5f762b7a982033255d943f52fe": {
+  "assetId": "129264977953941",
+  "imageId": "129264977953941",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_ALB",
+  "sha": "867c3bb72902cf7997aba6e207349c468c551c5f762b7a982033255d943f52fe",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963": {
   "assetId": "102126340609881",
   "imageId": "102126340609881",
@@ -5327,6 +5832,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH.png",
   "type": "Image"
  },
+ "Image:87f6e1456793b907af0ed0acb96fba6295d3b24983ca5ae40ad897480581c560": {
+  "assetId": "73268466597090",
+  "imageId": "73268466597090",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_RGH",
+  "sha": "87f6e1456793b907af0ed0acb96fba6295d3b24983ca5ae40ad897480581c560",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:8809796b07ef4a48cd156ef058a10411c21ae52a37c4e747747c32937d5d5cec": {
   "assetId": "86744316595762",
   "imageId": "86744316595762",
@@ -5336,6 +5850,15 @@
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:88a36dd5a4ffe2b86ea0f4da334f311aa56cdb4e947338559f6dda6569d918ce": {
+  "assetId": "90773240490921",
+  "imageId": "90773240490921",
+  "moderation": "Reviewing",
+  "name": "T_PickupBuoy_Buoy_ALB",
+  "sha": "88a36dd5a4ffe2b86ea0f4da334f311aa56cdb4e947338559f6dda6569d918ce",
+  "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca": {
   "assetId": "120584434821371",
   "imageId": "120584434821371",
@@ -5343,6 +5866,15 @@
   "name": "T_Chandlery_Bands_ALB_Wet",
   "sha": "89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:899555ff70ba8bc9517c7ce66a2ceb34e0131bc1b7d0b526433db9a2ed333daf": {
+  "assetId": "77452281312327",
+  "imageId": "77452281312327",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_ALB_Wet",
+  "sha": "899555ff70ba8bc9517c7ce66a2ceb34e0131bc1b7d0b526433db9a2ed333daf",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB_Wet.png",
   "type": "Image"
  },
  "Image:89ef8029d75b585cba4430e5b76c7d2a313c2f98723b6536e00c2f5e7b53c716": {
@@ -5489,6 +6021,15 @@
   "source": "assets/textures/M_Rock_Boulder_02/T_Boulder02_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:8c00e008d2d19d93b84bb03fb7468919d393b814e112c274577c088ab3881609": {
+  "assetId": "103467982436468",
+  "imageId": "103467982436468",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_ALB",
+  "sha": "8c00e008d2d19d93b84bb03fb7468919d393b814e112c274577c088ab3881609",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:8c089fa192fef654536ab1b7b2cb91fcb8926eb6c55a9d2f2ac8735395f1807b": {
   "assetId": "139877752921246",
   "imageId": "139877752921246",
@@ -5586,6 +6127,15 @@
   "name": "T_Station_Render_RGH",
   "sha": "8e76bfdac6e25ae2bbd797d71d760a50936bad82f42295e4939aaab7cb44f27d",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
+  "type": "Image"
+ },
+ "Image:8ed514dc97a78880dda7dfdc6e48613212ea717d9c58a62eaa26005499ec6211": {
+  "assetId": "100959961935007",
+  "imageId": "100959961935007",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_ALB_Wet",
+  "sha": "8ed514dc97a78880dda7dfdc6e48613212ea717d9c58a62eaa26005499ec6211",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB_Wet.png",
   "type": "Image"
  },
  "Image:8f211dab1622f5ecc4ee25ecdfb785061484d3f46546b7d62913ca27008ee5ca": {
@@ -5837,6 +6387,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Grime_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:94346c70233cf747f7a087fc69ec763f70fb5adafe4b87d317adbdf71039dcb5": {
+  "assetId": "123067895625526",
+  "imageId": "123067895625526",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_RGH_Wet",
+  "sha": "94346c70233cf747f7a087fc69ec763f70fb5adafe4b87d317adbdf71039dcb5",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:946e394646f9fe6a8d27dd73a582791e50e8b9ed344cb98d82d113a5db3dc825": {
   "assetId": "115382765784889",
   "imageId": "115382765784889",
@@ -5907,6 +6466,15 @@
   "name": "T_NavMarkPort_Buoy_NOR",
   "sha": "959a60989f0699539b4848d26936957fcbb5fb2aaa687361075918fcf1417fc9",
   "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_NOR.png",
+  "type": "Image"
+ },
+ "Image:959fcd42298a26ff2aa3332ed09fa522ee4136982379dcea57483930ee932e1f": {
+  "assetId": "81198424607338",
+  "imageId": "81198424607338",
+  "moderation": "Reviewing",
+  "name": "T_PickupBuoy_Buoy_RGH_Wet",
+  "sha": "959fcd42298a26ff2aa3332ed09fa522ee4136982379dcea57483930ee932e1f",
+  "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_RGH_Wet.png",
   "type": "Image"
  },
  "Image:95b0c4fc7525648494488166a6937a6a4968ab039dc7aed9ed5c4aceb4d44a02": {
@@ -6080,6 +6648,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:9beb90777891d88095d989354b3290dca6d6d567cd75b037a941e1f97a9f7db0": {
+  "assetId": "74012354266354",
+  "imageId": "74012354266354",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Armour_RGH",
+  "sha": "9beb90777891d88095d989354b3290dca6d6d567cd75b037a941e1f97a9f7db0",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_RGH.png",
+  "type": "Image"
+ },
  "Image:9befa3772c681e4f25877c4b1d5c94fe67de87519e34fb4abd52877e6c35c912": {
   "assetId": "108626486995655",
   "imageId": "108626486995655",
@@ -6132,6 +6709,15 @@
   "name": "T_Ledge01_Granite_ALB_Wet",
   "sha": "9ca760a8c4dd3402ee4ad82142f0e5e92759e870c550aad4a624760ab4c0ca30",
   "source": "assets/textures/M_Rock_Ledge_01/T_Ledge01_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:9cb0e6de8632cc7724f81a4c941f75bf6aadff0afb07936ba3a95b80d2a6c076": {
+  "assetId": "134562893566375",
+  "imageId": "134562893566375",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Tide_RGH",
+  "sha": "9cb0e6de8632cc7724f81a4c941f75bf6aadff0afb07936ba3a95b80d2a6c076",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH.png",
   "type": "Image"
  },
  "Image:9d0dbf69e13a55376a74596135fb4b91e0139beeeeac7b8322c7fcfeaafe33d8": {
@@ -6240,6 +6826,15 @@
   "name": "T_Boulder04_Granite_RGH",
   "sha": "9f06843d27917fe74109f63a9a37fed6fb44fa45c83cb8e2080c3967b67b5cfe",
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:9f18c12617738c65d78f7f894d391451aa02ff60dabda328cc3df3c91286c180": {
+  "assetId": "72189968684164",
+  "imageId": "72189968684164",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_ALB_Wet",
+  "sha": "9f18c12617738c65d78f7f894d391451aa02ff60dabda328cc3df3c91286c180",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:9f7840266235eecbf5dfd0a169939b38ed0822a1457ec4536bd45b14e8148dab": {
@@ -6378,6 +6973,15 @@
   "name": "T_Cottage_Render_Pink_ALB_Wet",
   "sha": "a31ad1b883943e0a797de2856cd2ce07349a2c2646b4cb8ff4c8350dc72b574d",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Pink_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:a39ba0ba4e6907228c1de3f2e35de076dc1098a4bd783b40300fdaebb4e59fac": {
+  "assetId": "127508641443254",
+  "imageId": "127508641443254",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_ALB_Wet",
+  "sha": "a39ba0ba4e6907228c1de3f2e35de076dc1098a4bd783b40300fdaebb4e59fac",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:a457fea60929e059e4f4cba89d9806f0ee93b4b520bce20faaa2e7346f0ab7fd": {
@@ -6590,6 +7194,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH.png",
   "type": "Image"
  },
+ "Image:a8b493cbf20b6f45294c0ee8e721e5714e503d9da9009f3e6884dde1af466194": {
+  "assetId": "133216980183496",
+  "imageId": "133216980183496",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_MET",
+  "sha": "a8b493cbf20b6f45294c0ee8e721e5714e503d9da9009f3e6884dde1af466194",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_MET.png",
+  "type": "Image"
+ },
  "Image:a8b86f52eb5f46178b914ae33885e6ab07f6121ad0c705dca89fc6cbf2d86d33": {
   "assetId": "110377936753051",
   "imageId": "110377936753051",
@@ -6615,6 +7228,15 @@
   "name": "T_Cliff02_Granite_RGH",
   "sha": "a913362ad171a19230c750035b7692d04bc43a98ff1967de54d8f9f8496d2129",
   "source": "assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:a91fe72f1f4919a0a2fd2168ff7b306662593d734058d1ba0c5e1eb3373a4081": {
+  "assetId": "72001945705255",
+  "imageId": "72001945705255",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_NOR",
+  "sha": "a91fe72f1f4919a0a2fd2168ff7b306662593d734058d1ba0c5e1eb3373a4081",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:a930a2487d7d84510ec21a9d9ae79c4d2cec74592810d43286c185aa9925618a": {
@@ -6717,6 +7339,15 @@
   "name": "Mayday_T_Bosun_Body_ALB_Wet",
   "sha": "ab42a58a5996a65fb224764387105a82ee6c390ee5eb891ebe9a9baf64d04d45",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:ab7969b934eadb704322c851ba8570fa0e2120feef765ee46c20f61d2a076cb1": {
+  "assetId": "104427074808628",
+  "imageId": "104427074808628",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_NOR",
+  "sha": "ab7969b934eadb704322c851ba8570fa0e2120feef765ee46c20f61d2a076cb1",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:ac4c3eb266f804ba1dc9f94e65d50345d3f12f4fc7f0143d75d09be63689d336": {
@@ -7019,6 +7650,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:b433fdcb4d81f728c937e2fae7a27296cd7348e143370bc5c47d50002c03b515": {
+  "assetId": "86371517406131",
+  "imageId": "86371517406131",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_RGH_Wet",
+  "sha": "b433fdcb4d81f728c937e2fae7a27296cd7348e143370bc5c47d50002c03b515",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:b4b93c332a498c050aaffc577cd5b8383bc5299c114385cbe96b4d99bc0001eb": {
   "assetId": "92409420143779",
   "imageId": "92409420143779",
@@ -7310,6 +7950,15 @@
   "source": "assets/textures/Materials/T_Mat_Tarmac_ALB.png",
   "type": "Image"
  },
+ "Image:bdfb217e4f8f1de829f31ee520448f8713fc20ec603b26874bcb783485d0c99a": {
+  "assetId": "136908621646282",
+  "imageId": "136908621646282",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_RGH_Wet",
+  "sha": "bdfb217e4f8f1de829f31ee520448f8713fc20ec603b26874bcb783485d0c99a",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:be089529163ca25479e9beb1fb7016e4e04f90433d64dad5e810163ba48e8135": {
   "assetId": "99773420301173",
   "imageId": "99773420301173",
@@ -7409,6 +8058,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB.png",
   "type": "Image"
  },
+ "Image:c0d259eefa0187f3fd6f13ee228c8c4ea3cd5e8f89111586778b1fbe7330a04f": {
+  "assetId": "140153688500515",
+  "imageId": "140153688500515",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Tide_ALB_Wet",
+  "sha": "c0d259eefa0187f3fd6f13ee228c8c4ea3cd5e8f89111586778b1fbe7330a04f",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:c0feb518944ed40665532d673dfa4bee81cf371a411608fe7691a4e713387bb3": {
   "assetId": "131892484786434",
   "imageId": "131892484786434",
@@ -7452,6 +8110,15 @@
   "name": "T_Ladder_Steel_RGH_Wet",
   "sha": "c2209d0b8c33f6304d5eb06ddbaba77a7f53bbc90005e4e2a74bea06498e8f8d",
   "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:c2950fe777b84c8315c434968018c4204a2e32d1847411e2bb2ef85f6a48acc4": {
+  "assetId": "93572464518148",
+  "imageId": "93572464518148",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_ALB_Wet",
+  "sha": "c2950fe777b84c8315c434968018c4204a2e32d1847411e2bb2ef85f6a48acc4",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:c2dc8efc6ccc9ea9859564d3d52a9dc07249a191434f0372dee105be8d2608d8": {
@@ -7506,6 +8173,15 @@
   "name": "T_Morwenna_Kelp_ALB",
   "sha": "c44ae853f36ed1d620ecbc5e582c37cb346098e25805f913d9b9ef3458b494c8",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_ALB.png",
+  "type": "Image"
+ },
+ "Image:c4759a4dc2092916273ec1fb9b5cfe309b7bb84be91df97a5454f440d2816432": {
+  "assetId": "105027022733739",
+  "imageId": "105027022733739",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Stone_ALB_Wet",
+  "sha": "c4759a4dc2092916273ec1fb9b5cfe309b7bb84be91df97a5454f440d2816432",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB_Wet.png",
   "type": "Image"
  },
  "Image:c475ee49e7a660aebeff83c252dfaf16517a5e724f215527eeeb49fe5e2da3f2": {
@@ -7578,6 +8254,15 @@
   "name": "Mayday_sky_Overcast_Ft",
   "sha": "c610f4d95ff2c3b7ba7c6494d561ebb61a550ed1432ccc44bcbfae34b1e9c4e6",
   "source": "assets/ocean/sky/Overcast_Ft.png",
+  "type": "Image"
+ },
+ "Image:c66c543314ba80568953e1c98c77f6a902feb5353f2a3a1e2290d6bd3b3f0a96": {
+  "assetId": "103084908570507",
+  "imageId": "103084908570507",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_ALB_Wet",
+  "sha": "c66c543314ba80568953e1c98c77f6a902feb5353f2a3a1e2290d6bd3b3f0a96",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:c6ad98b99621b76e1747f8ef5a2226a402807faf9a735f8cbe427e01ac963d19": {
@@ -7954,6 +8639,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:cf068a548c5ecadc47f9259105419856d13f6204462007b79268c891dbde0611": {
+  "assetId": "84317274494398",
+  "imageId": "84317274494398",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkNorth_Buoy_RGH_Wet",
+  "sha": "cf068a548c5ecadc47f9259105419856d13f6204462007b79268c891dbde0611",
+  "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:cf0d9e9075d749e4fed0edb4af31c43ef4e83d0586931f08c76081c394be8e41": {
   "assetId": "95728402822692",
   "imageId": "95728402822692",
@@ -8071,6 +8765,15 @@
   "source": "assets/textures/Spike1/T_Spike1_2048_RGH.png",
   "type": "Image"
  },
+ "Image:d0d3f5eb585eb916a95407650fda7fee8ba6564f2b5a8094d3c1e32bd12094b7": {
+  "assetId": "105911205674190",
+  "imageId": "105911205674190",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Stone_NOR",
+  "sha": "d0d3f5eb585eb916a95407650fda7fee8ba6564f2b5a8094d3c1e32bd12094b7",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_NOR.png",
+  "type": "Image"
+ },
  "Image:d0d6c0f716ecdd9bbe062be143a4ca68b06af280e0f832c6fd5edcca5d508f8d": {
   "assetId": "129503685055204",
   "imageId": "129503685055204",
@@ -8134,6 +8837,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:d2101186569f6f5bea4f5dca6fee43205198d78bb7f4933d4393c0ee5d540789": {
+  "assetId": "134520667298867",
+  "imageId": "134520667298867",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Tide_ALB",
+  "sha": "d2101186569f6f5bea4f5dca6fee43205198d78bb7f4933d4393c0ee5d540789",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB.png",
+  "type": "Image"
+ },
  "Image:d28165d7663b4b1068c700fa7a6f2e23e4b1fc7a0958dc497b31cd069f37784d": {
   "assetId": "71920021950811",
   "imageId": "71920021950811",
@@ -8159,6 +8871,15 @@
   "name": "T_NavMarkWest_Buoy_RGH",
   "sha": "d2e3a6b13fa100e31c0f0a70d793a33f8c173b492636aef2b485671f5f8c879b",
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_RGH.png",
+  "type": "Image"
+ },
+ "Image:d3237b9eec25bbbe063af548d7d8695e7a6f90dab05bccf36d838390568aaf0d": {
+  "assetId": "112318142349592",
+  "imageId": "112318142349592",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkEast_Buoy_ALB",
+  "sha": "d3237b9eec25bbbe063af548d7d8695e7a6f90dab05bccf36d838390568aaf0d",
+  "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_ALB.png",
   "type": "Image"
  },
  "Image:d32fecf05c0e8b40bffd2f6c274ed0770ba27a659c7ad4629bc5cc3df3e24297": {
@@ -8195,6 +8916,15 @@
   "name": "T_Spike1_1024_NOR",
   "sha": "d4863fbb854d37921269652d8a8e01597f24e13a4144407702eb28c71d437021",
   "source": "assets/textures/Spike1/T_Spike1_1024_NOR.png",
+  "type": "Image"
+ },
+ "Image:d4ba8a1d0a01d661ce27f0957c63d0029ce12638c255d19a29953c5f5eaa5829": {
+  "assetId": "90486620248066",
+  "imageId": "90486620248066",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkIsolatedDanger_Buoy_ALB_Wet",
+  "sha": "d4ba8a1d0a01d661ce27f0957c63d0029ce12638c255d19a29953c5f5eaa5829",
+  "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:d4dcb7fc77e827ca1922a1b6fd73904689fb0fc249fb5899dd1cfc17b54cc422": {
@@ -8423,6 +9153,15 @@
   "name": "T_Boulder04_Granite_ALB_Wet",
   "sha": "d9e5c321144e0be2e93aa0db9e6c5e987dc1587e7abefe520abfae00e7e8c925",
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:da6215094ebf4d4fc10c3dfe230b4d0457288e8594b2be13346311fcb6e0df32": {
+  "assetId": "80992502833660",
+  "imageId": "80992502833660",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_ALB",
+  "sha": "da6215094ebf4d4fc10c3dfe230b4d0457288e8594b2be13346311fcb6e0df32",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_ALB.png",
   "type": "Image"
  },
  "Image:daa41814ac94c21dab7b2593523bd6adde22129ead8b96c452a3cb1ca49830fb": {
@@ -8689,6 +9428,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:e0f35fcb3e53323b7408e39598c9ef9f721f91dcba124c877988be5cb0b097f0": {
+  "assetId": "122895583606542",
+  "imageId": "122895583606542",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkPort_Buoy_RGH",
+  "sha": "e0f35fcb3e53323b7408e39598c9ef9f721f91dcba124c877988be5cb0b097f0",
+  "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_RGH.png",
+  "type": "Image"
+ },
  "Image:e1279a156f3c1849af7967fe08743f19c08df4dcaa4a11b89f085430cdc9e5c1": {
   "assetId": "115555952753581",
   "imageId": "115555952753581",
@@ -8825,6 +9573,15 @@
   "name": "T_Boulder05_Granite_ALB_Wet",
   "sha": "e49920900b64553117775a904cea4a3fe1ae860076dfa1c5cf8ad45acdffba64",
   "source": "assets/textures/M_Rock_Boulder_05/T_Boulder05_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:e519676d1069c677aa3f91cf2c0e050f2f38edd97af2b75fca1144ea5b110fe4": {
+  "assetId": "81549986794748",
+  "imageId": "81549986794748",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_RGH_Wet",
+  "sha": "e519676d1069c677aa3f91cf2c0e050f2f38edd97af2b75fca1144ea5b110fe4",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_RGH_Wet.png",
   "type": "Image"
  },
  "Image:e536c07f3275c80c57b879fee26542ad2fdaf243039a4103f2f3fa13d90b9b6f": {
@@ -9160,6 +9917,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:eebaa61d39ba7f7b54171c9cef67fad980a476e4b79f3a328a9af743be174bcc": {
+  "assetId": "75469326231171",
+  "imageId": "75469326231171",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkWest_Buoy_ALB",
+  "sha": "eebaa61d39ba7f7b54171c9cef67fad980a476e4b79f3a328a9af743be174bcc",
+  "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_ALB.png",
+  "type": "Image"
+ },
  "Image:eec568a25d99c7ca653875962e01e2787c80bf6bc3de9a5d53791e6e58159d0f": {
   "assetId": "93078427746275",
   "imageId": "93078427746275",
@@ -9331,6 +10097,15 @@
   "source": "assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:f2342db1abb0d80a678282882531266f00c1e7c994fec534ab0ee459a39c5877": {
+  "assetId": "132502655494965",
+  "imageId": "132502655494965",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkBell_Buoy_NOR",
+  "sha": "f2342db1abb0d80a678282882531266f00c1e7c994fec534ab0ee459a39c5877",
+  "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_NOR.png",
+  "type": "Image"
+ },
  "Image:f24e823be9e1710cfdcf78e55857d148f12e042f9ec1d03d5ef3ad1c8b0d442b": {
   "assetId": "73479968303129",
   "imageId": "73479968303129",
@@ -9356,6 +10131,15 @@
   "name": "T_JetSkiCloseUp_CloseUp_ALB",
   "sha": "f2c0727ca43c2ca7ac9063e3f2d7a1547946ac3a6c7679c7adffa5f76127f67a",
   "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_ALB.png",
+  "type": "Image"
+ },
+ "Image:f2de37dfdcf1070fbfa03080c281204d31b34f992e223e4d9d2ce36135080892": {
+  "assetId": "79848509310222",
+  "imageId": "79848509310222",
+  "moderation": "Reviewing",
+  "name": "T_Ladder_Steel_NOR",
+  "sha": "f2de37dfdcf1070fbfa03080c281204d31b34f992e223e4d9d2ce36135080892",
+  "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_NOR.png",
   "type": "Image"
  },
  "Image:f30bbd4a5e5a03d3a65d9fc8d16ab2ceea8bf3fbc0c74692d5ecc1f1189440ee": {
@@ -9401,6 +10185,15 @@
   "name": "T_NavMarkIsolatedDanger_Buoy_RGH_Wet",
   "sha": "f332aa100fa0320b4341104626482e90447924f394b5e341d5db89b987d37433",
   "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:f3b0be289b7fa81cc92fe2f7e64b23cd66751d7457626260aa604f5a39107b52": {
+  "assetId": "129759083645779",
+  "imageId": "129759083645779",
+  "moderation": "Reviewing",
+  "name": "T_NavMarkSafeWater_Buoy_ALB_Wet",
+  "sha": "f3b0be289b7fa81cc92fe2f7e64b23cd66751d7457626260aa604f5a39107b52",
+  "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_ALB_Wet.png",
   "type": "Image"
  },
  "Image:f3c06740ceecaad0b2573b53b143df4460c2b30fd216cc8ebc86464780b04442": {
@@ -9565,6 +10358,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_MET.png",
   "type": "Image"
  },
+ "Image:f771c8f5c271e6355186004dd86208056f6f49c7cab3cda71ca0eebe722ec909": {
+  "assetId": "130460393571450",
+  "imageId": "130460393571450",
+  "moderation": "Reviewing",
+  "name": "T_QuayKit_Stone_RGH",
+  "sha": "f771c8f5c271e6355186004dd86208056f6f49c7cab3cda71ca0eebe722ec909",
+  "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH.png",
+  "type": "Image"
+ },
  "Image:f78904af5f692ad25d024ea20b221bf9e0aaf29400a700444918b95da112ab23": {
   "assetId": "94763399438097",
   "imageId": "94763399438097",
@@ -9599,6 +10401,15 @@
   "name": "Mayday_T_Bosun_Body_ALB_Wet",
   "sha": "f84d8645d72c9d862eb705480b928069d226786d7b7125e7c77fe51b80546366",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:f8f88bbbc4750aae0e158c089b3f8305c16523f6d816fb3555a2a5663846b36d": {
+  "assetId": "106223873947881",
+  "imageId": "106223873947881",
+  "moderation": "Reviewing",
+  "name": "T_MooringBuoy_Buoy_MET",
+  "sha": "f8f88bbbc4750aae0e158c089b3f8305c16523f6d816fb3555a2a5663846b36d",
+  "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_MET.png",
   "type": "Image"
  },
  "Image:f912fb9d329f3bf9ab95f50a27bdd801e6cbe42f4764ecdb0cdd64cd88b3add8": {
@@ -9704,6 +10515,15 @@
   "name": "Mayday_T_Mat_WeedyConcrete_NOR",
   "sha": "fbd4cd46a297d43f5d6749c808dd87676adc7cf5e5e304a37a37f0d089caa1a9",
   "source": "assets/textures/Materials/T_Mat_WeedyConcrete_NOR.png",
+  "type": "Image"
+ },
+ "Image:fc0b96657cb91248fb769e2efd70791e75de6d9abd59ce2461fb501ac7b23fbf": {
+  "assetId": "125902225873069",
+  "imageId": "125902225873069",
+  "moderation": "Reviewing",
+  "name": "T_PickupBuoy_Buoy_NOR",
+  "sha": "fc0b96657cb91248fb769e2efd70791e75de6d9abd59ce2461fb501ac7b23fbf",
+  "source": "assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_NOR.png",
   "type": "Image"
  },
  "Image:fc4937ef6a7c8763499c1d8b223f49d22e0e96c48ed7076e33d005495ae8ab05": {
@@ -9860,6 +10680,15 @@
   "name": "T_Cliff04_Granite_RGH_Wet",
   "sha": "ff62928f7cebd08cca75259fc8297766e81d64b9fdb50d08a991912253688c15",
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:ff6def282e43166f07431dc590320c95441be061afcdc635af09af9fda9d49f8": {
+  "assetId": "90918573167069",
+  "imageId": "90918573167069",
+  "moderation": "Reviewing",
+  "name": "T_Pontoon_Kit_MET",
+  "sha": "ff6def282e43166f07431dc590320c95441be061afcdc635af09af9fda9d49f8",
+  "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_MET.png",
   "type": "Image"
  },
  "Image:ffca44be056e9a95f3715ff77af5d35daac9048609d685da22ab4e8a6649b8da": {
@@ -10030,6 +10859,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_TexPlane.fbx",
   "type": "Model"
  },
+ "Model:0db3fab3427bbdf964fee60781e138455806629cd0a33d3e52045fa32d362e42": {
+  "assetId": "97848760146310",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_East_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_East_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "0db3fab3427bbdf964fee60781e138455806629cd0a33d3e52045fa32d362e42",
+  "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:0e43fe7fdfda7219c7577ef14147264ab1e8533a999e77e2306073214a04bff1": {
   "assetId": "86149424505857",
   "moderation": "Approved",
@@ -10088,6 +10927,16 @@
   "route": "delivery",
   "sha": "11863045f7359d4b5982533bc07494a635eb4c78424d5f582864d0a2f39b5580",
   "source": "assets/fbx/M_Rock_Ledge_01/M_Rock_Ledge_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:11e0faf95045701396ffa3a9de3fc0e3e83fb3a89b0a9636294f6f54cc232ff6": {
+  "assetId": "88977717761218",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_West",
+  "rbxm": "assets/models/M_Hbr_NavMark_West.rbxm",
+  "route": "delivery",
+  "sha": "11e0faf95045701396ffa3a9de3fc0e3e83fb3a89b0a9636294f6f54cc232ff6",
+  "source": "assets/fbx/M_Hbr_NavMark_West/M_Hbr_NavMark_West_LOD0.fbx",
   "type": "Model"
  },
  "Model:1479e183570a5df5dfa2d642265fde8ccaf9b3186c129d09b26c354d48fe8b7a": {
@@ -10330,6 +11179,16 @@
   "source": "assets/fbx/M_Bld_Cottage_04/M_Bld_Cottage_04_LOD2.fbx",
   "type": "Model"
  },
+ "Model:22d9e73f01c9265b285a26067ec201913037b963dcf8bf87f2c01b95bd04db25": {
+  "assetId": "110676445944860",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_SafeWater_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_SafeWater_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "22d9e73f01c9265b285a26067ec201913037b963dcf8bf87f2c01b95bd04db25",
+  "source": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:239bee92742e513abc3fd0bf0ca1bc89737b88f8853cf6c76ef8d0456a79b933": {
   "assetId": "93594095444599",
   "moderation": "Approved",
@@ -10560,6 +11419,16 @@
   "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:2c27c16a2fac3ce9d6e22c5983c3b7c1723ef6201938e498771aa47c7249de2d": {
+  "assetId": "87755623373003",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Bell_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_Bell_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "2c27c16a2fac3ce9d6e22c5983c3b7c1723ef6201938e498771aa47c7249de2d",
+  "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:2c5441c9afb4ee4149cc952e07ac988dd32f0581bfe3671f2ea21da0317e4f5d": {
   "assetId": "106684326721994",
   "moderation": "Approved",
@@ -10668,6 +11537,26 @@
   "route": "delivery",
   "sha": "32095bd123068322263e2046779128b4e3600baa74197fa48e5c2a2558e5cf76",
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:33a3d6dc16dca7a1714072b21f3e2fd7a8c5c0c9e6d18f6ee5fd99715bec5643": {
+  "assetId": "83939577174704",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Starboard_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_Starboard_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "33a3d6dc16dca7a1714072b21f3e2fd7a8c5c0c9e6d18f6ee5fd99715bec5643",
+  "source": "assets/fbx/M_Hbr_NavMark_Starboard/M_Hbr_NavMark_Starboard_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:344378a0f0d5edbf3814573012f03413f948dc40c07246d8fc39e4f2cebc0a50": {
+  "assetId": "85769079369742",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Port_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_Port_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "344378a0f0d5edbf3814573012f03413f948dc40c07246d8fc39e4f2cebc0a50",
+  "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD1.fbx",
   "type": "Model"
  },
  "Model:35f52797bdd562bcb5a28499b9d40d3a4319b98ef605ba65cc0ce81cb682d8fb": {
@@ -10950,6 +11839,16 @@
   "source": "assets/fbx/M_Veg_Gorse_02/M_Veg_Gorse_02_LOD2.fbx",
   "type": "Model"
  },
+ "Model:4754569cd48e3f95e790091b8474ec13a0775cd686410731d53eaf097af3f489": {
+  "assetId": "85758467944221",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_East_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_East_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "4754569cd48e3f95e790091b8474ec13a0775cd686410731d53eaf097af3f489",
+  "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:47c6fc70dca786000760804acf7a1775e31755c8eeceaa65281ad24c6a22837c": {
   "assetId": "105677462617729",
   "moderation": "Approved",
@@ -11100,6 +11999,16 @@
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
   "type": "Model"
  },
+ "Model:4e6a019dd53285ed62aef249c252d29df5817bc144b2fd9213f21c5977c5d578": {
+  "assetId": "112511074260505",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_IsolatedDanger_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_IsolatedDanger_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "4e6a019dd53285ed62aef249c252d29df5817bc144b2fd9213f21c5977c5d578",
+  "source": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:4e84d02327987bcf5540400e586190532fecbaec63b3cec371de80b1482f5a14": {
   "assetId": "90309200674031",
   "moderation": "Approved",
@@ -11128,6 +12037,36 @@
   "route": "delivery",
   "sha": "4f2be8579159ff1865c58197421886300f30b6cc54ddd77d6bf891b3b5ec76bf",
   "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:4f33f173797f994eb5b6c82ee456d09cd9673b9f4085fc3527d17b63d1a8b4b4": {
+  "assetId": "82261539842410",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Port",
+  "rbxm": "assets/models/M_Hbr_NavMark_Port.rbxm",
+  "route": "delivery",
+  "sha": "4f33f173797f994eb5b6c82ee456d09cd9673b9f4085fc3527d17b63d1a8b4b4",
+  "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:500c119c8eaac6c5d2120ad53615fdbbba99eb70002039a251987fe59743a70a": {
+  "assetId": "113143648428223",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_IsolatedDanger",
+  "rbxm": "assets/models/M_Hbr_NavMark_IsolatedDanger.rbxm",
+  "route": "delivery",
+  "sha": "500c119c8eaac6c5d2120ad53615fdbbba99eb70002039a251987fe59743a70a",
+  "source": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:500d88b9d3ef4853a40f281236ede73b853bd9c2951e26d4256f66aaedd20b1e": {
+  "assetId": "76828684306887",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Port_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_Port_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "500d88b9d3ef4853a40f281236ede73b853bd9c2951e26d4256f66aaedd20b1e",
+  "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD2.fbx",
   "type": "Model"
  },
  "Model:51314321fa53e6ae02c929e85294b8d9de90aaad95c375f327eaa24d72913c02": {
@@ -11330,6 +12269,16 @@
   "source": "assets/fbx/M_Veg_Gorse_02/M_Veg_Gorse_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:654294722ea5e3b8481ebd83d9d75b51924d9aaa9c4fe2bf7fd90979250ea5e0": {
+  "assetId": "131718678275118",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_North",
+  "rbxm": "assets/models/M_Hbr_NavMark_North.rbxm",
+  "route": "delivery",
+  "sha": "654294722ea5e3b8481ebd83d9d75b51924d9aaa9c4fe2bf7fd90979250ea5e0",
+  "source": "assets/fbx/M_Hbr_NavMark_North/M_Hbr_NavMark_North_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:65509b69a01a4478567822c01f47b0db7129eb6da5d56893ffa64f204fba41b3": {
   "assetId": "130195930909228",
   "moderation": "Approved",
@@ -11348,6 +12297,16 @@
   "route": "delivery",
   "sha": "65beab3807e303906c140c199265b1e54b404ffa6fe3bf72b6b50f810cbe35dd",
   "source": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6661b1deb0ab3c8b49fbab2408f6462785aa69fe4c7889662eeac2eb9d7c6343": {
+  "assetId": "112259235665776",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_SafeWater",
+  "rbxm": "assets/models/M_Hbr_NavMark_SafeWater.rbxm",
+  "route": "delivery",
+  "sha": "6661b1deb0ab3c8b49fbab2408f6462785aa69fe4c7889662eeac2eb9d7c6343",
+  "source": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD0.fbx",
   "type": "Model"
  },
  "Model:667a1fa05a7b20a08be6624bc0fb0e8a19f23f2e038a605e43be64fbc7e0a637": {
@@ -11370,6 +12329,16 @@
   "source": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD1.fbx",
   "type": "Model"
  },
+ "Model:67872fcbf19252a67533d56f8c08ee6fe0611254b31fcccb22774d124dfec6bf": {
+  "assetId": "81713058452563",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_SafeWater_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_SafeWater_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "67872fcbf19252a67533d56f8c08ee6fe0611254b31fcccb22774d124dfec6bf",
+  "source": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:678c97ddf9129a58052244ba1f1dbfeda1e9932f5dcc161e16db5f1e56721f8a": {
   "assetId": "111240610269958",
   "moderation": "Approved",
@@ -11388,6 +12357,16 @@
   "route": "delivery",
   "sha": "67a6958165d1156fded2ee481068368f8d0b20fbeec430516fc037a58d9f015b",
   "source": "assets/fbx/Spike1/M_Spike1_Tris20500.fbx",
+  "type": "Model"
+ },
+ "Model:67f14ca50ebddff07be4f2bca92d82b87df469b87da93b6d29e7e5036f27e00b": {
+  "assetId": "81916081746692",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_East",
+  "rbxm": "assets/models/M_Hbr_NavMark_East.rbxm",
+  "route": "delivery",
+  "sha": "67f14ca50ebddff07be4f2bca92d82b87df469b87da93b6d29e7e5036f27e00b",
+  "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
   "type": "Model"
  },
  "Model:6c4ec867980aa2e80682b094d29fc57bde5b731890b76620101c1db4138f6272": {
@@ -11790,6 +12769,16 @@
   "source": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD2.fbx",
   "type": "Model"
  },
+ "Model:814c9945f6359fce62ed6507bb000a9b18f4ba13867d00ea8d3401775033dcb7": {
+  "assetId": "88323716170134",
+  "moderation": "Approved",
+  "name": "M_Hbr_QuayKit_Straight_LOD1",
+  "rbxm": "assets/models/M_Hbr_QuayKit_Straight_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "814c9945f6359fce62ed6507bb000a9b18f4ba13867d00ea8d3401775033dcb7",
+  "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:8164901a3068d9a6ced6a0fe2f964e23b42ad8ebcb685dcf6529fa2c75cd8acf": {
   "assetId": "120967714183435",
   "moderation": "Approved",
@@ -11858,6 +12847,16 @@
   "route": "delivery",
   "sha": "8407789116f5e733a117f11182278e2e6263f76bc0c74f02d165cc05d8006836",
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:841328dd9fc50cfee695ec4effd6cadf83c69361f793622f6e6a6bd62ecf442d": {
+  "assetId": "106137526899170",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_South_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_South_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "841328dd9fc50cfee695ec4effd6cadf83c69361f793622f6e6a6bd62ecf442d",
+  "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD2.fbx",
   "type": "Model"
  },
  "Model:852127b970c313d283581b0b9df5bec8f804924dcc78ab7d231bc685d0e54443": {
@@ -11978,6 +12977,16 @@
   "route": "delivery",
   "sha": "8b86fae1d5937cbbdca9b66fd494256b8a011888d73a34d0b61fabf19b88538a",
   "source": "assets/fbx/M_Veg_SeaThrift_02/M_Veg_SeaThrift_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:8c251d5545f4c4d2e13655f76dc5eb081b64e2cb808e7a208ad2331158414fb2": {
+  "assetId": "109249883738380",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_South",
+  "rbxm": "assets/models/M_Hbr_NavMark_South.rbxm",
+  "route": "delivery",
+  "sha": "8c251d5545f4c4d2e13655f76dc5eb081b64e2cb808e7a208ad2331158414fb2",
+  "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD0.fbx",
   "type": "Model"
  },
  "Model:8d0e49d277cf8fb3aa970d82213abb0ba44c3a2a00563b6add02618ba35eaa98": {
@@ -12208,6 +13217,16 @@
   "route": "delivery",
   "sha": "976c8e1d169521759c979bce5cfb59f44a80a4fbd2b08f3655074597d608a087",
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:976f45edecf34562e5fd49f6ffc42db1b3948f0feead627de73f334f08bc3523": {
+  "assetId": "138314659597287",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_West_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_West_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "976f45edecf34562e5fd49f6ffc42db1b3948f0feead627de73f334f08bc3523",
+  "source": "assets/fbx/M_Hbr_NavMark_West/M_Hbr_NavMark_West_LOD2.fbx",
   "type": "Model"
  },
  "Model:98e432cb323cf358ba150a1c11fd29a6472025fde4241c0c656518d24f4def96": {
@@ -12470,6 +13489,16 @@
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD2.fbx",
   "type": "Model"
  },
+ "Model:a8cc73a0b21e96cb7cbc7ba83ac665dbd30e9e49e65e72d9cd8532f131c8bb6a": {
+  "assetId": "123969645356881",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_IsolatedDanger_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_IsolatedDanger_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a8cc73a0b21e96cb7cbc7ba83ac665dbd30e9e49e65e72d9cd8532f131c8bb6a",
+  "source": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:a94dc6944f769e92d161ab769987bc9a5d33cf5896954ebaa752242a5b18b821": {
   "assetId": "75676810929994",
   "moderation": "Approved",
@@ -12528,6 +13557,16 @@
   "route": "delivery",
   "sha": "abfdfa2beb89c61593eb3cbbcbfbdf3b18f37b93a83ebaba893fbe71a0d45c9d",
   "source": "assets/fbx/M_Veh_JetSki_CloseUp/M_Veh_JetSki_CloseUp_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:ac9ef5b85a8acc0a4d34603b7b67c1e8c62a5d2a0e0e2ae4c3e84c4426b380d8": {
+  "assetId": "104141300690054",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_North_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_North_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ac9ef5b85a8acc0a4d34603b7b67c1e8c62a5d2a0e0e2ae4c3e84c4426b380d8",
+  "source": "assets/fbx/M_Hbr_NavMark_North/M_Hbr_NavMark_North_LOD2.fbx",
   "type": "Model"
  },
  "Model:adacff21388c6e50c1226b905694e7d4c4ed1cb26f40910fe92ead4731048a12": {
@@ -12730,6 +13769,16 @@
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:b8096a9aa3d9df42a33d82c9054a1795a1d2676e149fee5c091c417e9417d794": {
+  "assetId": "81487299998822",
+  "moderation": "Approved",
+  "name": "M_Hbr_QuayKit_Straight",
+  "rbxm": "assets/models/M_Hbr_QuayKit_Straight.rbxm",
+  "route": "delivery",
+  "sha": "b8096a9aa3d9df42a33d82c9054a1795a1d2676e149fee5c091c417e9417d794",
+  "source": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:b8efbe04de2079b7a74e7654e324d63ef8cbeb4ed754fad8c59c0130d437ae26": {
   "assetId": "104715383093085",
   "moderation": "Approved",
@@ -12758,6 +13807,16 @@
   "route": "delivery",
   "sha": "ba1a7f558120b38a831d954ef2927a3282374964c904c04bc644451948d5bbde",
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:bac20da17c7eef45b7d9c71817f608c788c19989c627ca964ad530dd8b0dce79": {
+  "assetId": "113412049082767",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_West_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_West_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "bac20da17c7eef45b7d9c71817f608c788c19989c627ca964ad530dd8b0dce79",
+  "source": "assets/fbx/M_Hbr_NavMark_West/M_Hbr_NavMark_West_LOD1.fbx",
   "type": "Model"
  },
  "Model:bac520903b86f20b2c412e33a06f4ce3a1a18baced19059fe0ef7bb047d261e9": {
@@ -12798,6 +13857,26 @@
   "route": "delivery",
   "sha": "bbe0f1745d399ba2a7c508faacf75609754c6567896bdb5a22005181c1950038",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:bc20a5ec0ba7fcd3428c534311a5c382fd7a19e18209a047e67c0b264e55141a": {
+  "assetId": "110902454106752",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_North_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_North_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "bc20a5ec0ba7fcd3428c534311a5c382fd7a19e18209a047e67c0b264e55141a",
+  "source": "assets/fbx/M_Hbr_NavMark_North/M_Hbr_NavMark_North_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:bc9cd3491c5cab667495756ca3c8e4202bc25b6eab6daa2882763ca56a362123": {
+  "assetId": "76261552974843",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Starboard",
+  "rbxm": "assets/models/M_Hbr_NavMark_Starboard.rbxm",
+  "route": "delivery",
+  "sha": "bc9cd3491c5cab667495756ca3c8e4202bc25b6eab6daa2882763ca56a362123",
+  "source": "assets/fbx/M_Hbr_NavMark_Starboard/M_Hbr_NavMark_Starboard_LOD0.fbx",
   "type": "Model"
  },
  "Model:bcb8ac00ffc62d13e7b7f6ec8f8545e3d9d4dc1c16b5956fb894308c9746b071": {
@@ -12868,6 +13947,26 @@
   "route": "delivery",
   "sha": "c00e04bd3e4044e088caefc3add9ecdd1dbea106dfa1bc92adbabc87508e6df1",
   "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:c0a470857330f95c87887223ac4d995fcad7f2460704eef56d35add664564b38": {
+  "assetId": "116398732722463",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Starboard_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_Starboard_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c0a470857330f95c87887223ac4d995fcad7f2460704eef56d35add664564b38",
+  "source": "assets/fbx/M_Hbr_NavMark_Starboard/M_Hbr_NavMark_Starboard_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:c0da12129161042eed77dcf59f4d71db4f2cc9111cfa6a271e99e30487bb3134": {
+  "assetId": "104870134217809",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_South_LOD1",
+  "rbxm": "assets/models/M_Hbr_NavMark_South_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "c0da12129161042eed77dcf59f4d71db4f2cc9111cfa6a271e99e30487bb3134",
+  "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD1.fbx",
   "type": "Model"
  },
  "Model:c100a51504998c79185523328f9b94916b364e3bb9a0240e605172de178090ba": {
@@ -13400,6 +14499,16 @@
   "source": "assets/fbx/M_Bld_Chandlery_Int/M_Bld_Chandlery_Int_LOD1.fbx",
   "type": "Model"
  },
+ "Model:e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8": {
+  "assetId": "127640896132024",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Bell",
+  "rbxm": "assets/models/M_Hbr_NavMark_Bell.rbxm",
+  "route": "delivery",
+  "sha": "e66062ba4b86382b40d0155fd7239ce06e9d3d48c8e21797e5ccb950021c9ed8",
+  "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:e7c9a71cbb10c2446b86130c435eaf68f14591de4a223dc9a5818cd9f2b84a13": {
   "assetId": "99129283181074",
   "moderation": "Approved",
@@ -13598,6 +14707,16 @@
   "route": "delivery",
   "sha": "f2028a13a9cda8f6c9d488ccbff4e9ae5ed3ef14f97bb75561e8527da24ec8ea",
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f39934844cfeb131ef65ac73bcc993f011b101cd729f378dac12eef2b8f98c3e": {
+  "assetId": "127250340398779",
+  "moderation": "Approved",
+  "name": "M_Hbr_NavMark_Bell_LOD2",
+  "rbxm": "assets/models/M_Hbr_NavMark_Bell_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "f39934844cfeb131ef65ac73bcc993f011b101cd729f378dac12eef2b8f98c3e",
+  "source": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx",
   "type": "Model"
  },
  "Model:f4812230c97b763df14ea154366db316762fcfaee6fe5d5a074bbd734c93f541": {

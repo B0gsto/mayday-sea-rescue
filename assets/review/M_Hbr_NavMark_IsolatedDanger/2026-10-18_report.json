@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NavMark_IsolatedDanger",
  "name": "M_Hbr_NavMark_IsolatedDanger",
  "date": "2026-10-18",
- "commit": "7b49271+dirty",
+ "commit": "67fef4ea+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD0.fbx",
-   "bytes": 267836,
+   "bytes": 269516,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_IsolatedDanger_COL",
@@ -43,7 +43,7 @@
      "max": [
       2.82,
       2.82,
-      12.93
+      14.04
      ],
      "polygons": 64,
      "all_triangles": true
@@ -58,9 +58,9 @@
      "max": [
       2.82,
       2.82,
-      12.93
+      14.04
      ],
-     "polygons": 2606,
+     "polygons": 2618,
      "all_triangles": true,
      "uv": true
     },
@@ -91,7 +91,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD1.fbx",
-   "bytes": 173324,
+   "bytes": 174396,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_IsolatedDanger_LOD1",
@@ -108,9 +108,9 @@
      "max": [
       2.82,
       2.82,
-      12.93
+      14.04
      ],
-     "polygons": 1302,
+     "polygons": 1308,
      "all_triangles": true,
      "uv": true
     },
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_IsolatedDanger/M_Hbr_NavMark_IsolatedDanger_LOD2.fbx",
-   "bytes": 98396,
+   "bytes": 99004,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_IsolatedDanger_LOD2",
@@ -158,9 +158,9 @@
      "max": [
       2.8111,
       2.8111,
-      12.9246
+      14.0319
      ],
-     "polygons": 650,
+     "polygons": 654,
      "all_triangles": true,
      "uv": true
     },
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2606 of 8000"
+   "detail": "2618 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD0",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD0",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1407 faces have no UV area"
+   "detail": "0 of 1411 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD0",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "87 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "84 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD0",
@@ -344,7 +344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.063 to 0.960, v 0.382 to 0.962"
+   "detail": "u 0.067 to 0.895, v 0.631 to 0.964"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD0",
@@ -360,7 +360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "89 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD1",
@@ -384,7 +384,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1302 of 8000"
+   "detail": "1308 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD1",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD1",
@@ -424,7 +424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1302 faces have no UV area"
+   "detail": "0 of 1308 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD1",
@@ -432,7 +432,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.8% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD1",
@@ -488,7 +488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.063 to 0.959, v 0.382 to 0.962"
+   "detail": "u 0.068 to 0.895, v 0.631 to 0.963"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD1",
@@ -504,7 +504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD2",
@@ -528,7 +528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "650 of 8000"
+   "detail": "654 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD2",
@@ -560,7 +560,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.990"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD2",
@@ -568,7 +568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 650 faces have no UV area"
+   "detail": "0 of 654 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD2",
@@ -576,7 +576,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.001 (max 0.02), UV area by 22.0% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 22.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD2",
@@ -632,7 +632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.065 to 0.959, v 0.384 to 0.959"
+   "detail": "u 0.068 to 0.894, v 0.631 to 0.963"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD2",
@@ -648,7 +648,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.003 (max 0.02), UV area by 21.1% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 21.1% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_COL",
@@ -696,7 +696,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2886 of 3000 (large_prop, asset row)"
+   "detail": "2898 of 3000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger",
@@ -704,7 +704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1442 of 1500"
+   "detail": "1448 of 1500"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "720 of 750"
+   "detail": "724 of 750"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger",
@@ -720,7 +720,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.88 x 1.88 x 6.97 m, spec 1.88 x 1.88 x 6.97 m (art/reference/M_Hbr_NavMark_IsolatedDanger/dims.md)"
+   "detail": "dims.md 1.88 x 1.88 x 7.34 m, spec 1.88 x 1.88 x 7.34 m (art/reference/M_Hbr_NavMark_IsolatedDanger/dims.md)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger",
@@ -744,7 +744,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "20.902 studs, real 6.970 m = 20.910 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "22.012 studs, real 7.340 m = 22.020 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger",
@@ -872,7 +872,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_IsolatedDanger_COL, M_Hbr_NavMark_IsolatedDanger_LOD0, M_Hbr_NavMark_IsolatedDanger_Lens_LOD0; 2950 triangles (scene 2950)"
+   "detail": "M_Hbr_NavMark_IsolatedDanger_COL, M_Hbr_NavMark_IsolatedDanger_LOD0, M_Hbr_NavMark_IsolatedDanger_Lens_LOD0; 2962 triangles (scene 2962)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD0.fbx",
@@ -912,7 +912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_IsolatedDanger_LOD1, M_Hbr_NavMark_IsolatedDanger_Lens_LOD1; 1442 triangles (scene 1442)"
+   "detail": "M_Hbr_NavMark_IsolatedDanger_LOD1, M_Hbr_NavMark_IsolatedDanger_Lens_LOD1; 1448 triangles (scene 1448)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD1.fbx",
@@ -952,7 +952,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_IsolatedDanger_LOD2, M_Hbr_NavMark_IsolatedDanger_Lens_LOD2; 720 triangles (scene 720)"
+   "detail": "M_Hbr_NavMark_IsolatedDanger_LOD2, M_Hbr_NavMark_IsolatedDanger_Lens_LOD2; 724 triangles (scene 724)"
   },
   {
    "subject": "M_Hbr_NavMark_IsolatedDanger_LOD2.fbx",
@@ -968,15 +968,15 @@
    "name": "M_Hbr_NavMark_IsolatedDanger_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2606,
-   "texel_density": 87.0
+   "triangles": 2618,
+   "texel_density": 84.2
   },
   {
    "name": "M_Hbr_NavMark_IsolatedDanger_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 280,
-   "texel_density": 89.0
+   "texel_density": 86.1
   },
   {
    "name": "M_Hbr_NavMark_IsolatedDanger_COL",
@@ -989,14 +989,14 @@
    "name": "M_Hbr_NavMark_IsolatedDanger_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1302,
+   "triangles": 1308,
    "texel_density": null
   },
   {
    "name": "M_Hbr_NavMark_IsolatedDanger_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 650,
+   "triangles": 654,
    "texel_density": null
   },
   {
@@ -1017,7 +1017,7 @@
  "bbox_studs": [
   5.639999866485596,
   5.639999866485596,
-  20.90238380432129
+  22.01238250732422
  ],
- "peak_rss_mb": 1992.8
+ "peak_rss_mb": 2785.5
 }

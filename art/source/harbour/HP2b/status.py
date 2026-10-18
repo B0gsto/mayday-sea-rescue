@@ -17,8 +17,21 @@ for v in man.values():
         by_source[v["source"]] = v
 
 
+import hashlib
+
+_cands = {}
+for v in man.values():
+    if v.get("source"):
+        _cands.setdefault(v["source"], []).append(v)
+
+
 def asset_id(rel):
+    """The manifest entry whose sha matches the file on disk (re-uploads leave the old entry beside the new one)."""
     v = by_source.get(rel)
+    path = os.path.join(REPO, rel)
+    if os.path.isfile(path):
+        sha = hashlib.sha256(open(path, "rb").read()).hexdigest()
+        v = next((c for c in _cands.get(rel, []) if c.get("sha") == sha), v)
     return (v.get("assetId") or "", v.get("moderation", "")) if v else ("", "missing")
 
 
@@ -47,13 +60,15 @@ for k in marks.ALL:
     else:
         what = "%s, %.2f m; ATT_WaterLine (origin), ATT_Pickup, ATT_Mooring (chain end)" % (marks.MOORINGS[k]["label"], marks.MOORINGS[k]["d"])
         size = 1024
-    status = "built+validated+exported+check_textures PASS+uploaded (%s)+review sheet; AD review pending; no Studio pass (batch rule)" % (
+    status = "fix round b: rebuilt+validated+exported+check_textures PASS+re-uploaded (%s)+review sheet b; AD re-review pending; no Studio pass (batch rule)" % (
         "all Approved" if approved else "moderation: " + ",".join(sorted(set(mods))))
     notes = ("Tris LOD0/1/2 %s/%s/%s; LOD1 %s, LOD2 %s. %s. 1 set T_%s_Buoy at %d (+ALB/RGH _Wet), masters 2048 in "
              "art/source/harbour/%s/textures (G-buffer bake + compose.py; 4096 not authored), _COL hull, signal_mask.png. "
-             "Weathering: faded enamel, edge chips, rust streaks under seams, gull droppings on tops, salt film, weed band at "
-             "the waterline, barnacles below. dims art/reference/%s/dims.md; no reference photo board (open). Sheet "
-             "assets/review/HP2b/contact.png") % (
+             "Weathering: faded enamel, edge chips, rust streaks under seams and bleeding from every cage joint, gull droppings "
+             "on tops, salt film, graded fouling zone (slime film, patchy algae, wrack mat, barnacles ramping with depth). "
+             "Fix round b (after AD 6.5/10): topmarks 1.5x with a clear gap, solid banded pillar so every IALA band reads. "
+             "dims art/reference/%s/dims.md; no reference photo board (open). Sheet assets/review/HP2b/contact_b.png "
+             "(round a: contact.png)") % (
         tris.get("LOD0", "?"), tris.get("LOD1", "?"), tris.get("LOD2", "?"), ids["LOD1"][0], ids["LOD2"][0], what, tex, size,
         name, name)
     rows.append([name, "P0", status, ids["LOD0"][0], "blender:art/source/harbour/HP2b/buoylib.py (HP2b Opus 2026-10-18)",

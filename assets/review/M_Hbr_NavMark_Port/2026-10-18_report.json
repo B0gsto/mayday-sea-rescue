@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NavMark_Port",
  "name": "M_Hbr_NavMark_Port",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "67fef4ea+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD0.fbx",
-   "bytes": 249324,
+   "bytes": 250764,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Port_COL",
@@ -43,7 +43,7 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
      "polygons": 64,
      "all_triangles": true
@@ -58,9 +58,9 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
-     "polygons": 2366,
+     "polygons": 2378,
      "all_triangles": true,
      "uv": true
     },
@@ -91,7 +91,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD1.fbx",
-   "bytes": 163100,
+   "bytes": 163740,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Port_LOD1",
@@ -108,9 +108,9 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
-     "polygons": 1182,
+     "polygons": 1188,
      "all_triangles": true,
      "uv": true
     },
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD2.fbx",
-   "bytes": 93340,
+   "bytes": 93676,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Port_LOD2",
@@ -158,9 +158,9 @@
      "max": [
       2.8111,
       2.8111,
-      11.82
+      12.39
      ],
-     "polygons": 590,
+     "polygons": 594,
      "all_triangles": true,
      "uv": true
     },
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2366 of 8000"
+   "detail": "2378 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD0",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD0",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1275 faces have no UV area"
+   "detail": "0 of 1279 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD0",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "89 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD0",
@@ -344,7 +344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.028 to 0.774, v 0.920 to 0.966"
+   "detail": "u 0.118 to 0.961, v 0.921 to 0.964"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD0",
@@ -360,7 +360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "91 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "87 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD1",
@@ -384,7 +384,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1182 of 8000"
+   "detail": "1188 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD1",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD1",
@@ -424,7 +424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1182 faces have no UV area"
+   "detail": "0 of 1188 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD1",
@@ -432,7 +432,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD1",
@@ -488,7 +488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.029 to 0.774, v 0.920 to 0.965"
+   "detail": "u 0.118 to 0.961, v 0.921 to 0.962"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD1",
@@ -504,7 +504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.7% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD2",
@@ -528,7 +528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "590 of 8000"
+   "detail": "594 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD2",
@@ -560,7 +560,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD2",
@@ -568,7 +568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 590 faces have no UV area"
+   "detail": "0 of 594 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD2",
@@ -576,7 +576,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.001 (max 0.02), UV area by 22.5% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.004 (max 0.02), UV area by 22.5% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD2",
@@ -632,7 +632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.029 to 0.773, v 0.920 to 0.965"
+   "detail": "u 0.118 to 0.961, v 0.921 to 0.962"
   },
   {
    "subject": "M_Hbr_NavMark_Port_Lens_LOD2",
@@ -696,7 +696,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2646 of 3000 (large_prop, asset row)"
+   "detail": "2658 of 3000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_NavMark_Port",
@@ -704,7 +704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1322 of 1500"
+   "detail": "1328 of 1500"
   },
   {
    "subject": "M_Hbr_NavMark_Port",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "660 of 750"
+   "detail": "664 of 750"
   },
   {
    "subject": "M_Hbr_NavMark_Port",
@@ -720,7 +720,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.88 x 1.88 x 6.61 m, spec 1.88 x 1.88 x 6.6 m (art/reference/M_Hbr_NavMark_Port/dims.md)"
+   "detail": "dims.md 1.88 x 1.88 x 6.8 m, spec 1.88 x 1.88 x 6.79 m (art/reference/M_Hbr_NavMark_Port/dims.md)"
   },
   {
    "subject": "M_Hbr_NavMark_Port",
@@ -744,7 +744,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "19.792 studs, real 6.600 m = 19.800 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "20.362 studs, real 6.790 m = 20.370 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NavMark_Port",
@@ -872,7 +872,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_Port_COL, M_Hbr_NavMark_Port_LOD0, M_Hbr_NavMark_Port_Lens_LOD0; 2710 triangles (scene 2710)"
+   "detail": "M_Hbr_NavMark_Port_COL, M_Hbr_NavMark_Port_LOD0, M_Hbr_NavMark_Port_Lens_LOD0; 2722 triangles (scene 2722)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD0.fbx",
@@ -912,7 +912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_Port_LOD1, M_Hbr_NavMark_Port_Lens_LOD1; 1322 triangles (scene 1322)"
+   "detail": "M_Hbr_NavMark_Port_LOD1, M_Hbr_NavMark_Port_Lens_LOD1; 1328 triangles (scene 1328)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD1.fbx",
@@ -952,7 +952,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_Port_LOD2, M_Hbr_NavMark_Port_Lens_LOD2; 660 triangles (scene 660)"
+   "detail": "M_Hbr_NavMark_Port_LOD2, M_Hbr_NavMark_Port_Lens_LOD2; 664 triangles (scene 664)"
   },
   {
    "subject": "M_Hbr_NavMark_Port_LOD2.fbx",
@@ -968,15 +968,15 @@
    "name": "M_Hbr_NavMark_Port_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2366,
-   "texel_density": 88.9
+   "triangles": 2378,
+   "texel_density": 85.6
   },
   {
    "name": "M_Hbr_NavMark_Port_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 280,
-   "texel_density": 90.7
+   "texel_density": 87.2
   },
   {
    "name": "M_Hbr_NavMark_Port_COL",
@@ -989,14 +989,14 @@
    "name": "M_Hbr_NavMark_Port_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1182,
+   "triangles": 1188,
    "texel_density": null
   },
   {
    "name": "M_Hbr_NavMark_Port_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 590,
+   "triangles": 594,
    "texel_density": null
   },
   {
@@ -1017,7 +1017,7 @@
  "bbox_studs": [
   5.639999866485596,
   5.639999866485596,
-  19.792383193969727
+  20.36238384246826
  ],
- "peak_rss_mb": 3144.4
+ "peak_rss_mb": 2785.5
 }

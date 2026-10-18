@@ -176,27 +176,34 @@ def leg_r(z):
     return LEG_FOOT_R + (LEG_TOP_R - LEG_FOOT_R) * (z - DECK) / (PLAT - DECK)
 
 
+TS = 1.5          # HP2b-fix: topmarks 1.5x (0.66 m cardinal cones, 0.57 m can) so they read at range
+
+
 def topmark(g, kind, z0):
     """Returns the top z. IALA Region A topmark shapes."""
     seg = 20
     if kind == "can":
-        g.lathe([(0.0, z0), (0.19, z0), (0.19, z0 + 0.38), (0.0, z0 + 0.38)], seg, P_TOP)
-        return z0 + 0.38
+        r, h = 0.19 * TS, 0.38 * TS
+        g.lathe([(0.0, z0), (r, z0), (r, z0 + h), (0.0, z0 + h)], seg, P_TOP)
+        return z0 + h
     if kind == "cone":
-        g.lathe([(0.0, z0), (0.25, z0), (0.012, z0 + 0.44), (0.0, z0 + 0.445)], seg, P_TOP)
-        return z0 + 0.445
+        r, h = 0.25 * TS, 0.44 * TS
+        g.lathe([(0.0, z0), (r, z0), (0.012 * TS, z0 + h), (0.0, z0 + h + 0.005)], seg, P_TOP)
+        return z0 + h + 0.005
     if kind in ("ball", "balls2"):
-        r = 0.21 if kind == "ball" else 0.17
+        r = (0.21 if kind == "ball" else 0.17) * TS
         n = 1 if kind == "ball" else 2
+        gap = 0.10
         z = z0
         steps, bseg = (8, seg) if n == 1 else (6, 16)     # two balls: lighter spheres to stay in the 3,000 row
         for _ in range(n):
             prof = [(r * math.sin(math.pi * k / steps), z + r - r * math.cos(math.pi * k / steps)) for k in range(steps + 1)]
             g.lathe(prof, bseg, P_TOP)
-            z += 2 * r + 0.07
-        return z - 0.07
-    # cardinal cones r 0.22 h 0.30, gap 0.06
-    r, h, gap = 0.22, 0.30, 0.06
+            z += 2 * r + gap
+        return z - gap
+    # cardinal cones r 0.33 h 0.45; a clear 0.16 m gap with the mast showing, so base-to-base (East) reads as two
+    # cones, not one diamond, and point-to-point (West) as a wineglass
+    r, h, gap = 0.22 * TS, 0.30 * TS, 0.16
     up = lambda zb: g.lathe([(0.0, zb), (r, zb), (0.01, zb + h), (0.0, zb + h + 0.003)], seg, P_TOP)
     down = lambda zb: g.lathe([(0.0, zb - 0.003), (0.01, zb), (r, zb + h), (0.0, zb + h)], seg, P_TOP)
     lower, upper = {"cones_up": (up, up), "cones_down": (down, down), "cones_base": (down, up),
@@ -213,17 +220,31 @@ def pillar(kind):
     bell = cfg.get("bell")
     # central column (the pillar) and cage legs
     col_top = 1.15 if bell else PLAT
-    g.lathe([(0.27, DECK - 0.01), (0.25, DECK + 0.08), (0.24 if bell else 0.19, col_top)], 18, P_CAGE)
+    # HP2b-fix: solid tapered pillar (0.80 m at the deck to 0.48 m under the platform) so every paint band, the top
+    # band included, has real painted area and reads at range, not just thin cage tubes
+    if bell:
+        g.lathe([(0.27, DECK - 0.01), (0.25, DECK + 0.08), (0.24, col_top)], 18, P_CAGE)
+    else:
+        g.lathe([(0.40, DECK - 0.01), (0.37, DECK + 0.08), (0.24, col_top)], 20, P_CAGE)
+    joints = []
     for i in range(4):
         a = math.pi / 4 + i * math.pi / 2
         foot = (LEG_FOOT_R * math.cos(a), LEG_FOOT_R * math.sin(a), DECK - 0.01)
         top = (LEG_TOP_R * math.cos(a), LEG_TOP_R * math.sin(a), PLAT)
         g.tube(foot, top, 0.036, 6, P_CAGE, caps=False)
+        # rust bleeds from every welded joint: down the leg below hoops, brace ends and the platform, and from the
+        # foot weld and lifting lug across the deck and down the float side
+        legj = lambda zj: {"mode": "leg", "p0": list(foot), "p1": list(top), "z": zj}
+        joints += [legj(PLAT - 0.03), legj(1.95), legj(1.25), legj(0.70),
+                   {"mode": "radial", "a": a, "z": DECK + 0.02, "r0": 0.52},
+                   {"mode": "radial", "a": a + 0.4, "z": DECK + 0.03, "r0": 0.66}]
         # diagonal brace between legs (lower bay)
         b = a + math.pi / 2
         z1, z2 = 0.70, 1.22
         g.tube((leg_r(z1) * math.cos(a), leg_r(z1) * math.sin(a), z1), (leg_r(z2) * math.cos(b), leg_r(z2) * math.sin(b), z2),
                0.018, 4, P_CAGE, caps=False)
+        joints.append({"mode": "leg", "p0": [LEG_FOOT_R * math.cos(b), LEG_FOOT_R * math.sin(b), DECK - 0.01],
+                       "p1": [LEG_TOP_R * math.cos(b), LEG_TOP_R * math.sin(b), PLAT], "z": z2})
         # deck lifting lugs and the gusset at each leg foot
         g.box((0.74 * math.cos(a + 0.4), 0.74 * math.sin(a + 0.4), DECK - 0.01), (0.10, 0.03, 0.09), P_CAGE,
               Matrix.Rotation(a + 0.4, 4, "Z"))
@@ -273,8 +294,8 @@ def pillar(kind):
     g.chain((0, 0, -2.20), (0.05, 0, -2.62), 0.105, 0.11, 0.019, P_CHAIN)
     obj = g.to_object(marks.asset_name(kind) + "_LOD0")
     info = {"kind": kind, "top_z": top_z, "lens_z": (lz0 + lz1) / 2.0, "bell": bool(bell), "r": 0.94,
-            "bottom": -2.68, "rust_heights": [DECK, 1.25, 1.95, PLAT - 0.03, 0.30, LENS_Z[0]],
-            "drop_tops": [DECK, PLAT + 0.02, top_z, lz1 + 0.06, 2.90]}
+            "bottom": -2.68, "rust_heights": [DECK, PLAT - 0.03, 0.30, LENS_Z[0]],
+            "drop_tops": [DECK, PLAT + 0.02, top_z, lz1 + 0.06, 2.90], "joints": joints}
     return obj, info
 
 

@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NavMark_SafeWater",
  "name": "M_Hbr_NavMark_SafeWater",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "67fef4ea+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD0.fbx",
-   "bytes": 265452,
+   "bytes": 265196,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_SafeWater_COL",
@@ -43,7 +43,7 @@
      "max": [
       2.82,
       2.82,
-      11.94
+      12.57
      ],
      "polygons": 64,
      "all_triangles": true
@@ -58,9 +58,9 @@
      "max": [
       2.82,
       2.82,
-      11.94
+      12.57
      ],
-     "polygons": 2566,
+     "polygons": 2578,
      "all_triangles": true,
      "uv": true
     },
@@ -91,7 +91,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD1.fbx",
-   "bytes": 170732,
+   "bytes": 171228,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_SafeWater_LOD1",
@@ -108,9 +108,9 @@
      "max": [
       2.82,
       2.82,
-      11.94
+      12.57
      ],
-     "polygons": 1282,
+     "polygons": 1288,
      "all_triangles": true,
      "uv": true
     },
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD2.fbx",
-   "bytes": 97260,
+   "bytes": 97004,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_SafeWater_LOD2",
@@ -158,9 +158,9 @@
      "max": [
       2.8111,
       2.8111,
-      11.937
+      12.5655
      ],
-     "polygons": 640,
+     "polygons": 644,
      "all_triangles": true,
      "uv": true
     },
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2566 of 8000"
+   "detail": "2578 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD0",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD0",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1375 faces have no UV area"
+   "detail": "0 of 1379 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD0",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "89 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD0",
@@ -344,7 +344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.070 to 0.962, v 0.161 to 0.959"
+   "detail": "u 0.031 to 0.948, v 0.182 to 0.961"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD0",
@@ -360,7 +360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "91 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "88 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD1",
@@ -384,7 +384,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1282 of 8000"
+   "detail": "1288 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD1",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD1",
@@ -424,7 +424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1282 faces have no UV area"
+   "detail": "0 of 1288 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD1",
@@ -432,7 +432,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.5% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD1",
@@ -488,7 +488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.070 to 0.961, v 0.161 to 0.959"
+   "detail": "u 0.031 to 0.948, v 0.182 to 0.961"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD1",
@@ -504,7 +504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD2",
@@ -528,7 +528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "640 of 8000"
+   "detail": "644 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD2",
@@ -560,7 +560,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.988"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD2",
@@ -568,7 +568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 640 faces have no UV area"
+   "detail": "0 of 644 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD2",
@@ -576,7 +576,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 21.4% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.004 (max 0.02), UV area by 21.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD2",
@@ -632,7 +632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.071 to 0.960, v 0.161 to 0.959"
+   "detail": "u 0.032 to 0.948, v 0.182 to 0.960"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_Lens_LOD2",
@@ -696,7 +696,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2846 of 3000 (large_prop, asset row)"
+   "detail": "2858 of 3000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater",
@@ -704,7 +704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1422 of 1500"
+   "detail": "1428 of 1500"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "710 of 750"
+   "detail": "714 of 750"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater",
@@ -720,7 +720,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.88 x 1.88 x 6.64 m, spec 1.88 x 1.88 x 6.64 m (art/reference/M_Hbr_NavMark_SafeWater/dims.md)"
+   "detail": "dims.md 1.88 x 1.88 x 6.85 m, spec 1.88 x 1.88 x 6.85 m (art/reference/M_Hbr_NavMark_SafeWater/dims.md)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater",
@@ -744,7 +744,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "19.912 studs, real 6.640 m = 19.920 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "20.542 studs, real 6.850 m = 20.550 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater",
@@ -872,7 +872,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_SafeWater_COL, M_Hbr_NavMark_SafeWater_LOD0, M_Hbr_NavMark_SafeWater_Lens_LOD0; 2910 triangles (scene 2910)"
+   "detail": "M_Hbr_NavMark_SafeWater_COL, M_Hbr_NavMark_SafeWater_LOD0, M_Hbr_NavMark_SafeWater_Lens_LOD0; 2922 triangles (scene 2922)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD0.fbx",
@@ -912,7 +912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_SafeWater_LOD1, M_Hbr_NavMark_SafeWater_Lens_LOD1; 1422 triangles (scene 1422)"
+   "detail": "M_Hbr_NavMark_SafeWater_LOD1, M_Hbr_NavMark_SafeWater_Lens_LOD1; 1428 triangles (scene 1428)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD1.fbx",
@@ -952,7 +952,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_SafeWater_LOD2, M_Hbr_NavMark_SafeWater_Lens_LOD2; 710 triangles (scene 710)"
+   "detail": "M_Hbr_NavMark_SafeWater_LOD2, M_Hbr_NavMark_SafeWater_Lens_LOD2; 714 triangles (scene 714)"
   },
   {
    "subject": "M_Hbr_NavMark_SafeWater_LOD2.fbx",
@@ -968,15 +968,15 @@
    "name": "M_Hbr_NavMark_SafeWater_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2566,
-   "texel_density": 88.9
+   "triangles": 2578,
+   "texel_density": 86.1
   },
   {
    "name": "M_Hbr_NavMark_SafeWater_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 280,
-   "texel_density": 90.9
+   "texel_density": 88.0
   },
   {
    "name": "M_Hbr_NavMark_SafeWater_COL",
@@ -989,14 +989,14 @@
    "name": "M_Hbr_NavMark_SafeWater_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1282,
+   "triangles": 1288,
    "texel_density": null
   },
   {
    "name": "M_Hbr_NavMark_SafeWater_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 640,
+   "triangles": 644,
    "texel_density": null
   },
   {
@@ -1017,7 +1017,7 @@
  "bbox_studs": [
   5.639999866485596,
   5.639999866485596,
-  19.912384033203125
+  20.542383193969727
  ],
- "peak_rss_mb": 3467.3
+ "peak_rss_mb": 2785.5
 }

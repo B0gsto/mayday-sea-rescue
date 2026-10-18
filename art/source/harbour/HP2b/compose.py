@@ -11,7 +11,7 @@ CC0 detail (Poly Haven, build/materials/src/<id>/, 2k, triplanar from object pos
   metal_plate_02       galvanised steel grain                  https://polyhaven.com/a/metal_plate_02
   low_tide_rocks       wrack and weed colour for the fouling   https://polyhaven.com/a/low_tide_rocks
 Weathering: faded / chalked enamel, edge chips to primer and rust, rust streaks under every seam and weld line, gull
-droppings on up-facing tops with drips, salt film above the waterline, green slime fringe, a weed band at the waterline
+droppings on up-facing tops with drips, rust bleeding from every cage joint, salt film above the waterline, a graded fouling zone (slime film, patchy algae, wrack mat)
 and barnacles + fouling below it.
 """
 import os
@@ -175,7 +175,8 @@ def compose(kind, info, gb_path, src_dir, out_dir, tex, ship=SHIP):
     painted = is_(P_BODY, P_CAGE, P_TOP)
     pc = paint_colour(kind, z, ang, n)
     if navmark:
-        pc[part == P_TOP] = cfg["top_col"]
+        # topmarks a step lighter than the bands (fresh repaint, and they sit against the sky) so black reads as paint
+        pc[part == P_TOP] = np.asarray(cfg["top_col"], np.float32) * 1.18
     alb[:] = pc
     # faded, chalked enamel: sun side (up-facing) more, scan grain
     chalk = np.clip(0.18 + 0.30 * n_fade + 0.18 * np.clip(nz, 0, 1), 0, 0.7)
@@ -252,8 +253,31 @@ def compose(kind, info, gb_path, src_dir, out_dir, tex, ship=SHIP):
         m = np.where(below > 0, np.exp(-below / 0.42) * ss(0.0, 0.03, below), 0.0)
         rust = np.maximum(rust, m)
     rust = rust * ss(0.52, 0.72, n_streak) * vertical
+    # HP2b-fix: point-source streaks under every cage joint (hoop / brace / platform welds down the legs; foot welds
+    # and lifting lugs across the deck and down the float), widening and breaking up as they run
+    rxy = np.sqrt(x * x + y * y)
+    for j, jt in enumerate(info.get("joints", [])):
+        below = jt["z"] - z
+        L = 0.30 + 0.35 * ((j * 0.6180339) % 1.0)
+        if jt["mode"] == "leg":
+            p0, p1 = np.asarray(jt["p0"], np.float32), np.asarray(jt["p1"], np.float32)
+            t = np.clip((z - p0[2]) / (p1[2] - p0[2]), 0.0, 1.0)
+            lx, ly = p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t
+            d = np.sqrt((x - lx) ** 2 + (y - ly) ** 2)
+            w = 0.05 + 0.04 * np.clip(below, 0, 1)
+            near = (d < 0.09) & (z > p0[2] - 0.02)
+            vert = np.ones(n, np.float32)
+        else:
+            da = np.abs((ang - jt["a"] + np.pi) % (2 * np.pi) - np.pi)
+            d = da * rxy
+            w = 0.025 + 0.06 * np.clip(below, 0, 1)
+            near = rxy > jt["r0"]
+            vert = 0.6 + 0.4 * vertical
+        m = np.where((below > -0.01) & near, np.exp(-np.clip(below, 0, None) / L) * np.exp(-(d / w) ** 2), 0.0)
+        m = m * (0.45 + 0.55 * ss(0.38, 0.70, n_streak)) * vert
+        rust = np.maximum(rust, m * 1.15)
     rust = np.where(is_(P_BODY, P_CAGE, P_TOP, P_GALV, P_FENDER), rust, 0.0)
-    rust = np.where(z > marks.WEED_TOP, rust, 0.0)
+    rust = rust * ss(marks.WEED_TOP - 0.02, marks.WEED_TOP + 0.20, z)
     rust = np.clip(rust * 1.4, 0, 0.85)
     alb = mix(alb, rust_col, rust)
     rgh = mix(rgh, np.full(n, 0.82, np.float32), rust)
@@ -283,20 +307,31 @@ def compose(kind, info, gb_path, src_dir, out_dir, tex, ship=SHIP):
     alb = mix(alb, np.array([0.74, 0.75, 0.70], np.float32), np.clip(salt, 0, 0.6))
     rgh = mix(rgh, np.full(n, 0.85, np.float32), np.clip(salt, 0, 0.6))
 
-    edge = marks.WEED_TOP + 0.06 * (n_edge - 0.5) * 2.0 + 0.02 * (n_fine - 0.5)
-    weed = 1.0 - ss(edge - 0.025, edge + 0.01, z)
-    slime = np.where((z < edge + 0.06) & (z > edge - 0.10), 1.0 - np.abs(z - edge + 0.02) / 0.08, 0.0).clip(0, 1)
+    # HP2b-fix: graded fouling zone instead of one hard weed line. From the top down: a thin translucent slime film in
+    # the splash zone, patchy bright-green algae tufts that thicken towards the waterline, a solid olive-brown wrack
+    # mat below it, then dark fouling with barnacles whose density ramps up with depth. Every boundary is noise-broken.
+    edge = marks.WEED_TOP + 0.07 * (n_edge - 0.5) * 2.0 + 0.03 * (n_fine - 0.5)
+    patch = 0.6 * n_blob + 0.4 * n_chip
+    notlens = (part != P_LENS).astype(np.float32)
+    film = (1.0 - ss(edge - 0.02, edge + 0.22 + 0.06 * n_edge, z)) * (0.25 + 0.35 * n_fade) * notlens
+    alb = mix(alb, np.array([0.30, 0.36, 0.20], np.float32), np.clip(film, 0, 0.45))
+    rgh = mix(rgh, np.full(n, 0.50, np.float32), np.clip(film, 0, 0.45))
+    depth = (edge + 0.06 - z) / 0.42
+    weed = ss(0.10, 0.75, depth + 0.9 * (patch - 0.5)) * notlens
     wc = weed_col * np.array([0.80, 0.92, 0.70], np.float32) * 0.85
     wc = mix(wc, np.array([0.16, 0.20, 0.11], np.float32), 0.35 * ss(0.3, 0.7, n_blob))
-    alb = mix(alb, np.array([0.26, 0.36, 0.17], np.float32), slime * 0.55 * (part != P_LENS))
-    alb = mix(alb, wc, weed)
+    young = np.array([0.24, 0.38, 0.13], np.float32) * (0.85 + 0.3 * n_fine[:, None])
+    wcz = mix(young, wc, ss(0.1, 0.9, depth + 0.3 * (n_edge - 0.5)))
+    wcz = mix(wcz, wcz * 0.72, ss(0.9, 1.6, depth))
+    alb = mix(alb, wcz, weed)
     rgh = mix(rgh, np.full(n, 0.42, np.float32), weed)
     met = np.where(weed > 0.5, 0.0, met)
     hgt += weed * (0.0018 * n_fine + 0.0012 * n_blob)
 
-    # --- barnacles and heavy fouling below the weed band
-    deep = 1.0 - ss(marks.WEED_BOTTOM - 0.08, marks.WEED_BOTTOM + 0.12 + 0.1 * n_edge, z)
-    barn = deep * ss(0.60, 0.68, n_barn)
+    deep = (1.0 - ss(marks.WEED_BOTTOM - 0.30, marks.WEED_BOTTOM + 0.25 + 0.15 * n_edge, z)) * notlens
+    dens = np.clip((edge - 0.05 - z) / 0.6, 0.0, 1.0)
+    thr = 0.73 - 0.12 * dens
+    barn = np.where(dens > 0, ss(thr, thr + 0.06, n_barn), 0.0) * notlens
     fouled = mix(wc * 0.8, np.array([0.30, 0.29, 0.24], np.float32), 0.4 * ss(0.4, 0.7, n_blob)[:, None])
     alb = mix(alb, fouled, deep * 0.85)
     barnc = mix(np.array([0.70, 0.69, 0.63], np.float32), np.array([0.52, 0.50, 0.45], np.float32), n_fine)
@@ -305,10 +340,10 @@ def compose(kind, info, gb_path, src_dir, out_dir, tex, ship=SHIP):
     hgt += 0.004 * barn + 0.0015 * deep * n_blob
 
     # --- AO, albedo range (05 / 12 1.4a: 20 to 240 sRGB, metal 180 to 250), saturation outside the signal mask
-    alb *= (0.62 + 0.38 * ao)[:, None]
+    alb *= np.where(part == P_TOP, 0.80 + 0.20 * ao, 0.62 + 0.38 * ao)[:, None]
     metal = met > 0.5
     y_ = luma(alb)
-    lo = np.where(metal, 0.72, 0.135)
+    lo = np.where(metal, 0.735, 0.135)
     hi = np.where(metal, 0.96, 0.92)
     alb *= (np.clip(y_, lo, hi) / np.maximum(y_, 1e-4))[:, None]
     alb = np.clip(alb, 0.0, 1.0)

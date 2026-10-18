@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NavMark_Bell",
  "name": "M_Hbr_NavMark_Bell",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "67fef4ea+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD0.fbx",
-   "bytes": 279196,
+   "bytes": 278972,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Bell_COL",
@@ -43,7 +43,7 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
      "polygons": 64,
      "all_triangles": true
@@ -58,7 +58,7 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
      "polygons": 2718,
      "all_triangles": true,
@@ -91,7 +91,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD1.fbx",
-   "bytes": 182236,
+   "bytes": 182460,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Bell_LOD1",
@@ -108,7 +108,7 @@
      "max": [
       2.82,
       2.82,
-      11.82
+      12.39
      ],
      "polygons": 1358,
      "all_triangles": true,
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx",
-   "bytes": 101196,
+   "bytes": 101148,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_Bell_LOD2",
@@ -158,7 +158,7 @@
      "max": [
       2.8111,
       2.8111,
-      11.82
+      12.39
      ],
      "polygons": 678,
      "all_triangles": true,
@@ -273,7 +273,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_LOD0",
@@ -289,7 +289,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "85 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
@@ -345,7 +345,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.176 to 0.947, v 0.461 to 0.931"
+   "detail": "u 0.083 to 0.947, v 0.753 to 0.950"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
@@ -361,7 +361,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "88 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_LOD1",
@@ -417,7 +417,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_LOD1",
@@ -433,7 +433,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.9% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
@@ -489,7 +489,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.176 to 0.947, v 0.461 to 0.931"
+   "detail": "u 0.083 to 0.947, v 0.754 to 0.949"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
@@ -505,7 +505,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.9% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 9.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_LOD2",
@@ -561,7 +561,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_LOD2",
@@ -577,7 +577,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 22.3% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 22.5% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
@@ -633,7 +633,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.178 to 0.947, v 0.462 to 0.931"
+   "detail": "u 0.085 to 0.947, v 0.754 to 0.948"
   },
   {
    "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
@@ -721,7 +721,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.88 x 1.88 x 6.61 m, spec 1.88 x 1.88 x 6.6 m (art/reference/M_Hbr_NavMark_Bell/dims.md)"
+   "detail": "dims.md 1.88 x 1.88 x 6.8 m, spec 1.88 x 1.88 x 6.79 m (art/reference/M_Hbr_NavMark_Bell/dims.md)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell",
@@ -745,7 +745,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "19.792 studs, real 6.600 m = 19.800 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "20.362 studs, real 6.790 m = 20.370 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NavMark_Bell",
@@ -978,14 +978,14 @@
    "role": "visual",
    "lod": "LOD0",
    "triangles": 2718,
-   "texel_density": 86.3
+   "texel_density": 84.7
   },
   {
    "name": "M_Hbr_NavMark_Bell_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 280,
-   "texel_density": 88.2
+   "texel_density": 86.4
   },
   {
    "name": "M_Hbr_NavMark_Bell_COL",
@@ -1026,7 +1026,7 @@
  "bbox_studs": [
   5.639999866485596,
   5.639999866485596,
-  19.792383193969727
+  20.36238384246826
  ],
- "peak_rss_mb": 3467.3
+ "peak_rss_mb": 2785.5
 }

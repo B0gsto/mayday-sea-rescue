@@ -1,11 +1,11 @@
 # M_Hbr_NavMark_Starboard
 Starboard hand lateral (IALA A), IALA Region A pillar buoy (batch HP2b, docs/12 2.3).
 
-dims_m: 1.88 x 1.88 x 6.67
+dims_m: 1.88 x 1.88 x 6.89
 
 - Float 1.80 m diameter, rubbing fender 1.88 m, freeboard 0.56 m (deck); counterweight tail to 2.05 m below the waterline,
-  mooring eye and chain stub to 2.67 m below. Pillar column, 4-leg cage, platform at 2.62 m, solar LED lantern
-  (focal plane 2.90 m, ATT_Light), octahedral radar reflector, topmark to 4.00 m above the waterline.
+  mooring eye and chain stub to 2.67 m below. Solid tapered pillar column (0.80 m at the deck to 0.48 m), 4-leg cage, platform at 2.62 m, solar LED lantern
+  (focal plane 2.90 m, ATT_Light), octahedral radar reflector, topmark to 4.22 m above the waterline.
 - Paint: green pillar, single green cone point up.
 - Topmark: cone (green).
 

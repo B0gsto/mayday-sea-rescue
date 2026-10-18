@@ -17,10 +17,11 @@ import marks  # noqa: E402
 import template  # noqa: E402
 import turntable  # noqa: E402
 
-OUT = os.path.join(REPO, "assets", "review", "HP2b", "renders")
+OUT = os.path.join(REPO, "assets", "review", "HP2b", os.environ.get("HP2B_RENDERS", "renders_b"))
 os.makedirs(OUT, exist_ok=True)
-CLOSE = {"North": [("top", (0.0, 0.0, 3.45), 3.3, 35, 12)], "East": [("waterline", (0.0, 0.0, -0.1), 3.2, 30, 8)],
-         "Bell": [("bell", (0.0, 0.0, 1.8), 2.6, 20, 6)], "MooringBuoy": [("moor", (0.0, 0.0, 0.1), 2.2, 30, 15)]}
+TOP = ("top", (0.0, 0.0, 3.95), 2.6, 35, 6)
+CLOSE = {"North": [TOP], "South": [TOP], "East": [TOP, ("waterline", (0.0, 0.0, 0.05), 2.6, 30, 8)],
+         "West": [TOP, ("cage", (0.0, 0.0, 1.0), 3.0, 40, 10)], "MooringBuoy": [("moor", (0.0, 0.0, 0.1), 2.2, 30, 15)]}
 
 
 def look(cam, target, dist, az, el):

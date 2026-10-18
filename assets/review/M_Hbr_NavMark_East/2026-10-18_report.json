@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NavMark_East",
  "name": "M_Hbr_NavMark_East",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "67fef4ea+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
-   "bytes": 257164,
+   "bytes": 258124,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_East_COL",
@@ -43,7 +43,7 @@
      "max": [
       2.82,
       2.82,
-      12.66
+      13.86
      ],
      "polygons": 64,
      "all_triangles": true
@@ -58,9 +58,9 @@
      "max": [
       2.82,
       2.82,
-      12.669
+      13.869
      ],
-     "polygons": 2446,
+     "polygons": 2458,
      "all_triangles": true,
      "uv": true
     },
@@ -91,7 +91,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx",
-   "bytes": 166876,
+   "bytes": 167420,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_East_LOD1",
@@ -108,9 +108,9 @@
      "max": [
       2.82,
       2.82,
-      12.6694
+      13.8695
      ],
-     "polygons": 1222,
+     "polygons": 1228,
      "all_triangles": true,
      "uv": true
     },
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD2.fbx",
-   "bytes": 95164,
+   "bytes": 95292,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NavMark_East_LOD2",
@@ -158,9 +158,9 @@
      "max": [
       2.8111,
       2.8111,
-      12.6778
+      13.8778
      ],
-     "polygons": 610,
+     "polygons": 614,
      "all_triangles": true,
      "uv": true
     },
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2446 of 8000"
+   "detail": "2458 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD0",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD0",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1335 faces have no UV area"
+   "detail": "0 of 1339 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD0",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "87 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "84 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD0",
@@ -344,7 +344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.156 to 0.937, v 0.910 to 0.964"
+   "detail": "u 0.155 to 0.968, v 0.055 to 0.954"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD0",
@@ -360,7 +360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "89 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD1",
@@ -384,7 +384,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1222 of 8000"
+   "detail": "1228 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD1",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.992"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD1",
@@ -424,7 +424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1222 faces have no UV area"
+   "detail": "0 of 1228 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD1",
@@ -432,7 +432,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD1",
@@ -488,7 +488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.156 to 0.937, v 0.910 to 0.963"
+   "detail": "u 0.155 to 0.967, v 0.056 to 0.954"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD1",
@@ -528,7 +528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "610 of 8000"
+   "detail": "614 of 8000"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD2",
@@ -568,7 +568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 610 faces have no UV area"
+   "detail": "0 of 614 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD2",
@@ -576,7 +576,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 21.8% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 23.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD2",
@@ -632,7 +632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.158 to 0.935, v 0.910 to 0.963"
+   "detail": "u 0.156 to 0.967, v 0.057 to 0.954"
   },
   {
    "subject": "M_Hbr_NavMark_East_Lens_LOD2",
@@ -696,7 +696,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2726 of 3000 (large_prop, asset row)"
+   "detail": "2738 of 3000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_NavMark_East",
@@ -704,7 +704,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1362 of 1500"
+   "detail": "1368 of 1500"
   },
   {
    "subject": "M_Hbr_NavMark_East",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "680 of 750"
+   "detail": "684 of 750"
   },
   {
    "subject": "M_Hbr_NavMark_East",
@@ -720,7 +720,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.88 x 1.88 x 6.88 m, spec 1.88 x 1.88 x 6.88 m (art/reference/M_Hbr_NavMark_East/dims.md)"
+   "detail": "dims.md 1.88 x 1.88 x 7.28 m, spec 1.88 x 1.88 x 7.28 m (art/reference/M_Hbr_NavMark_East/dims.md)"
   },
   {
    "subject": "M_Hbr_NavMark_East",
@@ -744,7 +744,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "20.641 studs, real 6.880 m = 20.640 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "21.841 studs, real 7.280 m = 21.840 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NavMark_East",
@@ -872,7 +872,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_East_COL, M_Hbr_NavMark_East_LOD0, M_Hbr_NavMark_East_Lens_LOD0; 2790 triangles (scene 2790)"
+   "detail": "M_Hbr_NavMark_East_COL, M_Hbr_NavMark_East_LOD0, M_Hbr_NavMark_East_Lens_LOD0; 2802 triangles (scene 2802)"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD0.fbx",
@@ -912,7 +912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_East_LOD1, M_Hbr_NavMark_East_Lens_LOD1; 1362 triangles (scene 1362)"
+   "detail": "M_Hbr_NavMark_East_LOD1, M_Hbr_NavMark_East_Lens_LOD1; 1368 triangles (scene 1368)"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD1.fbx",
@@ -952,7 +952,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NavMark_East_LOD2, M_Hbr_NavMark_East_Lens_LOD2; 680 triangles (scene 680)"
+   "detail": "M_Hbr_NavMark_East_LOD2, M_Hbr_NavMark_East_Lens_LOD2; 684 triangles (scene 684)"
   },
   {
    "subject": "M_Hbr_NavMark_East_LOD2.fbx",
@@ -968,15 +968,15 @@
    "name": "M_Hbr_NavMark_East_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2446,
-   "texel_density": 87.2
+   "triangles": 2458,
+   "texel_density": 83.6
   },
   {
    "name": "M_Hbr_NavMark_East_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 280,
-   "texel_density": 89.1
+   "texel_density": 85.5
   },
   {
    "name": "M_Hbr_NavMark_East_COL",
@@ -989,14 +989,14 @@
    "name": "M_Hbr_NavMark_East_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1222,
+   "triangles": 1228,
    "texel_density": null
   },
   {
    "name": "M_Hbr_NavMark_East_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 610,
+   "triangles": 614,
    "texel_density": null
   },
   {
@@ -1017,7 +1017,7 @@
  "bbox_studs": [
   5.639999866485596,
   5.639999866485596,
-  20.64138412475586
+  21.841383934020996
  ],
- "peak_rss_mb": 3467.3
+ "peak_rss_mb": 2785.5
 }
