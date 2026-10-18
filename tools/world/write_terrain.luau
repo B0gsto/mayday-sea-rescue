@@ -196,12 +196,15 @@ elseif ARGS.mode == "colors" then
 		tints[name] = { 255, 255, 255 }
 	end
 	for _, name in
-		{ "Pavement", "Asphalt", "Cobblestone", "Concrete", "CrackedLava", "Snow", "WoodPlanks" }
+		{ "Pavement", "Asphalt", "Cobblestone", "Concrete", "CrackedLava", "Snow", "WoodPlanks", "Brick", "Glacier", "Ice" }
 	do
 		tints[name] = { 255, 255, 255 }
 	end
 	-- (T2's olive LeafyGrass multiplier is gone: T3 re-graded the Moor albedo itself, process.py MACRO; Snow and
 	-- WoodPlanks carry the TurfStraw / TurfOlive variants and their stock tints would recolour them)
+	-- T4: Grass carries an olive tint again so the Decoration blades read as turf (they take the Grass colour); the
+	-- Turf albedo is stored pre-divided by it (art/source/materials/library.py GRASS_COLOR, process.py)
+	tints.Grass = { 148, 154, 112 }
 	for name, c in tints do
 		Terrain:SetMaterialColor((Enum.Material :: any)[name], Color3.fromRGB(c[1], c[2], c[3]))
 	end
@@ -212,7 +215,7 @@ elseif ARGS.mode == "colors" then
 		(Terrain :: any).Decoration = ARGS.decoration ~= false
 	end)
 	local okG = pcall(function()
-		(Terrain :: any).GrassLength = ARGS.grassLength or 0.55
+		(Terrain :: any).GrassLength = ARGS.grassLength or 0.5
 	end)
 	return `colors ok, decoration set {okD}, grass length set {okG}`
 elseif ARGS.mode == "export" then

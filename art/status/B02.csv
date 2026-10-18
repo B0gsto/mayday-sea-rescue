@@ -1,18 +1,21 @@
 asset,priority,status,assetId,source,licence,ai_used,reviewer,notes
-MV_SandDry,P0,round1 (look-dev pending review),95962344907990,polyhaven:sand_03,CC0,no,,dry beach sand; base Sand; terrain Sand; 12 studs/tile; wet twin SandDry_Wet
-MV_SandWet,P0,round1 (look-dev pending review),100379806189311,polyhaven:damp_beach_sand,CC0,no,,wet sand: swash band and below the tide line; base Sandstone; terrain Sandstone; 12 studs/tile; wet twin SandWet_Wet
+MV_SandDry,P0,round1 (look-dev pending review),95962344907990,polyhaven:sand_03,CC0,no,,dry beach sand; base Sand; terrain Sand; 9 studs/tile; wet twin SandDry_Wet
+MV_SandWet,P0,round1 (look-dev pending review),100379806189311,polyhaven:damp_beach_sand,CC0,no,,wet sand: swash band and below the tide line; base Sandstone; terrain Sandstone; 9 studs/tile; wet twin SandWet_Wet
 MV_SeabedSand,P0,round1 (look-dev pending review),128559811322810,polyhaven:damp_beach_sand_02,CC0,no,,rippled seabed sand; base Salt; terrain Salt; 11 studs/tile; wet twin SeabedSand_Wet
 MV_ShellGravel,P0,round1 (look-dev pending review),84597693137052,polyhaven:shell_floor_01,CC0,no,,shell and maerl gravel on the seabed; base Limestone; terrain Limestone; 12 studs/tile; wet twin ShellGravel_Wet
 MV_Shingle,P0,round1 (look-dev pending review),134317979634094,polyhaven:pebbles,CC0,no,,shingle (Pebble is not a Terrain material: unused CrackedLava slot); base CrackedLava; terrain CrackedLava; 12.0 studs/tile; wet twin Shingle_Wet
-MV_Granite,P0,round1 (look-dev pending review),85466455016244,polyhaven:rock_face,CC0,no,,"granite: cliff tops, reefs; base Rock; terrain Rock; 22 studs/tile; wet twin Granite_Wet"
+MV_Granite,P0,round1 (look-dev pending review),85466455016244,polyhaven:rock_face,CC0,no,,"granite: cliff tops, reefs; base Rock; terrain Rock; 20 studs/tile; wet twin Granite_Wet"
 MV_KelpRock,P0,round1 (look-dev pending review),76401737473020,polyhaven:low_tide_rocks,CC0,no,,"kelp and wrack covered rock (seabed, intertidal); base Slate; terrain Slate; 13 studs/tile; wet twin KelpRock_Wet"
 MV_SplashRock,P0,round1 (look-dev pending review),95741801877113,polyhaven:dark_rock,CC0,no,,dark wet rock in the splash zone; base Basalt; terrain Basalt; 16 studs/tile; wet twin SplashRock_Wet
-MV_Turf,P0,round1 (look-dev pending review),72232689712295,polyhaven:leafy_grass,CC0,no,,machair and cliff-top turf; base Grass; terrain Grass; 18 studs/tile; wet twin Turf_Wet
-MV_Moor,P0,round1 (look-dev pending review),70778415715106,polyhaven:withered_grass,CC0,no,,heather and gorse moor (dry turf base); base LeafyGrass; terrain LeafyGrass; 20 studs/tile; wet twin Moor_Wet
-MV_TurfStraw,P0,round1 (look-dev pending review),102706131473680,polyhaven:withered_grass,CC0,no,,straw / dead-grass coastal turf (Snow slot); base Snow; terrain Snow; 20 studs/tile; wet twin TurfStraw_Wet
-MV_TurfOlive,P0,round1 (look-dev pending review),77063098207304,polyhaven:leafy_grass,CC0,no,,dark olive lush sward in hollows (WoodPlanks slot); base WoodPlanks; terrain WoodPlanks; 17 studs/tile; wet twin TurfOlive_Wet
+MV_Turf,P0,round1 (look-dev pending review),112224653926074,polyhaven:leafy_grass,CC0,no,,machair and cliff-top turf; base Grass; terrain Grass; 11 studs/tile; wet twin Turf_Wet
+MV_Moor,P0,round1 (look-dev pending review),140631129751989,polyhaven:withered_grass,CC0,no,,heather and gorse moor (dry turf base); base LeafyGrass; terrain LeafyGrass; 13 studs/tile; wet twin Moor_Wet
+MV_TurfStraw,P0,round1 (look-dev pending review),102706131473680,polyhaven:withered_grass,CC0,no,,straw / dead-grass coastal turf (Snow slot); base Snow; terrain Snow; 12 studs/tile; wet twin TurfStraw_Wet
+MV_TurfOlive,P0,round1 (look-dev pending review),77063098207304,polyhaven:leafy_grass,CC0,no,,dark olive lush sward in hollows (WoodPlanks slot); base WoodPlanks; terrain WoodPlanks; 11 studs/tile; wet twin TurfOlive_Wet
+MV_TurfWorn,P0,round1 (look-dev pending review),110420299994659,polyhaven:leafy_grass,CC0,no,,trampled turf over bare earth: the mid-tone between turf and mud / earth (Brick slot); base Brick; terrain Brick; 10 studs/tile; wet twin TurfWorn_Wet
+MV_SandRipple,P0,round1 (look-dev pending review),107956371717436,polyhaven:sand_03,CC0,no,,wind-rippled dry dune sand (Glacier slot); base Glacier; terrain Glacier; 8 studs/tile; wet twin SandRipple_Wet
+MV_Wrack,P0,round1 (look-dev pending review),115298267856981,polyhaven:damp_beach_sand,CC0,no,,strand line: damp sand under dried wrack and weed (Ice slot); base Ice; terrain Ice; 9 studs/tile; wet twin Wrack_Wet
 MV_Mud,P0,round1 (look-dev pending review),122683815219258,polyhaven:brown_mud_02,CC0,no,,estuary and track mud; base Mud; terrain Mud; 9 studs/tile; wet twin Mud_Wet
-MV_Earth,P0,round1 (look-dev pending review),113262137529292,polyhaven:stony_dirt_path,CC0,no,,bare earth and paths; base Ground; terrain Ground; 14 studs/tile; wet twin Earth_Wet
+MV_Earth,P0,round1 (look-dev pending review),113262137529292,polyhaven:stony_dirt_path,CC0,no,,bare earth and paths; base Ground; terrain Ground; 10 studs/tile; wet twin Earth_Wet
 MV_Gravel,P0,round1 (look-dev pending review),123161754821014,polyhaven:gravel_road,CC0,no,,"gravel tracks and cliff-top car parks (Pavement slot: proposed, not in 10 6.1); base Pavement; terrain Pavement; 6.0 studs/tile; wet twin Gravel_Wet"
 MV_Asphalt,P0,round1 (look-dev pending review),93699434802635,polyhaven:asphalt_02,CC0,no,,road asphalt under the road meshes; base Asphalt; terrain Asphalt; 9.0 studs/tile; wet twin Asphalt_Wet
 MV_Cobbles,P0,round1 (look-dev pending review),112986895851426,polyhaven:square_cobblestone,CC0,no,,"granite setts: quays, old town; base Cobblestone; terrain Cobblestone; 6.0 studs/tile; wet twin Cobbles_Wet"

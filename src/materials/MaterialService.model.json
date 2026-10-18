@@ -24,6 +24,9 @@
   "LeafyGrassName": "Moor",
   "SnowName": "TurfStraw",
   "WoodPlanksName": "TurfOlive",
+  "BrickName": "TurfWorn",
+  "GlacierName": "SandRipple",
+  "IceName": "Wrack",
   "MudName": "Mud",
   "GroundName": "Earth",
   "PavementName": "Gravel",
@@ -37,13 +40,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://95962344907990",
-    "NormalMap": "rbxassetid://119561874802876",
+    "NormalMap": "rbxassetid://71125281928407",
     "RoughnessMap": "rbxassetid://107837014471966",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1296
     },
-    "StudsPerTile": 12,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -70,13 +73,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://102604601628768",
-    "NormalMap": "rbxassetid://119561874802876",
+    "NormalMap": "rbxassetid://71125281928407",
     "RoughnessMap": "rbxassetid://99240790846447",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1296
     },
-    "StudsPerTile": 12,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -103,13 +106,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://100379806189311",
-    "NormalMap": "rbxassetid://107536143148481",
+    "NormalMap": "rbxassetid://73479968303129",
     "RoughnessMap": "rbxassetid://117619800814011",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 912
     },
-    "StudsPerTile": 12,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -136,13 +139,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://75498296548188",
-    "NormalMap": "rbxassetid://107536143148481",
+    "NormalMap": "rbxassetid://73479968303129",
     "RoughnessMap": "rbxassetid://120367606086407",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 912
     },
-    "StudsPerTile": 12,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -373,7 +376,7 @@
     "BaseMaterial": {
      "Enum": 896
     },
-    "StudsPerTile": 22,
+    "StudsPerTile": 20,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -406,7 +409,7 @@
     "BaseMaterial": {
      "Enum": 896
     },
-    "StudsPerTile": 22,
+    "StudsPerTile": 20,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -564,14 +567,14 @@
    "Name": "Turf",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://72232689712295",
-    "NormalMap": "rbxassetid://132329802120448",
+    "ColorMap": "rbxassetid://112224653926074",
+    "NormalMap": "rbxassetid://84967752986722",
     "RoughnessMap": "rbxassetid://108290419678390",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 18,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -597,14 +600,14 @@
    "Name": "Turf_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://96662289153830",
-    "NormalMap": "rbxassetid://132329802120448",
+    "ColorMap": "rbxassetid://82796658719111",
+    "NormalMap": "rbxassetid://84967752986722",
     "RoughnessMap": "rbxassetid://103483290268754",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 18,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -630,14 +633,14 @@
    "Name": "Moor",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://70778415715106",
-    "NormalMap": "rbxassetid://140443130129563",
+    "ColorMap": "rbxassetid://140631129751989",
+    "NormalMap": "rbxassetid://131899178826394",
     "RoughnessMap": "rbxassetid://114903343309758",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 20,
+    "StudsPerTile": 13,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -663,14 +666,14 @@
    "Name": "Moor_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://111711310371117",
-    "NormalMap": "rbxassetid://140443130129563",
+    "ColorMap": "rbxassetid://79911046515153",
+    "NormalMap": "rbxassetid://131899178826394",
     "RoughnessMap": "rbxassetid://89288332356106",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 20,
+    "StudsPerTile": 13,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -697,13 +700,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://102706131473680",
-    "NormalMap": "rbxassetid://140443130129563",
+    "NormalMap": "rbxassetid://90772463891898",
     "RoughnessMap": "rbxassetid://114903343309758",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1328
     },
-    "StudsPerTile": 20,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -730,13 +733,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://77581198617072",
-    "NormalMap": "rbxassetid://140443130129563",
+    "NormalMap": "rbxassetid://90772463891898",
     "RoughnessMap": "rbxassetid://89288332356106",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1328
     },
-    "StudsPerTile": 20,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -763,13 +766,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://77063098207304",
-    "NormalMap": "rbxassetid://132329802120448",
+    "NormalMap": "rbxassetid://109934808122953",
     "RoughnessMap": "rbxassetid://108290419678390",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 528
     },
-    "StudsPerTile": 17,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -796,13 +799,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://137713780609754",
-    "NormalMap": "rbxassetid://132329802120448",
+    "NormalMap": "rbxassetid://109934808122953",
     "RoughnessMap": "rbxassetid://103483290268754",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 528
     },
-    "StudsPerTile": 17,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -825,11 +828,209 @@
    }
   },
   {
+   "Name": "TurfWorn",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://110420299994659",
+    "NormalMap": "rbxassetid://90554577413748",
+    "RoughnessMap": "rbxassetid://89546390234031",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 848
+    },
+    "StudsPerTile": 10,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/leafy_grass"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "TurfWorn"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "TurfWorn_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://130202604062148",
+    "NormalMap": "rbxassetid://90554577413748",
+    "RoughnessMap": "rbxassetid://83334264943208",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 848
+    },
+    "StudsPerTile": 10,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/leafy_grass"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "TurfWorn"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "SandRipple",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://107956371717436",
+    "NormalMap": "rbxassetid://84349693818625",
+    "RoughnessMap": "rbxassetid://107837014471966",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1552
+    },
+    "StudsPerTile": 8,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/sand_03"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "SandRipple"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "SandRipple_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://92409420143779",
+    "NormalMap": "rbxassetid://84349693818625",
+    "RoughnessMap": "rbxassetid://99240790846447",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1552
+    },
+    "StudsPerTile": 8,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/sand_03"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "SandRipple"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "Wrack",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://115298267856981",
+    "NormalMap": "rbxassetid://70558803615320",
+    "RoughnessMap": "rbxassetid://76736534583876",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1536
+    },
+    "StudsPerTile": 9,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/damp_beach_sand"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "Wrack"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "Wrack_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://124662096018464",
+    "NormalMap": "rbxassetid://70558803615320",
+    "RoughnessMap": "rbxassetid://81194385775781",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1536
+    },
+    "StudsPerTile": 9,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "https://polyhaven.com/a/damp_beach_sand"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "Wrack"
+      }
+     }
+    }
+   }
+  },
+  {
    "Name": "Mud",
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://122683815219258",
-    "NormalMap": "rbxassetid://135915207302645",
+    "NormalMap": "rbxassetid://131985337304405",
     "RoughnessMap": "rbxassetid://88624121174539",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
@@ -862,7 +1063,7 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://130275912767332",
-    "NormalMap": "rbxassetid://135915207302645",
+    "NormalMap": "rbxassetid://131985337304405",
     "RoughnessMap": "rbxassetid://74466782379589",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
@@ -895,13 +1096,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://113262137529292",
-    "NormalMap": "rbxassetid://72621540984653",
+    "NormalMap": "rbxassetid://107524690874976",
     "RoughnessMap": "rbxassetid://115805251925556",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 14,
+    "StudsPerTile": 10,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -928,13 +1129,13 @@
    "ClassName": "MaterialVariant",
    "Properties": {
     "ColorMap": "rbxassetid://128695786841833",
-    "NormalMap": "rbxassetid://72621540984653",
+    "NormalMap": "rbxassetid://107524690874976",
     "RoughnessMap": "rbxassetid://73982198309599",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 14,
+    "StudsPerTile": 10,
     "MaterialPattern": {
      "Enum": 1
     },

@@ -9,8 +9,17 @@ STUDS_PER_M = 3
 # Terrain look pass T2: real-scale tiles (dims_m x 3, 6-8 studs) repeat every couple of metres and read as a visible
 # grid at landscape range, so the big natural terrain variants get larger tiles (macro variation then comes from the
 # generator's patch blending between Turf / Moor / Earth / Granite). Others keep dims_m x 3.
-STUDS_PER_TILE = {"Turf": 18, "Moor": 20, "Granite": 22, "SplashRock": 16, "KelpRock": 13, "Earth": 14,
-                  "TurfStraw": 20, "TurfOlive": 17, "SandDry": 12, "SandWet": 12, "SeabedSand": 11, "ShellGravel": 12, "Mud": 9}
+# T4: the T3 turf / sand tiles (17-20 studs) smeared the near ground in first person (a blade of grass 4x life size);
+# down to 10-13 studs now that every big turf / sand variant also carries a fine detail normal (process.py DETAIL) and
+# the generator breaks the repeats with patch dithering. Still about 1.5x real scale, so no grid at landscape range.
+STUDS_PER_TILE = {"Turf": 11, "Moor": 13, "Granite": 20, "SplashRock": 16, "KelpRock": 13, "Earth": 10,
+                  "TurfStraw": 12, "TurfOlive": 11, "TurfWorn": 10, "SandDry": 9, "SandWet": 9, "SandRipple": 8,
+                  "Wrack": 9, "SeabedSand": 11, "ShellGravel": 12, "Mud": 9}
+
+# T4: Terrain grass Decoration takes its blade colour from the Grass MaterialColor, and the MaterialColor multiplies
+# the Turf variant's colour map too, so Grass gets this olive tint and process.py stores Turf's albedo pre-divided by
+# it (the ground keeps its graded look, the wind-animated blades read as olive turf instead of white).
+GRASS_COLOR = (148, 154, 112)
 
 
 def studs_per_tile(name, dims_m):
@@ -31,6 +40,10 @@ LIBRARY = [
     # T3 turf macro patches (gen_terrain.py STRAW / OLIVE) on otherwise unused Terrain slots (Snow grips like turf)
     ("TurfStraw",    "withered_grass",       2.80, "Snow",        "Snow",        "Organic", "straw / dead-grass coastal turf (Snow slot)"),
     ("TurfOlive",    "leafy_grass",          2.50, "WoodPlanks",  "WoodPlanks",  "Organic", "dark olive lush sward in hollows (WoodPlanks slot)"),
+    # T4 extra slots (gen_terrain.py WORN / RIPPLE / WRACK; Tyre.luau grips them as Dirt / Sand / Sand)
+    ("TurfWorn",     "leafy_grass",          2.50, "Brick",       "Brick",       "Organic", "trampled turf over bare earth: the mid-tone between turf and mud / earth (Brick slot)"),
+    ("SandRipple",   "sand_03",              2.00, "Glacier",     "Glacier",     "Organic", "wind-rippled dry dune sand (Glacier slot)"),
+    ("Wrack",        "damp_beach_sand",      2.00, "Ice",         "Ice",         "Organic", "strand line: damp sand under dried wrack and weed (Ice slot)"),
     ("Mud",          "brown_mud_02",         1.30, "Mud",         "Mud",         "Organic", "estuary and track mud"),
     ("Earth",        "stony_dirt_path",      2.60, "Ground",      "Ground",      "Organic", "bare earth and paths"),
     ("Gravel",       "gravel_road",          2.00, "Pavement",    "Pavement",    "Organic", "gravel tracks and cliff-top car parks (Pavement slot: proposed, not in 10 6.1)"),

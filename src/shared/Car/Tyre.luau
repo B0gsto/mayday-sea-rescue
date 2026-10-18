@@ -54,7 +54,7 @@ Tyre.MaterialSurface = {
 	Concrete = "Concrete",
 	Pavement = "Cobbles",
 	Cobblestone = "Cobbles",
-	Brick = "Cobbles",
+	Brick = "Dirt", -- terrain T4: the Brick slot carries the TurfWorn (trampled turf over earth) variant
 	Slate = "Rock",
 	Granite = "Rock",
 	Rock = "Rock",
@@ -77,8 +77,8 @@ Tyre.MaterialSurface = {
 	DiamondPlate = "Metal",
 	CorrodedMetal = "Metal",
 	Snow = "Grass", -- terrain T3: the Snow slot carries the TurfStraw turf variant (no snow on the isles)
-	Ice = "Ice",
-	Glacier = "Ice",
+	Ice = "Sand", -- terrain T4: the Ice slot carries the Wrack strand-line variant (damp sand under weed)
+	Glacier = "Sand", -- terrain T4: the Glacier slot carries the SandRipple dune-sand variant
 }
 
 Tyre.TIDE_BAND = 4.5 -- studs above sea level that the sea keeps wet (1.5 m, mid tide + swash) -- tune

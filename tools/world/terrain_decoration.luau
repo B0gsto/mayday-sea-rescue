@@ -2,8 +2,8 @@
 -- Sets the Terrain grass decoration in map/terrain/Terrain.rbxm (run by studio_terrain.py after the export; Lune,
 -- because Terrain.Decoration and GrassLength are NotScriptable, so execute_luau cannot set them).
 -- usage: lune run tools/world/terrain_decoration.luau <Terrain.rbxm> [decoration true|false] [grassLength 0.1..1]
--- Look-dev round 2: off (studio_terrain.py passes "false"): the stock blades read as large, sparse, saturated
--- cones over the photoreal turf, and with neutral MaterialColors they would turn white.
+-- Look-dev round 2 had it off (stock blades read as large, sparse, saturated cones); T4 turns it on (studio_terrain.py
+-- passes "true" 0.5) with the Grass MaterialColor tinted olive and the Turf albedo pre-divided by it.
 local fs = require("@lune/fs")
 local process = require("@lune/process")
 local roblox = require("@lune/roblox")

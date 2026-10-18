@@ -16,7 +16,7 @@ GAME = os.path.abspath(os.path.join(HERE, "../../.."))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(GAME, "tools/blender"))
 import common  # noqa: E402  (SHIP_SIZE)
-from library import LIBRARY, TRIM  # noqa: E402
+from library import LIBRARY, TRIM, GRASS_COLOR  # noqa: E402
 
 CAP = common.SHIP_SIZE  # shipped size (EXPORT_CAP is only the maximum)
 RES = {512: "1k", 1024: "1k", 2048: "2k", 4096: "4k"}[CAP] if CAP <= 4096 else "4k"
@@ -156,7 +156,10 @@ MACRO = {
     "TurfStraw": ((140, 124, 84), 0.24, [(0.35, (0.80, 0.95, 0.78), 3, 7), (0.30, OCHRE_T, 2.5, 5),
                                          (0.25, (0.85, 0.83, 0.86), 8, 18)], 14),
     "TurfOlive": ((82, 88, 54), 0.26, [(0.30, STRAW_T, 3, 7), (0.25, (0.86, 0.92, 0.80), 2.5, 5)], 15),
-    "Moor": ((118, 104, 76), 0.24, [(0.30, (1.06, 0.86, 0.98), 3, 8), (0.28, (0.92, 1.05, 0.84), 2.5, 5)], 12),
+    # T4: heather / gorse / bracken patches tinted into the turf: lichen grey, dark heather and a turf-green layer
+    "Moor": ((112, 102, 76), 0.28, [(0.30, (1.06, 0.86, 0.98), 3, 8), (0.30, (0.88, 1.06, 0.82), 2.5, 5),
+                                    (0.26, (0.92, 0.95, 0.98), 6, 14), (0.24, (0.70, 0.70, 0.74), 9, 20)], 12),
+    "TurfWorn": ((94, 88, 62), 0.26, [(0.30, (1.12, 1.06, 0.86), 3, 7), (0.25, (0.86, 0.94, 0.80), 6, 14)], 19),
     "Earth": ((92, 76, 58), 0.24, [(0.35, (1.22, 1.05, 0.82), 2.5, 5), (0.30, (0.82, 0.86, 0.72), 4, 9),
                                    (0.25, (1.10, 1.08, 1.06), 9, 20)], 13),
     "Mud": ((86, 72, 56), 0.26, [(0.40, (1.25, 1.16, 1.02), 2.5, 5), (0.28, (0.92, 0.96, 0.80), 4, 10)], 16),
@@ -182,6 +185,78 @@ def macro_albedo(rgb, name):
     med1 = np.median(out.reshape(-1, 3), 0)
     return out, ["macro %s: median %s -> #%02X%02X%02X, clumps -%d%%, %d blend layers"
                  % (name, tuple(int(v) for v in med0), *(int(v) for v in med1), dark * 100, len(layers))] + notes
+
+
+# T4 detail: (normal gain on the scan's own normal, fine detail-normal strength, detail band in cycles per tile). The
+# smaller tiles plus a higher-contrast, high-frequency normal keep the near ground crisp instead of smeared.
+DETAIL = {"Turf": (1.5, 0.9, 48, 110), "TurfStraw": (1.5, 0.9, 48, 110), "TurfOlive": (1.5, 0.9, 48, 110),
+          "TurfWorn": (1.4, 0.8, 40, 100), "Moor": (1.4, 0.8, 40, 100), "Earth": (1.3, 0.6, 36, 90),
+          "SandDry": (1.4, 0.5, 60, 140), "SandWet": (1.3, 0.4, 60, 140), "SandRipple": (1.2, 0.4, 60, 140),
+          "Wrack": (1.3, 0.5, 50, 120), "Mud": (1.3, 0.5, 36, 90)}
+# T4 mixes: second Poly Haven scan blended in through a tileable mask (variant, source, coverage, mask band)
+MIX = {"TurfWorn": ("brown_mud_02", 0.45, 3, 10), "Wrack": ("brown_mud_02", 0.0, 0, 0)}
+
+
+def h2n(hgt, k):
+    """Height field (tile-periodic) -> OpenGL tangent normal (+Y up the image), strength k."""
+    gy = (np.roll(hgt, -1, 0) - np.roll(hgt, 1, 0)) * 0.5
+    gx = (np.roll(hgt, -1, 1) - np.roll(hgt, 1, 1)) * 0.5
+    n = np.stack([-gx * k, gy * k, np.ones_like(hgt)], -1)
+    return n / np.linalg.norm(n, axis=-1, keepdims=True)
+
+
+def blend_n(a, b):
+    """Whiteout blend of unit normals a (base) and b (detail)."""
+    c = np.stack([a[..., 0] + b[..., 0], a[..., 1] + b[..., 1], a[..., 2] * b[..., 2]], -1)
+    return c / np.linalg.norm(c, axis=-1, keepdims=True)
+
+
+def detail_normal(nor, name, seed):
+    gain, k, f0, f1 = DETAIL[name]
+    n = nor / 127.5 - 1
+    n = np.concatenate([n[..., :2] * gain, n[..., 2:]], -1)
+    n /= np.linalg.norm(n, axis=-1, keepdims=True)
+    fine = band_noise(n.shape[:2], f0, f1, seed + 70) + 0.5 * band_noise(n.shape[:2], f0 // 3, f0, seed + 71)
+    return (blend_n(n, h2n(fine, k * 0.6)) + 1) * 127.5, ["detail %s: normal x%.1f + fine band %d-%d @ %.1f" % (name, gain, f0, f1, k)]
+
+
+def ripple(alb, nor, rgh, seed):
+    """Wind ripples, tileable: an asymmetric (gentle stoss, steep lee) wave with integer cycles across the tile,
+    phase-warped so crests wander and fork; troughs a shade darker (heavy-mineral lag)."""
+    n = alb.shape[0]
+    v, u = np.mgrid[0:n, 0:n].astype(np.float32) / n
+    ph = 26 * u + 7 * v + 1.3 * band_noise((n, n), 1, 3, seed + 80) + 0.35 * band_noise((n, n), 3, 7, seed + 81)
+    f = ph - np.floor(ph)
+    prof = np.where(f < 0.72, f / 0.72, (1 - f) / 0.28)  # 0 trough .. 1 crest
+    prof = prof * prof * (3 - 2 * prof)
+    amp = 0.75 + 0.25 * np.clip(band_noise((n, n), 2, 5, seed + 82), -1, 1)
+    hgt = prof * amp * n / 26 * 0.18
+    nn = blend_n(nor / 127.5 - 1, h2n(hgt, 1.0))
+    alb = alb * (0.90 + 0.12 * prof)[..., None]
+    return alb, (nn + 1) * 127.5, rgh, ["ripple: 26x7 cycles, asymmetric, troughs -10%"]
+
+
+def mix_in(name, alb, nor, rgh, seed):
+    src, cov, f0, f1 = MIX[name]
+    a2, n2, r2 = load_maps(fetch(src)[0])
+    shp = alb.shape[:2]
+    if name == "Wrack":  # dark wrack strands (ridged band noise) in drifts over damp sand, wet-glossy
+        drift = sstep(-0.9, 0.1, band_noise(shp, 2, 6, seed + 90))
+        strand = sstep(0.32, 0.05, np.abs(band_noise(shp, 14, 34, seed + 91))) \
+            * sstep(-0.2, 0.5, band_noise(shp, 6, 16, seed + 92))
+        m = np.clip(drift * (0.25 + 0.75 * strand) + 0.45 * drift * sstep(0.4, 1.5, band_noise(shp, 20, 50, seed + 93)), 0, 1)
+        col = np.array([58, 50, 30], np.float32) * (0.75 + 0.5 * sstep(-1, 1, band_noise(shp, 10, 30, seed + 94)))[..., None] \
+            * np.where(band_noise(shp, 5, 12, seed + 95)[..., None] > 0.6, np.array([1.25, 1.1, 0.8], np.float32), 1)
+        alb = alb * 0.82 * (1 - m[..., None]) + col * m[..., None]
+        nor = (blend_n(nor / 127.5 - 1, h2n(m * 6.0, 1.0)) + 1) * 127.5
+        rgh = rgh * (1 - 0.5 * m)
+        return alb, nor, rgh, ["wrack: strand drifts, coverage %.0f%%" % (100 * float((m > 0.5).mean()))]
+    m = sstep(-0.25, 0.35, band_noise(shp, f0, f1, seed + 90) + 0.6 * band_noise(shp, f1, 3 * f1, seed + 91)
+              + (0.5 - cov) * 2)
+    alb = alb * (1 - m[..., None]) + a2 * m[..., None]
+    nor = nor * (1 - m[..., None]) + n2 * m[..., None]
+    rgh = rgh * (1 - m) + r2 * m
+    return alb, nor, rgh, ["mix %s: %s %.0f%%" % (name, src, 100 * float((m > 0.5).mean()))]
 
 
 def wet_albedo(rgb):
@@ -232,9 +307,22 @@ def build_variant(row, report):
     if name in LIFT:   # K1 fix: dark_rock graded to a flat near-black slab (luma p50 38, p99 51; wet 28): wet lava / oil in-engine
         alb, n2 = lift_albedo(alb, *LIFT[name])
         notes += n2
+    seed = sum(map(ord, name))
+    if name in MIX:
+        alb, nor, rgh, n4 = mix_in(name, alb, nor, rgh, seed)
+        notes += n4
+    if name == "SandRipple":
+        alb, nor, rgh, n4 = ripple(alb, nor, rgh, seed)
+        notes += n4
     if name in MACRO:  # terrain look-dev round 2: baked colour variation (no flat colours)
         alb, n3 = macro_albedo(alb, name)
         notes += n3
+    if name in DETAIL:
+        nor, n5 = detail_normal(nor, name, seed)
+        notes += n5
+    if name == "Turf":  # T4: pre-divided by the Grass MaterialColor (library.GRASS_COLOR) that tints the blades
+        alb = np.clip(alb / (np.array(GRASS_COLOR, np.float32) / 255.0), 0, 255)
+        notes += ["pre-divided by Grass MaterialColor %s" % (GRASS_COLOR,)]
     stem = os.path.join(OUT, "T_Mat_%s_" % name)
     save(alb, "RGB", stem + "ALB.png")
     save(nor, "RGB", stem + "NOR.png")

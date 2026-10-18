@@ -47,7 +47,7 @@ AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
 
 SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
-PLANT_CAP = 3500
+PLANT_CAP = 4400  # T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
 # rock stage budgets (target 500-900 total)
@@ -55,9 +55,9 @@ ROCK_BUDGET = {"waterline": 280, "clifffoot": 170, "reef": 200, "cliffchunk": 22
 
 # plant budgets per kind and region (sum = PLANT_CAP; regions without suitable ground simply fall short)
 PLANT_BUDGET = {
-    "marram": {"HavenSands": 640, "WestCoast": 110},
-    "turf": {"Town": 280, "CoastRoad": 300, "HavenSands": 150, "HavenHead": 130, "Inland": 140, "WestCoast": 110,
-             "SkerryIsle": 40},
+    "marram": {"HavenSands": 900, "WestCoast": 150},
+    "turf": {"Town": 400, "CoastRoad": 450, "HavenSands": 230, "HavenHead": 200, "Inland": 210, "WestCoast": 170,
+             "SkerryIsle": 60},
     "gorse": {"HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 40},
     "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60},
     "thrift": {"HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
@@ -254,18 +254,18 @@ def plant_weights(T, seed):
     w = {}
     dune = (wb > 0.5) & (dl >= bw + 6) & (dl < bw + dw + 30) & (slope < 0.9)
     dt = np.clip((dl - bw) / (dw + 30), 0, 1)
-    w["marram"] = dune * dry * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.9, "Sand": 0.55, "Ground": 0.3}) \
+    w["marram"] = dune * dry * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.9, "Sand": 0.55, "Glacier": 0.45, "Ground": 0.3, "Brick": 0.5}) \
         * (0.35 + 0.65 * smooth(0.0, 0.5, dt)) * (0.25 + 0.75 * patch(60, 1))
-    w["turf"] = dry * (slope < 0.6) * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.35, "Ground": 0.15}) \
+    w["turf"] = dry * (slope < 0.6) * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.35, "Brick": 0.6, "Ground": 0.15}) \
         * (0.1 + 0.9 * patch(90, 2)) * (1 - 0.7 * dune)
     w["gorse"] = dry * (slope < 0.75) * (dl > 14) * (h > 4) * cliff_top \
-        * mw({"LeafyGrass": 1.0, "Grass": 0.6, "Snow": 0.6, "WoodPlanks": 0.6, "Ground": 0.3}) * (0.1 + 0.9 * patch(120, 3))
+        * mw({"LeafyGrass": 1.0, "Grass": 0.6, "Snow": 0.6, "WoodPlanks": 0.6, "Ground": 0.3, "Brick": 0.3}) * (0.1 + 0.9 * patch(120, 3))
     w["heather"] = dry * (slope < 0.7) * (h > 4) * np.maximum(cliff_top * smooth(25, 80, dl), 0.8 * upland) \
         * mw({"LeafyGrass": 1.0, "Grass": 0.3, "Snow": 0.3, "WoodPlanks": 0.3, "Ground": 0.2}) * (0.1 + 0.9 * patch(100, 4))
     w["thrift"] = dry * (slope < 0.9) * (h > 3) * cliffy * smooth(95, 12, dl) \
         * mw({"Grass": 0.9, "Snow": 0.9, "WoodPlanks": 0.9, "LeafyGrass": 1.0, "Rock": 0.6, "Ground": 0.5, "Basalt": 0.3}) * (0.2 + 0.8 * patch(50, 5))
     w["bracken"] = dry * (h > 4) * (h < 140) * (dl > 40) * smooth(0.3, 1.2, T.hollow) * smooth(0.45, 0.15, slope) \
-        * mw({"Grass": 0.8, "Snow": 0.8, "WoodPlanks": 0.8, "LeafyGrass": 1.0, "Ground": 0.6}) * (0.2 + 0.8 * patch(80, 6))
+        * mw({"Grass": 0.8, "Snow": 0.8, "WoodPlanks": 0.8, "LeafyGrass": 1.0, "Ground": 0.6, "Brick": 0.8}) * (0.2 + 0.8 * patch(80, 6))
     w["hawthorn"] = dry * (h > 6) * (dl > 30) * smooth(0.18, 0.32, slope) * smooth(0.75, 0.55, slope) \
         * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.8})
     mvp = np.hypot(X, Z) <= L.MVP_RADIUS
@@ -336,7 +336,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
     inside = (np.abs(X) < L.HALF_EXTENT - 30) & (np.abs(Z) < L.HALF_EXTENT - 30)
     noise = 0.5 + 0.5 * G.fbm(X, Z, 150, seed + 300)
     rocky = (wc + wr > 0.5) & (wb < 0.4) & (wh < 0.3) & (wm < 0.3)
-    rock_mats = np.isin(mat, [M[n] for n in ("Rock", "Basalt", "Slate", "Ground", "Grass", "Snow", "WoodPlanks", "LeafyGrass", "Limestone")])
+    rock_mats = np.isin(mat, [M[n] for n in ("Rock", "Basalt", "Slate", "Ground", "Grass", "Snow", "WoodPlanks", "LeafyGrass", "Limestone", "Brick")])
     reef_m = np.zeros(X.shape, dtype=bool)
     for rf in L.REEFS:
         cx, cz = rf["center"]

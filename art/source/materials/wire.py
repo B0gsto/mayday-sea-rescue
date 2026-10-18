@@ -16,7 +16,7 @@ from library import LIBRARY, TRIM, STUDS_PER_M, studs_per_tile  # noqa: E402
 MATERIAL_ENUM = {"Sand": 1296, "Sandstone": 912, "Salt": 1392, "Limestone": 820, "Pebble": 864, "CrackedLava": 804, "Rock": 896, "Slate": 800,
                  "Basalt": 788, "Grass": 1280, "LeafyGrass": 1284, "Mud": 1344, "Ground": 1360, "Pavement": 836,
                  "Asphalt": 1376, "Cobblestone": 880, "Concrete": 816, "Granite": 832, "Plastic": 256,
-                 "Snow": 1328, "WoodPlanks": 528}
+                 "Snow": 1328, "WoodPlanks": 528, "Brick": 848, "Glacier": 1552, "Ice": 1536}
 PATTERN_ENUM = {"Regular": 0, "Organic": 1}
 LICENCE = "CC0 1.0 (https://polyhaven.com/license)"
 TODAY = datetime.date.today().isoformat()

@@ -9,18 +9,18 @@ Every map in `assets/textures/Materials/` and `assets/textures/M_Bld_TrimSheet/`
 | `brown_mud_02` | Brown Mud 02 | https://polyhaven.com/a/brown_mud_02 | Rob Tuytel | 1.30 x 1.30 m | Mud | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `brushed_concrete` | Brushed Concrete  | https://polyhaven.com/a/brushed_concrete | Dario Barresi, Dimitrios Savva | 2.50 x 2.50 m | Concrete | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `concrete_moss` | Concrete Moss | https://polyhaven.com/a/concrete_moss | Rob Tuytel | 3.00 x 3.00 m | WeedyConcrete | [CC0](https://polyhaven.com/license) | 2026-10-18 |
-| `damp_beach_sand` | Damp Beach Sand | https://polyhaven.com/a/damp_beach_sand | Dimitrios Savva | 2.00 x 2.00 m | SandWet | [CC0](https://polyhaven.com/license) | 2026-10-18 |
+| `damp_beach_sand` | Damp Beach Sand | https://polyhaven.com/a/damp_beach_sand | Dimitrios Savva | 2.00 x 2.00 m | SandWet, Wrack | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `damp_beach_sand_02` | Damp Beach Sand 02 | https://polyhaven.com/a/damp_beach_sand_02 | Dimitrios Savva | 1.87 x 1.87 m | SeabedSand | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `dark_rock` | Dark Rock | https://polyhaven.com/a/dark_rock | Amal Kumar | 2.42 x 2.42 m | SplashRock | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `granite_tile` | Granite Tile | https://polyhaven.com/a/granite_tile | Charlotte Baglioni | 2.30 x 2.30 m | trim:Sill, trim:Coping | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `gravel_road` | Gravel Road | https://polyhaven.com/a/gravel_road | Amal Kumar | 2.00 x 2.00 m | Gravel | [CC0](https://polyhaven.com/license) | 2026-10-18 |
-| `leafy_grass` | Leafy Grass | https://polyhaven.com/a/leafy_grass | Charlotte Baglioni | 2.00 x 2.00 m | Turf, TurfOlive | [CC0](https://polyhaven.com/license) | 2026-10-18 |
+| `leafy_grass` | Leafy Grass | https://polyhaven.com/a/leafy_grass | Charlotte Baglioni | 2.00 x 2.00 m | Turf, TurfOlive, TurfWorn | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `low_tide_rocks` | Low Tide Rocks | https://polyhaven.com/a/low_tide_rocks | Dimitrios Savva | 2.17 x 2.17 m | KelpRock | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `metal_plate` | Metal Plate | https://polyhaven.com/a/metal_plate | Rob Tuytel | 0.50 x 0.50 m | trim:Flashing | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `pebbles` | Pebbles | https://polyhaven.com/a/pebbles | Rob Tuytel | 4.00 x 4.00 m | Shingle | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `rock_face` | Rock Face | https://polyhaven.com/a/rock_face | Greg Zaal, Dario Barresi | 2.38 x 2.38 m | Granite | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `rusty_painted_metal` | Rusty Painted Metal | https://polyhaven.com/a/rusty_painted_metal | Amal Kumar | 2.20 x 2.20 m | trim:Gutter, trim:Downpipe | [CC0](https://polyhaven.com/license) | 2026-10-18 |
-| `sand_03` | Sand 03 | https://polyhaven.com/a/sand_03 | Charlotte Baglioni | 2.00 x 2.00 m | SandDry | [CC0](https://polyhaven.com/license) | 2026-10-18 |
+| `sand_03` | Sand 03 | https://polyhaven.com/a/sand_03 | Charlotte Baglioni | 2.00 x 2.00 m | SandDry, SandRipple | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `seaworn_stone_tiles` | Seaworn Stone Tiles | https://polyhaven.com/a/seaworn_stone_tiles | Dimitrios Savva | 2.00 x 2.00 m | QuayStone | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `shell_floor_01` | Shell Floor 01 | https://polyhaven.com/a/shell_floor_01 | Rob Tuytel | 3.00 x 3.00 m | ShellGravel | [CC0](https://polyhaven.com/license) | 2026-10-18 |
 | `square_cobblestone` | Square Cobblestone | https://polyhaven.com/a/square_cobblestone | Sơn Nguyễn | 2.00 x 2.00 m | Cobbles | [CC0](https://polyhaven.com/license) | 2026-10-18 |

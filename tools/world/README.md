@@ -65,6 +65,19 @@ car parks (+12) and points / POIs (30), so road profiles, pads and the station k
 tileable blend layers): Turf, TurfStraw, TurfOlive, Moor (the olive LeafyGrass MaterialColor is now white), Earth,
 Mud (peat), KelpRock (slate), Shingle. Before / after: `assets/review/terrain/t3_contact.png` (`t3_shots.json`).
 
+**Terrain pass T4.** `choose()` dithers with tileable blue noise through a Gumbel transform (stochastic soft-argmax:
+comparable weights mix across 2-3 voxels, no clumps), a 10-stud value noise and softened log weights, and the land
+slope / height drivers are noise-broken, so no smooth field thresholds into a band or a contour seam. New slots:
+TurfWorn (`WORN` = Brick: trampled turf over earth, a 28-stud halo round wet hollows, gullies and banks between turf
+and mud / earth), SandRipple (`RIPPLE` = Glacier: wind ripples on open dune faces and the upper dry beach), Wrack
+(`WRACK` = Ice: the high-water strand line on the beach, and the top of the shingle at cove backs, which now band wet
+sand -> shingle -> wrack -> worn turf; Harbour Cove too). Grass (Turf) is the main sward again (about 2x T3's
+cells; Moor down by half) because only Grass gets `Terrain.Decoration`: now on, GrassLength 0.5, Grass MaterialColor
+olive (`library.GRASS_COLOR`) with the Turf albedo pre-divided by it. Tiles down to 8-13 studs plus a gained scan
+normal and a fine detail normal (`process.py` DETAIL); Moor tinted with lichen grey, dark heather and turf green.
+Terracettes 0.5 studs over 6-36 deg, plus fine 8-16 stud roughness. Scatter: turf / marram budgets +50%
+(PLANT_CAP 4400). Before / after: `assets/review/terrain/t4_contact.png` (T3 row, T4 row; `t4_shots.json`).
+
 **Open.** The shore bake for `Waves.luau` (doc 10 section 6.4), MaterialVariants, the doc 10 harbour re-lay (mouth
 at about 900 studs; gameplay code and tests still use z = 368), `GameConfig.MapRadius` 2,000 vs WorldConfig's 2,500.
 
