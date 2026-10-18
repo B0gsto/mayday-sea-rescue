@@ -1,0 +1,152 @@
+{
+ "asset": "M_Hbr_NavMark_Bell",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.9238,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mooring",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    -8.04
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -8.04,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -9.9638,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    8.7
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    8.7,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    6.7762,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Topmark",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    11.82
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    11.82,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    9.8962,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Bell",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    5.25
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    5.25,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    3.3262,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

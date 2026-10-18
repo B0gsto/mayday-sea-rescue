@@ -1,0 +1,726 @@
+{
+ "asset": "M_Hbr_PickupBuoy",
+ "name": "M_Hbr_PickupBuoy",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD0.fbx",
+   "bytes": 150652,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_PickupBuoy_COL",
+    "M_Hbr_PickupBuoy_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_PickupBuoy_COL.001",
+     "min": [
+      -0.96,
+      -0.96,
+      -0.9
+     ],
+     "max": [
+      0.96,
+      0.96,
+      1.29
+     ],
+     "polygons": 32,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Hbr_PickupBuoy_LOD0.001",
+     "min": [
+      -0.8908,
+      -0.8818,
+      -5.4712
+     ],
+     "max": [
+      1.0061,
+      0.8818,
+      1.5366
+     ],
+     "polygons": 1372,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD1.fbx",
+   "bytes": 80540,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_PickupBuoy_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_PickupBuoy_LOD1.001",
+     "min": [
+      -0.8908,
+      -0.8992,
+      -5.4625
+     ],
+     "max": [
+      1.0106,
+      0.8992,
+      1.555
+     ],
+     "polygons": 686,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD2.fbx",
+   "bytes": 52876,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_PickupBuoy_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_PickupBuoy_LOD2.001",
+     "min": [
+      -0.9313,
+      -0.9174,
+      -5.4569
+     ],
+     "max": [
+      1.0018,
+      0.9174,
+      1.5328
+     ],
+     "polygons": 342,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy.attachments.json",
+   "attachments": [
+    "ATT_WaterLine",
+    "ATT_Mooring",
+    "ATT_Pickup"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_PickupBuoy_LOD0"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1372 of 8000"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.19e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.967, v 0.006 to 0.994"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 706 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "182 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_PickupBuoy_LOD1"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "686 of 8000"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.79e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.967, v 0.006 to 0.994"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 686 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.4% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_PickupBuoy_LOD2"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "342 of 8000"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.21e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.967, v 0.006 to 0.994"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 342 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 25.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_PickupBuoy_COL"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "32 of 8000"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "32 of 1000"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1372 of 1500 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "686 of 750"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "342 of 375"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.63 x 0.59 x 2.34 m, spec 0.63 x 0.59 x 2.34 m (art/reference/M_Hbr_PickupBuoy/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.897 studs, real 0.630 m = 1.890 studs, off 0.4% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.764 studs, real 0.590 m = 1.770 studs, off 0.4% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7.008 studs, real 2.340 m = 7.020 studs, off 0.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_PickupBuoy_COL"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_ALB.png"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_ALB_Wet.png"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_NOR.png"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_RGH.png"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_RGH_Wet.png"
+  },
+  {
+   "subject": "T_PickupBuoy_Buoy_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PickupBuoy/T_PickupBuoy_Buoy_MET.png"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mooring",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Pickup",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_PickupBuoy_COL, M_Hbr_PickupBuoy_LOD0; 1404 triangles (scene 1404)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_PickupBuoy_LOD1; 686 triangles (scene 686)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_PickupBuoy/M_Hbr_PickupBuoy_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_PickupBuoy_LOD2; 342 triangles (scene 342)"
+  },
+  {
+   "subject": "M_Hbr_PickupBuoy_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_PickupBuoy_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1372,
+   "texel_density": 181.5
+  },
+  {
+   "name": "M_Hbr_PickupBuoy_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 32,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_PickupBuoy_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 686,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_PickupBuoy_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 342,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.896902322769165,
+  1.7635436058044434,
+  7.007781267166138
+ ],
+ "peak_rss_mb": 3467.3
+}

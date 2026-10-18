@@ -1,0 +1,1032 @@
+{
+ "asset": "M_Hbr_NavMark_Bell",
+ "name": "M_Hbr_NavMark_Bell",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD0.fbx",
+   "bytes": 279196,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_Bell_COL",
+    "M_Hbr_NavMark_Bell_LOD0",
+    "M_Hbr_NavMark_Bell_Lens_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_Bell_COL.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -6.15
+     ],
+     "max": [
+      2.82,
+      2.82,
+      11.82
+     ],
+     "polygons": 64,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Hbr_NavMark_Bell_LOD0.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -7.9724
+     ],
+     "max": [
+      2.82,
+      2.82,
+      11.82
+     ],
+     "polygons": 2718,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_Bell_Lens_LOD0.001",
+     "min": [
+      -0.318,
+      -0.318,
+      8.4
+     ],
+     "max": [
+      0.318,
+      0.318,
+      9.0
+     ],
+     "polygons": 280,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD1.fbx",
+   "bytes": 182236,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_Bell_LOD1",
+    "M_Hbr_NavMark_Bell_Lens_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_Bell_LOD1.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -7.9543
+     ],
+     "max": [
+      2.82,
+      2.82,
+      11.82
+     ],
+     "polygons": 1358,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_Bell_Lens_LOD1.001",
+     "min": [
+      -0.3178,
+      -0.3178,
+      8.3998
+     ],
+     "max": [
+      0.3178,
+      0.3178,
+      9.0002
+     ],
+     "polygons": 140,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx",
+   "bytes": 101196,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_Bell_LOD2",
+    "M_Hbr_NavMark_Bell_Lens_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_Bell_LOD2.001",
+     "min": [
+      -2.8111,
+      -2.8111,
+      -7.9745
+     ],
+     "max": [
+      2.8111,
+      2.8111,
+      11.82
+     ],
+     "polygons": 678,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_Bell_Lens_LOD2.001",
+     "min": [
+      -0.3143,
+      -0.3038,
+      8.3995
+     ],
+     "max": [
+      0.3113,
+      0.3143,
+      9.0012
+     ],
+     "polygons": 70,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell.attachments.json",
+   "attachments": [
+    "ATT_WaterLine",
+    "ATT_Mooring",
+    "ATT_Light",
+    "ATT_Topmark",
+    "ATT_Bell"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_LOD0"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2718 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.83e-03, 166 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1487 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "86 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_Lens_LOD0"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "280 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.84e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.176 to 0.947, v 0.461 to 0.931"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 160 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_LOD1"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1358 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.86e-03, 130 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1358 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.9% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_Lens_LOD1"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "140 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.12e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.176 to 0.947, v 0.461 to 0.931"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 140 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.9% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_LOD2"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "678 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.40e-03, 126 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 678 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 22.3% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_Lens_LOD2"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "70 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.68e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.178 to 0.947, v 0.462 to 0.931"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 70 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 20.3% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_Bell_COL"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 1000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2998 of 3000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1498 of 1500"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "748 of 750"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.88 x 1.88 x 6.61 m, spec 1.88 x 1.88 x 6.6 m (art/reference/M_Hbr_NavMark_Bell/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.640 studs, real 1.880 m = 5.640 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.640 studs, real 1.880 m = 5.640 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "19.792 studs, real 6.600 m = 19.800 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_Bell_COL"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_ALB.png"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_ALB_Wet.png"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_NOR.png"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_RGH.png"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_RGH_Wet.png"
+  },
+  {
+   "subject": "T_NavMarkBell_Buoy_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_MET.png"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mooring",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Topmark",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Bell",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_Bell_COL, M_Hbr_NavMark_Bell_LOD0, M_Hbr_NavMark_Bell_Lens_LOD0; 3062 triangles (scene 3062)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_Bell_LOD1, M_Hbr_NavMark_Bell_Lens_LOD1; 1498 triangles (scene 1498)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_Bell/M_Hbr_NavMark_Bell_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_Bell_LOD2, M_Hbr_NavMark_Bell_Lens_LOD2; 748 triangles (scene 748)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_Bell_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_NavMark_Bell_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2718,
+   "texel_density": 86.3
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_Lens_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 280,
+   "texel_density": 88.2
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 64,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1358,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 678,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_Lens_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 140,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_Bell_Lens_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 70,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  5.639999866485596,
+  5.639999866485596,
+  19.792383193969727
+ ],
+ "peak_rss_mb": 3467.3
+}

@@ -972,6 +972,166 @@
    ]
   },
   {
+   "Name": "M_Hbr_MooringBuoy",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://128042506338958",
+        "NormalMap": "rbxassetid://98207407481399",
+        "RoughnessMap": "rbxassetid://73453525998939",
+        "MetalnessMap": "rbxassetid://112050687049312"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://139364559177247",
+        "NormalMap": "rbxassetid://98207407481399",
+        "RoughnessMap": "rbxassetid://74407973741699",
+        "MetalnessMap": "rbxassetid://112050687049312"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_Bell",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://123933927899611",
+        "NormalMap": "rbxassetid://100240610197053",
+        "RoughnessMap": "rbxassetid://77817449176133",
+        "MetalnessMap": "rbxassetid://83113840119341"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://138793112778738",
+        "NormalMap": "rbxassetid://100240610197053",
+        "RoughnessMap": "rbxassetid://133060338459456",
+        "MetalnessMap": "rbxassetid://83113840119341"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_East",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://77174930831414",
+        "NormalMap": "rbxassetid://77167599117356",
+        "RoughnessMap": "rbxassetid://90804770146182",
+        "MetalnessMap": "rbxassetid://100269086567897"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://94702091266318",
+        "NormalMap": "rbxassetid://77167599117356",
+        "RoughnessMap": "rbxassetid://85368791377732",
+        "MetalnessMap": "rbxassetid://100269086567897"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_IsolatedDanger",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://76850154092476",
+        "NormalMap": "rbxassetid://134934303201300",
+        "RoughnessMap": "rbxassetid://128351278712268",
+        "MetalnessMap": "rbxassetid://100472078505944"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://90967432646063",
+        "NormalMap": "rbxassetid://134934303201300",
+        "RoughnessMap": "rbxassetid://122068620460882",
+        "MetalnessMap": "rbxassetid://100472078505944"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_North",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://129988705083247",
+        "NormalMap": "rbxassetid://89979669361316",
+        "RoughnessMap": "rbxassetid://133283569725662",
+        "MetalnessMap": "rbxassetid://98839118896001"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://80616269782995",
+        "NormalMap": "rbxassetid://89979669361316",
+        "RoughnessMap": "rbxassetid://104790801263919",
+        "MetalnessMap": "rbxassetid://98839118896001"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Hbr_NavMark_Port",
    "ClassName": "Folder",
    "Children": [
@@ -997,6 +1157,164 @@
         "NormalMap": "rbxassetid://120838223587031",
         "RoughnessMap": "rbxassetid://130536984979014",
         "MetalnessMap": "rbxassetid://113183353204254"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_SafeWater",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://107174605415609",
+        "NormalMap": "rbxassetid://91108083614956",
+        "RoughnessMap": "rbxassetid://74856134407585",
+        "MetalnessMap": "rbxassetid://136907175925116"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://112576917580923",
+        "NormalMap": "rbxassetid://91108083614956",
+        "RoughnessMap": "rbxassetid://123607137066226",
+        "MetalnessMap": "rbxassetid://136907175925116"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_South",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://116853979746568",
+        "NormalMap": "rbxassetid://74369871449273",
+        "RoughnessMap": "rbxassetid://70957592205748",
+        "MetalnessMap": "rbxassetid://138222828806396"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://134682694624368",
+        "NormalMap": "rbxassetid://74369871449273",
+        "RoughnessMap": "rbxassetid://92327157906198",
+        "MetalnessMap": "rbxassetid://138222828806396"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_Starboard",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://102003612602797",
+        "NormalMap": "rbxassetid://101972366736024",
+        "RoughnessMap": "rbxassetid://109774789175084",
+        "MetalnessMap": "rbxassetid://73872625436751"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://104767416755194",
+        "NormalMap": "rbxassetid://101972366736024",
+        "RoughnessMap": "rbxassetid://74945922852875",
+        "MetalnessMap": "rbxassetid://73872625436751"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_NavMark_West",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://135808509042345",
+        "NormalMap": "rbxassetid://138230444012142",
+        "RoughnessMap": "rbxassetid://134257061581342",
+        "MetalnessMap": "rbxassetid://88903150491070"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101748120640008",
+        "NormalMap": "rbxassetid://138230444012142",
+        "RoughnessMap": "rbxassetid://117448026185810",
+        "MetalnessMap": "rbxassetid://88903150491070"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_PickupBuoy",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Buoy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://114161798828032",
+        "NormalMap": "rbxassetid://97814680929673",
+        "RoughnessMap": "rbxassetid://94744586588655"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://106874868031415",
+        "NormalMap": "rbxassetid://97814680929673",
+        "RoughnessMap": "rbxassetid://124686958270463"
        }
       }
      ]

@@ -1,0 +1,94 @@
+{
+ "asset": "M_Hbr_MooringBuoy",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.5292,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mooring",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    -5.55
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -5.55,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -4.0208,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Pickup",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    2.28
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.28,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    3.8092,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

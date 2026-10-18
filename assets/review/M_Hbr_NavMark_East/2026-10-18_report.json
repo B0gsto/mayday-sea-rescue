@@ -1,0 +1,1023 @@
+{
+ "asset": "M_Hbr_NavMark_East",
+ "name": "M_Hbr_NavMark_East",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
+   "bytes": 257164,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_East_COL",
+    "M_Hbr_NavMark_East_LOD0",
+    "M_Hbr_NavMark_East_Lens_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_East_COL.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -6.15
+     ],
+     "max": [
+      2.82,
+      2.82,
+      12.66
+     ],
+     "polygons": 64,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Hbr_NavMark_East_LOD0.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -7.9724
+     ],
+     "max": [
+      2.82,
+      2.82,
+      12.669
+     ],
+     "polygons": 2446,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_East_Lens_LOD0.001",
+     "min": [
+      -0.318,
+      -0.318,
+      8.4
+     ],
+     "max": [
+      0.318,
+      0.318,
+      9.0
+     ],
+     "polygons": 280,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx",
+   "bytes": 166876,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_East_LOD1",
+    "M_Hbr_NavMark_East_Lens_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_East_LOD1.001",
+     "min": [
+      -2.82,
+      -2.82,
+      -7.9543
+     ],
+     "max": [
+      2.82,
+      2.82,
+      12.6694
+     ],
+     "polygons": 1222,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_East_Lens_LOD1.001",
+     "min": [
+      -0.3178,
+      -0.3178,
+      8.3998
+     ],
+     "max": [
+      0.3178,
+      0.3178,
+      9.0002
+     ],
+     "polygons": 140,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD2.fbx",
+   "bytes": 95164,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_NavMark_East_LOD2",
+    "M_Hbr_NavMark_East_Lens_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_NavMark_East_LOD2.001",
+     "min": [
+      -2.8111,
+      -2.8111,
+      -7.9745
+     ],
+     "max": [
+      2.8111,
+      2.8111,
+      12.6778
+     ],
+     "polygons": 610,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_NavMark_East_Lens_LOD2.001",
+     "min": [
+      -0.3143,
+      -0.3038,
+      8.3995
+     ],
+     "max": [
+      0.3113,
+      0.3143,
+      9.0012
+     ],
+     "polygons": 70,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East.attachments.json",
+   "attachments": [
+    "ATT_WaterLine",
+    "ATT_Mooring",
+    "ATT_Light",
+    "ATT_Topmark"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_NavMark_East/M_Hbr_NavMark_East.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_LOD0"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2446 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.45e-04, 142 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1335 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "87 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_Lens_LOD0"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "280 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.84e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.156 to 0.937, v 0.910 to 0.964"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 160 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "89 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_LOD1"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1222 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.86e-03, 106 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1222 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.6% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_Lens_LOD1"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "140 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.12e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.156 to 0.937, v 0.910 to 0.963"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 140 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.7% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_LOD2"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "610 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.40e-03, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.988, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 610 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 21.8% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_Lens_LOD2"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "70 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.68e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.158 to 0.935, v 0.910 to 0.963"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 70 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_Lens_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of the thin cage tubes, rails and chain links drops small UV islands at LOD1/LOD2 (UV bounds unchanged); the kept faces keep the LOD0 UVs and set): UV bounds differ by 0.002 (max 0.02), UV area by 21.1% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_NavMark_East_COL"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 8000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 1000"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2726 of 3000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1362 of 1500"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "680 of 750"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.88 x 1.88 x 6.88 m, spec 1.88 x 1.88 x 6.88 m (art/reference/M_Hbr_NavMark_East/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.640 studs, real 1.880 m = 5.640 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.640 studs, real 1.880 m = 5.640 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "20.641 studs, real 6.880 m = 20.640 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_East_COL"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_ALB.png"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_ALB_Wet.png"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_NOR.png"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_RGH.png"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_RGH_Wet.png"
+  },
+  {
+   "subject": "T_NavMarkEast_Buoy_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_MET.png"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mooring",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Topmark",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_East_COL, M_Hbr_NavMark_East_LOD0, M_Hbr_NavMark_East_Lens_LOD0; 2790 triangles (scene 2790)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_East_LOD1, M_Hbr_NavMark_East_Lens_LOD1; 1362 triangles (scene 1362)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_NavMark_East_LOD2, M_Hbr_NavMark_East_Lens_LOD2; 680 triangles (scene 680)"
+  },
+  {
+   "subject": "M_Hbr_NavMark_East_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_NavMark_East_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2446,
+   "texel_density": 87.2
+  },
+  {
+   "name": "M_Hbr_NavMark_East_Lens_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 280,
+   "texel_density": 89.1
+  },
+  {
+   "name": "M_Hbr_NavMark_East_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 64,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_East_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1222,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_East_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 610,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_East_Lens_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 140,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_NavMark_East_Lens_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 70,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  5.639999866485596,
+  5.639999866485596,
+  20.64138412475586
+ ],
+ "peak_rss_mb": 3467.3
+}
