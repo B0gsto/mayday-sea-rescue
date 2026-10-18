@@ -565,6 +565,10 @@ function WorldDressingService.Start()
 			warn(`[WorldDressing] swap {key} failed: {err}`)
 		end
 	end
+	local hOk, hErr = pcall(require(script.Parent.Parent.World:WaitForChild("Harbour")).apply, base) -- RP-I1b-1
+	if not hOk then
+		warn(`[WorldDressing] harbour failed: {hErr}`)
+	end
 	local seamarks = script.Parent.Parent.World:FindFirstChild("Seamarks") -- RP-I1b-2 buoyage, Morwenna, anchor
 	if seamarks then
 		task.spawn((require :: any)(seamarks).place, base)
