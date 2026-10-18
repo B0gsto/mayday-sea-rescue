@@ -31,6 +31,7 @@ local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForC
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local Net = require(Shared:WaitForChild("Net"))
+local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Weather = require(Shared:WaitForChild("Weather"))
@@ -53,12 +54,15 @@ type Record = {
 	strikes: number,
 	resetting: boolean,
 	wetUntil: number,
+	spawnedAt: number, -- os.clock()
+	lastOccupiedAt: number?, -- os.clock() when the last rider left (RespawnPolicy)
 }
 
 local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
+local SWEEP_INTERVAL = 5 -- seconds between idle / wreck sweeps (RespawnPolicy)
 -- Real models per vehicle id (AssetIds names, LOD0; the first is required, the rest optional). A
 -- vehicle whose first model fails to load is built as the greybox.
 local VISUAL_ASSETS: { [string]: { string } } = {
@@ -97,7 +101,8 @@ local spawnedEvent = Instance.new("BindableEvent")
 VehicleService.VehicleSpawned = spawnedEvent.Event
 
 local records: { [Model]: Record } = {}
-local byPlayer: { [Player]: Record } = {}
+local byPlayer: { [Player]: Record } = {} -- the player's current vehicle (GetVehicle)
+local owned: { [Player]: { [string]: Record } } = {} -- one record per player per vehicle class
 local towTargets: { [Model]: Record } = {} -- towed model -> tower record
 local playerBay: { [Player]: number } = {}
 local lastSpawn: { [Player]: number } = {}
@@ -231,6 +236,7 @@ local function onDriverChanged(record: Record)
 	end
 	if player then
 		record.driver = player
+		byPlayer[player] = record -- riding an older craft of theirs makes it current again
 		record.model:SetAttribute("EngineRunning", true)
 		record.mode = "Driven"
 		record.root.Anchored = false
@@ -359,6 +365,10 @@ local function watchSeats(model: Model)
 			local seatPart = d :: Seat | VehicleSeat
 			seatPart:GetPropertyChangedSignal("Occupant"):Connect(function()
 				setRiderMassless(seatPart)
+				local record = records[model]
+				if record then
+					record.lastOccupiedAt = os.clock() -- someone sat down or just left
+				end
 			end)
 			seatPart.Destroying:Connect(function()
 				masslessParts[seatPart] = nil
@@ -382,7 +392,65 @@ local function despawnModel(model: Model)
 	if byPlayer[record.owner] == record then
 		byPlayer[record.owner] = nil
 	end
+	local classes = owned[record.owner]
+	if classes and classes[record.spec.id] == record then
+		classes[record.spec.id] = nil
+	end
 	model:Destroy()
+end
+
+-- Respawn rules (shared/Boat/RespawnPolicy) -----------------------------------------------------
+
+-- Anyone seated anywhere on the craft. The owner's own SeatPart counts too: it can still point at
+-- the seat while a weld drop (hull pitching over a wave) has briefly cleared seat.Occupant.
+local function isOccupied(record: Record): boolean
+	for _, d in record.model:GetDescendants() do
+		if (d:IsA("Seat") or d:IsA("VehicleSeat")) and (d :: any).Occupant then
+			return true
+		end
+	end
+	local character = record.owner.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	return seat ~= nil and seat:IsDescendantOf(record.model)
+end
+
+local function policyState(record: Record): RespawnPolicy.State
+	local occupied = isOccupied(record)
+	if occupied then
+		record.lastOccupiedAt = os.clock()
+	end
+	local pos = record.root.Position
+	local character = record.owner.Character
+	local ownerPos = character and character.PrimaryPart and character.PrimaryPart.Position
+	return {
+		occupied = occupied,
+		carrying = next(record.survivors) ~= nil
+			or record.tow ~= nil
+			or towTargets[record.model] ~= nil,
+		lastOccupiedAt = record.lastOccupiedAt,
+		spawnedAt = record.spawnedAt,
+		docked = record.mode == "Dock",
+		current = byPlayer[record.owner] == record,
+		wrecked = record.model:GetAttribute("Wrecked") == true
+			or pos.Y < MIN_Y
+			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200,
+		ownerDistance = if ownerPos then (ownerPos - pos).Magnitude else nil,
+	}
+end
+
+-- Periodic sweep: clears idle, superseded or wrecked vehicles nobody is (or just was) aboard.
+local function sweepVehicles()
+	local now = os.clock()
+	for model, record in table.clone(records) do
+		local state = policyState(record)
+		local idle = RespawnPolicy.mayRemove("Idle", state, now)
+		local wrecked = RespawnPolicy.mayRemove("Wrecked", state, now)
+		if idle or wrecked then
+			print(`[VehicleService] clearing {model.Name}: {if idle then "idle" else "wrecked"}`)
+			despawnModel(model)
+		end
+	end
 end
 
 -- Builds the player's vehicle floating at rest at `at` (X, Z and heading; Y from the waves),
@@ -438,9 +506,49 @@ local function updateWet(record: Record)
 	end
 end
 
-local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Model, VehicleSeat)
+-- What a spawn of `spec` should do with the player's vehicles (RespawnPolicy.planSpawn on the
+-- same class). Other classes they own go too unless someone is (or just was) aboard.
+local function planSpawn(
+	player: Player,
+	spec: VehicleSpec,
+	reason: RespawnPolicy.Reason
+): (RespawnPolicy.Plan, Record?, string)
+	local classes = owned[player]
+	local existing: Record? = classes and classes[spec.id]
+	if existing and not existing.model.Parent then
+		despawnModel(existing.model)
+		existing = nil
+	end
+	local now = os.clock()
+	local plan, why =
+		RespawnPolicy.planSpawn(reason, if existing then policyState(existing) else nil, now)
+	return plan :: any, existing, why
+end
+
+local function clearOtherClasses(player: Player, spec: VehicleSpec, reason: RespawnPolicy.Reason)
+	local classes = owned[player]
+	if not classes then
+		return
+	end
+	local now = os.clock()
+	for id, record in table.clone(classes) do
+		if id ~= spec.id and RespawnPolicy.mayRemove(reason, policyState(record), now) then
+			despawnModel(record.model)
+		end
+	end
+end
+
+-- Call only after planSpawn said Build or Replace.
+local function createVehicle(
+	player: Player,
+	spec: VehicleSpec,
+	at: CFrame,
+	reason: RespawnPolicy.Reason
+): (Model, VehicleSeat)
 	local visuals = visualsFor(spec)
-	local old = byPlayer[player]
+	clearOtherClasses(player, spec, reason)
+	local classes = owned[player]
+	local old = classes and classes[spec.id]
 	if old then
 		-- unseat the driver first: destroying the craft under a seated character leaves the client
 		-- holding a stale seat weld, and the replacement's seat:Sit fails (rider flung, camera in
@@ -495,9 +603,13 @@ local function createVehicle(player: Player, spec: VehicleSpec, at: CFrame): (Mo
 		strikes = 0,
 		resetting = false,
 		wetUntil = 0,
+		spawnedAt = os.clock(),
+		lastOccupiedAt = nil,
 	}
 	records[model] = record
 	byPlayer[player] = record
+	owned[player] = owned[player] or {}
+	owned[player][spec.id] = record
 	watchSeats(model)
 	seat:GetPropertyChangedSignal("Occupant"):Connect(function()
 		if records[model] == record then
@@ -533,9 +645,13 @@ local function spawnVehicle(
 	if bayBusy(at, player) then
 		return false, "BayBusy"
 	end
+	local plan, _, why = planSpawn(player, spec, "Request")
+	if plan == "Refuse" then
+		return false, why -- "Occupied": someone is aboard their current one
+	end
 	lastSpawn[player] = now
 
-	local model, seat = createVehicle(player, spec, at.CFrame)
+	local model, seat = createVehicle(player, spec, at.CFrame, "Request")
 	sitDriver(player, seat)
 
 	spawnedEvent:Fire(player, model)
@@ -862,10 +978,12 @@ function VehicleService.Init()
 		assignBay(player)
 	end
 	Players.PlayerRemoving:Connect(function(player)
-		local record = byPlayer[player]
-		if record then
+		local classes: { [string]: Record } = owned[player] or {}
+		for _, record in table.clone(classes) do
 			despawnModel(record.model)
 		end
+		owned[player] = nil
+		byPlayer[player] = nil
 		playerBay[player] = nil
 		lastSpawn[player] = nil
 		coldOpenRiders[player] = nil
@@ -887,6 +1005,15 @@ function VehicleService.Start()
 			updateWet(record)
 		end
 	end)
+	task.spawn(function()
+		while true do
+			task.wait(SWEEP_INTERVAL)
+			local ok, err = pcall(sweepVehicles :: any)
+			if not ok then
+				warn(`[VehicleService] sweep failed: {err}`)
+			end
+		end
+	end)
 	findBays()
 	addPrompts()
 	local preload = {}
@@ -904,18 +1031,39 @@ end
 -- seats them at the helm and gives it initialSpeed studs/s ahead. Skips bays, cooldown and
 -- progression checks (the cold-open jet ski is free). The owning client applies the speed too
 -- (LaunchSpeed attribute, BoatController), since it simulates the hull once seated.
+-- `reason` (RespawnPolicy.Reason, default "Request": the trailer launch is the player's own act)
+-- decides what happens to a craft of that class they already own: "Scripted" spawns (the cold
+-- open) reuse it in place, seating the player if needed, when someone is or just was aboard.
+-- Never destroys a vehicle with a rider: returns nil when a Request meets an occupied one.
 function VehicleService.SpawnSeated(
 	player: Player,
 	vehicleId: string,
 	cframe: CFrame,
-	initialSpeed: number?
+	initialSpeed: number?,
+	reason: RespawnPolicy.Reason?
 ): Model?
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
 		warn(`[VehicleService] SpawnSeated: unknown vehicle {vehicleId}`)
 		return nil
 	end
-	local model, seat = createVehicle(player, spec, cframe)
+	local why: RespawnPolicy.Reason = reason or "Request"
+	local plan, existing, detail = planSpawn(player, spec, why)
+	if plan == "Refuse" then
+		warn(`[VehicleService] SpawnSeated: {player.Name}'s {vehicleId} kept ({detail})`)
+		return nil
+	elseif plan == "Reuse" and existing then
+		byPlayer[player] = existing
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local seatPart = humanoid and humanoid.SeatPart
+		if not (seatPart and seatPart:IsDescendantOf(existing.model)) then
+			sitDriver(player, existing.seat)
+		end
+		print(`[VehicleService] SpawnSeated: reusing {existing.model.Name} ({detail})`)
+		return existing.model
+	end
+	local model, seat = createVehicle(player, spec, cframe, why)
 	local speed = math.clamp(initialSpeed or 0, 0, spec.topSpeed)
 	local root = model.PrimaryPart :: BasePart
 	if speed > 0 then
@@ -947,7 +1095,8 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 		player,
 		VehicleService.ColdOpenVehicle,
 		cframe,
-		VehicleService.ColdOpenSpeed
+		VehicleService.ColdOpenSpeed,
+		"Scripted" -- a re-run cold open never rebuilds the jet ski the player is riding
 	)
 	if model then
 		coldOpenRiders[player] = model -- arms the arrival handoff (Vehicle_ArrivalHandoff)
