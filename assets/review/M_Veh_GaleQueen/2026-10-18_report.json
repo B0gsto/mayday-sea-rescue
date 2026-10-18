@@ -1,0 +1,4891 @@
+{
+ "asset": "M_Veh_GaleQueen",
+ "name": "M_Veh_GaleQueen",
+ "date": "2026-10-18",
+ "commit": "8d732722+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD0.fbx",
+   "bytes": 1303708,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_GaleQueen_Bulwark_LOD0",
+    "M_Veh_GaleQueen_COL",
+    "M_Veh_GaleQueen_Decals_LOD0",
+    "M_Veh_GaleQueen_DeckGear_LOD0",
+    "M_Veh_GaleQueen_Decks_LOD0",
+    "M_Veh_GaleQueen_Fenders_LOD0",
+    "M_Veh_GaleQueen_Funnel_LOD0",
+    "M_Veh_GaleQueen_GrabLines_LOD0",
+    "M_Veh_GaleQueen_HullGear_LOD0",
+    "M_Veh_GaleQueen_Hull_LOD0",
+    "M_Veh_GaleQueen_Mast_LOD0",
+    "M_Veh_GaleQueen_Props_LOD0",
+    "M_Veh_GaleQueen_Rafts_LOD0",
+    "M_Veh_GaleQueen_Rails_LOD0",
+    "M_Veh_GaleQueen_Saloon_LOD0",
+    "M_Veh_GaleQueen_Wheelhouse_LOD0",
+    "M_Veh_GaleQueen_Windows_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_GaleQueen_Bulwark_LOD0.001",
+     "min": [
+      -9.12,
+      -31.7774,
+      10.1956
+     ],
+     "max": [
+      9.1227,
+      31.7774,
+      16.421
+     ],
+     "polygons": 1792,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_COL.001",
+     "min": [
+      -9.0,
+      -30.4644,
+      0.2977
+     ],
+     "max": [
+      9.0,
+      31.6356,
+      24.7177
+     ],
+     "polygons": 72,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decals_LOD0.001",
+     "min": [
+      -8.2973,
+      -27.1009,
+      3.4327
+     ],
+     "max": [
+      8.2973,
+      31.6716,
+      22.9627
+     ],
+     "polygons": 58,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_DeckGear_LOD0.001",
+     "min": [
+      -7.2,
+      -27.3894,
+      10.3477
+     ],
+     "max": [
+      7.2,
+      29.9856,
+      13.0777
+     ],
+     "polygons": 1848,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decks_LOD0.001",
+     "min": [
+      -8.85,
+      -30.6084,
+      10.1456
+     ],
+     "max": [
+      8.85,
+      31.4466,
+      24.8377
+     ],
+     "polygons": 736,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Fenders_LOD0.001",
+     "min": [
+      -9.3586,
+      -29.9963,
+      6.2977
+     ],
+     "max": [
+      9.3586,
+      31.6056,
+      12.1407
+     ],
+     "polygons": 784,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Funnel_LOD0.001",
+     "min": [
+      -1.35,
+      1.1856,
+      17.9677
+     ],
+     "max": [
+      1.35,
+      6.3006,
+      23.0677
+     ],
+     "polygons": 128,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_GrabLines_LOD0.001",
+     "min": [
+      -9.1657,
+      -24.931,
+      1.032
+     ],
+     "max": [
+      9.1657,
+      25.3744,
+      10.1749
+     ],
+     "polygons": 3100,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_HullGear_LOD0.001",
+     "min": [
+      -7.7914,
+      -23.999,
+      0.0
+     ],
+     "max": [
+      7.7914,
+      30.4656,
+      4.1827
+     ],
+     "polygons": 1000,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Hull_LOD0.001",
+     "min": [
+      -9.0,
+      -31.2024,
+      1.1977
+     ],
+     "max": [
+      9.0,
+      31.6356,
+      13.1182
+     ],
+     "polygons": 6301,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Mast_LOD0.001",
+     "min": [
+      -5.79,
+      -12.7644,
+      17.9677
+     ],
+     "max": [
+      5.79,
+      17.3508,
+      32.6977
+     ],
+     "polygons": 736,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Props_LOD0.001",
+     "min": [
+      -4.9799,
+      -6.3444,
+      0.7993
+     ],
+     "max": [
+      4.9799,
+      27.6156,
+      3.216
+     ],
+     "polygons": 560,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rafts_LOD0.001",
+     "min": [
+      -7.9489,
+      -20.1294,
+      11.0088
+     ],
+     "max": [
+      7.9489,
+      31.1785,
+      20.8765
+     ],
+     "polygons": 2848,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rails_LOD0.001",
+     "min": [
+      -8.5962,
+      -11.7085,
+      10.1977
+     ],
+     "max": [
+      8.5962,
+      25.9356,
+      26.7026
+     ],
+     "polygons": 986,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Saloon_LOD0.001",
+     "min": [
+      -7.956,
+      -14.2644,
+      10.4377
+     ],
+     "max": [
+      7.956,
+      18.9756,
+      17.9677
+     ],
+     "polygons": 1168,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Wheelhouse_LOD0.001",
+     "min": [
+      -5.67,
+      -12.1644,
+      17.9677
+     ],
+     "max": [
+      5.67,
+      -4.0644,
+      24.8377
+     ],
+     "polygons": 112,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Windows_LOD0.001",
+     "min": [
+      -7.755,
+      -13.6733,
+      13.0777
+     ],
+     "max": [
+      7.755,
+      15.6756,
+      23.4858
+     ],
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD1.fbx",
+   "bytes": 660620,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_GaleQueen_Bulwark_LOD1",
+    "M_Veh_GaleQueen_Decals_LOD1",
+    "M_Veh_GaleQueen_DeckGear_LOD1",
+    "M_Veh_GaleQueen_Decks_LOD1",
+    "M_Veh_GaleQueen_Fenders_LOD1",
+    "M_Veh_GaleQueen_Funnel_LOD1",
+    "M_Veh_GaleQueen_GrabLines_LOD1",
+    "M_Veh_GaleQueen_HullGear_LOD1",
+    "M_Veh_GaleQueen_Hull_LOD1",
+    "M_Veh_GaleQueen_Mast_LOD1",
+    "M_Veh_GaleQueen_Props_LOD1",
+    "M_Veh_GaleQueen_Rafts_LOD1",
+    "M_Veh_GaleQueen_Rails_LOD1",
+    "M_Veh_GaleQueen_Saloon_LOD1",
+    "M_Veh_GaleQueen_Wheelhouse_LOD1",
+    "M_Veh_GaleQueen_Windows_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_GaleQueen_Bulwark_LOD1.001",
+     "min": [
+      -9.1182,
+      -31.7774,
+      10.1935
+     ],
+     "max": [
+      9.1206,
+      31.7774,
+      16.421
+     ],
+     "polygons": 596,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decals_LOD1.001",
+     "min": [
+      -8.2973,
+      -27.1009,
+      3.4327
+     ],
+     "max": [
+      8.2973,
+      31.6716,
+      22.9627
+     ],
+     "polygons": 58,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_DeckGear_LOD1.001",
+     "min": [
+      -7.16,
+      -27.4271,
+      10.3477
+     ],
+     "max": [
+      7.16,
+      29.9856,
+      13.0777
+     ],
+     "polygons": 616,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decks_LOD1.001",
+     "min": [
+      -8.85,
+      -30.6085,
+      10.1456
+     ],
+     "max": [
+      8.85,
+      31.4466,
+      24.8377
+     ],
+     "polygons": 244,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Fenders_LOD1.001",
+     "min": [
+      -9.357,
+      -29.9963,
+      6.2977
+     ],
+     "max": [
+      9.3539,
+      31.6043,
+      12.1406
+     ],
+     "polygons": 260,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Funnel_LOD1.001",
+     "min": [
+      -1.35,
+      1.1856,
+      17.9677
+     ],
+     "max": [
+      1.35,
+      6.3006,
+      23.0677
+     ],
+     "polygons": 42,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_GrabLines_LOD1.001",
+     "min": [
+      -9.1657,
+      -24.9301,
+      1.0321
+     ],
+     "max": [
+      9.1657,
+      25.3812,
+      10.1768
+     ],
+     "polygons": 1032,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_HullGear_LOD1.001",
+     "min": [
+      -7.7512,
+      -23.999,
+      0.0
+     ],
+     "max": [
+      7.7575,
+      30.4656,
+      4.1856
+     ],
+     "polygons": 332,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Hull_LOD1.001",
+     "min": [
+      -8.9997,
+      -31.2039,
+      1.1977
+     ],
+     "max": [
+      8.9999,
+      31.6356,
+      13.1187
+     ],
+     "polygons": 2100,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Mast_LOD1.001",
+     "min": [
+      -5.79,
+      -12.7533,
+      17.9677
+     ],
+     "max": [
+      5.79,
+      17.37,
+      32.6977
+     ],
+     "polygons": 244,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Props_LOD1.001",
+     "min": [
+      -4.9799,
+      -6.3444,
+      0.7992
+     ],
+     "max": [
+      4.9799,
+      27.6156,
+      3.2161
+     ],
+     "polygons": 186,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rafts_LOD1.001",
+     "min": [
+      -7.9775,
+      -20.1328,
+      11.0392
+     ],
+     "max": [
+      7.9775,
+      31.2088,
+      20.91
+     ],
+     "polygons": 948,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rails_LOD1.001",
+     "min": [
+      -8.5784,
+      -11.6893,
+      10.1977
+     ],
+     "max": [
+      8.5784,
+      25.9356,
+      26.6849
+     ],
+     "polygons": 328,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Saloon_LOD1.001",
+     "min": [
+      -7.956,
+      -14.2644,
+      10.4377
+     ],
+     "max": [
+      7.956,
+      18.9756,
+      17.9677
+     ],
+     "polygons": 1168,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Wheelhouse_LOD1.001",
+     "min": [
+      -5.67,
+      -12.1403,
+      17.966
+     ],
+     "max": [
+      5.67,
+      -4.0644,
+      24.8377
+     ],
+     "polygons": 37,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Windows_LOD1.001",
+     "min": [
+      -7.755,
+      -13.6733,
+      13.0777
+     ],
+     "max": [
+      7.755,
+      15.6756,
+      23.4858
+     ],
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD2.fbx",
+   "bytes": 527068,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_GaleQueen_Bulwark_LOD2",
+    "M_Veh_GaleQueen_Decals_LOD2",
+    "M_Veh_GaleQueen_DeckGear_LOD2",
+    "M_Veh_GaleQueen_Decks_LOD2",
+    "M_Veh_GaleQueen_Fenders_LOD2",
+    "M_Veh_GaleQueen_Funnel_LOD2",
+    "M_Veh_GaleQueen_GrabLines_LOD2",
+    "M_Veh_GaleQueen_HullGear_LOD2",
+    "M_Veh_GaleQueen_Hull_LOD2",
+    "M_Veh_GaleQueen_Mast_LOD2",
+    "M_Veh_GaleQueen_Props_LOD2",
+    "M_Veh_GaleQueen_Rafts_LOD2",
+    "M_Veh_GaleQueen_Rails_LOD2",
+    "M_Veh_GaleQueen_Saloon_LOD2",
+    "M_Veh_GaleQueen_Wheelhouse_LOD2",
+    "M_Veh_GaleQueen_Windows_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_GaleQueen_Bulwark_LOD2.001",
+     "min": [
+      -9.1223,
+      -31.7774,
+      10.1875
+     ],
+     "max": [
+      9.0911,
+      31.7216,
+      16.3352
+     ],
+     "polygons": 158,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decals_LOD2.001",
+     "min": [
+      -7.9942,
+      -27.1009,
+      3.4225
+     ],
+     "max": [
+      7.6526,
+      31.6716,
+      15.8827
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_DeckGear_LOD2.001",
+     "min": [
+      -7.2,
+      -27.3894,
+      10.3477
+     ],
+     "max": [
+      7.2,
+      29.9856,
+      13.0777
+     ],
+     "polygons": 1848,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Decks_LOD2.001",
+     "min": [
+      -8.8441,
+      -30.6085,
+      10.146
+     ],
+     "max": [
+      8.8441,
+      31.4466,
+      24.8377
+     ],
+     "polygons": 65,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Fenders_LOD2.001",
+     "min": [
+      -9.2903,
+      -29.9153,
+      6.2977
+     ],
+     "max": [
+      9.2905,
+      31.6397,
+      11.7611
+     ],
+     "polygons": 68,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Funnel_LOD2.001",
+     "min": [
+      -1.259,
+      1.1881,
+      17.9628
+     ],
+     "max": [
+      1.4696,
+      6.3009,
+      23.0703
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_GrabLines_LOD2.001",
+     "min": [
+      -9.12,
+      -24.8837,
+      1.0447
+     ],
+     "max": [
+      9.12,
+      25.3819,
+      10.1653
+     ],
+     "polygons": 274,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_HullGear_LOD2.001",
+     "min": [
+      -7.5529,
+      -23.9066,
+      0.0
+     ],
+     "max": [
+      7.6602,
+      30.4656,
+      4.2984
+     ],
+     "polygons": 88,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Hull_LOD2.001",
+     "min": [
+      -8.9966,
+      -31.2039,
+      1.2004
+     ],
+     "max": [
+      8.9965,
+      31.6356,
+      13.1219
+     ],
+     "polygons": 559,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Mast_LOD2.001",
+     "min": [
+      -5.63,
+      -12.7606,
+      17.9677
+     ],
+     "max": [
+      5.63,
+      17.3023,
+      32.6977
+     ],
+     "polygons": 64,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Props_LOD2.001",
+     "min": [
+      -4.9799,
+      -6.3444,
+      0.7893
+     ],
+     "max": [
+      4.9799,
+      27.6156,
+      3.226
+     ],
+     "polygons": 48,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rafts_LOD2.001",
+     "min": [
+      -7.9489,
+      -20.1294,
+      11.0088
+     ],
+     "max": [
+      7.9489,
+      31.1785,
+      20.8765
+     ],
+     "polygons": 2848,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Rails_LOD2.001",
+     "min": [
+      -8.5433,
+      -11.6893,
+      10.1977
+     ],
+     "max": [
+      8.5323,
+      25.9356,
+      26.6672
+     ],
+     "polygons": 86,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Saloon_LOD2.001",
+     "min": [
+      -7.956,
+      -14.2644,
+      10.4377
+     ],
+     "max": [
+      7.956,
+      18.9756,
+      17.9677
+     ],
+     "polygons": 1168,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Wheelhouse_LOD2.001",
+     "min": [
+      -5.67,
+      -11.9035,
+      17.9207
+     ],
+     "max": [
+      5.67,
+      -4.0644,
+      24.8377
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_GaleQueen_Windows_LOD2.001",
+     "min": [
+      -7.5842,
+      -11.1744,
+      13.0777
+     ],
+     "max": [
+      7.5842,
+      12.9456,
+      16.0777
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen.attachments.json",
+   "attachments": [
+    "ATT_Waterline",
+    "ATT_Bow",
+    "ATT_Stern",
+    "ATT_Masthead",
+    "ATT_AirPocket",
+    "ATT_BoardingGate_Port",
+    "ATT_BoardingGate_Stbd",
+    "ATT_Liferaft_01",
+    "ATT_Liferaft_02",
+    "ATT_Liferaft_03",
+    "ATT_Liferaft_04",
+    "ATT_Knock_01",
+    "ATT_Knock_02",
+    "ATT_Knock_03",
+    "ATT_Knock_04",
+    "ATT_Knock_05"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vessels/M_Veh_GaleQueen/M_Veh_GaleQueen.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "big_ship"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6301 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.44e-03, 105 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 3181 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_HullGear_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1000 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.74e-03, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 556 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Props_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "560 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.83e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 396 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Bulwark_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1792 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.89e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 944 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Saloon_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1168 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e-03, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 844 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Wheelhouse_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.25e-01, 64 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Funnel_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "128 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.62e-01, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 64 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Windows_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.56e+00, 88 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 22 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rails_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "986 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.88e-04, 350 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 645 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Mast_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "736 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.48e-04, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 544 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_DeckGear_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1848 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1264 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Fenders_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "784 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.67e-07, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 of 418 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decals_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "58 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.03e+00, 88 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 29 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decks_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "736 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.12e-01, 136 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 384 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rafts_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2848 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1568 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_GrabLines_LOD0"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3100 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.10e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1580 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2100 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.88e-03, 74 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2100 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 8.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_HullGear_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "332 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.11e-02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 332 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Props_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "186 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.99e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 186 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 11.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Bulwark_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "596 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.91e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 596 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Saloon_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1168 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e-03, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 844 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Wheelhouse_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "37 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.82e-01, 33 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 37 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.008 (max 0.02), UV area by 0.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Funnel_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "42 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.74e-01, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 42 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Windows_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.56e+00, 88 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 22 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rails_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "328 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.87e-03, 222 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 328 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 43.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Mast_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "244 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.28e-02, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 244 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 24.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_DeckGear_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "616 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.08e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 616 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 18.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Fenders_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "260 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.39e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 260 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decals_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "58 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.03e+00, 88 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 29 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decks_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "244 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.88e-02, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 244 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rafts_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "948 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.73e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 948 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 19.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_GrabLines_LOD1"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1032 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.43e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1032 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "559 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.21e-02, 39 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 559 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.014 (max 0.02), UV area by 13.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_HullGear_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.11e-02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 88 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_HullGear_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.007 (max 0.02), UV area by 67.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Props_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "48 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.76e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 48 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Props_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 60.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Bulwark_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "158 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.56e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 158 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Saloon_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1168 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e-03, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 844 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Saloon_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Wheelhouse_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.50e+00, 13 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.345 (max 0.02), UV area by 17.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Funnel_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.20e+00, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Funnel_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.050 (max 0.02), UV area by 7.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Windows_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.48e+00, 26 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Windows_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 72.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rails_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "86 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.39e-02, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 86 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rails_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 64.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Mast_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.58e-02, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 64 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Mast_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 62.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_DeckGear_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1848 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1264 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Fenders_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.56e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 68 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Fenders_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decals_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.00e+00, 26 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decals_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.093 (max 0.02), UV area by 46.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Decks_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "65 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.88e-02, 63 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 65 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Decks_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_Rafts_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2848 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.81e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1568 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_Rafts_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_GrabLines_LOD2"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "274 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.77e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 274 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (rails, rope and decal strips decimate into fewer islands; every LOD samples the same trim / tiling sets): UV bounds differ by 0.004 (max 0.02), UV area by 25.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_GaleQueen_COL"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "72 of 10000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "72 of 1000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "22201 of 90000 (big_ship, asset row)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8235 of 30000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7322 of 8000"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 6.2 x 21 x - m, spec 6.2 x 21 x - m (art/reference/M_Veh_GaleQueen/dims.md)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "18.717 studs, real 6.200 m = 18.600 studs, off 0.6% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "63.555 studs, real 21.000 m = 63.000 studs, off 0.9% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_GaleQueen_COL"
+  },
+  {
+   "subject": "M_Veh_GaleQueen",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6 (6 to 8 sets)"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_MET.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Super_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_MET.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Deck_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_MET.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Fittings_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_MET.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Glass_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_MET.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_ALB.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_NOR.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GaleQueen_Decals_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Bow",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Stern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Masthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_AirPocket",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BoardingGate_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BoardingGate_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Liferaft_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Liferaft_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Liferaft_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Liferaft_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Knock_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Knock_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Knock_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Knock_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Knock_05",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_GaleQueen_Bulwark_LOD0, M_Veh_GaleQueen_COL, M_Veh_GaleQueen_Decals_LOD0, M_Veh_GaleQueen_DeckGear_LOD0, M_Veh_GaleQueen_Decks_LOD0, M_Veh_GaleQueen_Fenders_LOD0, M_Veh_GaleQueen_Funnel_LOD0, M_Veh_GaleQueen_GrabLines_LOD0, M_Veh_GaleQueen_HullGear_LOD0, M_Veh_GaleQueen_Hull_LOD0, M_Veh_GaleQueen_Mast_LOD0, M_Veh_GaleQueen_Props_LOD0, M_Veh_GaleQueen_Rafts_LOD0, M_Veh_GaleQueen_Rails_LOD0, M_Veh_GaleQueen_Saloon_LOD0, M_Veh_GaleQueen_Wheelhouse_LOD0, M_Veh_GaleQueen_Windows_LOD0; 22273 triangles (scene 22273)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 16 of 16 visual meshes"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_GaleQueen_Bulwark_LOD1, M_Veh_GaleQueen_Decals_LOD1, M_Veh_GaleQueen_DeckGear_LOD1, M_Veh_GaleQueen_Decks_LOD1, M_Veh_GaleQueen_Fenders_LOD1, M_Veh_GaleQueen_Funnel_LOD1, M_Veh_GaleQueen_GrabLines_LOD1, M_Veh_GaleQueen_HullGear_LOD1, M_Veh_GaleQueen_Hull_LOD1, M_Veh_GaleQueen_Mast_LOD1, M_Veh_GaleQueen_Props_LOD1, M_Veh_GaleQueen_Rafts_LOD1, M_Veh_GaleQueen_Rails_LOD1, M_Veh_GaleQueen_Saloon_LOD1, M_Veh_GaleQueen_Wheelhouse_LOD1, M_Veh_GaleQueen_Windows_LOD1; 8235 triangles (scene 8235)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 16 of 16 visual meshes"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_GaleQueen_Bulwark_LOD2, M_Veh_GaleQueen_Decals_LOD2, M_Veh_GaleQueen_DeckGear_LOD2, M_Veh_GaleQueen_Decks_LOD2, M_Veh_GaleQueen_Fenders_LOD2, M_Veh_GaleQueen_Funnel_LOD2, M_Veh_GaleQueen_GrabLines_LOD2, M_Veh_GaleQueen_HullGear_LOD2, M_Veh_GaleQueen_Hull_LOD2, M_Veh_GaleQueen_Mast_LOD2, M_Veh_GaleQueen_Props_LOD2, M_Veh_GaleQueen_Rafts_LOD2, M_Veh_GaleQueen_Rails_LOD2, M_Veh_GaleQueen_Saloon_LOD2, M_Veh_GaleQueen_Wheelhouse_LOD2, M_Veh_GaleQueen_Windows_LOD2; 7322 triangles (scene 7322)"
+  },
+  {
+   "subject": "M_Veh_GaleQueen_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 16 of 16 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_GaleQueen_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6301,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_HullGear_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1000,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Props_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 560,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Bulwark_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1792,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Saloon_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1168,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Wheelhouse_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 112,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Funnel_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 128,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Windows_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 44,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rails_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 986,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Mast_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 736,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_DeckGear_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1848,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Fenders_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 784,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decals_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 58,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decks_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 736,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rafts_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2848,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_GrabLines_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3100,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 72,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2100,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 559,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_HullGear_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 332,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_HullGear_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 88,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Props_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 186,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Props_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 48,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Bulwark_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 596,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Bulwark_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 158,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Saloon_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1168,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Saloon_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1168,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Wheelhouse_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 37,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Wheelhouse_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Funnel_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 42,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Funnel_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Windows_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 44,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Windows_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rails_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 328,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rails_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 86,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Mast_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 244,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Mast_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 64,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_DeckGear_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 616,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_DeckGear_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1848,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Fenders_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 260,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Fenders_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 68,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decals_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 58,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decals_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decks_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 244,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Decks_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 65,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rafts_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 948,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_Rafts_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2848,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_GrabLines_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1032,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_GaleQueen_GrabLines_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 274,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  18.717281341552734,
+  63.554893493652344,
+  32.69765853881836
+ ],
+ "peak_rss_mb": 306.7
+}

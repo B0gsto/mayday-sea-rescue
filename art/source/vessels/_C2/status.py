@@ -1,0 +1,63 @@
+"""Writes art/status/C2.csv from assets/manifest.json (system python3)."""
+import csv
+import hashlib
+import json
+import os
+
+G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
+m = json.load(open(G + "assets/manifest.json"))
+ids = {}
+for key, v in m.items():   # keys are "<Type>:<sha256>": keep only the upload of the file as it is now
+    src = v.get("source", "")
+    if src.startswith(("assets/fbx/M_Veh_GaleQueen", "assets/textures/M_Veh_GaleQueen", "assets/fbx/M_Sea_Liferaft",
+                       "assets/textures/M_Sea_Liferaft")) and os.path.exists(G + src):
+        if hashlib.sha256(open(G + src, "rb").read()).hexdigest() == key.split(":", 1)[-1]:
+            ids[v["name"]] = (v.get("assetId"), v.get("moderation"))
+
+
+def mod(prefixes):
+    states = {s for n, (_, s) in ids.items() if n.startswith(prefixes)}
+    return "all Approved" if states == {"Approved"} else "moderation: " + ",".join(sorted(str(s) for s in states))
+
+
+LIC = ("CC0 1.0 (https://polyhaven.com/license): Poly Haven blue_metal_plate, rusty_painted_metal, rust_coarse_01, "
+       "concrete_floor_painted, denim_fabric, fabric_leather_01 (2k scans, graded + zoned); reference photos "
+       "art/reference/<Asset>/SOURCES.md (Wikimedia Commons, CC BY / CC BY-SA / PD, not shipped)")
+AI = "assisted (geometry, texture zoning and lettering written as code by Claude on real CC0 scans; no AI images)"
+SRC = "BL: art/source/vessels/<Asset>/build.py + art/source/vessels/_C2 (c2geo.py, maketex.py, render_sheet.py, upload.sh) (C2 Opus 2026-10-18)"
+FERRY = (
+    "Gale Queen, generic 21.0 m steel island passenger ferry (6.24 m over fenders, 10.9 m keel to masthead, draught 1.85 m: "
+    "ATT_Waterline 5.55 studs above the base pivot). Replaces RescueService.buildFerry greybox. MAPPING greybox -> asset: "
+    "Hull 16x7x60 + Keel -> MeshParts Hull (shell + transom, bbox 18.0 x 11.9 x 62.8 studs, its Size.Z is the HullKnock "
+    "length; 5 compartments at -25.2/-12.6/0/12.6/25.2 studs along Z = ATT_Knock_01..05 on the Roblox +X bilge, the side that "
+    "is up at the 72 deg roll) + HullGear (bar keel, skeg, bilge keels, rudders, A-brackets, thruster) + Props (twin screws, "
+    "anodes); Deckhouse -> Saloon (+ Windows, Decks); Bridge -> Wheelhouse; Funnel -> Funnel (+ Mast cap, radar, lights); "
+    "LifeRaft x5 cylinders -> Rafts (4 GRP canisters on cradles + 6 lifebuoys; ATT_Liferaft_01..04); 'GALE QUEEN' SurfaceGui -> "
+    "Decals (bows, transom, draught marks, signs; AlphaMode Transparency added in tools/gen_asset_ids.py). Also Bulwark, Rails, "
+    "DeckGear, Fenders, GrabLines (5 girth lines at the compartments + bilge jackstay; hide when upright). Integration: keep the "
+    "greybox tilt CFrame.Angles(0,0,rad(72)) on this one model (bottom antifouling + slime/weed/barnacles reads when lying over "
+    "or turned turtle); hull_knock.luau FindFirstChild('Hull') needs the Hull MeshPart named 'Hull' (or a Hull proxy part); its "
+    "bbox centre is 7.2 studs above the base. Other ATT_: Bow, Stern, Masthead, AirPocket, BoardingGate_Port/Stbd. "
+    "LOD0 %s tris in 16 MeshParts (max 6,301), LOD1 8,235, LOD2 7,322 (big_ship 90k/30k/8k). 6 sets x 1024 + _Wet: Hull, "
+    "Super, Deck, Fittings, Glass, Decals. _COL 6 boxes. LOD1 %s, LOD2 %s")
+RAFT = (
+    "SOLAS 12-person throw-over liferaft, 2.97 m over the tubes (6.03 m with the ramp and drogue line), apex 2.37 m above the "
+    "ballast pockets. NAME: brief says M_Sea_Liferaft; docs/12 2.1 row says M_Veh_Liferaft. Twin black tubes, orange canopy "
+    "(outer + inner shell, arch, rolled flaps, retro tape, light), yellow boarding ramp (-Z), webbing ladder (+Z), lifeline "
+    "scallops, ballast pockets, drogue. ATT_Waterline, ATT_Entrance_Ramp, ATT_Entrance_Ladder, ATT_Light, ATT_Painter, "
+    "ATT_Seat_01..06. LOD0 4,488 tris (Canopy 1,624, Tubes 2,840), LOD1 1,560, LOD2 445 (small_craft 20k/8k/2k; row 6k). "
+    "2 sets x 1024 + _Wet: Canopy, Tubes (signal masks for the SOLAS orange / ramp). _COL 2 boxes. LOD1 %s, LOD2 %s")
+rows = [("M_Veh_GaleQueen", "P1", ("M_Veh_GaleQueen", "T_GaleQueen_"), FERRY, "22,273"),
+        ("M_Sea_Liferaft", "P1", ("M_Sea_Liferaft", "T_Liferaft_"), RAFT, None)]
+with open(G + "art/status/C2.csv", "w", newline="") as f:
+    w = csv.writer(f)
+    w.writerow(["asset", "priority", "status", "assetId", "source", "licence", "ai_used", "reviewer", "notes"])
+    for asset, pri, prefixes, notes, t in rows:
+        aid = (ids.get(asset) or ("",))[0] or ""
+        l1 = (ids.get(asset + "_LOD1") or ("n/a",))[0]
+        l2 = (ids.get(asset + "_LOD2") or ("n/a",))[0]
+        status = ("built+validated+exported+check_textures+review renders (contact.png)+uploaded (%s); Studio pass and AD "
+                  "review pending; not integrated" % mod(prefixes))
+        n = notes % ((t, l1, l2) if t else (l1, l2))
+        w.writerow([asset, pri, status, aid, SRC.replace("<Asset>", asset), LIC.replace("<Asset>", asset), AI, "", n])
+print(open(G + "art/status/C2.csv").read()[:400])

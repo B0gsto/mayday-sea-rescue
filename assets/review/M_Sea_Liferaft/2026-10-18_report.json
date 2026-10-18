@@ -1,0 +1,1062 @@
+{
+ "asset": "M_Sea_Liferaft",
+ "name": "M_Sea_Liferaft",
+ "date": "2026-10-18",
+ "commit": "8d732722+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD0.fbx",
+   "bytes": 307724,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Liferaft_COL",
+    "M_Sea_Liferaft_Canopy_LOD0",
+    "M_Sea_Liferaft_Tubes_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Liferaft_COL.001",
+     "min": [
+      -4.3352,
+      -6.1599,
+      1.686
+     ],
+     "max": [
+      4.3348,
+      2.5101,
+      7.278
+     ],
+     "polygons": 24,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Liferaft_Canopy_LOD0.001",
+     "min": [
+      -3.8102,
+      -5.5548,
+      3.783
+     ],
+     "max": [
+      3.8098,
+      1.9049,
+      7.143
+     ],
+     "polygons": 1624,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Liferaft_Tubes_LOD0.001",
+     "min": [
+      -4.4577,
+      -9.0399,
+      0.0
+     ],
+     "max": [
+      4.4577,
+      9.0399,
+      4.4346
+     ],
+     "polygons": 2840,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx",
+   "bytes": 135964,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Liferaft_Canopy_LOD1",
+    "M_Sea_Liferaft_Tubes_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Liferaft_Canopy_LOD1.001",
+     "min": [
+      -3.8151,
+      -5.5835,
+      3.769
+     ],
+     "max": [
+      3.8098,
+      1.9336,
+      7.143
+     ],
+     "polygons": 567,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Liferaft_Tubes_LOD1.001",
+     "min": [
+      -4.4458,
+      -9.0653,
+      -0.0099
+     ],
+     "max": [
+      4.4667,
+      9.0343,
+      4.4346
+     ],
+     "polygons": 993,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx",
+   "bytes": 54444,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Liferaft_Canopy_LOD2",
+    "M_Sea_Liferaft_Tubes_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Liferaft_Canopy_LOD2.001",
+     "min": [
+      -3.7428,
+      -5.735,
+      3.7822
+     ],
+     "max": [
+      3.8098,
+      2.0851,
+      7.143
+     ],
+     "polygons": 161,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Liferaft_Tubes_LOD2.001",
+     "min": [
+      -4.4458,
+      -8.9222,
+      0.0299
+     ],
+     "max": [
+      4.4667,
+      9.0246,
+      4.2393
+     ],
+     "polygons": 284,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft.attachments.json",
+   "attachments": [
+    "ATT_Waterline",
+    "ATT_Entrance_Ramp",
+    "ATT_Entrance_Ladder",
+    "ATT_Light",
+    "ATT_Painter",
+    "ATT_Seat_01",
+    "ATT_Seat_02",
+    "ATT_Seat_03",
+    "ATT_Seat_04",
+    "ATT_Seat_05",
+    "ATT_Seat_06"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vessels/M_Sea_Liferaft/M_Sea_Liferaft.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_craft"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Canopy_LOD0"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1624 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.04e-03, 212 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 860 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Tubes_LOD0"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2840 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.64e-04, 212 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1494 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Canopy_LOD1"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "567 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.87e-02, 89 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 567 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (lifeline, ladder and drogue strips decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.104 (max 0.02), UV area by 26.9% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Tubes_LOD1"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "993 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.59e-03, 127 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 993 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 11.7% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Canopy_LOD2"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "161 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.92e-02, 53 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 161 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Canopy_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (lifeline, ladder and drogue strips decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.104 (max 0.02), UV area by 43.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_Tubes_LOD2"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "284 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.59e-03, 52 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 284 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Liferaft_Tubes_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (lifeline, ladder and drogue strips decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.001 (max 0.02), UV area by 31.5% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Liferaft_COL"
+  },
+  {
+   "subject": "M_Sea_Liferaft_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Liferaft_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 10000"
+  },
+  {
+   "subject": "M_Sea_Liferaft_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Sea_Liferaft_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 1000"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4464 of 6000 (small_craft, asset row)"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1560 of 2400"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "445 of 600"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 2.9 x - x - m, spec 2.9 x - x - m (art/reference/M_Sea_Liferaft/dims.md)"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.915 studs, real 2.900 m = 8.700 studs, off 2.5% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Liferaft_COL"
+  },
+  {
+   "subject": "M_Sea_Liferaft",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (1 to 3 sets)"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_ALB.png"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_NOR.png"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_RGH.png"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Liferaft_Canopy_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_MET.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_ALB.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_NOR.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_RGH.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Liferaft_Tubes_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Entrance_Ramp",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Entrance_Ladder",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Painter",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_05",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_06",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD0.fbx"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Liferaft_COL, M_Sea_Liferaft_Canopy_LOD0, M_Sea_Liferaft_Tubes_LOD0; 4488 triangles (scene 4488)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Liferaft_Canopy_LOD1, M_Sea_Liferaft_Tubes_LOD1; 1560 triangles (scene 1560)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Liferaft_Canopy_LOD2, M_Sea_Liferaft_Tubes_LOD2; 445 triangles (scene 445)"
+  },
+  {
+   "subject": "M_Sea_Liferaft_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Sea_Liferaft_Canopy_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1624,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_Tubes_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2840,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 24,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_Canopy_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 567,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_Canopy_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 161,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_Tubes_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 993,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Liferaft_Tubes_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 284,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  8.915485382080078,
+  18.079883575439453,
+  7.14300012588501
+ ],
+ "peak_rss_mb": 283.2
+}

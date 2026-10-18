@@ -2414,6 +2414,60 @@
    ]
   },
   {
+   "Name": "M_Sea_Liferaft",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Canopy",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://96353086459098",
+        "NormalMap": "rbxassetid://79522680091939",
+        "RoughnessMap": "rbxassetid://81413382278380"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://91391658689516",
+        "NormalMap": "rbxassetid://79522680091939",
+        "RoughnessMap": "rbxassetid://110145848201480"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Tubes",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://87150254408085",
+        "NormalMap": "rbxassetid://126054651161885",
+        "RoughnessMap": "rbxassetid://91813316404858"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://111076796664722",
+        "NormalMap": "rbxassetid://126054651161885",
+        "RoughnessMap": "rbxassetid://135566543202593"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Sea_Morwenna",
    "ClassName": "Folder",
    "Children": [
@@ -2566,6 +2620,168 @@
         "AlphaMode": {
          "Enum": 1
         }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_GaleQueen",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Decals",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://73279555392952",
+        "NormalMap": "rbxassetid://86795487709765",
+        "RoughnessMap": "rbxassetid://103086040851198",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://114954167162360",
+        "NormalMap": "rbxassetid://86795487709765",
+        "RoughnessMap": "rbxassetid://115212704242549",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Deck",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://82541252108674",
+        "NormalMap": "rbxassetid://76178838994551",
+        "RoughnessMap": "rbxassetid://103590679785749"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101322400356470",
+        "NormalMap": "rbxassetid://76178838994551",
+        "RoughnessMap": "rbxassetid://76533404055070"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Fittings",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://75798403666791",
+        "NormalMap": "rbxassetid://132810670279160",
+        "RoughnessMap": "rbxassetid://117603600457179",
+        "MetalnessMap": "rbxassetid://140188536301090"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://129467430495181",
+        "NormalMap": "rbxassetid://132810670279160",
+        "RoughnessMap": "rbxassetid://88187824765401",
+        "MetalnessMap": "rbxassetid://140188536301090"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Glass",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://99567764612704",
+        "NormalMap": "rbxassetid://122451952567079",
+        "RoughnessMap": "rbxassetid://92115618211334",
+        "MetalnessMap": "rbxassetid://109510052358325"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://75283174944095",
+        "NormalMap": "rbxassetid://122451952567079",
+        "RoughnessMap": "rbxassetid://118361398375162",
+        "MetalnessMap": "rbxassetid://109510052358325"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://125426107137497",
+        "NormalMap": "rbxassetid://130214574218747",
+        "RoughnessMap": "rbxassetid://121748009514445",
+        "MetalnessMap": "rbxassetid://125498532995876"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://70802881689667",
+        "NormalMap": "rbxassetid://130214574218747",
+        "RoughnessMap": "rbxassetid://140216783867575",
+        "MetalnessMap": "rbxassetid://125498532995876"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Super",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://118670016888432",
+        "NormalMap": "rbxassetid://104019741869958",
+        "RoughnessMap": "rbxassetid://138940975197704"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://95976661375956",
+        "NormalMap": "rbxassetid://104019741869958",
+        "RoughnessMap": "rbxassetid://130488849788103"
        }
       }
      ]

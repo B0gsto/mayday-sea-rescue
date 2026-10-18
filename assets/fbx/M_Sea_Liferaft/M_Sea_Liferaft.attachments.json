@@ -1,0 +1,326 @@
+{
+ "asset": "M_Sea_Liferaft",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    -1.8249,
+    2.346
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    2.346,
+    -1.8249
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    -1.2255,
+    -1.8249
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Entrance_Ramp",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    -6.1599,
+    3.528
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    3.528,
+    -6.1599
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    -0.0435,
+    -6.1599
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Entrance_Ladder",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    2.5101,
+    3.528
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    3.528,
+    2.5101
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    -0.0435,
+    2.5101
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    -1.8249,
+    7.143
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    7.143,
+    -1.8249
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    3.5715,
+    -1.8249
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Painter",
+   "parent": null,
+   "blender": [
+    1.4998,
+    2.5101,
+    3.528
+   ],
+   "roblox_from_origin": [
+    -1.4998,
+    3.528,
+    2.5101
+   ],
+   "roblox_from_bbox_centre": [
+    -1.4998,
+    -0.0435,
+    2.5101
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_01",
+   "parent": null,
+   "blender": [
+    2.2081,
+    -0.5499,
+    2.136
+   ],
+   "roblox_from_origin": [
+    -2.2081,
+    2.136,
+    -0.5499
+   ],
+   "roblox_from_bbox_centre": [
+    -2.2081,
+    -1.4355,
+    -0.5499
+   ],
+   "look": [
+    0.866,
+    -0.0,
+    -0.5
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_02",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    0.7251,
+    2.136
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    2.136,
+    0.7251
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    -1.4355,
+    0.7251
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_03",
+   "parent": null,
+   "blender": [
+    -2.2086,
+    -0.5499,
+    2.136
+   ],
+   "roblox_from_origin": [
+    2.2086,
+    2.136,
+    -0.5499
+   ],
+   "roblox_from_bbox_centre": [
+    2.2086,
+    -1.4355,
+    -0.5499
+   ],
+   "look": [
+    -0.866,
+    -0.0,
+    -0.5
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_04",
+   "parent": null,
+   "blender": [
+    -2.2086,
+    -3.0999,
+    2.136
+   ],
+   "roblox_from_origin": [
+    2.2086,
+    2.136,
+    -3.0999
+   ],
+   "roblox_from_bbox_centre": [
+    2.2086,
+    -1.4355,
+    -3.0999
+   ],
+   "look": [
+    -0.866,
+    -0.0,
+    0.5
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_05",
+   "parent": null,
+   "blender": [
+    -0.0002,
+    -4.3749,
+    2.136
+   ],
+   "roblox_from_origin": [
+    0.0002,
+    2.136,
+    -4.3749
+   ],
+   "roblox_from_bbox_centre": [
+    0.0002,
+    -1.4355,
+    -4.3749
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_06",
+   "parent": null,
+   "blender": [
+    2.2081,
+    -3.0999,
+    2.136
+   ],
+   "roblox_from_origin": [
+    -2.2081,
+    2.136,
+    -3.0999
+   ],
+   "roblox_from_bbox_centre": [
+    -2.2081,
+    -1.4355,
+    -3.0999
+   ],
+   "look": [
+    0.866,
+    -0.0,
+    0.5
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
