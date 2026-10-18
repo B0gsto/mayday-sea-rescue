@@ -254,20 +254,20 @@ def plant_weights(T, seed):
     w = {}
     dune = (wb > 0.5) & (dl >= bw + 6) & (dl < bw + dw + 30) & (slope < 0.9)
     dt = np.clip((dl - bw) / (dw + 30), 0, 1)
-    w["marram"] = dune * dry * mw({"Grass": 1.0, "LeafyGrass": 0.9, "Sand": 0.55, "Ground": 0.3}) \
+    w["marram"] = dune * dry * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.9, "Sand": 0.55, "Ground": 0.3}) \
         * (0.35 + 0.65 * smooth(0.0, 0.5, dt)) * (0.25 + 0.75 * patch(60, 1))
-    w["turf"] = dry * (slope < 0.6) * mw({"Grass": 1.0, "LeafyGrass": 0.35, "Ground": 0.15}) \
+    w["turf"] = dry * (slope < 0.6) * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.35, "Ground": 0.15}) \
         * (0.1 + 0.9 * patch(90, 2)) * (1 - 0.7 * dune)
     w["gorse"] = dry * (slope < 0.75) * (dl > 14) * (h > 4) * cliff_top \
-        * mw({"LeafyGrass": 1.0, "Grass": 0.6, "Ground": 0.3}) * (0.1 + 0.9 * patch(120, 3))
+        * mw({"LeafyGrass": 1.0, "Grass": 0.6, "Snow": 0.6, "WoodPlanks": 0.6, "Ground": 0.3}) * (0.1 + 0.9 * patch(120, 3))
     w["heather"] = dry * (slope < 0.7) * (h > 4) * np.maximum(cliff_top * smooth(25, 80, dl), 0.8 * upland) \
-        * mw({"LeafyGrass": 1.0, "Grass": 0.3, "Ground": 0.2}) * (0.1 + 0.9 * patch(100, 4))
+        * mw({"LeafyGrass": 1.0, "Grass": 0.3, "Snow": 0.3, "WoodPlanks": 0.3, "Ground": 0.2}) * (0.1 + 0.9 * patch(100, 4))
     w["thrift"] = dry * (slope < 0.9) * (h > 3) * cliffy * smooth(95, 12, dl) \
-        * mw({"Grass": 0.9, "LeafyGrass": 1.0, "Rock": 0.6, "Ground": 0.5, "Basalt": 0.3}) * (0.2 + 0.8 * patch(50, 5))
+        * mw({"Grass": 0.9, "Snow": 0.9, "WoodPlanks": 0.9, "LeafyGrass": 1.0, "Rock": 0.6, "Ground": 0.5, "Basalt": 0.3}) * (0.2 + 0.8 * patch(50, 5))
     w["bracken"] = dry * (h > 4) * (h < 140) * (dl > 40) * smooth(0.3, 1.2, T.hollow) * smooth(0.45, 0.15, slope) \
-        * mw({"Grass": 0.8, "LeafyGrass": 1.0, "Ground": 0.6}) * (0.2 + 0.8 * patch(80, 6))
+        * mw({"Grass": 0.8, "Snow": 0.8, "WoodPlanks": 0.8, "LeafyGrass": 1.0, "Ground": 0.6}) * (0.2 + 0.8 * patch(80, 6))
     w["hawthorn"] = dry * (h > 6) * (dl > 30) * smooth(0.18, 0.32, slope) * smooth(0.75, 0.55, slope) \
-        * mw({"Grass": 1.0, "LeafyGrass": 0.8})
+        * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.8})
     mvp = np.hypot(X, Z) <= L.MVP_RADIUS
     return {k: (v * mvp).astype(np.float64) for k, v in w.items()}
 
@@ -336,7 +336,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
     inside = (np.abs(X) < L.HALF_EXTENT - 30) & (np.abs(Z) < L.HALF_EXTENT - 30)
     noise = 0.5 + 0.5 * G.fbm(X, Z, 150, seed + 300)
     rocky = (wc + wr > 0.5) & (wb < 0.4) & (wh < 0.3) & (wm < 0.3)
-    rock_mats = np.isin(mat, [M[n] for n in ("Rock", "Basalt", "Slate", "Ground", "Grass", "LeafyGrass", "Limestone")])
+    rock_mats = np.isin(mat, [M[n] for n in ("Rock", "Basalt", "Slate", "Ground", "Grass", "Snow", "WoodPlanks", "LeafyGrass", "Limestone")])
     reef_m = np.zeros(X.shape, dtype=bool)
     for rf in L.REEFS:
         cx, cz = rf["center"]
