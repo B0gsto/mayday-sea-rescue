@@ -28,6 +28,13 @@ local CasualtyAsset: any = (function()
 	end
 	return if ok then m else nil
 end)()
+local NpcFactory: any = (function()
+	local ok, m = pcall(require, script.Parent.Parent.Npc.NpcFactory)
+	if not ok then
+		warn(`[RescueService] NpcFactory unavailable ({m}): greybox people stay`)
+	end
+	return if ok then m else nil
+end)()
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
@@ -180,7 +187,9 @@ local function addPart(f: Floater, part: BasePart, offset: CFrame)
 end
 
 -- R15-ish greybox person. `base` is the torso centre relative to the floater root; waving arms.
-local function addPerson(f: Floater, model: Instance, base: CFrame, vest: boolean)
+-- Returns the parts it added (upgradePerson swaps them for a Roblox R15 character).
+local function addPerson(f: Floater, model: Instance, base: CFrame, vest: boolean): { BasePart }
+	local first = #f.parts + 1
 	local skin = SKIN[math.random(#SKIN)]
 	local shirt = SHIRTS[math.random(#SHIRTS)]
 	addPart(f, newPart(model, "Torso", Vector3.new(2, 2, 1), shirt), base)
@@ -219,6 +228,64 @@ local function addPerson(f: Floater, model: Instance, base: CFrame, vest: boolea
 			base * CFrame.new(0, 1, 0)
 		)
 	end
+	return table.move(f.parts, first, #f.parts, 1, {})
+end
+
+-- Swaps a greybox person (addPerson's parts) for a Roblox R15 character dressed for `role`
+-- (NpcFactory / Config/NpcOutfits, docs/12 section 2.9) once its catalog assets have loaded. The
+-- greybox stays when the build fails or the floater was carried off meanwhile. The greybox "Torso"
+-- stays as an invisible marker: the tow mechanics count POB by parts named Torso (Mechanics/Tow/Kit).
+local GREYBOX_FEET = 2.8 -- studs from addPerson's torso centre down to its feet
+local function upgradePerson(
+	f: Floater,
+	model: Instance,
+	base: CFrame,
+	parts: { BasePart },
+	role: string,
+	pose: string
+)
+	if not NpcFactory then
+		return
+	end
+	task.spawn(function()
+		local rig: Model?, rootHeight: number = NpcFactory.build(role, { pose = pose })
+		local root = rig and rig.PrimaryPart
+		if not (rig and root) then
+			return
+		end
+		if not (f.active and model.Parent and table.find(floaters, f)) then
+			rig:Destroy() -- carried, delivered or despawned while loading: keep what is there
+			return
+		end
+		local parts2, offsets2, arms2 = {}, {}, {}
+		for i, part in f.parts do
+			if table.find(parts, part) then
+				if part.Name == "Torso" then
+					part.Transparency = 1
+					part.CanQuery = false
+				else
+					part:Destroy()
+					continue
+				end
+			end
+			table.insert(parts2, part)
+			table.insert(offsets2, f.offsets[i])
+			if f.arms[i] and not table.find(parts, part) then
+				arms2[#parts2] = f.arms[i]
+			end
+		end
+		-- sitting: the hips (root) sit just under the torso; standing: the feet where the greybox's were
+		local lift = if pose == "Sit" then -0.9 else rootHeight - GREYBOX_FEET
+		local offset = base * CFrame.new(0, lift, 0)
+		root.CFrame = f.cf * offset
+		table.insert(parts2, root)
+		table.insert(offsets2, offset)
+		f.parts, f.offsets, f.arms = parts2, offsets2, arms2
+		rig.Parent = model
+		if model:IsA("Model") then
+			model:SetAttribute("R15", true)
+		end
+	end)
 end
 
 -- The rigged swimmer (CasualtyAsset): the skinned mesh rides the floater with the sea surface at its
@@ -303,7 +370,12 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		end
 	end
 	if not rig then
-		addPerson(f, model, CFrame.identity, true)
+		local greybox = addPerson(f, model, CFrame.identity, true)
+		local role = if call.kind == "CapsizedFerry"
+			then "Passenger"
+			elseif parent then "Boater"
+			else "Swimmer"
+		upgradePerson(f, model, CFrame.identity, greybox, role, if parent then "Sit" else "Tread")
 	end
 	model:SetAttribute("Rigged", rig ~= nil)
 	model.Parent = mapFolder
@@ -405,7 +477,9 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 	-- scene.pob (OperationService, from the tasking) people aboard; assess_vessel counts the torsos
 	local pob = math.clamp(if type(call.pob) == "number" then call.pob else 1, 1, #DECK_SEATS)
 	for i = 1, pob do
-		addPerson(f, model, DECK_SEATS[i], true)
+		local greybox = addPerson(f, model, DECK_SEATS[i], true)
+		-- the skipper waves from the bow; the rest stand by
+		upgradePerson(f, model, DECK_SEATS[i], greybox, "Boater", if i == 1 then "Wave" else "Idle")
 	end
 	local bow = Instance.new("Attachment")
 	bow.Name = "BowPoint"
