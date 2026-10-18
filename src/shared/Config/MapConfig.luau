@@ -126,6 +126,8 @@ local MapConfig = {
 		Vehicle = { label = "Your vehicle", glyph = "V", color = Color3.fromHex("F4F1EA") },
 		Crew = { label = "Crew", glyph = "C", color = Color3.fromHex("5AC8FA") },
 		Storm = { label = "Storm area", glyph = "", color = Color3.fromHex("8E5BD8") },
+		-- logbook discoveries (ExplorationController -> MapController.SetBlips("Logbook", ...))
+		Discovery = { label = "Logbook discovery", glyph = "*", color = Color3.fromHex("C9B98A") },
 	},
 
 	-- Drop-off pads (map/Build.luau buildDropOffs): the transport step's destinations.

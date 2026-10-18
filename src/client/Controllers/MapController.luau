@@ -65,6 +65,8 @@ local offers: { [string]: { position: Vector3, expires: number } } = {}
 local closedOps: { [string]: boolean } = {}
 local isOpen = false
 local objective: Vector3?, objectiveLabel: string? = nil, nil
+-- extra static blips other systems hand in (SetBlips), keyed by group: the logbook's discoveries
+local extraBlips: { [string]: { BlipDraw } } = {}
 
 -- ---------------------------------------------------------------- small UI helpers
 
@@ -294,6 +296,11 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				minimap = b.minimap ~= false,
 				size = 22,
 			})
+		end
+	end
+	for _, group in extraBlips do
+		for _, b in group do
+			table.insert(list, b)
 		end
 	end
 	objective, objectiveLabel = nil, nil
@@ -807,7 +814,9 @@ local function buildFullMap()
 	layout.Padding = UDim.new(0, 0)
 	layout.Parent = body
 	local order = 1
-	for _, key in { "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Crew", "Storm" } do
+	for _, key in
+		{ "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Crew", "Storm", "Discovery" }
+	do
 		legendRow(body, MapConfig.Styles[key], order)
 		order += 1
 	end
@@ -1128,6 +1137,36 @@ end
 function MapController.SetWaypoint(pos: Vector3?)
 	waypoint = pos
 	player:SetAttribute("MapWaypoint", pos)
+end
+
+-- Static blips from another system, replaced per group (nil clears it). Each item: a unique id,
+-- a position and a MapConfig.Styles key (default "Discovery"). Used by the logbook (RP-X1).
+function MapController.SetBlips(
+	group: string,
+	items: {
+		{
+			id: string,
+			position: Vector3,
+			style: string?,
+			minimap: boolean?,
+		}
+	}?
+)
+	if not items then
+		extraBlips[group] = nil
+		return
+	end
+	local list: { BlipDraw } = {}
+	for _, b in items do
+		table.insert(list, {
+			id = `{group}_{b.id}`,
+			pos = b.position,
+			style = MapConfig.Styles[b.style or "Discovery"] or MapConfig.Styles.Discovery,
+			minimap = b.minimap ~= false,
+			size = 18,
+		})
+	end
+	extraBlips[group] = list
 end
 
 function MapController.GetWaypoint(): Vector3?

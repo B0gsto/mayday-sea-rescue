@@ -1979,7 +1979,14 @@ local function tick()
 				if t - (coldOpenBegunAt[player] or -math.huge) > COLD_OPEN_START_GRACE then
 					endColdOpen(player, "Lost")
 				end
-			elseif decision == "Offer" then
+			elseif
+				decision == "Offer"
+				-- Off duty (ExplorationService, docs 10 section 5.1): no standard taskings after the tutorials
+				and not (
+					player:GetAttribute("OffDuty") == true
+					and st.completed >= #Grading.Payout.Tutorial
+				)
+			then
 				offerTo(player)
 			end -- "Wait": the profile is still loading, ask again next tick
 		end
