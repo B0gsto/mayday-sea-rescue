@@ -4,8 +4,8 @@ import os
 from PIL import Image, ImageDraw
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
-S = G + "assets/review/HP1/shots"
-OUT = G + "assets/review/HP1/contact.png"
+S = G + "assets/review/HP1/shots_b"
+OUT = G + "assets/review/HP1/contact_b.png"
 A = ["M_Hbr_QuayKit_Straight", "M_Hbr_QuayKit_Corner", "M_Hbr_QuayKit_Steps", "M_Hbr_QuayKit_Head",
      "M_Hbr_QuayKit_Armour", "M_Hbr_QuayKit_LadderBay", "M_Hbr_Pontoon_Straight6", "M_Hbr_Pontoon_Straight12",
      "M_Hbr_Pontoon_Corner", "M_Hbr_Pontoon_Finger", "M_Hbr_Pontoon_Gangway", "M_Hbr_Ladder"]

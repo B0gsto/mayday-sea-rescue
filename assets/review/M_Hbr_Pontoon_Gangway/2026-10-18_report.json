@@ -2,12 +2,12 @@
  "asset": "M_Hbr_Pontoon_Gangway",
  "name": "M_Hbr_Pontoon_Gangway",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
   "validate",
-  "turntable"
+  "export"
  ],
  "scene": "art/blender/_template.blend",
  "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
@@ -21,182 +21,133 @@
   "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
   "roblox_tri_limit": 20000
  },
- "turntable": {
-  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_Pontoon_Gangway/turntable",
-  "images": {
-   "Front3Q_neutral": "Front3Q_neutral.png",
-   "Side_neutral": "Side_neutral.png",
-   "Rear3Q_neutral": "Rear3Q_neutral.png",
-   "High_neutral": "High_neutral.png",
-   "Front3Q_overcast": "Front3Q_overcast.png",
-   "Side_overcast": "Side_overcast.png",
-   "Rear3Q_overcast": "Rear3Q_overcast.png",
-   "High_overcast": "High_overcast.png",
-   "silhouette": "silhouette.png"
-  },
-  "views": [
-   "Front3Q",
-   "Side",
-   "Rear3Q",
-   "High"
-  ],
-  "worlds": {
-   "neutral": "WLD_Neutral",
-   "overcast": "WLD_OvercastSea"
-  },
-  "hdri": {
-   "neutral": "studio_small_08_2k.hdr",
-   "overcast": "gray_pier_2k.hdr"
-  },
-  "size_px": 768,
-  "samples": 32,
-  "mannequin_studs": 5.5,
-  "maps_applied": {
-   "M_Hbr_Pontoon_Gangway_Gangway_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "bytes": 53980,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Pontoon_Gangway_COL",
+    "M_Hbr_Pontoon_Gangway_Gangway_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Pontoon_Gangway_COL.001",
+     "min": [
+      -1.8,
+      0.0,
+      -0.66
+     ],
+     "max": [
+      1.8,
+      27.0,
+      3.12
+     ],
+     "polygons": 36,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD0.001",
+     "min": [
+      -1.74,
+      -0.24,
+      -0.93
+     ],
+     "max": [
+      1.74,
+      27.0,
+      3.096
+     ],
+     "polygons": 846,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
    ]
   },
-  "sets": [
-   "T_Pontoon_Kit"
-  ],
-  "frames": {
-   "Front3Q": {
-    "asset": [
-     0.143,
-     0.082,
-     0.957,
-     0.604
-    ],
-    "mannequin": [
-     0.037,
-     0.346,
-     0.142,
-     0.6
-    ],
-    "fill": 0.814
-   },
-   "Side": {
-    "asset": [
-     0.199,
-     0.419,
-     0.963,
-     0.537
-    ],
-    "mannequin": [
-     0.046,
-     0.424,
-     0.104,
-     0.575
-    ],
-    "fill": 0.764
-   },
-   "Rear3Q": {
-    "asset": [
-     0.143,
-     0.082,
-     0.957,
-     0.604
-    ],
-    "mannequin": [
-     0.037,
-     0.346,
-     0.142,
-     0.6
-    ],
-    "fill": 0.814
-   },
-   "High": {
-    "asset": [
-     0.201,
-     0.037,
-     0.948,
-     0.813
-    ],
-    "mannequin": [
-     -0.059,
-     0.434,
-     0.067,
-     0.608
-    ],
-    "fill": 0.776
-   }
+  {
+   "file": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "bytes": 33068,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Pontoon_Gangway_Gangway_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD1.001",
+     "min": [
+      -1.74,
+      -0.24,
+      -0.66
+     ],
+     "max": [
+      1.74,
+      27.0,
+      3.096
+     ],
+     "polygons": 398,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
   },
-  "closeups": [
-   {
-    "name": "corner_FL",
-    "target": [
-     1.7400000095367432,
-     -0.23999999463558197,
-     3.072000026702881
-    ],
-    "dist": 6.0,
-    "az": 7.28,
-    "el": 25.0,
-    "file": "closeup_corner_FL.png"
-   },
-   {
-    "name": "corner_FR",
-    "target": [
-     -1.7400000095367432,
-     -0.23999999463558197,
-     3.072000026702881
-    ],
-    "dist": 6.0,
-    "az": 352.72,
-    "el": 25.0,
-    "file": "closeup_corner_FR.png"
-   },
-   {
-    "name": "corner_RL",
-    "target": [
-     1.7400000095367432,
-     27.0,
-     3.072000026702881
-    ],
-    "dist": 6.0,
-    "az": 172.72,
-    "el": 25.0,
-    "file": "closeup_corner_RL.png"
-   },
-   {
-    "name": "corner_RR",
-    "target": [
-     -1.7400000095367432,
-     27.0,
-     3.072000026702881
-    ],
-    "dist": 6.0,
-    "az": 187.28,
-    "el": 25.0,
-    "file": "closeup_corner_RR.png"
-   },
-   {
-    "name": "centre",
-    "target": [
-     0.0,
-     13.380000002682209,
-     1.0710000097751617
-    ],
-    "dist": 6.0,
-    "az": 35.0,
-    "el": 25.0,
-    "file": "closeup_centre.png"
-   }
-  ],
-  "closeup_px": 1024,
-  "min_fill": 0.764,
-  "in_frame": true,
-  "dims_m": [
-   1.12,
-   9.0,
-   null
-  ],
-  "validation_ok": true,
-  "seconds": 8.0
- },
+  {
+   "file": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "bytes": 21708,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Pontoon_Gangway_Gangway_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD2.001",
+     "min": [
+      -1.74,
+      -0.24,
+      -0.66
+     ],
+     "max": [
+      1.74,
+      27.0,
+      3.096
+     ],
+     "polygons": 118,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway.attachments.json",
+   "attachments": [
+    "ATT_Hinge",
+    "ATT_Roller",
+    "ATT_Snap_Start",
+    "ATT_Snap_End"
+   ]
+  }
+ ],
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway.blend",
  "ok": true,
  "checks": [
@@ -238,7 +189,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "814 of 8000"
+   "detail": "846 of 8000"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD0",
@@ -270,7 +221,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 455 faces have no UV area"
+   "detail": "0 of 479 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD1",
@@ -294,7 +245,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "366 of 8000"
+   "detail": "398 of 8000"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD1",
@@ -302,7 +253,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 9.98e-04, 228 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.03e-03, 228 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD1",
@@ -326,15 +277,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 203 faces have no UV area"
+   "detail": "0 of 227 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 13.0% (max 15%)"
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.187 (max 0.02), UV area by 9.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD2",
@@ -358,7 +309,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "102 of 8000"
+   "detail": "118 of 8000"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD2",
@@ -366,7 +317,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.07e-03, 4 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.03e-03, 4 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD2",
@@ -390,7 +341,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 63 faces have no UV area"
+   "detail": "0 of 75 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_Gangway_LOD2",
@@ -398,7 +349,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.000 (max 0.02), UV area by 53.1% (max 15%)"
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.187 (max 0.02), UV area by 55.8% (max 15%)"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway_COL",
@@ -446,7 +397,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "814 of 3000 (large_prop, asset row)"
+   "detail": "846 of 3000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway",
@@ -454,7 +405,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "366 of 1500"
+   "detail": "398 of 1500"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway",
@@ -462,7 +413,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "102 of 750"
+   "detail": "118 of 750"
   },
   {
    "subject": "M_Hbr_Pontoon_Gangway",
@@ -585,12 +536,124 @@
    "detail": "empty becomes an Attachment on import"
   },
   {
-   "subject": "M_Hbr_Pontoon_Gangway",
-   "check": "turntable",
+   "subject": "M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "check": "file naming",
    "ok": true,
    "waived": false,
-   "info": true,
-   "detail": "asset in frame, fill >= 0.76; 14 renders in 8 s, maps M_Hbr_Pontoon_Gangway_Gangway_LOD0: ALB/MET/NOR/RGH"
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Pontoon_Gangway_COL, M_Hbr_Pontoon_Gangway_Gangway_LOD0; 882 triangles (scene 882)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Pontoon_Gangway_Gangway_LOD1; 398 triangles (scene 398)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Pontoon_Gangway/M_Hbr_Pontoon_Gangway_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Pontoon_Gangway_Gangway_LOD2; 118 triangles (scene 118)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Gangway_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
   }
  ],
  "meshes": [
@@ -598,21 +661,21 @@
    "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 814,
+   "triangles": 846,
    "texel_density": null
   },
   {
    "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 366,
+   "triangles": 398,
    "texel_density": null
   },
   {
    "name": "M_Hbr_Pontoon_Gangway_Gangway_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 102,
+   "triangles": 118,
    "texel_density": null
   },
   {
@@ -626,7 +689,7 @@
  "bbox_studs": [
   3.4800000190734863,
   27.239999994635582,
-  4.002000033855438
+  4.02599972486496
  ],
- "peak_rss_mb": 705.8
+ "peak_rss_mb": 517.9
 }

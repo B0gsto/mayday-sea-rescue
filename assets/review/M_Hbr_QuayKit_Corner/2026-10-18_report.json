@@ -2,7 +2,7 @@
  "asset": "M_Hbr_QuayKit_Corner",
  "name": "M_Hbr_QuayKit_Corner",
  "date": "2026-10-18",
- "commit": "2a0e3b1+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD0.fbx",
-   "bytes": 128332,
+   "bytes": 553292,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_QuayKit_Corner_COL",
@@ -85,15 +85,15 @@
      "name": "M_Hbr_QuayKit_Corner_Wall_LOD0.001",
      "min": [
       -4.5,
-      -1.0904,
+      -1.0853,
       -12.0
      ],
      "max": [
-      5.6076,
+      5.6735,
       9.0,
       -0.9
      ],
-     "polygons": 1516,
+     "polygons": 6054,
      "all_triangles": true,
      "uv": true
     }
@@ -108,7 +108,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD1.fbx",
-   "bytes": 32268,
+   "bytes": 165468,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_QuayKit_Corner_Stone_LOD1",
@@ -152,15 +152,15 @@
      "name": "M_Hbr_QuayKit_Corner_Wall_LOD1.001",
      "min": [
       -4.5,
-      -1.0125,
+      -1.0567,
       -12.0
      ],
      "max": [
-      5.5125,
+      5.5557,
       9.0,
       -0.9
      ],
-     "polygons": 172,
+     "polygons": 1452,
      "all_triangles": true,
      "uv": true
     }
@@ -219,11 +219,11 @@
      "name": "M_Hbr_QuayKit_Corner_Wall_LOD2.001",
      "min": [
       -4.5,
-      -0.54,
+      -0.999,
       -12.0
      ],
      "max": [
-      5.04,
+      5.499,
       9.0,
       -0.9
      ],
@@ -291,7 +291,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1516 of 8000"
+   "detail": "6054 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Wall_LOD0",
@@ -299,7 +299,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.13e-03, 120 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.65e-02, 1714 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Wall_LOD0",
@@ -323,7 +323,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3 of 1046 faces have no UV area"
+   "detail": "0 of 3027 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Stone_LOD0",
@@ -459,7 +459,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "172 of 8000"
+   "detail": "1452 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Wall_LOD1",
@@ -467,7 +467,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.68e+00, 120 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.11e-02, 592 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Wall_LOD1",
@@ -491,15 +491,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 86 faces have no UV area"
+   "detail": "0 of 726 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Wall_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.004 (max 0.02), UV area by 64.1% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 2.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Stone_LOD1",
@@ -691,7 +691,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.205 (max 0.02), UV area by 76.4% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.236 (max 0.02), UV area by 63.5% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_Stone_LOD2",
@@ -867,7 +867,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1640 of 8000 (large_prop, asset row)"
+   "detail": "6178 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner",
@@ -875,7 +875,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "192 of 4000"
+   "detail": "1472 of 4000"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner",
@@ -1123,7 +1123,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_QuayKit_Corner_COL, M_Hbr_QuayKit_Corner_Stone_LOD0, M_Hbr_QuayKit_Corner_Top_LOD0, M_Hbr_QuayKit_Corner_Wall_LOD0; 1652 triangles (scene 1652)"
+   "detail": "M_Hbr_QuayKit_Corner_COL, M_Hbr_QuayKit_Corner_Stone_LOD0, M_Hbr_QuayKit_Corner_Top_LOD0, M_Hbr_QuayKit_Corner_Wall_LOD0; 6190 triangles (scene 6190)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_LOD0.fbx",
@@ -1163,7 +1163,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_QuayKit_Corner_Stone_LOD1, M_Hbr_QuayKit_Corner_Top_LOD1, M_Hbr_QuayKit_Corner_Wall_LOD1; 192 triangles (scene 192)"
+   "detail": "M_Hbr_QuayKit_Corner_Stone_LOD1, M_Hbr_QuayKit_Corner_Top_LOD1, M_Hbr_QuayKit_Corner_Wall_LOD1; 1472 triangles (scene 1472)"
   },
   {
    "subject": "M_Hbr_QuayKit_Corner_LOD1.fbx",
@@ -1219,14 +1219,14 @@
    "name": "M_Hbr_QuayKit_Corner_Wall_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1516,
+   "triangles": 6054,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_Corner_Wall_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 172,
+   "triangles": 1452,
    "texel_density": null
   },
   {
@@ -1287,9 +1287,9 @@
   }
  ],
  "bbox_studs": [
-  10.107644081115723,
-  10.090378999710083,
+  10.173521041870117,
+  10.085257530212402,
   12.0
  ],
- "peak_rss_mb": 287.2
+ "peak_rss_mb": 241.1
 }

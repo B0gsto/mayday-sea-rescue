@@ -2,12 +2,12 @@
  "asset": "M_Hbr_QuayKit_Steps",
  "name": "M_Hbr_QuayKit_Steps",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
   "validate",
-  "turntable"
+  "export"
  ],
  "scene": "art/blender/_template.blend",
  "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
@@ -21,196 +21,237 @@
   "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
   "roblox_tri_limit": 20000
  },
- "turntable": {
-  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_QuayKit_Steps/turntable",
-  "images": {
-   "Front3Q_neutral": "Front3Q_neutral.png",
-   "Side_neutral": "Side_neutral.png",
-   "Rear3Q_neutral": "Rear3Q_neutral.png",
-   "High_neutral": "High_neutral.png",
-   "Front3Q_overcast": "Front3Q_overcast.png",
-   "Side_overcast": "Side_overcast.png",
-   "Rear3Q_overcast": "Rear3Q_overcast.png",
-   "High_overcast": "High_overcast.png",
-   "silhouette": "silhouette.png"
-  },
-  "views": [
-   "Front3Q",
-   "Side",
-   "Rear3Q",
-   "High"
-  ],
-  "worlds": {
-   "neutral": "WLD_Neutral",
-   "overcast": "WLD_OvercastSea"
-  },
-  "hdri": {
-   "neutral": "studio_small_08_2k.hdr",
-   "overcast": "gray_pier_2k.hdr"
-  },
-  "size_px": 768,
-  "samples": 32,
-  "mannequin_studs": 5.5,
-  "maps_applied": {
-   "M_Hbr_QuayKit_Steps_Wall_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "bytes": 597452,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Steps_COL",
+    "M_Hbr_QuayKit_Steps_Stone_LOD0",
+    "M_Hbr_QuayKit_Steps_Top_LOD0",
+    "M_Hbr_QuayKit_Steps_Wall_LOD0"
    ],
-   "M_Hbr_QuayKit_Steps_Stone_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Steps_COL.001",
+     "min": [
+      -9.0,
+      -3.81,
+      -12.0
+     ],
+     "max": [
+      9.0,
+      9.0,
+      0.0
+     ],
+     "polygons": 60,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Stone_LOD0.001",
+     "min": [
+      -9.0,
+      -3.81,
+      -0.9
+     ],
+     "max": [
+      9.0,
+      1.65,
+      0.0
+     ],
+     "polygons": 178,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Top_LOD0.001",
+     "min": [
+      -9.0,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      9.0,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Wall_LOD0.001",
+     "min": [
+      -9.0,
+      -3.81,
+      -12.0
+     ],
+     "max": [
+      9.0,
+      0.3,
+      -0.9
+     ],
+     "polygons": 6528,
+     "all_triangles": true,
+     "uv": true
+    }
    ],
-   "M_Hbr_QuayKit_Steps_Top_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
    ]
   },
-  "sets": [
-   "T_QuayKit_Tide",
-   "T_QuayKit_Stone",
-   "T_Mat_Cobbles"
-  ],
-  "frames": {
-   "Front3Q": {
-    "asset": [
-     0.222,
-     0.17,
-     0.963,
-     0.717
-    ],
-    "mannequin": [
-     0.059,
-     0.309,
-     0.132,
-     0.487
-    ],
-    "fill": 0.741
-   },
-   "Side": {
-    "asset": [
-     0.241,
-     0.134,
-     0.963,
-     0.793
-    ],
-    "mannequin": [
-     0.16,
-     0.254,
-     0.241,
-     0.481
-    ],
-    "fill": 0.722
-   },
-   "Rear3Q": {
-    "asset": [
-     0.222,
-     0.269,
-     0.963,
-     0.717
-    ],
-    "mannequin": [
-     0.059,
-     0.309,
-     0.132,
-     0.487
-    ],
-    "fill": 0.741
-   },
-   "High": {
-    "asset": [
-     0.224,
-     0.123,
-     0.963,
-     0.83
-    ],
-    "mannequin": [
-     0.093,
-     0.37,
-     0.177,
-     0.497
-    ],
-    "fill": 0.739
-   }
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "bytes": 178940,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Steps_Stone_LOD1",
+    "M_Hbr_QuayKit_Steps_Top_LOD1",
+    "M_Hbr_QuayKit_Steps_Wall_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Steps_Stone_LOD1.001",
+     "min": [
+      -9.0,
+      -3.81,
+      -0.9
+     ],
+     "max": [
+      9.0,
+      1.65,
+      0.0
+     ],
+     "polygons": 18,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Top_LOD1.001",
+     "min": [
+      -9.0,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      9.0,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Wall_LOD1.001",
+     "min": [
+      -9.0,
+      -3.75,
+      -12.0
+     ],
+     "max": [
+      9.0,
+      0.3,
+      -0.9
+     ],
+     "polygons": 1594,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
   },
-  "closeups": [
-   {
-    "name": "corner_FL",
-    "target": [
-     9.0,
-     -3.809999942779541,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 54.56,
-    "el": 25.0,
-    "file": "closeup_corner_FL.png"
-   },
-   {
-    "name": "corner_FR",
-    "target": [
-     -9.0,
-     -3.809999942779541,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 305.44,
-    "el": 25.0,
-    "file": "closeup_corner_FR.png"
-   },
-   {
-    "name": "corner_RL",
-    "target": [
-     9.0,
-     9.0,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 125.44,
-    "el": 25.0,
-    "file": "closeup_corner_RL.png"
-   },
-   {
-    "name": "corner_RR",
-    "target": [
-     -9.0,
-     9.0,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 234.56,
-    "el": 25.0,
-    "file": "closeup_corner_RR.png"
-   },
-   {
-    "name": "centre",
-    "target": [
-     0.0,
-     2.5950000286102295,
-     -6.0
-    ],
-    "dist": 6.0,
-    "az": 35.0,
-    "el": 25.0,
-    "file": "closeup_centre.png"
-   }
-  ],
-  "closeup_px": 1024,
-  "min_fill": 0.722,
-  "in_frame": true,
-  "dims_m": [
-   6.0,
-   null,
-   4.0
-  ],
-  "validation_ok": true,
-  "seconds": 9.6
- },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "bytes": 30780,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Steps_Stone_LOD2",
+    "M_Hbr_QuayKit_Steps_Top_LOD2",
+    "M_Hbr_QuayKit_Steps_Wall_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Steps_Stone_LOD2.001",
+     "min": [
+      -9.0,
+      -3.81,
+      -0.9
+     ],
+     "max": [
+      9.0,
+      1.65,
+      0.0
+     ],
+     "polygons": 18,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Top_LOD2.001",
+     "min": [
+      -9.0,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      9.0,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Steps_Wall_LOD2.001",
+     "min": [
+      -9.0,
+      -3.75,
+      -12.0
+     ],
+     "max": [
+      9.0,
+      0.3,
+      -0.9
+     ],
+     "polygons": 126,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps.attachments.json",
+   "attachments": [
+    "ATT_Snap_L",
+    "ATT_Snap_R",
+    "ATT_Steps_Top",
+    "ATT_Steps_Bottom",
+    "ATT_Moor_01",
+    "ATT_WaterLine"
+   ]
+  }
+ ],
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps.blend",
  "ok": true,
  "checks": [
@@ -252,7 +293,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1712 of 8000"
+   "detail": "6528 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Wall_LOD0",
@@ -260,7 +301,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.29e-03, 136 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.07e-02, 1842 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Wall_LOD0",
@@ -284,7 +325,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3 of 1192 faces have no UV area"
+   "detail": "0 of 3312 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Stone_LOD0",
@@ -308,7 +349,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "150 of 8000"
+   "detail": "178 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Stone_LOD0",
@@ -340,7 +381,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 105 faces have no UV area"
+   "detail": "0 of 125 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Top_LOD0",
@@ -420,7 +461,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "224 of 8000"
+   "detail": "1594 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Wall_LOD1",
@@ -428,7 +469,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.94e-01, 208 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.86e-02, 716 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Wall_LOD1",
@@ -452,15 +493,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 112 faces have no UV area"
+   "detail": "0 of 797 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Wall_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 47.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Stone_LOD1",
@@ -524,7 +565,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.000 (max 0.02), UV area by 51.1% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.000 (max 0.02), UV area by 52.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Top_LOD1",
@@ -652,7 +693,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 73.4% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.236 (max 0.02), UV area by 64.1% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Stone_LOD2",
@@ -716,7 +757,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.000 (max 0.02), UV area by 51.1% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.000 (max 0.02), UV area by 52.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps_Top_LOD2",
@@ -828,7 +869,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1864 of 8000 (large_prop, asset row)"
+   "detail": "6708 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps",
@@ -836,7 +877,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "244 of 4000"
+   "detail": "1614 of 4000"
   },
   {
    "subject": "M_Hbr_QuayKit_Steps",
@@ -1079,12 +1120,124 @@
    "detail": "empty becomes an Attachment on import"
   },
   {
-   "subject": "M_Hbr_QuayKit_Steps",
-   "check": "turntable",
+   "subject": "M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "check": "file naming",
    "ok": true,
    "waived": false,
-   "info": true,
-   "detail": "asset in frame, fill >= 0.72; 14 renders in 10 s, maps M_Hbr_QuayKit_Steps_Wall_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_Steps_Stone_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_Steps_Top_LOD0: ALB/MET/NOR/RGH"
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Steps_COL, M_Hbr_QuayKit_Steps_Stone_LOD0, M_Hbr_QuayKit_Steps_Top_LOD0, M_Hbr_QuayKit_Steps_Wall_LOD0; 6768 triangles (scene 6768)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Steps_Stone_LOD1, M_Hbr_QuayKit_Steps_Top_LOD1, M_Hbr_QuayKit_Steps_Wall_LOD1; 1614 triangles (scene 1614)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Steps/M_Hbr_QuayKit_Steps_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Steps_Stone_LOD2, M_Hbr_QuayKit_Steps_Top_LOD2, M_Hbr_QuayKit_Steps_Wall_LOD2; 146 triangles (scene 146)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Steps_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
   }
  ],
  "meshes": [
@@ -1092,14 +1245,14 @@
    "name": "M_Hbr_QuayKit_Steps_Wall_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1712,
+   "triangles": 6528,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_Steps_Wall_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 224,
+   "triangles": 1594,
    "texel_density": null
   },
   {
@@ -1113,7 +1266,7 @@
    "name": "M_Hbr_QuayKit_Steps_Stone_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 150,
+   "triangles": 178,
    "texel_density": null
   },
   {
@@ -1164,5 +1317,5 @@
   12.809999942779541,
   12.0
  ],
- "peak_rss_mb": 690.4
+ "peak_rss_mb": 478.1
 }

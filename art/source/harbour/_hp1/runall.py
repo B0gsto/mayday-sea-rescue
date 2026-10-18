@@ -17,7 +17,7 @@ import run as R  # noqa: E402
 import template  # noqa: E402
 import turntable as TT  # noqa: E402
 
-SHOTS = G + "assets/review/HP1/shots"
+SHOTS = G + "assets/review/HP1/shots_b"   # HP1b fix round
 # per asset: (az, el) of the main 3/4 view; optional close-up (target m, dist m, az, el)
 VIEW = {"M_Hbr_QuayKit_Steps": (-30, 18), "M_Hbr_QuayKit_Head": (-20, 22), "M_Hbr_QuayKit_Armour": (-35, 20),
         "M_Hbr_Pontoon_Gangway": (-50, 22)}

@@ -18,7 +18,7 @@ import sys
 
 import bmesh
 import bpy
-from mathutils import Matrix, Vector
+from mathutils import Matrix, Vector, noise
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
@@ -30,7 +30,7 @@ from geo import Part  # noqa: E402
 
 class MT:   # layout constants shared with maketex.py (no PIL inside Blender)
     SEA = -1.333
-    PKIT = {"Float": (0.0, 0.125), "Tread": (0.125, 0.1875), "Galv": (0.1875, 0.25), "Rubber": (0.25, 0.375),
+    PKIT = {"Float": (0.0, 0.125), "Tread": (0.125, 0.15), "GwSteel": (0.15, 0.1875), "Galv": (0.1875, 0.25), "Rubber": (0.25, 0.375),
             "Frame": (0.375, 0.5), "Deck0": (0.5, 0.625), "Deck1": (0.625, 0.75), "Deck2": (0.75, 0.875), "Deck3": (0.875, 1.0)}
     FLOAT_Z = (-0.95, 0.0)
     LADDER_Z = (-4.2, 1.2)
@@ -40,7 +40,6 @@ TEX = G + "assets/textures/"
 SEA = MT.SEA
 FOOT = -4.0
 COPE_T, COPE_D, COPE_O = 0.3, 0.6, 0.05     # coping thickness, depth (front to back), overhang over the face
-SETBACK = 0.045                            # stepped batter per course (each course down steps 4.5 cm further out)
 COURSES = [0.5, 0.45, 0.55, 0.5, 0.45, 0.5, 0.55]   # block courses below the coping, top down (sum 3.5 + 0.3 = 3.8)
 JOINT = 0.012
 
@@ -50,21 +49,6 @@ def L(*lods):
 
 
 # ---------------------------------------------------------------- UV modes
-def tide_fn(p):
-    """T_QuayKit_Tide: u along the wall (4 m tile), v = height (z 0 -> v 1, z -4 -> v 0). Depth (y) nudges both so
-    horizontal faces (treads, block tops) do not smear one texel row."""
-    return ((p.x + 0.6 * p.y) / 4.0, min(0.999, max(0.001, (p.z + 4.0 + 0.12 * p.y) / 4.0)))
-
-
-TIDE = ("fn", tide_fn)
-
-
-def armour_fn(p):
-    """tide_fn without the clamp (rock undersides dip a few cm under the wall foot; tiling UVs)."""
-    return ((p.x + 0.6 * p.y + 0.05 * p.z) / 4.0, (p.z + 4.0 + 0.12 * p.y - 0.09 * p.x) / 4.0)
-
-
-ARMOUR = ("fn", armour_fn)
 STONE = ("tile", 2.0)
 SETTS = ("tile", 2.0)
 
@@ -105,47 +89,160 @@ def att(name, pos_m, look=(0, -1, 0)):
     return e
 
 
-# ---------------------------------------------------------------- masonry
-def block(part, x0, x1, yf, yb, z0, z1, mode, ch=0.035, tilt=0.0):
-    """A granite block, its face at y = yf (sea side, yf < yb), chamfered front arrises top and bottom (LOD0)."""
-    ya, yb2 = yf - tilt, yf + tilt
-    bulge = 0.012 + 0.02 * abs(math.sin(x0 * 7.3 + z0 * 3.1))       # pitch-faced: the face swells 1 to 3 cm
-    prof = [(yb, z0), (yf + ch, z0), (ya, z0 + ch), (yf - bulge, (z0 + z1) / 2 - 0.05), (yf - bulge * 0.8, (z0 + z1) / 2 + 0.06),
-            (yb2, z1 - ch), (yf + ch, z1), (yb, z1)]
-    part.prism(prof, "x", x0, x1, mode)
+# ---------------------------------------------------------------- masonry (HP1b: random-rubble Cornish granite)
+TIDE_U = 0.75                 # T_QuayKit_Tide: u 0..0.75 = granite block faces (3 m of scan, zoned by v = z) ...
+MORTAR_U = (0.79, 0.99)       # ... u 0.79..0.99 = the lime mortar strip (same zonation)
+BATTER = 0.09                 # continuous batter: the face steps out 9 cm per metre down (0.33 m at the foot)
+JH = 0.015                    # half joint (3 cm joints)
+JD = 0.06                     # mortar face set back behind the block arrises (deep raked joints)
 
 
-def wall_run(wall, stone, length, rnd, x_from=-1.5, top_mode=None, coping=True, skip_x=None):
-    """A straight battered block wall from x_from to x_from + length, face at y ~ 0 (going out with the batter
-    below), coping on top. Courses use per-course random joints; the end joints sit on the piece edges."""
-    x0, x1 = x_from, x_from + length
-    z = -COPE_T
-    # LOD2: one plane per wall, LOD1: one prism per course, LOD0: chamfered blocks + recessed joint backing
-    L(2)
-    zf = FOOT
-    wall.face([(x0, -SETBACK * 4, zf), (x1, -SETBACK * 4, zf), (x1, -0.02, -COPE_T), (x0, -0.02, -COPE_T)], TIDE,
-              outward=(0, -1, 0))
-    for ci, h in enumerate(COURSES + [z - sum(COURSES) - FOOT]):
-        if h <= 0.02:
-            continue
-        za, zb = z - h, z
-        yf = -SETBACK * (ci + 0.5)
-        L(1)
-        wall.box((x0, yf, za), (x1, 0.4, zb), TIDE, skip=("+y", "-x", "+x", "+z", "-z"))
+def batter(z):
+    return BATTER * max(0.0, -COPE_T - z)
+
+
+def tide_v(z, y=0.0):
+    return min(0.999, max(0.001, (z + 4.0 + 0.12 * y) / 4.0))
+
+
+def tmode(rnd, x_ref=0.0, y_ref=0.0, span=1.0):
+    """Tide UVs for a dressed block / plain face: u = u0 + ((x - x_ref) + 0.6 (y - y_ref)) / 4 from a random u0 kept
+    inside the granite region, v = z (the shore zonation)."""
+    u0 = rnd.uniform(0.005, max(0.006, TIDE_U - 0.01 - span / 4.0)) if rnd else 0.01
+    return ("fn", lambda p: (min(TIDE_U - 0.002, max(0.002, u0 + ((p.x - x_ref) + 0.6 * (p.y - y_ref)) / 4.0)),
+                             tide_v(p.z, p.y)))
+
+
+def uvface(part, pts, uvs, centre=None, outward=None):
+    """part.face with explicit per-vertex UVs."""
+    vs = [Vector(p) for p in pts]
+    lut = {(round(v.x, 4), round(v.y, 4), round(v.z, 4)): uv for v, uv in zip(vs, uvs)}
+    part.face(vs, ("fn", lambda q: lut[(round(q.x, 4), round(q.y, 4), round(q.z, 4))]), centre=centre, outward=outward)
+
+
+def skyline(s0, s1, z0, z1, rnd, wr=(0.26, 1.15), hr=(0.15, 0.62)):
+    """Random (uncoursed) rubble layout: blocks dropped onto the lowest gap of a skyline, so joints break everywhere
+    and sizes run from 15 cm pinning stones to 1.1 m bonders. Returns [(s0, s1, z0, z1)]."""
+    sky, out = [[s0, s1, z0]], []
+    for _ in range(4000):
+        m = [sky[0]]
+        for seg in sky[1:]:
+            if abs(seg[2] - m[-1][2]) < 1e-6:
+                m[-1][1] = seg[1]
+            else:
+                m.append(seg)
+        sky = m
+        i = min(range(len(sky)), key=lambda k: sky[k][2])
+        sa, sb, h = sky[i]
+        if h >= z1 - 1e-6:
+            break
+        avail = sb - sa
+        w = wr[0] + (wr[1] - wr[0]) * rnd.random() ** 1.3
+        if w > avail - 0.2:
+            w = avail
+        hh = hr[0] + (hr[1] - hr[0]) * rnd.random() ** 1.5
+        hh = min(hh, max(hr[0], w * 1.1))
+        top = h + hh
+        for k in (i - 1, i + 1):          # line up with a neighbour within 7 cm (no slivers)
+            if 0 <= k < len(sky) and abs(sky[k][2] - top) < 0.07 and sky[k][2] > h + 0.12:
+                top = sky[k][2]
+        if z1 - top < 0.15:
+            top = z1
+        out.append((sa, sa + w, h, top))
+        new = [[sa, sa + w, top]]
+        if w < avail - 1e-6:
+            new.append([sa + w, sb, h])
+        sky[i:i + 1] = new
+    return out
+
+
+def rubble(part, S, s0, s1, z0, z1, rnd, cell=0.1, bulge=(0.02, 0.06), mortar_col=0.75, lod2_col=3.0):
+    """Random-rubble granite on a parametric face S(s, z, d) -> Vector (s along the face, z up, d out of the face).
+    LOD0: every block a pitch-faced pillow (real relief, a grid of ~cell m displaced by a dome + noise) with its arris
+    sides running back JD to a recessed lime-mortar face; LOD1: flat blocks + mortar; LOD2: one face per lod2_col."""
+    def P(s, z, d):
+        return S(s, z, d)
+
+    def outv(s, z):
+        return S(s, z, 0.1) - S(s, z, 0.0)
+    for sa, sb, za, zb in skyline(s0, s1, z0, z1, rnd):
+        w, h = sb - sa, zb - za
+        j = lambda: rnd.uniform(-0.011, 0.011)  # noqa: E731
+        cs = lambda s: min(s1 - 0.006, max(s0 + 0.006, s))  # noqa: E731
+        c = [(cs(sa + JH + j()), za + JH + j() * 0.6), (cs(sb - JH + j()), za + JH + j() * 0.6),
+             (cs(sb - JH + j()), min(z1 - 0.008, zb - JH + j() * 0.6)), (cs(sa + JH + j()), min(z1 - 0.008, zb - JH + j() * 0.6))]
+        nu, nv = max(1, min(8, round(w / cell))), max(1, min(5, round(h / cell)))
+        amp = rnd.uniform(*bulge) * min(1.0, 0.4 + h / 0.4)
+        ph = Vector((rnd.uniform(0, 50), rnd.uniform(0, 50), rnd.uniform(0, 50)))
+        u0 = rnd.uniform(0.005, max(0.006, TIDE_U - 0.01 - (w + 0.1) / 4.0))
+        tilt = (rnd.uniform(-0.012, 0.012), rnd.uniform(-0.012, 0.012))
+
+        def grid(i, k):
+            a, b = i / nu, k / nv
+            s = (c[0][0] * (1 - a) + c[1][0] * a) * (1 - b) + (c[3][0] * (1 - a) + c[2][0] * a) * b
+            z = (c[0][1] * (1 - a) + c[1][1] * a) * (1 - b) + (c[3][1] * (1 - a) + c[2][1] * a) * b
+            ex = min(a, 1 - a, b, 1 - b)
+            pil = (1 - (2 * a - 1) ** 4) * (1 - (2 * b - 1) ** 4)
+            n1 = noise.noise(Vector((s * 2.7, z * 2.7, 0.0)) + ph)
+            n2 = noise.noise(Vector((s * 8.0, z * 8.0, 3.0)) + ph)
+            d = 0.003 + tilt[0] * (2 * a - 1) + tilt[1] * (2 * b - 1) + amp * pil * (0.8 + 0.5 * n1) \
+                + 0.012 * n2 * min(1.0, ex * 5)
+            return s, z, max(-0.01, d)
+
+        def uv(s, z, d):
+            return (min(TIDE_U - 0.002, max(0.002, u0 + (s - sa) / 4.0 - 0.15 * d)), tide_v(z + 0.4 * d))
         L(0)
-        wall.box((x0, yf + 0.03, za), (x1, 0.4, zb), TIDE, skip=("+y", "-x", "+x", "+z", "-z"))   # joint backing
-        xs = [x0]
-        while xs[-1] < x1 - 0.5:
-            nx = xs[-1] + rnd.uniform(0.8, 1.45) * (0.5 if ci % 2 and len(xs) == 1 else 1.0)
-            xs.append(min(nx, x1) if x1 - nx > 0.45 else x1)
-        if xs[-1] < x1:
-            xs[-1] = x1
-        for a, b in zip(xs, xs[1:]):
-            a2 = a + (JOINT if a > x0 + 1e-6 else 0.0)
-            b2 = b - (JOINT if b < x1 - 1e-6 else 0.0)
-            block(wall, a2, b2, yf + rnd.uniform(-0.012, 0.012), 0.35, za + JOINT, zb - JOINT, TIDE,
-                  ch=rnd.uniform(0.025, 0.05), tilt=rnd.uniform(-0.008, 0.008))
-        z = za
+        part.prim += 1
+        gp = {(i, k): grid(i, k) for i in range(nu + 1) for k in range(nv + 1)}
+        for i in range(nu):
+            for k in range(nv):
+                q = [gp[(i, k)], gp[(i + 1, k)], gp[(i + 1, k + 1)], gp[(i, k + 1)]]
+                sc, zc = sum(t[0] for t in q) / 4, sum(t[1] for t in q) / 4
+                uvface(part, [P(*t) for t in q], [uv(*t) for t in q], outward=outv(sc, zc))
+        ring = ([(i, 0) for i in range(nu)] + [(nu, k) for k in range(nv)] + [(i, nv) for i in range(nu, 0, -1)]
+                + [(0, k) for k in range(nv, 0, -1)])
+        smid, zmid = (c[0][0] + c[2][0]) / 2, (c[0][1] + c[2][1]) / 2
+        cen = P(smid, zmid, -JD * 0.5)
+        for e0, e1 in zip(ring, ring[1:] + ring[:1]):
+            (sa_, za_, da), (sb_, zb_, db) = gp[e0], gp[e1]
+            q = [(sa_, za_, da), (sb_, zb_, db), (sb_, zb_, -JD), (sa_, za_, -JD)]
+            uvface(part, [P(*t) for t in q], [uv(*t) for t in q], centre=cen)
+        L(1)                                   # LOD1: flat block (front + 4 arris sides)
+        part.prim += 1
+        q = [(c[0][0], c[0][1], 0.02), (c[1][0], c[1][1], 0.02), (c[2][0], c[2][1], 0.02), (c[3][0], c[3][1], 0.02)]
+        uvface(part, [P(*t) for t in q], [uv(*t) for t in q], outward=outv(smid, zmid))
+        for t0, t1 in zip(q, q[1:] + q[:1]):
+            qq = [t0, t1, (t1[0], t1[1], -JD), (t0[0], t0[1], -JD)]
+            uvface(part, [P(*t) for t in qq], [uv(*t) for t in qq], centre=cen)
+    # mortar face behind the blocks (LOD0 + LOD1), columns of <= mortar_col so the strip keeps its texel density
+    L(0, 1)
+    n = max(1, math.ceil((s1 - s0) / mortar_col - 1e-6))
+    du = MORTAR_U[1] - MORTAR_U[0]
+    for i in range(n):
+        a, b = s0 + (s1 - s0) * i / n, s0 + (s1 - s0) * (i + 1) / n
+        k = (b - a) / mortar_col
+        zs = [z0, (z0 + z1) / 2, z1]
+        for za_, zb_ in zip(zs, zs[1:]):
+            q = [(a, za_), (b, za_), (b, zb_), (a, zb_)]
+            uvface(part, [P(s, z, -JD) for s, z in q],
+                   [(MORTAR_U[0] + 0.002 + (s - a) / (b - a) * (du - 0.004) * k, tide_v(z)) for s, z in q],
+                   outward=outv((a + b) / 2, (za_ + zb_) / 2))
+    # LOD2: one face per column, the block texture
+    L(2)
+    n = max(1, math.ceil((s1 - s0) / lod2_col - 1e-6))
+    for i in range(n):
+        a, b = s0 + (s1 - s0) * i / n, s0 + (s1 - s0) * (i + 1) / n
+        q = [(a, z0), (b, z0), (b, z1), (a, z1)]
+        uvface(part, [P(s, z, 0.0) for s, z in q], [(0.002 + (s - a) / 4.0, tide_v(z)) for s, z in q],
+               outward=outv((a + b) / 2, (z0 + z1) / 2))
+    L()
+
+
+def wall_run(wall, stone, length, rnd, x_from=-1.5, top_mode=None, coping=True, skip_x=None, cell=0.1):
+    """A straight battered random-rubble wall from x_from to x_from + length, face at y ~ 0 at the coping (going out
+    with the batter below), coping on top. The end joints sit on the piece edges (snapping neighbours share them)."""
+    x0, x1 = x_from, x_from + length
+    rubble(wall, lambda s, z, d: Vector((s, -batter(z) - d, z)), x0, x1, FOOT, -COPE_T, rnd, cell=cell)
     if coping:
         cope(stone, x0, x1, rnd)
     L()
@@ -220,11 +317,12 @@ def quay_straight(rnd, ladder_bay=False):
         wall_run(wall, stone, 1.15, rnd, x_from=-1.5)
         wall_run(wall, stone, 1.15, rnd, x_from=0.35)
         rw, rd = 0.35, 0.22
+        # recess back: small rubble (no batter), recess sides: plain dressed reveals from the battered face to the back
+        rubble(wall, lambda s, z, d: Vector((s, rd - d, z)), -rw, rw, FOOT, -COPE_T, rnd, cell=0.12, bulge=(0.01, 0.03))
         L()
-        wall.face([(-rw, rd, FOOT), (rw, rd, FOOT), (rw, rd, -COPE_T), (-rw, rd, -COPE_T)], TIDE, outward=(0, -1, 0))
         for sx in (-1, 1):
-            wall.face([(sx * rw, -0.2, FOOT), (sx * rw, rd, FOOT), (sx * rw, rd, -COPE_T), (sx * rw, -0.2, -COPE_T)], TIDE,
-                      outward=(-sx, 0, 0))
+            wall.face([(sx * rw, -batter(FOOT) - 0.03, FOOT), (sx * rw, rd, FOOT), (sx * rw, rd, -COPE_T),
+                       (sx * rw, -0.03, -COPE_T)], tmode(rnd, sx * rw, -0.4, 0.4), outward=(-sx, 0, 0))
         # coping over the recess, cut back to the recess line
         L()
         stone.box((-rw, rd, -COPE_T), (rw, COPE_D - COPE_O, 0.0), STONE, skip=("+y", "-x", "+x", "-z"))
@@ -237,20 +335,21 @@ def quay_corner(rnd):
     """Outer 90-degree corner: face A along -Y (x -1.5..1.5), face B along +X (y 0..3), quoins at the arris."""
     wall, stone, top = quay_parts()
     a_w, a_s = Part("a"), Part("as")
-    wall_run(a_w, a_s, 3.0, rnd, x_from=-1.5, coping=False)
+    wall_run(a_w, a_s, 3.0, rnd, x_from=-1.5, coping=False, cell=0.13)
     place(a_w, wall)
     b_w, b_s = Part("b"), Part("bs")
-    wall_run(b_w, b_s, 3.0, rnd, x_from=-1.5, coping=False)
+    wall_run(b_w, b_s, 3.0, rnd, x_from=-1.5, coping=False, cell=0.13)
     place(b_w, wall, yaw_deg=90.0, offset=(1.5, 1.5, 0.0))           # face B: local -Y -> +X
     # quoins: long-and-short dressed blocks wrapping the arris (cover the two run ends)
     z = -COPE_T
     for ci, h in enumerate(COURSES):
         za = z - h
-        o = SETBACK * (ci + 0.5) + 0.02
+        o = batter(za) + 0.035
         long_a = 0.9 if ci % 2 == 0 else 0.45
         L(0, 1)
-        wall.box((1.5 - long_a, -o, za + JOINT), (1.5 + o, 0.35, z - JOINT), TIDE, skip=("+y",))
-        wall.box((1.15, -o, za + JOINT), (1.5 + o, 1.35 - long_a, z - JOINT), TIDE, skip=("-x",))
+        wall.box((1.5 - long_a, -o, za + JOINT), (1.5 + o, 0.35, z - JOINT), tmode(rnd, 1.5 - long_a, -o, long_a + 0.5),
+                 skip=("+y",))
+        wall.box((1.15, -o, za + JOINT), (1.5 + o, 1.35 - long_a, z - JOINT), tmode(rnd, 1.15, -o, 1.2), skip=("-x",))
         z = za
     L()
     cs = Part("cs")
@@ -268,8 +367,8 @@ def quay_steps(rnd):
     """6 m section with a flight of granite steps built out against the face, descending to -X below the water.
     0.3 m risers, 0.33 m treads with a nosing, 1.0 m wide; masonry outer side, the tide band continuous."""
     wall, stone, top = quay_parts()
-    wall_run(wall, stone, 3.0, rnd, x_from=-3.0)
-    wall_run(wall, stone, 3.0, rnd, x_from=0.0)
+    wall_run(wall, stone, 3.0, rnd, x_from=-3.0, cell=0.13)
+    wall_run(wall, stone, 3.0, rnd, x_from=0.0, cell=0.13)
     setts(top, -3.0, 3.0, COPE_D - COPE_O, 3.0)
     W, R, T = 1.0, 0.3, 0.33
     yb = 0.1
@@ -281,17 +380,18 @@ def quay_steps(rnd):
         xa = x - T
         L(0)     # tread stone with nosing
         wall.prism([(yb, zt - 0.2), (yf + 0.02, zt - 0.2), (yf - 0.02, zt - 0.17), (yf - 0.02, zt - 0.03),
-                     (yf, zt), (yb, zt)], "x", xa - 0.025, x, TIDE)
+                     (yf, zt), (yb, zt)], "x", xa - 0.025, x, tmode(rnd, xa, yf, 1.3))
         L(1, 2)
-        wall.box((xa, yf, zt - 0.2), (x, yb, zt), TIDE, skip=("+y", "-z"))
+        wall.box((xa, yf, zt - 0.2), (x, yb, zt), tmode(rnd, xa, yf, 1.3), skip=("+y", "-z"))
         L(0, 1)  # masonry column under the tread
-        wall.box((xa, yf + 0.04, FOOT), (x, yb, zt - 0.2), TIDE, skip=("+y", "+z"))
+        wall.box((xa, yf + 0.04, FOOT), (x, yb, zt - 0.2), tmode(rnd, xa, yf, 1.3), skip=("+y", "+z"))
         L(2)
-        wall.face([(xa, yf, FOOT), (x, yf, FOOT), (x, yf, zt - 0.2), (xa, yf, zt - 0.2)], TIDE, outward=(0, -1, 0))
+        wall.face([(xa, yf, FOOT), (x, yf, FOOT), (x, yf, zt - 0.2), (xa, yf, zt - 0.2)], tmode(rnd, xa, yf, 1.3),
+                  outward=(0, -1, 0))
         x = xa
         k += 1
     L()
-    wall.face([(x, yf + 0.04, FOOT), (x, yb, FOOT), (x, yb, -R * (k - 1) - 0.2), (x, yf + 0.04, -R * (k - 1) - 0.2)], TIDE,
+    wall.face([(x, yf + 0.04, FOOT), (x, yb, FOOT), (x, yb, -R * (k - 1) - 0.2), (x, yf + 0.04, -R * (k - 1) - 0.2)], tmode(rnd, x, yf, 1.4),
               outward=(-1, 0, 0))
     # top end of the flight: the coping returns along the steps' top side
     stone.box((2.85, yf - 0.02, -COPE_T), (3.0, -COPE_O, 0.0), STONE, skip=("-z",))
@@ -311,36 +411,12 @@ def quay_head(rnd):
     Snaps to two Straight pieces turned to face -X / +X (their faces along x = -3 and x = +3)."""
     wall, stone, top = quay_parts()
     R0 = 3.0
-    segs = 12
-    z = -COPE_T
-    for ci, h in enumerate(COURSES + [z - sum(COURSES) - FOOT]):
-        za, zb = z - h, z
-        ro = R0 + SETBACK * (ci + 0.5)
-        off = (ci % 2) * 0.5
-        for lods, n in (((0,), segs + (ci % 2)), ((1,), 6)):
-            geo.LEVEL = lods
-            for i in range(n):
-                a0 = math.pi + math.pi * max(0.0, (i - (off if lods == (0,) else 0))) / (n - (off if lods == (0,) else 0))
-                a1 = math.pi + math.pi * min(1.0, (i + 1 - (off if lods == (0,) else 0)) / (n - (off if lods == (0,) else 0)))
-                if a1 - a0 < 1e-4:
-                    continue
-                g = 0.004 if lods == (0,) else 0.0
-                rr = ro + (rnd.uniform(-0.01, 0.01) if lods == (0,) else 0.0)
-                ri = ro - 0.5
-                pts = [(ri * math.cos(a0 + g), ri * math.sin(a0 + g)), (rr * math.cos(a0 + g), rr * math.sin(a0 + g)),
-                       (rr * math.cos(a1 - g), rr * math.sin(a1 - g)), (ri * math.cos(a1 - g), ri * math.sin(a1 - g))]
-                wall.prism(pts, "z", za + (JOINT if lods == (0,) else 0), zb - (JOINT if lods == (0,) else 0),
-                           HEADUV)
-        z = za
-    L(2)
-    for i in range(4):
-        a0, a1 = math.pi + math.pi * i / 4, math.pi + math.pi * (i + 1) / 4
-        ro = R0 + SETBACK * 4
-        wall.face([(ro * math.cos(a0), ro * math.sin(a0), FOOT), (ro * math.cos(a1), ro * math.sin(a1), FOOT),
-                   (R0 * math.cos(a1), R0 * math.sin(a1), -COPE_T), (R0 * math.cos(a0), R0 * math.sin(a0), -COPE_T)],
-                  HEADUV,
-                  outward=(math.cos((a0 + a1) / 2), math.sin((a0 + a1) / 2), 0))
-    L()
+
+    def S(s, z, d):
+        a = math.pi + s / R0
+        r = R0 + batter(z) + d
+        return Vector((r * math.cos(a), r * math.sin(a), z))
+    rubble(wall, S, 0.0, math.pi * R0, FOOT, -COPE_T, rnd, cell=0.2, bulge=(0.02, 0.055), mortar_col=0.6, lod2_col=1.2)
     # radial copings
     for lods, n in (((0,), 10), ((1,), 6), ((2,), 3)):
         geo.LEVEL = lods
@@ -360,27 +436,97 @@ def quay_head(rnd):
     return wall, stone, top
 
 
-def quay_armour(rnd):
-    """Breakwater rock armour: 3 m section of quarried granite blocks (0.6 to 1.6 m) tipped against the wall face,
-    crest at about z -0.6 at the wall, toe 4.5 m out on the seabed; overlaps the piece edges so sections interlock."""
-    wall = Part("Wall")
-    placed = []
-    for layer, (zc, ymin, ymax, s) in enumerate(((-3.4, -4.6, -2.6, 1.2), (-2.6, -3.6, -1.6, 1.1),
-                                                 (-1.8, -2.6, -0.9, 0.95), (-1.1, -1.6, -0.5, 0.85))):
-        x = -1.5 + rnd.uniform(-0.2, 0.3)
-        while x < 1.6:
-            sz = s * rnd.uniform(0.75, 1.2)
-            sx_, sy_, sz_ = sz * rnd.uniform(0.6, 0.85), sz * rnd.uniform(0.5, 0.7), sz * rnd.uniform(0.35, 0.55)
-            c = (x + sx_ * 0.6, rnd.uniform(ymin, ymax), max(zc + rnd.uniform(-0.15, 0.2), FOOT + 0.03 + sz_ * 0.8))
-            if c[0] < 1.75:
-                placed.append(c)
-                hull_rock(wall, c, (sx_, sy_, sz_), rnd, ARMOUR, n=34, lods=(0,))
-                hull_rock(wall, c, (sx_ * 0.97, sy_ * 0.97, sz_ * 0.97), rnd, ARMOUR, n=10, lods=(1,))
-            x += sx_ * 1.15
-    L(2)
-    for c in placed[::3]:
-        hull_rock(wall, c, (0.9, 0.8, 0.5), rnd, ARMOUR, n=7, lods=(2,))
+ARMOUR_ZONES = 4      # T_QuayKit_Armour: 4 bands in v (each 1 m tall x 4 m wide, tiling in u), bottom up:
+#                       0 submerged kelp film, 1 wrack + barnacles, 2 barnacles + tar lichen, 3 dry lichened granite
+
+
+def zone_of(cz, nz, rnd):
+    hs = cz - SEA + rnd.uniform(-0.18, 0.18)
+    k = 0 if hs < -0.6 else 1 if hs < 0.05 else 2 if hs < 0.7 else 3
+    if nz < -0.35:
+        k = max(0, k - 1)         # undersides stay wetter / weedier
+    return k
+
+
+def band_mode(n, pts, zone, rnd):
+    ua, va = geo.frame_of(n)
+    b = [p.dot(va) for p in pts]
+    a0, b0 = min(p.dot(ua) for p in pts), min(b)
+    sc = 1.0 / max(1.0, (max(b) - b0) / 0.94)
+    du = rnd.random()
+    v0 = zone / float(ARMOUR_ZONES)
+    return ("fn", lambda p: (du + (p.dot(ua) - a0) / 4.0,
+                             v0 + (0.03 + min(0.94, max(0.0, (p.dot(va) - b0) * sc))) / ARMOUR_ZONES))
+
+
+def quarry_block(part, c, half, rnd, cell=0.42, amp=0.05):
+    """A big angular quarried granite block: a box chipped by 5..9 random plane cuts (split / spalled faces).
+    LOD0: every facet re-meshed (fan + barycentric grid) and displaced along its normal by noise that fades to zero
+    at the arrises (crisp edges, real relief on the faces); LOD1 / LOD2: the flat facets."""
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts:
+        v.co = Vector((v.co.x * 2 * half[0], v.co.y * 2 * half[1], v.co.z * 2 * half[2]))
+    for _ in range(rnd.randint(5, 9)):
+        nrm = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-0.8, 1))).normalized()
+        sup = max(v.co.dot(nrm) for v in bm.verts)
+        res = bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=nrm * sup * rnd.uniform(0.62, 0.86),
+                                     plane_no=nrm, clear_outer=True)
+        del res
+        bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=0)
+    bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(1.0), verts=bm.verts[:], edges=bm.edges[:])
+    m = (Matrix.Rotation(rnd.uniform(0, 2 * math.pi), 3, "Z") @ Matrix.Rotation(rnd.uniform(-0.3, 0.3), 3, "X")
+         @ Matrix.Rotation(rnd.uniform(-0.3, 0.3), 3, "Y"))
+    cv = Vector(c)
+    ph = Vector((rnd.uniform(0, 50), rnd.uniform(0, 50), rnd.uniform(0, 50)))
+    facets = []
+    for f in bm.faces:
+        pts = [m @ v.co + cv for v in f.verts]
+        n = (m @ f.normal).normalized()
+        cz = sum(p.z for p in pts) / len(pts)
+        facets.append((pts, n, band_mode(n, pts, zone_of(cz, n.z, rnd), rnd)))
+    bm.free()
+
+    def disp(p, n, wc):
+        k = noise.noise(p * 2.3 + ph) * 0.65 + noise.noise(p * 6.5 + ph) * 0.3
+        return p + n * (amp * min(1.0, wc * 2.6) * (0.3 + k))
+    geo.LEVEL = (0,)
+    part.prim += 1
+    for pts, n, mode in facets:
+        C = sum(pts, Vector()) / len(pts)
+        ns = max(1, min(3, math.ceil(max((pts[i] - pts[i - 1]).length for i in range(len(pts))) / cell)))
+        for i in range(len(pts)):
+            A, B = pts[i], pts[(i + 1) % len(pts)]
+
+            def G(a, b):
+                wc = 1.0 - (a + b) / ns
+                return disp(C * wc + A * (a / ns) + B * (b / ns), n, wc)
+            for a in range(ns):
+                for b in range(ns - a):
+                    part.face([G(a, b), G(a + 1, b), G(a, b + 1)], mode, outward=n)
+                    if a + b < ns - 1:
+                        part.face([G(a + 1, b), G(a + 1, b + 1), G(a, b + 1)], mode, outward=n)
+    geo.LEVEL = (1, 2)
+    part.prim += 1
+    for pts, n, mode in facets:
+        part.face(pts, mode, outward=n)
     L()
+
+
+def quay_armour(rnd):
+    """Breakwater rock armour: 3 m section of big quarried granite blocks (1.0 to 2.2 m) tipped against the wall
+    face in 4 layers, crest about z -0.3 at the wall (above the waterline), toe 5 m out on the seabed; blocks overlap
+    the piece edges so neighbouring sections interlock."""
+    wall = Part("Wall", smooth_angle=40.0)
+    for zc, ymin, ymax, s, xs in ((-3.25, -4.9, -4.0, 1.9, -1.55), (-2.35, -3.5, -2.7, 1.75, -1.2),
+                                  (-1.45, -2.25, -1.7, 1.55, -1.6), (-0.65, -1.15, -0.85, 1.25, -1.35)):
+        x = xs + rnd.uniform(-0.1, 0.15)
+        while x < 1.55:
+            sz = s * rnd.uniform(0.8, 1.15)
+            half = (sz * rnd.uniform(0.42, 0.58), sz * rnd.uniform(0.32, 0.45), sz * rnd.uniform(0.26, 0.38))
+            c = (x + half[0] * 0.75, rnd.uniform(ymin, ymax), max(zc + rnd.uniform(-0.12, 0.15), FOOT + half[2] * 0.6))
+            quarry_block(wall, c, half, rnd)
+            x += half[0] * 1.55
     return wall
 
 
@@ -536,8 +682,8 @@ def gangway(part, length=9.0, width=1.0, rnd=None):
     about ATT_Hinge for the tide."""
     hw = width / 2.0
     TR = pk_fn("Tread", 1.0)
-    GV = pk_fn("Galv", 0.5)
-    FR = pk_fn("Frame", 1.0)
+    GV = pk_fn("GwSteel", 0.5)        # HP1b: gangway steelwork has its own rust-streaked galvanised strip
+    FR = pk_fn("GwSteel", 1.0)
     L()
     part.box((-hw, 0.0, -0.04), (hw, length, 0.0), TR, skip=("-z",))
     L(0)
@@ -554,15 +700,15 @@ def gangway(part, length=9.0, width=1.0, rnd=None):
         while y <= length - 0.05:
             L(0, 1)
             xc = sx * (hw + 0.03)
-            part.tube((xc, y, 0.12), (xc, y, 1.0), 0.022, 8, GV, caps=False)
+            part.tube((xc, y, 0.12), (xc, y, 1.0), 0.028, 8, GV, caps=False)
             y += 1.5 if y + 1.5 <= length - 0.05 else max(length - 0.1 - y, 1.0)
             if y > length - 0.05:
                 break
         L()
         xc = sx * (hw + 0.03)
-        part.tube((xc, 0.0, 1.0), (xc, length, 1.0), 0.024, 8, GV)             # top rail
+        part.tube((xc, 0.0, 1.0), (xc, length, 1.0), 0.032, 10, GV)            # top rail (64 mm)
         L(0, 1)
-        part.tube((xc, 0.0, 0.55), (xc, length, 0.55), 0.016, 6, GV)           # knee rail
+        part.tube((xc, 0.0, 0.55), (xc, length, 0.55), 0.024, 8, GV)           # knee rail (48 mm)
         L(0)
         for yr in (length - 0.25,):
             part.tube((sx * (hw - 0.1), yr, -0.2), (sx * (hw + 0.01), yr, -0.2), 0.11, 12, ("trim", 0.254, 0.371, 1.0))  # roller
@@ -601,6 +747,7 @@ def col_object(name, boxes):
 
 QUAY_SETS = [{"name": "QuayKit", "set": "Tide", "size": 1024, "wet": True, "dir": TEX + "M_Hbr_QuayKit"},
              {"name": "QuayKit", "set": "Stone", "size": 1024, "wet": True, "dir": TEX + "M_Hbr_QuayKit"},
+             {"name": "QuayKit", "set": "Armour", "size": 1024, "wet": True, "dir": TEX + "M_Hbr_QuayKit"},
              {"name": "Mat", "set": "Cobbles", "size": 1024, "wet": True, "dir": TEX + "Materials"}]
 QUAY_WAIVER = {"texture sets": "HP1: 3 sets for a modular quay piece = 2 own kit sets shared by every QuayKit piece "
                                "(Tide: block faces with the shore zonation baked by height, v = z, so it cannot be a "
@@ -651,9 +798,10 @@ def quay_spec(piece, rnd_seed, dims, closeups, extra_atts=()):
         stone, top = Part("Stone"), Part("Top")
         atts = [att("ATT_Snap_L", (-1.5, 0, 0), (-1, 0, 0)), att("ATT_Snap_R", (1.5, 0, 0), (1, 0, 0)),
                 att("ATT_WaterLine", (0, -1.6, SEA), (0, -1, 0))]
-        cols = [((-1.5, -2.2, FOOT), (1.5, 0.0, -1.0)), ((-1.5, -4.0, FOOT), (1.5, -2.2, -2.4)),
-                ((-1.5, -5.4, FOOT), (1.5, -4.0, -3.4))]
-    meshes = emit(name, [(wall, "Tide", m["Wall"]), (stone, "Stone", m["Stone"]), (top, "Cobbles", m["Top"])])
+        cols = [((-1.5, -1.3, FOOT), (1.5, 0.0, -0.45)), ((-1.5, -2.6, FOOT), (1.5, -1.3, -1.15)),
+                ((-1.5, -4.0, FOOT), (1.5, -2.6, -2.1)), ((-1.5, -5.4, FOOT), (1.5, -4.0, -3.0))]
+    meshes = emit(name, [(wall, "Armour" if piece == "Armour" else "Tide", m["Wall"]), (stone, "Stone", m["Stone"]),
+                         (top, "Cobbles", m["Top"])])
     meshes.append({"object": col_object(name, cols)})
     used = {e["set"] for e in meshes if "set" in e}
     return {"name": name, "budget": "large_prop", "tris": 8000, "tier": "standard", "dims_m": dims,
@@ -678,7 +826,7 @@ def pontoon_spec(piece, closeups):
         atts = [att("ATT_Hinge", (0, -0.04, -0.02), (0, -1, 0)), att("ATT_Roller", (0, 8.75, -0.31), (0, 1, 0)),
                 att("ATT_Snap_Start", (0, 0, 0), (0, -1, 0)), att("ATT_Snap_End", (0, 9.0, 0), (0, 1, 0))]
         dims = (1.12, 9.0, None)
-        cols = [((-0.56, 0.0, -0.22), (0.56, 9.0, 0.0)), ((-0.6, 0.0, 0.0), (-0.5, 9.0, 1.02)), ((0.5, 0.0, 0.0), (0.6, 9.0, 1.02))]
+        cols = [((-0.56, 0.0, -0.22), (0.56, 9.0, 0.0)), ((-0.6, 0.0, 0.0), (-0.5, 9.0, 1.04)), ((0.5, 0.0, 0.0), (0.6, 9.0, 1.04))]
         budget, tris = "large_prop", 3000
     else:
         Lm, W = {"Straight6": (6.0, 2.4), "Straight12": (12.0, 2.4), "Corner": (2.4, 2.4), "Finger": (6.0, 0.9)}[piece]

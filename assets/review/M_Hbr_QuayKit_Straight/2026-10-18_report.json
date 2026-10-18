@@ -2,7 +2,7 @@
  "asset": "M_Hbr_QuayKit_Straight",
  "name": "M_Hbr_QuayKit_Straight",
  "date": "2026-10-18",
- "commit": "2a0e3b1+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx",
-   "bytes": 64892,
+   "bytes": 390988,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_QuayKit_Straight_COL",
@@ -59,7 +59,7 @@
      "max": [
       4.5,
       1.65,
-      -0.0041
+      -0.0167
      ],
      "polygons": 56,
      "all_triangles": true,
@@ -85,15 +85,15 @@
      "name": "M_Hbr_QuayKit_Straight_Wall_LOD0.001",
      "min": [
       -4.5,
-      -1.1259,
+      -1.1021,
       -12.0
      ],
      "max": [
       4.5,
-      1.05,
+      0.18,
       -0.9
      ],
-     "polygons": 660,
+     "polygons": 4256,
      "all_triangles": true,
      "uv": true
     }
@@ -108,7 +108,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD1.fbx",
-   "bytes": 25980,
+   "bytes": 83580,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_QuayKit_Straight_Stone_LOD1",
@@ -152,15 +152,15 @@
      "name": "M_Hbr_QuayKit_Straight_Wall_LOD1.001",
      "min": [
       -4.5,
-      -1.0125,
+      -1.0565,
       -12.0
      ],
      "max": [
       4.5,
-      -0.0675,
+      0.18,
       -0.9
      ],
-     "polygons": 16,
+     "polygons": 656,
      "all_triangles": true,
      "uv": true
     }
@@ -219,12 +219,12 @@
      "name": "M_Hbr_QuayKit_Straight_Wall_LOD2.001",
      "min": [
       -4.5,
-      -0.54,
+      -0.999,
       -12.0
      ],
      "max": [
       4.5,
-      -0.06,
+      0.0,
       -0.9
      ],
      "polygons": 2,
@@ -291,7 +291,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "660 of 8000"
+   "detail": "4256 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
@@ -299,7 +299,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.95e-03, 32 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.77e-02, 1072 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
@@ -323,7 +323,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 468 faces have no UV area"
+   "detail": "0 of 2128 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
@@ -459,7 +459,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "16 of 8000"
+   "detail": "656 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
@@ -467,7 +467,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.40e+00, 32 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.72e-02, 268 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
@@ -491,15 +491,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 8 faces have no UV area"
+   "detail": "0 of 328 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 73.1% (max 15%)"
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 3.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
@@ -563,7 +563,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.5% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
@@ -691,7 +691,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 72.8% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.236 (max 0.02), UV area by 54.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
@@ -755,7 +755,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.5% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
@@ -867,7 +867,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "718 of 8000 (large_prop, asset row)"
+   "detail": "4314 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight",
@@ -875,7 +875,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "22 of 4000"
+   "detail": "662 of 4000"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight",
@@ -907,7 +907,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "11.996 studs, real 4.000 m = 12.000 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "11.985 studs, real 4.000 m = 12.000 studs, off 0.1% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight",
@@ -1131,7 +1131,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_QuayKit_Straight_COL, M_Hbr_QuayKit_Straight_Stone_LOD0, M_Hbr_QuayKit_Straight_Top_LOD0, M_Hbr_QuayKit_Straight_Wall_LOD0; 730 triangles (scene 730)"
+   "detail": "M_Hbr_QuayKit_Straight_COL, M_Hbr_QuayKit_Straight_Stone_LOD0, M_Hbr_QuayKit_Straight_Top_LOD0, M_Hbr_QuayKit_Straight_Wall_LOD0; 4326 triangles (scene 4326)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
@@ -1171,7 +1171,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_QuayKit_Straight_Stone_LOD1, M_Hbr_QuayKit_Straight_Top_LOD1, M_Hbr_QuayKit_Straight_Wall_LOD1; 22 triangles (scene 22)"
+   "detail": "M_Hbr_QuayKit_Straight_Stone_LOD1, M_Hbr_QuayKit_Straight_Top_LOD1, M_Hbr_QuayKit_Straight_Wall_LOD1; 662 triangles (scene 662)"
   },
   {
    "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
@@ -1227,14 +1227,14 @@
    "name": "M_Hbr_QuayKit_Straight_Wall_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 660,
+   "triangles": 4256,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_Straight_Wall_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 16,
+   "triangles": 656,
    "texel_density": null
   },
   {
@@ -1296,8 +1296,8 @@
  ],
  "bbox_studs": [
   9.0,
-  10.125930786132812,
-  11.995902465190738
+  10.102136015892029,
+  11.985000000335276
  ],
- "peak_rss_mb": 280.1
+ "peak_rss_mb": 246.8
 }

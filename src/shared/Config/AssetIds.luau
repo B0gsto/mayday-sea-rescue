@@ -125,7 +125,7 @@ AssetIds.Models = {
 	M_Hbr_Ladder = {
 		LOD0 = "rbxassetid://109188250455001",
 		LOD1 = "rbxassetid://77667061767376",
-		LOD2 = "rbxassetid://77229937384889",
+		LOD2 = "rbxassetid://117362073738138",
 	},
 	M_Hbr_LifebuoyStation = {
 		LOD0 = "rbxassetid://130195930909228",
@@ -206,9 +206,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://130409345623080",
 	},
 	M_Hbr_Pontoon_Gangway = {
-		LOD0 = "rbxassetid://112770508199520",
-		LOD1 = "rbxassetid://92055175313548",
-		LOD2 = "rbxassetid://127270867660065",
+		LOD0 = "rbxassetid://75740683780938",
+		LOD1 = "rbxassetid://75973895972411",
+		LOD2 = "rbxassetid://96668212416734",
 	},
 	M_Hbr_Pontoon_Straight12 = {
 		LOD0 = "rbxassetid://110481514728442",
@@ -221,34 +221,34 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://85032014632711",
 	},
 	M_Hbr_QuayKit_Armour = {
-		LOD0 = "rbxassetid://136226246261242",
-		LOD1 = "rbxassetid://71278239551828",
-		LOD2 = "rbxassetid://108456407734712",
+		LOD0 = "rbxassetid://125170635077023",
+		LOD1 = "rbxassetid://79436830555940",
+		LOD2 = "rbxassetid://102273146906854",
 	},
 	M_Hbr_QuayKit_Corner = {
-		LOD0 = "rbxassetid://79064134565290",
-		LOD1 = "rbxassetid://136395746826912",
-		LOD2 = "rbxassetid://127425854733523",
+		LOD0 = "rbxassetid://138936571863576",
+		LOD1 = "rbxassetid://80284283228385",
+		LOD2 = "rbxassetid://83919389331073",
 	},
 	M_Hbr_QuayKit_Head = {
-		LOD0 = "rbxassetid://107404077758895",
-		LOD1 = "rbxassetid://130845197237197",
-		LOD2 = "rbxassetid://76568922080159",
+		LOD0 = "rbxassetid://89140542933150",
+		LOD1 = "rbxassetid://140515368338784",
+		LOD2 = "rbxassetid://94818133008790",
 	},
 	M_Hbr_QuayKit_LadderBay = {
-		LOD0 = "rbxassetid://115212078057759",
-		LOD1 = "rbxassetid://88316811650811",
-		LOD2 = "rbxassetid://111041890772605",
+		LOD0 = "rbxassetid://139806277451413",
+		LOD1 = "rbxassetid://124450714583047",
+		LOD2 = "rbxassetid://97472020375515",
 	},
 	M_Hbr_QuayKit_Steps = {
-		LOD0 = "rbxassetid://111507365928309",
-		LOD1 = "rbxassetid://99124171963855",
-		LOD2 = "rbxassetid://134583126487234",
+		LOD0 = "rbxassetid://87502107126602",
+		LOD1 = "rbxassetid://105694641554631",
+		LOD2 = "rbxassetid://96806824194164",
 	},
 	M_Hbr_QuayKit_Straight = {
-		LOD0 = "rbxassetid://94778079470029",
-		LOD1 = "rbxassetid://137621767342742",
-		LOD2 = "rbxassetid://123892134964088",
+		LOD0 = "rbxassetid://81487299998822",
+		LOD1 = "rbxassetid://88323716170134",
+		LOD2 = "rbxassetid://113088271242359",
 	},
 	M_Hbr_Rope_Chain = {
 		LOD0 = "rbxassetid://102080997453159",
@@ -358,15 +358,15 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://86655587525303",
 	},
 	M_Sea_AdmiraltyAnchor = {
-		LOD0 = "rbxassetid://134921024178133",
+		LOD0 = "rbxassetid://84567332979216",
 		LOD1 = "rbxassetid://77484820368293",
 		LOD2 = "rbxassetid://94174945578296",
 	},
 	M_Sea_Bell = { LOD0 = "rbxassetid://117046329942236", LOD1 = "rbxassetid://128769409174483" },
 	M_Sea_Morwenna = {
-		LOD0 = "rbxassetid://125857672478011",
-		LOD1 = "rbxassetid://85727245560620",
-		LOD2 = "rbxassetid://79237165088026",
+		LOD0 = "rbxassetid://96948248325880",
+		LOD1 = "rbxassetid://85796063394020",
+		LOD2 = "rbxassetid://107419924719703",
 	},
 	M_Spike1_RefBox = { LOD0 = "rbxassetid://124101679376385" },
 	M_Spike1_ScaleCube = { LOD0 = "rbxassetid://99212271339218" },
@@ -754,11 +754,11 @@ AssetIds.Textures = {
 	},
 	M_Hbr_Ladder = {
 		Steel = {
-			ALB = "rbxassetid://94574254290377",
-			NOR = "rbxassetid://97115793876479",
-			RGH = "rbxassetid://105245630506126",
-			MET = "rbxassetid://103781352346029",
-			Wet = { ALB = "rbxassetid://102670288997005", RGH = "rbxassetid://73233560502338" },
+			ALB = "rbxassetid://109890955107677",
+			NOR = "rbxassetid://79848509310222",
+			RGH = "rbxassetid://112952918440605",
+			MET = "rbxassetid://117827980281322",
+			Wet = { ALB = "rbxassetid://100959961935007", RGH = "rbxassetid://77295274210836" },
 		},
 	},
 	M_Hbr_MooringBuoy = {
@@ -861,11 +861,11 @@ AssetIds.Textures = {
 	},
 	M_Hbr_Pontoon = {
 		Kit = {
-			ALB = "rbxassetid://109704519567392",
-			NOR = "rbxassetid://122560410957703",
-			RGH = "rbxassetid://119015686187823",
-			MET = "rbxassetid://94321836411015",
-			Wet = { ALB = "rbxassetid://75676195597717", RGH = "rbxassetid://99374447335418" },
+			ALB = "rbxassetid://106626872867761",
+			NOR = "rbxassetid://78818609026591",
+			RGH = "rbxassetid://125458337529805",
+			MET = "rbxassetid://90918573167069",
+			Wet = { ALB = "rbxassetid://77452281312327", RGH = "rbxassetid://137803806099109" },
 		},
 	},
 	M_Hbr_PropAtlas = {
@@ -884,17 +884,23 @@ AssetIds.Textures = {
 		},
 	},
 	M_Hbr_QuayKit = {
+		Armour = {
+			ALB = "rbxassetid://119240854551332",
+			NOR = "rbxassetid://94142498318573",
+			RGH = "rbxassetid://74012354266354",
+			Wet = { ALB = "rbxassetid://71664420872754", RGH = "rbxassetid://112392156303887" },
+		},
 		Stone = {
-			ALB = "rbxassetid://100881844720605",
-			NOR = "rbxassetid://129317377941646",
-			RGH = "rbxassetid://101508075841613",
-			Wet = { ALB = "rbxassetid://96625907758777", RGH = "rbxassetid://107181501906186" },
+			ALB = "rbxassetid://87945102507517",
+			NOR = "rbxassetid://105911205674190",
+			RGH = "rbxassetid://130460393571450",
+			Wet = { ALB = "rbxassetid://105027022733739", RGH = "rbxassetid://112345644271709" },
 		},
 		Tide = {
-			ALB = "rbxassetid://94881347924720",
-			NOR = "rbxassetid://123980820102143",
-			RGH = "rbxassetid://113778231535676",
-			Wet = { ALB = "rbxassetid://89826503915078", RGH = "rbxassetid://93474646343184" },
+			ALB = "rbxassetid://134520667298867",
+			NOR = "rbxassetid://85680569938329",
+			RGH = "rbxassetid://134562893566375",
+			Wet = { ALB = "rbxassetid://140153688500515", RGH = "rbxassetid://80293039930095" },
 		},
 	},
 	M_Prop_Chandlery = {
@@ -1098,22 +1104,27 @@ AssetIds.Textures = {
 	},
 	M_Sea_AdmiraltyAnchor = {
 		Iron = {
-			ALB = "rbxassetid://101648698914279",
-			NOR = "rbxassetid://101920555938582",
-			RGH = "rbxassetid://80651971934951",
+			ALB = "rbxassetid://135284185672926",
+			NOR = "rbxassetid://100921295652807",
+			RGH = "rbxassetid://132534430485052",
 		},
 	},
 	M_Sea_Morwenna = {
+		Encrust = {
+			ALB = "rbxassetid://122271441894190",
+			NOR = "rbxassetid://122985718913326",
+			RGH = "rbxassetid://114523273180254",
+		},
 		Kelp = {
 			ALB = "rbxassetid://119079543125465",
 			NOR = "rbxassetid://121046780780612",
 			RGH = "rbxassetid://88225104223122",
 		},
 		Metal = {
-			ALB = "rbxassetid://110377936753051",
-			NOR = "rbxassetid://80042427656659",
-			RGH = "rbxassetid://97036478746912",
-			MET = "rbxassetid://87520539111686",
+			ALB = "rbxassetid://139429143606770",
+			NOR = "rbxassetid://115937149531361",
+			RGH = "rbxassetid://87793986979413",
+			MET = "rbxassetid://77482865945820",
 		},
 		Silt = {
 			ALB = "rbxassetid://114791116268179",
@@ -1121,8 +1132,8 @@ AssetIds.Textures = {
 			RGH = "rbxassetid://100089289009744",
 		},
 		Wood = {
-			ALB = "rbxassetid://77168889049828",
-			NOR = "rbxassetid://84727572447942",
+			ALB = "rbxassetid://72039419731426",
+			NOR = "rbxassetid://93534023662412",
 			RGH = "rbxassetid://94367035109369",
 		},
 	},

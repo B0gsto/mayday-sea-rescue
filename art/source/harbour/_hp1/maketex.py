@@ -29,7 +29,7 @@ G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 SRC = G + "build/hp1/src"
 N = 1024
 SEA = -1.333          # sea level below the quay top (m)
-PKIT = {"Float": (0.0, 0.125), "Tread": (0.125, 0.1875), "Galv": (0.1875, 0.25), "Rubber": (0.25, 0.375),
+PKIT = {"Float": (0.0, 0.125), "Tread": (0.125, 0.15), "GwSteel": (0.15, 0.1875), "Galv": (0.1875, 0.25), "Rubber": (0.25, 0.375),
         "Frame": (0.375, 0.5), "Deck0": (0.5, 0.625), "Deck1": (0.625, 0.75), "Deck2": (0.75, 0.875), "Deck3": (0.875, 1.0)}
 FLOAT_Z = (-0.95, 0.0)   # float strip v range in pontoon z (deck top 0, water -0.5)
 LADDER_Z = (-4.2, 1.2)
@@ -195,7 +195,60 @@ def save(folder, stem, alb, nor, rgh, met, alb_w=None, rgh_w=None, darken=0.32, 
     write(stem, "RGH_Wet", np.clip(np.minimum(rgh_w, rgh - 0.06), 0.06, 1), "L", folder)
 
 
-# ---------------------------------------------------------------- quay kit
+# ---------------------------------------------------------------- quay kit (HP1b)
+TIDE_U, MORTAR_U = 0.75, (0.79, 0.99)      # = kit.py: granite block region | lime mortar strip (u)
+
+
+def clusters(s, seed, beta=2.3, aniso=(1.0, 1.0)):
+    """patchy colony field 0..1 (sharp-edged blobs 10..40 cm)."""
+    return fbm(s, beta, aniso=aniso, seed=seed) * 0.75 + fbm(s, 1.4, seed=seed + 1) * 0.25
+
+
+def growth(s, hs, seed, line):
+    """Shore growth fields from height above sea level hs (m): barnacle colonies that are dense low down and thin
+    out into scattered clusters ~0.7 m above the line, wrack clumps hanging below the line, a tar-lichen splash band,
+    green algae seeps and the always-wet stain. Returns dict of 0..1 masks + barnacle height / pits."""
+    h = hs + 0.18 * (line - 0.5) * 2
+    col = clusters(s, seed)
+    fine = fbm(s, 1.1, seed=seed + 7)
+    # barnacles: colony threshold rises with height -> big crusts low, small clusters high, none above ~0.8 m
+    thr = 0.36 + 0.34 * smooth(-0.5, 0.75, h)
+    bmask = smooth(thr, thr + 0.05, col) * smooth(0.85, 0.4, h) * (1 - 0.75 * smooth(-0.6, -1.4, h))
+    bmask = np.maximum(bmask, smooth(0.93, 0.97, fine) * smooth(1.0, 0.5, h) * smooth(-1.6, -0.8, h) * 0.8)  # strays
+    bh, bcov, bpit = barnacles(s, bmask, seed + 3, count=60000, rads=(2, 2, 3, 3, 3, 4, 4, 5, 6))
+    # wrack (Fucus / Ascophyllum) clumps: vertical drapes, cover grows with depth below the line
+    drape = fbm(s, 2.2, aniso=(0.3, 1.0), seed=seed + 11)
+    wthr = 0.62 - 0.3 * smooth(0.1, -1.2, h)
+    weed = smooth(wthr, wthr + 0.08, drape * 0.7 + col * 0.3) * smooth(0.25, -0.15, h)
+    strands = fbm(s, 1.3, aniso=(0.15, 1.0), seed=seed + 12)
+    tar = smooth(1.2, 0.9, h) * smooth(0.35, 0.6, h) * smooth(0.5, 0.64, clusters(s, seed + 20))
+    alg = smooth(0.55, 0.1, h) * smooth(-0.6, -0.1, h) * smooth(0.55, 0.7, fbm(s, 2.4, aniso=(0.2, 1.0), seed=seed + 21))
+    wet = smooth(0.62, 0.48, h)                 # the tidal zone is always damp
+    sub = smooth(-0.3, -0.9, h)                 # permanently submerged: kelp / diatom film
+    return dict(b=bcov, bh=bh, bpit=bpit, weed=weed, strands=strands, tar=tar, alg=alg, wet=wet, sub=sub)
+
+
+def paint_shore(base, rough, g, fine, state):
+    """Apply the growth masks to a granite / mortar base for one state (dry | wet)."""
+    w = state == "wet"
+    a = base * (0.6 if w else 1.0)
+    a = mix(a, a * (0.62 if not w else 0.85), g["wet"])
+    a = mix(a, rgb((52, 50, 42)) * (0.75 if w else 1.0), g["sub"] * 0.7)
+    a = mix(a, rgb((30, 30, 28)) * (0.85 + 0.3 * fine[..., None]), g["tar"] * 0.85)
+    a = mix(a, rgb((70, 98, 40)) * (0.7 if w else 0.9) * (0.8 + 0.4 * fine[..., None]), g["alg"] * 0.7)
+    wc = mix(rgb((66, 56, 26)), rgb((96, 80, 34)), g["strands"]) * (0.8 + 0.35 * fine[..., None])
+    a = mix(a, wc * (0.72 if w else 1.0), g["weed"] * 0.93)
+    bc = mix(rgb((150, 142, 124)), rgb((182, 176, 160)), fine) * (0.78 if w else 1.0)
+    a = mix(a, bc, g["b"] * 0.92)
+    a = a * (1 - 0.6 * g["bpit"][..., None])
+    r = rough * (0.42 if w else 1.0)
+    r = mix(r, 0.34 if not w else 0.16, g["wet"] * (1 - g["b"]))
+    r = mix(r, 0.9 if not w else 0.55, g["tar"] * 0.5)
+    r = mix(r, 0.28 if not w else 0.1, g["weed"])
+    r = mix(r, 0.7 if not w else 0.4, g["b"] * 0.85)
+    return a, r
+
+
 def quay_sets():
     out = G + "assets/textures/M_Hbr_QuayKit"
     A, Nn, R = scan("granite_tile_02")
@@ -203,70 +256,86 @@ def quay_sets():
     s = (N, N)
     fine, mid, big = fbm(s, 1.2, seed=1), fbm(s, 2.2, seed=2), fbm(s, 3.0, seed=3)
     gx, gy = grad_of(Nn)
-    # ---- Stone: dressed Cornish granite (grey with a warm buff cast, feldspar sparkle), lichen, salt, rope polish
-    alb = regrade(A, (128, 124, 116), contrast=1.05, sat=0.7)
-    alb = alb * (0.9 + 0.2 * big[..., None])
-    lich_g = smooth(0.62, 0.72, mid * 0.6 + fine * 0.4) * smooth(0.45, 0.6, big)
+    xx = np.mgrid[0:N, 0:N][1].astype(np.float64) / N
+    # ---- Stone: the coping / cap: lighter, sun- and salt-bleached dressed granite, grey + orange lichen, rope polish
+    alb = regrade(A, (168, 164, 154), contrast=1.0, sat=0.6)
+    alb = alb * (0.92 + 0.14 * big[..., None])
+    lich_g = smooth(0.6, 0.7, mid * 0.6 + fine * 0.4) * smooth(0.45, 0.6, big)
     lich_o = smooth(0.8, 0.86, fbm(s, 1.6, seed=4)) * smooth(0.5, 0.7, big)
-    alb = mix(alb, rgb((150, 152, 138)) * (0.85 + 0.3 * fine[..., None]), lich_g * 0.55)
-    alb = mix(alb, rgb((186, 132, 52)) * (0.8 + 0.3 * fine[..., None]), lich_o * 0.75)
-    stain = smooth(0.55, 0.8, fbm(s, 2.6, aniso=(0.2, 1.4), seed=5)) * 0.25
-    alb = alb * (1 - stain[..., None] * 0.5)
-    rg = np.clip(0.7 + 0.07 * R + 0.08 * (fine - 0.5), 0.5, 0.92)
+    salt = smooth(0.55, 0.75, fbm(s, 1.8, seed=6)) * 0.5
+    alb = mix(alb, rgb((200, 198, 188)), salt * 0.5)
+    alb = mix(alb, rgb((164, 166, 150)) * (0.85 + 0.3 * fine[..., None]), lich_g * 0.55)
+    alb = mix(alb, rgb((190, 136, 56)) * (0.8 + 0.3 * fine[..., None]), lich_o * 0.75)
+    stain = smooth(0.6, 0.85, fbm(s, 2.6, aniso=(0.2, 1.4), seed=5)) * 0.25
+    alb = alb * (1 - stain[..., None] * 0.4)
+    rg = np.clip(0.74 + 0.07 * R + 0.08 * (fine - 0.5), 0.5, 0.94)
     rg = mix(rg, 0.95, lich_g * 0.6 + lich_o * 0.6)
     lh = lich_g * 0.6 + lich_o * 0.8
     lgx, lgy = hgrad(lh, 1.5)
-    nor = nor_of(gx * 1.2 + lgx, gy * 1.2 + lgy)
-    save(out, "T_QuayKit_Stone", alb, nor, rg, np.zeros(s), darken=0.34, gloss=0.45)
+    nor = nor_of(gx * 1.3 + lgx, gy * 1.3 + lgy)
+    rg_w = np.clip(rg * 0.42, 0.1, 0.5)
+    alb_w = alb * 0.6
+    save(out, "T_QuayKit_Stone", alb, nor, rg, np.zeros(s), alb_w=alb_w, rgh_w=rg_w)
 
-    # ---- Tide: block faces by height (v = z, 4 m), shore zonation
+    # ---- Tide: u 0..0.75 granite block faces (3 m of scan), u 0.79..0.99 lime mortar; v = z (row 0 = quay top)
     A4, N4, R4 = tile2(A), tile2(Nn), tile2(R)
     gx4, gy4 = grad_of(N4)
     yy = np.mgrid[0:N, 0:N][0].astype(np.float64)
-    z = -4.0 * yy / N                                         # row 0 = quay top
-    hs = z - SEA                                              # height above sea level
-    line = fbm(s, 2.6, aniso=(1.0, 0.12), seed=11)            # ragged along u
-    runs = fbm(s, 2.4, aniso=(0.1, 1.8), seed=12)             # streaks running down the face
+    z = -4.0 * yy / N
+    hs = z - SEA
+    line = fbm(s, 2.6, aniso=(1.0, 0.12), seed=11)
     fine4, mid4, big4 = fbm(s, 1.2, seed=13), fbm(s, 2.2, seed=14), fbm(s, 3.0, seed=15)
-    tl = 1.0 + 0.2 * (line - 0.5) * 2 + 0.18 * (runs - 0.5) * 2   # top of the wet/algae band, ~1 m above the water
-    d = tl - hs                                                # depth below the band top
-    base = regrade(A4, (120, 117, 110), contrast=1.0, sat=0.65) * (0.88 + 0.22 * big4[..., None])
-    # splash zone: black tar lichen (Verrucaria maura) band above the algae, patchy
-    tar = smooth(-0.55, -0.15, d) * (1 - smooth(-0.02, 0.1, d)) * smooth(0.35, 0.6, mid4 * 0.7 + fine4 * 0.3)
-    wetb = smooth(-0.04, 0.04, d)                               # wet stain below the line
-    rimstain = smooth(-0.03, 0.0, d) * (1 - smooth(0.02, 0.07, d))
-    alg = smooth(0.0, 0.6, d + 0.3 * (mid4 - 0.5)) * (0.5 + 0.5 * fine4) * (1 - smooth(-0.1, 0.3, -hs))
-    sub = smooth(-0.15, 0.25, -hs + 0.25 * (mid4 - 0.5))         # below sea level: brown wrack / kelp film
-    salt = smooth(0.0, 0.08, -d) * (1 - smooth(0.08, 0.35, -d)) * smooth(0.5, 0.7, fine4 * 0.6 + mid4 * 0.4)
-    bband = smooth(0.25, 0.45, d) * (1 - smooth(1.0, 1.35, d)) * smooth(0.4, 0.62, big4)
-    bh, bcov, bpit = barnacles(s, bband, 17, count=11000)
-    weedstreak = smooth(0.55, 0.75, runs) * smooth(0.3, 0.6, d) * (1 - sub)
-    green = mix(rgb((62, 82, 40)), rgb((88, 96, 52)), fine4)
-    brown = mix(rgb((58, 50, 30)), rgb((80, 66, 36)), smooth(0.4, 0.6, big4))
-    outs = {}
-    for state in ("dry", "wet"):
-        k = 1.0 if state == "dry" else 0.72
-        a = base * (1.0 if state == "dry" else 0.68)
-        a = mix(a, a * 0.52, wetb * (1.0 if state == "dry" else 0.5))
-        a = mix(a, rgb((34, 34, 32)) * (0.85 + 0.3 * fine4[..., None]), tar * 0.85)
-        a = mix(a, green * k * (0.75 + 0.45 * fine4[..., None]), alg * 0.72)
-        a = mix(a, green * k * 0.8, weedstreak * 0.5)
-        a = mix(a, brown * k * (0.8 + 0.35 * fine4[..., None]), sub * 0.88)
-        a = mix(a, rgb((48, 42, 30)) * k, rimstain * 0.6)
-        a = mix(a, rgb((196, 194, 184)) * k, salt * 0.4)
-        a = mix(a, rgb((168, 162, 150)) * k * (0.85 + 0.2 * fine4[..., None]), bcov * 0.9)
-        a = a * (1 - 0.55 * bpit[..., None])
-        r0 = np.clip(0.74 + 0.07 * R4, 0.5, 0.92) if state == "dry" else np.clip(0.4 + 0.06 * R4, 0.25, 0.6)
-        r = mix(r0, (0.3 if state == "dry" else 0.14) + 0.08 * fine4, np.maximum(wetb, sub))
-        r = mix(r, 0.9 if state == "dry" else 0.5, tar * 0.4)
-        r = mix(r, 0.85, salt * 0.5)
-        r = mix(r, 0.75 if state == "dry" else 0.45, bcov * 0.8)
-        outs[state] = (a, r)
-    soften = 1 - 0.55 * np.maximum(alg, sub)
-    bgx, bgy = hgrad(bh, 2.2)
-    agx, agy = hgrad(sub * fine4 + alg * fine4 * 0.6, 3.0)
-    nor = nor_of(gx4 * soften * 1.2 + bgx + agx, gy4 * soften * 1.2 + bgy + agy)
-    save(out, "T_QuayKit_Tide", outs["dry"][0], nor, outs["dry"][1], np.zeros(s), alb_w=outs["wet"][0], rgh_w=outs["wet"][1])
+    # lighter Cornish granite with per-stone tone: blocks pick random u offsets, so tone varies strongly along u
+    tone_u = fbm(s, 3.2, aniso=(0.02, 1.0), seed=16)
+    base = regrade(A4, (150, 145, 136), contrast=1.05, sat=0.6) * (0.84 + 0.3 * tone_u[..., None]) * (0.95 + 0.1 * big4[..., None])
+    warm = smooth(0.55, 0.8, fbm(s, 3.2, aniso=(0.05, 1.0), seed=17))
+    base = mix(base, base * np.array([1.06, 1.0, 0.9]), warm * 0.7)
+    lich = smooth(0.72, 0.8, mid4 * 0.6 + fine4 * 0.4) * smooth(0.9, 1.6, hs)
+    base = mix(base, rgb((176, 172, 150)) * (0.85 + 0.3 * fine4[..., None]), lich * 0.5)
+    mortar_m = (xx >= MORTAR_U[0] - 0.02).astype(np.float64)
+    mort = rgb((168, 160, 144)) * (0.86 + 0.22 * fine4[..., None]) * (0.92 + 0.1 * mid4[..., None])
+    base = mix(base, mort, mortar_m)
+    rough = np.where(mortar_m > 0.5, 0.9, np.clip(0.76 + 0.07 * R4, 0.55, 0.92))
+    g = growth(s, hs, 30, line)
+    a_d, r_d = paint_shore(base, rough, g, fine4, "dry")
+    a_w, r_w = paint_shore(base, rough, g, fine4, "wet")
+    wgx, wgy = hgrad(g["weed"] * (0.6 + 0.6 * g["strands"]), 4.0)
+    bgx, bgy = hgrad(g["bh"], 2.6)
+    soften = 1 - 0.7 * g["weed"]
+    mgx, mgy = hgrad(fine4 * mortar_m, 2.0)
+    nor = nor_of(gx4 * soften * 1.3 * (1 - mortar_m) + bgx + wgx + mgx, gy4 * soften * 1.3 * (1 - mortar_m) + bgy + wgy + mgy)
+    save(out, "T_QuayKit_Tide", a_d, nor, r_d, np.zeros(s), alb_w=a_w, rgh_w=r_w)
+
+    # ---- Armour: 4 bands of 256 rows (v 0..0.25 submerged, 0.25..0.5 wrack, 0.5..0.75 barnacle / tar, 0.75..1 dry)
+    hb = N // 4
+    a_d, r_d, a_w, r_w = np.zeros(s + (3,)), np.zeros(s), np.zeros(s + (3,)), np.zeros(s)
+    nor = np.zeros(s + (3,))
+    base = regrade(A4, (146, 142, 133), contrast=1.1, sat=0.6) * (0.86 + 0.26 * big4[..., None])
+    for k, hs_band in enumerate((-1.1, -0.35, 0.3, 1.4)):      # zone 3 = rows 0..255 (top of the image)
+        r0, r1 = (3 - k) * hb, (4 - k) * hb
+        bs = (hb, N)
+        t = 1 - (np.arange(hb)[:, None] + 0.5) / hb * np.ones((1, N))
+        hsb = hs_band + (t - 0.5) * 0.5                          # a little height gradient inside the band
+        g = growth(bs, hsb, 50 + 10 * k, fbm(bs, 2.6, aniso=(1.0, 0.12), seed=90 + k))
+        if k == 0:                                              # coralline pink crust patches on submerged rock
+            cor = smooth(0.6, 0.66, clusters(bs, 99))
+        else:
+            cor = np.zeros(bs)
+        lichd = smooth(0.66, 0.76, fbm(bs, 1.6, seed=95)) if k == 3 else np.zeros(bs)
+        lo = smooth(0.82, 0.88, fbm(bs, 1.5, seed=96)) if k == 3 else np.zeros(bs)
+        b0 = base[r0:r1]
+        b0 = mix(b0, rgb((176, 174, 158)), lichd * 0.55)
+        b0 = mix(b0, rgb((188, 134, 56)), lo * 0.7)
+        rg0 = np.clip(0.8 + 0.07 * R4[r0:r1], 0.55, 0.95)
+        for st, (A_, R_) in (("dry", (a_d, r_d)), ("wet", (a_w, r_w))):
+            a, r = paint_shore(b0, rg0, g, fine4[r0:r1], st)
+            a = mix(a, rgb((150, 104, 110)) * (0.7 if st == "wet" else 1.0), cor * 0.6)
+            A_[r0:r1], R_[r0:r1] = a, r
+        wgx, wgy = hgrad(g["weed"] * (0.6 + 0.6 * g["strands"]), 4.0)
+        bgx, bgy = hgrad(g["bh"], 2.6)
+        soften = 1 - 0.7 * g["weed"]
+        nor[r0:r1] = nor_of(gx4[r0:r1] * soften * 1.5 + bgx + wgx, gy4[r0:r1] * soften * 1.5 + bgy + wgy)
+    save(out, "T_QuayKit_Armour", a_d, nor, r_d, np.zeros(s), alb_w=a_w, rgh_w=r_w)
 
 
 # ---------------------------------------------------------------- pontoon atlas
@@ -311,7 +380,7 @@ def pontoon_set():
         hgt[r0:r1] = (src - 0.5) * 0.25 - gr * 0.8 - (1 - edge) * 0.6
     # galvanised frame channel + fittings: zinc grey, spangle, white rust, rust bleed along bolt lines
     ml = M.mean(-1)
-    for key, tone, rust_k in (("Frame", (150, 152, 150), 1.0), ("Galv", (160, 162, 160), 0.6)):
+    for key, tone, rust_k in (("Frame", (150, 152, 150), 1.0), ("Galv", (160, 162, 160), 0.6), ("GwSteel", (154, 156, 152), 0.8)):
         r0, r1 = band(*PKIT[key])
         h = r1 - r0
         t = (np.arange(h)[:, None] + 0.5) / h * np.ones((1, N))
@@ -326,6 +395,12 @@ def pontoon_set():
             bolts = smooth(0.02, 0.0, np.hypot(bx * 0.25 * N / h, t - 0.5) - 0.06)
         rust = np.clip(smooth(0.72, 0.9, fbm((h, N), 2.0, aniso=(1.0, 0.3), seed=41) + 0.3 * bolts) * rust_k
                        + smooth(0.0, 0.25, 1 - t) * 0.25 * rust_k, 0, 1)
+        if key == "GwSteel":    # HP1b: rust streaks bleeding down from bolts / welds / clamp joints on the gangway
+            bx = np.abs(((xx[r0:r1] * 2) % 1) - 0.5)
+            bleed = smooth(0.06, 0.0, bx - 0.03) * smooth(0.55, 0.75, fbm((h, N), 1.6, seed=44))
+            streak = smooth(0.6, 0.76, fbm((h, N), 2.0, aniso=(0.06, 1.6), seed=42)) \
+                * (0.45 + 0.55 * smooth(0.35, 0.7, fbm((h, N), 2.5, seed=43)))
+            rust = np.clip(np.maximum(rust, np.maximum(streak * 0.85, bleed * 0.9)), 0, 1)
         col = mix(col, Ru[r0:r1] * 0.8 + rgb((20, 8, 0)), rust * 0.8)
         alb[r0:r1] = col
         met[r0:r1] = 1.0 - rust * 0.9 - white * 0.6
@@ -389,6 +464,14 @@ def ladder_set():
     runs = fbm(s, 2.2, aniso=(0.1, 1.6), seed=74)
     rust = np.clip(smooth(0.9, -1.2, hs) * 0.75 + smooth(0.62, 0.8, runs * 0.6 + mid * 0.4) * 0.5
                    + smooth(0.8, 0.9, fine * 0.5 + big * 0.5) * 0.4, 0, 1)
+    # HP1b rust-streak pass: tears bleeding down from each bracket (every 1.2 m from z -3.8) and from the coping lip
+    tears = fbm(s, 1.8, aniso=(0.05, 1.6), seed=78)
+    tear = np.zeros(s)
+    for zb in (-3.8, -2.6, -1.4, -0.2, 0.0):
+        below = zb - z
+        tear = np.maximum(tear, (below > -0.02) * np.exp(-np.clip(below, 0, None) / 0.45))
+    streaks = smooth(0.52, 0.7, tears) * tear * (0.5 + 0.5 * smooth(0.3, 0.7, fbm(s, 2.4, seed=79)))
+    rust = np.clip(np.maximum(rust, streaks * 0.95), 0, 1)
     white = smooth(0.55, 0.75, mid) * (1 - rust) * 0.6
     d = 0.6 + 0.15 * (fbm(s, 2.5, aniso=(1.0, 0.1), seed=75) - 0.5) * 2 - hs
     wet = smooth(-0.03, 0.03, d)

@@ -2,12 +2,12 @@
  "asset": "M_Hbr_QuayKit_LadderBay",
  "name": "M_Hbr_QuayKit_LadderBay",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
   "validate",
-  "turntable"
+  "export"
  ],
  "scene": "art/blender/_template.blend",
  "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
@@ -21,196 +21,236 @@
   "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
   "roblox_tri_limit": 20000
  },
- "turntable": {
-  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_QuayKit_LadderBay/turntable",
-  "images": {
-   "Front3Q_neutral": "Front3Q_neutral.png",
-   "Side_neutral": "Side_neutral.png",
-   "Rear3Q_neutral": "Rear3Q_neutral.png",
-   "High_neutral": "High_neutral.png",
-   "Front3Q_overcast": "Front3Q_overcast.png",
-   "Side_overcast": "Side_overcast.png",
-   "Rear3Q_overcast": "Rear3Q_overcast.png",
-   "High_overcast": "High_overcast.png",
-   "silhouette": "silhouette.png"
-  },
-  "views": [
-   "Front3Q",
-   "Side",
-   "Rear3Q",
-   "High"
-  ],
-  "worlds": {
-   "neutral": "WLD_Neutral",
-   "overcast": "WLD_OvercastSea"
-  },
-  "hdri": {
-   "neutral": "studio_small_08_2k.hdr",
-   "overcast": "gray_pier_2k.hdr"
-  },
-  "size_px": 768,
-  "samples": 32,
-  "mannequin_studs": 5.5,
-  "maps_applied": {
-   "M_Hbr_QuayKit_LadderBay_Wall_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "bytes": 397788,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_LadderBay_COL",
+    "M_Hbr_QuayKit_LadderBay_Stone_LOD0",
+    "M_Hbr_QuayKit_LadderBay_Top_LOD0",
+    "M_Hbr_QuayKit_LadderBay_Wall_LOD0"
    ],
-   "M_Hbr_QuayKit_LadderBay_Stone_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_COL.001",
+     "min": [
+      -4.5,
+      -1.05,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      9.0,
+      0.0
+     ],
+     "polygons": 36,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Stone_LOD0.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      0.0
+     ],
+     "polygons": 66,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Top_LOD0.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Wall_LOD0.001",
+     "min": [
+      -4.5,
+      -1.1194,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      0.84,
+      -0.9
+     ],
+     "polygons": 4258,
+     "all_triangles": true,
+     "uv": true
+    }
    ],
-   "M_Hbr_QuayKit_LadderBay_Top_LOD0": [
-    "ALB",
-    "MET",
-    "NOR",
-    "RGH"
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
    ]
   },
-  "sets": [
-   "T_QuayKit_Tide",
-   "T_QuayKit_Stone",
-   "T_Mat_Cobbles"
-  ],
-  "frames": {
-   "Front3Q": {
-    "asset": [
-     0.251,
-     0.037,
-     0.934,
-     0.806
-    ],
-    "mannequin": [
-     0.076,
-     0.198,
-     0.187,
-     0.473
-    ],
-    "fill": 0.769
-   },
-   "Side": {
-    "asset": [
-     0.261,
-     0.079,
-     0.963,
-     0.889
-    ],
-    "mannequin": [
-     0.122,
-     0.164,
-     0.233,
-     0.474
-    ],
-    "fill": 0.81
-   },
-   "Rear3Q": {
-    "asset": [
-     0.228,
-     0.185,
-     0.963,
-     0.838
-    ],
-    "mannequin": [
-     0.044,
-     0.176,
-     0.165,
-     0.471
-    ],
-    "fill": 0.735
-   },
-   "High": {
-    "asset": [
-     0.275,
-     0.112,
-     0.963,
-     0.923
-    ],
-    "mannequin": [
-     0.127,
-     0.335,
-     0.241,
-     0.519
-    ],
-    "fill": 0.811
-   }
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "bytes": 98524,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_LadderBay_Stone_LOD1",
+    "M_Hbr_QuayKit_LadderBay_Top_LOD1",
+    "M_Hbr_QuayKit_LadderBay_Wall_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Stone_LOD1.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      0.0
+     ],
+     "polygons": 18,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Top_LOD1.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Wall_LOD1.001",
+     "min": [
+      -4.5,
+      -1.089,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      0.84,
+      -0.9
+     ],
+     "polygons": 824,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
   },
-  "closeups": [
-   {
-    "name": "corner_FL",
-    "target": [
-     4.5,
-     -1.099252700805664,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 41.71,
-    "el": 25.0,
-    "file": "closeup_corner_FL.png"
-   },
-   {
-    "name": "corner_FR",
-    "target": [
-     -4.5,
-     -1.099252700805664,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 318.29,
-    "el": 25.0,
-    "file": "closeup_corner_FR.png"
-   },
-   {
-    "name": "corner_RL",
-    "target": [
-     4.5,
-     9.0,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 138.29,
-    "el": 25.0,
-    "file": "closeup_corner_RL.png"
-   },
-   {
-    "name": "corner_RR",
-    "target": [
-     -4.5,
-     9.0,
-     0.0
-    ],
-    "dist": 6.0,
-    "az": 221.71,
-    "el": 25.0,
-    "file": "closeup_corner_RR.png"
-   },
-   {
-    "name": "centre",
-    "target": [
-     0.0,
-     3.950373649597168,
-     -6.0
-    ],
-    "dist": 6.0,
-    "az": 35.0,
-    "el": 25.0,
-    "file": "closeup_centre.png"
-   }
-  ],
-  "closeup_px": 1024,
-  "min_fill": 0.735,
-  "in_frame": true,
-  "dims_m": [
-   3.0,
-   null,
-   4.0
-  ],
-  "validation_ok": true,
-  "seconds": 7.2
- },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "bytes": 26604,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_LadderBay_Stone_LOD2",
+    "M_Hbr_QuayKit_LadderBay_Top_LOD2",
+    "M_Hbr_QuayKit_LadderBay_Wall_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Stone_LOD2.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      0.0
+     ],
+     "polygons": 18,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Top_LOD2.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_LadderBay_Wall_LOD2.001",
+     "min": [
+      -4.5,
+      -1.089,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      0.66,
+      -0.9
+     ],
+     "polygons": 10,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay.attachments.json",
+   "attachments": [
+    "ATT_Snap_L",
+    "ATT_Snap_R",
+    "ATT_Moor_01",
+    "ATT_WaterLine",
+    "ATT_Ladder"
+   ]
+  }
+ ],
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay.blend",
  "ok": true,
  "checks": [
@@ -252,7 +292,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "682 of 8000"
+   "detail": "4258 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD0",
@@ -260,7 +300,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.93e-03, 72 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.81e-02, 1154 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD0",
@@ -284,7 +324,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1 of 479 faces have no UV area"
+   "detail": "0 of 2129 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Stone_LOD0",
@@ -420,7 +460,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "38 of 8000"
+   "detail": "824 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD1",
@@ -428,7 +468,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.07e+00, 72 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.03e-02, 350 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD1",
@@ -452,15 +492,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 19 faces have no UV area"
+   "detail": "0 of 412 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 65.2% (max 15%)"
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 3.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Stone_LOD1",
@@ -524,7 +564,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 48.8% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 49.1% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Top_LOD1",
@@ -620,7 +660,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.40e+01, 16 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.39e+01, 16 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Wall_LOD2",
@@ -652,7 +692,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 65.0% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.629 (max 0.02), UV area by 50.5% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Stone_LOD2",
@@ -716,7 +756,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 48.8% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 49.1% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay_Top_LOD2",
@@ -828,7 +868,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "750 of 8000 (large_prop, asset row)"
+   "detail": "4326 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay",
@@ -836,7 +876,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "58 of 4000"
+   "detail": "844 of 4000"
   },
   {
    "subject": "M_Hbr_QuayKit_LadderBay",
@@ -1071,12 +1111,124 @@
    "detail": "empty becomes an Attachment on import"
   },
   {
-   "subject": "M_Hbr_QuayKit_LadderBay",
-   "check": "turntable",
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "check": "file naming",
    "ok": true,
    "waived": false,
-   "info": true,
-   "detail": "asset in frame, fill >= 0.73; 14 renders in 7 s, maps M_Hbr_QuayKit_LadderBay_Wall_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_LadderBay_Stone_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_LadderBay_Top_LOD0: ALB/MET/NOR/RGH"
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_LadderBay_COL, M_Hbr_QuayKit_LadderBay_Stone_LOD0, M_Hbr_QuayKit_LadderBay_Top_LOD0, M_Hbr_QuayKit_LadderBay_Wall_LOD0; 4362 triangles (scene 4362)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_LadderBay_Stone_LOD1, M_Hbr_QuayKit_LadderBay_Top_LOD1, M_Hbr_QuayKit_LadderBay_Wall_LOD1; 844 triangles (scene 844)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_LadderBay/M_Hbr_QuayKit_LadderBay_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_LadderBay_Stone_LOD2, M_Hbr_QuayKit_LadderBay_Top_LOD2, M_Hbr_QuayKit_LadderBay_Wall_LOD2; 30 triangles (scene 30)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_LadderBay_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
   }
  ],
  "meshes": [
@@ -1084,14 +1236,14 @@
    "name": "M_Hbr_QuayKit_LadderBay_Wall_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 682,
+   "triangles": 4258,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_LadderBay_Wall_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 38,
+   "triangles": 824,
    "texel_density": null
   },
   {
@@ -1153,8 +1305,8 @@
  ],
  "bbox_studs": [
   9.0,
-  10.099252700805664,
+  10.119426488876343,
   12.0
  ],
- "peak_rss_mb": 690.6
+ "peak_rss_mb": 517.9
 }
