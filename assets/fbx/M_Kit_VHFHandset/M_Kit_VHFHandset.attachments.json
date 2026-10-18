@@ -1,0 +1,152 @@
+{
+ "asset": "M_Kit_VHFHandset",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.009,
+    -0.0212,
+    0.228
+   ],
+   "roblox_from_origin": [
+    -0.009,
+    0.228,
+    -0.0212
+   ],
+   "roblox_from_bbox_centre": [
+    -0.009,
+    -0.171,
+    -0.0212
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PTT",
+   "parent": null,
+   "blender": [
+    -0.093,
+    -0.0212,
+    0.303
+   ],
+   "roblox_from_origin": [
+    0.093,
+    0.303,
+    -0.0212
+   ],
+   "roblox_from_bbox_centre": [
+    0.093,
+    -0.096,
+    -0.0212
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Antenna",
+   "parent": null,
+   "blender": [
+    0.009,
+    -0.0032,
+    0.798
+   ],
+   "roblox_from_origin": [
+    -0.009,
+    0.798,
+    -0.0032
+   ],
+   "roblox_from_bbox_centre": [
+    -0.009,
+    0.399,
+    -0.0032
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Speaker",
+   "parent": null,
+   "blender": [
+    0.009,
+    -0.0872,
+    0.138
+   ],
+   "roblox_from_origin": [
+    -0.009,
+    0.138,
+    -0.0872
+   ],
+   "roblox_from_bbox_centre": [
+    -0.009,
+    -0.261,
+    -0.0872
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Screen",
+   "parent": null,
+   "blender": [
+    0.009,
+    -0.0872,
+    0.348
+   ],
+   "roblox_from_origin": [
+    -0.009,
+    0.348,
+    -0.0872
+   ],
+   "roblox_from_bbox_centre": [
+    -0.009,
+    -0.051,
+    -0.0872
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

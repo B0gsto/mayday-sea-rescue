@@ -6,3 +6,5 @@ Reference: lifebuoy 0.75 m OD (05 section 4.1) with light and retro tape.
 - Mass about 2.5 kg (verify).
 Sources:
 - https://aspli.com/967/lifebuoy-30-inch-75-centimetres
+
+E1 build (2026-10-18, art/source/kit/E1/kitgeo.py): authored bbox (m): 0.903 x 0.764 x 0.138, X Y Z with Z up, base at Z 0; includes handles, lines, clips and lights, items modelled lying or standing as they rest on deck. The class size above is the real reference.

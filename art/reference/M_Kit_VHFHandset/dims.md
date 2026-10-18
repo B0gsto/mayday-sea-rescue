@@ -7,3 +7,5 @@ Reference: marine handheld VHF, Standard Horizon class.
 Sources:
 - https://www.marinesuperstore.com/marine-communication/handheld-vhf-radio/standard-horizon-hx210e-handheld-vhf-radio
 - https://www.marinesuperstore.com/?p=78389
+
+E1 build (2026-10-18, art/source/kit/E1/kitgeo.py): authored bbox (m): 0.069 x 0.056 x 0.266, X Y Z with Z up, base at Z 0; includes handles, lines, clips and lights, items modelled lying or standing as they rest on deck. The class size above is the real reference.

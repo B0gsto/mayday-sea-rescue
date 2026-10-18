@@ -1,0 +1,123 @@
+{
+ "asset": "M_Kit_FirstAidBag",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    -0.0006,
+    0.0047,
+    1.2
+   ],
+   "roblox_from_origin": [
+    0.0006,
+    1.2,
+    0.0047
+   ],
+   "roblox_from_bbox_centre": [
+    0.0006,
+    0.5723,
+    0.0047
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Open",
+   "parent": null,
+   "blender": [
+    -0.0006,
+    -0.3193,
+    0.906
+   ],
+   "roblox_from_origin": [
+    0.0006,
+    0.906,
+    -0.3193
+   ],
+   "roblox_from_bbox_centre": [
+    0.0006,
+    0.2782,
+    -0.3193
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Strap_L",
+   "parent": null,
+   "blender": [
+    -0.7506,
+    0.0047,
+    0.78
+   ],
+   "roblox_from_origin": [
+    0.7506,
+    0.78,
+    0.0047
+   ],
+   "roblox_from_bbox_centre": [
+    0.7506,
+    0.1522,
+    0.0047
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Strap_R",
+   "parent": null,
+   "blender": [
+    0.7494,
+    0.0047,
+    0.78
+   ],
+   "roblox_from_origin": [
+    -0.7494,
+    0.78,
+    0.0047
+   ],
+   "roblox_from_bbox_centre": [
+    -0.7494,
+    0.1522,
+    0.0047
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

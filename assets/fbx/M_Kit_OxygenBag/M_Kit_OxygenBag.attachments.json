@@ -1,0 +1,152 @@
+{
+ "asset": "M_Kit_OxygenBag",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    -0.0781,
+    0.1486,
+    1.1358
+   ],
+   "roblox_from_origin": [
+    0.0781,
+    1.1358,
+    0.1486
+   ],
+   "roblox_from_bbox_centre": [
+    0.0781,
+    0.5401,
+    0.1486
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mask",
+   "parent": null,
+   "blender": [
+    0.1619,
+    0.2077,
+    0.9062
+   ],
+   "roblox_from_origin": [
+    -0.1619,
+    0.9062,
+    0.2077
+   ],
+   "roblox_from_bbox_centre": [
+    -0.1619,
+    0.3106,
+    0.2077
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Valve",
+   "parent": null,
+   "blender": [
+    0.5519,
+    -0.3512,
+    0.0078
+   ],
+   "roblox_from_origin": [
+    -0.5519,
+    0.0078,
+    -0.3512
+   ],
+   "roblox_from_bbox_centre": [
+    -0.5519,
+    -0.5879,
+    -0.3512
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cylinder",
+   "parent": null,
+   "blender": [
+    -0.0781,
+    -0.3512,
+    0.2358
+   ],
+   "roblox_from_origin": [
+    0.0781,
+    0.2358,
+    -0.3512
+   ],
+   "roblox_from_bbox_centre": [
+    0.0781,
+    -0.3599,
+    -0.3512
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Open",
+   "parent": null,
+   "blender": [
+    -0.0781,
+    -0.089,
+    0.8418
+   ],
+   "roblox_from_origin": [
+    0.0781,
+    0.8418,
+    -0.089
+   ],
+   "roblox_from_bbox_centre": [
+    0.0781,
+    0.2461,
+    -0.089
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

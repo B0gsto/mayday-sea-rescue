@@ -1,0 +1,123 @@
+{
+ "asset": "M_Kit_HandFlare",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.2204
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.2204,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.1883,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lens",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.8054
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.8054,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.3967,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Flame",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.8354
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.8354,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.4267,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Striker",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0254
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0254,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.3833,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

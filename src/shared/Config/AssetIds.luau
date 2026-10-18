@@ -272,6 +272,66 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://78123498554138",
 		LOD1 = "rbxassetid://94659038910021",
 	},
+	M_Kit_FirstAidBag = {
+		LOD0 = "rbxassetid://77296916131094",
+		LOD1 = "rbxassetid://122183061428226",
+		LOD2 = "rbxassetid://89858809069565",
+	},
+	M_Kit_HandFlare = {
+		LOD0 = "rbxassetid://112992809771104",
+		LOD1 = "rbxassetid://136498369785253",
+		LOD2 = "rbxassetid://76337021837645",
+	},
+	M_Kit_Lifebuoy = {
+		LOD0 = "rbxassetid://71999070795284",
+		LOD1 = "rbxassetid://130197840756981",
+		LOD2 = "rbxassetid://77347607026125",
+	},
+	M_Kit_OxygenBag = {
+		LOD0 = "rbxassetid://128988621470833",
+		LOD1 = "rbxassetid://126481730223726",
+		LOD2 = "rbxassetid://101785187668637",
+	},
+	M_Kit_ParaFlare = {
+		LOD0 = "rbxassetid://139881387396119",
+		LOD1 = "rbxassetid://80692082366680",
+		LOD2 = "rbxassetid://129062318170051",
+	},
+	M_Kit_RescueTube = {
+		LOD0 = "rbxassetid://131014122706368",
+		LOD1 = "rbxassetid://120344675999778",
+		LOD2 = "rbxassetid://129575751208432",
+	},
+	M_Kit_Strobe = {
+		LOD0 = "rbxassetid://137366267462818",
+		LOD1 = "rbxassetid://135578328531103",
+		LOD2 = "rbxassetid://82097052329793",
+	},
+	M_Kit_ThermalBlanket = {
+		LOD0 = "rbxassetid://110076423047778",
+		LOD1 = "rbxassetid://91821253158332",
+		LOD2 = "rbxassetid://85488549577438",
+	},
+	M_Kit_ThermalBlanketDraped = {
+		LOD0 = "rbxassetid://111636974009545",
+		LOD1 = "rbxassetid://127359534230835",
+		LOD2 = "rbxassetid://87946399565420",
+	},
+	M_Kit_ThrowBag = {
+		LOD0 = "rbxassetid://75471576763729",
+		LOD1 = "rbxassetid://132806152304807",
+		LOD2 = "rbxassetid://129746262874630",
+	},
+	M_Kit_ThrowLine = {
+		LOD0 = "rbxassetid://90462440839329",
+		LOD1 = "rbxassetid://131071598736341",
+		LOD2 = "rbxassetid://112038686014339",
+	},
+	M_Kit_VHFHandset = {
+		LOD0 = "rbxassetid://95439636376736",
+		LOD1 = "rbxassetid://72590049221630",
+		LOD2 = "rbxassetid://108576335970716",
+	},
 	M_Prop_Chandlery = {
 		LOD0 = "rbxassetid://118094905660470",
 		LOD1 = "rbxassetid://110265683503505",
@@ -973,6 +1033,22 @@ AssetIds.Textures = {
 			NOR = "rbxassetid://94945988744017",
 			RGH = "rbxassetid://105730642054601",
 			Wet = { ALB = "rbxassetid://111645415363767", RGH = "rbxassetid://127393009105843" },
+		},
+	},
+	M_Kit_Atlas = {
+		Hard = {
+			ALB = "rbxassetid://78262164887688",
+			NOR = "rbxassetid://128094251760719",
+			RGH = "rbxassetid://109336474348838",
+			MET = "rbxassetid://97402144372021",
+			Wet = { ALB = "rbxassetid://122095875013941", RGH = "rbxassetid://72464853073393" },
+		},
+		Soft = {
+			ALB = "rbxassetid://126800234747635",
+			NOR = "rbxassetid://129679007698369",
+			RGH = "rbxassetid://135516183924135",
+			MET = "rbxassetid://120005958999301",
+			Wet = { ALB = "rbxassetid://71709356437685", RGH = "rbxassetid://79082944362609" },
 		},
 	},
 	M_Prop_Chandlery = {
@@ -1756,6 +1832,77 @@ AssetIds.Attachments = {
 	},
 	M_Hbr_Rope_Flaked = {
 		ATT_Eye = Vector3.new(-0.4809, 0.1941, -0.0171),
+	},
+	M_Kit_FirstAidBag = {
+		ATT_Grip = Vector3.new(0.0006, 1.2, 0.0047),
+		ATT_Open = Vector3.new(0.0006, 0.906, -0.3193),
+		ATT_Strap_L = Vector3.new(0.7506, 0.78, 0.0047),
+		ATT_Strap_R = Vector3.new(-0.7494, 0.78, 0.0047),
+	},
+	M_Kit_HandFlare = {
+		ATT_Grip = Vector3.new(0, 0.2204, 0),
+		ATT_Lens = Vector3.new(0, 0.8054, 0),
+		ATT_Flame = Vector3.new(0, 0.8354, 0),
+		ATT_Striker = Vector3.new(0, 0.0254, 0),
+	},
+	M_Kit_Lifebuoy = {
+		ATT_Grip = Vector3.new(-0.9771, 0.2072, 0),
+		ATT_Throw = Vector3.new(0.2079, 0.2072, 0),
+		ATT_Light = Vector3.new(-1.2921, 0.1007, 0.1156),
+		ATT_Lens = Vector3.new(-1.2921, 0.1007, 0.1156),
+		ATT_LineEnd = Vector3.new(1.3929, 0.2072, 0),
+	},
+	M_Kit_OxygenBag = {
+		ATT_Grip = Vector3.new(0.0781, 1.1358, 0.1486),
+		ATT_Mask = Vector3.new(-0.1619, 0.9062, 0.2077),
+		ATT_Valve = Vector3.new(-0.5519, 0.0078, -0.3512),
+		ATT_Cylinder = Vector3.new(0.0781, 0.2358, -0.3512),
+		ATT_Open = Vector3.new(0.0781, 0.8418, -0.089),
+	},
+	M_Kit_ParaFlare = {
+		ATT_Grip = Vector3.new(0.0465, 0.24, 0),
+		ATT_Lens = Vector3.new(0.0465, 1.035, 0),
+		ATT_Launch = Vector3.new(0.0465, 1.08, 0),
+		ATT_Trigger = Vector3.new(-0.0405, 0.18, 0),
+		ATT_Pin = Vector3.new(-0.0825, 0.09, 0),
+	},
+	M_Kit_RescueTube = {
+		ATT_Grip = Vector3.new(0.0144, 0.1613, 0.3346),
+		ATT_Clip = Vector3.new(-1.8756, 0.1613, 0.3346),
+		ATT_Ring = Vector3.new(-1.6206, 0.1613, 0.3346),
+		ATT_Leash = Vector3.new(1.6944, 0.0713, -0.2654),
+		ATT_Throw = Vector3.new(0.0144, 0.1613, 0.3346),
+	},
+	M_Kit_Strobe = {
+		ATT_Lens = Vector3.new(0, 0.258, -0.0202),
+		ATT_Clip = Vector3.new(0, 0.105, 0.0398),
+		ATT_Grip = Vector3.new(0, 0.105, -0.0202),
+		ATT_Switch = Vector3.new(0, 0.0945, -0.0682),
+	},
+	M_Kit_ThermalBlanket = {
+		ATT_Grip = Vector3.new(0, 0.108, 0),
+	},
+	M_Kit_ThermalBlanketDraped = {
+		ATT_Head = Vector3.new(0, 0.288, 3.51),
+		ATT_Casualty = Vector3.new(0, -0.012, 1.23),
+		ATT_Grip = Vector3.new(-1.8, 0.048, 1.23),
+	},
+	M_Kit_ThrowBag = {
+		ATT_Grip = Vector3.new(0.1026, 0.45, 0),
+		ATT_Throw = Vector3.new(0.1026, 0.42, 0),
+		ATT_LineEnd = Vector3.new(-0.2634, 1.125, -0.09),
+		ATT_LineExit = Vector3.new(0.1026, 1.056, 0),
+	},
+	M_Kit_ThrowLine = {
+		ATT_Grip = Vector3.new(0.0294, 0.0381, 0.1867),
+		ATT_LineEnd = Vector3.new(-0.6915, 0.0201, -0.6847),
+	},
+	M_Kit_VHFHandset = {
+		ATT_Grip = Vector3.new(-0.009, 0.228, -0.0212),
+		ATT_PTT = Vector3.new(0.093, 0.303, -0.0212),
+		ATT_Antenna = Vector3.new(-0.009, 0.798, -0.0032),
+		ATT_Speaker = Vector3.new(-0.009, 0.138, -0.0872),
+		ATT_Screen = Vector3.new(-0.009, 0.348, -0.0872),
 	},
 	M_Prop_Chandlery = {
 		ATT_Rack_01 = Vector3.new(25.8, 4.2, 1.2),

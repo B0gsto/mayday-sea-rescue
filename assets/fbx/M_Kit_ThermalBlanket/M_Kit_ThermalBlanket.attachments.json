@@ -1,0 +1,36 @@
+{
+ "asset": "M_Kit_ThermalBlanket",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.108
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.108,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0464,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

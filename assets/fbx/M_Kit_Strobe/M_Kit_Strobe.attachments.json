@@ -1,0 +1,123 @@
+{
+ "asset": "M_Kit_Strobe",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Lens",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.0202,
+    0.258
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.258,
+    -0.0202
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.1125,
+    -0.0202
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Clip",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0398,
+    0.105
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.105,
+    0.0398
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.0405,
+    0.0398
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.0202,
+    0.105
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.105,
+    -0.0202
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.0405,
+    -0.0202
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Switch",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.0682,
+    0.0945
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0945,
+    -0.0682
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.051,
+    -0.0682
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

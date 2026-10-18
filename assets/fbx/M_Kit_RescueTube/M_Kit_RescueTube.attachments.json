@@ -1,0 +1,152 @@
+{
+ "asset": "M_Kit_RescueTube",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    -0.0144,
+    0.3346,
+    0.1613
+   ],
+   "roblox_from_origin": [
+    0.0144,
+    0.1613,
+    0.3346
+   ],
+   "roblox_from_bbox_centre": [
+    0.0144,
+    -0.0008,
+    0.3346
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Clip",
+   "parent": null,
+   "blender": [
+    1.8756,
+    0.3346,
+    0.1613
+   ],
+   "roblox_from_origin": [
+    -1.8756,
+    0.1613,
+    0.3346
+   ],
+   "roblox_from_bbox_centre": [
+    -1.8756,
+    -0.0008,
+    0.3346
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Ring",
+   "parent": null,
+   "blender": [
+    1.6206,
+    0.3346,
+    0.1613
+   ],
+   "roblox_from_origin": [
+    -1.6206,
+    0.1613,
+    0.3346
+   ],
+   "roblox_from_bbox_centre": [
+    -1.6206,
+    -0.0008,
+    0.3346
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Leash",
+   "parent": null,
+   "blender": [
+    -1.6944,
+    -0.2654,
+    0.0713
+   ],
+   "roblox_from_origin": [
+    1.6944,
+    0.0713,
+    -0.2654
+   ],
+   "roblox_from_bbox_centre": [
+    1.6944,
+    -0.0908,
+    -0.2654
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Throw",
+   "parent": null,
+   "blender": [
+    -0.0144,
+    0.3346,
+    0.1613
+   ],
+   "roblox_from_origin": [
+    0.0144,
+    0.1613,
+    0.3346
+   ],
+   "roblox_from_bbox_centre": [
+    0.0144,
+    -0.0008,
+    0.3346
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
