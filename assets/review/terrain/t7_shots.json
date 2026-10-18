@@ -1,0 +1,110 @@
+{
+ "ocean": true,
+ "shots": [
+  {
+   "name": "DuneBank",
+   "cam": [
+    1324.3,
+    9.3,
+    506.7
+   ],
+   "look": [
+    1335.4,
+    4.5,
+    468.6
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1324.3, 9.3, 506.7}, {1335.4, 4.5, 468.6}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "HeadlandTurf",
+   "cam": [
+    1695.3,
+    113.5,
+    720.0
+   ],
+   "look": [
+    1600.0,
+    71.9,
+    665.0
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1695.3, 113.5, 720.0}, {1600.0, 71.9, 665.0}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "CoveBack",
+   "cam": [
+    250.0,
+    7.8,
+    30.0
+   ],
+   "look": [
+    250.0,
+    -1.2,
+    -9.0
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({250.0, 7.8, 30.0}, {250.0, -1.2, -9.0}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "RoadVerge",
+   "cam": [
+    696.2,
+    23.3,
+    -0.8
+   ],
+   "look": [
+    723.6,
+    13.6,
+    -28.2
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({696.2, 23.3, -0.8}, {723.6, 13.6, -28.2}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "HarbourHillside",
+   "cam": [
+    0.0,
+    9.8,
+    -322.0
+   ],
+   "look": [
+    0.0,
+    19.9,
+    -412.0
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({0.0, 9.8, -322.0}, {0.0, 19.9, -412.0}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "SlopeOutcrops",
+   "cam": [
+    -1473.7,
+    64.1,
+    -842.5
+   ],
+   "look": [
+    -1424.0,
+    63.1,
+    -848.0
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({-1473.7, 64.1, -842.5}, {-1424.0, 63.1, -848.0}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "HarbourOcean",
+   "cam": [
+    -120.0,
+    40.0,
+    60.0
+   ],
+   "look": [
+    60.0,
+    2.0,
+    420.0
+   ],
+   "settle": 4,
+   "lua": "_G.LookDev.shot({-120.0, 40.0, 60.0}, {60.0, 2.0, 420.0}) return _G.LookDev.apply('Overcast', false)"
+  }
+ ]
+}

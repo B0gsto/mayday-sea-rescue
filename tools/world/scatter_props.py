@@ -41,13 +41,17 @@ PLANTS = {
     "M_Veg_SeaThrift_01": (0.3, 0.28, 0.24), "M_Veg_SeaThrift_02": (0.22, 0.2, 0.2),
     "M_Veg_Bracken_01": (1.3, 1.2, 1.0), "M_Veg_Bracken_02": (1.2, 1.1, 0.8),
     "M_Veg_Hawthorn_01": (3.6, 2.6, 2.4), "M_Veg_Hawthorn_02": (2.6, 2.0, 1.9),
+    # T7 strand-line debris (art/source/veg/M_Veg_Strand_*): tiny flat pieces on the wrack line, cove backs, dune toe
+    "M_Veg_Strand_Shells_01": (0.111, 0.094, 0.010), "M_Veg_Strand_Wrack_01": (0.492, 0.471, 0.033),
+    "M_Veg_Strand_Driftwood_01": (0.692, 0.131, 0.046), "M_Veg_Strand_Pebbles_01": (0.181, 0.148, 0.014),
 }
 ASSETS = list(ROCKS) + list(PLANTS)
 AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
 
 SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
-PLANT_CAP = 4740  # T6: +340 gorse / heather / bracken on the harbour hillside; T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
+PLANT_CAP = 4740 + 1660  # T7: +1260 strand debris (<400 tris each, beaches = seen), +400 turf clumps (Decoration off)
+# T6 cap was 4740  # T6: +340 gorse / heather / bracken on the harbour hillside; T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
 # rock stage budgets (target 500-900 total)
@@ -60,13 +64,14 @@ DEBRIS = {"verge": ((0.14, 0.35), (0.25, 0.45)), "strand": ((0.07, 0.2), (0.2, 0
 # plant budgets per kind and region (sum = PLANT_CAP; regions without suitable ground simply fall short)
 PLANT_BUDGET = {
     "marram": {"HavenSands": 900, "WestCoast": 150},
-    "turf": {"Town": 400, "CoastRoad": 450, "HavenSands": 230, "HavenHead": 200, "Inland": 210, "WestCoast": 170,
-             "SkerryIsle": 60},
+    "turf": {"Town": 400 + 160, "CoastRoad": 450 + 180, "HavenSands": 230, "HavenHead": 200, "Inland": 210 + 60,
+             "WestCoast": 170, "SkerryIsle": 60},  # T7: +400 clumps (Terrain.Decoration off, see README T7)
     "gorse": {"HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 150},
     "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60, "Town": 130},
     "thrift": {"HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
     "bracken": {"Inland": 90, "CoastRoad": 60, "Town": 130, "WestCoast": 40, "HavenHead": 20},
     "hawthorn": {"CoastRoad": 12, "Town": 8, "HavenHead": 6, "WestCoast": 8, "Inland": 6},
+    "strand": {"HavenSands": 760, "CoastRoad": 160, "WestCoast": 120, "HavenHead": 60, "Town": 160},
 }
 # kind: (assets with weights, cluster sigma studs, mean members per cluster, spacing factor)
 PLANT_KIND = {
@@ -77,7 +82,10 @@ PLANT_KIND = {
     "thrift": ({"M_Veg_SeaThrift_01": 3, "M_Veg_SeaThrift_02": 2}, 4.0, 6, 1.0),
     "bracken": ({"M_Veg_Bracken_01": 3, "M_Veg_Bracken_02": 2}, 7.0, 6, 0.8),
     "hawthorn": ({"M_Veg_Hawthorn_01": 1, "M_Veg_Hawthorn_02": 1}, 0.0, 1, 1.0),
+    "strand": ({"M_Veg_Strand_Shells_01": 4, "M_Veg_Strand_Pebbles_01": 3, "M_Veg_Strand_Wrack_01": 3,
+                "M_Veg_Strand_Driftwood_01": 1}, 3.0, 16, 0.5),
 }
+
 REGIONS = ["Town", "HavenSands", "HavenHead", "CoastRoad", "SkerryIsle", "WestCoast", "EastCliffs", "Inland",
            "Reefs"]
 
@@ -226,6 +234,10 @@ def exclusions(T):
     rim = platform & ~in_box(X, Z, (tp["minX"] + 20, tp["maxX"] - 20, tp["minZ"] + 20, tp["maxZ"] - 20))
     ex_turf = ex | (platform & ~rim)
     ex_all = ex | platform
+    # T7: strand debris may use the upper half of the beach-rescue sand strip (tiny, non-colliding, flat)
+    T.cove_back = in_box(X, Z, (cv["minX"] + 6, cv["maxX"] - 6, cv["topZ"] - 6, cv["topZ"] + 60))  # Harbour Cove upper beach
+    T.ex_strand = ex_all & ~(((beach_sand & (T.d > 0.5 * L.BEACH_WIDTH)) | T.cove_back) & ~paving
+                             & (T.road_edge >= ROAD_VERGE))
     return ex_all, ex_turf
 
 
@@ -288,6 +300,10 @@ def plant_weights(T, seed):
     w["heather"] = w["heather"] + hill * leafy * (1.0 * heath + 0.15 * hedge) * (0.3 + 0.7 * patch(40, 8))
     w["bracken"] = w["bracken"] + hill * leafy * (1.0 * brack + 0.5 * smooth(9.0, 4.0, edge) * (1 - hedge)) \
         * (0.3 + 0.7 * patch(45, 9))
+    # T7: strand-line debris on the wrack / shingle / upper dry sand of beaches and cove backs and at the dune toe
+    strand_m = mw({"Ice": 1.0, "CrackedLava": 0.7, "Sand": 0.6, "Glacier": 0.35, "Sandstone": 0.25})
+    w["strand"] = ((h > 0.6) & (h < 9) & (slope < 0.35) & ((wb > 0.5) | (T.near_shore & (wc + wr > 0.5)) | T.cove_back)) \
+        * strand_m * (0.15 + 0.85 * patch(18, 10)) * (1.0 + 2.5 * smooth(bw - 75, bw - 50, dl) * smooth(bw + 16, bw + 4, dl))  # upper beach / dune toe
     mvp = np.hypot(X, Z) <= L.MVP_RADIUS
     return {k: (v * mvp).astype(np.float64) for k, v in w.items()}
 
@@ -653,7 +669,7 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
     total_budget = 0
     for kind, per_region in PLANT_BUDGET.items():
         assets, sigma, members, fac = PLANT_KIND[kind]
-        wk = weights[kind] * ~(ex_turf if kind == "turf" else ex_all)
+        wk = weights[kind] * ~(ex_turf if kind == "turf" else T.ex_strand if kind == "strand" else ex_all)
         for ri, (rname, budget) in enumerate(per_region.items()):
             budget = min(budget, PLANT_CAP - total_budget)
             total_budget += budget
@@ -687,7 +703,7 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
                     if wcell <= 0.02 or rng.random() > 0.3 + 0.7 * min(1.0, wcell / max(wv.max(), 1e-9) * 1.5):
                         continue
                     asset = pick_asset(rng, assets)
-                    s = rng.uniform(0.8, 1.3)
+                    s = rng.uniform(0.6, 1.4) if kind == "strand" else rng.uniform(0.8, 1.3)
                     r = FOOT[asset] * s
                     spacing = fac if kind != "hawthorn" else 6.0
                     if not space.ok(x, z, r, spacing) or not space_rocks.ok(x, z, r, 0.9):

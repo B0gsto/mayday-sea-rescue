@@ -266,20 +266,29 @@ def detail_normal(nor, name, seed):
     return (blend_n(n, h2n(fine, k * 0.6)) + 1) * 127.5, ["detail %s: normal x%.1f + fine band %d-%d @ %.1f" % (name, gain, f0, f1, k)]
 
 
-def ripple(alb, nor, rgh, seed):
+# T7: (cycles across, cycles down, height, trough darkening) per variant. The foreground sand read flat at 1-3 m in
+# T6 (only SandRipple carried ripples, at 0.18): every dry / strand sand slot now has them, stronger (~8-12 cm crests
+# on the 9-stud tiles, so they resolve from 1-3 m eye distance), SandWet only faint swash ripples.
+RIPPLE = {"SandRipple": (26, 7, 0.34, 0.14), "SandDry": (22, 5, 0.28, 0.10), "Wrack": (18, 4, 0.16, 0.06),
+          "SandWet": (30, 9, 0.08, 0.03)}
+
+
+def ripple(alb, nor, rgh, seed, name="SandRipple"):
     """Wind ripples, tileable: an asymmetric (gentle stoss, steep lee) wave with integer cycles across the tile,
     phase-warped so crests wander and fork; troughs a shade darker (heavy-mineral lag)."""
+    cu, cv, ht, dk = RIPPLE[name]
     n = alb.shape[0]
     v, u = np.mgrid[0:n, 0:n].astype(np.float32) / n
-    ph = 26 * u + 7 * v + 1.3 * band_noise((n, n), 1, 3, seed + 80) + 0.35 * band_noise((n, n), 3, 7, seed + 81)
+    ph = cu * u + cv * v + 1.3 * band_noise((n, n), 1, 3, seed + 80) + 0.35 * band_noise((n, n), 3, 7, seed + 81)
     f = ph - np.floor(ph)
     prof = np.where(f < 0.72, f / 0.72, (1 - f) / 0.28)  # 0 trough .. 1 crest
     prof = prof * prof * (3 - 2 * prof)
     amp = 0.75 + 0.25 * np.clip(band_noise((n, n), 2, 5, seed + 82), -1, 1)
-    hgt = prof * amp * n / 26 * 0.18
+    hgt = prof * amp * n / cu * ht
     nn = blend_n(nor / 127.5 - 1, h2n(hgt, 1.0))
-    alb = alb * (0.90 + 0.12 * prof)[..., None]
-    return alb, (nn + 1) * 127.5, rgh, ["ripple: 26x7 cycles, asymmetric, troughs -10%"]
+    alb = alb * (1 - dk + 1.2 * dk * prof)[..., None]
+    rgh = np.clip(rgh * (1.04 - 0.08 * prof), 0, 255)  # crests wind-polished a touch
+    return alb, (nn + 1) * 127.5, rgh, ["ripple: %dx%d cycles, height %.2f, troughs -%d%%" % (cu, cv, ht, 100 * dk)]
 
 
 def mix_in(name, alb, nor, rgh, seed):
@@ -357,8 +366,8 @@ def build_variant(row, report):
     if name in MIX:
         alb, nor, rgh, n4 = mix_in(name, alb, nor, rgh, seed)
         notes += n4
-    if name == "SandRipple":
-        alb, nor, rgh, n4 = ripple(alb, nor, rgh, seed)
+    if name in RIPPLE:
+        alb, nor, rgh, n4 = ripple(alb, nor, rgh, seed, name)
         notes += n4
     if name in MACRO:  # terrain look-dev round 2: baked colour variation (no flat colours)
         alb, n3 = macro_albedo(alb, name)

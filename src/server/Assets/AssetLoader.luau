@@ -81,8 +81,14 @@ local function numericId(uri: string): number?
 end
 
 -- Asset name prefix -> shared texture folder in Appearances (kits that share one atlas, e.g. G1's
--- T_FoliageLand_Main for every M_Veg_* plant)
-AssetLoader.SHARED_SETS = { M_Veg_ = "M_Veg_FoliageLand", M_Road_Bench = "M_Road_StreetLamp", M_Road_Bin = "M_Road_StreetLamp", M_Road_Bollard = "M_Road_StreetLamp" } :: { [string]: string }
+-- T_FoliageLand_Main for every M_Veg_* plant, T_StrandLine_Main for the M_Veg_Strand_* debris)
+AssetLoader.SHARED_SETS = {
+	M_Veg_ = "M_Veg_FoliageLand",
+	M_Veg_Strand_ = "M_Veg_StrandLine",
+	M_Road_Bench = "M_Road_StreetLamp",
+	M_Road_Bin = "M_Road_StreetLamp",
+	M_Road_Bollard = "M_Road_StreetLamp",
+} :: { [string]: string }
 
 local function appearanceFolder(asset: string): Instance?
 	if not appearances then
@@ -92,12 +98,18 @@ local function appearanceFolder(asset: string): Instance?
 	if own then
 		return own
 	end
-	for prefix, shared in AssetLoader.SHARED_SETS do
-		if string.sub(asset, 1, #prefix) == prefix then
-			return (appearances :: Instance):FindFirstChild(shared)
+	-- longest matching prefix wins (M_Veg_Strand_ before M_Veg_)
+	local best: string? = nil
+	for prefix in AssetLoader.SHARED_SETS do
+		if
+			string.sub(asset, 1, #prefix) == prefix and (not best or #prefix > #(best :: string))
+		then
+			best = prefix
 		end
 	end
-	return nil
+	return if best
+		then (appearances :: Instance):FindFirstChild(AssetLoader.SHARED_SETS[best :: string])
+		else nil
 end
 
 local function setFor(asset: string, partName: string): string?

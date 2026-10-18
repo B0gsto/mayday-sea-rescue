@@ -1,0 +1,642 @@
+{
+ "asset": "M_Veg_Strand_Shells_01",
+ "name": "M_Veg_Strand_Shells_01",
+ "date": "2026-10-18",
+ "commit": "ea00b640+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD0.fbx",
+   "bytes": 43308,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Strand_Shells_01_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Strand_Shells_01_LOD0.001",
+     "min": [
+      -0.166,
+      -0.1406,
+      0.0
+     ],
+     "max": [
+      0.166,
+      0.1406,
+      0.0298
+     ],
+     "polygons": 320,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD1.fbx",
+   "bytes": 32428,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Strand_Shells_01_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Strand_Shells_01_LOD1.001",
+     "min": [
+      -0.1614,
+      -0.1411,
+      0.0
+     ],
+     "max": [
+      0.166,
+      0.1394,
+      0.0297
+     ],
+     "polygons": 144,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD2.fbx",
+   "bytes": 22876,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Strand_Shells_01_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Strand_Shells_01_LOD2.001",
+     "min": [
+      -0.1604,
+      -0.1423,
+      0.0
+     ],
+     "max": [
+      0.1596,
+      0.1351,
+      0.0228
+     ],
+     "polygons": 25,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01.attachments.json",
+   "attachments": []
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/veg/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "vegetation"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Strand_Shells_01_LOD0"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "320 of 6000"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.14e-05, 192 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.028 to 0.477, v 0.013 to 0.489"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2403 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Strand_Shells_01_LOD1"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "144 of 6000"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.40e-05, 144 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.026 to 0.473, v 0.020 to 0.486"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 96 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.007 (max 0.02), UV area by 8.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Strand_Shells_01_LOD2"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "25 of 6000"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.83e-04, 25 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.034 to 0.476, v 0.023 to 0.469"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 25 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LODs are rebuilt from the same shape functions at lower resolution (pieces dropped), same atlas cells): UV bounds differ by 0.020 (max 0.02), UV area by 54.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "320 of 400 (vegetation, asset row)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "144 of 200"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "25 of 100"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veg_Strand_Shells_01/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.332 studs, real 0.111 m = 0.333 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.281 studs, real 0.094 m = 0.281 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.030 studs, real 0.010 m = 0.030 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas StrandLine"
+  },
+  {
+   "subject": "T_StrandLine_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_ALB.png"
+  },
+  {
+   "subject": "T_StrandLine_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_StrandLine_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_NOR.png"
+  },
+  {
+   "subject": "T_StrandLine_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_RGH.png"
+  },
+  {
+   "subject": "T_StrandLine_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_StrandLine_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veg_StrandLine/T_StrandLine_Main_MET.png"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Strand_Shells_01_LOD0; 320 triangles (scene 320)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Strand_Shells_01_LOD1; 144 triangles (scene 144)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Strand_Shells_01/M_Veg_Strand_Shells_01_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Strand_Shells_01_LOD2; 25 triangles (scene 25)"
+  },
+  {
+   "subject": "M_Veg_Strand_Shells_01_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veg_Strand_Shells_01_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 320,
+   "texel_density": 2403.0
+  },
+  {
+   "name": "M_Veg_Strand_Shells_01_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 144,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veg_Strand_Shells_01_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 25,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.33199501037597656,
+  0.2812647223472595,
+  0.029819665476679802
+ ],
+ "peak_rss_mb": 277.1
+}

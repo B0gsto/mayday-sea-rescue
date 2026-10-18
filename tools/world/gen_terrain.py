@@ -504,8 +504,10 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc, hill=None)
     }
     if hill is not None:
         heath_p = smoothstep(-0.3, 0.3, fbm(Xw, Zw, 22, s + 741, 3))
-        lw["LeafyGrass"] = lw["LeafyGrass"] + hm * (1 - steep) * (1.6 * f_heath * (0.4 + 0.6 * heath_p)
-                                                                + 0.7 * f_brack + 0.35 * heath_p * f_straw) + 1.1 * hedge
+        # T7: heath fields and hedge banks were solid Moor (a dark mossy blotch in the HarbourHillside foreground):
+        # heath is now patchy over the field's straw / olive sward, banks mostly turf with only a Moor share
+        lw["LeafyGrass"] = lw["LeafyGrass"] + hm * (1 - steep) * (0.6 * f_heath * heath_p * heath_p
+                                                                + 0.35 * f_brack + 0.2 * heath_p * f_straw) + 0.35 * hedge
         lw[WORN] = lw[WORN] + hm * (0.8 * f_brack * (1 - heath_p) + 0.15 * f_green * smoothstep(0.3, 0.7, heath_p)) \
             + 0.25 * hedge
         lw["Mud"] = lw["Mud"] * (1 - 0.75 * hm)  # field floors between the banks are not wet hollows

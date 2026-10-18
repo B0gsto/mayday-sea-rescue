@@ -82,7 +82,7 @@ def main():
         f.write(raw)
     print(f"wrote {out_path} ({len(raw)} bytes) in {time.time() - t0:.0f}s under the Studio lock")
     # T4: Decoration on (short wind-animated blades on the Grass / Turf sward, tinted olive by the Grass MaterialColor)
-    subprocess.run(["lune", "run", os.path.join(HERE, "terrain_decoration.luau"), out_path, "true", "0.3"], check=True)  # T6: 0.3 (0.5 blades read large and low-poly)
+    subprocess.run(["lune", "run", os.path.join(HERE, "terrain_decoration.luau"), out_path, "false", "0.1"], check=True)  # T7: off (A/B vs 0.1: blades 28% of the SlopeOutcrops lower frame, less fine detail); turf clumps instead
     if "--no-close" not in sys.argv:
         subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), "--close", TAG], check=False)
 

@@ -117,3 +117,13 @@ ledge slabs on inland Rock). Outcrops everywhere larger and more numerous; Grass
 Decoration blades break into patches; GrassLength 0.3. Harbour Cove: fuller upper beach (ct^1.8) so the dry
 foreground sits above the calm swell (it washed a dark sheet over the T5 foreground) and damp patches only near the
 tide. `assets/review/terrain/t6_contact.png` (T5 row, T6 row; `t6_shots.json`).
+
+**Terrain pass T7.** Grass Decoration A/B (GrassLength 0.1 vs off, RoadVerge + SlopeOutcrops, lower 40% of frame):
+the 0.1 blades still covered 28% of the SlopeOutcrops foreground, raised saturation (104 vs 92) and lowered fine
+detail (edge energy 4.7 vs 7.4), so Decoration is OFF (`studio_terrain.py` passes "false"); compensated by +400 turf
+clumps (Town / CoastRoad / Inland; plants Low tier still 50% seen). Strand debris: a `strand` plant kind with four
+tiny flat meshes (`art/source/veg/Strand`: shells, pebbles, wrack clump, driftwood; one 1024 atlas, 245-320 tris) in
+16-piece clusters on the wrack / shingle / upper dry sand, the dune toe and Harbour Cove's upper beach (may use the
+upper half of the beach-rescue strip: non-colliding). `process.py` RIPPLE: stronger wind ripples (~10 cm crests) on
+SandDry, SandRipple, Wrack and faint ones on SandWet. Harbour hillside: heath fields and hedge banks no longer solid
+Moor (the dark mossy foreground blotch), heath patchy over the field sward. `t7_contact.png` (T6 row, T7 row).

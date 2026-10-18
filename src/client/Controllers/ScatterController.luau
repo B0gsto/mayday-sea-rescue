@@ -78,6 +78,10 @@ local TRIS: { [string]: { number } } = {
 	M_Veg_Bracken_02 = { 1472, 640, 416 },
 	M_Veg_Hawthorn_01 = { 1558, 608, 312 },
 	M_Veg_Hawthorn_02 = { 1364, 584, 282 },
+	M_Veg_Strand_Shells_01 = { 320, 144, 25 },
+	M_Veg_Strand_Wrack_01 = { 280, 84, 32 },
+	M_Veg_Strand_Driftwood_01 = { 245, 99, 30 },
+	M_Veg_Strand_Pebbles_01 = { 310, 147, 75 },
 }
 local ROCK_TRIS: { [string]: number } = {
 	M_Rock_Boulder_01 = 4000,
