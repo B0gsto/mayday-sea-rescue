@@ -100,6 +100,8 @@ def main():
              "Children": children}
     os.makedirs(os.path.join(GAME, "src/materials"), exist_ok=True)
     json.dump(model, open(os.path.join(GAME, "src/materials/MaterialService.model.json"), "w"), indent=1)
+    sys.path.insert(0, os.path.join(GAME, "art/source/roads"))
+    __import__("wire_roads").main()  # I1b-3: the R1a road variants + terrain road slots
 
     os.makedirs(os.path.join(GAME, "assets/materials"), exist_ok=True)
     with open(os.path.join(GAME, "assets/materials/manifest.csv"), "w", newline="") as f:

@@ -121,7 +121,7 @@ Discovery.EXTRA = {
 		name = "Harbour Light",
 		era = "1868",
 		blurb = "The red and white light on the east breakwater head, kept by Tobias's family for three generations.",
-		position = Vector3.new(44, 6, 320), -- map/Build.luau buildLighthouse, east wall head
+		position = Vector3.new(40.5, 11.1, 355.8), -- M_Bld_HarbourLight ATT_Plaque (Street.swaps pivot 44, 6, 360)
 	},
 }
 

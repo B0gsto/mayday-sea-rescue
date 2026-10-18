@@ -555,6 +555,10 @@ end
 
 function WorldDressingService.Start()
 	local base = root()
+	local Street = require(script.Parent.Parent.World:WaitForChild("Street")) :: any -- I1b-3 streets, Harbour Light
+	for key, spec in Street.swaps do
+		Swaps[key] = spec
+	end
 	for key, spec in Swaps do
 		local ok, err = pcall(swap, key, spec)
 		if not ok or err ~= true then
@@ -565,6 +569,7 @@ function WorldDressingService.Start()
 	if seamarks then
 		task.spawn((require :: any)(seamarks).place, base)
 	end
+	task.spawn(Street.start)
 	local ok, rocks, plants, parts = pcall(scatterAll)
 	if not ok then
 		warn(`[WorldDressing] scatter failed: {rocks}`)

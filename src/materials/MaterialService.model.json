@@ -29,9 +29,9 @@
   "IceName": "Wrack",
   "MudName": "Mud",
   "GroundName": "Earth",
-  "PavementName": "Gravel",
-  "AsphaltName": "Asphalt",
-  "CobblestoneName": "Cobbles",
+  "PavementName": "RoadGravelTrack",
+  "AsphaltName": "RoadAsphaltWorn",
+  "CobblestoneName": "RoadHarbourCobbles",
   "ConcreteName": "Concrete"
  },
  "Children": [
@@ -1680,6 +1680,294 @@
       },
       "DryTwin": {
        "String": "NonSlipDeck"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadAsphaltWorn",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://79143836298158",
+    "NormalMap": "rbxassetid://103860084646107",
+    "RoughnessMap": "rbxassetid://71102419665268",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1376
+    },
+    "StudsPerTile": 12,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "RoadAsphaltWorn"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadAsphaltWorn_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://124268074036051",
+    "NormalMap": "rbxassetid://103860084646107",
+    "RoughnessMap": "rbxassetid://78753271475072",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 1376
+    },
+    "StudsPerTile": 12,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "RoadAsphaltWorn"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadHarbourCobbles",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://117344908774344",
+    "NormalMap": "rbxassetid://123185540762079",
+    "RoughnessMap": "rbxassetid://72900229712319",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 880
+    },
+    "StudsPerTile": 6,
+    "MaterialPattern": {
+     "Enum": 0
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "RoadHarbourCobbles"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadHarbourCobbles_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://135378297680898",
+    "NormalMap": "rbxassetid://123185540762079",
+    "RoughnessMap": "rbxassetid://125689504691687",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 880
+    },
+    "StudsPerTile": 6,
+    "MaterialPattern": {
+     "Enum": 0
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "RoadHarbourCobbles"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadGravelTrack",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://86869513936808",
+    "NormalMap": "rbxassetid://127130157227455",
+    "RoughnessMap": "rbxassetid://102420149464256",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 836
+    },
+    "StudsPerTile": 6,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "RoadGravelTrack"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadGravelTrack_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://90360463496739",
+    "NormalMap": "rbxassetid://127130157227455",
+    "RoughnessMap": "rbxassetid://112192667903523",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 836
+    },
+    "StudsPerTile": 6,
+    "MaterialPattern": {
+     "Enum": 1
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "RoadGravelTrack"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadKerbGranite",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://89687153004821",
+    "NormalMap": "rbxassetid://100490866022478",
+    "RoughnessMap": "rbxassetid://94961069619621",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 832
+    },
+    "StudsPerTile": 3,
+    "MaterialPattern": {
+     "Enum": 0
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": false
+      },
+      "DryTwin": {
+       "String": "RoadKerbGranite"
+      },
+      "Batch": {
+       "String": "R1a"
+      }
+     }
+    }
+   }
+  },
+  {
+   "Name": "RoadKerbGranite_Wet",
+   "ClassName": "MaterialVariant",
+   "Properties": {
+    "ColorMap": "rbxassetid://129819582335950",
+    "NormalMap": "rbxassetid://100490866022478",
+    "RoughnessMap": "rbxassetid://109300136254724",
+    "MetalnessMap": "rbxassetid://88157078302939",
+    "BaseMaterial": {
+     "Enum": 832
+    },
+    "StudsPerTile": 3,
+    "MaterialPattern": {
+     "Enum": 0
+    },
+    "Attributes": {
+     "Attributes": {
+      "Source": {
+       "String": "R1a art/source/roads/roadmats.py"
+      },
+      "Licence": {
+       "String": "CC0"
+      },
+      "Wet": {
+       "Bool": true
+      },
+      "DryTwin": {
+       "String": "RoadKerbGranite"
+      },
+      "Batch": {
+       "String": "R1a"
       }
      }
     }
