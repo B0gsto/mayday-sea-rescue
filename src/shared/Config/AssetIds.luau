@@ -282,6 +282,17 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://93376645434934",
 		LOD2 = "rbxassetid://86655587525303",
 	},
+	M_Sea_AdmiraltyAnchor = {
+		LOD0 = "rbxassetid://134921024178133",
+		LOD1 = "rbxassetid://77484820368293",
+		LOD2 = "rbxassetid://94174945578296",
+	},
+	M_Sea_Bell = { LOD0 = "rbxassetid://117046329942236", LOD1 = "rbxassetid://128769409174483" },
+	M_Sea_Morwenna = {
+		LOD0 = "rbxassetid://125857672478011",
+		LOD1 = "rbxassetid://85727245560620",
+		LOD2 = "rbxassetid://79237165088026",
+	},
 	M_Spike1_RefBox = { LOD0 = "rbxassetid://124101679376385" },
 	M_Spike1_ScaleCube = { LOD0 = "rbxassetid://99212271339218" },
 	M_Spike1_Tentacle20 = { LOD0 = "rbxassetid://71211016289278" },
@@ -728,6 +739,13 @@ AssetIds.Textures = {
 			MET = "rbxassetid://131230835504645",
 		},
 	},
+	M_Road_Ribbon = {
+		AsphaltTile = {
+			ALB = "rbxassetid://79143836298158",
+			NOR = "rbxassetid://103860084646107",
+			Wet = { ALB = "rbxassetid://124268074036051" },
+		},
+	},
 	M_Rock_Boulder_01 = {
 		Granite = {
 			ALB = "rbxassetid://105377411555545",
@@ -840,13 +858,35 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://131685386322309", RGH = "rbxassetid://76525759925242" },
 		},
 	},
+	M_Sea_AdmiraltyAnchor = {
+		Iron = {
+			ALB = "rbxassetid://101648698914279",
+			NOR = "rbxassetid://101920555938582",
+			RGH = "rbxassetid://80651971934951",
+		},
+	},
 	M_Sea_Morwenna = {
 		Kelp = {
 			ALB = "rbxassetid://119079543125465",
 			NOR = "rbxassetid://121046780780612",
 			RGH = "rbxassetid://88225104223122",
 		},
-		Metal = { ALB = "rbxassetid://110377936753051" },
+		Metal = {
+			ALB = "rbxassetid://110377936753051",
+			NOR = "rbxassetid://80042427656659",
+			RGH = "rbxassetid://97036478746912",
+			MET = "rbxassetid://87520539111686",
+		},
+		Silt = {
+			ALB = "rbxassetid://114791116268179",
+			NOR = "rbxassetid://71860494080566",
+			RGH = "rbxassetid://100089289009744",
+		},
+		Wood = {
+			ALB = "rbxassetid://77168889049828",
+			NOR = "rbxassetid://84727572447942",
+			RGH = "rbxassetid://94367035109369",
+		},
 	},
 	M_Veg_FoliageLand = {
 		Main = {
@@ -1270,6 +1310,21 @@ AssetIds.Attachments = {
 	},
 	M_Rock_Ledge_03 = {
 		ATT_Waterline = Vector3.new(0, 1.5968, 0),
+	},
+	M_Sea_AdmiraltyAnchor = {
+		ATT_Anchor = Vector3.new(0, 2.8984, -5.187),
+		ATT_AnchorCrown = Vector3.new(0, 3.4984, 5.673),
+	},
+	M_Sea_Bell = {
+		ATT_Bell = Vector3.new(0, 0.9, 0),
+	},
+	M_Sea_Morwenna = {
+		ATT_Bell = Vector3.new(5.2616, 5.3251, -32.5187),
+		ATT_Hatch = Vector3.new(0.3784, 4.946, -9.5572),
+		ATT_Windlass = Vector3.new(0.7941, 6.2044, -32.0423),
+		ATT_ChainEnd = Vector3.new(-15.45, 3.437, -32.6817),
+		ATT_Stem = Vector3.new(1.35, 7.1413, -41.0442),
+		ATT_Anchor = Vector3.new(-15.45, 3.3288, -32.9817),
 	},
 	M_Veg_Bracken_01 = {},
 	M_Veg_Bracken_02 = {},

@@ -1179,6 +1179,34 @@
    ]
   },
   {
+   "Name": "M_Road_Ribbon",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "AsphaltTile",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://79143836298158",
+        "NormalMap": "rbxassetid://103860084646107"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://124268074036051",
+        "NormalMap": "rbxassetid://103860084646107"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Rock_Boulder_01",
    "ClassName": "Folder",
    "Children": [
@@ -1599,6 +1627,27 @@
    ]
   },
   {
+   "Name": "M_Sea_AdmiraltyAnchor",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Iron",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101648698914279",
+        "NormalMap": "rbxassetid://101920555938582",
+        "RoughnessMap": "rbxassetid://80651971934951"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Sea_Morwenna",
    "ClassName": "Folder",
    "Children": [
@@ -1625,7 +1674,40 @@
        "Name": "Dry",
        "ClassName": "SurfaceAppearance",
        "Properties": {
-        "ColorMap": "rbxassetid://110377936753051"
+        "ColorMap": "rbxassetid://110377936753051",
+        "NormalMap": "rbxassetid://80042427656659",
+        "RoughnessMap": "rbxassetid://97036478746912",
+        "MetalnessMap": "rbxassetid://87520539111686"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Silt",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://114791116268179",
+        "NormalMap": "rbxassetid://71860494080566",
+        "RoughnessMap": "rbxassetid://100089289009744"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Wood",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://77168889049828",
+        "NormalMap": "rbxassetid://84727572447942",
+        "RoughnessMap": "rbxassetid://94367035109369"
        }
       }
      ]
