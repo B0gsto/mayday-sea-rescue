@@ -4,25 +4,45 @@
     "$className": "DataModel",
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
-      "Shared": { "$path": "src/shared" }
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "WorldPlacements": {
+        "$path": "map/generated/props.json"
+      }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
-      "Server": { "$path": "src/server" }
+      "Server": {
+        "$path": "src/server"
+      }
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
-        "Client": { "$path": "src/client" }
+        "Client": {
+          "$path": "src/client"
+        }
       }
     },
-    "Workspace": { "$className": "Workspace" },
-    "Lighting": { "$className": "Lighting", "$properties": { "Technology": "Future" } },
-    "MaterialService": { "$path": "src/materials/MaterialService.model.json" },
+    "Workspace": {
+      "$className": "Workspace"
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Technology": "Future"
+      }
+    },
+    "MaterialService": {
+      "$path": "src/materials/MaterialService.model.json"
+    },
     "TextChatService": {
       "$className": "TextChatService",
-      "$properties": { "ChatVersion": "TextChatService" }
+      "$properties": {
+        "ChatVersion": "TextChatService"
+      }
     }
   }
 }
