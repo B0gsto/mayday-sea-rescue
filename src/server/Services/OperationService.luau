@@ -1631,6 +1631,7 @@ function OperationService.OnTowParted(scene: any)
 		return
 	end
 	radio(op, "Crew", "Line's parted! Heads down! Stand by, we'll pass it again.")
+	op.towParted = true -- no Tow Truck badge for this op
 	for _, c in op.casualties do
 		c.towed = false
 	end
@@ -1673,7 +1674,6 @@ end
 -- A boat with casualties reached a pad: the real transport path. The current "deliver" step of
 -- the driver's track completes with the server-measured condition and destination (no stub cap).
 -- The pad and the client's transport result race: whichever reaches the step first completes it
-	op.towParted = true -- no Tow Truck badge for this op
 -- (complete() checks track.current), and the other is acknowledged and ignored.
 function OperationService.OnVictimsDelivered(
 	scene: any,
