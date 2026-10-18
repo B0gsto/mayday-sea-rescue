@@ -1,0 +1,1168 @@
+{
+ "asset": "M_Hbr_QuayKit_Head",
+ "name": "M_Hbr_QuayKit_Head",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_QuayKit_Head/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Hbr_QuayKit_Head_Wall_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Hbr_QuayKit_Head_Stone_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Hbr_QuayKit_Head_Top_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_QuayKit_Tide",
+   "T_QuayKit_Stone",
+   "T_Mat_Cobbles"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.242,
+     0.201,
+     0.963,
+     0.713
+    ],
+    "mannequin": [
+     0.074,
+     0.321,
+     0.144,
+     0.494
+    ],
+    "fill": 0.721
+   },
+   "Side": {
+    "asset": [
+     0.26,
+     0.042,
+     0.963,
+     0.849
+    ],
+    "mannequin": [
+     0.19,
+     0.223,
+     0.28,
+     0.48
+    ],
+    "fill": 0.807
+   },
+   "Rear3Q": {
+    "asset": [
+     0.243,
+     0.202,
+     0.963,
+     0.712
+    ],
+    "mannequin": [
+     0.074,
+     0.321,
+     0.144,
+     0.494
+    ],
+    "fill": 0.72
+   },
+   "High": {
+    "asset": [
+     0.206,
+     0.103,
+     0.963,
+     0.807
+    ],
+    "mannequin": [
+     0.075,
+     0.348,
+     0.164,
+     0.478
+    ],
+    "fill": 0.757
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     10.004182815551758,
+     -10.022838592529297,
+     -0.0006570486002601683
+    ],
+    "dist": 6.0,
+    "az": 63.42,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -10.031495094299316,
+     -10.022838592529297,
+     -0.0006570486002601683
+    ],
+    "dist": 6.0,
+    "az": 296.58,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     10.004182815551758,
+     9.001154432675433e-16,
+     -0.0006570486002601683
+    ],
+    "dist": 6.0,
+    "az": 116.58,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -10.031495094299316,
+     9.001154432675433e-16,
+     -0.0006570486002601683
+    ],
+    "dist": 6.0,
+    "az": 243.42,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     -0.013656139373779297,
+     -5.0114192962646475,
+     -5.98232839841512
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.72,
+  "in_frame": true,
+  "dims_m": [
+   null,
+   null,
+   4.0
+  ],
+  "validation_ok": true,
+  "seconds": 9.4
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_QuayKit_Head/M_Hbr_QuayKit_Head.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Wall_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1200 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.29e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 600 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Stone_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "120 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.56e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Top_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.03e-01, 17 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 15 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Wall_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "576 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.00e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 288 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 2.360 (max 0.02), UV area by 183.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Stone_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "72 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.62e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 36 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 6.8% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Top_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.03e-01, 17 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 15 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Wall_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.88e+01, 10 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 2.360 (max 0.02), UV area by 13.9% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Stone_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.62e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 18 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.204 (max 0.02), UV area by 20.8% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_Top_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.03e-01, 17 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 15 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Head_COL"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1335 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "663 of 4000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "59 of 2000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Hbr_QuayKit_Head/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11.963 studs, real 4.000 m = 12.000 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Head_COL"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "texture sets",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (HP1: 3 sets for a modular quay piece = 2 own kit sets shared by every QuayKit piece (Tide: block faces with the shore zonation baked by height, v = z, so it cannot be a MaterialVariant; Stone: dressed copings) + the shared B02 Cobbles setts): 3 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_QuayKit_Tide_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_NOR.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_MET.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_NOR.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_MET.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_ALB.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_NOR.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_RGH.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_MET.png"
+  },
+  {
+   "subject": "ATT_Snap_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Light",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Head",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.72; 14 renders in 9 s, maps M_Hbr_QuayKit_Head_Wall_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_Head_Stone_LOD0: ALB/MET/NOR/RGH, M_Hbr_QuayKit_Head_Top_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_QuayKit_Head_Wall_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1200,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Wall_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 576,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Wall_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 8,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Stone_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Stone_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 72,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Stone_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 36,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Top_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 15,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Top_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 15,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_Top_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 15,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Head_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  20.035677909851074,
+  10.022838592529299,
+  11.96334269962972
+ ],
+ "peak_rss_mb": 690.4
+}

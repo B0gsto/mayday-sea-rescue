@@ -940,6 +940,70 @@
    ]
   },
   {
+   "Name": "M_Hbr_Ladder",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Steel",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://94574254290377",
+        "NormalMap": "rbxassetid://97115793876479",
+        "RoughnessMap": "rbxassetid://105245630506126",
+        "MetalnessMap": "rbxassetid://103781352346029"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://102670288997005",
+        "NormalMap": "rbxassetid://97115793876479",
+        "RoughnessMap": "rbxassetid://73233560502338",
+        "MetalnessMap": "rbxassetid://103781352346029"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_Pontoon",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Kit",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://109704519567392",
+        "NormalMap": "rbxassetid://122560410957703",
+        "RoughnessMap": "rbxassetid://119015686187823",
+        "MetalnessMap": "rbxassetid://94321836411015"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://75676195597717",
+        "NormalMap": "rbxassetid://122560410957703",
+        "RoughnessMap": "rbxassetid://99374447335418",
+        "MetalnessMap": "rbxassetid://94321836411015"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Hbr_PropAtlas",
    "ClassName": "Folder",
    "Children": [
@@ -978,9 +1042,77 @@
        "ClassName": "SurfaceAppearance",
        "Properties": {
         "ColorMap": "rbxassetid://87394211689155",
+        "NormalMap": "rbxassetid://139239824158723",
+        "RoughnessMap": "rbxassetid://80436074747834",
         "AlphaMode": {
          "Enum": 1
         }
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://74231187931420",
+        "NormalMap": "rbxassetid://139239824158723",
+        "RoughnessMap": "rbxassetid://131734184000086",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Hbr_QuayKit",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Stone",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://100881844720605",
+        "NormalMap": "rbxassetid://129317377941646",
+        "RoughnessMap": "rbxassetid://101508075841613"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://96625907758777",
+        "NormalMap": "rbxassetid://129317377941646",
+        "RoughnessMap": "rbxassetid://107181501906186"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Tide",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://94881347924720",
+        "NormalMap": "rbxassetid://123980820102143",
+        "RoughnessMap": "rbxassetid://113778231535676"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://89826503915078",
+        "NormalMap": "rbxassetid://123980820102143",
+        "RoughnessMap": "rbxassetid://93474646343184"
        }
       }
      ]
@@ -1460,6 +1592,40 @@
         "ColorMap": "rbxassetid://131685386322309",
         "NormalMap": "rbxassetid://95518186690593",
         "RoughnessMap": "rbxassetid://76525759925242"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Sea_Morwenna",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Kelp",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://119079543125465",
+        "NormalMap": "rbxassetid://121046780780612",
+        "RoughnessMap": "rbxassetid://88225104223122"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Metal",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://110377936753051"
        }
       }
      ]

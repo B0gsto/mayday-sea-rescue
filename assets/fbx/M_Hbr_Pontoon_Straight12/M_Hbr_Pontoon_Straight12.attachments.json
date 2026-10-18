@@ -1,0 +1,355 @@
+{
+ "asset": "M_Hbr_Pontoon_Straight12",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Moor_01",
+   "parent": null,
+   "blender": [
+    -3.48,
+    1.8,
+    0.27
+   ],
+   "roblox_from_origin": [
+    3.48,
+    0.27,
+    1.8
+   ],
+   "roblox_from_bbox_centre": [
+    3.48,
+    1.5016,
+    -16.2
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_02",
+   "parent": null,
+   "blender": [
+    3.48,
+    1.8,
+    0.27
+   ],
+   "roblox_from_origin": [
+    -3.48,
+    0.27,
+    1.8
+   ],
+   "roblox_from_bbox_centre": [
+    -3.48,
+    1.5016,
+    -16.2
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_03",
+   "parent": null,
+   "blender": [
+    -3.48,
+    18.0,
+    0.27
+   ],
+   "roblox_from_origin": [
+    3.48,
+    0.27,
+    18.0
+   ],
+   "roblox_from_bbox_centre": [
+    3.48,
+    1.5016,
+    0.0
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_04",
+   "parent": null,
+   "blender": [
+    3.48,
+    18.0,
+    0.27
+   ],
+   "roblox_from_origin": [
+    -3.48,
+    0.27,
+    18.0
+   ],
+   "roblox_from_bbox_centre": [
+    -3.48,
+    1.5016,
+    0.0
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_05",
+   "parent": null,
+   "blender": [
+    -3.48,
+    34.2,
+    0.27
+   ],
+   "roblox_from_origin": [
+    3.48,
+    0.27,
+    34.2
+   ],
+   "roblox_from_bbox_centre": [
+    3.48,
+    1.5016,
+    16.2
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_06",
+   "parent": null,
+   "blender": [
+    3.48,
+    34.2,
+    0.27
+   ],
+   "roblox_from_origin": [
+    -3.48,
+    0.27,
+    34.2
+   ],
+   "roblox_from_bbox_centre": [
+    -3.48,
+    1.5016,
+    16.2
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Start",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.2316,
+    -18.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    18.0,
+    -1.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -1.5,
+    18.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.2684,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_End",
+   "parent": null,
+   "blender": [
+    0.0,
+    36.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    36.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.2316,
+    18.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Finger_01",
+   "parent": null,
+   "blender": [
+    3.81,
+    13.5,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -3.81,
+    0.0,
+    13.5
+   ],
+   "roblox_from_bbox_centre": [
+    -3.81,
+    1.2316,
+    -4.5
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Finger_02",
+   "parent": null,
+   "blender": [
+    3.81,
+    22.5,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -3.81,
+    0.0,
+    22.5
+   ],
+   "roblox_from_bbox_centre": [
+    -3.81,
+    1.2316,
+    4.5
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Gangway",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.9,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.9
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.2316,
+    -17.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

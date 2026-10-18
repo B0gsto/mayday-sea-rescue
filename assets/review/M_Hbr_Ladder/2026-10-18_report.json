@@ -1,0 +1,624 @@
+{
+ "asset": "M_Hbr_Ladder",
+ "name": "M_Hbr_Ladder",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_Ladder/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Hbr_Ladder_Steel_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Ladder_Steel"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.521,
+     0.066,
+     0.669,
+     0.963
+    ],
+    "mannequin": [
+     0.363,
+     0.085,
+     0.463,
+     0.387
+    ],
+    "fill": 0.897
+   },
+   "Side": {
+    "asset": [
+     0.52,
+     0.055,
+     0.642,
+     0.963
+    ],
+    "mannequin": [
+     0.364,
+     0.06,
+     0.465,
+     0.38
+    ],
+    "fill": 0.908
+   },
+   "Rear3Q": {
+    "asset": [
+     0.521,
+     0.066,
+     0.669,
+     0.963
+    ],
+    "mannequin": [
+     0.363,
+     0.085,
+     0.463,
+     0.387
+    ],
+    "fill": 0.897
+   },
+   "High": {
+    "asset": [
+     0.519,
+     0.196,
+     0.717,
+     0.963
+    ],
+    "mannequin": [
+     0.366,
+     0.224,
+     0.467,
+     0.435
+    ],
+    "fill": 0.767
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     0.7966645956039429,
+     0.009063061326742172,
+     3.057000160217285
+    ],
+    "dist": 6.0,
+    "az": 38.92,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -0.7949999570846558,
+     0.009063061326742172,
+     3.057000160217285
+    ],
+    "dist": 6.0,
+    "az": 321.08,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     0.7966645956039429,
+     1.9800000190734863,
+     3.057000160217285
+    ],
+    "dist": 6.0,
+    "az": 141.08,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -0.7949999570846558,
+     1.9800000190734863,
+     3.057000160217285
+    ],
+    "dist": 6.0,
+    "az": 218.92,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     0.0008323192596435547,
+     0.9945315402001143,
+     -4.621499538421631
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.767,
+  "in_frame": true,
+  "dims_m": [
+   0.49,
+   null,
+   null
+  ],
+  "validation_ok": true,
+  "seconds": 7.1
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Ladder/M_Hbr_Ladder.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Ladder_Steel_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "804 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.78e-04, 448 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 484 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Ladder_Steel_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "544 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.48e-03, 448 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 272 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 13.6% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Ladder_Steel_LOD2"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "224 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.48e-03, 200 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 112 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Ladder_Steel_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 14.9% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Ladder_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Ladder_COL"
+  },
+  {
+   "subject": "M_Hbr_Ladder_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Ladder_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Ladder_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_Ladder_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 1000"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "804 of 1500 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "544 of 750"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "224 of 375"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.49 x - x - m, spec 0.49 x - x - m (art/reference/M_Hbr_Ladder/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.592 studs, real 0.490 m = 1.470 studs, off 8.3% (5% free, 15% with a note); NOTE: HP1: 0.45 m between stile centres; dims are over the 38 mm grab hoops"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Ladder_COL"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_Ladder_Steel_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB.png"
+  },
+  {
+   "subject": "T_Ladder_Steel_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Ladder_Steel_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_NOR.png"
+  },
+  {
+   "subject": "T_Ladder_Steel_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH.png"
+  },
+  {
+   "subject": "T_Ladder_Steel_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Ladder_Steel_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Ladder/T_Ladder_Steel_MET.png"
+  },
+  {
+   "subject": "ATT_Ladder_Top",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Ladder_Bottom",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Ladder_Mount",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Ladder",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.77; 14 renders in 7 s, maps M_Hbr_Ladder_Steel_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Ladder_Steel_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 804,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Ladder_Steel_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 544,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Ladder_Steel_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 224,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Ladder_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 24,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.5916645526885986,
+  1.9709369577467442,
+  15.356999397277832
+ ],
+ "peak_rss_mb": 705.8
+}

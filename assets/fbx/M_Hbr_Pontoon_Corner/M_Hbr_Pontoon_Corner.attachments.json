@@ -1,0 +1,181 @@
+{
+ "asset": "M_Hbr_Pontoon_Corner",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Moor_01",
+   "parent": null,
+   "blender": [
+    3.48,
+    3.6,
+    0.27
+   ],
+   "roblox_from_origin": [
+    -3.48,
+    0.27,
+    3.6
+   ],
+   "roblox_from_bbox_centre": [
+    -3.48,
+    1.461,
+    0.0
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Start",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.191,
+    -3.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    3.6,
+    -1.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -1.5,
+    3.6
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.309,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_End",
+   "parent": null,
+   "blender": [
+    0.0,
+    7.2,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    7.2
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.191,
+    3.6
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Side_L",
+   "parent": null,
+   "blender": [
+    -3.6,
+    3.6,
+    0.0
+   ],
+   "roblox_from_origin": [
+    3.6,
+    0.0,
+    3.6
+   ],
+   "roblox_from_bbox_centre": [
+    3.6,
+    1.191,
+    0.0
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Side_R",
+   "parent": null,
+   "blender": [
+    3.6,
+    3.6,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -3.6,
+    0.0,
+    3.6
+   ],
+   "roblox_from_bbox_centre": [
+    -3.6,
+    1.191,
+    0.0
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

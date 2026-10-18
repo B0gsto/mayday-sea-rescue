@@ -1,0 +1,648 @@
+{
+ "asset": "M_Hbr_Pontoon_Corner",
+ "name": "M_Hbr_Pontoon_Corner",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_Pontoon_Corner/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Hbr_Pontoon_Corner_Deck_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Pontoon_Kit"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.037,
+     0.201,
+     0.922,
+     0.667
+    ],
+    "mannequin": [
+     -0.279,
+     0.362,
+     -0.051,
+     0.843
+    ],
+    "fill": 0.885
+   },
+   "Side": {
+    "asset": [
+     0.037,
+     0.266,
+     0.963,
+     0.654
+    ],
+    "mannequin": [
+     -0.141,
+     0.346,
+     0.072,
+     0.892
+    ],
+    "fill": 0.926
+   },
+   "Rear3Q": {
+    "asset": [
+     0.037,
+     0.201,
+     0.922,
+     0.667
+    ],
+    "mannequin": [
+     -0.279,
+     0.362,
+     -0.051,
+     0.843
+    ],
+    "fill": 0.885
+   },
+   "High": {
+    "asset": [
+     0.067,
+     0.053,
+     0.963,
+     0.832
+    ],
+    "mannequin": [
+     -0.349,
+     0.384,
+     -0.014,
+     0.789
+    ],
+    "fill": 0.896
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     3.809999942779541,
+     0.0,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 46.62,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -3.809999942779541,
+     0.0,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 313.38,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     3.809999942779541,
+     7.200000286102295,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 133.38,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -3.809999942779541,
+     7.200000286102295,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 226.62,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     0.0,
+     3.6000001430511475,
+     -1.1909955888986588
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.885,
+  "in_frame": true,
+  "dims_m": [
+   2.54,
+   2.4,
+   null
+  ],
+  "validation_ok": true,
+  "seconds": 7.5
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Pontoon_Corner/M_Hbr_Pontoon_Corner.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Corner_Deck_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "448 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.61e-04, 64 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 288 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Corner_Deck_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "180 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.16e-03, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 104 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.611 (max 0.02), UV area by 33.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Corner_Deck_LOD2"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.08e-02, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 63 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.651 (max 0.02), UV area by 51.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Corner_COL"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "448 of 3000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "180 of 1500"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 750"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Hbr_Pontoon_Corner/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7.620 studs, real 2.540 m = 7.620 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7.200 studs, real 2.400 m = 7.200 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Pontoon_Corner_COL"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_Pontoon_Kit_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_NOR.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_MET.png"
+  },
+  {
+   "subject": "ATT_Moor_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_Start",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_End",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_Side_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_Side_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Corner",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.89; 14 renders in 8 s, maps M_Hbr_Pontoon_Corner_Deck_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Pontoon_Corner_Deck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 448,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Corner_Deck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 180,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Corner_Deck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 126,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Corner_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  7.619999885559082,
+  7.200000286102295,
+  3.0719911754131317
+ ],
+ "peak_rss_mb": 705.8
+}

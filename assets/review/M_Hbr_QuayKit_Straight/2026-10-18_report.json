@@ -1,0 +1,1303 @@
+{
+ "asset": "M_Hbr_QuayKit_Straight",
+ "name": "M_Hbr_QuayKit_Straight",
+ "date": "2026-10-18",
+ "commit": "2a0e3b1+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "bytes": 64892,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Straight_COL",
+    "M_Hbr_QuayKit_Straight_Stone_LOD0",
+    "M_Hbr_QuayKit_Straight_Top_LOD0",
+    "M_Hbr_QuayKit_Straight_Wall_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Straight_COL.001",
+     "min": [
+      -4.5,
+      -1.05,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      9.0,
+      0.0
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Stone_LOD0.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      -0.0041
+     ],
+     "polygons": 56,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Top_LOD0.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Wall_LOD0.001",
+     "min": [
+      -4.5,
+      -1.1259,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      1.05,
+      -0.9
+     ],
+     "polygons": 660,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "bytes": 25980,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Straight_Stone_LOD1",
+    "M_Hbr_QuayKit_Straight_Top_LOD1",
+    "M_Hbr_QuayKit_Straight_Wall_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Straight_Stone_LOD1.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      0.0
+     ],
+     "polygons": 4,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Top_LOD1.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Wall_LOD1.001",
+     "min": [
+      -4.5,
+      -1.0125,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      -0.0675,
+      -0.9
+     ],
+     "polygons": 16,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "bytes": 25324,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_QuayKit_Straight_Stone_LOD2",
+    "M_Hbr_QuayKit_Straight_Top_LOD2",
+    "M_Hbr_QuayKit_Straight_Wall_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_QuayKit_Straight_Stone_LOD2.001",
+     "min": [
+      -4.5,
+      -0.15,
+      -0.9
+     ],
+     "max": [
+      4.5,
+      1.65,
+      0.0
+     ],
+     "polygons": 4,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Top_LOD2.001",
+     "min": [
+      -4.5,
+      1.65,
+      -0.015
+     ],
+     "max": [
+      4.5,
+      9.0,
+      -0.015
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Hbr_QuayKit_Straight_Wall_LOD2.001",
+     "min": [
+      -4.5,
+      -0.54,
+      -12.0
+     ],
+     "max": [
+      4.5,
+      -0.06,
+      -0.9
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight.attachments.json",
+   "attachments": [
+    "ATT_Snap_L",
+    "ATT_Snap_R",
+    "ATT_Moor_01",
+    "ATT_WaterLine"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Wall_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "660 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.95e-03, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 468 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Stone_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.64e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 40 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Top_LOD0"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.62e+01, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Wall_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "16 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e+00, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 73.1% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Stone_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 6 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Top_LOD1"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.62e+01, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Wall_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.00e+02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.056 (max 0.02), UV area by 72.8% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Stone_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 6 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.125 (max 0.02), UV area by 54.5% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_Top_LOD2"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.62e+01, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_QuayKit_Straight_COL"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "718 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "22 of 4000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8 of 2000"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Hbr_QuayKit_Straight/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9.000 studs, real 3.000 m = 9.000 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11.996 studs, real 4.000 m = 12.000 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Straight_COL"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight",
+   "check": "texture sets",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (HP1: 3 sets for a modular quay piece = 2 own kit sets shared by every QuayKit piece (Tide: block faces with the shore zonation baked by height, v = z, so it cannot be a MaterialVariant; Stone: dressed copings) + the shared B02 Cobbles setts): 3 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_QuayKit_Tide_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_NOR.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Tide_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_MET.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_ALB_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_NOR.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_RGH_Wet.png"
+  },
+  {
+   "subject": "T_QuayKit_Stone_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_QuayKit/T_QuayKit_Stone_MET.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_ALB.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_NOR.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_RGH.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Cobbles_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Cobbles_MET.png"
+  },
+  {
+   "subject": "ATT_Snap_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Straight_COL, M_Hbr_QuayKit_Straight_Stone_LOD0, M_Hbr_QuayKit_Straight_Top_LOD0, M_Hbr_QuayKit_Straight_Wall_LOD0; 730 triangles (scene 730)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Straight_Stone_LOD1, M_Hbr_QuayKit_Straight_Top_LOD1, M_Hbr_QuayKit_Straight_Wall_LOD1; 22 triangles (scene 22)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_QuayKit_Straight/M_Hbr_QuayKit_Straight_LOD2.fbx"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_QuayKit_Straight_Stone_LOD2, M_Hbr_QuayKit_Straight_Top_LOD2, M_Hbr_QuayKit_Straight_Wall_LOD2; 8 triangles (scene 8)"
+  },
+  {
+   "subject": "M_Hbr_QuayKit_Straight_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_QuayKit_Straight_Wall_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 660,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Wall_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 16,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Wall_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Stone_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 56,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Stone_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 4,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Stone_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 4,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Top_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Top_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_Top_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_QuayKit_Straight_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  9.0,
+  10.125930786132812,
+  11.995902465190738
+ ],
+ "peak_rss_mb": 280.1
+}

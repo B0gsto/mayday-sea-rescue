@@ -1,0 +1,648 @@
+{
+ "asset": "M_Hbr_Pontoon_Finger",
+ "name": "M_Hbr_Pontoon_Finger",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Hbr_Pontoon_Finger/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Hbr_Pontoon_Finger_Deck_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Pontoon_Kit"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.2,
+     0.07,
+     0.94,
+     0.577
+    ],
+    "mannequin": [
+     0.037,
+     0.307,
+     0.174,
+     0.641
+    ],
+    "fill": 0.74
+   },
+   "Side": {
+    "asset": [
+     0.218,
+     0.383,
+     0.963,
+     0.521
+    ],
+    "mannequin": [
+     0.047,
+     0.39,
+     0.13,
+     0.608
+    ],
+    "fill": 0.745
+   },
+   "Rear3Q": {
+    "asset": [
+     0.2,
+     0.07,
+     0.94,
+     0.577
+    ],
+    "mannequin": [
+     0.037,
+     0.307,
+     0.174,
+     0.641
+    ],
+    "fill": 0.74
+   },
+   "High": {
+    "asset": [
+     0.193,
+     0.037,
+     0.949,
+     0.819
+    ],
+    "mannequin": [
+     -0.127,
+     0.42,
+     0.064,
+     0.679
+    ],
+    "fill": 0.782
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     1.559999942779541,
+     0.0,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 9.74,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -1.559999942779541,
+     0.0,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 350.26,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     1.559999942779541,
+     18.18000030517578,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 170.26,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -1.559999942779541,
+     18.18000030517578,
+     0.3449999988079071
+    ],
+    "dist": 6.0,
+    "az": 189.74,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     0.0,
+     9.09000015258789,
+     -1.2486268430948257
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.74,
+  "in_frame": true,
+  "dims_m": [
+   1.04,
+   6.0,
+   null
+  ],
+  "validation_ok": true,
+  "seconds": 8.6
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Pontoon_Finger/M_Hbr_Pontoon_Finger.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Finger_Deck_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1120 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.85e-04, 164 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 733 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Finger_Deck_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "334 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.16e-03, 20 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.375 (max 0.02), UV area by 18.7% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Finger_Deck_LOD2"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "208 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.08e-02, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 104 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (strip atlas tiling in u; hand-made LODs (boards -> slab)): UV bounds differ by 0.375 (max 0.02), UV area by 44.9% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Pontoon_Finger_COL"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1120 of 3000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "334 of 1500"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "208 of 750"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Hbr_Pontoon_Finger/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.120 studs, real 1.040 m = 3.120 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "18.180 studs, real 6.000 m = 18.000 studs, off 1.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Pontoon_Finger_COL"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_Pontoon_Kit_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_NOR.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Pontoon_Kit_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_MET.png"
+  },
+  {
+   "subject": "ATT_Moor_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Moor_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Snap_Start",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Pontoon_Finger",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.74; 14 renders in 9 s, maps M_Hbr_Pontoon_Finger_Deck_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Pontoon_Finger_Deck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Finger_Deck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 334,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Finger_Deck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 208,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_Pontoon_Finger_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.119999885559082,
+  18.18000030517578,
+  3.1872536838054657
+ ],
+ "peak_rss_mb": 705.8
+}

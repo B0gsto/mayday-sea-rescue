@@ -1,0 +1,94 @@
+{
+ "asset": "M_Hbr_QuayKit_Armour",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Snap_L",
+   "parent": null,
+   "blender": [
+    -4.5,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    4.5,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    5.0913,
+    6.9182,
+    6.3449
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_R",
+   "parent": null,
+   "blender": [
+    4.5,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -4.5,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -3.9087,
+    6.9182,
+    6.3449
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    -4.8,
+    -3.999
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -3.999,
+    -4.8
+   ],
+   "roblox_from_bbox_centre": [
+    0.5913,
+    2.9192,
+    1.5449
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

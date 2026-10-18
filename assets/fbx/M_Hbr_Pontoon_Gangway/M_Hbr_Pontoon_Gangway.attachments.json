@@ -1,0 +1,123 @@
+{
+ "asset": "M_Hbr_Pontoon_Gangway",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Hinge",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.12,
+    -0.06
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -0.06,
+    -0.12
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.131,
+    -13.5
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Roller",
+   "parent": null,
+   "blender": [
+    0.0,
+    26.25,
+    -0.93
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    -0.93,
+    26.25
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -2.001,
+    12.87
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_Start",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.071,
+    -13.38
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_End",
+   "parent": null,
+   "blender": [
+    0.0,
+    27.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    27.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.071,
+    13.62
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

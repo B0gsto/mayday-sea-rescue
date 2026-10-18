@@ -77,6 +77,133 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://128829373189723",
 		LOD2 = "rbxassetid://88269285714718",
 	},
+	M_Hbr_Bollard_01 = {
+		LOD0 = "rbxassetid://112960974242559",
+		LOD1 = "rbxassetid://92633976436358",
+	},
+	M_Hbr_Bollard_02 = {
+		LOD0 = "rbxassetid://82829152296783",
+		LOD1 = "rbxassetid://79423301477730",
+	},
+	M_Hbr_Bollard_03 = {
+		LOD0 = "rbxassetid://101640101495963",
+		LOD1 = "rbxassetid://113500225143355",
+	},
+	M_Hbr_Cleat_01 = {
+		LOD0 = "rbxassetid://109396570011075",
+		LOD1 = "rbxassetid://114419861563693",
+	},
+	M_Hbr_Cleat_02 = { LOD0 = "rbxassetid://90309200674031", LOD1 = "rbxassetid://102008139575071" },
+	M_Hbr_Fender_Ball = {
+		LOD0 = "rbxassetid://127777782647594",
+		LOD1 = "rbxassetid://125861348152297",
+	},
+	M_Hbr_Fender_Cyl_01 = {
+		LOD0 = "rbxassetid://106922053138351",
+		LOD1 = "rbxassetid://87393402791869",
+	},
+	M_Hbr_Fender_Cyl_02 = {
+		LOD0 = "rbxassetid://102040156667627",
+		LOD1 = "rbxassetid://104952989882755",
+	},
+	M_Hbr_Fender_Cyl_03 = {
+		LOD0 = "rbxassetid://86149424505857",
+		LOD1 = "rbxassetid://110631355061943",
+	},
+	M_Hbr_Fender_Tyre = {
+		LOD0 = "rbxassetid://130157337861840",
+		LOD1 = "rbxassetid://79637808775952",
+	},
+	M_Hbr_FishBox_01 = {
+		LOD0 = "rbxassetid://130109827346259",
+		LOD1 = "rbxassetid://134295106548400",
+	},
+	M_Hbr_FishBox_02 = {
+		LOD0 = "rbxassetid://102468331884486",
+		LOD1 = "rbxassetid://77853467667092",
+	},
+	M_Hbr_Ladder = {
+		LOD0 = "rbxassetid://109188250455001",
+		LOD1 = "rbxassetid://77667061767376",
+		LOD2 = "rbxassetid://77229937384889",
+	},
+	M_Hbr_LifebuoyStation = {
+		LOD0 = "rbxassetid://130195930909228",
+		LOD1 = "rbxassetid://73843124544814",
+	},
+	M_Hbr_LobsterPot_01 = {
+		LOD0 = "rbxassetid://111121550908886",
+		LOD1 = "rbxassetid://75760602093481",
+	},
+	M_Hbr_LobsterPot_02 = {
+		LOD0 = "rbxassetid://98534087049091",
+		LOD1 = "rbxassetid://73620115585176",
+	},
+	M_Hbr_NetPile = { LOD0 = "rbxassetid://107740675639511", LOD1 = "rbxassetid://104178692729329" },
+	M_Hbr_Pontoon_Corner = {
+		LOD0 = "rbxassetid://95579947294661",
+		LOD1 = "rbxassetid://75116209656818",
+		LOD2 = "rbxassetid://92188868945760",
+	},
+	M_Hbr_Pontoon_Finger = {
+		LOD0 = "rbxassetid://100445251646543",
+		LOD1 = "rbxassetid://135203498302939",
+		LOD2 = "rbxassetid://130409345623080",
+	},
+	M_Hbr_Pontoon_Gangway = {
+		LOD0 = "rbxassetid://112770508199520",
+		LOD1 = "rbxassetid://92055175313548",
+		LOD2 = "rbxassetid://127270867660065",
+	},
+	M_Hbr_Pontoon_Straight12 = {
+		LOD0 = "rbxassetid://110481514728442",
+		LOD1 = "rbxassetid://122107493074761",
+		LOD2 = "rbxassetid://105677462617729",
+	},
+	M_Hbr_Pontoon_Straight6 = {
+		LOD0 = "rbxassetid://84519250249650",
+		LOD1 = "rbxassetid://132876219561354",
+		LOD2 = "rbxassetid://85032014632711",
+	},
+	M_Hbr_QuayKit_Armour = {
+		LOD0 = "rbxassetid://136226246261242",
+		LOD1 = "rbxassetid://71278239551828",
+		LOD2 = "rbxassetid://108456407734712",
+	},
+	M_Hbr_QuayKit_Corner = {
+		LOD0 = "rbxassetid://79064134565290",
+		LOD1 = "rbxassetid://136395746826912",
+		LOD2 = "rbxassetid://127425854733523",
+	},
+	M_Hbr_QuayKit_Head = {
+		LOD0 = "rbxassetid://107404077758895",
+		LOD1 = "rbxassetid://130845197237197",
+		LOD2 = "rbxassetid://76568922080159",
+	},
+	M_Hbr_QuayKit_LadderBay = {
+		LOD0 = "rbxassetid://115212078057759",
+		LOD1 = "rbxassetid://88316811650811",
+		LOD2 = "rbxassetid://111041890772605",
+	},
+	M_Hbr_QuayKit_Steps = {
+		LOD0 = "rbxassetid://111507365928309",
+		LOD1 = "rbxassetid://99124171963855",
+		LOD2 = "rbxassetid://134583126487234",
+	},
+	M_Hbr_QuayKit_Straight = {
+		LOD0 = "rbxassetid://94778079470029",
+		LOD1 = "rbxassetid://137621767342742",
+		LOD2 = "rbxassetid://123892134964088",
+	},
+	M_Hbr_Rope_Chain = {
+		LOD0 = "rbxassetid://102080997453159",
+		LOD1 = "rbxassetid://83768058005616",
+	},
+	M_Hbr_Rope_Coil = { LOD0 = "rbxassetid://92092648982564", LOD1 = "rbxassetid://70652697140696" },
+	M_Hbr_Rope_Flaked = {
+		LOD0 = "rbxassetid://72495371481479",
+		LOD1 = "rbxassetid://102532631258647",
+	},
 	M_Prop_Chandlery = {
 		LOD0 = "rbxassetid://118094905660470",
 		LOD1 = "rbxassetid://110265683503505",
@@ -533,6 +660,24 @@ AssetIds.Textures = {
 			RGH = "rbxassetid://105779975233277",
 		},
 	},
+	M_Hbr_Ladder = {
+		Steel = {
+			ALB = "rbxassetid://94574254290377",
+			NOR = "rbxassetid://97115793876479",
+			RGH = "rbxassetid://105245630506126",
+			MET = "rbxassetid://103781352346029",
+			Wet = { ALB = "rbxassetid://102670288997005", RGH = "rbxassetid://73233560502338" },
+		},
+	},
+	M_Hbr_Pontoon = {
+		Kit = {
+			ALB = "rbxassetid://109704519567392",
+			NOR = "rbxassetid://122560410957703",
+			RGH = "rbxassetid://119015686187823",
+			MET = "rbxassetid://94321836411015",
+			Wet = { ALB = "rbxassetid://75676195597717", RGH = "rbxassetid://99374447335418" },
+		},
+	},
 	M_Hbr_PropAtlas = {
 		Metal = {
 			ALB = "rbxassetid://81286129782871",
@@ -541,7 +686,26 @@ AssetIds.Textures = {
 			MET = "rbxassetid://95778966558451",
 			Wet = { ALB = "rbxassetid://81035287419057", RGH = "rbxassetid://102587953774423" },
 		},
-		Rope = { ALB = "rbxassetid://87394211689155" },
+		Rope = {
+			ALB = "rbxassetid://87394211689155",
+			NOR = "rbxassetid://139239824158723",
+			RGH = "rbxassetid://80436074747834",
+			Wet = { ALB = "rbxassetid://74231187931420", RGH = "rbxassetid://131734184000086" },
+		},
+	},
+	M_Hbr_QuayKit = {
+		Stone = {
+			ALB = "rbxassetid://100881844720605",
+			NOR = "rbxassetid://129317377941646",
+			RGH = "rbxassetid://101508075841613",
+			Wet = { ALB = "rbxassetid://96625907758777", RGH = "rbxassetid://107181501906186" },
+		},
+		Tide = {
+			ALB = "rbxassetid://94881347924720",
+			NOR = "rbxassetid://123980820102143",
+			RGH = "rbxassetid://113778231535676",
+			Wet = { ALB = "rbxassetid://89826503915078", RGH = "rbxassetid://93474646343184" },
+		},
 	},
 	M_Prop_Chandlery = {
 		Atlas = {
@@ -675,6 +839,14 @@ AssetIds.Textures = {
 			RGH = "rbxassetid://127624915750614",
 			Wet = { ALB = "rbxassetid://131685386322309", RGH = "rbxassetid://76525759925242" },
 		},
+	},
+	M_Sea_Morwenna = {
+		Kelp = {
+			ALB = "rbxassetid://119079543125465",
+			NOR = "rbxassetid://121046780780612",
+			RGH = "rbxassetid://88225104223122",
+		},
+		Metal = { ALB = "rbxassetid://110377936753051" },
 	},
 	M_Veg_FoliageLand = {
 		Main = {
@@ -904,6 +1076,156 @@ AssetIds.Attachments = {
 	M_Chr_Casualty_Swimmer_Rig = {
 		ATT_Strobe = Vector3.new(-0.5895, 4.2106, -0.5675),
 		ATT_Whistle = Vector3.new(0.5934, 4.2106, -0.4179),
+	},
+	M_Hbr_Bollard_01 = {
+		ATT_RopeNeck = Vector3.new(0, 1.11, 0),
+	},
+	M_Hbr_Bollard_02 = {
+		ATT_RopeNeck = Vector3.new(0, 1.14, 0),
+	},
+	M_Hbr_Bollard_03 = {
+		ATT_RopeNeck = Vector3.new(0, 0.99, 0),
+	},
+	M_Hbr_Cleat_01 = {
+		ATT_Rope = Vector3.new(0, 0.21, 0),
+	},
+	M_Hbr_Cleat_02 = {
+		ATT_Rope = Vector3.new(0, 0.315, 0),
+	},
+	M_Hbr_Fender_Ball = {
+		ATT_Line = Vector3.new(-0.03, 2.7, 0.03),
+	},
+	M_Hbr_Fender_Cyl_01 = {
+		ATT_Line = Vector3.new(-0.03, 2.4584, 0.06),
+	},
+	M_Hbr_Fender_Cyl_02 = {
+		ATT_Line = Vector3.new(-0.03, 3.0284, 0.06),
+	},
+	M_Hbr_Fender_Cyl_03 = {
+		ATT_Line = Vector3.new(-0.03, 3.5984, 0.06),
+	},
+	M_Hbr_Fender_Tyre = {
+		ATT_Hang = Vector3.new(0, 3.96, 0),
+	},
+	M_Hbr_FishBox_01 = {
+		ATT_Stack = Vector3.new(0, 0.63, 0),
+	},
+	M_Hbr_FishBox_02 = {
+		ATT_Stack = Vector3.new(0, 0.63, 0),
+	},
+	M_Hbr_Ladder = {
+		ATT_Ladder_Top = Vector3.new(0, 0, 0.18),
+		ATT_Ladder_Bottom = Vector3.new(0, -12.3, 0.18),
+		ATT_Ladder_Mount = Vector3.new(0, 0, 0.66),
+		ATT_WaterLine = Vector3.new(0, -3.999, 0.18),
+	},
+	M_Hbr_LifebuoyStation = {
+		ATT_Ring = Vector3.new(0, 4.0275, 0.12),
+		ATT_ThrowLine = Vector3.new(0, 3.15, 0.03),
+	},
+	M_Hbr_LobsterPot_01 = {
+		ATT_Bridle = Vector3.new(0, 1.56, 0),
+	},
+	M_Hbr_LobsterPot_02 = {
+		ATT_Bridle = Vector3.new(-1.3634, 1.56, 0.0569),
+	},
+	M_Hbr_NetPile = {},
+	M_Hbr_Pontoon_Corner = {
+		ATT_Moor_01 = Vector3.new(-3.48, 0.27, 3.6),
+		ATT_Snap_Start = Vector3.new(0, 0, 0),
+		ATT_WaterLine = Vector3.new(0, -1.5, 3.6),
+		ATT_Snap_End = Vector3.new(0, 0, 7.2),
+		ATT_Snap_Side_L = Vector3.new(3.6, 0, 3.6),
+		ATT_Snap_Side_R = Vector3.new(-3.6, 0, 3.6),
+	},
+	M_Hbr_Pontoon_Finger = {
+		ATT_Moor_01 = Vector3.new(1.23, 0.27, 8.4),
+		ATT_Moor_02 = Vector3.new(-1.23, 0.27, 8.4),
+		ATT_Moor_03 = Vector3.new(1.23, 0.27, 17.1),
+		ATT_Moor_04 = Vector3.new(-1.23, 0.27, 17.1),
+		ATT_Snap_Start = Vector3.new(0, 0, 0),
+		ATT_WaterLine = Vector3.new(0, -1.5, 9),
+	},
+	M_Hbr_Pontoon_Gangway = {
+		ATT_Hinge = Vector3.new(0, -0.06, -0.12),
+		ATT_Roller = Vector3.new(0, -0.93, 26.25),
+		ATT_Snap_Start = Vector3.new(0, 0, 0),
+		ATT_Snap_End = Vector3.new(0, 0, 27),
+	},
+	M_Hbr_Pontoon_Straight12 = {
+		ATT_Moor_01 = Vector3.new(3.48, 0.27, 1.8),
+		ATT_Moor_02 = Vector3.new(-3.48, 0.27, 1.8),
+		ATT_Moor_03 = Vector3.new(3.48, 0.27, 18),
+		ATT_Moor_04 = Vector3.new(-3.48, 0.27, 18),
+		ATT_Moor_05 = Vector3.new(3.48, 0.27, 34.2),
+		ATT_Moor_06 = Vector3.new(-3.48, 0.27, 34.2),
+		ATT_Snap_Start = Vector3.new(0, 0, 0),
+		ATT_WaterLine = Vector3.new(0, -1.5, 18),
+		ATT_Snap_End = Vector3.new(0, 0, 36),
+		ATT_Snap_Finger_01 = Vector3.new(-3.81, 0, 13.5),
+		ATT_Snap_Finger_02 = Vector3.new(-3.81, 0, 22.5),
+		ATT_Snap_Gangway = Vector3.new(0, 0, 0.9),
+	},
+	M_Hbr_Pontoon_Straight6 = {
+		ATT_Moor_01 = Vector3.new(3.48, 0.27, 1.8),
+		ATT_Moor_02 = Vector3.new(-3.48, 0.27, 1.8),
+		ATT_Moor_03 = Vector3.new(3.48, 0.27, 16.2),
+		ATT_Moor_04 = Vector3.new(-3.48, 0.27, 16.2),
+		ATT_Snap_Start = Vector3.new(0, 0, 0),
+		ATT_WaterLine = Vector3.new(0, -1.5, 9),
+		ATT_Snap_End = Vector3.new(0, 0, 18),
+		ATT_Snap_Finger_01 = Vector3.new(-3.81, 0, 9),
+		ATT_Snap_Gangway = Vector3.new(0, 0, 0.9),
+	},
+	M_Hbr_QuayKit_Armour = {
+		ATT_Snap_L = Vector3.new(4.5, 0, 0),
+		ATT_Snap_R = Vector3.new(-4.5, 0, 0),
+		ATT_WaterLine = Vector3.new(0, -3.999, -4.8),
+	},
+	M_Hbr_QuayKit_Corner = {
+		ATT_Snap_A = Vector3.new(4.5, 0, 0),
+		ATT_Snap_B = Vector3.new(-4.5, 0, 9),
+		ATT_Moor_01 = Vector3.new(-4.5, -0.45, -0.15),
+		ATT_WaterLine = Vector3.new(-4.2, -3.999, -0.3),
+	},
+	M_Hbr_QuayKit_Head = {
+		ATT_Snap_L = Vector3.new(9, 0, 0),
+		ATT_Snap_R = Vector3.new(-9, 0, 0),
+		ATT_Moor_01 = Vector3.new(6.36, -0.45, -6.36),
+		ATT_Moor_02 = Vector3.new(0, -0.45, -9.15),
+		ATT_Moor_03 = Vector3.new(-6.36, -0.45, -6.36),
+		ATT_WaterLine = Vector3.new(0, -3.999, -9.3),
+		ATT_Light = Vector3.new(0, 0, -4.5),
+	},
+	M_Hbr_QuayKit_LadderBay = {
+		ATT_Snap_L = Vector3.new(4.5, 0, 0),
+		ATT_Snap_R = Vector3.new(-4.5, 0, 0),
+		ATT_Moor_01 = Vector3.new(-3, -0.45, -0.15),
+		ATT_WaterLine = Vector3.new(0, -3.999, -0.3),
+		ATT_Ladder = Vector3.new(0, 0, 0.66),
+	},
+	M_Hbr_QuayKit_Steps = {
+		ATT_Snap_L = Vector3.new(9, 0, 0),
+		ATT_Snap_R = Vector3.new(-9, 0, 0),
+		ATT_Steps_Top = Vector3.new(-7.8, -0.9, -1.725),
+		ATT_Steps_Bottom = Vector3.new(2.73, -10.8, -1.725),
+		ATT_Moor_01 = Vector3.new(6, -0.45, -0.15),
+		ATT_WaterLine = Vector3.new(0, -3.999, -3.6),
+	},
+	M_Hbr_QuayKit_Straight = {
+		ATT_Snap_L = Vector3.new(4.5, 0, 0),
+		ATT_Snap_R = Vector3.new(-4.5, 0, 0),
+		ATT_Moor_01 = Vector3.new(0, -0.45, -0.15),
+		ATT_WaterLine = Vector3.new(0, -3.999, -0.3),
+	},
+	M_Hbr_Rope_Chain = {
+		ATT_End = Vector3.new(-1.2309, 0.0735, -0.7681),
+	},
+	M_Hbr_Rope_Coil = {
+		ATT_End = Vector3.new(-1.5063, 0.0298, -0.5325),
+	},
+	M_Hbr_Rope_Flaked = {
+		ATT_Eye = Vector3.new(-1.3321, 0.1104, 0.4199),
 	},
 	M_Prop_Chandlery = {
 		ATT_Rack_01 = Vector3.new(25.8, 4.2, 1.2),
