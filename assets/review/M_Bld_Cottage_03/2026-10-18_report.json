@@ -1,0 +1,2137 @@
+{
+ "asset": "M_Bld_Cottage_03",
+ "name": "M_Bld_Cottage_03",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD0.fbx",
+   "bytes": 128956,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Cottage_03_COL",
+    "M_Bld_Cottage_Details_03_LOD0",
+    "M_Bld_Cottage_GlassLit_03_LOD0",
+    "M_Bld_Cottage_Glass_03_LOD0",
+    "M_Bld_Cottage_Roof_03_LOD0",
+    "M_Bld_Cottage_Stone_03_LOD0",
+    "M_Bld_Cottage_Trim_03_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Cottage_03_COL.001",
+     "min": [
+      -9.18,
+      -8.96,
+      -1.2
+     ],
+     "max": [
+      9.18,
+      8.66,
+      27.66
+     ],
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Details_03_LOD0.001",
+     "min": [
+      -9.18,
+      -9.05,
+      0.0
+     ],
+     "max": [
+      9.93,
+      8.795,
+      29.16
+     ],
+     "polygons": 1580,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_GlassLit_03_LOD0.001",
+     "min": [
+      -2.715,
+      -8.885,
+      2.9535
+     ],
+     "max": [
+      4.155,
+      7.475,
+      16.005
+     ],
+     "polygons": 16,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Glass_03_LOD0.001",
+     "min": [
+      -5.955,
+      -8.975,
+      2.6535
+     ],
+     "max": [
+      4.605,
+      7.535,
+      16.005
+     ],
+     "polygons": 20,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Roof_03_LOD0.001",
+     "min": [
+      -9.18,
+      -8.66,
+      17.4852
+     ],
+     "max": [
+      9.18,
+      8.66,
+      24.66
+     ],
+     "polygons": 24,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Stone_03_LOD0.001",
+     "min": [
+      -9.27,
+      -8.09,
+      -1.2
+     ],
+     "max": [
+      9.0,
+      8.09,
+      27.36
+     ],
+     "polygons": 338,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Trim_03_LOD0.001",
+     "min": [
+      -9.18,
+      -8.99,
+      0.1145
+     ],
+     "max": [
+      9.18,
+      8.99,
+      17.4252
+     ],
+     "polygons": 264,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD1.fbx",
+   "bytes": 99276,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Cottage_Details_03_LOD1",
+    "M_Bld_Cottage_GlassLit_03_LOD1",
+    "M_Bld_Cottage_Glass_03_LOD1",
+    "M_Bld_Cottage_Roof_03_LOD1",
+    "M_Bld_Cottage_Stone_03_LOD1",
+    "M_Bld_Cottage_Trim_03_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Cottage_Details_03_LOD1.001",
+     "min": [
+      -9.18,
+      -9.05,
+      0.0
+     ],
+     "max": [
+      9.18,
+      8.66,
+      29.16
+     ],
+     "polygons": 884,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_GlassLit_03_LOD1.001",
+     "min": [
+      -2.715,
+      -8.885,
+      2.9535
+     ],
+     "max": [
+      4.155,
+      7.475,
+      16.005
+     ],
+     "polygons": 16,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Glass_03_LOD1.001",
+     "min": [
+      -5.955,
+      -8.975,
+      2.6535
+     ],
+     "max": [
+      4.605,
+      7.535,
+      16.005
+     ],
+     "polygons": 20,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Roof_03_LOD1.001",
+     "min": [
+      -9.18,
+      -8.66,
+      17.4852
+     ],
+     "max": [
+      9.18,
+      8.66,
+      24.66
+     ],
+     "polygons": 24,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Stone_03_LOD1.001",
+     "min": [
+      -9.27,
+      -8.09,
+      -1.2
+     ],
+     "max": [
+      9.0,
+      8.09,
+      27.36
+     ],
+     "polygons": 338,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Trim_03_LOD1.001",
+     "min": [
+      -9.18,
+      -8.99,
+      0.1145
+     ],
+     "max": [
+      9.18,
+      8.99,
+      17.4252
+     ],
+     "polygons": 264,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD2.fbx",
+   "bytes": 54956,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Cottage_Details_03_LOD2",
+    "M_Bld_Cottage_GlassLit_03_LOD2",
+    "M_Bld_Cottage_Glass_03_LOD2",
+    "M_Bld_Cottage_Roof_03_LOD2",
+    "M_Bld_Cottage_Stone_03_LOD2",
+    "M_Bld_Cottage_Trim_03_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Cottage_Details_03_LOD2.001",
+     "min": [
+      -9.18,
+      -8.96,
+      0.0
+     ],
+     "max": [
+      9.12,
+      8.018,
+      28.95
+     ],
+     "polygons": 114,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_GlassLit_03_LOD2.001",
+     "min": [
+      1.2,
+      -8.036,
+      2.7
+     ],
+     "max": [
+      4.35,
+      8.036,
+      16.2
+     ],
+     "polygons": 4,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Glass_03_LOD2.001",
+     "min": [
+      -6.15,
+      -8.027,
+      2.4
+     ],
+     "max": [
+      4.8,
+      8.027,
+      16.2
+     ],
+     "polygons": 8,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Roof_03_LOD2.001",
+     "min": [
+      -9.18,
+      -8.66,
+      17.4852
+     ],
+     "max": [
+      9.18,
+      8.66,
+      24.66
+     ],
+     "polygons": 24,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Stone_03_LOD2.001",
+     "min": [
+      -9.27,
+      -8.09,
+      -1.2
+     ],
+     "max": [
+      9.0,
+      8.09,
+      27.36
+     ],
+     "polygons": 146,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Cottage_Trim_03_LOD2.001",
+     "min": [
+      -9.18,
+      -8.99,
+      2.175
+     ],
+     "max": [
+      9.18,
+      8.99,
+      17.4252
+     ],
+     "polygons": 88,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03.attachments.json",
+   "attachments": [
+    "ATT_Lamp_Window_01",
+    "ATT_Lamp_Window_02",
+    "ATT_Door",
+    "ATT_Lamp_Door_01",
+    "ATT_Smoke_01",
+    "ATT_Smoke_02"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_Cottage_03/M_Bld_Cottage_03.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "hero_building"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Stone_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "338 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 171 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Roof_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Trim_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "264 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.55e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 178 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Details_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1580 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.60e-03, 56 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 861 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Glass_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "20 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-01, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 10 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_GlassLit_03_LOD0"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "16 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.09e-01, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Stone_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "338 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 171 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Roof_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Trim_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "264 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.55e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 178 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Details_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "884 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.18e-02, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 471 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 1.444 (max 0.02), UV area by 19.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Glass_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "20 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-01, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 10 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_GlassLit_03_LOD1"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "16 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.09e-01, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Stone_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "146 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-02, 28 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 75 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Stone_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.4% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Roof_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.64e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Roof_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Trim_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.55e-03, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 54 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Trim_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 2.668 (max 0.02), UV area by 44.3% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Details_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "114 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.18e-02, 20 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 74 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Details_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 2.048 (max 0.02), UV area by 73.9% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_Glass_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.20e+00, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_Glass_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 0.000 (max 0.02), UV area by 56.8% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_GlassLit_03_LOD2"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.20e+00, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (render / stone / slate sets, trim sheet strips): hand-made LODs drop and replace parts (LOD2 flush window cards), so the UV bounds change): UV bounds differ by 0.625 (max 0.02), UV area by 83.9% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Cottage_03_COL"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 10000"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 1000"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2242 of 40000 (hero_building, asset row)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1546 of 15000"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "384 of 3000"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 6.12 x - x 10.12 m, spec 6.12 x - x 10.12 m (art/reference/M_Bld_Cottage_03/dims.md)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "19.200 studs, real 6.120 m = 18.360 studs, off 4.6% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "30.360 studs, real 10.120 m = 30.360 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Cottage_03_COL"
+  },
+  {
+   "subject": "M_Bld_Cottage_03",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (4 to 5 sets)"
+  },
+  {
+   "subject": "T_Cottage_Details_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_ALB.png"
+  },
+  {
+   "subject": "T_Cottage_Details_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Details_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_NOR.png"
+  },
+  {
+   "subject": "T_Cottage_Details_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_RGH.png"
+  },
+  {
+   "subject": "T_Cottage_Details_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Details_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Details_MET.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_ALB.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_ALB_Wet.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_NOR.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_RGH.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_RGH_Wet.png"
+  },
+  {
+   "subject": "T_BldTrim_Sheet_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_MET.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_ALB.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_NOR.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_RGH.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Slate_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_MET.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_ALB.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_NOR.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_RGH.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Cottage_Stone_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Cottage_Kit/T_Cottage_Stone_MET.png"
+  },
+  {
+   "subject": "ATT_Lamp_Window_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Window_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Door",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Door_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Smoke_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Smoke_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD0.fbx"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Cottage_03_COL, M_Bld_Cottage_Details_03_LOD0, M_Bld_Cottage_GlassLit_03_LOD0, M_Bld_Cottage_Glass_03_LOD0, M_Bld_Cottage_Roof_03_LOD0, M_Bld_Cottage_Stone_03_LOD0, M_Bld_Cottage_Trim_03_LOD0; 2286 triangles (scene 2286)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD1.fbx"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Cottage_Details_03_LOD1, M_Bld_Cottage_GlassLit_03_LOD1, M_Bld_Cottage_Glass_03_LOD1, M_Bld_Cottage_Roof_03_LOD1, M_Bld_Cottage_Stone_03_LOD1, M_Bld_Cottage_Trim_03_LOD1; 1546 triangles (scene 1546)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Cottage_03/M_Bld_Cottage_03_LOD2.fbx"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Cottage_Details_03_LOD2, M_Bld_Cottage_GlassLit_03_LOD2, M_Bld_Cottage_Glass_03_LOD2, M_Bld_Cottage_Roof_03_LOD2, M_Bld_Cottage_Stone_03_LOD2, M_Bld_Cottage_Trim_03_LOD2; 384 triangles (scene 384)"
+  },
+  {
+   "subject": "M_Bld_Cottage_03_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Bld_Cottage_Stone_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 338,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Stone_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 338,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Stone_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 146,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Roof_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 24,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Roof_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 24,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Roof_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 24,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Trim_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 264,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Trim_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 264,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Trim_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 88,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Details_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1580,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Details_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 884,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Details_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 114,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Glass_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 20,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Glass_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 20,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_Glass_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 8,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_GlassLit_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 16,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_GlassLit_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 16,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_GlassLit_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 4,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Cottage_03_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 44,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  19.199999809265137,
+  18.039999961853027,
+  30.359999895095825
+ ],
+ "peak_rss_mb": 294.8
+}

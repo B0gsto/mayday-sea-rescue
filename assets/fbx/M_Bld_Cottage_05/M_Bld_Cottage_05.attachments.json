@@ -1,0 +1,355 @@
+{
+ "asset": "M_Bld_Cottage_05",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Lamp_Window_01",
+   "parent": null,
+   "blender": [
+    -7.8,
+    -6.95,
+    4.725
+   ],
+   "roblox_from_origin": [
+    7.8,
+    4.725,
+    -6.95
+   ],
+   "roblox_from_bbox_centre": [
+    8.18,
+    -9.255,
+    -6.92
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Window_02",
+   "parent": null,
+   "blender": [
+    8.4,
+    -6.95,
+    14.625
+   ],
+   "roblox_from_origin": [
+    -8.4,
+    14.625,
+    -6.95
+   ],
+   "roblox_from_bbox_centre": [
+    -8.02,
+    0.645,
+    -6.92
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door",
+   "parent": null,
+   "blender": [
+    -2.16,
+    -9.35,
+    0.36
+   ],
+   "roblox_from_origin": [
+    2.16,
+    0.36,
+    -9.35
+   ],
+   "roblox_from_bbox_centre": [
+    2.54,
+    -13.62,
+    -9.32
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door_02",
+   "parent": null,
+   "blender": [
+    2.16,
+    -9.35,
+    0.36
+   ],
+   "roblox_from_origin": [
+    -2.16,
+    0.36,
+    -9.35
+   ],
+   "roblox_from_bbox_centre": [
+    -1.78,
+    -13.62,
+    -9.32
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Door_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -8.72,
+    8.25
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    8.25,
+    -8.72
+   ],
+   "roblox_from_bbox_centre": [
+    0.38,
+    -5.73,
+    -8.69
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_01",
+   "parent": null,
+   "blender": [
+    -12.055,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    12.055,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    12.435,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_02",
+   "parent": null,
+   "blender": [
+    -11.245,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    11.245,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    11.625,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_03",
+   "parent": null,
+   "blender": [
+    -0.81,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    0.81,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.19,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_04",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    0.38,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_05",
+   "parent": null,
+   "blender": [
+    0.81,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    -0.81,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.43,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_06",
+   "parent": null,
+   "blender": [
+    11.245,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    -11.245,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -10.865,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Smoke_07",
+   "parent": null,
+   "blender": [
+    12.055,
+    0.0,
+    29.16
+   ],
+   "roblox_from_origin": [
+    -12.055,
+    29.16,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -11.675,
+    15.18,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
