@@ -505,6 +505,98 @@ function Rules.canUseVehicle(data: PlayerData, vehicleId: string): (boolean, str
 	return true, "ok"
 end
 
+-- Why a vehicle is rank-locked for this player, or nil when the rank is there (RP-C1b): the
+-- boat desk shows the same gate the server applies (Rules.canUseVehicle uses the gated rank).
+-- "Rank: Lifeguard" when the Rep is short, "Pass Helm" when the Rep is there but the rank's
+-- certification is not.
+function Rules.vehicleLock(data: PlayerData, vehicleId: string): string?
+	local unlock = ProgressionConfig.Vehicles[vehicleId]
+	if not unlock or Rules.rankIndex(data) >= unlock.rankIndex then
+		return nil
+	end
+	if Rules.rankIndexForRep(data.rep) >= unlock.rankIndex then
+		for i = Rules.rankIndex(data) + 1, unlock.rankIndex do
+			local cert = ProgressionConfig.Ranks[i].cert
+			if cert and data.certs[cert] ~= true then
+				local def = ProgressionConfig.Certifications[cert]
+				return `Pass {if def then def.displayName else cert}`
+			end
+		end
+	end
+	return `Rank: {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
+end
+
+-- The certification an exercise is the first half of (nil: the drill or an unknown id).
+function Rules.certForExercise(exerciseId: string): ProgressionConfig.Certification?
+	for _, id in ProgressionConfig.CertOrder do
+		local cert = ProgressionConfig.Certifications[id]
+		if cert and cert.exercise == exerciseId then
+			return cert
+		end
+	end
+	return nil
+end
+
+-- ok, reason: may this player start this exercise from the station board (RP-C1b)? Needs the
+-- cold open done and every prerequisite certification held (the swim test waits for Casualty
+-- Care). `busy` is true while the player is on an operation (OperationService checks it).
+-- Repeats are always allowed: only the first pass pays.
+function Rules.canStartExercise(
+	data: PlayerData,
+	exerciseId: string,
+	busy: boolean?
+): (boolean, string)
+	local cert = Rules.certForExercise(exerciseId)
+	if not cert and exerciseId ~= ProgressionConfig.DrillExercise then
+		return false, "Unknown exercise"
+	end
+	if not data.coldOpenDone then
+		return false, "Finish your first rescue first"
+	end
+	if busy then
+		return false, "Finish the current operation first"
+	end
+	if cert then
+		for _, need in cert.needs do
+			if data.certs[need] ~= true then
+				local def = ProgressionConfig.Certifications[need]
+				return false, `Needs {if def then def.displayName else need}`
+			end
+		end
+	end
+	return true, "ok"
+end
+
+-- The PlayerData a client can rebuild from a Rules.snapshot (the HUD and the exercise board use
+-- it so their gates match the server's): Rep, Cash, owned vehicles, certifications, exercises.
+function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
+	local data = Rules.defaultData()
+	data.cash = if type(snap.cash) == "number" then snap.cash else 0
+	data.rep = if type(snap.rep) == "number" then snap.rep else 0
+	data.coldOpenDone = snap.coldOpenDone == true
+	if type(snap.vehicles) == "table" then
+		data.vehicles = table.clone(snap.vehicles)
+	end
+	if type(snap.gear) == "table" then
+		data.gear = table.clone(snap.gear)
+	end
+	if type(snap.exercises) == "table" then
+		data.exercises = table.clone(snap.exercises)
+	end
+	if type(snap.certs) == "table" then
+		for id, st in snap.certs do
+			if type(st) == "table" then
+				if st.earned == true then
+					data.certs[id] = true
+				elseif type(st.live) == "number" then
+					data.certLive[id] = st.live
+				end
+			end
+		end
+	end
+	return data
+end
+
 -- ok, reason, price for buying a vehicle.
 function Rules.canBuyVehicle(data: PlayerData, vehicleId: string): (boolean, string, number)
 	local unlock = ProgressionConfig.Vehicles[vehicleId]

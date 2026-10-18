@@ -373,4 +373,110 @@ return function(t)
 			end
 		end
 	)
+	-- RP-C1b: the exercise board's gate, the HUD's rank gate from a snapshot, the no-tow berth
+	t.test(
+		"starting an exercise needs the cold open, the prerequisites and no operation",
+		function()
+			local d = data(0)
+			local ok, why = Rules.canStartExercise(d, "ExerciseBoatHandling")
+			t.expect(ok).toBe(false)
+			t.expect(why).toBe("Finish your first rescue first")
+			d.coldOpenDone = true
+			t.expect((Rules.canStartExercise(d, "ExerciseBoatHandling"))).toBe(true)
+			t.expect((Rules.canStartExercise(d, "ExerciseReopeningDay"))).toBe(true)
+			t.expect((Rules.canStartExercise(d, "ExerciseCasualtyCare"))).toBe(true)
+			ok, why = Rules.canStartExercise(d, "ExerciseSwimTest")
+			t.expect(ok).toBe(false)
+			t.expect(why).toBe("Needs Casualty Care")
+			d.certs.CasualtyCare = true
+			t.expect((Rules.canStartExercise(d, "ExerciseSwimTest"))).toBe(true)
+			ok, why = Rules.canStartExercise(d, "ExerciseSwimTest", true)
+			t.expect(ok).toBe(false)
+			t.expect(why).toBe("Finish the current operation first")
+			t.expect((Rules.canStartExercise(d, "PersonInWater"))).toBe(false) -- live calls never start here
+			-- repeats are allowed (only the first pass pays)
+			d.exercises.ExerciseBoatHandling = "Gold"
+			t.expect((Rules.canStartExercise(d, "ExerciseBoatHandling"))).toBe(true)
+		end
+	)
+
+	t.test("the board lists every exercise with its status, requirement and gate", function()
+		local d = data(0)
+		d.coldOpenDone = true
+		d.exercises.ExerciseCasualtyCare = "Silver"
+		local rows = Exercises.board(d)
+		t.expect(#rows).toBe(#Exercises.Order)
+		local byId = {}
+		for i, r in rows do
+			t.expect(r.id).toBe(Exercises.Order[i])
+			byId[r.id] = r
+		end
+		t.expect(byId.ExerciseReopeningDay.optional).toBe(true)
+		t.expect(byId.ExerciseReopeningDay.status).toBe("Optional")
+		t.expect(byId.ExerciseCasualtyCare.status).toBe("Passed: Silver")
+		t.expect(byId.ExerciseBoatHandling.status).toBe("Not yet passed")
+		t.expect(byId.ExerciseBoatHandling.certification).toBe("Helm")
+		t.expect(string.find(byId.ExerciseBoatHandling.requirement, "2 live operations", 1, true))
+			.toBeTruthy()
+		t.expect(byId.ExerciseSwimTest.canStart).toBe(false)
+		t.expect(byId.ExerciseSwimTest.reason).toBe("Needs Casualty Care")
+		t.expect(string.find(byId.ExerciseSwimTest.requirement, "Casualty Care held", 1, true))
+			.toBeTruthy()
+		d.certs.Helm = true
+		t.expect(Exercises.board(d)[2].requirement).toBe("Helm certified")
+		for _, r in Exercises.board(d, true) do
+			t.expect(r.canStart).toBe(false)
+		end
+	end)
+
+	t.test("a snapshot rebuilds the data the server gates on (HUD boat desk)", function()
+		local d = data(1000)
+		d.certs = {} -- not grandfathered: Rep without the certifications
+		d.exercises.ExerciseBoatHandling = "Gold"
+		d.certLive.Helm = 1
+		local back = Rules.fromSnapshot(Rules.snapshot(d))
+		t.expect(back.rep).toBe(1000)
+		t.expect(back.exercises.ExerciseBoatHandling).toBe("Gold")
+		t.expect(back.certLive.Helm).toBe(1)
+		t.expect(Rules.rankIndex(back)).toBe(Rules.rankIndex(d))
+		t.expect(Rules.rankIndex(back)).toBe(1)
+		t.expect((Rules.canUseVehicle(back, "RIB"))).toBe(false)
+		t.expect(Rules.vehicleLock(back, "RIB")).toBe("Pass Helm")
+		t.expect(Rules.vehicleLock(back, "JetSki")).toBeNil()
+		d.certs.Helm = true
+		back = Rules.fromSnapshot(Rules.snapshot(d))
+		t.expect(back.certs.Helm).toBe(true)
+		t.expect(Rules.rankIndex(back)).toBe(2)
+		t.expect(Rules.vehicleLock(back, "RIB")).toBe("Pass Rescue Swimmer")
+		d.certs.RescueSwimmer = true
+		d.vehicles.RIB = true
+		back = Rules.fromSnapshot(Rules.snapshot(d))
+		t.expect(Rules.vehicleLock(back, "RIB")).toBeNil()
+		t.expect((Rules.canUseVehicle(back, "RIB"))).toBe(true)
+		-- short of the Rep: the rank is named, not the certification
+		t.expect(Rules.vehicleLock(Rules.fromSnapshot(Rules.snapshot(data(100))), "RIB"))
+			.toBe("Rank: Rescue Swimmer")
+		t.expect(Rules.fromSnapshot({}).rep).toBe(0)
+	end)
+
+	t.test("the boat-handling exercise berths alone: no tow-line steps", function()
+		local Procedures = t.load("src/client/Mechanics/Tow/Procedures.luau")
+		local alongside
+		for _, s in Exercises.get("ExerciseBoatHandling").def.steps do
+			if s.mechanicId == "berth" then
+				alongside = s
+			end
+		end
+		t.expect(alongside.noTow).toBe(true)
+		for _, s in Operations.Defs.DisabledVessel.steps do
+			t.expect(s.noTow).toBeNil() -- the live tow keeps its release
+		end
+		local m = Procedures.noTowBerthMetrics(1.5, { "bow", "stern", "fwdSpring", "aftSpring" })
+		t.expect(m.lineInWater).toBe(0)
+		t.expect(m.lineOrderRight).toBe(1)
+		t.expect(Grading.stepGrade(alongside, m)).toBe("Gold")
+		local wrong = Procedures.noTowBerthMetrics(5, { "stern", "bow", "fwdSpring", "aftSpring" })
+		t.expect(wrong.lineOrderRight).toBe(0)
+		t.expect(Grading.stepGrade(alongside, wrong) ~= "Gold").toBe(true)
+	end)
 end

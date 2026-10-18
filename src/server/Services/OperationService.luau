@@ -28,6 +28,7 @@ local Remotes = require(OpsFolder:WaitForChild("Remotes"))
 local Types = require(OpsFolder:WaitForChild("Types"))
 -- training exercises (RP-C1): exercise kinds record a pass, not certification progress
 local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
+local ProgressionRules = require(Shared:WaitForChild("ProgressionRules")) -- exercise gate (RP-C1b)
 
 local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
 -- Ferry (stream c): server-side metric checks and the scene board's task list.
@@ -457,6 +458,7 @@ local function stepView(inst: StepInst, track: Track): { [string]: any }
 		npcDoneAt = if inst.npc then inst.npcDoneAt else nil,
 		trackId = track.id,
 		casualtyIndex = inst.casualtyIndex,
+		noTow = inst.def.noTow, -- berth alone: skip the tow-line parts (RP-C1b)
 	}
 end
 
@@ -530,9 +532,15 @@ end
 
 local POB_WORDS = { "one", "two", "three", "four" }
 
-local function newOp(kind: string, sceneKind: string, zone: string, position: Vector3): any
+local function newOp(
+	kind: string,
+	sceneKind: string,
+	zone: string,
+	position: Vector3,
+	exerciseDef: OperationDef? -- a station exercise (never in Operations.Defs, never offered)
+): any
 	nextId += 1
-	local def = assert(Operations.get(kind), kind)
+	local def = assert(exerciseDef or Operations.get(kind), kind)
 	local spec = assert(CallTypes.Kinds[sceneKind], sceneKind)
 	local id = `O{nextId}`
 	local op = {
@@ -683,7 +691,7 @@ local function beginStep(op: any, track: Track, def: StepDef, attempt: number?)
 	if assignee then
 		fire("Ops_StepStart", assignee, stepContext(op, track, inst, assignee))
 	end
-	if def.id == "alongside" or def.id == "berth" then
+	if (def.id == "alongside" or def.id == "berth") and not def.noTow then
 		pcall(RescueService.SetTowMode, op.scene, "Alongside") -- lashed beside the tug
 	end
 	broadcast(op)
@@ -987,6 +995,12 @@ local function closeOp(op: any)
 	op.state = "Done"
 	ops[op.id] = nil
 	pcall(RescueService.Cleanup, op.scene)
+	if op.exercise then
+		try("ExerciseBoardService", "EndExercise", op.id) -- the station-floor manikin
+		if op.owner then
+			op.owner:SetAttribute("OpsExercise", nil)
+		end
+	end
 	if op == bigOp then
 		bigOp = nil
 	end
@@ -1070,13 +1084,20 @@ finish = function(op: any, reason: string)
 				local total = Operations.totalWeight(if tr then tr.plan else op.def.steps)
 				reward = Grading.takeoverPayout(op.def.weight, scored, total, humans, assisted)
 				paidAs = `Op:{op.kind}:Takeover`
+			elseif op.exercise then
+				-- exercises pay only their first-pass reward (RecordTraining, below) and never
+				-- count toward the tutorial chain (RP-C1b)
+				reward = { cash = 0, rep = 0 }
+				paidAs = `Op:{op.kind}`
 			else
 				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
 				reward = Grading.payout(op.def.weight, grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 			end
-			st.completed += 1
-			p:SetAttribute("OpsCompleted", st.completed)
+			if not op.exercise then
+				st.completed += 1
+				p:SetAttribute("OpsCompleted", st.completed)
+			end
 		else
 			reward = Grading.shareWithoutStep(op.def.weight)
 			paidAs = "Op:Share"
@@ -1149,8 +1170,13 @@ finish = function(op: any, reason: string)
 			condition = op.history,
 			saved = op.saved,
 			total = #op.casualties,
-			cash = math.floor(reward.cash * mult + 0.5),
-			rep = reward.rep,
+			cash = if op.exercise
+				then (training and training.reward and training.reward.cash or 0)
+				else math.floor(reward.cash * mult + 0.5),
+			rep = if op.exercise
+				then (training and training.reward and training.reward.rep or 0)
+				else reward.rep,
+			exercise = op.exercise == true,
 			tip = tip,
 			me = p.UserId,
 			-- certifications earned, progress, exercise pass, promotion (ProgressionRules)
@@ -1160,6 +1186,11 @@ finish = function(op: any, reason: string)
 	closeOp(op)
 	if op.coldOpen and op.owner then
 		endColdOpen(op.owner, reason)
+	end
+	if op.exercise then
+		-- a training exercise is no rescue: no leaderboard, badge or call-chain listeners
+		print(`[OperationService] {op.id} {op.kind} exercise finished ({reason}): {op.grade}`)
+		return
 	end
 	local snap: any = info(op) -- plus the debrief facts BadgeService / LeaderboardService read
 	snap.reason, snap.storm, snap.saved, snap.towParted =
@@ -1656,7 +1687,8 @@ function OperationService.OnVictimsDelivered(
 	end
 	local track = trackOf(op, driver)
 	local inst = track and track.current
-	if track and inst and inst.def.effect == "deliver" then
+	-- berth (the boat-handling exercise's alongside) is graded by its own mechanic, never the pad
+	if track and inst and inst.def.effect == "deliver" and inst.mechanicId ~= "berth" then
 		local metrics: Types.Metrics = { elapsed = now() - inst.startedAt }
 		local ci = inst.casualtyIndex
 		if ci then
@@ -1854,7 +1886,8 @@ local function tickOp(op: any, dt: number, t: number)
 	sampleColdOpen(op)
 	local env = { storm = op.storm or weatherState() == "Storm", coldWater = false }
 	local ferry = op.kind == "CapsizedFerry"
-	for _, c in op.casualties do
+	-- an exercise's manikin never deteriorates and nobody takes over: the cap just ends it
+	for _, c in (if op.exercise then {} else op.casualties) :: { CasualtyState } do
 		local before = c.condition
 		Condition.step(c, dt, env)
 		if ferry and c.tag and not c.delivered and not c.takenOver and c.condition < before then
@@ -1882,6 +1915,11 @@ local function tickOp(op: any, dt: number, t: number)
 				radio(op, "Rescue Gale One", "Rescue Gale One has the casualty. Carry on.")
 			end
 		end
+		if elapsed > op.def.capSeconds then
+			finish(op, "Timer")
+			return
+		end
+	elseif op.exercise then
 		if elapsed > op.def.capSeconds then
 			finish(op, "Timer")
 			return
@@ -2159,6 +2197,109 @@ function OperationService.DevStart(player: Player, kind: string?): string?
 	return op.id
 end
 
+-- Training exercises (RP-C1b; docs 09 section 9.2): started from the station exercise board
+-- (ExerciseBoardService), never offered as calls. Gated by ProgressionRules.canStartExercise (the
+-- cold open done, the certification's prerequisites, not already on an operation). The station's
+-- loaner is spawned on the slip for a boat exercise; on foot the player is walked to the venue.
+-- The manikin floats off the slipway (or in the harbour for boat handling) as a swimmer scene that
+-- does not drift or deteriorate; the casualty-care manikin lies on the station floor. Solo, no crew,
+-- no takeover, no payout but the first-pass reward, no tutorial-chain count. Returns the
+-- operation id, or nil and the reason.
+function OperationService.StartExercise(player: Player, exerciseId: string): (string?, string?)
+	local ex = Exercises.get(exerciseId)
+	if not ex then
+		return nil, "Unknown exercise"
+	end
+	local st = stateOf(player)
+	local flow = coldOpenFlow[player]
+	local busy = (st.activeOpId ~= nil and ops[st.activeOpId] ~= nil)
+		or (flow ~= nil and flow.phase == "Running")
+	if coldOpenDone(player) ~= true then
+		return nil, "Finish your first rescue first"
+	end
+	local okData, snap = try("ProgressionService", "GetData", player)
+	if not okData or type(snap) ~= "table" then
+		return nil, "Your service record is still loading"
+	end
+	local data = ProgressionRules.fromSnapshot(snap)
+	data.coldOpenDone = true -- checked above (the attribute or the profile)
+	local allowed, why = ProgressionRules.canStartExercise(data, exerciseId, busy)
+	if not allowed then
+		return nil, why
+	end
+	local okVenue, venue = try("ExerciseBoardService", "Venue", ex.venue)
+	if not okVenue or type(venue) ~= "table" then
+		return nil, "The station is not ready yet"
+	end
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not (character and humanoid and humanoid.Health > 0) then
+		return nil, "Not while you're down"
+	end
+	if ex.vehicle then
+		local okBoat, boat =
+			try("VehicleService", "SpawnSeated", player, ex.vehicle, venue.launch, 0, "Scripted")
+		if not okBoat or typeof(boat) ~= "Instance" then
+			return nil, "No boat on the slip right now"
+		end
+	else
+		if humanoid.SeatPart then
+			local weld = humanoid.SeatPart:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+		end
+		humanoid.Sit = false
+		character:PivotTo(venue.stand)
+	end
+	if st.offerOpId and ops[st.offerOpId] then
+		withdrawOffer(ops[st.offerOpId])
+	end
+	local op = newOp(ex.id, "Swimmer", "Near", venue.casualty, ex.def)
+	op.exercise = true
+	op.zoneName = "Haven Station"
+	op.offeredTo = { player }
+	op.state = "Active"
+	op.owner = player
+	op.acceptedAt = now()
+	st.activeOpId = op.id
+	st.offerOpId = nil
+	table.insert(op.members, player)
+	local state = Operations.roll(ex.def.states, rng:NextNumber())
+	local c = Condition.new(`{op.id}-1`, state, rng:NextNumber() < ex.def.lifejacketChance)
+	table.insert(op.casualties, c)
+	op.scene.driftCurrent = Vector3.zero -- the manikin is on a line: only the wind moves it
+	if ex.venue == "StationFloor" then
+		c.inWater = false
+		c.wet = false
+		try("ExerciseBoardService", "BeginExercise", op.id, ex.venue)
+	else
+		RescueService.SpawnCall(op.scene)
+	end
+	player:SetAttribute("OpsExercise", ex.id) -- the board closes; cleared in closeOp
+	newTrack(op, player, { player })
+	radio(op, "Haven Station", ex.def.radioLine)
+	advance(op, op.tracks[1])
+	return op.id, nil
+end
+
+local function onStartExercise(player: Player, exerciseId: any)
+	if type(exerciseId) ~= "string" or #exerciseId > 64 then
+		return
+	end
+	-- only from the board: the prompt's range plus a margin
+	local okNear, near = try("ExerciseBoardService", "IsNearBoard", player)
+	local id, why
+	if okNear and near == true then
+		id, why = OperationService.StartExercise(player, exerciseId)
+	else
+		why = "Use the exercise board in the station"
+	end
+	if not id then
+		fire("Ops_ExerciseRefused", player, { exerciseId = exerciseId, reason = why or "Not now" })
+	end
+end
+
 local function onPlayerAdded(player: Player)
 	stateOf(player)
 	coldOpenEntry(player)
@@ -2238,6 +2379,7 @@ function OperationService.Init()
 	Remotes.event("Ops_StepResult").OnServerEvent:Connect(onStepResult)
 	Remotes.event("Ops_TakeStep").OnServerEvent:Connect(onTakeStep)
 	Remotes.event("Ops_TowLength").OnServerEvent:Connect(onTowLength)
+	Remotes.event("Ops_StartExercise").OnServerEvent:Connect(onStartExercise)
 	Players.PlayerAdded:Connect(onPlayerAdded)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 	for _, p in Players:GetPlayers() do
@@ -2254,6 +2396,13 @@ function OperationService.Init()
 			elseif cmd == "start" then
 				local p = Players:GetPlayers()[1]
 				return if p then OperationService.DevStart(p, a) else nil
+			elseif cmd == "exercise" then
+				local p = Players:GetPlayers()[1]
+				if not p then
+					return nil
+				end
+				local id, why = OperationService.StartExercise(p, a)
+				return id or why
 			elseif cmd == "coldopen" then
 				local p = Players:GetPlayers()[1]
 				return if p then OperationService.StartColdOpen(p, nil, true) else nil

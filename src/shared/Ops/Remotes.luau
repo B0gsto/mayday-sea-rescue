@@ -15,6 +15,8 @@
 --   Ops_Debrief     S->C  the debrief { opId, kind, title, grade, takeover?, steps, condition, cash, rep, tip }
 --   Ops_Closed      S->C  { opId, reason, message?, silent? } offer withdrawn or operation closed
 --   Ops_TowLength   C->S  (opId, studs) the Crew stepped the tow out or in (server clamps 30..150)
+--   Ops_StartExercise    C->S  (exerciseId) start a station exercise from the exercise board
+--   Ops_ExerciseRefused  S->C  { exerciseId, reason } the board's Start was refused (RP-C1b)
 --   Ops_Board       S->C  { opId, osc, npc, assigned, tasksCovered, reportCorrect, board? } the
 --                         on-scene commander's scene board (ferry), to every crew on the operation
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -33,6 +35,8 @@ export type EventName =
 	| "Ops_Closed"
 	| "Ops_TowLength"
 	| "Ops_Board"
+	| "Ops_StartExercise"
+	| "Ops_ExerciseRefused"
 
 local Remotes = {}
 
@@ -49,6 +53,8 @@ Remotes.EVENTS = table.freeze({
 	"Ops_Closed",
 	"Ops_Board",
 	"Ops_TowLength",
+	"Ops_StartExercise",
+	"Ops_ExerciseRefused",
 } :: { EventName })
 
 local function folder(): Instance

@@ -142,6 +142,7 @@ local def: Types.OperationDef = {
 			realTerm = "Coming alongside",
 			role = "Helm",
 			mechanicId = "berth",
+			noTow = true, -- our own boat alone: lines to the pontoon, no lashed pair to release
 			gradeBands = {
 				{ metric = "contactSpeed", gold = 2, silver = 4, bronze = 8 },
 				{ metric = "lineInWater", gold = 0, silver = 0, bronze = 1 },

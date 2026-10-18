@@ -46,6 +46,7 @@ export type StepDef = {
 	shared: boolean?, -- big calls: done once for the whole operation, not once per track
 	effect: string?, -- server side effect on success (see OperationService: "board", "tow", ...)
 	tip: string?, -- Chief Aggie's debrief tip when this is the weakest step
+	noTow: boolean?, -- berth with nothing in tow: no lashed pair, no tow-line release (RP-C1b)
 }
 
 export type OperationDef = {

@@ -2,7 +2,8 @@
 -- HudLaunch: the boatyard collection desk panel (docs 04 section 1.1: no launch buttons on the HUD).
 -- It opens only from the "BoatDesk" ProximityPrompt at the desk on the quay (wired by HudController,
 -- which also closes it when the player walks away). The bay prompts on the dock still launch too.
--- One row per boat: ready (orange "Collect X", RequestVehicle), rank-locked (grey, "X / Rank: <Rank>")
+-- One row per boat: ready (orange "Collect X", RequestVehicle), rank-locked (grey, "X / Rank: <Rank>", or
+-- "X / Pass Helm" when the Rep is there but the certification is not: the server's gated rank)
 -- or for sale once the rank is reached ("Buy X / 4,000 Cash", BuyGear). Land vehicles (entries flagged
 -- land in ProgressionConfig.Vehicles) are station-yard pool vehicles and never listed here.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -118,15 +119,14 @@ function HudLaunch.build(
 
 	local function update(snapshot: { [string]: any })
 		lastSnapshot = snapshot
-		local data = Rules.defaultData()
-		data.cash = snapshot.cash or 0
-		data.rep = snapshot.rep or 0
-		data.vehicles = snapshot.vehicles or {}
+		-- the server's gate: the rank from Rep plus certifications (Rules.canUseVehicle / rankIndex)
+		local data = Rules.fromSnapshot(snapshot)
 		for id, b in buttons do
 			local spec = VehicleConfig.get(id)
 			local name = if spec then spec.displayName else id
 			local unlock = ProgressionConfig.Vehicles[id]
 			local usable = Rules.canUseVehicle(data, id)
+			local lock = Rules.vehicleLock(data, id) -- "Rank: Lifeguard" or "Pass Helm"
 			if busy == id then
 				b.Text = "Collecting..."
 				b.BackgroundColor3 = C.panelLight
@@ -134,9 +134,9 @@ function HudLaunch.build(
 				states[id] = "ready"
 				b.Text = `Collect {name}`
 				b.BackgroundColor3 = C.accent
-			elseif unlock and Rules.rankIndexForRep(data.rep) < unlock.rankIndex then
+			elseif unlock and lock then
 				states[id] = "locked"
-				b.Text = `{name}\nRank: {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
+				b.Text = `{name}\n{lock}`
 				b.BackgroundColor3 = C.locked
 			elseif unlock then
 				local canBuy = Rules.canBuyVehicle(data, id)

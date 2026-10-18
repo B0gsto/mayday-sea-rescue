@@ -7,8 +7,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HudTheme = require(script.Parent.HudTheme)
-local Operations =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Operations"))
+local OpsFolder = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops")
+local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
+local Operations = require(OpsFolder:WaitForChild("Operations"))
 
 export type Debrief = { show: (d: { [string]: any }) -> (), hide: () -> (), shownFor: () -> number }
 
@@ -44,7 +45,8 @@ function OpsDebrief.reasonFor(kind: string, s: { [string]: any }): string
 	if s.grade == "Gold" then
 		return "Textbook."
 	end
-	local def = Operations.get(kind)
+	local ex = Exercises.get(kind)
+	local def = if ex then ex.def else Operations.get(kind)
 	for _, st in (def and def.steps or {}) :: { any } do
 		if st.id == s.id and st.tip then
 			return st.tip
@@ -53,6 +55,28 @@ function OpsDebrief.reasonFor(kind: string, s: { [string]: any }): string
 	return if s.grade == "Silver"
 		then "Good. One detail off Gold."
 		else "Safe, but rough. Slow it down."
+end
+
+local function escape(s: string): string
+	return (string.gsub(string.gsub(string.gsub(s, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"))
+end
+
+-- The debrief payload's badges (ProgressionRules.DebriefBadge: certifications earned, live
+-- operations counted, an exercise passed, a promotion) as the tablet's certification lines, in
+-- RichText: earned certifications and promotions in brass, progress in the Rep teal. Pure.
+function OpsDebrief.badgeLines(badges: { any }): { string }
+	local out = {}
+	for _, b in badges do
+		if type(b) == "table" and type(b.title) == "string" then
+			local strong = b.kind == "cert" or b.kind == "rank"
+			local colour = if strong then "#E3C88F" else "#8FB7BC"
+			local text = if type(b.text) == "string" and b.text ~= ""
+				then `  {escape(b.text)}`
+				else ""
+			table.insert(out, `<font color="{colour}"><b>{escape(b.title)}</b></font>{text}`)
+		end
+	end
+	return out
 end
 
 -- Certification credit from this debrief for the player (userId).
@@ -320,7 +344,13 @@ function OpsDebrief.new(gui: ScreenGui): Debrief
 				tip.TextYAlignment = Enum.TextYAlignment.Top
 				y += 68
 			end
-			local credits = OpsDebrief.certCredits(d.steps or {}, player.UserId)
+			-- the server's own result (RP-C1b): what this debrief earned, counted or passed
+			local badges = if type(d.badges) == "table"
+				then OpsDebrief.badgeLines(d.badges)
+				else nil
+			local credits: { { name: string, need: number } } = if badges
+				then {}
+				else OpsDebrief.certCredits(d.steps or {}, player.UserId)
 			local certLines = {}
 			for _, c in credits do
 				local have = player:GetAttribute("Cert_" .. string.gsub(c.name, " ", ""))
@@ -331,6 +361,9 @@ function OpsDebrief.new(gui: ScreenGui): Debrief
 						then `{c.name}: {n}/{c.need} operations`
 						else `{c.name}: +1 operation toward sign-off ({c.need} needed)`
 				)
+			end
+			if badges then
+				certLines = badges
 			end
 			local cert = HudTheme.label(
 				"Certs",
@@ -346,6 +379,11 @@ function OpsDebrief.new(gui: ScreenGui): Debrief
 			cert.TextWrapped = true
 			cert.TextYAlignment = Enum.TextYAlignment.Top
 			cert.TextColor3 = HudTheme.Colors.bar
+			cert.RichText = badges ~= nil
+			cert.TextTruncate = Enum.TextTruncate.None
+			if badges and #badges > 3 then
+				cert.Size = UDim2.new(1, 0, 0, 20 + 19 * #badges)
+			end
 
 			local close = HudTheme.button(
 				"Close",

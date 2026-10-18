@@ -265,6 +265,16 @@ Procedures.RELEASE_TEXT = {
 	coil = "Coil and stow the tow line",
 }
 
+-- Berth with nothing in tow (step def noTow, the boat-handling exercise): the metrics once the
+-- lines are on. No tow line is ever in the water; the order is the berthing order onto the pontoon.
+function Procedures.noTowBerthMetrics(contactSpeed: number, given: { string }): { [string]: number }
+	return {
+		contactSpeed = contactSpeed,
+		lineInWater = 0,
+		lineOrderRight = if Procedures.orderScore(given, Procedures.BERTH_ORDER) >= 1 then 1 else 0,
+	}
+end
+
 -- Contact speed (studs/s) along the touching normal from two velocities.
 function Procedures.contactSpeed(relVelocity: Vector3, normal: Vector3): number
 	local n = Vector3.new(normal.X, 0, normal.Z)

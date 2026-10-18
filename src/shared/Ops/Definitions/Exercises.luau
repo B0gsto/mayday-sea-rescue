@@ -4,6 +4,8 @@
 -- from the live mechanics (Exercise*.luau next to this file), run solo at the station with Chief
 -- Aggie and the manikin. The certifications they feed are in ProgressionConfig.Certifications and
 -- the pass and reward rules in ProgressionRules.recordExercise. Pure data (Lune-testable).
+local ProgressionConfig = require(script.Parent.Parent.Parent.Config.ProgressionConfig)
+local Rules = require(script.Parent.Parent.Parent.ProgressionRules)
 local Types = require(script.Parent.Parent.Types)
 
 export type Venue = "Slipway" | "Pontoon" | "StationFloor"
@@ -88,6 +90,72 @@ Exercises.Defs = table.freeze((function()
 end)())
 
 function Exercises.get(id: string): ExerciseInfo?
+	-- One card on the station exercise board (RP-C1b), for the player whose data this is.
+	export type BoardRow = {
+		id: string,
+		title: string,
+		summary: string,
+		minutes: number,
+		optional: boolean,
+		certification: string?, -- display name
+		best: string?, -- best passing grade
+		status: string, -- "Passed: Gold" | "Not yet passed" | "Optional"
+		requirement: string, -- what the certification needs, or the drill's note
+		canStart: boolean,
+		reason: string, -- why not, when canStart is false ("ok" otherwise)
+	}
+
+	-- Pure: the board's cards in board order. `busy`: the player is on an operation.
+	function Exercises.board(data: Rules.PlayerData, busy: boolean?): { BoardRow }
+		local rows = {}
+		for _, exId in Exercises.Order do
+			local e = Exercises.Defs[exId]
+			local best = data.exercises[exId]
+			local cert = if e.certification
+				then ProgressionConfig.Certifications[e.certification]
+				else nil
+			local requirement: string
+			if cert then
+				local st = Rules.certStatus(data, cert.id)
+				if st and st.earned then
+					requirement = `{cert.displayName} certified`
+				else
+					local parts = { "this exercise" }
+					table.insert(
+						parts,
+						`{cert.live.count} live {cert.live.label} at {cert.live.minGrade}`
+					)
+					for _, need in cert.needs do
+						local def = ProgressionConfig.Certifications[need]
+						table.insert(parts, `{if def then def.displayName else need} held`)
+					end
+					local live = if st then ` ({st.live} of {st.liveNeeded} done)` else ""
+					requirement = `{cert.displayName}: {table.concat(parts, ", ")}{live}`
+				end
+			else
+				requirement = "Optional: no certification. Cannot be failed."
+			end
+			local ok, reason = Rules.canStartExercise(data, exId, busy)
+			table.insert(rows, {
+				id = exId,
+				title = e.def.displayName,
+				summary = e.summary,
+				minutes = e.minutes,
+				optional = e.optional,
+				certification = if cert then cert.displayName else nil,
+				best = best,
+				status = if best
+					then `Passed: {best}`
+					elseif e.optional then "Optional"
+					else "Not yet passed",
+				requirement = requirement,
+				canStart = ok,
+				reason = reason,
+			})
+		end
+		return rows
+	end
+
 	return Exercises.Defs[id]
 end
 
@@ -106,6 +174,72 @@ function Exercises.forCertification(certId: string): ExerciseInfo?
 		end
 	end
 	return nil
+end
+
+-- One card on the station exercise board (RP-C1b), for the player whose data this is.
+export type BoardRow = {
+	id: string,
+	title: string,
+	summary: string,
+	minutes: number,
+	optional: boolean,
+	certification: string?, -- display name
+	best: string?, -- best passing grade
+	status: string, -- "Passed: Gold" | "Not yet passed" | "Optional"
+	requirement: string, -- what the certification needs, or the drill's note
+	canStart: boolean,
+	reason: string, -- why not, when canStart is false ("ok" otherwise)
+}
+
+-- Pure: the board's cards in board order. `busy`: the player is on an operation.
+function Exercises.board(data: Rules.PlayerData, busy: boolean?): { BoardRow }
+	local rows = {}
+	for _, id in Exercises.Order do
+		local e = Exercises.Defs[id]
+		local best = data.exercises[id]
+		local cert = if e.certification
+			then ProgressionConfig.Certifications[e.certification]
+			else nil
+		local requirement: string
+		if cert then
+			local st = Rules.certStatus(data, cert.id)
+			if st and st.earned then
+				requirement = `{cert.displayName} certified`
+			else
+				local parts = { "this exercise" }
+				table.insert(
+					parts,
+					`{cert.live.count} live {cert.live.label} at {cert.live.minGrade}`
+				)
+				for _, need in cert.needs do
+					local def = ProgressionConfig.Certifications[need]
+					table.insert(parts, `{if def then def.displayName else need} held`)
+				end
+				local live = if st then ` ({st.live} of {st.liveNeeded} done)` else ""
+				requirement = `{cert.displayName}: {table.concat(parts, ", ")}{live}`
+			end
+		else
+			requirement = "Optional: no certification. Cannot be failed."
+		end
+		local ok, reason = Rules.canStartExercise(data, id, busy)
+		table.insert(rows, {
+			id = id,
+			title = e.def.displayName,
+			summary = e.summary,
+			minutes = e.minutes,
+			optional = e.optional,
+			certification = if cert then cert.displayName else nil,
+			best = best,
+			status = if best
+				then `Passed: {best}`
+				elseif e.optional then "Optional"
+				else "Not yet passed",
+			requirement = requirement,
+			canStart = ok,
+			reason = reason,
+		})
+	end
+	return rows
 end
 
 return Exercises

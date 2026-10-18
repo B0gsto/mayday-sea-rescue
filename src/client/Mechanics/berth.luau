@@ -4,6 +4,9 @@
 -- harbour staff, then release in the right order: the casualty made fast to the pontoon first,
 -- our lashings off, and the tow line coiled and stowed (no line left in the water).
 -- Metrics: contactSpeed (studs/s), lineInWater (0/1), lineOrderRight (1/0).
+-- With nothing in tow (ctx.step.noTow, the boat-handling exercise's "alongside the pontoon") the
+-- tow-line parts are skipped: no lashed-pair drag, and the step ends once the lines are on, graded
+-- on the contact speed and the berthing line order (Procedures.noTowBerthMetrics).
 local RunService = game:GetService("RunService")
 
 local Kit = require(script.Parent:WaitForChild("Tow"):WaitForChild("Kit"))
@@ -27,7 +30,8 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		return cleanup
 	end
 	local r = root :: BasePart
-	local link = Kit.getLink(ctx)
+	local noTow = type(ctx.step) == "table" and ctx.step.noTow == true
+	local link = if noTow then nil else Kit.getLink(ctx)
 	local pad = Kit.nearestPad(r.Position)
 	local phase = "approach"
 	local contactSpeed = 0
@@ -58,11 +62,19 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		lbl.Parent = gui
 		speedLabel = lbl
 	end
-	Kit.brief(
-		gui,
-		"Bring her onto the pontoon at a shallow angle, dead slow. She's heavy now: start slowing early."
-	)
-	Kit.say(gui, "Haven Harbour", "Berth on the visitors' pontoon, we'll take your lines.", 4)
+	if noTow then
+		Kit.brief(
+			gui,
+			"Bring her alongside the pontoon at a shallow angle, under the slow mark, and let her kiss it."
+		)
+		Kit.say(gui, "Chief Aggie", "Alongside the pontoon to finish. Gently does it.", 4)
+	else
+		Kit.brief(
+			gui,
+			"Bring her onto the pontoon at a shallow angle, dead slow. She's heavy now: start slowing early."
+		)
+		Kit.say(gui, "Haven Harbour", "Berth on the visitors' pontoon, we'll take your lines.", 4)
+	end
 
 	local function release()
 		phase = "release"
@@ -136,6 +148,9 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 				)
 				if #remaining > 0 then
 					nextLine()
+				elseif noTow then
+					Kit.say(gui, "Chief Aggie", "Made fast. That'll do nicely.", 2.5)
+					complete({ metrics = Procedures.noTowBerthMetrics(contactSpeed, given) })
 				else
 					release()
 				end
@@ -150,7 +165,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		RunService.Heartbeat:Connect(function()
 			local v = r.AssemblyLinearVelocity
 			local flat = Vector3.new(v.X, 0, v.Z)
-			drag.Force = -flat * r.AssemblyMass * PAIR_DRAG
+			drag.Force = if noTow then Vector3.zero else -flat * r.AssemblyMass * PAIR_DRAG
 			if phase ~= "approach" then
 				drag.Force = -flat * r.AssemblyMass * 2
 				return
