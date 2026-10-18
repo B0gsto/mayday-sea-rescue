@@ -127,3 +127,13 @@ SFX_Radio_Key,RL,9120456241,Walkie Talkie 1 (SFX),1.0,Roblox licensed (PSE),RP-A
 SFX_UI_Click,RL,9119717529,Switch Click On Or Off Toggle Button 1 (SFX),0.5,Roblox licensed (PSE),RP-AU1 chosen (+ 9119717523 back). Verified public
 MUS_Operation,RL,1837463124,Tension Bed for One (The Box),133.0,Roblox licensed (APM),RP-AU1 music cue: operation underway. Verified public
 MUS_Debrief,RL,84002131639340,Cinematic Hopeful Gravitas Underscore Ambient Only (Leonard Miller),145.0,Roblox licensed (APM),RP-AU1 music cue: debrief. Verified public
+SFX_Horn_Ship,RL,9119077417,Ship Horn Uss Constellation 1 (SFX),5.0,Roblox licensed (PSE),RP-M5 Horn Pack: ship's horn (aircraft carrier). Verified public
+SFX_Horn_Ferry,RL,9114406660,Ferry Boat Horn Medium Cu Clean Twice 1 (SFX),14.0,Roblox licensed (PSE),RP-M5 Horn Pack: ferry horn (two blasts; cut at 7 s). Verified public
+SFX_Horn_Tug,RL,9120287542,Tugboat Horn 1 (SFX),4.0,Roblox licensed (PSE),RP-M5 Horn Pack: tug air horn. Verified public
+SFX_Horn_Cutter,RL,9113467357,Boat Horn Short Long Blasts 1 (SFX),3.0,Roblox licensed (PSE),RP-M5 Horn Pack: coast guard cutter hailer horn. Verified public
+SFX_Horn_Whistle,RL,9113467739,Boat Whistle Airy Tail 1 (SFX),7.0,Roblox licensed (PSE),RP-M5 Horn Pack: ship's whistle. Verified public
+SFX_Horn_WhistleHigh,RL,9113467743,Boat Whistle High Pitch Airy Tail 1 (SFX),5.0,Roblox licensed (PSE),RP-M5 Horn Pack: high-pitch boat whistle. Verified public
+SFX_Siren_Wail,RL,9119165131,Siren Wail 1 (SFX),27.0,Roblox licensed (PSE),RP-M5 Siren Pack: wail (start and away; loop region 1.5-9 s to tune by ear). Verified public
+SFX_Siren_Yelp,RL,9119165420,Siren Yelp 1 (SFX),32.0,Roblox licensed (PSE),RP-M5 Siren Pack: yelp (loop region 1.5-9 s to tune by ear). Verified public
+SFX_Siren_HiLo,RL,9119163723,Siren Start And Away 1 (SFX),31.0,Roblox licensed (PSE),RP-M5 Siren Pack: hi-lo (high and low tones; loop region 1.5-9 s to tune by ear). Verified public
+SFX_Siren_Phaser,RL,9118848118,Scream Siren Very Rapid High Low Buzzy 2 (SFX),13.0,Roblox licensed (PSE),RP-M5 Siren Pack: phaser / rapid high-low (stationary bursts; loop 0.3-5 s to tune by ear). Verified public

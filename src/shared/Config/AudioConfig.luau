@@ -133,6 +133,20 @@ AudioConfig.Clips = {
 		0.4,
 		"Cinematic Hopeful Gravitas Underscore Ambient Only (APM)"
 	),
+	-- RP-M5 stream A (Horn Pack / Siren Pack): real marine horns and siren tones, PSE via the
+	-- Roblox licensed library, each verified public (audio-search.py verify). Played by
+	-- src/client/Cosmetics/Horns and Sirens (options in Config/Cosmetics/Horn.luau, Siren.luau).
+	Horn_Ship = rl(9119077417, 0.9, "Ship Horn Uss Constellation 1 (SFX)", "aircraft carrier horn"),
+	Horn_Ferry = rl(9114406660, 0.85, "Ferry Boat Horn Medium Cu Clean Twice 1 (SFX)"),
+	Horn_Tug = rl(9120287542, 0.85, "Tugboat Horn 1 (SFX)"),
+	Horn_Cutter = rl(9113467357, 0.8, "Boat Horn Short Long Blasts 1 (SFX)", "coast guard cutter"),
+	Horn_Whistle = rl(9113467739, 0.8, "Boat Whistle Airy Tail 1 (SFX)"),
+	Horn_WhistleHigh = rl(9113467743, 0.75, "Boat Whistle High Pitch Airy Tail 1 (SFX)"),
+	Siren_Wail = rl(9119165131, 0.75, "Siren Wail 1 (SFX)", "looped on its steady part"),
+	Siren_Yelp = rl(9119165420, 0.75, "Siren Yelp 1 (SFX)", "looped on its steady part"),
+	Siren_HiLo = rl(9119163723, 0.75, "Siren Start And Away 1 (SFX)", "high and low tones"),
+	Siren_Phaser = rl(9118848118, 0.7, "Scream Siren Very Rapid High Low Buzzy 2 (SFX)"),
+	-- end RP-M5 stream A
 } :: { [string]: Clip }
 
 -- Which category each clip plays in (by name prefix).
