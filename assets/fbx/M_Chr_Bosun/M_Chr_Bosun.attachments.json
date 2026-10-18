@@ -7,19 +7,19 @@
    "name": "ATT_HarnessHandle",
    "parent": "M_Chr_Bosun_Harness_LOD0",
    "blender": [
-    -0.0052,
-    0.4942,
-    2.4407
+    -0.0038,
+    0.4724,
+    2.4265
    ],
    "roblox_from_origin": [
-    0.0052,
-    2.4407,
-    0.4942
+    0.0038,
+    2.4265,
+    0.4724
    ],
    "roblox_from_bbox_centre": [
-    -0.0603,
-    1.1244,
-    0.391
+    -0.0473,
+    1.1267,
+    0.4107
    ],
    "look": [
     0.0,
@@ -36,19 +36,19 @@
    "name": "ATT_TowRing",
    "parent": "M_Chr_Bosun_Harness_LOD0",
    "blender": [
-    -0.0052,
-    1.1918,
-    2.0093
+    -0.0038,
+    1.141,
+    2.0251
    ],
    "roblox_from_origin": [
-    0.0052,
-    2.0093,
-    1.1918
+    0.0038,
+    2.0251,
+    1.141
    ],
    "roblox_from_bbox_centre": [
-    -0.0603,
-    0.693,
-    1.0886
+    -0.0473,
+    0.7253,
+    1.0792
    ],
    "look": [
     0.0,
@@ -65,19 +65,48 @@
    "name": "ATT_Mouth",
    "parent": "M_Chr_Bosun_BodyHead_LOD0",
    "blender": [
-    -0.0052,
-    -1.7322,
-    2.0127
+    -0.0038,
+    -1.6589,
+    2.0164
    ],
    "roblox_from_origin": [
-    0.0052,
-    2.0127,
-    -1.7322
+    0.0038,
+    2.0164,
+    -1.6589
    ],
    "roblox_from_bbox_centre": [
-    -0.0603,
-    0.6964,
-    -1.8355
+    -0.0473,
+    0.7166,
+    -1.7207
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailRoot",
+   "parent": "M_Chr_Bosun_Tail_LOD0",
+   "blender": [
+    -0.0038,
+    1.1063,
+    1.6161
+   ],
+   "roblox_from_origin": [
+    0.0038,
+    1.6161,
+    1.1063
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0473,
+    0.3162,
+    1.0445
    ],
    "look": [
     0.0,

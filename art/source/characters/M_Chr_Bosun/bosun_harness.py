@@ -32,7 +32,7 @@ from mathutils.interpolate import poly_3d_calc
 HANDLE_APEX = DRING_POS = None
 INNER = {}                            # label -> harness vertex indices on the body-facing face (fit checks only)
 MM = 0.001
-ATTRS = ("tape", "metal", "plastic", "grip", "stitch", "edge", "padding", "buckle")
+ATTRS = ("tape", "metal", "plastic", "grip", "stitch", "edge", "padding", "buckle", "along", "across")  # r5: weave coords (m)
 
 # layout (build metres; same anchors as the first harness, everything else is cast onto the body)
 SAD_Y0, SAD_Y1 = -0.22, 0.06          # saddle front / rear edge along the spine
@@ -97,7 +97,9 @@ class Geo:
 
 def sweep(pc, frames, prof, attrs, cap=True, loop=False):
     """frames: (o, t, b, n); ring vertex = o + b*w + n*h for (w, h) in prof; attrs: per profile vertex dict."""
-    rings = [[pc.v(o + b * w + n * h, attrs[k]) for k, (w, h) in enumerate(prof)] for o, t, b, n in frames]
+    s = np.concatenate([[0.0], np.cumsum([np.linalg.norm(frames[i + 1][0] - frames[i][0]) for i in range(len(frames) - 1)])])
+    rings = [[pc.v(o + b * w + n * h, dict(attrs[k] or {}, along=float(s[i]), across=float(w)))   # r5: webbing weave coords
+              for k, (w, h) in enumerate(prof)] for i, (o, t, b, n) in enumerate(frames)]
     m = len(prof)
     for i in range(len(rings) if loop else len(rings) - 1):
         a, c = rings[i], rings[(i + 1) % len(rings)]

@@ -1,6 +1,6 @@
 """Round-4 art-review renders for M_Chr_Bosun (Blender only, Cycles at low samples), then a Pillow contact sheet.
 
-    ~/RobloxProjects/tools/blender-run.sh art/source/characters/M_Chr_Bosun/render_r4.py -- [--samples 48] [--px 800]
+    ~/RobloxProjects/tools/blender-run.sh art/source/characters/M_Chr_Bosun/render_r4.py -- [--samples 48] [--px 800] [--tag r5]
     -> assets/review/M_Chr_Bosun/r4/*.png and assets/review/M_Chr_Bosun/r4_contact.png (4 x 2 tiles, 1600 px wide)
 
 LOD0 body + harness + fur cards with the master textures (textures/T_Bosun_<Set>_<MAP>[_Wet].png). Every frame is
@@ -21,10 +21,10 @@ ASSET = "M_Chr_Bosun"
 BLEND = os.path.join(HERE, ASSET + ".blend")
 TEX = os.path.join(HERE, "textures")
 HDRI = os.path.join(REPO, "art", "blender", "hdri", "gray_pier_2k.hdr")
-OUT = os.path.join(REPO, "assets", "review", ASSET, "r4")
-SHEET = os.path.join(REPO, "assets", "review", ASSET, "r4_contact.png")
-
 a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+TAG = a[a.index("--tag") + 1] if "--tag" in a else "r4"         # review round: r4, r5, ...
+OUT = os.path.join(REPO, "assets", "review", ASSET, TAG)
+SHEET = os.path.join(REPO, "assets", "review", ASSET, TAG + "_contact.png")
 SAMPLES = int(a[a.index("--samples") + 1]) if "--samples" in a else 48
 PX = int(a[a.index("--px") + 1]) if "--px" in a else 800
 
@@ -118,7 +118,7 @@ def subject_points(objs, subject):
     for o in objs:
         if subject == "harness" and "_Harness" not in o.name:
             continue
-        if subject == "head" and not ("_BodyHead" in o.name or "_FurFront" in o.name):
+        if subject == "head" and not ("_BodyHead" in o.name or "_FurHead" in o.name):
             continue
         M = np.array(o.matrix_world)
         V = np.zeros(len(o.data.vertices) * 3)
@@ -251,10 +251,10 @@ def contact(paths):
         "    im = Image.open(p).convert('RGB').resize((T, T), Image.LANCZOS)\n"
         "    x, y = (i % 4) * T, (i // 4) * T\n    sheet.paste(im, (x, y))\n"
         "    d.rectangle([x, y + T - 18, x + T, y + T], fill=(0, 0, 0))\n"
-        "    d.text((x + 6, y + T - 15), 'Bosun r4 | ' + lab, fill=(235, 235, 235))\n"
+        "    d.text((x + 6, y + T - 15), 'Bosun %s | ' % sys.argv[3] + lab, fill=(235, 235, 235))\n"
         "sheet.save(sys.argv[1])\nprint('[r4] sheet', sys.argv[1], sheet.size)\n")
     subprocess.run([os.environ.get("R4_PY", "/usr/bin/python3"), "-c", script, SHEET,
-                    "\n".join("%s\t%s" % pl for pl in paths)], check=True)
+                    "\n".join("%s\t%s" % pl for pl in paths), TAG], check=True)
 
 
 main()

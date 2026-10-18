@@ -19,6 +19,7 @@ Attributes missing from the meshes (HAS) fall back gracefully (masks read 0, sun
 Outputs masters (PNG, bake size) to art/source/characters/M_Chr_Bosun/textures/raw/; finalize.py (system python3)
 writes the shipping maps. Passes: ALB, RGH, MET, NOR (tangent, OpenGL), and ALB/RGH/NOR _Wet; plus SIG (signal mask).
 """
+import math
 import os
 
 import bpy
@@ -277,7 +278,7 @@ def body_graph(g, wet):
     bump_k = g.math("MULTIPLY", smooth_k, 0.85 if wet else 0.7)
 
     # ---- albedo (linear). Coat: brown-black, sRGB ~25-35 around (31,27,24), R > G > B, warm undertone
-    c_dark, c_mid, c_light = srgb((33, 28, 24)), srgb((40, 33, 27)), srgb((48, 39, 31))   # round 4: lifted, warm
+    c_dark, c_mid, c_light = srgb((26, 22, 19)), srgb((33, 27, 22)), srgb((42, 33, 26))   # round 5: brown-black 25-40
     tone = g.math("ADD", g.math("MULTIPLY", strands, 0.55), g.math("MULTIPLY", clump, 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", streak, 0.5), 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.45), clamp=True)
@@ -287,7 +288,7 @@ def body_graph(g, wet):
     tips = g.remap(strands, 0.40, 0.72)
     fadek = g.math("MULTIPLY", g.math("POWER", g.math("MAXIMUM", fade, 0.0), 0.7), g.math("ADD", 0.55, g.math("MULTIPLY", tips, 0.6)))
     fadek = g.math("MULTIPLY", fadek, g.math("ADD", 0.6, g.math("MULTIPLY", g.math("ADD", big, patch), 0.55)), clamp=True)
-    fade_col = g.lerp(srgb((62, 50, 39)), srgb((84, 64, 46)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
+    fade_col = g.lerp(srgb((74, 57, 41)), srgb((108, 80, 54)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
     col = g.lerp(col, fade_col, fadek)
     # crease AO and clump partings (shallow: the floor below keeps the 1st percentile up)
     occl = g.math("MULTIPLY", g.remap(ao, 0.2, 1.0, 0.84, 1.0), g.remap(clump, 0.0, 0.5, 0.92, 1.0))
@@ -308,7 +309,8 @@ def body_graph(g, wet):
     if wet:
         col = colscale(g, col, g.lerp(0.52, 0.78, skin))                  # linear; soaked coat ~(25,22,19), median luma ~22
     # luma floor (check_textures non-metal 20): per-channel max keeps the warm hue; dry (23,21,19) ~21.3, wet (22,20,18) ~20.3
-    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((32, 28, 24)))
+    col = colscale(g, col, g.math("SUBTRACT", 1.0, g.math("MULTIPLY", A(g, "harn_ao"), 0.55)))   # r5: strap contact shadow
+    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((24, 21, 18)))
     col = g.lerp(col, srgb((17, 16, 16)), g.math("MULTIPLY", nostrils, nose))
     # mouth: dark gums / inner mouth, pink tongue with paler papillae and a darker groove (not darkened when wet)
     gum = g.lerp(srgb((52, 30, 31)), srgb((66, 39, 38)), g.noise(P, 1.0 / (0.006 * L), 2.0))
@@ -371,8 +373,17 @@ def harness_graph(g, wet):
     Z = g.sep(P)[2]
     low = A(g, "lower", g.remap(g.remap(Z, SET_B[0][2], SET_B[1][2]), 0.15, 0.65, 1.0, 0.0))  # lower straps: more salt
     # woven webbing: two crossing yarn sets plus yarn slub; padding: puffy cells with a ripstop grid
-    weave = g.math("MULTIPLY", g.wave(P, 260.0, "X"), g.wave(P, 260.0, "Y"))
-    weave = g.math("ADD", weave, g.math("MULTIPLY", g.wave(P, 260.0, "Z"), 0.5))
+    if "along" in HAS:   # round 5: woven nylon webbing in strap space: 2/2 twill ribs plus warp ribs and weft picks
+        al, ac = g.attr("along"), g.attr("across")
+        tw = g.math("SINE", g.math("MULTIPLY", g.math("ADD", al, ac), 2 * math.pi / 0.0040))
+        rib = g.math("SINE", g.math("MULTIPLY", ac, 2 * math.pi / 0.0030))
+        pick = g.math("SINE", g.math("MULTIPLY", al, 2 * math.pi / 0.0026))
+        weave = g.math("ADD", g.math("MULTIPLY", tw, 0.30), g.math("ADD", g.math("MULTIPLY", rib, 0.12),
+                                                                     g.math("MULTIPLY", pick, 0.08)))
+        weave = g.math("ADD", weave, 0.5, clamp=True)
+    else:
+        weave = g.math("MULTIPLY", g.wave(P, 260.0, "X"), g.wave(P, 260.0, "Y"))
+        weave = g.math("ADD", weave, g.math("MULTIPLY", g.wave(P, 260.0, "Z"), 0.5))
     slub = g.noise(P, 120.0, 2.0, 0.5)
     puff = g.remap(g.voronoi(P, 12.0, "DISTANCE_TO_EDGE"), 0.0, 0.25)
     rip = g.math("MULTIPLY", g.wave(P, 140.0, "X"), g.wave(P, 140.0, "Z"))
@@ -390,7 +401,7 @@ def harness_graph(g, wet):
     fill = g.remap(tn, t0, g.math("ADD", t0, 0.07))
     rim = g.remap(g.math("ABSOLUTE", g.math("SUBTRACT", tn, t0)), 0.0, 0.012, 1.0, 0.0)
     rim2 = g.remap(g.math("ABSOLUTE", g.math("SUBTRACT", tn, g.math("ADD", t0, 0.045))), 0.0, 0.008, 0.7, 0.0)
-    salt = g.math("ADD", g.math("MULTIPLY", fill, 0.35), g.math("MAXIMUM", rim, rim2), clamp=True)
+    salt = g.math("ADD", g.math("MULTIPLY", fill, 0.20), g.math("MULTIPLY", g.math("MAXIMUM", rim, rim2), 0.35), clamp=True)
     bloom = g.math("MULTIPLY", g.math("MAXIMUM", edge, g.math("MULTIPLY", groove, 0.7)),
                    g.remap(g.noise(P, 1.0 / (0.025 * L), 3.0, 0.6), 0.38, 0.58))
     salt = g.math("MAXIMUM", salt, bloom)
@@ -413,7 +424,7 @@ def harness_graph(g, wet):
     fab_h = g.math("SUBTRACT", fab_h, g.math("MULTIPLY", groove, 1.2))          # seam groove
     fab_h = g.math("ADD", fab_h, g.math("MULTIPLY", thread, g.math("ADD", 1.6, g.math("MULTIPLY", twist, 0.4))))
     fab_h = g.lerp(fab_h, g.math("ADD", g.math("MULTIPLY", g.noise(P, 220.0, 3.0, 0.7), 0.8), g.math("MULTIPLY", fibre, 0.9)), wear)
-    fab_h = g.math("ADD", fab_h, g.math("MULTIPLY", g.math("MULTIPLY", salt, crystal), 0.0 if wet else 0.6))  # salt crust
+    fab_h = g.math("ADD", fab_h, g.math("MULTIPLY", g.math("MULTIPLY", salt, crystal), 0.0 if wet else 0.2))  # salt crust
     h = g.math("MULTIPLY", fab_h, fabric)
     h = g.math("ADD", h, g.math("MULTIPLY", g.math("SUBTRACT", g.math("MULTIPLY", prism, 0.4), g.math("MULTIPLY", seal, 0.6)), tape))
     h = g.math("ADD", h, g.math("MULTIPLY", g.math("MULTIPLY", pores, 0.6), grip))
@@ -429,7 +440,7 @@ def harness_graph(g, wet):
     col = g.lerp(col, srgb((226, 150, 112)), g.math("MULTIPLY", wear, 0.65))     # faded edge
     col = g.lerp(col, srgb((242, 186, 146)), g.math("MULTIPLY", fray, 0.8))      # frayed fibres
     col = g.lerp(col, srgb((122, 66, 38)), g.math("MULTIPLY", g.remap(grime, 0.55, 0.85), 0.35))  # grime
-    col = g.lerp(col, srgb((236, 231, 220)), g.math("MULTIPLY", salt, 0.15 if wet else 0.88))      # salt crust
+    col = g.lerp(col, srgb((236, 231, 220)), g.math("MULTIPLY", salt, 0.10 if wet else 0.50))      # salt (r5: lighter)
     col = colscale(g, col, g.remap(ao, 0.2, 1.0, 0.72, 1.0))
     if wet:
         col = colscale(g, col, 0.50)                                            # soaked fabric (~0.73x sRGB)
@@ -501,7 +512,7 @@ def find_nose():
     print("[bake] nose front", NOSE)
 
 
-GRAPHS = {"Body": (body_graph, ["BodyHead", "BodyFore", "BodyHind"]), "Harness": (harness_graph, ["Harness"])}
+GRAPHS = {"Body": (body_graph, ["BodyHead", "BodyFore", "BodyHind", "Tail"]), "Harness": (harness_graph, ["Harness"])}
 
 
 def build_material(mat, set_name, wet, kind, image):

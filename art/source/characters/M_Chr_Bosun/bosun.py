@@ -14,7 +14,7 @@ Meshes (one material each, UVMap only):
   M_Chr_Bosun_BodyHead / _BodyFore / _BodyHind   set Body (2048)   split so each MeshPart stays under 10,000 tris;
                                                  custom normals from the unsplit body so the cuts do not show
   M_Chr_Bosun_Harness                            set Harness (1024) Hull Orange water-rescue harness (bosun_harness.py)
-  M_Chr_Bosun_FurFront / _FurRear                set Fur (2048, RGBA) alpha fur cards in two layers (fur_cards)
+  M_Chr_Bosun_FurHead / _FurFront / _FurRear / _FurTail (r5: head and tail fur split out; Tail = tail skin, Body set) set Fur (2048, RGBA) alpha fur cards in two layers (fur_cards)
 
 Per-vertex POINT attributes on the body parts for bake_bosun.py (FLOAT 0..1 unless noted):
   flow     FLOAT_VECTOR groom direction, unit and tangent to the skin: head nose-to-back, body to the rear, sides and
@@ -63,9 +63,9 @@ NECK = [(0, -0.41, 0.520, 0.172), (0, -0.49, 0.600, 0.166), (0, -0.55, 0.680, 0.
 HEAD = [(0, -0.585, 0.750, 0.138), (0, -0.615, 0.800, 0.128), (0, -0.655, 0.822, 0.128), (0, -0.700, 0.822, 0.118),
         (0, -0.745, 0.805, 0.094), (0, -0.785, 0.787, 0.088), (0, -0.820, 0.777, 0.084), (0, -0.850, 0.774, 0.078),
         (0, -0.872, 0.774, 0.066)]
-TAIL = [(0, 0.07, 0.548, 0.155), (0, 0.15, 0.548, 0.094), (0, 0.205, 0.500, 0.084), (0, 0.240, 0.420, 0.074),
+TAIL = [(0, 0.07, 0.548, 0.165), (0, 0.15, 0.548, 0.122), (0, 0.205, 0.500, 0.100), (0, 0.240, 0.420, 0.082),
         (0, 0.258, 0.320, 0.064), (0, 0.264, 0.225, 0.054), (0, 0.270, 0.160, 0.044), (0, 0.290, 0.118, 0.034)]
-# round 4: thick, otter-like (broad at the root, tapering evenly), hanging low to the hocks, the tip curling back
+# round 5: heavier root (0.165 / 0.122 / 0.100). round 4: thick, otter-like (broad at the root, tapering evenly), hanging low to the hocks, the tip curling back
 
 
 def fore(sx):
@@ -360,7 +360,11 @@ def shape(V):
 
     # prosternum keel
     keel = np.exp(-(((V[:, 1] + 0.43) / 0.07) ** 2 + ((V[:, 2] - 0.43) / 0.09) ** 2 + (V[:, 0] / 0.10) ** 2))
-    V[:, 1] -= 0.026 * keel
+    V[:, 1] -= 0.030 * keel
+    # round 5: deeper chest: the brisket drops to the elbows (below the front of the ribcage)
+    brisket = np.exp(-(((V[:, 1] + 0.30) / 0.11) ** 2) - ((V[:, 0] / 0.13) ** 2)) * smoothstep(0.42, 0.30, V[:, 2]) \
+        * (w[:, names.index("spine")] + w[:, names.index("neck")])
+    V[:, 2] -= 0.030 * brisket
     # flat broad crown and occiput; a defined stop
     head_w = w[:, names.index("head")]
     crown = np.exp(-(((V[:, 1] + 0.665) / 0.06) ** 2)) * smoothstep(0.88, 0.93, V[:, 2]) * head_w
@@ -645,7 +649,7 @@ def lid_rims(eye, skin_tree, segs=24, around=5):
     return bm, np.repeat(lower, around)
 
 
-EAR_ROOT, EAR_TIP = (0.112, -0.640, 0.900), (0.140, -0.668, 0.640)    # round 4: tip below the jaw line
+EAR_ROOT, EAR_TIP = (0.112, -0.640, 0.900), (0.142, -0.672, 0.690)    # round 5: tip at the jaw line (r4: below)
 
 
 def ear(sx, head_tree):
@@ -664,7 +668,7 @@ def ear(sx, head_tree):
     outer, inner, tpar, hang_x = {}, {}, [], {}
     for i in range(rows):
         t = i / (rows - 1)
-        width = 0.128 * (1 - 0.90 * t) ** 0.80
+        width = 0.140 * (1 - 0.92 * t) ** 0.85              # round 5: broader triangle
         for j in range(cols):
             u = j / (cols - 1) - 0.5
             p = root + axisd * L * t + fwd * u * width - axisd * (0.035 * (2 * u) ** 2 * t ** 3)
@@ -975,33 +979,33 @@ def harness_mesh(body_me):
 CARD_TYPES = {  # atlas column (4 x 2 cells, rows = two variants, roots at V=0): long wavy clump, medium clump,
     "long": 0, "medium": 1, "short": 2, "plume": 3}    # short tuft, tail plume / feathering
 REGIONS = [  # name, count, card type, length range (m), width factor, lift (rad), droop, segments
+    # round 5: long on the chest, ruff, belly, legs (feathering); short and flat on the face and ears
     ("under", 1050, "medium", (0.034, 0.052), 0.95, 0.10, 0.35, 1),     # inner layer: short, close to the skin, everywhere
-    ("ruff", 330, "long", (0.110, 0.155), 0.52, 0.45, 0.55, 3),
-    ("chest", 150, "long", (0.100, 0.145), 0.47, 0.30, 0.85, 3),
+    ("ruff", 330, "long", (0.120, 0.170), 0.52, 0.45, 0.55, 3),
+    ("chest", 150, "long", (0.115, 0.165), 0.47, 0.30, 0.85, 3),
     ("back", 150, "medium", (0.060, 0.090), 0.55, 0.20, 0.30, 3),
     ("flank", 135, "medium", (0.070, 0.100), 0.50, 0.18, 0.60, 3),
-    ("belly", 120, "long", (0.090, 0.125), 0.45, 0.25, 0.95, 3),
-    ("feather", 130, "plume", (0.060, 0.095), 0.45, 0.35, 0.75, 3),
-    ("breeches", 160, "long", (0.090, 0.130), 0.50, 0.35, 0.80, 3),
+    ("belly", 120, "long", (0.095, 0.135), 0.45, 0.25, 0.95, 3),
+    ("feather", 140, "plume", (0.080, 0.120), 0.45, 0.35, 0.80, 3),
+    ("breeches", 160, "long", (0.095, 0.140), 0.50, 0.35, 0.80, 3),
     ("tail", 190, "plume", (0.100, 0.160), 0.55, 0.45, 0.70, 3),
-    ("head", 95, "short", (0.028, 0.045), 0.60, 0.30, 0.20, 2),
-    ("ear", 50, "short", (0.030, 0.050), 0.60, 0.15, 0.50, 2),
-    ("leg", 120, "medium", (0.040, 0.060), 0.55, 0.20, 0.50, 2),
+    ("head", 95, "short", (0.018, 0.032), 0.60, 0.18, 0.20, 2),
+    ("ear", 70, "short", (0.014, 0.024), 0.70, 0.04, 0.30, 1),       # smooth, flat, short: the ear reads on the ruff
+    ("leg", 120, "medium", (0.050, 0.075), 0.55, 0.20, 0.55, 2),
     ("paw", 64, "short", (0.022, 0.032), 0.60, 0.50, 0.40, 2),
-    # round 4: outer silhouette tiers (tier 2 on the ruff, chest, belly fringe, leg feathering, breeches, tail, ear
-    # fringe; tier 3 on the ruff and tail): longer, more lift, so the outline breaks up in 2-3 layers
-    ("ruff:2", 115, "long", (0.150, 0.200), 0.45, 0.60, 0.65, 3),
-    ("chest:2", 60, "long", (0.140, 0.190), 0.42, 0.40, 0.95, 3),
-    ("belly:2", 40, "long", (0.120, 0.160), 0.40, 0.30, 1.05, 3),
-    ("feather:2", 60, "plume", (0.090, 0.130), 0.42, 0.45, 0.85, 3),
-    ("breeches:2", 45, "long", (0.120, 0.165), 0.45, 0.45, 0.90, 3),
+    # outer silhouette tiers (tier 2 on the ruff, chest, belly fringe, leg feathering, breeches, tail;
+    # tier 3 on the ruff and tail): longer, more lift, so the outline breaks up in 2-3 layers (r5: no ear fringe)
+    ("ruff:2", 115, "long", (0.160, 0.215), 0.45, 0.60, 0.65, 3),
+    ("chest:2", 60, "long", (0.150, 0.205), 0.42, 0.40, 0.95, 3),
+    ("belly:2", 40, "long", (0.125, 0.170), 0.40, 0.30, 1.05, 3),
+    ("feather:2", 60, "plume", (0.110, 0.150), 0.42, 0.45, 0.90, 3),
+    ("breeches:2", 45, "long", (0.125, 0.170), 0.45, 0.45, 0.90, 3),
     ("tail:2", 70, "plume", (0.140, 0.200), 0.50, 0.60, 0.80, 3),
-    ("ear:2", 30, "medium", (0.050, 0.075), 0.50, 0.20, 0.80, 2),
-    ("ruff:3", 40, "long", (0.190, 0.240), 0.40, 0.75, 0.70, 3),
+    ("ruff:3", 40, "long", (0.200, 0.250), 0.40, 0.75, 0.70, 3),
     ("tail:3", 25, "plume", (0.180, 0.240), 0.45, 0.70, 0.85, 3),
 ]
 FUR_TRIS = 14800                     # LOD0 card triangles (dog_fur_cards budget 15,000)
-TAPER = {1: [1.0, 0.6], 2: [1.0, 0.85, 0.5], 3: [1.0, 0.95, 0.78, 0.5]}
+TAPER = {1: [1.0, 0.45], 2: [1.0, 0.72, 0.28], 3: [1.0, 0.86, 0.55, 0.20]}   # round 5: strand-clump taper to a point
 
 
 def classify_points(C, N, ear):
@@ -1103,6 +1107,12 @@ def fur_cards(body_me, harness_me):
     body_tree = bvh_of(me)
     harn_tree = bvh_of(harness_me)
     eye_locs = list(EYE_LOCS) or [np.array(g) for g in EYE_GUESS]
+    from mathutils import kdtree
+    ear_v = V[at["ear"] > 0.5]
+    ear_kd = kdtree.KDTree(max(1, len(ear_v)))
+    for i, p in enumerate(ear_v):
+        ear_kd.insert(Vector(p.tolist()), i)
+    ear_kd.balance()
     cards = []
     for name, count, ctype, (l0, l1), wf, lift, droop, segs in REGIONS:
         inner = name == "under"
@@ -1110,11 +1120,14 @@ def fur_cards(body_me, harness_me):
         idx = np.nonzero(~bare if inner else ~bare & (reg == rname))[0]
         if len(idx) == 0:
             continue
-        keep_off = 0.016 if inner else 0.026          # round 4: the coat crowds the webbing (straps sink in)
+        keep_off = 0.022 if inner else 0.036          # round 5: cards trimmed under / beside the straps (seated)
+        ear_off = 0.0 if rname == "ear" else 0.030 if inner else 0.055   # round 5: nothing grows over the ears
 
         def reject(p):
             hn = harn_tree.find_nearest(Vector(p))
             if hn[0] is not None and hn[3] < keep_off:
+                return True
+            if ear_off and len(ear_v) and ear_kd.find(Vector(p.tolist()))[2] < ear_off:
                 return True
             return min(float(np.linalg.norm(p - e)) for e in eye_locs) < 0.026
 
@@ -1129,11 +1142,13 @@ def fur_cards(body_me, harness_me):
                 continue
             f /= np.linalg.norm(f)
             sh = float(bary @ at["short"][[a, b, c]])
-            L = l0 + (l1 - l0) * rng.random()
+            L = (l0 + (l1 - l0) * rng.random()) * (1.0 if inner else rng.uniform(0.78, 1.22))   # r5: varied lengths
             kind = ctype
             if inner:
                 L *= 1 - 0.45 * sh
                 kind = "short" if sh > 0.45 else "medium"
+                if float(bary @ at["ear"][[a, b, c]]) > 0.5:
+                    L *= 0.55                              # r5: ears: shorter, smoother than the body
             if rname == "tail":
                 L *= 0.75 + 0.5 * classify_t(root, "tail")
             W = L * wf * (0.8 + 0.4 * rng.random())
@@ -1186,7 +1201,7 @@ def fur_cards(body_me, harness_me):
             if min(ta.min(), tb.min()) < 4e-6:
                 continue
             cards.append({"root": root, "n": n, "verts": verts, "uv": uvs, "nrm": nrms, "region": name, "segs": segs,
-                          "front": root[1] < -0.13, "size": L * W})
+                          "front": root[1] < -0.13, "size": L * W, "group": card_group(root, rname)})
     # hold the LOD0 card budget: drop the smallest inner tufts first
     tot = sum(2 * c["segs"] for c in cards)
     if tot > FUR_TRIS:
@@ -1203,6 +1218,16 @@ def fur_cards(body_me, harness_me):
         counts[c["region"]] = counts.get(c["region"], 0) + 1
     print("[bosun] fur cards %d (%d tris): %s" % (len(cards), sum(2 * c["segs"] for c in cards), counts))
     return cards
+
+
+def card_group(root, rname):
+    """Fur MeshPart of a card (r5): FurHead turns with BodyHead, FurTail moves with Tail, else FurFront / FurRear."""
+    p = part_of(root)
+    if p == "Head":
+        return "FurHead"
+    if p == "Tail" or rname == "tail":
+        return "FurTail"
+    return "FurFront" if root[1] < -0.13 else "FurRear"
 
 
 def classify_t(p, chain):
@@ -1266,12 +1291,31 @@ def to_studs(me):
 XFORM = {"shift": np.zeros(3), "k": 1.0}      # build metres -> studs: (v + shift) * k * S
 
 
+LEG_LIFT, LEG_Z = 0.032, (0.03, 0.30)   # round 5: longer legs: z in LEG_Z stretched, everything above raised
+
+
+def leg_warp(V):
+    """build metres -> build metres with longer legs (piecewise linear in z, so the inverse is exact)."""
+    V = np.array(V, float)
+    z = V[..., 2]
+    V[..., 2] = z + LEG_LIFT * np.clip((z - LEG_Z[0]) / (LEG_Z[1] - LEG_Z[0]), 0.0, 1.0)
+    return V
+
+
+def leg_unwarp(V):
+    V = np.array(V, float)
+    z = V[..., 2]
+    k = (LEG_Z[1] - LEG_Z[0] + LEG_LIFT) / (LEG_Z[1] - LEG_Z[0])
+    V[..., 2] = np.where(z <= LEG_Z[0], z, np.where(z >= LEG_Z[1] + LEG_LIFT, z - LEG_LIFT, LEG_Z[0] + (z - LEG_Z[0]) / k))
+    return V
+
+
 def to_final(p):
-    return (np.asarray(p, float) + XFORM["shift"]) * XFORM["k"] * S
+    return (leg_warp(p) + XFORM["shift"]) * XFORM["k"] * S
 
 
 def from_final(p):
-    return np.asarray(p, float) / (XFORM["k"] * S) - XFORM["shift"]
+    return leg_unwarp(np.asarray(p, float) / (XFORM["k"] * S) - XFORM["shift"])
 
 
 HANDLE_APEX = DRING_POS = None
@@ -1281,7 +1325,8 @@ MOUTH = (0.0, -0.905, 0.738)
 def attachments():
     """ATT_ empties (Roblox Attachments on import): the harness grab handle, the tow-line D-ring, the mouth (CH7 line carry)."""
     made = []
-    for name, p in (("ATT_HarnessHandle", HANDLE_APEX), ("ATT_TowRing", DRING_POS), ("ATT_Mouth", MOUTH)):
+    for name, p in (("ATT_HarnessHandle", HANDLE_APEX), ("ATT_TowRing", DRING_POS), ("ATT_Mouth", MOUTH),
+                    ("ATT_TailRoot", TAIL_ROOT)):
         e = bpy.data.objects.new(name, None)
         e.empty_display_size = 0.15
         e.location = tuple(to_final(p))
@@ -1290,11 +1335,23 @@ def attachments():
     return made
 
 
+TAIL_ROOT_Y = 0.11                    # round 5: the tail is its own part from here back (scripted wag / tuck)
+TAIL_ROOT = (0.0, TAIL_ROOT_Y, 0.548)  # ATT_TailRoot (build metres): on the tail chain at the split
+
+
+def parts_of(C):
+    """Body split (metres, (N, 3)): head + upper neck, fore body + fore legs, hind body + hind legs, tail."""
+    C = np.atleast_2d(np.asarray(C, float))
+    names, w, _ = chain_fields(C)
+    best = np.array(names)[np.argmax(w, axis=1)]
+    out = np.where(C[:, 1] < -0.13, "Fore", "Hind").astype(object)
+    out[(best == "tail") & (C[:, 1] > TAIL_ROOT_Y)] = "Tail"
+    out[(C[:, 1] < -0.54) & (C[:, 2] > 0.60)] = "Head"
+    return out
+
+
 def part_of(c):
-    """Body split (metres): head + upper neck, fore body + fore legs, hind body + hind legs + tail."""
-    if c[1] < -0.54 and c[2] > 0.60:
-        return "Head"
-    return "Fore" if c[1] < -0.13 else "Hind"
+    return parts_of(c)[0]
 
 
 def split_body(obj, base, lod_suffix):
@@ -1307,14 +1364,18 @@ def split_body(obj, base, lod_suffix):
         kd.insert(v, i)
     kd.balance()
     parts = {}
-    for part in ("Head", "Fore", "Hind"):
+    bm0 = bmesh.new()
+    bm0.from_mesh(me)
+    lab = parts_of(from_final(np.array([f.calc_center_median()[:] for f in bm0.faces])))
+    bm0.free()
+    for part in ("Head", "Fore", "Hind", "Tail"):
         bm = bmesh.new()
         bm.from_mesh(me)
-        kill = [f for f in bm.faces if part_of(from_final(f.calc_center_median())) != part]
+        kill = [f for f, l in zip(bm.faces, lab) if l != part]
         bmesh.ops.delete(bm, geom=kill, context="FACES")
         bmesh.ops.delete(bm, geom=[ed for ed in bm.edges if not ed.link_faces], context="EDGES")
         bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
-        name = "%s_Body%s_%s" % (base, part, lod_suffix)
+        name = "%s_%s_%s" % (base, "Tail" if part == "Tail" else "Body" + part, lod_suffix)   # r5: Tail part
         pme = bpy.data.meshes.new(name)
         bm.to_mesh(pme)
         bm.free()

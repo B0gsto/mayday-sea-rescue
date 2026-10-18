@@ -53,18 +53,22 @@ def stage_build():
         bpy.ops.wm.read_factory_settings(use_empty=True)
     body_me, eyes = bosun.build_body(2)
     Vb = bosun.mesh_arrays(body_me)
-    wh = bosun.withers_height(Vb)
+    wh = bosun.withers_height(bosun.leg_warp(Vb))       # round 5: measured with the longer legs
     k = 0.700 / wh                                    # withers at 0.70 m (2.1 studs), proportions kept
     print("[bosun] withers %.3f m as built, scale %.3f" % (wh, k))
     harness_me = bosun.harness_mesh(body_me)           # built and fitted in build metres
     cards = bosun.fur_cards(body_me, harness_me)
+    # round 5: contact shadow under / beside the straps (body bake darkens the coat where the webbing sits)
+    htree = bosun.bvh_of(harness_me)
+    hd = np.array([htree.find_nearest(bosun.Vector(p.tolist()))[3] or 1.0 for p in Vb])
+    bosun.set_attr(body_me, "harn_ao", np.clip(1.0 - hd / 0.035, 0.0, 1.0) ** 1.6)
     Va = np.vstack([Vb, bosun.mesh_arrays(harness_me)])          # origin: centre of the base of body + harness
     shift = np.array([-(Va[:, 0].min() + Va[:, 0].max()) / 2, -(Va[:, 1].min() + Va[:, 1].max()) / 2, -Vb[:, 2].min()])
     bosun.XFORM.update(shift=shift, k=k)
     for me in (body_me, harness_me):
         bosun.set_coords(me, bosun.to_final(bosun.mesh_arrays(me)))
     for c in cards:
-        c["verts"] = (c["verts"] + shift) * k        # cards_mesh multiplies by S
+        c["verts"] = (bosun.leg_warp(c["verts"]) + shift) * k        # cards_mesh multiplies by S
     bpy.context.scene["bosun_withers_y"] = float(bosun.to_final((0, -0.28, 0))[1])
     body = bosun.new_object(ASSET + "_Body_TMP", body_me)
     harn = bosun.new_object(ASSET + "_Harness_LOD0", harness_me)
@@ -116,8 +120,8 @@ def stage_build():
     for lod, ws, ls in (("LOD0", 1.0, 1.0), ("LOD1", 1.45, 1.05), ("LOD2", 2.4, 1.1)):
         sub = cards if lod == "LOD0" else subset(lambda i: i % 5 in (0, 2), 5900) if lod == "LOD1" else \
             subset(lambda i: i % 10 == 0, 1480)
-        for half, front in (("FurFront", True), ("FurRear", False)):
-            bosun.cards_mesh([c for c in sub if c["front"] == front], "%s_%s_%s" % (ASSET, half, lod), ws, ls)
+        for grp in ("FurHead", "FurFront", "FurRear", "FurTail"):     # r5: head and tail fur split out
+            bosun.cards_mesh([c for c in sub if c["group"] == grp], "%s_%s_%s" % (ASSET, grp, lod), ws, ls)
 
     # materials (one per mesh) and attachments
     for o in list(bpy.context.scene.objects):
@@ -126,9 +130,10 @@ def stage_build():
             mat = bpy.data.materials.get("MI_Bosun_" + set_name) or bpy.data.materials.new("MI_Bosun_" + set_name)
             o.data.materials.clear()
             o.data.materials.append(mat)
-    # attachments ride on their MeshParts: harness handle and tow ring on the harness, the mouth on the head
+    # attachments ride on their MeshParts: harness handle and tow ring on the harness, the mouth on the head, the
+    # tail root (the Tail / FurTail pivot for scripted motion) on the tail
     for e in bosun.attachments():
-        par = bpy.data.objects[ASSET + ("_BodyHead_LOD0" if e.name == "ATT_Mouth" else "_Harness_LOD0")]
+        par = bpy.data.objects[ASSET + {"ATT_Mouth": "_BodyHead_LOD0", "ATT_TailRoot": "_Tail_LOD0"}.get(e.name, "_Harness_LOD0")]
         e.parent = par
         e.matrix_parent_inverse = par.matrix_world.inverted()
     report_counts()
@@ -164,12 +169,12 @@ def specs():
 
     import bosun_checks
     body = {"name": ASSET, "asset": ASSET, "species": "animal", "budget": "dog", "tier": "hero", "dims_m": (None, None, None),
-            "origin": "base", "sets": [s for s in SETS if s["set"] != "Fur"], "meshes": meshes(["Body", "Harness"]),
+            "origin": "base", "sets": [s for s in SETS if s["set"] != "Fur"], "meshes": meshes(["Body", "Harness", "Tail"]),
             "attachments": atts, "extra_checks": [bosun_checks.withers],
-            # round 3: only BodyHind_LOD2 trips this, at the 15% edge (the 2,850-tri far LOD collapses small paw / tail
-            # islands); LOD1 rows pass. Revisit with a UV-seam-preserving LOD2 decimate.
-            "waivers": {"LOD UV layout": "BodyHind LOD2 (~3k-tri far LOD) loses ~15% UV area to decimation of small "
-                        "paw / tail islands; same atlas, invisible at LOD2 distance"}}
+            # round 5: the r3 BodyHind LOD2 waiver is gone (BodyHind passes now the tail is split off); the new Tail
+            # LOD2 (118 tris) trips only the bounds half (0.10, area 4.9% < 15%): the decimate drops the tail-tip island
+            "waivers": {"LOD UV layout": "Tail LOD2 only (118-tri far LOD of the split-off tail): the decimate drops "
+                        "the small tail-tip UV island (bounds 0.10, area within 5%); same atlas, invisible at LOD2"}}
     fur = {"name": ASSET, "asset": ASSET, "species": "animal", "budget": "dog_fur_cards", "tier": "hero", "dims_m": (None, None, None),
            "origin": "free", "sets": [s for s in SETS if s["set"] == "Fur"], "meshes": meshes(["Fur"]), "attachments": [],
            "waivers": {"LOD UV layout": "fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), "

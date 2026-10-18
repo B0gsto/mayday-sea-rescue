@@ -78,7 +78,7 @@ def grow_cell(col, row, wet, seed):
     # clump guides (shared by the mid coat, loosely followed by guards)
     K = max(2, int(round(k["clumps"] * (0.5 if wet else 1.0))))
     ck = np.linspace(0.08, 0.92, K) + rng.uniform(-0.35, 0.35, K) * (0.84 / K)
-    c_len = rng.uniform(*k["mid_len"], K) * H
+    c_len = rng.uniform(*k["mid_len"], K) * H * (0.75 if wet else 1.0)     # r5: wet coat plastered ~25% closer
     c_lean = rng.normal(0, 0.10, K) + k["fan"] * (ck - 0.5)
     c_amp = k["wave"] * rng.uniform(0.6, 1.35, K) * wv
     c_ph = rng.uniform(0, 2 * math.pi, K)
@@ -117,8 +117,8 @@ def grow_cell(col, row, wet, seed):
 
     # ---- undercoat: dense, short, crinkled, deepest layer
     n = int(k["under"] * (0.55 if wet else 1.0))     # wet: the undercoat mats down into the clumps, gaps open
-    ur = rng.uniform(0.012, 0.988, n)
-    L = rng.uniform(*k["under_len"], n) * H
+    ur = 0.5 + (rng.beta(1.7, 1.7, n) - 0.5) * 0.976  # r5: thinner towards the card sides (no hard card edges)
+    L = rng.uniform(*k["under_len"], n) * H * (0.78 if wet else 1.0)
     lean = rng.normal(0, 0.16, n) + k["fan"] * 0.7 * (ur - 0.5)
     bend = rng.normal(0, 0.10, n)
     camp = k["crinkle"] * rng.uniform(0.4, 1.3, n) * (0.4 if wet else 1.0)
@@ -159,7 +159,7 @@ def grow_cell(col, row, wet, seed):
     # ---- strays
     n = int(k["strays"] * (0.2 if wet else 1.0))
     ur = rng.uniform(0.05, 0.95, n)
-    L = rng.uniform(0.3, 0.85, n) * H * (0.9 if col == 2 else 1.0)
+    L = rng.uniform(0.3, 0.85, n) * H * (0.9 if col == 2 else 1.0) * (0.75 if wet else 1.0)
     lean = rng.normal(0, 0.38, n)
     bend = rng.normal(0, 0.28, n)
     x = ur[:, None] + np.sin(lean)[:, None] * L[:, None] * t + bend[:, None] * L[:, None] * t ** 2
@@ -174,6 +174,9 @@ def grow_cell(col, row, wet, seed):
     Z = np.concatenate([np.asarray(o[2]) for o in out])
     R = np.concatenate([o[3] for o in out])
     tone, bleach, layer = (np.concatenate([o[i] for o in out]) for i in (4, 5, 6))
+    # r5: every strand bends in towards the cell centre line with height, so the coverage tapers like a lock of hair
+    # (paired with the tapered card geometry in bosun.py): no straight card edges
+    X = 0.5 + (X - 0.5) * (1.0 - 0.32 * np.clip(Y / H, 0.0, 1.0) ** 1.2)
     # stay inside the cell: a strand leaving it is cut (radius 0) from that point on, never clamped onto the border
     m = 0.012
     outside = (X < m) | (X > 1 - m) | (Y > H - 0.03) | (Y < 0.002)
@@ -402,7 +405,7 @@ def smooth(a, b, x):
     return t * t * (3 - 2 * t)
 
 
-BEAD_COLS = (0, 3)          # long clump (ruff / chest / belly / breeches) and plume (tail / feathering) cells
+BEAD_COLS = (0, 2, 3)       # long clump (ruff / chest / belly), short tuft (chin / muzzle), plume (tail) cells
 
 
 def add_beads(A, lin, nt, rg):
@@ -416,6 +419,7 @@ def add_beads(A, lin, nt, rg):
             grow_cell(col, row, True, 7100 + col * 10 + row + 500)
             rng = np.random.default_rng(4400 + col * 10 + row)
             for tx, ty in TIPS[(col, row, True)]:
+                tx = 0.5 + (tx - 0.5) * (1.0 - 0.32 * min(1.0, max(0.0, ty / H)) ** 1.2)   # r5: follow the taper
                 if rng.random() > 0.85 or not (0.08 < tx < 0.92 and 0.3 < ty < H - 0.08):
                     continue
                 r = rng.uniform(15.0, 22.0) * upx / 1024.0
@@ -473,26 +477,27 @@ def assemble(tag, cache, size, out=OUT):
 
     # ---- albedo in sRGB terms, per strand: warm brown-black root -> body with a grey-brown sheen down the strand
     #      centre -> (guards / some mid) sun-bleached warm-brown tips
-    base = np.array([40.0, 33.0, 27.0]) * (0.90 + 0.20 * tone)[..., None]     # round 4: lifted, warmer (was 31,27,24)
-    root = base * 0.86
+    base = np.array([38.0, 31.0, 25.0]) * (0.88 + 0.24 * tone)[..., None]     # round 5: brown-black, luma ~28-38
+    root = np.array([27.0, 23.0, 20.0]) * (0.95 + 0.10 * tone)[..., None]     # undercoat at the skin ~25
     srgb = root + (base - root) * smooth(0.0, 0.40, tt)[..., None]
     face = np.clip(un["nz"], 0, 1) ** 2                                   # strand centre (faces the card normal)
     band = smooth(0.20, 0.55, tt) * (1.0 - 0.6 * smooth(0.80, 1.0, tt))
     sheen = (0.25 + 0.55 * tone) * band * face * (0.45 + 0.55 * (layer > 0.25)) * (0.3 if wet else 1.0)
-    srgb = srgb + (np.array([64.0, 53.0, 43.0]) - srgb) * sheen[..., None]     # warm brown sun-tint in the mid-tones
-    tip = np.array([96.0, 72.0, 50.0])
-    sun = np.clip(bleach * 1.35, 0, 1) + 0.18 * (layer > 0.25)        # some strong, all mid/guard tips a little
+    srgb = srgb + (np.array([84.0, 66.0, 49.0]) - srgb) * sheen[..., None]     # r5: warmer, stronger sheen band
+    tip = np.array([126.0, 92.0, 61.0])                                    # r5: sun-bleached warm brown tips
+    sun = np.clip(bleach * 1.5, 0, 1) + 0.30 * (layer > 0.25)         # some strong, all mid/guard tips clearly
     fade = np.clip(sun, 0, 1) * smooth(0.45, 1.0, tt) ** 1.4 * (0.3 if wet else 1.0)
     srgb = srgb + (tip - srgb) * fade[..., None]
     lin = srgb_to_lin(srgb)
-    occl = (0.80 + 0.20 * ao) * (0.88 + 0.12 * smooth(0.0, 0.3, tt))         # AO + root darkening
+    occl = (0.85 + 0.15 * ao) * (0.92 + 0.08 * smooth(0.0, 0.3, tt))         # AO + root darkening
     lin = lin * occl[..., None]
     if wet:
         lin = lin * 0.50                                                   # soaked: dark, clearly apart from dry
     # sRGB luma floor: dry keeps its darkest texels at the non-metal albedo floor (check_textures: 1st pct >= 20);
     # wet gets a soft knee into 18..22 so finalize.py's luma_clamp(18) never flattens the soaked coat
     y = (lin_to_srgb8(lin).astype(np.float32) * np.array([0.2126, 0.7152, 0.0722], np.float32)).sum(-1)
-    yt = np.where(y < 24.0, 20.0 + (np.clip(y, 12.0, 24.0) - 12.0) / 3.0, y) if wet else np.maximum(y, 31.0)
+    yt = np.where(y < 24.0, 20.0 + (np.clip(y, 12.0, 24.0) - 12.0) / 3.0, y) if wet else \
+        np.where(y < 26.0, 22.0 + (np.clip(y, 14.0, 26.0) - 14.0) / 3.0, y)       # r5: soft knee, not a flat floor
     lin = lin * (srgb_to_lin(yt) / np.maximum(srgb_to_lin(np.maximum(y, 1.0)), 1e-6))[..., None]
 
     # ---- normal: strand cylinder normals (camera = card space, +Y up) + clump / layer normals from height
@@ -511,7 +516,7 @@ def assemble(tag, cache, size, out=OUT):
     if wet:
         rg = 0.35 - 0.08 * smooth(0.2, 1.0, tt) - 0.02 * layer + 0.02 * (tone - 0.5)   # ~0.25-0.35
     else:
-        rg = 0.71 + 0.04 * (tone - 0.5) - 0.03 * layer - 0.08 * layer * smooth(0.5, 1.0, tt) + 0.02 * (layer < 0.25)
+        rg = 0.70 + 0.04 * (tone - 0.5) - 0.04 * layer - 0.14 * layer * smooth(0.45, 1.0, tt) + 0.03 * (layer < 0.25)
     rg = np.clip(rg, 0.15, 0.75)
 
     # ---- dilate everything into empty texels (weights = coverage, so the background never leaks in)
