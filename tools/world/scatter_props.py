@@ -47,24 +47,25 @@ AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
 
 SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
-PLANT_CAP = 4400  # T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
+PLANT_CAP = 4740  # T6: +340 gorse / heather / bracken on the harbour hillside; T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
 # rock stage budgets (target 500-900 total)
-ROCK_BUDGET = {"waterline": 280, "clifffoot": 170, "reef": 200, "cliffchunk": 220, "verge": 260, "strand": 420}
+ROCK_BUDGET = {"waterline": 280, "clifffoot": 170, "reef": 200, "cliffchunk": 220, "verge": 260, "strand": 420, "outcrop": 480}
 # T5 debris stages: small stones along the road verges and pebbles / cobbles on the strand lines and cove backs
 # (boulder scans at 0.08-0.35 scale, kept by thin() below the ROCK_MIN_STUDS cut). stage: (scale range, bury range)
-DEBRIS = {"verge": ((0.14, 0.35), (0.25, 0.45)), "strand": ((0.07, 0.2), (0.2, 0.4))}
+DEBRIS = {"verge": ((0.14, 0.35), (0.25, 0.45)), "strand": ((0.07, 0.2), (0.2, 0.4)),
+          "outcrop": ((0.7, 1.7), (0.3, 0.5))}  # T6: boulders / ledges half-buried on the inland outcrops
 
 # plant budgets per kind and region (sum = PLANT_CAP; regions without suitable ground simply fall short)
 PLANT_BUDGET = {
     "marram": {"HavenSands": 900, "WestCoast": 150},
     "turf": {"Town": 400, "CoastRoad": 450, "HavenSands": 230, "HavenHead": 200, "Inland": 210, "WestCoast": 170,
              "SkerryIsle": 60},
-    "gorse": {"HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 40},
-    "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60},
+    "gorse": {"HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 150},
+    "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60, "Town": 130},
     "thrift": {"HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
-    "bracken": {"Inland": 90, "CoastRoad": 60, "Town": 30, "WestCoast": 40, "HavenHead": 20},
+    "bracken": {"Inland": 90, "CoastRoad": 60, "Town": 130, "WestCoast": 40, "HavenHead": 20},
     "hawthorn": {"CoastRoad": 12, "Town": 8, "HavenHead": 6, "WestCoast": 8, "Inland": 6},
 }
 # kind: (assets with weights, cluster sigma studs, mean members per cluster, spacing factor)
@@ -276,6 +277,17 @@ def plant_weights(T, seed):
         * mw({"Grass": 0.8, "Snow": 0.8, "WoodPlanks": 0.8, "LeafyGrass": 1.0, "Ground": 0.6, "Brick": 0.8}) * (0.2 + 0.8 * patch(80, 6))
     w["hawthorn"] = dry * (h > 6) * (dl > 30) * smooth(0.18, 0.32, slope) * smooth(0.75, 0.55, slope) \
         * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.8})
+    # T6: the harbour hillside's field patchwork (gen_terrain.hill_relief): gorse along the hedge banks, heather in the
+    # heath fields, bracken in the bracken fields and on the bank feet
+    hill = G.harbour_hill(X, Z) * dry * (slope < 0.7)
+    edge, cid = G.field_cells(X, Z, L.SEED)
+    hedge = smooth(5.0, 1.2, edge)
+    heath, brack = ((cid >= 0.7) & (cid < 0.86)), (cid >= 0.86)
+    leafy = mw({"LeafyGrass": 1.0, "Grass": 0.5, "Snow": 0.6, "WoodPlanks": 0.5, "Brick": 0.6, "Ground": 0.4})
+    w["gorse"] = w["gorse"] + hill * leafy * (1.2 * hedge + 0.25 * heath) * (0.3 + 0.7 * patch(60, 7))
+    w["heather"] = w["heather"] + hill * leafy * (1.0 * heath + 0.15 * hedge) * (0.3 + 0.7 * patch(40, 8))
+    w["bracken"] = w["bracken"] + hill * leafy * (1.0 * brack + 0.5 * smooth(9.0, 4.0, edge) * (1 - hedge)) \
+        * (0.3 + 0.7 * patch(45, 9))
     mvp = np.hypot(X, Z) <= L.MVP_RADIUS
     return {k: (v * mvp).astype(np.float64) for k, v in w.items()}
 
@@ -373,6 +385,11 @@ def scatter_rocks(T, ex_all, reg, seed, space):
          & ((wb > 0.5) | (T.near_shore & rocky)) & inside & ~ex_all,
          (0.1 + noise) * (1.0 + 2.0 * np.isin(mat, [M["Ice"], M["CrackedLava"]])),
          {"M_Rock_Boulder_02": 3, "M_Rock_Boulder_03": 3, "M_Rock_Boulder_04": 1}, False, 0.9, 25.0, 0.6),
+        # T6: boulders and ledge slabs on the inland granite outcrops (Rock material on moderate slopes, off the coast)
+        ("outcrop", (mat == M["Rock"]) & (h > 8) & (dl > 45) & (slope > 0.06) & (slope < 0.75) & inside & ~ex_all,
+         (0.2 + noise) * smooth(0.06, 0.3, slope),
+         {"M_Rock_Boulder_01": 2, "M_Rock_Boulder_04": 2, "M_Rock_Boulder_05": 2, "M_Rock_Boulder_06": 3,
+          "M_Rock_Ledge_03": 2, "M_Rock_Cliff_02": 2}, False, 0.8, 18.0, 0.8),
     ]
     out, meta = [], []
     for k, (name, cand, wgt, assets, waterline, follow, cap, fac) in enumerate(stages):
@@ -700,6 +717,8 @@ ALWAYS_KEEP = ("M_Veg_Hawthorn_01", "M_Veg_Hawthorn_02", "M_Veg_Gorse_02")  # si
 def seen_mask_at(T, x, z):
     j, i = T.idx(x, z)
     if min(T.road_edge[j, i], T.slip_edge[j, i], T.park_edge[j, i]) < SEEN_EDGE:
+        return True
+    if float(G.harbour_hill(np.array([[x]]), np.array([[z]]))[0, 0]) > 0.3:  # T6: the hillside over the harbour town
         return True
     wb = T.W[2][j, i]
     if wb > 0.5 and T.d[j, i] < L.BEACH_WIDTH + L.DUNE_WIDTH + 40:  # beaches and the dune front

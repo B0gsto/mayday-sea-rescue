@@ -106,3 +106,14 @@ pebbles / cobbles on the wrack, shingle and sand at the cove backs (the beach-re
 LightingPresets Clear / Overcast: less haze (Overcast Density 0.31, Haze 1.3; Clear 0.24 / 0.45), slight saturation and
 contrast (Overcast +0.02 / 0.14, Clear +0.06 / 0.12); Storm unchanged. DuneBank, CoveBack and RoadVerge re-framed at
 1.7 m eye height (`t5_shots.json`), plus a HarbourOcean grade check. `assets/review/terrain/t5_contact.png` (T4 row, T5 row).
+
+**Terrain pass T6.** Harbour hillside (`harbour_hill()`, 14-520 studs south of the town platform, applied after the
+platform blend): `hill_relief()` adds Cornish hedges (turf-and-stone field banks 2-3 studs high, ~9 across, with
+gateways) on a warped Voronoi field pattern (`field_cells()`, ~74-stud fields), 1-1.6 stud hummocks and granite
+outcrops 2-6 studs proud; each field gets its own sward (green pasture, straw, olive, heather / gorse heath, bracken),
+banks LeafyGrass with a little stone, no mud in the field floors. Scatter: gorse on the banks, heather / bracken in
+their fields (Town budgets up, PLANT_CAP 4740, hillside counted as seen), and an `outcrop` rock stage (480 boulders /
+ledge slabs on inland Rock). Outcrops everywhere larger and more numerous; Grass's share down in `turf()` so the
+Decoration blades break into patches; GrassLength 0.3. Harbour Cove: fuller upper beach (ct^1.8) so the dry
+foreground sits above the calm swell (it washed a dark sheet over the T5 foreground) and damp patches only near the
+tide. `assets/review/terrain/t6_contact.png` (T5 row, T6 row; `t6_shots.json`).

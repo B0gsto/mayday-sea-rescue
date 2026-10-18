@@ -215,7 +215,7 @@ elseif ARGS.mode == "colors" then
 		(Terrain :: any).Decoration = ARGS.decoration ~= false
 	end)
 	local okG = pcall(function()
-		(Terrain :: any).GrassLength = ARGS.grassLength or 0.5
+		(Terrain :: any).GrassLength = ARGS.grassLength or 0.3
 	end)
 	return `colors ok, decoration set {okD}, grass length set {okG}`
 elseif ARGS.mode == "export" then

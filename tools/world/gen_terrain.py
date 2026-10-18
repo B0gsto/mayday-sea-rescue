@@ -187,9 +187,10 @@ def micro_relief(X, Z, hl, dl, wb, s, fk=1.0):
     # T3: rock outcrops: knuckles of granite breaking the turf on ridges and knolls (convex ground), 2-6 studs proud
     convex = smoothstep(0.05, 0.6, hl - box_blur(hl, 6))
     rid = ridged(Xw, Zw, 55, s + 530, 3)
-    outc = smoothstep(0.9, 0.975, rid + 0.12 * convex) * (0.35 + 0.65 * convex) * smoothstep(0.06, 0.18, slope) \
-        * smoothstep(0.95, 0.7, slope) * smoothstep(12, 26, hl) * smoothstep(-0.2, 0.25, fbm(X, Z, 260, s + 532, 2))
-    rock_h = outc * (2.0 + 3.5 * ridged(X, Z, 9, s + 531, 2) + 1.2 * vnoise(X, Z, 5, s + 533))
+    # T6: larger and more numerous (thresholds down, 3-9 studs proud, a wider regional gate)
+    outc = smoothstep(0.88, 0.965, rid + 0.12 * convex) * (0.45 + 0.55 * convex) * smoothstep(0.05, 0.16, slope) \
+        * smoothstep(0.95, 0.7, slope) * smoothstep(12, 26, hl) * smoothstep(-0.4, 0.1, fbm(X, Z, 260, s + 532, 2))
+    rock_h = outc * (3.0 + 4.8 * ridged(X, Z, 11, s + 531, 2) + 1.4 * vnoise(X, Z, 6, s + 533))
     phase = 2 * np.pi * (box_blur(hl, 2) + 1.2 * fbm(Xw, Zw, 50, s + 512, 2)) / 2.6
     # T4: sheep-track terracettes stronger (0.5 studs) over a wider slope range, and a fine low-amplitude
     # 8-16 stud roughness so the near ground is never a smooth sheet
@@ -202,6 +203,52 @@ def micro_relief(X, Z, hl, dl, wb, s, fk=1.0):
         * smoothstep(-0.1, 0.3, fbm(X, Z, 200, s + 515, 2)) * smoothstep(8, 22, hl) * keep
     outc = outc * keep * fk
     return hl + (bump + terr) * keep + (hum + rock_h) * keep * fk - 2.0 * gully, (gully, smoothstep(0.15, 0.45, outc))
+
+
+def harbour_hill(X, Z):
+    """T6: 0..1 over the hillside behind the harbour town (south of the town platform, 14-520 studs out)."""
+    tp = L.TOWN_PLATFORM
+    ex = np.maximum(np.maximum(tp["minX"] - X, X - tp["maxX"]), 0)
+    ez = np.maximum(np.maximum(tp["minZ"] - Z, Z - tp["maxZ"]), 0)
+    dp = np.hypot(ex, ez)
+    return smoothstep(14, 40, dp) * smoothstep(520, 380, dp) * smoothstep(tp["minZ"] + 40, tp["minZ"] - 10, Z)
+
+
+def field_cells(X, Z, s, size=74.0):
+    """T6 Cornish field pattern: a warped jittered-grid Voronoi. Returns (distance to the nearest field boundary,
+    studs; a 0..1 hash per field)."""
+    Xw, Zw = warp(X, Z, s + 700, 12, 90)
+    gx, gz = np.floor(Xw / size), np.floor(Zw / size)
+    f1, f2, cid = np.full(X.shape, 1e9), np.full(X.shape, 1e9), np.zeros(X.shape)
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            ci, cj = (gx + dx).astype(np.int64), (gz + dz).astype(np.int64)
+            px = (ci + 0.15 + 0.7 * _hash(ci, cj, s + 701)) * size
+            pz = (cj + 0.15 + 0.7 * _hash(ci, cj, s + 702)) * size
+            dd = np.hypot(Xw - px, Zw - pz)
+            closer = dd < f1
+            f2 = np.where(closer, f1, np.minimum(f2, dd))
+            cid = np.where(closer, _hash(ci, cj, s + 703), cid)
+            f1 = np.where(closer, dd, f1)
+    return (f2 - f1) * 0.5, cid
+
+
+def hill_relief(X, Z, s):
+    """T6 harbour hillside relief (the T5 hillside was a flat straw plane: the town-platform mask kept the
+    micro-relief off it): Cornish hedges (turf-and-stone field banks, 2-3 studs high, ~9 studs across, with gateways)
+    on the field boundaries, 0.8-1.6 stud hummocks inside the fields and granite outcrops 2-6 studs proud.
+    Returns (height, hedge 0..1, field hash, outcrop 0..1); the caller multiplies by harbour_hill() and flat_keep()."""
+    edge, cid = field_cells(X, Z, s)
+    gate = smoothstep(-0.62, -0.45, fbm(X, Z, 46, s + 710, 2))  # gateways and slumped gaps
+    hedge = smoothstep(5.0, 1.2, edge + 0.8 * vnoise(X, Z, 9, s + 711)) * gate
+    hedge_h = hedge * (2.3 + 0.7 * vnoise(X, Z, 21, s + 712))
+    Xw, Zw = warp(X, Z, s + 720, 16, 70)
+    hum = (1.1 * fbm(Xw, Zw, 17, s + 721, 2) + 0.45 * vnoise(X, Z, 8, s + 722)) \
+        * (0.5 + 0.5 * smoothstep(-0.3, 0.3, fbm(X, Z, 120, s + 723, 2)))
+    rk = smoothstep(0.95, 0.99, ridged(Xw, Zw, 48, s + 730, 3)) * smoothstep(-0.25, 0.2, fbm(X, Z, 180, s + 731, 2)) \
+        * smoothstep(4.0, 9.0, edge)
+    rock_h = rk * (2.2 + 3.6 * ridged(X, Z, 8, s + 732, 2) + 0.9 * vnoise(X, Z, 5, s + 733))
+    return hedge_h + hum * (1 - hedge) + rock_h, hedge, cid, smoothstep(0.12, 0.4, rk)
 
 
 # ---------------------------------------------------------------- bake
@@ -314,7 +361,9 @@ def bake():
     cv = L.HARBOUR_COVE
     cove = (X >= cv["minX"]) & (X <= cv["maxX"]) & (Z >= cv["topZ"]) & (Z <= cv["toeZ"] + 70)
     ct = np.clip((Z - cv["topZ"]) / (cv["toeZ"] - cv["topZ"]), 0, 1)
-    cove_h = cv["topY"] + (cv["toeY"] - cv["topY"]) * ct ** 1.3
+    # T6: a fuller upper beach (ct^1.8, was ^1.3): the dry sand sits above the calm swell (about 1.25 studs), which
+    # washed a dark wet sheet over the T5 foreground; the swash band is narrower and further out
+    cove_h = cv["topY"] + (cv["toeY"] - cv["topY"]) * ct ** 1.8
     cw = smoothstep(cv["minX"], cv["minX"] + 30, X) * smoothstep(cv["toeZ"] + 70, cv["toeZ"], Z)
     h = np.where(cove, h + (cove_h - h) * cw, h)
     feat[cove & (cw > 0.5)] = 6
@@ -323,10 +372,15 @@ def bake():
     ez = np.maximum(np.maximum(tp["minZ"] - Z, Z - tp["maxZ"]), 0)
     tw = smoothstep(tp["blend"], 0, np.hypot(ex, ez)) * (h > 0) * ~basin
     h = h + (tp["y"] - h) * tw
+    # T6: harbour hillside: field banks, hummocks, outcrops (after the platform blend, so the town edge stays flat)
+    hm = harbour_hill(X, Z) * fk * smoothstep(2, 5, h) * smoothstep(6, 20, dl)
+    hdh, hedge, hcid, hrock = hill_relief(X, Z, s)
+    h = h + hdh * hm
+    hill = (hm, hedge * hm, hcid, hrock * hm)
 
     # ---- paving first (heights only change here), then materials on the final surface
     h, road_mat, road_edge, road_surf = pave(X, Z, h)
-    mat = materials(X, Z, h, d, W, feat, road_edge, road_surf, np.where(land, gully, 0), np.where(land, outc, 0))
+    mat = materials(X, Z, h, d, W, feat, road_edge, road_surf, np.where(land, gully, 0), np.where(land, outc, 0), hill)
     mat = np.where(road_mat != 255, road_mat, mat).astype(np.uint8)
     mat[(X > -180) & (X < 180) & (Z > -62) & (Z < -20)] = MI["Cobblestone"]  # quayside setts
     return xs, h, mat, d
@@ -378,10 +432,12 @@ def turf(w, straw, olive):
     """Split a turf weight into Turf / TurfStraw / TurfOlive by the macro fields (0..1)."""
     # T4: Grass (the Turf variant, the only slot that carries the animated Decoration blades) is the main sward again;
     # straw and olive are patches within it
-    return {"Grass": w * (1 - 0.45 * straw) * (1 - 0.4 * olive) + 1e-4, STRAW: 0.8 * w * straw, OLIVE: 0.75 * w * olive}
+    # T6: Grass's share down (straw / olive patches wider) so the single-colour Decoration blades break into patches
+    return {"Grass": 0.85 * w * (1 - 0.6 * straw) * (1 - 0.55 * olive) + 1e-4, STRAW: 0.95 * w * straw,
+            OLIVE: 0.9 * w * olive}
 
 
-def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
+def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc, hill=None):
     """Coastal material layering (docs/05 terrain, docs/10 6.1). Weights by slope, height, curvature, distance to the
     sea and to the roads; a soft argmax with domain-warped multi-octave patch noise per material (choose()) on land,
     hard zones under the sea. Land: turf with heather / gorse (Moor) patches, more on cliff tops and the Beacon,
@@ -413,7 +469,7 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     upland = smoothstep(105, 230, h_n + 30 * n_big)
     steep = smoothstep(0.45, 0.75, slope + 0.08 * n_mid)  # 24 -> 37 deg: turf gives way to rock
     crag = smoothstep(0.8, 1.2, slope)
-    outcrop = smoothstep(0.93, 0.975, ridged(Xw, Zw, 70, s + 22) + 0.05 * smoothstep(0.15, 0.45, slope)) \
+    outcrop = smoothstep(0.915, 0.97, ridged(Xw, Zw, 70, s + 22) + 0.05 * smoothstep(0.15, 0.45, slope)) \
         * smoothstep(14, 32, h) * smoothstep(0.08, 0.2, slope)
     wet_hollow = smoothstep(0.3, 1.5, hollow + 0.3 * n_fine) * smoothstep(0.24, 0.05, slope_n) * smoothstep(95, 45, h_n) \
         * (h > 2.5)
@@ -423,6 +479,19 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     straw = smoothstep(-0.3, 0.45, fbm(Xw, Zw, 150, s + 600, 3) + 0.45 * exposure + 0.35 * cliff_top
                        - 0.6 * smoothstep(0, 1.0, hollow) + 0.2 * smoothstep(0.12, 0.6, slope_n))
     olive = smoothstep(-0.15, 0.5, fbm(Xw, Zw, 120, s + 601, 3) + 0.8 * smoothstep(0, 1.2, hollow) - 0.3 * exposure)
+    # T6: the harbour hillside is a patchwork of fields, each its own sward: green pasture, straw / rough grazing,
+    # lush olive, heather and gorse heath, bracken; patch noise inside every field
+    if hill is not None:
+        hm, hedge, hcid, hrock = hill
+        fn = 0.25 * fbm(Xw, Zw, 30, s + 740, 2)
+        f_green, f_straw = (hcid < 0.4).astype(float), ((hcid >= 0.4) & (hcid < 0.58)).astype(float)
+        f_olive, f_heath = ((hcid >= 0.58) & (hcid < 0.7)).astype(float), ((hcid >= 0.7) & (hcid < 0.86)).astype(float)
+        f_brack = (hcid >= 0.86).astype(float)
+        hstraw = np.clip(0.1 * f_green + 0.85 * f_straw + 0.25 * f_heath + 0.45 * f_brack + fn, 0, 1)
+        holive = np.clip(0.25 * f_green + 0.9 * f_olive + 0.15 * f_heath + fn, 0, 1)
+        straw = straw * (1 - 0.85 * hm) + hstraw * 0.85 * hm
+        olive = olive * (1 - 0.85 * hm) + holive * 0.85 * hm
+        steep, crag = steep * (1 - 0.85 * hedge), crag * (1 - 0.85 * hedge)  # bank sides are turfed, not cliff
     lw = {
         **turf(1.0 * (1 - steep) * (1 - 0.45 * cliff_top) * (1 - 0.5 * upland) * (1 - 0.2 * exposure), straw, olive),
         "LeafyGrass": (0.12 + 0.5 * cliff_top + 1.1 * upland + 0.2 * exposure + 0.22 * bank) * (1 - steep),
@@ -433,6 +502,15 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
         "Rock": 6.0 * steep + 4.0 * outcrop + 6.0 * crag + 9.0 * outc + 1e-3,
         "Basalt": 2.0 * steep * smoothstep(0.1, 0.5, n_mid) * smoothstep(60, 15, h),
     }
+    if hill is not None:
+        heath_p = smoothstep(-0.3, 0.3, fbm(Xw, Zw, 22, s + 741, 3))
+        lw["LeafyGrass"] = lw["LeafyGrass"] + hm * (1 - steep) * (1.6 * f_heath * (0.4 + 0.6 * heath_p)
+                                                                + 0.7 * f_brack + 0.35 * heath_p * f_straw) + 1.1 * hedge
+        lw[WORN] = lw[WORN] + hm * (0.8 * f_brack * (1 - heath_p) + 0.15 * f_green * smoothstep(0.3, 0.7, heath_p)) \
+            + 0.25 * hedge
+        lw["Mud"] = lw["Mud"] * (1 - 0.75 * hm)  # field floors between the banks are not wet hollows
+        lw["Ground"] = lw["Ground"] + 0.35 * hedge * smoothstep(0.2, 0.5, slope_n)
+        lw["Rock"] = lw["Rock"] + 9.0 * hrock + 0.35 * hedge * smoothstep(0.2, 0.6, fbm(Xw, Zw, 7, s + 742, 2))  # hedge stone
     mat = choose(lw, Xw, Zw, ix, iz, s + 200, {"Grass": (150, 1.6), STRAW: (110, 1.5), OLIVE: (90, 1.4),
                                                 "LeafyGrass": (85, 1.6), "Ground": (26, 1.2), WORN: (22, 1.2),
                                                 "Mud": (30, 0.8), "Rock": (40, 0.9), "Basalt": (30, 0.8)})
@@ -452,7 +530,7 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
     # T5: break the single brown: damp dark patches (seepage) up into the shingle, pale dry sand pockets between
     # the shingle and the wrack, a little sand blown up into the worn turf
     cpatch = smoothstep(-0.1, 0.5, fbm(Xw, Zw, 18, s + 262, 3))
-    sz["Sandstone"] = sz["Sandstone"] + 1.6 * cove_back * cpatch * smoothstep(3.4, 1.4, hs)
+    sz["Sandstone"] = sz["Sandstone"] + 0.9 * cove_back * cpatch * smoothstep(2.6, 1.2, hs)  # T6: softer, lower
     sz[RIPPLE] = 1.5 * cove_back * (1 - cpatch) * smoothstep(1.2, 2.0, hs) * smoothstep(4.4, 3.2, hs) \
         * smoothstep(-0.2, 0.4, fbm(Xw, Zw, 24, s + 263, 3))
     sz["Sand"] = 0.9 * cove_back * smoothstep(3.6, 4.6, hs) * smoothstep(-0.1, 0.5, fbm(Xw, Zw, 20, s + 264, 3))
@@ -560,7 +638,7 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc):
            SHINGLE: 1.2 * smoothstep(2.6, 3.4, hc), WRACK: 1.8 * smoothstep(3.3, 3.8, hc) * smoothstep(4.8, 4.0, hc)}
     # T5: damp patches up the beach and pale dry pockets under the shingle
     c6p = smoothstep(-0.1, 0.5, fbm(X, Z, 16, s + 462, 3))
-    cw6["Sandstone"] = cw6["Sandstone"] + 1.2 * c6p * smoothstep(3.0, 1.4, hc)
+    cw6["Sandstone"] = cw6["Sandstone"] + 0.6 * c6p * smoothstep(2.2, 1.2, hc)  # T6: damp patches only near the tide
     cw6[RIPPLE] = 1.0 * (1 - c6p) * smoothstep(1.4, 2.0, hc) * smoothstep(3.6, 2.8, hc)
     ixc, izc = np.round(X).astype(np.int64), np.round(Z).astype(np.int64)
     m6 = choose(cw6, X, Z, ixc, izc, s + 460, {SHINGLE: (16, 0.8), WRACK: (12, 0.8), "Sandstone": (14, 0.8), RIPPLE: (14, 0.8)})
