@@ -377,9 +377,9 @@ AssetIds.Models = {
 	},
 	M_Sea_Bell = { LOD0 = "rbxassetid://136993362490504", LOD1 = "rbxassetid://104764958425131" },
 	M_Sea_Liferaft = {
-		LOD0 = "rbxassetid://78286728084581",
-		LOD1 = "rbxassetid://93900104579598",
-		LOD2 = "rbxassetid://131297282443705",
+		LOD0 = "rbxassetid://128454493437854",
+		LOD1 = "rbxassetid://118205357536086",
+		LOD2 = "rbxassetid://140036093138257",
 	},
 	M_Sea_Morwenna = {
 		LOD0 = "rbxassetid://96948248325880",
@@ -497,9 +497,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://72182670613554",
 	},
 	M_Veh_GaleQueen = {
-		LOD0 = "rbxassetid://138721621304278",
-		LOD1 = "rbxassetid://120554334449989",
-		LOD2 = "rbxassetid://119306301327514",
+		LOD0 = "rbxassetid://130238531402444",
+		LOD1 = "rbxassetid://124442954817723",
+		LOD2 = "rbxassetid://123607537823134",
 	},
 	M_Veh_JetSki = {
 		LOD0 = "rbxassetid://77535739244028",
@@ -1188,16 +1188,24 @@ AssetIds.Textures = {
 	},
 	M_Sea_Liferaft = {
 		Canopy = {
-			ALB = "rbxassetid://96353086459098",
-			NOR = "rbxassetid://79522680091939",
-			RGH = "rbxassetid://81413382278380",
-			Wet = { ALB = "rbxassetid://91391658689516", RGH = "rbxassetid://110145848201480" },
+			ALB = "rbxassetid://140225267654907",
+			NOR = "rbxassetid://95188314297376",
+			RGH = "rbxassetid://100453476867802",
+			Wet = {
+				ALB = "rbxassetid://110652783066389",
+				NOR = "rbxassetid://73366717425104",
+				RGH = "rbxassetid://120815149888664",
+			},
 		},
 		Tubes = {
-			ALB = "rbxassetid://87150254408085",
-			NOR = "rbxassetid://126054651161885",
-			RGH = "rbxassetid://91813316404858",
-			Wet = { ALB = "rbxassetid://111076796664722", RGH = "rbxassetid://135566543202593" },
+			ALB = "rbxassetid://125339526478362",
+			NOR = "rbxassetid://84048875338155",
+			RGH = "rbxassetid://121986639698502",
+			Wet = {
+				ALB = "rbxassetid://118567513081500",
+				NOR = "rbxassetid://73565894940710",
+				RGH = "rbxassetid://110834305040287",
+			},
 		},
 	},
 	M_Sea_Morwenna = {
@@ -1250,40 +1258,52 @@ AssetIds.Textures = {
 			ALB = "rbxassetid://73279555392952",
 			NOR = "rbxassetid://86795487709765",
 			RGH = "rbxassetid://103086040851198",
-			Wet = { ALB = "rbxassetid://114954167162360", RGH = "rbxassetid://115212704242549" },
+			Wet = { ALB = "rbxassetid://130392991921091", RGH = "rbxassetid://115861472651496" },
 		},
 		Deck = {
-			ALB = "rbxassetid://82541252108674",
+			ALB = "rbxassetid://128177548416478",
 			NOR = "rbxassetid://76178838994551",
-			RGH = "rbxassetid://103590679785749",
-			Wet = { ALB = "rbxassetid://101322400356470", RGH = "rbxassetid://76533404055070" },
+			RGH = "rbxassetid://106723727594735",
+			Wet = {
+				ALB = "rbxassetid://111468146432950",
+				NOR = "rbxassetid://89794394155137",
+				RGH = "rbxassetid://123144248795294",
+			},
 		},
 		Fittings = {
 			ALB = "rbxassetid://75798403666791",
 			NOR = "rbxassetid://132810670279160",
 			RGH = "rbxassetid://117603600457179",
 			MET = "rbxassetid://140188536301090",
-			Wet = { ALB = "rbxassetid://129467430495181", RGH = "rbxassetid://88187824765401" },
+			Wet = { ALB = "rbxassetid://88409523507800", RGH = "rbxassetid://108058944158942" },
 		},
 		Glass = {
 			ALB = "rbxassetid://99567764612704",
 			NOR = "rbxassetid://122451952567079",
 			RGH = "rbxassetid://92115618211334",
 			MET = "rbxassetid://109510052358325",
-			Wet = { ALB = "rbxassetid://75283174944095", RGH = "rbxassetid://118361398375162" },
+			Wet = { ALB = "rbxassetid://110364235349194", RGH = "rbxassetid://98699069572848" },
 		},
 		Hull = {
-			ALB = "rbxassetid://125426107137497",
-			NOR = "rbxassetid://130214574218747",
-			RGH = "rbxassetid://121748009514445",
+			ALB = "rbxassetid://104183970847934",
+			NOR = "rbxassetid://128716023056887",
+			RGH = "rbxassetid://118068262872977",
 			MET = "rbxassetid://125498532995876",
-			Wet = { ALB = "rbxassetid://70802881689667", RGH = "rbxassetid://140216783867575" },
+			Wet = {
+				ALB = "rbxassetid://121978952427749",
+				NOR = "rbxassetid://112229120206421",
+				RGH = "rbxassetid://102903837715528",
+			},
 		},
 		Super = {
-			ALB = "rbxassetid://118670016888432",
-			NOR = "rbxassetid://104019741869958",
-			RGH = "rbxassetid://138940975197704",
-			Wet = { ALB = "rbxassetid://95976661375956", RGH = "rbxassetid://130488849788103" },
+			ALB = "rbxassetid://140035594097525",
+			NOR = "rbxassetid://119180355849228",
+			RGH = "rbxassetid://123776629579668",
+			Wet = {
+				ALB = "rbxassetid://79761902036523",
+				NOR = "rbxassetid://89698836932600",
+				RGH = "rbxassetid://136584806075723",
+			},
 		},
 	},
 	M_Veh_JetSki = {
@@ -1922,5 +1942,8 @@ AssetIds.Attachments = {
 		ATT_WheelHub = Vector3.new(0, 4.25, 0.5761),
 	},
 } :: { [string]: { [string]: Vector3 } }
+
+-- FX flipbook sheets and foam maps (Image ids), read by src/shared/Fx/Flipbooks.luau
+AssetIds.Fx = {} :: { [string]: string }
 
 return AssetIds

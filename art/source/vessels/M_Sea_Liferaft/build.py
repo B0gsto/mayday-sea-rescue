@@ -91,6 +91,18 @@ def build_canopy():
     # canopy light + rain catcher at the apex
     apex = prof[-1][1]
     C.tube(b, [V(0, 0, apex - 0.02), V(0, 0, apex + 0.12)], 0.045, ("strip", 0.86, 0.90, 0.3), sides=8)
+    # C2b: arch inflation / topping-up valves (dark grey moulding, silver cap ring) on reinforcing patches, both legs
+    HWS, TAPE = ("strip", 0.962, 0.995, 0.3), ("strip", 0.845, 0.875, 0.3)
+    for k in (3, 9):
+        p, t = arch[k], (arch[k + 1] - arch[k - 1])
+        n = Vector((-t.z, 0, t.x)).normalized()
+        if n.dot(p - V(0, 0, Z1)) < 0:
+            n = -n
+        p = p + n * 0.105
+        W.sweep(b, [p - n * 0.01, p + n * 0.012], W.round_profile(0.085, 14), ("strip", 0.20, 0.28, 0.3), up_hint=(0, 1, 0))
+        C.tube(b, [p, p + n * 0.065], 0.034, HWS, sides=12, up_hint=(0, 1, 0))
+        C.tube(b, [p + n * 0.062, p + n * 0.092], 0.041, TAPE, sides=12, up_hint=(0, 1, 0))
+        C.tube(b, [p + n * 0.09, p + n * 0.10], 0.022, HWS, sides=8, up_hint=(0, 1, 0))
     return b, n_outer, n_inner
 
 
@@ -149,6 +161,12 @@ def build_tubes():
             pts.append(V((R + r + 0.03) * math.cos(a), (R + r + 0.03) * math.sin(a), Z1 + 0.02 - sag))
     pts.append(pts[0])
     C.tube(b, pts, 0.011, LL, sides=4, caps=(False, False))
+    # C2b: topping-up valves on the upper tube either side of the ramp entrance (grey-blue moulding)
+    for a in (math.radians(-62), math.radians(-118)):
+        n = V(math.cos(a) * 0.45, math.sin(a) * 0.45, 0.89).normalized()
+        p = V(R * math.cos(a), R * math.sin(a), Z1) + n * r
+        C.tube(b, [p - n * 0.01, p + n * 0.05], 0.03, band("floor", 0.3), sides=10, up_hint=(1, 0, 0))
+        C.tube(b, [p + n * 0.05, p + n * 0.075], 0.036, band("lifeline", 0.3), sides=10, up_hint=(1, 0, 0))
     # drogue line paying out astern
     C.tube(b, C.catenary(V(0.5, R + r, Z1), V(0.9, R + 2.4, WL - 0.05), 0.15, 6), 0.009, LL, sides=4)
     return b

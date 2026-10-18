@@ -821,6 +821,15 @@
   "source": "assets/ocean/sky/Storm_Dn.png",
   "type": "Image"
  },
+ "Image:103854cfc796e4b815e80e717f5d59066db5a6bbd226af5be65ff641119d416d": {
+  "assetId": "98699069572848",
+  "imageId": "98699069572848",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Glass_RGH_Wet",
+  "sha": "103854cfc796e4b815e80e717f5d59066db5a6bbd226af5be65ff641119d416d",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:1042dd3025caf4af3548fdd0a8a3fb3135f4c5fa138e7da39801a494cad9f43b": {
   "assetId": "123994999408737",
   "imageId": "123994999408737",
@@ -1107,6 +1116,15 @@
   "name": "T_Pontoon_Kit_RGH_Wet",
   "sha": "1614997e22ff55ef41d1ceaaad61ededc6f052f526f9109253f21c510385a5f1",
   "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:1616bc4ccba28f6ca509c0349d3cca259701dc69e35fc6e321d6a9c1e75c97d0": {
+  "assetId": "108058944158942",
+  "imageId": "108058944158942",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Fittings_RGH_Wet",
+  "sha": "1616bc4ccba28f6ca509c0349d3cca259701dc69e35fc6e321d6a9c1e75c97d0",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_RGH_Wet.png",
   "type": "Image"
  },
  "Image:1622b63c54bfb265d88086620f8bbe1e3bc362dfb67d589add5b52914e804da3": {
@@ -2277,6 +2295,15 @@
   "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:2c36dd9c537d347c0e21ec6cceb427d83313290648651a600949a53e76a7b0e3": {
+  "assetId": "73565894940710",
+  "imageId": "73565894940710",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_NOR_Wet",
+  "sha": "2c36dd9c537d347c0e21ec6cceb427d83313290648651a600949a53e76a7b0e3",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:2ca028eaea58fbf899ffdd841ce88884af025022cc583a6d2b5f6d9fe0b1917f": {
   "assetId": "112345644271709",
   "imageId": "112345644271709",
@@ -2473,6 +2500,15 @@
   "name": "Mayday_T_Mat_QuayStone_ALB",
   "sha": "2f7d9cee5c4498f8509940c422148eb28758c34cca535d8b69663a7d11fc4c83",
   "source": "assets/textures/Materials/T_Mat_QuayStone_ALB.png",
+  "type": "Image"
+ },
+ "Image:2f8defb81d3ef01b1cbbfc8fc608055370a1163c6bf9c1a6f36bc7282ce2daf1": {
+  "assetId": "123776629579668",
+  "imageId": "123776629579668",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_RGH",
+  "sha": "2f8defb81d3ef01b1cbbfc8fc608055370a1163c6bf9c1a6f36bc7282ce2daf1",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_RGH.png",
   "type": "Image"
  },
  "Image:2fbcb49239b32c023bf1d8a8138460aa711b6bea67c90b642cad6fc13720ea8d": {
@@ -3187,6 +3223,15 @@
   "name": "T_NavMarkEast_Buoy_RGH_Wet",
   "sha": "3d542721c27a209aaeb99955bacdc3bfa340b696079fb6ba17cfd85f6a581063",
   "source": "assets/textures/M_Hbr_NavMark_East/T_NavMarkEast_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:3d69d75667e14ccd62d4957456e953bd8a8fda0893b1aae9bb930e4ff22c72d4": {
+  "assetId": "121978952427749",
+  "imageId": "121978952427749",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_ALB_Wet",
+  "sha": "3d69d75667e14ccd62d4957456e953bd8a8fda0893b1aae9bb930e4ff22c72d4",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_ALB_Wet.png",
   "type": "Image"
  },
  "Image:3d73747a3e523d53974d08920ea287513c99f887077908d22614ae1dce4d6ab1": {
@@ -5154,6 +5199,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_RGH.png",
   "type": "Image"
  },
+ "Image:66aa98d13a530b57f4e7827223d3d3c892bb4bb293df282fc63fe0651eac3048": {
+  "assetId": "136584806075723",
+  "imageId": "136584806075723",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_RGH_Wet",
+  "sha": "66aa98d13a530b57f4e7827223d3d3c892bb4bb293df282fc63fe0651eac3048",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:66aeab7f5ba7e8c6dbe63e876787f67c1bd4bc6fa1b4b872fc7482f3f46e6d4f": {
   "assetId": "80408405709079",
   "imageId": "80408405709079",
@@ -5226,6 +5280,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB.png",
   "type": "Image"
  },
+ "Image:688c7c35ffbd9ffcd5874a10d43ff990db7a8aace195075bc59b315c6eb34c76": {
+  "assetId": "120815149888664",
+  "imageId": "120815149888664",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_RGH_Wet",
+  "sha": "688c7c35ffbd9ffcd5874a10d43ff990db7a8aace195075bc59b315c6eb34c76",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:68988fed6da755d6b738ba90de737b466761047dda67e0de074c5f2d67847bf5": {
   "assetId": "120618846558449",
   "imageId": "120618846558449",
@@ -5278,6 +5341,15 @@
   "name": "T_Road_CobblesTile_ALB_Wet",
   "sha": "69c11973c6c029acc1a81c826d9f876ff86da9f23cb2f30509501d32bbd1df2b",
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:69e057a3f916a46fb9675564ea059716c6504eeed3d381a88dd4af1ca4066dc0": {
+  "assetId": "140225267654907",
+  "imageId": "140225267654907",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_ALB",
+  "sha": "69e057a3f916a46fb9675564ea059716c6504eeed3d381a88dd4af1ca4066dc0",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_ALB.png",
   "type": "Image"
  },
  "Image:6a045d956b1456cc25bf9acea6d72b6599198aff26bcb1596d4b6bc3f4ecab5c": {
@@ -5781,6 +5853,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Slate_NOR.png",
   "type": "Image"
  },
+ "Image:73692ae260def58d77808917c996f9f6b8d467a1f89627053e047141e7816e24": {
+  "assetId": "111468146432950",
+  "imageId": "111468146432950",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Deck_ALB_Wet",
+  "sha": "73692ae260def58d77808917c996f9f6b8d467a1f89627053e047141e7816e24",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:7375264229216df3ebaddf4854f5b47b848b934159c54068cffd68e0fbc07174": {
   "assetId": "107103226456779",
   "imageId": "107103226456779",
@@ -6015,6 +6096,15 @@
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:7879cd557b43ec166cdd4d4f5ce292888220a1aedae07f6e02aa81f9166997f2": {
+  "assetId": "89698836932600",
+  "imageId": "89698836932600",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_NOR_Wet",
+  "sha": "7879cd557b43ec166cdd4d4f5ce292888220a1aedae07f6e02aa81f9166997f2",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:787b0eb8ea9b1d54d0a8df2ae928467ff3e372782b5ce7e004ca205473806e89": {
   "assetId": "114577919043328",
   "imageId": "114577919043328",
@@ -6085,6 +6175,15 @@
   "name": "T_Road_Cobbles_RGH_Wet",
   "sha": "791405ec4b86dd3a2a1eab698b84c78fa0b7628127b5808c0666b47a263a2604",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Cobbles_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:79a084aa1abf95e7cb009b0fe495ddf12546d16ff811cf9eb85037bfa4ebcfa0": {
+  "assetId": "115861472651496",
+  "imageId": "115861472651496",
+  "moderation": "Approved",
+  "name": "T_GaleQueen_Decals_RGH_Wet",
+  "sha": "79a084aa1abf95e7cb009b0fe495ddf12546d16ff811cf9eb85037bfa4ebcfa0",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH_Wet.png",
   "type": "Image"
  },
  "Image:79b33eb90b731dbff513d434604b7a2193c768afc729e6220786459b7d04df42": {
@@ -6699,6 +6798,15 @@
   "source": "assets/textures/Materials/T_Mat_TurfOlive_ALB.png",
   "type": "Image"
  },
+ "Image:852dbc9fac5ee93ee41f0f39a7057e7cb8501d986ad484ca01f29441943c6d74": {
+  "assetId": "119180355849228",
+  "imageId": "119180355849228",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_NOR",
+  "sha": "852dbc9fac5ee93ee41f0f39a7057e7cb8501d986ad484ca01f29441943c6d74",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_NOR.png",
+  "type": "Image"
+ },
  "Image:855e9deb6e4e774dfe0758d2781a8460d0e33791aeaf1381c46844aacc0b9f0e": {
   "assetId": "76473974963286",
   "imageId": "76473974963286",
@@ -6798,6 +6906,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH.png",
   "type": "Image"
  },
+ "Image:8707fd1b5563262113c226b992dd0e10b184a48718a33ced998ca49d6585863c": {
+  "assetId": "88409523507800",
+  "imageId": "88409523507800",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Fittings_ALB_Wet",
+  "sha": "8707fd1b5563262113c226b992dd0e10b184a48718a33ced998ca49d6585863c",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:871380f76f4fde293b8f4a593071021746099409c6fa60ffb1d353420d8f4d85": {
   "assetId": "104947634191533",
   "imageId": "104947634191533",
@@ -6895,6 +7012,15 @@
   "name": "T_Pontoon_Kit_ALB_Wet",
   "sha": "899555ff70ba8bc9517c7ce66a2ceb34e0131bc1b7d0b526433db9a2ed333daf",
   "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:89c25690d9f8a29dfd8418ce857f00264fdfe9e4c05c7d2695a423df65a3c012": {
+  "assetId": "128716023056887",
+  "imageId": "128716023056887",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_NOR",
+  "sha": "89c25690d9f8a29dfd8418ce857f00264fdfe9e4c05c7d2695a423df65a3c012",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_NOR.png",
   "type": "Image"
  },
  "Image:89ef8029d75b585cba4430e5b76c7d2a313c2f98723b6536e00c2f5e7b53c716": {
@@ -7255,6 +7381,15 @@
   "name": "T_RIB_Deck_MET",
   "sha": "8fcc7435b2774ccf1113c5fee6632478152fe70dd61ad81b26b1318c22a28799",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_MET.png",
+  "type": "Image"
+ },
+ "Image:9003dc376f8afd7e4ef1d5f5bf50bf58fa8c7b2aa09d3e92dd4ea0ef98695e97": {
+  "assetId": "73366717425104",
+  "imageId": "73366717425104",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_NOR_Wet",
+  "sha": "9003dc376f8afd7e4ef1d5f5bf50bf58fa8c7b2aa09d3e92dd4ea0ef98695e97",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_NOR_Wet.png",
   "type": "Image"
  },
  "Image:9015341f0829f486041b8ac02caad245a7d228e37acc1966f67db76f62ced508": {
@@ -7695,6 +7830,15 @@
   "source": "assets/textures/Materials/T_Mat_Wrack_NOR.png",
   "type": "Image"
  },
+ "Image:99118e031963ebb4c70a7b55708871033f578c426d9353dc0cdfdd5106fd5140": {
+  "assetId": "104183970847934",
+  "imageId": "104183970847934",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_ALB",
+  "sha": "99118e031963ebb4c70a7b55708871033f578c426d9353dc0cdfdd5106fd5140",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_ALB.png",
+  "type": "Image"
+ },
  "Image:993e6f1607cb4c744b39f5d75a9a09c92914ad3957f3b3b2fa4bf0b69987c1f7": {
   "assetId": "85829276475872",
   "imageId": "85829276475872",
@@ -7986,6 +8130,15 @@
   "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:9f49777600d767edd7158c258b4ed5a3fc617dc82776d9dee69907888f5e40f7": {
+  "assetId": "121986639698502",
+  "imageId": "121986639698502",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_RGH",
+  "sha": "9f49777600d767edd7158c258b4ed5a3fc617dc82776d9dee69907888f5e40f7",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_RGH.png",
+  "type": "Image"
+ },
  "Image:9f7840266235eecbf5dfd0a169939b38ed0822a1457ec4536bd45b14e8148dab": {
   "assetId": "125516558272954",
   "imageId": "125516558272954",
@@ -8218,6 +8371,15 @@
   "name": "T_Road_Markings_NOR",
   "sha": "a6281232268d1c8fe13c54b42af79523a6cbd01653693741af3fac83adcc83d5",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Markings_NOR.png",
+  "type": "Image"
+ },
+ "Image:a62b25d8db5c71bfa6df641ac534e3edc75255fca0d7c58e108692164ae373b5": {
+  "assetId": "118567513081500",
+  "imageId": "118567513081500",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_ALB_Wet",
+  "sha": "a62b25d8db5c71bfa6df641ac534e3edc75255fca0d7c58e108692164ae373b5",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_ALB_Wet.png",
   "type": "Image"
  },
  "Image:a63a5bb88418d36515b1d8791e918bb98f4b24815dd402d9edc445e9a3350466": {
@@ -8542,6 +8704,15 @@
   "name": "T_GaleQueen_Glass_RGH_Wet",
   "sha": "aa587202cd1fb371360285d4d440d5a0a5e7b50bda12d702559b9d7b669764a3",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:aaa934bbe6410a57bc1fc4a1973f753c672b394c59427a0566b56a0de2ccd307": {
+  "assetId": "118068262872977",
+  "imageId": "118068262872977",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_RGH",
+  "sha": "aaa934bbe6410a57bc1fc4a1973f753c672b394c59427a0566b56a0de2ccd307",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_RGH.png",
   "type": "Image"
  },
  "Image:aac92ffd91c2c07134741c001081fe32dcd939b3eeaedfb95701b6e07b2642e4": {
@@ -8877,6 +9048,15 @@
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Tower_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b1e5d6f6c4566c00391f9e87ebfc3dc6c047629201c74458bcd76ceff2751b6f": {
+  "assetId": "110364235349194",
+  "imageId": "110364235349194",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Glass_ALB_Wet",
+  "sha": "b1e5d6f6c4566c00391f9e87ebfc3dc6c047629201c74458bcd76ceff2751b6f",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Glass_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:b23caa936581e1ff0c4212cdfd73226a9fd9f2ed57b7a323a9c210b52adf1ee0": {
   "assetId": "110145848201480",
   "imageId": "110145848201480",
@@ -8988,6 +9168,15 @@
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_RGH.png",
   "type": "Image"
  },
+ "Image:b56a630b48d625e710a9b8eabcb8fa5be85f531660a882838c0042bb4ad8e961": {
+  "assetId": "130392991921091",
+  "imageId": "130392991921091",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Decals_ALB_Wet",
+  "sha": "b56a630b48d625e710a9b8eabcb8fa5be85f531660a882838c0042bb4ad8e961",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Decals_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:b59f1a84b0eef946f603831778a5239d027269e0105ff472f265101deaabd445": {
   "assetId": "134432950070307",
   "imageId": "134432950070307",
@@ -9060,6 +9249,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b6d28bad8b2184edf07b365871179f465e9414768e19a536399248e71591d254": {
+  "assetId": "79761902036523",
+  "imageId": "79761902036523",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_ALB_Wet",
+  "sha": "b6d28bad8b2184edf07b365871179f465e9414768e19a536399248e71591d254",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:b706d3c6fa106942da087141bc464af7d43cde468518490c4bc6f67c4eee85a1": {
   "assetId": "75676195597717",
   "imageId": "75676195597717",
@@ -9085,6 +9283,15 @@
   "name": "T_Station_Details_RGH",
   "sha": "b77404cef7049b4e7e62bd38220e6f1336e0d8417736b603f4cc7bdbfd866dcf",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH.png",
+  "type": "Image"
+ },
+ "Image:b77ab4b28a2a0f03c875c3f993555b4e6c1a1af85767884478e77693d93b9800": {
+  "assetId": "128177548416478",
+  "imageId": "128177548416478",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Deck_ALB",
+  "sha": "b77ab4b28a2a0f03c875c3f993555b4e6c1a1af85767884478e77693d93b9800",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png",
   "type": "Image"
  },
  "Image:b7a742e7bf77703007c30f6bac1985771731a78b660f1083de097fed94047f6c": {
@@ -9175,6 +9382,15 @@
   "name": "T_Cliff03_Granite_RGH_Wet",
   "sha": "ba9012b7ae238ca81826e3139b6f2339a290d034a71affcf11e3de1a1e2a0ceb",
   "source": "assets/textures/M_Rock_Cliff_03/T_Cliff03_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:baa14a8c2da815b0f0eec5b040057ece4b713ed91b54e6af10e20ca0576d6628": {
+  "assetId": "112229120206421",
+  "imageId": "112229120206421",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_NOR_Wet",
+  "sha": "baa14a8c2da815b0f0eec5b040057ece4b713ed91b54e6af10e20ca0576d6628",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_NOR_Wet.png",
   "type": "Image"
  },
  "Image:babcb37cdd573979c0f5bb9f8879da237053ae69045959221d558504f0647e80": {
@@ -9277,6 +9493,15 @@
   "name": "T_QuayKit_Armour_ALB",
   "sha": "bc8f1524af276af2ed4eb0726543d6bda0dd6fa021f396be6161ccaa2134fd5b",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_ALB.png",
+  "type": "Image"
+ },
+ "Image:bcfc661b357673956a3c9fa9c4cdc672acffe1b0cda0a845ff22d26a2f1a9259": {
+  "assetId": "100453476867802",
+  "imageId": "100453476867802",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_RGH",
+  "sha": "bcfc661b357673956a3c9fa9c4cdc672acffe1b0cda0a845ff22d26a2f1a9259",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_RGH.png",
   "type": "Image"
  },
  "Image:bd1bb7dabffc8d555a5eac0921845706a1288f65926dd8c629481233a35497bc": {
@@ -9839,6 +10064,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_MET.png",
   "type": "Image"
  },
+ "Image:c9f8d261daec7b555994f0c6bcd24804630f167ee32f3d655f9f66d75b4ff1e8": {
+  "assetId": "110652783066389",
+  "imageId": "110652783066389",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_ALB_Wet",
+  "sha": "c9f8d261daec7b555994f0c6bcd24804630f167ee32f3d655f9f66d75b4ff1e8",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:c9f9e7132eb4d9072be2326b785518e504c6ca07f43bf0f049f4d190466418c2": {
   "assetId": "100074060791737",
   "imageId": "100074060791737",
@@ -9882,6 +10116,15 @@
   "name": "T_Road_Gravel_RGH_Wet",
   "sha": "ca5a7f9016ef0f87a606c82aac66b22931b0d58b35c6aaa242e0cd89f8d9612e",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:ca9cacf80bf3384abe8637e5820255aec6a99dfc7b643db5cb8a0e1f686ac30a": {
+  "assetId": "84048875338155",
+  "imageId": "84048875338155",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_NOR",
+  "sha": "ca9cacf80bf3384abe8637e5820255aec6a99dfc7b643db5cb8a0e1f686ac30a",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_NOR.png",
   "type": "Image"
  },
  "Image:cad131807d2f5d0c76e2431c42bcfca5123b776125ecfe4903538c22327f9eac": {
@@ -10499,6 +10742,15 @@
   "source": "assets/textures/Materials/T_Mat_Mud_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:d67cd4032aed26305b085f6f293fd106daa23c151bc691b71a4d5de243b1a9d1": {
+  "assetId": "106723727594735",
+  "imageId": "106723727594735",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Deck_RGH",
+  "sha": "d67cd4032aed26305b085f6f293fd106daa23c151bc691b71a4d5de243b1a9d1",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_RGH.png",
+  "type": "Image"
+ },
  "Image:d69a03be6f4ca0da91fa5c084836e126f068d5434293fc8cb2b36ea1b7bfe04c": {
   "assetId": "110604989262931",
   "imageId": "110604989262931",
@@ -10563,6 +10815,15 @@
   "name": "T_RIBHelm_Console_ALB",
   "sha": "d7c4cea685fe0480073141394974869ccb65f36644589f59fef6fc6d1d9e12f9",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png",
+  "type": "Image"
+ },
+ "Image:d80c6fe91601129fa60d7b8cf4cf263b206dcd15e0fcb271e653d7150e0a209c": {
+  "assetId": "140035594097525",
+  "imageId": "140035594097525",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Super_ALB",
+  "sha": "d80c6fe91601129fa60d7b8cf4cf263b206dcd15e0fcb271e653d7150e0a209c",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Super_ALB.png",
   "type": "Image"
  },
  "Image:d814990bce93c8b5bb7637998a24b22c279f69b493e8bce0e5b9b2058464c598": {
@@ -10790,6 +11051,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_RGH.png",
   "type": "Image"
  },
+ "Image:dc4cf00f04ed64d2a8830f9a7b7303bcf1638b68c886112a21b2d2e1a6711612": {
+  "assetId": "123144248795294",
+  "imageId": "123144248795294",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Deck_RGH_Wet",
+  "sha": "dc4cf00f04ed64d2a8830f9a7b7303bcf1638b68c886112a21b2d2e1a6711612",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:dc6dff582ac6f98f9be5dbceec430e0a41ff4e83229472dd8a9ab5ef409caafb": {
   "assetId": "72330000729118",
   "imageId": "72330000729118",
@@ -10797,6 +11067,15 @@
   "name": "T_Cliff03_Granite_RGH",
   "sha": "dc6dff582ac6f98f9be5dbceec430e0a41ff4e83229472dd8a9ab5ef409caafb",
   "source": "assets/textures/M_Rock_Cliff_03/T_Cliff03_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:dc88a2a24323b86578d4e369dc1c6550236fcd0edab2a3d86401e7d7adbcc129": {
+  "assetId": "89794394155137",
+  "imageId": "89794394155137",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Deck_NOR_Wet",
+  "sha": "dc88a2a24323b86578d4e369dc1c6550236fcd0edab2a3d86401e7d7adbcc129",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_NOR_Wet.png",
   "type": "Image"
  },
  "Image:dc946d3a0fa03d3dc6eb1755af44959fac7bb1b30f38652efdb87807c768214c": {
@@ -11894,6 +12173,15 @@
   "source": "assets/textures/Materials/T_Mat_SandRipple_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:f3798ca0e6782d73443670867a1183287c451390e51716fd8ec62b4a9ebc8b7c": {
+  "assetId": "95188314297376",
+  "imageId": "95188314297376",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Canopy_NOR",
+  "sha": "f3798ca0e6782d73443670867a1183287c451390e51716fd8ec62b4a9ebc8b7c",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_NOR.png",
+  "type": "Image"
+ },
  "Image:f3b0be289b7fa81cc92fe2f7e64b23cd66751d7457626260aa604f5a39107b52": {
   "assetId": "129759083645779",
   "imageId": "129759083645779",
@@ -12233,6 +12521,24 @@
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:fabe43b1dfe79f9279ce74f8a94918036b3551cd57f636cdc2b9608e447e38fa": {
+  "assetId": "125339526478362",
+  "imageId": "125339526478362",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_ALB",
+  "sha": "fabe43b1dfe79f9279ce74f8a94918036b3551cd57f636cdc2b9608e447e38fa",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_ALB.png",
+  "type": "Image"
+ },
+ "Image:faf0c47893a87a891e2e39072a224cb88e47c484b08abe3be257790fd2e4d8f6": {
+  "assetId": "102903837715528",
+  "imageId": "102903837715528",
+  "moderation": "Reviewing",
+  "name": "T_GaleQueen_Hull_RGH_Wet",
+  "sha": "faf0c47893a87a891e2e39072a224cb88e47c484b08abe3be257790fd2e4d8f6",
+  "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Hull_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:fbb6b0c44c0ecf3a16a22ea1ef3aacafb64477f58d96172a407b58333801d568": {
   "assetId": "74661482253511",
   "imageId": "74661482253511",
@@ -12249,6 +12555,15 @@
   "name": "T_Station_GraniteBase_ALB",
   "sha": "fbcaefa6f109b34e7482b57c9934fd376ddd9d0952f1e90e63821834d079d096",
   "source": "assets/textures/M_Bld_Station/T_Station_GraniteBase_ALB.png",
+  "type": "Image"
+ },
+ "Image:fbcfa4d2f7de1faf0520a7b78e08eab4787fda62bdf6282eec904f8ee83f4fa5": {
+  "assetId": "110834305040287",
+  "imageId": "110834305040287",
+  "moderation": "Reviewing",
+  "name": "T_Liferaft_Tubes_RGH_Wet",
+  "sha": "fbcfa4d2f7de1faf0520a7b78e08eab4787fda62bdf6282eec904f8ee83f4fa5",
+  "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_RGH_Wet.png",
   "type": "Image"
  },
  "Image:fbd4cd46a297d43f5d6749c808dd87676adc7cf5e5e304a37a37f0d089caa1a9": {
@@ -13638,6 +13953,16 @@
   "source": "assets/fbx/M_Hbr_LifebuoyStation/M_Hbr_LifebuoyStation_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3a75b169c30203ad9c166969b4be09db2868881d8c7c0d97b2effbf3622913f1": {
+  "assetId": "140036093138257",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft_LOD2",
+  "rbxm": "assets/models/M_Sea_Liferaft_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3a75b169c30203ad9c166969b4be09db2868881d8c7c0d97b2effbf3622913f1",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:3b68368d084a73d663ec5ba15d93300f33b8830602255207e089f6bd82f8a750": {
   "assetId": "125546650919847",
   "moderation": "Approved",
@@ -14118,6 +14443,16 @@
   "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD2.fbx",
   "type": "Model"
  },
+ "Model:4d9c1b82c0935ff74fe9355a6c3ce4e1d9f8a59c16eb077f935502154a2d5bd4": {
+  "assetId": "123607537823134",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen_LOD2",
+  "rbxm": "assets/models/M_Veh_GaleQueen_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "4d9c1b82c0935ff74fe9355a6c3ce4e1d9f8a59c16eb077f935502154a2d5bd4",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:4d9fe963dcdab913877144dd21f8c7c897568893f8fa5467a16127fbab9b5c86": {
   "assetId": "76088563680656",
   "moderation": "Approved",
@@ -14546,6 +14881,16 @@
   "route": "delivery",
   "sha": "65509b69a01a4478567822c01f47b0db7129eb6da5d56893ffa64f204fba41b3",
   "source": "assets/fbx/M_Hbr_LifebuoyStation/M_Hbr_LifebuoyStation_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:657f7adbb577d9c93bd72b640ae8c018020ac7de2a6fe3b05c1f6756f7dfe3b3": {
+  "assetId": "128454493437854",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft",
+  "rbxm": "assets/models/M_Sea_Liferaft.rbxm",
+  "route": "delivery",
+  "sha": "657f7adbb577d9c93bd72b640ae8c018020ac7de2a6fe3b05c1f6756f7dfe3b3",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD0.fbx",
   "type": "Model"
  },
  "Model:65beab3807e303906c140c199265b1e54b404ffa6fe3bf72b6b50f810cbe35dd": {
@@ -15378,6 +15723,16 @@
   "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD0.fbx",
   "type": "Model"
  },
+ "Model:8e9e10412bf8ad8ac93f4108e7c76b2b48ed90a5f13c5a878416b395ce208e02": {
+  "assetId": "124442954817723",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen_LOD1",
+  "rbxm": "assets/models/M_Veh_GaleQueen_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "8e9e10412bf8ad8ac93f4108e7c76b2b48ed90a5f13c5a878416b395ce208e02",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:8edb31c2f6ee6eae5acf8a85a4c00de956818fc25cb4081e5de2af67df43b960": {
   "assetId": "105184847951520",
   "moderation": "Approved",
@@ -16186,6 +16541,16 @@
   "route": "delivery",
   "sha": "b1fe979c62322bad33898955f2d3cc77bd7779aa9afe7a3242b2c85d472d2cba",
   "source": "assets/fbx/M_Veg_Strand_Driftwood_01/M_Veg_Strand_Driftwood_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:b3069ceba144e0b49fcb732b2a799e2143fcc1c682d5fba7980f7ae3ba01bc19": {
+  "assetId": "118205357536086",
+  "moderation": "Approved",
+  "name": "M_Sea_Liferaft_LOD1",
+  "rbxm": "assets/models/M_Sea_Liferaft_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b3069ceba144e0b49fcb732b2a799e2143fcc1c682d5fba7980f7ae3ba01bc19",
+  "source": "assets/fbx/M_Sea_Liferaft/M_Sea_Liferaft_LOD1.fbx",
   "type": "Model"
  },
  "Model:b3c9cbfe144ca8901839abb97f49d66443f6d0884d2c9cb1e410c64d03de36d4": {
@@ -17566,6 +17931,16 @@
   "route": "delivery",
   "sha": "f52759e27813383393ba36713a9cae4c6cd65abcc0ce45044b33c255cb06e826",
   "source": "assets/fbx/M_Hbr_Ladder/M_Hbr_Ladder_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:f54d432d20459a6432e66aa00a93964a46c9c4d26860eadac8f1e164c6accf9b": {
+  "assetId": "130238531402444",
+  "moderation": "Approved",
+  "name": "M_Veh_GaleQueen",
+  "rbxm": "assets/models/M_Veh_GaleQueen.rbxm",
+  "route": "delivery",
+  "sha": "f54d432d20459a6432e66aa00a93964a46c9c4d26860eadac8f1e164c6accf9b",
+  "source": "assets/fbx/M_Veh_GaleQueen/M_Veh_GaleQueen_LOD0.fbx",
   "type": "Model"
  },
  "Model:f570233e37866e958df581cbc227d30e33a75cc93ef7067dfc62db4e2a331dbe": {

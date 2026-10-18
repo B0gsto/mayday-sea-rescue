@@ -142,8 +142,20 @@ def streaks(U, V, seed, count, top, length, width, wrap_u=True):
     return np.clip(out * (0.6 + 0.6 * n), 0, 1)
 
 
-def save(asset, stem, alb, nor, rgh, met, alpha=None, signal=None, wet=(0.30, 0.30), smax=0.44, wet_mask=None):
-    """Dry + _Wet maps. Saturation limited outside `signal` (written as the check_textures signal mask)."""
+def rivulets(U, V, seed, count=60, top=(0.2, 1.0), length=0.6, width=0.0011, meander=0.004):
+    """Streaming-water rivulets for the _Wet sets: thin meandering run-downs (along -V) with bead drops, 0..1."""
+    wig = (fbm(M, 3, 24, 1.4, seed + 7) - 0.5) * 2 * meander
+    r = streaks((U + wig) % 1.0, V, seed, count, top, length, width)
+    r = np.clip(r * 1.6, 0, 1) ** 0.8
+    beads = sm(0.80, 0.92, fbm(M, 60, 400, 0.6, seed + 9)) * sm(0.05, 0.3, Image_blur(r, 3.0))
+    return np.clip(np.maximum(r, beads), 0, 1)
+
+
+def save(asset, stem, alb, nor, rgh, met, alpha=None, signal=None, wet=(0.30, 0.30), smax=0.44, wet_mask=None,
+         h=None, riv=None, nor_strength=4.0):
+    """Dry + _Wet maps. Saturation limited outside `signal` (written as the check_textures signal mask).
+    With `h` (height) and `riv` (rivulet mask) a NOR_Wet is written: the dry height plus raised water films, and the
+    _Wet albedo / roughness darken and gloss further along the rivulets."""
     out = G + "assets/textures/" + asset
     os.makedirs(out, exist_ok=True)
     os.makedirs(MASTERS, exist_ok=True)
@@ -165,15 +177,23 @@ def save(asset, stem, alb, nor, rgh, met, alpha=None, signal=None, wet=(0.30, 0.
     alb = np.where(l > 236 / 255, alb * (236 / 255) / np.maximum(l, 1e-4), alb)
     alb = np.clip(alb, 0, 1)
     rgh = np.clip(rgh, 0.04, 1)
-    wa, wr = pbrmaps.wet(alb, rgh, darken=wet[0], gloss=wet[1], floor=0.05)
+    wa, wr = pbrmaps.wet(alb, rgh, darken=wet[0], gloss=wet[1], floor=0.09)
     if wet_mask is not None:       # parts that are always wet (below the waterline) change less
         k = np.clip(wet_mask, 0, 1)
         wa = mix(wa, alb * (1 - wet[0] * 0.55), k)
         wr = mix(wr, np.minimum(rgh, rgh - wet[1] * 0.5), k)
+    extra = {}
+    if riv is not None:
+        k = np.clip(riv, 0, 1)
+        wa = wa * (1 - 0.22 * k[..., None])
+        wr = mix(wr, np.minimum(wr, 0.06), k)
+        if h is not None:
+            extra["NOR_Wet"] = np.clip(normal(Image_blur(h + 0.9 * Image_blur(k, 1.2), 0.7), nor_strength), 0, 1)
     l = lum(wa)[..., None]
-    wa = np.where(l < 30 / 255, wa + (30 / 255 - l), wa)
+    wa = np.where(l < 24 / 255, wa + (24 / 255 - l), wa)
     maps = {"ALB": alb, "NOR": np.clip(nor, 0, 1), "RGH": rgh, "MET": np.clip(met, 0, 1), "ALB_Wet": np.clip(wa, 0, 1),
             "RGH_Wet": np.clip(wr, 0.04, 1)}
+    maps.update(extra)
     for k, a in maps.items():
         a8 = (a * 255 + 0.5).astype(np.uint8)
         im = Image.fromarray(a8, "RGB" if a8.ndim == 3 else "L")
@@ -193,7 +213,6 @@ def rust_colour(seed=0):
 # ------------------------------------------------------------------ hull
 def hull_set():
     U, V = coords()
-    pm = scan("blue_metal_plate")
     dpm = detail("blue_metal_plate")
     drp = detail("rusty_painted_metal")
     rust = rust_colour(1)
@@ -206,14 +225,20 @@ def hull_set():
     top = band(V, 0.545, 0.955)
     sheer = band(V, 0.955, 0.985)
     cap = sm(0.983, 0.987, V)
-    # base paints
-    af_col = mix(rgb(150, 66, 54), rgb(122, 58, 50), n1) * (1 + 0.10 * dpm[..., None])
-    af_col = mix(af_col, rgb(168, 92, 76), sm(0.55, 0.85, n3) * 0.5)            # chalky, leached antifouling
+    flow = fbm(M, 3, 90, 1.2, 14, aniso=(0.10, 1.0))           # streaks combed along the length by the water flow
+    blot = fbm(M, 2, 14, 1.8, 15)                               # big patches (coats, touch-ups, slip cradles)
+    # antifouling: faded and patchy, three coats of different age, roller laps along the length
+    af_old = mix(rgb(132, 74, 64), rgb(116, 66, 58), n1)        # faded, leached brick red
+    af_fresh = mix(rgb(118, 46, 40), rgb(104, 42, 38), n1)      # touched-up patches (darker, redder)
+    af_chalk = mix(rgb(156, 112, 100), rgb(140, 100, 90), n2)   # chalky, leached to pink-grey
+    af_col = mix(af_old, af_fresh, sm(0.62, 0.70, blot) * 0.85)
+    af_col = mix(af_col, af_chalk, np.clip(sm(0.50, 0.80, n3) * 0.55 + sm(0.55, 0.75, flow) * 0.25, 0, 1))
+    af_col = af_col * (1 + 0.10 * dpm[..., None]) * (1 + 0.06 * (flow[..., None] - 0.5))
     navy = mix(rgb(38, 50, 70), rgb(46, 58, 76), n1) * (1 + 0.12 * dpm[..., None])
     alb = af_col * af[..., None] + rgb(46, 46, 48) * boot[..., None] + navy * top[..., None] \
         + rgb(214, 214, 206) * sheer[..., None] + rgb(60, 62, 66) * cap[..., None]
     h = 0.15 * scan("blue_metal_plate")["Displacement"]
-    rgh = 0.78 * af + 0.55 * boot + 0.42 * top + 0.40 * sheer + 0.55 * cap + 0.06 * n2
+    rgh = 0.80 * af + 0.55 * boot + 0.42 * top + 0.40 * sheer + 0.55 * cap + 0.06 * n2
     met = np.zeros((M, M), np.float32)
     # plating: frames every 0.5 m (hungry horse dishing), butts every 2 m, strake seams
     fr = 0.5 / 6.0
@@ -222,12 +247,36 @@ def hull_set():
     seams = np.maximum(lines(U, 2.0 / 6.0, 0.0018), np.maximum(lines(V - 0.25, 1.0, 0.0018), lines(V - 0.78, 1.0, 0.0018)))
     h += 0.6 * seams
     alb = mix(alb, alb * 0.82, seams * 0.6)
-    # topsides wear: rust weeps from the sheer and the butts, chips, fender scrapes, salt
+    rcol = mix(rust, rgb(120, 62, 34), 0.4)
+    # bottom paint damage: grey primer and black old-coat windows, slipway / grounding scrapes to rusty steel along the
+    # keel and the turn of the bilge (long strokes along the length)
+    primer = sm(0.74, 0.80, fbm(M, 3, 30, 1.5, 32)) * af * (V < 0.46)
+    alb = mix(alb, mix(rgb(118, 116, 110), rgb(96, 96, 92), n2), primer * 0.85)
+    oldcoat = sm(0.70, 0.76, fbm(M, 3, 30, 1.5, 33)) * af * (1 - primer)
+    alb = mix(alb, rgb(58, 52, 50), oldcoat * 0.75)
+    scrape_n = fbm(M, 4, 160, 1.0, 34, aniso=(0.05, 1.0))
+    scrape_zone = np.clip((1 - sm(0.02, 0.14, V)) + band(V, 0.26, 0.36, 0.03) * 0.8, 0, 1) * af
+    scr_b = sm(0.70, 0.80, scrape_n) * scrape_zone * sm(0.35, 0.6, fbm(M, 2, 20, 1.5, 35))
+    alb = mix(alb, mix(rcol, rgb(96, 88, 80), 0.3), scr_b * 0.9)
+    h -= 0.5 * scr_b
+    rgh = mix(rgh, 0.88, scr_b)
+    bare_b = scr_b * sm(0.82, 0.9, scrape_n)
+    alb = mix(alb, rgb(150, 146, 140), bare_b * 0.5)
+    # topsides wear: scupper streaks (every 1.5 m from the deck edge), rust weeps from the butts, chips, fender scrapes
+    w = np.zeros((M, M), np.float32)
+    for i in range(4):          # scuppers: 4 per 6 m tile, each a dark mouth with a long rust run
+        u0 = (i + 0.5) / 4 + 0.03 * np.sin(i * 2.1)
+        du = np.abs(((U - u0 + 0.5) % 1.0) - 0.5)
+        run = np.clip(1 - du / (0.010 + 0.025 * np.clip(0.95 - V, 0, 1)), 0, 1) * band(V, 0.60, 0.95, 0.04)
+        run *= (0.55 + 0.45 * sm(0.3, 0.7, fbm(M, 6, 80, 1.2, 36 + i, aniso=(1.0, 0.15))))
+        w = np.maximum(w, run * (0.6 + 0.4 * (V - 0.6) / 0.35))
+        mouth = (du < 0.012) * band(V, 0.925, 0.945, 0.003)
+        alb = mix(alb, rgb(30, 30, 32), mouth)
+        h -= 0.6 * mouth
     weeps = streaks(U, V, 21, 40, (0.93, 0.97), 0.35, 0.004) * top
     seam_weeps = streaks(U, V, 22, 30, (0.70, 0.80), 0.18, 0.003) * top
-    w = np.clip(weeps + seam_weeps * 0.8, 0, 1)
-    rcol = mix(rust, rgb(120, 62, 34), 0.4)
-    alb = mix(alb, rcol * 0.85 + navy * 0.15, w * 0.75)
+    w = np.clip(np.maximum(w, weeps) + seam_weeps * 0.8, 0, 1) * (top + sheer)
+    alb = mix(alb, rcol * 0.85 + navy * 0.15, w * 0.8)
     chips = sm(0.74, 0.88, drp * 0.5 + 0.5) * sm(0.65, 0.85, fbm(M, 4, 60, 1.5, 23)) * (top + sheer)
     alb = mix(alb, rcol, chips * 0.9)
     h -= 0.4 * chips
@@ -238,31 +287,39 @@ def hull_set():
     met = np.maximum(met, bare * 0.55)
     alb = mix(alb, rgb(150, 150, 148), bare * 0.6)
     salt = sm(0.45, 0.9, fbm(M, 6, 200, 1.1, 25)) * (1 - sm(0.55, 0.75, V)) * (V > wl + 0.01)
-    alb = mix(alb, rgb(196, 196, 188), salt * 0.45)
+    tide = band(fbm(M, 2, 30, 1.6, 37), 0.49, 0.51, 0.006) * band(V, 0.55, 0.80, 0.03)     # dried salt tide marks
+    alb = mix(alb, rgb(196, 196, 188), np.clip(salt * 0.45 + tide * 0.5, 0, 1))
     rgh = mix(rgh, 0.8, salt * 0.6)
-    # boot-top: green slime fringe at its lower edge and a scum line at the waterline
+    # fouling gradient keel -> waterline: brown diatom film low, olive-green slime higher, combed by the flow
+    film = np.clip((0.30 + 0.70 * sm(0.0, wl - 0.02, V)) * (0.55 + 0.6 * fbm(M, 3, 90, 1.3, 27)) * (0.7 + 0.5 * flow), 0, 1) * af
+    film_col = mix(rgb(104, 90, 62), rgb(76, 84, 50), sm(0.15, 0.45, V)[..., None] * np.ones(3, np.float32))
+    alb = mix(alb, film_col, film * 0.62)
+    rgh = mix(rgh, 0.50, film * 0.8)
+    h += 0.15 * film * flow
     slime_wl = band(V, wl - 0.07, wl + 0.012, 0.01) * sm(0.3, 0.7, fbm(M, 6, 120, 1.2, 26))
-    # antifouling: slime film up toward the waterline, weed filaments, barnacles, scrubbed patches
-    zone = sm(0.25, wl - 0.01, V) * af
-    slime = np.clip(zone * (0.4 + 0.8 * fbm(M, 3, 90, 1.3, 27)), 0, 1)
-    alb = mix(alb, rgb(84, 86, 52), np.clip(slime * 0.7 + slime_wl * 0.8, 0, 1))
-    rgh = mix(rgh, 0.48, np.clip(slime + slime_wl, 0, 1))
+    alb = mix(alb, rgb(62, 78, 40), slime_wl * 0.85)
+    rgh = mix(rgh, 0.40, slime_wl)
+    # weed: dense green filaments in the top 0.5 m under the waterline, sparse tufts lower
     weed_n = fbm(M, 60, 500, 0.9, 28, aniso=(1.0, 0.08))     # strands along V
-    weed = sm(0.62, 0.78, weed_n) * sm(0.32, wl, V) * af * sm(0.35, 0.65, fbm(M, 4, 40, 1.4, 29))
+    weed = sm(0.60, 0.76, weed_n) * af * np.clip(sm(0.36, wl - 0.02, V) + 0.35 * sm(0.62, 0.8, fbm(M, 4, 40, 1.4, 29)), 0, 1)
     weed = np.clip(weed + sm(0.66, 0.8, weed_n) * slime_wl, 0, 1)
-    alb = mix(alb, mix(rgb(48, 74, 38), rgb(70, 86, 40), n2), weed * 0.9)
+    alb = mix(alb, mix(rgb(44, 70, 34), rgb(74, 88, 40), n2), weed * 0.9)
     h += 0.5 * weed
-    rgh = mix(rgh, 0.42, weed)
-    bmask = (af * (1 - sm(0.40, 0.48, V)) * sm(0.45, 0.75, fbm(M, 3, 30, 1.5, 30))).astype(np.float32)
-    barn = stamps(M, 2600, 2.5, 7.0, bmask, 31)
-    alb = mix(alb, mix(rgb(176, 170, 156), rgb(140, 136, 124), n2), sm(0.05, 0.3, barn))
+    rgh = mix(rgh, 0.40, weed)
+    # barnacles: a dense band 0.2 .. 0.8 m under the waterline, clusters below
+    bmask = af * np.clip(band(V, 0.40, 0.485, 0.012) * (0.75 + 0.25 * fbm(M, 4, 40, 1.4, 30))
+                         + sm(0.62, 0.8, fbm(M, 3, 30, 1.5, 38)) * (V < 0.40) * 0.8, 0, 1)
+    barn = stamps(M, 4200, 2.5, 7.5, bmask.astype(np.float32), 31)
+    bm = sm(0.05, 0.3, barn)
+    alb = mix(alb, mix(rgb(178, 172, 158), rgb(132, 128, 116), n2), bm)
+    shell_ao = np.clip(Image_blur(bm, 3.0) - bm, 0, 1)
+    alb = mix(alb, alb * 0.6, shell_ao * 1.5)
     h += 1.2 * barn
-    rgh = mix(rgh, 0.85, sm(0.05, 0.3, barn))
-    scrub = sm(0.72, 0.85, fbm(M, 3, 30, 1.5, 32)) * af * (V < 0.42)
-    alb = mix(alb, rgb(112, 108, 104), scrub * 0.6)           # grey primer where the antifouling has scrubbed off
+    rgh = mix(rgh, 0.85, bm)
     nor = normal(Image_blur(h, 0.7), 5.0)
-    save("M_Veh_GaleQueen", "T_GaleQueen_Hull", alb, nor, rgh, met, signal=1 - sm(wl - 0.012, wl - 0.004, V),
-         wet_mask=af, wet=(0.38, 0.32))
+    riv = rivulets(U, V, 39, 90, (0.3, 1.0), 0.7, 0.0012) * (0.5 + 0.5 * af)
+    save("M_Veh_GaleQueen", "T_GaleQueen_Hull", alb, nor, rgh, met, wet=(0.46, 0.46), smax=0.40, h=Image_blur(h, 0.7), riv=riv,
+         nor_strength=5.0)
 
 
 # ------------------------------------------------------------------ superstructure (white)
@@ -298,8 +355,40 @@ def super_set():
     alb = mix(alb, rgb(232, 230, 222), salt * 0.25)
     soot = sm(0.6, 0.9, fbm(M, 2, 20, 1.6, 48)) * sm(0.6, 1.0, V)
     alb = mix(alb, rgb(150, 148, 140), soot * 0.35)        # exhaust soot film high on the walls
+    # C2b: varied paint wear - repainted rectangles of a slightly different white, chalked and yellowed areas, brush laps
+    qx, qy = np.floor(U * 7 + 0.3 * fbm(M, 2, 8, 1.5, 49)), np.floor(V * 5)
+    cell = (np.sin(qx * 12.9898 + qy * 78.233) * 43758.5453) % 1.0
+    repaint = (cell > 0.72) * sm(0.3, 0.6, fbm(M, 2, 10, 1.6, 50))
+    alb = mix(alb, mix(rgb(232, 232, 226), rgb(214, 210, 194), cell[..., None] * np.ones(3, np.float32)), repaint * 0.55)
+    rgh = mix(rgh, 0.30, repaint * 0.5)
+    chalk = sm(0.55, 0.85, fbm(M, 2, 16, 1.6, 57))
+    alb = mix(alb, rgb(200, 196, 180), chalk * 0.30)
+    rgh = mix(rgh, 0.62, chalk * 0.6)
+    laps = sm(0.5, 0.9, fbm(M, 2, 120, 1.0, 58, aniso=(1.0, 0.06)))
+    alb = alb * (1 - 0.035 * laps[..., None])
+    # rust streaks from fittings (bolts, brackets, hinges, rail feet): a rust bloom at the source and a long run below
+    rng = np.random.default_rng(59)
+    for _ in range(26):
+        u0, v0 = rng.random(), rng.uniform(0.15, 0.98)
+        du = np.abs(((U - u0 + 0.5) % 1.0) - 0.5)
+        ln = rng.uniform(0.15, 0.6)
+        run = np.clip(1 - du / (0.0025 + 0.010 * np.clip((v0 - V) / ln, 0, 1)), 0, 1) * (V < v0) * np.clip(1 - (v0 - V) / ln, 0, 1) ** 1.2
+        src = np.clip(1 - np.hypot(du, (V - v0) * 1.0) / 0.006, 0, 1)
+        k = np.clip(run * rng.uniform(0.5, 0.9) + src, 0, 1)
+        alb = mix(alb, mix(rcol, rgb(150, 96, 60), 0.4), k * 0.75)
+        rgh = mix(rgh, 0.8, k * 0.6)
+        h -= 0.3 * src
+    # salt: dried spray crust in blotches and tide-mark rings where puddled spray evaporated
+    tide = np.clip(band(fbm(M, 3, 40, 1.5, 60), 0.47, 0.49, 0.005) + band(fbm(M, 3, 40, 1.5, 61), 0.52, 0.535, 0.005), 0, 1)
+    tide *= sm(0.4, 0.7, fbm(M, 2, 10, 1.5, 62))
+    crust = sm(0.62, 0.85, fbm(M, 8, 260, 1.0, 63)) * (1 - sm(0.2, 0.6, V))
+    alb = mix(alb, rgb(238, 236, 228), np.clip(tide * 0.6 + crust * 0.35, 0, 1))
+    alb = mix(alb, alb * 0.86, tide * 0.25)
+    rgh = mix(rgh, 0.85, np.clip(tide + crust, 0, 1) * 0.5)
+    h += 0.2 * crust
     nor = normal(Image_blur(h, 0.7), 4.0)
-    save("M_Veh_GaleQueen", "T_GaleQueen_Super", alb, nor, rgh, met, wet=(0.36, 0.30))
+    riv = rivulets(U, V, 64, 70, (0.4, 1.0), 0.8, 0.0011)
+    save("M_Veh_GaleQueen", "T_GaleQueen_Super", alb, nor, rgh, met, wet=(0.44, 0.42), h=Image_blur(h, 0.7), riv=riv)
 
 
 # ------------------------------------------------------------------ deck
@@ -329,8 +418,30 @@ def deck_set():
     alb = mix(alb, rgb(70, 72, 64), stains * 0.35)
     salt = sm(0.6, 0.95, fbm(M, 6, 200, 1.1, 56))
     alb = mix(alb, rgb(186, 186, 178), salt * 0.3)
+    # C2b: grime packed into the non-slip grit (cavities dark), walkway lanes, oil / diesel stains, rust from fittings
+    hd = scan("concrete_floor_painted")["Displacement"]
+    cav = np.clip((np.percentile(hd, 60) - hd) / max(np.ptp(hd), 1e-3) * 4.0, 0, 1)
+    grime_zone = 0.45 + 0.55 * sm(0.35, 0.7, fbm(M, 2, 12, 1.6, 57))
+    alb = mix(alb, rgb(46, 48, 40), cav[..., None] * 0.0 + (cav * grime_zone * 0.55)[..., None])
+    lane = sm(0.45, 0.75, fbm(M, 2, 10, 1.8, 58, aniso=(0.3, 1.0)))
+    alb = mix(alb, rgb(84, 86, 76), lane * 0.35)
+    rgh = mix(rgh, 0.58, lane * 0.4)
+    oil = sm(0.80, 0.88, fbm(M, 3, 50, 1.4, 59))
+    alb = mix(alb, rgb(40, 40, 38), oil * 0.6)
+    rgh = mix(rgh, 0.25, oil * 0.8)
+    rng = np.random.default_rng(66)
+    for _ in range(10):          # rust blooms round deck fittings, with a run toward the scuppers
+        u0, v0 = rng.random(), rng.random()
+        du = np.abs(((U - u0 + 0.5) % 1.0) - 0.5)
+        dv = np.abs(((V - v0 + 0.5) % 1.0) - 0.5)
+        r = np.hypot(du, dv * 0.6)
+        k = np.clip(1 - r / rng.uniform(0.01, 0.025), 0, 1) ** 0.7 * (0.6 + 0.4 * fbm(M, 20, 200, 1.0, 67))
+        alb = mix(alb, mix(rust, rgb(110, 70, 40), 0.3), k * 0.8)
+        rgh = mix(rgh, 0.85, k * 0.5)
     nor = normal(Image_blur(h, 0.6), 5.0)
-    save("M_Veh_GaleQueen", "T_GaleQueen_Deck", alb, nor, rgh, met, wet=(0.40, 0.42))
+    riv = 0.6 * sm(0.55, 0.75, fbm(M, 3, 30, 1.4, 68))      # standing water films in the deck hollows
+    save("M_Veh_GaleQueen", "T_GaleQueen_Deck", alb, nor, rgh, met, wet=(0.48, 0.50), h=Image_blur(h, 0.6), riv=riv,
+         nor_strength=5.0)
 
 
 # ------------------------------------------------------------------ fittings trim
@@ -398,7 +509,7 @@ def fittings_set():
     alb = np.where((met > 0.3)[..., None], alb * np.maximum(1.0, (190 / 255) / np.maximum(l, 1e-3))[..., None], alb)
     met = np.where(Image_blur((met > 0.5).astype(np.float32), 2.0) > 0.98, met, 0.0)    # metal only well inside its bands
     nor = normal(Image_blur(h, 0.6), 4.0)
-    save("M_Veh_GaleQueen", "T_GaleQueen_Fittings", alb, nor, rgh, met, signal=sig, wet=(0.36, 0.32))
+    save("M_Veh_GaleQueen", "T_GaleQueen_Fittings", alb, nor, rgh, met, signal=sig, wet=(0.44, 0.42))
 
 
 # ------------------------------------------------------------------ glass
@@ -417,7 +528,7 @@ def glass_set():
     met = 0.85 * frame
     h = frame * 0.6 + 0.2 * frit
     nor = normal(Image_blur(h, 1.0), 3.0)
-    save("M_Veh_GaleQueen", "T_GaleQueen_Glass", alb, nor, rgh, met, wet=(0.12, 0.05))
+    save("M_Veh_GaleQueen", "T_GaleQueen_Glass", alb, nor, rgh, met, wet=(0.20, 0.10))
 
 
 # ------------------------------------------------------------------ decals
@@ -488,10 +599,27 @@ def decals_set():
     for k in ("muster", "raft"):
         x0, y0, x1, y1 = rect(k)
         signs[y0:y1, x0:x1] = 1
-    save("M_Veh_GaleQueen", "T_GaleQueen_Decals", alb, nor, rgh, met, alpha=a, signal=signs)
+    save("M_Veh_GaleQueen", "T_GaleQueen_Decals", alb, nor, rgh, met, alpha=a, signal=signs, wet=(0.42, 0.36))
 
 
 # ------------------------------------------------------------------ liferaft
+def _label_patch(w, h):
+    """A printed white manufacturer / SOLAS label (RGB 0..1 and its mask), w x h px."""
+    im = Image.new("RGB", (w, h), (226, 224, 214))
+    d = ImageDraw.Draw(im)
+    d.rectangle((6, 6, w - 7, h - 7), outline=(40, 40, 44), width=5)
+    rows = [("LIFERAFT", 0.30), ("SOLAS A PACK  12 PERSONS", 0.20), ("DO NOT STEP ON CANOPY", 0.15)]
+    y = h * 0.10
+    for s, k in rows:
+        f = ImageFont.truetype(FONT, int(h * k))
+        while d.textlength(s, font=f) > w * 0.88:
+            f = ImageFont.truetype(FONT, f.size - 2)
+        bb = d.textbbox((0, 0), s, font=f)
+        d.text(((w - (bb[2] - bb[0])) / 2 - bb[0], y - bb[1]), s, font=f, fill=(34, 34, 38))
+        y += h * k * 1.38
+    return np.asarray(im, np.float32) / 255.0
+
+
 def canopy_set():
     U, V = coords()
     fab = detail("denim_fabric")
@@ -500,27 +628,62 @@ def canopy_set():
     orange = mix(rgb(230, 98, 32), rgb(212, 86, 28), n1) * (1 + 0.05 * fab[..., None])
     alb = orange
     h = 0.15 * fab
-    seams = np.maximum(lines(U, 0.25, 0.004), lines(V - 0.45, 1.0, 0.004))
+    # welded panel seams (overlap tape) with twin lock-stitch rows either side
+    seams = np.maximum(lines(U, 0.25, 0.006), lines(V - 0.45, 1.0, 0.006))
     h += 0.8 * seams
-    alb = mix(alb, alb * 0.82, seams * 0.6)
-    # SOLAS retro-reflective tape: one cross patch per tile on the shoulder, a strip near the apex
+    alb = mix(alb, alb * 0.80, seams * 0.6)
+    dash_v = ((V * M / 7.0) % 1.0) < 0.55
+    dash_u = ((U * M / 7.0) % 1.0) < 0.55
+    st = np.clip((lines(U - 0.0075, 0.25, 0.0012, 1.0) + lines(U + 0.0075, 0.25, 0.0012, 1.0)) * dash_v
+                 + (lines(V - 0.45 - 0.0075, 1.0, 0.0012, 1.0) + lines(V - 0.45 + 0.0075, 1.0, 0.0012, 1.0)) * dash_u, 0, 1)
+    alb = mix(alb, rgb(150, 66, 26), st * 0.8)
+    h += 0.5 * st
+    # SOLAS retro-reflective tape: big cross per tile on the shoulder + a ring near the apex, micro-prism cells
     du = np.abs(((U + 0.5) % 1.0) - 0.5)
-    cross = (band(V, 0.52, 0.60, 0.003) * (du < 0.12)) + (band(V, 0.44, 0.68, 0.003) * (du < 0.035))
-    strip = band(V, 0.86, 0.90, 0.003) * (du < 0.2)
+    cross = np.clip(band(V, 0.50, 0.60, 0.003) * (du < 0.16) + band(V, 0.40, 0.72, 0.003) * (du < 0.045), 0, 1)
+    strip = band(V, 0.835, 0.885, 0.003)
     tape = np.clip(cross + strip, 0, 1)
+    cells = np.maximum(lines(U * 1.0, 0.006, 0.0007, 1.0), lines(V + U * 0.5, 0.006, 0.0007, 1.0))
     beads = fbm(M, 200, 800, 0.5, 93)
-    alb = mix(alb, mix(rgb(186, 190, 190), rgb(170, 172, 172), beads), tape)
-    h += 0.3 * tape
-    hem = 1 - sm(0.0, 0.14, V)
-    alb = mix(alb, rgb(150, 70, 34), hem * (0.5 + 0.5 * n2) * 0.6)                  # wet / grimy hem
-    stains = streaks(U * 4 % 1.0, V, 94, 20, (0.3, 0.9), 0.4, 0.004)
-    alb = mix(alb, alb * 0.85, stains * 0.6)
+    tcol = mix(mix(rgb(204, 208, 208), rgb(184, 188, 190), beads), rgb(150, 154, 156), cells * 0.6)
+    tcol = mix(tcol, rgb(150, 140, 120), sm(0.6, 0.85, n2)[..., None] * 0.35)      # grubby tape
+    alb = mix(alb, tcol, tape)
+    h += 0.35 * tape - 0.1 * cells * tape
+    # printed label on the shoulder between the crosses (one per quarter)
+    lw, lh = int(0.24 * M), int(0.10 * M)
+    lab = _label_patch(lw, lh)
+    x0, y0 = int(0.5 * M - lw / 2), int((1 - 0.36) * M)
+    lab_m = np.zeros((M, M), np.float32)
+    lab_m[y0:y0 + lh, x0:x0 + lw] = 1.0
+    full = np.zeros((M, M, 3), np.float32)
+    full[y0:y0 + lh, x0:x0 + lw] = lab
+    lab_wear = 1 - 0.5 * sm(0.62, 0.8, fbm(M, 20, 300, 1.0, 96))
+    alb = mix(alb, full, lab_m * lab_wear)
+    h += 0.2 * lab_m
+    # valve hardware cap round the apex (V >= 0.955): dark grey moulding
+    hw = sm(0.952, 0.958, V)
+    alb = mix(alb, mix(rgb(62, 64, 66), rgb(52, 54, 56), n2), hw)
+    # dirt: grimy hem, handling smudges, mildew speckle low, dried salt water tide marks, run-down stains
+    hem = 1 - sm(0.0, 0.16, V)
+    alb = mix(alb, rgb(120, 70, 40), hem * (0.5 + 0.5 * n2) * 0.65)
+    smudge = sm(0.62, 0.82, fbm(M, 3, 50, 1.4, 97)) * (1 - sm(0.3, 0.8, V))
+    alb = mix(alb, rgb(110, 86, 64), smudge * 0.55)
+    mildew = sm(0.78, 0.86, fbm(M, 80, 600, 0.6, 98)) * (1 - sm(0.05, 0.3, V))
+    alb = mix(alb, rgb(60, 58, 46), mildew * 0.7)
+    stains = streaks(U, V, 94, 26, (0.3, 0.95), 0.45, 0.004)
+    alb = mix(alb, alb * 0.80, stains * 0.6)
+    tide = band(fbm(M, 3, 40, 1.5, 99), 0.48, 0.50, 0.005) * sm(0.3, 0.7, fbm(M, 2, 10, 1.5, 100))
     salt = sm(0.55, 0.9, fbm(M, 8, 200, 1.1, 95))
-    alb = mix(alb, rgb(220, 170, 140), salt * 0.25)
-    rgh = mix(0.55 + 0.08 * n2, 0.28, tape)
+    alb = mix(alb, rgb(222, 180, 150), np.clip(salt * 0.22 + tide * 0.5, 0, 1))
+    rgh = mix(0.55 + 0.08 * n2, 0.25, tape)
+    rgh = mix(rgh, 0.45, lab_m)
+    rgh = mix(rgh, 0.4, hw)
+    rgh = mix(rgh, 0.78, np.clip(smudge * 0.5 + mildew + hem * 0.3, 0, 1))
     met = np.zeros((M, M), np.float32)
     nor = normal(Image_blur(h, 0.6), 4.0)
-    save("M_Sea_Liferaft", "T_Liferaft_Canopy", alb, nor, rgh, met, signal=1 - tape, wet=(0.36, 0.34))
+    riv = rivulets(U, V, 105, 60, (0.4, 1.0), 0.7, 0.0012)
+    save("M_Sea_Liferaft", "T_Liferaft_Canopy", alb, nor, rgh, met, signal=(1 - tape) * (1 - lab_m) * (1 - hw),
+         wet=(0.44, 0.42), h=Image_blur(h, 0.6), riv=riv)
 
 
 def tubes_set():
@@ -534,23 +697,53 @@ def tubes_set():
     h = np.zeros((M, M), np.float32)
     sig = np.zeros((M, M), np.float32)
     rel = {k: (band(V, a, b, 0.0005), (V - a) / (b - a)) for k, (a, b) in RAFT_BANDS.items()}
+    grime = sm(0.55, 0.8, fbm(M, 3, 40, 1.4, 104))
     b, r = rel["tube"]
     c = mix(rgb(50, 50, 52), rgb(60, 60, 62), n1) * (1 + 0.08 * lea[..., None])
     seam = lines(r - 0.5, 1.0, 0.006)
     du = np.abs(((U + 0.5) % 1.0) - 0.5)
-    tape = band(r, 0.25, 0.75, 0.01) * (du < 0.05)
-    c = mix(c, rgb(186, 190, 190), tape)
-    c = mix(c, rgb(30 + 120, 150, 140), sm(0.6, 0.9, fbm(M, 8, 200, 1.0, 103)) * 0.25)   # salt bloom
+    tape = band(r, 0.22, 0.78, 0.01) * (du < 0.07)
+    tcol = mix(rgb(200, 204, 204), rgb(170, 172, 172), fbm(M, 200, 800, 0.5, 106))
+    c = mix(c, tcol, tape)
+    c = mix(c, rgb(150, 150, 140), sm(0.6, 0.9, fbm(M, 8, 200, 1.0, 103)) * 0.25)   # salt bloom
+    c = mix(c, rgb(84, 78, 62), grime * 0.35)                                         # scuff / grime
     c = mix(c, c * 0.8, seam)
     alb += c * b[..., None]; rgh += b * mix(0.55, 0.28, tape); h += b * (0.15 * lea + 0.6 * seam)
     b, r = rel["floor"]
     c = mix(rgb(70, 76, 82), rgb(60, 64, 70), n1) * (1 + 0.06 * fab[..., None])
     alb += c * b[..., None]; rgh += b * 0.6; h += b * 0.2 * fab
+    # boarding ramp: coated yellow fabric, glued seam tapes with twin stitch rows, wrinkles, grip bars, dirt
     b, r = rel["ramp"]
     c = mix(rgb(222, 178, 44), rgb(196, 156, 40), n1) * (1 + 0.05 * fab[..., None])
-    grip = lines(U, 0.05, 0.01) * 0.6
-    c = mix(c, c * 0.75, grip)
-    alb += c * b[..., None]; rgh += b * 0.6; h += b * (0.2 * fab + 0.6 * grip); sig += b
+    wr1 = 1 - np.abs(2 * fbm(M, 3, 40, 1.3, 107, aniso=(1.0, 0.25)) - 1)
+    wr2 = 1 - np.abs(2 * fbm(M, 4, 60, 1.3, 108, aniso=(0.25, 1.0)) - 1)
+    wrink = np.clip(sm(0.75, 0.97, wr1) + 0.7 * sm(0.78, 0.97, wr2), 0, 1) * (0.5 + 0.5 * sm(0.3, 0.7, fbm(M, 2, 10, 1.6, 109)))
+    c = c * (1 - 0.18 * Image_blur(wrink, 2.0)[..., None]) + 0.05 * wrink[..., None]
+    h += b * (0.9 * wrink)
+    tapes_r = np.zeros((M, M), np.float32)
+    for rc in (0.07, 0.50, 0.93):
+        tapes_r = np.maximum(tapes_r, band(r, rc - 0.03, rc + 0.03, 0.004))
+    tapes_u = lines(U, 0.4, 0.010, 1.5)
+    seamt = np.clip(tapes_r + tapes_u, 0, 1)
+    c = mix(c, c * 0.84, seamt)
+    h += b * 0.5 * seamt
+    dash_u = ((U * M / 9.0) % 1.0) < 0.6
+    dash_r = ((V * M / 9.0) % 1.0) < 0.6
+    st = np.zeros((M, M), np.float32)
+    for rc in (0.07, 0.50, 0.93):
+        for off in (-0.042, 0.042):
+            st = np.maximum(st, band(r, rc + off - 0.004, rc + off + 0.004, 0.002) * dash_u)
+    for off in (-0.0085, 0.0085):
+        st = np.maximum(st, lines(U + off, 0.4, 0.0012, 1.0) * dash_r)
+    c = mix(c, rgb(120, 92, 30), st * 0.85)
+    h += b * 0.4 * st
+    grip = lines(U, 0.05, 0.008) * band(r, 0.14, 0.86, 0.01) * 0.7
+    c = mix(c, c * 0.72, grip)
+    dirt = np.clip(sm(0.5, 0.8, fbm(M, 3, 50, 1.4, 110)) * 0.6 + sm(0.65, 0.85, fbm(M, 10, 200, 1.0, 111)) * 0.5, 0, 1)
+    c = mix(c, rgb(118, 104, 70), dirt * 0.55)
+    c = mix(c, rgb(84, 92, 48), (1 - sm(0.0, 0.22, r)) * sm(0.4, 0.7, n2) * 0.6)     # green water line slime
+    c = mix(c, rgb(90, 80, 60), Image_blur(wrink, 1.0)[..., None] * 0.0 + (wrink * dirt * 0.4)[..., None])
+    alb += c * b[..., None]; rgh += b * mix(0.6, 0.78, dirt); h += b * (0.2 * fab + 0.6 * grip); sig += b
     b, r = rel["webbing"]
     weave = np.sin(U * M / 3.0) * 0.5 + 0.5
     c = mix(rgb(120, 120, 114), rgb(96, 96, 92), weave * 0.6 + n1 * 0.4)
@@ -564,7 +757,9 @@ def tubes_set():
     c = mix(c, rgb(110, 90, 50), sm(0.5, 0.85, n2) * 0.35)        # slime on the pockets
     alb += c * b[..., None]; rgh += b * 0.5; h += b * 0.2 * fab; sig += b
     nor = normal(Image_blur(h, 0.6), 4.0)
-    save("M_Sea_Liferaft", "T_Liferaft_Tubes", alb, nor, rgh, np.zeros((M, M), np.float32), signal=sig, wet=(0.36, 0.34))
+    riv = rivulets(U, V, 112, 80, (0.0, 1.0), 0.5, 0.0012)
+    save("M_Sea_Liferaft", "T_Liferaft_Tubes", alb, nor, rgh, np.zeros((M, M), np.float32), signal=sig, wet=(0.48, 0.50),
+         h=Image_blur(h, 0.6), riv=riv)
 
 
 SETS = {"hull": hull_set, "super": super_set, "deck": deck_set, "fittings": fittings_set, "glass": glass_set,

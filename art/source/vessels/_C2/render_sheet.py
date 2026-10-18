@@ -12,7 +12,7 @@ import sys
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 OUT = G + "assets/review/C2/renders/"
-SHEET = G + "assets/review/C2/contact.png"
+SHEET = G + "assets/review/C2/contact_b.png"      # C2b fix round (C2 sheet: contact.png)
 S = 3.0
 # (asset, shot, pose, wet, water, target m (x, y, z in the posed frame), distance m, azimuth deg (0 = from -Y, the bow), elevation, lens)
 SHOTS = [
@@ -22,12 +22,20 @@ SHOTS = [
     ("M_Veh_GaleQueen", "capsized72_bottom_dry", "capsized", False, True, (0, 0.0, 1.0), 32, 300, 22, 40),
     ("M_Veh_GaleQueen", "capsized72_bottom_wet", "capsized", True, True, (0, 0.0, 1.0), 32, 250, 16, 40),
     ("M_Veh_GaleQueen", "turtle_dry", "turtle", False, True, (0, 0.0, 1.0), 30, 60, 22, 40),
+    ("M_Veh_GaleQueen", "capsized72_deckside_dry", "capsized", False, True, (3.0, -1.0, 2.8), 27, 75, 24, 40),
+    ("M_Veh_GaleQueen", "capsized72_deckside_wet", "capsized", True, True, (3.0, -1.0, 2.8), 27, 75, 24, 40),
+    ("M_Veh_GaleQueen", "closeup_capsized_damage_rail_raft_window", "capsized", False, True, (3.6, -0.6, 5.0), 9.0, 55, 26, 40),
+    ("M_Veh_GaleQueen", "closeup_capsized_bottom_wet_fouling", "capsized", True, True, (-2.0, 3.0, 2.6), 7.0, 285, 18, 40),
     ("M_Veh_GaleQueen", "closeup_bottom_grablines_bilgekeel", "capsized", False, True, (-2.2, 2.0, 2.4), 6.5, 290, 30, 40),
     ("M_Veh_GaleQueen", "closeup_saloon_rafts", "upright", False, False, (2.4, 2.4, 5.2), 6.5, 70, 18, 40),
     ("M_Veh_GaleQueen", "closeup_bow_name_fender", "upright", False, False, (2.8, -7.0, 2.6), 6.0, 60, 6, 40),
+    ("M_Veh_GaleQueen", "closeup_aftdeck_grime_scuppers", "upright", False, False, (0.0, 7.6, 3.6), 6.5, 160, 38, 40),
     ("M_Sea_Liferaft", "raft_ramp34_dry", "raft", False, True, (0, -0.4, 0.9), 6.5, 30, 18, 40),
     ("M_Sea_Liferaft", "raft_ladder34_wet", "raft", True, True, (0, 0.4, 0.9), 6.5, 200, 18, 40),
     ("M_Sea_Liferaft", "closeup_raft_entrance", "raft", False, True, (0, -1.4, 0.8), 3.0, 20, 12, 40),
+    ("M_Sea_Liferaft", "closeup_raft_ramp_stitching", "raft", False, True, (0, -2.0, 0.35), 1.8, 25, 40, 40),
+    ("M_Sea_Liferaft", "closeup_raft_canopy_label_valve", "raft", False, True, (0.6, -0.6, 1.9), 2.6, 40, 22, 40),
+    ("M_Sea_Liferaft", "closeup_raft_tubes_wet", "raft", True, True, (0.9, -0.9, 0.7), 2.4, 45, 14, 40),
 ]
 
 
@@ -57,7 +65,9 @@ def blender_main():
             key = (stem, wet)
             if key not in cache:
                 sfx = "_Wet" if wet else ""
-                maps = {"ALB": tex + "%s_ALB%s.png" % (stem, sfx), "NOR": tex + "%s_NOR.png" % stem,
+                nor = tex + "%s_NOR%s.png" % (stem, sfx)
+                nor = nor if os.path.exists(nor) else tex + "%s_NOR.png" % stem
+                maps = {"ALB": tex + "%s_ALB%s.png" % (stem, sfx), "NOR": nor,
                         "RGH": tex + "%s_RGH%s.png" % (stem, sfx), "MET": tex + "%s_MET.png" % stem}
                 m = turntable.pbr_material("MI_C2_%s%s" % (stem, sfx), maps)
                 if stem.endswith("Decals"):
@@ -95,6 +105,8 @@ def blender_main():
         for (_, shot, pose, wet, water, tgt, dist, az, el, lens) in shots:
             for o in vis:
                 o.data.materials[0] = mat_for(stem_of(orig[o.name]), wet)
+                # C2b state parts: Damage only when she lies over / is turned turtle, Undamaged only upright
+                o.hide_render = ("_Damage_" in o.name and pose != "capsized") or ("_Undamaged_" in o.name and pose in ("capsized", "turtle"))
             if pose == "upright":
                 rig.matrix_world = Matrix.Identity(4)
                 sea_z = 1.75
@@ -122,13 +134,13 @@ def blender_main():
 
 def sheet():
     from PIL import Image, ImageDraw, ImageFont
-    cell, cols = 512, 3
+    cell, cols = 400, 4
     rows = math.ceil(len(SHOTS) / cols)
     head = 40
     im = Image.new("RGB", (cell * cols, head + rows * (cell + 24)), (28, 30, 32))
     d = ImageDraw.Draw(im)
     f = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 15)
-    d.text((10, 10), "C2: Gale Queen island passenger ferry (21 m, steel, generic) upright / lying over 72 deg (the op's roll) / "
+    d.text((10, 10), "C2b: Gale Queen island passenger ferry (21 m, steel, generic) upright / lying over 72 deg (the op's roll) / "
                      "turned turtle, and SOLAS 12-person liferaft. Overcast-sea HDRI, EEVEE, LOD0; sea = stand-in plane",
            fill=(230, 230, 230), font=f)
     for i, (asset, shot, *_r) in enumerate(SHOTS):

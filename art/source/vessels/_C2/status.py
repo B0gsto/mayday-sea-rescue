@@ -24,7 +24,7 @@ LIC = ("CC0 1.0 (https://polyhaven.com/license): Poly Haven blue_metal_plate, ru
        "concrete_floor_painted, denim_fabric, fabric_leather_01 (2k scans, graded + zoned); reference photos "
        "art/reference/<Asset>/SOURCES.md (Wikimedia Commons, CC BY / CC BY-SA / PD, not shipped)")
 AI = "assisted (geometry, texture zoning and lettering written as code by Claude on real CC0 scans; no AI images)"
-SRC = "BL: art/source/vessels/<Asset>/build.py + art/source/vessels/_C2 (c2geo.py, maketex.py, render_sheet.py, upload.sh) (C2 Opus 2026-10-18)"
+SRC = "BL: art/source/vessels/<Asset>/build.py + art/source/vessels/_C2 (c2geo.py, maketex.py, render_sheet.py, upload.sh) (C2 Opus 2026-10-18; C2b fix round 2026-10-18)"
 FERRY = (
     "Gale Queen, generic 21.0 m steel island passenger ferry (6.24 m over fenders, 10.9 m keel to masthead, draught 1.85 m: "
     "ATT_Waterline 5.55 studs above the base pivot). Replaces RescueService.buildFerry greybox. MAPPING greybox -> asset: "
@@ -34,30 +34,41 @@ FERRY = (
     "anodes); Deckhouse -> Saloon (+ Windows, Decks); Bridge -> Wheelhouse; Funnel -> Funnel (+ Mast cap, radar, lights); "
     "LifeRaft x5 cylinders -> Rafts (4 GRP canisters on cradles + 6 lifebuoys; ATT_Liferaft_01..04); 'GALE QUEEN' SurfaceGui -> "
     "Decals (bows, transom, draught marks, signs; AlphaMode Transparency added in tools/gen_asset_ids.py). Also Bulwark, Rails, "
-    "DeckGear, Fenders, GrabLines (5 girth lines at the compartments + bilge jackstay; hide when upright). Integration: keep the "
+    "DeckGear, Fenders, GrabLines (5 girth lines at the compartments + bilge jackstay; hide when upright). C2b STATE PARTS: "
+    "Damage (capsized only: buckled -X upper deck rail, canister 4 torn from its cradle and jammed in the rail on its painter, "
+    "smashed wheelhouse -X side + front panes, loose lines over the -X bulwark hanging into the sea with a lifebuoy and a "
+    "fender; posed for the 72 deg roll) and Undamaged (upright only: the straight -X upper rail run + canister 4); show "
+    "Undamaged upright, Damage + GrabLines when capsized. Integration: keep the "
     "greybox tilt CFrame.Angles(0,0,rad(72)) on this one model (bottom antifouling + slime/weed/barnacles reads when lying over "
     "or turned turtle); hull_knock.luau FindFirstChild('Hull') needs the Hull MeshPart named 'Hull' (or a Hull proxy part); its "
     "bbox centre is 7.2 studs above the base. Other ATT_: Bow, Stern, Masthead, AirPocket, BoardingGate_Port/Stbd. "
-    "LOD0 %s tris in 16 MeshParts (max 6,301), LOD1 8,235, LOD2 7,322 (big_ship 90k/30k/8k). 6 sets x 1024 + _Wet: Hull, "
-    "Super, Deck, Fittings, Glass, Decals. _COL 6 boxes. LOD1 %s, LOD2 %s")
+    "LOD0 %s tris in 18 MeshParts (max 6,301), LOD1 9,763, LOD2 7,224 (big_ship 90k/30k/8k). 6 sets x 1024 + _Wet: Hull, "
+    "Super, Deck, Fittings, Glass, Decals; Hull, Super, Deck also ship NOR_Wet (streaming-water rivulets). C2b textures: "
+    "faded patchy antifouling (3 coats, chalking, primer and old-coat windows, slipway scrapes to rust), keel-to-waterline "
+    "fouling gradient (diatom film, slime, weed band, barnacle band), scupper rust runs, salt tide marks, varied paint wear, "
+    "deck grit grime, oil and rust blooms; wet sets darker and glossier everywhere. _COL 6 boxes. LOD1 %s, LOD2 %s")
 RAFT = (
     "SOLAS 12-person throw-over liferaft, 2.97 m over the tubes (6.03 m with the ramp and drogue line), apex 2.37 m above the "
     "ballast pockets. NAME: brief says M_Sea_Liferaft; docs/12 2.1 row says M_Veh_Liferaft. Twin black tubes, orange canopy "
     "(outer + inner shell, arch, rolled flaps, retro tape, light), yellow boarding ramp (-Z), webbing ladder (+Z), lifeline "
     "scallops, ballast pockets, drogue. ATT_Waterline, ATT_Entrance_Ramp, ATT_Entrance_Ladder, ATT_Light, ATT_Painter, "
-    "ATT_Seat_01..06. LOD0 4,488 tris (Canopy 1,624, Tubes 2,840), LOD1 1,560, LOD2 445 (small_craft 20k/8k/2k; row 6k). "
-    "2 sets x 1024 + _Wet: Canopy, Tubes (signal masks for the SOLAS orange / ramp). _COL 2 boxes. LOD1 %s, LOD2 %s")
-rows = [("M_Veh_GaleQueen", "P1", ("M_Veh_GaleQueen", "T_GaleQueen_"), FERRY, "22,273"),
+    "ATT_Seat_01..06. LOD0 4,992 tris (Canopy 1,992, Tubes 3,000), LOD1 1,747, LOD2 498 (small_craft 20k/8k/2k; row 6k). "
+    "2 sets x 1024 + _Wet + NOR_Wet: Canopy, Tubes (signal masks for the SOLAS orange / ramp). C2b: ramp seam tapes, twin "
+    "stitch rows, wrinkles, grip bars, dirt and slime; canopy stitched seams, larger retro-reflective crosses + apex ring, "
+    "printed LIFERAFT / SOLAS A PACK 12 PERSONS label, dirt, mildew, salt; two arch inflation valves and two tube topping-up "
+    "valves (geometry). _COL 2 boxes. LOD1 %s, LOD2 %s")
+rows = [("M_Veh_GaleQueen", "P1", ("M_Veh_GaleQueen", "T_GaleQueen_"), FERRY, "26,788"),
         ("M_Sea_Liferaft", "P1", ("M_Sea_Liferaft", "T_Liferaft_"), RAFT, None)]
-with open(G + "art/status/C2.csv", "w", newline="") as f:
-    w = csv.writer(f)
-    w.writerow(["asset", "priority", "status", "assetId", "source", "licence", "ai_used", "reviewer", "notes"])
-    for asset, pri, prefixes, notes, t in rows:
-        aid = (ids.get(asset) or ("",))[0] or ""
-        l1 = (ids.get(asset + "_LOD1") or ("n/a",))[0]
-        l2 = (ids.get(asset + "_LOD2") or ("n/a",))[0]
-        status = ("built+validated+exported+check_textures+review renders (contact.png)+uploaded (%s); Studio pass and AD "
-                  "review pending; not integrated" % mod(prefixes))
-        n = notes % ((t, l1, l2) if t else (l1, l2))
-        w.writerow([asset, pri, status, aid, SRC.replace("<Asset>", asset), LIC.replace("<Asset>", asset), AI, "", n])
-print(open(G + "art/status/C2.csv").read()[:400])
+for out in ("C2", "C2b"):
+  with open(G + "art/status/%s.csv" % out, "w", newline="") as f:
+      w = csv.writer(f)
+      w.writerow(["asset", "priority", "status", "assetId", "source", "licence", "ai_used", "reviewer", "notes"])
+      for asset, pri, prefixes, notes, t in rows:
+          aid = (ids.get(asset) or ("",))[0] or ""
+          l1 = (ids.get(asset + "_LOD1") or ("n/a",))[0]
+          l2 = (ids.get(asset + "_LOD2") or ("n/a",))[0]
+          status = ("built+validated+exported+check_textures+review renders (contact_b.png)+uploaded (%s); Studio pass and AD "
+                    "review pending; not integrated" % mod(prefixes))
+          n = notes % ((t, l1, l2) if t else (l1, l2))
+          w.writerow([asset, pri, status, aid, SRC.replace("<Asset>", asset), LIC.replace("<Asset>", asset), AI, "", n])
+print(open(G + "art/status/C2b.csv").read()[:300])

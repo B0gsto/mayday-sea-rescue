@@ -551,7 +551,7 @@ def build_rails():
     hw = s["hw"] * 1.04 - 0.06
     run = [V(hw, w["y0"] + 0.2, zu), V(hw, s["y1"] + 0.02, zu), V(-hw + 0.9, s["y1"] + 0.02, zu)]
     rail_run(b, run)
-    rail_run(b, [V(-hw, s["y1"] - 0.95, zu), V(-hw, w["y0"] + 0.2, zu)])
+    # (the -X run is in build_undamaged / build_damage)
     # wheelhouse roof guard rail (low) and the external stair handrails
     zr = zu + w["h"] + 0.14
     rail_run(b, [V(w["hw"] - 0.1, w["y1"] - 0.1, zr), V(-w["hw"] + 0.1, w["y1"] - 0.1, zr)], h=0.6, mids=(0.5,))
@@ -591,14 +591,16 @@ def build_rafts():
     zu = s["z"] + s["h"] + 0.16
     GRP, GV, OR = band("grp", 1.6), band("galv", 1.0), band("orange", 0.47)
     rafts = []
+    ub = Buf()                   # canister 4 (-X, aft) and its strap: Undamaged part (Damage has it torn loose)
     for side in (1, -1):
         for y in (1.9, 3.7):
+            cb = ub if (side == -1 and y == 3.7) else b
             x = side * (s["hw"] * 1.04 - 0.55)
             c = Vector((x, y, zu + 0.48))
             tilt = Vector((side * math.sin(math.radians(15)), 0, math.cos(math.radians(15))))
             pts = [c + Vector((0, d, 0)) for d in (-0.62, -0.56, -0.45, 0.0, 0.45, 0.56, 0.62)]
             sc = [0.50, 0.86, 1.0, 1.0, 1.0, 0.86, 0.50]
-            W.sweep(b, pts, W.round_profile(0.29, 16), GRP, up_hint=tuple(tilt), scale=sc, smooth=True)
+            W.sweep(cb, pts, W.round_profile(0.29, 16), GRP, up_hint=tuple(tilt), scale=sc, smooth=True)
             rafts.append((x, y, zu + 0.48))
             # cradle: two saddles + feet
             for d in (-0.32, 0.32):
@@ -606,14 +608,14 @@ def build_rafts():
             C.tube(b, [V(x - 0.36, y - 0.4, zu + 0.03), V(x - 0.36, y + 0.4, zu + 0.03)], 0.025, GV, sides=4)
             C.tube(b, [V(x + 0.36, y - 0.4, zu + 0.03), V(x + 0.36, y + 0.4, zu + 0.03)], 0.025, GV, sides=4)
             # lashing strap over the top + hydrostatic release unit
-            W.ring(b, (x, y, zu + 0.48), (1, 0, 0), (0, 0, 1), 0.31, 0.012, 14, 3, GV)
+            W.ring(cb, (x, y, zu + 0.48), (1, 0, 0), (0, 0, 1), 0.31, 0.012, 14, 3, GV)
             W.obox(b, (x - side * 0.05, y, zu + 0.06), ((0, 1, 0), (1, 0, 0), (0, 0, 1)), (0.08, 0.05, 0.05), OR)
     # lifebuoys on the rails / bulwark
     for (x, y, z, ax) in ((s["hw"] * 1.04 - 0.05, -0.6, zu + 0.62, (0, 1, 0)), (-(s["hw"] * 1.04 - 0.05), -0.6, zu + 0.62, (0, 1, 0)),
                           (bd(U_(-6.4)) - 0.16, -6.4, zs(U_(-6.4)) + 0.62, (0, 1, 0)), (-(bd(U_(-6.4)) - 0.16), -6.4, zs(U_(-6.4)) + 0.62, (0, 1, 0)),
                           (0.9, 10.30, zs(0.99) + 0.62, (1, 0, 0)), (-0.9, 10.30, zs(0.99) + 0.62, (1, 0, 0))):
         W.ring(b, (x, y, z), ax, (0, 0, 1), 0.30, 0.055, 18, 6, OR)
-    return b, rafts
+    return b, rafts, ub
 
 
 def build_mast():
@@ -794,6 +796,239 @@ def build_decals():
     return b
 
 
+# ------------------------------------------------------------------ C2b: capsized damage (shown only when she lies over)
+GRAV = Vector((math.sin(math.radians(72)), 0, -math.cos(math.radians(72))))   # "down" in the model frame at the op's roll
+
+
+def world_z(p):
+    """Height above the review pivot frame's base when rolled 72 deg about (0, 0, 2 m) (render_sheet 'capsized')."""
+    return 2.0 + (-math.sin(math.radians(72)) * p.x + math.cos(math.radians(72)) * (p.z - 2.0))
+
+
+def upper_port_run():
+    s, w = SAL, WH
+    zu = s["z"] + s["h"] + 0.16
+    hw = s["hw"] * 1.04 - 0.06
+    return [V(-hw, s["y1"] - 0.95, zu), V(-hw, w["y0"] + 0.2, zu)], zu, hw
+
+
+def build_undamaged():
+    """The pieces the Damage part replaces: the Blender -X (Roblox +X, up side) upper deck rail run; canister 4 is
+    added by build_rafts. Visible upright, hidden when capsized."""
+    b = Buf()
+    run, _, _ = upper_port_run()
+    rail_run(b, run)
+    return b
+
+
+def bent_rail(b):
+    """The same upper deck run, buckled outboard by a sea between y 0.6 and 4.4 m: stanchions kinked over, one sheared,
+    the top rail torn at the break and drooping, the mid rails snapped and hanging."""
+    WHT = band("rail_white", 1.0)
+    run, zu, hw = upper_port_run()
+    y0, y1 = run[0].y, run[1].y
+    nst = max(2, int(abs(y1 - y0) / 1.3) + 1)
+    yc, half = 2.5, 1.9
+    tops, mids1, mids2 = [], [], []
+    broken = None
+    for k in range(nst):
+        y = y0 + (y1 - y0) * k / (nst - 1)
+        f = max(0.0, 1 - abs(y - yc) / half) ** 0.8
+        ang = math.radians(36 * f + rnd.uniform(-3, 3) * f)
+        base = V(-hw, y, zu)
+        knee = base + V(0, 0, 0.28)
+        d = Vector((-math.sin(ang), rnd.uniform(-0.25, 0.25) * f, math.cos(ang))).normalized()
+        if f > 0.85 and broken is None:          # sheared stanchion: a stub with a jagged end
+            broken = y
+            C.tube(b, [base, knee + V(0, 0, 0.05)], 0.02, WHT, sides=5, caps=(False, True))
+            tops.append(None); mids1.append(None); mids2.append(None)
+            continue
+        top = knee + d * 0.72
+        C.tube(b, [base, knee, top], 0.02, WHT, sides=5, caps=(False, False))
+        tops.append(top)
+        mids1.append(knee + d * 0.07)
+        mids2.append(knee + d * 0.40)
+    # top rail in two pieces at the break, the loose ends drooping along gravity
+    for seq_r, tr in ((tops, 0.025), (mids1, 0.011), (mids2, 0.011)):
+        segs, cur = [], []
+        for p in seq_r:
+            if p is None:
+                if cur:
+                    segs.append(cur)
+                cur = []
+            else:
+                cur.append(p)
+        if cur:
+            segs.append(cur)
+        for i, sg in enumerate(segs):
+            pts = list(sg)
+            droop = 0.55 if tr > 0.02 else 0.85
+            if i == 0 and len(segs) > 1:
+                pts.append(pts[-1] + V(0, 0.25 * (1 if y1 > y0 else -1), 0) + GRAV * droop * 0.5)
+                pts.append(pts[-1] + GRAV * droop * 0.5)
+            elif i == 1:
+                pts = [pts[0] + V(0, -0.25 * (1 if y1 > y0 else -1), 0) + GRAV * droop * 0.6] + pts
+            C.tube(b, pts, tr, WHT, sides=6 if tr > 0.02 else 4, smooth=True)
+    return broken, zu, hw
+
+
+def shatter(b, pane, seed):
+    """A smashed pane: a jagged dark hole (rubber band: matte black) proud of the glass and white crazing cracks
+    radiating to the frame and ringing the hole."""
+    c, r, up, hw, hh = pane
+    n = r.cross(up).normalized()
+    rr = random.Random(seed)
+    hc = c + r * (hw * rr.uniform(-0.25, 0.25)) + up * (hh * rr.uniform(-0.15, 0.25))
+    R0 = min(hw, hh) * 0.55
+    prof, verts = [], []
+    m = 15
+    for i in range(m):
+        a = 2 * math.pi * i / m
+        rad = R0 * (rr.uniform(0.45, 1.0) if i % 2 else rr.uniform(0.85, 1.25))
+        prof.append((rad * math.cos(a), rad * math.sin(a)))
+        verts.append(hc + r * prof[-1][0] + up * prof[-1][1])
+    W.sweep(b, [hc + n * 0.002, hc + n * 0.008], prof[::-1], band("rubber", 1.0), axes=[(r, up)] * 2)
+    WHT = band("rail_white", 1.0)
+
+    def crack(a, q, w=0.0035):
+        d = q - a
+        if d.length < 1e-3:
+            return
+        x = d.normalized()
+        y = n.cross(x).normalized()
+        W.obox(b, (a + q) / 2 + n * 0.006, (x, y, n), (d.length / 2, w / 2, 0.0015), WHT)
+    for i, v in enumerate(verts):
+        if i % 2:
+            continue
+        a = v
+        dirn = (v - hc).normalized()
+        for k in range(3):
+            jit = (r * rr.uniform(-0.3, 0.3) + up * rr.uniform(-0.3, 0.3)) * 0.4
+            q = a + (dirn + jit).normalized() * rr.uniform(0.12, 0.22)
+            lr, lu = (q - c).dot(r), (q - c).dot(up)
+            q = c + r * max(-hw, min(hw, lr)) + up * max(-hh, min(hh, lu))
+            crack(a, q)
+            a = q
+    for ring_k in (1.35, 1.8):
+        for i in range(m):
+            if rr.random() < 0.35:
+                continue
+            p0 = hc + (verts[i] - hc) * ring_k
+            p1 = hc + (verts[(i + 1) % m] - hc) * ring_k
+            if all(abs((p - c).dot(r)) < hw and abs((p - c).dot(up)) < hh for p in (p0, p1)):
+                crack(p0, p1, 0.0025)
+
+
+ZMIN = -0.27                     # keep every Damage vertex above the intact ship's base (validate origin)
+
+
+def hang(start, wz_end=1.0):
+    """Points from `start` straight down (model GRAV) until the rolled height reaches wz_end (0.4 m under the review
+    sea), with a slight sway; never below ZMIN."""
+    pts = [start]
+    ln = max(0.1, world_z(start) - wz_end)
+    for k in range(1, 7):
+        t = k / 6
+        p = start + GRAV * ln * t + V(0, 0.12 * math.sin(t * 2.4), 0)
+        if p.z < ZMIN:
+            break
+        pts.append(p)
+    return pts
+
+
+def drape(y, start_in, seed):
+    """A loose line from an inboard point over the -X bulwark capping, down the -X topsides (resting on the hull while
+    the surface still faces up at the roll) and then hanging free into the sea."""
+    u = U_(y)
+    hs = half_section(u)
+    pts = [start_in, V(-bd(u) + 0.10, y, zs(u) + 1.08), V(-bd(u) - 0.09, y, zs(u) + 1.06),
+           V(-bd(u) - 0.10, y, zs(u) - 0.02), V(-bd(u) - 0.09, y, zs(u) - 0.30)]      # over the D-fender
+    side = [V(-x, y + stem_shift(u, z), z) for x, z in hs]          # keel .. sheer on -X
+    last = None
+    for i in range(len(side) - 1, 0, -1):
+        p, q = side[i], side[i - 1]
+        t = q - p
+        nrm = Vector((-t.z, 0, t.x))
+        nrm = nrm if nrm.x < 0 or (abs(nrm.x) < 1e-6 and nrm.z < 0) else -nrm
+        nrm.normalize()
+        up_w = -math.sin(math.radians(72)) * nrm.x + math.cos(math.radians(72)) * nrm.z
+        if up_w < 0.05 or p.z < 0.08:
+            last = p + nrm * 0.05
+            break
+        if p.z < zs(u) - 0.40:
+            pts.append(p + nrm * 0.05)
+        last = p + nrm * 0.05
+    pts += hang(last)[1:]
+    ded = [pts[0]]
+    for p in pts[1:]:             # drop near-duplicate points (degenerate sweep frames make mitre spikes)
+        if (p - ded[-1]).length > 0.04:
+            ded.append(p)
+    pts = ded
+    for _ in range(1):            # Chaikin corner cutting where the line leaves the hull
+        pts = [pts[0]] + [q for a, c in zip(pts, pts[1:]) for q in (a.lerp(c, 0.25), a.lerp(c, 0.75))] + [pts[-1]]
+    out = []
+    for p in pts:                 # cut the line where it would dip under the intact ship's base
+        if p.z < ZMIN + 0.02:
+            break
+        out.append(p)
+    return out
+
+
+def build_damage(rafts):
+    b = Buf()
+    RP, GRP, GV, OR = band("rope", 0.6), band("grp", 1.6), band("galv", 1.0), band("orange", 0.47)
+    broken, zu, hw = bent_rail(b)
+    # canister 4 (-X, aft) torn out of its cradle: strap snapped, canister rolled outboard and jammed in the buckled
+    # rail, hung up on its painter from the hydrostatic release on the cradle
+    x4, y4, z4 = rafts[3]
+    c = Vector((-hw - 0.17, y4 - 0.55, zu + 0.62))
+    ax = Vector((0.20, 0.88, 0.42)).normalized()
+    pts = [c + ax * d for d in (-0.62, -0.56, -0.45, 0.0, 0.45, 0.56, 0.62)]
+    sc = [0.50, 0.86, 1.0, 1.0, 1.0, 0.86, 0.50]
+    W.sweep(b, pts, W.round_profile(0.29, 16), GRP, up_hint=(1, 0, 0), scale=sc, smooth=True)
+    lo = Buf()                   # LOD2 stand-in: the canister, the lifebuoy and the fender only
+    W.sweep(lo, pts, W.round_profile(0.29, 8), GRP, up_hint=(1, 0, 0), scale=sc, smooth=True)
+    strap = [Vector((x4 + 0.31, y4, z4)), Vector((x4 + 0.2, y4, z4 + 0.25)), Vector((x4, y4, z4 + 0.31)),
+             Vector((x4 - 0.2, y4 - 0.05, z4 + 0.26))]
+    C.tube(b, strap, 0.012, GV, sides=4, caps=(True, True))
+    C.tube(b, [Vector((x4 + 0.31, y4, z4)), Vector((x4 + 0.33, y4 + 0.02, z4 - 0.15)) + GRAV * 0.25], 0.012, GV, sides=4)
+    hru = Vector((x4 + 0.05, y4, zu + 0.06))
+    end = c - ax * 0.62
+    C.tube(b, C.catenary(hru, end, 0.25, 8), 0.010, RP, sides=4)
+    # shattered wheelhouse windows: the port-side (-X) after pane and the -X front pane
+    panes = window_rects()
+    side = [p for p in panes if p[0].x < -WH["hw"] * 0.9 and abs(p[0].y + 2.05) < 0.05]
+    front = [p for p in panes if abs(p[0].x + 0.76) < 0.01 and p[0].z > SAL["z"] + SAL["h"]]
+    for k, p in enumerate(side[:1] + front[:1]):
+        shatter(b, p, 41 + k)
+    # debris lines: loose mooring lines over the -X bulwark, down the topsides and hanging into the sea; a lifebuoy
+    # hanging on its line, a fender on its lanyard
+    for (y, seed) in ((-5.9, 1), (6.9, 2)):
+        u = U_(y)
+        start = V(-bd(u) + 0.55, y + 0.3, zs(u) + 0.08)
+        C.tube(b, drape(y, start, seed), 0.016, RP, sides=5, smooth=True)
+    yb = -2.2
+    u = U_(yb)
+    line = drape(yb, V(-bd(u) + 0.30, yb, zs(u) + 0.95), 3)
+    cut = max(4, len(line) - 2)
+    C.tube(b, line[:cut], 0.010, RP, sides=4, smooth=True)
+    q = line[cut - 1]
+    buoy = q + GRAV * max(0.0, min(0.38, (q.z + 0.06) / -GRAV.z))
+    W.ring(b, tuple(buoy), (0, 1, 0), tuple(GRAV), 0.30, 0.055, 18, 6, OR)
+    W.ring(lo, tuple(buoy), (0, 1, 0), tuple(GRAV), 0.30, 0.055, 8, 3, OR)
+    yf = 3.0
+    u = U_(yf)
+    fl = drape(yf, V(-bd(u) + 0.25, yf, zs(u) + 1.0), 4)
+    cut = max(4, len(fl) - 2)
+    C.tube(b, fl[:cut], 0.008, RP, sides=4, smooth=True)
+    q = fl[cut - 1]
+    fc = q + GRAV * max(0.0, min(0.45, (q.z - 0.0) / -GRAV.z))
+    W.sweep(b, [fc - GRAV * 0.35, fc - GRAV * 0.3, fc + GRAV * 0.3, fc + GRAV * 0.35], W.round_profile(0.11, 10),
+            band("rubber", 1.0), scale=[0.4, 1.0, 1.0, 0.4], smooth=True)
+    W.sweep(lo, [fc - GRAV * 0.35, fc + GRAV * 0.35], W.round_profile(0.11, 6), band("rubber", 1.0))
+    return b, lo
+
+
 def make_cols():
     X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
     s, w = SAL, WH
@@ -810,7 +1045,8 @@ def build():
     parts = {}
     mats = {"Hull": "Hull", "HullGear": "Hull", "Props": "Fittings", "Bulwark": "Super", "Decks": "Deck", "Saloon": "Super",
             "Wheelhouse": "Super", "Funnel": "Super", "Windows": "Glass", "Rails": "Fittings", "Rafts": "Fittings",
-            "Mast": "Fittings", "DeckGear": "Fittings", "Fenders": "Fittings", "GrabLines": "Fittings", "Decals": "Decals"}
+            "Mast": "Fittings", "DeckGear": "Fittings", "Fenders": "Fittings", "GrabLines": "Fittings", "Decals": "Decals",
+            "Undamaged": "Fittings", "Damage": "Fittings"}
     bufs = {"Hull": build_hull(), "HullGear": build_hullgear(), "Props": build_props_anodes(), "Bulwark": build_bulwark(),
             "Saloon": build_saloon(), "Wheelhouse": build_wheelhouse(), "Funnel": build_funnel(), "Windows": build_windows(),
             "Rails": build_rails(), "Mast": build_mast(), "DeckGear": build_deckgear(), "Fenders": build_fenders(),
@@ -818,8 +1054,12 @@ def build():
     dk = build_decks()
     dk.extend(build_roofs())
     bufs["Decks"] = dk
-    rafts_b, rafts = build_rafts()
+    rafts_b, rafts, raft4 = build_rafts()
     bufs["Rafts"] = rafts_b
+    und = build_undamaged()
+    und.extend(raft4)
+    bufs["Undamaged"] = und
+    bufs["Damage"], damage_lo = build_damage(rafts)
     gl, comp_ys = build_grablines()
     bufs["GrabLines"] = gl
     import bmesh
@@ -855,10 +1095,33 @@ def build():
         k = int(NB * 0.62)
         atts.append(W.empty("ATT_Knock_%02d" % i, (-hs[k][0] - 0.06, y, hs[k][1]), look=(-1, 0, 0)))
     col = make_cols()
+    # keep the Damage part inside the intact ship's bbox (hanging line ends under the keel are clamped, they are under
+    # water at the roll), so the base pivot and the bbox centre stay those of C2
+    blo, bhi = W.bbox([o for k, o in parts.items() if k != "Damage"])
+    dmg = parts["Damage"]
+    nclamp = 0
+    for v in dmg.data.vertices:
+        c = v.co.copy()
+        v.co.z = max(v.co.z, blo.z + 0.003)
+        v.co.x = min(max(v.co.x, blo.x + 0.003), bhi.x - 0.003)
+        v.co.y = min(max(v.co.y, blo.y + 0.003), bhi.y - 0.003)
+        nclamp += (v.co - c).length > 1e-6
+    print("[C2] Damage vertices clamped into the ship bbox:", nclamp)
     lods = C.make_lods(parts, BUDGET, BUDGET_TRIS, keep=("Decals", "Windows"))
+    for o, lod, src in lods:     # Damage LOD2: the big pieces only (thin lines and cracks do not decimate)
+        if src is parts["Damage"] and lod == "LOD2":
+            tmp = damage_lo.to_object("C2b_tmp_damage_lo", o.data.materials[0].name)
+            old_me, o.data = o.data, tmp.data
+            bpy.data.objects.remove(tmp, do_unlink=True)
+            nm = old_me.name
+            bpy.data.meshes.remove(old_me)
+            o.data.name = nm
+            print("[C2] Damage LOD2 stand-in", C.tri_count(o), "tris")
     vis = list(parts.values())
-    off = W.shift_to_base(vis + [col], empties=atts, others=[o for o, _, _ in lods])
-    lo, hi = W.bbox(vis)
+    # the base pivot ignores the Damage part (its lines hang below the keel at the roll): same pivot as C2
+    base_vis = [o for k, o in parts.items() if k != "Damage"]
+    off = W.shift_to_base(base_vis + [col], empties=atts, others=[o for o, _, _ in lods] + [parts["Damage"]])
+    lo, hi = W.bbox(base_vis)
     hlo, hhi = W.bbox([parts["Hull"]])
     tri = {k: C.tri_count(o) for k, o in parts.items()}
     print("[C2] tris per part", tri, "LOD0 total", sum(tri.values()))
