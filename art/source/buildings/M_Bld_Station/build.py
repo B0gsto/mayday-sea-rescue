@@ -38,6 +38,15 @@ def rect(name, w, h):
     return ("rect", u0 + pad, v0 + pad, u1 - pad, v1 - pad, w, h)
 
 
+GR = {"Streak": (0.0, 0.5, 0.5, 1.0), "Rust": (0.5, 0.5, 0.75, 1.0), "Pipe": (0.75, 0.5, 1.0, 1.0),   # maketex.GRIME
+      "Salt": (0.0, 0.25, 1.0, 0.5), "Repaint": (0.0, 0.0, 0.5, 0.25), "Moss": (0.5, 0.0, 1.0, 0.25)}
+
+
+def grect(name, w, h):
+    u0, v0, u1, v1 = GR[name]
+    return ("rect", u0 + 0.004, v0 + 0.004, u1 - 0.004, v1 - 0.004, w, h)
+
+
 STONE = ("tile", 2.0)
 RENDER = ("tile", 4.0)
 SLATE = ("tile", 2.0)
@@ -74,6 +83,7 @@ def gable_poly(x0, x1, slope):
 def build():
     stone, render, roof, tr, det, door = (Part("Stone"), Part("Render"), Part("Roof"), Part("Trim"), Part("Details"),
                                           Part("BayDoor"))
+    grime = Part("Grime")     # H3: alpha decal cards (streaks, rust, pipe stains, salt bloom, repaint, moss)
     plinth, lit = Part("Plinth"), Part("GlassLit")      # H2: damp base courses; switchable night glazing / lamp lenses
     atts = {}
     rng = random.Random(7)
@@ -406,44 +416,44 @@ def build():
         geo.LEVEL = 3
         tr.box((min(xbase, xe + out * 0.28), YF - VG + 0.07, zsof - 0.08), (max(xbase, xe + out * 0.28), YB + VG - 0.07,
                zsof + SLAB), trim("Fascia"))
-        r, th = 0.065, 0.005
+        r, th = 0.1, 0.012          # H3: 200 mm half-round (was 130), thicker wall
 
         def arc(rr, d0, z0, a0=math.pi, a1=2 * math.pi, segs=7):
             return [(xe + out * (d0 + rr * math.cos(a0 + (a1 - a0) * i / segs)), z0 + rr * math.sin(a0 + (a1 - a0) * i / segs))
                     for i in range(segs + 1)]
-        gut = arc(r, 0.345, zc) + arc(r - th, 0.345, zc)[::-1]
+        gut = arc(r, 0.39, zc) + arc(r - th, 0.39, zc)[::-1]
         tr.extrude(gut, "y", YF - VG + 0.04, YB + VG - 0.04, trim("Gutter"), cap_mode=trim("Gutter"))
         geo.LEVEL = 2
         tr.box((min(xe, xbase), YF - VG + 0.07, zsof - 0.025), (max(xe, xbase), YB + VG - 0.07, zsof), trim("Fascia"))
         xw = xe + out * 0.13
-        xg = xe + out * 0.345
+        xg = xe + out * 0.39
         for yp in ((YF + 0.35, YB - 0.35) if out < 0 else (YF + 0.9, YB - 0.9)):
             geo.LEVEL = 2
-            tr.tube((xg, yp, zc - 0.05), (xg, yp, zc - 0.16), 0.04, 8, trim("Downpipe"), caps=False)
-            tr.tube((xg, yp, zc - 0.16), (xw, yp, zc - 0.42), 0.045, 8, trim("Downpipe"), caps=False)
-            tr.tube((xw, yp, 0.22), (xw, yp, zc - 0.42), 0.045, 8, trim("Downpipe"))
-            tr.tube((xw + out * 0.06, yp, 0.02), (xw, yp, 0.24), 0.05, 8, trim("Downpipe"))
+            tr.tube((xg, yp, zc - 0.08), (xg, yp, zc - 0.2), 0.062, 10, trim("Downpipe"), caps=False)   # H3: 140 mm pipes
+            tr.tube((xg, yp, zc - 0.2), (xw, yp, zc - 0.46), 0.07, 10, trim("Downpipe"), caps=False)
+            tr.tube((xw, yp, 0.22), (xw, yp, zc - 0.46), 0.07, 10, trim("Downpipe"))
+            tr.tube((xw + out * 0.07, yp, 0.02), (xw, yp, 0.24), 0.08, 10, trim("Downpipe"))
             geo.LEVEL = 1
             zz = 1.2
             while zz < zc - 0.8:
-                tr.box((xw - 0.055, yp - 0.055, zz), (xw + 0.055, yp + 0.055, zz + 0.05), trim("Flashing"))
+                tr.box((xw - 0.085, yp - 0.085, zz), (xw + 0.085, yp + 0.085, zz + 0.06), trim("Flashing"))
                 tr.box((min(xe, xw), yp - 0.015, zz + 0.01), (max(xe, xw), yp + 0.015, zz + 0.04), trim("Flashing"))
                 zz += 1.6
         geo.LEVEL = 1
-        tr.tube((xe + out * 0.414, YF - VG + 0.04, zc + 0.004), (xe + out * 0.414, YB + VG - 0.04, zc + 0.004), 0.008, 6,
+        tr.tube((xe + out * 0.482, YF - VG + 0.04, zc + 0.006), (xe + out * 0.482, YB + VG - 0.04, zc + 0.006), 0.014, 6,
                 trim("Gutter"))                                                                  # rolled bead
         yb = YF - VG + 0.25
         while yb < YB + VG - 0.2:
-            tr.extrude(arc(r + 0.006, 0.345, zc) + arc(r + 0.0005, 0.345, zc)[::-1], "y", yb, yb + 0.025, trim("Flashing"))
+            tr.extrude(arc(r + 0.008, 0.39, zc) + arc(r + 0.0005, 0.39, zc)[::-1], "y", yb, yb + 0.025, trim("Flashing"))
             tr.box((min(xe + out * 0.28, xe + out * 0.287), yb, zc - 0.01), (max(xe + out * 0.28, xe + out * 0.287), yb + 0.025,
                    zc + 0.05), trim("Flashing"))
             yb += 0.8
     geo.LEVEL = 2
-    tr.tube((XM, YB + 0.14, 0.22), (XM, YB + 0.14, EAV - 0.45), 0.05, 8, trim("Downpipe"))      # valley downpipe
-    tr.tube((XM, YB + 0.2, 0.02), (XM, YB + 0.14, 0.24), 0.055, 8, trim("Downpipe"))
+    tr.tube((XM, YB + 0.15, 0.22), (XM, YB + 0.15, EAV - 0.45), 0.075, 8, trim("Downpipe"))      # valley downpipe
+    tr.tube((XM, YB + 0.22, 0.02), (XM, YB + 0.15, 0.24), 0.08, 8, trim("Downpipe"))
     tr.box((XM - 0.13, YB + 0.03, EAV - 0.62), (XM + 0.13, YB + 0.28, EAV - 0.36), trim("Flashing"))   # hopper
-    tr.tube((XM, YF - 0.14, 0.22), (XM, YF - 0.14, EAV - 0.45), 0.05, 8, trim("Downpipe"))      # H2 front valley downpipe
-    tr.tube((XM, YF - 0.2, 0.02), (XM, YF - 0.14, 0.24), 0.055, 8, trim("Downpipe"))
+    tr.tube((XM, YF - 0.15, 0.22), (XM, YF - 0.15, EAV - 0.45), 0.075, 8, trim("Downpipe"))      # H2 front valley downpipe
+    tr.tube((XM, YF - 0.22, 0.02), (XM, YF - 0.15, 0.24), 0.08, 8, trim("Downpipe"))
     tr.box((XM - 0.13, YF - 0.28, EAV - 0.62), (XM + 0.13, YF - 0.03, EAV - 0.36), trim("Flashing"))
     det.prism([(XM - 0.5, EAV + 0.2), (XM + 0.5, EAV + 0.2), (XM + 0.5, EAV + 0.24), (XM - 0.5, EAV + 0.24)], "y",
               YF - VG - 0.06, YF - VG + 0.02, rect("Lead", 1.0, 0.1))                                    # valley outlet lip
@@ -483,8 +493,96 @@ def build():
     det.box((XH - 0.1, YF + 0.5, RIDGE + 0.15), (XH + 0.1, YF + 0.7, RIDGE + 0.36), STEEL)     # ridge clamp
     geo.LEVEL = 3
 
+    # ------------------------------------------------ H3 weathering decals (alpha cards 6 mm off the faces) and lamps
+    OPEN = {}
+    for key, s, sill, w, h, _b, _k in WIN:
+        OPEN.setdefault(key, []).append((s - w / 2 - 0.2, s + w / 2 + 0.2, sill - SB - 0.05, sill + h + CR + 0.05))
+    for key, s, _n in DOORS:
+        OPEN.setdefault(key, []).append((s - DW / 2 - 0.25, s + DW / 2 + 0.25, -1.0, DT + 0.45))
+
+    def free(key, s0, s1, t0, t1):
+        return all(s1 <= a or s0 >= b_ or t1 <= c or t0 >= d for a, b_, c, d in OPEN.get(key, []))
+
+    def decal(key, s0, s1, t0, t1, name, o=0.006, check=True):
+        if t1 - t0 < 0.12 or s1 - s0 < 0.05 or (check and not free(key, s0, s1, t0, t1)):
+            return False
+        WALLS[key][1].quad(grime, s0, s1, o, t0, t1, grect(name, s1 - s0, t1 - t0))
+        return True
+    RW = ("wing_front", "wing_east", "wing_back")
+    SPAN = {"wing_front": (XM + 0.05, XR - 0.05), "wing_east": (YF + 0.05, YB - 0.05), "wing_back": (-XR + 0.05, -XM - 0.05)}
+    geo.LEVEL = 2
+    for key, s, sill, w, h, _b, _k in WIN:          # rain streaks under the sills
+        if key in RW:
+            t1 = sill - SB - 0.004
+            decal(key, s - w / 2 - 0.06, s + w / 2 + 0.06, max(0.82, t1 - 1.1), t1, "Streak", check=False)
+    for y0 in (YF + 0.3, -3.0, 2.2):                # under the wing eaves (east): soffit drip
+        decal("wing_east", y0, min(y0 + 2.6, YB - 0.3), EAV - 1.0, EAV - 0.03, "Streak", o=0.007)
+    geo.LEVEL = 3                                   # pipe stains and the salt band survive to LOD2
+    for key, ps in (("wing_east", (YF + 0.9, YB - 0.9)), ("hall_west", (-(YF + 0.35), -(YB - 0.35))),
+                    ("wing_front", (XM + 0.02,)), ("wing_back", (-XM - 0.02,))):
+        for sp in ps:                               # downpipe staining
+            decal(key, sp - 0.3, sp + 0.3, 0.8, EAV - 0.4, "Pipe", o=0.009)
+    for xl in (-9.0, -1.5):                         # rust runs under the floodlight plates
+        decal("hall_front", xl - 0.13, xl + 0.13, 4.35, 5.36, "Rust", o=0.008, check=False)
+    lp = atts.get("ATT_Lamp_Door")
+    if lp is not None:
+        decal("wing_front", lp.x - 0.12, lp.x + 0.12, lp.z - 0.9, lp.z + 0.05, "Rust", o=0.008)
+    for key in RW:                                  # salt bloom + damp band over the plinth, split round the openings
+        s, (sa, sb) = None, SPAN[key]
+        s = sa
+        while s < sb - 0.1:
+            e = min(s + 3.5, sb)
+            while e - s > 0.3 and not free(key, s, e, 0.79, 1.7):
+                e -= 0.1
+            if e - s > 0.3:
+                decal(key, s, e, 0.79, 1.7, "Salt", o=0.005)
+                s = e
+            else:
+                s += 0.2
+    geo.LEVEL = 2
+    rr = random.Random(33)
+    for key in RW:                                  # patchy repaint
+        n = 0
+        for _ in range(80):
+            sa, sb = SPAN[key]
+            w, h = rr.uniform(0.9, 1.9), rr.uniform(0.5, 1.1)
+            s0, t0 = rr.uniform(sa, sb - w), rr.uniform(1.8, EAV - 1.3 - h)
+            if n < 6 and decal(key, s0, s0 + w, t0, t0 + h, "Repaint", o=0.004):
+                n += 1
+    geo.LEVEL = 1
+    for xc, slope in ((XH, TH), (XW, TW)):          # moss + lichen on the ridge-tile flanks
+        zw = RIDGE + SLAB - 0.21 * slope + 0.012
+        for sd in (-1, 1):
+            plo = Vector((xc + sd * 0.215, 0, zw + 0.033))
+            phi = Vector((xc + sd * 0.03, 0, zw + 0.047 + 0.18 * slope))
+            dv = phi - plo
+            nrm = Vector((sd * dv.z, 0, abs(dv.x))).normalized()
+            y = YF - VG + rr.uniform(0.0, 0.8)
+            while y < YB + VG - 0.5:
+                L = rr.uniform(0.5, 1.8)
+                y1 = min(y + L, YB + VG)
+                q = [plo + nrm * 0.008, phi + nrm * 0.008]
+                grime.face([(q[0].x, y, q[0].z), (q[0].x, y1, q[0].z), (q[1].x, y1, q[1].z), (q[1].x, y, q[1].z)],
+                           grect("Moss", y1 - y, dv.length), outward=nrm)
+                y = y1 + rr.uniform(0.4, 2.2)
+    geo.LEVEL = 2
+    # wall-wash lamps under the eaves (02/01 east wing, 03/04 hall west) and a trough lamp over the name board
+    for k, (xe, out, y) in enumerate(((XR, 1, -2.5), (XR, 1, 2.5), (XL, -1, -2.25), (XL, -1, 2.25))):
+        x0, x1 = sorted((xe, xe + out * 0.24))
+        det.box((x0, y - 0.13, EAV - 0.44), (x1, y + 0.13, EAV - 0.3), STEEL)
+        lx0, lx1 = sorted((xe + out * 0.05, xe + out * 0.22))
+        lit.face([(lx0, y - 0.11, EAV - 0.441), (lx1, y - 0.11, EAV - 0.441), (lx1, y + 0.11, EAV - 0.441),
+                  (lx0, y + 0.11, EAV - 0.441)], rect("Glass", 0.17, 0.22), outward=(0, 0, -1))
+        atts["ATT_Lamp_Wash_%02d" % (k + 1)] = Vector((xe + out * 0.14, y, EAV - 0.46))
+    det.box((XH - 0.09, YF - 0.02, 6.62), (XH + 0.09, YF, 6.86), STEEL)
+    det.box((XH - 0.02, YF - 0.48, 6.72), (XH + 0.02, YF - 0.02, 6.76), STEEL)
+    det.box((XH - 0.36, YF - 0.62, 6.66), (XH + 0.36, YF - 0.42, 6.76), STEEL)
+    lit.face([(XH - 0.33, YF - 0.6, 6.659), (XH + 0.33, YF - 0.6, 6.659), (XH + 0.33, YF - 0.44, 6.659),
+              (XH - 0.33, YF - 0.44, 6.659)], rect("Glass", 0.66, 0.16), outward=(0, 0, -1))
+    atts["ATT_Lamp_Sign"] = Vector((XH, YF - 0.52, 6.64))
+    geo.LEVEL = 3
     # ------------------------------------------------ recentre (origin "base"), objects, collision
-    parts = [p for p in (stone, render, roof, tr, det, door, plinth, lit) if p.faces]
+    parts = [p for p in (stone, render, roof, tr, det, door, plinth, lit, grime) if p.faces]
     lo = Vector((min(p.bbox()[0].x for p in parts), min(p.bbox()[0].y for p in parts), min(p.bbox()[0].z for p in parts)))
     hi = Vector((max(p.bbox()[1].x for p in parts), max(p.bbox()[1].y for p in parts), max(p.bbox()[1].z for p in parts)))
     off = Vector((-(lo.x + hi.x) / 2, -(lo.y + hi.y) / 2, -lo.z))
@@ -497,6 +595,7 @@ def build():
         "BayDoor": ("Details", geo.material("MI_Station_BayDoor", (0.06, 0.09, 0.12), 0.5)),
         "Plinth": ("GraniteBase", geo.material("MI_Station_GraniteBase", (0.2, 0.2, 0.18), 0.7)),
         "GlassLit": ("Details", geo.material("MI_Station_GlassLit", (1.0, 0.72, 0.4), 0.3)),
+        "Grime": ("Grime", geo.material("MI_Station_Grime", (0.4, 0.4, 0.36), 0.8)),
     }
     meshes = []
     for p in parts:
@@ -547,10 +646,11 @@ def build():
         "size_note": "depth includes the 0.75 m watch-room bay and the door surround",
         "origin": "base",
         "tiling": True,
-        "waivers": {"texture sets": "H2: 6 sets = 5 own + the shared BldTrim sheet; GraniteBase (damp, salt-lined, algae base courses) is the granite with a rising-damp gradient, kept separate so the 2 m wall tile stays clean",
+        "waivers": {"texture sets": "H3: +1 own set Grime (RGBA decal atlas, AlphaMode Transparency: rain streaks, rust runs, downpipe stains, salt bloom, repaint, ridge moss) = 7 sets. H2: 6 sets = 5 own + the shared BldTrim sheet; GraniteBase (damp, salt-lined, algae base courses) is the granite with a rising-damp gradient, kept separate so the 2 m wall tile stays clean",
                     "LOD UV layout": "world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep"},
         "sets": [
             {"name": "Station", "set": "Render", "size": 1024, "wet": True},
+            {"name": "Station", "set": "Grime", "size": 1024, "wet": True},
             {"name": "Station", "set": "Slate", "size": 1024, "wet": True},
             {"name": "Station", "set": "Details", "size": 1024, "wet": True},
             {"name": "BldTrim", "set": "Sheet", "size": 1024, "wet": True, "dir": tex + "M_Bld_TrimSheet"},

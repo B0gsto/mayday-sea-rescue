@@ -2,7 +2,7 @@
  "asset": "M_Bld_Station",
  "name": "M_Bld_Station",
  "date": "2026-10-18",
- "commit": "0c26ba0+dirty",
+ "commit": "501a548+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,13 +24,14 @@
  "exports": [
   {
    "file": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
-   "bytes": 595852,
+   "bytes": 615372,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Station_BayDoor_LOD0",
     "M_Bld_Station_COL",
     "M_Bld_Station_Details_LOD0",
     "M_Bld_Station_GlassLit_LOD0",
+    "M_Bld_Station_Grime_LOD0",
     "M_Bld_Station_Plinth_LOD0",
     "M_Bld_Station_Render_LOD0",
     "M_Bld_Station_Roof_LOD0",
@@ -43,12 +44,12 @@
      "min": [
       -24.75,
       -23.265,
-      0.0
+      0.0128
      ],
      "max": [
       -6.75,
       -22.785,
-      13.8
+      13.8128
      ],
      "polygons": 368,
      "all_triangles": true,
@@ -59,12 +60,12 @@
      "min": [
       -30.0,
       -26.325,
-      0.0
+      0.0128
      ],
      "max": [
       30.0,
       24.825,
-      32.94
+      32.9528
      ],
      "polygons": 100,
      "all_triangles": true,
@@ -73,32 +74,48 @@
     {
      "name": "M_Bld_Station_Details_LOD0.001",
      "min": [
-      -28.86,
+      -29.97,
       -26.505,
-      0.0
+      0.0128
      ],
      "max": [
-      29.325,
+      29.97,
       26.505,
-      43.14
+      43.1528
      ],
-     "polygons": 1722,
+     "polygons": 1806,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Station_GlassLit_LOD0.001",
      "min": [
-      -27.39,
+      -29.91,
       -25.827,
-      10.305
+      10.3178
      ],
      "max": [
-      22.212,
-      -24.195,
-      18.15
+      29.91,
+      8.355,
+      19.9898
      ],
-     "polygons": 34,
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Station_Grime_LOD0.001",
+     "min": [
+      -29.277,
+      -24.0854,
+      2.3828
+     ],
+     "max": [
+      29.277,
+      25.725,
+      32.9039
+     ],
+     "polygons": 150,
      "all_triangles": true,
      "uv": true
     },
@@ -107,12 +124,12 @@
      "min": [
       -29.49,
       -24.015,
-      0.0
+      0.0128
      ],
      "max": [
       29.49,
       25.065,
-      2.4
+      2.4128
      ],
      "polygons": 128,
      "all_triangles": true,
@@ -123,12 +140,12 @@
      "min": [
       -2.25,
       -26.025,
-      0.0
+      0.0128
      ],
      "max": [
       29.25,
       24.825,
-      32.34
+      32.3528
      ],
      "polygons": 666,
      "all_triangles": true,
@@ -139,12 +156,12 @@
      "min": [
       -30.18,
       -24.675,
-      20.3574
+      20.3702
      ],
      "max": [
       30.18,
       25.725,
-      32.8046
+      32.8174
      ],
      "polygons": 896,
      "all_triangles": true,
@@ -155,12 +172,12 @@
      "min": [
       -29.475,
       -26.325,
-      0.0
+      0.0128
      ],
      "max": [
       29.475,
       25.845,
-      36.0
+      36.0128
      ],
      "polygons": 1804,
      "all_triangles": true,
@@ -169,16 +186,16 @@
     {
      "name": "M_Bld_Station_Trim_LOD0.001",
      "min": [
-      -30.5128,
+      -30.744,
       -26.445,
-      0.0166
+      0.0
      ],
      "max": [
-      30.5128,
+      30.744,
       25.785,
-      36.36
+      36.3728
      ],
-     "polygons": 7058,
+     "polygons": 7154,
      "all_triangles": true,
      "uv": true
     }
@@ -193,12 +210,13 @@
   },
   {
    "file": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD1.fbx",
-   "bytes": 340108,
+   "bytes": 351436,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Station_BayDoor_LOD1",
     "M_Bld_Station_Details_LOD1",
     "M_Bld_Station_GlassLit_LOD1",
+    "M_Bld_Station_Grime_LOD1",
     "M_Bld_Station_Plinth_LOD1",
     "M_Bld_Station_Render_LOD1",
     "M_Bld_Station_Roof_LOD1",
@@ -211,12 +229,12 @@
      "min": [
       -24.75,
       -23.19,
-      0.0
+      0.0128
      ],
      "max": [
       -6.75,
       -22.785,
-      13.8
+      13.8128
      ],
      "polygons": 304,
      "all_triangles": true,
@@ -225,32 +243,48 @@
     {
      "name": "M_Bld_Station_Details_LOD1.001",
      "min": [
-      -28.86,
+      -29.97,
       -26.505,
-      0.0
+      0.0128
      ],
      "max": [
-      28.86,
+      29.97,
       25.725,
-      43.14
+      43.1528
      ],
-     "polygons": 438,
+     "polygons": 522,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Bld_Station_GlassLit_LOD1.001",
      "min": [
-      7.788,
+      -29.91,
       -25.827,
-      13.86
+      13.8728
      ],
      "max": [
-      22.212,
-      -24.195,
-      18.15
+      29.91,
+      8.355,
+      19.9898
      ],
-     "polygons": 10,
+     "polygons": 20,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Station_Grime_LOD1.001",
+     "min": [
+      -29.277,
+      -23.802,
+      2.3828
+     ],
+     "max": [
+      29.277,
+      24.852,
+      22.4408
+     ],
+     "polygons": 92,
      "all_triangles": true,
      "uv": true
     },
@@ -259,12 +293,12 @@
      "min": [
       -29.49,
       -24.015,
-      0.0
+      0.0128
      ],
      "max": [
       29.49,
       25.065,
-      2.4
+      2.4128
      ],
      "polygons": 128,
      "all_triangles": true,
@@ -275,12 +309,12 @@
      "min": [
       -2.25,
       -26.025,
-      0.0
+      0.0128
      ],
      "max": [
       29.25,
       24.825,
-      32.34
+      32.3528
      ],
      "polygons": 666,
      "all_triangles": true,
@@ -291,12 +325,12 @@
      "min": [
       -30.18,
       -24.675,
-      20.3574
+      20.3702
      ],
      "max": [
       30.18,
       25.725,
-      32.8046
+      32.8174
      ],
      "polygons": 896,
      "all_triangles": true,
@@ -307,12 +341,12 @@
      "min": [
       -29.475,
       -26.325,
-      0.0
+      0.0128
      ],
      "max": [
       29.475,
       25.845,
-      36.0
+      36.0128
      ],
      "polygons": 1588,
      "all_triangles": true,
@@ -321,16 +355,16 @@
     {
      "name": "M_Bld_Station_Trim_LOD1.001",
      "min": [
-      -30.48,
+      -30.72,
       -26.445,
-      0.0166
+      0.0
      ],
      "max": [
-      30.48,
+      30.72,
       25.785,
-      36.36
+      36.3728
      ],
-     "polygons": 3178,
+     "polygons": 3274,
      "all_triangles": true,
      "uv": true
     }
@@ -345,12 +379,13 @@
   },
   {
    "file": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
-   "bytes": 121084,
+   "bytes": 126316,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_Station_BayDoor_LOD2",
     "M_Bld_Station_Details_LOD2",
     "M_Bld_Station_GlassLit_LOD2",
+    "M_Bld_Station_Grime_LOD2",
     "M_Bld_Station_Plinth_LOD2",
     "M_Bld_Station_Render_LOD2",
     "M_Bld_Station_Roof_LOD2",
@@ -363,12 +398,12 @@
      "min": [
       -24.75,
       -23.19,
-      0.075
+      0.0878
      ],
      "max": [
       -6.75,
       -22.785,
-      13.8
+      13.8128
      ],
      "polygons": 20,
      "all_triangles": true,
@@ -379,12 +414,12 @@
      "min": [
       -28.86,
       -26.505,
-      0.45
+      0.4628
      ],
      "max": [
       28.86,
       25.725,
-      24.99
+      25.0028
      ],
      "polygons": 168,
      "all_triangles": true,
@@ -395,14 +430,30 @@
      "min": [
       7.788,
       -25.827,
-      13.86
+      13.8728
      ],
      "max": [
       22.212,
       -24.195,
-      18.15
+      18.1628
      ],
      "polygons": 10,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Station_Grime_LOD2.001",
+     "min": [
+      -29.277,
+      -23.802,
+      2.3828
+     ],
+     "max": [
+      29.277,
+      24.852,
+      19.8128
+     ],
+     "polygons": 40,
      "all_triangles": true,
      "uv": true
     },
@@ -411,12 +462,12 @@
      "min": [
       -29.49,
       -24.015,
-      0.0
+      0.0128
      ],
      "max": [
       29.49,
       25.065,
-      2.4
+      2.4128
      ],
      "polygons": 128,
      "all_triangles": true,
@@ -427,12 +478,12 @@
      "min": [
       -2.25,
       -26.025,
-      0.0
+      0.0128
      ],
      "max": [
       29.25,
       24.825,
-      32.34
+      32.3528
      ],
      "polygons": 666,
      "all_triangles": true,
@@ -443,12 +494,12 @@
      "min": [
       -30.015,
       -24.465,
-      20.3574
+      20.3702
      ],
      "max": [
       30.015,
       25.515,
-      32.76
+      32.7728
      ],
      "polygons": 48,
      "all_triangles": true,
@@ -459,12 +510,12 @@
      "min": [
       -29.25,
       -26.325,
-      0.0
+      0.0128
      ],
      "max": [
       22.56,
       24.825,
-      32.34
+      32.3528
      ],
      "polygons": 328,
      "all_triangles": true,
@@ -473,14 +524,14 @@
     {
      "name": "M_Bld_Station_Trim_LOD2.001",
      "min": [
-      -30.48,
+      -30.72,
       -26.175,
-      13.56
+      13.5728
      ],
      "max": [
-      30.48,
+      30.72,
       25.815,
-      32.937
+      32.9498
      ],
      "polygons": 248,
      "all_triangles": true,
@@ -509,6 +560,11 @@
     "ATT_Sign",
     "ATT_Lamp_Flood_01",
     "ATT_Lamp_Flood_02",
+    "ATT_Lamp_Wash_01",
+    "ATT_Lamp_Wash_02",
+    "ATT_Lamp_Wash_03",
+    "ATT_Lamp_Wash_04",
+    "ATT_Lamp_Sign",
     "ATT_Bay_01",
     "ATT_Bay_02",
     "ATT_Bay_03",
@@ -725,7 +781,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "7058 of 10000"
+   "detail": "7154 of 10000"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD0",
@@ -733,7 +789,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.49e-04, 644 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.64e-04, 676 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD0",
@@ -757,7 +813,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 4455 faces have no UV area"
+   "detail": "0 of 4519 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_Details_LOD0",
@@ -781,7 +837,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1722 of 10000"
+   "detail": "1806 of 10000"
   },
   {
    "subject": "M_Bld_Station_Details_LOD0",
@@ -813,7 +869,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4 of 1076 faces have no UV area"
+   "detail": "4 of 1118 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_BayDoor_LOD0",
@@ -949,7 +1005,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "34 of 10000"
+   "detail": "44 of 10000"
   },
   {
    "subject": "M_Bld_Station_GlassLit_LOD0",
@@ -957,7 +1013,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.86e-03, 36 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.86e-03, 56 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Station_GlassLit_LOD0",
@@ -981,7 +1037,63 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 17 faces have no UV area"
+   "detail": "0 of 22 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Station_Grime_LOD0"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "150 of 10000"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.09e+00, 300 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 75 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_Stone_LOD1",
@@ -1197,7 +1309,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3178 of 10000"
+   "detail": "3274 of 10000"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD1",
@@ -1205,7 +1317,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.86e-04, 500 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.06e-03, 532 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD1",
@@ -1229,7 +1341,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1919 faces have no UV area"
+   "detail": "0 of 1983 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD1",
@@ -1237,7 +1349,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.006 (max 0.02), UV area by 16.4% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.008 (max 0.02), UV area by 16.5% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_Details_LOD1",
@@ -1261,7 +1373,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "438 of 10000"
+   "detail": "522 of 10000"
   },
   {
    "subject": "M_Bld_Station_Details_LOD1",
@@ -1293,7 +1405,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 252 faces have no UV area"
+   "detail": "0 of 294 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_Details_LOD1",
@@ -1301,7 +1413,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 39.8% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 37.5% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_BayDoor_LOD1",
@@ -1453,7 +1565,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "10 of 10000"
+   "detail": "20 of 10000"
   },
   {
    "subject": "M_Bld_Station_GlassLit_LOD1",
@@ -1461,7 +1573,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 6.31e+00, 20 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.37e-01, 40 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Station_GlassLit_LOD1",
@@ -1485,7 +1597,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 5 faces have no UV area"
+   "detail": "0 of 10 faces have no UV area"
   },
   {
    "subject": "M_Bld_Station_GlassLit_LOD1",
@@ -1493,7 +1605,71 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 45.1% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 29.2% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Station_Grime_LOD1"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "92 of 10000"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.36e+00, 184 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 46 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 30.4% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_Stone_LOD2",
@@ -1717,7 +1893,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.86e-04, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.06e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_Station_Trim_LOD2",
@@ -1749,7 +1925,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 2.656 (max 0.02), UV area by 60.8% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 2.456 (max 0.02), UV area by 61.4% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_Details_LOD2",
@@ -1813,7 +1989,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 66.2% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 68.1% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_BayDoor_LOD2",
@@ -2005,7 +2181,71 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 45.1% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.000 (max 0.02), UV area by 64.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Station_Grime_LOD2"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "40 of 10000"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.36e+00, 80 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 20 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Station_Grime_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep): UV bounds differ by 0.250 (max 0.02), UV area by 66.3% (max 15%)"
   },
   {
    "subject": "M_Bld_Station_COL",
@@ -2053,7 +2293,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "12676 of 40000 (hero_building, asset row)"
+   "detail": "13016 of 40000 (hero_building, asset row)"
   },
   {
    "subject": "M_Bld_Station",
@@ -2061,7 +2301,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "7208 of 15000"
+   "detail": "7490 of 15000"
   },
   {
    "subject": "M_Bld_Station",
@@ -2069,7 +2309,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1616 of 3000"
+   "detail": "1656 of 3000"
   },
   {
    "subject": "M_Bld_Station",
@@ -2085,7 +2325,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "61.026 studs, real 20.000 m = 60.000 studs, off 1.7% (5% free, 15% with a note)"
+   "detail": "61.488 studs, real 20.000 m = 60.000 studs, off 2.5% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Bld_Station",
@@ -2117,7 +2357,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (H2: 6 sets = 5 own + the shared BldTrim sheet; GraniteBase (damp, salt-lined, algae base courses) is the granite with a rising-damp gradient, kept separate so the 2 m wall tile stays clean): 6 (4 to 5 sets)"
+   "detail": "WAIVED (H3: +1 own set Grime (RGBA decal atlas, AlphaMode Transparency: rain streaks, rust runs, downpipe stains, salt bloom, repaint, ridge moss) = 7 sets. H2: 6 sets = 5 own + the shared BldTrim sheet; GraniteBase (damp, salt-lined, algae base courses) is the granite with a rising-damp gradient, kept separate so the 2 m wall tile stays clean): 7 (4 to 5 sets)"
   },
   {
    "subject": "T_Station_Render_ALB",
@@ -2166,6 +2406,54 @@
    "waived": false,
    "info": false,
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Render_MET.png"
+  },
+  {
+   "subject": "T_Station_Grime_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_ALB.png"
+  },
+  {
+   "subject": "T_Station_Grime_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Station_Grime_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_NOR.png"
+  },
+  {
+   "subject": "T_Station_Grime_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_RGH.png"
+  },
+  {
+   "subject": "T_Station_Grime_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Station_Grime_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Station/T_Station_Grime_MET.png"
   },
   {
    "subject": "T_Station_Slate_ALB",
@@ -2496,6 +2784,46 @@
    "detail": "empty becomes an Attachment on import"
   },
   {
+   "subject": "ATT_Lamp_Wash_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Wash_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Wash_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Wash_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lamp_Sign",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
    "subject": "ATT_Bay_01",
    "check": "attachment naming",
    "ok": true,
@@ -2557,7 +2885,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Station_BayDoor_LOD0, M_Bld_Station_COL, M_Bld_Station_Details_LOD0, M_Bld_Station_GlassLit_LOD0, M_Bld_Station_Plinth_LOD0, M_Bld_Station_Render_LOD0, M_Bld_Station_Roof_LOD0, M_Bld_Station_Stone_LOD0, M_Bld_Station_Trim_LOD0; 12776 triangles (scene 12776)"
+   "detail": "M_Bld_Station_BayDoor_LOD0, M_Bld_Station_COL, M_Bld_Station_Details_LOD0, M_Bld_Station_GlassLit_LOD0, M_Bld_Station_Grime_LOD0, M_Bld_Station_Plinth_LOD0, M_Bld_Station_Render_LOD0, M_Bld_Station_Roof_LOD0, M_Bld_Station_Stone_LOD0, M_Bld_Station_Trim_LOD0; 13116 triangles (scene 13116)"
   },
   {
    "subject": "M_Bld_Station_LOD0.fbx",
@@ -2565,7 +2893,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 8 of 8 visual meshes"
+   "detail": "UV layer on 9 of 9 visual meshes"
   },
   {
    "subject": "M_Bld_Station_LOD1.fbx",
@@ -2597,7 +2925,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Station_BayDoor_LOD1, M_Bld_Station_Details_LOD1, M_Bld_Station_GlassLit_LOD1, M_Bld_Station_Plinth_LOD1, M_Bld_Station_Render_LOD1, M_Bld_Station_Roof_LOD1, M_Bld_Station_Stone_LOD1, M_Bld_Station_Trim_LOD1; 7208 triangles (scene 7208)"
+   "detail": "M_Bld_Station_BayDoor_LOD1, M_Bld_Station_Details_LOD1, M_Bld_Station_GlassLit_LOD1, M_Bld_Station_Grime_LOD1, M_Bld_Station_Plinth_LOD1, M_Bld_Station_Render_LOD1, M_Bld_Station_Roof_LOD1, M_Bld_Station_Stone_LOD1, M_Bld_Station_Trim_LOD1; 7490 triangles (scene 7490)"
   },
   {
    "subject": "M_Bld_Station_LOD1.fbx",
@@ -2605,7 +2933,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 8 of 8 visual meshes"
+   "detail": "UV layer on 9 of 9 visual meshes"
   },
   {
    "subject": "M_Bld_Station_LOD2.fbx",
@@ -2637,7 +2965,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_Station_BayDoor_LOD2, M_Bld_Station_Details_LOD2, M_Bld_Station_GlassLit_LOD2, M_Bld_Station_Plinth_LOD2, M_Bld_Station_Render_LOD2, M_Bld_Station_Roof_LOD2, M_Bld_Station_Stone_LOD2, M_Bld_Station_Trim_LOD2; 1616 triangles (scene 1616)"
+   "detail": "M_Bld_Station_BayDoor_LOD2, M_Bld_Station_Details_LOD2, M_Bld_Station_GlassLit_LOD2, M_Bld_Station_Grime_LOD2, M_Bld_Station_Plinth_LOD2, M_Bld_Station_Render_LOD2, M_Bld_Station_Roof_LOD2, M_Bld_Station_Stone_LOD2, M_Bld_Station_Trim_LOD2; 1656 triangles (scene 1656)"
   },
   {
    "subject": "M_Bld_Station_LOD2.fbx",
@@ -2645,7 +2973,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 8 of 8 visual meshes"
+   "detail": "UV layer on 9 of 9 visual meshes"
   }
  ],
  "meshes": [
@@ -2716,14 +3044,14 @@
    "name": "M_Bld_Station_Trim_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 7058,
+   "triangles": 7154,
    "texel_density": null
   },
   {
    "name": "M_Bld_Station_Trim_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 3178,
+   "triangles": 3274,
    "texel_density": null
   },
   {
@@ -2737,14 +3065,14 @@
    "name": "M_Bld_Station_Details_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1722,
+   "triangles": 1806,
    "texel_density": null
   },
   {
    "name": "M_Bld_Station_Details_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 438,
+   "triangles": 522,
    "texel_density": null
   },
   {
@@ -2800,14 +3128,14 @@
    "name": "M_Bld_Station_GlassLit_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 34,
+   "triangles": 44,
    "texel_density": null
   },
   {
    "name": "M_Bld_Station_GlassLit_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 10,
+   "triangles": 20,
    "texel_density": null
   },
   {
@@ -2815,6 +3143,27 @@
    "role": "visual",
    "lod": "LOD2",
    "triangles": 10,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Station_Grime_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 150,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Station_Grime_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 92,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Station_Grime_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 40,
    "texel_density": null
   },
   {
@@ -2826,9 +3175,9 @@
   }
  ],
  "bbox_studs": [
-  61.02556610107422,
+  61.487998962402344,
   53.01000213623047,
-  43.13999938964844
+  43.152767181396484
  ],
- "peak_rss_mb": 296.7
+ "peak_rss_mb": 299.0
 }

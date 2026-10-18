@@ -176,17 +176,17 @@ def render_set():
     base = rgb((170, 166, 154))
     alb = base[None, None, :] * (0.95 + 0.07 * big[..., None] + 0.06 * mid[..., None])
     algae = smooth(0.58, 0.85, runs)[..., None]
-    alb = alb * (1 - 0.12 * algae) + rgb((104, 110, 92)) * 0.12 * algae
-    alb = alb * (1 - 0.14 * salt[..., None]) + rgb((196, 194, 186)) * 0.14 * salt[..., None]
+    alb = alb * (1 - 0.2 * algae) + rgb((104, 110, 92)) * 0.2 * algae   # H3: stronger
+    alb = alb * (1 - 0.2 * salt[..., None]) + rgb((200, 198, 190)) * 0.2 * salt[..., None]
     pits = smooth(0.8, 0.92, fine)
     alb = alb * (1 - 0.06 * pits[..., None])
     h = 0.55 * mid + 0.35 * fine + 0.25 * big - 0.15 * pits
     rgh = 0.87 + 0.06 * fine - 0.05 * salt + 0.04 * algae[..., 0]
     # patch repairs: newer lime / cement render, smoother, a touch different in tone, a fine seam at the edge
     r = np.random.default_rng(31)
-    specs = [(r.uniform(0, N), r.uniform(0, N), r.uniform(40, 90), r.uniform(30, 70)) for _ in range(4)]   # H2: small
+    specs = [(r.uniform(0, N), r.uniform(0, N), r.uniform(60, 170), r.uniform(40, 110)) for _ in range(8)]   # H3: patchy repaint
     pm, ring = patch_masks(s, specs, 32, edge_amp=9.0)
-    tones = [rgb((160, 160, 156)), rgb((176, 170, 158)), rgb((154, 156, 152)), rgb((168, 164, 152))]
+    tones = [rgb((188, 187, 180)), rgb((176, 170, 158)), rgb((194, 192, 184)), rgb((168, 164, 152))] * 2
     pid = np.zeros(s, dtype=np.int64)
     yy, xx = np.mgrid[0:N, 0:N].astype(np.float64)
     best = np.full(s, 1e9)
@@ -196,7 +196,7 @@ def render_set():
         best = np.minimum(best, d)
     pcol = np.stack(tones)[pid] * (0.97 + 0.05 * mid[..., None])
     pcol = pcol * (1 - 0.1 * algae * 0.5)
-    alb = lerp(alb, pcol, pm * 0.35)
+    alb = lerp(alb, pcol, pm * 0.55)
     alb = alb * (1 - 0.1 * ring[..., None] * (0.5 + fine[..., None]))
     h = lerp(h, 0.6 + 0.12 * big + 0.06 * fine, pm) - 0.12 * ring
     rgh = lerp(rgh, 0.8 + 0.03 * fine, pm)
@@ -206,7 +206,7 @@ def render_set():
     h = h - 0.12 * crk
     rgh = rgh + 0.03 * crk
     nor = normal_from_height(h, 9.0)
-    save(OUT, "T_Station_Render", alb, nor, rgh, np.zeros(s), darken=0.32, gloss=0.42)
+    save(OUT, "T_Station_Render", alb, nor, rgh, np.zeros(s), darken=0.36, gloss=0.55)
 
 
 # ---------------------------------------------------------------- slate (8 courses x 5 slates per 2 m tile)
@@ -263,13 +263,13 @@ def slate_set():
     alb = alb * (1 - 0.5 * shadow[..., None])
     alb = lerp(alb, dark * (0.9 + 0.2 * edgen[..., None]), under * 0.9)
     # lichen and salt, sparing: rosettes (grey-green, white crustose, a few orange Xanthoria), salt at some tails
-    lm, li = spots(s, 120, (3.0, 15.0), 45)   # H2: lichen (was 34)
+    lm, li = spots(s, 220, (3.0, 17.0), 45)   # H3: lichen (H2 120)
     lm = lm * (1 - gap) * (1 - under) * np.where(replaced[slot], 0.2, 1.0)
     lcol = np.array([rgb((122, 130, 106)), rgb((176, 178, 168)), rgb((168, 126, 60)), rgb((134, 138, 112))])
-    lpick = np.random.default_rng(46).choice(4, 120, p=(0.38, 0.3, 0.14, 0.18))
+    lpick = np.random.default_rng(46).choice(4, 220, p=(0.34, 0.26, 0.2, 0.2))
     alb = lerp(alb, lcol[lpick][li] * (0.9 + 0.2 * edgen[..., None]), lm * 0.85)
-    moss = smooth(0.62, 0.8, fbm(s, 2.8, seed=48)) * (1 - smooth(0.0, 40.0, ty)) * (1 - under)   # grey-green crust under the tails
-    alb = lerp(alb, rgb((96, 104, 84)) * (0.9 + 0.2 * edgen[..., None]), moss[..., None] * 0.55)
+    moss = smooth(0.55, 0.75, fbm(s, 2.8, seed=48)) * (1 - smooth(0.0, 56.0, ty)) * (1 - under)   # grey-green crust under the tails
+    alb = lerp(alb, rgb((88, 100, 62)) * (0.9 + 0.2 * edgen[..., None]), moss[..., None] * 0.75)
     lm = np.maximum(lm, moss * 0.6)
     tsalt = smooth(0.6, 1.0, 1 - dt / 26) * smooth(0.72, 0.9, fbm(s, 2.2, seed=47)) * (1 - under)
     alb = lerp(alb, rgb((150, 153, 152)), tsalt * 0.35)
@@ -286,7 +286,7 @@ def slate_set():
     rgh = lerp(rgh, 0.9, under)
     rgh = lerp(rgh, 0.92, lm)
     rgh = rgh + 0.08 * tsalt
-    save(OUT, "T_Station_Slate", alb, nor, rgh, np.zeros(s), darken=0.35, gloss=0.5)
+    save(OUT, "T_Station_Slate", alb, nor, rgh, np.zeros(s), darken=0.42, gloss=0.6)
 
 
 # ---------------------------------------------------------------- granite ashlar (5 courses x 0.4 m per 2 m tile)
@@ -429,14 +429,16 @@ def granite_set(basev=False):
     name = "T_Station_Granite"
     if basev:    # plinth / base courses (v = z / 2 m): rising damp, green algae at the foot, a white salt line at the damp edge
         wob = fbm(s, 2.6, aniso=(1.0, 0.3), seed=96)
-        edge = 0.55 + 0.25 * (wob - 0.5) * 2
+        edge = 0.27 + 0.08 * (wob - 0.5) * 2      # H3: z 0.38 .. 0.70 m (H2 1.1 m was above the plinth)
         damp = 1 - smooth(edge - 0.18, edge, vm)
-        alb = alb * (1 - 0.38 * damp[..., None])
-        green = (1 - smooth(0.05, 0.35 + 0.15 * wob, vm)) * (0.6 + 0.4 * fine)
+        alb = alb * (1 - 0.5 * damp[..., None])
+        tline = np.exp(-((vm - edge + 0.012) / 0.01) ** 2) * smooth(0.3, 0.6, fine + 0.3 * mid)    # dark tide line
+        alb = alb * (1 - 0.35 * tline[..., None])
+        green = (1 - smooth(0.03, 0.17 + 0.08 * wob, vm)) * (0.6 + 0.4 * fine)
         alb = lerp(alb, rgb((58, 70, 50)) * (0.85 + 0.3 * mid[..., None]), green[..., None] * 0.55)
         sline = smooth(0.0, 0.04, vm - edge + 0.06) * (1 - smooth(0.0, 0.06, vm - edge)) * smooth(0.4, 0.7, fine + 0.3 * mid)
         alb = lerp(alb, rgb((214, 212, 204)), sline[..., None] * 0.6 * (1 - jm[..., None] * 0.5))
-        rgh = rgh - 0.18 * damp - 0.1 * green + 0.08 * sline
+        rgh = rgh - 0.24 * damp - 0.1 * green + 0.08 * sline
         h = h + 0.3 * sline
         name = "T_Station_GraniteBase"
     nor = normal_from_height(h, 0.9)
@@ -712,7 +714,96 @@ def details_set():
     save(OUT, "T_Station_Details", alb, nor, rgh, met, darken=0.28, gloss=0.35, rlo=0.03)
 
 
+# ---------------------------------------------------------------- H3 grime decal atlas (RGBA, AlphaMode Transparency)
+GRIME = {"Streak": (0.0, 0.5, 0.5, 1.0), "Rust": (0.5, 0.5, 0.75, 1.0), "Pipe": (0.75, 0.5, 1.0, 1.0),
+         "Salt": (0.0, 0.25, 1.0, 0.5), "Repaint": (0.0, 0.0, 0.5, 0.25), "Moss": (0.5, 0.0, 1.0, 0.25)}
+
+
+def grime_set():
+    """Decal cards: rain streaks (under sills / eaves), rust runs (under fittings), downpipe staining, salt bloom band
+    (wall foot), patchy repaint, moss + lichen (ridges). Alpha 0 outside the marks; every rect fades to 0 at its rim."""
+    s = (N, N)
+    alb = np.zeros((N, N, 3)) + rgb((112, 110, 100))
+    a, rg, hg = np.zeros(s), np.full(s, 0.85), np.zeros(s)
+    big, mid, fine = fbm(s, 3.0, seed=81), fbm(s, 2.2, seed=82), fbm(s, 1.3, seed=83)
+    runs = fbm(s, 2.4, aniso=(0.06, 1.8), seed=84)
+    blot = fbm(s, 2.8, seed=85)
+    moss_n = fbm(s, 2.2, aniso=(1.0, 0.4), seed=86)
+    lich = fbm(s, 1.1, seed=87)
+
+    def reg(name):
+        u0, v0, u1, v1 = GRIME[name]
+        r0, r1, c0, c1 = int(round((1 - v1) * N)), int(round((1 - v0) * N)), int(round(u0 * N)), int(round(u1 * N))
+        sl = (slice(r0, r1), slice(c0, c1))
+        ty, tx = np.mgrid[0:r1 - r0, 0:c1 - c0].astype(np.float64)
+        return sl, ty / (r1 - r0 - 1), tx / (c1 - c0 - 1)
+
+    def rim(ty, tx, e=0.04, top=True):
+        r = smooth(0, e, tx) * smooth(0, e, 1 - tx) * smooth(0, e, 1 - ty)
+        return r * smooth(0, e, ty) if top else r
+
+    sl, ty, tx = reg("Streak")                     # top edge = under the sill / soffit
+    st = smooth(0.42, 0.72, runs[sl] * 0.8 + fine[sl] * 0.2)
+    aa = (st * (1 - ty) ** 1.5 * 0.8 + 0.35 * (1 - ty) ** 5) * rim(ty, tx, 0.1, top=False) * smooth(0, 0.01, ty)
+    a[sl] = np.clip(aa, 0, 1)
+    alb[sl] = lerp(rgb((92, 96, 82)), rgb((70, 72, 62)), st[..., None]) * (0.85 + 0.3 * fine[sl][..., None])
+    rg[sl] = 0.72
+    sl, ty, tx = reg("Rust")                       # fitting at the top centre
+    rx = tx + 0.04 * (mid[sl] - 0.5)
+    col = (np.exp(-((rx - 0.5) / (0.06 + 0.12 * ty)) ** 2) + 0.6 * np.exp(-((rx - 0.33) / 0.035) ** 2) * smooth(0.45, 0.65, runs[sl])
+           + 0.5 * np.exp(-((rx - 0.68) / 0.03) ** 2) * smooth(0.4, 0.6, runs[sl]))
+    a[sl] = np.clip(col * (1 - ty) ** 1.2 * 0.9, 0, 1) * rim(ty, tx, 0.06, top=False)
+    alb[sl] = lerp(rgb((118, 62, 30)), rgb((150, 102, 64)), ty[..., None]) * (0.85 + 0.3 * fine[sl][..., None])
+    rg[sl] = 0.7
+    sl, ty, tx = reg("Pipe")                       # pipe on the centre line; splash fan at the foot
+    colm = np.exp(-((tx - 0.5) / 0.26) ** 2) * (0.35 + 0.65 * smooth(0.4, 0.7, runs[sl]))
+    fan = smooth(0.75, 1.0, ty) * np.exp(-((tx - 0.5) / (0.18 + 0.3 * smooth(0.75, 1.0, ty))) ** 2)
+    a[sl] = np.clip(colm * (0.4 + 0.5 * ty) + fan * 0.6 * smooth(0.3, 0.6, blot[sl]), 0, 0.9) * rim(ty, tx, 0.08)
+    alb[sl] = lerp(rgb((66, 74, 58)), rgb((52, 60, 44)), smooth(0.7, 1.0, ty)[..., None]) * (0.85 + 0.3 * fine[sl][..., None])
+    rg[sl] = 0.6
+    sl, ty, tx = reg("Salt")                       # tiles in u; bottom edge = top of the plinth
+    lh = 0.45 + 0.18 * (fbm(s, 2.6, aniso=(1.0, 0.1), seed=88)[sl] - 0.5) * 2
+    damp = smooth(-0.04, 0.06, ty - lh)
+    salt = np.exp(-((ty - lh) / 0.06) ** 2) * smooth(0.4, 0.7, fine[sl] * 0.5 + mid[sl] * 0.5) + 0.5 * smooth(0.8, 0.9, fine[sl]) * damp
+    salt = np.clip(salt, 0, 1)
+    a[sl] = np.clip(np.maximum(damp * 0.5, salt * 0.9), 0, 1) * smooth(0, 0.03, ty)
+    alb[sl] = lerp(rgb((104, 104, 92)), rgb((228, 226, 216)), (salt / (salt + damp * 0.6 + 1e-3))[..., None])
+    rg[sl] = lerp(0.7 * np.ones_like(ty), 0.92, salt)
+    hg[sl] = salt * 0.4
+    sl, ty, tx = reg("Repaint")                    # fresh limewash over the old render, ragged soft edge
+    ell = np.sqrt(((tx - 0.5) / 0.48) ** 2 + ((ty - 0.5) / 0.46) ** 2)
+    pm = smooth(0.48, 0.56, (1 - ell) * 0.9 + blot[sl] * 0.55 + fine[sl] * 0.15 - 0.2)
+    seam = pm * (1 - smooth(0.0, 0.05, pm - 0.5)) * 0.0 + np.clip(pm * (1 - pm) * 4, 0, 1)
+    a[sl] = np.clip(pm * 0.8, 0, 1) * rim(ty, tx, 0.05)
+    alb[sl] = rgb((196, 194, 186)) * (0.96 + 0.06 * fine[sl][..., None]) * (1 - 0.12 * seam[..., None])
+    rg[sl] = 0.82
+    hg[sl] = pm * 0.15
+    sl, ty, tx = reg("Moss")                       # cushions + lichen rosettes, tiles in u
+    mo = smooth(0.5, 0.62, moss_n[sl] * 0.75 + fine[sl] * 0.25) * (1 - smooth(0.65, 1.0, ty) * 0.6)
+    li = smooth(0.74, 0.8, lich[sl])
+    a[sl] = np.clip(np.maximum(mo, li * 0.9), 0, 1) * smooth(0, 0.08, ty) * smooth(0, 0.08, 1 - ty)
+    mcol = lerp(rgb((70, 86, 38)), rgb((108, 112, 56)), smooth(0.4, 0.7, mid[sl])[..., None]) * (0.8 + 0.4 * fine[sl][..., None])
+    lcol = lerp(rgb((176, 134, 58)), rgb((164, 168, 150)), smooth(0.45, 0.55, big[sl])[..., None])
+    alb[sl] = lerp(mcol, lcol, (li * (1 - mo))[..., None])
+    rg[sl] = 0.92
+    hg[sl] = mo * (0.5 + 0.5 * fine[sl])
+    os.makedirs(OUT, exist_ok=True)
+    stem = OUT + "/T_Station_Grime"
+    alb = np.clip(alb, 24 / 255, 236 / 255)
+
+    def rgba(c):
+        return Image.fromarray((np.dstack([c, a]) * 255 + 0.5).astype(np.uint8), "RGBA")
+    rgba(alb).save(stem + "_ALB.png")
+    lum = alb.mean(-1, keepdims=True)
+    rgba(np.clip((lum + (alb - lum) * 1.15) * 0.55, 22 / 255, 236 / 255)).save(stem + "_ALB_Wet.png")
+    Image.fromarray((np.clip(rg, 0.04, 1) * 255 + 0.5).astype(np.uint8)).save(stem + "_RGH.png")
+    Image.fromarray((np.clip(rg - 0.45, 0.06, 1) * 255 + 0.5).astype(np.uint8)).save(stem + "_RGH_Wet.png")
+    Image.fromarray((np.clip(normal_from_height(hg, 2.0, wrap=False), 0, 1) * 255 + 0.5).astype(np.uint8)).save(stem + "_NOR.png")
+    Image.fromarray(np.zeros(s, dtype=np.uint8)).save(stem + "_MET.png")
+
+
 if __name__ == "__main__":
+    grime_set()
     render_set()
     slate_set()
     granite_set()

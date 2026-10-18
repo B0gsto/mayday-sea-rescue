@@ -37,6 +37,7 @@ LS = math.sqrt(1 + K * K)    # slope length per metre of run
 HW = 10.0 / 3.0            # half width of the ramp
 KW, KH = 0.33, 0.2         # kerbs
 SPLIT = -6.0               # weed line (0.4 m above sea level), the middle of the tide band
+ZWT = 0.0                  # H3: WallTide below this height (one 3 m tile in v: z -3 .. 0)
 TOE = -30.0                # H2: toe 3.2 m below sea level (was -23 with a blunt stepped end)
 YW = -1.333 / K            # waterline (sea level, 4 studs under the pivot)
 WX0 = HW + KW              # retaining wall inner face
@@ -230,14 +231,21 @@ def frond(part, p0, d, L, w, rnd, mode, droop=0.0, segs=3):
         q = Vector(p0) + d * L * t + side * (0.04 * math.sin(t * 3.0 + rnd.uniform(0, 1))) + Vector((0, 0, -droop * t * t))
         ww = w * (1.0 - 0.65 * t) * rnd.uniform(0.85, 1.1)
         pts.append((q - side * ww / 2, q + side * ww / 2))
-    for k in range(segs):
-        quad = [pts[k][0], pts[k][1], pts[k + 1][1], pts[k + 1][0]]
+    # H3 fix (the translucent bubble-like blobs at the toe): the back side shared the front's prim id, so to_object welded
+    # both sides onto the same vertices; the duplicate opposite faces averaged their smooth normals to ~zero, which shaded
+    # as glossy see-through blobs. The back is now its own shell, lifted 1.5 mm off the front along the ribbon normal.
+    quads = [[pts[k][0], pts[k][1], pts[k + 1][1], pts[k + 1][0]] for k in range(segs)]
+    for quad in quads:
         part.face(quad, mode)
-        part.face(quad[::-1], mode)
+    part.prim += 1
+    for quad in quads:
+        n = newell(quad)
+        n = n.normalized() * 0.0015 if n.length > 1e-12 else Vector()
+        part.face([p - n for p in quad[::-1]], mode)
 
 
 def h2_toe_walls(con, weed, st, rnd):
-    wallp, rockp = Part("Wall"), Part("Rock")
+    wallp, rockp, wtide = Part("Wall"), Part("Rock"), Part("WallTide")
     QS, KR = ("tile", 3.0), ("tile", 2.5)
     VENT = rect("Vent", 0.25, 0.25)
     # stepped, battered retaining walls along both kerbs: 3 m bays stepping 0.45 m down the slope, concrete copings
@@ -247,12 +255,23 @@ def h2_toe_walls(con, weed, st, rnd):
             ztop = z(ya) + 0.55
             zb = z(yb) - 0.95
             xo = WX0 + 0.45 + 0.2 * (ztop - zb)
-            prof = [(sx * WX0, zb), (sx * xo, zb), (sx * (WX0 + 0.45), ztop), (sx * WX0, ztop)]
             geo.LEVEL = 3
-            wallp.prism(prof, "y", yb + 0.012, ya - 0.012, QS)
+
+            def xout(zz, zb=zb, ztop=ztop, xo=xo):
+                return xo + (WX0 + 0.45 - xo) * (zz - zb) / (ztop - zb)
+
+            def prof(z0, z1, sx=sx):
+                return [(sx * WX0, z0), (sx * xout(z0), z0), (sx * xout(z1), z1), (sx * WX0, z1)]
+            # H3: below z = 0 the wall is the own WallTide set (QuayStone + tidal wet band, algae, waterline stain);
+            # same u / v as the QuayStone tile on the inner face (u = -sx y / 3, v = z / 3), so the courses run on
+            if ztop > ZWT:
+                wallp.prism(prof(max(zb, ZWT), ztop), "y", yb + 0.012, ya - 0.012, QS)
+            if zb < ZWT:
+                wt = ("fn", lambda p, sx=sx: (-sx * p.y / 3.0 + sx * (p.x - sx * WX0) / 3.0, p.z / 3.0 + 0.5 * sx * (p.x - sx * WX0) / 3.0))
+                wtide.prism(prof(zb, min(ztop, ZWT)), "y", yb + 0.012, ya - 0.012, wt)
             cp = [(sx * (WX0 - 0.05), ztop), (sx * (WX0 + 0.52), ztop), (sx * (WX0 + 0.52), ztop + 0.1),
                   (sx * (WX0 + 0.49), ztop + 0.13), (sx * (WX0 - 0.02), ztop + 0.13), (sx * (WX0 - 0.05), ztop + 0.1)]
-            con.prism(cp, "y", yb + 0.008, ya - 0.008, CON)
+            (weed if ztop < -0.2 else con).prism(cp, "y", yb + 0.008, ya - 0.008, CON)   # H3: tidal copings weedy
             geo.LEVEL = 1
             for yw in (ya - 0.9, ya - 2.1):         # weep pipes through the inner face, just above the kerb
                 if yw < yb + 0.2:
@@ -322,7 +341,7 @@ def h2_toe_walls(con, weed, st, rnd):
                      (x + n.x, y + n.y, z(y) + 0.003)], VENT, outward=(0, 0, 1))
             x, y = x1, y1
     geo.LEVEL = 3
-    return wallp, rockp
+    return wallp, rockp, wtide
 
 
 # ------------------------------------------------------------------ build
@@ -362,7 +381,7 @@ def build():
             geo.LEVEL = 2
             sweep(st, [(-HW - KW, -0.06), (HW + KW, -0.06), (HW + KW, -0.03), (-HW - KW, -0.03)], ya + g, ya - g, 0.0, RUST)
             geo.LEVEL = 3
-    WALLP, ROCKP = h2_toe_walls(con, weed, st, rnd)
+    WALLP, ROCKP, WTIDE = h2_toe_walls(con, weed, st, rnd)
 
     # ---- launch rails: flat-bottom profile (foot, web, head), end stops, sole plates with clips and bolts
     head = [(-0.036, 0.148), (-0.036, 0.122), (-0.03, 0.114), (0.03, 0.114), (0.036, 0.122), (0.036, 0.148),
@@ -553,9 +572,10 @@ def build():
             "Tide": ("Tide", geo.material("MI_Slipway_Tide", (0.26, 0.26, 0.22), 0.6)),
             "Steel": ("Steel", geo.material("MI_Slipway_Steel", (0.3, 0.27, 0.24), 0.8, 0.0)),
             "Wall": ("QuayStone", geo.material("MI_Slipway_Wall", (0.3, 0.3, 0.29), 0.85)),
+            "WallTide": ("WallTide", geo.material("MI_Slipway_WallTide", (0.22, 0.23, 0.19), 0.6)),
             "Rock": ("KelpRock", geo.material("MI_Slipway_Rock", (0.16, 0.16, 0.13), 0.5))}
     meshes = []
-    for p in (con, tide, weed, st, WALLP, ROCKP):
+    for p in (con, tide, weed, st, WALLP, ROCKP, WTIDE):
         s, mat = mats[p.name]
         for li, lod in ((0, "LOD0"), (1, "LOD1"), (2, "LOD2")):
             meshes.append({"object": p.to_object("%s_%s_%s" % (NAME, p.name, lod), mat, lod=li), "set": s})
@@ -585,9 +605,10 @@ def build():
                  {"name": "Mat", "set": "WeedyConcrete", "size": 1024, "wet": True, "dir": tex + "Materials"},
                  {"name": "Slipway", "set": "Tide", "size": 1024, "wet": True},
                  {"name": "Slipway", "set": "Steel", "size": 1024, "wet": True},
+                 {"name": "Slipway", "set": "WallTide", "size": 1024, "wet": True},
                  {"name": "Mat", "set": "QuayStone", "size": 1024, "wet": True, "dir": tex + "Materials"},
                  {"name": "Mat", "set": "KelpRock", "size": 1024, "wet": True, "dir": tex + "Materials"}],
-        "waivers": {"texture sets": "H2: hero_building class (the slipway is half of the station hero shell); 6 sets = 2 own + 4 shared B02 library sets (QuayStone retaining walls, KelpRock toe armour and weed fronds added in H2). 2 own sets: Steel (kit atlas: rails, winch, winch "
+        "waivers": {"texture sets": "H3: +1 own set WallTide (the retaining walls below z 0: QuayStone with the tidal wet band, green-brown algae and the waterline stain, v = height, so it cannot be the shared tiling set) = 7 sets. H2: hero_building class (the slipway is half of the station hero shell); 6 sets = 2 own + 4 shared B02 library sets (QuayStone retaining walls, KelpRock toe armour and weed fronds added in H2). 2 own sets: Steel (kit atlas: rails, winch, winch "
                                     "house walls / door / vent / roof) and Tide (the intertidal band, which has to be its own "
                                     "tiling set to blend the two shared sets seamlessly); Concrete and WeedyConcrete are the "
                                     "shared B02 library sets (docs/12 row, no new texture budget)",

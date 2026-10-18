@@ -218,6 +218,14 @@ def tide_set():
         rg = mix(rg, wr, wet * edge)
         rg = mix(rg, (0.34 if state == "dry" else 0.22) + 0.1 * fine, weed)
         rg = mix(rg, (0.8 if state == "dry" else 0.55), bcov * 0.8)
+        # H3: dark wet band, green-brown algae film and a waterline stain over the lower band (waterline at t = 1)
+        film = smooth(0.6, 0.78, tp + 0.08 * (big - 0.5)) * (1 - smooth(0.95, 1.0, t))
+        stain = np.exp(-((tp - 0.62) / 0.02) ** 2) * smooth(0.04, 0.1, t) * (1 - smooth(0.88, 0.96, t))
+        fcol = mix(rgb((58, 66, 38)), rgb((74, 62, 40)), smooth(0.4, 0.6, big)) * (0.8 + 0.4 * fine[..., None]) * k
+        alb = mix(alb, alb * 0.58, film)
+        alb = mix(alb, fcol, film * 0.6 * (1 - bcov))
+        alb = mix(alb, rgb((46, 40, 30)) * k, stain * 0.65)
+        rg = mix(rg, (0.24 if state == "dry" else 0.14) + 0.06 * fine, film * (1 - bcov))
         out[state] = (alb, rg)
     cgx, cgy = grad_of(half_tile(load(MAT + "/T_Mat_Concrete_NOR.png")))
     wgx, wgy = grad_of(half_tile(load(MAT + "/T_Mat_WeedyConcrete_NOR.png")))
@@ -399,7 +407,61 @@ def steel_set():
     save(OUT, "T_Slipway_Steel", alb, nor, rgh, met, darken=0.3, gloss=0.35)
 
 
+def walltide_set():
+    """T_Slipway_WallTide: the QuayStone tile (same 3 m phase) with the tidal zone baked in by height. On the walls
+    v = z / 3, so image row r is z = -3 r / N (pivot level 0 at the top row, sea level z = -1.333 at row 455)."""
+    s = (N, N)
+    yy, xx = np.mgrid[0:N, 0:N].astype(np.float64)
+    zr = -3.0 * yy / N
+    h = zr + 1.333                                            # height above sea level
+    big, mid, fine = fbm(s, 3.0, seed=61), fbm(s, 2.3, seed=62), fbm(s, 1.3, seed=63)
+    line = fbm(s, 2.6, aniso=(1.0, 0.15), seed=64)            # varies along u: ragged tide / splash line
+    runs = fbm(s, 2.4, aniso=(0.12, 1.6), seed=65)            # vertical runs reaching above the line
+    tl = 0.8 + 0.22 * (line - 0.5) * 2 + 0.12 * (runs - 0.5) * 2
+    da = tl - h                                               # depth below the line
+    keep = 1 - smooth(-0.16, -0.04, zr)                       # top rows stay pure QuayStone (seam at z = 0)
+    wet = smooth(-0.03, 0.03, da) * keep
+    stain = smooth(-0.025, 0.0, da) * (1 - smooth(0.03, 0.09, da)) * keep
+    alg = smooth(0.12, 0.7, da + 0.3 * (mid - 0.5)) * (0.55 + 0.45 * fine) * keep
+    sub = smooth(-0.1, 0.3, -h + 0.2 * (mid - 0.5)) * keep    # below sea level: dense weed film
+    salt = smooth(0.0, 0.06, -da) * (1 - smooth(0.06, 0.3, -da)) * smooth(0.45, 0.7, fine * 0.6 + mid * 0.4) * keep
+    band = smooth(0.3, 0.45, da) * (1 - smooth(0.8, 1.1, da)) * smooth(0.45, 0.65, big)
+    bh, bcov, bpit = barnacles(s, band * keep, 67)
+    gcol = mix(rgb((54, 64, 36)), rgb((72, 60, 40)), smooth(0.4, 0.6, big)) * (0.8 + 0.4 * fine[..., None])
+    out = {}
+    for state, sfx in (("dry", ""), ("wet", "_Wet")):
+        A = load(MAT + "/T_Mat_QuayStone_ALB%s.png" % sfx)[..., :3]
+        Rg = load(MAT + "/T_Mat_QuayStone_RGH%s.png" % sfx)
+        Rg = Rg[..., 0] if Rg.ndim == 3 else Rg
+        assert A.shape[:2] == s, A.shape
+        k = 1.0 if state == "dry" else 0.74
+        alb = mix(A, A * 0.55, wet * (1 if state == "dry" else 0.6))
+        alb = mix(alb, gcol * k, alg * 0.7)
+        alb = mix(alb, rgb((38, 46, 28)) * k * (0.85 + 0.3 * fine[..., None]), sub * 0.85)
+        alb = mix(alb, rgb((44, 38, 28)) * k, stain * 0.7)
+        alb = mix(alb, rgb((200, 198, 188)) * k, salt * 0.45)
+        alb = mix(alb, rgb((160, 156, 146)) * k * (0.85 + 0.2 * fine[..., None]), bcov * 0.9)
+        alb = alb * (1 - 0.6 * bpit[..., None])
+        rg = mix(Rg, (0.26 if state == "dry" else 0.14) + 0.06 * fine, np.maximum(wet, sub))
+        rg = mix(rg, 0.85, salt * 0.5)
+        rg = mix(rg, 0.8 if state == "dry" else 0.55, bcov * 0.8)
+        out[state] = (alb, rg)
+    gx, gy = grad_of(load(MAT + "/T_Mat_QuayStone_NOR.png")[..., :3])
+    soften = 1 - 0.5 * np.maximum(alg, sub)
+    bgx = (np.roll(bh, -1, 1) - np.roll(bh, 1, 1)) * 1.1
+    bgy = (np.roll(bh, -1, 0) - np.roll(bh, 1, 0)) * 1.1
+    nor = nor_of(gx * soften + bgx, gy * soften + bgy)
+    stem = "T_Slipway_WallTide"
+    write(OUT, stem, "ALB", np.clip(out["dry"][0], 22 / 255, 238 / 255), "RGB")
+    write(OUT, stem, "ALB_Wet", np.clip(np.minimum(out["wet"][0], out["dry"][0] * 0.86), 22 / 255, 238 / 255), "RGB")
+    write(OUT, stem, "RGH", np.clip(out["dry"][1], 0.05, 1), "L")
+    write(OUT, stem, "RGH_Wet", np.clip(np.minimum(out["wet"][1], out["dry"][1] - 0.04), 0.05, 1), "L")
+    write(OUT, stem, "NOR", nor, "RGB")
+    write(OUT, stem, "MET", np.zeros(s), "L")
+
+
 if __name__ == "__main__":
+    walltide_set()
     tide_set()
     steel_set()
     print("ok")
