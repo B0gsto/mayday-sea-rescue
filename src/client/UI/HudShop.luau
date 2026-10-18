@@ -4,10 +4,15 @@
 -- HudController, which also closes it when the player walks away). One row per gear item: name,
 -- effect, level pips and a buy button (price, or the rank needed, or MAX). Buying calls the onBuy
 -- callback (BuyGear on the server).
+-- It also mounts the Robux product cards (UI/ProductCard, RP-M3: Chandlery shelves, the harbourmaster's
+-- desk, the BoatDesk Quick Launch card) and forwards the data snapshots to them. One store panel at a
+-- time: opening a card closes this counter, and the E that opened a card (HudController's unprocessed-E
+-- fallback can see the counter prompt in range too) does not reopen the counter right after.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HudTheme = require(script.Parent.HudTheme)
+local ProductCard = require(script.Parent.ProductCard)
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 
@@ -114,16 +119,30 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 		rows[id] = { pips = pips, buy = buy, info = info }
 	end
 
+	local CARD_GRACE = 0.3 -- seconds after a product card opens in which the counter stays shut
 	local open = false
+	local cardOpenedAt = -math.huge
+	local card: ProductCard.Card
 	local function setOpen(value: boolean)
+		if value and os.clock() - cardOpenedAt < CARD_GRACE then
+			return
+		end
 		open = value
 		frame.Visible = value
+		if value and card then
+			card.close()
+		end
 	end
+	card = ProductCard.mount(function()
+		cardOpenedAt = os.clock()
+		setOpen(false)
+	end)
 	close.Activated:Connect(function()
 		setOpen(false)
 	end)
 
 	local function update(snapshot: { [string]: any })
+		card.setSnapshot(snapshot)
 		local data = Rules.defaultData()
 		data.cash = snapshot.cash or 0
 		data.rep = snapshot.rep or 0

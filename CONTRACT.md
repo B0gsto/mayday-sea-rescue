@@ -279,6 +279,11 @@ Owner (RP-M1): `src/shared/Config/MonetizationConfig.luau`, `src/server/Services
 - Client: player attributes `Pass_<Key>` = true and `PassesChecked`; remotes under `ReplicatedStorage.Net`: `Monetization_GetCatalogue` (function -> `{ {kind, key, id, name, order, owned} }`, only items offered to this player) and `Monetization_Purchased` (S->C `{kind, key, name}`). The client opens prompts itself (`PromptGamePassPurchase` / `PromptProductPurchase`) after an explicit Buy tap (docs/04 §1, RP-M3).
 - Policy: paid random items (none at launch) are offered only where `PolicyService` says `ArePaidRandomItemsRestricted == false`.
 
+**Product cards (RP-M3):** `src/shared/ProductShelves.luau` (pure: shelves, rule-6 gate, card states, `mayPrompt`; `tests/ProductCard.spec.luau`), `src/client/UI/ProductCard.luau` (mounted by `HudShop.build`), shelf tagging in `src/server/World/ChandleryRig.luau`, `buildHarbourmasterDesk` in `map/Build.luau`.
+- Shelves are markers with attribute `ProductShelf = <id>`: ChandleryRig tags the H2 shop's `ATT_ServiceCards`, `ATT_Logbook`, `ATT_Till`, `ATT_Rack_02`, `ATT_DogBasket`, `ATT_SwatchBoard`, `ATT_HornBoard`, `ATT_RadioShelf`; the quay desk `Map.PortHaven.HarbourmasterDesk` (x -14..-4, z -18..-12) has `DeskShelf` = `StormDesk` and a `StormBoard` chalkboard; the client adds a `BoatDeskQuickLaunch` attachment on the BoatDesk anchor (prompt on F / ButtonY). The client creates the ProximityPrompts locally (`Panel = "ProductShelf"`), only once `ProductShelves.pricedOpen` (cold open done and `OpsCompleted` >= 3, or rank >= 2, or a cert earned / 3 live cert ops).
+- Buy opens `PromptGamePassPurchase` / `PromptProductPurchase` only when the item is in `Monetization_GetCatalogue` with its config id and the live `GetProductInfo` price loaded. id 0 or not offered = "Coming soon"; `ready = false` items are listed only in Studio.
+- **Signals wanted (RP-M2):** player attributes `CashPacksToday` (number; Buy greys out at `CashPackDailyLimit`) and `CashPerMinute` (top open zone's rate; the card shows the exact pack Cash), `ReplicatedStorage.Weather` attribute `SummonQueue` (queued summoned storms; Buy greys out at 2, the chalkboard shows it). Server-side checks must still refuse what the card refuses.
+
 ## Settings (RP-S1)
 
 | File | Owns / API |

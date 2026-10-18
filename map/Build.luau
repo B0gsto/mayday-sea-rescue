@@ -1621,6 +1621,123 @@ local function buildBoatDesk(parent: Instance, g: number)
 	return desk
 end
 
+-- Harbourmaster's desk (docs/04 sections 1.1 and 5, RP-M3): a greybox stand-in on the quay just east
+-- of the Chandlery until the H4 office building exists. A desk with a brass storm barometer behind it
+-- and a chalkboard by the side panel showing the server's storm queue (StormBoard: the client writes
+-- its Sign.Text from ReplicatedStorage.Weather SummonQueue). The marker DeskShelf carries
+-- ProductShelf = "StormDesk": the client adds the prompt that opens the Call the Storm cards.
+local function buildHarbourmasterDesk(parent: Instance, g: number)
+	local desk = folder(parent, "HarbourmasterDesk", "Model")
+	local navy = rgb(28, 50, 86)
+	local brass = rgb(176, 140, 72)
+	local x0, x1, zb, zf = -14, -4, -18, -12 -- back wall (north) and desk front (south, the water)
+	box(
+		desk,
+		"BackWall",
+		Vector3.new(x0, g, zb - 1),
+		Vector3.new(x1, g + 10, zb),
+		COLORS.white,
+		M.Concrete
+	)
+	box(
+		desk,
+		"SideWest",
+		Vector3.new(x0, g, zb),
+		Vector3.new(x0 + 1, g + 10, zf),
+		COLORS.white,
+		M.Concrete
+	)
+	box(
+		desk,
+		"SideEast",
+		Vector3.new(x1 - 1, g, zb),
+		Vector3.new(x1, g + 10, zf),
+		COLORS.white,
+		M.Concrete
+	)
+	box(
+		desk,
+		"Desk",
+		Vector3.new(x0 + 1, g, zf - 1.5),
+		Vector3.new(x1 - 1, g + 3.5, zf),
+		navy,
+		M.Wood
+	)
+	box(
+		desk,
+		"DeskTop",
+		Vector3.new(x0 + 0.8, g + 3.5, zf - 1.7),
+		Vector3.new(x1 - 0.8, g + 3.8, zf + 0.4),
+		COLORS.wood,
+		M.WoodPlanks
+	)
+	box(
+		desk,
+		"Canopy",
+		Vector3.new(x0 - 1, g + 10, zb - 2),
+		Vector3.new(x1 + 1, g + 10.6, zf + 3),
+		navy,
+		M.SmoothPlastic
+	)
+	local board = box(
+		desk,
+		"SignBoard",
+		Vector3.new(x0 + 1, g + 10.6, zf + 2.4),
+		Vector3.new(x1 - 1, g + 12.6, zf + 2.8),
+		navy,
+		M.Wood
+	)
+	sign(board, "HARBOURMASTER", Enum.NormalId.Back, COLORS.white)
+	-- the storm barometer: a brass case with a white dial on the back wall, behind the desk
+	local cx = (x0 + x1) / 2
+	part({
+		Name = "Barometer",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.4, 3, 3),
+		CFrame = CFrame.new(cx, g + 7, zb + 0.2) * CFrame.Angles(0, math.pi / 2, 0),
+		Color = brass,
+		Material = M.Metal,
+		Parent = desk,
+	})
+	part({
+		Name = "BarometerDial",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.1, 2.4, 2.4),
+		CFrame = CFrame.new(cx, g + 7, zb + 0.45) * CFrame.Angles(0, math.pi / 2, 0),
+		Color = rgb(236, 230, 214),
+		Material = M.SmoothPlastic,
+		Parent = desk,
+	})
+	-- the storm queue chalkboard on the outside of the east side panel, facing the quay
+	local chalk = box(
+		desk,
+		"StormBoard",
+		Vector3.new(x1, g + 3, zf - 4.5),
+		Vector3.new(x1 + 0.3, g + 7, zf - 0.5),
+		rgb(34, 40, 38),
+		M.Slate
+	)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Sign"
+	gui.Face = Enum.NormalId.Right
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 40
+	gui.LightInfluence = 1
+	gui.Parent = chalk
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(0.9, 0.85)
+	label.Position = UDim2.fromScale(0.05, 0.075)
+	label.BackgroundTransparency = 1
+	label.Text = "STORM QUEUE\nNone waiting"
+	label.TextScaled = true
+	label.FontFace = Font.new("rbxasset://fonts/families/PatrickHand.json")
+	label.TextColor3 = rgb(226, 226, 216)
+	label.Parent = gui
+	marker(desk, "DeskShelf", Vector3.new(cx, g + 4.5, zf + 1.5), { ProductShelf = "StormDesk" })
+	return desk
+end
+
 -- Instance streaming (I1): the gameplay map (Map, Zones) stays Persistent, so every client script that reads
 -- Workspace.Map works as before; the run-time dressing (WorldDressingService: the Chandlery Packages, the K1 rocks and
 -- G1 plants from map/generated/props.json) lives in Workspace.Dressing as Atomic models that stream by distance.
@@ -1663,6 +1780,7 @@ return function(place: any, ctx: any)
 	local town = buildPortHaven(map, landTop, floorY, hasTerrain)
 	buildChandlery(town, landTop)
 	buildBoatDesk(town, landTop)
+	buildHarbourmasterDesk(town, landTop)
 	buildDropOffs(map)
 	local wallTop, wallFar = buildBreakwater(map, floorY, 30)
 	if not hasTerrain then
