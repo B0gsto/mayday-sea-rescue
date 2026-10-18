@@ -100,6 +100,7 @@ return function(t)
 		t.expect(#Shelves.shelfItems(unready, "Till", true)).toBe(7)
 		local c = clone(Config)
 		c.GamePasses.QuickLaunch.ready = true -- RP-M2 done, RP-M4 not yet: id 0
+		c.GamePasses.QuickLaunch.id = 0
 		t.expect(Shelves.shelfVisible(c, "BoatDeskQuickLaunch", false, true)).toBe(true)
 		local st = Shelves.cardState(c, pass("QuickLaunch"), ctx({ offered = false }))
 		t.expect(st.status).toBe("comingSoon")

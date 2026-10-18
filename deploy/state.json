@@ -2,8 +2,21 @@
   "universeId": 10771468869,
   "placeId": 85419402278824,
   "items": {
-    "Products": {},
-    "GamePasses": {}
+    "Products": {
+      "SmallBonus": 3719524891,
+      "CrewPayroll": 3719524897,
+      "StationBudget": 3719524917,
+      "HarborFund": 3719524924,
+      "CashBoost": 3719524939,
+      "CrewBoost": 3719524950,
+      "CallTheStorm": 3719524960,
+      "CallTheGreatStorm": 3719525027
+    },
+    "GamePasses": {
+      "DoubleCash": 2040015521,
+      "QuickLaunch": 2036073727,
+      "StarterKit": 2036091711
+    }
   },
   "placeVersion": 13
 }

@@ -38,7 +38,7 @@ local MonetizationConfig = {
 	Products = {
 		-- 4.1 Cash packs (scale with the highest open zone; the card shows the exact Cash first)
 		SmallBonus = {
-			id = 0,
+			id = 3719524891,
 			name = "Small Bonus",
 			description = "Cash equal to 15 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
 			price = 39,
@@ -48,7 +48,7 @@ local MonetizationConfig = {
 			valueBonus = 0,
 		},
 		CrewPayroll = {
-			id = 0,
+			id = 3719524897,
 			name = "Crew Payroll",
 			description = "Cash equal to 45 minutes of your top open zone's Cash rate. Cash only, no Reputation.",
 			price = 99,
@@ -58,7 +58,7 @@ local MonetizationConfig = {
 			valueBonus = 0,
 		},
 		StationBudget = {
-			id = 0,
+			id = 3719524917,
 			name = "Station Budget",
 			description = "Cash equal to 2.5 hours of your top open zone's Cash rate, plus 10%. Cash only, no Reputation.",
 			price = 249,
@@ -68,7 +68,7 @@ local MonetizationConfig = {
 			valueBonus = 0.1,
 		},
 		HarborFund = {
-			id = 0,
+			id = 3719524924,
 			name = "Harbor Fund",
 			description = "Cash equal to 7 hours of your top open zone's Cash rate, plus 20%. Cash only, no Reputation.",
 			price = 599,
@@ -79,7 +79,7 @@ local MonetizationConfig = {
 		},
 		-- 4.2 Other products
 		CashBoost = {
-			id = 0,
+			id = 3719524939,
 			name = "Cash Boost",
 			description = "2x Cash for 30 minutes of playtime. The timer pauses while you are away. Does not stack with the 2x Cash pass.",
 			price = 49,
@@ -89,7 +89,7 @@ local MonetizationConfig = {
 			boostMinutes = 30,
 		},
 		CrewBoost = {
-			id = 0,
+			id = 3719524950,
 			name = "Crew Boost",
 			description = "+50% Cash for you and everyone in your crew for 20 minutes of playtime. One active per crew. Cash only.",
 			price = 49,
@@ -108,7 +108,7 @@ local MonetizationConfig = {
 			dailyLimit = 3,
 		},
 		CallTheStorm = {
-			id = 0,
+			id = 3719524960,
 			name = "Call the Storm",
 			description = "Brings a server-wide storm to the Gale Isles for everyone in the server. Joins the server's storm queue.",
 			price = 249,
@@ -117,7 +117,7 @@ local MonetizationConfig = {
 			stormTier = "Storm",
 		},
 		CallTheGreatStorm = {
-			id = 0,
+			id = 3719525027,
 			name = "Call the Great Storm",
 			description = "Brings a bigger server-wide storm with a guaranteed big call for everyone in the server. Joins the server's storm queue.",
 			price = 699,
@@ -138,7 +138,7 @@ local MonetizationConfig = {
 
 	GamePasses = {
 		DoubleCash = {
-			id = 0,
+			id = 2040015521,
 			name = "2x Cash",
 			description = "Doubles Cash from operations, big calls and challenges. Does not change Reputation or rank.",
 			price = 199,
@@ -155,7 +155,7 @@ local MonetizationConfig = {
 			ready = false,
 		},
 		QuickLaunch = {
-			id = 0,
+			id = 2036073727,
 			name = "Quick Launch",
 			description = "Skip the launch cooldown and launch any owned vehicle straight from the station or an opened outpost. Never affects casualties or grades.",
 			price = 149,
@@ -163,7 +163,7 @@ local MonetizationConfig = {
 			ready = false,
 		},
 		StarterKit = {
-			id = 0,
+			id = 2036091711,
 			name = "Starter Kit",
 			description = "3,000 Cash, paid once. Owners also get the Station Orange livery and a Bosun bandana when they arrive in a later update.",
 			price = 99,

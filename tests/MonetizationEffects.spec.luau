@@ -147,7 +147,7 @@ return function(t)
 			for key, item in items do
 				t.expect(`{kind}.{key}={item.ready == true}`)
 					.toBe(`{kind}.{key}={ready[kind][key] == true}`)
-				t.expect(item.id).toBe(0) -- RP-M4 writes the real ids
+				t.expect(item.id >= 0 and item.id % 1 == 0).toBe(true) -- 0 = off; RP-M4 (deploy.py) writes the real ids
 			end
 		end
 		-- the Starter Kit's card states only what it gives today (docs/04 rule 4)
