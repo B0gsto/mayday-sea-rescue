@@ -1,0 +1,555 @@
+{
+ "asset": "M_Hbr_LobsterPot_02",
+ "name": "M_Hbr_LobsterPot_02",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD0.fbx",
+   "bytes": 115180,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_LobsterPot_02_COL",
+    "M_Hbr_LobsterPot_02_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_LobsterPot_02_COL.001",
+     "min": [
+      -1.3366,
+      -0.7531,
+      0.0
+     ],
+     "max": [
+      1.0634,
+      0.7469,
+      1.2
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Hbr_LobsterPot_02_LOD0.001",
+     "min": [
+      -1.369,
+      -0.7793,
+      0.0
+     ],
+     "max": [
+      1.369,
+      0.7793,
+      1.5771
+     ],
+     "polygons": 1158,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD1.fbx",
+   "bytes": 73420,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_LobsterPot_02_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_LobsterPot_02_LOD1.001",
+     "min": [
+      -1.3616,
+      -0.7804,
+      0.0
+     ],
+     "max": [
+      1.369,
+      0.7742,
+      1.5771
+     ],
+     "polygons": 579,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02.attachments.json",
+   "attachments": [
+    "ATT_Bridle"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_prop"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_LobsterPot_02_LOD0"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1158 of 3000"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.35e-04, 686 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.126 to 0.999, v 0.001 to 0.749"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 584 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "198 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_LobsterPot_02_LOD1"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "579 of 3000"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.48e-04, 641 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.126 to 0.999, v 0.001 to 0.749"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 579 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 36.2% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_LobsterPot_02_COL"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 3000"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1158 of 3000 (small_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "579 of 1500"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.913 x 0.52 x 0.526 m, spec 0.913 x 0.52 x 0.526 m (art/reference/M_Hbr_LobsterPot_02/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.738 studs, real 0.913 m = 2.739 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.559 studs, real 0.520 m = 1.560 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.577 studs, real 0.526 m = 1.578 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_LobsterPot_02_COL"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas M_Hbr_PropAtlas"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_NOR.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_MET.png"
+  },
+  {
+   "subject": "ATT_Bridle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_LobsterPot_02_COL, M_Hbr_LobsterPot_02_LOD0; 1170 triangles (scene 1170)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_LobsterPot_02_LOD1; 579 triangles (scene 579)"
+  },
+  {
+   "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_LobsterPot_02_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1158,
+   "texel_density": 197.8
+  },
+  {
+   "name": "M_Hbr_LobsterPot_02_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 579,
+   "texel_density": null
+  },
+  {
+   "name": "M_Hbr_LobsterPot_02_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  2.737952709197998,
+  1.5586121082305908,
+  1.5771369934082031
+ ],
+ "peak_rss_mb": 296.4
+}

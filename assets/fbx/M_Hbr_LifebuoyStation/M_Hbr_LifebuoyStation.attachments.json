@@ -1,0 +1,65 @@
+{
+ "asset": "M_Hbr_LifebuoyStation",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Ring",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.12,
+    4.0275
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    4.0275,
+    0.12
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.1925,
+    0.12
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ThrowLine",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.03,
+    3.15
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    3.15,
+    0.03
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.315,
+    0.03
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

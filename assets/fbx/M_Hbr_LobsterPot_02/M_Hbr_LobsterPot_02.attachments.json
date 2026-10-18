@@ -1,0 +1,36 @@
+{
+ "asset": "M_Hbr_LobsterPot_02",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Bridle",
+   "parent": null,
+   "blender": [
+    1.3634,
+    0.0569,
+    1.56
+   ],
+   "roblox_from_origin": [
+    -1.3634,
+    1.56,
+    0.0569
+   ],
+   "roblox_from_bbox_centre": [
+    -1.3634,
+    0.7714,
+    0.0569
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

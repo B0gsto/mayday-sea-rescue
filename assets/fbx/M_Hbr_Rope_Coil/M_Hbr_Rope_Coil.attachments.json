@@ -1,0 +1,36 @@
+{
+ "asset": "M_Hbr_Rope_Coil",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_End",
+   "parent": null,
+   "blender": [
+    1.5063,
+    -0.5325,
+    0.0298
+   ],
+   "roblox_from_origin": [
+    -1.5063,
+    0.0298,
+    -0.5325
+   ],
+   "roblox_from_bbox_centre": [
+    -1.5063,
+    -0.0424,
+    -0.5325
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

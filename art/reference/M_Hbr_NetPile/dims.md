@@ -1,6 +1,7 @@
 # M_Hbr_NetPile
-dims_m: 2 x 0.5 x 2
-Reference: heaped trawl net.
-- Pile footprint about 2 x 2 m, height about 0.5 m (verify).
-- Mesh cards are alpha; mesh size about 0.1 m (verify).
-Sources: none found (verify).
+
+Real class: Heaped trawl net on the quay, about 2 x 1.5 x 0.6 m (verify)
+
+dims_m: 2.359 x 1.628 x 0.788
+
+(X, Y, Z metres, front -Y, base at Z 0; the authored size of the HP2a build, art/source/harbour/M_Hbr_PropAtlas/props.py. Reference photo board: pending, see art/status/HP2a.csv.)

@@ -1,7 +1,7 @@
-# M_Hbr_Bollard_01 (_02, _03)
-dims_m: 0.35 x 0.55 x 0.35
-Reference: cast-iron harbour bollard.
-- Height 0.5 to 0.6 m above quay (row, verify).
-- Diameter 0.35 m at the head (row, verify).
-- Base flange about 0.5 m across (verify).
-Sources: none found (verify).
+# M_Hbr_Bollard_01
+
+Real class: Cast-iron mushroom-head harbour bollard on a bolted base plate, about 0.5 to 0.6 m tall, 0.35 m body (verify); e.g. https://en.wikipedia.org/wiki/Bollard#Maritime
+
+dims_m: 0.48 x 0.48 x 0.552
+
+(X, Y, Z metres, front -Y, base at Z 0; the authored size of the HP2a build, art/source/harbour/M_Hbr_PropAtlas/props.py. Reference photo board: pending, see art/status/HP2a.csv.)

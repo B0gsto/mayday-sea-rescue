@@ -1,0 +1,492 @@
+{
+ "asset": "M_Hbr_Cleat_01",
+ "name": "M_Hbr_Cleat_01",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01_LOD0.fbx",
+   "bytes": 33148,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Cleat_01_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Cleat_01_LOD0.001",
+     "min": [
+      -0.45,
+      -0.1125,
+      0.0
+     ],
+     "max": [
+      0.45,
+      0.1125,
+      0.278
+     ],
+     "polygons": 266,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01_LOD1.fbx",
+   "bytes": 27180,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Cleat_01_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Cleat_01_LOD1.001",
+     "min": [
+      -0.4501,
+      -0.1125,
+      0.0
+     ],
+     "max": [
+      0.4501,
+      0.1125,
+      0.2756
+     ],
+     "polygons": 132,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01.attachments.json",
+   "attachments": [
+    "ATT_Rope"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Cleat_01/M_Hbr_Cleat_01.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_prop"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Cleat_01_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "266 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.10e-03, 44 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.376 to 0.833, v 0.001 to 0.123"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 123 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "118 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Cleat_01_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "132 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.04e-04, 30 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.376 to 0.833, v 0.001 to 0.123"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 132 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 19.1% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "266 of 500 (small_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "132 of 250"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.3 x 0.075 x 0.093 m, spec 0.3 x 0.075 x 0.093 m (art/reference/M_Hbr_Cleat_01/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.900 studs, real 0.300 m = 0.900 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.225 studs, real 0.075 m = 0.225 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.278 studs, real 0.093 m = 0.279 studs, off 0.4% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas M_Hbr_PropAtlas"
+  },
+  {
+   "subject": "T_HbrProps_Metal_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_ALB.png"
+  },
+  {
+   "subject": "T_HbrProps_Metal_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Metal_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_NOR.png"
+  },
+  {
+   "subject": "T_HbrProps_Metal_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_RGH.png"
+  },
+  {
+   "subject": "T_HbrProps_Metal_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Metal_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_MET.png"
+  },
+  {
+   "subject": "ATT_Rope",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Cleat_01_LOD0; 266 triangles (scene 266)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Cleat_01/M_Hbr_Cleat_01_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Cleat_01_LOD1; 132 triangles (scene 132)"
+  },
+  {
+   "subject": "M_Hbr_Cleat_01_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Cleat_01_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 266,
+   "texel_density": 118.1
+  },
+  {
+   "name": "M_Hbr_Cleat_01_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 132,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.9000000357627869,
+  0.22500000894069672,
+  0.27797219157218933
+ ],
+ "peak_rss_mb": 290.7
+}

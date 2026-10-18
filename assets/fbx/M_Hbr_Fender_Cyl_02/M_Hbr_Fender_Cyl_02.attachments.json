@@ -1,0 +1,36 @@
+{
+ "asset": "M_Hbr_Fender_Cyl_02",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Line",
+   "parent": null,
+   "blender": [
+    0.03,
+    0.06,
+    3.0284
+   ],
+   "roblox_from_origin": [
+    -0.03,
+    3.0284,
+    0.06
+   ],
+   "roblox_from_bbox_centre": [
+    -0.03,
+    1.513,
+    0.06
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

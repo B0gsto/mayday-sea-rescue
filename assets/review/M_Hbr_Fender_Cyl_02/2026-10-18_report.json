@@ -1,0 +1,492 @@
+{
+ "asset": "M_Hbr_Fender_Cyl_02",
+ "name": "M_Hbr_Fender_Cyl_02",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "bytes": 101212,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Fender_Cyl_02_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Fender_Cyl_02_LOD0.001",
+     "min": [
+      -0.375,
+      -0.375,
+      0.0
+     ],
+     "max": [
+      0.375,
+      0.375,
+      3.0309
+     ],
+     "polygons": 1116,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "bytes": 64348,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Fender_Cyl_02_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Fender_Cyl_02_LOD1.001",
+     "min": [
+      -0.3691,
+      -0.3691,
+      0.0091
+     ],
+     "max": [
+      0.3691,
+      0.3691,
+      3.0309
+     ],
+     "polygons": 552,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02.attachments.json",
+   "attachments": [
+    "ATT_Line"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_prop"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Fender_Cyl_02_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1116 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.11e-04, 244 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.249, v 0.001 to 0.249"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 544 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "150 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Fender_Cyl_02_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "552 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.40e-04, 257 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.249, v 0.001 to 0.249"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 552 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.4% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1116 of 1200 (small_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "552 of 600"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.25 x 0.25 x 1.01 m, spec 0.25 x 0.25 x 1.01 m (art/reference/M_Hbr_Fender_Cyl_02/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.750 studs, real 0.250 m = 0.750 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.750 studs, real 0.250 m = 0.750 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.031 studs, real 1.010 m = 3.030 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas M_Hbr_PropAtlas"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_NOR.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_MET.png"
+  },
+  {
+   "subject": "ATT_Line",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Fender_Cyl_02_LOD0; 1116 triangles (scene 1116)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Fender_Cyl_02/M_Hbr_Fender_Cyl_02_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Fender_Cyl_02_LOD1; 552 triangles (scene 552)"
+  },
+  {
+   "subject": "M_Hbr_Fender_Cyl_02_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Fender_Cyl_02_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1116,
+   "texel_density": 149.6
+  },
+  {
+   "name": "M_Hbr_Fender_Cyl_02_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 552,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.75,
+  0.75,
+  3.030886650085449
+ ],
+ "peak_rss_mb": 292.8
+}

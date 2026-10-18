@@ -1,0 +1,492 @@
+{
+ "asset": "M_Hbr_Rope_Coil",
+ "name": "M_Hbr_Rope_Coil",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx",
+   "bytes": 328028,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Rope_Coil_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Rope_Coil_LOD0.001",
+     "min": [
+      -1.5117,
+      -0.6991,
+      0.0
+     ],
+     "max": [
+      1.5117,
+      0.6991,
+      0.1444
+     ],
+     "polygons": 2296,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx",
+   "bytes": 174924,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Hbr_Rope_Coil_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Hbr_Rope_Coil_LOD1.001",
+     "min": [
+      -1.5117,
+      -0.6991,
+      0.0007
+     ],
+     "max": [
+      1.5117,
+      0.6991,
+      0.1444
+     ],
+     "polygons": 1148,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil.attachments.json",
+   "attachments": [
+    "ATT_End"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_prop"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Rope_Coil_LOD0"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2296 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.37e-03, 4590 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.124, v 0.001 to 0.124"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1147 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "728 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Hbr_Rope_Coil_LOD1"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1148 of 3000"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.88e-04, 2462 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.124, v 0.001 to 0.124"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1148 faces have no UV area"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 50.0% (max 15%)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2296 of 2500 (small_prop, asset row)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1148 of 1250"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.008 x 0.466 x 0.048 m, spec 1.008 x 0.466 x 0.048 m (art/reference/M_Hbr_Rope_Coil/dims.md)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.023 studs, real 1.008 m = 3.024 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.398 studs, real 0.466 m = 1.398 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.144 studs, real 0.048 m = 0.144 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas M_Hbr_PropAtlas"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_NOR.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HbrProps_Rope_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_MET.png"
+  },
+  {
+   "subject": "ATT_End",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Rope_Coil_LOD0; 2296 triangles (scene 2296)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Hbr_Rope_Coil_LOD1; 1148 triangles (scene 1148)"
+  },
+  {
+   "subject": "M_Hbr_Rope_Coil_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Hbr_Rope_Coil_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2296,
+   "texel_density": 728.1
+  },
+  {
+   "name": "M_Hbr_Rope_Coil_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1148,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.023379325866699,
+  1.398217797279358,
+  0.144428551197052
+ ],
+ "peak_rss_mb": 298.4
+}
