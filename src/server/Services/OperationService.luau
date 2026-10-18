@@ -1119,7 +1119,13 @@ finish = function(op: any, reason: string)
 	if op.coldOpen and op.owner then
 		endColdOpen(op.owner, reason)
 	end
-	local snap = info(op)
+	local snap: any = info(op) -- plus the debrief facts BadgeService / LeaderboardService read
+	snap.reason, snap.storm, snap.saved, snap.towParted =
+		reason, op.storm == true, op.saved, op.towParted == true
+	snap.steps = table.create(#op.results)
+	for _, r in op.results do
+		table.insert(snap.steps, { id = r.stepId, grade = r.grade, userId = r.userId })
+	end
 	for _, fn in table.clone(handlers) do
 		task.spawn(fn, snap, helpers)
 	end
@@ -1594,6 +1600,7 @@ end
 -- A boat with casualties reached a pad: the real transport path. The current "deliver" step of
 -- the driver's track completes with the server-measured condition and destination (no stub cap).
 -- The pad and the client's transport result race: whichever reaches the step first completes it
+	op.towParted = true -- no Tow Truck badge for this op
 -- (complete() checks track.current), and the other is acknowledged and ignored.
 function OperationService.OnVictimsDelivered(
 	scene: any,
