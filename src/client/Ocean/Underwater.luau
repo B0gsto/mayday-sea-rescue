@@ -9,6 +9,15 @@
 -- transparent, so the sky shows through it like Snell's window.
 -- Everything is created once and only toggled / moved, no per-frame allocation.
 local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Flipbooks =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Fx"):WaitForChild("Flipbooks"))
+local OceanQuality = require(script.Parent:WaitForChild("OceanQuality"))
+-- FX2: real flocs (16 variants, random start, held) are much larger in their cells than the stock
+-- sparkle, so the sheet is drawn smaller; the bubble loop wobbles as it rises.
+local SNOW = Flipbooks.uploaded("FX_Under_MarineSnow")
+local MOTES_RATE, BUBBLE_RATE = 25, 10 -- per second at High -- tune
 
 local FOG_DISTANCES = { 12, 25, 45, 80, 150 } -- studs -- tune
 local FOG_TRANSPARENCY = 0.72 -- per slice -- tune
@@ -27,6 +36,7 @@ export type Underwater = {
 	tops: { Attachment },
 	bottoms: { Attachment },
 	motes: ParticleEmitter,
+	bubbles: ParticleEmitter,
 	window: Part,
 	active: boolean,
 }
@@ -101,10 +111,12 @@ function Underwater.new(parent: Instance): Underwater
 		shafts[i], tops[i], bottoms[i] = beam, a0, a1
 	end
 	local motes = Instance.new("ParticleEmitter")
-	motes.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	Flipbooks.apply(motes, "FX_Under_MarineSnow")
 	motes.Color = ColorSequence.new(Color3.fromHex("#CFE3DA"))
-	motes.LightInfluence = 0.6
-	motes.Size = NumberSequence.new(0.08, 0.15)
+	motes.LightInfluence = if SNOW then 0.85 else 0.6
+	motes.Size = if SNOW then NumberSequence.new(0.07, 0.16) else NumberSequence.new(0.08, 0.15)
+	motes.Rotation = NumberRange.new(0, 360)
+	motes.RotSpeed = NumberRange.new(-12, 12)
 	motes.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 1),
 		NumberSequenceKeypoint.new(0.3, 0.4),
@@ -117,6 +129,29 @@ function Underwater.new(parent: Instance): Underwater
 	motes.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
 	motes.Rate = 0
 	motes.Parent = anchor
+	-- a few rising bubbles drifting up through the view (surf-zone entrained air)
+	local bubbles = Instance.new("ParticleEmitter")
+	Flipbooks.apply(bubbles, "FX_Under_Bubbles")
+	bubbles.Color = ColorSequence.new(Color3.fromHex("#DDEDEA"))
+	bubbles.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.06),
+		NumberSequenceKeypoint.new(1, 0.14), -- they grow as the pressure drops
+	})
+	bubbles.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1),
+		NumberSequenceKeypoint.new(0.15, 0.15),
+		NumberSequenceKeypoint.new(0.85, 0.25),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	bubbles.Lifetime = NumberRange.new(3, 5)
+	bubbles.Speed = NumberRange.new(2.5, 4) -- ~0.25 m/s, a 2-5 mm bubble's rise speed
+	bubbles.EmissionDirection = Enum.NormalId.Top
+	bubbles.SpreadAngle = Vector2.new(8, 8)
+	bubbles.Shape = Enum.ParticleEmitterShape.Box
+	bubbles.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+	bubbles.Rate = 0
+	bubbles.Enabled = Flipbooks.uploaded("FX_Under_Bubbles")
+	bubbles.Parent = anchor
 	-- Snell's window: the bright disc of sky seen straight up through the surface (radius about
 	-- 1.13 x depth). A translucent Neon disc just under the surface, above the camera.
 	local window = basePart("SurfaceWindow", folder)
@@ -136,6 +171,7 @@ function Underwater.new(parent: Instance): Underwater
 		tops = tops,
 		bottoms = bottoms,
 		motes = motes,
+		bubbles = bubbles,
 		active = false,
 	}
 end
@@ -154,7 +190,9 @@ function Underwater.update(u: Underwater, camera: Camera, surfaceY: number)
 		for _, b in u.shafts do
 			b.Enabled = under
 		end
-		u.motes.Rate = if under then 25 else 0
+		local thin = Flipbooks.scale("ambient", OceanQuality.current().name)
+		u.motes.Rate = if under then MOTES_RATE * thin else 0
+		u.bubbles.Rate = if under then BUBBLE_RATE * thin else 0
 		u.window.Transparency = 1
 	end
 	if not under then

@@ -38,6 +38,7 @@ MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "Me
 ALPHA_TRANSPARENCY = ("M_Veg_",)
 # Single texture sets that are alpha cards inside an otherwise opaque asset: (asset, set).
 ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Road_Ribbon", "Markings"), ("M_Bld_Cottage_Kit", "Grime"), ("M_Sea_Morwenna", "Kelp"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Veh_GaleQueen", "Decals")}  # Morwenna kelp cards (S1a); anchor sand bed alpha rim (POL2); Bosun fur cards (DogService); station H3 grime decals; cottage H3b grime decals
+FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
 RIG_SETS = ("Atlas",)  # texture sets a rigged (single skinned MeshPart) asset keeps
@@ -90,7 +91,7 @@ def main():
         if e.get("source") and e.get("assetId"):
             by_source.setdefault((e.get("type"), e["source"]), []).append(e)
 
-    models, textures = {}, {}
+    models, textures, fx = {}, {}, {}
     for (kind, src), entries in sorted(by_source.items()):
         e = pick(entries, listed, src)
         if kind == "Model":
@@ -103,6 +104,9 @@ def main():
                 base = base[: -len("Raw")]
             models.setdefault(base, {})[lod] = e["assetId"]
         elif kind == "Image":
+            f = FX_RE.match(src)
+            if f and e.get("imageId"):
+                fx[f[1]] = e["imageId"]
             r = TEX_RE.match(src)
             if r and e.get("imageId"):
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
@@ -158,7 +162,10 @@ def main():
         for name, p in attachments[asset].items():
             out.append(f"\t\t{name} = Vector3.new({num(p[0])}, {num(p[1])}, {num(p[2])}),")
         out.append("\t},")
-    out += ["} :: { [string]: { [string]: Vector3 } }", "", "return AssetIds", ""]
+    out += ["} :: { [string]: { [string]: Vector3 } }", "", "-- FX flipbook sheets and foam maps (Image ids), read by src/shared/Fx/Flipbooks.luau",
+            "AssetIds.Fx = {"]
+    out += [f"\t{name} = {uri(fx[name])}," for name in sorted(fx)]
+    out += ["} :: { [string]: string }", "", "return AssetIds", ""]
     with open(OUT_LUAU, "w") as f:
         f.write("\n".join(out))
     stylua = shutil.which("stylua")

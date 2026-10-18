@@ -1,0 +1,19 @@
+{
+ "name": "FX_Foam_HullRing",
+ "size": 1024,
+ "grid": 1,
+ "layout": "None",
+ "kind": "flat",
+ "frames": [
+  1
+ ],
+ "alpha_cover": 0.4216,
+ "cell_alpha_max": [
+  255
+ ],
+ "cell_edge_alpha_max": [
+  0
+ ],
+ "empty_cells": 0,
+ "seconds": 12.5
+}

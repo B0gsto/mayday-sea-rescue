@@ -43,6 +43,12 @@ local Workspace = game:GetService("Workspace")
 
 local Ocean = script.Parent.Parent:WaitForChild("Ocean")
 local FarPlane = require(Ocean:WaitForChild("FarPlane"))
+local Flipbooks = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Fx")
+		:WaitForChild("Flipbooks")
+)
 local Horizon = require(Ocean:WaitForChild("Horizon"))
 local MeshGrid = require(Ocean:WaitForChild("MeshGrid"))
 local OceanQuality = require(Ocean:WaitForChild("OceanQuality"))
@@ -106,6 +112,8 @@ local sprayBudget = 0
 local sprayAt = os.clock()
 local spray: Part? = nil
 local sprayEmitter: ParticleEmitter? = nil
+local streakEmitter: ParticleEmitter? = nil -- FX1 crest foam streaks left on the crest (High tier only)
+local streakEvery = 0
 local underwater: Underwater.Underwater? = nil
 local clarity = 0 -- current surface transparency
 local depthCheckAt = 0
@@ -190,6 +198,7 @@ local function teardown()
 		spray:Destroy()
 		spray = nil
 		sprayEmitter = nil
+		streakEmitter = nil
 	end
 	table.clear(foamLift)
 	table.clear(foamPersist)
@@ -302,13 +311,14 @@ local function buildMesh(parent: Instance): boolean
 	sprayPart.Transparency = 1
 	sprayPart.Size = Vector3.new(3, 0.5, 3) -- one crest's lip; moved to a crest per burst
 	local emitter = Instance.new("ParticleEmitter")
-	emitter.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	-- FX1 spindrift: wind-torn crest spray (Mantaflow mist + droplet sim, 8x8 OneShot per particle)
+	Flipbooks.apply(emitter, "FX_Spray_Spindrift")
+	local sheet = if Flipbooks.uploaded("FX_Spray_Spindrift") then 1.6 else 1
 	emitter.Color = ColorSequence.new(Color3.fromHex("#DCE2E1"))
-	emitter.LightInfluence = 1
 	emitter.LightEmission = 0
 	emitter.Size = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.6),
-		NumberSequenceKeypoint.new(1, 4.5),
+		NumberSequenceKeypoint.new(0, 0.9 * sheet),
+		NumberSequenceKeypoint.new(1, 4.5 * sheet),
 	})
 	emitter.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, 1),
@@ -322,10 +332,34 @@ local function buildMesh(parent: Instance): boolean
 	emitter.Shape = Enum.ParticleEmitterShape.Box
 	emitter.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
 	emitter.Drag = 1.2
-	emitter.Rotation = NumberRange.new(0, 360)
-	emitter.RotSpeed = NumberRange.new(-40, 40)
+	-- the sheet's streamers run level: keep the billboards near upright
+	emitter.Rotation = if sheet > 1 then NumberRange.new(-8, 8) else NumberRange.new(0, 360)
+	emitter.RotSpeed = if sheet > 1 then NumberRange.new(-6, 6) else NumberRange.new(-40, 40)
 	emitter.Rate = 0
 	emitter.Parent = sprayPart
+	if Flipbooks.uploaded("FX_Foam_CrestStreak") then
+		local streak = Instance.new("ParticleEmitter")
+		Flipbooks.apply(streak, "FX_Foam_CrestStreak")
+		streak.Color = ColorSequence.new(Color3.fromHex("#E4EAE8"))
+		streak.Orientation = Enum.ParticleOrientation.VelocityPerpendicular -- lies flat on the water
+		streak.EmissionDirection = Enum.NormalId.Top
+		streak.Speed = NumberRange.new(0.05)
+		streak.Drag = 4
+		streak.Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 3),
+			NumberSequenceKeypoint.new(1, 6.5),
+		})
+		streak.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.1, 0.35),
+			NumberSequenceKeypoint.new(1, 1),
+		})
+		streak.Lifetime = NumberRange.new(2.5, 4)
+		streak.Rotation = NumberRange.new(-15, 15)
+		streak.Rate = 0
+		streak.Parent = sprayPart
+		streakEmitter = streak
+	end
 	sprayPart.Parent = parent
 	spray = sprayPart
 	sprayEmitter = emitter
@@ -546,10 +580,7 @@ local function updateLook()
 	local emitter = sprayEmitter
 	if emitter then
 		local s = math.clamp((intensity - 0.35) / 0.65, 0, 1)
-		local tierScale = if tier.name == "High"
-			then 1
-			elseif tier.name == "Medium" then 0.5
-			else 0.25
+		local tierScale = Flipbooks.scale("spray", tier.name) -- docs/06 3.5: Full / Half / Quarter
 		-- Manual emission from crest tops only (the part hops to a crest per burst).
 		emitter.Rate = 0
 		local now2 = os.clock()
@@ -563,6 +594,16 @@ local function updateLook()
 				sprayBudget -= 1
 				sprayP.CFrame = CFrame.new(crestPos[math.random(1, crestCount)])
 				emitter:Emit(1)
+				local streak = streakEmitter
+				streakEvery += 1
+				if streak and streakEvery >= 3 and Flipbooks.scale("crestFoam", tier.name) > 0 then
+					streakEvery = 0
+					streak.Rotation = NumberRange.new(
+						math.deg(math.atan2(wz, wx)) - 15,
+						math.deg(math.atan2(wz, wx)) + 15
+					)
+					streak:Emit(1)
+				end
 			end
 		elseif crestCount == 0 then
 			sprayBudget = 0

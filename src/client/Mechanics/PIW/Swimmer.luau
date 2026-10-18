@@ -9,6 +9,12 @@
 -- up / right, or tap); flick away: S, stick down, or the Away button.
 local UserInputService = game:GetService("UserInputService")
 
+local Flipbooks = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Fx")
+		:WaitForChild("Flipbooks")
+)
 local Panic = require(script.Parent.Panic)
 local Step = require(script.Parent.Step)
 local Ui = require(script.Parent.Ui)
@@ -62,19 +68,28 @@ function Swimmer.contact(
 	local spray: ParticleEmitter? = nil
 	if victim and victim.PrimaryPart then
 		local e = Instance.new("ParticleEmitter")
+		-- FX1 slam burst sheet: each particle is a whole thrown-and-falling splash (OneShot)
+		Flipbooks.apply(e, "FX_Spray_SlamBurst")
+		local sheet = Flipbooks.uploaded("FX_Spray_SlamBurst")
 		e.Color = ColorSequence.new(Color3.fromRGB(235, 245, 250))
-		e.Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.4),
-			NumberSequenceKeypoint.new(1, 1.2),
-		})
+		e.Size = if sheet
+			then NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.4),
+				NumberSequenceKeypoint.new(1, 2.2),
+			})
+			else NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.4),
+				NumberSequenceKeypoint.new(1, 1.2),
+			})
 		e.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.3),
+			NumberSequenceKeypoint.new(0, if sheet then 0.1 else 0.3),
 			NumberSequenceKeypoint.new(1, 1),
 		})
-		e.Lifetime = NumberRange.new(0.4, 0.8)
-		e.Speed = NumberRange.new(6, 10)
+		e.Lifetime = if sheet then NumberRange.new(0.6, 0.9) else NumberRange.new(0.4, 0.8)
+		e.Speed = if sheet then NumberRange.new(0.5, 1.5) else NumberRange.new(6, 10)
 		e.SpreadAngle = Vector2.new(50, 50)
-		e.Acceleration = Vector3.new(0, -29.43, 0)
+		e.Rotation = NumberRange.new(-20, 20)
+		e.Acceleration = Vector3.new(0, if sheet then -4 else -29.43, 0) -- the sheet carries its own fall
 		e.Rate = 0
 		e.Parent = victim.PrimaryPart
 		spray = e
@@ -198,7 +213,8 @@ function Swimmer.contact(
 		fwd, side = math.clamp(fwd, -1, 1), math.clamp(side, -1, 1)
 		local lull = Panic.isLull(p, t)
 		if spray then
-			spray.Rate = if lull or p.level < Panic.ACCEPT then 0 else 40 * p.level / 100
+			local per = if Flipbooks.uploaded("FX_Spray_SlamBurst") then 12 else 40 -- one sheet = one splash
+			spray.Rate = if lull or p.level < Panic.ACCEPT then 0 else per * p.level / 100
 		end
 		if grabbedAt then
 			cueLine.Text = "They've grabbed you! Flick away (S / stick down / Away)."

@@ -18,9 +18,18 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
+local OceanQuality = require(script.Parent:WaitForChild("OceanQuality"))
 local WakeMath = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 
-local FOAM_ID = "rbxassetid://107434961132990" -- ocean_foam (approved)
+-- FX1: the wake ribbon foam map (U along the wake) and the bow-sheet spray flipbook; the stock
+-- ocean_foam / smoke textures stay until the uploads exist.
+local FOAM_ID = if Flipbooks.uploaded("FX_Foam_WakeRibbon")
+	then Flipbooks.id("FX_Foam_WakeRibbon")
+	else "rbxassetid://107434961132990" -- ocean_foam (approved)
+-- A sheet's spray fills about 60 % of its cell, the stock smoke blob nearly all of it.
+local BOW_SIZE = if Flipbooks.uploaded("FX_Spray_BowSheet") then 1.7 else 1
+local tierScale = 1 -- docs/06 3.5 spray budget for the current ocean tier, refreshed on the scan
 local SCAN_PERIOD = 1.0
 local MIN_SPEED, FULL_SPEED = 3, 40 -- studs/s -- tune
 
@@ -87,7 +96,9 @@ local function build(model: Model, seat: BasePart): Rig?
 	ab.Position = Vector3.new(front.X, waterLocal, front.Z)
 	ab.Parent = part
 	local bow = Instance.new("ParticleEmitter")
-	bow.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	Flipbooks.apply(bow, "FX_Spray_BowSheet")
+	bow.Rotation = NumberRange.new(-12, 12)
+	bow.Drag = 0.6
 	bow.Color = ColorSequence.new(Color3.fromHex("#E2E8E6"))
 	bow.LightInfluence = 1
 	bow.Size = NumberSequence.new({
@@ -163,8 +174,8 @@ local function applyStyle(rig: Rig, night: number)
 	bow.LightEmission = v.lightEmission * 0.6
 	bow.LightInfluence = v.lightInfluence
 	bow.Size = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, v.bowSize[1]),
-		NumberSequenceKeypoint.new(1, v.bowSize[2]),
+		NumberSequenceKeypoint.new(0, v.bowSize[1] * BOW_SIZE),
+		NumberSequenceKeypoint.new(1, v.bowSize[2] * BOW_SIZE),
 	})
 	bow.Transparency = NumberSequence.new({
 		NumberSequenceKeypoint.new(0, v.bowTransparency),
@@ -194,6 +205,7 @@ local function scan()
 		end
 	end
 	local night = WakeMath.nightFactor(Lighting:GetSunDirection().Y)
+	tierScale = Flipbooks.scale("spray", OceanQuality.current().name)
 	for model, rig in rigs do
 		if not model.Parent or not rig.part.Parent then
 			rig.folder:Destroy()
@@ -221,7 +233,7 @@ function Wake.start(seaLevel: number)
 				then math.clamp((speed - MIN_SPEED) / (FULL_SPEED - MIN_SPEED), 0, 1)
 				else 0
 			rig.trail.Enabled = s > 0
-			rig.bow.Rate = rig.bowRate * s
+			rig.bow.Rate = rig.bowRate * s * tierScale
 		end
 	end)
 end

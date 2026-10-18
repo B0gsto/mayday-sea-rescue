@@ -6,6 +6,12 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
+local Flipbooks = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Fx")
+		:WaitForChild("Flipbooks")
+)
 local Ui = require(script.Parent.Ui)
 local Units = require(script.Parent.Units)
 
@@ -236,12 +242,22 @@ function World.marker(bag: Ui.Bag, position: Vector3, windDirection: number, smo
 	flag.Parent = m
 	if smoke then
 		local emitter = Instance.new("ParticleEmitter")
-		emitter.Color =
-			ColorSequence.new(Color3.fromRGB(255, 130, 40), Color3.fromRGB(255, 170, 110))
-		emitter.Size = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1.5),
-			NumberSequenceKeypoint.new(1, 9),
-		})
+		-- FX2 orange smoke: a Mantaflow billow per particle (the sheet is already orange)
+		Flipbooks.apply(emitter, "FX_Smoke_Orange")
+		local sheet = Flipbooks.uploaded("FX_Smoke_Orange")
+		emitter.Color = if sheet
+			then ColorSequence.new(Color3.fromRGB(255, 196, 160)) -- pushes the amber sheet to signal orange
+			else ColorSequence.new(Color3.fromRGB(255, 130, 40), Color3.fromRGB(255, 170, 110))
+		emitter.Size = if sheet
+			then NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 4),
+				NumberSequenceKeypoint.new(1, 13),
+			})
+			else NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1.5),
+				NumberSequenceKeypoint.new(1, 9),
+			})
+		emitter.Rotation = NumberRange.new(-10, 10)
 		emitter.Transparency = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 0.2),
 			NumberSequenceKeypoint.new(1, 1),
@@ -252,6 +268,7 @@ function World.marker(bag: Ui.Bag, position: Vector3, windDirection: number, smo
 		emitter.SpreadAngle = Vector2.new(20, 20)
 		emitter.Acceleration = Units.windVector(windDirection) * 3 + Vector3.new(0, 0.6, 0)
 		emitter.LightEmission = 0
+		emitter.LightInfluence = 1
 		emitter.Parent = float
 	end
 	m.Parent = Workspace

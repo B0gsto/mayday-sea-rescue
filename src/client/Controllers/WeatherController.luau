@@ -35,10 +35,14 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local LightingPresets = require(Shared:WaitForChild("Config"):WaitForChild("LightingPresets"))
 local Net = require(Shared:WaitForChild("Net"))
+local OceanQuality =
+	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
+local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
 type Preset = LightingPresets.Preset
 
@@ -46,7 +50,11 @@ type Preset = LightingPresets.Preset
 local THUNDER_SOUND_ID = AudioConfig.id("Thunder_Near") -- crack + rumble (RL stand-in)
 local RAIN_LOOP_SOUND_ID = AudioConfig.id("Rain_Heavy") -- rain bed, looped (wind is AudioController's)
 local SIREN_SOUND_ID = "" -- TODO asset: harbour storm siren, one shot
-local RAIN_TEXTURE = "rbxasset://textures/particles/sparkles_main.dds" -- TODO asset: rain streak
+-- FX2: 16 motion-blurred streak variants (random start, held) and the ripple ring on the sea.
+local RAIN_STREAKS = Flipbooks.uploaded("FX_Rain_Streak")
+local RIPPLE_MAX_RATE = 260 -- ripples/s over the RIPPLE_AREA square at full storm, High -- tune
+local RIPPLE_AREA = 70 -- studs square around the camera -- tune
+local RIPPLE_MAX_HEIGHT = 45 -- camera height above the sea beyond which ripples are not drawn
 
 local BLEND_HZ = 10
 local ROOF_CHECK_SECONDS = 0.25
@@ -94,6 +102,8 @@ local current: Preset = LightingPresets.Overcast
 
 local rainPart: Part
 local rainEmitter: ParticleEmitter
+local ripplePart: Part
+local rippleEmitter: ParticleEmitter
 local rainLoop: Sound
 local thunderTemplate: Sound
 local sirenSound: Sound
@@ -278,26 +288,66 @@ local function createRain()
 
 	rainEmitter = Instance.new("ParticleEmitter")
 	rainEmitter.Name = "Rain"
-	rainEmitter.Texture = RAIN_TEXTURE
+	Flipbooks.apply(rainEmitter, "FX_Rain_Streak")
 	rainEmitter.EmissionDirection = Enum.NormalId.Bottom
 	rainEmitter.Shape = Enum.ParticleEmitterShape.Box
 	rainEmitter.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
 	rainEmitter.Orientation = Enum.ParticleOrientation.VelocityParallel
 	rainEmitter.Speed = NumberRange.new(RAIN_FALL_SPEED * 0.9, RAIN_FALL_SPEED * 1.1)
 	rainEmitter.Lifetime = NumberRange.new(0.7, 0.9)
-	rainEmitter.Size = NumberSequence.new(0.14)
-	rainEmitter.Squash = NumberSequence.new(2.6) -- stretch each drop into a streak
-	rainEmitter.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 1),
-		NumberSequenceKeypoint.new(0.15, 0.45),
-		NumberSequenceKeypoint.new(1, 0.6),
-	})
+	if RAIN_STREAKS then
+		-- the streak fills ~70 % of its cell's height: about 1.3 studs (40 cm) of 1/50 s exposure
+		rainEmitter.Size = NumberSequence.new(1.8)
+		rainEmitter.Squash = NumberSequence.new(0.4)
+		rainEmitter.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.12, 0.35),
+			NumberSequenceKeypoint.new(1, 0.5),
+		})
+	else
+		rainEmitter.Size = NumberSequence.new(0.14)
+		rainEmitter.Squash = NumberSequence.new(2.6) -- stretch each drop into a streak
+		rainEmitter.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.15, 0.45),
+			NumberSequenceKeypoint.new(1, 0.6),
+		})
+	end
 	rainEmitter.Color = ColorSequence.new(LightingPresets.Palette.RainGrey)
-	rainEmitter.LightInfluence = 0.6
+	rainEmitter.LightInfluence = if RAIN_STREAKS then 0.85 else 0.6
 	rainEmitter.LightEmission = 0.1
 	rainEmitter.Rate = 0
 	rainEmitter.Enabled = true
 	rainEmitter.Parent = rainPart
+
+	-- Ripple rings where the drops hit the sea: flat particles on a box at sea level under the camera.
+	ripplePart = Instance.new("Part")
+	ripplePart.Name = "WeatherRainRipples"
+	ripplePart.Anchored = true
+	ripplePart.CanCollide = false
+	ripplePart.CanQuery = false
+	ripplePart.CanTouch = false
+	ripplePart.CastShadow = false
+	ripplePart.Transparency = 1
+	ripplePart.Size = Vector3.new(RIPPLE_AREA, 0.1, RIPPLE_AREA)
+	rippleEmitter = Instance.new("ParticleEmitter")
+	rippleEmitter.Name = "RainRipples"
+	Flipbooks.apply(rippleEmitter, "FX_Rain_OnWater")
+	rippleEmitter.EmissionDirection = Enum.NormalId.Top
+	rippleEmitter.Shape = Enum.ParticleEmitterShape.Box
+	rippleEmitter.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+	rippleEmitter.Orientation = Enum.ParticleOrientation.VelocityPerpendicular -- flat on the water
+	rippleEmitter.Speed = NumberRange.new(0.01)
+	rippleEmitter.Lifetime = NumberRange.new(0.45, 0.7)
+	rippleEmitter.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.9),
+		NumberSequenceKeypoint.new(1, 1.6),
+	})
+	rippleEmitter.Transparency = NumberSequence.new(0.35)
+	rippleEmitter.Color = ColorSequence.new(LightingPresets.Palette.RainGrey)
+	rippleEmitter.Rate = 0
+	rippleEmitter.Enabled = Flipbooks.uploaded("FX_Rain_OnWater")
+	rippleEmitter.Parent = ripplePart
 
 	rainLoop = newSound("StormRainLoop", RAIN_LOOP_SOUND_ID, true, 0)
 end
@@ -330,8 +380,22 @@ local function updateRain(camera: Camera, intensity: number)
 	local wind = Weather.getWindDirection()
 	rainEmitter.Acceleration = Vector3.new(math.cos(wind), 0, math.sin(wind))
 		* (WIND_PUSH * intensity)
-	local rate = if underRoof then 0 else RAIN_MAX_RATE * qualityFactor() * intensity * intensity
+	local tierName = OceanQuality.current().name
+	local quality = if RAIN_STREAKS then Flipbooks.scale("rain", tierName) else qualityFactor()
+	local rate = if underRoof then 0 else RAIN_MAX_RATE * quality * intensity * intensity
 	rainEmitter.Rate = if rate < 1 then 0 else rate
+	local seaY = WorldConfig.SeaLevel
+	local above = position.Y - seaY
+	ripplePart.CFrame = CFrame.new(position.X + ahead.X, seaY + 0.12, position.Z + ahead.Z)
+	if ripplePart.Parent ~= camera then
+		ripplePart.Parent = camera
+	end
+	local ripples = if underRoof
+			or above < 0
+			or above > RIPPLE_MAX_HEIGHT
+		then 0
+		else RIPPLE_MAX_RATE * Flipbooks.scale("rain", tierName) * intensity * intensity
+	rippleEmitter.Rate = if ripples < 1 then 0 else ripples
 	rainLoop.Volume = RAIN_LOOP_VOLUME * intensity * (if underRoof then 0.45 else 1)
 	if intensity > 0.01 and not rainLoop.IsPlaying then
 		playIfReal(rainLoop)
