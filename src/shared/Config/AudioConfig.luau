@@ -183,7 +183,7 @@ end
 -- harbour mouth (MapConfig.Places "Harbour Mouth").
 AudioConfig.HarbourCentre = Vector3.new(0, 4, -150)
 AudioConfig.HarbourRadius = 320 -- the marina bed and rigging fade out past this
-AudioConfig.BellBuoy = Vector3.new(30, 2, 450)
+AudioConfig.BellBuoy = Vector3.new(-60, 5.25, 880) -- SeamarkRules No2Bell, ATT_Bell height
 AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
 
 -- Mix constants (tune by ear).

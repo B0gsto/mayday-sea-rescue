@@ -561,6 +561,10 @@ function WorldDressingService.Start()
 			warn(`[WorldDressing] swap {key} failed: {err}`)
 		end
 	end
+	local seamarks = script.Parent.Parent.World:FindFirstChild("Seamarks") -- RP-I1b-2 buoyage, Morwenna, anchor
+	if seamarks then
+		task.spawn((require :: any)(seamarks).place, base)
+	end
 	local ok, rocks, plants, parts = pcall(scatterAll)
 	if not ok then
 		warn(`[WorldDressing] scatter failed: {rocks}`)

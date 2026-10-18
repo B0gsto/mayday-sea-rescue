@@ -128,6 +128,20 @@ local MapConfig = {
 		Storm = { label = "Storm area", glyph = "", color = Color3.fromHex("8E5BD8") },
 		-- logbook discoveries (ExplorationController -> MapController.SetBlips("Logbook", ...))
 		Discovery = { label = "Logbook discovery", glyph = "*", color = Color3.fromHex("C9B98A") },
+		-- seamarks (SeamarkController -> SetBlips("Seamarks", ...), small dots in the IALA colours)
+		SeamarkPort = { label = "Port-hand mark", glyph = "", color = Color3.fromHex("E0352B") },
+		SeamarkStarboard = {
+			label = "Starboard-hand mark",
+			glyph = "",
+			color = Color3.fromHex("2FB45A"),
+		},
+		SeamarkCardinal = { label = "Cardinal mark", glyph = "", color = Color3.fromHex("F2C230") },
+		SeamarkSafe = { label = "Safe water mark", glyph = "", color = Color3.fromHex("F4F1EA") },
+		SeamarkDanger = {
+			label = "Isolated danger mark",
+			glyph = "",
+			color = Color3.fromHex("1C1C1C"),
+		},
 	},
 
 	-- Drop-off pads (map/Build.luau buildDropOffs): the transport step's destinations.

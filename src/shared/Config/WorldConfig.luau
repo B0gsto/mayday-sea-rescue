@@ -366,8 +366,8 @@ local WorldConfig = {
 			blurb = "An Admiralty-pattern anchor lying beside the harbour wall.",
 			position = Vector3.new(288, -14.8, 250),
 			yaw = 70,
-			length = 15,
-			beam = 9,
+			length = 12,
+			beam = 10,
 		},
 		{
 			id = "NedsGully",

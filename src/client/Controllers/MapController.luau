@@ -1149,6 +1149,7 @@ function MapController.SetBlips(
 			position: Vector3,
 			style: string?,
 			minimap: boolean?,
+			size: number?,
 		}
 	}?
 )
@@ -1163,7 +1164,7 @@ function MapController.SetBlips(
 			pos = b.position,
 			style = MapConfig.Styles[b.style or "Discovery"] or MapConfig.Styles.Discovery,
 			minimap = b.minimap ~= false,
-			size = 18,
+			size = b.size or 18,
 		})
 	end
 	extraBlips[group] = list

@@ -133,7 +133,7 @@ POIS = [
      "pos": (1300, None, 1200), "yaw": -35, "length": 39, "beam": 50},
     {"id": "AdmiraltyAnchor", "kind": "Find", "name": "Admiralty anchor", "era": "1840s",
      "blurb": "An Admiralty-pattern anchor lying beside the harbour wall.",
-     "pos": (288, None, 250), "yaw": 70, "length": 15, "beam": 9},
+     "pos": (288, None, 250), "yaw": 70, "length": 12, "beam": 10},
     {"id": "NedsGully", "kind": "Seabed", "name": "Old Ned's kelp gully", "era": "",
      "blurb": "A kelp-lined gully under Haven Head where the old seal hunts.",
      "pos": (1730, None, 1045), "yaw": 33, "length": 300, "beam": 36},
