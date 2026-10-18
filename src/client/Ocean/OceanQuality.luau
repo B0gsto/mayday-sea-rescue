@@ -1,6 +1,7 @@
 --!strict
 -- OceanQuality: picks the ocean grid tier from the player's graphics quality setting
--- (UserGameSettings.SavedQualityLevel). Tiers follow docs/06 section 3.1 (numbers are -- tune).
+-- (UserGameSettings.SavedQualityLevel), or the settings panel's override (Comfort "oceanQuality":
+-- "Auto" follows the Roblox slider). Tiers follow docs/06 section 3.1 (numbers are -- tune).
 --
 -- Each tier is two rings around the camera:
 --   near patch: nearCells x nearCells cells of nearCell studs (full detail, exact at vertices)
@@ -9,7 +10,12 @@
 -- The whole system snaps in outerCell steps (a whole multiple of nearCell), so no vertex ever
 -- slides. updateHz = 0 means every frame.
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local SettingsRules =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("SettingsRules"))
 
 export type Tier = {
 	name: string,
@@ -83,21 +89,19 @@ local function savedLevel(): number?
 end
 
 function OceanQuality.current(): Tier
-	local level = savedLevel()
-	if level == nil then
-		-- Automatic: phones and tablets get Medium, everything else High. -- tune
-		local touchOnly = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-		return if touchOnly then OceanQuality.TIERS.Medium else OceanQuality.TIERS.High
-	elseif level <= 3 then
-		return OceanQuality.TIERS.Low
-	elseif level <= 7 then
-		return OceanQuality.TIERS.Medium
-	end
-	return OceanQuality.TIERS.High
+	local touchOnly = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	local name = SettingsRules.qualityTier(Comfort.get("oceanQuality"), savedLevel(), touchOnly)
+	return OceanQuality.TIERS[name] or OceanQuality.TIERS.High
 end
 
--- Calls back when the player changes graphics quality. Returns the connection (or nil).
+-- Calls back when the player changes graphics quality (the Roblox slider or the settings
+-- panel's ocean override). Returns the slider connection (or nil).
 function OceanQuality.onChanged(callback: () -> ()): RBXScriptConnection?
+	Comfort.changed:Connect(function(key: string)
+		if key == "oceanQuality" then
+			callback()
+		end
+	end)
 	local settings = userGameSettings()
 	if not settings then
 		return nil

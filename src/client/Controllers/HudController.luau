@@ -398,6 +398,7 @@ function HudController.Init()
 	buildStatus(statusRegion)
 	buildToast(noticeRegion)
 	buildCrewChip(statusRegion)
+	require(UI:WaitForChild("SettingsPanel")).mount(statusRegion) -- gear, panel, Start button
 	shop = HudShop.build(gui, buy)
 	launch = HudLaunch.build(gui, requestLaunch, buy)
 	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder

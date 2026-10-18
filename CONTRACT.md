@@ -269,6 +269,16 @@ Owner (RP-M1): `src/shared/Config/MonetizationConfig.luau`, `src/server/Services
 - Client: player attributes `Pass_<Key>` = true and `PassesChecked`; remotes under `ReplicatedStorage.Net`: `Monetization_GetCatalogue` (function -> `{ {kind, key, id, name, order, owned} }`, only items offered to this player) and `Monetization_Purchased` (S->C `{kind, key, name}`). The client opens prompts itself (`PromptGamePassPurchase` / `PromptProductPurchase`) after an explicit Buy tap (docs/04 §1, RP-M3).
 - Policy: paid random items (none at launch) are offered only where `PolicyService` says `ArePaidRandomItemsRestricted == false`.
 
+## Settings (RP-S1)
+
+| File | Owns / API |
+|---|---|
+| `src/shared/SettingsRules.luau` | Pure data model: `Defaults`, `Ranges`, `Choices`, `clean`, `SEASICK`, `isPreset`, `qualityTier(override, savedLevel, touchOnly)`, `mix(values)` (SoundGroup volumes), `resolvePro(want, current, inOp, coldOpenDone)`. Tested in `tests/Settings.spec.luau` |
+| `src/client/Camera/Comfort.luau` | Client store, saved in `flags.cameraSettings` (17 keys + `seen_<id>`, limit 24): `get`, `set`, `setMany`, `all`, `changed`, `load`, `whenReady`. Keys: comfort, `oceanQuality` / `scatterQuality` (`Auto`/`High`/`Medium`/`Low`), `volMaster`, `volSfx`, `volRadio`, `volMusic`, `voice`, `pro` |
+| `src/client/UI/SettingsPanel.luau` | Gear beside the status strip + gamepad Start; `mount(statusRegion)`, `setOpen`, `isOpen`, `soundGroup(name)`. Sets the AudioConfig SoundGroup tree (`SoundService.Master` > `Music`, `SFX`, `Ambience`, `Radio` > `Voice`), finding or creating the groups by name, and calls `AudioController.setVolume(name, v)` when that exists. `Voice` = 0 while voice is off: **voiced radio clips go in `Voice`**, squelch/static in `Radio` |
+| `src/server/Services/SettingsService.luau` | `Settings_SetPro` (C->S, boolean). Sole writer of the `OpsPro` attribute after the cold open: Pro -> Assist at once, Assist -> Pro only outside an operation and after `ColdOpenDone` (2 s sweep). OperationService still forces Assist at the cold-open start |
+| `src/client/Ocean/OceanQuality.luau`, `ScatterController.luau` | Read the `oceanQuality` / `scatterQuality` override first (Auto = the Roblox slider), and rebuild on change |
+
 ## Badges and leaderboards (RP-B1)
 
 Owner: `src/server/Services/BadgeService.luau`, `src/server/Services/LeaderboardService.luau`, `src/shared/Config/BadgeConfig.luau`, `src/shared/BadgeRules.luau`, `src/shared/LeaderboardRules.luau`, `tests/Badges.spec.luau`, `tests/Leaderboard.spec.luau`.

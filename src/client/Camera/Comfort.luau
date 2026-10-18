@@ -1,15 +1,23 @@
 --!strict
--- Comfort: the player's camera comfort settings, persisted on the profile.
+-- Comfort: the player's settings (camera comfort, graphics override, audio, voice, Assist/Pro),
+-- persisted on the profile.
 -- Loaded once from Progression_GetData (flags.cameraSettings) and saved through the
 -- Camera_SaveSettings RemoteEvent (ProgressionService stores it with SetFlag; rate limited, so
 -- saves are debounced here). Cinematics record "seen_<id>" in the same table.
 --
 --   Comfort.get(key) / Comfort.set(key, value) / Comfort.all()
+--   Comfort.setMany({ [key]: value }) (one save; the Seasick-safe preset uses it)
 --   Comfort.changed:Connect(fn(key, value))
 --   Comfort.hasSeen(id) / Comfort.markSeen(id)
 --   Comfort.load() (yields briefly; CameraController.Start calls it)
+--   Comfort.whenReady(fn) calls fn once the stored values are in (or the load gave up)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local SettingsRules =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("SettingsRules"))
+
+-- The keys, defaults, ranges and choices live in shared/SettingsRules (comfort, graphics
+-- override, audio volumes, voice, Assist/Pro); this module is the client store.
 export type Settings = {
 	horizonStab: number, -- 0 hull locked .. 1 horizon locked (vehicle first person)
 	fov: number, -- base field of view, degrees
@@ -20,32 +28,23 @@ export type Settings = {
 	gLean: number, -- 0..1 head lean in turns and under acceleration
 	lensSpray: boolean, -- spray drops on the lens (jet ski)
 	sensitivity: number, -- look sensitivity multiplier
+	oceanQuality: string, -- "Auto" | "High" | "Medium" | "Low"
+	scatterQuality: string,
+	volMaster: number,
+	volSfx: number,
+	volRadio: number,
+	volMusic: number,
+	voice: boolean,
+	pro: boolean,
 }
 
-local DEFAULTS: Settings = {
-	horizonStab = 0.65,
-	fov = 75,
-	headBob = 0.6,
-	motionBlur = false,
-	shake = 0.6,
-	speedFov = true,
-	gLean = 0.8,
-	lensSpray = true,
-	sensitivity = 1,
-}
-
-local RANGES: { [string]: { number } } = {
-	horizonStab = { 0, 1 },
-	fov = { 60, 95 },
-	headBob = { 0, 1 },
-	shake = { 0, 1 },
-	gLean = { 0, 1 },
-	sensitivity = { 0.2, 3 },
-}
+local DEFAULTS: Settings = SettingsRules.Defaults :: any
+local RANGES: { [string]: { number } } = SettingsRules.Ranges
 
 local Comfort = {}
 Comfort.Defaults = DEFAULTS
 Comfort.Ranges = RANGES
+Comfort.Rules = SettingsRules
 
 local values: { [string]: any } = table.clone(DEFAULTS :: any)
 local seen: { [string]: boolean } = {}
@@ -55,20 +54,7 @@ Comfort.changed = changedEvent.Event
 local saveScheduled = false
 local loaded = false
 
-local function clean(key: string, value: any): any
-	local default = (DEFAULTS :: any)[key]
-	if default == nil or type(value) ~= type(default) then
-		return nil
-	end
-	if type(value) == "number" then
-		if value ~= value then
-			return nil
-		end
-		local range = RANGES[key]
-		return if range then math.clamp(value, range[1], range[2]) else value
-	end
-	return value
-end
+local clean = SettingsRules.clean
 
 function Comfort.get(key: string): any
 	return values[key]
@@ -107,6 +93,12 @@ function Comfort.set(key: string, value: any)
 	save()
 end
 
+function Comfort.setMany(changes: { [string]: any })
+	for k, v in changes do
+		Comfort.set(k, v)
+	end
+end
+
 function Comfort.hasSeen(id: string): boolean
 	return seen[id] == true
 end
@@ -122,11 +114,18 @@ function Comfort.isLoaded(): boolean
 	return loaded
 end
 
-function Comfort.load()
-	if loaded then
-		return
+local ready = false
+local readyEvent = Instance.new("BindableEvent")
+
+function Comfort.whenReady(fn: () -> ())
+	if ready then
+		task.spawn(fn)
+	else
+		readyEvent.Event:Once(fn)
 	end
-	loaded = true
+end
+
+local function fetch()
 	local net = ReplicatedStorage:WaitForChild("Net", 10)
 	local fn = net and net:WaitForChild("Progression_GetData", 10)
 	if not (fn and fn:IsA("RemoteFunction")) then
@@ -156,6 +155,16 @@ function Comfort.load()
 			end
 		end
 	end
+end
+
+function Comfort.load()
+	if loaded then
+		return
+	end
+	loaded = true
+	fetch()
+	ready = true
+	readyEvent:Fire()
 end
 
 return Comfort
