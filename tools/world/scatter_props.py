@@ -5,12 +5,13 @@ usage: python3 tools/world/scatter_props.py [--seed N] [--preview build/world/pr
 
 Reads the terrain bake (map/generated/terrain.json + terrain_height.i16 + terrain_material.u8) and
 tools/world/layout.py, and writes map/generated/props.json (compact):
-  {"generator", "seed", "assets": [names], "rocks": [[a,x,y,z,yaw,tx,tz,s,b],...], "plants": [...], "stats": {...}}
+  {"generator", "seed", "assets": [names], "rocks": [[a,x,y,z,yaw,tx,tz,s,b,c],...], "plants": [...], "stats": {...}}
 a = 1-based index into assets; y = bilinear terrain height (studs); yaw / tx / tz in degrees, applied as
 CFrame.new(x,y,z) * CFrame.Angles(rad(tx), 0, rad(tz)) * CFrame.Angles(0, rad(yaw), 0); s = uniform scale;
 b = bury fraction of the scaled model height sunk below y. b = -1 is waterline mode: the asset's ATT_Waterline goes
 to height y, and y is then the water height (0 + a small tide jitter), not the terrain height.
-Same inputs + seed = byte-identical output. Needs numpy (Pillow only for --preview)."""
+Rock column c: 1 = landmark (cliff dressing faces and top ledges, drawn much further out by ScatterController),
+0 = ordinary rock. Plant column 10 is the "seen" flag (see thin()). Same inputs + seed = byte-identical output. Needs numpy (Pillow only for --preview)."""
 import hashlib, json, math, os, sys
 import numpy as np
 
@@ -398,6 +399,219 @@ def scatter_rocks(T, ex_all, reg, seed, space):
     return out, meta
 
 
+# ---------------------------------------------------------------- cliff dressing (sheer faces from the K1 kit)
+# Voxel terrain cannot hold a sheer strata face, so the steep coasts read as soft green mounds. This pass builds
+# real faces from the cliff pieces, scaled 1.5-4x, stacked in 1-3 tiers, overlapping with jittered yaw / lean so the
+# seams hide; ledge pieces cap the top edge, boulder aprons and mid-tide wave-cut platforms dress the foot.
+# Convention: a face piece's LookVector (-Z, the scan's open face) points out to sea and its X axis (the widest
+# footprint) runs along the coast. Face pieces and top ledges are landmarks (row column 10 = 1): the client draws
+# them much further out than the other rocks. All of them keep their server _COL hull (players and boats collide).
+
+CLIFF_REGIONS = ("EastCliffs", "HavenHead", "WestCoast", "SkerryIsle")
+CLIFF_SLOPE = 1.0  # 45 degrees
+CLIFF_DROP = 24.0  # studs (8 m) of drop to the sea ...
+CLIFF_REACH = 9  # ... within 9 cells = 36 studs (12 m) of the waterline
+CLIFF_MIN_FACE = 18.0  # studs (6 m): lower faces stay terrain + boulders
+CLIFF_SCALE = (1.5, 4.0)
+CLIFF_MAX_WIDTH = 150.0  # studs (50 m): wider slabs read as one repeated scan
+CLIFF_OVERLAP = 0.62  # neighbour centres at least this share of the mean width apart (about 40 % overlap)
+COLD_OPEN = (30.0, 540.0, 380.0)  # Harbour Mouth jet-ski run (CallTypes HarbourMouth + 220-260 studs out), radius
+CLIFF_FACE = {"M_Rock_Cliff_05": 3, "M_Rock_Cliff_04": 3, "M_Rock_Cliff_03": 2, "M_Rock_Cliff_01": 2,
+              "M_Rock_Cliff_02": 1}
+CLIFF_TOP = {"M_Rock_Ledge_01": 2, "M_Rock_Ledge_02": 3, "M_Rock_Ledge_03": 2}
+CLIFF_APRON = {"M_Rock_Boulder_04": 3, "M_Rock_Boulder_05": 3, "M_Rock_Boulder_06": 2, "M_Rock_Boulder_01": 2}
+CLIFF_PLATFORM = {"M_Rock_Ledge_02": 3, "M_Rock_Ledge_01": 2, "M_Rock_Ledge_03": 2}
+CLIFF_BUDGET = {"face": 420, "top": 160, "apron": 520, "platform": 140}
+
+
+def max_filter(a, r):
+    """Max over a (2r+1)^2 window (edge-clamped), separable."""
+    out = a
+    for ax in (0, 1):
+        p = np.pad(out, [(r, r) if k == ax else (0, 0) for k in (0, 1)], mode="edge")
+        n = out.shape[ax]
+        res = p.take(range(0, n), axis=ax)
+        for k in range(1, 2 * r + 1):
+            res = np.maximum(res, p.take(range(k, k + n), axis=ax))
+        out = res
+    return out
+
+
+def cliff_cells(T, ex_all, reg):
+    """Waterline cells of the four steep coasts where the land rises over 45 degrees or drops 8 m to the sea
+    within 12 m."""
+    X, Z = T.X, T.Z
+    co_x, co_z, co_r = COLD_OPEN
+    in_reg = np.isin(reg, [REGIONS.index(n) for n in CLIFF_REGIONS])
+    top = max_filter(T.h, CLIFF_REACH)
+    steep = max_filter(T.slope, 4) > CLIFF_SLOPE
+    inside = (np.abs(X) < L.HALF_EXTENT - 60) & (np.abs(Z) < L.HALF_EXTENT - 60)
+    far = np.hypot(X - co_x, Z - co_z) > co_r
+    return T.shore & in_reg & inside & far & ~ex_all & ((top > CLIFF_DROP) | (steep & (top > 9.0)))
+
+
+def face_profile(T, x, z, ux, uz):
+    """Walk uphill from the waterline: [(dist, h)] while the face stays steep; ends at the cliff top."""
+    prof, d, rose = [(0.0, T.height(x, z))], 0.0, False
+    while d < 240:
+        d += 4.0
+        h = T.height(x + ux * d, z + uz * d)
+        j, i = T.idx(x + ux * d, z + uz * d)
+        if h < prof[-1][1] - 0.5:
+            break
+        prof.append((d, h))
+        rose = rose or h - prof[0][1] > 6
+        if rose and T.slope_b[j, i] < 0.55:
+            break
+    return prof
+
+
+def at_height(prof, e):
+    for (d0, h0), (d1, h1) in zip(prof, prof[1:]):
+        if h1 >= e:
+            return d0 + (d1 - d0) * (e - h0) / max(h1 - h0, 1e-6)
+    return prof[-1][0]
+
+
+def cliff_dressing(T, ex_all, reg, seed, space):
+    """Rows (10 columns: + landmark flag) and region meta for the cliff faces, top ledges, aprons and platforms."""
+    cand = cliff_cells(T, ex_all, reg)
+    hb = G.box_blur(T.h, 4)
+    gz_, gx_ = np.gradient(hb, T.cell)
+    T.slope_b = G.box_blur(T.slope, 2)
+    rng = np.random.default_rng([seed, 41])
+    jj, ii = np.nonzero(cand)
+    keys = rng.random(len(jj))
+    order = np.argsort(keys, kind="stable")
+    tiers = [Spacing(32.0) for _ in range(3)]
+    s_top, s_apron, s_plat = Spacing(16.0), Spacing(16.0), Spacing(16.0)
+    rows, meta, kinds = [], [], []
+    count = {k: 0 for k in CLIFF_BUDGET}
+
+    def blocked(x, z, r):
+        j, i = T.idx(x, z)
+        if ex_all[j, i] or min(T.road_edge[j, i], T.slip_edge[j, i], T.park_edge[j, i]) < ROAD_VERGE + 0.5 * r:
+            return True
+        return math.hypot(x - COLD_OPEN[0], z - COLD_OPEN[1]) < COLD_OPEN[2]
+
+    def put(kind, asset, x, y, z, yaw, tx, tz, s, b, region, landmark):
+        rows.append(row(asset, x, y, z, yaw, tx, tz, s, b) + [1 if landmark else 0])
+        meta.append(region)
+        kinds.append(kind)
+        count[kind] += 1
+
+    for o in order:
+        if count["face"] >= CLIFF_BUDGET["face"]:
+            break
+        j, i = int(jj[o]), int(ii[o])
+        x0, z0 = float(T.X[j, i]), float(T.Z[j, i])
+        g = math.hypot(gx_[j, i], gz_[j, i])
+        if g < 0.25:
+            continue
+        ux, uz = gx_[j, i] / g, gz_[j, i] / g  # uphill (landward); the sea normal is (-ux, -uz)
+        if not tiers[0].ok(x0, z0, 18.0, CLIFF_OVERLAP):
+            continue
+        prof = face_profile(T, x0, z0, ux, uz)
+        top_d, top_h = prof[-1]
+        H = top_h - 0.0
+        if H < CLIFF_MIN_FACE:
+            continue
+        region = REGIONS[int(reg[j, i])]
+        n_t = 1 if H < 45 else 2 if H < 95 else 3
+        yaw0 = math.degrees(math.atan2(ux, uz))  # CFrame.Angles(0, a, 0).LookVector = (-sin a, 0, -cos a) = sea
+        tgx, tgz = -uz, ux  # along the coast
+        base, placed_any = -1.5, False
+        for k in range(n_t):
+            asset = pick_asset(rng, CLIFF_FACE)
+            wm, dm, hm = (3 * v for v in ROCKS[asset])
+            want = (H + 1.5 - (base + 1.5)) / (n_t - k) * 1.3  # this tier's share of what is left, +30 % overlap
+            s = want / hm * rng.uniform(0.92, 1.08)
+            s = max(min(s, CLIFF_SCALE[1], CLIFF_MAX_WIDTH / wm), CLIFF_SCALE[0])
+            hp, wp, dp = hm * s, wm * s, dm * s
+            em = base + 0.5 * hp
+            d = at_height(prof, min(em, top_h - 0.25 * hp)) - 0.3 * dp  # stand proud of the mound
+            lat = rng.uniform(-0.15, 0.15) * wp
+            x, z = x0 + ux * d + tgx * lat, z0 + uz * d + tgz * lat
+            if not tiers[k].ok(x, z, 0.5 * wp, CLIFF_OVERLAP):
+                break
+            ends = [(x + tgx * 0.45 * wp, z + tgz * 0.45 * wp), (x - tgx * 0.45 * wp, z - tgz * 0.45 * wp),
+                    (x, z)]
+            if any(blocked(px, pz, 0.0) for px, pz in ends):
+                break
+            # bury the base: never above the terrain under the piece's sea edge or centre (no floating overhang)
+            fx, fz = x - ux * 0.45 * dp, z - uz * 0.45 * dp
+            y = min(base, T.height(fx, fz) - 1.0, T.height(x, z) - 0.2 * hp) if k else base
+            lean = math.radians(rng.uniform(3, 14))  # top leans back into the land, like a real face
+            roll = math.radians(rng.uniform(-5, 5))
+            up = np.array([ux * math.sin(lean) + tgx * math.sin(roll), math.cos(lean) * math.cos(roll),
+                           uz * math.sin(lean) + tgz * math.sin(roll)])
+            tx, tz = tilt_angles(up / np.linalg.norm(up), 1.0, 30.0)
+            put("face", asset, x, y, z, yaw0 + rng.uniform(-12, 12) + (180 if rng.random() < 0.15 else 0), tx, tz,
+                s, 0.0, region, True)
+            tiers[k].add(x, z, 0.5 * wp)
+            space.add(x, z, 0.35 * wp)
+            placed_any = True
+            base = y + hp * 0.72
+            if base >= top_h - 4:
+                break
+        if not placed_any:
+            continue
+        # cap the seam between the top tier and the turf with a ledge lip
+        if count["top"] < CLIFF_BUDGET["top"] and rng.random() < 0.75:
+            asset = pick_asset(rng, CLIFF_TOP)
+            s = rng.uniform(1.3, 2.4)
+            r = FOOT[asset] * s
+            tdx = top_d - rng.uniform(2, 8)
+            x, z = x0 + ux * tdx, z0 + uz * tdx
+            if s_top.ok(x, z, r, 0.8) and not blocked(x, z, r):
+                tx, tz = tilt_angles(T.normal(x, z), 0.6, 12.0)
+                put("top", asset, x, T.height(x, z), z, yaw0 + 90 + rng.uniform(-20, 20), tx, tz, s,
+                    rng.uniform(0.35, 0.5), region, True)
+                s_top.add(x, z, r)
+                space.add(x, z, 0.5 * r)
+        # boulder apron at the foot
+        for _ in range(int(rng.integers(3, 7))):
+            if count["apron"] >= CLIFF_BUDGET["apron"]:
+                break
+            asset = pick_asset(rng, CLIFF_APRON)
+            s = rng.uniform(1.0, 2.6)
+            r = FOOT[asset] * s
+            out_d = rng.uniform(-4, 26)
+            lat = rng.normal(0, 18)
+            x, z = x0 - ux * out_d + tgx * lat, z0 - uz * out_d + tgz * lat
+            y = T.height(x, z)
+            if y < -4 or y > 10 or not s_apron.ok(x, z, r, 0.8) or blocked(x, z, r):
+                continue
+            tx, tz = tilt_angles(T.normal(x, z), 0.6, 15.0)
+            put("apron", asset, x, y, z, rng.uniform(0, 360), tx, tz, s, rng.uniform(0.2, 0.35), region, False)
+            s_apron.add(x, z, r)
+            space.add(x, z, r)
+        # mid-tide wave-cut platform (the ledge's ATT_Waterline goes to the water)
+        for _ in range(3 if rng.random() < 0.6 else 0):
+            if count["platform"] >= CLIFF_BUDGET["platform"]:
+                break
+            asset = pick_asset(rng, CLIFF_PLATFORM)
+            s = rng.uniform(1.2, 2.5)
+            r = FOOT[asset] * s
+            out_d = rng.uniform(4, 36)
+            x, z = x0 - ux * out_d + tgx * rng.normal(0, 12), z0 - uz * out_d + tgz * rng.normal(0, 12)
+            th = T.height(x, z)
+            if -7 < th < 2 and s_plat.ok(x, z, r, 0.85) and not blocked(x, z, r):
+                tx, tz = tilt_angles(T.normal(x, z), 0.1, 3.0)
+                put("platform", asset, x, rng.uniform(-0.5, 0.3), z, yaw0 + 90 + rng.uniform(-25, 25), tx, tz, s,
+                    -1.0, region, False)
+                s_plat.add(x, z, r)
+                space.add(x, z, r)
+                break
+    by = {}
+    for g, k in zip(meta, kinds):
+        by.setdefault(g, {kk: 0 for kk in CLIFF_BUDGET})[k] += 1
+    print(f"  cliffs: {count} ({len(jj)} candidate waterline cells)")
+    for g in CLIFF_REGIONS:
+        print(f"    {g}: {by.get(g, {})}")
+    return rows, meta, {g: by[g] for g in CLIFF_REGIONS if g in by}
+
+
 # ---------------------------------------------------------------- plants
 
 
@@ -535,7 +749,9 @@ def main():
     ex_all, ex_turf = exclusions(T)
     reg = regions(T)
     space_rocks = Spacing(16.0)
+    crows, cmeta, cliff_stats = cliff_dressing(T, ex_all, reg, seed, space_rocks)
     rocks, rmeta = scatter_rocks(T, ex_all, reg, seed, space_rocks)
+    rocks, rmeta = crows + [r + [0] for r in rocks], cmeta + rmeta
     plants, pmeta = scatter_plants(T, plant_weights(T, seed), ex_all, ex_turf, reg, seed, space_rocks)
     plants = plants[:PLANT_CAP]
     pmeta = pmeta[:PLANT_CAP]
@@ -549,7 +765,7 @@ def main():
     by_region = {k: by_region[k] for k in REGIONS if k in by_region}
     doc = {"generator": "tools/world/scatter_props.py", "seed": seed, "assets": ASSETS, "rocks": rocks,
            "plants": plants, "stats": {"rocks": len(rocks), "plants": len(plants), "byAsset": by_asset,
-                                       "byRegion": by_region}}
+                                       "byRegion": by_region, "cliffs": cliff_stats}}
     text = json.dumps(doc, separators=(",", ":"))
     path = os.path.join(REPO, "map/generated/props.json")
     with open(path, "w") as f:

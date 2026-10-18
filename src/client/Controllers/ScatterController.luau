@@ -2,8 +2,10 @@
 -- ScatterController (I1 perf pass): draws the K1 rocks and G1 plants of map/generated/props.json locally.
 --   * LOD by camera distance per CELL x CELL cell (nearest point of the cell): LOD0 < LOD1_AT, LOD1 < LOD2_AT,
 --     LOD2 out to the draw distance, nothing beyond; rocks switch sooner (TIERS rock1 / rock2 / rockDraw);
+--     landmark rocks (rock row column 10 = 1: the scaled-up cliff faces and top ledges of the cliff dressing pass)
+--     get their own cells, switch LOD at twice the rock distances and draw out to TIERS cliffDraw;
 --   * density by graphics quality (UserGameSettings.SavedQualityLevel; Automatic and touch-only devices use the
---     medium tier): rows flagged "seen" by scatter_props.py (roads, paths, beaches, viewpoints) go first;
+--     medium tier; the settings panel's "scatterQuality" override wins over both): rows flagged "seen" by scatter_props.py (roads, paths, beaches, viewpoints) go first;
 --   * the server keeps only the rocks' invisible collision hulls (WorldDressingService); these local copies are
 --     not replicated and not streamed, so StreamingEnabled has nothing to send for the meshes.
 --   * wet state: in a storm (Weather Storm / Clearing) or a wet look-dev shot (Lighting LookDevWet) every cell is
@@ -14,6 +16,8 @@ local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 
 local ScatterController = {}
 ScatterController.Priority = 150
@@ -27,9 +31,33 @@ local TICK = 0.3
 -- tier -> plant share kept where seen / elsewhere, plant draw distance, rock LOD1 / LOD2 / draw distances
 -- (rocks are 2.5k-9.8k triangle scans: they drop to LOD1 sooner than the plants)
 local TIERS = {
-	low = { seen = 0.5, filler = 0.15, draw = 260, rock1 = 50, rock2 = 150, rockDraw = 800 },
-	medium = { seen = 1.0, filler = 0.5, draw = 420, rock1 = 60, rock2 = 170, rockDraw = 1000 },
-	high = { seen = 1.0, filler = 1.0, draw = 650, rock1 = 80, rock2 = 200, rockDraw = 1200 },
+	low = {
+		seen = 0.5,
+		filler = 0.15,
+		draw = 260,
+		rock1 = 50,
+		rock2 = 150,
+		rockDraw = 800,
+		cliffDraw = 1500,
+	},
+	medium = {
+		seen = 1.0,
+		filler = 0.5,
+		draw = 420,
+		rock1 = 60,
+		rock2 = 170,
+		rockDraw = 1000,
+		cliffDraw = 2000,
+	},
+	high = {
+		seen = 1.0,
+		filler = 1.0,
+		draw = 650,
+		rock1 = 80,
+		rock2 = 200,
+		rockDraw = 1200,
+		cliffDraw = 2600,
+	},
 }
 
 -- LOD0 / LOD1 / LOD2 triangles per asset (assets/review/*_report.json, art/status/K1.csv; rocks 1 / 0.4 / 0.15)
@@ -72,7 +100,15 @@ for name, t in ROCK_TRIS do
 end
 
 type Row = { number }
-type Item = { asset: string, cf: CFrame, scale: number, keep: number, seen: boolean, rock: boolean }
+type Item = {
+	asset: string,
+	cf: CFrame,
+	scale: number,
+	keep: number,
+	seen: boolean,
+	rock: boolean,
+	landmark: boolean,
+}
 type Cell =
 	{ min: Vector2, max: Vector2, items: { Item }, lod: number, model: Model?, tris: number }
 
@@ -122,6 +158,10 @@ local function hash01(i: number): number
 end
 
 local function pickTier(): string
+	local override = Comfort.get("scatterQuality")
+	if override == "High" or override == "Medium" or override == "Low" then
+		return string.lower(override)
+	end
 	local ok, level = pcall(function()
 		return UserSettings():GetService("UserGameSettings").SavedQualityLevel.Value
 	end)
@@ -169,6 +209,7 @@ local function itemFor(asset: string, row: Row, rock: boolean, index: number): I
 		keep = hash01(index),
 		seen = rock or row[10] == 1,
 		rock = rock,
+		landmark = rock and row[10] == 1,
 	}
 end
 
@@ -179,15 +220,22 @@ local function wanted(item: Item): boolean
 	return item.keep < (if item.seen then tier.seen else tier.filler)
 end
 
-local function desiredLod(cell: Cell, cam: Vector3, rockCell: boolean): number
+-- kind: "p" plants, "r" rocks, "c" landmark rocks (cliff faces)
+local function desiredLod(cell: Cell, cam: Vector3, kind: string): number
 	local p = Vector2.new(cam.X, cam.Z)
 	local q = p:Max(cell.min):Min(cell.max)
 	local d = (p - q).Magnitude
-	if d < (if rockCell then tier.rock1 else LOD1_AT) then
+	local l1, l2, draw = LOD1_AT, LOD2_AT, tier.draw
+	if kind == "r" then
+		l1, l2, draw = tier.rock1, tier.rock2, tier.rockDraw
+	elseif kind == "c" then
+		l1, l2, draw = tier.rock1 * 2, tier.rock2 * 2, tier.cliffDraw
+	end
+	if d < l1 then
 		return 1
-	elseif d < (if rockCell then tier.rock2 else LOD2_AT) then
+	elseif d < l2 then
 		return 2
-	elseif d < (if rockCell then tier.rockDraw else tier.draw) then
+	elseif d < draw then
 		return 3
 	end
 	return 0
@@ -314,7 +362,8 @@ function ScatterController.Start()
 			local item = asset and itemFor(asset, row, rock, i + offset)
 			if item then
 				local cx, cz = math.floor(row[2] / CELL), math.floor(row[4] / CELL)
-				local key = `{if rock then "r" else "p"}{cx}_{cz}`
+				local kind = if item.landmark then "c" elseif rock then "r" else "p"
+				local key = `{kind}{cx}_{cz}`
 				local found = byKey[key]
 				local cell: Cell
 				if found then
@@ -337,21 +386,27 @@ function ScatterController.Start()
 	end
 	add(props.rocks or {}, true, 0)
 	add(props.plants or {}, false, 100000)
-	local rockCell: { [Cell]: boolean } = {}
+	local cellKind: { [Cell]: string } = {}
 	for key, c in byKey do
-		rockCell[c] = string.sub(key, 1, 1) == "r"
+		cellKind[c] = string.sub(key, 1, 1)
+	end
+	local function retier()
+		local n = pickTier()
+		if n ~= tierName then
+			tierName, tier = n, TIERS[n]
+			for _, c in cells do
+				c.lod = -1 -- rebuild everything at the new density
+			end
+		end
 	end
 	pcall(function()
 		local gs = UserSettings():GetService("UserGameSettings")
-		gs:GetPropertyChangedSignal("SavedQualityLevel"):Connect(function()
-			local n = pickTier()
-			if n ~= tierName then
-				tierName, tier = n, TIERS[n]
-				for _, c in cells do
-					c.lod = -1 -- rebuild everything at the new density
-				end
-			end
-		end)
+		gs:GetPropertyChangedSignal("SavedQualityLevel"):Connect(retier)
+	end)
+	Comfort.changed:Connect(function(key: string)
+		if key == "scatterQuality" then
+			retier()
+		end
 	end)
 	print(`[Scatter] {#cells} cells, tier {tierName}`)
 	while h.Parent do
@@ -367,7 +422,7 @@ function ScatterController.Start()
 			local pos = cam.CFrame.Position
 			local work: { { cell: Cell, lod: number, d: number } } = {}
 			for _, c in cells do
-				local want = desiredLod(c, pos, rockCell[c])
+				local want = desiredLod(c, pos, cellKind[c])
 				if want ~= c.lod then
 					local mid = (c.min + c.max) / 2
 					table.insert(
