@@ -37,6 +37,7 @@ Full evidence: [`docs/research/reference-games.md`](docs/research/reference-game
 | 10 | [World and map](docs/10-world-and-map.md) | The Gale Isles map, roads and beaches, land vehicles, seabed and wrecks, free exploration and the logbook, Terrain and streaming tech |
 | 11 | [Dispatcher and voice](docs/11-dispatcher-and-voice.md) | The voiced Coastguard radio: cast, line script, stitching, radio FX, ElevenLabs pipeline |
 | 12 | [Asset list](docs/12-asset-list.md) | Every photoreal MVP asset with references, sources, budgets, priority and production batches |
+| 13 | [Release plan](docs/13-release-plan.md) | Launch audit: gap table, work packages, definition of launch-ready, user-only steps |
 
 Raw research notes: [`docs/research/`](docs/research/).
 
