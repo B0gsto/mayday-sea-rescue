@@ -6,7 +6,11 @@
 --     medium tier): rows flagged "seen" by scatter_props.py (roads, paths, beaches, viewpoints) go first;
 --   * the server keeps only the rocks' invisible collision hulls (WorldDressingService); these local copies are
 --     not replicated and not streamed, so StreamingEnabled has nothing to send for the meshes.
--- Workspace.ScatterLocal attributes: ScatterTier, ScatterRows (drawn), ScatterTris (estimated, drawn now).
+--   * wet state: in a storm (Weather Storm / Clearing) or a wet look-dev shot (Lighting LookDevWet) every cell is
+--     rebuilt with each part's SurfaceAppearance_Wet (the templates keep AssetLoader's SurfaceVariants), so the
+--     plants darken with the wet sand instead of dissolving into it.
+-- Workspace.ScatterLocal attributes: ScatterTier, ScatterRows (drawn), ScatterTris (estimated, drawn now), ScatterWet.
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
@@ -77,6 +81,40 @@ local cells: { Cell } = {}
 local holder: Model? = nil
 local tier = TIERS.high
 local tierName = "high"
+local wet = false
+local Weather: any = nil
+
+local function wetNow(): boolean
+	if Lighting:GetAttribute("LookDevWet") == true then
+		return true
+	end
+	if not Weather then
+		return false
+	end
+	local ok, s = pcall(Weather.getState)
+	return ok and (s == "Storm" or s == "Clearing")
+end
+
+-- a clone's parts wear their wet (or dry) SurfaceAppearance
+local function applyWet(root: Instance)
+	if not wet then
+		return
+	end
+	for _, d in root:GetDescendants() do
+		if not d:IsA("BasePart") then
+			continue
+		end
+		local variants = d:FindFirstChild("SurfaceVariants")
+		local stored = variants and variants:FindFirstChild("SurfaceAppearance_Wet")
+		local active = d:FindFirstChildWhichIsA("SurfaceAppearance")
+		if variants and stored and active then
+			active.Name = "SurfaceAppearance_Dry"
+			active.Parent = variants
+			stored.Name = "SurfaceAppearance"
+			stored.Parent = d
+		end
+	end
+end
 
 local function hash01(i: number): number
 	local x = math.sin(i * 12.9898 + 78.233) * 43758.5453
@@ -177,6 +215,7 @@ local function build(cell: Cell, lod: number): number
 					c:ScaleTo(item.scale)
 				end
 				c:PivotTo(item.cf)
+				applyWet(c)
 				for _, d in c:GetChildren() do
 					d.Parent = m
 				end
@@ -207,6 +246,7 @@ local function stats()
 		holder:SetAttribute("ScatterTier", tierName)
 		holder:SetAttribute("ScatterRows", rows)
 		holder:SetAttribute("ScatterTris", tris)
+		holder:SetAttribute("ScatterWet", wet)
 	end
 end
 
@@ -253,6 +293,13 @@ function ScatterController.Start()
 		)
 	end
 	templates = folder
+	local shared = ReplicatedStorage:FindFirstChild("Shared")
+	local wm = shared and shared:FindFirstChild("Weather")
+	if wm and wm:IsA("ModuleScript") then
+		local ok, mod = pcall(require, wm)
+		Weather = if ok then mod else nil
+	end
+	wet = wetNow()
 	local props = (require :: any)(data)
 	tierName = pickTier()
 	tier = TIERS[tierName]
@@ -308,6 +355,13 @@ function ScatterController.Start()
 	end)
 	print(`[Scatter] {#cells} cells, tier {tierName}`)
 	while h.Parent do
+		local nowWet = wetNow()
+		if nowWet ~= wet then
+			wet = nowWet
+			for _, c in cells do
+				c.lod = -1 -- rebuild everything with the other surface set
+			end
+		end
 		local cam = Workspace.CurrentCamera
 		if cam then
 			local pos = cam.CFrame.Position

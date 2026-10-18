@@ -307,7 +307,7 @@ type Row = { number }
 -- rocks' invisible _COL hulls (boats and characters collide; nothing to render, almost nothing to stream).
 local LODS = { "LOD0", "LOD1", "LOD2" }
 
--- Client copy of a template: visual parts only (hulls, wet variants and tags dropped), with the LOD0 bounds
+-- Client copy of a template: visual parts and their wet SurfaceVariants (hulls and tags dropped), with the LOD0 bounds
 -- the client needs to bury every LOD at the same height: BaseMinY / BaseSizeY / WaterlineY (studs, scale 1).
 local function publish(asset: string, lod: string, folder: Folder, base: Model?): Model?
 	local t = AssetLoader.getTemplate(asset, lod)
@@ -317,8 +317,9 @@ local function publish(asset: string, lod: string, folder: Folder, base: Model?)
 	local m = t:Clone()
 	m.Name = `{asset}_{lod}`
 	for _, d in m:GetDescendants() do
-		local hull = d:IsA("BasePart") and d:HasTag(AssetLoader.COLLISION_TAG)
-		if hull or (d:IsA("Configuration") and d.Name == "SurfaceVariants") then
+		-- SurfaceVariants stay: ScatterController swaps the plants to their wet maps in storms / wet look-dev
+		-- shots (stripped, dry marram sat on darkened wet sand at the same tone and vanished from view)
+		if d:IsA("BasePart") and d:HasTag(AssetLoader.COLLISION_TAG) then
 			d:Destroy()
 		end
 	end
