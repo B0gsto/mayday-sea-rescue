@@ -2937,6 +2937,148 @@
    ]
   },
   {
+   "Name": "M_Veh_Kayak",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Craft",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://121957535075547",
+        "NormalMap": "rbxassetid://84015963015420",
+        "RoughnessMap": "rbxassetid://118680085765150",
+        "MetalnessMap": "rbxassetid://89456716371338"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://122696737751696",
+        "NormalMap": "rbxassetid://111866107015830",
+        "RoughnessMap": "rbxassetid://90749635108640",
+        "MetalnessMap": "rbxassetid://89456716371338"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_Optimist",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Deck",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://71224713668065",
+        "NormalMap": "rbxassetid://112264568683924",
+        "RoughnessMap": "rbxassetid://115844360051560"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://100855164843314",
+        "NormalMap": "rbxassetid://116452716789897",
+        "RoughnessMap": "rbxassetid://84575377969399"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Fittings",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132107152816828",
+        "NormalMap": "rbxassetid://123020802053328",
+        "RoughnessMap": "rbxassetid://112712492119619",
+        "MetalnessMap": "rbxassetid://139746183947920"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://127961520299146",
+        "NormalMap": "rbxassetid://101660250710738",
+        "RoughnessMap": "rbxassetid://127110589164555",
+        "MetalnessMap": "rbxassetid://139746183947920"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://83745903826921",
+        "NormalMap": "rbxassetid://90469226134169",
+        "RoughnessMap": "rbxassetid://120617678725218"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://100032361389410",
+        "NormalMap": "rbxassetid://111098965437128",
+        "RoughnessMap": "rbxassetid://81815735686519"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_Paddleboard",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Craft",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://83656359702841",
+        "NormalMap": "rbxassetid://110354259142581",
+        "RoughnessMap": "rbxassetid://137409355972920"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://117898988288155",
+        "NormalMap": "rbxassetid://126878640311019",
+        "RoughnessMap": "rbxassetid://113754417526563"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Veh_RIB",
    "ClassName": "Folder",
    "Children": [

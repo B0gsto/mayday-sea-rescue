@@ -1,0 +1,2533 @@
+{
+ "asset": "M_Veh_Optimist",
+ "name": "M_Veh_Optimist",
+ "date": "2026-10-18",
+ "commit": "23fe1bee+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD0.fbx",
+   "bytes": 531260,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Optimist_COL",
+    "M_Veh_Optimist_Cabin_LOD0",
+    "M_Veh_Optimist_Deck_LOD0",
+    "M_Veh_Optimist_Fittings_LOD0",
+    "M_Veh_Optimist_Hull_LOD0",
+    "M_Veh_Optimist_Outboard_LOD0",
+    "M_Veh_Optimist_SamsonPost_LOD0",
+    "M_Veh_Optimist_TrailingRope_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Optimist_COL.001",
+     "min": [
+      -3.36,
+      -9.72,
+      0.51
+     ],
+     "max": [
+      3.36,
+      10.53,
+      8.31
+     ],
+     "polygons": 36,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Cabin_LOD0.001",
+     "min": [
+      -2.55,
+      -4.35,
+      2.5763
+     ],
+     "max": [
+      2.55,
+      0.753,
+      8.1
+     ],
+     "polygons": 72,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Deck_LOD0.001",
+     "min": [
+      -3.2214,
+      -9.642,
+      2.58
+     ],
+     "max": [
+      3.2214,
+      8.88,
+      8.28
+     ],
+     "polygons": 480,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Fittings_LOD0.001",
+     "min": [
+      -3.6645,
+      -10.62,
+      2.52
+     ],
+     "max": [
+      3.6645,
+      9.1949,
+      11.85
+     ],
+     "polygons": 4116,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Hull_LOD0.001",
+     "min": [
+      -3.5098,
+      -10.02,
+      0.0
+     ],
+     "max": [
+      3.5098,
+      8.88,
+      4.86
+     ],
+     "polygons": 2358,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Outboard_LOD0.001",
+     "min": [
+      -0.6,
+      6.4748,
+      0.18
+     ],
+     "max": [
+      0.63,
+      10.62,
+      4.89
+     ],
+     "polygons": 580,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_SamsonPost_LOD0.001",
+     "min": [
+      -0.57,
+      -8.46,
+      4.3573
+     ],
+     "max": [
+      0.57,
+      -7.8,
+      5.8423
+     ],
+     "polygons": 60,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_TrailingRope_LOD0.001",
+     "min": [
+      -3.1557,
+      7.5432,
+      0.3905
+     ],
+     "max": [
+      0.3327,
+      10.575,
+      3.6535
+     ],
+     "polygons": 372,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD1.fbx",
+   "bytes": 245852,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Optimist_Cabin_LOD1",
+    "M_Veh_Optimist_Deck_LOD1",
+    "M_Veh_Optimist_Fittings_LOD1",
+    "M_Veh_Optimist_Hull_LOD1",
+    "M_Veh_Optimist_Outboard_LOD1",
+    "M_Veh_Optimist_SamsonPost_LOD1",
+    "M_Veh_Optimist_TrailingRope_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Optimist_Cabin_LOD1.001",
+     "min": [
+      -2.55,
+      -4.35,
+      2.5763
+     ],
+     "max": [
+      2.55,
+      0.753,
+      8.1
+     ],
+     "polygons": 24,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Deck_LOD1.001",
+     "min": [
+      -3.2214,
+      -9.6423,
+      2.58
+     ],
+     "max": [
+      3.2214,
+      8.88,
+      8.28
+     ],
+     "polygons": 163,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Fittings_LOD1.001",
+     "min": [
+      -3.6607,
+      -10.62,
+      2.52
+     ],
+     "max": [
+      3.6607,
+      9.18,
+      11.85
+     ],
+     "polygons": 1411,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Hull_LOD1.001",
+     "min": [
+      -3.5082,
+      -10.025,
+      0.0
+     ],
+     "max": [
+      3.5082,
+      8.8802,
+      4.8604
+     ],
+     "polygons": 807,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Outboard_LOD1.001",
+     "min": [
+      -0.581,
+      6.4743,
+      0.18
+     ],
+     "max": [
+      0.63,
+      10.62,
+      4.8698
+     ],
+     "polygons": 198,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_SamsonPost_LOD1.001",
+     "min": [
+      -0.57,
+      -8.46,
+      4.3573
+     ],
+     "max": [
+      0.57,
+      -7.8,
+      5.8423
+     ],
+     "polygons": 20,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_TrailingRope_LOD1.001",
+     "min": [
+      -3.1227,
+      7.5573,
+      0.4201
+     ],
+     "max": [
+      0.3253,
+      10.575,
+      3.659
+     ],
+     "polygons": 126,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD2.fbx",
+   "bytes": 91356,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Optimist_Cabin_LOD2",
+    "M_Veh_Optimist_Deck_LOD2",
+    "M_Veh_Optimist_Fittings_LOD2",
+    "M_Veh_Optimist_Hull_LOD2",
+    "M_Veh_Optimist_Outboard_LOD2",
+    "M_Veh_Optimist_SamsonPost_LOD2",
+    "M_Veh_Optimist_TrailingRope_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Optimist_Cabin_LOD2.001",
+     "min": [
+      -2.55,
+      -4.35,
+      2.5763
+     ],
+     "max": [
+      2.55,
+      0.753,
+      8.1
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Deck_LOD2.001",
+     "min": [
+      -3.2223,
+      -9.6477,
+      2.58
+     ],
+     "max": [
+      3.2223,
+      8.8795,
+      8.28
+     ],
+     "polygons": 41,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Fittings_LOD2.001",
+     "min": [
+      -3.7323,
+      -10.6214,
+      2.52
+     ],
+     "max": [
+      3.7323,
+      9.175,
+      11.85
+     ],
+     "polygons": 352,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Hull_LOD2.001",
+     "min": [
+      -3.5076,
+      -10.0422,
+      0.0
+     ],
+     "max": [
+      3.5076,
+      8.8803,
+      4.8621
+     ],
+     "polygons": 202,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_Outboard_LOD2.001",
+     "min": [
+      -0.5487,
+      6.4743,
+      0.1456
+     ],
+     "max": [
+      0.63,
+      10.62,
+      4.9092
+     ],
+     "polygons": 49,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_SamsonPost_LOD2.001",
+     "min": [
+      -0.57,
+      -8.46,
+      4.3573
+     ],
+     "max": [
+      0.57,
+      -7.8,
+      5.8423
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Optimist_TrailingRope_LOD2.001",
+     "min": [
+      -1.4415,
+      9.0591,
+      1.992
+     ],
+     "max": [
+      -1.3815,
+      9.0591,
+      2.052
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist.attachments.json",
+   "attachments": [
+    "ATT_Waterline",
+    "ATT_BowPoint",
+    "ATT_Tow_SamsonPost",
+    "ATT_Cleat_Bow_Port",
+    "ATT_Cleat_Bow_Stbd",
+    "ATT_Bridle",
+    "ATT_BowRail",
+    "ATT_Cleat_Stern_Port",
+    "ATT_Cleat_Stern_Stbd",
+    "ATT_Cleat_Spring_Port",
+    "ATT_Cleat_Spring_Stbd",
+    "ATT_Boarding_Port",
+    "ATT_Boarding_Stbd",
+    "ATT_Fender_Port",
+    "ATT_Fender_Stbd",
+    "ATT_Seat_Helm",
+    "ATT_Seat_01",
+    "ATT_Seat_02",
+    "ATT_Seat_03",
+    "ATT_Seat_04",
+    "ATT_Door",
+    "ATT_Smoke",
+    "ATT_Prop",
+    "ATT_TrailingRope",
+    "ATT_Stern",
+    "ATT_NavLight"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vessels/M_Veh_Optimist/M_Veh_Optimist.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "rib"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2358 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.85e-04, 600 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1179 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Cabin_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "72 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.13e-01, 144 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 36 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Deck_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "480 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.16e-02, 166 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 240 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Fittings_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4116 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.20e-04, 470 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2363 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_SamsonPost_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "60 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.98e-04, 72 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 36 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Outboard_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "580 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.48e-04, 168 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 374 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_TrailingRope_LOD0"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "372 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.61e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "807 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.66e-03, 391 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 807 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Cabin_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.07e-01, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 24 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.013 (max 0.02), UV area by 13.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Deck_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "163 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.04e-03, 157 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 163 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Fittings_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1411 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.72e-04, 405 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1411 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 15.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_SamsonPost_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "20 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.57e-02, 38 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 20 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.000 (max 0.02), UV area by 44.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Outboard_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "198 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.88e-03, 134 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 198 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.001 (max 0.02), UV area by 15.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_TrailingRope_LOD1"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.44e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 126 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 14.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "202 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.40e-03, 234 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 202 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Cabin_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.01e+01, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Cabin_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.013 (max 0.02), UV area by 29.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Deck_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "41 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.97e-01, 75 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 41 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Deck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.011 (max 0.02), UV area by 5.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Fittings_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "352 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.85e-03, 154 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 352 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Fittings_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.510 (max 0.02), UV area by 38.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_SamsonPost_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.57e-02, 22 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_SamsonPost_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.700 (max 0.02), UV area by 56.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_Outboard_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "49 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.09e-03, 43 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 49 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_Outboard_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.045 (max 0.02), UV area by 46.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_TrailingRope_LOD2"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.60e-03, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Optimist_TrailingRope_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 2.192 (max 0.02), UV area by 100.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Optimist_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Optimist_COL"
+  },
+  {
+   "subject": "M_Veh_Optimist_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Optimist_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36 of 10000"
+  },
+  {
+   "subject": "M_Veh_Optimist_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_Optimist_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36 of 1000"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8038 of 25000 (rib, asset row)"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2749 of 8571"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "670 of 2142"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 2.4 x 7 x - m, spec 2.4 x 7 x - m (art/reference/M_Veh_Optimist/dims.md)"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7.329 studs, real 2.400 m = 7.200 studs, off 1.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "21.240 studs, real 7.000 m = 21.000 studs, off 1.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Optimist_COL"
+  },
+  {
+   "subject": "M_Veh_Optimist",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3 (3 to 4 sets)"
+  },
+  {
+   "subject": "T_Optimist_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_ALB.png"
+  },
+  {
+   "subject": "T_Optimist_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_NOR.png"
+  },
+  {
+   "subject": "T_Optimist_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_RGH.png"
+  },
+  {
+   "subject": "T_Optimist_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Hull_MET.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_ALB.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_NOR.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_RGH.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Deck_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Deck_MET.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_ALB.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_NOR.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_RGH.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Optimist_Fittings_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Optimist/T_Optimist_Fittings_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Tow_SamsonPost",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Bow_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Bow_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Bridle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowRail",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Stern_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Stern_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Spring_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cleat_Spring_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Fender_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Fender_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_Helm",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Door",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Smoke",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TrailingRope",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Stern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavLight",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Optimist_COL, M_Veh_Optimist_Cabin_LOD0, M_Veh_Optimist_Deck_LOD0, M_Veh_Optimist_Fittings_LOD0, M_Veh_Optimist_Hull_LOD0, M_Veh_Optimist_Outboard_LOD0, M_Veh_Optimist_SamsonPost_LOD0, M_Veh_Optimist_TrailingRope_LOD0; 8074 triangles (scene 8074)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Optimist_Cabin_LOD1, M_Veh_Optimist_Deck_LOD1, M_Veh_Optimist_Fittings_LOD1, M_Veh_Optimist_Hull_LOD1, M_Veh_Optimist_Outboard_LOD1, M_Veh_Optimist_SamsonPost_LOD1, M_Veh_Optimist_TrailingRope_LOD1; 2749 triangles (scene 2749)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Optimist_Cabin_LOD2, M_Veh_Optimist_Deck_LOD2, M_Veh_Optimist_Fittings_LOD2, M_Veh_Optimist_Hull_LOD2, M_Veh_Optimist_Outboard_LOD2, M_Veh_Optimist_SamsonPost_LOD2, M_Veh_Optimist_TrailingRope_LOD2; 670 triangles (scene 670)"
+  },
+  {
+   "subject": "M_Veh_Optimist_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_Optimist_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2358,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Cabin_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 72,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Deck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 480,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Fittings_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4116,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_SamsonPost_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 60,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Outboard_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 580,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_TrailingRope_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 372,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 36,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 807,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 202,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Cabin_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 24,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Cabin_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Deck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 163,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Deck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 41,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Fittings_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1411,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Fittings_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 352,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_SamsonPost_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 20,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_SamsonPost_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Outboard_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 198,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_Outboard_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 49,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_TrailingRope_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 126,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Optimist_TrailingRope_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  7.329012870788574,
+  21.239999771118164,
+  11.850000381469727
+ ],
+ "peak_rss_mb": 287.7
+}

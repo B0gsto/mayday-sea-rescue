@@ -1,0 +1,268 @@
+{
+ "asset": "M_Veh_Kayak",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.336
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.336,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.3525,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat",
+   "parent": null,
+   "blender": [
+    0.0,
+    1.17,
+    0.5671
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.5671,
+    1.17
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.1215,
+    1.17
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tow_Bow",
+   "parent": null,
+   "blender": [
+    0.0,
+    -5.115,
+    0.756
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.756,
+    -5.115
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0675,
+    -5.115
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tow_Stern",
+   "parent": null,
+   "blender": [
+    0.0,
+    5.115,
+    0.756
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.756,
+    5.115
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0675,
+    5.115
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Grab_Port",
+   "parent": null,
+   "blender": [
+    1.1357,
+    0.975,
+    0.5821
+   ],
+   "roblox_from_origin": [
+    -1.1357,
+    0.5821,
+    0.975
+   ],
+   "roblox_from_bbox_centre": [
+    -1.1357,
+    -0.1065,
+    0.975
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Grab_Stbd",
+   "parent": null,
+   "blender": [
+    -1.1357,
+    0.975,
+    0.5821
+   ],
+   "roblox_from_origin": [
+    1.1357,
+    0.5821,
+    0.975
+   ],
+   "roblox_from_bbox_centre": [
+    1.1357,
+    -0.1065,
+    0.975
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Port",
+   "parent": null,
+   "blender": [
+    1.0827,
+    0.78,
+    0.8497
+   ],
+   "roblox_from_origin": [
+    -1.0827,
+    0.8497,
+    0.78
+   ],
+   "roblox_from_bbox_centre": [
+    -1.0827,
+    0.1612,
+    0.78
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Stbd",
+   "parent": null,
+   "blender": [
+    -1.0827,
+    0.78,
+    0.8497
+   ],
+   "roblox_from_origin": [
+    1.0827,
+    0.8497,
+    0.78
+   ],
+   "roblox_from_bbox_centre": [
+    1.0827,
+    0.1612,
+    0.78
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Paddle",
+   "parent": null,
+   "blender": [
+    0.9,
+    0.195,
+    0.9899
+   ],
+   "roblox_from_origin": [
+    -0.9,
+    0.9899,
+    0.195
+   ],
+   "roblox_from_bbox_centre": [
+    -0.9,
+    0.3013,
+    0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,355 @@
+{
+ "asset": "M_Veh_Paddleboard",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.0,
+    0.75
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.75,
+    -0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.06,
+    -0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    -1.8,
+    1.071
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.071,
+    -1.8
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.381,
+    -1.8
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat_02",
+   "parent": null,
+   "blender": [
+    0.0,
+    1.8,
+    1.071
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.071,
+    1.8
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.381,
+    1.8
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stand",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.192,
+    1.071
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.071,
+    0.192
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.381,
+    0.192
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Handle",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.192,
+    1.161
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.161,
+    0.192
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.471,
+    0.192
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tow_Nose",
+   "parent": null,
+   "blender": [
+    0.0,
+    -3.456,
+    1.1746
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.1746,
+    -3.456
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.4846,
+    -3.456
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Leash",
+   "parent": null,
+   "blender": [
+    0.0,
+    4.656,
+    1.11
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.11,
+    4.656
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.42,
+    4.656
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Leash_Cuff",
+   "parent": null,
+   "blender": [
+    0.3787,
+    2.586,
+    1.185
+   ],
+   "roblox_from_origin": [
+    -0.3787,
+    1.185,
+    2.586
+   ],
+   "roblox_from_bbox_centre": [
+    -0.3787,
+    0.495,
+    2.586
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Paddle",
+   "parent": null,
+   "blender": [
+    -0.6,
+    1.518,
+    1.131
+   ],
+   "roblox_from_origin": [
+    0.6,
+    1.131,
+    1.518
+   ],
+   "roblox_from_bbox_centre": [
+    0.6,
+    0.441,
+    1.518
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Port",
+   "parent": null,
+   "blender": [
+    1.215,
+    -0.0,
+    0.825
+   ],
+   "roblox_from_origin": [
+    -1.215,
+    0.825,
+    -0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -1.215,
+    0.135,
+    -0.0
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Stbd",
+   "parent": null,
+   "blender": [
+    -1.215,
+    -0.0,
+    0.825
+   ],
+   "roblox_from_origin": [
+    1.215,
+    0.825,
+    -0.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.215,
+    0.135,
+    -0.0
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Fin",
+   "parent": null,
+   "blender": [
+    0.0,
+    3.84,
+    0.3
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.3,
+    3.84
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.39,
+    3.84
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

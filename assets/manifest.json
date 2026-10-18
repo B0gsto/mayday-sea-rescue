@@ -412,6 +412,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Cobbles_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:085ee2cf3a0af7a74fe759c45e25f425af526d25816d9e457bf4bb544f19e8fb": {
+  "assetId": "71224713668065",
+  "imageId": "71224713668065",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_ALB",
+  "sha": "085ee2cf3a0af7a74fe759c45e25f425af526d25816d9e457bf4bb544f19e8fb",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_ALB.png",
+  "type": "Image"
+ },
  "Image:08613a41b695ade395ebfeb123e573eb42658205b1807f10e571a8bf7d7bed04": {
   "assetId": "76533404055070",
   "imageId": "76533404055070",
@@ -646,6 +655,15 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:0d454d811607077852d68acf4efa4b673ffe5c11c79207e201ecef5e7e2c8804": {
+  "assetId": "84015963015420",
+  "imageId": "84015963015420",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_NOR",
+  "sha": "0d454d811607077852d68acf4efa4b673ffe5c11c79207e201ecef5e7e2c8804",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_NOR.png",
+  "type": "Image"
+ },
  "Image:0d490fd46f44d2289d7e5cad915faa9486db51248d3d178deed24c794658c537": {
   "assetId": "109300136254724",
   "imageId": "109300136254724",
@@ -736,6 +754,24 @@
   "source": "assets/textures/Materials/T_Mat_TurfWorn_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:0e0c20655742e0e174f5b2d03304d6b6afd6811f234494723a9bc82a70ff003c": {
+  "assetId": "113754417526563",
+  "imageId": "113754417526563",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_RGH_Wet",
+  "sha": "0e0c20655742e0e174f5b2d03304d6b6afd6811f234494723a9bc82a70ff003c",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0ee38b55dad67aaae27caf1aee6dfcfade15c8a1483db2daf21ef99b6da050be": {
+  "assetId": "89456716371338",
+  "imageId": "89456716371338",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_MET",
+  "sha": "0ee38b55dad67aaae27caf1aee6dfcfade15c8a1483db2daf21ef99b6da050be",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_MET.png",
+  "type": "Image"
+ },
  "Image:0f17434e3c38b535c633a2c024cfe7d6391d50fe589654fed46e93da98a9e777": {
   "assetId": "74899824275932",
   "imageId": "74899824275932",
@@ -820,7 +856,10 @@
    "T_GaleQueen_Deck_MET",
    "T_GaleQueen_Super_MET",
    "T_Liferaft_Canopy_MET",
-   "T_Liferaft_Tubes_MET"
+   "T_Liferaft_Tubes_MET",
+   "T_Optimist_Deck_MET",
+   "T_Optimist_Hull_MET",
+   "T_Paddleboard_Craft_MET"
   ],
   "assetId": "74679138706162",
   "imageId": "74679138706162",
@@ -1244,6 +1283,15 @@
   "source": "assets/textures/Materials/T_Mat_SplashRock_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:17a3716d1f750964d4e5c1b7a982aaba397c90434ab50f9c9fec3ab40fcbbf37": {
+  "assetId": "112264568683924",
+  "imageId": "112264568683924",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_NOR",
+  "sha": "17a3716d1f750964d4e5c1b7a982aaba397c90434ab50f9c9fec3ab40fcbbf37",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_NOR.png",
+  "type": "Image"
+ },
  "Image:17f884031b3f2ab06afabb74d5dc56c28ed1e87f2455a497f18faf8e0d7e4b4b": {
   "assetId": "124686958270463",
   "imageId": "124686958270463",
@@ -1281,6 +1329,15 @@
   "name": "T_Morwenna_Silt_RGH",
   "sha": "1865ef1821238b0422d770513645ad4da0248f6a4bd8f2756eef154d03e805c3",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_RGH.png",
+  "type": "Image"
+ },
+ "Image:1897a76fcfc1a4b530a9c68199c87883823668061dcbb597b338f3734722880f": {
+  "assetId": "110354259142581",
+  "imageId": "110354259142581",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_NOR",
+  "sha": "1897a76fcfc1a4b530a9c68199c87883823668061dcbb597b338f3734722880f",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_NOR.png",
   "type": "Image"
  },
  "Image:18a958fa99e6dfd6fecfaabba9a07cb4b393d0b580d25e9a5513613a737f68a1": {
@@ -1542,6 +1599,15 @@
   "name": "T_Road_Cobbles_RGH",
   "sha": "1da5cc73e899deda142f58ee43ca486d4ccaf6a49ee8bf90d368762be122d20d",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Cobbles_RGH.png",
+  "type": "Image"
+ },
+ "Image:1e08a24521ee1f31f4dd4c1036ab859daba7667deb19e288a7435ccd055895f7": {
+  "assetId": "111866107015830",
+  "imageId": "111866107015830",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_NOR_Wet",
+  "sha": "1e08a24521ee1f31f4dd4c1036ab859daba7667deb19e288a7435ccd055895f7",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_NOR_Wet.png",
   "type": "Image"
  },
  "Image:1e1134e3285cfbb2fa0bd23ad910d911e3eb07760668c349c540820a7e49caba": {
@@ -1977,6 +2043,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_RGH.png",
   "type": "Image"
  },
+ "Image:253413170f01898a5161a45d56463175d1ead08765661656af32699bd581fb68": {
+  "assetId": "100855164843314",
+  "imageId": "100855164843314",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_ALB_Wet",
+  "sha": "253413170f01898a5161a45d56463175d1ead08765661656af32699bd581fb68",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:2615aca4ebc78ae6a4f3c129751d752f95fd4fe6d3e26f119ca650868a8b04ac": {
   "assetId": "98519338287215",
   "imageId": "98519338287215",
@@ -2185,6 +2260,15 @@
   "name": "T_Road_Cobbles_NOR",
   "sha": "290e921bfdf9e82076e0116593704790d2d26adaec551dba419edcbdb88a357c",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Cobbles_NOR.png",
+  "type": "Image"
+ },
+ "Image:292f9fa64c75224793c0d369464d6821a30874eda0cd71a46ff05d1b51a1f692": {
+  "assetId": "139746183947920",
+  "imageId": "139746183947920",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_MET",
+  "sha": "292f9fa64c75224793c0d369464d6821a30874eda0cd71a46ff05d1b51a1f692",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_MET.png",
   "type": "Image"
  },
  "Image:2947fe81572b9032df12cc23ed12efe702e8e6755ae71c797f19dd41f42b1cee": {
@@ -3933,6 +4017,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Blue_ALB.png",
   "type": "Image"
  },
+ "Image:48ebfd7b41573e9f6ad9616931913d2a642a6f2c86d8f65a9f73ac89a2d8e0bd": {
+  "assetId": "84575377969399",
+  "imageId": "84575377969399",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_RGH_Wet",
+  "sha": "48ebfd7b41573e9f6ad9616931913d2a642a6f2c86d8f65a9f73ac89a2d8e0bd",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:48f7cc58d5fe0b6f9e7cd13126c0a56974a99166ffcc9c24eb1b3eff19f9aad9": {
   "assetId": "128128601276557",
   "imageId": "128128601276557",
@@ -4722,6 +4815,15 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_NOR.png",
   "type": "Image"
  },
+ "Image:58dd88bc14633b0aa4b0ea11488acea52329105b868941e94e3569192d810ff5": {
+  "assetId": "83745903826921",
+  "imageId": "83745903826921",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_ALB",
+  "sha": "58dd88bc14633b0aa4b0ea11488acea52329105b868941e94e3569192d810ff5",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_ALB.png",
+  "type": "Image"
+ },
  "Image:58e920a7fd3b2fe57ec79fe57bfd5ece325d4b48ef4cbefe277c5ec5b88c6ff1": {
   "assetId": "137666019441071",
   "imageId": "137666019441071",
@@ -5064,6 +5166,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
   "type": "Image"
  },
+ "Image:619d3f3ead0fa190acd9d54a35d7d95e18208d15d877036df24c80ae7881e7f4": {
+  "assetId": "132107152816828",
+  "imageId": "132107152816828",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_ALB",
+  "sha": "619d3f3ead0fa190acd9d54a35d7d95e18208d15d877036df24c80ae7881e7f4",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_ALB.png",
+  "type": "Image"
+ },
  "Image:61d8c0fb3421bf876b888e191db7636626d64bb847d86ad5bda660d8a052d02f": {
   "assetId": "76239779303955",
   "imageId": "76239779303955",
@@ -5116,6 +5227,15 @@
   "name": "T_HarbourLight_Lantern_RGH",
   "sha": "62bcc11a68850af0657927af834e729fd2d0a9571d8e03191c6bfd74d560061b",
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Lantern_RGH.png",
+  "type": "Image"
+ },
+ "Image:631c6988b21367a02e9819123e1a9a037c9b5d14f5b90cbae13f7da83c566bf6": {
+  "assetId": "101660250710738",
+  "imageId": "101660250710738",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_NOR_Wet",
+  "sha": "631c6988b21367a02e9819123e1a9a037c9b5d14f5b90cbae13f7da83c566bf6",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_NOR_Wet.png",
   "type": "Image"
  },
  "Image:6352e97ac5297180177f42edd9d9e451953d542942a515d4dae2d14d32a4a5e0": {
@@ -5422,6 +5542,15 @@
   "name": "Mayday_T_Mat_TurfWorn_RGH_Wet",
   "sha": "6a1d19be89c7b5b027f8a58252b4cff51ba2e1253d890b0e3dde1aae012810ac",
   "source": "assets/textures/Materials/T_Mat_TurfWorn_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:6a1e12c226d2addcd15dc8d9c92e030b97b7eb71d9eee7f2f8d640ea45a9c8a6": {
+  "assetId": "83656359702841",
+  "imageId": "83656359702841",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_ALB",
+  "sha": "6a1e12c226d2addcd15dc8d9c92e030b97b7eb71d9eee7f2f8d640ea45a9c8a6",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_ALB.png",
   "type": "Image"
  },
  "Image:6a208b3f796ba5b2c9c8f8ac20758f766be8aee6010e950ce53f7eb0f66a2061": {
@@ -6040,6 +6169,15 @@
   "name": "T_NavMarkWest_Buoy_ALB_Wet",
   "sha": "7500eb22cab7cd957d0904235a615bac07dbe35f9ba37a8374e2885150518120",
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:7505ca655df85b10a7ea90a59f3710be992dd821dd1312edd62d461464f656e4": {
+  "assetId": "137409355972920",
+  "imageId": "137409355972920",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_RGH",
+  "sha": "7505ca655df85b10a7ea90a59f3710be992dd821dd1312edd62d461464f656e4",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_RGH.png",
   "type": "Image"
  },
  "Image:75294fefd79f2112dac20e997b54dd57d5d7cd6c2b24b7d0346dc05199c8205b": {
@@ -6762,6 +6900,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:8383423a9c39aef0a538e20a2ef1c9639bad9cc1588e4879e75d534162cb9a21": {
+  "assetId": "123020802053328",
+  "imageId": "123020802053328",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_NOR",
+  "sha": "8383423a9c39aef0a538e20a2ef1c9639bad9cc1588e4879e75d534162cb9a21",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_NOR.png",
+  "type": "Image"
+ },
  "Image:8391f725d3c4126dedd9aaabbd8d83b91d89616e5492b73a3fb49121b146f8e9": {
   "assetId": "101655548192508",
   "imageId": "101655548192508",
@@ -6967,6 +7114,15 @@
   "name": "T_Chandlery_Stone_RGH",
   "sha": "86c6fc9bacc92cbf6402fb465e13ccc1190fd1877b386ac6e8a974ae07211963",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Stone_RGH.png",
+  "type": "Image"
+ },
+ "Image:86d362768ba25745e35d70c9d8cd773f4f978f8872c76ba822b133b349f05bba": {
+  "assetId": "100032361389410",
+  "imageId": "100032361389410",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_ALB_Wet",
+  "sha": "86d362768ba25745e35d70c9d8cd773f4f978f8872c76ba822b133b349f05bba",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_ALB_Wet.png",
   "type": "Image"
  },
  "Image:8707fd1b5563262113c226b992dd0e10b184a48718a33ced998ca49d6585863c": {
@@ -7491,6 +7647,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB.png",
   "type": "Image"
  },
+ "Image:904a7a51f42f2dc834c45089cd74493765378b48f8e8c5b45576d8da4a59debe": {
+  "assetId": "121957535075547",
+  "imageId": "121957535075547",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_ALB",
+  "sha": "904a7a51f42f2dc834c45089cd74493765378b48f8e8c5b45576d8da4a59debe",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_ALB.png",
+  "type": "Image"
+ },
  "Image:9073ceb764954a1d1d4a3a145b4095eb945ab9323075c89959e54559e861ec09": {
   "assetId": "98207407481399",
   "imageId": "98207407481399",
@@ -7677,6 +7842,15 @@
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:946cb9feee8c4cde561cdc19bb508d69087746484136ae3ca2bcbb885d67799b": {
+  "assetId": "111098965437128",
+  "imageId": "111098965437128",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_NOR_Wet",
+  "sha": "946cb9feee8c4cde561cdc19bb508d69087746484136ae3ca2bcbb885d67799b",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:946e394646f9fe6a8d27dd73a582791e50e8b9ed344cb98d82d113a5db3dc825": {
   "assetId": "115382765784889",
   "imageId": "115382765784889",
@@ -7812,6 +7986,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
+ "Image:965bcedcf24d3fa3c3e0c4e412a4ebe804b857e677c003938167de0f4db3e6a8": {
+  "assetId": "90749635108640",
+  "imageId": "90749635108640",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_RGH_Wet",
+  "sha": "965bcedcf24d3fa3c3e0c4e412a4ebe804b857e677c003938167de0f4db3e6a8",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:966178bf88be2ba93145655ba0b678200ff5ee38643463b7f25260d28368f087": {
   "assetId": "84802728167462",
   "imageId": "84802728167462",
@@ -7902,6 +8085,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_NOR_Wet.png",
   "type": "Image"
  },
+ "Image:98ea6d3c5b9d8999b2063ca01cda4021e1af16ceba76be8b15882517403e2859": {
+  "assetId": "116452716789897",
+  "imageId": "116452716789897",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_NOR_Wet",
+  "sha": "98ea6d3c5b9d8999b2063ca01cda4021e1af16ceba76be8b15882517403e2859",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:98fc11379accb655fe8a9c934503d888cdd53d075d1e7d22eee65ac062d47db1": {
   "assetId": "103997918743856",
   "imageId": "103997918743856",
@@ -7927,6 +8119,15 @@
   "name": "T_RIB_Hull_NOR",
   "sha": "993e6f1607cb4c744b39f5d75a9a09c92914ad3957f3b3b2fa4bf0b69987c1f7",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_NOR.png",
+  "type": "Image"
+ },
+ "Image:998f63de821e65c99501615e43ebc1ca67548014028cf2995aacca33bf9fc419": {
+  "assetId": "112712492119619",
+  "imageId": "112712492119619",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_RGH",
+  "sha": "998f63de821e65c99501615e43ebc1ca67548014028cf2995aacca33bf9fc419",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_RGH.png",
   "type": "Image"
  },
  "Image:99c12e3b4d72675228a7cb97b11d0686ee2c16260f6c6013c247e0c3bb9c9931": {
@@ -8841,6 +9042,15 @@
   "source": "assets/textures/M_Hbr_NavMark_IsolatedDanger/T_NavMarkIsolatedDanger_Buoy_NOR.png",
   "type": "Image"
  },
+ "Image:abefda8bd3ae77fc68c6d72736e5b54876a537306bf82f3807f57e24d1c0d5c3": {
+  "assetId": "127961520299146",
+  "imageId": "127961520299146",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_ALB_Wet",
+  "sha": "abefda8bd3ae77fc68c6d72736e5b54876a537306bf82f3807f57e24d1c0d5c3",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:ac4c3eb266f804ba1dc9f94e65d50345d3f12f4fc7f0143d75d09be63689d336": {
   "assetId": "119651059409836",
   "imageId": "119651059409836",
@@ -8866,6 +9076,15 @@
   "name": "T_Road_GravelTile_RGH",
   "sha": "acc49a8111a56f898ad2e03928a13658a5660ad7fe8c319f6c00906e52f8741d",
   "source": "assets/textures/M_Road_Ribbon/T_Road_GravelTile_RGH.png",
+  "type": "Image"
+ },
+ "Image:aced239b518335589023fb96952c3933d327aad7d7d189700ddaecb5e809a01b": {
+  "assetId": "127110589164555",
+  "imageId": "127110589164555",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Fittings_RGH_Wet",
+  "sha": "aced239b518335589023fb96952c3933d327aad7d7d189700ddaecb5e809a01b",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Fittings_RGH_Wet.png",
   "type": "Image"
  },
  "Image:ad1a7d7b10b3ee106e36c975298b9bcd424d11b28fb3dfc5d4b19e36a20b0152": {
@@ -9981,6 +10200,15 @@
   "source": "assets/textures/Materials/T_Mat_SandWet_NOR.png",
   "type": "Image"
  },
+ "Image:c6f500ab52b3fa2f7d7ed88593290ab502089f1bbe23bf77ea818b55db55ca83": {
+  "assetId": "122696737751696",
+  "imageId": "122696737751696",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_ALB_Wet",
+  "sha": "c6f500ab52b3fa2f7d7ed88593290ab502089f1bbe23bf77ea818b55db55ca83",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:c746b08f443a200bcdacfa0d6f692ac58a80346d122e618650b17366cef19d60": {
   "assetId": "98143491482120",
   "imageId": "98143491482120",
@@ -10244,6 +10472,15 @@
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:cbe42166513acd54361f6f26a2176e826bf5e8a9fee08dec82caaffaff1461b2": {
+  "assetId": "120617678725218",
+  "imageId": "120617678725218",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_RGH",
+  "sha": "cbe42166513acd54361f6f26a2176e826bf5e8a9fee08dec82caaffaff1461b2",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_RGH.png",
+  "type": "Image"
+ },
  "Image:cbecfd38448e2981015f4b53b96ea013defd71b22e6ad9a1d3b3825b02a607d5": {
   "assetId": "122180806478705",
   "imageId": "122180806478705",
@@ -10389,6 +10626,15 @@
   "name": "T_Road_KerbTile_ALB",
   "sha": "cdd8ecabf99d4d634a5497925dd830459a5792d1f682c0831cddf32adef85ea2",
   "source": "assets/textures/M_Road_Ribbon/T_Road_KerbTile_ALB.png",
+  "type": "Image"
+ },
+ "Image:ce289f3c2d42a4558da702afd2ce4826eb231d1363b91a002cb8333f55b3ed14": {
+  "assetId": "81815735686519",
+  "imageId": "81815735686519",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_RGH_Wet",
+  "sha": "ce289f3c2d42a4558da702afd2ce4826eb231d1363b91a002cb8333f55b3ed14",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_RGH_Wet.png",
   "type": "Image"
  },
  "Image:ce3b9779b11e57dacbc01e28ecef8a81913a5f04d38954004cd92c17455057b8": {
@@ -10614,6 +10860,15 @@
   "name": "T_CasualtySwimmer_Lifejacket_ALB",
   "sha": "d150383965ca05f4ef15fd2074e5218d8bba76b9c31e118098ae3c887fb8f10b",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Lifejacket_ALB.png",
+  "type": "Image"
+ },
+ "Image:d1832adf50bc7be85822f194cf4890946ab26bcacf3d7e22cc2afcad52ff9bbb": {
+  "assetId": "117898988288155",
+  "imageId": "117898988288155",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_ALB_Wet",
+  "sha": "d1832adf50bc7be85822f194cf4890946ab26bcacf3d7e22cc2afcad52ff9bbb",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_ALB_Wet.png",
   "type": "Image"
  },
  "Image:d185a9d0cacf3477acd4cc004a14c5a2fdc8d154e2914cc8d7daa1dd82c1e5ad": {
@@ -11096,6 +11351,15 @@
   "source": "assets/textures/Materials/T_Mat_Wrack_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:dadd0524bb849aa2cf908ce0cf6fa93ed726c7ec6549abf63bd0efc4721be1bc": {
+  "assetId": "118680085765150",
+  "imageId": "118680085765150",
+  "moderation": "Reviewing",
+  "name": "T_Kayak_Craft_RGH",
+  "sha": "dadd0524bb849aa2cf908ce0cf6fa93ed726c7ec6549abf63bd0efc4721be1bc",
+  "source": "assets/textures/M_Veh_Kayak/T_Kayak_Craft_RGH.png",
+  "type": "Image"
+ },
  "Image:db51c145497f71b51ef221e2fb824c584291bb83304e03f2a54cb5ef40418722": {
   "assetId": "137009431414972",
   "imageId": "137009431414972",
@@ -11394,6 +11658,15 @@
   "name": "T_Street_Main_ALB_Wet",
   "sha": "e0a6925bbe295088b0104b8573393ef95df20ead1ec0a1b27903b61902afb9f5",
   "source": "assets/textures/M_Road_StreetLamp/T_Street_Main_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:e0b7a444f36b51d03e5037bf07b213b292d4b410006f9539eb3324119a01d35a": {
+  "assetId": "126878640311019",
+  "imageId": "126878640311019",
+  "moderation": "Reviewing",
+  "name": "T_Paddleboard_Craft_NOR_Wet",
+  "sha": "e0b7a444f36b51d03e5037bf07b213b292d4b410006f9539eb3324119a01d35a",
+  "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_NOR_Wet.png",
   "type": "Image"
  },
  "Image:e0f35fcb3e53323b7408e39598c9ef9f721f91dcba124c877988be5cb0b097f0": {
@@ -11879,6 +12152,15 @@
   "source": "assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ebdfdd89e5de39c0016759c6a0a3b445ced718783a416c31c952bf1202a5f468": {
+  "assetId": "90469226134169",
+  "imageId": "90469226134169",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Hull_NOR",
+  "sha": "ebdfdd89e5de39c0016759c6a0a3b445ced718783a416c31c952bf1202a5f468",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Hull_NOR.png",
+  "type": "Image"
+ },
  "Image:ec55563b99b2db109d02a4d042e5a774c1dc5bf883b5e27059106389be4da32d": {
   "assetId": "92327157906198",
   "imageId": "92327157906198",
@@ -12108,6 +12390,15 @@
   "name": "T_RIB_Deck_ALB",
   "sha": "f0aea4f09bf94f16138817eb58c0f7f659fbd98679e8eae213e582d8a7ececcf",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:f11477fb611717dd25ebe9a168f93fa7f612e1fd5579bc05f3c704b1add3fe40": {
+  "assetId": "115844360051560",
+  "imageId": "115844360051560",
+  "moderation": "Reviewing",
+  "name": "T_Optimist_Deck_RGH",
+  "sha": "f11477fb611717dd25ebe9a168f93fa7f612e1fd5579bc05f3c704b1add3fe40",
+  "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_RGH.png",
   "type": "Image"
  },
  "Image:f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453": {
@@ -13321,6 +13612,16 @@
   "source": "assets/fbx/M_Chr_Casualty_Swimmer/M_Chr_Casualty_Swimmer_LOD1.fbx",
   "type": "Model"
  },
+ "Model:19f1dcc5d414dd53f5cc6e4d13b4174baf4ee1e18d2be0a66a6d138f886c61d4": {
+  "assetId": "82178784203952",
+  "moderation": "Approved",
+  "name": "M_Veh_Optimist_LOD1",
+  "rbxm": "assets/models/M_Veh_Optimist_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "19f1dcc5d414dd53f5cc6e4d13b4174baf4ee1e18d2be0a66a6d138f886c61d4",
+  "source": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:1a1568e58b8788d2d728b28a1c4f1cc97938f6d6e824b67d9029dbfe26727b4f": {
   "assetId": "129439624841519",
   "moderation": "Approved",
@@ -13579,6 +13880,16 @@
   "route": "delivery",
   "sha": "22d9e73f01c9265b285a26067ec201913037b963dcf8bf87f2c01b95bd04db25",
   "source": "assets/fbx/M_Hbr_NavMark_SafeWater/M_Hbr_NavMark_SafeWater_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:2390a0ded27f47a032de728b81a68dfac47c521762e77cc06d9df20b272379ce": {
+  "assetId": "138359430152381",
+  "moderation": "Approved",
+  "name": "M_Veh_Optimist_LOD2",
+  "rbxm": "assets/models/M_Veh_Optimist_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "2390a0ded27f47a032de728b81a68dfac47c521762e77cc06d9df20b272379ce",
+  "source": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD2.fbx",
   "type": "Model"
  },
  "Model:239bee92742e513abc3fd0bf0ca1bc89737b88f8853cf6c76ef8d0456a79b933": {
@@ -14029,6 +14340,16 @@
   "route": "delivery",
   "sha": "32095bd123068322263e2046779128b4e3600baa74197fa48e5c2a2558e5cf76",
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:32a5e32ff805da6938286ec1ae521cd5bcda9d819e9752c684c904cdd4308f9d": {
+  "assetId": "113182293085640",
+  "moderation": "Approved",
+  "name": "M_Veh_Kayak",
+  "rbxm": "assets/models/M_Veh_Kayak.rbxm",
+  "route": "delivery",
+  "sha": "32a5e32ff805da6938286ec1ae521cd5bcda9d819e9752c684c904cdd4308f9d",
+  "source": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD0.fbx",
   "type": "Model"
  },
  "Model:33a3d6dc16dca7a1714072b21f3e2fd7a8c5c0c9e6d18f6ee5fd99715bec5643": {
@@ -14951,6 +15272,16 @@
   "source": "assets/fbx/M_Bld_Chandlery_Ext/M_Bld_Chandlery_Ext_LOD0.fbx",
   "type": "Model"
  },
+ "Model:570ce45764febf46be6a1773fc36d1fb30769957153b97e2b1ff513346531871": {
+  "assetId": "129557597175985",
+  "moderation": "Approved",
+  "name": "M_Veh_Optimist",
+  "rbxm": "assets/models/M_Veh_Optimist.rbxm",
+  "route": "delivery",
+  "sha": "570ce45764febf46be6a1773fc36d1fb30769957153b97e2b1ff513346531871",
+  "source": "assets/fbx/M_Veh_Optimist/M_Veh_Optimist_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:572481d9e5ad33c61c994bc6f340e0452d5fbe224fb5e63af72034630a9b8bb5": {
   "assetId": "105507506298853",
   "moderation": "Approved",
@@ -15789,6 +16120,16 @@
   "route": "delivery",
   "sha": "820002352436e241fc23e2c855dcaa598d7eb0de9181ef899188dd14f244bee3",
   "source": "assets/fbx/M_Veg_Hawthorn_01/M_Veg_Hawthorn_01_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:82d4d8083c4824933603f21abf50a0feb31f81e19cbb6ef834a8a21f4b3e2640": {
+  "assetId": "139345858698024",
+  "moderation": "Approved",
+  "name": "M_Veh_Paddleboard_LOD2",
+  "rbxm": "assets/models/M_Veh_Paddleboard_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "82d4d8083c4824933603f21abf50a0feb31f81e19cbb6ef834a8a21f4b3e2640",
+  "source": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD2.fbx",
   "type": "Model"
  },
  "Model:82ee923db49a6bf3457a1c61593b1d2116af536255bf845ce1f4abde64a9d1cc": {
@@ -16631,6 +16972,16 @@
   "source": "assets/fbx/M_Hbr_Bollard_02/M_Hbr_Bollard_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:a3568cfdc09e71df1b05f67a7b710062093f93c8fc065f81e78b7d0fddde35ea": {
+  "assetId": "117594380968935",
+  "moderation": "Approved",
+  "name": "M_Veh_Paddleboard",
+  "rbxm": "assets/models/M_Veh_Paddleboard.rbxm",
+  "route": "delivery",
+  "sha": "a3568cfdc09e71df1b05f67a7b710062093f93c8fc065f81e78b7d0fddde35ea",
+  "source": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:a356bb00d9add46fd0df5821a4e2b6402856dae95a170a9dd12c27d04a34d249": {
   "assetId": "92994014539964",
   "moderation": "Approved",
@@ -17099,6 +17450,16 @@
   "route": "delivery",
   "sha": "ba1a7f558120b38a831d954ef2927a3282374964c904c04bc644451948d5bbde",
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:ba7a1b0da3b7967d1ef211fc6f60c093c337693e3ee9dae52fe6714e86eea10f": {
+  "assetId": "92085066285171",
+  "moderation": "Approved",
+  "name": "M_Veh_Paddleboard_LOD1",
+  "rbxm": "assets/models/M_Veh_Paddleboard_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "ba7a1b0da3b7967d1ef211fc6f60c093c337693e3ee9dae52fe6714e86eea10f",
+  "source": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD1.fbx",
   "type": "Model"
  },
  "Model:baba67f9b7f073f83f4f2684d7ee09ed05edd9a7026b645863ae54b6ae267133": {
@@ -17951,6 +18312,16 @@
   "source": "assets/fbx/M_Bld_Cottage_06/M_Bld_Cottage_06_LOD0.fbx",
   "type": "Model"
  },
+ "Model:e30763ce95126fdc147a59b49ad907e1915eb30954d03bd5d5f17a62ce410c2b": {
+  "assetId": "121815557166485",
+  "moderation": "Approved",
+  "name": "M_Veh_Kayak_LOD1",
+  "rbxm": "assets/models/M_Veh_Kayak_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e30763ce95126fdc147a59b49ad907e1915eb30954d03bd5d5f17a62ce410c2b",
+  "source": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:e310d5b70d707e7d5f71356fa93e1c488f0129c51f0393f031e48210b86df116": {
   "assetId": "130949957754481",
   "moderation": "Approved",
@@ -18279,6 +18650,16 @@
   "route": "delivery",
   "sha": "ee94c6da761dec2ffa438a294fcc29d27b20bcb33e97b791fd565492f4a72b1f",
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ef33508da4c2ce21fcec8f2e9582d6ef14270048e927db9de734fe4c7fcfa01e": {
+  "assetId": "127926976370093",
+  "moderation": "Approved",
+  "name": "M_Veh_Kayak_LOD2",
+  "rbxm": "assets/models/M_Veh_Kayak_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ef33508da4c2ce21fcec8f2e9582d6ef14270048e927db9de734fe4c7fcfa01e",
+  "source": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD2.fbx",
   "type": "Model"
  },
  "Model:ef46f76926c9af1de59c66035ed4de03bd67d6040392305d7287998e2b73f258": {

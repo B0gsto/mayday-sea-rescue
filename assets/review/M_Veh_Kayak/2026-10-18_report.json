@@ -1,0 +1,1260 @@
+{
+ "asset": "M_Veh_Kayak",
+ "name": "M_Veh_Kayak",
+ "date": "2026-10-18",
+ "commit": "23fe1bee+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD0.fbx",
+   "bytes": 163708,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Kayak_COL",
+    "M_Veh_Kayak_Fittings_LOD0",
+    "M_Veh_Kayak_Hull_LOD0",
+    "M_Veh_Kayak_Paddle_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Kayak_COL.001",
+     "min": [
+      -1.14,
+      -4.86,
+      0.066
+     ],
+     "max": [
+      1.14,
+      4.86,
+      1.026
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Fittings_LOD0.001",
+     "min": [
+      -1.1577,
+      -5.217,
+      0.4171
+     ],
+     "max": [
+      1.1577,
+      5.217,
+      1.3771
+     ],
+     "polygons": 732,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Hull_LOD0.001",
+     "min": [
+      -1.0924,
+      -4.875,
+      0.0
+     ],
+     "max": [
+      1.0924,
+      4.875,
+      1.2192
+     ],
+     "polygons": 1602,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Paddle_LOD0.001",
+     "min": [
+      0.752,
+      -2.925,
+      0.7486
+     ],
+     "max": [
+      1.048,
+      3.315,
+      1.2312
+     ],
+     "polygons": 88,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD1.fbx",
+   "bytes": 79164,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Kayak_Fittings_LOD1",
+    "M_Veh_Kayak_Hull_LOD1",
+    "M_Veh_Kayak_Paddle_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Kayak_Fittings_LOD1.001",
+     "min": [
+      -1.1624,
+      -5.189,
+      0.4171
+     ],
+     "max": [
+      1.1596,
+      5.189,
+      1.3771
+     ],
+     "polygons": 256,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Hull_LOD1.001",
+     "min": [
+      -1.0922,
+      -4.876,
+      -0.0001
+     ],
+     "max": [
+      1.0922,
+      4.876,
+      1.2185
+     ],
+     "polygons": 560,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Paddle_LOD1.001",
+     "min": [
+      0.752,
+      -2.925,
+      0.7486
+     ],
+     "max": [
+      1.048,
+      3.315,
+      1.2312
+     ],
+     "polygons": 30,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD2.fbx",
+   "bytes": 35356,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Kayak_Fittings_LOD2",
+    "M_Veh_Kayak_Hull_LOD2",
+    "M_Veh_Kayak_Paddle_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Kayak_Fittings_LOD2.001",
+     "min": [
+      -0.03,
+      0.0,
+      0.8671
+     ],
+     "max": [
+      0.03,
+      0.0,
+      0.9271
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Hull_LOD2.001",
+     "min": [
+      -1.103,
+      -4.8978,
+      0.0193
+     ],
+     "max": [
+      1.103,
+      4.8978,
+      1.2276
+     ],
+     "polygons": 159,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Kayak_Paddle_LOD2.001",
+     "min": [
+      0.752,
+      -2.925,
+      0.7486
+     ],
+     "max": [
+      1.048,
+      3.315,
+      1.2312
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak.attachments.json",
+   "attachments": [
+    "ATT_Waterline",
+    "ATT_Seat",
+    "ATT_Tow_Bow",
+    "ATT_Tow_Stern",
+    "ATT_Grab_Port",
+    "ATT_Grab_Stbd",
+    "ATT_Boarding_Port",
+    "ATT_Boarding_Stbd",
+    "ATT_Paddle"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vessels/M_Veh_Kayak/M_Veh_Kayak.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_craft"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1602 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.17e-03, 232 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 801 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Fittings_LOD0"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "732 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-04, 104 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 442 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Paddle_LOD0"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.64e-04, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "560 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.45e-03, 128 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 560 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Fittings_LOD1"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "256 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.41e-04, 104 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 256 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.000 (max 0.02), UV area by 26.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Paddle_LOD1"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "30 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.29e-03, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 30 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.007 (max 0.02), UV area by 13.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "159 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.36e-03, 57 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 159 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Fittings_LOD2"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.60e-03, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Fittings_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 3.604 (max 0.02), UV area by 100.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_Paddle_LOD2"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.57e-02, 16 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Kayak_Paddle_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.018 (max 0.02), UV area by 27.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Kayak_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Kayak_COL"
+  },
+  {
+   "subject": "M_Veh_Kayak_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Kayak_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Kayak_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_Kayak_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2422 of 3000 (small_craft, asset row)"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "846 of 1200"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "173 of 300"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.79 x 3.47 x - m, spec 0.79 x 3.47 x - m (art/reference/M_Veh_Kayak/dims.md)"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.315 studs, real 0.790 m = 2.370 studs, off 2.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "10.434 studs, real 3.470 m = 10.410 studs, off 0.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Kayak_COL"
+  },
+  {
+   "subject": "M_Veh_Kayak",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 3 sets)"
+  },
+  {
+   "subject": "T_Kayak_Craft_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_ALB.png"
+  },
+  {
+   "subject": "T_Kayak_Craft_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kayak_Craft_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_NOR.png"
+  },
+  {
+   "subject": "T_Kayak_Craft_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_RGH.png"
+  },
+  {
+   "subject": "T_Kayak_Craft_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kayak_Craft_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Kayak/T_Kayak_Craft_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Tow_Bow",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Tow_Stern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Grab_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Grab_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Paddle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Kayak_COL, M_Veh_Kayak_Fittings_LOD0, M_Veh_Kayak_Hull_LOD0, M_Veh_Kayak_Paddle_LOD0; 2434 triangles (scene 2434)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Kayak_Fittings_LOD1, M_Veh_Kayak_Hull_LOD1, M_Veh_Kayak_Paddle_LOD1; 846 triangles (scene 846)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Kayak/M_Veh_Kayak_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Kayak_Fittings_LOD2, M_Veh_Kayak_Hull_LOD2, M_Veh_Kayak_Paddle_LOD2; 173 triangles (scene 173)"
+  },
+  {
+   "subject": "M_Veh_Kayak_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_Kayak_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1602,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Fittings_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 732,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Paddle_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 88,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 560,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 159,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Fittings_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 256,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Fittings_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Paddle_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 30,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Kayak_Paddle_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  2.315305709838867,
+  10.434000015258789,
+  1.377088189125061
+ ],
+ "peak_rss_mb": 282.0
+}

@@ -1,0 +1,1543 @@
+{
+ "asset": "M_Veh_Paddleboard",
+ "name": "M_Veh_Paddleboard",
+ "date": "2026-10-18",
+ "commit": "23fe1bee+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD0.fbx",
+   "bytes": 107980,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Paddleboard_Board_LOD0",
+    "M_Veh_Paddleboard_COL",
+    "M_Veh_Paddleboard_Fittings_LOD0",
+    "M_Veh_Paddleboard_Leash_LOD0",
+    "M_Veh_Paddleboard_Paddle_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Paddleboard_Board_LOD0.001",
+     "min": [
+      -1.215,
+      -4.8,
+      0.6
+     ],
+     "max": [
+      1.215,
+      4.8,
+      1.38
+     ],
+     "polygons": 702,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_COL.001",
+     "min": [
+      -1.17,
+      -4.68,
+      0.6
+     ],
+     "max": [
+      1.17,
+      4.68,
+      1.05
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Fittings_LOD0.001",
+     "min": [
+      -0.9209,
+      -4.218,
+      0.0
+     ],
+     "max": [
+      0.9209,
+      4.6664,
+      1.2394
+     ],
+     "polygons": 332,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Leash_LOD0.001",
+     "min": [
+      -0.01,
+      2.3834,
+      1.0997
+     ],
+     "max": [
+      0.5917,
+      4.6605,
+      1.2594
+     ],
+     "polygons": 278,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Paddle_LOD0.001",
+     "min": [
+      -0.855,
+      -1.632,
+      1.068
+     ],
+     "max": [
+      -0.345,
+      4.599,
+      1.1842
+     ],
+     "polygons": 100,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD1.fbx",
+   "bytes": 61388,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Paddleboard_Board_LOD1",
+    "M_Veh_Paddleboard_Fittings_LOD1",
+    "M_Veh_Paddleboard_Leash_LOD1",
+    "M_Veh_Paddleboard_Paddle_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Paddleboard_Board_LOD1.001",
+     "min": [
+      -1.2019,
+      -4.8054,
+      0.6
+     ],
+     "max": [
+      1.2019,
+      4.8009,
+      1.3843
+     ],
+     "polygons": 245,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Fittings_LOD1.001",
+     "min": [
+      -0.9209,
+      -4.2053,
+      0.0
+     ],
+     "max": [
+      0.9182,
+      4.6753,
+      1.2266
+     ],
+     "polygons": 116,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Leash_LOD1.001",
+     "min": [
+      -0.0159,
+      2.3827,
+      1.1106
+     ],
+     "max": [
+      0.5522,
+      4.6233,
+      1.2594
+     ],
+     "polygons": 96,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Paddle_LOD1.001",
+     "min": [
+      -0.855,
+      -1.632,
+      1.0629
+     ],
+     "max": [
+      -0.345,
+      4.582,
+      1.1793
+     ],
+     "polygons": 34,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD2.fbx",
+   "bytes": 35132,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Paddleboard_Board_LOD2",
+    "M_Veh_Paddleboard_Fittings_LOD2",
+    "M_Veh_Paddleboard_Leash_LOD2",
+    "M_Veh_Paddleboard_Paddle_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Paddleboard_Board_LOD2.001",
+     "min": [
+      -1.1974,
+      -4.7893,
+      0.5492
+     ],
+     "max": [
+      1.2326,
+      4.8007,
+      1.3885
+     ],
+     "polygons": 68,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Fittings_LOD2.001",
+     "min": [
+      -0.03,
+      0.2242,
+      0.5897
+     ],
+     "max": [
+      0.03,
+      0.2242,
+      0.6497
+     ],
+     "polygons": 2,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Leash_LOD2.001",
+     "min": [
+      0.2033,
+      2.3827,
+      1.1476
+     ],
+     "max": [
+      0.6153,
+      4.2315,
+      1.233
+     ],
+     "polygons": 26,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Paddleboard_Paddle_LOD2.001",
+     "min": [
+      -0.855,
+      -1.632,
+      1.0629
+     ],
+     "max": [
+      -0.345,
+      4.582,
+      1.1871
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard.attachments.json",
+   "attachments": [
+    "ATT_Waterline",
+    "ATT_Seat_01",
+    "ATT_Seat_02",
+    "ATT_Stand",
+    "ATT_Handle",
+    "ATT_Tow_Nose",
+    "ATT_Leash",
+    "ATT_Leash_Cuff",
+    "ATT_Paddle",
+    "ATT_Boarding_Port",
+    "ATT_Boarding_Stbd",
+    "ATT_Fin"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vessels/M_Veh_Paddleboard/M_Veh_Paddleboard.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_craft"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Board_LOD0"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "702 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.19e-04, 300 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 358 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Fittings_LOD0"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "332 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.20e-05, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 186 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Leash_LOD0"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "278 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.24e-05, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 142 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Paddle_LOD0"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "100 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.69e-04, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 72 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Board_LOD1"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "245 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.73e-03, 229 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 245 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Fittings_LOD1"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "116 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.64e-04, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 116 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.041 (max 0.02), UV area by 33.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Leash_LOD1"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "96 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.86e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 96 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 10.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Paddle_LOD1"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "34 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.86e-03, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 34 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 12.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Board_LOD2"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.06e-02, 76 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 68 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Board_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.025 (max 0.02), UV area by 7.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Fittings_LOD2"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.60e-03, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Fittings_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 6.911 (max 0.02), UV area by 100.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Leash_LOD2"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "26 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.11e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 26 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Leash_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.244 (max 0.02), UV area by 52.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_Paddle_LOD2"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.87e-02, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_Paddle_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (thin strips (rails, cords, rope) decimate into fewer islands; every LOD samples the same trim sets): UV bounds differ by 0.014 (max 0.02), UV area by 49.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Paddleboard_COL"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1412 of 1500 (small_craft, asset row)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "491 of 600"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "108 of 150"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.81 x 3.2 x - m, spec 0.81 x 3.2 x - m (art/reference/M_Veh_Paddleboard/dims.md)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.430 studs, real 0.810 m = 2.430 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9.600 studs, real 3.200 m = 9.600 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Paddleboard_COL"
+  },
+  {
+   "subject": "M_Veh_Paddleboard",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 3 sets)"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_ALB.png"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_NOR.png"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_RGH.png"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Paddleboard_Craft_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Stand",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Handle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Tow_Nose",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Leash",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Leash_Cuff",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Paddle",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Port",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Boarding_Stbd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Fin",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Paddleboard_Board_LOD0, M_Veh_Paddleboard_COL, M_Veh_Paddleboard_Fittings_LOD0, M_Veh_Paddleboard_Leash_LOD0, M_Veh_Paddleboard_Paddle_LOD0; 1424 triangles (scene 1424)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Paddleboard_Board_LOD1, M_Veh_Paddleboard_Fittings_LOD1, M_Veh_Paddleboard_Leash_LOD1, M_Veh_Paddleboard_Paddle_LOD1; 491 triangles (scene 491)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Paddleboard/M_Veh_Paddleboard_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Paddleboard_Board_LOD2, M_Veh_Paddleboard_Fittings_LOD2, M_Veh_Paddleboard_Leash_LOD2, M_Veh_Paddleboard_Paddle_LOD2; 108 triangles (scene 108)"
+  },
+  {
+   "subject": "M_Veh_Paddleboard_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_Paddleboard_Board_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 702,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Fittings_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 332,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Leash_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 278,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Paddle_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 100,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Board_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 245,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Board_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 68,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Fittings_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 116,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Fittings_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 2,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Leash_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 96,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Leash_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 26,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Paddle_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 34,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Paddleboard_Paddle_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  2.430000066757202,
+  9.600000858306885,
+  1.3799999952316284
+ ],
+ "peak_rss_mb": 280.5
+}
