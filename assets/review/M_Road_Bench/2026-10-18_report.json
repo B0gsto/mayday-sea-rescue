@@ -1,0 +1,901 @@
+{
+ "asset": "M_Road_Bench",
+ "name": "M_Road_Bench",
+ "date": "2026-10-18",
+ "commit": "42dc047+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD0.fbx",
+   "bytes": 155996,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bench_COL",
+    "M_Road_Bench_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bench_COL.001",
+     "min": [
+      -2.79,
+      -0.81,
+      0.0
+     ],
+     "max": [
+      2.79,
+      1.0007,
+      2.5898
+     ],
+     "polygons": 24,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Road_Bench_LOD0.001",
+     "min": [
+      -2.76,
+      -0.855,
+      -0.0046
+     ],
+     "max": [
+      2.76,
+      0.9827,
+      2.4732
+     ],
+     "polygons": 1700,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD1.fbx",
+   "bytes": 51548,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bench_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bench_LOD1.001",
+     "min": [
+      -2.76,
+      -0.855,
+      -0.0046
+     ],
+     "max": [
+      2.76,
+      0.9876,
+      2.4732
+     ],
+     "polygons": 516,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD2.fbx",
+   "bytes": 51548,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bench_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bench_LOD2.001",
+     "min": [
+      -2.76,
+      -0.855,
+      -0.0046
+     ],
+     "max": [
+      2.76,
+      0.9876,
+      2.4732
+     ],
+     "polygons": 516,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bench/M_Road_Bench.attachments.json",
+   "attachments": [
+    "ATT_Seat",
+    "ATT_Base"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Road_Bench/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Road_Bench_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Street_Main"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.112,
+     0.182,
+     0.963,
+     0.706
+    ],
+    "mannequin": [
+     -0.473,
+     0.297,
+     -0.04,
+     1.204
+    ],
+    "fill": 0.851
+   },
+   "Side": {
+    "asset": [
+     0.197,
+     0.037,
+     0.803,
+     0.828
+    ],
+    "mannequin": [
+     -0.32,
+     0.229,
+     0.145,
+     1.452
+    ],
+    "fill": 0.791
+   },
+   "Rear3Q": {
+    "asset": [
+     0.112,
+     0.182,
+     0.963,
+     0.706
+    ],
+    "mannequin": [
+     -0.473,
+     0.297,
+     -0.04,
+     1.204
+    ],
+    "fill": 0.851
+   },
+   "High": {
+    "asset": [
+     0.037,
+     0.112,
+     0.906,
+     0.831
+    ],
+    "mannequin": [
+     -0.713,
+     0.326,
+     0.005,
+     1.14
+    ],
+    "fill": 0.869
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     2.759999990463257,
+     -0.8550000190734863,
+     2.4732377529144287
+    ],
+    "dist": 6.0,
+    "az": 71.59,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -2.759999990463257,
+     -0.8550000190734863,
+     2.4732377529144287
+    ],
+    "dist": 6.0,
+    "az": 288.41,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     2.759999990463257,
+     0.9826700091362,
+     2.4732377529144287
+    ],
+    "dist": 6.0,
+    "az": 108.41,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -2.759999990463257,
+     0.9826700091362,
+     2.4732377529144287
+    ],
+    "dist": 6.0,
+    "az": 251.59,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     0.0,
+     0.06383499503135681,
+     1.2343230699189007
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.791,
+  "in_frame": true,
+  "dims_m": [
+   1.84,
+   0.62,
+   0.84
+  ],
+  "validation_ok": true,
+  "seconds": 9.2
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_Bench/M_Road_Bench.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Road_Bench",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bench_LOD0"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1700 of 8000"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.25e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.247, v 0.253 to 0.496"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1084 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "74 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bench_LOD1"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "516 of 8000"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.247, v 0.253 to 0.496"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 264 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (hand-made LODs share the LOD0 trim mapping exactly (bounds 0.000); the 15.6% UV-area drop is the 6 mm slat edge bevels and coach bolts, LOD0 only (R1a)): UV bounds differ by 0.000 (max 0.02), UV area by 15.6% (max 15%)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bench_LOD2"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "516 of 8000"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.247, v 0.253 to 0.496"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 264 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (hand-made LODs share the LOD0 trim mapping exactly (bounds 0.000); the 15.6% UV-area drop is the 6 mm slat edge bevels and coach bolts, LOD0 only (R1a)): UV bounds differ by 0.000 (max 0.02), UV area by 15.6% (max 15%)"
+  },
+  {
+   "subject": "M_Road_Bench_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bench_COL"
+  },
+  {
+   "subject": "M_Road_Bench_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bench_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 8000"
+  },
+  {
+   "subject": "M_Road_Bench_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Road_Bench_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24 of 1000"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1700 of 2500 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "516 of 1250"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "516 of 625"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.84 x 0.62 x 0.84 m, spec 1.84 x 0.62 x 0.84 m (art/reference/M_Road_Bench/dims.md)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.520 studs, real 1.840 m = 5.520 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.838 studs, real 0.620 m = 1.860 studs, off 1.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.478 studs, real 0.840 m = 2.520 studs, off 1.7% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bench_COL"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas Street"
+  },
+  {
+   "subject": "T_Street_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_ALB.png"
+  },
+  {
+   "subject": "T_Street_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_NOR.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_RGH.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bench/T_Street_Main_MET.png"
+  },
+  {
+   "subject": "ATT_Seat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Base",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD0.fbx"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bench_COL, M_Road_Bench_LOD0; 1724 triangles (scene 1724)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD1.fbx"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bench_LOD1; 516 triangles (scene 516)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD2.fbx"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bench_LOD2; 516 triangles (scene 516)"
+  },
+  {
+   "subject": "M_Road_Bench_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bench",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.79; 14 renders in 9 s, maps M_Road_Bench_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Road_Bench_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 516,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_Bench_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 516,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_Bench_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1700,
+   "texel_density": 74.5
+  },
+  {
+   "name": "M_Road_Bench_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 24,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  5.519999980926514,
+  1.8376700282096863,
+  2.477829365991056
+ ],
+ "peak_rss_mb": 571.3
+}

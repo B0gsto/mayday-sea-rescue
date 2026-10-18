@@ -1,0 +1,1195 @@
+{
+ "asset": "M_Road_StreetLamp",
+ "name": "M_Road_StreetLamp",
+ "date": "2026-10-18",
+ "commit": "42dc047+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD0.fbx",
+   "bytes": 164844,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_StreetLamp_COL",
+    "M_Road_StreetLamp_LOD0",
+    "M_Road_StreetLamp_Lens_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_StreetLamp_COL.001",
+     "min": [
+      -0.51,
+      -0.51,
+      0.0
+     ],
+     "max": [
+      0.51,
+      0.51,
+      16.5
+     ],
+     "polygons": 60,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Road_StreetLamp_LOD0.001",
+     "min": [
+      -0.495,
+      -0.495,
+      0.0
+     ],
+     "max": [
+      3.9681,
+      0.495,
+      17.0044
+     ],
+     "polygons": 1626,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Road_StreetLamp_Lens_LOD0.001",
+     "min": [
+      2.3868,
+      -0.3,
+      16.5679
+     ],
+     "max": [
+      3.7621,
+      0.3,
+      16.7105
+     ],
+     "polygons": 44,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD1.fbx",
+   "bytes": 81420,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_StreetLamp_LOD1",
+    "M_Road_StreetLamp_Lens_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_StreetLamp_LOD1.001",
+     "min": [
+      -0.495,
+      -0.4708,
+      0.0
+     ],
+     "max": [
+      3.9681,
+      0.4708,
+      16.9922
+     ],
+     "polygons": 697,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Road_StreetLamp_Lens_LOD1.001",
+     "min": [
+      2.386,
+      -0.3,
+      16.5671
+     ],
+     "max": [
+      3.7629,
+      0.3,
+      16.7113
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD2.fbx",
+   "bytes": 59708,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_StreetLamp_LOD2",
+    "M_Road_StreetLamp_Lens_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_StreetLamp_LOD2.001",
+     "min": [
+      -0.495,
+      -0.441,
+      0.0
+     ],
+     "max": [
+      3.9681,
+      0.4287,
+      16.9922
+     ],
+     "polygons": 426,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Road_StreetLamp_Lens_LOD2.001",
+     "min": [
+      2.386,
+      -0.3,
+      16.5671
+     ],
+     "max": [
+      3.7629,
+      0.3,
+      16.7113
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp.attachments.json",
+   "attachments": [
+    "ATT_Light",
+    "ATT_Base"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Road_StreetLamp/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Road_StreetLamp_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Road_StreetLamp_Lens_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Street_Main"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.474,
+     0.073,
+     0.707,
+     0.963
+    ],
+    "mannequin": [
+     0.335,
+     0.1,
+     0.425,
+     0.367
+    ],
+    "fill": 0.89
+   },
+   "Side": {
+    "asset": [
+     0.538,
+     0.043,
+     0.603,
+     0.963
+    ],
+    "mannequin": [
+     0.407,
+     0.077,
+     0.493,
+     0.355
+    ],
+    "fill": 0.92
+   },
+   "Rear3Q": {
+    "asset": [
+     0.474,
+     0.073,
+     0.707,
+     0.963
+    ],
+    "mannequin": [
+     0.335,
+     0.1,
+     0.425,
+     0.367
+    ],
+    "fill": 0.89
+   },
+   "High": {
+    "asset": [
+     0.463,
+     0.155,
+     0.758,
+     0.963
+    ],
+    "mannequin": [
+     0.331,
+     0.199,
+     0.43,
+     0.39
+    ],
+    "fill": 0.808
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     3.9680979251861572,
+     -0.4950000047683716,
+     17.004426956176758
+    ],
+    "dist": 6.0,
+    "az": 77.49,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -0.4950000047683716,
+     -0.4950000047683716,
+     17.004426956176758
+    ],
+    "dist": 6.0,
+    "az": 282.51,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     3.9680979251861572,
+     0.4950000047683716,
+     17.004426956176758
+    ],
+    "dist": 6.0,
+    "az": 102.51,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -0.4950000047683716,
+     0.4950000047683716,
+     17.004426956176758
+    ],
+    "dist": 6.0,
+    "az": 257.49,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     1.7365489602088928,
+     0.0,
+     8.502213478088379
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.808,
+  "in_frame": true,
+  "dims_m": [
+   1.49,
+   0.33,
+   5.67
+  ],
+  "validation_ok": true,
+  "seconds": 8.5
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_StreetLamp/M_Road_StreetLamp.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_LOD0"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1626 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.75e-05, 54 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.247, v 0.503 to 0.997"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 884 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "118 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_Lens_LOD0"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.01e-05, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.128 to 0.247, v 0.564 to 0.624"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 26 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "91 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_LOD1"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "697 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.90e-04, 27 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.247, v 0.503 to 0.997"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 367 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.1% (max 15%)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_Lens_LOD1"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.44e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.128 to 0.247, v 0.564 to 0.624"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_LOD2"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "426 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.90e-04, 18 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.247, v 0.503 to 0.997"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 225 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.4% (max 15%)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_Lens_LOD2"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.44e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.128 to 0.247, v 0.564 to 0.624"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 6 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_StreetLamp_Lens_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_StreetLamp_COL"
+  },
+  {
+   "subject": "M_Road_StreetLamp_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_StreetLamp_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "60 of 8000"
+  },
+  {
+   "subject": "M_Road_StreetLamp_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Road_StreetLamp_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "60 of 1000"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1670 of 2500 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "709 of 1250"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "438 of 625"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.49 x 0.33 x 5.67 m, spec 1.49 x 0.33 x 5.67 m (art/reference/M_Road_StreetLamp/dims.md)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4.463 studs, real 1.490 m = 4.470 studs, off 0.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.990 studs, real 0.330 m = 0.990 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "17.004 studs, real 5.670 m = 17.010 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_StreetLamp_COL"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas Street"
+  },
+  {
+   "subject": "T_Street_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_ALB.png"
+  },
+  {
+   "subject": "T_Street_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_NOR.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_RGH.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_StreetLamp/T_Street_Main_MET.png"
+  },
+  {
+   "subject": "ATT_Light",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Base",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD0.fbx"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_StreetLamp_COL, M_Road_StreetLamp_LOD0, M_Road_StreetLamp_Lens_LOD0; 1730 triangles (scene 1730)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD1.fbx"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_StreetLamp_LOD1, M_Road_StreetLamp_Lens_LOD1; 709 triangles (scene 709)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD2.fbx"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_StreetLamp_LOD2, M_Road_StreetLamp_Lens_LOD2; 438 triangles (scene 438)"
+  },
+  {
+   "subject": "M_Road_StreetLamp_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Road_StreetLamp",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.81; 14 renders in 8 s, maps M_Road_StreetLamp_LOD0: ALB/MET/NOR/RGH, M_Road_StreetLamp_Lens_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Road_StreetLamp_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 426,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_StreetLamp_Lens_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_StreetLamp_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 697,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_StreetLamp_Lens_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_StreetLamp_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1626,
+   "texel_density": 117.9
+  },
+  {
+   "name": "M_Road_StreetLamp_Lens_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 44,
+   "texel_density": 91.0
+  },
+  {
+   "name": "M_Road_StreetLamp_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 60,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  4.463097929954529,
+  0.9900000095367432,
+  17.004426956176758
+ ],
+ "peak_rss_mb": 592.2
+}

@@ -1,0 +1,181 @@
+{
+ "note": "R1a road surfaces (art/source/roads/roadmats.py, INTEGRATION.md). Texture ids: AssetIds.Textures.M_Road_Ribbon.<Set>",
+ "strips": {
+  "Asphalt": {
+   "len_u_m": 8.0,
+   "width_m": 6.0,
+   "edge_band_m": 0.9
+  },
+  "Cobbles": {
+   "len_u_m": 8.0,
+   "width_m": 6.0,
+   "edge_band_m": 0.9
+  },
+  "Gravel": {
+   "len_u_m": 8.0,
+   "width_m": 3.333,
+   "edge_band_m": 0.5
+  },
+  "Kerb": {
+   "len_u_m": 1.8,
+   "profile_v_m": {
+    "face": [
+     0.0,
+     0.125
+    ],
+    "arris": [
+     0.125,
+     0.145
+    ],
+    "top": [
+     0.145,
+     0.295
+    ],
+    "back": [
+     0.295,
+     0.4
+    ]
+   },
+   "stone_m": 0.9
+  }
+ },
+ "variants": [
+  {
+   "name": "RoadAsphaltWorn",
+   "set": "AsphaltTile",
+   "base": "Asphalt",
+   "studsPerTile": 12,
+   "pattern": "Organic",
+   "use": "verges of the ribbon, car parks, lay-bys, terrain Asphalt slot"
+  },
+  {
+   "name": "RoadHarbourCobbles",
+   "set": "CobblesTile",
+   "base": "Cobblestone",
+   "studsPerTile": 6,
+   "pattern": "Regular",
+   "use": "Harbour Road quay apron, slipway heads"
+  },
+  {
+   "name": "RoadGravelTrack",
+   "set": "GravelTile",
+   "base": "Pavement",
+   "studsPerTile": 6,
+   "pattern": "Organic",
+   "use": "Haven Head track shoulders, viewpoint car park"
+  },
+  {
+   "name": "RoadKerbGranite",
+   "set": "KerbTile",
+   "base": "Granite",
+   "studsPerTile": 3,
+   "pattern": "Regular",
+   "use": "kerb Parts / steps where the ribbon kerb mesh is not used"
+  }
+ ],
+ "markings": {
+  "ppm": 256,
+  "catseye_ppm": 512,
+  "uv": "u0, v0, u1, v1 (v up)",
+  "rects": {
+   "CentreDash": [
+    0.0,
+    0.9375,
+    0.5625,
+    1.0
+   ],
+   "EdgeLine": [
+    0.0,
+    0.875,
+    0.5,
+    0.9375
+   ],
+   "DoubleYellow": [
+    0.0,
+    0.8125,
+    0.5,
+    0.875
+   ],
+   "GiveWayLines": [
+    0.0,
+    0.6875,
+    0.5,
+    0.8125
+   ],
+   "GiveWayTriangle": [
+    0.59375,
+    0.5,
+    0.8125,
+    1.0
+   ],
+   "CatsEyeWhite": [
+    0.84375,
+    0.9375,
+    0.90625,
+    1.0
+   ],
+   "CatsEyeRed": [
+    0.90625,
+    0.9375,
+    0.96875,
+    1.0
+   ]
+  },
+  "dims_m": {
+   "CentreDash": [
+    4.0,
+    0.1
+   ],
+   "EdgeLine": [
+    4.0,
+    0.1
+   ],
+   "DoubleYellow": [
+    4.0,
+    0.275
+   ],
+   "GiveWayLines": [
+    4.0,
+    0.7
+   ],
+   "GiveWayTriangle": [
+    1.5,
+    3.75
+   ],
+   "CatsEye": [
+    0.22,
+    0.16
+   ]
+  },
+  "cell_m": {
+   "CentreDash": [
+    4.5,
+    0.5
+   ],
+   "EdgeLine": [
+    4.0,
+    0.5
+   ],
+   "DoubleYellow": [
+    4.0,
+    0.5
+   ],
+   "GiveWayLines": [
+    4.0,
+    1.0
+   ],
+   "GiveWayTriangle": [
+    1.75,
+    4.0
+   ],
+   "CatsEyeWhite": [
+    0.25,
+    0.25
+   ],
+   "CatsEyeRed": [
+    0.25,
+    0.25
+   ]
+  }
+ }
+}

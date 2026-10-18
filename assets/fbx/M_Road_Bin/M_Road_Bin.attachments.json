@@ -1,0 +1,65 @@
+{
+ "asset": "M_Road_Bin",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Opening",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    2.73
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.73,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.365,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Base",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.365,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

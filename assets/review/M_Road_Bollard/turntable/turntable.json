@@ -1,0 +1,176 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Road_Bollard/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Road_Bollard_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Street_Main"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.352,
+    0.04,
+    0.643,
+    0.963
+   ],
+   "mannequin": [
+    -0.979,
+    0.015,
+    0.077,
+    2.288
+   ],
+   "fill": 0.923
+  },
+  "Side": {
+   "asset": [
+    0.391,
+    0.045,
+    0.609,
+    0.963
+   ],
+   "mannequin": [
+    -0.689,
+    0.007,
+    0.128,
+    2.104
+   ],
+   "fill": 0.918
+  },
+  "Rear3Q": {
+   "asset": [
+    0.352,
+    0.04,
+    0.643,
+    0.963
+   ],
+   "mannequin": [
+    -0.979,
+    0.015,
+    0.077,
+    2.288
+   ],
+   "fill": 0.923
+  },
+  "High": {
+   "asset": [
+    0.33,
+    0.155,
+    0.675,
+    0.963
+   ],
+   "mannequin": [
+    -3.335,
+    0.121,
+    0.123,
+    3.468
+   ],
+   "fill": 0.808
+  }
+ },
+ "closeups": [
+  {
+   "name": "corner_FL",
+   "target": [
+    0.3149999976158142,
+    -0.3149999976158142,
+    2.745000123977661
+   ],
+   "dist": 6.0,
+   "az": 45.0,
+   "el": 25.0,
+   "file": "closeup_corner_FL.png"
+  },
+  {
+   "name": "corner_FR",
+   "target": [
+    -0.3149999976158142,
+    -0.3149999976158142,
+    2.745000123977661
+   ],
+   "dist": 6.0,
+   "az": 315.0,
+   "el": 25.0,
+   "file": "closeup_corner_FR.png"
+  },
+  {
+   "name": "corner_RL",
+   "target": [
+    0.3149999976158142,
+    0.3149999976158142,
+    2.745000123977661
+   ],
+   "dist": 6.0,
+   "az": 135.0,
+   "el": 25.0,
+   "file": "closeup_corner_RL.png"
+  },
+  {
+   "name": "corner_RR",
+   "target": [
+    -0.3149999976158142,
+    0.3149999976158142,
+    2.745000123977661
+   ],
+   "dist": 6.0,
+   "az": 225.0,
+   "el": 25.0,
+   "file": "closeup_corner_RR.png"
+  },
+  {
+   "name": "centre",
+   "target": [
+    0.0,
+    0.0,
+    1.3725000619888306
+   ],
+   "dist": 6.0,
+   "az": 35.0,
+   "el": 25.0,
+   "file": "closeup_centre.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.808,
+ "in_frame": true,
+ "dims_m": [
+  0.21,
+  0.21,
+  0.915
+ ],
+ "validation_ok": true,
+ "seconds": 11.4
+}

@@ -1,0 +1,176 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Road_Bin/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Road_Bin_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Street_Main"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.223,
+    0.037,
+    0.76,
+    0.891
+   ],
+   "mannequin": [
+    -0.863,
+    0.094,
+    0.01,
+    1.921
+   ],
+   "fill": 0.854
+  },
+  "Side": {
+   "asset": [
+    0.262,
+    0.037,
+    0.738,
+    0.949
+   ],
+   "mannequin": [
+    -0.708,
+    0.052,
+    0.056,
+    1.953
+   ],
+   "fill": 0.912
+  },
+  "Rear3Q": {
+   "asset": [
+    0.223,
+    0.037,
+    0.76,
+    0.891
+   ],
+   "mannequin": [
+    -0.863,
+    0.094,
+    0.01,
+    1.921
+   ],
+   "fill": 0.854
+  },
+  "High": {
+   "asset": [
+    0.195,
+    0.085,
+    0.823,
+    0.963
+   ],
+   "mannequin": [
+    -2.272,
+    0.169,
+    0.052,
+    2.351
+   ],
+   "fill": 0.878
+  }
+ },
+ "closeups": [
+  {
+   "name": "corner_FL",
+   "target": [
+    0.6899999976158142,
+    -0.6899999976158142,
+    2.7300000190734863
+   ],
+   "dist": 6.0,
+   "az": 45.0,
+   "el": 25.0,
+   "file": "closeup_corner_FL.png"
+  },
+  {
+   "name": "corner_FR",
+   "target": [
+    -0.6899999976158142,
+    -0.6899999976158142,
+    2.7300000190734863
+   ],
+   "dist": 6.0,
+   "az": 315.0,
+   "el": 25.0,
+   "file": "closeup_corner_FR.png"
+  },
+  {
+   "name": "corner_RL",
+   "target": [
+    0.6899999976158142,
+    0.6899999976158142,
+    2.7300000190734863
+   ],
+   "dist": 6.0,
+   "az": 135.0,
+   "el": 25.0,
+   "file": "closeup_corner_RL.png"
+  },
+  {
+   "name": "corner_RR",
+   "target": [
+    -0.6899999976158142,
+    0.6899999976158142,
+    2.7300000190734863
+   ],
+   "dist": 6.0,
+   "az": 225.0,
+   "el": 25.0,
+   "file": "closeup_corner_RR.png"
+  },
+  {
+   "name": "centre",
+   "target": [
+    0.0,
+    0.0,
+    1.3650000095367432
+   ],
+   "dist": 6.0,
+   "az": 35.0,
+   "el": 25.0,
+   "file": "closeup_centre.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.854,
+ "in_frame": true,
+ "dims_m": [
+  0.46,
+  0.46,
+  0.91
+ ],
+ "validation_ok": true,
+ "seconds": 10.4
+}

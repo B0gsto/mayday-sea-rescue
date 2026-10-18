@@ -1,0 +1,892 @@
+{
+ "asset": "M_Road_Bollard",
+ "name": "M_Road_Bollard",
+ "date": "2026-10-18",
+ "commit": "42dc047+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD0.fbx",
+   "bytes": 104076,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bollard_COL",
+    "M_Road_Bollard_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bollard_COL.001",
+     "min": [
+      -0.315,
+      -0.315,
+      0.0
+     ],
+     "max": [
+      0.315,
+      0.315,
+      2.745
+     ],
+     "polygons": 28,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Road_Bollard_LOD0.001",
+     "min": [
+      -0.315,
+      -0.315,
+      0.0
+     ],
+     "max": [
+      0.315,
+      0.315,
+      2.745
+     ],
+     "polygons": 1128,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD1.fbx",
+   "bytes": 59084,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bollard_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bollard_LOD1.001",
+     "min": [
+      -0.315,
+      -0.315,
+      0.0
+     ],
+     "max": [
+      0.315,
+      0.315,
+      2.745
+     ],
+     "polygons": 564,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD2.fbx",
+   "bytes": 42764,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Road_Bollard_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Road_Bollard_LOD2.001",
+     "min": [
+      -0.315,
+      -0.315,
+      0.0
+     ],
+     "max": [
+      0.315,
+      0.315,
+      2.745
+     ],
+     "polygons": 280,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Road_Bollard/M_Road_Bollard.attachments.json",
+   "attachments": [
+    "ATT_Base"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Road_Bollard/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Road_Bollard_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Street_Main"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.352,
+     0.04,
+     0.643,
+     0.963
+    ],
+    "mannequin": [
+     -0.979,
+     0.015,
+     0.077,
+     2.288
+    ],
+    "fill": 0.923
+   },
+   "Side": {
+    "asset": [
+     0.391,
+     0.045,
+     0.609,
+     0.963
+    ],
+    "mannequin": [
+     -0.689,
+     0.007,
+     0.128,
+     2.104
+    ],
+    "fill": 0.918
+   },
+   "Rear3Q": {
+    "asset": [
+     0.352,
+     0.04,
+     0.643,
+     0.963
+    ],
+    "mannequin": [
+     -0.979,
+     0.015,
+     0.077,
+     2.288
+    ],
+    "fill": 0.923
+   },
+   "High": {
+    "asset": [
+     0.33,
+     0.155,
+     0.675,
+     0.963
+    ],
+    "mannequin": [
+     -3.335,
+     0.121,
+     0.123,
+     3.468
+    ],
+    "fill": 0.808
+   }
+  },
+  "closeups": [
+   {
+    "name": "corner_FL",
+    "target": [
+     0.3149999976158142,
+     -0.3149999976158142,
+     2.745000123977661
+    ],
+    "dist": 6.0,
+    "az": 45.0,
+    "el": 25.0,
+    "file": "closeup_corner_FL.png"
+   },
+   {
+    "name": "corner_FR",
+    "target": [
+     -0.3149999976158142,
+     -0.3149999976158142,
+     2.745000123977661
+    ],
+    "dist": 6.0,
+    "az": 315.0,
+    "el": 25.0,
+    "file": "closeup_corner_FR.png"
+   },
+   {
+    "name": "corner_RL",
+    "target": [
+     0.3149999976158142,
+     0.3149999976158142,
+     2.745000123977661
+    ],
+    "dist": 6.0,
+    "az": 135.0,
+    "el": 25.0,
+    "file": "closeup_corner_RL.png"
+   },
+   {
+    "name": "corner_RR",
+    "target": [
+     -0.3149999976158142,
+     0.3149999976158142,
+     2.745000123977661
+    ],
+    "dist": 6.0,
+    "az": 225.0,
+    "el": 25.0,
+    "file": "closeup_corner_RR.png"
+   },
+   {
+    "name": "centre",
+    "target": [
+     0.0,
+     0.0,
+     1.3725000619888306
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_centre.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.808,
+  "in_frame": true,
+  "dims_m": [
+   0.21,
+   0.21,
+   0.915
+  ],
+  "validation_ok": true,
+  "seconds": 11.4
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_Bollard/M_Road_Bollard.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Road_Bollard",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bollard_LOD0"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1128 of 8000"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.83e-04, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.503 to 0.622, v 0.253 to 0.497"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 576 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "70 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bollard_LOD1"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "564 of 8000"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.40e-04, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.503 to 0.622, v 0.253 to 0.497"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 288 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bollard_LOD2"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "280 of 8000"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.05e-03, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.503 to 0.622, v 0.253 to 0.497"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 144 faces have no UV area"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.1% (max 15%)"
+  },
+  {
+   "subject": "M_Road_Bollard_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Road_Bollard_COL"
+  },
+  {
+   "subject": "M_Road_Bollard_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Road_Bollard_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "28 of 8000"
+  },
+  {
+   "subject": "M_Road_Bollard_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Road_Bollard_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "28 of 1000"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1128 of 2500 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "564 of 1250"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "280 of 625"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.21 x 0.21 x 0.915 m, spec 0.21 x 0.21 x 0.915 m (art/reference/M_Road_Bollard/dims.md)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.630 studs, real 0.210 m = 0.630 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.630 studs, real 0.210 m = 0.630 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.745 studs, real 0.915 m = 2.745 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bollard_COL"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas Street"
+  },
+  {
+   "subject": "T_Street_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_ALB.png"
+  },
+  {
+   "subject": "T_Street_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_NOR.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_RGH.png"
+  },
+  {
+   "subject": "T_Street_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Street_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Road_Bollard/T_Street_Main_MET.png"
+  },
+  {
+   "subject": "ATT_Base",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD0.fbx"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bollard_COL, M_Road_Bollard_LOD0; 1156 triangles (scene 1156)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD1.fbx"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bollard_LOD1; 564 triangles (scene 564)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Road_Bollard/M_Road_Bollard_LOD2.fbx"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Road_Bollard_LOD2; 280 triangles (scene 280)"
+  },
+  {
+   "subject": "M_Road_Bollard_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Road_Bollard",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.81; 14 renders in 11 s, maps M_Road_Bollard_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Road_Bollard_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 280,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_Bollard_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 564,
+   "texel_density": null
+  },
+  {
+   "name": "M_Road_Bollard_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1128,
+   "texel_density": 70.2
+  },
+  {
+   "name": "M_Road_Bollard_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 28,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.6299999952316284,
+  0.6299999952316284,
+  2.745000123977661
+ ],
+ "peak_rss_mb": 520.5
+}

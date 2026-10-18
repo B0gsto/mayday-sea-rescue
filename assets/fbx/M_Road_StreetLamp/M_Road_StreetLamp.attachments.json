@@ -1,0 +1,65 @@
+{
+ "asset": "M_Road_StreetLamp",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Light",
+   "parent": null,
+   "blender": [
+    3.0705,
+    0.0,
+    16.5944
+   ],
+   "roblox_from_origin": [
+    -3.0705,
+    16.5944,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -1.334,
+    8.0922,
+    0.0
+   ],
+   "look": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    -1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Base",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.7365,
+    -8.5022,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
