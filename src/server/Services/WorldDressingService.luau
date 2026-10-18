@@ -59,10 +59,17 @@ local function findPath(base: Instance, path: { string }): Instance?
 	return node
 end
 
--- Swings the door parts about the hinge when a character is within reach of the trigger point.
+-- Swings the door parts about the hinge when a character is within reach of the trigger point
+-- (spec.roll: a roller door, each part shrinks up into its own top edge, the roll hood, instead).
 local function autoDoor(
 	model: Model,
-	spec: { parts: { string }, hinge: string, trigger: string, angle: number }
+	spec: {
+		parts: { string },
+		hinge: string,
+		trigger: string,
+		angle: number,
+		roll: boolean?,
+	}
 )
 	local hinge = findAttachment(model, spec.hinge)
 	local trigger = findAttachment(model, spec.trigger)
@@ -71,16 +78,28 @@ local function autoDoor(
 		return
 	end
 	local axis = CFrame.new(hinge.WorldPosition)
-	local parts: { { part: BasePart, closed: CFrame, open: CFrame } } = {}
+	local parts: { { part: BasePart, closed: { [string]: any }, open: { [string]: any } } } = {}
 	local swing = CFrame.Angles(0, math.rad(spec.angle), 0)
 	for _, name in spec.parts do
 		local p = model:FindFirstChild(name, true)
 		if p and p:IsA("BasePart") then
 			p.CanCollide = false
-			table.insert(
-				parts,
-				{ part = p, closed = p.CFrame, open = axis * swing * axis:Inverse() * p.CFrame }
-			)
+			local closed: { [string]: any } = { CFrame = p.CFrame }
+			local open: { [string]: any } = { CFrame = axis * swing * axis:Inverse() * p.CFrame }
+			if spec.roll then
+				-- the part's local axis closest to world up is its height; keep 4 % of it at the top edge
+				local up = p.CFrame:VectorToObjectSpace(Vector3.yAxis)
+				local a = Vector3.new(math.abs(up.X), math.abs(up.Y), math.abs(up.Z))
+				local mask = if a.X >= a.Y and a.X >= a.Z
+					then Vector3.xAxis
+					elseif a.Y >= a.Z then Vector3.yAxis
+					else Vector3.zAxis
+				local h = (p.Size * mask).Magnitude
+				closed.Size = p.Size
+				open.Size = p.Size - mask * h * 0.96
+				open.CFrame = p.CFrame + Vector3.new(0, h * 0.48, 0)
+			end
+			table.insert(parts, { part = p, closed = closed, open = open })
 		end
 	end
 	if #parts == 0 then
@@ -103,9 +122,7 @@ local function autoDoor(
 			if near ~= isOpen then
 				isOpen = near
 				for _, d in parts do
-					TweenService
-						:Create(d.part, info, { CFrame = if near then d.open else d.closed })
-						:Play()
+					TweenService:Create(d.part, info, if near then d.open else d.closed):Play()
 				end
 			end
 			task.wait(0.25)
@@ -153,7 +170,38 @@ local function addColliders(model: Model, spec: Swaps.Swap)
 	end
 end
 
-local function swap(key: string, spec: Swaps.Swap): boolean
+-- spec.ground: the pivot's Y follows the terrain top under the footprint (the highest of a grid of terrain
+-- raycasts within `ground` studs of the pivot), so no terrain shows through the floor; the authored Y stays
+-- when nothing is hit.
+local function grounded(spec: Swaps.Swap): Swaps.Swap
+	local reach = spec.ground
+	if not reach then
+		return spec
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { Workspace.Terrain }
+	local top: number? = nil
+	for i = -2, 2 do
+		for j = -2, 2 do
+			local at = (spec.pivot * CFrame.new(i * reach / 2, 0, j * reach / 2)).Position
+			local hit =
+				Workspace:Raycast(at + Vector3.new(0, 40, 0), Vector3.new(0, -80, 0), params)
+			if hit and (not top or hit.Position.Y > top) then
+				top = hit.Position.Y
+			end
+		end
+	end
+	if not top then
+		return spec
+	end
+	local out = table.clone(spec)
+	out.pivot = spec.pivot + Vector3.new(0, top - spec.pivot.Y, 0)
+	return out
+end
+
+local function swap(key: string, authored: Swaps.Swap): boolean
+	local spec = grounded(authored)
 	local map = Workspace:FindFirstChild("Map")
 	local greybox = map and findPath(map, spec.greybox)
 	local lod = spec.lod or "LOD0"
@@ -234,7 +282,18 @@ local function swap(key: string, spec: Swaps.Swap): boolean
 			end
 		end
 	end
-	if greybox then
+	if greybox and spec.hide then
+		-- kept for the services that read its geometry: invisible, still the collider
+		for _, d in { greybox, table.unpack(greybox:GetDescendants()) } do
+			if d:IsA("BasePart") then
+				d.Transparency = 1
+				d.CastShadow = false
+			elseif d:IsA("Decal") or d:IsA("Texture") or d:IsA("SurfaceAppearance") then
+				d:Destroy()
+			end
+		end
+		greybox:SetAttribute("SwappedTo", key)
+	elseif greybox then
 		greybox:Destroy()
 	end
 	print(`[WorldDressing] {key}: swapped in {#all} assets`)

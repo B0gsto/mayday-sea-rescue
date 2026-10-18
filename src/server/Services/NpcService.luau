@@ -13,7 +13,7 @@ NpcService.Priority = 120
 
 local SLIPWAY_WAIT = 30 -- seconds to wait for Workspace.Map.Slipways.StationSlipway
 local AGGIE_ONTO_QUAY = 6 -- studs past the ramp's top edge (VehicleService looks 0.6 x 10 studs past it)
-local CREW_ASIDE = 3 -- studs beyond the ramp's side edges
+local CREW_ASIDE = 4.5 -- studs beyond the ramp's side edges (clear of the slipway retaining-wall copings)
 
 local folder: Folder? = nil
 
