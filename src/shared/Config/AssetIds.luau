@@ -46,6 +46,16 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://85415675047914",
 		LOD2 = "rbxassetid://76507732803802",
 	},
+	M_Bld_HarbourLight = {
+		LOD0 = "rbxassetid://80320963227251",
+		LOD1 = "rbxassetid://122719583385838",
+		LOD2 = "rbxassetid://81910232707540",
+	},
+	M_Bld_LifeguardTower = {
+		LOD0 = "rbxassetid://132828663855094",
+		LOD1 = "rbxassetid://114976123263412",
+		LOD2 = "rbxassetid://130949957754481",
+	},
 	M_Bld_Slipway = {
 		LOD0 = "rbxassetid://94856201993892",
 		LOD1 = "rbxassetid://76088563680656",
@@ -461,6 +471,26 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://78374601463088",
 		LOD2 = "rbxassetid://121670539551659",
 	},
+	M_Veg_Strand_Driftwood_01 = {
+		LOD0 = "rbxassetid://112286102839687",
+		LOD1 = "rbxassetid://104276603490817",
+		LOD2 = "rbxassetid://115560626241336",
+	},
+	M_Veg_Strand_Pebbles_01 = {
+		LOD0 = "rbxassetid://111688922278477",
+		LOD1 = "rbxassetid://128599256480619",
+		LOD2 = "rbxassetid://139042053030032",
+	},
+	M_Veg_Strand_Shells_01 = {
+		LOD0 = "rbxassetid://115948586577353",
+		LOD1 = "rbxassetid://76716366475142",
+		LOD2 = "rbxassetid://96176184056961",
+	},
+	M_Veg_Strand_Wrack_01 = {
+		LOD0 = "rbxassetid://89970631563421",
+		LOD1 = "rbxassetid://120873001726014",
+		LOD2 = "rbxassetid://72182670613554",
+	},
 	M_Veh_JetSki = {
 		LOD0 = "rbxassetid://77535739244028",
 		LOD1 = "rbxassetid://117090188851926",
@@ -572,6 +602,35 @@ AssetIds.Textures = {
 		White = {
 			ALB = "rbxassetid://131552050825504",
 			Wet = { ALB = "rbxassetid://92932348266875" },
+		},
+	},
+	M_Bld_HarbourLight = {
+		Lantern = {
+			ALB = "rbxassetid://139871952642508",
+			NOR = "rbxassetid://83276490297450",
+			RGH = "rbxassetid://97735617464055",
+			MET = "rbxassetid://91615250697117",
+			Wet = { ALB = "rbxassetid://70579085221176", RGH = "rbxassetid://74006745649556" },
+		},
+		Tower = {
+			ALB = "rbxassetid://119810008023709",
+			NOR = "rbxassetid://82267971777808",
+			RGH = "rbxassetid://76148614895565",
+			Wet = { ALB = "rbxassetid://72184829108882", RGH = "rbxassetid://100930947416224" },
+		},
+	},
+	M_Bld_LifeguardTower = {
+		Frame = {
+			ALB = "rbxassetid://139684753203853",
+			NOR = "rbxassetid://74622738250124",
+			RGH = "rbxassetid://85577009804223",
+			Wet = { ALB = "rbxassetid://87230236875041", RGH = "rbxassetid://128927530409970" },
+		},
+		Hut = {
+			ALB = "rbxassetid://78684289904259",
+			NOR = "rbxassetid://123918049987801",
+			RGH = "rbxassetid://120943243409422",
+			Wet = { ALB = "rbxassetid://80709305535953", RGH = "rbxassetid://108804227306144" },
 		},
 	},
 	M_Bld_Slipway = {
@@ -1154,6 +1213,14 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://80392929167799", RGH = "rbxassetid://132660770674454" },
 		},
 	},
+	M_Veg_StrandLine = {
+		Main = {
+			ALB = "rbxassetid://105669266990095",
+			NOR = "rbxassetid://79015245087712",
+			RGH = "rbxassetid://115758230582511",
+			Wet = { ALB = "rbxassetid://86070908161774", RGH = "rbxassetid://73216567128728" },
+		},
+	},
 	M_Veh_JetSki = {
 		Hull = {
 			ALB = "rbxassetid://70581610864570",
@@ -1329,6 +1396,22 @@ AssetIds.Attachments = {
 		ATT_Lamp_Door_01 = Vector3.new(2.1, 6.75, -8.72),
 		ATT_Smoke_01 = Vector3.new(-7.98, 24.03, 0),
 		ATT_Smoke_02 = Vector3.new(-8.88, 23.58, 0),
+	},
+	M_Bld_HarbourLight = {
+		ATT_Light = Vector3.new(0, 29.85, 0),
+		ATT_Door = Vector3.new(0, 1.65, -6.15),
+		ATT_Plaque = Vector3.new(-3.5193, 5.1, -4.1941),
+		ATT_Gallery = Vector3.new(0, 25.74, -4.35),
+		ATT_Top = Vector3.new(0, 36, 0),
+	},
+	M_Bld_LifeguardTower = {
+		ATT_Door = Vector3.new(-2.625, 9, -5.55),
+		ATT_Flag = Vector3.new(5.55, 23.7, -7.08),
+		ATT_FlagHoist = Vector3.new(5.25, 3.75, -7.08),
+		ATT_BoardRack = Vector3.new(5.97, 10.92, -1.2),
+		ATT_Lookout = Vector3.new(1.8, 9, -5.85),
+		ATT_StairsFoot = Vector3.new(-3, 0, -14.55),
+		ATT_Sign = Vector3.new(0, 15.99, -4.47),
 	},
 	M_Bld_Slipway = {
 		ATT_SlipwayTop = Vector3.new(0, 0, 0),
@@ -1679,6 +1762,10 @@ AssetIds.Attachments = {
 	M_Veg_Heather_03 = {},
 	M_Veg_SeaThrift_01 = {},
 	M_Veg_SeaThrift_02 = {},
+	M_Veg_Strand_Driftwood_01 = {},
+	M_Veg_Strand_Pebbles_01 = {},
+	M_Veg_Strand_Shells_01 = {},
+	M_Veg_Strand_Wrack_01 = {},
 	M_Veh_JetSki = {
 		ATT_DriverSeat = Vector3.new(0, 2.62, -0.9213),
 		ATT_EyePoint = Vector3.new(0, 5.2, -1.4213),

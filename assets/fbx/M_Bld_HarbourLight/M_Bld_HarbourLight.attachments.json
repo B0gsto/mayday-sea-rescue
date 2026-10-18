@@ -1,0 +1,152 @@
+{
+ "asset": "M_Bld_HarbourLight",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Light",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    29.85
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    29.85,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    11.85,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door",
+   "parent": null,
+   "blender": [
+    0.0,
+    -6.15,
+    1.65
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.65,
+    -6.15
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -16.35,
+    -6.15
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Plaque",
+   "parent": null,
+   "blender": [
+    3.5193,
+    -4.1941,
+    5.1
+   ],
+   "roblox_from_origin": [
+    -3.5193,
+    5.1,
+    -4.1941
+   ],
+   "roblox_from_bbox_centre": [
+    -3.5193,
+    -12.9,
+    -4.1941
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Gallery",
+   "parent": null,
+   "blender": [
+    0.0,
+    -4.35,
+    25.74
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    25.74,
+    -4.35
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    7.74,
+    -4.35
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Top",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    36.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    36.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    18.0,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

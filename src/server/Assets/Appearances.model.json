@@ -385,6 +385,116 @@
    ]
   },
   {
+   "Name": "M_Bld_HarbourLight",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Lantern",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://139871952642508",
+        "NormalMap": "rbxassetid://83276490297450",
+        "RoughnessMap": "rbxassetid://97735617464055",
+        "MetalnessMap": "rbxassetid://91615250697117"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://70579085221176",
+        "NormalMap": "rbxassetid://83276490297450",
+        "RoughnessMap": "rbxassetid://74006745649556",
+        "MetalnessMap": "rbxassetid://91615250697117"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Tower",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://119810008023709",
+        "NormalMap": "rbxassetid://82267971777808",
+        "RoughnessMap": "rbxassetid://76148614895565"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://72184829108882",
+        "NormalMap": "rbxassetid://82267971777808",
+        "RoughnessMap": "rbxassetid://100930947416224"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Bld_LifeguardTower",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Frame",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://139684753203853",
+        "NormalMap": "rbxassetid://74622738250124",
+        "RoughnessMap": "rbxassetid://85577009804223"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://87230236875041",
+        "NormalMap": "rbxassetid://74622738250124",
+        "RoughnessMap": "rbxassetid://128927530409970"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Hut",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://78684289904259",
+        "NormalMap": "rbxassetid://123918049987801",
+        "RoughnessMap": "rbxassetid://120943243409422"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://80709305535953",
+        "NormalMap": "rbxassetid://123918049987801",
+        "RoughnessMap": "rbxassetid://108804227306144"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Bld_Slipway",
    "ClassName": "Folder",
    "Children": [
@@ -2417,6 +2527,42 @@
         "NormalMap": "rbxassetid://115536868537189",
         "RoughnessMap": "rbxassetid://132660770674454",
         "MetalnessMap": "rbxassetid://87872063083227",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veg_StrandLine",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Main",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://105669266990095",
+        "NormalMap": "rbxassetid://79015245087712",
+        "RoughnessMap": "rbxassetid://115758230582511",
+        "AlphaMode": {
+         "Enum": 1
+        }
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://86070908161774",
+        "NormalMap": "rbxassetid://79015245087712",
+        "RoughnessMap": "rbxassetid://73216567128728",
         "AlphaMode": {
          "Enum": 1
         }

@@ -1,0 +1,1583 @@
+{
+ "asset": "M_Bld_LifeguardTower",
+ "name": "M_Bld_LifeguardTower",
+ "date": "2026-10-18",
+ "commit": "cf82a493+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD0.fbx",
+   "bytes": 247532,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_LifeguardTower_COL",
+    "M_Bld_LifeguardTower_Frame_LOD0",
+    "M_Bld_LifeguardTower_Glass_LOD0",
+    "M_Bld_LifeguardTower_Hut_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_LifeguardTower_COL.001",
+     "min": [
+      -5.52,
+      -13.4963,
+      -0.1049
+     ],
+     "max": [
+      5.13,
+      5.25,
+      24.0
+     ],
+     "polygons": 156,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Frame_LOD0.001",
+     "min": [
+      -8.25,
+      -13.65,
+      0.0
+     ],
+     "max": [
+      5.2575,
+      5.3265,
+      24.36
+     ],
+     "polygons": 2044,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Glass_LOD0.001",
+     "min": [
+      -4.5,
+      -4.2,
+      12.03
+     ],
+     "max": [
+      4.5,
+      2.37,
+      15.12
+     ],
+     "polygons": 36,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Hut_LOD0.001",
+     "min": [
+      -5.4,
+      -5.34,
+      9.0
+     ],
+     "max": [
+      5.37,
+      6.27,
+      17.58
+     ],
+     "polygons": 1372,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD1.fbx",
+   "bytes": 154588,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_LifeguardTower_Frame_LOD1",
+    "M_Bld_LifeguardTower_Glass_LOD1",
+    "M_Bld_LifeguardTower_Hut_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_LifeguardTower_Frame_LOD1.001",
+     "min": [
+      -8.25,
+      -13.65,
+      0.0
+     ],
+     "max": [
+      5.2575,
+      5.3265,
+      24.359
+     ],
+     "polygons": 766,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Glass_LOD1.001",
+     "min": [
+      -4.485,
+      -4.2,
+      12.03
+     ],
+     "max": [
+      4.5,
+      2.37,
+      15.12
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Hut_LOD1.001",
+     "min": [
+      -5.4,
+      -5.34,
+      9.0
+     ],
+     "max": [
+      5.37,
+      6.2693,
+      17.58
+     ],
+     "polygons": 514,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD2.fbx",
+   "bytes": 101100,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_LifeguardTower_Frame_LOD2",
+    "M_Bld_LifeguardTower_Glass_LOD2",
+    "M_Bld_LifeguardTower_Hut_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_LifeguardTower_Frame_LOD2.001",
+     "min": [
+      -7.9894,
+      -13.65,
+      0.0
+     ],
+     "max": [
+      5.2309,
+      5.3265,
+      24.0
+     ],
+     "polygons": 424,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Glass_LOD2.001",
+     "min": [
+      -3.87,
+      -4.2,
+      12.03
+     ],
+     "max": [
+      0.27,
+      -4.17,
+      15.12
+     ],
+     "polygons": 8,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_LifeguardTower_Hut_LOD2.001",
+     "min": [
+      -5.3474,
+      -5.3174,
+      9.0
+     ],
+     "max": [
+      5.34,
+      6.2642,
+      17.58
+     ],
+     "polygons": 284,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower.attachments.json",
+   "attachments": [
+    "ATT_Door",
+    "ATT_Flag",
+    "ATT_FlagHoist",
+    "ATT_BoardRack",
+    "ATT_Lookout",
+    "ATT_StairsFoot",
+    "ATT_Sign"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_LifeguardTower/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Bld_LifeguardTower_Hut_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_LifeguardTower_Glass_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Bld_LifeguardTower_Frame_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_LifeguardTower_Hut",
+   "T_LifeguardTower_Frame"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.249,
+     0.037,
+     0.846,
+     0.818
+    ],
+    "mannequin": [
+     0.152,
+     0.189,
+     0.206,
+     0.328
+    ],
+    "fill": 0.781
+   },
+   "Side": {
+    "asset": [
+     0.209,
+     0.042,
+     0.963,
+     0.94
+    ],
+    "mannequin": [
+     0.113,
+     0.121,
+     0.177,
+     0.296
+    ],
+    "fill": 0.898
+   },
+   "Rear3Q": {
+    "asset": [
+     0.251,
+     0.037,
+     0.862,
+     0.826
+    ],
+    "mannequin": [
+     0.144,
+     0.183,
+     0.2,
+     0.324
+    ],
+    "fill": 0.789
+   },
+   "High": {
+    "asset": [
+     0.267,
+     0.096,
+     0.952,
+     0.963
+    ],
+    "mannequin": [
+     0.188,
+     0.329,
+     0.247,
+     0.426
+    ],
+    "fill": 0.867
+   }
+  },
+  "closeups": [
+   {
+    "name": "sign_door",
+    "target": [
+     0.8999999999999999,
+     -4.5,
+     13.799999999999999
+    ],
+    "dist": 10.0,
+    "az": 15.0,
+    "el": 5.0,
+    "file": "closeup_sign_door.png"
+   },
+   {
+    "name": "board_rack",
+    "target": [
+     -5.699999999999999,
+     -0.8999999999999999,
+     10.8
+    ],
+    "dist": 7.0,
+    "az": 280.0,
+    "el": 15.0,
+    "file": "closeup_board_rack.png"
+   },
+   {
+    "name": "flag",
+    "target": [
+     -6.6000000000000005,
+     -7.08,
+     22.799999999999997
+    ],
+    "dist": 7.0,
+    "az": 10.0,
+    "el": 0.0,
+    "file": "closeup_flag.png"
+   },
+   {
+    "name": "steps",
+    "target": [
+     3.0,
+     -9.899999999999999,
+     4.800000000000001
+    ],
+    "dist": 9.0,
+    "az": 40.0,
+    "el": 10.0,
+    "file": "closeup_steps.png"
+   },
+   {
+    "name": "deck",
+    "target": [
+     1.7999999999999998,
+     -5.699999999999999,
+     9.3
+    ],
+    "dist": 6.0,
+    "az": 20.0,
+    "el": 40.0,
+    "file": "closeup_deck.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.781,
+  "in_frame": true,
+  "dims_m": [
+   4.54,
+   6.64,
+   8.12
+  ],
+  "validation_ok": true,
+  "seconds": 15.9
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_LifeguardTower/M_Bld_LifeguardTower.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "hero_building"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Hut_LOD0"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1372 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.58e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.992, v 0.007 to 0.998"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 686 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 28 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Glass_LOD0"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.061 to 0.946, v 0.022 to 0.849"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 18 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 25 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Frame_LOD0"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2044 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.46e-04, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.989, v 0.007 to 0.993"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1020 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 30 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Hut_LOD1"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "514 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.07e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.992, v 0.007 to 0.998"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 514 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.1% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Glass_LOD1"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.51e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.076 to 0.946, v 0.037 to 0.849"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.016 (max 0.02), UV area by 27.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Frame_LOD1"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "766 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.59e-03, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.988, v 0.007 to 0.989"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 766 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 9.7% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Hut_LOD2"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "284 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.40e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.971, v 0.007 to 0.998"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 284 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Hut_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.022 (max 0.02), UV area by 42.2% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Glass_LOD2"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.63e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.061 to 0.796, v 0.022 to 0.849"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Glass_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.151 (max 0.02), UV area by 53.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_Frame_LOD2"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "424 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.12e-03, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.988, v 0.007 to 0.988"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 424 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_Frame_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.004 (max 0.02), UV area by 41.6% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_LifeguardTower_COL"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "156 of 10000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "156 of 1000"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3452 of 12000 (hero_building, asset row)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1292 of 4500"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "716 of 900"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 4.54 x 6.64 x 8.12 m, spec 4.54 x 6.64 x 8.12 m (art/reference/M_Bld_LifeguardTower/dims.md)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "13.620 studs, real 4.540 m = 13.620 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "19.920 studs, real 6.640 m = 19.920 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "24.360 studs, real 8.120 m = 24.360 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_LifeguardTower_COL"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "texture sets",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (docs/12 2.2 row: 2 sets (Hut, Frame; glazing is a MeshPart on Hut); hero_building class asks 4-5): 2 (4 to 5 sets)"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_ALB.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_NOR.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_RGH.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Hut_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Hut_MET.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_ALB.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_NOR.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_RGH.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LifeguardTower_Frame_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_MET.png"
+  },
+  {
+   "subject": "ATT_Door",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Flag",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_FlagHoist",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BoardRack",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lookout",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_StairsFoot",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Sign",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD0.fbx"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_LifeguardTower_COL, M_Bld_LifeguardTower_Frame_LOD0, M_Bld_LifeguardTower_Glass_LOD0, M_Bld_LifeguardTower_Hut_LOD0; 3608 triangles (scene 3608)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD1.fbx"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_LifeguardTower_Frame_LOD1, M_Bld_LifeguardTower_Glass_LOD1, M_Bld_LifeguardTower_Hut_LOD1; 1292 triangles (scene 1292)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD2.fbx"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_LifeguardTower_Frame_LOD2, M_Bld_LifeguardTower_Glass_LOD2, M_Bld_LifeguardTower_Hut_LOD2; 716 triangles (scene 716)"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 3 of 3 visual meshes"
+  },
+  {
+   "subject": "M_Bld_LifeguardTower",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.78; 14 renders in 16 s, maps M_Bld_LifeguardTower_Hut_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Glass_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Frame_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Bld_LifeguardTower_Hut_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1372,
+   "texel_density": 27.7
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Glass_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 36,
+   "texel_density": 24.7
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Frame_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2044,
+   "texel_density": 29.8
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Hut_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 514,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Glass_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Frame_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 766,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Hut_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 284,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Glass_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 8,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_Frame_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 424,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_LifeguardTower_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 156,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  13.619999885559082,
+  19.920000076293945,
+  24.360000610351562
+ ],
+ "peak_rss_mb": 1529.6
+}

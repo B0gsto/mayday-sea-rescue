@@ -1,0 +1,195 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_HarbourLight/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_HarbourLight_Tower_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_HarbourLight_Lantern_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_HarbourLight_Lens_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_HarbourLight_Glass_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_HarbourLight_Tower",
+  "T_HarbourLight_Lantern"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.361,
+    0.037,
+    0.741,
+    0.929
+   ],
+   "mannequin": [
+    0.28,
+    0.124,
+    0.321,
+    0.241
+   ],
+   "fill": 0.892
+  },
+  "Side": {
+   "asset": [
+    0.389,
+    0.037,
+    0.703,
+    0.962
+   ],
+   "mannequin": [
+    0.322,
+    0.089,
+    0.364,
+    0.218
+   ],
+   "fill": 0.925
+  },
+  "Rear3Q": {
+   "asset": [
+    0.361,
+    0.037,
+    0.741,
+    0.929
+   ],
+   "mannequin": [
+    0.28,
+    0.124,
+    0.321,
+    0.241
+   ],
+   "fill": 0.892
+  },
+  "High": {
+   "asset": [
+    0.347,
+    0.144,
+    0.79,
+    0.963
+   ],
+   "mannequin": [
+    0.302,
+    0.27,
+    0.345,
+    0.346
+   ],
+   "fill": 0.819
+  }
+ },
+ "closeups": [
+  {
+   "name": "door_plaque",
+   "target": [
+    1.9500000000000002,
+    -5.699999999999999,
+    4.5
+   ],
+   "dist": 9.0,
+   "az": 20.0,
+   "el": 5.0,
+   "file": "closeup_door_plaque.png"
+  },
+  {
+   "name": "plaque",
+   "target": [
+    3.422844171524048,
+    -4.079186916351318,
+    5.100000381469727
+   ],
+   "dist": 5.0,
+   "az": 40.0,
+   "el": 3.0,
+   "file": "closeup_plaque.png"
+  },
+  {
+   "name": "lantern",
+   "target": [
+    0.0,
+    0.0,
+    30.0
+   ],
+   "dist": 14.0,
+   "az": 30.0,
+   "el": 12.0,
+   "file": "closeup_lantern.png"
+  },
+  {
+   "name": "gallery",
+   "target": [
+    0.0,
+    -5.699999999999999,
+    25.799999999999997
+   ],
+   "dist": 7.0,
+   "az": 15.0,
+   "el": 20.0,
+   "file": "closeup_gallery.png"
+  },
+  {
+   "name": "plinth",
+   "target": [
+    -2.052120859954012,
+    5.638155724715451,
+    1.7999999999999998
+   ],
+   "dist": 7.0,
+   "az": 200.0,
+   "el": 15.0,
+   "file": "closeup_plinth.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.819,
+ "in_frame": true,
+ "dims_m": [
+  4.0,
+  4.0,
+  12.0
+ ],
+ "validation_ok": true,
+ "seconds": 18.9
+}

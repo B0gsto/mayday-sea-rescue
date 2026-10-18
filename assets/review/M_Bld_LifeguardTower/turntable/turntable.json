@@ -1,0 +1,189 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Bld_LifeguardTower/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Bld_LifeguardTower_Hut_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_LifeguardTower_Glass_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Bld_LifeguardTower_Frame_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_LifeguardTower_Hut",
+  "T_LifeguardTower_Frame"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.249,
+    0.037,
+    0.846,
+    0.818
+   ],
+   "mannequin": [
+    0.152,
+    0.189,
+    0.206,
+    0.328
+   ],
+   "fill": 0.781
+  },
+  "Side": {
+   "asset": [
+    0.209,
+    0.042,
+    0.963,
+    0.94
+   ],
+   "mannequin": [
+    0.113,
+    0.121,
+    0.177,
+    0.296
+   ],
+   "fill": 0.898
+  },
+  "Rear3Q": {
+   "asset": [
+    0.251,
+    0.037,
+    0.862,
+    0.826
+   ],
+   "mannequin": [
+    0.144,
+    0.183,
+    0.2,
+    0.324
+   ],
+   "fill": 0.789
+  },
+  "High": {
+   "asset": [
+    0.267,
+    0.096,
+    0.952,
+    0.963
+   ],
+   "mannequin": [
+    0.188,
+    0.329,
+    0.247,
+    0.426
+   ],
+   "fill": 0.867
+  }
+ },
+ "closeups": [
+  {
+   "name": "sign_door",
+   "target": [
+    0.8999999999999999,
+    -4.5,
+    13.799999999999999
+   ],
+   "dist": 10.0,
+   "az": 15.0,
+   "el": 5.0,
+   "file": "closeup_sign_door.png"
+  },
+  {
+   "name": "board_rack",
+   "target": [
+    -5.699999999999999,
+    -0.8999999999999999,
+    10.8
+   ],
+   "dist": 7.0,
+   "az": 280.0,
+   "el": 15.0,
+   "file": "closeup_board_rack.png"
+  },
+  {
+   "name": "flag",
+   "target": [
+    -6.6000000000000005,
+    -7.08,
+    22.799999999999997
+   ],
+   "dist": 7.0,
+   "az": 10.0,
+   "el": 0.0,
+   "file": "closeup_flag.png"
+  },
+  {
+   "name": "steps",
+   "target": [
+    3.0,
+    -9.899999999999999,
+    4.800000000000001
+   ],
+   "dist": 9.0,
+   "az": 40.0,
+   "el": 10.0,
+   "file": "closeup_steps.png"
+  },
+  {
+   "name": "deck",
+   "target": [
+    1.7999999999999998,
+    -5.699999999999999,
+    9.3
+   ],
+   "dist": 6.0,
+   "az": 20.0,
+   "el": 40.0,
+   "file": "closeup_deck.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.781,
+ "in_frame": true,
+ "dims_m": [
+  4.54,
+  6.64,
+  8.12
+ ],
+ "validation_ok": true,
+ "seconds": 15.9
+}
