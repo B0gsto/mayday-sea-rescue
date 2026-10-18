@@ -7394,6 +7394,16 @@
   "source": "assets/fbx/M_Veg_Grass_Turf_02/M_Veg_Grass_Turf_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:249fd8eb39c736ede2447d110c238b532ee5c84345153723561d211c9b10a806": {
+  "assetId": "93498658626129",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD0",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "249fd8eb39c736ede2447d110c238b532ee5c84345153723561d211c9b10a806",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.rbxm",
+  "type": "Model"
+ },
  "Model:2540ca3dfac05691021587f57e4234d01de09f133929e45cb5bcc1fef9d94f80": {
   "assetId": "119125465148068",
   "moderation": "Approved",
@@ -7802,6 +7812,16 @@
   "route": "delivery",
   "sha": "4aabc67c2728fa3b90fbe2615459cf8bcebddf6e55c5a8a8e8b38625c28ff787",
   "source": "assets/fbx/M_Rock_Boulder_01/M_Rock_Boulder_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:4b7c2c3f16811a6f3132c09eabaca6f2af8a47b6d26f754d30d633f388e22e0c": {
+  "assetId": "76515816763344",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD2",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "4b7c2c3f16811a6f3132c09eabaca6f2af8a47b6d26f754d30d633f388e22e0c",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.rbxm",
   "type": "Model"
  },
  "Model:4c4c26c530542f0869f63d2fd5032d9bb84fd49392f164ceb0d46149d27bb2f3": {
@@ -8542,6 +8562,16 @@
   "route": "delivery",
   "sha": "9ac0550fc612f0047a7555bf91bc84906df1affbd769b88c37efa1c54f4c6a5c",
   "source": "assets/fbx/Spike1/M_Spike1_ScaleCube.fbx",
+  "type": "Model"
+ },
+ "Model:9cdc1b5562ebbc96331a3df676ebd9523ae7155309bca24f960483fa8de0dc16": {
+  "assetId": "83581557797709",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD1",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9cdc1b5562ebbc96331a3df676ebd9523ae7155309bca24f960483fa8de0dc16",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.rbxm",
   "type": "Model"
  },
  "Model:9d5dfbebbb800cc2f5286c533180047ea7d2e7102213d23699cba3e9006a4f9d": {

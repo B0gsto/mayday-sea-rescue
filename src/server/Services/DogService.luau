@@ -306,8 +306,8 @@ local function keyOf(name: string): string?
 end
 
 -- Fur cards are alpha cutouts seen from both sides. AlphaMode comes from Appearances.model.json
--- (tools/gen_asset_ids.py) and DoubleSided from the upload; these writes are best effort (Studio-only
--- on some builds).
+-- (tools/gen_asset_ids.py); DoubleSided can't be set from game scripts, so it is baked into the uploaded
+-- Model (art/source/characters/M_Chr_Bosun/set_double_sided.luau). These writes are best effort.
 local function prepareFur(p: BasePart)
 	for _, sa in p:GetDescendants() do
 		if sa:IsA("SurfaceAppearance") then

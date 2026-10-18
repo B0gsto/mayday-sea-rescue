@@ -27,9 +27,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://129439624841519",
 	},
 	M_Chr_Bosun = {
-		LOD0 = "rbxassetid://80627802424044",
-		LOD1 = "rbxassetid://79332309241871",
-		LOD2 = "rbxassetid://134272676505484",
+		LOD0 = "rbxassetid://93498658626129",
+		LOD1 = "rbxassetid://83581557797709",
+		LOD2 = "rbxassetid://76515816763344",
 	},
 	M_Chr_Casualty_Swimmer = {
 		LOD0 = "rbxassetid://77856458721407",
