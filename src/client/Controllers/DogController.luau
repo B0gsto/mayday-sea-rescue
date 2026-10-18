@@ -1,30 +1,62 @@
 --!strict
--- DogController: Bosun's point-and-bark on the client (DogService fires DogPoint).
--- On each DogPoint: his head turns toward the victim (local NeckWeld.C0), a "Woof!" bubble pops
+-- DogController: Bosun's body language and his point-and-bark, on the client.
+--
+-- Motion: every dog in Workspace.Bosun (DogService) is the rigid M_Chr_Bosun model rigged with Motor6Ds
+-- (Root, Neck, Hips, Ruff) on an invisible root the server moves. Each frame (PreSimulation) this
+-- writes their Transforms from Shared.Dog.BosunMotion: breathing, the walk's bob and pitch while he
+-- follows, sitting when he stops (and while he waits ashore for a jet ski), his head turning to his
+-- owner, a casualty or a passing glance, a rear wiggle for a tail wag, a float and paddle when he
+-- swims, a shake when he climbs out, and a lean into the boat's motion aboard. Inputs come from the
+-- replicated Mode attribute and the root's velocity. Transforms are local; the server owns position.
+-- LOD: LOD1 / LOD2 copies start hidden; the client shows one by camera distance (local Transparency).
+--
+-- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
 -- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
 -- skipped while ReplicatedStorage attribute UseMapWaypoints is true (the map shows the casualty).
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
-local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BosunMotion = require(Shared:WaitForChild("Dog"):WaitForChild("BosunMotion"))
+local Net = require(Shared:WaitForChild("Net"))
 
 local DogController = {}
 
 local SHOW_SECONDS = 2.2
-local MAX_HEAD_YAW = math.rad(75)
+local OWNER_LOOK_RANGE = 28 -- studs: he watches his owner inside this
 local ARROW_COLOR = Color3.fromHex("3EE07A") -- Waypoint Green: where to go (docs 05 section 3.2)
 local BUBBLE_TEXT = Color3.fromHex("0A2A3B")
+local JOINTS = { "Root", "Neck", "Hips", "Ruff" }
+
+type DogState = {
+	model: Model,
+	motion: BosunMotion.State,
+	motors: { [string]: { Motor6D } },
+	lods: { [number]: { BasePart } },
+	lod: number?,
+	dirty: boolean,
+	lastVel: Vector3,
+	accel: Vector3,
+	pointAt: Vector3?,
+	pointUntil: number,
+	glanceDir: Vector3?,
+	glanceUntil: number,
+	nextGlance: number,
+	connections: { RBXScriptConnection },
+}
 
 local active: { [Model]: number } = {}
-local baseNeck: { [Weld]: CFrame } = {}
+local dogs: { [Model]: DogState } = {}
+local rng = Random.new()
 
-local function makeBubble(head: BasePart): BillboardGui
+local function makeBubble(body: BasePart): BillboardGui
 	local bubble = Instance.new("BillboardGui")
 	bubble.Name = "WoofBubble"
 	bubble.Size = UDim2.fromOffset(110, 52)
-	bubble.StudsOffsetWorldSpace = Vector3.new(0, 2.6, 0)
+	bubble.StudsOffsetWorldSpace = Vector3.new(0, 1.4, 0)
 	bubble.AlwaysOnTop = true
 	bubble.MaxDistance = 250
 	local frame = Instance.new("Frame")
@@ -52,8 +84,8 @@ local function makeBubble(head: BasePart): BillboardGui
 	scale.Scale = 0.2
 	scale.Parent = frame
 	frame.Parent = bubble
-	bubble.Adornee = head
-	bubble.Parent = head
+	bubble.Adornee = body:FindFirstChild("BarkAttachment") or body
+	bubble.Parent = body
 	TweenService:Create(scale, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 	return bubble
 end
@@ -95,6 +127,187 @@ local function placeArrow(arrow: Model, origin: Vector3, direction: Vector3, t: 
 		* CFrame.Angles(0, math.rad(180), 0)
 end
 
+-- Rig cache ----------------------------------------------------------------------------------------
+
+local function rebuild(state: DogState)
+	state.dirty = false
+	local motors: { [string]: { Motor6D } } = {}
+	for _, name in JOINTS do
+		motors[name] = {}
+	end
+	local lods: { [number]: { BasePart } } = {}
+	for _, d in state.model:GetDescendants() do
+		if d:IsA("Motor6D") and motors[d.Name] then
+			table.insert(motors[d.Name], d)
+		elseif d:IsA("Model") then
+			local lod = d:GetAttribute("BosunLod")
+			if type(lod) == "number" then
+				local parts = {}
+				for _, p in d:GetDescendants() do
+					if p:IsA("BasePart") then
+						table.insert(parts, p)
+					end
+				end
+				lods[lod] = parts
+			end
+		end
+	end
+	state.motors = motors
+	state.lods = lods
+	state.lod = nil -- re-apply visibility
+end
+
+local function track(model: Instance)
+	if not model:IsA("Model") or dogs[model] then
+		return
+	end
+	local state: DogState = {
+		model = model,
+		motion = BosunMotion.new(),
+		motors = {},
+		lods = {},
+		lod = nil,
+		dirty = true,
+		lastVel = Vector3.zero,
+		accel = Vector3.zero,
+		pointAt = nil,
+		pointUntil = 0,
+		glanceDir = nil,
+		glanceUntil = 0,
+		nextGlance = os.clock() + rng:NextNumber(3, 7),
+		connections = {},
+	}
+	local function markDirty()
+		state.dirty = true
+	end
+	table.insert(state.connections, model.DescendantAdded:Connect(markDirty))
+	table.insert(state.connections, model.DescendantRemoving:Connect(markDirty))
+	dogs[model] = state
+end
+
+local function untrack(model: Instance)
+	local state = dogs[model :: Model]
+	if state then
+		for _, c in state.connections do
+			c:Disconnect()
+		end
+		dogs[model :: Model] = nil
+	end
+end
+
+-- LOD --------------------------------------------------------------------------------------------
+
+local function applyLod(state: DogState, distance: number)
+	local want = BosunMotion.lodFor(distance, state.lod)
+	if not state.lods[want] then
+		-- an LOD that didn't load: the nearest one that did
+		for _, alt in { want - 1, want + 1, want - 2, want + 2 } do
+			if state.lods[alt] then
+				want = alt
+				break
+			end
+		end
+	end
+	if want == state.lod or not state.lods[want] then
+		return
+	end
+	state.lod = want
+	for lod, parts in state.lods do
+		local t = if lod == want then 0 else 1
+		for _, p in parts do
+			p.Transparency = t -- local only: the server never writes it after rigging
+		end
+	end
+end
+
+-- Motion ------------------------------------------------------------------------------------------
+
+local function ownerHead(model: Model): Vector3?
+	local owner = Players:GetPlayerByUserId(model:GetAttribute("Owner") :: number? or 0)
+	local character = owner and owner.Character
+	local head = character and character:FindFirstChild("Head") :: BasePart?
+	return if head then head.Position else nil
+end
+
+local function lookTarget(state: DogState, body: BasePart, now: number, moving: boolean): Vector3?
+	local origin = body.Position + body.CFrame:VectorToWorldSpace(Vector3.new(0, 0.5, -2))
+	if state.pointAt and now < state.pointUntil then
+		return body.CFrame:VectorToObjectSpace(state.pointAt - origin)
+	end
+	if state.glanceDir and now < state.glanceUntil then
+		return state.glanceDir
+	end
+	if now > state.nextGlance then
+		-- a glance at something off to the side (gulls, a passing boat)
+		state.glanceDir = CFrame.fromEulerAnglesYXZ(
+			rng:NextNumber(-0.25, 0.2),
+			rng:NextNumber(-0.5, 0.5),
+			0
+		).LookVector
+		state.glanceUntil = now + rng:NextNumber(0.8, 1.8)
+		state.nextGlance = now + rng:NextNumber(4, 9)
+		return state.glanceDir
+	end
+	local head = ownerHead(state.model)
+	if head and not moving and (head - origin).Magnitude < OWNER_LOOK_RANGE then
+		return body.CFrame:VectorToObjectSpace(head - origin)
+	end
+	return nil
+end
+
+local function stepDog(state: DogState, dt: number, now: number, camera: Camera?)
+	local model = state.model
+	local body = model:FindFirstChild("Body") :: BasePart?
+	if not body then
+		return
+	end
+	if state.dirty then
+		rebuild(state)
+	end
+	if camera then
+		applyLod(state, (camera.CFrame.Position - body.Position).Magnitude)
+	end
+	local cf = body.CFrame
+	local vel = body.AssemblyLinearVelocity
+	local attr = model:GetAttribute("Mode")
+	local mode: string = if type(attr) == "string" then attr else "Follow"
+	-- the deck's acceleration (Ride: he is welded to the boat), smoothed against physics jitter
+	if dt > 0 then
+		local raw = cf:VectorToObjectSpace(vel - state.lastVel) / dt
+		state.accel = state.accel:Lerp(raw, math.min(1, dt * 6))
+	end
+	state.lastVel = vel
+	local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
+	local pointing = state.pointAt ~= nil and now < state.pointUntil
+	local excited = if pointing then 1 else 0
+	if not pointing and mode ~= "Swim" then
+		local head = ownerHead(model)
+		if head and (head - body.Position).Magnitude < 10 then
+			excited = 0.45
+		end
+	end
+	local pose = BosunMotion.step(state.motion, {
+		dt = dt,
+		mode = mode,
+		speed = speed,
+		look = lookTarget(state, body, now, speed > 4),
+		excited = excited,
+		accel = state.accel,
+		deckRoll = math.asin(math.clamp(cf.RightVector.Y, -1, 1)),
+		deckPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1)),
+	})
+	for name, list in state.motors do
+		local transform = (pose :: any)[name] :: CFrame?
+		if transform then
+			for _, m in list do
+				m.Transform = transform
+			end
+		end
+	end
+end
+
+-- Point and bark -----------------------------------------------------------------------------------
+
 local function onPoint(payload: any)
 	if type(payload) ~= "table" or typeof(payload.dog) ~= "Instance" then
 		return
@@ -104,35 +317,27 @@ local function onPoint(payload: any)
 		return
 	end
 	local body = dog:FindFirstChild("Body") :: BasePart?
-	local head = dog:FindFirstChild("Head") :: BasePart?
-	local neck = body and body:FindFirstChild("NeckWeld") :: Weld?
 	local direction = payload.direction
-	if not body or not head or typeof(direction) ~= "Vector3" then
+	if not body or typeof(direction) ~= "Vector3" then
 		return
 	end
 	local serial = (active[dog] or 0) + 1
 	active[dog] = serial
 
-	-- head turn, in the body's frame
-	if neck then
-		local base = baseNeck[neck] or neck.C0
-		baseNeck[neck] = base
-		local localDir = body.CFrame:VectorToObjectSpace(direction)
-		local yaw = math.clamp(math.atan2(-localDir.X, -localDir.Z), -MAX_HEAD_YAW, MAX_HEAD_YAW)
-		local turned = base * CFrame.Angles(math.rad(12), yaw, 0)
-		TweenService:Create(neck, TweenInfo.new(0.2, Enum.EasingStyle.Back), { C0 = turned }):Play()
-		task.delay(SHOW_SECONDS, function()
-			if active[dog] == serial and neck.Parent then
-				TweenService:Create(neck, TweenInfo.new(0.4), { C0 = base }):Play()
-			end
-		end)
+	track(dog)
+	local state = dogs[dog]
+	if state then
+		state.pointAt = if typeof(payload.position) == "Vector3"
+			then payload.position
+			else body.Position + direction * 20
+		state.pointUntil = os.clock() + SHOW_SECONDS
 	end
 
-	local old = head:FindFirstChild("WoofBubble")
+	local old = body:FindFirstChild("WoofBubble")
 	if old then
 		old:Destroy()
 	end
-	local bubble = makeBubble(head)
+	local bubble = makeBubble(body)
 	local arrow: Model? = if ReplicatedStorage:GetAttribute("UseMapWaypoints") == true
 		then nil
 		else makeArrow()
@@ -166,6 +371,26 @@ function DogController.Init()
 	Net.event("DogPoint").OnClientEvent:Connect(onPoint)
 end
 
-function DogController.Start() end
+function DogController.Start()
+	task.spawn(function()
+		local folder = Workspace:WaitForChild("Bosun")
+		folder.ChildAdded:Connect(track)
+		folder.ChildRemoved:Connect(untrack)
+		for _, child in folder:GetChildren() do
+			track(child)
+		end
+	end)
+	RunService.PreSimulation:Connect(function(dt)
+		local now = os.clock()
+		local camera = Workspace.CurrentCamera
+		for model, state in dogs do
+			if model.Parent then
+				stepDog(state, dt, now, camera)
+			else
+				untrack(model)
+			end
+		end
+	end)
+end
 
 return DogController

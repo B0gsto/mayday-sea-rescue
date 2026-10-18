@@ -430,7 +430,10 @@
        "Properties": {
         "ColorMap": "rbxassetid://72677137767461",
         "NormalMap": "rbxassetid://103748169485793",
-        "RoughnessMap": "rbxassetid://133402828268520"
+        "RoughnessMap": "rbxassetid://133402828268520",
+        "AlphaMode": {
+         "Enum": 1
+        }
        }
       },
       {
@@ -439,7 +442,10 @@
        "Properties": {
         "ColorMap": "rbxassetid://135540737096451",
         "NormalMap": "rbxassetid://105519932437575",
-        "RoughnessMap": "rbxassetid://84506139266722"
+        "RoughnessMap": "rbxassetid://84506139266722",
+        "AlphaMode": {
+         "Enum": 1
+        }
        }
       }
      ]

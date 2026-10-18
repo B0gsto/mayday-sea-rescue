@@ -22,7 +22,7 @@ A ModuleScript in `src/server/Services/` or `src/client/Controllers/` exports `I
 | B Vehicles | `src/server/Services/VehicleService.luau`, `src/client/Controllers/BoatController.luau`, `src/shared/Boat/*`, `tests/Boat*.spec.luau` |
 | C Calls / Ops framework | `src/server/Services/OperationService.luau`, `CallService.luau` (shim), `RescueService.luau`, `src/shared/Calls/*`, `src/shared/Ops/*` (except `Definitions/*` step tuning, see below), `src/client/Controllers/OpsController.luau`, `CallController.luau`, `src/client/Mechanics/Default.luau`, `src/client/UI/Call*`, `tests/Call*.spec.luau`, `tests/Ops.spec.luau` |
 | D Storm | `src/server/Services/StormService.luau`, `src/client/Controllers/WeatherController.luau`, `src/shared/Weather.luau`, `src/shared/Config/LightingPresets.luau`, `tests/Weather*.spec.luau` |
-| E Progression | `src/server/Services/DataService.luau`, `ProgressionService.luau`, `CrewService.luau`, `DogService.luau`; `src/client/Controllers/HudController.luau`, `DogController.luau`; `src/client/UI/Hud*`; `src/shared/Config/ProgressionConfig.luau`; `tests/Progression*.spec.luau` |
+| E Progression | `src/server/Services/DataService.luau`, `ProgressionService.luau`, `CrewService.luau`, `DogService.luau`; `src/client/Controllers/HudController.luau`, `DogController.luau`; `src/client/UI/Hud*`; `src/shared/Config/ProgressionConfig.luau`; `src/shared/Dog/*` (BosunMotion, BosunWetness); `tests/Progression*.spec.luau`, `tests/BosunMotion.spec.luau` |
 
 ## APIs
 
@@ -89,7 +89,7 @@ Superseded by "Operations v2" below. `CallService` is a thin shim kept for old c
 - `ProgressionService.GetGearBonus(player, stat: "speed" | "pullTime" | "searchRadius"): number` is a multiplier, 1 by default.
 - `CrewService.GetCrew(player): { Player }`
 - `CrewService.RecordRoleAction(player, callId)` and `CrewService.HasRoleAction(player, callId): boolean`
-- `DogService` keeps Bosun beside each player. It fires `DogPoint` toward the closest victim from `CallService.GetVictimPositions`.
+- `DogService` keeps Bosun beside each player: the uploaded rigid `M_Chr_Bosun` (by name via AssetLoader, LOD0-2, greybox placeholder until it loads) on an invisible root `Body`, rigged with Motor6Ds Root / Neck / Hips / Ruff that `DogController` drives locally (`Shared.Dog.BosunMotion`); model attributes `Mode` (Follow / Wait / Ride / Swim), `Wetness`, `Wet` (wet SurfaceAppearances via `AssetLoader.setWet`, `Shared.Dog.BosunWetness`). ATT_Mouth rides on BodyHead, ATT_HarnessHandle / ATT_TowRing on Harness. It fires `DogPoint` toward the closest victim from `CallService.GetVictimPositions`.
 
 ### A: OceanController (client)
 
