@@ -1,0 +1,181 @@
+{
+ "asset": "M_Sea_Morwenna",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Bell",
+   "parent": null,
+   "blender": [
+    -5.2616,
+    -32.5187,
+    5.3251
+   ],
+   "roblox_from_origin": [
+    5.2616,
+    5.3251,
+    -32.5187
+   ],
+   "roblox_from_bbox_centre": [
+    5.2616,
+    -3.4572,
+    -32.5187
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Hatch",
+   "parent": null,
+   "blender": [
+    -0.3784,
+    -9.5572,
+    4.946
+   ],
+   "roblox_from_origin": [
+    0.3784,
+    4.946,
+    -9.5572
+   ],
+   "roblox_from_bbox_centre": [
+    0.3784,
+    -3.8363,
+    -9.5572
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Windlass",
+   "parent": null,
+   "blender": [
+    -0.7941,
+    -32.0423,
+    6.2044
+   ],
+   "roblox_from_origin": [
+    0.7941,
+    6.2044,
+    -32.0423
+   ],
+   "roblox_from_bbox_centre": [
+    0.7941,
+    -2.5778,
+    -32.0423
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ChainEnd",
+   "parent": null,
+   "blender": [
+    15.45,
+    -32.6817,
+    3.437
+   ],
+   "roblox_from_origin": [
+    -15.45,
+    3.437,
+    -32.6817
+   ],
+   "roblox_from_bbox_centre": [
+    -15.45,
+    -5.3453,
+    -32.6817
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stem",
+   "parent": null,
+   "blender": [
+    -1.35,
+    -41.0442,
+    7.1413
+   ],
+   "roblox_from_origin": [
+    1.35,
+    7.1413,
+    -41.0442
+   ],
+   "roblox_from_bbox_centre": [
+    1.35,
+    -1.641,
+    -41.0442
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Anchor",
+   "parent": null,
+   "blender": [
+    15.45,
+    -32.9817,
+    3.3288
+   ],
+   "roblox_from_origin": [
+    -15.45,
+    3.3288,
+    -32.9817
+   ],
+   "roblox_from_bbox_centre": [
+    -15.45,
+    -5.4535,
+    -32.9817
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

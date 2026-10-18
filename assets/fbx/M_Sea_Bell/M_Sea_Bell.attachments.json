@@ -1,0 +1,36 @@
+{
+ "asset": "M_Sea_Bell",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Bell",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.9
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.9,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.3765,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

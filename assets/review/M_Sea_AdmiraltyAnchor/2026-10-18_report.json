@@ -1,0 +1,678 @@
+{
+ "asset": "M_Sea_AdmiraltyAnchor",
+ "name": "M_Sea_AdmiraltyAnchor",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "bytes": 168684,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_AdmiraltyAnchor_COL",
+    "M_Sea_AdmiraltyAnchor_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_AdmiraltyAnchor_COL.001",
+     "min": [
+      -4.95,
+      -3.927,
+      -0.2945
+     ],
+     "max": [
+      4.95,
+      6.0847,
+      6.0914
+     ],
+     "polygons": 48,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_AdmiraltyAnchor_LOD0.001",
+     "min": [
+      -5.014,
+      -6.003,
+      0.0
+     ],
+     "max": [
+      5.014,
+      6.003,
+      5.7968
+     ],
+     "polygons": 2208,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "bytes": 101132,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_AdmiraltyAnchor_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_AdmiraltyAnchor_LOD1.001",
+     "min": [
+      -5.0131,
+      -6.003,
+      -0.0099
+     ],
+     "max": [
+      5.0131,
+      6.003,
+      5.7968
+     ],
+     "polygons": 1104,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "bytes": 55164,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_AdmiraltyAnchor_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_AdmiraltyAnchor_LOD2.001",
+     "min": [
+      -5.0288,
+      -6.0059,
+      0.0058
+     ],
+     "max": [
+      5.0288,
+      6.003,
+      5.7753
+     ],
+     "polygons": 551,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor.attachments.json",
+   "attachments": [
+    "ATT_Anchor",
+    "ATT_AnchorCrown"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/seabed/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_LOD0"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2208 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.18e-04, 292 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1152 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_LOD1"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1104 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.27e-06, 116 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1104 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_LOD2"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "551 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.90e-06, 71 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 551 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 12.1% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_COL"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "48 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "48 of 1000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2208 of 4000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1104 of 2000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "551 of 1000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 3.35 x 4 x 1.93 m, spec 3.35 x 4 x 1.93 m (art/reference/M_Sea_AdmiraltyAnchor/dims.md)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "10.028 studs, real 3.350 m = 10.050 studs, off 0.2% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12.006 studs, real 4.000 m = 12.000 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.797 studs, real 1.930 m = 5.790 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_AdmiraltyAnchor_COL"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets)"
+  },
+  {
+   "subject": "T_AdmiraltyAnchor_Iron_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_ALB.png"
+  },
+  {
+   "subject": "T_AdmiraltyAnchor_Iron_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_NOR.png"
+  },
+  {
+   "subject": "T_AdmiraltyAnchor_Iron_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_RGH.png"
+  },
+  {
+   "subject": "T_AdmiraltyAnchor_Iron_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_MET.png"
+  },
+  {
+   "subject": "ATT_Anchor",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_AnchorCrown",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_AdmiraltyAnchor_COL, M_Sea_AdmiraltyAnchor_LOD0; 2256 triangles (scene 2256)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD1.fbx"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_AdmiraltyAnchor_LOD1; 1104 triangles (scene 1104)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_AdmiraltyAnchor_LOD2; 551 triangles (scene 551)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Sea_AdmiraltyAnchor_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2208,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 48,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1104,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 551,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  10.027975082397461,
+  12.006000518798828,
+  5.796821594238281
+ ],
+ "peak_rss_mb": 280.7
+}

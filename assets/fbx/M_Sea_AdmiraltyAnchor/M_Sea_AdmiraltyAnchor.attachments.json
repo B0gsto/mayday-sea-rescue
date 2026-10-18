@@ -1,0 +1,65 @@
+{
+ "asset": "M_Sea_AdmiraltyAnchor",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Anchor",
+   "parent": null,
+   "blender": [
+    0.0,
+    -5.187,
+    2.8984
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.8984,
+    -5.187
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0,
+    -5.187
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_AnchorCrown",
+   "parent": null,
+   "blender": [
+    0.0,
+    5.673,
+    3.4984
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    3.4984,
+    5.673
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.6,
+    5.673
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

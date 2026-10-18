@@ -1,0 +1,3865 @@
+{
+ "asset": "M_Sea_Morwenna",
+ "name": "M_Sea_Morwenna",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD0.fbx",
+   "bytes": 1949532,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Morwenna_COL",
+    "M_Sea_Morwenna_ChainBow_LOD0",
+    "M_Sea_Morwenna_ChainRun_LOD0",
+    "M_Sea_Morwenna_HullAft_LOD0",
+    "M_Sea_Morwenna_HullFore_LOD0",
+    "M_Sea_Morwenna_Ironwork_LOD0",
+    "M_Sea_Morwenna_Kelp_LOD0",
+    "M_Sea_Morwenna_Mast_LOD0",
+    "M_Sea_Morwenna_RibA_LOD0",
+    "M_Sea_Morwenna_RibB_LOD0",
+    "M_Sea_Morwenna_RibC_LOD0",
+    "M_Sea_Morwenna_SidePort_LOD0",
+    "M_Sea_Morwenna_Silt_LOD0",
+    "M_Sea_Morwenna_Windlass_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Morwenna_COL.001",
+     "min": [
+      -11.4,
+      -42.5817,
+      0.4299
+     ],
+     "max": [
+      15.15,
+      40.6435,
+      12.7513
+     ],
+     "polygons": 96,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_ChainBow_LOD0.001",
+     "min": [
+      0.9074,
+      -39.8519,
+      3.6244
+     ],
+     "max": [
+      6.1041,
+      -30.6427,
+      7.2892
+     ],
+     "polygons": 5020,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_ChainRun_LOD0.001",
+     "min": [
+      5.6419,
+      -39.8101,
+      2.3564
+     ],
+     "max": [
+      15.7576,
+      -32.2028,
+      3.9178
+     ],
+     "polygons": 5020,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullAft_LOD0.001",
+     "min": [
+      -11.8475,
+      1.9073,
+      0.0
+     ],
+     "max": [
+      2.4612,
+      41.1317,
+      12.0786
+     ],
+     "polygons": 3888,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullFore_LOD0.001",
+     "min": [
+      -11.3656,
+      -43.2712,
+      1.0731
+     ],
+     "max": [
+      5.6889,
+      3.9183,
+      14.0905
+     ],
+     "polygons": 4944,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Ironwork_LOD0.001",
+     "min": [
+      -5.8879,
+      -34.2262,
+      3.3181
+     ],
+     "max": [
+      11.8181,
+      40.8159,
+      8.6635
+     ],
+     "polygons": 1016,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Kelp_LOD0.001",
+     "min": [
+      -12.8506,
+      -43.3683,
+      4.8313
+     ],
+     "max": [
+      8.4266,
+      42.313,
+      17.5645
+     ],
+     "polygons": 752,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Mast_LOD0.001",
+     "min": [
+      -0.6909,
+      -23.1003,
+      2.601
+     ],
+     "max": [
+      15.025,
+      10.7298,
+      6.2327
+     ],
+     "polygons": 588,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibA_LOD0.001",
+     "min": [
+      -11.1698,
+      -13.3017,
+      2.5513
+     ],
+     "max": [
+      8.4707,
+      -12.7017,
+      9.9192
+     ],
+     "polygons": 368,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibB_LOD0.001",
+     "min": [
+      -11.1694,
+      -5.8607,
+      2.5535
+     ],
+     "max": [
+      7.2752,
+      -5.2627,
+      9.9193
+     ],
+     "polygons": 368,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibC_LOD0.001",
+     "min": [
+      -10.7423,
+      -18.8804,
+      2.5542
+     ],
+     "max": [
+      5.7723,
+      -18.2829,
+      6.4808
+     ],
+     "polygons": 368,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_SidePort_LOD0.001",
+     "min": [
+      7.8815,
+      -21.0234,
+      0.8954
+     ],
+     "max": [
+      14.9897,
+      6.7635,
+      3.3044
+     ],
+     "polygons": 1328,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Silt_LOD0.001",
+     "min": [
+      -19.35,
+      -43.3317,
+      0.4397
+     ],
+     "max": [
+      19.35,
+      43.3683,
+      5.3913
+     ],
+     "polygons": 3016,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Windlass_LOD0.001",
+     "min": [
+      -5.2696,
+      -31.3244,
+      3.3022
+     ],
+     "max": [
+      2.8626,
+      -28.1911,
+      8.1511
+     ],
+     "polygons": 160,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD1.fbx",
+   "bytes": 763100,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Morwenna_ChainBow_LOD1",
+    "M_Sea_Morwenna_ChainRun_LOD1",
+    "M_Sea_Morwenna_HullAft_LOD1",
+    "M_Sea_Morwenna_HullFore_LOD1",
+    "M_Sea_Morwenna_Ironwork_LOD1",
+    "M_Sea_Morwenna_Kelp_LOD1",
+    "M_Sea_Morwenna_Mast_LOD1",
+    "M_Sea_Morwenna_RibA_LOD1",
+    "M_Sea_Morwenna_RibB_LOD1",
+    "M_Sea_Morwenna_RibC_LOD1",
+    "M_Sea_Morwenna_SidePort_LOD1",
+    "M_Sea_Morwenna_Silt_LOD1",
+    "M_Sea_Morwenna_Windlass_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Morwenna_ChainBow_LOD1.001",
+     "min": [
+      0.9215,
+      -39.8286,
+      3.6381
+     ],
+     "max": [
+      6.088,
+      -30.6582,
+      7.3007
+     ],
+     "polygons": 1720,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_ChainRun_LOD1.001",
+     "min": [
+      5.6499,
+      -39.7827,
+      2.3602
+     ],
+     "max": [
+      15.7546,
+      -32.2225,
+      3.906
+     ],
+     "polygons": 1720,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullAft_LOD1.001",
+     "min": [
+      -11.8475,
+      1.9073,
+      0.0
+     ],
+     "max": [
+      2.4612,
+      41.1317,
+      12.0786
+     ],
+     "polygons": 1332,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullFore_LOD1.001",
+     "min": [
+      -11.3737,
+      -43.2712,
+      1.0731
+     ],
+     "max": [
+      5.6889,
+      3.9183,
+      14.0905
+     ],
+     "polygons": 1694,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Ironwork_LOD1.001",
+     "min": [
+      -5.8879,
+      -34.2254,
+      3.2881
+     ],
+     "max": [
+      11.8118,
+      40.8159,
+      8.6635
+     ],
+     "polygons": 348,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Kelp_LOD1.001",
+     "min": [
+      -12.8521,
+      -43.3714,
+      4.8281
+     ],
+     "max": [
+      8.4072,
+      42.313,
+      17.5813
+     ],
+     "polygons": 257,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Mast_LOD1.001",
+     "min": [
+      -0.6911,
+      -23.1003,
+      2.6027
+     ],
+     "max": [
+      15.025,
+      10.7298,
+      6.2354
+     ],
+     "polygons": 200,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibA_LOD1.001",
+     "min": [
+      -11.1532,
+      -13.2793,
+      2.5691
+     ],
+     "max": [
+      8.4568,
+      -12.7047,
+      9.9192
+     ],
+     "polygons": 126,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibB_LOD1.001",
+     "min": [
+      -11.148,
+      -5.8444,
+      2.5855
+     ],
+     "max": [
+      7.2752,
+      -5.2708,
+      9.9193
+     ],
+     "polygons": 126,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibC_LOD1.001",
+     "min": [
+      -10.7266,
+      -18.8761,
+      2.5428
+     ],
+     "max": [
+      5.7723,
+      -18.2872,
+      6.4808
+     ],
+     "polygons": 126,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_SidePort_LOD1.001",
+     "min": [
+      7.8815,
+      -21.0234,
+      0.907
+     ],
+     "max": [
+      14.9897,
+      6.7635,
+      3.3044
+     ],
+     "polygons": 454,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Silt_LOD1.001",
+     "min": [
+      -19.3689,
+      -43.3369,
+      0.4397
+     ],
+     "max": [
+      19.3568,
+      43.3758,
+      5.3913
+     ],
+     "polygons": 1033,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Windlass_LOD1.001",
+     "min": [
+      -5.2696,
+      -31.3244,
+      3.3022
+     ],
+     "max": [
+      2.8626,
+      -28.194,
+      8.1511
+     ],
+     "polygons": 54,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD2.fbx",
+   "bytes": 187852,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Morwenna_ChainBow_LOD2",
+    "M_Sea_Morwenna_ChainRun_LOD2",
+    "M_Sea_Morwenna_HullAft_LOD2",
+    "M_Sea_Morwenna_HullFore_LOD2",
+    "M_Sea_Morwenna_Ironwork_LOD2",
+    "M_Sea_Morwenna_Kelp_LOD2",
+    "M_Sea_Morwenna_Mast_LOD2",
+    "M_Sea_Morwenna_RibA_LOD2",
+    "M_Sea_Morwenna_RibB_LOD2",
+    "M_Sea_Morwenna_RibC_LOD2",
+    "M_Sea_Morwenna_SidePort_LOD2",
+    "M_Sea_Morwenna_Silt_LOD2",
+    "M_Sea_Morwenna_Windlass_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Morwenna_ChainBow_LOD2.001",
+     "min": [
+      0.9084,
+      -39.8684,
+      3.7314
+     ],
+     "max": [
+      5.3419,
+      -30.8471,
+      7.0897
+     ],
+     "polygons": 112,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_ChainRun_LOD2.001",
+     "min": [
+      5.8603,
+      -39.8304,
+      2.6735
+     ],
+     "max": [
+      15.467,
+      -32.8295,
+      3.8228
+     ],
+     "polygons": 112,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullAft_LOD2.001",
+     "min": [
+      -11.7711,
+      2.0006,
+      0.0776
+     ],
+     "max": [
+      2.4701,
+      41.1057,
+      12.0786
+     ],
+     "polygons": 332,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_HullFore_LOD2.001",
+     "min": [
+      -11.3376,
+      -43.1886,
+      1.1336
+     ],
+     "max": [
+      5.673,
+      3.9183,
+      14.0905
+     ],
+     "polygons": 422,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Ironwork_LOD2.001",
+     "min": [
+      -5.8879,
+      -34.1874,
+      3.2543
+     ],
+     "max": [
+      11.7967,
+      40.8159,
+      8.5635
+     ],
+     "polygons": 86,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Kelp_LOD2.001",
+     "min": [
+      -12.7803,
+      -43.4405,
+      4.769
+     ],
+     "max": [
+      8.4072,
+      42.2917,
+      17.5813
+     ],
+     "polygons": 63,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Mast_LOD2.001",
+     "min": [
+      -0.7302,
+      -23.0567,
+      2.609
+     ],
+     "max": [
+      15.025,
+      10.7298,
+      6.2075
+     ],
+     "polygons": 50,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibA_LOD2.001",
+     "min": [
+      -10.9356,
+      -13.4065,
+      2.7109
+     ],
+     "max": [
+      8.2258,
+      -12.6322,
+      9.9207
+     ],
+     "polygons": 30,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibB_LOD2.001",
+     "min": [
+      -10.9243,
+      -5.8271,
+      2.6538
+     ],
+     "max": [
+      7.2177,
+      -5.2893,
+      9.9205
+     ],
+     "polygons": 30,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_RibC_LOD2.001",
+     "min": [
+      -10.6344,
+      -18.8666,
+      2.4976
+     ],
+     "max": [
+      5.6213,
+      -18.3104,
+      6.4701
+     ],
+     "polygons": 30,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_SidePort_LOD2.001",
+     "min": [
+      8.1304,
+      -21.0745,
+      0.76
+     ],
+     "max": [
+      15.0206,
+      6.6779,
+      3.2689
+     ],
+     "polygons": 112,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Silt_LOD2.001",
+     "min": [
+      -19.388,
+      -43.4432,
+      0.4608
+     ],
+     "max": [
+      19.3697,
+      43.492,
+      5.4675
+     ],
+     "polygons": 258,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_Morwenna_Windlass_LOD2.001",
+     "min": [
+      -5.2436,
+      -31.3244,
+      3.3177
+     ],
+     "max": [
+      2.5504,
+      -28.2726,
+      8.1511
+     ],
+     "polygons": 12,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna.attachments.json",
+   "attachments": [
+    "ATT_Bell",
+    "ATT_Hatch",
+    "ATT_Windlass",
+    "ATT_ChainEnd",
+    "ATT_Stem",
+    "ATT_Anchor"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/seabed/M_Sea_Morwenna/M_Sea_Morwenna.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "rib"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullFore_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4944 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.97e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2636 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullAft_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3888 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.21e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2088 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_SidePort_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1328 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.24e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 760 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Mast_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "588 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.42e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 308 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Windlass_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "160 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.14e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 104 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Ironwork_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1016 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.50e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 762 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainBow_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5020 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.35e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2510 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainRun_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5020 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.27e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2510 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Silt_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3016 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.38e+00, 168 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1508 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Kelp_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "752 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.18e-01, 846 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 376 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibA_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "368 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.23e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibB_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "368 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.22e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibC_LOD0"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "368 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.14e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullFore_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1694 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.42e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1694 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 0.4% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullAft_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1332 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.43e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1332 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.7% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_SidePort_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "454 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.17e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 454 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.7% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Mast_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "200 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.41e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 200 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Windlass_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "54 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.20e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 54 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 7.4% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Ironwork_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "348 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.52e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 348 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 21.6% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainBow_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1720 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.49e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1720 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.9% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainRun_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1720 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.34e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1720 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.7% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Silt_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1033 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.32e-02, 109 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1033 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Kelp_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "257 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.26e-02, 351 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 257 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibA_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.97e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 126 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 2.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibB_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.66e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 126 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibC_LOD1"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.49e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 126 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.005 (max 0.02), UV area by 0.5% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullFore_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "422 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.40e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 422 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullFore_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.006 (max 0.02), UV area by 4.1% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_HullAft_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "332 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.97e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 332 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_HullAft_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.013 (max 0.02), UV area by 3.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_SidePort_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.35e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 112 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_SidePort_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 9.5% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Mast_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "50 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.28e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 50 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Mast_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.008 (max 0.02), UV area by 2.1% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Windlass_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.44e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 12 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Windlass_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 53.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Ironwork_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "86 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.73e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 86 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Ironwork_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.000 (max 0.02), UV area by 65.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainBow_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.87e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainBow_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 15.673 (max 0.02), UV area by 75.4% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_ChainRun_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.87e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_ChainRun_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 15.537 (max 0.02), UV area by 74.9% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Silt_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "258 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.48e-01, 38 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 258 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Silt_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_Kelp_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "63 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.08e-01, 157 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 63 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_Kelp_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.020 (max 0.02), UV area by 41.1% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibA_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "30 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.94e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 30 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibA_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.157 (max 0.02), UV area by 15.9% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibB_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "30 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.20e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 30 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibB_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (kelp cards and chain links decimate into fewer islands; every LOD samples the same tiling sets): UV bounds differ by 0.160 (max 0.02), UV area by 12.3% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_RibC_LOD2"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "30 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.77e-01, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 30 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Morwenna_RibC_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.005 (max 0.02), UV area by 3.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Morwenna_COL"
+  },
+  {
+   "subject": "M_Sea_Morwenna_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Morwenna_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "96 of 10000"
+  },
+  {
+   "subject": "M_Sea_Morwenna_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Sea_Morwenna_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "96 of 1000"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "26836 of 30000 (rib, asset row)"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9190 of 10285"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1649 of 2571"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x 28 x - m, spec - x 28 x - m (art/reference/M_Sea_Morwenna/dims.md)"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "86.737 studs, real 28.000 m = 84.000 studs, off 3.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Morwenna_COL"
+  },
+  {
+   "subject": "M_Sea_Morwenna",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (3 to 4 sets)"
+  },
+  {
+   "subject": "T_Morwenna_Wood_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Wood_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Wood_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Wood_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_MET.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_MET.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_MET.png"
+  },
+  {
+   "subject": "T_Morwenna_Kelp_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Kelp_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Kelp_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Kelp_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_MET.png"
+  },
+  {
+   "subject": "ATT_Bell",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Hatch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Windlass",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ChainEnd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Stem",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Anchor",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD0.fbx"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Morwenna_COL, M_Sea_Morwenna_ChainBow_LOD0, M_Sea_Morwenna_ChainRun_LOD0, M_Sea_Morwenna_HullAft_LOD0, M_Sea_Morwenna_HullFore_LOD0, M_Sea_Morwenna_Ironwork_LOD0, M_Sea_Morwenna_Kelp_LOD0, M_Sea_Morwenna_Mast_LOD0, M_Sea_Morwenna_RibA_LOD0, M_Sea_Morwenna_RibB_LOD0, M_Sea_Morwenna_RibC_LOD0, M_Sea_Morwenna_SidePort_LOD0, M_Sea_Morwenna_Silt_LOD0, M_Sea_Morwenna_Windlass_LOD0; 26932 triangles (scene 26932)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 13 of 13 visual meshes"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD1.fbx"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Morwenna_ChainBow_LOD1, M_Sea_Morwenna_ChainRun_LOD1, M_Sea_Morwenna_HullAft_LOD1, M_Sea_Morwenna_HullFore_LOD1, M_Sea_Morwenna_Ironwork_LOD1, M_Sea_Morwenna_Kelp_LOD1, M_Sea_Morwenna_Mast_LOD1, M_Sea_Morwenna_RibA_LOD1, M_Sea_Morwenna_RibB_LOD1, M_Sea_Morwenna_RibC_LOD1, M_Sea_Morwenna_SidePort_LOD1, M_Sea_Morwenna_Silt_LOD1, M_Sea_Morwenna_Windlass_LOD1; 9190 triangles (scene 9190)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 13 of 13 visual meshes"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD2.fbx"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Morwenna_ChainBow_LOD2, M_Sea_Morwenna_ChainRun_LOD2, M_Sea_Morwenna_HullAft_LOD2, M_Sea_Morwenna_HullFore_LOD2, M_Sea_Morwenna_Ironwork_LOD2, M_Sea_Morwenna_Kelp_LOD2, M_Sea_Morwenna_Mast_LOD2, M_Sea_Morwenna_RibA_LOD2, M_Sea_Morwenna_RibB_LOD2, M_Sea_Morwenna_RibC_LOD2, M_Sea_Morwenna_SidePort_LOD2, M_Sea_Morwenna_Silt_LOD2, M_Sea_Morwenna_Windlass_LOD2; 1649 triangles (scene 1649)"
+  },
+  {
+   "subject": "M_Sea_Morwenna_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 13 of 13 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Sea_Morwenna_HullFore_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4944,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_HullAft_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3888,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_SidePort_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1328,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Mast_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 588,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Windlass_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 160,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Ironwork_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1016,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainBow_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 5020,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainRun_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 5020,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Silt_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3016,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Kelp_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 752,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibA_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 368,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibB_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 368,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibC_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 368,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 96,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_HullFore_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1694,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_HullFore_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 422,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_HullAft_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1332,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_HullAft_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 332,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_SidePort_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 454,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_SidePort_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 112,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Mast_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 200,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Mast_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 50,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Windlass_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 54,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Windlass_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 12,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Ironwork_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 348,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Ironwork_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 86,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainBow_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1720,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainBow_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 112,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainRun_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1720,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_ChainRun_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 112,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Silt_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1033,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Silt_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 258,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Kelp_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 257,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_Kelp_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 63,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibA_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 126,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibA_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 30,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibB_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 126,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibB_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 30,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibC_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 126,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Morwenna_RibC_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 30,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  38.70000076293945,
+  86.73664093017578,
+  17.564546585083008
+ ],
+ "peak_rss_mb": 305.1
+}

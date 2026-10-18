@@ -1,0 +1,908 @@
+{
+ "asset": "M_Sea_Morwenna",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "use": "clone <mesh> per row (masters already placed): part.CFrame = model pivot (LOD0 bbox centre) * CFrame.fromMatrix(roblox_from_bbox_centre, right, up, back); part.Size = master Size * size_factor",
+ "instances": [
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -10.4,
+   "roblox_from_bbox_centre": [
+    1.6017,
+    -2.0571,
+    -31.2124
+   ],
+   "right": [
+    0.99994,
+    -0.01087,
+    8e-05
+   ],
+   "up": [
+    0.01087,
+    0.99991,
+    -0.00736
+   ],
+   "back": [
+    -0.0,
+    0.00736,
+    0.99997
+   ],
+   "size_factor": [
+    0.3456,
+    1.1333,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": -9.16,
+   "roblox_from_bbox_centre": [
+    1.4512,
+    -2.1708,
+    -27.2921
+   ],
+   "right": [
+    0.99969,
+    -0.02493,
+    -0.00104
+   ],
+   "up": [
+    0.02496,
+    0.99882,
+    0.04172
+   ],
+   "back": [
+    -0.0,
+    -0.04173,
+    0.99913
+   ],
+   "size_factor": [
+    0.4858,
+    1.1034,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -8.54,
+   "roblox_from_bbox_centre": [
+    1.5509,
+    -2.2068,
+    -25.5295
+   ],
+   "right": [
+    0.9995,
+    0.03169,
+    0.00057
+   ],
+   "up": [
+    -0.0317,
+    0.99934,
+    0.01792
+   ],
+   "back": [
+    0.0,
+    -0.01792,
+    0.99984
+   ],
+   "size_factor": [
+    0.5499,
+    1.0899,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": -7.92,
+   "roblox_from_bbox_centre": [
+    1.3687,
+    -2.2657,
+    -23.9089
+   ],
+   "right": [
+    0.99999,
+    -0.00478,
+    0.0002
+   ],
+   "up": [
+    0.00478,
+    0.9991,
+    -0.04214
+   ],
+   "back": [
+    0.0,
+    0.04214,
+    0.99911
+   ],
+   "size_factor": [
+    0.61,
+    1.0773,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": false,
+   "station_m": -7.3,
+   "roblox_from_bbox_centre": [
+    2.0873,
+    -4.1292,
+    -21.9115
+   ],
+   "right": [
+    0.99996,
+    0.00883,
+    -0.00013
+   ],
+   "up": [
+    -0.00883,
+    0.99986,
+    -0.01417
+   ],
+   "back": [
+    -0.0,
+    0.01417,
+    0.9999
+   ],
+   "size_factor": [
+    0.6659,
+    1.0657,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -6.68,
+   "roblox_from_bbox_centre": [
+    1.86,
+    -2.353,
+    -20.0324
+   ],
+   "right": [
+    0.99978,
+    -0.02098,
+    6e-05
+   ],
+   "up": [
+    0.02098,
+    0.99978,
+    -0.00276
+   ],
+   "back": [
+    0.0,
+    0.00276,
+    1.0
+   ],
+   "size_factor": [
+    0.7178,
+    1.055,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": true,
+   "station_m": -6.2,
+   "roblox_from_bbox_centre": [
+    2.485,
+    -4.2648,
+    -18.5817
+   ],
+   "right": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ],
+   "back": [
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size_factor": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": -5.44,
+   "roblox_from_bbox_centre": [
+    1.2729,
+    -2.4135,
+    -16.2743
+   ],
+   "right": [
+    0.9998,
+    0.02009,
+    0.00014
+   ],
+   "up": [
+    -0.02009,
+    0.99977,
+    0.00716
+   ],
+   "back": [
+    0.0,
+    -0.00716,
+    0.99997
+   ],
+   "size_factor": [
+    0.809,
+    1.0365,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": -4.82,
+   "roblox_from_bbox_centre": [
+    1.4112,
+    -2.4427,
+    -14.5122
+   ],
+   "right": [
+    0.99987,
+    -0.01626,
+    0.0003
+   ],
+   "up": [
+    0.01626,
+    0.99969,
+    -0.01861
+   ],
+   "back": [
+    0.0,
+    0.01861,
+    0.99983
+   ],
+   "size_factor": [
+    0.8482,
+    1.0286,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": true,
+   "station_m": -4.34,
+   "roblox_from_bbox_centre": [
+    1.3495,
+    -2.547,
+    -13.0017
+   ],
+   "right": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ],
+   "back": [
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size_factor": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -2.96,
+   "roblox_from_bbox_centre": [
+    1.8035,
+    -2.4928,
+    -8.762
+   ],
+   "right": [
+    0.99958,
+    0.02884,
+    0.00077
+   ],
+   "up": [
+    -0.02885,
+    0.99923,
+    0.02665
+   ],
+   "back": [
+    0.0,
+    -0.02666,
+    0.99964
+   ],
+   "size_factor": [
+    0.9399,
+    1.0108,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -2.34,
+   "roblox_from_bbox_centre": [
+    1.8314,
+    -2.508,
+    -7.0371
+   ],
+   "right": [
+    0.99969,
+    0.02494,
+    -0.00024
+   ],
+   "up": [
+    -0.02494,
+    0.99964,
+    -0.00951
+   ],
+   "back": [
+    -0.0,
+    0.00951,
+    0.99995
+   ],
+   "size_factor": [
+    0.9615,
+    1.0068,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": true,
+   "station_m": -1.86,
+   "roblox_from_bbox_centre": [
+    1.9471,
+    -2.5459,
+    -5.5617
+   ],
+   "right": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ],
+   "back": [
+    -0.0,
+    0.0,
+    1.0
+   ],
+   "size_factor": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": false,
+   "station_m": -1.1,
+   "roblox_from_bbox_centre": [
+    2.5241,
+    -4.291,
+    -3.2777
+   ],
+   "right": [
+    0.99968,
+    -0.02532,
+    -5e-05
+   ],
+   "up": [
+    0.02532,
+    0.99968,
+    0.00207
+   ],
+   "back": [
+    -0.0,
+    -0.00207,
+    1.0
+   ],
+   "size_factor": [
+    0.9908,
+    1.0015,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": -0.48,
+   "roblox_from_bbox_centre": [
+    1.9958,
+    -2.5533,
+    -1.4418
+   ],
+   "right": [
+    0.99991,
+    -0.01353,
+    7e-05
+   ],
+   "up": [
+    0.01353,
+    0.99989,
+    -0.00546
+   ],
+   "back": [
+    -0.0,
+    0.00546,
+    0.99999
+   ],
+   "size_factor": [
+    0.9981,
+    1.0003,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 0.14,
+   "roblox_from_bbox_centre": [
+    1.3417,
+    -2.5474,
+    0.3787
+   ],
+   "right": [
+    1.0,
+    0.00214,
+    -3e-05
+   ],
+   "up": [
+    -0.00214,
+    0.99987,
+    -0.01618
+   ],
+   "back": [
+    0.0,
+    0.01618,
+    0.99987
+   ],
+   "size_factor": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": false,
+   "station_m": 2.0,
+   "roblox_from_bbox_centre": [
+    2.8827,
+    -5.2509,
+    5.8591
+   ],
+   "right": [
+    0.99302,
+    -0.07927,
+    -0.08734
+   ],
+   "up": [
+    0.07737,
+    0.99669,
+    -0.025
+   ],
+   "back": [
+    0.08903,
+    0.01807,
+    0.99586
+   ],
+   "size_factor": [
+    0.9923,
+    1.0049,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 3.24,
+   "roblox_from_bbox_centre": [
+    2.2415,
+    -3.4122,
+    9.7626
+   ],
+   "right": [
+    0.99299,
+    -0.08063,
+    -0.08638
+   ],
+   "up": [
+    0.08208,
+    0.99654,
+    0.01334
+   ],
+   "back": [
+    0.08501,
+    -0.02033,
+    0.99617
+   ],
+   "size_factor": [
+    0.973,
+    1.0129,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": false,
+   "station_m": 3.86,
+   "roblox_from_bbox_centre": [
+    3.4286,
+    -5.2895,
+    11.3988
+   ],
+   "right": [
+    0.98762,
+    -0.1314,
+    -0.08571
+   ],
+   "up": [
+    0.12865,
+    0.99101,
+    -0.03681
+   ],
+   "back": [
+    0.08978,
+    0.02533,
+    0.99564
+   ],
+   "size_factor": [
+    0.9575,
+    1.0184,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 4.48,
+   "roblox_from_bbox_centre": [
+    3.319,
+    -3.4637,
+    13.4697
+   ],
+   "right": [
+    0.98747,
+    -0.13135,
+    -0.08743
+   ],
+   "up": [
+    0.13411,
+    0.99061,
+    0.02648
+   ],
+   "back": [
+    0.08313,
+    -0.03788,
+    0.99582
+   ],
+   "size_factor": [
+    0.9373,
+    1.0247,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 5.1,
+   "roblox_from_bbox_centre": [
+    3.3854,
+    -3.4163,
+    15.0851
+   ],
+   "right": [
+    0.98968,
+    -0.11437,
+    -0.08632
+   ],
+   "up": [
+    0.11156,
+    0.99308,
+    -0.03666
+   ],
+   "back": [
+    0.08992,
+    0.02666,
+    0.99559
+   ],
+   "size_factor": [
+    0.9122,
+    1.0321,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 5.72,
+   "roblox_from_bbox_centre": [
+    3.5754,
+    -3.3914,
+    17.0358
+   ],
+   "right": [
+    0.98859,
+    -0.12331,
+    -0.08648
+   ],
+   "up": [
+    0.1228,
+    0.99237,
+    -0.01124
+   ],
+   "back": [
+    0.08721,
+    0.0005,
+    0.99619
+   ],
+   "size_factor": [
+    0.8817,
+    1.0403,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 6.34,
+   "roblox_from_bbox_centre": [
+    3.1776,
+    -3.2886,
+    18.9694
+   ],
+   "right": [
+    0.98999,
+    -0.11144,
+    -0.08667
+   ],
+   "up": [
+    0.11168,
+    0.99374,
+    -0.00206
+   ],
+   "back": [
+    0.08635,
+    -0.00764,
+    0.99624
+   ],
+   "size_factor": [
+    0.8454,
+    1.0496,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 6.96,
+   "roblox_from_bbox_centre": [
+    3.9052,
+    -3.3297,
+    20.639
+   ],
+   "right": [
+    0.98688,
+    -0.13696,
+    -0.08547
+   ],
+   "up": [
+    0.13409,
+    0.99022,
+    -0.03848
+   ],
+   "back": [
+    0.0899,
+    0.02652,
+    0.9956
+   ],
+   "size_factor": [
+    0.803,
+    1.0597,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibC",
+   "master": false,
+   "station_m": 7.58,
+   "roblox_from_bbox_centre": [
+    4.0739,
+    -5.0973,
+    22.532
+   ],
+   "right": [
+    0.99325,
+    -0.07578,
+    -0.08776
+   ],
+   "up": [
+    0.07286,
+    0.99669,
+    -0.03612
+   ],
+   "back": [
+    0.0902,
+    0.02949,
+    0.99549
+   ],
+   "size_factor": [
+    0.754,
+    1.0708,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 8.2,
+   "roblox_from_bbox_centre": [
+    4.0273,
+    -3.2007,
+    24.3952
+   ],
+   "right": [
+    0.99143,
+    -0.09753,
+    -0.08687
+   ],
+   "up": [
+    0.09559,
+    0.99507,
+    -0.02625
+   ],
+   "back": [
+    0.089,
+    0.01772,
+    0.99587
+   ],
+   "size_factor": [
+    0.6982,
+    1.0829,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 8.82,
+   "roblox_from_bbox_centre": [
+    3.9479,
+    -3.1319,
+    26.3586
+   ],
+   "right": [
+    0.98676,
+    -0.13725,
+    -0.08648
+   ],
+   "up": [
+    0.13711,
+    0.99053,
+    -0.00754
+   ],
+   "back": [
+    0.08669,
+    -0.00441,
+    0.99623
+   ],
+   "size_factor": [
+    0.6353,
+    1.0959,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 9.44,
+   "roblox_from_bbox_centre": [
+    3.8597,
+    -3.0553,
+    28.3611
+   ],
+   "right": [
+    0.99375,
+    -0.07143,
+    -0.08576
+   ],
+   "up": [
+    0.07416,
+    0.99682,
+    0.02912
+   ],
+   "back": [
+    0.0834,
+    -0.0353,
+    0.99589
+   ],
+   "size_factor": [
+    0.5648,
+    1.1099,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibA",
+   "master": false,
+   "station_m": 10.06,
+   "roblox_from_bbox_centre": [
+    4.1004,
+    -3.006,
+    30.1853
+   ],
+   "right": [
+    0.9922,
+    -0.08994,
+    -0.08637
+   ],
+   "up": [
+    0.09214,
+    0.99551,
+    0.02181
+   ],
+   "back": [
+    0.08402,
+    -0.0296,
+    0.99602
+   ],
+   "size_factor": [
+    0.4865,
+    1.1248,
+    1.0
+   ]
+  },
+  {
+   "mesh": "M_Sea_Morwenna_RibB",
+   "master": false,
+   "station_m": 10.68,
+   "roblox_from_bbox_centre": [
+    4.668,
+    -2.9972,
+    32.0785
+   ],
+   "right": [
+    0.98797,
+    -0.12751,
+    -0.08754
+   ],
+   "up": [
+    0.13107,
+    0.99072,
+    0.03608
+   ],
+   "back": [
+    0.08212,
+    -0.04712,
+    0.99551
+   ],
+   "size_factor": [
+    0.4002,
+    1.1406,
+    1.0
+   ]
+  }
+ ]
+}

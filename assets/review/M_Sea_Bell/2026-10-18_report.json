@@ -1,0 +1,453 @@
+{
+ "asset": "M_Sea_Bell",
+ "name": "M_Sea_Bell",
+ "date": "2026-10-18",
+ "commit": "69f1206+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx",
+   "bytes": 87948,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Bell_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Bell_LOD0.001",
+     "min": [
+      -0.393,
+      -0.393,
+      0.0
+     ],
+     "max": [
+      0.393,
+      0.393,
+      1.047
+     ],
+     "polygons": 1192,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD1.fbx",
+   "bytes": 52748,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Sea_Bell_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Sea_Bell_LOD1.001",
+     "min": [
+      -0.393,
+      -0.393,
+      0.0
+     ],
+     "max": [
+      0.393,
+      0.393,
+      1.047
+     ],
+     "polygons": 595,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell.attachments.json",
+   "attachments": [
+    "ATT_Bell"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/seabed/M_Sea_Bell/M_Sea_Bell.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Sea_Bell",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "small_prop"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Bell_LOD0"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1192 of 3000"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.91e-04, 148 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 602 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_Bell_LOD1"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "595 of 3000"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-04, 87 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 595 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (lathe seam columns and the two canon loops merge under collapse; the LOD samples the same strips): UV bounds differ by 0.098 (max 0.02), UV area by 19.8% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1192 of 1500 (small_prop, asset row)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "595 of 750"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.26 x 0.26 x 0.35 m, spec 0.26 x 0.26 x 0.35 m (art/reference/M_Sea_Bell/dims.md)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.786 studs, real 0.260 m = 0.780 studs, off 0.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.786 studs, real 0.260 m = 0.780 studs, off 0.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.047 studs, real 0.350 m = 1.050 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Sea_Bell",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas Morwenna_Metal"
+  },
+  {
+   "subject": "T_Morwenna_Metal_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Metal_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_MET.png"
+  },
+  {
+   "subject": "ATT_Bell",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Bell_LOD0; 1192 triangles (scene 1192)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD1.fbx"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Sea_Bell_LOD1; 595 triangles (scene 595)"
+  },
+  {
+   "subject": "M_Sea_Bell_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Sea_Bell_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1192,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_Bell_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 595,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.7860000133514404,
+  0.7860000133514404,
+  1.0470000505447388
+ ],
+ "peak_rss_mb": 279.1
+}
