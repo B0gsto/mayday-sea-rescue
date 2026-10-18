@@ -3,6 +3,9 @@
 -- bottom centre between the minimap and the gauges). Always on:
 -- every transmission shows the speaker's callsign and the text, with an RX/TX lamp, the channel
 -- and a signal bar that drops in storms. The log (last lines) unfolds while the radio wheel is open.
+local AvatarCosmetics = require(
+	game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("AvatarCosmetics")
+)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
 
@@ -131,6 +134,7 @@ function RadioPanel.new(playerGui: Instance): Panel
 	speaker.Size = UDim2.new(1, -20, 0, 20)
 	speaker.TextTruncate = Enum.TextTruncate.AtEnd
 	speaker.TextWrapped = false
+	speaker.RichText = true
 	local line = text(lcd, "Line", HudTheme.BodyFont, 18, LCD_TEXT)
 	line.Position = UDim2.fromOffset(10, 46)
 	line.Size = UDim2.new(1, -20, 1, -50)
@@ -172,7 +176,14 @@ function RadioPanel.new(playerGui: Instance): Panel
 		show = function(who: string, msg: string, m: string, seconds: number)
 			serial += 1
 			local mine = serial
-			speaker.Text = who
+			-- RP-M5 E2: the VIP Crew Card's gold "VIP" tag beside the player's own callsign (Badge slot)
+			local tag = if m == "tx"
+				then AvatarCosmetics.radioTag(
+					game:GetService("Players").LocalPlayer:GetAttribute("Cos_Badge") :: any
+				)
+				else nil
+			local gold = `<font color="#{HudTheme.Colors.gold:ToHex()}"><b>{tag or ""}</b></font>`
+			speaker.Text = if tag then `{escape(who)}  {gold}` else escape(who)
 			line.Text = msg
 			local tx = m == "tx"
 			mode.Text = if tx then "TX" elseif m == "intercom" then "ICM" else "RX"
@@ -181,7 +192,9 @@ function RadioPanel.new(playerGui: Instance): Panel
 			body.Visible = true
 			table.insert(
 				entries,
-				`<font color="#D9682E"><b>{escape(who)}</b></font>  {escape(msg)}`
+				`<font color="#D9682E"><b>{escape(who)}</b></font>{if tag then " " .. gold else ""}  {escape(
+					msg
+				)}`
 			)
 			while #entries > LOG_MAX do
 				table.remove(entries, 1)

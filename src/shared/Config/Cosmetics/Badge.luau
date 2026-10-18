@@ -1,18 +1,20 @@
 --!strict
--- Cosmetics slot "Badge" (RP-M5). On/off style slot: gold nameplate and radio tag.
--- Pass(es): VipCrewCard.
--- STUB: placeholder options from the RP-M5 spine; the slot's builder replaces them.
--- Shape: { slot, options = { { id, name, pass = <GamePass key, nil for free>, ...free-form } }, default }.
--- The default must be a free option (pass = nil). A file may also return a list of such slot tables.
+-- Cosmetics slot "Badge" (RP-M5 E2): the VIP Crew Card's gold nameplate and gold "VIP" radio tag.
+-- Pass(es): VipCrewCard. On/off: "Off" (free default, everyone's plain Roblox name) or "Gold"
+-- (owners). Buying the card switches it on once (src/server/Cosmetics/VipStatus.luau); owners can
+-- switch it off again to hide the gold tag. The VIP roof deck does not depend on this slot.
+-- Drawn by src/client/Cosmetics/VipNameplate.luau (HudTheme.Colors.gold, pale brass) and
+-- src/client/UI/RadioPanel.luau (the tag next to the player's callsign).
 type Option = { id: string, name: string, pass: string?, [string]: any }
 
 local options: { Option } = {
-	{ id = "Off", name = "Off", pass = nil, stub = true },
-	{ id = "Gold", name = "Gold nameplate and radio tag", pass = "VipCrewCard", stub = true },
+	{ id = "Off", name = "Hidden", pass = nil },
+	{ id = "Gold", name = "Gold nameplate and VIP tag", pass = "VipCrewCard" },
 }
 
 return {
 	slot = "Badge",
+	label = "VIP badge",
 	options = options,
 	default = "Off",
 }

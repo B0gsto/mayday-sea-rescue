@@ -126,6 +126,11 @@ AudioConfig.Clips = {
 	UI_Click = rl(9119717529, 0.18, "Switch Click On Or Off Toggle Button 1 (SFX)"),
 	UI_Back = rl(9119717523, 0.16, "Switch Click On Or Off Toggle Button 2 (SFX)"),
 
+	-- RP-M5 stream E2 (Captain's Locker whistle emote): verified public (audio-search.py verify),
+	-- candidates.csv SFX_Casualty_Whistle. 3D at the player's head, rolled off by 140 studs.
+	Emote_Whistle = rl(9117258228, 0.9, "Pealess Whistle Referee Fox 40 2 (SFX)"),
+	-- end RP-M5 stream E2
+
 	-- Music (APM via Roblox). Two cues: an operation underway, and the debrief.
 	Music_Operation = rl(1837463124, 0.35, "Tension Bed for One (APM, The Box)"),
 	Music_Debrief = rl(
