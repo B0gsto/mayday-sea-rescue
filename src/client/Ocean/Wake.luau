@@ -6,15 +6,38 @@
 --   Model attribute OceanWakeWidth      wake width in studs (default from the model's bounding box)
 -- Per boat: a Trail between two stern attachments at the waterline (white foam texture, fading
 -- with age) plus a bow-wave ParticleEmitter whose rate follows the boat's speed.
+-- Wake Trails (RP-M5): the look follows the owner's "Cos_Wake" cosmetic (model attribute Owner =
+-- UserId -> that player's Cos_Wake -> the option's `style` -> Boat/Wake.visual). Re-applied on the
+-- scan when the choice or the night factor changes; same two instances per boat (no perf cost).
 
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local WakeMath = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 
 local FOAM_ID = "rbxassetid://107434961132990" -- ocean_foam (approved)
 local SCAN_PERIOD = 1.0
 local MIN_SPEED, FULL_SPEED = 3, 40 -- studs/s -- tune
 
-type Rig = { model: Model, part: BasePart, trail: Trail, bow: ParticleEmitter, folder: Folder }
+type Rig = {
+	model: Model,
+	part: BasePart,
+	trail: Trail,
+	bow: ParticleEmitter,
+	folder: Folder,
+	a0: Attachment,
+	a1: Attachment,
+	centre: Vector3, -- stern waterline centre (part space)
+	baseWidth: number,
+	styleId: string?,
+	night: number,
+	bowRate: number,
+}
 
 local Wake = {}
 local rigs: { [Model]: Rig } = {}
@@ -82,7 +105,75 @@ local function build(model: Model, seat: BasePart): Rig?
 	bow.Rate = 0
 	bow.Parent = ab
 	folder.Parent = part
-	return { model = model, part = part, trail = trail, bow = bow, folder = folder }
+	return {
+		model = model,
+		part = part,
+		trail = trail,
+		bow = bow,
+		folder = folder,
+		a0 = a0,
+		a1 = a1,
+		centre = Vector3.new(back.X, waterLocal, back.Z),
+		baseWidth = w,
+		styleId = nil,
+		night = -1,
+		bowRate = WakeMath.BOW_RATE,
+	}
+end
+
+-- The owner's Wake cosmetic id (nil = no owner / standard).
+local function styleIdOf(model: Model): string?
+	local owner = model:GetAttribute("Owner")
+	if type(owner) ~= "number" then
+		return nil
+	end
+	local p = Players:GetPlayerByUserId(owner)
+	local id = p and p:GetAttribute(Cosmetics.attribute("Wake"))
+	return if type(id) == "string" then id else nil
+end
+
+local function applyStyle(rig: Rig, night: number)
+	local id = styleIdOf(rig.model)
+	if id == rig.styleId and math.abs(night - rig.night) < 0.02 then
+		return
+	end
+	rig.styleId, rig.night = id, night
+	local option = if id then Cosmetics.option("Wake", id) else nil
+	local style = option and option.style
+	local v = WakeMath.visual(if type(style) == "table" then style else nil, night)
+	local half = rig.baseWidth * v.width * 0.5
+	rig.a0.Position = rig.centre - Vector3.new(half, 0, 0)
+	rig.a1.Position = rig.centre + Vector3.new(half, 0, 0)
+	local trail = rig.trail
+	trail.Lifetime = v.lifetime
+	trail.WidthScale = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, v.widthStart),
+		NumberSequenceKeypoint.new(1, v.spread),
+	})
+	trail.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, v.transparency[1]),
+		NumberSequenceKeypoint.new(v.hold, v.transparency[2]),
+		NumberSequenceKeypoint.new(1, v.transparency[3]),
+	})
+	trail.Color = ColorSequence.new(v.color)
+	trail.LightEmission = v.lightEmission
+	trail.LightInfluence = v.lightInfluence
+	local bow = rig.bow
+	bow.Color = ColorSequence.new(v.bowColor)
+	bow.LightEmission = v.lightEmission * 0.6
+	bow.LightInfluence = v.lightInfluence
+	bow.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, v.bowSize[1]),
+		NumberSequenceKeypoint.new(1, v.bowSize[2]),
+	})
+	bow.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, v.bowTransparency),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	bow.Lifetime = NumberRange.new(v.bowLife[1], v.bowLife[2])
+	bow.Speed = NumberRange.new(v.bowSpeed[1], v.bowSpeed[2])
+	bow.SpreadAngle = Vector2.new(v.bowSpread[1], v.bowSpread[2])
+	rig.bowRate = v.bowRate
 end
 
 local function scan()
@@ -102,10 +193,13 @@ local function scan()
 			end
 		end
 	end
+	local night = WakeMath.nightFactor(Lighting:GetSunDirection().Y)
 	for model, rig in rigs do
 		if not model.Parent or not rig.part.Parent then
 			rig.folder:Destroy()
 			rigs[model] = nil
+		else
+			applyStyle(rig, night)
 		end
 	end
 end
@@ -127,7 +221,7 @@ function Wake.start(seaLevel: number)
 				then math.clamp((speed - MIN_SPEED) / (FULL_SPEED - MIN_SPEED), 0, 1)
 				else 0
 			rig.trail.Enabled = s > 0
-			rig.bow.Rate = 60 * s
+			rig.bow.Rate = rig.bowRate * s
 		end
 	end)
 end

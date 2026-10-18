@@ -200,4 +200,11 @@ AudioConfig.Mix = {
 	musicFade = 3, -- s
 }
 
+-- RP-M5 stream C (Sea Shanty Radio): the radio's tracks are station data in
+-- src/shared/Config/Cosmetics/Radio.luau (RL, APM; verified public, logged in candidates.csv as
+-- MUS_Radio_*). They play as 3D Sounds on the vehicle in this category, through its RadioDuck group
+-- (ducked under VHF lines) and further under Music_Operation (src/shared/ShantyRadio.luau).
+AudioConfig.ShantyRadioCategory = "Music" :: Category
+-- end RP-M5 stream C
+
 return AudioConfig

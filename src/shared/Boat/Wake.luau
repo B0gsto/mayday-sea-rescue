@@ -110,6 +110,108 @@ function Wake.at(point: Vector3, hull: Hull): (Vector3, number)
 	return push, height
 end
 
+---------------------------------------------------------------- visual style (RP-M5 Wake Trails)
+-- The look of the client wake rig (src/client/Ocean/Wake) from a Wake cosmetic option's `style`
+-- table (src/shared/Config/Cosmetics/Wake.luau). nil or {} gives the standard wake exactly.
+--   Wake.visual(style?, night 0..1): Visual
+--   Wake.nightFactor(sunDirectionY): number   0 by day .. 1 once the sun is well below the horizon
+--   Wake.liveParticles(visual): number         bow spray particles alive at full speed (perf budget)
+
+export type Visual = {
+	lifetime: number, -- Trail.Lifetime (s)
+	width: number, -- multiplier on the rig's base foam band width
+	widthStart: number, -- Trail.WidthScale at the stern (a taper below 1)
+	spread: number, -- Trail.WidthScale at the tail
+	transparency: { number }, -- Trail.Transparency at 0, `hold`, 1
+	hold: number, -- keypoint time of the middle transparency value
+	color: Color3, -- Trail.Color
+	lightEmission: number,
+	lightInfluence: number,
+	bowRate: number, -- particles / s at full speed
+	bowSize: { number }, -- size at 0 and 1
+	bowSpeed: { number }, -- NumberRange min, max
+	bowLife: { number }, -- NumberRange min, max
+	bowSpread: { number }, -- SpreadAngle X, Y
+	bowColor: Color3,
+	bowTransparency: number, -- at birth
+}
+
+Wake.FOAM = Color3.fromHex("#E8EEEC")
+Wake.SPRAY = Color3.fromHex("#E2E8E6")
+Wake.BOW_RATE = 60
+
+local function num(
+	style: { [string]: any },
+	key: string,
+	default: number,
+	lo: number,
+	hi: number
+): number
+	local v = style[key]
+	return if type(v) == "number" then math.clamp(v, lo, hi) else default
+end
+
+local function hex(style: { [string]: any }, key: string): Color3?
+	local v = style[key]
+	if type(v) ~= "string" then
+		return nil
+	end
+	local ok, c = pcall(Color3.fromHex, v)
+	return if ok then c else nil
+end
+
+function Wake.nightFactor(sunY: number): number
+	local t = math.clamp((sunY + 0.1) / 0.18, 0, 1)
+	return 1 - t * t * (3 - 2 * t)
+end
+
+function Wake.visual(style: { [string]: any }?, night: number?): Visual
+	local s = style or {}
+	local n = math.clamp(night or 0, 0, 1)
+	local opacity = num(s, "opacity", 1, 0.3, 2)
+	local hold = num(s, "hold", 0.4, 0.2, 0.8)
+	local function op(t: number): number -- scale opacity (1 - transparency), keep the 0..1 range
+		return 1 - math.clamp((1 - t) * opacity, 0, 0.92)
+	end
+	local color = hex(s, "tint") or Wake.FOAM
+	local bowColor = Wake.SPRAY
+	local emission, influence = 0, 1
+	local glow = hex(s, "glow")
+	if glow and n > 0 then
+		-- bioluminescence: tint the churned water and let it emit a little, only in the dark
+		color = color:Lerp(glow, 0.85 * n)
+		bowColor = bowColor:Lerp(glow, 0.6 * n)
+		emission = num(s, "glowEmission", 0.45, 0, 1) * n
+		influence = 1 - 0.5 * n
+	end
+	local bowLife = num(s, "bowLife", 1, 0.3, 2)
+	local bowSize = num(s, "bowSize", 1, 0.3, 2)
+	local bowSpeed = num(s, "bowSpeed", 1, 0.3, 2.5)
+	local bowSpread = num(s, "bowSpread", 1, 0.5, 1.6)
+	return {
+		lifetime = 3.5 * num(s, "length", 1, 0.5, 2.5),
+		width = num(s, "width", 1, 0.5, 2),
+		widthStart = num(s, "taper", 1, 0.4, 1),
+		spread = num(s, "spread", 2.6, 1, 5),
+		transparency = { op(0.15), op(0.55), 1 },
+		hold = hold,
+		color = color,
+		lightEmission = emission,
+		lightInfluence = influence,
+		bowRate = Wake.BOW_RATE * num(s, "bowRate", 1, 0, 2.5),
+		bowSize = { 0.8 * bowSize, 3.5 * bowSize },
+		bowSpeed = { 2 * bowSpeed, 6 * bowSpeed },
+		bowLife = { 0.6 * bowLife, 1.2 * bowLife },
+		bowSpread = { math.min(70 * bowSpread, 120), 20 * bowSpread },
+		bowColor = bowColor,
+		bowTransparency = op(0.35),
+	}
+end
+
+function Wake.liveParticles(v: Visual): number
+	return v.bowRate * (v.bowLife[1] + v.bowLife[2]) / 2
+end
+
 local function hullOf(model: Model): Hull?
 	local root = model.PrimaryPart
 	if not root then
