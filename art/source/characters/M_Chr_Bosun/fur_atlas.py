@@ -473,14 +473,14 @@ def assemble(tag, cache, size, out=OUT):
 
     # ---- albedo in sRGB terms, per strand: warm brown-black root -> body with a grey-brown sheen down the strand
     #      centre -> (guards / some mid) sun-bleached warm-brown tips
-    base = np.array([31.0, 27.0, 24.0]) * (0.92 + 0.16 * tone)[..., None]
+    base = np.array([40.0, 33.0, 27.0]) * (0.90 + 0.20 * tone)[..., None]     # round 4: lifted, warmer (was 31,27,24)
     root = base * 0.86
     srgb = root + (base - root) * smooth(0.0, 0.40, tt)[..., None]
     face = np.clip(un["nz"], 0, 1) ** 2                                   # strand centre (faces the card normal)
     band = smooth(0.20, 0.55, tt) * (1.0 - 0.6 * smooth(0.80, 1.0, tt))
     sheen = (0.25 + 0.55 * tone) * band * face * (0.45 + 0.55 * (layer > 0.25)) * (0.3 if wet else 1.0)
-    srgb = srgb + (np.array([50.0, 45.0, 40.0]) - srgb) * sheen[..., None]
-    tip = np.array([70.0, 58.0, 46.0])
+    srgb = srgb + (np.array([64.0, 53.0, 43.0]) - srgb) * sheen[..., None]     # warm brown sun-tint in the mid-tones
+    tip = np.array([96.0, 72.0, 50.0])
     sun = np.clip(bleach * 1.35, 0, 1) + 0.18 * (layer > 0.25)        # some strong, all mid/guard tips a little
     fade = np.clip(sun, 0, 1) * smooth(0.45, 1.0, tt) ** 1.4 * (0.3 if wet else 1.0)
     srgb = srgb + (tip - srgb) * fade[..., None]
@@ -488,11 +488,11 @@ def assemble(tag, cache, size, out=OUT):
     occl = (0.80 + 0.20 * ao) * (0.88 + 0.12 * smooth(0.0, 0.3, tt))         # AO + root darkening
     lin = lin * occl[..., None]
     if wet:
-        lin = lin * 0.52                                                   # soaked: base ~15-20 sRGB
+        lin = lin * 0.50                                                   # soaked: dark, clearly apart from dry
     # sRGB luma floor: dry keeps its darkest texels at the non-metal albedo floor (check_textures: 1st pct >= 20);
     # wet gets a soft knee into 18..22 so finalize.py's luma_clamp(18) never flattens the soaked coat
     y = (lin_to_srgb8(lin).astype(np.float32) * np.array([0.2126, 0.7152, 0.0722], np.float32)).sum(-1)
-    yt = np.where(y < 22.0, 18.0 + (np.clip(y, 10.0, 22.0) - 10.0) / 3.0, y) if wet else np.maximum(y, 22.5)
+    yt = np.where(y < 24.0, 20.0 + (np.clip(y, 12.0, 24.0) - 12.0) / 3.0, y) if wet else np.maximum(y, 31.0)
     lin = lin * (srgb_to_lin(yt) / np.maximum(srgb_to_lin(np.maximum(y, 1.0)), 1e-6))[..., None]
 
     # ---- normal: strand cylinder normals (camera = card space, +Y up) + clump / layer normals from height
@@ -509,9 +509,9 @@ def assemble(tag, cache, size, out=OUT):
 
     # ---- roughness
     if wet:
-        rg = 0.34 - 0.07 * smooth(0.2, 1.0, tt) - 0.02 * layer + 0.02 * (tone - 0.5)   # ~0.25-0.35
+        rg = 0.35 - 0.08 * smooth(0.2, 1.0, tt) - 0.02 * layer + 0.02 * (tone - 0.5)   # ~0.25-0.35
     else:
-        rg = 0.66 + 0.04 * (tone - 0.5) - 0.03 * layer - 0.10 * layer * smooth(0.5, 1.0, tt) + 0.02 * (layer < 0.25)
+        rg = 0.71 + 0.04 * (tone - 0.5) - 0.03 * layer - 0.08 * layer * smooth(0.5, 1.0, tt) + 0.02 * (layer < 0.25)
     rg = np.clip(rg, 0.15, 0.75)
 
     # ---- dilate everything into empty texels (weights = coverage, so the background never leaks in)

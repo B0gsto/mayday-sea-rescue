@@ -2,7 +2,7 @@
  "asset": "M_Chr_Bosun",
  "name": "M_Chr_Bosun",
  "date": "2026-10-18",
- "commit": "03ba4ad+dirty",
+ "commit": "045b7f2+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "validate",
@@ -23,7 +23,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
-   "bytes": 4086764,
+   "bytes": 3909916,
    "fbx_version": 7400,
    "meshes": [
     "M_Chr_Bosun_BodyFore_LOD0",
@@ -37,96 +37,96 @@
     {
      "name": "M_Chr_Bosun_BodyFore_LOD0.001",
      "min": [
-      -0.6076,
-      -1.0845,
+      -0.6102,
+      -1.2462,
       0.0
      ],
      "max": [
-      0.6024,
-      0.4029,
-      2.5486
+      0.5997,
+      0.4032,
+      2.4603
      ],
-     "polygons": 4728,
+     "polygons": 4744,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHead_LOD0.001",
      "min": [
-      -0.4994,
-      -1.7255,
-      1.7035
+      -0.4948,
+      -1.7467,
+      1.6792
      ],
      "max": [
-      0.4962,
-      -0.6609,
-      2.6691
+      0.4893,
+      -0.6358,
+      2.611
      ],
-     "polygons": 9190,
+     "polygons": 8962,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHind_LOD0.001",
      "min": [
-      -0.6386,
-      0.3305,
+      -0.6412,
+      0.3308,
       0.0
      ],
      "max": [
-      0.6356,
-      1.7255,
+      0.633,
+      1.7467,
       2.1621
      ],
-     "polygons": 5992,
+     "polygons": 5352,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurFront_LOD0.001",
      "min": [
-      -0.6789,
-      -1.7007,
+      -0.9147,
+      -1.7605,
       0.0
      ],
      "max": [
-      0.7244,
-      0.5894,
-      2.7032
+      0.7836,
+      0.6822,
+      2.6326
      ],
-     "polygons": 9120,
+     "polygons": 9030,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurRear_LOD0.001",
      "min": [
-      -0.7295,
-      0.4675,
+      -0.7613,
+      0.4041,
       0.0
      ],
      "max": [
-      0.7173,
-      1.87,
-      2.1876
+      0.7451,
+      1.967,
+      2.1837
      ],
-     "polygons": 5536,
+     "polygons": 5416,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_Harness_LOD0.001",
      "min": [
-      -0.6713,
-      -0.889,
-      0.858
+      -0.6712,
+      -0.9484,
+      0.8581
      ],
      "max": [
-      0.6713,
-      1.2025,
+      0.6712,
+      1.2028,
       2.4431
      ],
-     "polygons": 3522,
+     "polygons": 3544,
      "all_triangles": true,
      "uv": true
     }
@@ -141,7 +141,7 @@
   },
   {
    "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
-   "bytes": 1691084,
+   "bytes": 1643548,
    "fbx_version": 7400,
    "meshes": [
     "M_Chr_Bosun_BodyFore_LOD1",
@@ -155,78 +155,78 @@
     {
      "name": "M_Chr_Bosun_BodyFore_LOD1.001",
      "min": [
-      -0.6093,
-      -1.0871,
+      -0.6119,
+      -1.2624,
       -0.0013
      ],
      "max": [
-      0.6041,
-      0.6502,
-      2.5386
+      0.6015,
+      0.6506,
+      2.4603
      ],
-     "polygons": 2635,
+     "polygons": 2667,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHead_LOD1.001",
      "min": [
-      -0.5032,
-      -1.7261,
-      1.7015
+      -0.5063,
+      -1.7472,
+      1.6387
      ],
      "max": [
-      0.4891,
-      -0.666,
-      2.6691
+      0.4952,
+      -0.6646,
+      2.611
      ],
-     "polygons": 2263,
+     "polygons": 2229,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHind_LOD1.001",
      "min": [
-      -0.6386,
-      0.3324,
+      -0.6412,
+      0.3327,
       -0.0017
      ],
      "max": [
-      0.6358,
-      1.7267,
+      0.6332,
+      1.7471,
       2.1621
      ],
-     "polygons": 3118,
+     "polygons": 3110,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurFront_LOD1.001",
      "min": [
-      -0.712,
-      -1.6884,
-      -0.0072
+      -0.8884,
+      -1.756,
+      -0.007
      ],
      "max": [
-      0.7436,
-      0.589,
-      2.7153
+      0.8144,
+      0.6676,
+      2.6431
      ],
-     "polygons": 3748,
+     "polygons": 3676,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurRear_LOD1.001",
      "min": [
-      -0.7481,
-      0.4522,
-      -0.0295
+      -0.7882,
+      0.462,
+      -0.0318
      ],
      "max": [
-      0.7417,
-      1.8872,
-      2.2025
+      0.7335,
+      2.0084,
+      2.1806
      ],
      "polygons": 2106,
      "all_triangles": true,
@@ -235,16 +235,16 @@
     {
      "name": "M_Chr_Bosun_Harness_LOD1.001",
      "min": [
-      -0.6713,
-      -0.8895,
-      0.8582
+      -0.6709,
+      -0.9479,
+      0.8584
      ],
      "max": [
       0.67,
-      1.2038,
+      1.2044,
       2.4431
      ],
-     "polygons": 1583,
+     "polygons": 1593,
      "all_triangles": true,
      "uv": true
     }
@@ -259,7 +259,7 @@
   },
   {
    "file": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
-   "bytes": 477260,
+   "bytes": 450172,
    "fbx_version": 7400,
    "meshes": [
     "M_Chr_Bosun_BodyFore_LOD2",
@@ -273,96 +273,96 @@
     {
      "name": "M_Chr_Bosun_BodyFore_LOD2.001",
      "min": [
-      -0.6077,
-      -1.1039,
+      -0.6103,
+      -1.2644,
       -0.0027
      ],
      "max": [
-      0.6027,
-      0.9073,
-      2.5191
+      0.6,
+      0.9076,
+      2.4671
      ],
-     "polygons": 699,
+     "polygons": 715,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHead_LOD2.001",
      "min": [
-      -0.5137,
-      -1.7286,
-      1.5639
+      -0.5179,
+      -1.7383,
+      1.5602
      ],
      "max": [
-      0.5015,
-      -0.5946,
-      2.6774
+      0.4898,
+      -0.5392,
+      2.6091
      ],
-     "polygons": 464,
+     "polygons": 446,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_BodyHind_LOD2.001",
      "min": [
-      -0.6509,
-      -0.1601,
+      -0.6535,
+      -0.1598,
       -0.0007
      ],
      "max": [
-      0.6464,
-      1.7272,
+      0.6437,
+      1.7484,
       2.1511
      ],
-     "polygons": 807,
+     "polygons": 803,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurFront_LOD2.001",
      "min": [
-      -0.7577,
-      -1.699,
-      0.0027
+      -0.7933,
+      -1.734,
+      -0.0142
      ],
      "max": [
-      0.7832,
-      0.619,
-      2.6976
+      0.8628,
+      0.6843,
+      2.6023
      ],
-     "polygons": 952,
+     "polygons": 902,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_FurRear_LOD2.001",
      "min": [
-      -0.7509,
-      0.5576,
-      -0.048
+      -0.7956,
+      0.4752,
+      -0.0796
      ],
      "max": [
-      0.7071,
-      1.9399,
-      2.1878
+      0.7508,
+      2.0193,
+      2.16
      ],
-     "polygons": 528,
+     "polygons": 554,
      "all_triangles": true,
      "uv": true
     },
     {
      "name": "M_Chr_Bosun_Harness_LOD2.001",
      "min": [
-      -0.663,
-      -0.889,
-      0.8582
+      -0.6709,
+      -0.9477,
+      0.8584
      ],
      "max": [
-      0.6676,
-      1.2029,
+      0.6698,
+      1.2032,
       2.4419
      ],
-     "polygons": 879,
+     "polygons": 886,
      "all_triangles": true,
      "uv": true
     }
@@ -424,7 +424,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4728 of 10000"
+   "detail": "4744 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD0",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.988, v 0.003 to 0.993"
+   "detail": "u 0.002 to 0.987, v 0.002 to 0.998"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD0",
@@ -464,7 +464,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2380 faces have no UV area"
+   "detail": "0 of 2388 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD0",
@@ -472,7 +472,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "294 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "299 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD0",
@@ -496,7 +496,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "9190 of 10000"
+   "detail": "8962 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD0",
@@ -504,7 +504,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.75e-06, 70 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.07e-06, 70 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD0",
@@ -528,7 +528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.003 to 0.983, v 0.002 to 0.998"
+   "detail": "u 0.002 to 0.971, v 0.002 to 0.998"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD0",
@@ -536,7 +536,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 4594 faces have no UV area"
+   "detail": "0 of 4478 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD0",
@@ -544,7 +544,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "295 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "301 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD0",
@@ -568,7 +568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5992 of 10000"
+   "detail": "5352 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD0",
@@ -600,7 +600,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.974, v 0.002 to 0.979"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.989"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD0",
@@ -608,7 +608,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 3012 faces have no UV area"
+   "detail": "0 of 2692 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD0",
@@ -616,7 +616,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "297 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "300 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD0",
@@ -640,7 +640,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3522 of 10000"
+   "detail": "3544 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD0",
@@ -672,7 +672,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.993, v 0.004 to 0.996"
+   "detail": "u 0.004 to 0.987, v 0.004 to 0.996"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD0",
@@ -680,7 +680,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1687 faces have no UV area"
+   "detail": "0 of 1698 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD0",
@@ -688,7 +688,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "334 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "325 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD1",
@@ -712,7 +712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2635 of 10000"
+   "detail": "2667 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD1",
@@ -744,7 +744,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.988, v 0.003 to 0.993"
+   "detail": "u 0.002 to 0.987, v 0.002 to 0.998"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD1",
@@ -752,7 +752,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2635 faces have no UV area"
+   "detail": "0 of 2667 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD1",
@@ -760,7 +760,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.9% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.2% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD1",
@@ -784,7 +784,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2263 of 10000"
+   "detail": "2229 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD1",
@@ -792,7 +792,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.56e-05, 51 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.50e-05, 51 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD1",
@@ -816,7 +816,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.003 to 0.983, v 0.002 to 0.998"
+   "detail": "u 0.002 to 0.971, v 0.002 to 0.998"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD1",
@@ -824,7 +824,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2263 faces have no UV area"
+   "detail": "0 of 2229 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD1",
@@ -832,7 +832,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.3% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD1",
@@ -856,7 +856,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3118 of 10000"
+   "detail": "3110 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD1",
@@ -888,7 +888,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.975, v 0.002 to 0.978"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.989"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD1",
@@ -896,7 +896,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 3118 faces have no UV area"
+   "detail": "0 of 3110 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD1",
@@ -904,7 +904,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 2.9% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.7% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD1",
@@ -928,7 +928,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1583 of 10000"
+   "detail": "1593 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD1",
@@ -936,7 +936,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.67e-05, 239 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.06e-05, 239 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD1",
@@ -960,7 +960,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.993, v 0.004 to 0.996"
+   "detail": "u 0.004 to 0.987, v 0.004 to 0.996"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD1",
@@ -968,7 +968,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1583 faces have no UV area"
+   "detail": "0 of 1593 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD1",
@@ -976,7 +976,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.1% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.4% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD2",
@@ -1000,7 +1000,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "699 of 10000"
+   "detail": "715 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD2",
@@ -1008,7 +1008,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.69e-04, 61 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.69e-04, 65 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD2",
@@ -1032,7 +1032,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.987, v 0.003 to 0.993"
+   "detail": "u 0.002 to 0.985, v 0.003 to 0.997"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD2",
@@ -1040,7 +1040,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 699 faces have no UV area"
+   "detail": "0 of 715 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyFore_LOD2",
@@ -1048,7 +1048,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 9.4% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 7.2% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD2",
@@ -1072,7 +1072,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "464 of 10000"
+   "detail": "446 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD2",
@@ -1080,7 +1080,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.80e-06, 26 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.91e-05, 30 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD2",
@@ -1104,7 +1104,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.003 to 0.983, v 0.003 to 0.997"
+   "detail": "u 0.002 to 0.971, v 0.003 to 0.995"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD2",
@@ -1112,7 +1112,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 464 faces have no UV area"
+   "detail": "0 of 446 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHead_LOD2",
@@ -1120,7 +1120,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 14.9% (max 15%)"
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 13.8% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD2",
@@ -1144,7 +1144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "807 of 10000"
+   "detail": "803 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD2",
@@ -1176,7 +1176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.003 to 0.974, v 0.002 to 0.977"
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.987"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD2",
@@ -1184,15 +1184,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 807 faces have no UV area"
+   "detail": "0 of 803 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_BodyHind_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (BodyHind LOD2 (~3k-tri far LOD) loses ~15% UV area to decimation of small paw / tail islands; same atlas, invisible at LOD2 distance): UV bounds differ by 0.002 (max 0.02), UV area by 15.0% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 13.0% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD2",
@@ -1216,7 +1216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "879 of 10000"
+   "detail": "886 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD2",
@@ -1224,7 +1224,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.44e-05, 235 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.22e-05, 236 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD2",
@@ -1248,7 +1248,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.993, v 0.004 to 0.996"
+   "detail": "u 0.005 to 0.987, v 0.004 to 0.995"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD2",
@@ -1256,7 +1256,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 879 faces have no UV area"
+   "detail": "0 of 886 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_Harness_LOD2",
@@ -1264,7 +1264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.3% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.9% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1272,7 +1272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "23432 of 25000 (dog)"
+   "detail": "22602 of 25000 (dog)"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1288,7 +1288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2849 of 3000"
+   "detail": "2850 of 3000"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1488,7 +1488,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "9120 of 10000"
+   "detail": "9030 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD0",
@@ -1496,7 +1496,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.96e-05, 13756 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.40e-05, 13024 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD0",
@@ -1528,7 +1528,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 9120 faces have no UV area"
+   "detail": "0 of 9030 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD0",
@@ -1536,7 +1536,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4595 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "3743 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD0",
@@ -1560,7 +1560,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5536 of 10000"
+   "detail": "5416 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD0",
@@ -1568,7 +1568,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.40e-04, 8428 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.48e-04, 7876 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD0",
@@ -1600,7 +1600,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 5536 faces have no UV area"
+   "detail": "0 of 5416 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD0",
@@ -1608,7 +1608,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4665 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+   "detail": "3730 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD1",
@@ -1632,7 +1632,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3748 of 10000"
+   "detail": "3676 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD1",
@@ -1640,7 +1640,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.36e-04, 5658 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.92e-04, 5290 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD1",
@@ -1672,7 +1672,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 3748 faces have no UV area"
+   "detail": "0 of 3676 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD1",
@@ -1680,7 +1680,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 58.8% (max 15%)"
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 59.6% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD1",
@@ -1712,7 +1712,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.11e-04, 3208 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.28e-04, 3074 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD1",
@@ -1752,7 +1752,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 61.9% (max 15%)"
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 60.7% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD2",
@@ -1776,7 +1776,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "952 of 10000"
+   "detail": "902 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD2",
@@ -1784,7 +1784,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.09e-03, 1434 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.04e-04, 1306 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD2",
@@ -1816,7 +1816,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 952 faces have no UV area"
+   "detail": "0 of 902 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_FurFront_LOD2",
@@ -1824,7 +1824,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 89.6% (max 15%)"
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 89.9% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD2",
@@ -1848,7 +1848,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "528 of 10000"
+   "detail": "554 of 10000"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD2",
@@ -1856,7 +1856,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.37e-03, 790 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 9.92e-04, 796 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD2",
@@ -1888,7 +1888,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 528 faces have no UV area"
+   "detail": "0 of 554 faces have no UV area"
   },
   {
    "subject": "M_Chr_Bosun_FurRear_LOD2",
@@ -1896,7 +1896,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 90.9% (max 15%)"
+   "detail": "WAIVED (fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), so the used UV area shrinks by design; the atlas layout is identical): UV bounds differ by 0.000 (max 0.02), UV area by 90.2% (max 15%)"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1904,7 +1904,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "14656 of 15000 (dog_fur_cards)"
+   "detail": "14446 of 15000 (dog_fur_cards)"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1912,7 +1912,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5854 of 6000"
+   "detail": "5782 of 6000"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -1920,7 +1920,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1480 of 1500"
+   "detail": "1456 of 1500"
   },
   {
    "subject": "M_Chr_Bosun",
@@ -2048,7 +2048,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Chr_Bosun_BodyFore_LOD0, M_Chr_Bosun_BodyHead_LOD0, M_Chr_Bosun_BodyHind_LOD0, M_Chr_Bosun_FurFront_LOD0, M_Chr_Bosun_FurRear_LOD0, M_Chr_Bosun_Harness_LOD0; 38088 triangles (scene 38088)"
+   "detail": "M_Chr_Bosun_BodyFore_LOD0, M_Chr_Bosun_BodyHead_LOD0, M_Chr_Bosun_BodyHind_LOD0, M_Chr_Bosun_FurFront_LOD0, M_Chr_Bosun_FurRear_LOD0, M_Chr_Bosun_Harness_LOD0; 37048 triangles (scene 37048)"
   },
   {
    "subject": "M_Chr_Bosun_LOD0.fbx",
@@ -2088,7 +2088,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Chr_Bosun_BodyFore_LOD1, M_Chr_Bosun_BodyHead_LOD1, M_Chr_Bosun_BodyHind_LOD1, M_Chr_Bosun_FurFront_LOD1, M_Chr_Bosun_FurRear_LOD1, M_Chr_Bosun_Harness_LOD1; 15453 triangles (scene 15453)"
+   "detail": "M_Chr_Bosun_BodyFore_LOD1, M_Chr_Bosun_BodyHead_LOD1, M_Chr_Bosun_BodyHind_LOD1, M_Chr_Bosun_FurFront_LOD1, M_Chr_Bosun_FurRear_LOD1, M_Chr_Bosun_Harness_LOD1; 15381 triangles (scene 15381)"
   },
   {
    "subject": "M_Chr_Bosun_LOD1.fbx",
@@ -2128,7 +2128,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Chr_Bosun_BodyFore_LOD2, M_Chr_Bosun_BodyHead_LOD2, M_Chr_Bosun_BodyHind_LOD2, M_Chr_Bosun_FurFront_LOD2, M_Chr_Bosun_FurRear_LOD2, M_Chr_Bosun_Harness_LOD2; 4329 triangles (scene 4329)"
+   "detail": "M_Chr_Bosun_BodyFore_LOD2, M_Chr_Bosun_BodyHead_LOD2, M_Chr_Bosun_BodyHind_LOD2, M_Chr_Bosun_FurFront_LOD2, M_Chr_Bosun_FurRear_LOD2, M_Chr_Bosun_Harness_LOD2; 4306 triangles (scene 4306)"
   },
   {
    "subject": "M_Chr_Bosun_LOD2.fbx",
@@ -2144,113 +2144,113 @@
    "name": "M_Chr_Bosun_BodyFore_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 4728,
-   "texel_density": 294.4
+   "triangles": 4744,
+   "texel_density": 298.9
   },
   {
    "name": "M_Chr_Bosun_BodyFore_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 2635,
+   "triangles": 2667,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_BodyFore_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 699,
+   "triangles": 715,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_BodyHead_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 9190,
-   "texel_density": 295.0
+   "triangles": 8962,
+   "texel_density": 300.6
   },
   {
    "name": "M_Chr_Bosun_BodyHead_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 2263,
+   "triangles": 2229,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_BodyHead_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 464,
+   "triangles": 446,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_BodyHind_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 5992,
-   "texel_density": 297.0
+   "triangles": 5352,
+   "texel_density": 299.6
   },
   {
    "name": "M_Chr_Bosun_BodyHind_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 3118,
+   "triangles": 3110,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_BodyHind_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 807,
+   "triangles": 803,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_Harness_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 3522,
-   "texel_density": 333.9
+   "triangles": 3544,
+   "texel_density": 325.0
   },
   {
    "name": "M_Chr_Bosun_Harness_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1583,
+   "triangles": 1593,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_Harness_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 879,
+   "triangles": 886,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_FurFront_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 9120,
-   "texel_density": 4595.2
+   "triangles": 9030,
+   "texel_density": 3742.9
   },
   {
    "name": "M_Chr_Bosun_FurFront_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 3748,
+   "triangles": 3676,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_FurFront_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 952,
+   "triangles": 902,
    "texel_density": null
   },
   {
    "name": "M_Chr_Bosun_FurRear_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 5536,
-   "texel_density": 4665.2
+   "triangles": 5416,
+   "texel_density": 3730.0
   },
   {
    "name": "M_Chr_Bosun_FurRear_LOD1",
@@ -2263,13 +2263,13 @@
    "name": "M_Chr_Bosun_FurRear_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 528,
+   "triangles": 554,
    "texel_density": null
   }
  ],
  "bbox_studs": [
-  1.3426612615585327,
-  3.4509456157684326,
-  2.6691131591796875
+  1.3424655199050903,
+  3.493377685546875,
+  2.611025333404541
  ]
 }

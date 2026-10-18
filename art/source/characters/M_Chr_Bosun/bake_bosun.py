@@ -266,7 +266,7 @@ def body_graph(g, wet):
     ridges = g.noise(stretched(20.0), 220.0, 1.0, 0.5)                      # nail growth ridges along the flow
     h = g.lerp(h, g.math("MULTIPLY", ridges, 0.25), nail)
     h = g.lerp(h, g.math("MULTIPLY", g.noise(P, 300.0, 1.0), 0.15), g.math("MAXIMUM", lid, lip))
-    h = g.math("SUBTRACT", h, g.math("MULTIPLY", lip, 0.6))
+    h = g.math("SUBTRACT", h, g.math("MULTIPLY", lip, 0.25))
     # tongue: filiform papillae and a shallow median groove (tongue runs along Y, centred on x = 0)
     X0 = g.sep(P)[0]
     groove = g.remap(g.math("ABSOLUTE", X0), 0.0, 0.004 * L, 1.0, 0.0)
@@ -277,7 +277,7 @@ def body_graph(g, wet):
     bump_k = g.math("MULTIPLY", smooth_k, 0.85 if wet else 0.7)
 
     # ---- albedo (linear). Coat: brown-black, sRGB ~25-35 around (31,27,24), R > G > B, warm undertone
-    c_dark, c_mid, c_light = srgb((27, 24, 21)), srgb((31, 27, 24)), srgb((36, 32, 28))
+    c_dark, c_mid, c_light = srgb((33, 28, 24)), srgb((40, 33, 27)), srgb((48, 39, 31))   # round 4: lifted, warm
     tone = g.math("ADD", g.math("MULTIPLY", strands, 0.55), g.math("MULTIPLY", clump, 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", streak, 0.5), 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.45), clamp=True)
@@ -287,7 +287,7 @@ def body_graph(g, wet):
     tips = g.remap(strands, 0.40, 0.72)
     fadek = g.math("MULTIPLY", g.math("POWER", g.math("MAXIMUM", fade, 0.0), 0.7), g.math("ADD", 0.55, g.math("MULTIPLY", tips, 0.6)))
     fadek = g.math("MULTIPLY", fadek, g.math("ADD", 0.6, g.math("MULTIPLY", g.math("ADD", big, patch), 0.55)), clamp=True)
-    fade_col = g.lerp(srgb((47, 42, 37)), srgb((60, 53, 45)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
+    fade_col = g.lerp(srgb((62, 50, 39)), srgb((84, 64, 46)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
     col = g.lerp(col, fade_col, fadek)
     # crease AO and clump partings (shallow: the floor below keeps the 1st percentile up)
     occl = g.math("MULTIPLY", g.remap(ao, 0.2, 1.0, 0.84, 1.0), g.remap(clump, 0.0, 0.5, 0.92, 1.0))
@@ -298,7 +298,7 @@ def body_graph(g, wet):
     leather = g.lerp(srgb((26, 24, 23)), srgb((34, 31, 29)), pebble)
     col = g.lerp(col, leather, nose)
     # lips / flews darker
-    col = g.lerp(col, srgb((25, 22, 22)), g.math("MINIMUM", g.math("MULTIPLY", lip, 1.4), 1.0))
+    col = g.lerp(col, srgb((30, 26, 24)), g.math("MINIMUM", g.math("MULTIPLY", lip, 0.9), 0.8))   # softer lip line (seam)
     # paw pads, the fur webbing between the toes, nails (dark horn)
     col = g.lerp(col, g.lerp(srgb((27, 25, 24)), srgb((34, 32, 30)), papil), pad)
     col = g.lerp(col, colscale(g, srgb((27, 24, 22)), g.remap(ao, 0.2, 1.0, 0.85, 1.0)), web)
@@ -306,9 +306,9 @@ def body_graph(g, wet):
     # eyelid rim
     col = g.lerp(col, srgb((24, 22, 21)), lid)
     if wet:
-        col = colscale(g, col, g.lerp(0.70, 0.78, skin))                  # linear; soaked coat ~(25,22,19), median luma ~22
+        col = colscale(g, col, g.lerp(0.52, 0.78, skin))                  # linear; soaked coat ~(25,22,19), median luma ~22
     # luma floor (check_textures non-metal 20): per-channel max keeps the warm hue; dry (23,21,19) ~21.3, wet (22,20,18) ~20.3
-    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((23, 21, 19)))
+    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((32, 28, 24)))
     col = g.lerp(col, srgb((17, 16, 16)), g.math("MULTIPLY", nostrils, nose))
     # mouth: dark gums / inner mouth, pink tongue with paler papillae and a darker groove (not darkened when wet)
     gum = g.lerp(srgb((52, 30, 31)), srgb((66, 39, 38)), g.noise(P, 1.0 / (0.006 * L), 2.0))
@@ -331,17 +331,17 @@ def body_graph(g, wet):
 
     # ---- roughness
     if wet:
-        rgh = g.math("ADD", 0.20, g.math("MULTIPLY", strands, 0.07))       # glossy soaked coat ~0.2-0.3
+        rgh = g.math("ADD", 0.26, g.math("MULTIPLY", strands, 0.06))       # round 4: soaked coat ~0.25-0.35
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", 1.0, clump), 0.05))
         rgh = g.lerp(rgh, 0.08, runs)                                      # water runnels
         rgh = g.lerp(rgh, 0.03, dmask)                                     # droplets
     else:
-        rgh = g.math("ADD", 0.52, g.math("MULTIPLY", strands, 0.12))
+        rgh = g.math("ADD", 0.62, g.math("MULTIPLY", strands, 0.10))       # round 4: dry ~0.7
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", 1.0, clump), 0.06))
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", fadek, 0.06))           # sun-faded tips drier
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.10))  # patchy sheen
     moist = g.remap(g.noise(P, 40.0, 2.0, 0.5), 0.45, 0.65)
-    nose_r = g.lerp(0.40 if not wet else 0.22, 0.26 if not wet else 0.14, pebble)
+    nose_r = g.lerp(0.26 if not wet else 0.16, 0.18 if not wet else 0.10, pebble)   # round 4: wet-looking nose
     nose_r = g.lerp(nose_r, 0.16 if not wet else 0.10, g.math("MULTIPLY", moist, pebble))
     rgh = g.lerp(rgh, nose_r, nose)
     rgh = g.lerp(rgh, 0.20 if wet else 0.32, g.math("MINIMUM", lip, 1.0))
@@ -364,7 +364,7 @@ def harness_graph(g, wet):
     stitch, edge, padding, buckle = A(g, "stitch"), A(g, "edge"), A(g, "padding"), A(g, "buckle")
     edge = g.remap(edge, 0.6, 1.0)                          # interpolated across the face: keep only the edge band
     tack = A(g, "tack")                                     # optional box-X tack mask (solid satin thread)
-    plastic = g.math("MAXIMUM", plastic, buckle)
+    metal = g.math("MAXIMUM", metal, buckle)                 # round 4: steel buckles / tri-glides
     hard = g.math("ADD", g.math("ADD", tape, metal), g.math("ADD", plastic, grip))
     fabric = g.math("SUBTRACT", 1.0, hard, clamp=True)
     ao = local_ao(g, 0.03)
@@ -419,8 +419,8 @@ def harness_graph(g, wet):
     h = g.math("ADD", h, g.math("MULTIPLY", g.math("MULTIPLY", pores, 0.6), grip))
     h = g.math("ADD", h, g.math("MULTIPLY", g.math("MULTIPLY", scuff, -0.3), plastic))
     # albedo: Hull Orange
-    orange = srgb((228, 92, 28))
-    orange_d = srgb((196, 78, 28))
+    orange = srgb((206, 90, 40))                                 # round 4: weathered
+    orange_d = srgb((172, 76, 38))
     col = g.lerp(orange, orange_d, g.remap(grime, 0.35, 0.75))
     col = g.lerp(col, srgb((214, 84, 26)), g.math("MULTIPLY", g.math("SUBTRACT", 1.0, weave), 0.3))
     col = g.lerp(col, g.lerp(srgb((212, 82, 26)), srgb((232, 104, 40)), puff), padding)

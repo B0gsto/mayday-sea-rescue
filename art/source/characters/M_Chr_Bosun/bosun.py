@@ -63,8 +63,9 @@ NECK = [(0, -0.41, 0.520, 0.172), (0, -0.49, 0.600, 0.166), (0, -0.55, 0.680, 0.
 HEAD = [(0, -0.585, 0.750, 0.138), (0, -0.615, 0.800, 0.128), (0, -0.655, 0.822, 0.128), (0, -0.700, 0.822, 0.118),
         (0, -0.745, 0.805, 0.094), (0, -0.785, 0.787, 0.088), (0, -0.820, 0.777, 0.084), (0, -0.850, 0.774, 0.078),
         (0, -0.872, 0.774, 0.066)]
-TAIL = [(0, 0.07, 0.548, 0.155), (0, 0.15, 0.553, 0.074), (0, 0.21, 0.500, 0.060), (0, 0.25, 0.420, 0.050),
-        (0, 0.27, 0.320, 0.042), (0, 0.275, 0.225, 0.033), (0, 0.268, 0.155, 0.026), (0, 0.250, 0.112, 0.020)]
+TAIL = [(0, 0.07, 0.548, 0.155), (0, 0.15, 0.548, 0.094), (0, 0.205, 0.500, 0.084), (0, 0.240, 0.420, 0.074),
+        (0, 0.258, 0.320, 0.064), (0, 0.264, 0.225, 0.054), (0, 0.270, 0.160, 0.044), (0, 0.290, 0.118, 0.034)]
+# round 4: thick, otter-like (broad at the root, tapering evenly), hanging low to the hocks, the tip curling back
 
 
 def fore(sx):
@@ -309,9 +310,9 @@ def head_box(V, o, axis, t, rad, dirs, o_s):
     rho, phi = np.hypot(u, v), np.arctan2(v, u)
     top = v > 0
     # skull: squared on top (flat, wide crown), rounder under the jaw
-    cx, cz = squircle(phi, np.where(top, 3.4, 2.3))
-    sk = (ex[None] * (rho * cx * r * 1.24)[:, None] +
-          ez * (rho * cz * r * np.where(top, 0.92, 1.0))[:, None] + a[:, None] * dirs)
+    cx, cz = squircle(phi, np.where(top, 2.05, 2.3))          # round 4: domed skull (p ~2 = round)
+    sk = (ex[None] * (rho * cx * r * 1.26)[:, None] +
+          ez * (rho * cz * r * np.where(top, 1.06, 1.0))[:, None] + a[:, None] * dirs)
     # muzzle box (world heights): top nearly level, a deep square front, flews hang from the lower corners
     y = V[:, 1]
     q = np.clip((y + 0.775) / (-0.872 + 0.775), 0, 1)
@@ -363,14 +364,14 @@ def shape(V):
     # flat broad crown and occiput; a defined stop
     head_w = w[:, names.index("head")]
     crown = np.exp(-(((V[:, 1] + 0.665) / 0.06) ** 2)) * smoothstep(0.88, 0.93, V[:, 2]) * head_w
-    V[:, 2] -= 0.010 * crown
+    V[:, 2] += 0.008 * crown * np.exp(-(V[:, 0] / 0.09) ** 2)      # round 4: domed crown
     stop = np.exp(-(((V[:, 1] + 0.752) / 0.016) ** 2) - ((V[:, 2] - 0.862) / 0.022) ** 2 - (V[:, 0] / 0.05) ** 2) * head_w
-    V[:, 1] += 0.010 * stop
-    V[:, 2] -= 0.006 * stop
+    V[:, 1] += 0.016 * stop
+    V[:, 2] -= 0.012 * stop
     # flews: the upper lips hang below the lower jaw at the sides; the chin (lower jaw) is narrower and higher
     flew = flew_profile(V) * smoothstep(0.770, 0.715, V[:, 2]) * head_w
-    V[:, 2] -= 0.024 * flew
-    V[:, 0] += np.sign(V[:, 0]) * 0.008 * flew
+    V[:, 2] -= 0.036 * flew                                    # round 4: pendulous flews
+    V[:, 0] += np.sign(V[:, 0]) * 0.011 * flew
     ax = np.abs(V[:, 0])
     chin = smoothstep(-0.77, -0.81, V[:, 1]) * (1 - smoothstep(0.018, 0.042, ax)) * smoothstep(0.725, 0.695, V[:, 2]) * head_w
     V[:, 2] += 0.005 * chin
@@ -644,7 +645,7 @@ def lid_rims(eye, skin_tree, segs=24, around=5):
     return bm, np.repeat(lower, around)
 
 
-EAR_ROOT, EAR_TIP = (0.108, -0.645, 0.892), (0.118, -0.672, 0.752)
+EAR_ROOT, EAR_TIP = (0.112, -0.640, 0.900), (0.140, -0.668, 0.640)    # round 4: tip below the jaw line
 
 
 def ear(sx, head_tree):
@@ -660,15 +661,19 @@ def ear(sx, head_tree):
     fwd -= (fwd @ axisd) * axisd
     fwd /= np.linalg.norm(fwd)
     bm = bmesh.new()
-    outer, inner, tpar = {}, {}, []
+    outer, inner, tpar, hang_x = {}, {}, [], {}
     for i in range(rows):
         t = i / (rows - 1)
-        width = 0.112 * (1 - 0.93 * t) ** 0.85
+        width = 0.128 * (1 - 0.90 * t) ** 0.80
         for j in range(cols):
             u = j / (cols - 1) - 0.5
             p = root + axisd * L * t + fwd * u * width - axisd * (0.035 * (2 * u) ** 2 * t ** 3)
             loc, nrm, _, _ = head_tree.find_nearest(Vector(p.tolist()))
             loc, nrm = np.array(loc), np.array(nrm)
+            if i > 0 and abs(loc[0]) < hang_x.get(j, 0.0):     # below the cheek the ear hangs free, not on the throat
+                loc = np.array([sx * hang_x[j], loc[1], loc[2]])
+                nrm = np.array([sx * 1.0, 0.0, 0.0])
+            hang_x[j] = max(hang_x.get(j, 0.0), abs(loc[0]))
             gap = -0.005 if i == 0 else 0.0015 + 0.003 * t
             th = (0.017 * (1 - t) + 0.006) * (1 - 0.55 * (2 * u) ** 2)
             inner[i, j] = bm.verts.new((loc + nrm * gap).tolist())
@@ -830,7 +835,31 @@ def build_body(level=2):
         p.use_smooth = True
     me.update()
     body_attributes(me, eyes, masks, np.concatenate(tags), np.concatenate(ear_t), np.concatenate(lid_low))
+    set_coords(me, head_warp(mesh_arrays(me)))                   # round 4: shorter deeper muzzle, lower head carriage
+    MOUTH = tuple(head_warp(np.array([MOUTH]))[0])
+    EYE_LOCS[:] = list(head_warp(np.array(EYE_LOCS)))
     return me, eyes
+
+
+MUZZLE_Y0, MUZZLE_K, MUZZLE_DEEP = -0.765, 0.24, 0.16
+CARRIAGE = (-0.035, -0.045)       # head forward / down (m): neck ~45 deg, not upright
+
+
+def head_warp(V):
+    """Round 4 space warp after the attributes are set (they are per vertex, so they ride along): the muzzle in
+    front of the stop shortened by MUZZLE_K and deepened below its centre line (flews / lower jaw), then the whole
+    head carried lower and further forward, blended over the neck."""
+    V = np.array(V, float).copy()
+    y, z = V[:, 1], V[:, 2]
+    m = smoothstep(MUZZLE_Y0, MUZZLE_Y0 - 0.045, y)
+    d = np.minimum(y - MUZZLE_Y0, 0.0)
+    V[:, 1] = y - MUZZLE_K * d * m
+    zc = 0.772
+    V[:, 2] = z - MUZZLE_DEEP * np.maximum(zc - z, 0.0) * m * smoothstep(MUZZLE_Y0, MUZZLE_Y0 - 0.08, y)
+    c = smoothstep(-0.44, -0.62, V[:, 1]) * smoothstep(0.40, 0.60, V[:, 2])
+    V[:, 1] += CARRIAGE[0] * c
+    V[:, 2] += CARRIAGE[1] * c
+    return V
 
 
 def long_coat(V, N, names, w, data):
@@ -946,19 +975,30 @@ def harness_mesh(body_me):
 CARD_TYPES = {  # atlas column (4 x 2 cells, rows = two variants, roots at V=0): long wavy clump, medium clump,
     "long": 0, "medium": 1, "short": 2, "plume": 3}    # short tuft, tail plume / feathering
 REGIONS = [  # name, count, card type, length range (m), width factor, lift (rad), droop, segments
-    ("under", 1800, "medium", (0.030, 0.048), 0.85, 0.10, 0.35, 1),     # inner layer: short, close to the skin, everywhere
-    ("ruff", 390, "long", (0.110, 0.155), 0.52, 0.45, 0.55, 3),
-    ("chest", 170, "long", (0.100, 0.145), 0.47, 0.30, 0.85, 3),
-    ("back", 240, "medium", (0.060, 0.090), 0.55, 0.20, 0.30, 3),
-    ("flank", 200, "medium", (0.070, 0.100), 0.50, 0.18, 0.60, 3),
+    ("under", 1050, "medium", (0.034, 0.052), 0.95, 0.10, 0.35, 1),     # inner layer: short, close to the skin, everywhere
+    ("ruff", 330, "long", (0.110, 0.155), 0.52, 0.45, 0.55, 3),
+    ("chest", 150, "long", (0.100, 0.145), 0.47, 0.30, 0.85, 3),
+    ("back", 150, "medium", (0.060, 0.090), 0.55, 0.20, 0.30, 3),
+    ("flank", 135, "medium", (0.070, 0.100), 0.50, 0.18, 0.60, 3),
     ("belly", 120, "long", (0.090, 0.125), 0.45, 0.25, 0.95, 3),
     ("feather", 130, "plume", (0.060, 0.095), 0.45, 0.35, 0.75, 3),
     ("breeches", 160, "long", (0.090, 0.130), 0.50, 0.35, 0.80, 3),
     ("tail", 190, "plume", (0.100, 0.160), 0.55, 0.45, 0.70, 3),
-    ("head", 110, "short", (0.028, 0.045), 0.60, 0.30, 0.20, 2),
+    ("head", 95, "short", (0.028, 0.045), 0.60, 0.30, 0.20, 2),
     ("ear", 50, "short", (0.030, 0.050), 0.60, 0.15, 0.50, 2),
-    ("leg", 140, "medium", (0.040, 0.060), 0.55, 0.20, 0.50, 2),
+    ("leg", 120, "medium", (0.040, 0.060), 0.55, 0.20, 0.50, 2),
     ("paw", 64, "short", (0.022, 0.032), 0.60, 0.50, 0.40, 2),
+    # round 4: outer silhouette tiers (tier 2 on the ruff, chest, belly fringe, leg feathering, breeches, tail, ear
+    # fringe; tier 3 on the ruff and tail): longer, more lift, so the outline breaks up in 2-3 layers
+    ("ruff:2", 115, "long", (0.150, 0.200), 0.45, 0.60, 0.65, 3),
+    ("chest:2", 60, "long", (0.140, 0.190), 0.42, 0.40, 0.95, 3),
+    ("belly:2", 40, "long", (0.120, 0.160), 0.40, 0.30, 1.05, 3),
+    ("feather:2", 60, "plume", (0.090, 0.130), 0.42, 0.45, 0.85, 3),
+    ("breeches:2", 45, "long", (0.120, 0.165), 0.45, 0.45, 0.90, 3),
+    ("tail:2", 70, "plume", (0.140, 0.200), 0.50, 0.60, 0.80, 3),
+    ("ear:2", 30, "medium", (0.050, 0.075), 0.50, 0.20, 0.80, 2),
+    ("ruff:3", 40, "long", (0.190, 0.240), 0.40, 0.75, 0.70, 3),
+    ("tail:3", 25, "plume", (0.180, 0.240), 0.45, 0.70, 0.85, 3),
 ]
 FUR_TRIS = 14800                     # LOD0 card triangles (dog_fur_cards budget 15,000)
 TAPER = {1: [1.0, 0.6], 2: [1.0, 0.85, 0.5], 3: [1.0, 0.95, 0.78, 0.5]}
@@ -1066,10 +1106,11 @@ def fur_cards(body_me, harness_me):
     cards = []
     for name, count, ctype, (l0, l1), wf, lift, droop, segs in REGIONS:
         inner = name == "under"
-        idx = np.nonzero(~bare if inner else ~bare & (reg == name))[0]
+        rname = name.split(":")[0]
+        idx = np.nonzero(~bare if inner else ~bare & (reg == rname))[0]
         if len(idx) == 0:
             continue
-        keep_off = 0.030 if inner else 0.040
+        keep_off = 0.016 if inner else 0.026          # round 4: the coat crowds the webbing (straps sink in)
 
         def reject(p):
             hn = harn_tree.find_nearest(Vector(p))
@@ -1093,7 +1134,7 @@ def fur_cards(body_me, harness_me):
             if inner:
                 L *= 1 - 0.45 * sh
                 kind = "short" if sh > 0.45 else "medium"
-            if name == "tail":
+            if rname == "tail":
                 L *= 0.75 + 0.5 * classify_t(root, "tail")
             W = L * wf * (0.8 + 0.4 * rng.random())
             lf = lift * (0.7 + 0.6 * rng.random())
@@ -1139,6 +1180,11 @@ def fur_cards(body_me, harness_me):
                 nrms += [nk, nk]
             verts = np.array(verts)
             verts[:, 2] = np.maximum(verts[:, 2], 0.0)
+            q0, q1 = verts[0::2], verts[1::2]                  # skip degenerate cards (crushed on the ground / folded)
+            ta = np.linalg.norm(np.cross(q1[:-1] - q0[:-1], q0[1:] - q0[:-1]), axis=1)
+            tb = np.linalg.norm(np.cross(q1[1:] - q1[:-1], q0[1:] - q1[:-1]), axis=1)
+            if min(ta.min(), tb.min()) < 4e-6:
+                continue
             cards.append({"root": root, "n": n, "verts": verts, "uv": uvs, "nrm": nrms, "region": name, "segs": segs,
                           "front": root[1] < -0.13, "size": L * W})
     # hold the LOD0 card budget: drop the smallest inner tufts first
