@@ -29,6 +29,7 @@ local Rules = require(Shared:WaitForChild("ProgressionRules"))
 
 local CashEffects = require(script.Parent:WaitForChild("Monetization"):WaitForChild("CashEffects"))
 local DataService = require(script.Parent.DataService)
+local Telemetry = require(script.Parent:WaitForChild("TelemetryService")) -- RP-A1 analytics
 
 local ProgressionService = {}
 ProgressionService.Priority = 30
@@ -105,6 +106,7 @@ local function push(player: Player, data: Rules.PlayerData, extra: { [string]: a
 		end
 	end
 	Net.event("PlayerDataChanged"):FireClient(player, snapshot)
+	Telemetry.CashFlow(player, extra, data.cash) -- every Cash source travels as extra.award
 end
 
 function ProgressionService.Award(player: Player, cash: number, rep: number, reason: string)
@@ -281,6 +283,7 @@ local function buy(player: Player, itemId: any): (boolean, string)
 		end
 		data.cash -= price
 		data.gear[itemId] = (data.gear[itemId] or 0) + 1
+		Telemetry.CashSpent(player, price, data.cash, "Gear", itemId)
 	elseif ProgressionConfig.Vehicles[itemId] then
 		local ok, reason, price = Rules.canBuyVehicle(data, itemId)
 		if not ok then
@@ -288,6 +291,7 @@ local function buy(player: Player, itemId: any): (boolean, string)
 		end
 		data.cash -= price
 		data.vehicles[itemId] = true
+		Telemetry.CashSpent(player, price, data.cash, "Vehicle", itemId)
 	else
 		return false, "Unknown item"
 	end

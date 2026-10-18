@@ -160,7 +160,7 @@ local MonetizationConfig = {
 			description = "Skip the launch cooldown and launch any owned vehicle straight from the station or an opened outpost. Never affects casualties or grades.",
 			price = 149,
 			order = 3,
-			ready = false,
+			ready = true, -- server path RP-M2, BoatDesk use card RP-A1
 		},
 		StarterKit = {
 			id = 2036091711,

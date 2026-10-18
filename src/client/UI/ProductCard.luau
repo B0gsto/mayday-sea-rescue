@@ -9,6 +9,8 @@
 -- with a real id (ProductShelves.mayPrompt): id 0 / ready = false items read "Coming soon".
 -- Several items on one shelf page with the arrows (gamepad: LB / RB). B or Close shuts the card, and
 -- walking away closes it. Rules and copy live in src/shared/ProductShelves.luau (tested).
+-- Quick Launch owners get the BoatDesk card as a use card instead (src/shared/QuickLaunchCard.luau):
+-- one page per boat they may take out, "Launch now" calls Vehicle_QuickLaunch (VehicleService, RP-M2).
 --
 --   ProductCard.mount(onOpen?) -> Card   once, from HudShop.build
 --   card.setSnapshot(snapshot)            PlayerDataChanged snapshots (rule 6 gate)
@@ -27,6 +29,10 @@ local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
+local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
+local QuickLaunchCard = require(Shared:WaitForChild("QuickLaunchCard"))
+local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local C = HudTheme.Colors
 local player = Players.LocalPlayer
@@ -44,6 +50,7 @@ local CATALOGUE_TTL = 20
 local PENDING_TIMEOUT = 30
 local ACTION_CLOSE = "ProductCard_Close"
 local ACTION_PAGE = "ProductCard_Page"
+local LAUNCH_TIMEOUT = 10
 
 local ProductCard = {}
 
@@ -179,6 +186,11 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	local priceFetching: { [number]: boolean } = {}
 	local pendingKey: string? = nil
 	local pendingAt = 0
+	local pageCount = 0 -- pages on the open card (items, or an owner's boats)
+	local boats: { string } = {} -- Quick Launch owner card: the launchable boats
+	local launchBusy: string? = nil
+	local launchToken = 0
+	local launchFailure: { [string]: string } = {}
 
 	local function keyOf(ref: ProductShelves.ItemRef): string
 		return `{ref.kind}/{ref.key}`
@@ -278,8 +290,67 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 		return out
 	end
 
+	local function ownsQuickLaunch(): boolean
+		local entry = catalogue[`GamePasses/{QuickLaunchCard.PASS}`]
+		return player:GetAttribute("Pass_" .. QuickLaunchCard.PASS) == true
+			or (entry ~= nil and entry.owned == true)
+	end
+
+	local function ownerCard(): boolean
+		return openShelf == QuickLaunchCard.SHELF and ownsQuickLaunch()
+	end
+
+	local function launchableBoats(): { string }
+		local data = Rules.fromSnapshot(snapshot or {})
+		return QuickLaunchCard.boats(VehicleConfig.Order, function(id)
+			return (Rules.canUseVehicle(data, id))
+		end, function(id)
+			local unlock = (ProgressionConfig.Vehicles :: any)[id]
+			return type(unlock) == "table" and unlock.land == true
+		end)
+	end
+
+	local function setButton(canUse: boolean, text: string)
+		buy.Text = text
+		buy.Active = canUse
+		buy.AutoButtonColor = canUse
+		buy.BackgroundColor3 = if canUse then C.accent else C.locked
+		buy.TextColor3 = if canUse then C.text else C.textDim
+	end
+
+	-- the owner's use card: one page per boat, "Launch now"
+	local function renderOwner(shelf: ProductShelves.Shelf)
+		boats = launchableBoats()
+		pageCount = #boats
+		page = math.clamp(page, 1, math.max(1, #boats))
+		local boat = boats[page]
+		local spec = boat and VehicleConfig.get(boat)
+		local st = QuickLaunchCard.state({
+			boats = boats,
+			busy = launchBusy,
+			coldOpenDone = player:GetAttribute("ColdOpenDone") == true
+				or (snapshot ~= nil and snapshot.coldOpenDone == true),
+			failure = boat and launchFailure[boat],
+		}, boat)
+		place.Text = shelf.title
+		pager.Text = if #boats > 1 then `{page} of {#boats}` else ""
+		prev.Visible = #boats > 1
+		nextButton.Visible = #boats > 1
+		name.Text = if spec then `Quick Launch: {spec.displayName}` else "Quick Launch"
+		effect.Text = QuickLaunchCard.EFFECT
+		note.Text = st.note or ""
+		tag.Text = "OWNED"
+		tag.TextColor3 = C.ready
+		setButton(st.canLaunch, st.buttonText)
+		frame.Visible = true
+	end
+
 	render = function()
 		if not openShelf then
+			return
+		end
+		if ownerCard() then
+			renderOwner(ProductShelves.Shelves[openShelf])
 			return
 		end
 		local shelf = ProductShelves.Shelves[openShelf]
@@ -288,6 +359,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			closeCard()
 			return
 		end
+		pageCount = #items
 		page = math.clamp(page, 1, #items)
 		local ref = items[page]
 		local item = ProductShelves.configItem(config, ref)
@@ -308,11 +380,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			elseif st.status == "comingSoon" then "COMING SOON"
 			else ""
 		tag.TextColor3 = if st.status == "owned" then C.ready else C.textDim
-		buy.Text = st.buyText
-		buy.Active = st.canBuy
-		buy.AutoButtonColor = st.canBuy
-		buy.BackgroundColor3 = if st.canBuy then C.accent else C.locked
-		buy.TextColor3 = if st.canBuy then C.text else C.textDim
+		setButton(st.canBuy, st.buyText)
 		frame.Visible = true
 	end
 
@@ -322,9 +390,9 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 		end
 		if actionName == ACTION_CLOSE then
 			closeCard()
-		elseif actionName == ACTION_PAGE and #items > 1 then
+		elseif actionName == ACTION_PAGE and pageCount > 1 then
 			local step = if input.KeyCode == Enum.KeyCode.ButtonL1 then -1 else 1
-			page = (page - 1 + step) % #items + 1
+			page = (page - 1 + step) % pageCount + 1
 			render()
 		end
 		return Enum.ContextActionResult.Sink
@@ -370,23 +438,69 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	end
 
 	prev.Activated:Connect(function()
-		if #items > 1 then
-			page = (page - 2) % #items + 1
+		if pageCount > 1 then
+			page = (page - 2) % pageCount + 1
 			render()
 		end
 	end)
 	nextButton.Activated:Connect(function()
-		if #items > 1 then
-			page = page % #items + 1
+		if pageCount > 1 then
+			page = page % pageCount + 1
 			render()
 		end
 	end)
+
+	-- Quick Launch owners: the server re-checks the pass, the station radius, rank and the bay
+	local function quickLaunch(boat: string)
+		if launchBusy then
+			return
+		end
+		launchToken += 1
+		local token = launchToken
+		launchBusy = boat
+		launchFailure[boat] = nil
+		render()
+		task.delay(LAUNCH_TIMEOUT, function()
+			if launchToken == token and launchBusy then
+				launchBusy = nil
+				launchFailure[boat] = "Offline"
+				render()
+			end
+		end)
+		task.spawn(function()
+			local net = ReplicatedStorage:FindFirstChild("Net")
+			local remote = net and net:FindFirstChild("Vehicle_QuickLaunch")
+			local ok, launched, reason = false, false, nil
+			if remote and remote:IsA("RemoteFunction") then
+				ok, launched, reason = pcall(function()
+					return remote:InvokeServer(boat)
+				end)
+			end
+			if launchToken ~= token then
+				return
+			end
+			launchBusy = nil
+			if ok and launched == true then
+				closeCard()
+				return
+			end
+			launchFailure[boat] = if ok and type(reason) == "string" then reason else "Offline"
+			render()
+		end)
+	end
 	closeButton.Activated:Connect(function()
 		closeCard()
 	end)
 
 	-- Rule 5: the only path to a purchase prompt.
 	buy.Activated:Connect(function()
+		if open and ownerCard() then
+			local boat = boats[page]
+			if boat and buy.Active then
+				quickLaunch(boat)
+			end
+			return
+		end
 		local ref = items[page]
 		if not (open and ref) then
 			return
@@ -426,10 +540,19 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			remote.OnClientEvent:Connect(purchaseFinished)
 		end
 	end)
+	local refreshAll: () -> ()
 	player.AttributeChanged:Connect(function(attr: string)
+		if attr == "Pass_" .. QuickLaunchCard.PASS then
+			refreshAll() -- owners get the BoatDesk prompt before the priced shelves open
+		end
 		if
 			open
-			and (attr:sub(1, 5) == "Pass_" or attr == "CashPacksToday" or attr == "CashPerMinute")
+			and (
+				attr:sub(1, 5) == "Pass_"
+				or attr == "CashPacksToday"
+				or attr == "CashPerMinute"
+				or attr == "ColdOpenDone"
+			)
 		then
 			render()
 		end
@@ -451,13 +574,23 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	end
 
 	local function refreshSpot(spot: Spot)
-		local visible = spot.anchor:IsDescendantOf(Workspace)
-			and ProductShelves.shelfVisible(config, spot.shelf, studio, pricedOpen())
+		local priced = ProductShelves.shelfVisible(config, spot.shelf, studio, pricedOpen())
+		local owner = spot.shelf == QuickLaunchCard.SHELF and ownsQuickLaunch()
+		if spot.shelf == QuickLaunchCard.SHELF then
+			local listed = ProductShelves.listed(config.GamePasses[QuickLaunchCard.PASS], studio)
+			priced = QuickLaunchCard.promptVisible(listed, owner, priced)
+		end
+		local visible = spot.anchor:IsDescendantOf(Workspace) and priced
+		if spot.prompt and spot.shelf == QuickLaunchCard.SHELF then
+			spot.prompt.ActionText = if owner
+				then "Quick Launch"
+				else ProductShelves.Shelves[spot.shelf].action
+		end
 		if visible and not spot.prompt then
 			local shelf = ProductShelves.Shelves[spot.shelf]
 			local prompt = Instance.new("ProximityPrompt")
 			prompt.Name = "ProductShelfPrompt"
-			prompt.ActionText = shelf.action
+			prompt.ActionText = if owner then "Quick Launch" else shelf.action
 			prompt.ObjectText = shelf.object
 			prompt.HoldDuration = 0
 			prompt.MaxActivationDistance = PROMPT_DISTANCE
@@ -483,7 +616,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 		end
 	end
 
-	local function refreshAll()
+	refreshAll = function()
 		for _, spot in spots do
 			refreshSpot(spot)
 		end
@@ -594,6 +727,9 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			snapshot = data
 			if pricedOpen() ~= was then
 				refreshAll()
+			end
+			if open and ownerCard() then
+				render() -- a boat bought or unlocked at the desk joins the Quick Launch pages
 			end
 		end,
 		close = closeCard,

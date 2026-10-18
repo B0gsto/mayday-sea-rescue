@@ -299,6 +299,7 @@ local function endColdOpen(player: Player, reason: string)
 		return
 	end
 	markColdOpenDone(player)
+	try("TelemetryService", "ColdOpenEnded", player, reason) -- RP-A1 onboarding funnel
 	local ok, v = try("VehicleService", "GetVehicle", player)
 	if ok and typeof(v) == "Instance" and v:IsA("Model") then
 		v:SetAttribute("ColdOpenApproach", false)
@@ -711,6 +712,9 @@ local function record(op: any, track: Track, inst: StepInst, grade: Grade, by: P
 		-- the cold open's Assist ease braked the hull on this step (grade capped at Silver)
 		assistEase = if (inst :: any).assistEase then true else nil,
 	})
+	if op.coldOpen and op.owner then -- RP-A1 onboarding funnel
+		try("TelemetryService", "ColdOpenStep", op.owner, inst.def.id)
+	end
 	if by then
 		op.helpers[by] = true
 		try("CrewService", "RecordRoleAction", by, op.id)
@@ -1158,6 +1162,7 @@ finish = function(op: any, reason: string)
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
+		try("TelemetryService", "OpFinished", p, op, reason) -- RP-A1: grade, fail reason, first op
 		fire("Ops_Debrief", p, {
 			opId = op.id,
 			kind = op.kind,
@@ -2121,6 +2126,7 @@ function OperationService.StartColdOpen(
 	local op = newOp("PersonInWater", "Swimmer", "HarbourMouth", pos)
 	op.coldOpen = true
 	flow.opId = op.id
+	try("TelemetryService", "ColdOpenStarted", player) -- RP-A1 onboarding funnel
 	op.planIds = OperationService.ColdOpenPlan
 	op.offeredTo = { player }
 	player:SetAttribute("OpsPro", false) -- Assist mode

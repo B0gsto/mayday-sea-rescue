@@ -141,7 +141,7 @@ return function(t)
 				CallTheStorm = true,
 				CallTheGreatStorm = true,
 			},
-			GamePasses = { DoubleCash = true, StarterKit = true },
+			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}
 		for kind, items in { Products = Config.Products, GamePasses = Config.GamePasses } do
 			for key, item in items do
