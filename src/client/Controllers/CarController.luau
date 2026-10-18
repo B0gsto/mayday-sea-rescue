@@ -27,6 +27,9 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CarFolder = Shared:WaitForChild("Car")
+local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
+local AudioMix = require(Shared:WaitForChild("Audio"):WaitForChild("AudioMix"))
 local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local LightBar = require(CarFolder:WaitForChild("LightBar"))
@@ -36,14 +39,15 @@ local Weather = require(Shared:WaitForChild("Weather"))
 
 local player = Players.LocalPlayer
 
--- TODO(audio): our own recorded or licensed assets (never toolbox ids). Empty = silent.
+-- Sound name -> AudioConfig clip (licensed stand-ins, docs 12 section 4). Empty = silent.
 local SOUNDS = {
-	Engine = "", -- diesel idle loop, pitched by rpm
-	Horn = "",
-	Siren = "", -- UK two-tone / wail
-	TyreRoar = "",
+	Engine = "Eng_Car_Idle", -- diesel idle layer, pitched by rpm
+	EngineLoad = "Eng_Car_Load", -- driving layer, crossfaded in with rpm and throttle
+	Horn = "Car_Horn",
+	Siren = "", -- invented two-tone still to make (docs 12: must copy no real pattern)
+	TyreRoar = "Tyre_Asphalt",
 	Skid = "",
-	Gravel = "",
+	Gravel = "Tyre_Gravel",
 }
 
 local VISUAL_RANGE = 400 -- studs: wheels and lights animate for cars this close
@@ -87,16 +91,14 @@ local function extraMass(model: Model): number
 end
 
 local function makeSound(parent: Instance, name: string, looped: boolean): Sound?
-	local id = (SOUNDS :: any)[name]
-	if type(id) ~= "string" or id == "" then
+	local clip = (SOUNDS :: any)[name]
+	if type(clip) ~= "string" or clip == "" or AudioConfig.Clips[clip] == nil then
 		return nil
 	end
-	local s = Instance.new("Sound")
+	local s = AudioController.newSound(clip, parent, looped)
 	s.Name = "Car" .. name
-	s.SoundId = id
-	s.Looped = looped
+	s.Volume = AudioConfig.Clips[clip].volume
 	s.RollOffMaxDistance = 250
-	s.Parent = parent
 	return s
 end
 
@@ -117,7 +119,7 @@ local function visualFor(model: Model): Visual?
 	end
 	local root = model.PrimaryPart :: BasePart
 	local sounds: { [string]: Sound } = {}
-	for _, name in { "Engine", "Horn", "Siren" } do
+	for _, name in { "Engine", "EngineLoad", "TyreRoar", "Horn", "Siren" } do
 		local s = makeSound(root, name, true)
 		if s then
 			sounds[name] = s
@@ -307,6 +309,15 @@ local function currentDriverSeat(): VehicleSeat?
 end
 
 local function stopDriving()
+	local v = driving and visuals[driving]
+	if v then
+		for _, name in { "Engine", "EngineLoad", "TyreRoar" } do
+			local snd = v.sounds[name]
+			if snd then
+				snd:Stop() -- engine off when the driver gets out
+			end
+		end
+	end
 	if driveSim then
 		Physics.idle(driveSim)
 	end
@@ -449,14 +460,45 @@ local function drive(dt: number)
 	setLamps(driving, "Headlamp", headlights, Color3.fromRGB(245, 245, 230))
 	local v = visuals[driving]
 	local engine = v and v.sounds.Engine
+	local engineLoad = v and v.sounds.EngineLoad
 	if engine and flooded then
 		engine:Stop() -- stalled
+		if engineLoad then
+			engineLoad:Stop()
+		end
 	elseif engine then
-		local redline = if sim.derived.spec.engine then sim.derived.spec.engine.redlineRpm else 4000
-		engine.PlaybackSpeed = 0.55 + telemetry.rpm / redline
-		engine.Volume = 0.35 + 0.4 * telemetry.drive
+		local eng = sim.derived.spec.engine
+		local redline = if eng then eng.redlineRpm else 4000
+		local idleRpm = if eng then eng.idleRpm else 750
+		local idleVol, loadVol, pitch =
+			AudioMix.carEngine(telemetry.rpm, idleRpm, redline, telemetry.drive)
+		engine.PlaybackSpeed = pitch
+		engine.Volume = AudioConfig.Clips.Eng_Car_Idle.volume * idleVol
 		if not engine.IsPlaying then
 			engine:Play()
+		end
+		if engineLoad then
+			engineLoad.PlaybackSpeed = pitch * 0.9
+			engineLoad.Volume = AudioConfig.Clips.Eng_Car_Load.volume * loadVol
+			if loadVol > 0.01 and not engineLoad.IsPlaying then
+				engineLoad:Play()
+			elseif loadVol <= 0.01 and engineLoad.IsPlaying then
+				engineLoad:Stop()
+			end
+		end
+	end
+	local tyres = v and v.sounds.TyreRoar
+	if tyres then
+		local speedFrac =
+			math.clamp(math.abs(telemetry.speed) / (100 * LandVehicleConfig.KMH), 0, 1)
+		tyres.Volume = AudioConfig.Clips.Tyre_Asphalt.volume
+			* speedFrac
+			* (if telemetry.grounded > 0 then 1 else 0)
+		tyres.PlaybackSpeed = 0.8 + 0.4 * speedFrac
+		if tyres.Volume > 0.01 and not tyres.IsPlaying then
+			tyres:Play()
+		elseif tyres.Volume <= 0.01 and tyres.IsPlaying then
+			tyres:Stop()
 		end
 	end
 	if hud then

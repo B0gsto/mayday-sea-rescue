@@ -101,3 +101,29 @@ SFX_Chandlery_Floorboard,RL,9125563505,Floor Creaks Wood Floorboard Cu Many Vers
 SFX_Station_RollerDoor,NONE,,no suitable candidate,,,Not found
 SFX_Station_LaunchPager,NONE,,no suitable candidate,,,Not found
 SFX_Station_Winch,NONE,,no suitable candidate,,,Not found
+SFX_Eng_JetSki_Low,RL,9112798559,Jet Skis Some Chop 1 (SFX),57.0,Roblox licensed (PSE),RP-AU1 chosen (AudioConfig Eng_JetSki_Low). Verified public
+SFX_Eng_JetSki_High,RL,9112798882,Jet Skis Surges 1 (SFX),56.0,Roblox licensed (PSE),RP-AU1 chosen (Eng_JetSki_High). Verified public
+SFX_Eng_RIB_Idle,FS,https://freesound.org/people/kyles/sounds/637742/,outboard motor boat idle or slow rattly3 quieter.flac,,CC0 (checked on page),RP-AU1 uploaded as Audio 91517159436369 (moderation Approved 2026-10-18); fallback RL 9112780932 Fishing Boat 1
+SFX_Eng_RIB_Plane,FS,https://freesound.org/people/kyles/sounds/637744/,outboard motor boat onboard high speed.flac,127.4,CC0 (checked on page),RP-AU1 uploaded as Audio 137085856844255 (Approved); fallback RL 9112780932
+SFX_Wind_Strong,FS,https://freesound.org/people/DBlover/sounds/405601/,Howling Wind Ambience,85.4,CC0 (checked on page),RP-AU1 uploaded as Audio 102165262654580 (Approved); fallback RL 9114057128
+SFX_Wind_Gale,FS,https://freesound.org/people/LanDub/sounds/181935/,Gale Wind.wav,59.1,CC0 (checked on page),RP-AU1 uploaded as Audio 101650660993799 (Approved); fallback RL 9113732046
+SFX_Wind_Light,RL,9113286969,Barstow Wind Light Blustery Low Howl 2 (SFX),37.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Eng_Pickup_Idle,RL,9112988114,1988 Chevy Pickup Truck Idle 1 (SFX),33.0,Roblox licensed (PSE),RP-AU1 chosen (Eng_Car_Idle). Verified public
+SFX_Eng_Pickup_Load,RL,9112736090,1988 Gmc Suburban 2 (SFX),51.0,Roblox licensed (PSE),RP-AU1 chosen (Eng_Car_Load). Verified public
+SFX_Car_Horn,RL,9113014312,1998 Ford Expedition V8 Suv Horn Honks 6 (SFX),3.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Tyre_Asphalt,RL,9112886237,Tire Constant 1 (SFX),27.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Tyre_Cobble,RL,9112886780,Tires Cobblestones 2 (SFX),30.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Hull_Lap,RL,9112737677,Active Water Lap 1 (SFX),44.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Hull_BowWash,RL,9112750448,Bow Wash Slow Trolling Speed 1 (SFX),36.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Hull_Wake,RL,9120610020,Water Wake Constant 1 (SFX),23.0,Roblox licensed (PSE),RP-AU1 chosen. Verified public
+SFX_Hull_Slam,RL,9120611452,Wave Crashes Single Large Impacts 6 (SFX),5.0,Roblox licensed (PSE),RP-AU1 chosen (replaces Metal Tank Impact). Verified public
+SFX_Wave_OpenSwell,RL,9117143192,Ocean Surf 1 (SFX),32.0,Roblox licensed (PSE),RP-AU1 chosen for the open-sea calm bed. Verified public
+SFX_Rain_Heavy,RL,9112853287,Rain Heavy 1 (SFX),41.0,Roblox licensed (PSE),RP-AU1 chosen (WeatherController rain loop). Verified public
+SFX_Wind_Halyard,RL,9114462292,Flagpole Hit 1 (SFX),1.0,Roblox licensed (PSE),RP-AU1 chosen (+ 9114462293 9114462450 hits; 9114462106 creak). Verified public
+SFX_Radio_Open,RL,9118026328,Radio Squelches 12 (SFX),1.0,Roblox licensed (PSE),RP-AU1 stand-in until docs 11 designed clips. Verified public
+SFX_Radio_Tail,RL,9118021986,Radio Squelches 32 (SFX),1.0,Roblox licensed (PSE),RP-AU1 stand-in. Verified public
+SFX_Radio_Static,RL,9118026602,Radio Static 1 (SFX),3.0,Roblox licensed (PSE),RP-AU1 chosen (no voices; replaces police feed). Verified public
+SFX_Radio_Key,RL,9120456241,Walkie Talkie 1 (SFX),1.0,Roblox licensed (PSE),RP-AU1 stand-in. Verified public
+SFX_UI_Click,RL,9119717529,Switch Click On Or Off Toggle Button 1 (SFX),0.5,Roblox licensed (PSE),RP-AU1 chosen (+ 9119717523 back). Verified public
+MUS_Operation,RL,1837463124,Tension Bed for One (The Box),133.0,Roblox licensed (APM),RP-AU1 music cue: operation underway. Verified public
+MUS_Debrief,RL,84002131639340,Cinematic Hopeful Gravitas Underscore Ambient Only (Leonard Miller),145.0,Roblox licensed (APM),RP-AU1 music cue: debrief. Verified public

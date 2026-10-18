@@ -71,6 +71,7 @@ local driving: Model? = nil -- the vehicle whose DriverSeat we sit in
 local simulated: { [Model]: boolean } = {} -- models this client applied forces to last frame
 local visualOffset: { [Model]: number } = {}
 local telemetry: Simulator.Telemetry? = nil
+local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
 local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
@@ -312,6 +313,7 @@ local function step(dt: number)
 					end
 					local throttle = coldOpenThrottle(child, seat.ThrottleFloat, now)
 					telemetry = Simulator.step(child, throttle, seat.SteerFloat, now)
+					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
 				elseif isLocalTow(child) then
@@ -352,6 +354,11 @@ end
 -- Last Simulator telemetry of the driven hull (speed, contact, slam, trim, pitch, roll, planing).
 function BoatController.GetTelemetry(): Simulator.Telemetry?
 	return telemetry
+end
+
+-- The throttle (-1..1) the driven hull got last step; AudioController ties the engine RPM to it.
+function BoatController.GetThrottle(): number
+	return if driving then lastThrottle else 0
 end
 
 -- The vehicle the local player is driving, if any.

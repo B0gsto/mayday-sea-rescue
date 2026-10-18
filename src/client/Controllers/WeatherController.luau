@@ -33,6 +33,8 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local LightingPresets = require(Shared:WaitForChild("Config"):WaitForChild("LightingPresets"))
 local Net = require(Shared:WaitForChild("Net"))
 local Weather = require(Shared:WaitForChild("Weather"))
@@ -41,8 +43,8 @@ local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 type Preset = LightingPresets.Preset
 
 -- Assets: placeholders until audio and textures are uploaded (empty id = silent).
-local THUNDER_SOUND_ID = "" -- TODO asset: thunder crack + rumble
-local RAIN_LOOP_SOUND_ID = "" -- TODO asset: rain and wind bed, looped
+local THUNDER_SOUND_ID = AudioConfig.id("Thunder_Near") -- crack + rumble (RL stand-in)
+local RAIN_LOOP_SOUND_ID = AudioConfig.id("Rain_Heavy") -- rain bed, looped (wind is AudioController's)
 local SIREN_SOUND_ID = "" -- TODO asset: harbour storm siren, one shot
 local RAIN_TEXTURE = "rbxasset://textures/particles/sparkles_main.dds" -- TODO asset: rain streak
 
@@ -127,6 +129,7 @@ local function newSound(name: string, soundId: string, looped: boolean, volume: 
 	sound.SoundId = soundId
 	sound.Looped = looped
 	sound.Volume = volume
+	sound.SoundGroup = AudioController.group("Ambience")
 	sound.Parent = SoundService
 	return sound
 end

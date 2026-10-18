@@ -32,6 +32,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local Condition = require(Shared:WaitForChild("Ops"):WaitForChild("Condition"))
 local OpsController = require(script.Parent.OpsController)
 local OpsHud = require(UI:WaitForChild("OpsHud"))
@@ -42,6 +43,18 @@ local RadioStitch = require(UI:WaitForChild("RadioStitch"))
 local RadioTemplates = require(UI:WaitForChild("RadioTemplates"))
 local RadioWheel = require(UI:WaitForChild("RadioWheel"))
 local VoiceManifest = require(Shared:WaitForChild("Config"):WaitForChild("VoiceManifest"))
+
+-- Radio sfx: our own designed clips (VoiceManifest.Sfx) first, else the licensed stand-ins.
+local RADIO_SFX_FALLBACK: { [string]: string } = {
+	SquelchOpen = AudioConfig.id("Radio_SquelchOpen"),
+	SquelchClose = AudioConfig.id("Radio_SquelchClose"),
+	Static = AudioConfig.id("Radio_Static"),
+	Key = AudioConfig.id("Radio_Key"),
+}
+local function radioSfx(name: string): string
+	local own = VoiceManifest.Sfx[name]
+	return if own and own ~= "" then own else RADIO_SFX_FALLBACK[name] or ""
+end
 local Weather = require(Shared:WaitForChild("Weather"))
 
 type Line = RadioStitch.Line
@@ -127,9 +140,15 @@ local function buildAudio()
 	local out = Instance.new("AudioDeviceOutput")
 	out.Name = "Out"
 	out.Parent = folder
+	-- Master x Radio volume category; AudioController sets it from the SoundGroups
+	local groupLevel = Instance.new("AudioFader")
+	groupLevel.Name = "GroupLevel"
+	groupLevel.Volume = 1
+	groupLevel.Parent = folder
 	wire(eq, dist, folder)
 	wire(dist, voiceFader, folder)
-	wire(voiceFader, out, folder)
+	wire(voiceFader, groupLevel, folder)
+	wire(groupLevel, out, folder)
 	local players: { AudioPlayer } = {}
 	for i = 1, 2 do
 		local ap = Instance.new("AudioPlayer")
@@ -141,7 +160,7 @@ local function buildAudio()
 	local static = Instance.new("AudioPlayer")
 	static.Name = "Static"
 	static.Looping = true
-	static.Asset = VoiceManifest.Sfx.Static or ""
+	static.Asset = radioSfx("Static")
 	static.Parent = folder
 	local staticFader = Instance.new("AudioFader")
 	staticFader.Name = "StaticLevel"
@@ -166,7 +185,7 @@ end
 
 local function sfx(name: string)
 	local f = fx
-	local asset = VoiceManifest.Sfx[name]
+	local asset = radioSfx(name)
 	if f and asset and asset ~= "" then
 		f.click.Asset = asset
 		f.click:Play()
