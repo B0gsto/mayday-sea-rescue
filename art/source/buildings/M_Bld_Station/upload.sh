@@ -1,5 +1,5 @@
 #!/bin/bash
-# H1 upload: the own texture sets (Station Render / Slate / Details, Slipway Steel) and the FBX LODs of both assets.
+# H1/H2 upload: the own texture sets (Station Render / Slate / Details, Slipway Steel) and the FBX LODs of both assets.
 # Shared sets (BldTrim Sheet, B02 QuayStone / Concrete / WeedyConcrete) are already uploaded (assets/materials/manifest.csv).
 set -uo pipefail
 cd /Users/bogdan/RobloxProjects/MaydaySeaRescue

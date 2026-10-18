@@ -29,7 +29,8 @@ DETAILS = {
     "Steel": (0.5, 0.28, 0.75, 0.56),
     "CrewDoor": (0.75, 0.28, 1.0, 0.84),
     "Lead": (0.0, 0.0, 0.5, 0.28),
-    "Housing": (0.5, 0.0, 1.0, 0.28),
+    "Housing": (0.5, 0.0, 0.75, 0.28),
+    "Orange": (0.75, 0.0, 1.0, 0.28),      # H2: rescue-orange painted steel (bands, pelmet, fascia)
 }
 
 
@@ -91,9 +92,10 @@ def save(folder, stem, alb, nor, rgh, met, darken=0.3, gloss=0.4, rlo=0.04):
     Image.fromarray((np.clip(met, 0, 1) * 255 + 0.5).astype(np.uint8)).save(os.path.join(folder, stem + "_MET.png"))
     m = met[..., None] > 0.5
     # wet: water darkens rough dielectrics, barely touches metal; roughness drops
-    dk = np.where(m, darken * 0.4, darken)
-    walb = np.clip(alb * (1 - dk), 22 / 255, 238 / 255)
-    wrgh = np.clip(rgh - gloss * (0.6 + 0.4 * rgh), min(0.03, rlo), 1.0)
+    dk = np.where(m, darken * 0.5, np.minimum(darken * 1.45, 0.6))       # H2: wet clearly darker
+    lum = alb.mean(-1, keepdims=True)
+    walb = np.clip((lum + (alb - lum) * 1.18) * (1 - dk), 22 / 255, 238 / 255)
+    wrgh = np.clip(rgh - min(gloss * 1.3, 0.75) * (0.55 + 0.45 * rgh), min(0.03, rlo), 1.0)   # and glossier
     Image.fromarray((walb * 255 + 0.5).astype(np.uint8)).save(os.path.join(folder, stem + "_ALB_Wet.png"))
     Image.fromarray((wrgh * 255 + 0.5).astype(np.uint8)).save(os.path.join(folder, stem + "_RGH_Wet.png"))
 
@@ -172,9 +174,9 @@ def render_set():
     runs = fbm(s, 2.6, aniso=(0.15, 1.6), seed=24)          # long vertical runs (algae / water marks)
     salt = smooth(0.62, 0.8, fbm(s, 2.8, seed=25))
     base = rgb((170, 166, 154))
-    alb = base[None, None, :] * (0.9 + 0.16 * big[..., None] + 0.06 * mid[..., None])
+    alb = base[None, None, :] * (0.95 + 0.07 * big[..., None] + 0.06 * mid[..., None])
     algae = smooth(0.58, 0.85, runs)[..., None]
-    alb = alb * (1 - 0.22 * algae) + rgb((104, 110, 92)) * 0.22 * algae
+    alb = alb * (1 - 0.12 * algae) + rgb((104, 110, 92)) * 0.12 * algae
     alb = alb * (1 - 0.14 * salt[..., None]) + rgb((196, 194, 186)) * 0.14 * salt[..., None]
     pits = smooth(0.8, 0.92, fine)
     alb = alb * (1 - 0.06 * pits[..., None])
@@ -182,7 +184,7 @@ def render_set():
     rgh = 0.87 + 0.06 * fine - 0.05 * salt + 0.04 * algae[..., 0]
     # patch repairs: newer lime / cement render, smoother, a touch different in tone, a fine seam at the edge
     r = np.random.default_rng(31)
-    specs = [(r.uniform(0, N), r.uniform(0, N), r.uniform(70, 210), r.uniform(50, 160)) for _ in range(4)]
+    specs = [(r.uniform(0, N), r.uniform(0, N), r.uniform(40, 90), r.uniform(30, 70)) for _ in range(4)]   # H2: small
     pm, ring = patch_masks(s, specs, 32, edge_amp=9.0)
     tones = [rgb((160, 160, 156)), rgb((176, 170, 158)), rgb((154, 156, 152)), rgb((168, 164, 152))]
     pid = np.zeros(s, dtype=np.int64)
@@ -194,12 +196,12 @@ def render_set():
         best = np.minimum(best, d)
     pcol = np.stack(tones)[pid] * (0.97 + 0.05 * mid[..., None])
     pcol = pcol * (1 - 0.1 * algae * 0.5)
-    alb = lerp(alb, pcol, pm * 0.92)
+    alb = lerp(alb, pcol, pm * 0.35)
     alb = alb * (1 - 0.1 * ring[..., None] * (0.5 + fine[..., None]))
     h = lerp(h, 0.6 + 0.12 * big + 0.06 * fine, pm) - 0.12 * ring
     rgh = lerp(rgh, 0.8 + 0.03 * fine, pm)
     # a few hairline cracks: 1 px, low contrast, slightly recessed
-    crk = hairlines(s, 9, 5)
+    crk = hairlines(s, 4, 5)
     alb = alb * (1 - 0.13 * crk[..., None])
     h = h - 0.12 * crk
     rgh = rgh + 0.03 * crk
@@ -261,11 +263,14 @@ def slate_set():
     alb = alb * (1 - 0.5 * shadow[..., None])
     alb = lerp(alb, dark * (0.9 + 0.2 * edgen[..., None]), under * 0.9)
     # lichen and salt, sparing: rosettes (grey-green, white crustose, a few orange Xanthoria), salt at some tails
-    lm, li = spots(s, 34, (3.0, 11.0), 45)
+    lm, li = spots(s, 120, (3.0, 15.0), 45)   # H2: lichen (was 34)
     lm = lm * (1 - gap) * (1 - under) * np.where(replaced[slot], 0.2, 1.0)
     lcol = np.array([rgb((122, 130, 106)), rgb((176, 178, 168)), rgb((168, 126, 60)), rgb((134, 138, 112))])
-    lpick = np.random.default_rng(46).choice(4, 34, p=(0.4, 0.3, 0.12, 0.18))
+    lpick = np.random.default_rng(46).choice(4, 120, p=(0.38, 0.3, 0.14, 0.18))
     alb = lerp(alb, lcol[lpick][li] * (0.9 + 0.2 * edgen[..., None]), lm * 0.85)
+    moss = smooth(0.62, 0.8, fbm(s, 2.8, seed=48)) * (1 - smooth(0.0, 40.0, ty)) * (1 - under)   # grey-green crust under the tails
+    alb = lerp(alb, rgb((96, 104, 84)) * (0.9 + 0.2 * edgen[..., None]), moss[..., None] * 0.55)
+    lm = np.maximum(lm, moss * 0.6)
     tsalt = smooth(0.6, 1.0, 1 - dt / 26) * smooth(0.72, 0.9, fbm(s, 2.2, seed=47)) * (1 - under)
     alb = lerp(alb, rgb((150, 153, 152)), tsalt * 0.35)
 
@@ -311,7 +316,7 @@ def granite_layout(seed, courses=5, width=2.0, gapmin=0.18):
             return rows
 
 
-def granite_set():
+def granite_set(basev=False):
     s = (N, N)
     nc, cm = 5, 0.4
     ppm = N / 2.0                                    # px per metre
@@ -340,7 +345,7 @@ def granite_set():
     d = np.minimum(du, dv)                           # px to the nearest joint centre
     r = np.random.default_rng(78)
     nb = nc * 4
-    tone = r.uniform(0.86, 1.12, nb)
+    tone = r.uniform(0.74, 1.2, nb) * np.where(r.random(nb) < 0.15, 0.82, 1.0)   # H2: more value spread
     warm = r.random(nb) < 0.3
     hue = np.where(warm[:, None], [1.05, 0.99, 0.93], [1.0, 1.0, 1.0]) * (1 + r.normal(0, 0.015, (nb, 3)))
     tu, tv = r.normal(0, 3.0, nb), r.normal(0, 3.0, nb)   # px of tilt across the face
@@ -421,8 +426,21 @@ def granite_set():
     h = h + 0.5 * lm
     rgh = lerp(rgh, 0.95, lm)
     _ = stone
+    name = "T_Station_Granite"
+    if basev:    # plinth / base courses (v = z / 2 m): rising damp, green algae at the foot, a white salt line at the damp edge
+        wob = fbm(s, 2.6, aniso=(1.0, 0.3), seed=96)
+        edge = 0.55 + 0.25 * (wob - 0.5) * 2
+        damp = 1 - smooth(edge - 0.18, edge, vm)
+        alb = alb * (1 - 0.38 * damp[..., None])
+        green = (1 - smooth(0.05, 0.35 + 0.15 * wob, vm)) * (0.6 + 0.4 * fine)
+        alb = lerp(alb, rgb((58, 70, 50)) * (0.85 + 0.3 * mid[..., None]), green[..., None] * 0.55)
+        sline = smooth(0.0, 0.04, vm - edge + 0.06) * (1 - smooth(0.0, 0.06, vm - edge)) * smooth(0.4, 0.7, fine + 0.3 * mid)
+        alb = lerp(alb, rgb((214, 212, 204)), sline[..., None] * 0.6 * (1 - jm[..., None] * 0.5))
+        rgh = rgh - 0.18 * damp - 0.1 * green + 0.08 * sline
+        h = h + 0.3 * sline
+        name = "T_Station_GraniteBase"
     nor = normal_from_height(h, 0.9)
-    save(OUT, "T_Station_Granite", alb, nor, rgh, np.zeros(s), darken=0.34, gloss=0.45)
+    save(OUT, name, alb, nor, rgh, np.zeros(s), darken=0.34, gloss=0.45)
 
 
 # ---------------------------------------------------------------- details atlas helpers
@@ -629,6 +647,22 @@ def details_set():
     rgh[r0:r1, c0:c1] = 0.5 + 0.18 * st[..., 0] + 0.3 * rust + 0.12 * sc + 0.1 * ew
     hgt[r0:r1, c0:c1] = 0.2 * rust - 0.1 * sc + 0.1 * R(fine)
 
+    # ---- H2 rescue orange: painted steel, chalky UV fade at the top, rust bleeding from fixings, worn edges
+    r0, r1, c0, c1 = box("Orange")
+    hh, ww = r1 - r0, c1 - c0
+    yo = np.arange(hh)[:, None] / hh * np.ones((1, ww))
+    reg = rgb((208, 84, 30)) * (0.9 + 0.12 * R(big)[..., None] + 0.04 * R(fine)[..., None])
+    reg = lerp(reg, rgb((214, 132, 98)), (smooth(0.55, 0.0, yo) * smooth(0.45, 0.85, R(mid)))[..., None] * 0.35)
+    seeds = [(rr.uniform(0, ww), rr.uniform(0, 6), rr.uniform(20, 120), rr.uniform(1.0, 3.0), rr.uniform(0.3, 0.8)) for _ in range(24)]
+    rs = streaks((hh, ww), seeds, 79) * (0.5 + 0.5 * R(runs))
+    reg = lerp(reg, rustc * (0.8 + 0.3 * R(fine)[..., None]), np.clip(rs, 0, 1)[..., None] * 0.5)
+    ed = edge_dist(hh, ww)
+    ew = smooth(0.55, 0.8, (1 - smooth(0, 6, ed)) * 0.8 + R(fine) * 0.4)
+    reg = lerp(reg, rgb((120, 116, 108)), ew[..., None] * 0.5)
+    alb[r0:r1, c0:c1] = reg
+    rgh[r0:r1, c0:c1] = 0.42 + 0.08 * R(fine) + 0.25 * np.clip(rs, 0, 1) + 0.15 * ew
+    hgt[r0:r1, c0:c1] = 0.2 * R(big) - 0.2 * ew
+
     # ---- sign board: navy, bold cream lettering filling the board, painted border, mild weathering
     r0, r1, c0, c1 = box("Sign")
     hh, ww = r1 - r0, c1 - c0
@@ -682,5 +716,6 @@ if __name__ == "__main__":
     render_set()
     slate_set()
     granite_set()
+    granite_set(basev=True)
     details_set()
     print("ok")

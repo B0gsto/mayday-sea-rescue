@@ -82,9 +82,10 @@ def save(folder, stem, alb, nor, rgh, met, darken=0.3, gloss=0.4):
     write(folder, stem, "RGH", rgh, "L")
     write(folder, stem, "MET", met, "L")
     m = met[..., None] > 0.5
-    dk = np.where(m, darken * 0.4, darken)
-    write(folder, stem, "ALB_Wet", np.clip(alb * (1 - dk), 22 / 255, 238 / 255), "RGB")
-    write(folder, stem, "RGH_Wet", np.clip(rgh - gloss * (0.6 + 0.4 * rgh), 0.05, 1.0), "L")
+    dk = np.where(m, darken * 0.5, np.minimum(darken * 1.45, 0.6))       # H2: wet clearly darker, glossier
+    lum = alb.mean(-1, keepdims=True)
+    write(folder, stem, "ALB_Wet", np.clip((lum + (alb - lum) * 1.18) * (1 - dk), 22 / 255, 238 / 255), "RGB")
+    write(folder, stem, "RGH_Wet", np.clip(rgh - min(gloss * 1.3, 0.75) * (0.55 + 0.45 * rgh), 0.04, 1.0), "L")
 
 
 def rgb(c):

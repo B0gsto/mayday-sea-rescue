@@ -29,7 +29,7 @@ NAME = "M_Bld_Station"
 D = {  # Details atlas rects (maketex.DETAILS)
     "Sign": (0.0, 0.84, 1.0, 1.0), "RollerDoor": (0.0, 0.28, 0.5, 0.84), "Glass": (0.5, 0.56, 0.75, 0.84),
     "Steel": (0.5, 0.28, 0.75, 0.56), "CrewDoor": (0.75, 0.28, 1.0, 0.84), "Lead": (0.0, 0.0, 0.5, 0.28),
-    "Housing": (0.5, 0.0, 1.0, 0.28)}
+    "Housing": (0.5, 0.0, 0.75, 0.28), "Orange": (0.75, 0.0, 1.0, 0.28)}
 
 
 def rect(name, w, h):
@@ -42,6 +42,8 @@ STONE = ("tile", 2.0)
 RENDER = ("tile", 4.0)
 SLATE = ("tile", 2.0)
 STEEL = rect("Steel", 0.4, 0.4)
+ORANGE = rect("Orange", 1.5, 0.3)
+BASE = ("tile", 2.0)       # H2 GraniteBase: v = z / 2 m, rising damp below ~1.1 m
 
 XL, XM, XR = -9.75, -0.75, 9.75
 YF, YB = -8.1, 8.1
@@ -72,6 +74,7 @@ def gable_poly(x0, x1, slope):
 def build():
     stone, render, roof, tr, det, door = (Part("Stone"), Part("Render"), Part("Roof"), Part("Trim"), Part("Details"),
                                           Part("BayDoor"))
+    plinth, lit = Part("Plinth"), Part("GlassLit")      # H2: damp base courses; switchable night glazing / lamp lenses
     atts = {}
     rng = random.Random(7)
     front, back = Wall((0, -1, 0), YF), Wall((0, 1, 0), YB)
@@ -83,7 +86,8 @@ def build():
         "hall_back": (stone, back, "y", YB - T, YB, gable_poly(XL, XM, TH), STONE),
         "wing_front": (render, front, "y", YF, YF + T, gable_poly(XM, XR, TW), RENDER),
         "wing_east": (render, east, "x", XR - T, XR, side_rect, RENDER),
-        "wing_back": (render, back, "y", YB - T, YB, gable_poly(XM, XR, TW), RENDER),
+        "wing_back": (render, back, "y", YB - T, YB, gable_poly(XM, XR, TW),
+                      ("tileo", 4.6, 0.37, 0.61, 0.055)),
     }
     # windows (wall, s, sill top, width, height, sash bars, keystone); granite-wall heads and sills sit on bed joints
     WIN = [("hall_west", -y, 2.4, 1.0, 2.0, True, False) for y in (-4.5, 0.0, 4.5)]
@@ -114,12 +118,13 @@ def build():
     stone.box((XL + T, YF + T, 0), (-1.0, YB - T, 0.08), STONE, skip=("-z",))   # hall floor (granite flags)
 
     # plinth with a weathered (sloped) top, both buildings, two courses (0 - 0.8 m), stopped at the doors
-    geo.LEVEL = 2
+    geo.LEVEL = 3          # H2: plinth is its own MeshPart (GraniteBase), present in every LOD
     PL = [(-0.02, 0.0), (0.08, 0.0), (0.08, 0.66), (0.0, 0.8), (-0.02, 0.8)]
     for wall, s0, s1 in ((front, XL - 0.08, -8.65), (front, -1.85, 0.48), (front, 1.92, XR + 0.08),
                          (east, YF - 0.08, YB + 0.08), (west, -(YB + 0.08), -(YF - 0.08)),
                          (back, -(XR + 0.08), -2.72), (back, -1.28, 6.78), (back, 8.22, -(XL - 0.08))):
-        wall.prism(stone, s0, s1, PL, STONE)
+        wall.prism(plinth, s0, s1, PL, BASE)
+    geo.LEVEL = 2
     # crew wing quoins: alternating long (0.6) and short (0.3) faces, one 0.4 m course each, 1.5 cm proud, 12 mm joints
     z, k = 0.8, 0
     while z + CR <= EAV - 0.15:
@@ -169,8 +174,20 @@ def build():
         geo.LEVEL = 1
         wall.plate(stone, [(s - 0.09, DT - 0.05), (s + 0.09, DT - 0.05), (s + 0.12, DT + CR + 0.03),
                            (s - 0.12, DT + CR + 0.03)], 0.0, 0.09, STONE)                # keystone
-        wall.box(det, s - 0.09, s + 0.09, 0.05, 0.25, DT + 0.55, DT + 0.82, STEEL)       # lamp
-        wall.box(det, s - 0.02, s + 0.02, 0, 0.25, DT + 0.8, DT + 0.84, STEEL)
+        if name == "ATT_CrewDoor":      # H2 swan-neck bracket lamp: wall plate, arm, lantern, lit lens (ATT_Lamp_Door)
+            zl = DT + 0.62
+            wall.box(det, s - 0.07, s + 0.07, 0.0, 0.02, zl + 0.1, zl + 0.36, STEEL)
+            wall.box(det, s - 0.018, s + 0.018, 0.02, 0.34, zl + 0.3, zl + 0.34, STEEL)
+            wall.box(det, s - 0.018, s + 0.018, 0.3, 0.34, zl + 0.2, zl + 0.32, STEEL)
+            wall.box(det, s - 0.12, s + 0.12, 0.2, 0.44, zl + 0.16, zl + 0.2, ORANGE)       # hood
+            wall.box(det, s - 0.09, s + 0.09, 0.23, 0.41, zl, zl + 0.16, STEEL)
+            for o0 in (0.229, 0.411):
+                wall.box(lit, s - 0.075, s + 0.075, o0 - 0.002, o0 + 0.002, zl + 0.015, zl + 0.15, rect("Glass", 0.15, 0.14))
+            pl = wall.world(s, 0.32, zl + 0.05)
+            atts["ATT_Lamp_Door"] = Vector((pl.x, pl.y, pl.z))
+        else:
+            wall.box(det, s - 0.09, s + 0.09, 0.05, 0.25, DT + 0.55, DT + 0.82, STEEL)       # lamp
+            wall.box(det, s - 0.02, s + 0.02, 0, 0.25, DT + 0.8, DT + 0.84, STEEL)
         geo.LEVEL = 3
         p = wall.world(s, 0.3, 0.05)
         atts[name] = Vector((p.x, p.y, 0.0))
@@ -195,10 +212,14 @@ def build():
     for xa, xb in zip(posts, posts[1:]):
         det.face([(xa + 0.07, yo + 0.07, 4.62), (xb - 0.07, yo + 0.07, 4.62), (xb - 0.07, yo + 0.07, 6.05),
                   (xa + 0.07, yo + 0.07, 6.05)], rect("Glass", 1.46, 1.43), outward=(0, -1, 0))
+        lit.face([(xa + 0.07, yo + 0.066, 4.62), (xb - 0.07, yo + 0.066, 4.62), (xb - 0.07, yo + 0.066, 6.05),
+                  (xa + 0.07, yo + 0.066, 6.05)], rect("Glass", 1.46, 1.43), outward=(0, -1, 0))
     for xs, sgn in ((x0, -1), (x1, 1)):
         det.face([(xs, yo + 0.12, 4.62), (xs, YF - 0.14, 4.62), (xs, YF - 0.14, 6.05), (xs, yo + 0.12, 6.05)],
                  rect("Glass", 0.49, 1.43), outward=(sgn, 0, 0))
-    tr.box((x0 - 0.1, yo - 0.1, 6.15), (x1 + 0.1, YF, 6.3), trim("Fascia"), skip=("+y",))
+        lit.face([(xs + sgn * 0.004, yo + 0.12, 4.62), (xs + sgn * 0.004, YF - 0.14, 4.62), (xs + sgn * 0.004, YF - 0.14, 6.05),
+                  (xs + sgn * 0.004, yo + 0.12, 6.05)], rect("Glass", 0.49, 1.43), outward=(sgn, 0, 0))
+    det.box((x0 - 0.1, yo - 0.1, 6.15), (x1 + 0.1, YF, 6.3), ORANGE, skip=("+y",))          # H2 rescue-orange fascia
     det.prism([(YF, 6.33), (yo - 0.16, 6.33), (yo - 0.16, 6.37), (YF, 6.6)], "x", x0 - 0.16, x1 + 0.16, rect("Lead", 5.2, 1.0))
     geo.LEVEL = 2
     for xb in (x0 + 0.12, x0 + 1.6, x0 + 3.2, x1 - 0.12):                                    # corbel brackets
@@ -284,9 +305,17 @@ def build():
         det.box((xb - 0.07, YF - 0.012, 5.8), (xb + 0.07, YF, 6.08), STEEL)                   # wall plate
         for zb in (5.84, 6.04):
             det.tube((xb, YF - 0.012, zb), (xb, YF - 0.024, zb), 0.012, 6, STEEL)
-    for xl in (-9.0, -1.5):                                                                  # lamps
-        det.box((xl - 0.1, YF - 0.45, 5.2), (xl + 0.1, YF - 0.25, 5.5), STEEL)
-        det.box((xl - 0.02, YF - 0.3, 5.45), (xl + 0.02, YF, 5.49), STEEL)
+    for k, xl in enumerate((-9.0, -1.5)):            # H2 floodlights: wall plate, yoke arm, tilted housing, lit lens
+        det.box((xl - 0.08, YF - 0.02, 5.36), (xl + 0.08, YF, 5.62), STEEL)
+        det.box((xl - 0.02, YF - 0.3, 5.47), (xl + 0.02, YF - 0.02, 5.51), STEEL)
+        det.prism([(YF - 0.26, 5.52), (YF - 0.5, 5.4), (YF - 0.42, 5.2), (YF - 0.2, 5.36)], "x", xl - 0.15, xl + 0.15, STEEL)
+        lit.face([(xl - 0.13, YF - 0.505, 5.395), (xl + 0.13, YF - 0.505, 5.395), (xl + 0.13, YF - 0.425, 5.215),
+                  (xl - 0.13, YF - 0.425, 5.215)], rect("Glass", 0.26, 0.2), outward=(0, -1, -1))
+        atts["ATT_Lamp_Flood_%02d" % (k + 1)] = Vector((xl, YF - 0.5, 5.28))
+    det.box((-8.25, YF - 0.03, 4.92), (-2.25, YF + 0.09, 5.2), ORANGE, skip=("+y",))       # H2 orange pelmet over the shutter
+    for sw_, xa, xb in ((front, XM, XR + 0.016),):                       # orange band under the wing eaves
+        sw_.box(det, xa, xb, 0.0, 0.025, 6.8, 6.98, ORANGE)
+    east.box(det, YF - 0.016, YB + 0.016, 0.0, 0.025, 6.42, 6.6, ORANGE)
 
     # ------------------------------------------------ roofs: battens/sarking slab + modelled slate courses
     def roof_plane(xe, xr, slope, outer):
@@ -365,7 +394,7 @@ def build():
     # valley: lead lining over the slates
     geo.LEVEL = 3
     for zt, sd in ((zt_he, -1), (zt_ww, 1)):
-        xv = XM + sd * 0.32
+        xv = XM + sd * 0.48
         det.prism([(XM, zt(XM) + 0.027), (xv, zt(xv) + 0.027), (xv, zt(xv) + 0.037), (XM, zt(XM) + 0.037)], "y",
                   YF - VG, YB + VG, rect("Lead", 2, 2))
 
@@ -413,6 +442,21 @@ def build():
     tr.tube((XM, YB + 0.14, 0.22), (XM, YB + 0.14, EAV - 0.45), 0.05, 8, trim("Downpipe"))      # valley downpipe
     tr.tube((XM, YB + 0.2, 0.02), (XM, YB + 0.14, 0.24), 0.055, 8, trim("Downpipe"))
     tr.box((XM - 0.13, YB + 0.03, EAV - 0.62), (XM + 0.13, YB + 0.28, EAV - 0.36), trim("Flashing"))   # hopper
+    tr.tube((XM, YF - 0.14, 0.22), (XM, YF - 0.14, EAV - 0.45), 0.05, 8, trim("Downpipe"))      # H2 front valley downpipe
+    tr.tube((XM, YF - 0.2, 0.02), (XM, YF - 0.14, 0.24), 0.055, 8, trim("Downpipe"))
+    tr.box((XM - 0.13, YF - 0.28, EAV - 0.62), (XM + 0.13, YF - 0.03, EAV - 0.36), trim("Flashing"))
+    det.prism([(XM - 0.5, EAV + 0.2), (XM + 0.5, EAV + 0.2), (XM + 0.5, EAV + 0.24), (XM - 0.5, EAV + 0.24)], "y",
+              YF - VG - 0.06, YF - VG + 0.02, rect("Lead", 1.0, 0.1))                                    # valley outlet lip
+    # H2 rear gable furniture: meter box, conduit to the eaves, vent grille, hose reel (breaks up the render)
+    geo.LEVEL = 2
+    back.box(det, -3.6, -3.1, 0.0, 0.16, 0.9, 1.55, rect("Housing", 0.5, 0.65))
+    back.box(det, -3.37, -3.33, 0.0, 0.05, 1.55, 6.7, STEEL)
+    back.box(det, -6.75, -6.25, 0.0, 0.03, 2.55, 2.85, rect("Lead", 0.5, 0.3))
+    back.box(det, -9.1, -8.95, 0.0, 0.2, 1.05, 1.25, STEEL)
+    geo.LEVEL = 1
+    p_ = back.world(-9.0, 0.32, 1.15)
+    det.tube((p_.x - 0.17, p_.y, p_.z), (p_.x + 0.17, p_.y, p_.z), 0.24, 12, ORANGE)
+    geo.LEVEL = 2
 
     # chimney (granite, oversailing course, coping, pots, lead collar)
     geo.LEVEL = 2
@@ -421,7 +465,14 @@ def build():
     tr.box((5.92, 4.32, 12.0), (7.08, 5.18, 12.12), trim("Coping"))
     det.prism([(5.94, zt_we(5.94)), (7.06, zt_we(7.06)), (7.06, zt_we(7.06) + 0.16), (5.94, zt_we(5.94) + 0.16)], "y",
               4.34, 5.16, rect("Lead", 1.2, 0.2))
+    det.prism([(7.0, zt_we(7.0) + 0.012), (7.3, zt_we(7.3) + 0.012), (7.3, zt_we(7.3) + 0.024), (7.03, zt_we(7.0) + 0.22),
+               (7.0, zt_we(7.0) + 0.22)], "y", 4.3, 5.2, rect("Lead", 1.0, 0.3))                  # H2 apron flashing
+    det.prism([(5.68, zt_we(5.68) + 0.03), (6.0, zt_we(6.0) + 0.03), (6.0, zt_we(6.0) + 0.26), (5.97, zt_we(6.0) + 0.26),
+               (5.68, zt_we(5.68) + 0.07)], "y", 4.3, 5.2, rect("Lead", 1.0, 0.3))                 # back gutter
     geo.LEVEL = 1
+    for xa in (6.0, 6.25, 6.5, 6.75):                                                             # step flashings
+        for y0, y1 in ((4.385, 4.4), (5.1, 5.115)):
+            det.box((xa, y0, zt_we(xa + 0.25) + 0.1), (xa + 0.25, y1, zt_we(xa) + 0.3), rect("Lead", 0.25, 0.2))
     for xp in (6.28, 6.72):
         det.tube((xp, 4.75, 12.12), (xp, 4.75, 12.45), 0.11, 8, rect("Housing", 0.7, 0.33))
 
@@ -433,7 +484,7 @@ def build():
     geo.LEVEL = 3
 
     # ------------------------------------------------ recentre (origin "base"), objects, collision
-    parts = [p for p in (stone, render, roof, tr, det, door) if p.faces]
+    parts = [p for p in (stone, render, roof, tr, det, door, plinth, lit) if p.faces]
     lo = Vector((min(p.bbox()[0].x for p in parts), min(p.bbox()[0].y for p in parts), min(p.bbox()[0].z for p in parts)))
     hi = Vector((max(p.bbox()[1].x for p in parts), max(p.bbox()[1].y for p in parts), max(p.bbox()[1].z for p in parts)))
     off = Vector((-(lo.x + hi.x) / 2, -(lo.y + hi.y) / 2, -lo.z))
@@ -444,6 +495,8 @@ def build():
         "Trim": ("Sheet", geo.material("MI_Station_Trim", (0.3, 0.3, 0.3), 0.6)),
         "Details": ("Details", geo.material("MI_Station_Details", (0.1, 0.12, 0.15), 0.4)),
         "BayDoor": ("Details", geo.material("MI_Station_BayDoor", (0.06, 0.09, 0.12), 0.5)),
+        "Plinth": ("GraniteBase", geo.material("MI_Station_GraniteBase", (0.2, 0.2, 0.18), 0.7)),
+        "GlassLit": ("Details", geo.material("MI_Station_GlassLit", (1.0, 0.72, 0.4), 0.3)),
     }
     meshes = []
     for p in parts:
@@ -494,13 +547,15 @@ def build():
         "size_note": "depth includes the 0.75 m watch-room bay and the door surround",
         "origin": "base",
         "tiling": True,
-        "waivers": {"LOD UV layout": "world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep"},
+        "waivers": {"texture sets": "H2: 6 sets = 5 own + the shared BldTrim sheet; GraniteBase (damp, salt-lined, algae base courses) is the granite with a rising-damp gradient, kept separate so the 2 m wall tile stays clean",
+                    "LOD UV layout": "world-scale tiling UVs (trim sheet and own tiling sets): hand-made LODs drop small parts, so the UV bounds change; no baked layout to keep"},
         "sets": [
             {"name": "Station", "set": "Render", "size": 1024, "wet": True},
             {"name": "Station", "set": "Slate", "size": 1024, "wet": True},
             {"name": "Station", "set": "Details", "size": 1024, "wet": True},
             {"name": "BldTrim", "set": "Sheet", "size": 1024, "wet": True, "dir": tex + "M_Bld_TrimSheet"},
             {"name": "Station", "set": "Granite", "size": 1024, "wet": True},
+            {"name": "Station", "set": "GraniteBase", "size": 1024, "wet": True},
         ],
         "meshes": meshes + [{"object": colobj}],
         "attachments": att_objs,
@@ -510,6 +565,7 @@ def build():
             {"name": "crew_door", "target": [(1.2 + off.x) * 3, (YF + off.y) * 3, 4.5], "dist": 9, "az": 20, "el": 5},
             {"name": "eaves_gutter_downpipe", "target": [(XR + off.x) * 3, (YF + 0.4 + off.y) * 3, 19.0], "dist": 8, "az": 50, "el": 10},
             {"name": "quoins_plinth", "target": [(XR + off.x) * 3, (YF + off.y) * 3, 3.0], "dist": 8, "az": 40, "el": 10},
+            {"name": "rear_gable", "target": [(XW + off.x) * 3, (YB + off.y) * 3, 12.0], "dist": 34, "az": 180, "el": 8},
             {"name": "roof_ridge_chimney", "target": [(6.5 + off.x) * 3, (4.7 + off.y) * 3, 32.0], "dist": 14, "az": 150, "el": 25},
         ],
     }

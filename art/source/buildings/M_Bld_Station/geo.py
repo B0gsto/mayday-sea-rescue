@@ -82,6 +82,10 @@ class Part:
         elif kind == "tile":
             s = mode[1]
             uvs = [(x / s, y / s) for x, y in zip(a, b)]
+        elif kind == "tileo":      # H2: tile with a per-wall offset / rotation / scale (breaks visible repeats)
+            s, du, dv, rot = mode[1:5]
+            cr, sr = math.cos(rot), math.sin(rot)
+            uvs = [((x * cr - y * sr) / s + du, (x * sr + y * cr) / s + dv) for x, y in zip(a, b)]
         elif kind == "trim":
             v0, v1, s = mode[1], mode[2], mode[3]
             ea, eb = max(a) - min(a), max(b) - min(b)

@@ -1,0 +1,2225 @@
+{
+ "asset": "M_Bld_Slipway",
+ "name": "M_Bld_Slipway",
+ "date": "2026-10-18",
+ "commit": "0c26ba0+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD0.fbx",
+   "bytes": 1293676,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Slipway_COL",
+    "M_Bld_Slipway_Ramp_LOD0",
+    "M_Bld_Slipway_Rock_LOD0",
+    "M_Bld_Slipway_Steel_LOD0",
+    "M_Bld_Slipway_Tide_LOD0",
+    "M_Bld_Slipway_Wall_LOD0",
+    "M_Bld_Slipway_Weedy_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Slipway_COL.001",
+     "min": [
+      -12.49,
+      -91.65,
+      -15.6864
+     ],
+     "max": [
+      12.49,
+      21.0,
+      9.3
+     ],
+     "polygons": 52,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Ramp_LOD0.001",
+     "min": [
+      -12.55,
+      -35.976,
+      -12.0
+     ],
+     "max": [
+      12.55,
+      12.0,
+      2.04
+     ],
+     "polygons": 326,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Rock_LOD0.001",
+     "min": [
+      -17.843,
+      -96.5862,
+      -16.2773
+     ],
+     "max": [
+      16.8629,
+      -13.5766,
+      -1.3324
+     ],
+     "polygons": 3804,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Steel_LOD0.001",
+     "min": [
+      -12.31,
+      -90.0,
+      -13.5464
+     ],
+     "max": [
+      12.31,
+      21.675,
+      9.311
+     ],
+     "polygons": 6298,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Tide_LOD0.001",
+     "min": [
+      -10.99,
+      -26.6503,
+      -12.0
+     ],
+     "max": [
+      10.99,
+      -8.9434,
+      -0.7642
+     ],
+     "polygons": 2058,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Wall_LOD0.001",
+     "min": [
+      -13.5127,
+      -35.964,
+      -8.3045
+     ],
+     "max": [
+      13.5127,
+      8.964,
+      1.65
+     ],
+     "polygons": 120,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Weedy_LOD0.001",
+     "min": [
+      -10.99,
+      -92.25,
+      -15.7773
+     ],
+     "max": [
+      10.99,
+      -26.7403,
+      -3.4607
+     ],
+     "polygons": 914,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
+   "bytes": 536620,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Slipway_Ramp_LOD1",
+    "M_Bld_Slipway_Rock_LOD1",
+    "M_Bld_Slipway_Steel_LOD1",
+    "M_Bld_Slipway_Tide_LOD1",
+    "M_Bld_Slipway_Wall_LOD1",
+    "M_Bld_Slipway_Weedy_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Slipway_Ramp_LOD1.001",
+     "min": [
+      -12.55,
+      -35.976,
+      -12.0
+     ],
+     "max": [
+      12.55,
+      12.0,
+      2.04
+     ],
+     "polygons": 326,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Rock_LOD1.001",
+     "min": [
+      -17.6952,
+      -96.5862,
+      -16.2773
+     ],
+     "max": [
+      16.8629,
+      -13.5766,
+      -2.7835
+     ],
+     "polygons": 1815,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Steel_LOD1.001",
+     "min": [
+      -12.31,
+      -90.0,
+      -13.5464
+     ],
+     "max": [
+      12.31,
+      21.675,
+      9.311
+     ],
+     "polygons": 2864,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Tide_LOD1.001",
+     "min": [
+      -10.99,
+      -26.6503,
+      -12.0
+     ],
+     "max": [
+      10.99,
+      -8.9434,
+      -0.7642
+     ],
+     "polygons": 392,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Wall_LOD1.001",
+     "min": [
+      -13.5127,
+      -35.964,
+      -8.3045
+     ],
+     "max": [
+      13.5127,
+      8.964,
+      1.65
+     ],
+     "polygons": 120,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Weedy_LOD1.001",
+     "min": [
+      -10.99,
+      -92.25,
+      -15.7773
+     ],
+     "max": [
+      10.99,
+      -26.7403,
+      -3.4607
+     ],
+     "polygons": 610,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD2.fbx",
+   "bytes": 157452,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Bld_Slipway_Ramp_LOD2",
+    "M_Bld_Slipway_Rock_LOD2",
+    "M_Bld_Slipway_Steel_LOD2",
+    "M_Bld_Slipway_Tide_LOD2",
+    "M_Bld_Slipway_Wall_LOD2",
+    "M_Bld_Slipway_Weedy_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Bld_Slipway_Ramp_LOD2.001",
+     "min": [
+      -12.55,
+      -35.976,
+      -12.0
+     ],
+     "max": [
+      12.55,
+      12.0,
+      2.04
+     ],
+     "polygons": 326,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Rock_LOD2.001",
+     "min": [
+      -15.6117,
+      -96.5862,
+      -16.2773
+     ],
+     "max": [
+      13.9312,
+      -89.5207,
+      -13.0061
+     ],
+     "polygons": 330,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Steel_LOD2.001",
+     "min": [
+      -9.21,
+      -90.0,
+      -13.5464
+     ],
+     "max": [
+      9.21,
+      21.6,
+      9.186
+     ],
+     "polygons": 692,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Tide_LOD2.001",
+     "min": [
+      -10.99,
+      -26.6503,
+      -12.0
+     ],
+     "max": [
+      10.99,
+      -8.9434,
+      -0.7642
+     ],
+     "polygons": 120,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Wall_LOD2.001",
+     "min": [
+      -13.5127,
+      -35.964,
+      -8.3045
+     ],
+     "max": [
+      13.5127,
+      8.964,
+      1.65
+     ],
+     "polygons": 120,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Bld_Slipway_Weedy_LOD2.001",
+     "min": [
+      -10.99,
+      -92.25,
+      -15.7773
+     ],
+     "max": [
+      10.99,
+      -26.7403,
+      -3.4607
+     ],
+     "polygons": 420,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway.attachments.json",
+   "attachments": [
+    "ATT_SlipwayTop",
+    "ATT_SlipwayBottom",
+    "ATT_WaterLine",
+    "ATT_WeedLine",
+    "ATT_Winch",
+    "ATT_WinchHouseDoor"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_Slipway/M_Bld_Slipway.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "hero_building"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Ramp_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "326 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.35e-02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 226 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Tide_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2058 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.98e-05, 738 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1284 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Weedy_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "914 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.67e-03, 182 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 606 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Steel_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6298 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-04, 482 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3781 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Wall_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "120 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Rock_LOD0"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3804 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.85e-02, 2260 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2092 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Ramp_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "326 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.35e-02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 226 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Tide_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "392 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.74e-03, 102 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 254 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Weedy_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "610 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.00e-02, 70 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 414 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Steel_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2864 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-04, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1664 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.2% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Wall_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "120 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Rock_LOD1"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1815 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.82e-02, 385 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1045 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs drop small parts): UV bounds differ by 0.000 (max 0.02), UV area by 27.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Ramp_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "326 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.35e-02, 4 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 226 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Ramp_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Tide_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "120 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.79e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 84 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Tide_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.3% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Weedy_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "420 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.18e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 294 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Weedy_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.3% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Steel_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "692 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.02e-04, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 422 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Steel_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs drop small parts): UV bounds differ by 0.124 (max 0.02), UV area by 75.7% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Wall_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "120 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.10e+00, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 60 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Wall_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_Rock_LOD2"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "330 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.07e-02, 70 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 190 faces have no UV area"
+  },
+  {
+   "subject": "M_Bld_Slipway_Rock_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs drop small parts): UV bounds differ by 0.290 (max 0.02), UV area by 86.7% (max 15%)"
+  },
+  {
+   "subject": "M_Bld_Slipway_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Bld_Slipway_COL"
+  },
+  {
+   "subject": "M_Bld_Slipway_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Bld_Slipway_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "52 of 10000"
+  },
+  {
+   "subject": "M_Bld_Slipway_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Bld_Slipway_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "52 of 1000"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "13520 of 32000 (hero_building, asset row)"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6127 of 12000"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2008 of 2400"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 11.57 x - x - m, spec 11.57 x - x - m (art/reference/M_Bld_Slipway/dims.md)"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "34.706 studs, real 11.570 m = 34.710 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Slipway_COL"
+  },
+  {
+   "subject": "M_Bld_Slipway",
+   "check": "texture sets",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (H2: hero_building class (the slipway is half of the station hero shell); 6 sets = 2 own + 4 shared B02 library sets (QuayStone retaining walls, KelpRock toe armour and weed fronds added in H2). 2 own sets: Steel (kit atlas: rails, winch, winch house walls / door / vent / roof) and Tide (the intertidal band, which has to be its own tiling set to blend the two shared sets seamlessly); Concrete and WeedyConcrete are the shared B02 library sets (docs/12 row, no new texture budget)): 6 (4 to 5 sets)"
+  },
+  {
+   "subject": "T_Mat_Concrete_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_ALB.png"
+  },
+  {
+   "subject": "T_Mat_Concrete_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Concrete_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_NOR.png"
+  },
+  {
+   "subject": "T_Mat_Concrete_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_RGH.png"
+  },
+  {
+   "subject": "T_Mat_Concrete_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_Concrete_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_Concrete_MET.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_ALB.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_NOR.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_RGH.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_WeedyConcrete_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_WeedyConcrete_MET.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_NOR.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Slipway_Tide_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Tide_MET.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_ALB.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_NOR.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_RGH.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Slipway_Steel_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Bld_Slipway/T_Slipway_Steel_MET.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_ALB.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_NOR.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_RGH.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_QuayStone_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_QuayStone_MET.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_ALB.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_NOR.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_RGH.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Mat_KelpRock_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/Materials/T_Mat_KelpRock_MET.png"
+  },
+  {
+   "subject": "ATT_SlipwayTop",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SlipwayBottom",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WaterLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WeedLine",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Winch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_WinchHouseDoor",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD0.fbx"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Slipway_COL, M_Bld_Slipway_Ramp_LOD0, M_Bld_Slipway_Rock_LOD0, M_Bld_Slipway_Steel_LOD0, M_Bld_Slipway_Tide_LOD0, M_Bld_Slipway_Wall_LOD0, M_Bld_Slipway_Weedy_LOD0; 13572 triangles (scene 13572)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Slipway_Ramp_LOD1, M_Bld_Slipway_Rock_LOD1, M_Bld_Slipway_Steel_LOD1, M_Bld_Slipway_Tide_LOD1, M_Bld_Slipway_Wall_LOD1, M_Bld_Slipway_Weedy_LOD1; 6127 triangles (scene 6127)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD2.fbx"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Bld_Slipway_Ramp_LOD2, M_Bld_Slipway_Rock_LOD2, M_Bld_Slipway_Steel_LOD2, M_Bld_Slipway_Tide_LOD2, M_Bld_Slipway_Wall_LOD2, M_Bld_Slipway_Weedy_LOD2; 2008 triangles (scene 2008)"
+  },
+  {
+   "subject": "M_Bld_Slipway_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Bld_Slipway_Ramp_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 326,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Ramp_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 326,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Ramp_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 326,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Tide_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2058,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Tide_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 392,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Tide_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Weedy_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 914,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Weedy_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 610,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Weedy_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 420,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Steel_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6298,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Steel_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2864,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Steel_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 692,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Wall_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Wall_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Wall_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 120,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Rock_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3804,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Rock_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1815,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_Rock_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 330,
+   "texel_density": null
+  },
+  {
+   "name": "M_Bld_Slipway_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 52,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  34.70591926574707,
+  118.26121139526367,
+  25.58831024169922
+ ],
+ "peak_rss_mb": 294.0
+}

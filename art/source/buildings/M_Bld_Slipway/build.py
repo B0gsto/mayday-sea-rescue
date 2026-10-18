@@ -37,7 +37,10 @@ LS = math.sqrt(1 + K * K)    # slope length per metre of run
 HW = 10.0 / 3.0            # half width of the ramp
 KW, KH = 0.33, 0.2         # kerbs
 SPLIT = -6.0               # weed line (0.4 m above sea level), the middle of the tide band
-TOE = -23.0
+TOE = -30.0                # H2: toe 3.2 m below sea level (was -23 with a blunt stepped end)
+YW = -1.333 / K            # waterline (sea level, 4 studs under the pivot)
+WX0 = HW + KW              # retaining wall inner face
+WEND = -12.0               # retaining walls stop 0.5 m under the waterline
 BAY = 3.0                  # slab bays along the slope (m of slope)
 S_TOP, S_BOT = -3.0, -9.0  # tide band, slope distance from the head (one T_Slipway_Tide tile in v)
 TT, TIDE_T = 3.0, 6.0      # tile metres: Concrete / WeedyConcrete, Tide
@@ -184,8 +187,142 @@ def mound(part, cx, cy, rx, ry, h, n, rnd, mode, top=0.5, lift=-0.01):
     part.face(t, mode, centre=c)
 
 
+def bot(y):
+    """Slab underside: flat under the upper ramp, parallel to the slope (0.6 m thick) towards the toe."""
+    return min(-4.0, z(y) - 0.6)
+
+
 def zone(s):
     return "dry" if s > S_TOP + 1e-6 else ("tide" if s > S_BOT + 1e-6 else "weed")
+
+
+# ------------------------------------------------------------------ H2: toe armour, retaining walls, fronds, cracks
+def rock(part, c, r, h, rnd, mode, n=7):
+    """Irregular boulder bedded at c (base ring in the bed, bulging mid ring, small top ring, cap)."""
+    part.prim += 1
+    ang = [2 * math.pi * (i + rnd.uniform(-0.25, 0.25)) / n for i in range(n)]
+    jit = [rnd.uniform(0.75, 1.2) for _ in range(n)]
+    sq = rnd.uniform(0.7, 1.3)
+
+    def ring(sc, dz):
+        return [Vector((c[0] + math.cos(a) * r * j * sc, c[1] + math.sin(a) * r * j * sc * sq,
+                        c[2] + dz * rnd.uniform(0.85, 1.1))) for a, j in zip(ang, jit)]
+    rings = [ring(1.0, -0.1), ring(1.08, h * 0.45), ring(0.55, h * 0.9)]
+    ctr = Vector((c[0], c[1], c[2] + h * 0.35))
+    for ra, rb in zip(rings, rings[1:]):
+        for i in range(n):
+            j = (i + 1) % n
+            part.face([ra[i], ra[j], rb[j], rb[i]], mode, centre=ctr)
+    part.face(rings[-1], mode, centre=ctr)
+
+
+def frond(part, p0, d, L, w, rnd, mode, droop=0.0, segs=3):
+    """Bladder-wrack frond: a tapering two-sided ribbon from p0 along d (3D), drooping by droop over its length."""
+    part.prim += 1
+    d = Vector(d).normalized()
+    side = d.cross(Vector((0, 0, 1)))
+    if side.length < 1e-3:
+        side = Vector((1, 0, 0))
+    side.normalize()
+    pts = []
+    for k in range(segs + 1):
+        t = k / segs
+        q = Vector(p0) + d * L * t + side * (0.04 * math.sin(t * 3.0 + rnd.uniform(0, 1))) + Vector((0, 0, -droop * t * t))
+        ww = w * (1.0 - 0.65 * t) * rnd.uniform(0.85, 1.1)
+        pts.append((q - side * ww / 2, q + side * ww / 2))
+    for k in range(segs):
+        quad = [pts[k][0], pts[k][1], pts[k + 1][1], pts[k + 1][0]]
+        part.face(quad, mode)
+        part.face(quad[::-1], mode)
+
+
+def h2_toe_walls(con, weed, st, rnd):
+    wallp, rockp = Part("Wall"), Part("Rock")
+    QS, KR = ("tile", 3.0), ("tile", 2.5)
+    VENT = rect("Vent", 0.25, 0.25)
+    # stepped, battered retaining walls along both kerbs: 3 m bays stepping 0.45 m down the slope, concrete copings
+    segs = [(3.0, 0.0)] + [(y, y - 3.0) for y in (0.0, -3.0, -6.0, -9.0)]
+    for sx in (-1, 1):
+        for j, (ya, yb) in enumerate(segs):
+            ztop = z(ya) + 0.55
+            zb = z(yb) - 0.95
+            xo = WX0 + 0.45 + 0.2 * (ztop - zb)
+            prof = [(sx * WX0, zb), (sx * xo, zb), (sx * (WX0 + 0.45), ztop), (sx * WX0, ztop)]
+            geo.LEVEL = 3
+            wallp.prism(prof, "y", yb + 0.012, ya - 0.012, QS)
+            cp = [(sx * (WX0 - 0.05), ztop), (sx * (WX0 + 0.52), ztop), (sx * (WX0 + 0.52), ztop + 0.1),
+                  (sx * (WX0 + 0.49), ztop + 0.13), (sx * (WX0 - 0.02), ztop + 0.13), (sx * (WX0 - 0.05), ztop + 0.1)]
+            con.prism(cp, "y", yb + 0.008, ya - 0.008, CON)
+            geo.LEVEL = 1
+            for yw in (ya - 0.9, ya - 2.1):         # weep pipes through the inner face, just above the kerb
+                if yw < yb + 0.2:
+                    continue
+                zw = z(yw) + KH + 0.16
+                st.tube((sx * (WX0 + 0.03), yw, zw), (sx * (WX0 - 0.035), yw, zw), 0.038, 6, VENT)
+            geo.LEVEL = 2
+            ym = (ya + yb) / 2
+            if j % 2 == 1:                          # cleat on a bolted base plate
+                xc = sx * (WX0 + 0.24)
+                st.box((xc - 0.1, ym - 0.2, ztop + 0.13), (xc + 0.1, ym + 0.2, ztop + 0.15), RUST)
+                st.box((xc - 0.035, ym - 0.06, ztop + 0.15), (xc + 0.035, ym + 0.06, ztop + 0.24), PAINT)
+                st.box((xc - 0.03, ym - 0.24, ztop + 0.22), (xc + 0.03, ym + 0.24, ztop + 0.27), PAINT)
+            elif j in (2, 4):                       # cast bollard on its base plate
+                xc = sx * (WX0 + 0.24)
+                st.box((xc - 0.2, ym - 0.2, ztop + 0.13), (xc + 0.2, ym + 0.2, ztop + 0.16), RUST)
+                st.tube((xc, ym, ztop + 0.16), (xc, ym, ztop + 0.5), 0.1, 10, PAINT)
+                st.tube((xc, ym, ztop + 0.5), (xc, ym, ztop + 0.56), 0.13, 10, PAINT)
+    # rock armour: a bedded apron round the sloped toe nose and along both flanks from the waterline down
+    zt = bot(TOE - 0.55)
+    for k in range(18):
+        x = rnd.uniform(-HW - 1.6, HW + 1.6)
+        y = TOE - rnd.uniform(0.2, 1.6)
+        geo.LEVEL = 3 if k < 10 else 2
+        rock(rockp, (x, y, zt + rnd.uniform(-0.1, 0.25)), rnd.uniform(0.35, 0.7), rnd.uniform(0.35, 0.75), rnd, KR)
+    for sx in (-1, 1):
+        y = YW + 3.5
+        while y > TOE:
+            off = 0.55 if y > WEND else 0.0
+            x = sx * (WX0 + off + rnd.uniform(0.15, 1.3))
+            geo.LEVEL = 2 if rnd.random() < 0.6 else 1
+            rock(rockp, (x, y, z(y) - 0.8 + rnd.uniform(0.0, 0.3)), rnd.uniform(0.3, 0.65), rnd.uniform(0.3, 0.7), rnd, KR)
+            y -= rnd.uniform(0.6, 1.1)
+    # weed fronds at the waterline: on the slab and kerbs, draping off the copings and the armour
+    geo.LEVEL = 1
+    dn = Vector((0, -1, -K)).normalized()
+    for _ in range(120):
+        y = YW + rnd.uniform(-0.7, 0.9)
+        x = rnd.choice((rnd.uniform(-HW + 0.05, HW - 0.05), rnd.choice((-1, 1)) * rnd.uniform(HW - 0.2, HW + KW - 0.02),
+                        rnd.choice(RAILS) + rnd.uniform(-0.2, 0.2)))
+        top = KH if abs(x) > HW else 0.0
+        d = (dn + Vector((rnd.uniform(-0.6, 0.6), 0, 0))).normalized()
+        frond(rockp, (x, y, z(y) + top + 0.012), d, rnd.uniform(0.25, 0.6), rnd.uniform(0.05, 0.09), rnd, KR, droop=0.01)
+    for sx in (-1, 1):
+        for _ in range(26):                         # hanging off the inner faces of the walls at the waterline
+            y = YW + rnd.uniform(-0.3, 1.6)
+            if y < WEND + 0.2:
+                continue
+            frond(rockp, (sx * (WX0 - 0.03), y, z(y) + KH + rnd.uniform(0.2, 0.5)), (-sx * 0.15, rnd.uniform(-0.3, 0.3), -1.0),
+                  rnd.uniform(0.25, 0.5), rnd.uniform(0.05, 0.08), rnd, KR)
+        for _ in range(22):                         # over the armour
+            y = rnd.uniform(TOE + 1.0, YW + 1.0)
+            x = sx * (WX0 + rnd.uniform(0.2, 1.4))
+            frond(rockp, (x, y, z(y) - 0.25), (sx * rnd.uniform(0.2, 1.0), rnd.uniform(-0.6, 0.6), -0.4),
+                  rnd.uniform(0.3, 0.6), rnd.uniform(0.06, 0.1), rnd, KR, droop=0.1)
+    # hairline cracks and spalls across the slab bays (tar-dark, 7 mm, a hair above the surface)
+    for _ in range(14):
+        s0 = rnd.uniform(-1.0, S(TOE) + 2.0)
+        y, x = yS(s0), rnd.uniform(-HW + 0.3, HW - 0.3)
+        a = rnd.uniform(-0.5, 0.5) + rnd.choice((0.0, math.pi))
+        for _k in range(rnd.randint(5, 9)):
+            l = rnd.uniform(0.12, 0.28)
+            a += rnd.uniform(-0.5, 0.5)
+            x1, y1 = max(-HW + 0.05, min(HW - 0.05, x + math.cos(a) * l)), y + math.sin(a) * l * 0.5
+            n = Vector((-(y1 - y), x1 - x, 0)).normalized() * 0.0035
+            st.face([(x - n.x, y - n.y, z(y) + 0.003), (x1 - n.x, y1 - n.y, z(y1) + 0.003), (x1 + n.x, y1 + n.y, z(y1) + 0.003),
+                     (x + n.x, y + n.y, z(y) + 0.003)], VENT, outward=(0, 0, 1))
+            x, y = x1, y1
+    geo.LEVEL = 3
+    return wallp, rockp
 
 
 # ------------------------------------------------------------------ build
@@ -206,17 +343,18 @@ def build():
         p = slab[zone((S(ya) + S(yb)) / 2)]
         a = ya - (g if i > 0 else 0.0)
         b = yb + (g if yb > TOE else 0.0)
-        bot = -4.0 if yb > -12 else -4.5
+        last = yb <= TOE + 1e-6
         dz = 0.0 if i == 0 else rnd.uniform(-0.006, 0.0)
         k0 = len(p.faces)
-        prof = [(a, -4.0 if a > -12 else bot), (a, z(a) - (ch if i > 0 else 0.0) + dz), (a - ch, z(a - ch) + dz),
-                (b + ch, z(b + ch) + dz), (b, z(b) - ch + dz), (b, bot)]
+        nose = [(b, z(b) - 0.08 + dz), (b - 0.55, bot(b - 0.55))] if last else [(b, z(b) - ch + dz), (b, bot(b))]
+        prof = [(a, bot(a)), (a, z(a) - (ch if i > 0 else 0.0) + dz), (a - ch, z(a - ch) + dz),
+                (b + ch, z(b + ch) + dz)] + nose
         if i == 0:
             prof = [(a, -4.0), (a, 0.0), (b + ch, 0.0), (b, -ch), (b, -4.0)]
         p.prism(prof, "x", -HW, HW, CON)
         for x0, x1 in ((-HW - KW, -HW), (HW, HW + KW)):
-            kp = [(a, bot), (a, z(a) + KH - (ch if i > 0 else 0)), (a - ch, z(a - ch) + KH), (b + ch, z(b + ch) + KH),
-                  (b, z(b) + KH - ch), (b, bot)]
+            kn = [(b, z(b) + KH - 0.08), (b - 0.55 - KH, bot(b - 0.55 - KH))] if last else [(b, z(b) + KH - ch), (b, bot(b))]
+            kp = [(a, bot(a)), (a, z(a) + KH - (ch if i > 0 else 0)), (a - ch, z(a - ch) + KH), (b + ch, z(b + ch) + KH)] + kn
             p.prism(kp, "x", x0, x1, CON)
         remap(p, k0, slab_uv(TIDE_T if p is tide else TT))
         # tarred expansion-joint filler at the bottom of each gap
@@ -224,12 +362,7 @@ def build():
             geo.LEVEL = 2
             sweep(st, [(-HW - KW, -0.06), (HW + KW, -0.06), (HW + KW, -0.03), (-HW - KW, -0.03)], ya + g, ya - g, 0.0, RUST)
             geo.LEVEL = 3
-    # stepped toe (two weedy steps down to the bed)
-    zt = z(TOE)
-    for (y0, y1, top) in ((TOE, TOE - 0.9, zt - 0.3), (TOE - 0.9, TOE - 1.7, zt - 0.6)):
-        k0 = len(weed.faces)
-        weed.prism([(y0, top), (y1 + ch, top), (y1, top - ch), (y1, -4.5), (y0, -4.5)], "x", -HW - KW, HW + KW, CON)
-        remap(weed, k0, slab_uv(TT))
+    WALLP, ROCKP = h2_toe_walls(con, weed, st, rnd)
 
     # ---- launch rails: flat-bottom profile (foot, web, head), end stops, sole plates with clips and bolts
     head = [(-0.036, 0.148), (-0.036, 0.122), (-0.03, 0.114), (0.03, 0.114), (0.036, 0.122), (0.036, 0.148),
@@ -418,18 +551,23 @@ def build():
     mats = {"Ramp": ("Concrete", geo.material("MI_Slipway_Concrete", (0.35, 0.34, 0.32), 0.9)),
             "Weedy": ("WeedyConcrete", geo.material("MI_Slipway_Weedy", (0.2, 0.22, 0.17), 0.8)),
             "Tide": ("Tide", geo.material("MI_Slipway_Tide", (0.26, 0.26, 0.22), 0.6)),
-            "Steel": ("Steel", geo.material("MI_Slipway_Steel", (0.3, 0.27, 0.24), 0.8, 0.0))}
+            "Steel": ("Steel", geo.material("MI_Slipway_Steel", (0.3, 0.27, 0.24), 0.8, 0.0)),
+            "Wall": ("QuayStone", geo.material("MI_Slipway_Wall", (0.3, 0.3, 0.29), 0.85)),
+            "Rock": ("KelpRock", geo.material("MI_Slipway_Rock", (0.16, 0.16, 0.13), 0.5))}
     meshes = []
-    for p in (con, tide, weed, st):
+    for p in (con, tide, weed, st, WALLP, ROCKP):
         s, mat = mats[p.name]
         for li, lod in ((0, "LOD0"), (1, "LOD1"), (2, "LOD2")):
             meshes.append({"object": p.to_object("%s_%s_%s" % (NAME, p.name, lod), mat, lod=li), "set": s})
         print("[H1] %s %d tris (LOD0 faces)" % (p.name, p.tris()))
     col = Part("COL")
-    col.prism([(7.0, 0.0), (0.0, 0.0), (TOE, z(TOE)), (TOE, -4.5), (7.0, -4.5)], "x", -HW - KW, HW + KW, CON)
+    col.prism([(7.0, 0.0), (0.0, 0.0), (TOE, z(TOE)), (TOE - 0.55, bot(TOE - 0.55)), (7.0, -4.5)], "x", -HW - KW, HW + KW, CON)
+    for sx in (-1, 1):
+        col.prism([(3.0, 0.55), (WEND, z(WEND) + 1.0), (WEND, -4.5), (3.0, -4.5)], "x", min(sx * WX0, sx * (WX0 + 0.5)),
+                  max(sx * WX0, sx * (WX0 + 0.5)), CON)
     col.box((-1.5, 4.0, 0.0), (1.5, 7.0, 3.1), CON)
     colobj = col.to_object(NAME + "_COL", None, weld=False)
-    atts = {"ATT_SlipwayTop": (0, 0, 0), "ATT_SlipwayBottom": (0, -RUN, -DROP), "ATT_WaterLine": (0, -1.333 / K, -1.333),
+    atts = {"ATT_SlipwayTop": (0, 0, 0), "ATT_SlipwayBottom": (0, TOE, z(TOE)), "ATT_WaterLine": (0, YW, -1.333),
             "ATT_WeedLine": (0, SPLIT, z(SPLIT)), "ATT_Winch": (0, 2.8, 0.6), "ATT_WinchHouseDoor": (0.8, 3.5, 0)}
     objs = []
     for n, p in atts.items():
@@ -440,13 +578,16 @@ def build():
     tex = G + "assets/textures/"
     yr = yS(-7.0)
     return {
-        "name": NAME, "budget": "large_prop", "tris": 8000, "tier": "hero",
-        "dims_m": (2 * (HW + KW), None, None), "origin": "free", "tiling": True,
+        "name": NAME, "budget": "hero_building", "tris": 32000, "tier": "hero",
+        "dims_m": (11.57, None, None),
+        "size_note": "H2: width includes the battered retaining walls and the toe rock armour (ramp 7.33 m between kerb faces)", "origin": "free", "tiling": True,
         "sets": [{"name": "Mat", "set": "Concrete", "size": 1024, "wet": True, "dir": tex + "Materials"},
                  {"name": "Mat", "set": "WeedyConcrete", "size": 1024, "wet": True, "dir": tex + "Materials"},
                  {"name": "Slipway", "set": "Tide", "size": 1024, "wet": True},
-                 {"name": "Slipway", "set": "Steel", "size": 1024, "wet": True}],
-        "waivers": {"texture sets": "2 own sets inside the large_prop (1, 2) budget: Steel (kit atlas: rails, winch, winch "
+                 {"name": "Slipway", "set": "Steel", "size": 1024, "wet": True},
+                 {"name": "Mat", "set": "QuayStone", "size": 1024, "wet": True, "dir": tex + "Materials"},
+                 {"name": "Mat", "set": "KelpRock", "size": 1024, "wet": True, "dir": tex + "Materials"}],
+        "waivers": {"texture sets": "H2: hero_building class (the slipway is half of the station hero shell); 6 sets = 2 own + 4 shared B02 library sets (QuayStone retaining walls, KelpRock toe armour and weed fronds added in H2). 2 own sets: Steel (kit atlas: rails, winch, winch "
                                     "house walls / door / vent / roof) and Tide (the intertidal band, which has to be its own "
                                     "tiling set to blend the two shared sets seamlessly); Concrete and WeedyConcrete are the "
                                     "shared B02 library sets (docs/12 row, no new texture budget)",
@@ -458,6 +599,8 @@ def build():
             {"name": "rail_base", "target": [0.75 * 3, yr * 3, (z(yr) + 0.08) * 3], "dist": 4.5, "az": 55, "el": 30},
             {"name": "winch_house_door", "target": [0.6 * 3, 4.0 * 3, 1.2 * 3], "dist": 9, "az": 20, "el": 10},
             {"name": "winch_house_vent", "target": [1.5 * 3, 5.5 * 3, 1.6 * 3], "dist": 8, "az": 70, "el": 12},
+            {"name": "toe_waterline", "target": [0, (YW - 4) * 3, -1.333 * 3], "dist": 26, "az": 35, "el": 14},
+            {"name": "side_wall", "target": [WX0 * 3, -6.0 * 3, (z(-6.0) + 0.5) * 3], "dist": 9, "az": 60, "el": 12},
             {"name": "head_winch_rails", "target": [0, 1.0 * 3, 1.5], "dist": 10, "az": 150, "el": 30},
         ],
     }

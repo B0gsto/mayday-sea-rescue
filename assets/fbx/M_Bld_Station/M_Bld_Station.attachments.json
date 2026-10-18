@@ -8,18 +8,47 @@
    "parent": null,
    "blender": [
     -22.5,
-    26.055,
+    25.725,
     0.0
    ],
    "roblox_from_origin": [
     22.5,
     0.0,
-    26.055
+    25.725
    ],
    "roblox_from_bbox_centre": [
     22.5,
     -21.57,
-    26.055
+    25.725
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Door",
+   "parent": null,
+   "blender": [
+    3.6,
+    -24.735,
+    10.41
+   ],
+   "roblox_from_origin": [
+    -3.6,
+    10.41,
+    -24.735
+   ],
+   "roblox_from_bbox_centre": [
+    -3.6,
+    -11.16,
+    -24.735
    ],
    "look": [
     0.0,
@@ -37,18 +66,18 @@
    "parent": null,
    "blender": [
     3.6,
-    -24.345,
+    -24.675,
     0.0
    ],
    "roblox_from_origin": [
     -3.6,
     0.0,
-    -24.345
+    -24.675
    ],
    "roblox_from_bbox_centre": [
     -3.6,
     -21.57,
-    -24.345
+    -24.675
    ],
    "look": [
     0.0,
@@ -66,18 +95,18 @@
    "parent": null,
    "blender": [
     6.0,
-    26.055,
+    25.725,
     0.0
    ],
    "roblox_from_origin": [
     -6.0,
     0.0,
-    26.055
+    25.725
    ],
    "roblox_from_bbox_centre": [
     -6.0,
     -21.57,
-    26.055
+    25.725
    ],
    "look": [
     0.0,
@@ -95,18 +124,18 @@
    "parent": null,
    "blender": [
     15.0,
-    -19.845,
+    -20.175,
     15.6
    ],
    "roblox_from_origin": [
     -15.0,
     15.6,
-    -19.845
+    -20.175
    ],
    "roblox_from_bbox_centre": [
     -15.0,
     -5.97,
-    -19.845
+    -20.175
    ],
    "look": [
     0.0,
@@ -124,18 +153,18 @@
    "parent": null,
    "blender": [
     -15.75,
-    -24.945,
+    -25.275,
     0.0
    ],
    "roblox_from_origin": [
     15.75,
     0.0,
-    -24.945
+    -25.275
    ],
    "roblox_from_bbox_centre": [
     15.75,
     -21.57,
-    -24.945
+    -25.275
    ],
    "look": [
     0.0,
@@ -153,18 +182,18 @@
    "parent": null,
    "blender": [
     -15.75,
-    -22.665,
+    -22.995,
     13.8
    ],
    "roblox_from_origin": [
     15.75,
     13.8,
-    -22.665
+    -22.995
    ],
    "roblox_from_bbox_centre": [
     15.75,
     -7.77,
-    -22.665
+    -22.995
    ],
    "look": [
     0.0,
@@ -182,18 +211,18 @@
    "parent": null,
    "blender": [
     -15.75,
-    0.855,
+    0.525,
     0.24
    ],
    "roblox_from_origin": [
     15.75,
     0.24,
-    0.855
+    0.525
    ],
    "roblox_from_bbox_centre": [
     15.75,
     -21.33,
-    0.855
+    0.525
    ],
    "look": [
     0.0,
@@ -211,18 +240,76 @@
    "parent": null,
    "blender": [
     -15.75,
-    -24.105,
+    -24.435,
     17.4
    ],
    "roblox_from_origin": [
     15.75,
     17.4,
-    -24.105
+    -24.435
    ],
    "roblox_from_bbox_centre": [
     15.75,
     -4.17,
-    -24.105
+    -24.435
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Flood_01",
+   "parent": null,
+   "blender": [
+    -27.0,
+    -25.275,
+    15.84
+   ],
+   "roblox_from_origin": [
+    27.0,
+    15.84,
+    -25.275
+   ],
+   "roblox_from_bbox_centre": [
+    27.0,
+    -5.73,
+    -25.275
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Flood_02",
+   "parent": null,
+   "blender": [
+    -4.5,
+    -25.275,
+    15.84
+   ],
+   "roblox_from_origin": [
+    4.5,
+    15.84,
+    -25.275
+   ],
+   "roblox_from_bbox_centre": [
+    4.5,
+    -5.73,
+    -25.275
    ],
    "look": [
     0.0,
