@@ -62,8 +62,9 @@ st = {"name": "M_Bld_Station", "source": "Workspace/M_Bld_Station", "tier": "her
                                           "Details": "Details", "BayDoor": "Details"}),
       "attachments": atts("M_Bld_Station"), "cframe": [0, 4, 0, 180]}
 sl = {"name": "M_Bld_Slipway", "source": "Workspace/M_Bld_Slipway", "tier": "hero",
-      "sets": {"Concrete": lib["Concrete"], "WeedyConcrete": lib["WeedyConcrete"], "Steel": own("M_Bld_Slipway", "T_Slipway_Steel")},
-      "partSets": parts("M_Bld_Slipway", {"Ramp": "Concrete", "Weedy": "WeedyConcrete", "Steel": "Steel"}),
+      "sets": {"Concrete": lib["Concrete"], "WeedyConcrete": lib["WeedyConcrete"], "Steel": own("M_Bld_Slipway", "T_Slipway_Steel"),
+               "Tide": own("M_Bld_Slipway", "T_Slipway_Tide")},
+      "partSets": parts("M_Bld_Slipway", {"Ramp": "Concrete", "Weedy": "WeedyConcrete", "Steel": "Steel", "Tide": "Tide"}),
       "attachments": atts("M_Bld_Slipway"), "cframe": [-55, 4, 69, 180]}
 pre = """for _, c in workspace:GetChildren() do
 \tif c:IsA("Model") and c.Name == "M_Bld_Station_LOD0" then c.Name = "M_Bld_Station" end

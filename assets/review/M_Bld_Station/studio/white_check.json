@@ -1,0 +1,15 @@
+{
+ "limit_pct": 8.0,
+ "luma": 245.0,
+ "wait_s": 8.0,
+ "shots": [
+  {
+   "name": "M_Bld_Station_Ocean_Overcast_dry",
+   "white_pct": 0.0
+  },
+  {
+   "name": "M_Bld_Slipway_Ocean_Storm_wet",
+   "white_pct": 0.0
+  }
+ ]
+}

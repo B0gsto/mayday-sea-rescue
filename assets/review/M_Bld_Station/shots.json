@@ -120,6 +120,126 @@
   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({45, 16, 165}, {-18, 15, 12}) return _G.LookDev.apply('Night', true)"
  },
  {
+  "name": "M_Bld_Slipway_Hero_Clear_dry",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Clear', false)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Clear_wet",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Clear', true)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Overcast_dry",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Overcast_wet",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Storm_dry",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Storm', false)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Storm_wet",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Storm', true)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Night_dry",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Night', false)"
+ },
+ {
+  "name": "M_Bld_Slipway_Hero_Night_wet",
+  "cam": [
+   -18,
+   24,
+   150
+  ],
+  "look": [
+   -55,
+   0,
+   92
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-18, 24, 150}, {-55, 0, 92}) return _G.LookDev.apply('Night', true)"
+ },
+ {
   "name": "M_Bld_Slipway_Closeup_Overcast_dry",
   "cam": [
    -38,
@@ -150,6 +270,21 @@
   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-6, 10, 42}, {-15, 10, 23}) return _G.LookDev.apply('Overcast', false)"
  },
  {
+  "name": "M_Bld_Station_WallDetail_Overcast_dry",
+  "cam": [
+   38,
+   9,
+   46
+  ],
+  "look": [
+   24,
+   9,
+   26
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 9, 46}, {24, 9, 26}) return _G.LookDev.apply('Overcast', false)"
+ },
+ {
   "name": "M_Bld_Slipway_Closeup_Overcast_wet",
   "cam": [
    -38,
@@ -178,5 +313,20 @@
   ],
   "settle": 3.0,
   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({-6, 10, 42}, {-15, 10, 23}) return _G.LookDev.apply('Overcast', true)"
+ },
+ {
+  "name": "M_Bld_Station_WallDetail_Overcast_wet",
+  "cam": [
+   38,
+   9,
+   46
+  ],
+  "look": [
+   24,
+   9,
+   26
+  ],
+  "settle": 3.0,
+  "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.shot({38, 9, 46}, {24, 9, 26}) return _G.LookDev.apply('Overcast', true)"
  }
 ]

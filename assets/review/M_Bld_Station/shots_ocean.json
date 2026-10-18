@@ -1,0 +1,42 @@
+{
+ "ocean": true,
+ "storm_wait": 6,
+ "expect": [
+  "M_Bld_Station",
+  "M_Bld_Slipway"
+ ],
+ "shots": [
+  {
+   "name": "M_Bld_Station_Ocean_Overcast_dry",
+   "cam": [
+    40,
+    7,
+    175
+   ],
+   "look": [
+    -20,
+    10,
+    10
+   ],
+   "settle": 4.0,
+   "storm": false,
+   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.preload(25) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "M_Bld_Slipway_Ocean_Storm_wet",
+   "cam": [
+    -10,
+    6,
+    160
+   ],
+   "look": [
+    -50,
+    4,
+    80
+   ],
+   "settle": 4.0,
+   "storm": true,
+   "lua": "workspace.CurrentCamera.FieldOfView = 40 _G.LookDev.preload(25) return _G.LookDev.apply('Storm', true)"
+  }
+ ]
+}
