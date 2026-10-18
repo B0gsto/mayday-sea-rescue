@@ -258,3 +258,13 @@ Owner: `src/client/Controllers/MapController.luau`, `src/server/Services/MapServ
 - Player attributes: `MapWaypoint` (Vector3?, the player's own waypoint), `MapOpen` (bool). API: `MapController.SetWaypoint`, `GetWaypoint`, `GetObjective`, `Open`, `Close`, `IsOpen`.
 - CONTRACT (storm stream): `ReplicatedStorage.Weather` attributes `StormCenter` (Vector3) + `StormRadius` (number) replace the placeholder open-sea storm area in `MapConfig.StormAreas`.
 - CONTRACT (Ops framework): the objective comes from `Ops_State` (`casualties[].position/inWater/delivered`, `current[1].mechanicId`); a `destination` field (`"Dock"`/`"Hospital"`) on the transport step view would let the map point at the chosen pad instead of the nearest one.
+
+## Monetization
+
+Owner (RP-M1): `src/shared/Config/MonetizationConfig.luau`, `src/server/Services/MonetizationService.luau`, `src/server/Services/Monetization/*` (pure core), `tests/Monetization.spec.luau`. RP-M2 flips `ready` and adds effects; RP-M4 writes real ids (deploy.py).
+
+- Config: `Products` / `GamePasses` keyed by item, `id` first field (deploy.py rewrites it). `id = 0` or `ready = false` = not for sale. Prices are docs/04's; UI shows the price MarketplaceService returns, never `price`. Effect data: `cashMultiplier`, `cashOnce`, `cashMinutes`, `valueBonus`, `boostMinutes`, `dailyLimit`, `stormTier`; `CashPackDailyLimit` = 5 and `CashPacks`.
+- Server API (register in your Init): `OnProduct(key, grant(player, data, receipt) -> boolean?, afterSaved(player, receipt, fresh)?)` (grant mutates PlayerData, no yield; false or error = not granted; afterSaved runs in a new thread after the save commits; `fresh` = false on a ledger retry), `OnPassOwned(key, fn(player, isNewPurchase))` (fires on join too), `OwnsPass`, `PassesChecked`, `WaitForPasses`, `GetPolicy`, `IsOffered(player, kind, key)`, `GetCatalogue(player)`, `SetPassOwnedForTesting` (Studio only).
+- Receipts go through `DataService.CommitReceipt(player, PurchaseId, grantFn)` (RP-D1): PurchaseGranted only when it returns true. A session-only fallback ledger is used if that function is missing.
+- Client: player attributes `Pass_<Key>` = true and `PassesChecked`; remotes under `ReplicatedStorage.Net`: `Monetization_GetCatalogue` (function -> `{ {kind, key, id, name, order, owned} }`, only items offered to this player) and `Monetization_Purchased` (S->C `{kind, key, name}`). The client opens prompts itself (`PromptGamePassPurchase` / `PromptProductPurchase`) after an explicit Buy tap (docs/04 §1, RP-M3).
+- Policy: paid random items (none at launch) are offered only where `PolicyService` says `ArePaidRandomItemsRestricted == false`.
