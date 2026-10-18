@@ -17,10 +17,10 @@ local HttpService = game:GetService("HttpService")
 local ContentProvider = game:GetService("ContentProvider")
 local Lighting = game:GetService("Lighting")
 local A = "M_Chr_Bosun"
-local CFG: any = {["name"] = "M_Chr_Bosun", ["source"] = "Workspace/M_Chr_Bosun", ["tier"] = "hero", ["sets"] = {["Fur"] = {["NOR"] = "103748169485793", ["RGH"] = "77028271605241", ["Wet"] = {["RGH"] = "119325078333872", ["NOR"] = "100632999508535", ["ALB"] = "106200218168749"}, ["ALB"] = "72677137767461", ["MET"] = "92191140489137", ["alphaMode"] = "Transparency"}, ["Harness"] = {["Wet"] = {["RGH"] = "139563428363372", ["NOR"] = "123326580701832", ["ALB"] = "100866977192425"}, ["MET"] = "101631640126594", ["RGH"] = "122403920806076", ["NOR"] = "99011034098276", ["ALB"] = "80508447575444"}, ["Body"] = {["Wet"] = {["RGH"] = "107948487145826", ["ALB"] = "133270748415860", ["NOR"] = "102318804896381"}, ["RGH"] = "114876666079129", ["ALB"] = "135572693292701", ["NOR"] = "131093018094688", ["MET"] = "92191140489137"}}}
-local IDNAMES: {[string]: string} = {["103748169485793"] = "T_Bosun_Fur_NOR.png", ["77028271605241"] = "T_Bosun_Fur_RGH.png", ["127650751038896"] = "T_Bosun_Fur_RGH_Wet.png", ["136161537490250"] = "T_Bosun_Fur_NOR_Wet.png", ["139563428363372"] = "T_Bosun_Harness_RGH_Wet.png", ["132940714883591"] = "T_Bosun_Fur_ALB.png", ["128729814698779"] = "T_Bosun_Harness_MET.png", ["106200218168749"] = "T_Bosun_Fur_ALB_Wet.png", ["89869746461866"] = "T_Bosun_Body_RGH_Wet.png", ["124715963239143"] = "T_Bosun_Body_ALB_Wet.png", ["114876666079129"] = "T_Bosun_Body_RGH.png", ["123326580701832"] = "T_Bosun_Harness_NOR_Wet.png", ["73590411681709"] = "T_Bosun_Harness_NOR_Wet.png", ["100632999508535"] = "T_Bosun_Fur_NOR_Wet.png", ["107761244501881"] = "T_Bosun_Body_ALB.png", ["124354172288228"] = "T_Bosun_Harness_RGH.png", ["120618846558449"] = "T_Bosun_Harness_NOR.png", ["100866977192425"] = "T_Bosun_Harness_ALB_Wet.png", ["78173250678751"] = "T_Bosun_Body_NOR_Wet.png", ["102318804896381"] = "T_Bosun_Body_NOR_Wet.png", ["76747465814971"] = "T_Bosun_Harness_ALB_Wet.png", ["99011034098276"] = "T_Bosun_Harness_NOR.png", ["133270748415860"] = "T_Bosun_Body_ALB_Wet.png", ["122403920806076"] = "T_Bosun_Harness_RGH.png", ["119325078333872"] = "T_Bosun_Fur_RGH_Wet.png", ["84206738702518"] = "T_Bosun_Body_NOR.png", ["135572693292701"] = "T_Bosun_Body_ALB.png", ["92191140489137"] = "T_Bosun_Body_MET.png", ["133402828268520"] = "T_Bosun_Fur_RGH.png", ["131093018094688"] = "T_Bosun_Body_NOR.png", ["91347224757059"] = "T_Bosun_Harness_RGH_Wet.png", ["130981403101613"] = "T_Bosun_Harness_ALB.png", ["101631640126594"] = "T_Bosun_Harness_MET.png", ["80508447575444"] = "T_Bosun_Harness_ALB.png", ["72677137767461"] = "T_Bosun_Fur_ALB.png", ["133152335720908"] = "T_Bosun_Fur_ALB_Wet.png", ["107948487145826"] = "T_Bosun_Body_RGH_Wet.png", ["102472218436672"] = "T_Bosun_Fur_NOR.png", ["97126455887113"] = "T_Bosun_Body_RGH.png"}
-local FUR_WET_ALB = "106200218168749"
-local NON_ALB: {[string]: boolean} = {["100632999508535"] = true, ["101631640126594"] = true, ["102318804896381"] = true, ["103748169485793"] = true, ["107948487145826"] = true, ["114876666079129"] = true, ["119325078333872"] = true, ["122403920806076"] = true, ["123326580701832"] = true, ["131093018094688"] = true, ["139563428363372"] = true, ["77028271605241"] = true, ["92191140489137"] = true, ["99011034098276"] = true}
+local CFG: any = {["name"] = "M_Chr_Bosun", ["source"] = "Workspace/M_Chr_Bosun", ["tier"] = "hero", ["sets"] = {["Fur"] = {["NOR"] = "103748169485793", ["RGH"] = "77028271605241", ["Wet"] = {["RGH"] = "84506139266722", ["NOR"] = "105519932437575", ["ALB"] = "135540737096451"}, ["ALB"] = "138162811665432", ["MET"] = "92191140489137", ["alphaMode"] = "Transparency"}, ["Harness"] = {["Wet"] = {["RGH"] = "121040799299980", ["NOR"] = "98223935884982", ["ALB"] = "123895615298952"}, ["MET"] = "93014693104941", ["ALB"] = "89304369941654", ["RGH"] = "105690658871547", ["NOR"] = "84794786702653"}, ["Body"] = {["ALB"] = "75056237096134", ["NOR"] = "76845004833130", ["Wet"] = {["RGH"] = "136139160564565", ["ALB"] = "97234724198694", ["NOR"] = "127190487438843"}, ["RGH"] = "128890754999678", ["MET"] = "92191140489137"}}}
+local IDNAMES: {[string]: string} = {["103748169485793"] = "T_Bosun_Fur_NOR.png", ["77028271605241"] = "T_Bosun_Fur_RGH.png", ["127650751038896"] = "T_Bosun_Fur_RGH_Wet.png", ["136161537490250"] = "T_Bosun_Fur_NOR_Wet.png", ["139563428363372"] = "T_Bosun_Harness_RGH_Wet.png", ["132940714883591"] = "T_Bosun_Fur_ALB.png", ["75056237096134"] = "T_Bosun_Body_ALB.png", ["128729814698779"] = "T_Bosun_Harness_MET.png", ["76845004833130"] = "T_Bosun_Body_NOR.png", ["106200218168749"] = "T_Bosun_Fur_ALB_Wet.png", ["89869746461866"] = "T_Bosun_Body_RGH_Wet.png", ["124715963239143"] = "T_Bosun_Body_ALB_Wet.png", ["114876666079129"] = "T_Bosun_Body_RGH.png", ["89304369941654"] = "T_Bosun_Harness_ALB.png", ["105519932437575"] = "T_Bosun_Fur_NOR_Wet.png", ["123326580701832"] = "T_Bosun_Harness_NOR_Wet.png", ["73590411681709"] = "T_Bosun_Harness_NOR_Wet.png", ["100632999508535"] = "T_Bosun_Fur_NOR_Wet.png", ["107761244501881"] = "T_Bosun_Body_ALB.png", ["124354172288228"] = "T_Bosun_Harness_RGH.png", ["127190487438843"] = "T_Bosun_Body_NOR_Wet.png", ["120618846558449"] = "T_Bosun_Harness_NOR.png", ["100866977192425"] = "T_Bosun_Harness_ALB_Wet.png", ["128890754999678"] = "T_Bosun_Body_RGH.png", ["78173250678751"] = "T_Bosun_Body_NOR_Wet.png", ["102318804896381"] = "T_Bosun_Body_NOR_Wet.png", ["76747465814971"] = "T_Bosun_Harness_ALB_Wet.png", ["99011034098276"] = "T_Bosun_Harness_NOR.png", ["121040799299980"] = "T_Bosun_Harness_RGH_Wet.png", ["98223935884982"] = "T_Bosun_Harness_NOR_Wet.png", ["133270748415860"] = "T_Bosun_Body_ALB_Wet.png", ["122403920806076"] = "T_Bosun_Harness_RGH.png", ["119325078333872"] = "T_Bosun_Fur_RGH_Wet.png", ["136139160564565"] = "T_Bosun_Body_RGH_Wet.png", ["123895615298952"] = "T_Bosun_Harness_ALB_Wet.png", ["84206738702518"] = "T_Bosun_Body_NOR.png", ["135572693292701"] = "T_Bosun_Body_ALB.png", ["92191140489137"] = "T_Bosun_Body_MET.png", ["133402828268520"] = "T_Bosun_Fur_RGH.png", ["131093018094688"] = "T_Bosun_Body_NOR.png", ["138162811665432"] = "T_Bosun_Fur_ALB.png", ["91347224757059"] = "T_Bosun_Harness_RGH_Wet.png", ["130981403101613"] = "T_Bosun_Harness_ALB.png", ["101631640126594"] = "T_Bosun_Harness_MET.png", ["80508447575444"] = "T_Bosun_Harness_ALB.png", ["72677137767461"] = "T_Bosun_Fur_ALB.png", ["133152335720908"] = "T_Bosun_Fur_ALB_Wet.png", ["135540737096451"] = "T_Bosun_Fur_ALB_Wet.png", ["105690658871547"] = "T_Bosun_Harness_RGH.png", ["107948487145826"] = "T_Bosun_Body_RGH_Wet.png", ["102472218436672"] = "T_Bosun_Fur_NOR.png", ["97126455887113"] = "T_Bosun_Body_RGH.png", ["84794786702653"] = "T_Bosun_Harness_NOR.png", ["84506139266722"] = "T_Bosun_Fur_RGH_Wet.png", ["93014693104941"] = "T_Bosun_Harness_MET.png", ["97234724198694"] = "T_Bosun_Body_ALB_Wet.png"}
+local FUR_WET_ALB = "135540737096451"
+local NON_ALB: {[string]: boolean} = {["103748169485793"] = true, ["105519932437575"] = true, ["105690658871547"] = true, ["121040799299980"] = true, ["127190487438843"] = true, ["128890754999678"] = true, ["136139160564565"] = true, ["76845004833130"] = true, ["77028271605241"] = true, ["84506139266722"] = true, ["84794786702653"] = true, ["92191140489137"] = true, ["93014693104941"] = true, ["98223935884982"] = true}
 local T = Vector3.new(-46.0, 6.0, -9.0)
 local MAPPROPS = {"ColorMap", "NormalMap", "RoughnessMap", "MetalnessMap"}
 local function now(): number return DateTime.now().UnixTimestampMillis / 1000 end
@@ -87,6 +87,21 @@ local spot = Instance.new("SpotLight")
 spot.Face = Enum.NormalId.Front; spot.Angle = 50; spot.Range = 24; spot.Brightness = 4
 spot.Color = Color3.fromRGB(255, 228, 192); spot.Shadows = true; spot.Enabled = false
 spot.Parent = lamp
+-- Camera-following soft key + fill (round 3): two invisible, non-colliding, anchored lamp heads that _G.BosunShot re-aims
+-- at every shot's look point: key up-left of the camera (Shadows on), weaker shadowless fill low-right. Brightness per preset.
+local function rigLamp(name: string, shadows: boolean): SpotLight
+	local p = Instance.new("Part")
+	p.Name = name; p.Anchored = true; p.Size = Vector3.one * 0.2; p.Transparency = 1
+	p.CanCollide = false; p.CanQuery = false; p.CanTouch = false; p.CastShadow = false
+	p.CFrame = CFrame.new(T + Vector3.new(0, 4, -6)); p.Parent = stage
+	local l = Instance.new("SpotLight")
+	l.Name = "Light"; l.Face = Enum.NormalId.Front; l.Angle = 60; l.Range = 16; l.Brightness = 0
+	l.Color = Color3.fromRGB(255, 244, 230); l.Shadows = shadows; l.Enabled = false
+	l.Parent = p
+	return l
+end
+rigLamp("ShotKey", true)
+rigLamp("ShotFill", false)
 
 -- 3. ground the feet on the deck by raycast and face the mouth to -Z
 local mn, mx = lod0Box(model)
@@ -191,20 +206,40 @@ local function preload(timeout: number, activeOnly: boolean?): any
 end
 _G.BosunPreload = preload
 
--- 7. per-shot driver: preset + wet, identical exposure offset on top of the preset, Night key on, preload of the active maps
-_G.BosunShot = function(preset: string, wet: boolean, ev: number): string
+-- 7. per-shot driver: preset + wet, identical exposure offset on top of the preset, Night key on, camera key/fill rig
+-- re-aimed from this shot's camera at its look point, preload of the active maps
+local RIG: {[string]: {number}} = {["Clear"] = {0.35, 0.15}, ["Overcast"] = {0.8, 0.35}, ["Storm"] = {1.8, 0.8}, ["Night"] = {2.4, 1.0}} -- preset -> {key brightness, fill brightness}
+_G.BosunShot = function(preset: string, wet: boolean, ev: number, cam: {number}?, look: {number}?): string
 	local r = _G.LookDev.apply(preset, wet)
 	local base = Lighting.ExposureCompensation
 	Lighting.ExposureCompensation = base + ev
 	local lampNow = stage:FindFirstChild("NightKeyLamp")
 	local key = lampNow and lampNow:FindFirstChildOfClass("SpotLight")
 	if key then key.Enabled = preset == "Night" end
+	local rig = "off"
+	local kPart, fPart = stage:FindFirstChild("ShotKey"), stage:FindFirstChild("ShotFill")
+	if cam and look and kPart and fPart and kPart:IsA("BasePart") and fPart:IsA("BasePart") then
+		local c, l = Vector3.new(cam[1], cam[2], cam[3]), Vector3.new(look[1], look[2], look[3])
+		local cf = CFrame.lookAt(c, l)
+		local d = (l - c).Magnitude
+		local k = math.clamp(d * 0.45, 0.8, 3) -- lamp offset from the lens, grows with the shot distance
+		local b = RIG[preset] or {0.5, 0.2}
+		kPart.CFrame = CFrame.lookAt(c - cf.RightVector * k + cf.UpVector * k * 0.8 - cf.LookVector * 0.3, l)
+		fPart.CFrame = CFrame.lookAt(c + cf.RightVector * k * 1.2 - cf.UpVector * k * 0.15 - cf.LookVector * 0.3, l)
+		for i, p in {kPart, fPart} do
+			local s = p:FindFirstChildOfClass("SpotLight")
+			if s then
+				s.Brightness = b[i]; s.Range = math.min(60, d + 10); s.Enabled = b[i] > 0
+			end
+		end
+		rig = string.format("key %.2f fill %.2f @%.1f", b[1], b[2], d)
+	end
 	local pr = preload(6, true)
 	local bad = {}
 	for _, f in pr.failed do table.insert(bad, f.id .. ":" .. f.status) end
 	for _, o in pr.otherFailed do table.insert(bad, o) end
-	return string.format("%s | EC %.2f%+.2f | key %s | preload %s %.1fs %s", r, base, ev, if key and key.Enabled then "on" else "off",
-		if pr.allOk then "ok" else "FAIL", pr.seconds, table.concat(bad, ","))
+	return string.format("%s | EC %.2f%+.2f | night key %s | rig %s | preload %s %.1fs %s", r, base, ev,
+		if key and key.Enabled then "on" else "off", rig, if pr.allOk then "ok" else "FAIL", pr.seconds, table.concat(bad, ","))
 end
 
 local pre = preload(40, false)

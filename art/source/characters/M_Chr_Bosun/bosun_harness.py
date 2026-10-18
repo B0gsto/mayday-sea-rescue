@@ -4,11 +4,15 @@ bosun.harness_mesh copies them back into bosun).
 
 A Hull Orange water-rescue harness (docs/05 8.3; grab handle, retroreflective tape, no cross):
   padded saddle      quilted pad with a rolled webbing binding, stitch row inside the binding, tape strip each side
-  girth strap        45 mm webbing behind the elbows, side-release buckle on the left, tri-glide + doubled tail right
-  chest strap        45 mm webbing across the chest, tape across the front, buckle on the right, tri-glide left
-  grab handle        38 mm webbing loop with a neoprene grip sleeve, feet stitched flat to the saddle (box-X tacks)
-  tow D-ring         welded stainless D (weld bead) on a 25 mm webbing tab at the rear of the saddle
-Webbing is a real solid (3.5 mm, chamfered edges, crowned face with stitch grooves 3 mm in from each edge).
+  girth strap        48 mm webbing behind the elbows, side-release buckle on the left, tri-glide + doubled tail right
+  chest strap        48 mm webbing across the chest, tape across the front, buckle on the right, tri-glide left
+  grab handle        40 mm webbing loop with a neoprene grip sleeve, feet stitched flat to the saddle (box-X tacks)
+  tow D-ring         welded stainless D (8.4 mm wire, weld bead) on a 25 mm webbing tab at the rear of the saddle
+Webbing is a real solid (5.5 mm, exaggerated for 2 m reads: rolled edges, crowned face, 0.9 mm stitch channels 4 mm
+in from each edge); buckles and tri-glides are scaled up (BK) so they read as chunky parts at game distance.
+Fit: straps are cast round the body, then conform() tilts each section to the body's slope under the webbing and
+seats its lowest point STRAP_OFF above the skin (the compressed coat; see the note at SAD_OFF), so the straps hug
+whatever body shape is passed in. INNER maps label -> body-side vertex indices (for fit checks, not exported).
 
 Per-vertex 0..1 float attributes (POINT domain) for bake_bosun.harness_graph:
   tape     retroreflective tape        metal    stainless D-ring          plastic  black acetal buckles / tri-glides
@@ -26,16 +30,23 @@ from mathutils import Vector
 from mathutils.interpolate import poly_3d_calc
 
 HANDLE_APEX = DRING_POS = None
+INNER = {}                            # label -> harness vertex indices on the body-facing face (fit checks only)
 MM = 0.001
 ATTRS = ("tape", "metal", "plastic", "grip", "stitch", "edge", "padding", "buckle")
 
 # layout (build metres; same anchors as the first harness, everything else is cast onto the body)
 SAD_Y0, SAD_Y1 = -0.22, 0.06          # saddle front / rear edge along the spine
 SAD_THETA = 1.20                      # saddle drape down each side (rad from the top)
-SAD_OFF = 0.018                       # saddle underside above the body surface (coat)
-STRAP_OFF = 0.015                     # straps above the body surface
+# Coat: fur_cards keeps card roots 30-40 mm off the harness, so beside a strap the visible coat is the inner layer
+# (tufts 5-9 mm above the skin) with the outer back / flank cards (12-20 mm) leaning in over it. The harness bears on
+# that compressed coat: inner faces at ~9-10 mm, tops at ~15 mm, so the outer coat bulges round the webbing edges.
+SAD_OFF = 0.010                       # saddle underside above the body surface (coat)
+STRAP_OFF = 0.009                     # strap inner face above the body surface (lowest point across the width)
 GIRTH_Y = -0.105                      # girth strap plane, behind the elbows
-WEB_T = 3.5 * MM
+STEP = 0.05                           # strap ring spacing along the path (m)
+WEB_T = 5.5 * MM                      # webbing thickness (real 3-5 mm, exaggerated so the edge reads at 2 m)
+WEB_W = 48 * MM                       # girth / chest webbing width
+BK = 1.2                              # buckle / tri-glide scale along the strap and in thickness (chunky at 2 m)
 PLASTIC = dict(plastic=1.0, buckle=1.0)
 
 
@@ -43,7 +54,7 @@ PLASTIC = dict(plastic=1.0, buckle=1.0)
 
 class Piece:
     def __init__(self):
-        self.V, self.F, self.A, self.ref = [], [], [], []
+        self.V, self.F, self.A, self.ref, self.inner, self.name = [], [], [], [], [], None
 
     def v(self, co, a=None):
         self.V.append(Vector(co))
@@ -80,6 +91,7 @@ class Geo:
         self.V += pc.V
         self.A += pc.A
         self.F += [tuple(i + base for i in f) for f in faces]
+        INNER.setdefault(pc.name or label, []).extend(i + base for i in pc.inner)
         self.tris[label] = self.tris.get(label, 0) + sum(len(f) - 2 for f in faces)
 
 
@@ -125,13 +137,27 @@ def resample(P, N, step, extra=None):
     return outP, outN, outE, L[-1]
 
 
+def web_top(W, T=WEB_T):
+    """Top (outer) half of the webbing section, left to right: rolled edge, stitch channel 4 mm in, crowned middle."""
+    return [(-W / 2, 0.30 * T), (-W / 2 + 0.25 * MM, 0.78 * T), (-W / 2 + 1.7 * MM, T), (-W / 2 + 4 * MM, T - 0.9 * MM),
+            (0, T + 0.5 * MM), (W / 2 - 4 * MM, T - 0.9 * MM), (W / 2 - 1.7 * MM, T), (W / 2 - 0.25 * MM, 0.78 * T),
+            (W / 2, 0.30 * T)]
+
+
+def web_h(x, W, T=WEB_T):
+    """Height of the webbing's outer face at lateral offset x (for tape and tacks laid on the crown)."""
+    top = web_top(W, T)[2:-2]
+    xs, hs = [p[0] for p in top], [p[1] for p in top]
+    return float(np.interp(x, xs, hs))
+
+
 def web_profile(W, T=WEB_T):
-    """9-vertex webbing section: flat underside, chamfered edges, stitch grooves 3 mm in, crowned middle."""
-    c = 0.6 * MM
-    prof = [(-W / 2 + c, 0), (W / 2 - c, 0), (W / 2, T / 2), (W / 2 - c, T), (W / 2 - 3 * MM, T - 0.3 * MM),
-            (0, T + 0.25 * MM), (-W / 2 + 3 * MM, T - 0.3 * MM), (-W / 2 + c, T), (-W / 2, T / 2)]
-    attrs = [dict(edge=.5), dict(edge=.5), dict(edge=1.), dict(edge=.5), dict(stitch=1.), {}, dict(stitch=1.),
-             dict(edge=.5), dict(edge=1.)]
+    """11-vertex webbing section: flat underside (vertices 0, 1: the body side), rolled edges that catch the light,
+    a stitch channel 4 mm in from each edge (0.9 mm deep) and a crowned middle."""
+    c = 1.2 * MM
+    prof = [(-W / 2 + c, 0), (W / 2 - c, 0)] + list(reversed(web_top(W, T)))
+    attrs = [dict(edge=.5), dict(edge=.5), dict(edge=1.), dict(edge=1.), dict(edge=.5), dict(stitch=1.), {},
+             dict(stitch=1.), dict(edge=.5), dict(edge=1.), dict(edge=1.)]
     return prof, attrs
 
 
@@ -145,6 +171,7 @@ def loop_section(wy, hz, ch):
 
 def harness_mesh(body_me):
     global HANDLE_APEX, DRING_POS
+    INNER.clear()
     tree = bvh_of(body_me)
     Vb = mesh_arrays(body_me)
     Nb = vertex_normals(body_me)
@@ -231,6 +258,7 @@ def harness_mesh(body_me):
             loc, n = saddle_surf(a2, b2)
             row.append(pc.v(loc + n * (SAD_OFF + h), at))
         rims.append(row)
+    pc.inner = list(rims[-1])
     for r0, r1 in zip(rims, rims[1:]):
         for m in range(len(perim)):
             m2 = (m + 1) % len(perim)
@@ -279,25 +307,47 @@ def harness_mesh(body_me):
         for _ in range(3):
             N = [N[0]] + [(N[k - 1] + N[k] * 2 + N[k + 1]).normalized() for k in range(1, len(N) - 1)] + [N[-1]]
         P = [p + n * STRAP_OFF for p, n in zip(P, N)]
-        P, N, E, L = resample(P, N, 0.044, list(phis))
-        return clear(P, N, 45 * MM), N, E, L
+        P, N, E, L = resample(P, N, STEP, list(phis))
+        P, N = conform(P, N, WEB_W)
+        return P, N, E, L
 
     def clearance(p, n):
         loc = cast(p + n * 0.25, -n)[0]
         return 1.0 if loc is None else (p - loc).dot(n)
 
-    def clear(P, N, W, need=0.8 * STRAP_OFF):
-        """Push each station out along its normal so the strap's edges and middle keep `need` above the body
-        (the body slopes and bulges across the strap width, which a centreline offset alone does not see)."""
-        fr = path_frames(P, N)
-        push = [max(0.0, max(need - clearance(o + b * w, n) for w in (-W / 2, 0.0, W / 2))) for o, t, b, n in fr]
-        push = [max(push[max(i - 1, 0):i + 2]) for i in range(len(push))]
-        return [p + n * d for p, n, d in zip(P, N, push)]
+    def conform(P, N, W, need=STRAP_OFF, iters=6):
+        """Seat the strap on the coat across its whole width: per station, tilt the section about the path so it
+        follows the body's slope under the webbing (least-squares over 5 points across), then move it in or out
+        along its normal until its lowest point is `need` above the body. The offset is lightly blurred along the
+        path (never below a station's own need), so the strap runs smoothly and dips into hollows instead of
+        bridging them (the coat fills under a real strap; a bridged gap reads as floating at game distance)."""
+        xs = np.linspace(-W / 2, W / 2, 5)
+        P, N = list(P), list(N)
+        m = len(P)
+        total = np.zeros(m)
+        for _ in range(iters):
+            fr = path_frames(P, N)
+            tilt, off = [], []
+            for o, t, b, n in fr:
+                c = np.minimum([clearance(o + b * x, n) for x in xs], 0.08)
+                tilt.append(math.atan(np.polyfit(xs, c, 1)[0]))
+                off.append(need - float(c.min()))
+            tilt[0], tilt[-1] = tilt[1], tilt[-2]                    # one-sided end frames: borrow the neighbour
+            tilt = [0.8 * (0.5 * tilt[i] + 0.25 * tilt[max(i - 1, 0)] + 0.25 * tilt[min(i + 1, m - 1)]) for i in range(m)]
+            tilt = np.clip(total + tilt, -0.6, 0.6) - total          # total tilt off the band's normal <= 0.6 rad
+            total += tilt
+            sm = [0.25 * off[max(i - 1, 0)] + 0.5 * off[i] + 0.25 * off[min(i + 1, m - 1)] for i in range(m)]
+            off = [max(a, b) for a, b in zip(off, sm)]
+            P = [o + n * d for (o, t, b, n), d in zip(fr, off)]
+            N = [n * math.cos(a) + b * math.sin(a) for (o, t, b, n), a in zip(fr, tilt)]
+        return P, N
 
-    def strap(P, N, W, label, s0=None, s1=None):
+    def strap(P, N, W, label, name=None):
         prof, attrs = web_profile(W)
         pc = Piece()
-        sweep(pc, path_frames(P, N), prof, attrs)
+        pc.name = name
+        rings = sweep(pc, path_frames(P, N), prof, attrs)
+        pc.inner = [r[k] for r in rings for k in (0, 1)]
         G.commit(pc, label)
 
     def frame_at(P, N, s):
@@ -317,19 +367,25 @@ def harness_mesh(body_me):
         cnt = max(2, int(round((s1 - s0) / step)) + 1)
         return [frame_at(P, N, s0 + (s1 - s0) * k / (cnt - 1)) for k in range(cnt)]
 
-    def overlay(frames, w, h, attr, label):
+    def overlay(frames, w, web, attr, label):
+        """Sewn-on strip (tape) 0.5 mm proud of the crowned webbing face, 3 vertices across so it follows the crown."""
         pc = Piece()
-        rows = [[pc.v(o + b * x + n * h, attr) for x in (-w / 2, w / 2)] for o, t, b, n in frames]
+        xs = (-w / 2, 0.0, w / 2)
+        rows = [[pc.v(o + b * x + n * (web_h(x, *web) + 0.5 * MM), attr) for x in xs] for o, t, b, n in frames]
         for (o, t, b, n), r0, r1 in zip(frames, rows, rows[1:]):
-            pc.f(r0[0], r0[1], r1[1], r1[0], out=n)
+            for k in range(len(xs) - 1):
+                pc.f(r0[k], r0[k + 1], r1[k + 1], r1[k], out=n)
         G.commit(pc, label)
 
-    def tack(o, t, b, n, L, W, h):
-        """Box-X bar tack: six thin thread ribbons over the webbing face."""
+    def tack(o, t, b, n, L, W, h, web=None):
+        """Box-X bar tack: six raised thread ribbons (1.6 mm wide, standing 0.8 mm proud) over the webbing face;
+        web = (webbing width, thickness) lays the corners on the crowned face instead of a flat height h."""
         pc = Piece()
-        c = [o + t * (sl * L / 2) + b * (sw * W / 2) + n * h for sl, sw in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        hh = [h if web is None else web_h(sw * W / 2, *web) + 0.8 * MM for sw in (-1, 1, 1, -1)]
+        c = [o + t * (sl * L / 2) + b * (sw * W / 2) + n * hk
+             for (sl, sw), hk in zip(((-1, -1), (1, -1), (1, 1), (-1, 1)), hh)]
         for p, q in ((c[0], c[1]), (c[1], c[2]), (c[2], c[3]), (c[3], c[0]), (c[0], c[2]), (c[1], c[3])):
-            sd = (q - p).cross(n).normalized() * 0.55 * MM
+            sd = (q - p).cross(n).normalized() * 0.8 * MM
             ids = [pc.v(x, dict(stitch=1.0)) for x in (p - sd, q - sd, q + sd, p + sd)]
             pc.f(*ids, out=n)
         G.commit(pc, "stitch")
@@ -368,20 +424,22 @@ def harness_mesh(body_me):
             rings = [[(cx + s * length / 2, cy + u, cz + v) for u, v in sec] for s in (-1, 1)]
         solid(rings, place, attr, label)
 
-    def placer(o, t, b, n, flip=1.0):
+    def placer(o, t, b, n, flip=1.0, k=1.0):
+        """Local (x along the strap, y across, z out) -> world; k scales x and z (length, thickness), not the width."""
         def place(p):
             x, y, z = p
-            return o + t * (x * flip) + b * y + n * z
+            return o + t * (x * flip * k) + b * y + n * (z * k)
         return place
 
     def side_release_buckle(fr, W):
         """Female (+x) and male (-x) halves, mouth at x=0, centred on the strap mid-thickness."""
         o, t, b, n = fr
-        bw = W + 11 * MM
-        # rigid part on a curved strap: lift it until its underside corners clear the body by 4 mm
-        lift = max(0.0, max(0.004 - clearance(o + t * x + b * y - n * 4.5 * MM, n)
+        bw = W + 14 * MM
+        # rigid part on a curved strap: lift it until its underside corners sit on the coat (STRAP_OFF - 3 mm)
+        und = 6.5 * MM * BK - (WEB_T / 2 + 2.0 * MM)          # buckle underside below the strap's inner face
+        lift = max(0.0, max(STRAP_OFF - 0.003 - clearance(o + t * (x * BK) + b * y - n * und, n)
                             for x in (-46 * MM, 0.0, 52 * MM) for y in (-bw / 2, bw / 2)))
-        place = placer(o + n * (WEB_T / 2 + 2.0 * MM + lift), t, b, n)
+        place = placer(o + n * (WEB_T / 2 + 2.0 * MM + lift), t, b, n, k=BK)
         # female: hollow mouth, body, tapered back, webbing bar on two posts, release prong tips through side windows
         solid(lofted(None, [(8 * MM, bw - 8 * MM, 7 * MM, 1.5 * MM), (1.5 * MM, bw - 8 * MM, 7 * MM, 1.5 * MM),
                             (0.0, bw, 13 * MM, 3 * MM), (27 * MM, bw, 13 * MM, 3 * MM),
@@ -404,15 +462,15 @@ def harness_mesh(body_me):
     def tri_glide(P, N, s, W, direction):
         """Tri-glide on the strap at arc length s, with the doubled tail lying on the strap toward `direction`."""
         o, t, b, n = frame_at(P, N, s)
-        place = placer(o + n * (WEB_T + 2.2 * MM), t, b, n)
-        gw = W + 6 * MM
+        place = placer(o + n * (WEB_T + 2.2 * MM * BK), t, b, n, k=BK)
+        gw = W + 8 * MM
         for s_ in (1, -1):
             box(place, (0, s_ * (gw / 2 - 1.8 * MM), 0), (21 * MM, 3.6 * MM, 4.4 * MM), PLASTIC, "buckle")
         for x in (-8.5 * MM, 0.0, 8.5 * MM):
             bar(place, (x, 0, 0), gw - 3 * MM, 1.9 * MM, PLASTIC, "buckle", segs=4)
         s_end = s + direction * 0.055
         fr = sub_path(P, N, min(s, s_end), max(s, s_end), 0.025)
-        fr = [(o_ + n_ * (WEB_T + 0.4 * MM), t_, b_, n_) for o_, t_, b_, n_ in fr]
+        fr = [(o_ + n_ * (WEB_T + 0.6 * MM), t_, b_, n_) for o_, t_, b_, n_ in fr]
         prof, attrs = web_profile(W)
         pc = Piece()
         sweep(pc, fr, prof, attrs)
@@ -427,16 +485,16 @@ def harness_mesh(body_me):
     a_g = (GIRTH_Y - sad_yc) / sad_hy
     th_edge = SAD_THETA * math.sqrt(1 - 0.55 * a_g * a_g / 2)
     Cg = Vector((0, GIRTH_Y, gz))
-    Pg, Ng, phg, Lg = plane_band(Cg, Vector((0, 0, 1)), Vector((1, 0, 0)), th_edge - 0.16, 2 * math.pi - th_edge + 0.16)
-    strap(Pg, Ng, 45 * MM, "webbing")
+    Pg, Ng, phg, Lg = plane_band(Cg, Vector((0, 0, 1)), Vector((1, 0, 0)), th_edge - 0.09, 2 * math.pi - th_edge + 0.09)
+    strap(Pg, Ng, WEB_W, "webbing", "girth")
 
     def s_of_phi(phis, L, ph):
         return L * float(np.interp(ph, phis, np.linspace(0, 1, len(phis))))
 
-    side_release_buckle(frame_at(Pg, Ng, s_of_phi(phg, Lg, 2 * math.pi - 1.95)), 45 * MM)
-    tri_glide(Pg, Ng, s_of_phi(phg, Lg, 1.80), 45 * MM, +1)
+    side_release_buckle(frame_at(Pg, Ng, s_of_phi(phg, Lg, 2 * math.pi - 1.95)), WEB_W)
+    tri_glide(Pg, Ng, s_of_phi(phg, Lg, 1.80), WEB_W, +1)
     for ph in (th_edge + 0.05, 2 * math.pi - th_edge - 0.05):
-        tack(*frame_at(Pg, Ng, s_of_phi(phg, Lg, ph)), 26 * MM, 36 * MM, WEB_T + 0.6 * MM)
+        tack(*frame_at(Pg, Ng, s_of_phi(phg, Lg, ph)), 26 * MM, WEB_W - 10 * MM, 0.0, (WEB_W, WEB_T))
 
     # ---------------- chest strap: plane through the saddle's lower front corners and the front of the chest
     corner = saddle_surf(-0.80, 0.86)[0]
@@ -447,25 +505,25 @@ def harness_mesh(body_me):
     e_up = (F - Cc).normalized()
     e_side = Vector((1, 0, 0))
     Pc, Nc, phc, Lc = plane_band(Cc, e_up, e_side, -math.pi / 2 - 0.22, math.pi / 2 + 0.22)
-    strap(Pc, Nc, 45 * MM, "webbing")
+    strap(Pc, Nc, WEB_W, "webbing", "chest")
     mid = s_of_phi(phc, Lc, 0.0)
     # tape on the strap's own ring stations (a finer or offset sampling would dip under the chord of the strap)
     Lcum = np.concatenate([[0.0], np.cumsum([(b - a).length for a, b in zip(Pc, Pc[1:])])])
-    overlay([f for f, s in zip(path_frames(Pc, Nc), Lcum) if abs(s - mid) <= 0.16], 25 * MM, WEB_T + 0.6 * MM,
+    overlay([f for f, s in zip(path_frames(Pc, Nc), Lcum) if abs(s - mid) <= 0.16], 25 * MM, (WEB_W, WEB_T),
             dict(tape=1.0), "tape")
-    side_release_buckle(frame_at(Pc, Nc, s_of_phi(phc, Lc, 0.95)), 45 * MM)
-    tri_glide(Pc, Nc, s_of_phi(phc, Lc, -0.95), 45 * MM, -1)
+    side_release_buckle(frame_at(Pc, Nc, s_of_phi(phc, Lc, 0.95)), WEB_W)
+    tri_glide(Pc, Nc, s_of_phi(phc, Lc, -0.95), WEB_W, -1)
     for ph in (-math.pi / 2 + 0.22, math.pi / 2 - 0.22):
-        tack(*frame_at(Pc, Nc, s_of_phi(phc, Lc, ph)), 26 * MM, 36 * MM, WEB_T + 0.6 * MM)
+        tack(*frame_at(Pc, Nc, s_of_phi(phc, Lc, ph)), 26 * MM, WEB_W - 10 * MM, 0.0, (WEB_W, WEB_T))
 
     # ---------------- grab handle: webbing loop, feet stitched flat on the saddle, neoprene grip sleeve
-    HW = 38 * MM
+    HW = 40 * MM
     a_f, a_b = -0.50, 0.36
     pa, na = saddle_top(a_f, 0.0, 0.3 * MM)
     pb, nb = saddle_top(a_b, 0.0, 0.3 * MM)
     up = (na + nb).normalized()
     u = (pb - pa).normalized()
-    Ry, H = (pb - pa).length / 2, 0.066
+    Ry, H = (pb - pa).length / 2, 0.072
     M = (pa + pb) / 2
     P, N = [], []
     foot = 0.24
@@ -496,15 +554,15 @@ def harness_mesh(body_me):
     for i in (0, len(hf) - 1):
         o, t, b, n = path_frames(P, N)[i]
         o2 = o.lerp(P[1 if i == 0 else -2], 0.5)
-        tack(o2, t, b, n, 24 * MM, 30 * MM, WEB_T + 0.6 * MM)
+        tack(o2, t, b, n, 24 * MM, HW - 10 * MM, 0.0, (HW, WEB_T))
     # grip sleeve
     pc = Piece()
-    segs = 10
+    segs, GR = 8, (27 * MM, 12.5 * MM)       # grip sleeve half-width / half-height
     sec = []
     for k in range(segs):
         ang = 2 * math.pi * k / segs
         c, s = math.cos(ang), math.sin(ang)
-        sec.append((25 * MM * math.copysign(abs(c) ** 0.6, c), 10.5 * MM * math.copysign(abs(s) ** 0.6, s)))
+        sec.append((GR[0] * math.copysign(abs(c) ** 0.6, c), GR[1] * math.copysign(abs(s) ** 0.6, s)))
     fr = []
     ph0, ph1, st = 0.30 * math.pi, 0.70 * math.pi, 9
     for k in range(-1, st + 1):
@@ -520,17 +578,17 @@ def harness_mesh(body_me):
     sweep(pc, fr, sec, [dict(grip=1.0)] * segs)
     G.commit(pc, "grip")
     apex_p = M + up * H
-    HANDLE_APEX = tuple(apex_p + up * (WEB_T / 2 + 10.5 * MM))
+    HANDLE_APEX = tuple(apex_p + up * (WEB_T / 2 + GR[1]))
 
     # ---------------- tow D-ring on a webbing tab behind the saddle
-    TW, wr = 25 * MM, 3.2 * MM
+    TW, TAB_T, wr = 25 * MM, 4.5 * MM, 4.2 * MM
     y_bar = SAD_Y1 + 0.030
     hit, nrm = cast((0, y_bar, 3.0), (0, 0, -1))
     rear_top = saddle_top(0.93, 0.0)[0]
-    bc = Vector((0, y_bar, max(hit.z + 0.020 + wr, rear_top.z - 0.004)))
+    bc = Vector((0, y_bar, max(hit.z + SAD_OFF + wr + 2 * MM, rear_top.z - 0.004)))
     q = Vector((0, math.cos(math.radians(22)), math.sin(math.radians(22))))
     ex = Vector((1, 0, 0))
-    hw, rc, side = 20 * MM, 5 * MM, 9 * MM
+    hw, rc, side = 24 * MM, 6 * MM, 11 * MM
     outline = [(-hw + rc, 0), (0, 0), (hw - rc, 0)]
     outline += [(hw - rc + rc * math.sin(a), rc - rc * math.cos(a)) for a in (math.pi / 4, math.pi / 2)]
     outline += [(hw, side)]
@@ -563,13 +621,13 @@ def harness_mesh(body_me):
         N.append(rad)
     P.append(bc + Vector((0, -0.020, -rr)))
     N.append(Vector((0, 0, -1)))
-    prof, attrs = web_profile(TW, 3.0 * MM)
+    prof, attrs = web_profile(TW, TAB_T)
     pc = Piece()
     tf = path_frames(P, N)
     sweep(pc, tf, prof, attrs)
     G.commit(pc, "tab")
     o, t, b, n = tf[1]
-    tack(o, t, b, n, 20 * MM, 19 * MM, 3.6 * MM)
+    tack(o, t, b, n, 20 * MM, TW - 7 * MM, 0.0, (TW, TAB_T))
 
     # ---------------- mesh
     me = bpy.data.meshes.new("BosunHarness")

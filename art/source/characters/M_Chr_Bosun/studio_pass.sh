@@ -1,7 +1,8 @@
 #!/bin/bash
 # CH6 Studio pass (docs/12 3.3): studio lock, then one heavy slot (order studio -> heavy); own TestBench window
-# (mayday-lookdev-ch6), closed unsaved. Sheet: assets/review/M_Chr_Bosun/studio.png (34 shots, 6 per row:
-# per preset dry EV-0.5/0/+0.5 | wet EV-0.5/0/+0.5, then side views and wet fur close-ups); cells kept in .../studio/.
+# (mayday-lookdev-ch6), closed unsaved. Sheet: assets/review/M_Chr_Bosun/studio.png (22 shots, 5 per row: per preset
+# hero 3/4 dry | hero wet (1.5 m) | side (1.5 m) | head close-up (0.6 m) | wet ruff close-up (1 m); last row Storm/Night
+# hero EV+0.5); camera key/fill SpotLight rig re-aimed per shot by _G.BosunShot; cells kept in .../studio/.
 # Run upload_ch6.sh first (it waits for moderation). The SurfaceAppearances are preloaded (dry + wet) and re-checked
 # up to 4 x 40 s before any shot: Studio's generated TexturePacks must exist or the fur renders as a bare grey ghost.
 set -uo pipefail
@@ -26,5 +27,5 @@ for i in 1 2 3 4; do
   if grep -q '\"allOk\":true' $R/studio/preload-result.txt; then echo \"preload ok (try \$i)\"; break; fi
   echo \"preload not ready (try \$i):\"; head -c 400 $R/studio/preload-result.txt; echo
 done
-python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --shots $R/shots.json --out $R/studio.png --keep $R/studio --cols 6 --cell 640x360
+python3 $T/studio-shot.py --setup art/lookdev/shot-setup.luau --shots $R/shots.json --out $R/studio.png --keep $R/studio --cols 5 --cell 640x360
 python3 tools/studio/smoke.py console 2>&1 | tail -8; python3 tools/studio/smoke.py close; date +%T" 2>&1 | tee $R/studio/session.log

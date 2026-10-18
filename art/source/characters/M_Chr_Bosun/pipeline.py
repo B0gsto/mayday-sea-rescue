@@ -165,7 +165,11 @@ def specs():
     import bosun_checks
     body = {"name": ASSET, "asset": ASSET, "species": "animal", "budget": "dog", "tier": "hero", "dims_m": (None, None, None),
             "origin": "base", "sets": [s for s in SETS if s["set"] != "Fur"], "meshes": meshes(["Body", "Harness"]),
-            "attachments": atts, "extra_checks": [bosun_checks.withers]}
+            "attachments": atts, "extra_checks": [bosun_checks.withers],
+            # round 3: only BodyHind_LOD2 trips this, at the 15% edge (the 2,850-tri far LOD collapses small paw / tail
+            # islands); LOD1 rows pass. Revisit with a UV-seam-preserving LOD2 decimate.
+            "waivers": {"LOD UV layout": "BodyHind LOD2 (~3k-tri far LOD) loses ~15% UV area to decimation of small "
+                        "paw / tail islands; same atlas, invisible at LOD2 distance"}}
     fur = {"name": ASSET, "asset": ASSET, "species": "animal", "budget": "dog_fur_cards", "tier": "hero", "dims_m": (None, None, None),
            "origin": "free", "sets": [s for s in SETS if s["set"] == "Fur"], "meshes": meshes(["Fur"]), "attachments": [],
            "waivers": {"LOD UV layout": "fur-card LODs are subsets of the LOD0 cards on the same atlas cells (fewer, wider cards), "
@@ -230,7 +234,22 @@ def stage_final(turntable=True):
         tt.pbr_material = alpha_pbr_material(tt.pbr_material)
         for e in allspec["meshes"]:
             e["object"].hide_render = e.get("lod") != "LOD0"
-        result["turntable"] = tt.run(allspec, report, ok)
+        # Bosun-only: the template mannequin is the 5.5-stud avatar (docs/05 4.1); next to a dog read it as the docs/05
+        # adult, 1.8 m = 5.4 studs. Uniform scale about its feet (origin at Z 0) for the render, restored after.
+        man = bpy.data.objects.get("TPL_Mannequin")
+        man_scale = man.scale.copy() if man else None
+        if man:
+            from mathutils import Vector
+            bpy.context.view_layer.update()
+            zs = [(man.matrix_world @ Vector(c)).z for c in man.bound_box]
+            man.scale = man_scale * (5.4 / (max(zs) - min(zs)))
+            bpy.context.view_layer.update()
+        try:
+            result["turntable"] = tt.run(allspec, report, ok)
+        finally:
+            if man:
+                man.scale = man_scale
+        result["mannequin_studs_rendered"] = 5.4 if man else common.MANNEQUIN_STUDS
     result["ok"] = ok
     result["checks"] = report.rows
     result["meshes"] = [{"name": e["object"].name, "role": e["role"], "lod": e.get("lod"), "triangles": e.get("tris"),

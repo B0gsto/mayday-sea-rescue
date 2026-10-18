@@ -8,7 +8,8 @@
                                                    DoubleSided, Fur wet ALB id check, preload of every SurfaceAppearance
                                                    (dry + stored wet); installs _G.BosunPreload / _G.BosunShot; returns JSON
   assets/review/M_Chr_Bosun/studio/preload.luau    re-runnable preload check (studio_pass.sh loops it until allOk)
-  assets/review/M_Chr_Bosun/shots.json             4 presets x dry/wet x EV -0.5/0/+0.5 hero 3/4 front, side views, fur close-ups
+  assets/review/M_Chr_Bosun/shots.json             per preset: hero 3/4 dry + wet (1.5 m), side (1.5 m), head
+                                                   close-up (0.6 m), wet ruff close-up (1 m); + Storm/Night hero EV+0.5
 
 White-ghost fix (CH6 pass 1): the maps were fine, Studio's auto-generated TexturePack assets for the SurfaceAppearances were
 still "being generated" while the shots ran, so the fur rendered as the bare MeshPart grey with no alpha cut-out. Everything
@@ -19,8 +20,8 @@ G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 A = "M_Chr_Bosun"
 R = G + "assets/review/%s/" % A
 T = (-46.0, 6.0, -9.0)   # quay spot: Terrain top Y 6 (raycast hit in CH6 pass 1; the quay box LandTopY 4 is buried), dog faces -Z
-EYE = 4.5                # 1.5 m eye level in studs above the ground
-EV = (-0.5, 0.0, 0.5)    # exposure ladder, added to every preset's own ExposureCompensation
+# camera key/fill rig brightness per preset (key with shadows, fill without): a fill on Clear, real form light on Storm/Night
+RIG = {"Clear": [0.35, 0.15], "Overcast": [0.8, 0.35], "Storm": [1.8, 0.8], "Night": [2.4, 1.0]}
 PRESETS = ("Clear", "Overcast", "Storm", "Night")
 MAPS = ("ALB", "NOR", "RGH", "MET")
 
@@ -221,6 +222,21 @@ local spot = Instance.new("SpotLight")
 spot.Face = Enum.NormalId.Front; spot.Angle = 50; spot.Range = 24; spot.Brightness = 4
 spot.Color = Color3.fromRGB(255, 228, 192); spot.Shadows = true; spot.Enabled = false
 spot.Parent = lamp
+-- Camera-following soft key + fill (round 3): two invisible, non-colliding, anchored lamp heads that _G.BosunShot re-aims
+-- at every shot's look point: key up-left of the camera (Shadows on), weaker shadowless fill low-right. Brightness per preset.
+local function rigLamp(name: string, shadows: boolean): SpotLight
+\tlocal p = Instance.new("Part")
+\tp.Name = name; p.Anchored = true; p.Size = Vector3.one * 0.2; p.Transparency = 1
+\tp.CanCollide = false; p.CanQuery = false; p.CanTouch = false; p.CastShadow = false
+\tp.CFrame = CFrame.new(T + Vector3.new(0, 4, -6)); p.Parent = stage
+\tlocal l = Instance.new("SpotLight")
+\tl.Name = "Light"; l.Face = Enum.NormalId.Front; l.Angle = 60; l.Range = 16; l.Brightness = 0
+\tl.Color = Color3.fromRGB(255, 244, 230); l.Shadows = shadows; l.Enabled = false
+\tl.Parent = p
+\treturn l
+end
+rigLamp("ShotKey", true)
+rigLamp("ShotFill", false)
 
 -- 3. ground the feet on the deck by raycast and face the mouth to -Z
 local mn, mx = lod0Box(model)
@@ -325,20 +341,40 @@ local function preload(timeout: number, activeOnly: boolean?): any
 end
 _G.BosunPreload = preload
 
--- 7. per-shot driver: preset + wet, identical exposure offset on top of the preset, Night key on, preload of the active maps
-_G.BosunShot = function(preset: string, wet: boolean, ev: number): string
+-- 7. per-shot driver: preset + wet, identical exposure offset on top of the preset, Night key on, camera key/fill rig
+-- re-aimed from this shot's camera at its look point, preload of the active maps
+local RIG: {[string]: {number}} = RIG_TABLE -- preset -> {key brightness, fill brightness}
+_G.BosunShot = function(preset: string, wet: boolean, ev: number, cam: {number}?, look: {number}?): string
 \tlocal r = _G.LookDev.apply(preset, wet)
 \tlocal base = Lighting.ExposureCompensation
 \tLighting.ExposureCompensation = base + ev
 \tlocal lampNow = stage:FindFirstChild("NightKeyLamp")
 \tlocal key = lampNow and lampNow:FindFirstChildOfClass("SpotLight")
 \tif key then key.Enabled = preset == "Night" end
+\tlocal rig = "off"
+\tlocal kPart, fPart = stage:FindFirstChild("ShotKey"), stage:FindFirstChild("ShotFill")
+\tif cam and look and kPart and fPart and kPart:IsA("BasePart") and fPart:IsA("BasePart") then
+\t\tlocal c, l = Vector3.new(cam[1], cam[2], cam[3]), Vector3.new(look[1], look[2], look[3])
+\t\tlocal cf = CFrame.lookAt(c, l)
+\t\tlocal d = (l - c).Magnitude
+\t\tlocal k = math.clamp(d * 0.45, 0.8, 3) -- lamp offset from the lens, grows with the shot distance
+\t\tlocal b = RIG[preset] or {0.5, 0.2}
+\t\tkPart.CFrame = CFrame.lookAt(c - cf.RightVector * k + cf.UpVector * k * 0.8 - cf.LookVector * 0.3, l)
+\t\tfPart.CFrame = CFrame.lookAt(c + cf.RightVector * k * 1.2 - cf.UpVector * k * 0.15 - cf.LookVector * 0.3, l)
+\t\tfor i, p in {kPart, fPart} do
+\t\t\tlocal s = p:FindFirstChildOfClass("SpotLight")
+\t\t\tif s then
+\t\t\t\ts.Brightness = b[i]; s.Range = math.min(60, d + 10); s.Enabled = b[i] > 0
+\t\t\tend
+\t\tend
+\t\trig = string.format("key %.2f fill %.2f @%.1f", b[1], b[2], d)
+\tend
 \tlocal pr = preload(6, true)
 \tlocal bad = {}
 \tfor _, f in pr.failed do table.insert(bad, f.id .. ":" .. f.status) end
 \tfor _, o in pr.otherFailed do table.insert(bad, o) end
-\treturn string.format("%s | EC %.2f%+.2f | key %s | preload %s %.1fs %s", r, base, ev, if key and key.Enabled then "on" else "off",
-\t\tif pr.allOk then "ok" else "FAIL", pr.seconds, table.concat(bad, ","))
+\treturn string.format("%s | EC %.2f%+.2f | night key %s | rig %s | preload %s %.1fs %s", r, base, ev,
+\t\tif key and key.Enabled then "on" else "off", rig, if pr.allOk then "ok" else "FAIL", pr.seconds, table.concat(bad, ","))
 end
 
 local pre = preload(40, false)
@@ -358,7 +394,7 @@ return HttpService:JSONEncode({report = report, pre = _G.BosunPre, partSets = pa
 """
 b = (b.replace("CFG_TABLE", lua(cfg)).replace("IDNAMES_TABLE", lua(names)).replace("FURWETALB", fur_wet_alb)
      .replace("NONALB_TABLE", lua({i: True for i in sorted(non_alb)}))
-     .replace("T_VEC", "%s, %s, %s" % T))
+     .replace("T_VEC", "%s, %s, %s" % T).replace("RIG_TABLE", lua(RIG)))
 pre = 'return game:GetService("HttpService"):JSONEncode(_G.BosunPreload(40, false))\n'
 os.makedirs(R + "studio", exist_ok=True)
 open(R + "studio/import-a.luau", "w").write(a)
@@ -367,31 +403,46 @@ open(R + "studio/preload.luau", "w").write(pre)
 
 
 # ---------------------------------------------------------------- shots
+# Framing: studio-shot.py's screen_capture sets only the camera position/look; the Edit camera keeps Studio's default
+# FieldOfView 70 deg (vertical). Visible height at distance d = 2 d tan(35) = 1.40 d; a 640x360 cell is 16:9, so the
+# width is 2.49 d. The dog (import-result.json bbox: 1.4 wide, 2.8 tall incl. head, 4.85 long incl. tail; withers 2.1,
+# mouth at -Z ~2.5 from the centre) at 4.5 studs: 2.8 / 6.3 = 44% of the height (hero), 4.85 / 11.2 = 43% of the width
+# (side). Head close-up at 1.8 studs: 2.5-stud frame, head ~1.1 stud = 44%. Wet close-up at 3 studs (1 m): 4.2-stud frame.
+import math
 def off(d):
     return [round(T[0] + d[0], 2), round(T[1] + d[1], 2), round(T[2] + d[2], 2)]
 
 
-look = off((0.0, 1.3, -0.4))                        # chest/shoulder of the dog (bbox centre ~1.4 up, head at -Z)
-hero = off((4.6, EYE, -4.8))                        # 3/4 front, 6.6 studs (2.2 m) horizontal, 1.5 m eye level
-side = off((7.0, EYE, -0.4))                        # right side, 7 studs (2.3 m)
-ccam, clook = off((2.4, 3.6, -4.2)), off((0.0, 2.0, -1.6))   # wet ruff / chest close-up, ~3.4 studs
-evn = {-0.5: "EVm05", 0.0: "EV0", 0.5: "EVp05"}
+def orbit(target, dist, az, elev):
+    """camera at dist studs from target (offset from T), az deg from the dog's front (-Z) towards +X, elev deg up"""
+    a, e = math.radians(az), math.radians(elev)
+    h = dist * math.cos(e)
+    return off((target[0] + h * math.sin(a), target[1] + dist * math.sin(e), target[2] - h * math.cos(a)))
 
 
-def shot(name, cam, lk, preset, wet, ev):
-    return {"name": "%s_%s_%s_%s" % (A, preset, "wet" if wet else "dry", name), "cam": cam, "look": lk,
-            "settle": 2.0 if wet else 1.5, "lua": "return _G.BosunShot('%s', %s, %s)" % (preset, "true" if wet else "false", ev)}
+BODY = (0.0, 1.45, -0.2)    # dog centre (bbox centre 1.4 up, nudged towards the chest)
+HEAD = (0.0, 2.3, -2.0)     # skull / eyes (mouth attachment at y 2.23, z -2.53 from T)
+RUFF = (0.0, 1.75, -1.4)    # neck ruff / chest / harness front: where the wet coat reads
+VIEWS = {   # name: (camera, look, distance in studs)
+    "Hero": (orbit(BODY, 4.5, 40, 16), off(BODY), 4.5),
+    "Side": (orbit(BODY, 4.5, 90, 10), off(BODY), 4.5),
+    "Head": (orbit(HEAD, 1.8, 30, 8), off(HEAD), 1.8),
+    "WetClose": (orbit(RUFF, 3.0, 50, 14), off(RUFF), 3.0),
+}
+
+
+def shot(view, preset, wet, ev=0.0):
+    cam, lk, _ = VIEWS[view]
+    tag = view + ("_EVp05" if ev > 0 else "_EVm05" if ev < 0 else "")
+    return {"name": "%s_%s_%s_%s" % (A, preset, "wet" if wet else "dry", tag), "cam": cam, "look": lk,
+            "settle": 2.0 if wet else 1.5,
+            "lua": "return _G.BosunShot('%s', %s, %s, %s, %s)" % (preset, "true" if wet else "false", ev, lua(cam), lua(lk))}
 
 
 shots = []
-for p in PRESETS:                                   # one sheet row per preset: dry EV-/0/+, wet EV-/0/+
-    for wet in (False, True):
-        for ev in EV:
-            shots.append(shot(evn[ev], hero, look, p, wet, ev))
-for p in PRESETS:
-    for wet in (False, True):
-        shots.append(shot("Side", side, look, p, wet, 0.0))
-for wet in (False, True):
-    shots.append(shot("FurClose", ccam, clook, "Overcast", wet, 0.0))
+for p in PRESETS:                                   # one sheet row (5 cols) per preset
+    shots += [shot("Hero", p, False), shot("Hero", p, True), shot("Side", p, False), shot("Head", p, False),
+              shot("WetClose", p, True)]
+shots += [shot("Hero", "Storm", False, 0.5), shot("Hero", "Night", False, 0.5)]   # the only EV variants: the dark presets
 json.dump(shots, open(R + "shots.json", "w"), indent=1)
-print("shots", len(shots), "hero", hero, "side", side, "look", look)
+print("shots", len(shots), {k: (v[0], v[1], v[2]) for k, v in VIEWS.items()})

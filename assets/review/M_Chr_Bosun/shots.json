@@ -1,512 +1,332 @@
 [
  {
-  "name": "M_Chr_Bosun_Clear_dry_EVm05",
+  "name": "M_Chr_Bosun_Clear_dry_Hero",
   "cam": [
-   -41.4,
-   10.5,
-   -13.8
+   -43.22,
+   8.69,
+   -12.51
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Clear', false, -0.5)"
+  "lua": "return _G.BosunShot('Clear', false, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  },
  {
-  "name": "M_Chr_Bosun_Clear_dry_EV0",
+  "name": "M_Chr_Bosun_Clear_wet_Hero",
   "cam": [
-   -41.4,
-   10.5,
-   -13.8
+   -43.22,
+   8.69,
+   -12.51
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Clear', false, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Clear_dry_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Clear', false, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Clear_wet_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 2.0,
-  "lua": "return _G.BosunShot('Clear', true, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Clear_wet_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Clear', true, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Clear_wet_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Clear', true, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_dry_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Overcast', false, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_dry_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_dry_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Overcast', false, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_wet_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Overcast', true, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_wet_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_wet_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Overcast', true, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_dry_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Storm', false, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_dry_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Storm', false, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_dry_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Storm', false, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_wet_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Storm', true, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_wet_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Storm', true, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Storm_wet_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Storm', true, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Night_dry_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Night', false, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Night_dry_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Night', false, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Night_dry_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 1.5,
-  "lua": "return _G.BosunShot('Night', false, 0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Night_wet_EVm05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Night', true, -0.5)"
- },
- {
-  "name": "M_Chr_Bosun_Night_wet_EV0",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Night', true, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Night_wet_EVp05",
-  "cam": [
-   -41.4,
-   10.5,
-   -13.8
-  ],
-  "look": [
-   -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Night', true, 0.5)"
+  "lua": "return _G.BosunShot('Clear', true, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  },
  {
   "name": "M_Chr_Bosun_Clear_dry_Side",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -41.57,
+   8.23,
+   -9.2
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Clear', false, 0.0)"
+  "lua": "return _G.BosunShot('Clear', false, 0.0, {-41.57, 8.23, -9.2}, {-46.0, 7.45, -9.2})"
  },
  {
-  "name": "M_Chr_Bosun_Clear_wet_Side",
+  "name": "M_Chr_Bosun_Clear_dry_Head",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -45.11,
+   8.55,
+   -12.54
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   8.3,
+   -11.0
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Clear', false, 0.0, {-45.11, 8.55, -12.54}, {-46.0, 8.3, -11.0})"
+ },
+ {
+  "name": "M_Chr_Bosun_Clear_wet_WetClose",
+  "cam": [
+   -43.77,
+   8.48,
+   -12.27
+  ],
+  "look": [
+   -46.0,
+   7.75,
+   -10.4
   ],
   "settle": 2.0,
-  "lua": "return _G.BosunShot('Clear', true, 0.0)"
+  "lua": "return _G.BosunShot('Clear', true, 0.0, {-43.77, 8.48, -12.27}, {-46.0, 7.75, -10.4})"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_dry_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Overcast', false, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Overcast', true, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  },
  {
   "name": "M_Chr_Bosun_Overcast_dry_Side",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -41.57,
+   8.23,
+   -9.2
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
+  "lua": "return _G.BosunShot('Overcast', false, 0.0, {-41.57, 8.23, -9.2}, {-46.0, 7.45, -9.2})"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_wet_Side",
+  "name": "M_Chr_Bosun_Overcast_dry_Head",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -45.11,
+   8.55,
+   -12.54
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   8.3,
+   -11.0
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Overcast', false, 0.0, {-45.11, 8.55, -12.54}, {-46.0, 8.3, -11.0})"
+ },
+ {
+  "name": "M_Chr_Bosun_Overcast_wet_WetClose",
+  "cam": [
+   -43.77,
+   8.48,
+   -12.27
+  ],
+  "look": [
+   -46.0,
+   7.75,
+   -10.4
   ],
   "settle": 2.0,
-  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
+  "lua": "return _G.BosunShot('Overcast', true, 0.0, {-43.77, 8.48, -12.27}, {-46.0, 7.75, -10.4})"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Storm', true, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  },
  {
   "name": "M_Chr_Bosun_Storm_dry_Side",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -41.57,
+   8.23,
+   -9.2
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Storm', false, 0.0)"
+  "lua": "return _G.BosunShot('Storm', false, 0.0, {-41.57, 8.23, -9.2}, {-46.0, 7.45, -9.2})"
  },
  {
-  "name": "M_Chr_Bosun_Storm_wet_Side",
+  "name": "M_Chr_Bosun_Storm_dry_Head",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -45.11,
+   8.55,
+   -12.54
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   8.3,
+   -11.0
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.0, {-45.11, 8.55, -12.54}, {-46.0, 8.3, -11.0})"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_wet_WetClose",
+  "cam": [
+   -43.77,
+   8.48,
+   -12.27
+  ],
+  "look": [
+   -46.0,
+   7.75,
+   -10.4
   ],
   "settle": 2.0,
-  "lua": "return _G.BosunShot('Storm', true, 0.0)"
+  "lua": "return _G.BosunShot('Storm', true, 0.0, {-43.77, 8.48, -12.27}, {-46.0, 7.75, -10.4})"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_wet_Hero",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 2.0,
+  "lua": "return _G.BosunShot('Night', true, 0.0, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  },
  {
   "name": "M_Chr_Bosun_Night_dry_Side",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -41.57,
+   8.23,
+   -9.2
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
+   7.45,
+   -9.2
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Night', false, 0.0)"
+  "lua": "return _G.BosunShot('Night', false, 0.0, {-41.57, 8.23, -9.2}, {-46.0, 7.45, -9.2})"
  },
  {
-  "name": "M_Chr_Bosun_Night_wet_Side",
+  "name": "M_Chr_Bosun_Night_dry_Head",
   "cam": [
-   -39.0,
-   10.5,
-   -9.4
+   -45.11,
+   8.55,
+   -12.54
   ],
   "look": [
    -46.0,
-   7.3,
-   -9.4
-  ],
-  "settle": 2.0,
-  "lua": "return _G.BosunShot('Night', true, 0.0)"
- },
- {
-  "name": "M_Chr_Bosun_Overcast_dry_FurClose",
-  "cam": [
-   -43.6,
-   9.6,
-   -13.2
-  ],
-  "look": [
-   -46.0,
-   8.0,
-   -10.6
+   8.3,
+   -11.0
   ],
   "settle": 1.5,
-  "lua": "return _G.BosunShot('Overcast', false, 0.0)"
+  "lua": "return _G.BosunShot('Night', false, 0.0, {-45.11, 8.55, -12.54}, {-46.0, 8.3, -11.0})"
  },
  {
-  "name": "M_Chr_Bosun_Overcast_wet_FurClose",
+  "name": "M_Chr_Bosun_Night_wet_WetClose",
   "cam": [
-   -43.6,
-   9.6,
-   -13.2
+   -43.77,
+   8.48,
+   -12.27
   ],
   "look": [
    -46.0,
-   8.0,
-   -10.6
+   7.75,
+   -10.4
   ],
   "settle": 2.0,
-  "lua": "return _G.BosunShot('Overcast', true, 0.0)"
+  "lua": "return _G.BosunShot('Night', true, 0.0, {-43.77, 8.48, -12.27}, {-46.0, 7.75, -10.4})"
+ },
+ {
+  "name": "M_Chr_Bosun_Storm_dry_Hero_EVp05",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Storm', false, 0.5, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
+ },
+ {
+  "name": "M_Chr_Bosun_Night_dry_Hero_EVp05",
+  "cam": [
+   -43.22,
+   8.69,
+   -12.51
+  ],
+  "look": [
+   -46.0,
+   7.45,
+   -9.2
+  ],
+  "settle": 1.5,
+  "lua": "return _G.BosunShot('Night', false, 0.5, {-43.22, 8.69, -12.51}, {-46.0, 7.45, -9.2})"
  }
 ]

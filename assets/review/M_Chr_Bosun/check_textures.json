@@ -1,6 +1,14 @@
 {
- "ok": false,
+ "ok": true,
  "rows": [
+  {
+   "subject": "T_Bosun_Harness",
+   "check": "signal mask",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "assets/review/M_Chr_Bosun/masks/T_Bosun_Harness_signal.png"
+  },
   {
    "subject": "T_Bosun_Body",
    "check": "ALB present",
@@ -55,7 +63,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_ALB.png",
@@ -71,7 +79,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_ALB_Wet.png",
@@ -87,7 +95,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_MET.png",
@@ -103,7 +111,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_NOR.png",
@@ -119,7 +127,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_NOR_Wet.png",
@@ -135,7 +143,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_RGH.png",
@@ -151,7 +159,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Body_RGH_Wet.png",
@@ -172,10 +180,10 @@
   {
    "subject": "T_Bosun_Body_ALB",
    "check": "non-metal albedo",
-   "ok": false,
+   "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 20, 99th 43, range 30 to 240 over 100% of pixels"
+   "detail": "luma 1st 23, 99th 40, range 20 to 240 over 100% of pixels"
   },
   {
    "subject": "T_Bosun_Body_ALB",
@@ -183,7 +191,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.37, ceiling 0.45"
+   "detail": "95th percentile 0.25, ceiling 0.45"
   },
   {
    "subject": "T_Bosun_Body_ALB_Wet",
@@ -199,7 +207,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.39, ceiling 0.45"
+   "detail": "95th percentile 0.26, ceiling 0.45"
   },
   {
    "subject": "T_Bosun_Body_NOR",
@@ -215,7 +223,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "undetermined (curl share 0.47): check the bake settings"
+   "detail": "undetermined (curl share 0.48): check the bake settings"
   },
   {
    "subject": "T_Bosun_Body_ALB_Wet",
@@ -223,7 +231,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 21, dry 27"
+   "detail": "mean 23, dry 28"
   },
   {
    "subject": "T_Bosun_Body_RGH_Wet",
@@ -231,7 +239,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 58, dry 155"
+   "detail": "mean 62, dry 155"
   },
   {
    "subject": "T_Bosun_Fur",
@@ -287,7 +295,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_ALB.png",
@@ -303,7 +311,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_ALB_Wet.png",
@@ -319,7 +327,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_MET.png",
@@ -335,7 +343,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_NOR.png",
@@ -351,7 +359,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_NOR_Wet.png",
@@ -367,7 +375,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_RGH.png",
@@ -383,7 +391,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2048 x 2048, cap 2048"
+   "detail": "2048 x 2048, cap 4096"
   },
   {
    "subject": "T_Bosun_Fur_RGH_Wet.png",
@@ -404,10 +412,10 @@
   {
    "subject": "T_Bosun_Fur_ALB",
    "check": "non-metal albedo",
-   "ok": false,
+   "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 19, 99th 38, range 30 to 240 over 53% of pixels"
+   "detail": "luma 1st 22, 99th 39, range 20 to 240 over 53% of pixels"
   },
   {
    "subject": "T_Bosun_Fur_ALB",
@@ -415,7 +423,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.27, ceiling 0.45"
+   "detail": "95th percentile 0.28, ceiling 0.45"
   },
   {
    "subject": "T_Bosun_Fur_ALB_Wet",
@@ -423,7 +431,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 25, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 21, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_Bosun_Fur_ALB_Wet",
@@ -431,7 +439,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.23, ceiling 0.45"
+   "detail": "95th percentile 0.29, ceiling 0.45"
   },
   {
    "subject": "T_Bosun_Fur_NOR",
@@ -455,7 +463,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 16, dry 26"
+   "detail": "mean 12, dry 27"
   },
   {
    "subject": "T_Bosun_Fur_RGH_Wet",
@@ -463,7 +471,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 60, dry 154"
+   "detail": "mean 73, dry 154"
   },
   {
    "subject": "T_Bosun_Harness",
@@ -519,7 +527,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_ALB.png",
@@ -535,7 +543,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_ALB_Wet.png",
@@ -551,7 +559,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_MET.png",
@@ -567,7 +575,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_NOR.png",
@@ -583,7 +591,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_NOR_Wet.png",
@@ -599,7 +607,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_RGH.png",
@@ -615,7 +623,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 2048"
+   "detail": "1024 x 1024, cap 4096"
   },
   {
    "subject": "T_Bosun_Harness_RGH_Wet.png",
@@ -631,7 +639,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "0.4% of pixels between 0.1 and 0.9"
+   "detail": "0.3% of pixels between 0.1 and 0.9"
   },
   {
    "subject": "T_Bosun_Harness_ALB",
@@ -639,7 +647,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 30, 99th 163, range 30 to 240 over 97% of pixels"
+   "detail": "luma 1st 30, 99th 187, range 20 to 240 over 98% of pixels"
   },
   {
    "subject": "T_Bosun_Harness_ALB",
@@ -647,7 +655,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 1st 184, 99th 188, range 180 to 250 over 1% of pixels"
+   "detail": "luma 1st 185, 99th 188, range 180 to 250 over 1% of pixels"
   },
   {
    "subject": "T_Bosun_Harness_ALB",
@@ -655,7 +663,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.31, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.06, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_Bosun_Harness_ALB_Wet",
@@ -663,7 +671,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "luma 99th 143, ceiling 240 (wet: no floor)"
+   "detail": "luma 99th 162, ceiling 240 (wet: no floor)"
   },
   {
    "subject": "T_Bosun_Harness_ALB_Wet",
@@ -679,7 +687,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "95th percentile 0.30, ceiling 0.45 outside the signal mask"
+   "detail": "95th percentile 0.06, ceiling 0.45 outside the signal mask"
   },
   {
    "subject": "T_Bosun_Harness_NOR",
@@ -703,7 +711,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 85, dry 118"
+   "detail": "mean 80, dry 112"
   },
   {
    "subject": "T_Bosun_Harness_RGH_Wet",
@@ -711,7 +719,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "mean 95, dry 183"
+   "detail": "mean 94, dry 178"
   }
  ]
 }

@@ -33,7 +33,7 @@ local function host(word: string): MeshPart?
 	end
 	return best
 end
-for _, m in {{["name"] = "ATT_HarnessHandle", ["c"] = {0.0124, 1.0722, -0.0044}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_TowRing", ["c"] = {0.0125, 0.8681, 0.6076}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_Mouth", ["c"] = {0.0125, 0.8499, -2.3511}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "BodyHead"}} do
+for _, m in {{["name"] = "ATT_HarnessHandle", ["c"] = {0.0, 1.0891, 0.4216}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_TowRing", ["c"] = {0.0, 0.6594, 1.1192}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "Harness"}, {["name"] = "ATT_Mouth", ["c"] = {0.0, 0.8062, -1.7787}, ["look"] = {0.0, -0.0, -1.0}, ["up"] = {-0.0, 1.0, 0.0}, ["host"] = "BodyHead"}} do
 	local old = model:FindFirstChild(m.name, true)
 	if old then old:Destroy() end
 	local pos = centre + Vector3.new(m.c[1], m.c[2], m.c[3])
@@ -74,8 +74,10 @@ Takes a model that tools/studio-insert.py already put into the place (Workspace 
     CastShadow off on parts whose largest axis is under config.smallPartSize; Anchored as configured;
   * _LOD1/_LOD2 parts hidden (Transparency 1, attribute LodHidden) when config.hideLods (default true),
     so the look-dev shot shows LOD0 only; LodController owns LOD switching in the game;
-  * renamed to config.name, PrimaryPart set to the largest LOD0 visual part, pivoted to config.cframe and
-    parented to workspace.LookDev (config.parent overrides), tagged "LookDevAsset".
+  * renamed to config.name, PrimaryPart set to the largest LOD0 visual part with every part's PivotOffset
+    re-pointed at the authored pivot (the Blender origin, upright; the uploaded parts carry the FBX axis
+    rotation in PivotOffset), pivoted to config.cframe ({x, y, z, yaw}: upright, forward -Z turned by yaw)
+    and parented to workspace.LookDev (config.parent overrides), tagged "LookDevAsset".
 Saving as a Package is not scriptable from run_code (no API): the model gets attribute PackagePending =
 true; a human does right click > Convert to Package (or Save to Roblox) later.
 MeshPart triangle counts are not readable from Luau: the report says tris = "unknown" (validate.py has
@@ -493,7 +495,20 @@ local function importAsset(config: Config): Report
 		end
 	end
 	if primary then
+		-- Keep the authored pivot. The uploaded Model's WorldPivot is the Blender origin, upright (identity
+		-- rotation), but the cloud FBX importer stores each FBX node's axis-conversion rotation (Blender's -Z
+		-- forward / Y up export writes Lcl Rotation -90 X on every node) in the MeshPart's PivotOffset:
+		-- Orientation (90, 0, 0). Setting PrimaryPart makes Model:GetPivot() = PrimaryPart.CFrame *
+		-- PivotOffset, so a plain PivotTo(CFrame.new(x, y, z)) then tipped the model 90 degrees about X (the
+		-- RIB stood on its stern). Re-point every part's PivotOffset at the authored pivot before that.
+		local authored = model.WorldPivot
+		for _, d in model:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.PivotOffset = d.CFrame:ToObjectSpace(authored)
+			end
+		end
 		model.PrimaryPart = primary
+		model.WorldPivot = authored
 	else
 		table.insert(warnings, "no visual LOD0 part found")
 	end

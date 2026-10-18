@@ -110,6 +110,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:0550f08ec226c30458f5fb1dfc8f6fd814b157c254d0fbfd1311f989c6262b8b": {
+  "assetId": "120034502122598",
+  "imageId": "120034502122598",
+  "moderation": "Approved",
+  "name": "T_Station_Slate_RGH",
+  "sha": "0550f08ec226c30458f5fb1dfc8f6fd814b157c254d0fbfd1311f989c6262b8b",
+  "source": "assets/textures/M_Bld_Station/T_Station_Slate_RGH.png",
+  "type": "Image"
+ },
  "Image:05d1b18800f13aad6353e3dcc69b409fc2e8edf69e073f629da5c500f8e6ed8e": {
   "assetId": "115726787251390",
   "imageId": "115726787251390",
@@ -144,6 +153,15 @@
   "name": "Mayday_T_Mat_Tarmac_RGH",
   "sha": "06aeb7ecafd647cedd192b1ea9eeb5e617e15e2fd6aa028823397c8992bdbb08",
   "source": "assets/textures/Materials/T_Mat_Tarmac_RGH.png",
+  "type": "Image"
+ },
+ "Image:071cefa2dadba1b055fe5a0626329f9c9c3d7e1d3c12ba81f53f0ae70050e20e": {
+  "assetId": "109862585432703",
+  "imageId": "109862585432703",
+  "moderation": "Approved",
+  "name": "T_Station_Render_NOR",
+  "sha": "071cefa2dadba1b055fe5a0626329f9c9c3d7e1d3c12ba81f53f0ae70050e20e",
+  "source": "assets/textures/M_Bld_Station/T_Station_Render_NOR.png",
   "type": "Image"
  },
  "Image:073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29": {
@@ -308,6 +326,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_ALB.png",
   "type": "Image"
  },
+ "Image:0d1204726ce2992ff6e7d010158ccd6f3cbeb0b16da0f9c1f032c344231c0a2b": {
+  "assetId": "86073336897261",
+  "imageId": "86073336897261",
+  "moderation": "Approved",
+  "name": "T_Station_Slate_NOR",
+  "sha": "0d1204726ce2992ff6e7d010158ccd6f3cbeb0b16da0f9c1f032c344231c0a2b",
+  "source": "assets/textures/M_Bld_Station/T_Station_Slate_NOR.png",
+  "type": "Image"
+ },
  "Image:0d7069aefdb59d1190ca4da325f03280b2eb87c1f5331e620f899c16fc75dc57": {
   "assetId": "73380362915176",
   "imageId": "73380362915176",
@@ -315,6 +342,15 @@
   "name": "Mayday_ocean_rough_storm",
   "sha": "0d7069aefdb59d1190ca4da325f03280b2eb87c1f5331e620f899c16fc75dc57",
   "source": "assets/ocean/ocean_rough_storm.png",
+  "type": "Image"
+ },
+ "Image:0dd5a07b9ea263f19a890a084c7f1260df228b6283a6e42fd4191c5878312a7e": {
+  "assetId": "75056237096134",
+  "imageId": "75056237096134",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_ALB",
+  "sha": "0dd5a07b9ea263f19a890a084c7f1260df228b6283a6e42fd4191c5878312a7e",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB.png",
   "type": "Image"
  },
  "Image:0de15cb25ca1a5204bcb5cd7ae840a1d3e281d00f4ec5806d1b5a93c1b755b06": {
@@ -353,7 +389,9 @@
    "T_ChandleryInt_Lining_MET",
    "T_ChandleryInt_Pine_MET",
    "T_Chandlery_Bands_MET",
-   "T_Chandlery_Stone_MET"
+   "T_Chandlery_Stone_MET",
+   "T_Station_Granite_MET",
+   "T_Slipway_Tide_MET"
   ],
   "assetId": "74679138706162",
   "imageId": "74679138706162",
@@ -456,7 +494,7 @@
  "Image:136dd779ef1ca3d3f23be8ae369365f8d92a10c07c46584f8aada75f2bec8119": {
   "assetId": "74858834705134",
   "imageId": "74858834705134",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Earth_ALB_Wet",
   "sha": "136dd779ef1ca3d3f23be8ae369365f8d92a10c07c46584f8aada75f2bec8119",
   "source": "assets/textures/Materials/T_Mat_Earth_ALB_Wet.png",
@@ -552,6 +590,15 @@
   "source": "assets/textures/M_Chr_HumanBase_F/T_HumanBaseF_Head_ALB.png",
   "type": "Image"
  },
+ "Image:16e386bf17b180cb688a7451c3e30b20da6699ca8a7a107406c2916ce88c552d": {
+  "assetId": "76845004833130",
+  "imageId": "76845004833130",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_NOR",
+  "sha": "16e386bf17b180cb688a7451c3e30b20da6699ca8a7a107406c2916ce88c552d",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_NOR.png",
+  "type": "Image"
+ },
  "Image:170c80adc723c0f7c4b5f184ea6fb8563d5d51c9f5e1f67f4ebb198db80ad4d0": {
   "assetId": "100951654868525",
   "imageId": "100951654868525",
@@ -577,6 +624,15 @@
   "name": "Mayday_T_Mat_SplashRock_ALB_Wet",
   "sha": "17931f5bd1dc97f8b9ddaef81fe6b4b47d3529a8d92da166f3ccfdb2bc66472c",
   "source": "assets/textures/Materials/T_Mat_SplashRock_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:19267295472d00c758225b863e2e479b341f2ea94a297eeec53e5a6bbb0ea4d8": {
+  "assetId": "106746310737076",
+  "imageId": "106746310737076",
+  "moderation": "Approved",
+  "name": "T_Station_Details_NOR",
+  "sha": "19267295472d00c758225b863e2e479b341f2ea94a297eeec53e5a6bbb0ea4d8",
+  "source": "assets/textures/M_Bld_Station/T_Station_Details_NOR.png",
   "type": "Image"
  },
  "Image:19e50edc3edde5c892d56742582955b1a2837ef6b75a79d989914e735455a811": {
@@ -1003,6 +1059,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_RGH.png",
   "type": "Image"
  },
+ "Image:261bb01bb38e797437c778fe553970c1d585a9b87a3af3a19e39d767f9433495": {
+  "assetId": "89304369941654",
+  "imageId": "89304369941654",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_ALB",
+  "sha": "261bb01bb38e797437c778fe553970c1d585a9b87a3af3a19e39d767f9433495",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB.png",
+  "type": "Image"
+ },
  "Image:26e6fcd8f278a0d43444f4a66efa7c20bd349b979a3e12bcbb61bf746977ff2e": {
   "assetId": "90292908839121",
   "imageId": "90292908839121",
@@ -1028,6 +1093,15 @@
   "name": "T_Slipway_Steel_MET",
   "sha": "28385b3eca1ca58977ea504fc36d58942243d833bf9118af0d8d6e76d4088541",
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_MET.png",
+  "type": "Image"
+ },
+ "Image:28724f99da1c8bb2d4de01a2371834e82ac34b3e2408fe4dc0e588f43a299f20": {
+  "assetId": "70412438793750",
+  "imageId": "70412438793750",
+  "moderation": "Approved",
+  "name": "T_Slipway_Tide_ALB",
+  "sha": "28724f99da1c8bb2d4de01a2371834e82ac34b3e2408fe4dc0e588f43a299f20",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB.png",
   "type": "Image"
  },
  "Image:28991d2d05874f96bdd3f0ce31eef3818ac416af0037df84ab69e5d9300bc57a": {
@@ -1091,6 +1165,15 @@
   "name": "Mayday_T_Mat_Shingle_ALB_Wet",
   "sha": "2aff24fe9dd1a977c934bc37a8f46a84d21a761e9b21121090a5671b48c00208",
   "source": "assets/textures/Materials/T_Mat_Shingle_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:2b51793d4e45b2944eb4b9d9420f3d20fa2f4e69130b1998fb0777c0afb226c4": {
+  "assetId": "105519932437575",
+  "imageId": "105519932437575",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Fur_NOR_Wet",
+  "sha": "2b51793d4e45b2944eb4b9d9420f3d20fa2f4e69130b1998fb0777c0afb226c4",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_NOR_Wet.png",
   "type": "Image"
  },
  "Image:2b648e41fb4a09fdfe2c65ddeaec5073484e2ab36eaa32e94c09bd3b86601f2e": {
@@ -1354,6 +1437,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH.png",
   "type": "Image"
  },
+ "Image:3567d10ee8b00cd553e6abe05f3c3fbdd64a769f0be82776f01edacfea0e2528": {
+  "assetId": "84264028157867",
+  "imageId": "84264028157867",
+  "moderation": "Approved",
+  "name": "T_Slipway_Tide_RGH",
+  "sha": "3567d10ee8b00cd553e6abe05f3c3fbdd64a769f0be82776f01edacfea0e2528",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH.png",
+  "type": "Image"
+ },
  "Image:35ca31028376daba85147fcd8920b8ba3bfad3ab33d9028bcb91e126638cdb26": {
   "assetId": "114725982770733",
   "imageId": "114725982770733",
@@ -1613,6 +1705,15 @@
   "name": "Mayday_T_Mat_Concrete_NOR",
   "sha": "411b0a1a1a6e0776aeb322f71e88996a430b0a4032cbe500129dd4350a06c35b",
   "source": "assets/textures/Materials/T_Mat_Concrete_NOR.png",
+  "type": "Image"
+ },
+ "Image:415361c18398127949df55632d7489f90b1a937f41f7f5b2d35190644b442534": {
+  "assetId": "128002751240243",
+  "imageId": "128002751240243",
+  "moderation": "Approved",
+  "name": "T_Station_Render_RGH_Wet",
+  "sha": "415361c18398127949df55632d7489f90b1a937f41f7f5b2d35190644b442534",
+  "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH_Wet.png",
   "type": "Image"
  },
  "Image:41852661f4861fdf04726708769e4e86fb7abdea66ea67d72cc7fb5333b32e51": {
@@ -2014,6 +2115,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:50148f3c9ee8a3a03691166364136f1ff0ec812cf38964e95a6bc73b22a1e658": {
+  "assetId": "127190487438843",
+  "imageId": "127190487438843",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_NOR_Wet",
+  "sha": "50148f3c9ee8a3a03691166364136f1ff0ec812cf38964e95a6bc73b22a1e658",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:50d9dd5a708c442f0d25b0c2f714f73b88d5d15567bc6c08d24be6c9db10f805": {
   "assetId": "81735398423517",
   "imageId": "81735398423517",
@@ -2332,7 +2442,7 @@
  "Image:5e361324671a7e4ec55efbcd0784c7bf67afb2881f6b25a1af21bfffb9b33083": {
   "assetId": "92062472041856",
   "imageId": "92062472041856",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Moor_ALB",
   "sha": "5e361324671a7e4ec55efbcd0784c7bf67afb2881f6b25a1af21bfffb9b33083",
   "source": "assets/textures/Materials/T_Mat_Moor_ALB.png",
@@ -2413,7 +2523,7 @@
  "Image:63fdcb24c572cae959201098623550bf74d18fef32b6ccf61844f619d35a5f38": {
   "assetId": "104059519068999",
   "imageId": "104059519068999",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Earth_ALB",
   "sha": "63fdcb24c572cae959201098623550bf74d18fef32b6ccf61844f619d35a5f38",
   "source": "assets/textures/Materials/T_Mat_Earth_ALB.png",
@@ -2644,6 +2754,24 @@
   "source": "assets/textures/M_Chr_HumanBase_M/T_HumanBaseM_Body_ALB.png",
   "type": "Image"
  },
+ "Image:6c492eb96fb7bd8a3ae23e2d8c38d5e1933c536e6c33dd422ba6a15d139df91b": {
+  "assetId": "78327068645268",
+  "imageId": "78327068645268",
+  "moderation": "Approved",
+  "name": "T_Station_Granite_RGH",
+  "sha": "6c492eb96fb7bd8a3ae23e2d8c38d5e1933c536e6c33dd422ba6a15d139df91b",
+  "source": "assets/textures/M_Bld_Station/T_Station_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:6cb8a890cac4a37437437635da485fc31ba1e2c81b7e4b125515d8e9bd636fec": {
+  "assetId": "124725741622050",
+  "imageId": "124725741622050",
+  "moderation": "Approved",
+  "name": "T_Station_Granite_NOR",
+  "sha": "6cb8a890cac4a37437437635da485fc31ba1e2c81b7e4b125515d8e9bd636fec",
+  "source": "assets/textures/M_Bld_Station/T_Station_Granite_NOR.png",
+  "type": "Image"
+ },
  "Image:6ceeb5ad81b4d6e6b9b3dc806c7e974d970f8266c424826cb002ce688d8122b2": {
   "assetId": "138754958400083",
   "imageId": "138754958400083",
@@ -2732,6 +2860,15 @@
   "name": "T_Boulder05_Granite_ALB",
   "sha": "6ffc9d6debfa987c5dcf1f899817bc2f3ded63f2793c4f34c207df5b2cd3a4a2",
   "source": "assets/textures/M_Rock_Boulder_05/T_Boulder05_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:706963552a46061a728e9c03d2c554ac44272dc6deb9d16b61c98174b89f2701": {
+  "assetId": "128890754999678",
+  "imageId": "128890754999678",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_RGH",
+  "sha": "706963552a46061a728e9c03d2c554ac44272dc6deb9d16b61c98174b89f2701",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH.png",
   "type": "Image"
  },
  "Image:70813cde6650ebd4fa2ab6041079cf41f9ca90c5fcc061af6ec170e2203da557": {
@@ -2881,10 +3018,19 @@
  "Image:76205c2c43d9eef1658d2665db5a45a8442ff1fbe8031bd2421c54a4b9f9c91c": {
   "assetId": "137877416569687",
   "imageId": "137877416569687",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Moor_ALB_Wet",
   "sha": "76205c2c43d9eef1658d2665db5a45a8442ff1fbe8031bd2421c54a4b9f9c91c",
   "source": "assets/textures/Materials/T_Mat_Moor_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:778b838868ebe2945a7d3027ed99a7bac962bf249e998244bb333254fccc8f0f": {
+  "assetId": "84459242463519",
+  "imageId": "84459242463519",
+  "moderation": "Approved",
+  "name": "T_Slipway_Tide_NOR",
+  "sha": "778b838868ebe2945a7d3027ed99a7bac962bf249e998244bb333254fccc8f0f",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_NOR.png",
   "type": "Image"
  },
  "Image:782cdd8d0d5e879782b143bae64e8d36d55e75fde71a3d3789a6660cc525972c": {
@@ -2948,6 +3094,15 @@
   "name": "T_JetSki_Hull_NOR",
   "sha": "7a26d4f4f1fd314e13de7d28c3f73fa6ba91a71e63f9a824c19e7e9ff70a458a",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_NOR.png",
+  "type": "Image"
+ },
+ "Image:7a3dbb9b306732116156c23dad526799967cb917fc18a9553c2dacc25cd6520d": {
+  "assetId": "74233494993425",
+  "imageId": "74233494993425",
+  "moderation": "Approved",
+  "name": "T_Slipway_Tide_RGH_Wet",
+  "sha": "7a3dbb9b306732116156c23dad526799967cb917fc18a9553c2dacc25cd6520d",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH_Wet.png",
   "type": "Image"
  },
  "Image:7a79864f15fe2d6fc10e4fa149a97e52c110cb02ce42062e26628f5366a1937f": {
@@ -3101,6 +3256,15 @@
   "name": "T_JetSki_Hull_NOR",
   "sha": "8133ad236b933c684fc34e4cde0d7cda1f8e87a4b2575cd761ad5acd37be7952",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_NOR.png",
+  "type": "Image"
+ },
+ "Image:81a7cc68e2e072b1d46a193900182dc73cdc316305e10f1ad067b35f1c3322a8": {
+  "assetId": "126814126223836",
+  "imageId": "126814126223836",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_NOR",
+  "sha": "81a7cc68e2e072b1d46a193900182dc73cdc316305e10f1ad067b35f1c3322a8",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_NOR.png",
   "type": "Image"
  },
  "Image:81db2b581b1a66df58b50356e61934d09c2fa9a82548d30904026476f52a9dd5": {
@@ -3472,6 +3636,33 @@
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:8e619b2ed9cad74712d17bf7a591b893f751d33504f89ae89e680525cc9129ca": {
+  "assetId": "114342138687260",
+  "imageId": "114342138687260",
+  "moderation": "Approved",
+  "name": "T_Station_Render_ALB",
+  "sha": "8e619b2ed9cad74712d17bf7a591b893f751d33504f89ae89e680525cc9129ca",
+  "source": "assets/textures/M_Bld_Station/T_Station_Render_ALB.png",
+  "type": "Image"
+ },
+ "Image:8e76bfdac6e25ae2bbd797d71d760a50936bad82f42295e4939aaab7cb44f27d": {
+  "assetId": "102758495601164",
+  "imageId": "102758495601164",
+  "moderation": "Approved",
+  "name": "T_Station_Render_RGH",
+  "sha": "8e76bfdac6e25ae2bbd797d71d760a50936bad82f42295e4939aaab7cb44f27d",
+  "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
+  "type": "Image"
+ },
+ "Image:8f254afaa279309bf7ad48b684e64944425c7bfe141d2d9156ba35200ecab9d6": {
+  "assetId": "121040799299980",
+  "imageId": "121040799299980",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_RGH_Wet",
+  "sha": "8f254afaa279309bf7ad48b684e64944425c7bfe141d2d9156ba35200ecab9d6",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:8f39c48eb081e417ec135cee88b87c62c4464c92d6b70fd3fd0247b4ae86f79f": {
   "assetId": "115615555060349",
   "imageId": "115615555060349",
@@ -3569,6 +3760,15 @@
   "name": "T_RIB_Rig_ALB_Wet",
   "sha": "9160bb168008979242ce564c212b2968ab483d2f73db5b6c04df647829a75ea6",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:91eb9f88176ce5f4186a37874ee6825c0b5df28639cf1fb03997c4b71798761b": {
+  "assetId": "89950671294048",
+  "imageId": "89950671294048",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_RGH",
+  "sha": "91eb9f88176ce5f4186a37874ee6825c0b5df28639cf1fb03997c4b71798761b",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_RGH.png",
   "type": "Image"
  },
  "Image:91ff0efc2e1d15e9b04b950e3bdaee327fe9c4541448d910f8823c17c8d098cd": {
@@ -3715,6 +3915,15 @@
   "source": "assets/ocean/sky/Storm_Lf.png",
   "type": "Image"
  },
+ "Image:98c94f04ad7d681ef55fa0a2ea10d7dec764c365154e8d5286798ec7893af58a": {
+  "assetId": "98223935884982",
+  "imageId": "98223935884982",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_NOR_Wet",
+  "sha": "98c94f04ad7d681ef55fa0a2ea10d7dec764c365154e8d5286798ec7893af58a",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_NOR_Wet.png",
+  "type": "Image"
+ },
  "Image:993e6f1607cb4c744b39f5d75a9a09c92914ad3957f3b3b2fa4bf0b69987c1f7": {
   "assetId": "85829276475872",
   "imageId": "85829276475872",
@@ -3731,6 +3940,15 @@
   "name": "T_CasualtySwimmer_Atlas_ALB_Wet",
   "sha": "99c12e3b4d72675228a7cb97b11d0686ee2c16260f6c6013c247e0c3bb9c9931",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Atlas_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:99c55b14c5b7377f0b5e6d5f618ab051fe57e2a43a23f7546e1a4ec17c96a380": {
+  "assetId": "77744727476720",
+  "imageId": "77744727476720",
+  "moderation": "Approved",
+  "name": "T_Station_Details_RGH",
+  "sha": "99c55b14c5b7377f0b5e6d5f618ab051fe57e2a43a23f7546e1a4ec17c96a380",
+  "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH.png",
   "type": "Image"
  },
  "Image:9b5e6060cbf10918ad8bbf3eed5afcabaaf7be72421d042453ecffbda60c963c": {
@@ -3875,6 +4093,15 @@
   "name": "T_ChandleryInt_Joinery_ALB",
   "sha": "a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
+  "type": "Image"
+ },
+ "Image:a0fd71fccefb5be9e25af0851f7f3efc2402ec443ea5019d448d2864f6171293": {
+  "assetId": "90663224065891",
+  "imageId": "90663224065891",
+  "moderation": "Approved",
+  "name": "T_Station_Details_ALB",
+  "sha": "a0fd71fccefb5be9e25af0851f7f3efc2402ec443ea5019d448d2864f6171293",
+  "source": "assets/textures/M_Bld_Station/T_Station_Details_ALB.png",
   "type": "Image"
  },
  "Image:a1c022b3a842f7a649e1ff4c581210d8807fcf872a29cdfd138dfeb5bd05b02c": {
@@ -4174,6 +4401,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH.png",
   "type": "Image"
  },
+ "Image:aed3be93b0f7da440923c9e8e9955cb745283daa777f7e644d52fc48d778caad": {
+  "assetId": "132759149365870",
+  "imageId": "132759149365870",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_ALB",
+  "sha": "aed3be93b0f7da440923c9e8e9955cb745283daa777f7e644d52fc48d778caad",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_ALB.png",
+  "type": "Image"
+ },
  "Image:aee0588f432dbcf06fc921cb08f67c836edffb64fed0dd8379ab9a352f5dfdef": {
   "assetId": "119325078333872",
   "imageId": "119325078333872",
@@ -4192,6 +4428,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_MET.png",
   "type": "Image"
  },
+ "Image:af05f94b828691e1e898b813a3266bb1a6f0aebe8ec44e0fd27f04678311035a": {
+  "assetId": "100186830760988",
+  "imageId": "100186830760988",
+  "moderation": "Approved",
+  "name": "T_Station_Render_ALB_Wet",
+  "sha": "af05f94b828691e1e898b813a3266bb1a6f0aebe8ec44e0fd27f04678311035a",
+  "source": "assets/textures/M_Bld_Station/T_Station_Render_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a": {
   "assetId": "73511196593796",
   "imageId": "73511196593796",
@@ -4199,6 +4444,15 @@
   "name": "T_Chandlery_Details_RGH",
   "sha": "af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
+  "type": "Image"
+ },
+ "Image:afb88a0f2929eb4bbc17fbc4083ce650709e9386704ec842b568f13d956cbe8b": {
+  "assetId": "79755452905278",
+  "imageId": "79755452905278",
+  "moderation": "Approved",
+  "name": "T_Station_Granite_ALB",
+  "sha": "afb88a0f2929eb4bbc17fbc4083ce650709e9386704ec842b568f13d956cbe8b",
+  "source": "assets/textures/M_Bld_Station/T_Station_Granite_ALB.png",
   "type": "Image"
  },
  "Image:b0037f87fb3bc66c39fab45f2b968c230bddf47517254c3407a6fea825f35837": {
@@ -4244,6 +4498,15 @@
   "name": "Mayday_T_Mat_Shingle_RGH_Wet",
   "sha": "b0a2ba1a2dde875d0e763918a6bd75c9ab161e328c5b9b7cb7e0632570e9dcf1",
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:b11901989ab570519354a125ee3db8894d8a2510adbfb67d349e77b49a583d3d": {
+  "assetId": "136139160564565",
+  "imageId": "136139160564565",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_RGH_Wet",
+  "sha": "b11901989ab570519354a125ee3db8894d8a2510adbfb67d349e77b49a583d3d",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png",
   "type": "Image"
  },
  "Image:b253bebe8d3b743f8afecdb540515db2f94f91bae8a2669a05bf457e7bea74f5": {
@@ -4298,6 +4561,15 @@
   "name": "T_RIB_Hull_RGH",
   "sha": "b59f1a84b0eef946f603831778a5239d027269e0105ff472f265101deaabd445",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_RGH.png",
+  "type": "Image"
+ },
+ "Image:b65ea31dc48bb0a17a217f0e850e4f31bdf424c4522a65642797da388f1d3b39": {
+  "assetId": "123895615298952",
+  "imageId": "123895615298952",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_ALB_Wet",
+  "sha": "b65ea31dc48bb0a17a217f0e850e4f31bdf424c4522a65642797da388f1d3b39",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB_Wet.png",
   "type": "Image"
  },
  "Image:b69c43e9ed357425d0efa5e878c7a3a96f07ed98a25eddb961e395845d540d93": {
@@ -4483,6 +4755,15 @@
   "source": "assets/textures/M_Rock_Cliff_03/T_Cliff03_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:c0a5f0509bd6e0b35e0fad768db16976046ce758f8be8e7edb02066908d3b919": {
+  "assetId": "138162811665432",
+  "imageId": "138162811665432",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Fur_ALB",
+  "sha": "c0a5f0509bd6e0b35e0fad768db16976046ce758f8be8e7edb02066908d3b919",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB.png",
+  "type": "Image"
+ },
  "Image:c0feb518944ed40665532d673dfa4bee81cf371a411608fe7691a4e713387bb3": {
   "assetId": "131892484786434",
   "imageId": "131892484786434",
@@ -4540,7 +4821,7 @@
  "Image:c475ee49e7a660aebeff83c252dfaf16517a5e724f215527eeeb49fe5e2da3f2": {
   "assetId": "93667695174873",
   "imageId": "93667695174873",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Turf_ALB",
   "sha": "c475ee49e7a660aebeff83c252dfaf16517a5e724f215527eeeb49fe5e2da3f2",
   "source": "assets/textures/Materials/T_Mat_Turf_ALB.png",
@@ -4571,6 +4852,15 @@
   "name": "Mayday_T_Mat_Gravel_ALB_Wet",
   "sha": "c5f7f5e4890630409720a09d02edbf733bdea47a0de5815e580f24b777ca0b87",
   "source": "assets/textures/Materials/T_Mat_Gravel_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:c5fe04eee8dc2ea7a02adc92b7c070114e3f772bd6bd7c4549f771da76ec3c9f": {
+  "assetId": "110247583842966",
+  "imageId": "110247583842966",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_ALB_Wet",
+  "sha": "c5fe04eee8dc2ea7a02adc92b7c070114e3f772bd6bd7c4549f771da76ec3c9f",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_ALB_Wet.png",
   "type": "Image"
  },
  "Image:c5fe551b7d7868c3b490924dfabf4257db51687cb2a48929129382c9013e27f5": {
@@ -4656,6 +4946,15 @@
   "source": "assets/textures/M_Chr_HumanBase_M/T_HumanBaseM_Body_MET.png",
   "type": "Image"
  },
+ "Image:c8e620c437f9f70f84ca1f6e09e54349597ea30d57d5370da10a24fecc0275e8": {
+  "assetId": "72743596123183",
+  "imageId": "72743596123183",
+  "moderation": "Approved",
+  "name": "T_Station_Slate_ALB_Wet",
+  "sha": "c8e620c437f9f70f84ca1f6e09e54349597ea30d57d5370da10a24fecc0275e8",
+  "source": "assets/textures/M_Bld_Station/T_Station_Slate_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:c8fbaa6a8875c216116dea13de0b38eb95ce9af587897ce76851a5526251ca78": {
   "assetId": "116251212607567",
   "imageId": "116251212607567",
@@ -4717,6 +5016,15 @@
   "name": "Mayday_ocean_rough_calm",
   "sha": "cad131807d2f5d0c76e2431c42bcfca5123b776125ecfe4903538c22327f9eac",
   "source": "assets/ocean/ocean_rough_calm.png",
+  "type": "Image"
+ },
+ "Image:cb08a6ad3b07e01a99d427f761d196623a4d3921ea15767e422af1a2d2531be0": {
+  "assetId": "78854942223625",
+  "imageId": "78854942223625",
+  "moderation": "Approved",
+  "name": "T_Slipway_Tide_ALB_Wet",
+  "sha": "cb08a6ad3b07e01a99d427f761d196623a4d3921ea15767e422af1a2d2531be0",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB_Wet.png",
   "type": "Image"
  },
  "Image:cbecfd38448e2981015f4b53b96ea013defd71b22e6ad9a1d3b3825b02a607d5": {
@@ -5049,6 +5357,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB.png",
   "type": "Image"
  },
+ "Image:d8215a21d68b76157612c14afa5ce6b3d7ff85e135db6b05169597b61a147bf0": {
+  "assetId": "134002599623393",
+  "imageId": "134002599623393",
+  "moderation": "Approved",
+  "name": "T_Station_Details_RGH_Wet",
+  "sha": "d8215a21d68b76157612c14afa5ce6b3d7ff85e135db6b05169597b61a147bf0",
+  "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:d89cb0f5c64ae9ccb06955c18eb789fbdfaf11ae0ec445b5f3efd35a2e0b97ea": {
   "assetId": "138288822640667",
   "imageId": "138288822640667",
@@ -5202,6 +5519,15 @@
   "source": "assets/textures/Materials/T_Mat_Moor_ALB.png",
   "type": "Image"
  },
+ "Image:dd9abb796cad34de028f0b5425e2fc944909536a352306b76acf86ebf428c19b": {
+  "assetId": "135422805475907",
+  "imageId": "135422805475907",
+  "moderation": "Approved",
+  "name": "T_Station_Slate_ALB",
+  "sha": "dd9abb796cad34de028f0b5425e2fc944909536a352306b76acf86ebf428c19b",
+  "source": "assets/textures/M_Bld_Station/T_Station_Slate_ALB.png",
+  "type": "Image"
+ },
  "Image:ddc2a738816d1f32967c1359718852112c390c8162d118cddd193f3da873cbc2": {
   "assetId": "129576769741854",
   "imageId": "129576769741854",
@@ -5227,6 +5553,15 @@
   "name": "T_Ledge02_Granite_RGH",
   "sha": "de0d7cc0cc4916fbde11986fa573b0157f8490583c1fd8321bd393418497ffa2",
   "source": "assets/textures/M_Rock_Ledge_02/T_Ledge02_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:de52fdaa692100bc92baa83aa166335b0172701fb638b7ee47bca7aa101fb60f": {
+  "assetId": "105638684078664",
+  "imageId": "105638684078664",
+  "moderation": "Approved",
+  "name": "T_Station_Details_ALB_Wet",
+  "sha": "de52fdaa692100bc92baa83aa166335b0172701fb638b7ee47bca7aa101fb60f",
+  "source": "assets/textures/M_Bld_Station/T_Station_Details_ALB_Wet.png",
   "type": "Image"
  },
  "Image:de834af0546668552a0a6db5f841937eea35bf3028c9195b9afc5c6850d2fe6b": {
@@ -5299,6 +5634,15 @@
   "name": "T_RIBHelm_Seats_NOR",
   "sha": "e26cc8097cc4341bc50c2265fa12fcce95115c65caaa06a81211a37d851e56d4",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_NOR.png",
+  "type": "Image"
+ },
+ "Image:e27f455df4dbf7342d99007d875a4765bc2ffd4ac5452a90d98074dfab85b629": {
+  "assetId": "111418848972021",
+  "imageId": "111418848972021",
+  "moderation": "Approved",
+  "name": "T_Station_Granite_ALB_Wet",
+  "sha": "e27f455df4dbf7342d99007d875a4765bc2ffd4ac5452a90d98074dfab85b629",
+  "source": "assets/textures/M_Bld_Station/T_Station_Granite_ALB_Wet.png",
   "type": "Image"
  },
  "Image:e284933b6e33000673ae69f82c36202fb2bc28a319747b2ef0a6328868c0a5ef": {
@@ -5400,6 +5744,15 @@
   "source": "assets/textures/M_Rock_Boulder_06/T_Boulder06_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:e7ac965c201042b0bd4967d6190bc783e45677466c773927f9d2062cafefa7d8": {
+  "assetId": "135540737096451",
+  "imageId": "135540737096451",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Fur_ALB_Wet",
+  "sha": "e7ac965c201042b0bd4967d6190bc783e45677466c773927f9d2062cafefa7d8",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:e7c0a57281398e6e3ab5bd7d6ce8b683b29d1c4f75fecbf1f203188ac840e1e2": {
   "assetId": "124254426798757",
   "imageId": "124254426798757",
@@ -5442,7 +5795,7 @@
  "Image:e9432be719d985b7578f4b6a76d2d660081e2d7888db7ff59dc0a25f1f9c1b40": {
   "assetId": "121197227768454",
   "imageId": "121197227768454",
-  "moderation": "Reviewing",
+  "moderation": "Approved",
   "name": "Mayday_T_Mat_Turf_ALB_Wet",
   "sha": "e9432be719d985b7578f4b6a76d2d660081e2d7888db7ff59dc0a25f1f9c1b40",
   "source": "assets/textures/Materials/T_Mat_Turf_ALB_Wet.png",
@@ -5455,6 +5808,15 @@
   "name": "T_Spike1_2048_NOR",
   "sha": "e9785278f8559b851662cface3eb598aa892a15b0626c5627c83f8a1b26de0c5",
   "source": "assets/textures/Spike1/T_Spike1_2048_NOR.png",
+  "type": "Image"
+ },
+ "Image:e9837b5e41faa5391d5ff6965fe337ec4e94e6d17d6a5175cad04a4efdf28b8f": {
+  "assetId": "105690658871547",
+  "imageId": "105690658871547",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_RGH",
+  "sha": "e9837b5e41faa5391d5ff6965fe337ec4e94e6d17d6a5175cad04a4efdf28b8f",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH.png",
   "type": "Image"
  },
  "Image:e9b15a2a26f4dd7486407d5177f560e6bc63f14018b52875a0ad01dea432ce97": {
@@ -5554,6 +5916,15 @@
   "name": "T_Chandlery_Details_RGH_Wet",
   "sha": "ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:edb6319f4ace4fa3742ce1a74ef83c3f96e6b92336eea44cbf3dd848dfddbc0a": {
+  "assetId": "120253267586249",
+  "imageId": "120253267586249",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_RGH_Wet",
+  "sha": "edb6319f4ace4fa3742ce1a74ef83c3f96e6b92336eea44cbf3dd848dfddbc0a",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_RGH_Wet.png",
   "type": "Image"
  },
  "Image:ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2": {
@@ -5736,6 +6107,15 @@
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:f31e5c36d32d8d0ff10e93cea2b013b6d65b9227e270f6d4e8ec76ea3052b2ac": {
+  "assetId": "84794786702653",
+  "imageId": "84794786702653",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_NOR",
+  "sha": "f31e5c36d32d8d0ff10e93cea2b013b6d65b9227e270f6d4e8ec76ea3052b2ac",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_NOR.png",
+  "type": "Image"
+ },
  "Image:f3c15e229f6662aa761504622c60e14ecde8d15e93039a7fcc8fff4e62315be8": {
   "assetId": "81550009189148",
   "imageId": "81550009189148",
@@ -5743,6 +6123,15 @@
   "name": "T_RIB_Rig_MET",
   "sha": "f3c15e229f6662aa761504622c60e14ecde8d15e93039a7fcc8fff4e62315be8",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_MET.png",
+  "type": "Image"
+ },
+ "Image:f472f60950a79193558c56d0edc770098436b60bb4cee6148daef63f34835681": {
+  "assetId": "78757566096903",
+  "imageId": "78757566096903",
+  "moderation": "Approved",
+  "name": "T_Slipway_Steel_MET",
+  "sha": "f472f60950a79193558c56d0edc770098436b60bb4cee6148daef63f34835681",
+  "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_MET.png",
   "type": "Image"
  },
  "Image:f4a13c82b415ff19b421a8c8ad88a2975fe8aeecf44af762f81f1bb8a0ced1d7": {
@@ -5761,6 +6150,15 @@
   "name": "T_RIBHelm_Console_NOR",
   "sha": "f4b05911e7958c46a93deaaacd8cf23a18a2a91670b735a00857578197bad9e4",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_NOR.png",
+  "type": "Image"
+ },
+ "Image:f4d0b8c99f914a9950d86c6b95084bea383a206e0096eea7a537cd3e112fdcdf": {
+  "assetId": "84506139266722",
+  "imageId": "84506139266722",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Fur_RGH_Wet",
+  "sha": "f4d0b8c99f914a9950d86c6b95084bea383a206e0096eea7a537cd3e112fdcdf",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_RGH_Wet.png",
   "type": "Image"
  },
  "Image:f4d945e59d9db76147b6e417a7f836ddd3c5623ecaccc59931fcc6c58c359316": {
@@ -5788,6 +6186,15 @@
   "name": "T_Ledge03_Granite_RGH_Wet",
   "sha": "f57790f09234cfa8ca98baaf2db4862dffe0196bfc7af524feef515ec6b3fbb0",
   "source": "assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:f5b80db54898f36ac1643051451704b1e061e127b80b7a8e33bf114f8f906c34": {
+  "assetId": "101906028704012",
+  "imageId": "101906028704012",
+  "moderation": "Approved",
+  "name": "T_Station_Slate_RGH_Wet",
+  "sha": "f5b80db54898f36ac1643051451704b1e061e127b80b7a8e33bf114f8f906c34",
+  "source": "assets/textures/M_Bld_Station/T_Station_Slate_RGH_Wet.png",
   "type": "Image"
  },
  "Image:f5d1d9137fbfb9bd0d6d32141574a60fce45f89323c491ced731ebb1b4ab07cf": {
@@ -5826,6 +6233,15 @@
   "source": "assets/textures/M_Rock_Boulder_06/T_Boulder06_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:f76eba8064fcf34898a7a6df208f7f2dd5b3a6915140ac0cc726a53bf25c7ab6": {
+  "assetId": "93014693104941",
+  "imageId": "93014693104941",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Harness_MET",
+  "sha": "f76eba8064fcf34898a7a6df208f7f2dd5b3a6915140ac0cc726a53bf25c7ab6",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_MET.png",
+  "type": "Image"
+ },
  "Image:f78904af5f692ad25d024ea20b221bf9e0aaf29400a700444918b95da112ab23": {
   "assetId": "94763399438097",
   "imageId": "94763399438097",
@@ -5833,6 +6249,15 @@
   "name": "T_JetSki_Hull_RGH_Wet",
   "sha": "f78904af5f692ad25d024ea20b221bf9e0aaf29400a700444918b95da112ab23",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:f84d8645d72c9d862eb705480b928069d226786d7b7125e7c77fe51b80546366": {
+  "assetId": "97234724198694",
+  "imageId": "97234724198694",
+  "moderation": "Approved",
+  "name": "Mayday_T_Bosun_Body_ALB_Wet",
+  "sha": "f84d8645d72c9d862eb705480b928069d226786d7b7125e7c77fe51b80546366",
+  "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_ALB_Wet.png",
   "type": "Image"
  },
  "Image:f96c3db91d3313bc1604b24543ef89969ac5e5d4dce0feaf3e7293fbc3fc7588": {
@@ -5892,6 +6317,15 @@
   "name": "T_Cliff04_Granite_ALB_Wet",
   "sha": "fa9548a09bf21588ba926260c568696f4277df4e1108c52ada2367cb27dfb70e",
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:fbb6b0c44c0ecf3a16a22ea1ef3aacafb64477f58d96172a407b58333801d568": {
+  "assetId": "74661482253511",
+  "imageId": "74661482253511",
+  "moderation": "Approved",
+  "name": "T_Station_Granite_RGH_Wet",
+  "sha": "fbb6b0c44c0ecf3a16a22ea1ef3aacafb64477f58d96172a407b58333801d568",
+  "source": "assets/textures/M_Bld_Station/T_Station_Granite_RGH_Wet.png",
   "type": "Image"
  },
  "Image:fbd4cd46a297d43f5d6749c808dd87676adc7cf5e5e304a37a37f0d089caa1a9": {
@@ -6090,6 +6524,16 @@
   "route": "delivery",
   "sha": "090b863fdfb59ddf90e496718f5307e78cb45f013b3ada27d2d72a3de66a6879",
   "source": "assets/fbx/M_Veg_Grass_Turf_02/M_Veg_Grass_Turf_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:0a253de9a17059dca93c68ac92fc80789ba0b356c49e6a04f41574e8976c313d": {
+  "assetId": "95533998102204",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD1",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "0a253de9a17059dca93c68ac92fc80789ba0b356c49e6a04f41574e8976c313d",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD1.fbx",
   "type": "Model"
  },
  "Model:0b177fa96d8304025f649c77c53fce59c30527593b7e6fa4c8346213026182eb": {
@@ -6712,6 +7156,16 @@
   "source": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD0.fbx",
   "type": "Model"
  },
+ "Model:548748396aa16d994afff366c43e9d40a8fb61f56d7ac2fe8a09442a6a666c69": {
+  "assetId": "135975521138620",
+  "moderation": "Approved",
+  "name": "M_Bld_Slipway_LOD1",
+  "rbxm": "assets/models/M_Bld_Slipway_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "548748396aa16d994afff366c43e9d40a8fb61f56d7ac2fe8a09442a6a666c69",
+  "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:555c53fc2723537de7c9454ed8ae848dec633375669ba43330148b67d791746b": {
   "assetId": "131492053121256",
   "moderation": "Approved",
@@ -7052,6 +7506,16 @@
   "source": "assets/fbx/M_Veg_Grass_Turf_02/M_Veg_Grass_Turf_02_LOD1.fbx",
   "type": "Model"
  },
+ "Model:80dff971780e3e168eca0d082681050bfb1d21cdced061e941c61fd9f27bfb9b": {
+  "assetId": "77271836666194",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD2",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "80dff971780e3e168eca0d082681050bfb1d21cdced061e941c61fd9f27bfb9b",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:8164901a3068d9a6ced6a0fe2f964e23b42ad8ebcb685dcf6529fa2c75cd8acf": {
   "assetId": "120967714183435",
   "moderation": "Approved",
@@ -7110,6 +7574,16 @@
   "route": "delivery",
   "sha": "8407789116f5e733a117f11182278e2e6263f76bc0c74f02d165cc05d8006836",
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:852127b970c313d283581b0b9df5bec8f804924dcc78ab7d231bc685d0e54443": {
+  "assetId": "88484209948916",
+  "moderation": "Approved",
+  "name": "M_Bld_Slipway",
+  "rbxm": "assets/models/M_Bld_Slipway.rbxm",
+  "route": "delivery",
+  "sha": "852127b970c313d283581b0b9df5bec8f804924dcc78ab7d231bc685d0e54443",
+  "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD0.fbx",
   "type": "Model"
  },
  "Model:86674d26450a0e66f3061c7c45d7808ba3e1a7423a5593a4ca288def36d8f5a5": {
@@ -7192,6 +7666,16 @@
   "source": "assets/fbx/M_Rock_Cliff_02/M_Rock_Cliff_02_LOD0.fbx",
   "type": "Model"
  },
+ "Model:9253afd0bddede33b41a91e77f0514c284586444e2f17400d9e68411a2154695": {
+  "assetId": "139076406661993",
+  "moderation": "Approved",
+  "name": "M_Chr_Bosun_LOD0",
+  "rbxm": "assets/models/M_Chr_Bosun_LOD0.rbxm",
+  "route": "delivery",
+  "sha": "9253afd0bddede33b41a91e77f0514c284586444e2f17400d9e68411a2154695",
+  "source": "assets/fbx/M_Chr_Bosun/M_Chr_Bosun_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:930d895407a7c6df899b680538967c7dbdead6f81f3ab14167eca8241240f6fc": {
   "assetId": "106540460120401",
   "moderation": "Approved",
@@ -7262,6 +7746,16 @@
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD2.fbx",
   "type": "Model"
  },
+ "Model:98e432cb323cf358ba150a1c11fd29a6472025fde4241c0c656518d24f4def96": {
+  "assetId": "120691025429406",
+  "moderation": "Approved",
+  "name": "M_Bld_Slipway_LOD2",
+  "rbxm": "assets/models/M_Bld_Slipway_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "98e432cb323cf358ba150a1c11fd29a6472025fde4241c0c656518d24f4def96",
+  "source": "assets/fbx/M_Bld_Slipway/M_Bld_Slipway_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:9922a0681a910004faf2fc753504f280697be7270f2d720e551eb7e7c1edd16a": {
   "assetId": "109614224417360",
   "moderation": "Approved",
@@ -7320,6 +7814,16 @@
   "route": "delivery",
   "sha": "9f4595664bf245578faa0af9372a3c745352e457345bcbe3ba5ee1cc9bc87b4d",
   "source": "assets/fbx/M_Prop_Chandlery/M_Prop_Chandlery_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:9f527f7e4d708d286a6e4c4055676ab67fee69574a2397e3a423c0ff043f1ed0": {
+  "assetId": "134044673829608",
+  "moderation": "Approved",
+  "name": "M_Bld_Station_LOD2",
+  "rbxm": "assets/models/M_Bld_Station_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "9f527f7e4d708d286a6e4c4055676ab67fee69574a2397e3a423c0ff043f1ed0",
+  "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
   "type": "Model"
  },
  "Model:a1d51f33154f0772d870cf8350a66c9b3f7f894ee3849b4d3d75ae9060dc09fc": {
@@ -7482,6 +7986,16 @@
   "source": "assets/fbx/Spike1/M_Spike1_Tris19990.fbx",
   "type": "Model"
  },
+ "Model:b5bc348c795d51099153a118b784db59d160e1a1d0b825f4e840d9d585220107": {
+  "assetId": "117168269518357",
+  "moderation": "Approved",
+  "name": "M_Bld_Station_LOD1",
+  "rbxm": "assets/models/M_Bld_Station_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "b5bc348c795d51099153a118b784db59d160e1a1d0b825f4e840d9d585220107",
+  "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:b5e8eb172fb49eb7f03305469b4ae1d69a9c4761a0ee8bc1d5f6eab194a66bcd": {
   "assetId": "122796022528665",
   "moderation": "Approved",
@@ -7540,6 +8054,16 @@
   "route": "delivery",
   "sha": "ba1a7f558120b38a831d954ef2927a3282374964c904c04bc644451948d5bbde",
   "source": "assets/fbx/M_Veg_Bracken_02/M_Veg_Bracken_02_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:bbe0f1745d399ba2a7c508faacf75609754c6567896bdb5a22005181c1950038": {
+  "assetId": "81569103844678",
+  "moderation": "Approved",
+  "name": "M_Bld_Station",
+  "rbxm": "assets/models/M_Bld_Station.rbxm",
+  "route": "delivery",
+  "sha": "bbe0f1745d399ba2a7c508faacf75609754c6567896bdb5a22005181c1950038",
+  "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD0.fbx",
   "type": "Model"
  },
  "Model:bcb8ac00ffc62d13e7b7f6ec8f8545e3d9d4dc1c16b5956fb894308c9746b071": {
