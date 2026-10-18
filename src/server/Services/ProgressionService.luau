@@ -9,6 +9,9 @@
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
+--   ProgressionService.RecordTraining(player, kind, grade, steps, isExercise, cannotFail?)
+--     -> TrainingResult? (ProgressionRules): exercise passes and certification progress from a
+--     finished operation; pays the exercise's first-pass reward; sets Cert<Id> attributes.
 -- Remotes: BuyGear (Net, function: itemId = gear id or vehicle id -> ok, reason),
 --   PlayerDataChanged (Net, S->C full snapshot plus optional rankUp / award fields),
 --   Progression_GetData (own RemoteFunction under ReplicatedStorage.Net: pull the snapshot).
@@ -79,10 +82,15 @@ local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 	if cash then
 		cash.Value = data.cash
 	end
+	local rankIndex = Rules.rankIndex(data) -- Rep plus the rank's certification
 	if rank then
-		rank.Value = Rules.rankForRep(data.rep).displayName
+		rank.Value = ProgressionConfig.Ranks[rankIndex].displayName
 	end
-	player:SetAttribute("RankIndex", Rules.rankIndexForRep(data.rep))
+	player:SetAttribute("RankIndex", rankIndex)
+	-- CertHelm, CertCasualtyCare, CertRescueSwimmer: read by OperationService and the mechanics
+	for _, id in ProgressionConfig.CertOrder do
+		player:SetAttribute(`Cert{id}`, if data.certs[id] then true else nil)
+	end
 end
 
 local function push(player: Player, data: Rules.PlayerData, extra: { [string]: any }?)
@@ -104,10 +112,10 @@ function ProgressionService.Award(player: Player, cash: number, rep: number, rea
 	end
 	local state, isGreat = weatherState()
 	local finalCash, finalRep, mult = Rules.applyAward(cash, rep, state, isGreat)
-	local oldRank = Rules.rankIndexForRep(data.rep)
+	local oldRank = Rules.rankIndex(data)
 	data.cash += finalCash
 	data.rep += finalRep
-	local newRank = Rules.rankIndexForRep(data.rep)
+	local newRank = Rules.rankIndex(data)
 	DataService.MarkDirty(player)
 	local extra: { [string]: any } = {
 		award = { cash = finalCash, rep = finalRep, multiplier = mult, reason = reason },
@@ -121,6 +129,68 @@ function ProgressionService.Award(player: Player, cash: number, rep: number, rea
 	if newRank ~= oldRank then
 		rankChanged:Fire(player, newRank, oldRank)
 	end
+end
+
+-- A finished operation or exercise: certification progress, exercise passes and their first-pass
+-- reward (docs 03 sections 2 and 3.1). OperationService calls it once per player at the debrief
+-- and puts result.badges in Ops_Debrief.
+function ProgressionService.RecordTraining(
+	player: Player,
+	kind: string,
+	grade: string,
+	steps: { Rules.StepRecord },
+	isExercise: boolean,
+	cannotFail: boolean?
+): Rules.TrainingResult?
+	local data = DataService.Get(player)
+	if not data then
+		return nil
+	end
+	local result = if isExercise
+		then Rules.recordExercise(data, kind, grade, steps, player.UserId, cannotFail)
+		else Rules.recordOperation(data, kind, steps, player.UserId)
+	if #result.counted == 0 and #result.earned == 0 and not result.passed then
+		return result
+	end
+	DataService.MarkDirty(player)
+	local paid = result.reward.cash > 0 or result.reward.rep > 0
+	if paid then
+		-- Award pushes the snapshot and reports a rank-up the reward's Rep itself brings
+		ProgressionService.Award(player, result.reward.cash, result.reward.rep, `Exercise:{kind}`)
+	end
+	-- a rank-up the certification brings (the Rep was already there): Award cannot see it
+	if result.rankAfter > result.rankBefore then
+		local rankDef = ProgressionConfig.Ranks[result.rankAfter]
+		push(player, data, {
+			certsEarned = result.earned,
+			rankUp = {
+				rankIndex = result.rankAfter,
+				rank = rankDef.displayName,
+				unlocks = rankDef.unlocks,
+			},
+		})
+		rankChanged:Fire(player, result.rankAfter, result.rankBefore)
+	elseif not paid then
+		push(player, data, { certsEarned = result.earned })
+	end
+	if #result.earned > 0 then
+		task.spawn(DataService.Save, player, false) -- a certification is a milestone
+		-- one Roblox badge per certification (RP-B1's BadgeService; skipped until it exists)
+		local module = script.Parent:FindFirstChild("BadgeService")
+		if module and module:IsA("ModuleScript") then
+			local ok, badges = pcall(require, module)
+			if ok and type(badges) == "table" and type((badges :: any).Award) == "function" then
+				for _, id in result.earned do
+					task.spawn(
+						(badges :: any).Award,
+						player,
+						ProgressionConfig.Certifications[id].badge
+					)
+				end
+			end
+		end
+	end
+	return result
 end
 
 function ProgressionService.GetData(player: Player): { [string]: any }?

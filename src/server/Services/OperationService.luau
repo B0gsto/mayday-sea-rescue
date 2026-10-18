@@ -26,6 +26,8 @@ local Grading = require(OpsFolder:WaitForChild("Grading"))
 local Operations = require(OpsFolder:WaitForChild("Operations"))
 local Remotes = require(OpsFolder:WaitForChild("Remotes"))
 local Types = require(OpsFolder:WaitForChild("Types"))
+-- training exercises (RP-C1): exercise kinds record a pass, not certification progress
+local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
 
 local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
 -- Ferry (stream c): server-side metric checks and the scene board's task list.
@@ -1095,6 +1097,44 @@ finish = function(op: any, reason: string)
 				boat:SetAttribute("ColdOpenAutoThrottle", false)
 			end
 		end
+		-- certification progress and exercise passes (RP-C1); takeovers never count
+		local training: any = nil
+		if op.helpers[p] and not op.takeover then
+			local casualty = op.casualties[1]
+			local steps = {}
+			for _, r in op.results do
+				local stepDef: StepDef? = nil
+				for _, sd in op.def.steps do
+					if sd.id == r.stepId then
+						stepDef = sd
+						break
+					end
+				end
+				table.insert(steps, {
+					id = r.stepId,
+					grade = r.grade,
+					userId = r.userId,
+					assistEase = r.assistEase,
+					mechanicId = if stepDef
+						then Operations.mechanicFor(stepDef, casualty and casualty.state)
+						else nil,
+				})
+			end
+			local ex = Exercises.get(op.kind)
+			local ok, res = try(
+				"ProgressionService",
+				"RecordTraining",
+				p,
+				op.kind,
+				grade,
+				steps,
+				ex ~= nil,
+				ex ~= nil and ex.cannotFail
+			)
+			if ok and type(res) == "table" then
+				training = res
+			end
+		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
 		fire("Ops_Debrief", p, {
@@ -1113,6 +1153,8 @@ finish = function(op: any, reason: string)
 			rep = reward.rep,
 			tip = tip,
 			me = p.UserId,
+			-- certifications earned, progress, exercise pass, promotion (ProgressionRules)
+			badges = if training then training.badges else nil,
 		})
 	end
 	closeOp(op)

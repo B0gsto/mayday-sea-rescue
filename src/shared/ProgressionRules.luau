@@ -1,7 +1,8 @@
 --!strict
 -- ProgressionRules: the pure progression math (rank from Rep, storm multipliers, gear bonuses,
--- purchase checks, save-data defaults and migration). No services, safe to load in Lune
--- (tests/Progression.spec.luau). Server services and HUD both use it so they agree.
+-- purchase checks, certifications and the rank gate, save-data defaults and migration). No
+-- services, safe to load in Lune (tests/Progression.spec.luau, tests/Certs.spec.luau). Server
+-- services and HUD both use it so they agree.
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 
 export type PlayerData = {
@@ -15,6 +16,44 @@ export type PlayerData = {
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
+	-- Certifications (docs 03 section 3.1): id -> true once earned. Never lost.
+	certs: { [string]: boolean },
+	-- Live operations counted toward each unearned certification (capped at its count).
+	certLive: { [string]: number },
+	-- Exercise id -> best passing grade ("Gold" | "Silver" | "Bronze"); present means passed.
+	exercises: { [string]: string },
+}
+
+-- One step of a finished operation, as the debrief timeline has it (OperationService record()).
+export type StepRecord = {
+	id: string,
+	grade: string,
+	userId: number?, -- who did it (nil: an NPC)
+	mechanicId: string?, -- the mechanic that played it (Operations.mechanicFor)
+	assistEase: boolean?, -- the cold open's Assist ease drove the hull: never counts
+}
+
+-- What the debrief shows under the grade ("debrief badges").
+export type DebriefBadge = {
+	id: string, -- "Cert:Helm", "Exercise:ExerciseSwimTest", "Progress:Helm"
+	kind: "cert" | "exercise" | "progress" | "rank",
+	title: string,
+	text: string,
+	badge: string?, -- BadgeConfig key for a Roblox badge award (certifications)
+}
+
+export type TrainingResult = {
+	kind: string,
+	exercise: boolean,
+	passed: boolean, -- exercises: this run passed (live operations: false)
+	firstPass: boolean, -- exercises: the first pass ever (pays the reward)
+	best: string?, -- exercises: the best passing grade after this run
+	reward: { cash: number, rep: number }, -- exercises: the first-pass reward (else 0)
+	counted: { string }, -- certifications whose live count went up
+	earned: { string }, -- certifications earned by this result
+	rankBefore: number,
+	rankAfter: number, -- gated rank index after the certifications (Rep is awarded separately)
+	badges: { DebriefBadge },
 }
 
 local Rules = {}
@@ -32,6 +71,329 @@ end
 
 function Rules.rankForRep(rep: number): ProgressionConfig.Rank
 	return ProgressionConfig.Ranks[Rules.rankIndexForRep(rep)]
+end
+
+local GRADE_RANK = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 } :: { [string]: number }
+
+-- True when grade is minGrade or better ("Takeover" and unknown grades never are).
+function Rules.gradeAtLeast(grade: string?, minGrade: string): boolean
+	local g = if grade then GRADE_RANK[grade] else nil
+	local m = GRADE_RANK[minGrade]
+	return g ~= nil and m ~= nil and g >= m
+end
+
+function Rules.hasCert(data: PlayerData, certId: string): boolean
+	return data.certs[certId] == true
+end
+
+-- The player's rank: the highest rank whose Rep is met with every rank up to it certified
+-- (docs 03 section 3: the Rep keeps counting, the promotion waits for the certification).
+function Rules.rankIndex(data: PlayerData): number
+	local index = 1
+	for i, rank in ProgressionConfig.Ranks do
+		if data.rep < rank.rep or (rank.cert ~= nil and data.certs[rank.cert] ~= true) then
+			break
+		end
+		index = i
+	end
+	return index
+end
+
+-- The rank the Rep has reached but its certification holds back, and that certification.
+function Rules.blockedRank(data: PlayerData): (ProgressionConfig.Rank?, string?)
+	local nextRank = ProgressionConfig.Ranks[Rules.rankIndex(data) + 1]
+	if nextRank and data.rep >= nextRank.rep and nextRank.cert then
+		return nextRank, nextRank.cert
+	end
+	return nil, nil
+end
+
+function Rules.exercisePassed(data: PlayerData, exerciseId: string): boolean
+	return data.exercises[exerciseId] ~= nil
+end
+
+export type CertStatus = {
+	id: string,
+	displayName: string,
+	earned: boolean,
+	exercisePassed: boolean,
+	live: number,
+	liveNeeded: number,
+	liveLabel: string,
+	missing: { string }, -- prerequisite certifications not yet held (display names)
+	ready: boolean, -- every condition met (evaluateCerts grants it)
+}
+
+function Rules.certStatus(data: PlayerData, certId: string): CertStatus?
+	local cert = ProgressionConfig.Certifications[certId]
+	if not cert then
+		return nil
+	end
+	local missing = {}
+	for _, need in cert.needs do
+		if data.certs[need] ~= true then
+			local needDef = ProgressionConfig.Certifications[need]
+			table.insert(missing, if needDef then needDef.displayName else need)
+		end
+	end
+	local earned = data.certs[certId] == true
+	local passed = Rules.exercisePassed(data, cert.exercise)
+	local live = if earned
+		then cert.live.count
+		else math.min(data.certLive[certId] or 0, cert.live.count)
+	return {
+		id = certId,
+		displayName = cert.displayName,
+		earned = earned,
+		exercisePassed = passed or earned,
+		live = live,
+		liveNeeded = cert.live.count,
+		liveLabel = cert.live.label,
+		missing = missing,
+		ready = earned or (passed and live >= cert.live.count and #missing == 0),
+	}
+end
+
+-- Grants every certification whose conditions are met (prerequisites first, so one result can
+-- earn a chain). Returns the newly earned ids in ladder order.
+function Rules.evaluateCerts(data: PlayerData): { string }
+	local earned = {}
+	local changed = true
+	while changed do
+		changed = false
+		for _, id in ProgressionConfig.CertOrder do
+			if data.certs[id] ~= true then
+				local st = Rules.certStatus(data, id)
+				if st and st.ready then
+					data.certs[id] = true
+					data.certLive[id] = nil
+					table.insert(earned, id)
+					changed = true
+				end
+			end
+		end
+	end
+	return earned
+end
+
+-- One short line for the HUD's "next thing" about certifications, or nil when none applies:
+-- the rank a certification holds back first ("Pass Rescue Swimmer to be promoted"), else the
+-- next certification on the ladder ("Casualty Care: 1 of 2 operations").
+function Rules.certHint(data: PlayerData): string?
+	local blocked, blockingCert = Rules.blockedRank(data)
+	if blocked and blockingCert then
+		local cert = ProgressionConfig.Certifications[blockingCert]
+		local name = if cert then cert.displayName else blockingCert
+		return `Pass {name} to be promoted`
+	end
+	for _, id in ProgressionConfig.CertOrder do
+		local st = Rules.certStatus(data, id)
+		if st and not st.earned then
+			if #st.missing > 0 then
+				return `{st.displayName}: needs {table.concat(st.missing, ", ")}`
+			elseif not st.exercisePassed then
+				return `{st.displayName}: pass the exercise at the station`
+			end
+			return `{st.displayName}: {st.live} of {st.liveNeeded} {st.liveLabel}`
+		end
+	end
+	return nil
+end
+
+-- Does this finished operation count toward the certification's live half for this player?
+local function qualifies(
+	live: ProgressionConfig.CertLive,
+	steps: { StepRecord },
+	userId: number
+): boolean
+	local hits, present = 0, 0
+	for _, wanted in live.stepIds do
+		local found, good = false, false
+		for _, s in steps do
+			if s.id == wanted then
+				local mechanicOk = live.mechanicIds == nil
+				if live.mechanicIds and s.mechanicId then
+					mechanicOk = table.find(live.mechanicIds, s.mechanicId) ~= nil
+				end
+				if mechanicOk then
+					found = true
+					if
+						s.userId == userId
+						and s.assistEase ~= true
+						and Rules.gradeAtLeast(s.grade, live.minGrade)
+					then
+						good = true
+					end
+				end
+			end
+		end
+		if found then
+			present += 1
+			if good then
+				hits += 1
+			end
+		end
+	end
+	if live.mode == "all" then
+		return present > 0 and hits == present
+	end
+	return hits > 0
+end
+
+local function certBadges(
+	data: PlayerData,
+	earned: { string },
+	counted: { string }
+): { DebriefBadge }
+	local badges: { DebriefBadge } = {}
+	for _, id in earned do
+		local cert = ProgressionConfig.Certifications[id]
+		table.insert(badges, {
+			id = `Cert:{id}`,
+			kind = "cert",
+			title = `{cert.displayName} certified`,
+			text = table.concat(cert.gates, " · "),
+			badge = cert.badge,
+		})
+	end
+	for _, id in counted do
+		if table.find(earned, id) == nil then
+			local st = Rules.certStatus(data, id)
+			if st then
+				local text = `{st.live} of {st.liveNeeded} {st.liveLabel}`
+				if not st.exercisePassed then
+					text ..= "; the exercise is still to pass"
+				elseif #st.missing > 0 then
+					text ..= `; needs {table.concat(st.missing, ", ")}`
+				end
+				table.insert(badges, {
+					id = `Progress:{id}`,
+					kind = "progress",
+					title = st.displayName,
+					text = text,
+				})
+			end
+		end
+	end
+	return badges
+end
+
+local function rankBadge(badges: { DebriefBadge }, before: number, after: number)
+	if after > before then
+		local rank = ProgressionConfig.Ranks[after]
+		table.insert(badges, {
+			id = `Rank:{rank.id}`,
+			kind = "rank",
+			title = `Promoted to {rank.displayName}`,
+			text = table.concat(rank.unlocks, " · "),
+		})
+	end
+end
+
+-- A live operation finished: count it toward every unearned certification it qualifies for,
+-- then grant what is complete. Exercises never count here (use recordExercise).
+function Rules.recordOperation(
+	data: PlayerData,
+	kind: string,
+	steps: { StepRecord },
+	userId: number
+): TrainingResult
+	local before = Rules.rankIndex(data)
+	local counted = {}
+	for _, id in ProgressionConfig.CertOrder do
+		local cert = ProgressionConfig.Certifications[id]
+		if data.certs[id] ~= true and qualifies(cert.live, steps, userId) then
+			data.certLive[id] = math.min((data.certLive[id] or 0) + 1, cert.live.count)
+			table.insert(counted, id)
+		end
+	end
+	local earned = Rules.evaluateCerts(data)
+	local after = Rules.rankIndex(data)
+	local badges = certBadges(data, earned, counted)
+	rankBadge(badges, before, after)
+	return {
+		kind = kind,
+		exercise = false,
+		passed = false,
+		firstPass = false,
+		best = nil,
+		reward = { cash = 0, rep = 0 },
+		counted = counted,
+		earned = earned,
+		rankBefore = before,
+		rankAfter = after,
+		badges = badges,
+	}
+end
+
+-- An exercise finished with this overall grade. It passes at ExercisePassGrade or better when
+-- the player did every step themselves (an NPC finishing one means no pass); a cannotFail
+-- exercise (the drill) always passes. The first pass pays the reward; the best grade is kept.
+function Rules.recordExercise(
+	data: PlayerData,
+	exerciseId: string,
+	grade: string,
+	steps: { StepRecord },
+	userId: number,
+	cannotFail: boolean?
+): TrainingResult
+	local before = Rules.rankIndex(data)
+	local own = #steps > 0
+	for _, s in steps do
+		if s.userId ~= userId then
+			own = false
+		end
+	end
+	local passed = own
+		and (cannotFail == true or Rules.gradeAtLeast(grade, ProgressionConfig.ExercisePassGrade))
+	local shown = if Rules.gradeAtLeast(grade, "Bronze") then grade else "Bronze"
+	local prior = data.exercises[exerciseId]
+	local firstPass = passed and prior == nil
+	if passed and (prior == nil or (GRADE_RANK[shown] or 0) > (GRADE_RANK[prior] or 0)) then
+		data.exercises[exerciseId] = shown
+	end
+	local reward = { cash = 0, rep = 0 }
+	if firstPass then
+		local r = if exerciseId == ProgressionConfig.DrillExercise
+			then ProgressionConfig.DrillReward
+			else ProgressionConfig.ExerciseReward
+		reward = { cash = r.cash, rep = r.rep }
+	end
+	local earned = Rules.evaluateCerts(data)
+	local after = Rules.rankIndex(data)
+	local counted = {}
+	for _, id in ProgressionConfig.CertOrder do
+		local cert = ProgressionConfig.Certifications[id]
+		if cert.exercise == exerciseId and firstPass then
+			table.insert(counted, id)
+		end
+	end
+	local badges: { DebriefBadge } = {}
+	if passed then
+		table.insert(badges, {
+			id = `Exercise:{exerciseId}`,
+			kind = "exercise",
+			title = if firstPass then "Exercise passed" else "Exercise passed again",
+			text = `Best: {data.exercises[exerciseId]}`,
+		})
+	end
+	for _, b in certBadges(data, earned, counted) do
+		table.insert(badges, b)
+	end
+	rankBadge(badges, before, after)
+	return {
+		kind = exerciseId,
+		exercise = true,
+		passed = passed,
+		firstPass = firstPass,
+		best = data.exercises[exerciseId],
+		reward = reward,
+		counted = counted,
+		earned = earned,
+		rankBefore = before,
+		rankAfter = after,
+		badges = badges,
+	}
 end
 
 -- Next rank, plus 0..1 progress from the current threshold to the next. nil next at max rank.
@@ -111,7 +473,7 @@ function Rules.canBuyGear(data: PlayerData, gearId: string): (boolean, string, n
 	end
 	local price = ProgressionConfig.GearLevelPrices[nextLevel]
 	local needRank = ProgressionConfig.GearLevelRank[nextLevel] or 1
-	if Rules.rankIndexForRep(data.rep) < needRank then
+	if Rules.rankIndex(data) < needRank then
 		return false, `Needs {ProgressionConfig.Ranks[needRank].displayName}`, price
 	end
 	if data.cash < price then
@@ -134,7 +496,7 @@ function Rules.canUseVehicle(data: PlayerData, vehicleId: string): (boolean, str
 	if not unlock then
 		return false, "Unknown vehicle"
 	end
-	if Rules.rankIndexForRep(data.rep) < unlock.rankIndex then
+	if Rules.rankIndex(data) < unlock.rankIndex then
 		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
 	end
 	if not Rules.ownsVehicle(data, vehicleId) then
@@ -152,7 +514,7 @@ function Rules.canBuyVehicle(data: PlayerData, vehicleId: string): (boolean, str
 	if Rules.ownsVehicle(data, vehicleId) then
 		return false, "Already owned", unlock.price
 	end
-	if Rules.rankIndexForRep(data.rep) < unlock.rankIndex then
+	if Rules.rankIndex(data) < unlock.rankIndex then
 		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`, unlock.price
 	end
 	if data.cash < unlock.price then
@@ -171,6 +533,9 @@ function Rules.defaultData(): PlayerData
 		totalRescues = 0,
 		coldOpenDone = false,
 		flags = {},
+		certs = {},
+		certLive = {},
+		exercises = {},
 	}
 end
 
@@ -265,6 +630,48 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	if type(raw.certs) == "table" then
+		for id, held in raw.certs do
+			if type(id) == "string" and ProgressionConfig.Certifications[id] and held == true then
+				data.certs[id] = true
+			end
+		end
+	else
+		-- a save from before certifications: grandfather the ones its Rep rank already needs, so
+		-- nobody is demoted (prerequisites included: Rescue Swimmer brings Casualty Care)
+		local function grant(id: string)
+			local cert = ProgressionConfig.Certifications[id]
+			if cert and not data.certs[id] then
+				data.certs[id] = true
+				for _, need in cert.needs do
+					grant(need)
+				end
+			end
+		end
+		for _, rank in ProgressionConfig.Ranks do
+			if data.rep >= rank.rep and rank.cert then
+				grant(rank.cert)
+			end
+		end
+	end
+	if type(raw.certLive) == "table" then
+		for id, n in raw.certLive do
+			local cert = if type(id) == "string" then ProgressionConfig.Certifications[id] else nil
+			if cert and not data.certs[id] then
+				local count = math.clamp(math.floor(num(n, 0)), 0, cert.live.count)
+				if count > 0 then
+					data.certLive[id] = count
+				end
+			end
+		end
+	end
+	if type(raw.exercises) == "table" then
+		for id, grade in raw.exercises do
+			if type(id) == "string" and #id <= 40 and Rules.gradeAtLeast(grade, "Bronze") then
+				data.exercises[id] = grade
+			end
+		end
+	end
 	-- version 1 is current; future migrations go here, keyed on raw.version
 	data.version = ProgressionConfig.SchemaVersion
 	return data
@@ -272,8 +679,25 @@ end
 
 -- What the client sees (PlayerDataChanged and Progression_GetData).
 function Rules.snapshot(data: PlayerData): { [string]: any }
-	local index = Rules.rankIndexForRep(data.rep)
+	local index = Rules.rankIndex(data)
 	local nextRank, progress = Rules.progressToNext(data.rep)
+	local repIndex = Rules.rankIndexForRep(data.rep)
+	if index < repIndex then
+		-- the Rep is there, the certification is not: the bar shows full until it is passed
+		nextRank, progress = ProgressionConfig.Ranks[index + 1], 1
+	end
+	local certs = {}
+	for _, id in ProgressionConfig.CertOrder do
+		local st = Rules.certStatus(data, id)
+		if st then
+			certs[id] = {
+				earned = st.earned,
+				exercisePassed = st.exercisePassed,
+				live = st.live,
+				liveNeeded = st.liveNeeded,
+			}
+		end
+	end
 	return {
 		cash = data.cash,
 		rep = data.rep,
@@ -285,6 +709,9 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		vehicles = table.clone(data.vehicles),
 		coldOpenDone = data.coldOpenDone,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
+		certs = certs, -- id -> { earned, exercisePassed, live, liveNeeded }
+		exercises = table.clone(data.exercises), -- exercise id -> best grade (the board)
+		certHint = Rules.certHint(data),
 	}
 end
 

@@ -9,6 +9,11 @@ return function(t)
 		d.rep = rep
 		d.gear = gear or {}
 		d.vehicles = vehicles or {}
+		-- certified for every rank, so these cases test Rep, Cash and gear (tests/Certs.spec.luau
+		-- covers the certification gate)
+		for _, id in Config.CertOrder do
+			d.certs[id] = true
+		end
 		return d
 	end
 

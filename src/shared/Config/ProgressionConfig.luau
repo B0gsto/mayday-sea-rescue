@@ -8,6 +8,31 @@ export type Rank = {
 	displayName: string,
 	rep: number, -- total Rep needed (docs 03 section 3)
 	unlocks: { string }, -- short lines for the rank-up toast
+	cert: string?, -- the certification this rank also needs (docs 03 section 3); nil: none
+}
+
+-- What counts toward a certification's live half (docs 03 section 3.1, docs 09 section 11): an
+-- operation (not an exercise) where the player themselves did the listed steps at minGrade or
+-- better. mode "any": one of the steps is enough; "all": every listed step that the operation
+-- has. mechanicIds narrows a step to the mechanic that played it (a swimmer recovery is the
+-- recovery step played by recover_swimmer). Each operation counts once per certification.
+export type CertLive = {
+	stepIds: { string },
+	mode: "any" | "all",
+	mechanicIds: { string }?,
+	minGrade: string, -- "Gold" | "Silver" | "Bronze"
+	count: number,
+	label: string, -- the HUD's "next thing" noun ("operations", "swimmer recoveries")
+}
+
+export type Certification = {
+	id: string,
+	displayName: string,
+	exercise: string, -- Ops/Definitions/Exercises id: the first half
+	live: CertLive, -- the second half
+	needs: { string }, -- certifications that must be held first
+	gates: { string }, -- short lines for the debrief and the crew board
+	badge: string, -- BadgeConfig key (RP-B1 maps it to a Roblox badge id)
 }
 
 export type VehicleUnlock = {
@@ -42,15 +67,79 @@ ProgressionConfig.Ranks = {
 		id = "Lifeguard",
 		displayName = "Lifeguard",
 		rep = 400, -- tune
+		cert = "Helm",
 		unlocks = { "Crew joining" },
 	},
 	{
 		id = "RescueSwimmer",
 		displayName = "Rescue Swimmer",
 		rep = 900, -- tune
+		cert = "RescueSwimmer",
 		unlocks = { "RIB (buy)", "Gear level 3" },
 	},
 } :: { Rank }
+
+-- docs 03 section 3.1 and docs 09 section 11 (MVP: the first three). Never sold, never expire,
+-- never lost. Coxswain, Winch Operator, Pilot and Rescue Diver are [L].
+ProgressionConfig.Certifications = {
+	Helm = {
+		id = "Helm",
+		displayName = "Helm",
+		exercise = "ExerciseBoatHandling",
+		live = {
+			stepIds = { "approach", "alongside" },
+			mode = "any",
+			minGrade = "Silver",
+			count = 2, -- tune
+			label = "operations",
+		},
+		needs = {},
+		gates = { "Lifeguard rank", "Helm seat as lead", "Buying the RIB" },
+		badge = "CertHelm",
+	},
+	CasualtyCare = {
+		id = "CasualtyCare",
+		displayName = "Casualty Care",
+		exercise = "ExerciseCasualtyCare",
+		live = {
+			stepIds = { "survey", "treatment" },
+			mode = "all",
+			minGrade = "Silver",
+			count = 2, -- tune
+			label = "operations",
+		},
+		needs = {},
+		gates = { "Medic seat as lead", "Oxygen and CPR as lead", "Triage on big calls" },
+		badge = "CertCasualtyCare",
+	},
+	RescueSwimmer = {
+		id = "RescueSwimmer",
+		displayName = "Rescue Swimmer",
+		exercise = "ExerciseSwimTest",
+		live = {
+			stepIds = { "recovery" },
+			mode = "any",
+			mechanicIds = { "recover_swimmer" },
+			minGrade = "Silver",
+			count = 1, -- tune
+			label = "swimmer recoveries",
+		},
+		needs = { "CasualtyCare" },
+		gates = { "Rescue Swimmer rank", "Entering the water from boats", "Air-pocket dive" },
+		badge = "CertRescueSwimmer",
+	},
+} :: { [string]: Certification }
+
+-- Ladder order (HUD, crew board, debrief).
+ProgressionConfig.CertOrder = { "Helm", "CasualtyCare", "RescueSwimmer" }
+
+-- docs 03 section 2: an exercise pays 200 Cash and 50 Rep the first time it is passed, nothing on
+-- repeats. The optional Reopening Day drill pays a token amount (tune).
+ProgressionConfig.ExerciseReward = { cash = 200, rep = 50 }
+ProgressionConfig.DrillReward = { cash = 50, rep = 10 } -- tune
+ProgressionConfig.DrillExercise = "ExerciseReopeningDay"
+-- The worst overall grade that passes an exercise (every step must be the player's own).
+ProgressionConfig.ExercisePassGrade = "Bronze" -- tune
 
 -- docs 03 section 4: jet ski free at Recruit, RIB 4,000 Cash at Rescue Swimmer.
 ProgressionConfig.Vehicles = {
