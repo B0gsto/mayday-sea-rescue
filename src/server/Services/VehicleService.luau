@@ -88,6 +88,7 @@ local TELEPORT_SLACK = 12 -- studs per check -- tune
 local BYPASS_ATTRIBUTE = "StudioBypassChecks"
 local IS_STUDIO = RunService:IsStudio()
 local STRIKES_TO_RESET = 2
+local SURVIVOR_WELD_DELAY = 0.2 -- s a boarded survivor rides anchored before its weld goes on
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
 local TOW_MIN_LENGTH = 12
@@ -1156,22 +1157,44 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	if not slotIndex or not part then
 		return false
 	end
+	-- The survivor rides anchored at its slot until SURVIVOR_WELD_DELAY has passed and only then is
+	-- unanchored and welded. Welding at once (unanchor, PivotTo, weld in one frame) sent the weld to
+	-- the driver's client before the survivor's new CFrame: on the client-owned craft the weld then
+	-- joined the boat to a survivor still anchored at its spot in the water, the craft snapped back
+	-- there (~100 studs at the cold-open pickup) and the anti-teleport check reset it.
+	local parts = {}
 	for _, d in survivorModel:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.Massless = true
 			d.CanCollide = false
-			d.Anchored = false
+			d.Anchored = true
+			table.insert(parts, d)
 		end
 	end
 	local bbCF, size = survivorModel:GetBoundingBox()
 	local pivotOffset = bbCF:ToObjectSpace(survivorModel:GetPivot())
-	local slotCF = record.slots[slotIndex].WorldCFrame
-	survivorModel:PivotTo(slotCF * CFrame.new(0, size.Y / 2, 0) * pivotOffset)
+	local slot = record.slots[slotIndex]
+	local function toSlot()
+		survivorModel:PivotTo(slot.WorldCFrame * CFrame.new(0, size.Y / 2, 0) * pivotOffset)
+	end
+	toSlot()
 	local weld = Instance.new("WeldConstraint")
 	weld.Name = "VehicleSurvivorWeld"
 	weld.Part0 = record.root
-	weld.Part1 = part
 	weld.Parent = part
+	task.delay(SURVIVOR_WELD_DELAY, function()
+		local entry = record.survivors[slotIndex]
+		if not (entry and entry.weld == weld and weld.Parent and survivorModel.Parent) then
+			return -- taken off (RemoveSurvivors) or gone before the weld went on
+		end
+		toSlot() -- the boat moved meanwhile: a short hop while still anchored
+		for _, d in parts do
+			if d.Parent then
+				d.Anchored = false
+			end
+		end
+		weld.Part1 = part
+	end)
 	local humanoid = survivorModel:FindFirstChildOfClass("Humanoid")
 	if humanoid then
 		humanoid.Sit = true
