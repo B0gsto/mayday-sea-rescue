@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
 local HudTheme = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Layout = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 
 local Ui = {}
 Ui.Theme = HudTheme
@@ -88,17 +89,40 @@ function Ui.screen(bag: Bag, name: string): ScreenGui
 	local gui = Instance.new("ScreenGui")
 	gui.Name = `PIW_{name}`
 	gui.ResetOnSpawn = false
-	gui.IgnoreGuiInset = false
 	gui.DisplayOrder = 22
+	Layout.prepare(gui)
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 	Ui.add(bag, gui)
 	return gui
 end
 
+-- The Layout "prompt" region (centre low, above the radio subtitles) of a mechanic screen, as a
+-- bottom-up stack so a step panel and a recovery panel never sit on top of each other.
+local function promptStack(gui: ScreenGui): Frame
+	local region = Layout.region(gui, "prompt")
+	if not region:FindFirstChildOfClass("UIListLayout") then
+		local list = Instance.new("UIListLayout")
+		list.FillDirection = Enum.FillDirection.Vertical
+		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		list.VerticalAlignment = Enum.VerticalAlignment.Bottom
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.Padding = UDim.new(0, Layout.GAP)
+		list.Parent = region
+	end
+	return region
+end
+
+-- A bottom-anchored panel on a ScreenGui goes into the prompt stack (its pos is then ignored);
+-- anything else is placed as given.
 function Ui.panel(parent: Instance, size: UDim2, pos: UDim2, anchor: Vector2?): Frame
 	local f = Instance.new("Frame")
 	f.AnchorPoint = anchor or Vector2.new(0.5, 1)
 	f.Position = pos
+	if parent:IsA("ScreenGui") and f.AnchorPoint.Y == 1 then
+		local stack = promptStack(parent)
+		f.LayoutOrder = -#stack:GetChildren() -- newest on top
+		parent = stack
+	end
 	f.Size = size
 	f.BackgroundColor3 = HudTheme.Colors.panel
 	f.BackgroundTransparency = 0.25
@@ -174,15 +198,16 @@ end
 function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 	local l = Instance.new("TextLabel")
 	l.AnchorPoint = Vector2.new(0.5, 0)
-	l.Position = UDim2.new(0.5, 0, 0, 72)
-	l.Size = UDim2.fromOffset(520, 30)
+	l.Position = UDim2.fromScale(0.5, 0)
+	l.Size = UDim2.new(1, 0, 0, 30)
 	l.BackgroundTransparency = 1
 	l.Font = HudTheme.BoldFont
 	l.TextSize = 22
 	l.TextColor3 = HudTheme.Colors.text
-	l.TextStrokeTransparency = 0.4
+	l.TextStrokeTransparency = 0.6
+	l.TextWrapped = true
 	l.Text = ""
-	l.Parent = gui
+	l.Parent = Layout.region(gui, "notice")
 	Ui.add(bag, l)
 	local n = 0
 	return function(text: string, seconds: number?)

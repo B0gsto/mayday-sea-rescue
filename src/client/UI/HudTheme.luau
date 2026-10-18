@@ -1,27 +1,30 @@
 --!strict
--- HudTheme: docs 05 section 9 UI style. Chunky rounded Abyss Navy panels (~90% opacity), a
--- Rescue Orange accent edge, Hull White text, Fredoka One headers, Builder Sans body, buttons at
--- least 48 px tall. Small factory helpers so every HUD piece looks the same.
+-- HudTheme: the restrained, realistic HUD look (photoreal brief; supersedes the chunky docs 05
+-- section 9 style). Translucent near-black panels with a hairline edge, thin Builder Sans type,
+-- one muted safety-orange accent used sparingly, buttons still at least 48 px tall. Small factory
+-- helpers so every HUD piece looks the same. Placement lives in UI/Layout.
 local HudTheme = {}
 
 HudTheme.Colors = {
-	panel = Color3.fromHex("0A2A3B"), -- Abyss Navy
-	panelLight = Color3.fromHex("0E5E6F"), -- Deep Teal
-	accent = Color3.fromHex("FF6B1A"), -- Rescue Orange
-	text = Color3.fromHex("F4F1EA"), -- Hull White
-	textDim = Color3.fromHex("9AA8B3"), -- Rain Grey
-	ready = Color3.fromHex("3EE07A"), -- Waypoint Green ("ready" states)
-	locked = Color3.fromHex("2F3A45"), -- Storm Slate
-	gold = Color3.fromHex("FFC872"), -- Golden Hour (Cash)
-	bar = Color3.fromHex("3FC1C0"), -- Shallow Aqua (Rep)
+	panel = Color3.fromHex("0C1217"), -- near-black slate
+	panelLight = Color3.fromHex("26323A"), -- raised slate (secondary buttons)
+	accent = Color3.fromHex("D9682E"), -- muted rescue orange
+	text = Color3.fromHex("ECEDEA"), -- off-white
+	textDim = Color3.fromHex("98A3AB"), -- rain grey
+	ready = Color3.fromHex("6FBF8E"), -- muted green ("ready" states)
+	locked = Color3.fromHex("2A3239"), -- slate
+	gold = Color3.fromHex("E3C88F"), -- pale brass (Cash)
+	bar = Color3.fromHex("8FB7BC"), -- grey-teal (Rep)
+	edge = Color3.fromHex("FFFFFF"), -- hairline panel edge (drawn at EdgeTransparency)
 }
 
-HudTheme.PanelTransparency = 0.1
-HudTheme.HeaderFont = Enum.Font.FredokaOne
+HudTheme.PanelTransparency = 0.35
+HudTheme.EdgeTransparency = 0.85
+HudTheme.HeaderFont = Enum.Font.BuilderSansMedium
 HudTheme.BodyFont = Enum.Font.BuilderSans
-HudTheme.BoldFont = Enum.Font.BuilderSansBold
+HudTheme.BoldFont = Enum.Font.BuilderSansMedium
 HudTheme.MinButtonHeight = 52 -- >= 48 px (docs 05)
-HudTheme.Corner = 14
+HudTheme.Corner = 6
 
 function HudTheme.corner(parent: GuiObject, radius: number?): UICorner
 	local c = Instance.new("UICorner")
@@ -32,8 +35,9 @@ end
 
 function HudTheme.stroke(parent: GuiObject, color: Color3?, thickness: number?): UIStroke
 	local s = Instance.new("UIStroke")
-	s.Color = color or HudTheme.Colors.accent
-	s.Thickness = thickness or 2
+	s.Color = color or HudTheme.Colors.edge
+	s.Thickness = thickness or 1
+	s.Transparency = if color then 0 else HudTheme.EdgeTransparency
 	s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	s.Parent = parent
 	return s
@@ -92,10 +96,10 @@ function HudTheme.button(name: string, text: string, size: UDim2, parent: Instan
 	b.BackgroundColor3 = HudTheme.Colors.accent
 	b.BorderSizePixel = 0
 	b.Font = HudTheme.HeaderFont
-	b.TextSize = 20
+	b.TextSize = 18
 	b.TextColor3 = HudTheme.Colors.text
 	b.TextWrapped = true
-	HudTheme.corner(b, 12)
+	HudTheme.corner(b, 4)
 	b.Parent = parent
 	return b
 end

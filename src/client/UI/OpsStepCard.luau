@@ -1,13 +1,15 @@
 --!strict
--- OpsStepCard: the running operation as a slim strip (top centre): priority and title, the step
+-- OpsStepCard: the running operation as a slim strip (Layout "objective" region, top left): priority and title, the step
 -- you are on (plain label, the real term and the role), who has it (you, a crewmate or the NPC
 -- crew, with "Do it myself" to swap in), the plan as grade-coloured pips, and saved/total on big
 -- calls. A takeover shows as a banner ("Rescue Gale One is taking the casualty").
+-- setCompact(true) (the cold open) leaves only the step line: one objective, nothing else.
 local HudTheme = require(script.Parent.HudTheme)
 
 export type StepCard = {
 	update: (s: { [string]: any }, onTake: (key: string) -> ()) -> (),
 	hide: () -> (),
+	setCompact: (on: boolean) -> (),
 }
 
 local GRADE_COLORS: { [string]: Color3 } = {
@@ -19,22 +21,17 @@ local GRADE_COLORS: { [string]: Color3 } = {
 
 local OpsStepCard = {}
 
-function OpsStepCard.new(gui: ScreenGui): StepCard
+function OpsStepCard.new(gui: GuiBase2d): StepCard
 	local body = Instance.new("Frame")
 	body.Name = "StepCard"
-	body.AnchorPoint = Vector2.new(0.5, 0)
-	body.Position = UDim2.new(0.5, 0, 0, 10)
-	body.Size = UDim2.new(0.5, 0, 0, 92)
+	body.Size = UDim2.new(1, 0, 0, 92)
 	body.BackgroundColor3 = HudTheme.Colors.panel
-	body.BackgroundTransparency = 0.12
+	body.BackgroundTransparency = HudTheme.PanelTransparency
 	body.BorderSizePixel = 0
 	body.Visible = false
 	body.Parent = gui
-	HudTheme.corner(body, 12)
-	local lim = Instance.new("UISizeConstraint")
-	lim.MinSize = Vector2.new(320, 0)
-	lim.MaxSize = Vector2.new(620, 200)
-	lim.Parent = body
+	HudTheme.corner(body)
+	HudTheme.stroke(body)
 
 	local head = HudTheme.label("Head", "", UDim2.new(1, -24, 0, 20), HudTheme.BoldFont, 15, body)
 	head.Position = UDim2.fromOffset(12, 6)
@@ -79,14 +76,28 @@ function OpsStepCard.new(gui: ScreenGui): StepCard
 		HudTheme.label("Takeover", "", UDim2.new(1, 0, 0, 26), HudTheme.BoldFont, 16, body)
 	banner.AnchorPoint = Vector2.new(0, 0)
 	banner.Position = UDim2.new(0, 0, 1, 6)
-	banner.BackgroundColor3 = Color3.fromHex("E8332A")
-	banner.BackgroundTransparency = 0.1
+	banner.BackgroundColor3 = Color3.fromHex("8C2A24")
+	banner.BackgroundTransparency = 0.25
 	banner.TextXAlignment = Enum.TextXAlignment.Center
 	banner.Visible = false
 	HudTheme.corner(banner, 8)
 
+	local compact = false
+	local function applyCompact()
+		head.Visible = not compact
+		who.Visible = not compact
+		pips.Visible = not compact
+		step.Position = UDim2.fromOffset(12, if compact then 9 else 26)
+		step.Size = UDim2.new(1, if compact then -24 else -170, 0, 26)
+		body.Size = UDim2.new(1, 0, 0, if compact then 44 else 92)
+	end
+
 	local card: StepCard
 	card = {
+		setCompact = function(on: boolean)
+			compact = on
+			applyCompact()
+		end,
 		update = function(s: { [string]: any }, onTake: (string) -> ())
 			takeFn = onTake
 			local word = if s.kind == "DisabledVessel" then "PAN-PAN" else "MAYDAY"
@@ -108,7 +119,7 @@ function OpsStepCard.new(gui: ScreenGui): StepCard
 				who.Text = "Waiting for the next step"
 				takeKey = nil
 			end
-			take.Visible = takeKey ~= nil
+			take.Visible = takeKey ~= nil and not compact
 			-- pips: one per plan step, coloured by its grade once done
 			for _, ch in pips:GetChildren() do
 				if ch:IsA("Frame") then

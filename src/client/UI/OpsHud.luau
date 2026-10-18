@@ -3,8 +3,12 @@
 -- the tasking pager (OnOffer), the step card and casualty monitor (OnState), the debrief tablet
 -- (OnDebrief) and closures (OnClosed). Mounted by RadioController, which also sets
 -- OpsController.UseBuiltInUi = false so the greybox UI stays hidden.
+-- Placement (UI/Layout): the step card in the "objective" region (top left), the pager and the
+-- casualty monitor stacked in the "right" column; the debrief is a centred modal. In the cold
+-- open only the step line shows (the right column is hidden).
 local Players = game:GetService("Players")
 
+local Layout = require(script.Parent.Layout)
 local OpsConditionMonitor = require(script.Parent.OpsConditionMonitor)
 local OpsDebrief = require(script.Parent.OpsDebrief)
 local OpsStepCard = require(script.Parent.OpsStepCard)
@@ -24,11 +28,25 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	gui.Name = "OpsHud"
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 16
+	Layout.prepare(gui)
 	gui.Parent = playerGui
 
-	local tasking = OpsTaskingCard.new(gui)
-	local step = OpsStepCard.new(gui)
-	local monitor = OpsConditionMonitor.new(gui)
+	local objective = Layout.region(gui, "objective")
+	local right = Layout.region(gui, "right")
+	local stack = Instance.new("UIListLayout")
+	stack.FillDirection = Enum.FillDirection.Vertical
+	stack.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	stack.SortOrder = Enum.SortOrder.LayoutOrder
+	stack.Padding = UDim.new(0, Layout.GAP)
+	stack.Parent = right
+
+	local tasking = OpsTaskingCard.new(right)
+	local step = OpsStepCard.new(objective)
+	local monitor = OpsConditionMonitor.new(right)
+	Layout.onColdOpen(function(active: boolean)
+		right.Visible = not active
+		step.setCompact(active)
+	end)
 	local debrief = OpsDebrief.new(gui)
 	local activeOp: string? = nil
 

@@ -1,7 +1,9 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
---   Top centre: Cash, rank name and a Rep bar to the next rank, plus "+Cash +Rep" award pops.
---   Rank-up toast with the new unlocks; short notices for failed buys / launches.
+--   Placement: UI/Layout regions. Top right ("status"): rank, Cash and a thin Rep bar to the next
+--   rank, with the crew row under it. Top centre ("notice"): "+Cash +Rep" award pops, the rank-up
+--   toast with the new unlocks and short notices for failed buys / launches.
+--   Cold open (Layout.coldOpen): wallet, rank, crew and pops stay hidden until it ends.
 --   No shop or launch buttons (docs 04 section 1.1). Diegetic panels open from map prompts that
 --   WorldService adds (attribute Panel on the prompt, read on this client's PromptTriggered):
 --     ShopCounter  the Chandlery gear counter (HudShop: BuyGear)
@@ -26,6 +28,7 @@ local UI = script.Parent.Parent:WaitForChild("UI")
 local HudLaunch = require(UI:WaitForChild("HudLaunch"))
 local HudShop = require(UI:WaitForChild("HudShop"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
+local Layout = require(UI:WaitForChild("Layout"))
 
 local C = HudTheme.Colors
 local player = Players.LocalPlayer
@@ -44,6 +47,9 @@ local toast: Frame
 local toastTitle: TextLabel
 local toastBody: TextLabel
 local crewChip: Frame
+local statusRegion: Frame
+local noticeRegion: Frame
+local inCrew = false
 local crewLabel: TextLabel
 local shop: HudShop.Shop
 local launch: HudLaunch.Launch
@@ -62,10 +68,10 @@ local function showToast(title: string, body: string, color: Color3, seconds: nu
 	toastTitle.Text = title
 	toastTitle.TextColor3 = color
 	toastBody.Text = body
-	toast.Position = UDim2.new(0.5, 0, 0, 60)
+	toast.Position = UDim2.new(0.5, 0, 0, 30)
 	toast.Visible = true
-	TweenService:Create(toast, TweenInfo.new(0.35, Enum.EasingStyle.Back), {
-		Position = UDim2.new(0.5, 0, 0, 104),
+	TweenService:Create(toast, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+		Position = UDim2.new(0.5, 0, 0, 38),
 	}):Play()
 	task.delay(seconds, function()
 		if serial == toastSerial then
@@ -267,102 +273,96 @@ local function watchPanel()
 end
 
 local function buildStatus(parent: Instance)
-	local status = HudTheme.panel("Status", UDim2.fromOffset(320, 86), parent)
-	status.AnchorPoint = Vector2.new(0.5, 0)
-	status.Position = UDim2.new(0.5, 0, 0, 8)
-	HudTheme.padding(status, 10)
+	-- one slim strip: rank left, Cash right, a hairline Rep bar along the bottom
+	local status = HudTheme.panel("Status", UDim2.new(1, 0, 0, 52), parent)
+	HudTheme.padding(status, 8)
 
-	rankLabel = HudTheme.label(
-		"Rank",
-		"Recruit",
-		UDim2.new(0.55, 0, 0, 30),
-		HudTheme.HeaderFont,
-		24,
-		status
-	)
-	rankLabel.TextColor3 = C.accent
+	rankLabel =
+		HudTheme.label("Rank", "Recruit", UDim2.new(0.6, 0, 0, 22), HudTheme.HeaderFont, 18, status)
+	rankLabel.TextColor3 = C.text
 
 	cashLabel =
-		HudTheme.label("Cash", "0", UDim2.new(0.45, -26, 0, 30), HudTheme.HeaderFont, 26, status)
+		HudTheme.label("Cash", "0", UDim2.new(0.4, 0, 0, 22), HudTheme.HeaderFont, 18, status)
 	cashLabel.AnchorPoint = Vector2.new(1, 0)
 	cashLabel.Position = UDim2.fromScale(1, 0)
 	cashLabel.TextXAlignment = Enum.TextXAlignment.Right
 	cashLabel.TextColor3 = C.gold
-	local coin = Instance.new("Frame")
-	coin.Name = "Coin"
-	coin.Size = UDim2.fromOffset(20, 20)
-	coin.AnchorPoint = Vector2.new(1, 0.5)
-	coin.Position = UDim2.new(0.55, 0, 0, 15)
-	coin.BackgroundColor3 = C.gold
-	HudTheme.corner(coin, 10)
-	HudTheme.stroke(coin, C.accent, 2)
-	coin.Parent = status
 
 	local bar = Instance.new("Frame")
 	bar.Name = "RepBar"
-	bar.Position = UDim2.fromOffset(0, 38)
-	bar.Size = UDim2.new(1, 0, 0, 26)
+	bar.AnchorPoint = Vector2.new(0, 1)
+	bar.Position = UDim2.fromScale(0, 1)
+	bar.Size = UDim2.new(0.6, -8, 0, 3)
 	bar.BackgroundColor3 = C.locked
 	bar.BorderSizePixel = 0
-	HudTheme.corner(bar, 13)
 	bar.Parent = status
 	repFill = Instance.new("Frame")
 	repFill.Name = "Fill"
 	repFill.Size = UDim2.fromScale(0, 1)
 	repFill.BackgroundColor3 = C.bar
 	repFill.BorderSizePixel = 0
-	HudTheme.corner(repFill, 13)
 	repFill.Parent = bar
-	repLabel = HudTheme.label("RepText", "0 Rep", UDim2.fromScale(1, 1), HudTheme.BoldFont, 16, bar)
-	repLabel.TextXAlignment = Enum.TextXAlignment.Center
-	repLabel.TextStrokeTransparency = 0.6
+	repLabel =
+		HudTheme.label("RepText", "0 Rep", UDim2.new(0.4, 0, 0, 14), HudTheme.BodyFont, 13, status)
+	repLabel.AnchorPoint = Vector2.new(1, 1)
+	repLabel.Position = UDim2.new(1, 0, 1, 4)
+	repLabel.TextXAlignment = Enum.TextXAlignment.Right
+	repLabel.TextColor3 = C.textDim
 
 	awardLabel =
-		HudTheme.label("Award", "", UDim2.fromOffset(360, 28), HudTheme.HeaderFont, 20, parent)
+		HudTheme.label("Award", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 17, noticeRegion)
 	awardLabel.AnchorPoint = Vector2.new(0.5, 0)
-	awardLabel.Position = UDim2.new(0.5, 0, 0, 98)
+	awardLabel.Position = UDim2.fromScale(0.5, 0)
 	awardLabel.TextXAlignment = Enum.TextXAlignment.Center
 	awardLabel.TextColor3 = C.gold
-	awardLabel.TextStrokeTransparency = 0.4
+	awardLabel.TextStrokeTransparency = 0.7
 	awardLabel.Visible = false
 end
 
 local function buildToast(parent: Instance)
-	toast = HudTheme.panel("Toast", UDim2.fromOffset(360, 76), parent)
+	toast = HudTheme.panel("Toast", UDim2.new(1, 0, 0, 68), parent)
 	toast.AnchorPoint = Vector2.new(0.5, 0)
-	toast.Position = UDim2.new(0.5, 0, 0, 104)
+	toast.Position = UDim2.new(0.5, 0, 0, 38)
 	toast.Visible = false
 	toast.ZIndex = 5
 	HudTheme.padding(toast, 10)
-	toastTitle = HudTheme.label("Title", "", UDim2.new(1, 0, 0, 30), HudTheme.HeaderFont, 26, toast)
+	toastTitle = HudTheme.label("Title", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 20, toast)
 	toastTitle.TextXAlignment = Enum.TextXAlignment.Center
-	toastBody = HudTheme.label("Body", "", UDim2.new(1, 0, 0, 24), HudTheme.BodyFont, 18, toast)
-	toastBody.Position = UDim2.fromOffset(0, 32)
+	toastBody = HudTheme.label("Body", "", UDim2.new(1, 0, 0, 20), HudTheme.BodyFont, 16, toast)
+	toastBody.Position = UDim2.fromOffset(0, 26)
 	toastBody.TextXAlignment = Enum.TextXAlignment.Center
+	toastBody.TextColor3 = C.textDim
 end
 
 local function buildCrewChip(parent: Instance)
-	crewChip = HudTheme.panel("Crew", UDim2.fromOffset(200, 64), parent)
-	crewChip.AnchorPoint = Vector2.new(0, 0.5)
-	crewChip.Position = UDim2.new(0, 16, 0.45, 0)
+	-- the crew row under the status strip (inside the status region)
+	crewChip = HudTheme.panel("Crew", UDim2.new(1, 0, 0, 40), parent)
+	crewChip.Position = UDim2.fromOffset(0, 60)
 	crewChip.Visible = false
-	HudTheme.padding(crewChip, 6)
+	HudTheme.padding(crewChip, 4)
 	crewLabel = HudTheme.label(
 		"Count",
 		"Crew 1/4",
 		UDim2.new(1, -96, 1, 0),
-		HudTheme.HeaderFont,
-		20,
+		HudTheme.BodyFont,
+		17,
 		crewChip
 	)
-	local leave =
-		HudTheme.button("Leave", "Leave", UDim2.fromOffset(90, HudTheme.MinButtonHeight), crewChip)
+	crewLabel.Position = UDim2.fromOffset(6, 0)
+	local leave = HudTheme.button("Leave", "Leave", UDim2.new(0, 84, 1, 0), crewChip)
 	leave.AnchorPoint = Vector2.new(1, 0.5)
 	leave.Position = UDim2.fromScale(1, 0.5)
 	leave.BackgroundColor3 = C.locked
+	leave.TextSize = 16
 	leave.Activated:Connect(function()
 		Net.event("CrewLeave"):FireServer()
 	end)
+end
+
+local function applyColdOpen(active: boolean)
+	statusRegion.Visible = not active
+	noticeRegion.Visible = not active
+	crewChip.Visible = inCrew and not active
 end
 
 function HudController.Init()
@@ -371,11 +371,14 @@ function HudController.Init()
 	gui.Name = "Hud"
 	gui.ResetOnSpawn = false
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	Layout.prepare(gui)
 	gui.Parent = playerGui
 
-	buildStatus(gui)
-	buildToast(gui)
-	buildCrewChip(gui)
+	statusRegion = Layout.region(gui, "status")
+	noticeRegion = Layout.region(gui, "notice")
+	buildStatus(statusRegion)
+	buildToast(noticeRegion)
+	buildCrewChip(statusRegion)
 	shop = HudShop.build(gui, buy)
 	launch = HudLaunch.build(gui, requestLaunch, buy)
 	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder
@@ -400,12 +403,15 @@ function HudController.Init()
 	Net.event("CrewJoin").OnClientEvent:Connect(function(payload: any)
 		if type(payload) == "table" and type(payload.members) == "table" then
 			crewLabel.Text = `Crew {#payload.members}/4`
-			crewChip.Visible = true
+			inCrew = true
+			crewChip.Visible = not Layout.coldOpen()
 		end
 	end)
 	Net.event("CrewLeave").OnClientEvent:Connect(function()
+		inCrew = false
 		crewChip.Visible = false
 	end)
+	Layout.onColdOpen(applyColdOpen)
 
 	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own.
 	ProximityPromptService.PromptShown:Connect(function(prompt)

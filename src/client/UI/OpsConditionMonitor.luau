@@ -31,11 +31,10 @@ local function ecg(phase: number): number
 		+ bump(0.68, 0.06, 0.22)
 end
 
-function OpsConditionMonitor.new(gui: ScreenGui): Monitor
+function OpsConditionMonitor.new(gui: GuiBase2d): Monitor
 	local body = Instance.new("Frame")
 	body.Name = "CasualtyMonitor"
-	body.AnchorPoint = Vector2.new(1, 0.5)
-	body.Position = UDim2.new(1, -12, 0.5, 0)
+	body.LayoutOrder = 2 -- under the pager in the Layout "right" column
 	body.Size = UDim2.fromOffset(230, 132)
 	body.BackgroundColor3 = Color3.fromHex("2A3034")
 	body.BorderSizePixel = 0

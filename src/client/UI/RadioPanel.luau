@@ -1,8 +1,10 @@
 --!strict
--- RadioPanel: the boat's VHF set as the subtitle display (diegetic, bottom-left). Always on:
+-- RadioPanel: the boat's VHF set as the subtitle display (diegetic, Layout "subtitle" region,
+-- bottom centre between the minimap and the gauges). Always on:
 -- every transmission shows the speaker's callsign and the text, with an RX/TX lamp, the channel
 -- and a signal bar that drops in storms. The log (last lines) unfolds while the radio wheel is open.
 local HudTheme = require(script.Parent.HudTheme)
+local Layout = require(script.Parent.Layout)
 
 export type Panel = {
 	gui: ScreenGui,
@@ -53,25 +55,23 @@ function RadioPanel.new(playerGui: Instance): Panel
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "RadioPanel"
 	gui.ResetOnSpawn = false
-	gui.IgnoreGuiInset = false
 	gui.DisplayOrder = 18
+	Layout.prepare(gui)
 	gui.Parent = playerGui
+	local region = Layout.region(gui, "subtitle")
 
 	-- the set: a rugged body with a recessed LCD
 	local body = Instance.new("Frame")
 	body.Name = "VHF"
-	body.AnchorPoint = Vector2.new(0, 1)
-	body.Position = UDim2.new(0, 12, 1, -12)
-	body.Size = UDim2.new(0.42, 0, 0, 118)
+	body.AnchorPoint = Vector2.new(0.5, 1)
+	body.Position = UDim2.fromScale(0.5, 1)
+	body.Size = UDim2.fromScale(1, 1)
 	body.BackgroundColor3 = BODY
+	body.BackgroundTransparency = 0.15
 	body.BorderSizePixel = 0
 	body.Visible = false
-	body.Parent = gui
-	corner(body, 12)
-	local sizeLimit = Instance.new("UISizeConstraint")
-	sizeLimit.MinSize = Vector2.new(300, 0)
-	sizeLimit.MaxSize = Vector2.new(560, 400)
-	sizeLimit.Parent = body
+	body.Parent = region
+	corner(body, 8)
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = Color3.fromHex("3A4248")
 	stroke.Thickness = 2
@@ -181,7 +181,7 @@ function RadioPanel.new(playerGui: Instance): Panel
 			body.Visible = true
 			table.insert(
 				entries,
-				`<font color="#FF6B1A"><b>{escape(who)}</b></font>  {escape(msg)}`
+				`<font color="#D9682E"><b>{escape(who)}</b></font>  {escape(msg)}`
 			)
 			while #entries > LOG_MAX do
 				table.remove(entries, 1)

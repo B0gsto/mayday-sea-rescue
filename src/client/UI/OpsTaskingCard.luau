@@ -47,12 +47,11 @@ local function lcdLine(
 	return l
 end
 
-function OpsTaskingCard.new(gui: ScreenGui): Card
+function OpsTaskingCard.new(gui: GuiBase2d): Card
 	local body = Instance.new("Frame")
 	body.Name = "TaskingPager"
-	body.AnchorPoint = Vector2.new(1, 0)
-	body.Position = UDim2.new(1, -12, 0, 64)
-	body.Size = UDim2.fromOffset(360, 250)
+	body.LayoutOrder = 1 -- top of the Layout "right" column
+	body.Size = UDim2.new(1, 0, 0, 250)
 	body.BackgroundColor3 = Color3.fromHex("1B1F22")
 	body.BorderSizePixel = 0
 	body.Visible = false

@@ -17,7 +17,6 @@
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
 --      GetObjective(): (Vector3?, string?)
 local ContextActionService = game:GetService("ContextActionService")
-local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -26,6 +25,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
@@ -50,7 +50,8 @@ type BlipDraw = {
 type Pool = { parent: GuiObject, items: { [string]: Frame }, used: { [string]: boolean } }
 
 local OpsController: any = nil
-local gui: ScreenGui
+local gui: ScreenGui -- the full map (whole screen)
+local miniGui: ScreenGui -- the minimap, in the Layout "minimap" region (bottom left, safe area)
 local mini: { [string]: any } = {}
 local full: { [string]: any } = {}
 local waypoint: Vector3? = nil
@@ -406,14 +407,14 @@ end
 local function buildMinimap()
 	local root = Instance.new("ImageButton")
 	root.Name = "Minimap"
-	root.AnchorPoint = Vector2.new(0, 1)
+	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundColor3 = C.panel
-	root.BackgroundTransparency = 0.05
+	root.BackgroundTransparency = 0.2
 	root.AutoButtonColor = false
 	root.Image = ""
-	root.Parent = gui
+	root.Parent = Layout.region(miniGui, "minimap")
 	corner(root)
-	stroke(root, C.accent, 3)
+	stroke(root, Color3.fromRGB(255, 255, 255), 1, 0.7)
 	mini.root = root
 
 	local canvas = Instance.new("CanvasGroup")
@@ -476,17 +477,18 @@ local function buildMinimap()
 		ZIndex = 9,
 	})
 	corner(pill, 10)
-	stroke(pill, C.accent, 2)
+	stroke(pill, Color3.fromRGB(255, 255, 255), 1, 0.8)
 	local pt = text("Text", pill, "", 17)
 	pt.Size = UDim2.fromScale(1, 1)
 	pt.ZIndex = 10
 	mini.pill, mini.pillText = pill, pt
 
 	if UserInputService.TouchEnabled then
-		local b = button("MapButton", root, "MAP", UDim2.fromOffset(64, 48))
-		b.AnchorPoint = Vector2.new(0, 1)
-		b.Position = UDim2.new(1, 8, 1, 0)
-		b.TextSize = 20
+		-- in the square's empty top-right corner, so it stays inside the minimap region
+		local b = button("MapButton", root, "MAP", UDim2.fromOffset(52, 40))
+		b.AnchorPoint = Vector2.new(1, 0)
+		b.Position = UDim2.fromScale(1, 0)
+		b.TextSize = 16
 		b.Activated:Connect(function()
 			MapController.Open()
 		end)
@@ -494,51 +496,6 @@ local function buildMinimap()
 	root.Activated:Connect(function()
 		MapController.Open()
 	end)
-end
-
--- Bottom-anchored panels from other HUDs (the VHF set, mechanic panels) that would cover the
--- minimap: it rises above them. Rescanned four times a second.
-local liftCache, liftAt = 0, -1
-
-local function bottomLift(size: number, vp: Vector2): number
-	local now = os.clock()
-	if now - liftAt < 0.25 then
-		return liftCache
-	end
-	liftAt = now
-	local lift = 0
-	local inset = GuiService:GetGuiInset().Y
-	local pg = player:FindFirstChildOfClass("PlayerGui")
-	for _, sg in if pg then pg:GetChildren() else {} do
-		if sg:IsA("ScreenGui") and sg.Enabled and sg ~= gui then
-			for _, o in sg:GetDescendants() do
-				if
-					o:IsA("GuiObject")
-					and o.Visible
-					and o.Parent
-					and (o.Parent == sg or o.Name == "VHF")
-				then
-					local pos, sz = o.AbsolutePosition, o.AbsoluteSize
-					local bottom = pos.Y + sz.Y + (if sg.IgnoreGuiInset then 0 else inset)
-					if
-						sz.X < vp.X * 0.9
-						and sz.Y < vp.Y * 0.6
-						and pos.X < 16 + size
-						and pos.X + sz.X > 16
-						and bottom > vp.Y - 48
-						and o.BackgroundTransparency < 0.95
-					then
-						lift = math.max(
-							lift,
-							vp.Y - (pos.Y + (if sg.IgnoreGuiInset then 0 else inset)) + 10
-						)
-					end
-				end
-			end
-		end
-	end
-	liftCache = math.min(lift, vp.Y * 0.45)
-	return liftCache
 end
 
 local function updateMinimap(dt: number, now: number)
@@ -549,10 +506,8 @@ local function updateMinimap(dt: number, now: number)
 		return
 	end
 	mini.root.Visible = true
-	local vp = cam.ViewportSize
-	local size = math.clamp(math.floor(math.min(vp.X, vp.Y) * 0.27), 150, 236)
-	mini.root.Size = UDim2.fromOffset(size, size)
-	mini.root.Position = UDim2.new(0, 16, 1, -16 - bottomLift(size, vp))
+	-- size and place come from UI/Layout (design units inside the region's UIScale)
+	local size = Layout.current().side
 
 	local vehicle, mode = seatModel()
 	local vel = root.AssemblyLinearVelocity
@@ -1125,6 +1080,14 @@ function MapController.Init()
 	gui.DisplayOrder = 16
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui:SetAttribute("CinematicKeep", true) -- MapController hides itself on CinematicPlaying
+	miniGui = Instance.new("ScreenGui")
+	miniGui.Name = "MiniMapHud"
+	miniGui.ResetOnSpawn = false
+	miniGui.DisplayOrder = 16
+	miniGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	miniGui:SetAttribute("CinematicKeep", true)
+	Layout.prepare(miniGui)
+	miniGui.Parent = player:WaitForChild("PlayerGui")
 	buildMinimap()
 	buildFullMap()
 	bindFullMapInput()
@@ -1153,6 +1116,7 @@ function MapController.Start()
 	local function cinematic()
 		local on = player:GetAttribute("CinematicPlaying") == true
 		gui.Enabled = not on
+		miniGui.Enabled = not on
 		if on then
 			MapController.Close()
 		end

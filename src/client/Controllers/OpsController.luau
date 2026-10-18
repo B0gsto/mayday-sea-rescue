@@ -17,6 +17,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local Remotes =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Remotes"))
 
@@ -395,9 +396,18 @@ function OpsController.Init()
 		UDim2.fromOffset(440, 400),
 		Vector2.new(0.5, 0.5)
 	)
+	-- greybox fallback, placed on the shared HUD layout (UI/Layout) like the real UI
+	Layout.prepare(gui)
+	local function slot(f: GuiObject, region: Layout.RegionName, size: UDim2)
+		f.AnchorPoint = Vector2.zero
+		f.Position = UDim2.new()
+		f.Size = size
+		f.Parent = Layout.region(gui, region)
+	end
+	slot(offerFrame, "right", UDim2.new(1, 0, 0, 170))
+	slot(stripFrame, "objective", UDim2.new(1, 0, 0, 84))
 	radioLabel = label(gui, "", 0, 24, 18)
-	radioLabel.Position = UDim2.new(0, 16, 1, -260)
-	radioLabel.Size = UDim2.fromOffset(520, 48)
+	slot(radioLabel, "subtitle", UDim2.new(1, 0, 0, 48))
 	radioLabel.BackgroundTransparency = 0.3
 	radioLabel.BackgroundColor3 = HudTheme.Colors.panel
 	radioLabel.Visible = false

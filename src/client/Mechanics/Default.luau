@@ -6,6 +6,7 @@
 local Players = game:GetService("Players")
 
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 
 local Default = {}
 
@@ -18,13 +19,14 @@ function Default.start(
 	gui.Name = "OpsStubMechanic"
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 20
+	Layout.prepare(gui)
 	local frame = Instance.new("Frame")
 	frame.AnchorPoint = Vector2.new(0.5, 1)
-	frame.Position = UDim2.new(0.5, 0, 1, -110)
+	frame.Position = UDim2.fromScale(0.5, 1)
 	frame.Size = UDim2.fromOffset(420, 120)
 	frame.BackgroundColor3 = HudTheme.Colors.panel
 	frame.BackgroundTransparency = HudTheme.PanelTransparency
-	frame.Parent = gui
+	frame.Parent = Layout.region(gui, "prompt") -- centre low, above the radio subtitles
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, HudTheme.Corner)
 	corner.Parent = frame
