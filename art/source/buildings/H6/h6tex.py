@@ -119,7 +119,10 @@ def fbm(pos, freq, seed, octaves=4, stretch=(1.0, 1.0, 1.0)):
 
 
 def ss(e0, e1, x):
-    t = np.clip((x - e0) / np.maximum(np.asarray(e1, np.float32) - e0, 1e-6), 0.0, 1.0)
+    # H6b: the old denominator np.maximum(e1 - e0, 1e-6) made every reversed ramp (e1 < e0) a hard step the wrong way
+    d = np.asarray(e1, np.float32) - np.asarray(e0, np.float32)
+    d = np.where(np.abs(d) < 1e-6, np.float32(1e-6), d)
+    t = np.clip((x - e0) / d, 0.0, 1.0)
     return t * t * (3.0 - 2.0 * t)
 
 

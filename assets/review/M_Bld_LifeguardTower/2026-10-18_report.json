@@ -2,7 +2,7 @@
  "asset": "M_Bld_LifeguardTower",
  "name": "M_Bld_LifeguardTower",
  "date": "2026-10-18",
- "commit": "cf82a493+dirty",
+ "commit": "05415751+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD0.fbx",
-   "bytes": 247532,
+   "bytes": 792876,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_LifeguardTower_COL",
@@ -57,11 +57,11 @@
       0.0
      ],
      "max": [
-      5.2575,
-      5.3265,
+      5.7,
+      5.806,
       24.36
      ],
-     "polygons": 2044,
+     "polygons": 6268,
      "all_triangles": true,
      "uv": true
     },
@@ -70,12 +70,12 @@
      "min": [
       -4.5,
       -4.2,
-      12.03
+      12.18
      ],
      "max": [
       4.5,
       2.37,
-      15.12
+      15.27
      ],
      "polygons": 36,
      "all_triangles": true,
@@ -84,16 +84,16 @@
     {
      "name": "M_Bld_LifeguardTower_Hut_LOD0.001",
      "min": [
-      -5.4,
-      -5.34,
-      9.0
+      -5.505,
+      -5.9535,
+      8.97
      ],
      "max": [
-      5.37,
-      6.27,
-      17.58
+      5.505,
+      6.12,
+      17.94
      ],
-     "polygons": 1372,
+     "polygons": 5558,
      "all_triangles": true,
      "uv": true
     }
@@ -108,7 +108,7 @@
   },
   {
    "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD1.fbx",
-   "bytes": 154588,
+   "bytes": 494444,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_LifeguardTower_Frame_LOD1",
@@ -120,15 +120,15 @@
      "name": "M_Bld_LifeguardTower_Frame_LOD1.001",
      "min": [
       -8.25,
-      -13.65,
+      -13.6445,
       0.0
      ],
      "max": [
-      5.2575,
-      5.3265,
+      5.7,
+      5.806,
       24.359
      ],
-     "polygons": 766,
+     "polygons": 2350,
      "all_triangles": true,
      "uv": true
     },
@@ -137,12 +137,12 @@
      "min": [
       -4.485,
       -4.2,
-      12.03
+      12.18
      ],
      "max": [
       4.5,
       2.37,
-      15.12
+      15.27
      ],
      "polygons": 12,
      "all_triangles": true,
@@ -151,16 +151,16 @@
     {
      "name": "M_Bld_LifeguardTower_Hut_LOD1.001",
      "min": [
-      -5.4,
-      -5.34,
-      9.0
+      -5.505,
+      -5.948,
+      8.97
      ],
      "max": [
-      5.37,
-      6.2693,
-      17.58
+      5.505,
+      6.12,
+      17.94
      ],
-     "polygons": 514,
+     "polygons": 2084,
      "all_triangles": true,
      "uv": true
     }
@@ -175,7 +175,7 @@
   },
   {
    "file": "assets/fbx/M_Bld_LifeguardTower/M_Bld_LifeguardTower_LOD2.fbx",
-   "bytes": 101100,
+   "bytes": 109100,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_LifeguardTower_Frame_LOD2",
@@ -186,16 +186,16 @@
     {
      "name": "M_Bld_LifeguardTower_Frame_LOD2.001",
      "min": [
-      -7.9894,
-      -13.65,
-      0.0
+      -5.5604,
+      -7.2,
+      0.8757
      ],
      "max": [
-      5.2309,
-      5.3265,
+      5.1765,
+      5.28,
       24.0
      ],
-     "polygons": 424,
+     "polygons": 468,
      "all_triangles": true,
      "uv": true
     },
@@ -204,12 +204,12 @@
      "min": [
       -3.87,
       -4.2,
-      12.03
+      12.18
      ],
      "max": [
       0.27,
       -4.17,
-      15.12
+      15.27
      ],
      "polygons": 8,
      "all_triangles": true,
@@ -218,16 +218,16 @@
     {
      "name": "M_Bld_LifeguardTower_Hut_LOD2.001",
      "min": [
-      -5.3474,
-      -5.3174,
-      9.0
+      -5.505,
+      -5.948,
+      8.9873
      ],
      "max": [
-      5.34,
-      6.2642,
-      17.58
+      5.505,
+      6.1071,
+      17.94
      ],
-     "polygons": 284,
+     "polygons": 416,
      "all_triangles": true,
      "uv": true
     }
@@ -310,63 +310,63 @@
   "frames": {
    "Front3Q": {
     "asset": [
-     0.249,
+     0.248,
      0.037,
-     0.846,
-     0.818
+     0.854,
+     0.817
     ],
     "mannequin": [
-     0.152,
-     0.189,
-     0.206,
+     0.15,
+     0.19,
+     0.204,
      0.328
     ],
-    "fill": 0.781
+    "fill": 0.78
    },
    "Side": {
     "asset": [
      0.209,
-     0.042,
-     0.963,
-     0.94
+     0.037,
+     0.96,
+     0.943
     ],
     "mannequin": [
-     0.113,
+     0.115,
      0.121,
-     0.177,
+     0.179,
      0.296
     ],
-    "fill": 0.898
+    "fill": 0.906
    },
    "Rear3Q": {
     "asset": [
-     0.251,
+     0.25,
      0.037,
-     0.862,
-     0.826
+     0.857,
+     0.82
     ],
     "mannequin": [
-     0.144,
-     0.183,
-     0.2,
-     0.324
+     0.149,
+     0.188,
+     0.204,
+     0.327
     ],
-    "fill": 0.789
+    "fill": 0.783
    },
    "High": {
     "asset": [
-     0.267,
-     0.096,
-     0.952,
+     0.263,
+     0.104,
+     0.949,
      0.963
     ],
     "mannequin": [
-     0.188,
-     0.329,
-     0.247,
-     0.426
+     0.183,
+     0.333,
+     0.242,
+     0.428
     ],
-    "fill": 0.867
+    "fill": 0.859
    }
   },
   "closeups": [
@@ -381,6 +381,30 @@
     "az": 15.0,
     "el": 5.0,
     "file": "closeup_sign_door.png"
+   },
+   {
+    "name": "door_hardware",
+    "target": [
+     3.4499999999999997,
+     -4.35,
+     12.299999999999999
+    ],
+    "dist": 3.0,
+    "az": 20.0,
+    "el": 5.0,
+    "file": "closeup_door_hardware.png"
+   },
+   {
+    "name": "feet",
+    "target": [
+     4.800000000000001,
+     -6.6000000000000005,
+     1.5
+    ],
+    "dist": 5.0,
+    "az": 60.0,
+    "el": 10.0,
+    "file": "closeup_feet.png"
    },
    {
     "name": "board_rack",
@@ -417,22 +441,10 @@
     "az": 40.0,
     "el": 10.0,
     "file": "closeup_steps.png"
-   },
-   {
-    "name": "deck",
-    "target": [
-     1.7999999999999998,
-     -5.699999999999999,
-     9.3
-    ],
-    "dist": 6.0,
-    "az": 20.0,
-    "el": 40.0,
-    "file": "closeup_deck.png"
    }
   ],
   "closeup_px": 1024,
-  "min_fill": 0.781,
+  "min_fill": 0.78,
   "in_frame": true,
   "dims_m": [
    4.54,
@@ -440,7 +452,7 @@
    8.12
   ],
   "validation_ok": true,
-  "seconds": 15.9
+  "seconds": 5.2
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_LifeguardTower/M_Bld_LifeguardTower.blend",
  "ok": true,
@@ -483,7 +495,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1372 of 10000"
+   "detail": "5558 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD0",
@@ -491,7 +503,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.58e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.12e-05, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD0",
@@ -515,7 +527,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.992, v 0.007 to 0.998"
+   "detail": "u 0.004 to 0.993, v 0.007 to 0.998"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD0",
@@ -523,7 +535,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 686 faces have no UV area"
+   "detail": "0 of 2301 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD0",
@@ -531,7 +543,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 28 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 20 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD0",
@@ -563,7 +575,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.02e-02, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.92e-02, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD0",
@@ -587,7 +599,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.061 to 0.946, v 0.022 to 0.849"
+   "detail": "u 0.179 to 0.867, v 0.108 to 0.845"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD0",
@@ -603,7 +615,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 25 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 16 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD0",
@@ -627,7 +639,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2044 of 10000"
+   "detail": "6268 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD0",
@@ -635,7 +647,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.46e-04, 12 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.46e-04, 288 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD0",
@@ -659,7 +671,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.007 to 0.989, v 0.007 to 0.993"
+   "detail": "u 0.007 to 0.987, v 0.007 to 0.993"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD0",
@@ -667,7 +679,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1020 faces have no UV area"
+   "detail": "0 of 2874 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD0",
@@ -675,7 +687,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 30 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Hut 28, Frame 30, glass 25 px/stud; standard 51 needs 4096 or more sets. Lettering faces (LIFEGUARDS sign) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 16 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD1",
@@ -699,7 +711,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "514 of 10000"
+   "detail": "2084 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD1",
@@ -707,7 +719,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.07e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.14e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD1",
@@ -731,7 +743,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.992, v 0.007 to 0.998"
+   "detail": "u 0.004 to 0.993, v 0.007 to 0.998"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD1",
@@ -739,7 +751,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 514 faces have no UV area"
+   "detail": "0 of 2084 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD1",
@@ -747,7 +759,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.1% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.7% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD1",
@@ -779,7 +791,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.51e-02, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.96e-02, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD1",
@@ -803,7 +815,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.076 to 0.946, v 0.037 to 0.849"
+   "detail": "u 0.179 to 0.867, v 0.122 to 0.845"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD1",
@@ -819,7 +831,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.016 (max 0.02), UV area by 27.6% (max 15%)"
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.014 (max 0.02), UV area by 29.1% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD1",
@@ -843,7 +855,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "766 of 10000"
+   "detail": "2350 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD1",
@@ -851,7 +863,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.59e-03, 12 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.35e-03, 252 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD1",
@@ -875,7 +887,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.007 to 0.989"
+   "detail": "u 0.007 to 0.987, v 0.007 to 0.993"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD1",
@@ -883,7 +895,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 766 faces have no UV area"
+   "detail": "0 of 2350 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD1",
@@ -891,7 +903,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 9.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 11.3% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD2",
@@ -915,7 +927,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "284 of 10000"
+   "detail": "416 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD2",
@@ -923,7 +935,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.40e-02, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.27e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD2",
@@ -947,7 +959,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.004 to 0.971, v 0.007 to 0.998"
+   "detail": "u 0.007 to 0.993, v 0.007 to 0.932"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD2",
@@ -955,7 +967,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 284 faces have no UV area"
+   "detail": "0 of 416 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Hut_LOD2",
@@ -963,7 +975,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.022 (max 0.02), UV area by 42.2% (max 15%)"
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.066 (max 0.02), UV area by 71.0% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD2",
@@ -1019,7 +1031,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.061 to 0.796, v 0.022 to 0.849"
+   "detail": "u 0.179 to 0.867, v 0.108 to 0.764"
   },
   {
    "subject": "M_Bld_LifeguardTower_Glass_LOD2",
@@ -1035,7 +1047,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.151 (max 0.02), UV area by 53.6% (max 15%)"
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.081 (max 0.02), UV area by 56.5% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD2",
@@ -1059,7 +1071,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "424 of 10000"
+   "detail": "468 of 10000"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD2",
@@ -1067,7 +1079,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 6.12e-03, 12 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.51e-04, 12 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD2",
@@ -1091,7 +1103,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.007 to 0.988"
+   "detail": "u 0.007 to 0.941, v 0.007 to 0.948"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD2",
@@ -1099,7 +1111,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 424 faces have no UV area"
+   "detail": "0 of 468 faces have no UV area"
   },
   {
    "subject": "M_Bld_LifeguardTower_Frame_LOD2",
@@ -1107,7 +1119,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.004 (max 0.02), UV area by 41.6% (max 15%)"
+   "detail": "WAIVED (collapse decimation of rails, treads, halyard and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.046 (max 0.02), UV area by 64.4% (max 15%)"
   },
   {
    "subject": "M_Bld_LifeguardTower_COL",
@@ -1155,7 +1167,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3452 of 12000 (hero_building, asset row)"
+   "detail": "11862 of 12000 (hero_building, asset row)"
   },
   {
    "subject": "M_Bld_LifeguardTower",
@@ -1163,7 +1175,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1292 of 4500"
+   "detail": "4446 of 4500"
   },
   {
    "subject": "M_Bld_LifeguardTower",
@@ -1171,7 +1183,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "716 of 900"
+   "detail": "892 of 900"
   },
   {
    "subject": "M_Bld_LifeguardTower",
@@ -1187,7 +1199,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "13.620 studs, real 4.540 m = 13.620 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "13.950 studs, real 4.540 m = 13.620 studs, off 2.4% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Bld_LifeguardTower",
@@ -1195,7 +1207,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "19.920 studs, real 6.640 m = 19.920 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "19.770 studs, real 6.640 m = 19.920 studs, off 0.8% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Bld_LifeguardTower",
@@ -1403,7 +1415,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_LifeguardTower_COL, M_Bld_LifeguardTower_Frame_LOD0, M_Bld_LifeguardTower_Glass_LOD0, M_Bld_LifeguardTower_Hut_LOD0; 3608 triangles (scene 3608)"
+   "detail": "M_Bld_LifeguardTower_COL, M_Bld_LifeguardTower_Frame_LOD0, M_Bld_LifeguardTower_Glass_LOD0, M_Bld_LifeguardTower_Hut_LOD0; 12018 triangles (scene 12018)"
   },
   {
    "subject": "M_Bld_LifeguardTower_LOD0.fbx",
@@ -1443,7 +1455,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_LifeguardTower_Frame_LOD1, M_Bld_LifeguardTower_Glass_LOD1, M_Bld_LifeguardTower_Hut_LOD1; 1292 triangles (scene 1292)"
+   "detail": "M_Bld_LifeguardTower_Frame_LOD1, M_Bld_LifeguardTower_Glass_LOD1, M_Bld_LifeguardTower_Hut_LOD1; 4446 triangles (scene 4446)"
   },
   {
    "subject": "M_Bld_LifeguardTower_LOD1.fbx",
@@ -1483,7 +1495,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_LifeguardTower_Frame_LOD2, M_Bld_LifeguardTower_Glass_LOD2, M_Bld_LifeguardTower_Hut_LOD2; 716 triangles (scene 716)"
+   "detail": "M_Bld_LifeguardTower_Frame_LOD2, M_Bld_LifeguardTower_Glass_LOD2, M_Bld_LifeguardTower_Hut_LOD2; 892 triangles (scene 892)"
   },
   {
    "subject": "M_Bld_LifeguardTower_LOD2.fbx",
@@ -1499,7 +1511,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.78; 14 renders in 16 s, maps M_Bld_LifeguardTower_Hut_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Glass_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Frame_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.78; 15 renders in 5 s, maps M_Bld_LifeguardTower_Hut_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Glass_LOD0: ALB/MET/NOR/RGH, M_Bld_LifeguardTower_Frame_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -1507,28 +1519,28 @@
    "name": "M_Bld_LifeguardTower_Hut_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1372,
-   "texel_density": 27.7
+   "triangles": 5558,
+   "texel_density": 19.6
   },
   {
    "name": "M_Bld_LifeguardTower_Glass_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 36,
-   "texel_density": 24.7
+   "texel_density": 15.7
   },
   {
    "name": "M_Bld_LifeguardTower_Frame_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2044,
-   "texel_density": 29.8
+   "triangles": 6268,
+   "texel_density": 16.3
   },
   {
    "name": "M_Bld_LifeguardTower_Hut_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 514,
+   "triangles": 2084,
    "texel_density": null
   },
   {
@@ -1542,14 +1554,14 @@
    "name": "M_Bld_LifeguardTower_Frame_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 766,
+   "triangles": 2350,
    "texel_density": null
   },
   {
    "name": "M_Bld_LifeguardTower_Hut_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 284,
+   "triangles": 416,
    "texel_density": null
   },
   {
@@ -1563,7 +1575,7 @@
    "name": "M_Bld_LifeguardTower_Frame_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 424,
+   "triangles": 468,
    "texel_density": null
   },
   {
@@ -1575,9 +1587,9 @@
   }
  ],
  "bbox_studs": [
-  13.619999885559082,
-  19.920000076293945,
+  13.950000286102295,
+  19.770000457763672,
   24.360000610351562
  ],
- "peak_rss_mb": 1529.6
+ "peak_rss_mb": 1687.3
 }

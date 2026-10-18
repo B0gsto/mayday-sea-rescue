@@ -16,15 +16,18 @@ import template  # noqa: E402
 import turntable  # noqa: E402
 
 S = 3.0
-OUT = os.path.join(REPO, "assets", "review", "H6", "renders")
+TAG = os.environ.get("H6_REVIEW", "b")                     # H6b fix round: renders_b -> contact_b.png
+OUT = os.path.join(REPO, "assets", "review", "H6", "renders_" + TAG if TAG else "renders")
 os.makedirs(OUT, exist_ok=True)
 ASSETS = {
     "M_Bld_HarbourLight": {"tex": "HarbourLight", "sets": {"Tower": "Tower", "Lantern": "Lantern", "Lens": "Lantern", "Glass": "Lantern"},
                            "man": (0.9, -2.6), "az": 30, "el": 6,
-                           "close": [("door_plaque", (0.55, -1.85, 1.55), 2.3, 22, 4), ("lantern", (0.0, 0.0, 10.1), 4.6, 28, 10)]},
+                           "close": [("door_plaque", (0.55, -1.85, 1.55), 2.3, 22, 4), ("lantern", (0.0, 0.0, 10.1), 4.6, 28, 10),
+                                     ("band_drips", (0.0, -1.6, 7.3), 3.6, 15, 4)]},
     "M_Bld_LifeguardTower": {"tex": "LifeguardTower", "sets": {"Hut": "Hut", "Glass": "Hut", "Frame": "Frame"},
                              "man": (-0.4, -3.4), "az": 32, "el": 8,
-                             "close": [("sign_door", (0.25, -1.5, 4.55), 3.0, 12, 4), ("flag_board", (-1.9, -1.0, 5.3), 5.4, 300, 12)]},
+                             "close": [("sign_door", (0.25, -1.5, 4.55), 3.0, 12, 4), ("door_hardware", (1.12, -1.45, 4.0), 1.1, 18, 3),
+                                       ("feet", (1.6, -2.2, 0.45), 1.7, 55, 8), ("deck_rail", (-0.3, -2.0, 3.8), 5.0, 325, 16)]},
 }
 
 

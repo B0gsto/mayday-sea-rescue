@@ -97,9 +97,20 @@ def tower_geo():
     # door: granite surround, threshold, boarded leaf, strap hinges, ring handle, escutcheon
     opening(g, 0.0, 0.50, 2.50, 0.92, door=True)
     g.box((0.0, -1.86, 0.525), (1.30, 0.26, 0.05), P_DRESS)
-    g.box((0.0, -1.79, 1.50), (0.94, 0.07, 2.00), P_DOOR)
+    # H6b: lined timber frame (jambs, head) and a leaf of five V-jointed planks with shadow gaps, dark lobby behind
+    for sx in (-1, 1):
+        g.bbox((sx * 0.425, -1.80, 1.50), (0.07, 0.10, 2.00), P_DOOR, 0.008, axis=2)
+    g.bbox((0.0, -1.80, 2.465), (0.92, 0.10, 0.07), P_DOOR, 0.008, axis=0)
+    g.box((0.0, -1.72, 1.50), (0.92, 0.02, 2.00), P_IRON)
+    for i in range(5):
+        g.bbox((-0.384 + 0.1536 * (i + 0.5), -1.79, 1.475), (0.1516, 0.05, 1.89), P_DOOR, 0.007, axis=2)
     for zh in (0.80, 2.18):
-        g.box((-0.20, -1.83, zh), (0.50, 0.014, 0.055), P_IRON)
+        g.bbox((-0.15, -1.822, zh), (0.48, 0.014, 0.055), P_IRON, 0.003, axis=0)
+        g.lathe([(0.0, -0.02), (0.035, -0.02), (0.035, 0.02), (0.0, 0.02)], 8, P_IRON,
+                m=Matrix.Translation((0.09, -1.822, zh)) @ Matrix.Rotation(math.pi / 2, 4, "X"))
+        g.tube((-0.39, -1.83, zh - 0.07), (-0.39, -1.83, zh + 0.07), 0.016, 8, P_IRON)
+        for xn in (-0.30, -0.12, 0.04):
+            g.lathe([(0.009, 0.0), (0.0, 0.006)], 6, P_IRON, m=Matrix.Translation((xn, -1.829, zh)) @ Matrix.Rotation(math.pi / 2, 4, "X"))
         g.lathe([(0.0, 1.80), (0.022, 1.80), (0.022, 1.835), (0.0, 1.835)], 8, P_IRON,
                 m=Matrix.Translation((-0.45, 0.0, zh)) @ Matrix.Rotation(math.pi / 2, 4, "X"))
     g.torus((0.30, -1.835, 1.40), 0.055, 0.010, 12, 4, P_IRON, normal=(0, 1, 0))
@@ -165,6 +176,8 @@ def lantern_geo():
         a = 2 * math.pi * i / 12
         g.boxr((0.93 * math.cos(a), 0.93 * math.sin(a), 9.96), (0.07, 0.05, 1.30), L_WHITE, a)
     g.torus((0, 0, 9.96), 0.93, 0.018, 12, 4, L_WHITE)
+    for zb in (9.64, 10.28):                                  # H6b: glazing bars, four tiers of panes
+        g.torus((0, 0, zb), 0.925, 0.011, 12, 4, L_WHITE)
     g.lathe([(0.90, 9.30), (0.97, 9.30), (0.97, 9.37), (0.90, 9.37)], 12, L_WHITE)
     g.lathe([(0.90, 10.58), (1.05, 10.62), (1.05, 10.72), (0.98, 10.75), (0.90, 10.75)], SEG, L_WHITE)
     # domed roof (red), ventilator ball (black), vane and finial (galvanised)
@@ -278,12 +291,16 @@ def paint_tower(c):
     vj = np.minimum(vq, 1 - vq) * ch
     joint = np.maximum(ss(0.02, 0.004, bj), ss(0.02, 0.004, vj))
     blk = hash3(np.stack([course, np.floor(u), np.ones(n)], 1), 11)
-    plaster = tri(scan("white_plaster_rough_01"), c.pos, c.nrm, 1.3)
+    # H6b: two samplings of the plaster scan at unrelated scales and offsets, blended by low-frequency noise, so the
+    # 1.3 m tile no longer repeats eight times round the tower (it read as a repeating chip pattern on the red bands)
+    pl_a = tri(scan("white_plaster_rough_01"), c.pos, c.nrm, 1.3)
+    pl_b = tri(scan("white_plaster_rough_01"), c.pos + np.array([3.1, 1.7, 0.9], np.float32), c.nrm, 0.77)
+    plaster = mix(pl_a, pl_b, ss(0.35, 0.65, fbm(c.pos, 0.7, 25, 3)))
     white = tone(plaster, (0.87, 0.865, 0.83), 0.6) * (0.97 + 0.05 * blk)[:, None]
     in_band = np.zeros(n, bool)
     for z0, z1 in BANDS:
         in_band |= (z >= z0) & (z < z1)
-    red = tone(plaster, (0.60, 0.135, 0.115), 0.5) * (0.96 + 0.06 * blk)[:, None]
+    red = tone(plaster, (0.60, 0.135, 0.115), 0.28) * (0.96 + 0.06 * blk)[:, None]
     chalk = ss(0.45, 0.75, fbm(c.pos, 2.0, 23, 3)) * (0.35 + 0.4 * weather)
     red = mix(red, col((0.66, 0.36, 0.33), n), 0.45 * chalk)
     a = np.where(in_band[:, None], red, white)
@@ -291,7 +308,14 @@ def paint_tower(c):
     hgt += -0.0035 * joint + 0.0008 * (plaster[:, 0] - 0.5)
     r_ = np.where(in_band, 0.55, 0.62) + 0.12 * chalk * in_band + 0.06 * (fbm(c.pos, 6.0, 29, 2) - 0.5)
     # paint flaking to the granite, worst low down and on the weather side
-    fl = fbm(c.pos, 3.0, 31, 4) + 0.10 * ss(2.0, 0.5, z) + 0.06 * weather + 0.05 * joint
+    warp = np.stack([fbm(c.pos, 1.3, 33, 2), fbm(c.pos, 1.3, 35, 2), fbm(c.pos, 1.3, 37, 2)], 1) - 0.5
+    fl = fbm(c.pos + 0.6 * warp, 3.0, 31, 4) + 0.10 * ss(2.0, 0.5, z) + 0.06 * weather + 0.05 * joint
+    # red bands: their own finer, domain-warped chipping (red over the white coat) at the band edges and arrises
+    bandedge = np.zeros(n, np.float32)
+    for z0, z1 in BANDS:
+        bandedge = np.maximum(bandedge, ss(0.06, 0.0, np.minimum(np.abs(z - z0), np.abs(z - z1))))
+    rchip = ss(0.74, 0.75, fbm(c.pos + 0.4 * warp, 9.0, 61, 4) + 0.18 * bandedge + 0.08 * joint) * in_band
+    a = mix(a, white * 0.95, rchip)
     flake = ss(0.70, 0.715, fl)
     rim = ss(0.66, 0.70, fl) * (1 - flake)
     a = mix(a, ga * 0.92, flake)
@@ -315,6 +339,21 @@ def paint_tower(c):
     # rust streaks from the gallery stanchions and slab fixings down the upper wall
     rust = np.exp(-(d_st / (0.035 + 0.03 * vfade)) ** 2) * ss(5.6, 7.95, z) * ss(0.3, 0.7, fbm(c.pos, 3.0, 43, 2, stretch=(3, 3, 0.4)))
     a = mix(a, rusty, 0.65 * rust)
+    # H6b: rust drips from the gallery slab fixings and corbels, irregular lengths and widths
+    ncol = 40
+    fi = (ang / (2 * math.pi)) * ncol
+    idx = np.floor(fi)
+    hid = np.stack([idx, np.zeros(n), np.ones(n)], 1)
+    centre = idx + 0.5 + (hash3(hid, 63) - 0.5) * 0.7
+    da = np.abs(fi - centre) * 2 * math.pi / ncol * c.r
+    L = 0.3 + 2.4 * hash3(hid, 65) ** 2
+    below = np.clip(7.99 - z, 0, None)
+    wd = (0.010 + 0.018 * hash3(hid, 67)) * (1.0 + 0.8 * below)
+    wob = 0.02 * (fbm(c.pos, 2.5, 69, 2) - 0.5)
+    drip = np.exp(-((da + wob) / wd) ** 2) * ss(7.99 - L, 7.99 - 0.35 * L, z) * (z < 7.99) * (hash3(hid, 71) < 0.7)
+    drip *= ss(0.25, 0.55, fbm(c.pos, 4.0, 73, 3, stretch=(4, 4, 0.25)))
+    a = mix(a, col((0.48, 0.27, 0.13), n), 0.7 * drip * ss(0.0, 0.25, 1.0 - below / np.maximum(L, 0.3) + 0.2))
+    rust = np.maximum(rust, drip)
     # salt bloom and green algae low on the wall, more on the north (+Y) side
     north = 0.5 + 0.5 * np.cos(ang - math.pi)
     alg = ss(1.8, 0.5, z) * (0.4 + 0.6 * north) * ss(0.35, 0.65, fbm(c.pos, 3.0, 47, 3))
@@ -326,7 +365,7 @@ def paint_tower(c):
 
     # ---- door: boarded leaf, green gloss paint worn to timber
     door = c.is_(P_DOOR)
-    plank = ((c.x + 0.47) / 0.157) % 1.0
+    plank = ((c.x + 0.384) / 0.1536) % 1.0
     groove = ss(0.05, 0.0, np.minimum(plank, 1 - plank))
     wood = tri(scan("wood_peeling_paint_weathered"), c.pos, c.nrm, 1.0)
     dpaint = tone(wood, (0.17, 0.29, 0.25), 0.35)

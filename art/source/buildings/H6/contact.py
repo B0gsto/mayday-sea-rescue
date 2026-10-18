@@ -6,7 +6,8 @@ from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))
-R = os.path.join(REPO, "assets", "review", "H6", "renders")
+TAG = os.environ.get("H6_REVIEW", "b")
+R = os.path.join(REPO, "assets", "review", "H6", "renders_" + TAG if TAG else "renders")
 W, CW, CH = 1600, 400, 600
 cells = [("%s %s" % (a.replace("M_Bld_", ""), s), os.path.join(R, "%s_%s.png" % (a, s)))
          for a in ("M_Bld_HarbourLight", "M_Bld_LifeguardTower") for s in ("dry", "wet")]
@@ -24,8 +25,8 @@ for i, f in enumerate(closes):
     x, y = (i % 4) * cw, CH + (i // 4) * chh
     sheet.paste(im, (x, y))
     d.text((x + 6, y + 6), f[6:-4].replace("M_Bld_", ""), fill=(255, 255, 255))
-d.text((8, CH + crow * chh + 12), "H6: Harbour Light (12 m pier-head light, Fl(2) W 10s) and Haven Sands lifeguard tower. Overcast-sea HDRI, "
+d.text((8, CH + crow * chh + 12), "H6b: Harbour Light (12 m pier-head light, Fl(2) W 10s) and Haven Sands lifeguard tower. Overcast-sea HDRI, "
        "EEVEE, LOD0 with shipping maps (dry, then _Wet ALB/RGH), 5.5-stud mannequin for scale.", fill=(230, 230, 230))
-out = os.path.join(REPO, "assets", "review", "H6", "contact.png")
+out = os.path.join(REPO, "assets", "review", "H6", "contact_%s.png" % TAG if TAG else "contact.png")
 sheet.save(out)
 print(out, sheet.size)

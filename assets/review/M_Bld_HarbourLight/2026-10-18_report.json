@@ -2,7 +2,7 @@
  "asset": "M_Bld_HarbourLight",
  "name": "M_Bld_HarbourLight",
  "date": "2026-10-18",
- "commit": "cf82a493+dirty",
+ "commit": "2274cea5+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD0.fbx",
-   "bytes": 907900,
+   "bytes": 953212,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_HarbourLight_COL",
@@ -78,7 +78,7 @@
       5.835,
       36.0
      ],
-     "polygons": 5970,
+     "polygons": 6162,
      "all_triangles": true,
      "uv": true
     },
@@ -110,7 +110,7 @@
       6.0,
       25.74
      ],
-     "polygons": 4228,
+     "polygons": 4664,
      "all_triangles": true,
      "uv": true
     }
@@ -125,7 +125,7 @@
   },
   {
    "file": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD1.fbx",
-   "bytes": 438492,
+   "bytes": 460652,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_HarbourLight_Glass_LOD1",
@@ -162,7 +162,7 @@
       5.8193,
       36.0
      ],
-     "polygons": 2238,
+     "polygons": 2310,
      "all_triangles": true,
      "uv": true
     },
@@ -194,7 +194,7 @@
       5.9968,
       25.74
      ],
-     "polygons": 1584,
+     "polygons": 1748,
      "all_triangles": true,
      "uv": true
     }
@@ -209,7 +209,7 @@
   },
   {
    "file": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD2.fbx",
-   "bytes": 133564,
+   "bytes": 137468,
    "fbx_version": 7400,
    "meshes": [
     "M_Bld_HarbourLight_Glass_LOD2",
@@ -221,16 +221,16 @@
     {
      "name": "M_Bld_HarbourLight_Glass_LOD2.001",
      "min": [
-      -3.1268,
-      -3.0842,
+      -2.76,
+      -2.76,
       27.96
      ],
      "max": [
-      3.1268,
-      1.2944,
+      2.76,
+      2.76,
       31.8
      ],
-     "polygons": 4,
+     "polygons": 24,
      "all_triangles": true,
      "uv": true
     },
@@ -239,14 +239,14 @@
      "min": [
       -5.7762,
       -5.782,
-      25.74
+      26.7965
      ],
      "max": [
       5.782,
       5.782,
-      32.2501
+      36.0
      ],
-     "polygons": 642,
+     "polygons": 626,
      "all_triangles": true,
      "uv": true
     },
@@ -269,16 +269,16 @@
     {
      "name": "M_Bld_HarbourLight_Tower_LOD2.001",
      "min": [
-      -6.1056,
-      -6.1056,
+      -6.184,
+      -6.008,
       -0.0003
      ],
      "max": [
+      6.0498,
       6.1056,
-      6.1074,
-      25.7418
+      25.7422
      ],
-     "polygons": 316,
+     "polygons": 349,
      "all_triangles": true,
      "uv": true
     }
@@ -495,7 +495,7 @@
    12.0
   ],
   "validation_ok": true,
-  "seconds": 18.9
+  "seconds": 5.8
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/buildings/M_Bld_HarbourLight/M_Bld_HarbourLight.blend",
  "ok": true,
@@ -538,7 +538,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4228 of 10000"
+   "detail": "4664 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD0",
@@ -546,7 +546,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.17e-03, 384 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.98e-04, 384 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD0",
@@ -570,7 +570,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.990, v 0.007 to 0.998"
+   "detail": "u 0.002 to 0.992, v 0.007 to 0.998"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD0",
@@ -578,7 +578,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2130 faces have no UV area"
+   "detail": "0 of 2328 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD0",
@@ -586,7 +586,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 33 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 30 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD0",
@@ -610,7 +610,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5970 of 10000"
+   "detail": "6162 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD0",
@@ -642,7 +642,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.988"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD0",
@@ -650,7 +650,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2961 faces have no UV area"
+   "detail": "0 of 3057 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD0",
@@ -658,7 +658,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 45 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 43 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD0",
@@ -714,7 +714,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.992, v 0.008 to 0.990"
+   "detail": "u 0.008 to 0.973, v 0.009 to 0.978"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD0",
@@ -730,7 +730,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 45 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 43 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD0",
@@ -786,7 +786,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.807, v 0.335 to 0.826"
+   "detail": "u 0.008 to 0.802, v 0.008 to 0.802"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD0",
@@ -802,7 +802,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 44 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "WAIVED (2 sets per the docs/12 2.2 row at 2048 (EXPORT_CAP shipping size until Spike 1): Tower 33, Lantern / lens / glass 45 px/stud; standard 51 needs 4096 or more sets. Lettering faces (plaque) get their own UV rect at about 150 px/stud; wear reads at 2 m (contact sheet)): 42 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD1",
@@ -826,7 +826,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1584 of 10000"
+   "detail": "1748 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD1",
@@ -834,7 +834,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.00e-03, 252 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.29e-04, 252 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD1",
@@ -858,7 +858,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.979, v 0.007 to 0.998"
+   "detail": "u 0.002 to 0.992, v 0.007 to 0.998"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD1",
@@ -866,7 +866,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1584 faces have no UV area"
+   "detail": "0 of 1748 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD1",
@@ -874,7 +874,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.011 (max 0.02), UV area by 2.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.1% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD1",
@@ -898,7 +898,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2238 of 10000"
+   "detail": "2310 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD1",
@@ -906,7 +906,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.52e-03, 308 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.52e-03, 280 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD1",
@@ -930,7 +930,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.988, v 0.008 to 0.988"
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD1",
@@ -938,7 +938,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 2238 faces have no UV area"
+   "detail": "0 of 2310 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD1",
@@ -946,7 +946,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.7% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD1",
@@ -1002,7 +1002,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.992, v 0.009 to 0.989"
+   "detail": "u 0.009 to 0.973, v 0.009 to 0.977"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD1",
@@ -1074,7 +1074,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.807, v 0.335 to 0.826"
+   "detail": "u 0.015 to 0.802, v 0.009 to 0.801"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD1",
@@ -1090,7 +1090,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 27.9% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.007 (max 0.02), UV area by 28.1% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD2",
@@ -1114,7 +1114,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "316 of 10000"
+   "detail": "349 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD2",
@@ -1122,7 +1122,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.18e-03, 72 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.29e-04, 67 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD2",
@@ -1146,7 +1146,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.002 to 0.979, v 0.007 to 0.998"
+   "detail": "u 0.002 to 0.992, v 0.007 to 0.998"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD2",
@@ -1154,7 +1154,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 316 faces have no UV area"
+   "detail": "0 of 349 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Tower_LOD2",
@@ -1162,7 +1162,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.011 (max 0.02), UV area by 37.8% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.000 (max 0.02), UV area by 37.6% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD2",
@@ -1186,7 +1186,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "642 of 10000"
+   "detail": "626 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD2",
@@ -1194,7 +1194,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.14e-03, 6 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.11e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD2",
@@ -1218,7 +1218,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.008 to 0.983, v 0.008 to 0.988"
+   "detail": "u 0.008 to 0.958, v 0.009 to 0.987"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD2",
@@ -1226,7 +1226,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 642 faces have no UV area"
+   "detail": "0 of 626 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Lantern_LOD2",
@@ -1234,7 +1234,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.005 (max 0.02), UV area by 60.1% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.034 (max 0.02), UV area by 62.7% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD2",
@@ -1290,7 +1290,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.009 to 0.985, v 0.009 to 0.989"
+   "detail": "u 0.015 to 0.967, v 0.012 to 0.977"
   },
   {
    "subject": "M_Bld_HarbourLight_Lens_LOD2",
@@ -1306,7 +1306,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.008 (max 0.02), UV area by 43.6% (max 15%)"
+   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.006 (max 0.02), UV area by 43.5% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD2",
@@ -1330,7 +1330,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4 of 10000"
+   "detail": "24 of 10000"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD2",
@@ -1338,7 +1338,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.00e+01, 6 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.49e+00, 24 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD2",
@@ -1362,7 +1362,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.015 to 0.788, v 0.335 to 0.809"
+   "detail": "u 0.008 to 0.802, v 0.008 to 0.802"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD2",
@@ -1370,15 +1370,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 4 faces have no UV area"
+   "detail": "0 of 12 faces have no UV area"
   },
   {
    "subject": "M_Bld_HarbourLight_Glass_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (collapse decimation of the rails, astragals and fittings drops small UV islands at LOD1/LOD2 (UV bounds unchanged); kept faces keep the LOD0 UVs and set): UV bounds differ by 0.019 (max 0.02), UV area by 66.2% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
    "subject": "M_Bld_HarbourLight_COL",
@@ -1426,7 +1426,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "11126 of 20000 (hero_building, asset row)"
+   "detail": "11754 of 20000 (hero_building, asset row)"
   },
   {
    "subject": "M_Bld_HarbourLight",
@@ -1434,7 +1434,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4169 of 7500"
+   "detail": "4405 of 7500"
   },
   {
    "subject": "M_Bld_HarbourLight",
@@ -1442,7 +1442,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1028 of 1500"
+   "detail": "1065 of 1500"
   },
   {
    "subject": "M_Bld_HarbourLight",
@@ -1666,7 +1666,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_HarbourLight_COL, M_Bld_HarbourLight_Glass_LOD0, M_Bld_HarbourLight_Lantern_LOD0, M_Bld_HarbourLight_Lens_LOD0, M_Bld_HarbourLight_Tower_LOD0; 11318 triangles (scene 11318)"
+   "detail": "M_Bld_HarbourLight_COL, M_Bld_HarbourLight_Glass_LOD0, M_Bld_HarbourLight_Lantern_LOD0, M_Bld_HarbourLight_Lens_LOD0, M_Bld_HarbourLight_Tower_LOD0; 11946 triangles (scene 11946)"
   },
   {
    "subject": "M_Bld_HarbourLight_LOD0.fbx",
@@ -1706,7 +1706,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_HarbourLight_Glass_LOD1, M_Bld_HarbourLight_Lantern_LOD1, M_Bld_HarbourLight_Lens_LOD1, M_Bld_HarbourLight_Tower_LOD1; 4169 triangles (scene 4169)"
+   "detail": "M_Bld_HarbourLight_Glass_LOD1, M_Bld_HarbourLight_Lantern_LOD1, M_Bld_HarbourLight_Lens_LOD1, M_Bld_HarbourLight_Tower_LOD1; 4405 triangles (scene 4405)"
   },
   {
    "subject": "M_Bld_HarbourLight_LOD1.fbx",
@@ -1746,7 +1746,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Bld_HarbourLight_Glass_LOD2, M_Bld_HarbourLight_Lantern_LOD2, M_Bld_HarbourLight_Lens_LOD2, M_Bld_HarbourLight_Tower_LOD2; 1028 triangles (scene 1028)"
+   "detail": "M_Bld_HarbourLight_Glass_LOD2, M_Bld_HarbourLight_Lantern_LOD2, M_Bld_HarbourLight_Lens_LOD2, M_Bld_HarbourLight_Tower_LOD2; 1065 triangles (scene 1065)"
   },
   {
    "subject": "M_Bld_HarbourLight_LOD2.fbx",
@@ -1762,7 +1762,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.82; 14 renders in 19 s, maps M_Bld_HarbourLight_Tower_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Lantern_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Lens_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Glass_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.82; 14 renders in 6 s, maps M_Bld_HarbourLight_Tower_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Lantern_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Lens_LOD0: ALB/MET/NOR/RGH, M_Bld_HarbourLight_Glass_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -1770,42 +1770,42 @@
    "name": "M_Bld_HarbourLight_Tower_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 4228,
-   "texel_density": 32.7
+   "triangles": 4664,
+   "texel_density": 30.1
   },
   {
    "name": "M_Bld_HarbourLight_Lantern_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 5970,
-   "texel_density": 45.3
+   "triangles": 6162,
+   "texel_density": 43.4
   },
   {
    "name": "M_Bld_HarbourLight_Lens_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 904,
-   "texel_density": 44.5
+   "texel_density": 42.6
   },
   {
    "name": "M_Bld_HarbourLight_Glass_LOD0",
    "role": "visual",
    "lod": "LOD0",
    "triangles": 24,
-   "texel_density": 44.0
+   "texel_density": 42.5
   },
   {
    "name": "M_Bld_HarbourLight_Tower_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1584,
+   "triangles": 1748,
    "texel_density": null
   },
   {
    "name": "M_Bld_HarbourLight_Lantern_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 2238,
+   "triangles": 2310,
    "texel_density": null
   },
   {
@@ -1826,14 +1826,14 @@
    "name": "M_Bld_HarbourLight_Tower_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 316,
+   "triangles": 349,
    "texel_density": null
   },
   {
    "name": "M_Bld_HarbourLight_Lantern_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 642,
+   "triangles": 626,
    "texel_density": null
   },
   {
@@ -1847,7 +1847,7 @@
    "name": "M_Bld_HarbourLight_Glass_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 4,
+   "triangles": 24,
    "texel_density": null
   },
   {
@@ -1863,5 +1863,5 @@
   12.0,
   36.0
  ],
- "peak_rss_mb": 1834.6
+ "peak_rss_mb": 703.7
 }
