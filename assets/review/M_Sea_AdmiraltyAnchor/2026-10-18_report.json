@@ -2,7 +2,7 @@
  "asset": "M_Sea_AdmiraltyAnchor",
  "name": "M_Sea_AdmiraltyAnchor",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,24 +25,25 @@
  "exports": [
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx",
-   "bytes": 168684,
+   "bytes": 570652,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_AdmiraltyAnchor_COL",
-    "M_Sea_AdmiraltyAnchor_LOD0"
+    "M_Sea_AdmiraltyAnchor_LOD0",
+    "M_Sea_AdmiraltyAnchor_Sand_LOD0"
    ],
    "geometry": [
     {
      "name": "M_Sea_AdmiraltyAnchor_COL.001",
      "min": [
-      -4.95,
-      -3.927,
-      -0.2945
+      -5.4399,
+      -4.1706,
+      -0.279
      ],
      "max": [
-      4.95,
-      6.0847,
-      6.0914
+      4.4601,
+      5.8411,
+      6.1069
      ],
      "polygons": 48,
      "all_triangles": true,
@@ -51,16 +52,32 @@
     {
      "name": "M_Sea_AdmiraltyAnchor_LOD0.001",
      "min": [
-      -5.014,
-      -6.003,
+      -5.5466,
+      -6.1852,
       0.0
      ],
      "max": [
-      5.014,
-      6.003,
-      5.7968
+      4.6136,
+      5.9163,
+      5.7818
      ],
-     "polygons": 2208,
+     "polygons": 5599,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_AdmiraltyAnchor_Sand_LOD0.001",
+     "min": [
+      -6.911,
+      -7.9781,
+      1.6344
+     ],
+     "max": [
+      6.911,
+      7.9781,
+      3.0902
+     ],
+     "polygons": 1292,
      "all_triangles": true,
      "uv": true
     }
@@ -75,25 +92,42 @@
   },
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD1.fbx",
-   "bytes": 101132,
+   "bytes": 296620,
    "fbx_version": 7400,
    "meshes": [
-    "M_Sea_AdmiraltyAnchor_LOD1"
+    "M_Sea_AdmiraltyAnchor_LOD1",
+    "M_Sea_AdmiraltyAnchor_Sand_LOD1"
    ],
    "geometry": [
     {
      "name": "M_Sea_AdmiraltyAnchor_LOD1.001",
      "min": [
-      -5.0131,
-      -6.003,
-      -0.0099
+      -5.5462,
+      -6.1592,
+      -0.0138
      ],
      "max": [
-      5.0131,
-      6.003,
-      5.7968
+      4.6078,
+      5.9163,
+      5.7663
      ],
-     "polygons": 1104,
+     "polygons": 2798,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_AdmiraltyAnchor_Sand_LOD1.001",
+     "min": [
+      -6.911,
+      -7.9781,
+      1.6344
+     ],
+     "max": [
+      6.911,
+      7.9781,
+      3.0925
+     ],
+     "polygons": 645,
      "all_triangles": true,
      "uv": true
     }
@@ -108,25 +142,42 @@
   },
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
-   "bytes": 55164,
+   "bytes": 166668,
    "fbx_version": 7400,
    "meshes": [
-    "M_Sea_AdmiraltyAnchor_LOD2"
+    "M_Sea_AdmiraltyAnchor_LOD2",
+    "M_Sea_AdmiraltyAnchor_Sand_LOD2"
    ],
    "geometry": [
     {
      "name": "M_Sea_AdmiraltyAnchor_LOD2.001",
      "min": [
-      -5.0288,
-      -6.0059,
-      0.0058
+      -5.5206,
+      -6.1667,
+      0.0077
      ],
      "max": [
-      5.0288,
-      6.003,
-      5.7753
+      4.609,
+      5.8735,
+      5.7652
      ],
-     "polygons": 551,
+     "polygons": 1398,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Sea_AdmiraltyAnchor_Sand_LOD2.001",
+     "min": [
+      -6.911,
+      -7.9781,
+      1.6344
+     ],
+     "max": [
+      6.911,
+      7.9781,
+      3.0983
+     ],
+     "polygons": 322,
      "all_triangles": true,
      "uv": true
     }
@@ -188,7 +239,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2208 of 8000"
+   "detail": "5599 of 8000"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD0",
@@ -196,7 +247,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.18e-04, 292 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.92e-05, 803 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD0",
@@ -220,7 +271,63 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1152 faces have no UV area"
+   "detail": "0 of 5599 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_Sand_LOD0"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1292 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.48e-01, 130 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 646 faces have no UV area"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1",
@@ -244,7 +351,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1104 of 8000"
+   "detail": "2798 of 8000"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1",
@@ -252,7 +359,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.27e-06, 116 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.85e-04, 526 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1",
@@ -276,7 +383,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1104 faces have no UV area"
+   "detail": "0 of 2798 faces have no UV area"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1",
@@ -284,7 +391,71 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.0% (max 15%)"
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 6.5% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_Sand_LOD1"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "645 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.76e-02, 127 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 645 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2",
@@ -308,7 +479,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "551 of 8000"
+   "detail": "1398 of 8000"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2",
@@ -316,7 +487,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.90e-06, 71 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.46e-04, 340 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2",
@@ -340,7 +511,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 551 faces have no UV area"
+   "detail": "0 of 1398 faces have no UV area"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2",
@@ -348,7 +519,71 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 12.1% (max 15%)"
+   "detail": "UV bounds differ by 0.007 (max 0.02), UV area by 14.7% (max 15%)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Sea_AdmiraltyAnchor_Sand_LOD2"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "322 of 8000"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.42e-02, 122 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 322 faces have no UV area"
+  },
+  {
+   "subject": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_COL",
@@ -396,7 +631,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2208 of 4000 (large_prop, asset row)"
+   "detail": "6891 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor",
@@ -404,7 +639,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1104 of 2000"
+   "detail": "3443 of 4000"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor",
@@ -412,7 +647,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "551 of 1000"
+   "detail": "1720 of 2000"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor",
@@ -420,23 +655,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 3.35 x 4 x 1.93 m, spec 3.35 x 4 x 1.93 m (art/reference/M_Sea_AdmiraltyAnchor/dims.md)"
-  },
-  {
-   "subject": "M_Sea_AdmiraltyAnchor",
-   "check": "real size x",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "10.028 studs, real 3.350 m = 10.050 studs, off 0.2% (5% free, 15% with a note)"
-  },
-  {
-   "subject": "M_Sea_AdmiraltyAnchor",
-   "check": "real size y",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "12.006 studs, real 4.000 m = 12.000 studs, off 0.1% (5% free, 15% with a note)"
+   "detail": "dims.md 3.35 x 4 x 1.93 m, spec - x - x 1.93 m (art/reference/M_Sea_AdmiraltyAnchor/dims.md)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor",
@@ -444,7 +663,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5.797 studs, real 1.930 m = 5.790 studs, off 0.1% (5% free, 15% with a note)"
+   "detail": "5.782 studs, real 1.930 m = 5.790 studs, off 0.1% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor",
@@ -468,7 +687,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1 (1 to 2 sets)"
+   "detail": "2 (1 to 2 sets)"
   },
   {
    "subject": "T_AdmiraltyAnchor_Iron_ALB",
@@ -501,6 +720,38 @@
    "waived": false,
    "info": false,
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_MET.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_ALB.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_NOR.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_RGH.png"
+  },
+  {
+   "subject": "T_Morwenna_Silt_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_MET.png"
   },
   {
    "subject": "ATT_Anchor",
@@ -548,7 +799,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_AdmiraltyAnchor_COL, M_Sea_AdmiraltyAnchor_LOD0; 2256 triangles (scene 2256)"
+   "detail": "M_Sea_AdmiraltyAnchor_COL, M_Sea_AdmiraltyAnchor_LOD0, M_Sea_AdmiraltyAnchor_Sand_LOD0; 6939 triangles (scene 6939)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD0.fbx",
@@ -556,7 +807,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
+   "detail": "UV layer on 2 of 2 visual meshes"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
@@ -588,7 +839,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_AdmiraltyAnchor_LOD1; 1104 triangles (scene 1104)"
+   "detail": "M_Sea_AdmiraltyAnchor_LOD1, M_Sea_AdmiraltyAnchor_Sand_LOD1; 3443 triangles (scene 3443)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD1.fbx",
@@ -596,7 +847,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
+   "detail": "UV layer on 2 of 2 visual meshes"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
@@ -628,7 +879,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_AdmiraltyAnchor_LOD2; 551 triangles (scene 551)"
+   "detail": "M_Sea_AdmiraltyAnchor_LOD2, M_Sea_AdmiraltyAnchor_Sand_LOD2; 1720 triangles (scene 1720)"
   },
   {
    "subject": "M_Sea_AdmiraltyAnchor_LOD2.fbx",
@@ -636,7 +887,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
+   "detail": "UV layer on 2 of 2 visual meshes"
   }
  ],
  "meshes": [
@@ -644,7 +895,14 @@
    "name": "M_Sea_AdmiraltyAnchor_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2208,
+   "triangles": 5599,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_Sand_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1292,
    "texel_density": null
   },
   {
@@ -658,21 +916,35 @@
    "name": "M_Sea_AdmiraltyAnchor_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1104,
+   "triangles": 2798,
    "texel_density": null
   },
   {
    "name": "M_Sea_AdmiraltyAnchor_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 551,
+   "triangles": 1398,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_Sand_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 645,
+   "texel_density": null
+  },
+  {
+   "name": "M_Sea_AdmiraltyAnchor_Sand_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 322,
    "texel_density": null
   }
  ],
  "bbox_studs": [
-  10.027975082397461,
-  12.006000518798828,
-  5.796821594238281
+  13.821905136108398,
+  15.95615005493164,
+  5.781778812408447
  ],
- "peak_rss_mb": 280.7
+ "peak_rss_mb": 329.1
 }

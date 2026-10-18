@@ -78,37 +78,37 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://88269285714718",
 	},
 	M_Hbr_Bollard_01 = {
-		LOD0 = "rbxassetid://112960974242559",
-		LOD1 = "rbxassetid://92633976436358",
+		LOD0 = "rbxassetid://130451736470147",
+		LOD1 = "rbxassetid://78726194215691",
 	},
 	M_Hbr_Bollard_02 = {
-		LOD0 = "rbxassetid://82829152296783",
-		LOD1 = "rbxassetid://79423301477730",
+		LOD0 = "rbxassetid://85661314092951",
+		LOD1 = "rbxassetid://72465653956703",
 	},
 	M_Hbr_Bollard_03 = {
-		LOD0 = "rbxassetid://101640101495963",
-		LOD1 = "rbxassetid://113500225143355",
+		LOD0 = "rbxassetid://140083701957833",
+		LOD1 = "rbxassetid://116734039833731",
 	},
-	M_Hbr_Cleat_01 = {
-		LOD0 = "rbxassetid://109396570011075",
-		LOD1 = "rbxassetid://114419861563693",
+	M_Hbr_Cleat_01 = { LOD0 = "rbxassetid://119616494815329", LOD1 = "rbxassetid://94038220435586" },
+	M_Hbr_Cleat_02 = {
+		LOD0 = "rbxassetid://130906111771201",
+		LOD1 = "rbxassetid://119678897802447",
 	},
-	M_Hbr_Cleat_02 = { LOD0 = "rbxassetid://90309200674031", LOD1 = "rbxassetid://102008139575071" },
 	M_Hbr_Fender_Ball = {
-		LOD0 = "rbxassetid://127777782647594",
-		LOD1 = "rbxassetid://125861348152297",
+		LOD0 = "rbxassetid://73411429004042",
+		LOD1 = "rbxassetid://98736897640614",
 	},
 	M_Hbr_Fender_Cyl_01 = {
-		LOD0 = "rbxassetid://106922053138351",
-		LOD1 = "rbxassetid://87393402791869",
+		LOD0 = "rbxassetid://105184847951520",
+		LOD1 = "rbxassetid://102102678303277",
 	},
 	M_Hbr_Fender_Cyl_02 = {
-		LOD0 = "rbxassetid://102040156667627",
-		LOD1 = "rbxassetid://104952989882755",
+		LOD0 = "rbxassetid://114034433311471",
+		LOD1 = "rbxassetid://73015713278651",
 	},
 	M_Hbr_Fender_Cyl_03 = {
-		LOD0 = "rbxassetid://86149424505857",
-		LOD1 = "rbxassetid://110631355061943",
+		LOD0 = "rbxassetid://85336960116917",
+		LOD1 = "rbxassetid://119341089660533",
 	},
 	M_Hbr_Fender_Tyre = {
 		LOD0 = "rbxassetid://130157337861840",
@@ -871,16 +871,16 @@ AssetIds.Textures = {
 	M_Hbr_PropAtlas = {
 		Metal = {
 			ALB = "rbxassetid://78415629416389",
-			NOR = "rbxassetid://115226913972559",
-			RGH = "rbxassetid://135221035341261",
+			NOR = "rbxassetid://95541866029283",
+			RGH = "rbxassetid://91627607980857",
 			MET = "rbxassetid://79470737965338",
-			Wet = { ALB = "rbxassetid://120397765889906", RGH = "rbxassetid://102587953774423" },
+			Wet = { ALB = "rbxassetid://120397765889906", RGH = "rbxassetid://116484206295091" },
 		},
 		Rope = {
-			ALB = "rbxassetid://87394211689155",
-			NOR = "rbxassetid://139239824158723",
-			RGH = "rbxassetid://80436074747834",
-			Wet = { ALB = "rbxassetid://74231187931420", RGH = "rbxassetid://131734184000086" },
+			ALB = "rbxassetid://117537421487805",
+			NOR = "rbxassetid://122827553845141",
+			RGH = "rbxassetid://118388610880615",
+			Wet = { ALB = "rbxassetid://114188562627964", RGH = "rbxassetid://113272835017404" },
 		},
 	},
 	M_Hbr_QuayKit = {

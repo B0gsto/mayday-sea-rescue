@@ -19,6 +19,7 @@ shipped at 1024 (common.SHIP_SIZE) to assets/textures/<Asset>/.
 import io
 import json
 import os
+import sys
 import urllib.request
 
 import numpy as np
@@ -29,7 +30,7 @@ SRC = G + "build/s1a/src"
 MASTERS = G + "build/s1a/masters"
 SHIP, M = 1024, 2048
 UA = {"User-Agent": "MaydaySeaRescue-S1a/1.0"}
-SCANS = {"wood": "rough_wood", "rust": "rust_coarse_01", "verd": "green_metal_rust", "sand": "damp_beach_sand_02"}
+SCANS = {"wood": "rough_wood", "rust": "rust_coarse_01", "verd": "green_metal_rust", "sand": "damp_beach_sand_02", "stone": "rock_boulder_dry"}
 FONT = "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"
 
 
@@ -188,7 +189,11 @@ def wood_set():
     enc = np.maximum(barn, tube * 0.9)
     shell = np.array([0.56, 0.54, 0.47]) * (0.85 + 0.15 * fbm(M, 40, 200, 1.0, 16))[..., None]
     alb = alb * (1 - enc[..., None]) + shell * enc[..., None]
-    h = hgt * 0.8 + enc * 2.2
+    film = sm(0.40, 0.70, fbm(M, 2, 14, 1.8, 17))         # S1a-fix: settled silt film, patchy
+    alb = alb * (1 - 0.40 * film[..., None]) + np.array([0.40, 0.37, 0.30]) * 0.40 * film[..., None]
+    pink = sm(0.72, 0.86, fbm(M, 3, 24, 1.6, 18))         # encrusting coralline crust
+    alb = alb * (1 - 0.45 * pink[..., None]) + np.array([0.50, 0.36, 0.36]) * 0.45 * pink[..., None]
+    h = hgt * 0.8 + enc * 2.2 + pink * 0.5
     nor = normal(Image_blur(h, 0.8), 6.0)
     rgh = 0.48 + 0.08 * (s["Rough"] - s["Rough"].mean()) + 0.10 * enc - 0.04 * algae_m
     save("M_Sea_Morwenna", "T_Morwenna_Wood", alb, nor, np.clip(rgh, 0.38, 0.62), np.zeros((M, M)))
@@ -253,28 +258,32 @@ def metal_set():
     H = M // 4
     txt = Image.new("L", (M, H), 0)
     d = ImageDraw.Draw(txt)
-    font = ImageFont.truetype(FONT, int(H * 0.42))
+    font = ImageFont.truetype(FONT, int(H * 0.50))
     msg = "MORWENNA   1902"
     w = d.textlength(msg, font=font)
     track = (M * 0.5 - w) / (len(msg) - 1)
     x = M * 0.25
     for ch in msg:
-        d.text((x, H * 0.27), ch, fill=255, font=font)
+        d.text((x, H * 0.20), ch, fill=255, font=font)
         x += d.textlength(ch, font=font) + track
-    t = np.asarray(txt.filter(ImageFilter.GaussianBlur(1.6)), np.float32) / 255.0
+    t0 = np.asarray(txt, np.float32) / 255.0
+    # S1a-fix: crisp cast capitals: a narrow bevel (small blur, then a steep ramp) instead of the soft 1.6 px blur,
+    # dark silt packed at the letter feet, and the faces rubbed back to bronze
+    t = sm(0.12, 0.88, np.asarray(txt.filter(ImageFilter.GaussianBlur(1.1)), np.float32) / 255.0)
+    feet = np.clip(np.asarray(txt.filter(ImageFilter.GaussianBlur(5.0)), np.float32) / 255.0 * 1.8 - t0, 0, 1)
     rim = np.zeros((H, M), np.float32)
-    rim[int(H * 0.08):int(H * 0.14)] = 1
-    rim[int(H * 0.86):int(H * 0.92)] = 1                   # two cast fillet lines around the band
-    rim = np.asarray(Image.fromarray((rim * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2)), np.float32) / 255.0
+    rim[int(H * 0.06):int(H * 0.11)] = 1
+    rim[int(H * 0.89):int(H * 0.94)] = 1                   # two cast fillet lines around the band
+    rim = np.asarray(Image.fromarray((rim * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2)), np.float32) / 255.0
     raised = np.maximum(t, rim)
-    t_alb = b_alb[M // 4: M // 2].copy()
-    rub = sm(0.6, 0.95, t)[..., None] * (0.35 + 0.65 * fbm(M, 4, 30, 1.5, 34)[: H, :, None])
-    t_alb = t_alb * (1 - rub) + bronze * 1.15 * rub
+    t_alb = b_alb[M // 4: M // 2].copy() * (1 - 0.45 * feet[..., None])
+    rub = sm(0.5, 0.95, np.maximum(t, rim * 0.8))[..., None] * (0.55 + 0.45 * fbm(M, 4, 30, 1.5, 34)[: H, :, None])
+    t_alb = t_alb * (1 - rub) + bronze * 1.25 * rub
     alb[r_t] = t_alb
-    h[r_t] = b_h[M // 4: M // 2] * 0.5 + raised * 3.0
-    rgh[r_t] = b_rgh[M // 4: M // 2] - 0.08 * rub[..., 0]
-    met[r_t] = b_met[M // 4: M // 2] * 0.5 + 0.4 * rub[..., 0]
-    nor = normal(Image_blur(h, 0.7), 5.0)
+    h[r_t] = b_h[M // 4: M // 2] * 0.35 + raised * 4.5
+    rgh[r_t] = b_rgh[M // 4: M // 2] - 0.10 * rub[..., 0] + 0.05 * feet
+    met[r_t] = b_met[M // 4: M // 2] * 0.5 + 0.45 * rub[..., 0]
+    nor = normal(Image_blur(h, 0.45), 5.0)
     save("M_Sea_Morwenna", "T_Morwenna_Metal", alb, nor, np.clip(rgh, 0.38, 0.66), np.clip(met, 0, 0.42))
 
 
@@ -333,13 +342,81 @@ def seabed_set():
 
 
 def anchor_set():
+    """S1a-fix: thick concretion, not clean iron: grey-brown calcareous crust over most of the surface, orange rust
+    bloom where the crust has spalled, pink coralline and barnacles, a deep lumpy height field."""
     alb, h, rgh = iron_fields(51, 1.0)
-    pink = sm(0.7, 0.85, fbm(M, 3, 20, 1.6, 55))           # sparse encrusting coralline red algae
-    alb = alb * (1 - 0.4 * pink[..., None]) + np.array([0.46, 0.32, 0.33]) * 0.4 * pink[..., None]
-    nor = normal(Image_blur(h, 0.8), 6.0)
+    crust = sm(0.30, 0.55, fbm(M, 2, 18, 1.7, 56))
+    cl = fbm(M, 6, 120, 1.2, 57)
+    alb = alb * (1 - 0.75 * crust[..., None]) + (np.array([0.37, 0.33, 0.27]) * (0.8 + 0.4 * cl[..., None])) * 0.75 * crust[..., None]
+    spall = sm(0.62, 0.74, fbm(M, 3, 26, 1.5, 58)) * (1 - 0.6 * crust)
+    alb = alb * (1 - 0.85 * spall[..., None]) + np.array([0.52, 0.26, 0.10]) * 0.85 * spall[..., None]
+    pink = sm(0.68, 0.84, fbm(M, 3, 20, 1.6, 55))           # encrusting coralline red algae
+    alb = alb * (1 - 0.5 * pink[..., None]) + np.array([0.50, 0.33, 0.34]) * 0.5 * pink[..., None]
+    barn = stamps(M, 900, 3.0, 9.0, 0.2 + 0.8 * crust, 59, "barnacle")
+    alb = alb * (1 - barn[..., None]) + np.array([0.56, 0.54, 0.48]) * barn[..., None]
+    h = h + crust * 1.6 + fbm(M, 3, 40, 1.3, 60) * 1.4 - spall * 0.8 + barn * 1.8
+    rgh = np.clip(rgh + 0.06 * crust - 0.04 * spall, 0.42, 0.68)
+    nor = normal(Image_blur(h, 0.8), 8.0)
     save("M_Sea_AdmiraltyAnchor", "T_AdmiraltyAnchor_Iron", alb, nor, rgh, np.zeros((M, M)))
 
 
+def encrust_set():
+    """S1a-fix T_Morwenna_Encrust, a 2 x 2 atlas (each quadrant one growth kind; geometry UVs stay inside a quadrant):
+    u 0..0.5 v 0.5..1 concretion crust; u 0.5..1 v 0.5..1 ballast stone (Poly Haven rock_boulder_dry, silted);
+    u 0..0.5 v 0..0.5 plumose anemone (column at the bottom, tentacle crown at the top);
+    u 0.5..1 v 0..0.5 dead man's fingers soft coral (cream-orange lobes with white polyps)."""
+    Q = M // 2
+    alb = np.zeros((M, M, 3), np.float32)
+    h = np.zeros((M, M), np.float32)
+    rgh = np.zeros((M, M), np.float32)
+    # concretion (rows 0..Q = v 1..0.5, cols 0..Q)
+    ia, ih, ir = iron_fields(61, 1.3)
+    cl = fbm(M, 4, 60, 1.3, 62)
+    grey = np.array([0.38, 0.35, 0.29]) * (0.8 + 0.4 * cl[..., None])
+    ca = ia * 0.35 + grey * 0.65
+    pink = sm(0.62, 0.8, fbm(M, 3, 20, 1.6, 63))
+    ca = ca * (1 - 0.5 * pink[..., None]) + np.array([0.52, 0.35, 0.36]) * 0.5 * pink[..., None]
+    alb[:Q, :Q], h[:Q, :Q], rgh[:Q, :Q] = ca[:Q, :Q], (ih + cl * 1.5)[:Q, :Q], (ir + 0.04)[:Q, :Q]
+    # ballast stone
+    st = fetch(SCANS["stone"])
+    sl = lum(st["Diffuse"])
+    sl = (sl - sl.mean()) / (sl.std() + 1e-6)
+    sa = np.array([0.33, 0.33, 0.31]) * (1 + 0.22 * sl[..., None])
+    film = sm(0.35, 0.7, fbm(M, 2, 12, 1.8, 64))
+    sa = sa * (1 - 0.45 * film[..., None]) + np.array([0.40, 0.37, 0.30]) * 0.45 * film[..., None]
+    alg = sm(0.55, 0.8, fbm(M, 2, 16, 1.7, 65))
+    sa = sa * (1 - 0.5 * alg[..., None]) + np.array([0.22, 0.25, 0.14]) * 0.5 * alg[..., None]
+    sb = stamps(M, 300, 3.0, 7.0, 0.1 + 0.9 * alg, 66, "barnacle")
+    sa = sa * (1 - sb[..., None]) + np.array([0.56, 0.54, 0.47]) * sb[..., None]
+    sh = st["Displacement"] + sb * 1.5
+    alb[:Q, Q:] = sa[:Q, :Q]
+    h[:Q, Q:] = sh[:Q, :Q]
+    rgh[:Q, Q:] = (0.56 + 0.06 * (st["Rough"] - st["Rough"].mean()) - 0.05 * alg)[:Q, :Q]
+    # plumose anemone (rows Q..M, cols 0..Q): local v = 1 - row / Q (crown at the top of the quadrant)
+    vv = 1.0 - np.arange(Q)[:, None] / Q * np.ones((1, Q))
+    uu = np.ones((Q, 1)) * (np.arange(Q)[None, :] / Q)
+    crown = sm(0.52, 0.62, vv)
+    fluff = fbm(Q, 30, 260, 0.9, 67)
+    stripes = 0.5 + 0.5 * np.sin(uu * 2 * np.pi * 14 + 2 * fbm(Q, 2, 8, 1.6, 68))
+    col_c = np.array([0.80, 0.58, 0.40]) * (0.9 + 0.1 * stripes[..., None])
+    crw_c = np.array([0.86, 0.80, 0.70]) * (0.75 + 0.35 * fluff[..., None])
+    alb[Q:, :Q] = col_c * (1 - crown[..., None]) + crw_c * crown[..., None]
+    h[Q:, :Q] = stripes * 0.3 * (1 - crown) + fluff * 1.6 * crown
+    rgh[Q:, :Q] = 0.46 - 0.06 * (1 - crown)
+    # dead man's fingers (rows Q..M, cols Q..M)
+    lob = fbm(Q, 3, 30, 1.5, 69)
+    pol = stamps(Q, 2600, 2.0, 4.5, np.full((Q, Q), 0.9), 70, "barnacle")
+    dm = np.array([0.82, 0.62, 0.44]) * (0.85 + 0.25 * lob[..., None])
+    dm = dm * (1 - 0.8 * pol[..., None]) + np.array([0.90, 0.87, 0.80]) * 0.8 * pol[..., None]
+    alb[Q:, Q:] = dm
+    h[Q:, Q:] = lob * 0.8 + pol * 1.2
+    rgh[Q:, Q:] = 0.50
+    nor = normal(Image_blur(h, 0.8), 6.0)
+    save("M_Sea_Morwenna", "T_Morwenna_Encrust", alb, nor, np.clip(rgh, 0.38, 0.66), np.zeros((M, M)))
+
+
 if __name__ == "__main__":
-    for f in (wood_set, metal_set, seabed_set, anchor_set):
-        f()
+    only = sys.argv[1:]
+    for f in (wood_set, metal_set, seabed_set, anchor_set, encrust_set):
+        if not only or f.__name__ in only:
+            f()

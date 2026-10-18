@@ -18,7 +18,7 @@ import wreckgeo as W  # noqa: E402
 from wreckgeo import Buf  # noqa: E402
 
 NAME = "M_Sea_Bell"
-N = 20
+N = 28                     # S1a-fix: rounder waist so the lettering band reads smooth (was 20)
 # outer profile (radius, z) mouth -> shoulder, in metres; waist band between rows BAND
 OUTER = [(0.130, 0.000), (0.131, 0.012), (0.124, 0.030), (0.112, 0.060), (0.103, 0.095), (0.098, 0.125),
          (0.096, 0.150), (0.095, 0.180), (0.093, 0.205), (0.088, 0.228), (0.074, 0.246), (0.050, 0.256), (0.0, 0.258)]
@@ -40,14 +40,17 @@ def build():
             return (a, 0.01 + 0.23 * (z - z0) / (z1 - z0))
         return (a, 0.26 + 0.23 * (k / (len(OUTER) - 1)))
     W.lathe(b, OUTER, N, outer_uv)
-    W.lathe(b, INNER, N, lambda k, a: (a, 0.26 + 0.23 * k / (len(INNER) - 1)))
+    W.lathe(b, INNER, 16, lambda k, a: (a, 0.26 + 0.23 * k / (len(INNER) - 1)))
     # crown: two canons (the cast loop) on top
-    W.ring(b, (0, 0, 0.258 + 0.045), (0, 0, 1), (1, 0, 0), 0.034, 0.012, 12, 6, ("strip", 0.26, 0.49, 0.3))
-    W.ring(b, (0, 0, 0.258 + 0.045), (0, 0, 1), (0, 1, 0), 0.034, 0.012, 12, 6, ("strip", 0.26, 0.49, 0.3))
-    # iron clapper: rod + ball (hangs from the crown staple inside)
-    W.sweep(b, [Vector((0, 0, 0.224)), Vector((0, 0, 0.07))], W.round_profile(0.007, 6), ("strip", 0.52, 0.98, 0.3), smooth=True)
-    W.lathe(b, [(0.001, 0.035), (0.020, 0.040), (0.026, 0.055), (0.020, 0.070), (0.001, 0.075)], 10,
-            lambda k, a: (a * 0.3, 0.55 + 0.4 * k / 4))
+    W.ring(b, (0, 0, 0.258 + 0.045), (0, 0, 1), (1, 0, 0), 0.034, 0.012, 10, 6, ("strip", 0.26, 0.49, 0.3))
+    W.ring(b, (0, 0, 0.258 + 0.045), (0, 0, 1), (0, 1, 0), 0.034, 0.012, 10, 6, ("strip", 0.26, 0.49, 0.3))
+    # S1a-fix: the iron clapper, readable: a staple loop under the crown, a tapered shank and a heavy ball hanging
+    # level with the sound bow (it shows in the mouth), with a short flight below the ball
+    W.ring(b, (0, 0, 0.212), (1, 0, 0), (0, 0, 1), 0.014, 0.005, 10, 5, ("strip", 0.52, 0.98, 0.3))
+    W.sweep(b, [Vector((0, 0, 0.200)), Vector((0, 0, 0.12)), Vector((0, 0, 0.045))], W.round_profile(0.008, 8),
+            ("strip", 0.52, 0.98, 0.3), scale=[0.9, 1.0, 1.35], smooth=True)
+    W.lathe(b, [(0.001, -0.012), (0.012, -0.010), (0.016, 0.004), (0.026, 0.014), (0.031, 0.030), (0.027, 0.046),
+                (0.014, 0.056), (0.001, 0.060)], 12, lambda k, a: (a * 0.3, 0.55 + 0.4 * k / 7))
     lod0 = b.to_object(NAME + "_LOD0", "MI_Morwenna_Metal")
     att = W.empty("ATT_Bell", (0, 0, 0.30), look=(0, -1, 0))
     W.shift_to_base([lod0], empties=[att])

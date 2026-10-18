@@ -1,0 +1,5 @@
+{
+ "asset": "M_Sea_AdmiraltyAnchor",
+ "terrain_z_studs_above_base": 2.464,
+ "use": "place the pivot (base) this far below the seabed terrain: the stock is half buried, the lower arm in the sand"
+}

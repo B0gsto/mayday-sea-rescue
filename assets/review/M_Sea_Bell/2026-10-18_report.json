@@ -2,7 +2,7 @@
  "asset": "M_Sea_Bell",
  "name": "M_Sea_Bell",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx",
-   "bytes": 87948,
+   "bytes": 108252,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_Bell_LOD0"
@@ -41,9 +41,9 @@
      "max": [
       0.393,
       0.393,
-      1.047
+      1.083
      ],
-     "polygons": 1192,
+     "polygons": 1484,
      "all_triangles": true,
      "uv": true
     }
@@ -58,7 +58,7 @@
   },
   {
    "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD1.fbx",
-   "bytes": 52748,
+   "bytes": 61164,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_Bell_LOD1"
@@ -74,9 +74,9 @@
      "max": [
       0.393,
       0.393,
-      1.047
+      1.083
      ],
-     "polygons": 595,
+     "polygons": 742,
      "all_triangles": true,
      "uv": true
     }
@@ -137,7 +137,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1192 of 3000"
+   "detail": "1484 of 3000"
   },
   {
    "subject": "M_Sea_Bell_LOD0",
@@ -145,7 +145,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.91e-04, 148 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.65e-04, 166 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_Bell_LOD0",
@@ -169,7 +169,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 602 faces have no UV area"
+   "detail": "0 of 750 faces have no UV area"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -193,7 +193,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "595 of 3000"
+   "detail": "742 of 3000"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -201,7 +201,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.12e-04, 87 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.46e-05, 88 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -225,7 +225,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 595 faces have no UV area"
+   "detail": "0 of 742 faces have no UV area"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -233,7 +233,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (lathe seam columns and the two canon loops merge under collapse; the LOD samples the same strips): UV bounds differ by 0.098 (max 0.02), UV area by 19.8% (max 15%)"
+   "detail": "WAIVED (lathe seam columns and the two canon loops merge under collapse; the LOD samples the same strips): UV bounds differ by 0.098 (max 0.02), UV area by 18.5% (max 15%)"
   },
   {
    "subject": "M_Sea_Bell",
@@ -241,7 +241,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1192 of 1500 (small_prop, asset row)"
+   "detail": "1484 of 1500 (small_prop, asset row)"
   },
   {
    "subject": "M_Sea_Bell",
@@ -249,7 +249,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "595 of 750"
+   "detail": "742 of 750"
   },
   {
    "subject": "M_Sea_Bell",
@@ -281,7 +281,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.047 studs, real 0.350 m = 1.050 studs, off 0.3% (5% free, 15% with a note)"
+   "detail": "1.083 studs, real 0.350 m = 1.050 studs, off 3.1% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Sea_Bell",
@@ -377,7 +377,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_Bell_LOD0; 1192 triangles (scene 1192)"
+   "detail": "M_Sea_Bell_LOD0; 1484 triangles (scene 1484)"
   },
   {
    "subject": "M_Sea_Bell_LOD0.fbx",
@@ -417,7 +417,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_Bell_LOD1; 595 triangles (scene 595)"
+   "detail": "M_Sea_Bell_LOD1; 742 triangles (scene 742)"
   },
   {
    "subject": "M_Sea_Bell_LOD1.fbx",
@@ -433,21 +433,21 @@
    "name": "M_Sea_Bell_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1192,
+   "triangles": 1484,
    "texel_density": null
   },
   {
    "name": "M_Sea_Bell_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 595,
+   "triangles": 742,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   0.7860000133514404,
   0.7860000133514404,
-  1.0470000505447388
+  1.0830000638961792
  ],
- "peak_rss_mb": 279.1
+ "peak_rss_mb": 278.6
 }

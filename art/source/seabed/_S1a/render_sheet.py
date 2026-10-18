@@ -9,18 +9,25 @@ import os
 import sys
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
-OUT = G + "assets/review/S1a/renders/"
+OUT = G + "assets/review/S1a/renders_b/"      # S1a-fix round (contact_b.png); round 1 stays in renders/
+SHEET = G + "assets/review/S1a/contact_b.png"
+TERRAIN = {"M_Sea_Morwenna": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna.instances.json",
+           "M_Sea_AdmiraltyAnchor": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor.placement.json"}
 SHOTS = [  # (asset, shot, rig, target (m from base centre), distance m, azimuth deg, elevation deg, lens)
     ("M_Sea_Morwenna", "uw_threequarter", "uw", (0.0, 0.0, 0.8), 30, 35, 32, 30),
     ("M_Sea_Morwenna", "uw_high", "uw", (0.0, 0.0, 0.6), 30, 120, 62, 30),
     ("M_Sea_Morwenna", "uw_bow_windlass_chain", "uw", (1.2, -11.0, 1.0), 6.5, 30, 28, 30),
     ("M_Sea_Morwenna", "uw_broken_back", "uw", (0.6, 1.2, 1.0), 7.5, 75, 30, 30),
+    ("M_Sea_Morwenna", "uw_scour_meets_terrain", "uw", (6.5, 3.0, 1.6), 10, 75, 13, 30),
+    ("M_Sea_Morwenna", "uw_growth_frame_heads", "uw", (-2.6, -4.6, 3.4), 3.6, -55, 22, 35),
     ("M_Sea_Morwenna", "neutral_threequarter", "neutral", (0.0, 0.0, 0.8), 30, 215, 30, 30),
+    ("M_Sea_Morwenna", "neutral_ballast_planks", "neutral", (0.5, -1.5, 1.8), 9, 160, 55, 30),
     ("M_Sea_AdmiraltyAnchor", "uw_threequarter", "uw", (0.0, 0.0, 0.7), 6.0, 40, 25, 35),
     ("M_Sea_AdmiraltyAnchor", "uw_crown_closeup", "uw", (0.0, 1.4, 1.0), 2.0, 60, 15, 35),
     ("M_Sea_AdmiraltyAnchor", "neutral_threequarter", "neutral", (0.0, 0.0, 0.7), 6.0, 220, 25, 35),
     ("M_Sea_Bell", "uw_lettering", "uw", (0.0, 0.0, 0.15), 0.75, 0, 8, 50),
-    ("M_Sea_Bell", "neutral_threequarter", "neutral", (0.0, 0.0, 0.16), 0.85, 30, 20, 50),
+    ("M_Sea_Bell", "uw_mouth_clapper", "uw", (0.0, 0.0, 0.13), 0.8, 28, 14, 50),
+    ("M_Sea_Bell", "neutral_lettering", "neutral", (0.0, 0.0, 0.16), 0.8, 12, 12, 50),
 ]
 
 
@@ -59,7 +66,7 @@ def blender_main():
                 continue
             mn = o.data.materials[0].name if o.data.materials[0] else ""
             stem = None
-            for st in ("Wood", "Metal", "Silt", "Kelp"):
+            for st in ("Wood", "Metal", "Silt", "Kelp", "Encrust"):
                 if mn.endswith("Morwenna_" + st):
                     stem = ("T_Morwenna_" + st, G + "assets/textures/M_Sea_Morwenna/")
             if mn.endswith("AdmiraltyAnchor_Iron"):
@@ -75,6 +82,23 @@ def blender_main():
             att = sc.objects["ATT_Bell"]
             bell.matrix_world = Matrix.Translation(att.matrix_world.translation + Vector((0, 0, 0.35))) @ Matrix.Rotation(math.radians(100), 4, "X") @ Matrix.Rotation(math.radians(30), 4, "Z")
             bell.hide_render = False
+        # stand-in for the game's seabed terrain (Sand): a 600 m plane at the asset's terrain level, Silt set, so
+        # the scour / sand bed edge is judged where it meets the ground
+        tz = 0.0
+        if asset in TERRAIN:
+            import json
+            tz = json.load(open(G + TERRAIN[asset]))["terrain_z_studs_above_base"]
+        bpy.ops.mesh.primitive_plane_add(size=1800.0, location=(0, 0, tz))
+        ground = bpy.context.active_object
+        ground.name = "S1a_TerrainStandIn"
+        for lp in ground.data.uv_layers[0].data:
+            lp.uv = (lp.uv[0] * 150.0, lp.uv[1] * 150.0)
+        ground.data.materials.append(mat_for("T_Morwenna_Silt", G + "assets/textures/M_Sea_Morwenna/"))
+        try:
+            sc.eevee.volumetric_end = 3000.0
+            sc.eevee.volumetric_tile_size = "4"
+        except Exception as e:  # noqa: BLE001
+            print("[S1a] volumetrics:", e)
         # rigs
         uw = bpy.data.worlds.new("WLD_S1a_Underwater")
         uw.use_nodes = True
@@ -86,8 +110,8 @@ def blender_main():
         ramp = nt.nodes.new("ShaderNodeValToRGB")
         nt.links.new(coord.outputs["Generated"], sep.inputs[0])
         nt.links.new(sep.outputs["Z"], ramp.inputs["Fac"])
-        ramp.color_ramp.elements[0].color = (0.004, 0.018, 0.020, 1)
-        ramp.color_ramp.elements[1].color = (0.050, 0.150, 0.150, 1)
+        ramp.color_ramp.elements[0].color = (0.003, 0.016, 0.020, 1)
+        ramp.color_ramp.elements[1].color = (0.030, 0.120, 0.125, 1)
         nt.links.new(ramp.outputs["Color"], bg.inputs["Color"])
         bg.inputs["Strength"].default_value = 1.6
         # bounded water haze (a world volume would swallow the sun in EEVEE): a cube of scattering water around the set
@@ -100,7 +124,7 @@ def blender_main():
         vol = vnt.nodes.new("ShaderNodeVolumePrincipled")
         vol.inputs["Color"].default_value = (0.10, 0.26, 0.25, 1)
         vol.inputs["Density"].default_value = 0.0035
-        vol.inputs["Absorption Color"].default_value = (0.70, 0.90, 0.86, 1)
+        vol.inputs["Absorption Color"].default_value = (0.45, 0.82, 0.76, 1)    # reds go first: blue-green with depth
         vnt.links.new(vol.outputs["Volume"], vnt.nodes["Material Output"].inputs["Volume"])
         bpy.ops.mesh.primitive_cube_add(size=1.0)
         water = bpy.context.active_object
@@ -125,14 +149,19 @@ def blender_main():
                 sun.hide_render = False
                 water.hide_render = False
                 water.location = Vector(tgt) * 3.0
-                water.scale = (dist * 3.0 * 2.6,) * 3
-                vol.inputs["Density"].default_value = min(0.02, 0.18 / (dist * 3.0))
+                water.scale = (max(dist * 3.0 * 2.6, 1500.0),) * 3
+                # S1a-fix: depth falloff: about 0.5 optical depth at the camera distance, the far seabed lost in haze
+                vol.inputs["Density"].default_value = min(0.05, 0.5 / (dist * 3.0))
                 sc.view_settings.exposure = 0.6
             else:
                 template.set_world(template.NEUTRAL)
                 sun.hide_render = True
                 water.hide_render = True
                 sc.view_settings.exposure = 0.0
+            if asset == "M_Sea_Bell":      # the mouth shot lays the bell on its side, mouth to the camera
+                b_ = sc.objects["M_Sea_Bell_LOD0"]
+                b_.matrix_world = (Matrix.Translation((0, 0, 0.131 * 3)) @ Matrix.Rotation(math.radians(-90), 4, "X")
+                                   @ Matrix.Translation((0, 0, -0.18 * 3))) if "mouth" in shot else Matrix.Identity(4)
             t = Vector(tgt) * 3.0
             a, e = math.radians(az), math.radians(el)
             pos = t + Vector((math.sin(a) * math.cos(e), -math.cos(a) * math.cos(e), math.sin(e))) * dist * 3.0
@@ -154,14 +183,14 @@ def sheet():
     f = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 16)
     fb = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 20)
     d.text((10, 9), "S1a seabed wreck kit: Morwenna (1902 schooner, 28 m), Admiralty anchor (3.2 m shank), bell 0.26 m. "
-                    "uw = underwater rig (7 m, blue-green), neutral = studio HDRI", fill=(230, 230, 230), font=f)
+                    "S1a-fix round b. uw = underwater rig (7 m, blue-green depth falloff), neutral = studio HDRI; ground = terrain stand-in", fill=(230, 230, 230), font=f)
     for i, (asset, shot, *_r) in enumerate(SHOTS):
         x, y = (i % cols) * cell, head + (i // cols) * (cell + 24)
         p = OUT + "%s__%s.png" % (asset, shot)
         if os.path.exists(p):
             im.paste(Image.open(p).convert("RGB").resize((cell, cell), Image.LANCZOS), (x, y + 24))
         d.text((x + 6, y + 2), "%s  %s" % (asset.replace("M_Sea_", ""), shot), fill=(240, 240, 200), font=fb if False else f)
-    out = G + "assets/review/S1a/contact.png"
+    out = SHEET
     if im.width > 1600:
         im = im.resize((1600, int(im.height * 1600 / im.width)), Image.LANCZOS)
     im.save(out)

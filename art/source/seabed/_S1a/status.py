@@ -4,10 +4,15 @@ import json
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 m = json.load(open(G + "assets/manifest.json"))
+import hashlib
+import os
+
 ids = {}
-for v in m.values():
-    if v.get("source", "").startswith(("assets/fbx/M_Sea_", "assets/textures/M_Sea_")):
-        ids[v["name"]] = (v.get("assetId"), v.get("moderation"))
+for key, v in m.items():   # keys are "<Type>:<sha256>": keep only the upload of the file as it is now
+    src = v.get("source", "")
+    if src.startswith(("assets/fbx/M_Sea_", "assets/textures/M_Sea_")) and os.path.exists(G + src):
+        if hashlib.sha256(open(G + src, "rb").read()).hexdigest() == key.split(":", 1)[-1]:
+            ids[v["name"]] = (v.get("assetId"), v.get("moderation"))
 
 
 def mod(prefixes):
@@ -16,25 +21,35 @@ def mod(prefixes):
 
 
 LIC = ("CC0 1.0 (https://polyhaven.com/license): Poly Haven rough_wood, rust_coarse_01, green_metal_rust, "
-       "damp_beach_sand_02 (2k scans, graded + zoned); reference links art/reference/<Asset>/dims.md (not shipped)")
+       "damp_beach_sand_02, rock_boulder_dry (2k scans, graded + zoned); reference links art/reference/<Asset>/dims.md (not shipped)")
 AI = "assisted (geometry, texture zoning and lettering written as code by Claude on real CC0 scans; no AI images)"
-SRC = "BL: art/source/seabed/<Asset>/build.py + art/source/seabed/_S1a (wreckgeo.py, maketex.py, render_sheet.py) (S1a Opus 2026-10-18)"
+SRC = "BL: art/source/seabed/<Asset>/build.py + art/source/seabed/_S1a (wreckgeo.py, maketex.py, render_sheet.py) (S1a Opus 2026-10-18; S1a-fix round b)"
+FIX = "S1a-fix (round b, contact_b.png): "
 rows = [
     ("M_Sea_Morwenna", "P0", "M_Sea_Morwenna", ("M_Sea_Morwenna", "T_Morwenna_"),
-     "LOD0 26,836 tris in 14 MeshParts (max 5,020) + 27 instanced frame clones (9,936 tris, instances.json); LOD1 9,190, "
-     "LOD2 1,649 (LODs made in build.py: chain LOD2 is a swept strap, link rings cannot collapse to 10%%). bbox 12.9 x 28.9 x "
-     "5.9 m (Y 28 m +3%%; X free: collapsed port side, fallen foremast, chain on the sand). 4 sets at 1024, wet-only "
-     "(underwater): Wood (tiling 2 m), Metal (trim strips: iron / verdigris bronze / bell lettering), Silt (tiling 4 m), Kelp "
-     "(RGBA cards: DoubleSided + AlphaMode Transparency). ATT_Bell, ATT_Hatch, ATT_Anchor, ATT_Windlass, ATT_ChainEnd, ATT_Stem; "
-     "_COL 8 boxes. Integration: drop greybox roll, sink ~0.3 m so the silt skirt meets terrain, clone RibA/B/C per "
-     "M_Sea_Morwenna.instances.json. LOD1 %s, LOD2 %s"),
+     FIX + "slab removed: irregular sand scour (drifts banked on the hull, lumpy fill, trough at the break) sinking under "
+     "the terrain on a noisy outline 3 to 7 m off the hull; 6 frame states (RibA..F) with splinters, erosion and per-clone "
+     "height / tilt; ceiling planks and port strakes still fastened, 19 collapsed planks + 3 deck beams + break debris "
+     "(Planks); ballast heap (Ballast); anemones, dead man's fingers, concretion (GrowthFore/Aft, new set T_Morwenna_Encrust: "
+     "Poly Haven rock_boulder_dry stone quadrant); kelp on frame heads; silt drapes on horizontal timbers (SiltCaps); "
+     "uneven broken back (aft yaw 7, heel 9, sag 2.5 deg, drop 0.45 m). LOD0 39,842 tris in 21 MeshParts (max 5,760) + 28 "
+     "instanced frame clones (8,888, instances.json); LOD1 13,781, LOD2 2,718 (budget class hero_building 40k / 15k / 3k). "
+     "5 sets at 1024, wet-only: Wood, Metal, Silt, Kelp (AlphaMode Transparency via gen_asset_ids; set DoubleSided on "
+     "the Kelp MeshPart in Studio), Encrust. ATT_Bell, ATT_Hatch, ATT_Anchor, ATT_Windlass, ATT_ChainEnd, ATT_Stem; _COL 8 boxes. "
+     "Integration: no greybox roll; place the pivot (base) 5.21 studs below the terrain surface "
+     "(instances.json terrain_z_studs_above_base); clone RibA..F per instances.json. LOD1 %s, LOD2 %s"),
     ("M_Sea_AdmiraltyAnchor", "P0", "M_Sea_AdmiraltyAnchor", ("M_Sea_AdmiraltyAnchor", "T_AdmiraltyAnchor_"),
-     "LOD0 2,208 tris (1 MeshPart), LOD1 1,104, LOD2 551; 3.35 x 4.0 x 1.93 m: 1841 Admiralty pattern iron-stocked merchant "
-     "bower, shank 3.2 m. SIZE: WorldConfig 15 x 9 studs (5 x 3 m) is a ship-of-the-line anchor; recommend 12 x 10 studs. "
-     "1 set T_AdmiraltyAnchor_Iron (tiling 1 m, wet-only). ATT_Anchor (ring), ATT_AnchorCrown; _COL 4 boxes. LOD1 %s, LOD2 %s"),
+     FIX + "thick concretion (46 merged crust lumps, thickened irregular shank / stock, subdivided + 2-scale noise "
+     "displacement), rust bloom where the crust spalled, coralline and barnacles; partly buried: sunk 0.06 m with a "
+     "_Sand MeshPart (shares T_Morwenna_Silt) drifted over the stock, shank and crown, feathering under the terrain. "
+     "LOD0 6,891 tris (iron 5,599 + sand 1,292), LOD1 3,443, LOD2 1,720; iron 3.35 x 4.0 x 1.93 m (shank 3.2 m). "
+     "SIZE: WorldConfig 15 x 9 studs is a ship-of-the-line anchor; recommend 12 x 10 studs. ATT_Anchor (ring), ATT_AnchorCrown; "
+     "_COL 4 boxes. Place the pivot 2.46 studs below the terrain (placement.json). LOD1 %s, LOD2 %s"),
     ("M_Sea_Bell", "P0", "M_Sea_Bell", ("M_Sea_Bell",),
-     "LOD0 1,192 tris, LOD1 595 (small_prop: no LOD2); 0.26 x 0.26 x 0.35 m; shares T_Morwenna_Metal (verdigris bronze strip, "
-     "'MORWENNA 1902' raised capitals on the waist band facing -Y, iron clapper). ATT_Bell at the crown. LOD1 %s, LOD2 %s"),
+     FIX + "iron clapper readable (staple loop, tapered shank, heavy ball level with the sound bow), rounder waist (28 "
+     "sides), crisp cast 'MORWENNA 1902' capitals (narrow bevel, silt at the letter feet, rubbed bronze faces). LOD0 "
+     "1,484 tris, LOD1 742 (small_prop: no LOD2); 0.26 x 0.26 x 0.36 m; shares T_Morwenna_Metal. ATT_Bell at the crown. "
+     "LOD1 %s, LOD2 %s"),
 ]
 with open(G + "art/status/S1a.csv", "w", newline="") as f:
     w = csv.writer(f)
@@ -43,6 +58,6 @@ with open(G + "art/status/S1a.csv", "w", newline="") as f:
         aid = ids.get(lod0, ("", ""))[0] or ""
         l1 = (ids.get(asset + "_LOD1") or ("n/a",))[0]
         l2 = (ids.get(asset + "_LOD2") or ("n/a",))[0]
-        status = "built+validated+exported+review renders (uw + neutral)+uploaded (%s); Studio pass and AD review pending" % mod(prefixes)
+        status = "fix round b: rebuilt+validated+exported+review renders (contact_b: uw + neutral)+re-uploaded (%s); Studio pass and AD re-review pending" % mod(prefixes)
         w.writerow([asset, pri, status, aid, SRC.replace("<Asset>", asset), LIC, AI, "", notes % (l1, l2)])
 print(open(G + "art/status/S1a.csv").read()[:600])
