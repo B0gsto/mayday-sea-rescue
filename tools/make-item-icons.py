@@ -219,17 +219,26 @@ def vhf_face(path):
     im.save(path)
 
 
-def bandana(path):
+def bandana(path, base=(150, 18, 16), ink=(236, 228, 214), dot=(20, 16, 18), check=False):
     S = 1024
-    im = Image.new("RGB", (S, S), (150, 18, 16))
+    im = Image.new("RGB", (S, S), base)
     d = ImageDraw.Draw(im)
     rng = random.Random(12)
-    for _ in range(140):  # paisley-like teardrops
-        x, y, r = rng.randrange(S), rng.randrange(S), rng.randint(14, 34)
-        d.ellipse([x - r, y - r, x + r, y + r], outline=(236, 228, 214), width=4)
-        d.ellipse([x - r // 3, y - r // 3, x + r // 3, y + r // 3], fill=(20, 16, 18))
+    if check:  # woven gingham: dark bands both ways, darker where they cross
+        dark = tuple(int(v * 0.45) for v in base)
+        for i in range(0, S, 64):
+            d.rectangle([i, 0, i + 31, S], fill=dark)
+        for i in range(0, S, 64):
+            for j in range(0, S, 64):
+                d.rectangle([j, i, j + 31, i + 31], fill=tuple(int(v * 0.25) for v in base))
+                d.rectangle([j + 32, i, j + 63, i + 31], fill=dark)
+    else:
+        for _ in range(140):  # paisley-like teardrops
+            x, y, r = rng.randrange(S), rng.randrange(S), rng.randint(14, 34)
+            d.ellipse([x - r, y - r, x + r, y + r], outline=ink, width=4)
+            d.ellipse([x - r // 3, y - r // 3, x + r // 3, y + r // 3], fill=dot)
     for k in (40, 70):
-        d.rectangle([k, k, S - k, S - k], outline=(236, 228, 214), width=8)
+        d.rectangle([k, k, S - k, S - k], outline=ink, width=8)
     im.filter(ImageFilter.GaussianBlur(1.2)).save(path)
 
 
@@ -264,6 +273,8 @@ def paint_textures():
                   ("vip_card.png", vip_card), ("grille.png", grille), ("radio_dial.png", radio_dial),
                   ("vhf_face.png", vhf_face), ("bandana.png", bandana)):
         f(os.path.join(TEX, fn))
+    bandana(os.path.join(TEX, "bandana_navy.png"), base=(22, 34, 70))
+    bandana(os.path.join(TEX, "bandana_green.png"), base=(40, 92, 52), ink=(226, 220, 200), check=True)
     tasking(os.path.join(TEX, "tasking.png"), "DAILY TASKING", (("TASK", "Tow 2 boats"), ("ZONE", "Calm Bay"), ("CREW", "Any")))
     tasking(os.path.join(TEX, "tasking2.png"), "DAILY TASKING", (("TASK", "3 night calls"), ("ZONE", "Skerries"), ("CREW", "2+")), stamp="SWAPPED")
 

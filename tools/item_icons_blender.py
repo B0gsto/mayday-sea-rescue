@@ -254,6 +254,57 @@ def frame(objs, az, el, lens=50.0, fill=0.94, fstop=None, target=None, lift=0.0)
     return cam
 
 
+def frame_tight(objs, az, el, lens=50.0, fill=0.94, fstop=None, max_pts=40000):
+    """Like frame() but fits the evaluated mesh vertices (not bbox corners) and re-centres on them, so flat-lays
+    and groups of characters fill the square instead of floating in the middle of their bounding box."""
+    import numpy as np
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    chunks = []
+    for o in objs:
+        if o.type not in ("MESH", "CURVE"):
+            continue
+        ev = o.evaluated_get(dg)
+        me = ev.to_mesh()
+        if me is None:
+            continue
+        co = np.empty(len(me.vertices) * 3)
+        me.vertices.foreach_get("co", co)
+        co = co.reshape(-1, 3)
+        mw = np.array(o.matrix_world)
+        chunks.append(co @ mw[:3, :3].T + mw[:3, 3])
+        ev.to_mesh_clear()
+    P = np.concatenate(chunks)
+    if len(P) > max_pts:
+        P = P[:: len(P) // max_pts + 1]
+    t = Vector(((P.min(0) + P.max(0)) / 2).tolist())
+    cam = camera(t, az, el, 1.0, lens=lens)
+    bpy.context.view_layer.update()
+    d = (cam.location - t).normalized()
+    R = np.array(cam.matrix_world.to_3x3())
+    lim = math.tan(math.atan(18.0 / lens)) * fill
+    D = 1.0
+    for _ in range(3):
+        a, b = 0.01, float(np.ptp(P, 0).max()) * 200
+        for _ in range(50):
+            mid = (a + b) / 2
+            pc = (P - np.array(t + d * mid)) @ R
+            ok = (pc[:, 2] < 0).all() and (np.abs(pc[:, :2] / -pc[:, 2:3]) <= lim).all()
+            a, b = (a, mid) if ok else (mid, b)
+        D = b
+        pc = (P - np.array(t + d * D)) @ R
+        sx, sy = pc[:, 0] / -pc[:, 2], pc[:, 1] / -pc[:, 2]
+        cx, cy = (sx.min() + sx.max()) / 2, (sy.min() + sy.max()) / 2
+        right, up = cam.matrix_world.to_3x3() @ Vector((1, 0, 0)), cam.matrix_world.to_3x3() @ Vector((0, 1, 0))
+        t = t + right * (cx * D) + up * (cy * D)
+    cam.location = t + d * D
+    if fstop:
+        cam.data.dof.use_dof = True
+        cam.data.dof.aperture_fstop = fstop
+        cam.data.dof.focus_distance = D
+    return cam
+
+
 def float_on(sea, empty, objs, draft=0.25, follow=0.8):
     """Sit `empty` on the evaluated ocean surface under its footprint and pitch/roll it with the local slope."""
     bpy.context.view_layer.update()
@@ -332,6 +383,12 @@ def pbr_from_maps(o, asset, tint=None):
             continue
         stem = "T_" + m.name[3:].split(".")[0] + "_"
         d = os.path.join(TEXROOT, asset)
+        if not os.path.exists(os.path.join(d, stem + "ALB.png")):  # e.g. Bosun's fur/harness maps live with the source
+            for folder in os.listdir(SRC):
+                sd = os.path.join(SRC, folder, asset, "textures")
+                if os.path.exists(os.path.join(sd, stem + "ALB.png")):
+                    d = sd
+                    break
         p = lambda k: os.path.join(d, stem + k + ".png")
         if not os.path.exists(p("ALB")):  # kits share one atlas: T_<Short>_Atlas_*
             stem = "T_" + m.name[3:].split(".")[0].split("_")[0] + "_Atlas_"
@@ -633,9 +690,25 @@ def stopwatch(loc, rot=(0, 0, 0), r=0.032):
     return e
 
 
-def lightning(start, end, seed=1, strength=60.0, width=0.08, branches=3, color=(0.75, 0.82, 1.0)):
+def lightning(start, end, seed=1, strength=60.0, width=0.08, branches=3, color=(0.75, 0.82, 1.0), glow=0.0):
     rng = random.Random(seed)
     m = mat("Bolt", color=(0, 0, 0), rough=1, emit=color, emit_strength=strength)
+    halo = None
+    if glow:  # soft ionised-air halo: a fat, mostly transparent emissive sleeve round the channel
+        halo = bpy.data.materials.new("BoltHalo")
+        halo.use_nodes = True
+        nt = halo.node_tree
+        nt.nodes.clear()
+        o_ = nt.nodes.new("ShaderNodeOutputMaterial")
+        em = node(nt, "ShaderNodeEmission", Color=(*color, 1), Strength=strength * glow)
+        tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+        lw = nt.nodes.new("ShaderNodeLayerWeight")
+        lw.inputs["Blend"].default_value = 0.35
+        mx = nt.nodes.new("ShaderNodeMixShader")
+        nt.links.new(lw.outputs["Facing"], mx.inputs["Fac"])
+        nt.links.new(em.outputs["Emission"], mx.inputs[1])
+        nt.links.new(tr.outputs["BSDF"], mx.inputs[2])
+        nt.links.new(mx.outputs["Shader"], o_.inputs["Surface"])
 
     def path(a, b, depth):
         pts = [Vector(a), Vector(b)]
@@ -665,6 +738,10 @@ def lightning(start, end, seed=1, strength=60.0, width=0.08, branches=3, color=(
 
     main = path(start, end, 6)
     curve(main, width)
+    if halo:
+        h = curve(main, width * 7)
+        h.data.materials[0] = halo
+        h.visible_diffuse = h.visible_glossy = False
     for i in range(branches):
         k = rng.randint(len(main) // 5, len(main) * 3 // 4)
         a = main[k]
@@ -785,23 +862,30 @@ def s_storm():
 
 
 def s_greatstorm():
+    """Bigger and darker than Call the Storm: the RIB small and low in a huge black sky split by one great bolt."""
     reset()
-    bpy.context.scene.view_settings.exposure = 0.5
-    sea = ocean(size=160, wave=9.0, chop=1.6, wind=36, res=16, seed=11, foam=0.45, color=(0.003, 0.014, 0.018))
+    bpy.context.scene.view_settings.exposure = 0.35
+    sea = ocean(size=200, wave=11.0, chop=1.7, wind=40, res=16, seed=11, foam=0.28, color=(0.0015, 0.008, 0.011))
     rib, objs = vehicle("M_Veh_RIB")
     rib.rotation_euler = (0, 0, math.radians(-35))
     float_on(sea, rib, objs, draft=0.3, follow=0.9)
-    storm_sky(1.4)
+    storm_sky(3.2)
     lo, hi = bbox(objs)
     L = hi.y - lo.y
-    area("Key", (-L, -L, L), (0, 0, 2), 90 * L * L, size=L * 0.5, color=(1.0, 0.9, 0.75))
-    cam = frame(objs, 30, 1, lens=30, fill=0.75, lift=0.4)
+    area("Key", (-L, -L, L), (0, 0, 2), 110 * L * L, size=L * 0.5, color=(1.0, 0.9, 0.75))
+    cam = frame(objs, 30, 1, lens=26, fill=0.55, lift=1.6)
     q = cam.matrix_world.to_quaternion()
     back, side = q @ Vector((0, 0, -1)), q @ Vector((1, 0, 0))
-    for sgn, seed, st in ((-1, 8, 320), (1, 3, 240)):
-        far = cam.location + back * L * 9 + side * sgn * L * 2.2
-        top = far + Vector((0, 0, L * 4.5))
-        lightning(top, (top.x + L * 0.3, top.y, -1), seed=seed, strength=st, width=L * 0.02, branches=3)
+    far = cam.location + back * L * 8 + side * L * 0.5
+    top = far + Vector((0, 0, L * 9.0))
+    lightning(top, (top.x - L * 0.4, top.y, -1), seed=8, strength=700, width=L * 0.03, branches=7, glow=0.012,
+              color=(0.62, 0.72, 1.0))
+    far = cam.location + back * L * 14 - side * L * 4.0
+    top = far + Vector((0, 0, L * 7.0))
+    lightning(top, (top.x + L * 0.3, top.y, -1), seed=3, strength=160, width=L * 0.02, branches=2)
+    # the bolt lights the sea and the cloud base around it
+    area("Flash", tuple(cam.location + back * L * 8 + Vector((0, 0, L * 5))), tuple(rib.location), 2200 * L * L,
+         size=L * 4, color=(0.75, 0.82, 1.0))
 
 
 def s_sea_vehicle(kind, az, el, lens=45, calm=True, livery=None, bolt=False, wake=False, fill=0.92, pitch=0.0, yaw=None):
@@ -877,24 +961,6 @@ def wake_trail(objs):
         v.co.x *= 0.5 + 2.2 * t
     o.location = ((lo.x + hi.x) / 2, hi.y + L / 2 - (hi.y - lo.y) * 0.15, 0.08)
     o.data.materials.append(m)
-
-
-def s_bosun(variants, back=(0.42, 0.43, 0.44)):
-    reset()
-    product_studio(key_power=110, back=back, scale=2.5, world=1.2)
-    area("DogRim", (0, 6, 4), (0, 0, 1), 1600, size=2.5, color=(0.9, 0.93, 1.0))
-    area("DogFill", (3, -5, 2.5), (0, 0, 1), 500, size=4, color=(1.0, 0.97, 0.92))
-    pts = []
-    n = len(variants)
-    for i, tint in enumerate(variants):
-        dog, objs = lod0_asset("characters", "M_Chr_Bosun", tint)
-        x = (i - (n - 1) / 2) * 1.9
-        dog.location = (x * 1.25, abs(i - (n - 1) / 2) * 1.2, 0)
-        dog.rotation_euler = (0, 0, math.radians(-30 + 30 * (i - (n - 1) / 2)))
-        pts += objs
-    bpy.context.view_layer.update()
-    lo, hi = bbox(pts)
-    frame(pts, 20, 12, lens=60, fill=0.96, fstop=8)
 
 
 def s_card():
@@ -1174,6 +1240,297 @@ def s_clipboard():
     frame(subj, 12, 58, lens=70, fill=0.94, fstop=8)
 
 
+# ------------------------------------------------------------------ RP-M5: dog wardrobe flat-lay, water dog friends
+def ribbon(name, pts, width, thick, m, z=0.0, closed=False):
+    """Flat webbing strip along a 2D polyline `pts` (x, y) lying at height z, solidified to `thick`."""
+    n = len(pts)
+    verts, faces = [], []
+    for i, (x, y) in enumerate(pts):
+        a = pts[(i - 1) % n] if (closed or i > 0) else pts[i]
+        b = pts[(i + 1) % n] if (closed or i < n - 1) else pts[i]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        ln = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / ln * width / 2, dx / ln * width / 2
+        verts += [(x + nx, y + ny, z), (x - nx, y - ny, z)]
+    for i in range(n if closed else n - 1):
+        j = (i + 1) % n
+        faces.append((2 * i, 2 * j, 2 * j + 1, 2 * i + 1))
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    o = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(o)
+    so = o.modifiers.new("Solid", "SOLIDIFY")
+    so.thickness, so.offset = thick, 1.0
+    bv = o.modifiers.new("Bevel", "BEVEL")
+    bv.width, bv.segments = thick * 0.4, 2
+    me.materials.append(m)
+    for pg in me.polygons:
+        pg.use_smooth = True
+    return o
+
+
+def webbing_mat(name, color):
+    m = mat(name, color=color, rough=0.72)
+    nt = m.node_tree
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    w = node(nt, "ShaderNodeTexWave", Scale=900.0, Distortion=0.4)
+    w.bands_direction = "X"
+    nt.links.new(tc.outputs["Object"], w.inputs["Vector"])
+    bm = node(nt, "ShaderNodeBump", Strength=0.25, Distance=0.0002)
+    nt.links.new(w.outputs["Fac"], bm.inputs["Height"])
+    nt.links.new(bm.outputs["Normal"], bsdf(m).inputs["Normal"])
+    bsdf(m).inputs["Sheen Weight"].default_value = 0.4
+    return m
+
+
+def quilted_mat(name, color, scale=60.0):
+    """Padded nylon: diagonal quilting channels plus a fine ripstop weave."""
+    m = mat(name, color=color, rough=0.55, coat=0.05)
+    nt = m.node_tree
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    q1 = node(nt, "ShaderNodeTexWave", Scale=scale, Distortion=0.0)
+    q1.wave_profile = "TRI"
+    q1.bands_direction = "DIAGONAL"
+    nt.links.new(tc.outputs["Object"], q1.inputs["Vector"])
+    fine = node(nt, "ShaderNodeTexNoise", Scale=2500.0, Detail=2.0)
+    nt.links.new(tc.outputs["Object"], fine.inputs["Vector"])
+    add = nt.nodes.new("ShaderNodeMath")
+    add.operation = "MULTIPLY_ADD"
+    add.inputs[1].default_value = 0.08
+    nt.links.new(fine.outputs["Fac"], add.inputs[0])
+    nt.links.new(q1.outputs["Fac"], add.inputs[2])
+    bm = node(nt, "ShaderNodeBump", Strength=0.5, Distance=0.002)
+    nt.links.new(add.outputs["Value"], bm.inputs["Height"])
+    nt.links.new(bm.outputs["Normal"], bsdf(m).inputs["Normal"])
+    bsdf(m).inputs["Sheen Weight"].default_value = 0.3
+    return m
+
+
+def side_release(name, loc, rot_z, z):
+    """Black acetal side-release buckle (female body + male tongue), lying flat."""
+    blk = mat("Acetal", color=(0.012, 0.012, 0.013), rough=0.35)
+    ca, sa = math.cos(rot_z), math.sin(rot_z)
+    out = []
+    for off, sx, sy, sz in ((-0.016, 0.018, 0.016, 0.006), (0.014, 0.013, 0.013, 0.0045)):
+        p = (loc[0] + off * ca, loc[1] + off * sa, z + sz)
+        out.append(obj_from("cube", name, blk, loc=p, rot=(0, 0, rot_z), scale=(sx, sy, sz), bevel=0.003))
+    return out
+
+
+def flat_harness(loc, rot_z, color, z0=0.0, name="H"):
+    """A dog harness laid flat: padded saddle, girth strap through it with a buckle, chest loop, D-ring, handle."""
+    c, s = math.cos(rot_z), math.sin(rot_z)
+    W = lambda x, y: (loc[0] + x * c - y * s, loc[1] + x * s + y * c)
+    pad_m = quilted_mat(name + "Pad", color)
+    web_m = webbing_mat(name + "Web", tuple(v * 0.6 for v in color))
+    bind_m = webbing_mat(name + "Bind", (0.015, 0.015, 0.017))
+    objs = []
+    # girth strap: runs across under the saddle and fans out both sides with a gentle curve
+    g = [W(-0.03 + 0.012 * math.sin(t * 2.2), -0.25 + 0.5 * t) for t in [i / 24 for i in range(25)]]
+    objs.append(ribbon(name + "Girth", g, 0.032, 0.004, web_m, z=z0))
+    bx, by = W(-0.03, 0.25)
+    objs += side_release(name + "Bk", (bx, by), rot_z + math.pi / 2, z0)
+    # chest loop in front of the saddle
+    ch = [W(0.19 + 0.085 * math.cos(a), 0.075 * math.sin(a)) for a in [i / 40 * math.tau for i in range(40)]]
+    objs.append(ribbon(name + "Chest", ch, 0.028, 0.004, web_m, z=z0, closed=True))
+    cx, cy = W(0.19, -0.075)
+    objs += side_release(name + "Bk2", (cx, cy), rot_z, z0)
+    # padded saddle with a dark binding all round
+    pad = obj_from("cube", name + "Pad", pad_m, loc=(*W(0.0, 0.0), z0 + 0.014), rot=(0, 0, rot_z),
+                   scale=(0.13, 0.095, 0.010), bevel=0.012, smooth=True)
+    objs.append(pad)
+    rim = [W(0.135 * math.copysign(abs(math.cos(a)) ** 0.35, math.cos(a)), 0.1 * math.copysign(abs(math.sin(a)) ** 0.35, math.sin(a)))
+           for a in [i / 64 * math.tau for i in range(64)]]
+    objs.append(ribbon(name + "Rim", rim, 0.012, 0.022, bind_m, z=z0 + 0.003, closed=True))
+    # grab handle arch on top, D-ring at the back
+    hx, hy = W(-0.01, 0.0)
+    objs.append(obj_from("torus", name + "Handle", bind_m, loc=(hx, hy, z0 + 0.024), rot=(math.pi / 2, 0, rot_z),
+                         major_radius=0.04, minor_radius=0.007, smooth=True))
+    dx, dy = W(-0.15, 0.0)
+    steel = mat("Steel", color=(0.75, 0.75, 0.74), rough=0.18, metal=1.0)
+    objs.append(obj_from("torus", name + "D", steel, loc=(dx, dy, z0 + 0.004), major_radius=0.018, minor_radius=0.0028,
+                         smooth=True))
+    return objs
+
+
+def bandana_fold(path, loc, rot_z, z, name):
+    m = image_mat(name, path, rough=0.85)
+    add_noise_bump(m, 900, 0.25, 0.0003)
+    o = obj_from("plane", name, m, loc=(loc[0], loc[1], z), rot=(0, 0, rot_z), size=0.13)
+    so = o.modifiers.new("Solid", "SOLIDIFY")
+    so.thickness, so.offset = 0.007, 1.0
+    bv = o.modifiers.new("Bevel", "BEVEL")
+    bv.width, bv.segments = 0.0025, 3
+    bpy.ops.object.shade_smooth()
+    return o
+
+
+def life_jacket(loc, rot_z, color):
+    """Small dog buoyancy aid: a curved foam shell with stitched panels, dark binding, grab handle, belly straps."""
+    shell_m = quilted_mat("JacketShell", color, scale=14.0)
+    bsdf(shell_m).inputs["Roughness"].default_value = 0.45
+    bind_m = webbing_mat("JacketBind", (0.012, 0.012, 0.014))
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=48, y_subdivisions=32, size=1.0)
+    o = bpy.context.active_object
+    o.name = "Jacket"
+    R, L, A = 0.16, 0.36, 1.0  # opened out flat-ish on the table, as it would be laid out in a shop
+    for v in o.data.vertices:
+        x, y = v.co.x * L, v.co.y
+        rx = R * (0.78 + 0.22 * (1 - (x / L + 0.5)))  # narrower towards the neck (+x)
+        th = y * 2.0 * A
+        v.co = Vector((x, rx * math.sin(th), rx * (math.cos(th) - math.cos(A)) + 0.004))
+    so = o.modifiers.new("Solid", "SOLIDIFY")
+    so.thickness, so.offset, so.material_offset_rim = 0.022, 1.0, 1
+    o.modifiers.new("Sub", "SUBSURF").levels = 1
+    o.data.materials.append(shell_m)
+    o.data.materials.append(bind_m)
+    bpy.ops.object.shade_smooth()
+    objs = [o]
+    top = R - R * math.cos(A) + 0.004 + 0.022
+    objs.append(obj_from("torus", "JHandle", bind_m, loc=(0.0, 0, top), rot=(math.pi / 2, 0, math.pi / 2),
+                         major_radius=0.045, minor_radius=0.008, smooth=True))
+    web = webbing_mat("JWeb", (0.014, 0.014, 0.016))
+    for sx in (-0.09, 0.08):
+        side = R * math.sin(A)
+        objs.append(ribbon("JStrap", [(sx, side + 0.005 + t * 0.12) for t in (0, 0.5, 1)], 0.03, 0.004, web))
+        objs.append(ribbon("JStrap", [(sx, -side - 0.005 - t * 0.12) for t in (0, 0.5, 1)], 0.03, 0.004, web))
+        objs += side_release("JBk", (sx, side + 0.13), math.pi / 2, 0.0)
+    e = group(objs, "LifeJacket")
+    e.location = (loc[0], loc[1], 0)
+    e.rotation_euler = (0, 0, rot_z)
+    return objs
+
+
+def captains_hat(loc, rot_z, r=0.06):
+    white = mat("HatCotton", color=(0.78, 0.78, 0.76), rough=0.8)
+    add_noise_bump(white, 1500, 0.2, 0.0002)
+    black = mat("HatBand", color=(0.01, 0.01, 0.012), rough=0.55)
+    patent = mat("HatVisor", color=(0.006, 0.006, 0.007), rough=0.12, coat=1.0)
+    gold = mat("Gold", color=(0.9, 0.62, 0.25), rough=0.28, metal=1.0)
+    objs = [obj_from("cylinder", "Band", black, loc=(0, 0, 0.021), scale=(r, r, 0.021), vertices=64, bevel=0.002, smooth=True)]
+    bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=r * 1.02, radius2=r * 1.42, depth=0.03, location=(0, 0, 0.057))
+    crown = bpy.context.active_object
+    crown.name = "Crown"
+    b = crown.modifiers.new("Bevel", "BEVEL")
+    b.width, b.segments = 0.011, 5
+    bpy.ops.object.shade_smooth()
+    crown.data.materials.append(white)
+    objs.append(crown)
+    # visor: a crescent off the front of the band, tipped down
+    pts_o = [(math.sin(a) * r * 1.0, -math.cos(a) * r * 1.62) for a in [(-1.25 + 2.5 * i / 30) for i in range(31)]]
+    pts_i = [(math.sin(a) * r * 0.99, -math.cos(a) * r * 0.99) for a in [(1.25 - 2.5 * i / 30) for i in range(31)]]
+    me = bpy.data.meshes.new("Visor")
+    me.from_pydata([(x, y, 0) for x, y in pts_o + pts_i], [], [tuple(range(62))])
+    vis = bpy.data.objects.new("Visor", me)
+    bpy.context.collection.objects.link(vis)
+    vis.location, vis.rotation_euler = (0, 0, 0.004), (math.radians(-14), 0, 0)
+    so = vis.modifiers.new("Solid", "SOLIDIFY")
+    so.thickness = 0.003
+    bv = vis.modifiers.new("Bevel", "BEVEL")
+    bv.width, bv.segments = 0.001, 2
+    me.materials.append(patent)
+    objs.append(vis)
+    # gold chin cord across the front and a badge
+    for zc in (0.016, 0.022):
+        cd = bpy.data.curves.new("Cord", "CURVE")
+        cd.dimensions, cd.bevel_depth, cd.bevel_resolution = "3D", 0.0018, 3
+        sp = cd.splines.new("POLY")
+        arc = [(math.sin(a) * r * 1.03, -math.cos(a) * r * 1.03, zc) for a in [(-1.1 + 2.2 * i / 24) for i in range(25)]]
+        sp.points.add(len(arc) - 1)
+        for i, p in enumerate(arc):
+            sp.points[i].co = (*p, 1)
+        co = bpy.data.objects.new("Cord", cd)
+        bpy.context.collection.objects.link(co)
+        cd.materials.append(gold)
+        objs.append(co)
+    objs.append(obj_from("cylinder", "Badge", gold, loc=(0, -r * 1.02, 0.036), rot=(math.pi / 2, 0, 0), vertices=32,
+                         scale=(0.011, 0.014, 0.002), bevel=0.001, smooth=True))
+    e = group(objs, "Hat")
+    e.location = (loc[0], loc[1], 0)
+    e.rotation_euler = (0, 0, rot_z)
+    return objs
+
+
+def s_wardrobe():
+    reset()
+    wood_table(tone=(0.05, 0.024, 0.011))
+    subj = []
+    colors = ((0.03, 0.06, 0.20), (0.05, 0.15, 0.06), (0.30, 0.035, 0.05), (0.02, 0.17, 0.17))
+    for i, col in enumerate(colors):  # navy, forest, burgundy, teal harnesses fanned like a hand of cards
+        subj += flat_harness((-0.17 + i * 0.06, 0.28 - i * 0.025), 1.25 - i * 0.2, col, z0=i * 0.026, name="H%d" % i)
+    for i, (fn, rz) in enumerate((("bandana_green.png", 0.35), ("bandana_navy.png", 0.15), ("bandana.png", -0.08))):
+        subj.append(bandana_fold(os.path.join(TEX, fn), (-0.13 + i * 0.012, -0.29 + i * 0.008), rz, i * 0.0075, "Bandana%d" % i))
+    subj += life_jacket((0.19, 0.22), -1.1, (0.02, 0.09, 0.36))
+    subj += captains_hat((0.12, -0.27), 0.15)
+    world_hdri("studio_small_08_2k.hdr", strength=0.3, cam_color=(0.02, 0.018, 0.016))
+    area("Key", (-1.1, -0.9, 1.3), (0, 0, 0.02), 80, size=0.9, color=(1.0, 0.92, 0.82))
+    area("Rim", (0.9, 1.1, 0.6), (0, 0, 0.02), 40, size=0.7, color=(0.8, 0.88, 1.0))
+    area("Fill", (1.2, -1.0, 0.5), (0, 0, 0.02), 10, size=1.5)
+    frame_tight(subj, 8, 45, lens=70, fill=0.9, fstop=11)
+
+
+def dog(coat=None, fur=True, harness=True, curl=False):
+    """Bosun's LOD0 with his baked maps; `coat` recolours body + fur by luminance (keeps every strand of detail)."""
+    asset = "M_Chr_Bosun"
+    keep = lambda n: (n.startswith(asset + "_") and n.endswith("_LOD0") and (fur or "_Fur" not in n)
+                      and (harness or "_Harness" not in n))
+    objs = append_objects(os.path.join(SRC, "characters", asset, asset + ".blend"), keep)
+    for o in objs:
+        pbr_from_maps(o, asset)
+        for m in o.data.materials:
+            if not m or "Harness" in m.name or not coat:
+                continue
+            nt = m.node_tree
+            b = nt.nodes["Principled BSDF"]
+            src = b.inputs["Base Color"].links[0].from_socket
+            bw = nt.nodes.new("ShaderNodeRGBToBW")
+            nt.links.new(src, bw.inputs["Color"])
+            g = nt.nodes.new("ShaderNodeMath")
+            g.operation, g.inputs[1].default_value = "MULTIPLY", (50.0 if "Fur" in m.name else 90.0)
+            nt.links.new(bw.outputs["Val"], g.inputs[0])
+            pw = nt.nodes.new("ShaderNodeMath")
+            pw.operation, pw.inputs[1].default_value = "POWER", 0.8
+            nt.links.new(g.outputs["Value"], pw.inputs[0])
+            mx = nt.nodes.new("ShaderNodeMix")
+            mx.data_type, mx.blend_type = "RGBA", "MULTIPLY"
+            mx.inputs["Factor"].default_value = 1.0
+            nt.links.new(pw.outputs["Value"], mx.inputs["A"])
+            mx.inputs["B"].default_value = (*coat, 1)
+            nt.links.new(mx.outputs["Result"], b.inputs["Base Color"])
+            if curl:  # tight Portuguese Water Dog curls
+                vo = node(nt, "ShaderNodeTexVoronoi", Scale=14.0)
+                tc = nt.nodes.new("ShaderNodeTexCoord")
+                nt.links.new(tc.outputs["Object"], vo.inputs["Vector"])
+                bm = node(nt, "ShaderNodeBump", Strength=1.0, Distance=0.06)
+                nt.links.new(vo.outputs["Distance"], bm.inputs["Height"])
+                if b.inputs["Normal"].links:
+                    nt.links.new(b.inputs["Normal"].links[0].from_socket, bm.inputs["Normal"])
+                nt.links.new(bm.outputs["Normal"], b.inputs["Normal"])
+                b.inputs["Roughness"].default_value = 0.8
+                if b.inputs["Roughness"].links:
+                    nt.links.remove(b.inputs["Roughness"].links[0])
+    return group(objs, asset), objs
+
+
+def s_dog_friends(lab_fur=False):
+    reset()
+    backdrop((0.16, 0.25, 0.32), size=15.0)  # pale sea-blue sweep, lit into a soft halo behind the group
+    world_hdri("studio_small_08_2k.hdr", strength=0.8)
+    area("Back", (0, 1.0, 1.2), (0, 6.5, 3.5), 2600, size=5.0, color=(0.95, 0.98, 1.0))
+    area("DogKey", (-4.5, -5.5, 5.0), (0, 0, 1), 2400, size=2.5, color=(1.0, 0.94, 0.85))
+    area("DogRim", (0.5, 2.5, 7.0), (0, 0, 1.2), 2200, size=2.0, color=(0.9, 0.93, 1.0))
+    area("DogFill", (4, -5, 2.0), (0, 0, 1), 400, size=4, color=(1.0, 0.97, 0.92))
+    pts = []
+    for coat, fur, harn, curl, x, y, rz, sc in (
+            ((0.40, 0.21, 0.055), lab_fur, False, False, -1.75, 0.8, 26, 0.86),  # yellow Labrador
+            ((0.013, 0.012, 0.012), True, False, True, 1.7, 0.9, -28, 0.78),     # black curly Portuguese Water Dog
+            (None, True, True, False, 0.0, -0.7, -6, 1.0)):                      # Bosun, front and centre
+        e, objs = dog(coat, fur, harn, curl)
+        e.location, e.rotation_euler, e.scale = (x, y, 0), (0, 0, math.radians(rz)), (sc, sc, sc)
+        pts += objs
+    frame_tight(pts, 12, 7, lens=70, fill=0.94, fstop=9)
+
+
 SCENES = {
     "SmallBonus": s_small,
     "CrewPayroll": s_payroll,
@@ -1189,8 +1546,8 @@ SCENES = {
     "VipCrewCard": s_card,
     "QuickLaunch": lambda: s_sea_vehicle("M_Veh_RIB", 32, 5, wake=True, pitch=7, yaw=-25, fill=0.9),
     "StarterKit": s_starter_kit,
-    "BosunsWardrobe": lambda: s_bosun([(0.53, 1.3, 3.2), None, (0.5, 0.0, 4.5)]),
-    "WaterDogFriends": lambda: s_bosun([(0.55, 1.6, 6.0), (0.5, 0.2, 0.6)], back=(0.55, 0.45, 0.32)),
+    "BosunsWardrobe": s_wardrobe,
+    "WaterDogFriends": s_dog_friends,
     "StormChaserLiveries": lambda: s_sea_vehicle("M_Veh_JetSki", 35, 8, calm=False, bolt=True, fill=0.82,
                                                  livery=({"PWCOrange", "PWCOrangeDark", "SledOrange"}, (0.02, 0.06, 0.2))),
     "CaptainsLocker": s_locker,
