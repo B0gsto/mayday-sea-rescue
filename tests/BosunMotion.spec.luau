@@ -100,6 +100,77 @@ return function(t)
 		t.expect(hi - lo < math.rad(0.5)).toBeTruthy()
 	end)
 
+	local function tailRange(state, seconds, input)
+		local lo, hi, liftSum, n = math.huge, -math.huge, 0, 0
+		for _ = 1, math.floor(seconds * 60) do
+			input.dt = 1 / 60
+			local pose = M.step(state, input)
+			local y = yawOf(pose.Tail)
+			lo, hi = math.min(lo, y), math.max(hi, y)
+			liftSum += -pitchOf(pose.Tail)
+			n += 1
+		end
+		return hi - lo, liftSum / n
+	end
+
+	t.test(
+		"the tail wags and lifts when excited; the rear wiggle stays small with a tail joint",
+		function()
+			local s = M.new()
+			run(s, 1.5, { mode = "Follow", speed = 0, excited = 1, tailJoint = true })
+			local swing, lift =
+				tailRange(s, 1, { mode = "Follow", speed = 0, excited = 1, tailJoint = true })
+			t.expect(swing > math.rad(30)).toBeTruthy()
+			t.expect(lift > math.rad(15)).toBeTruthy()
+			local lo, hi = math.huge, -math.huge
+			for _ = 1, 60 do
+				local pose = M.step(
+					s,
+					{ dt = 1 / 60, mode = "Follow", speed = 0, excited = 1, tailJoint = true }
+				)
+				lo, hi = math.min(lo, yawOf(pose.Hips)), math.max(hi, yawOf(pose.Hips))
+			end
+			t.expect(hi - lo < math.rad(3.5)).toBeTruthy()
+			local c = M.new()
+			local calmSwing =
+				tailRange(c, 2, { mode = "Follow", speed = 0, excited = 0, tailJoint = true })
+			t.expect(calmSwing < math.rad(1)).toBeTruthy()
+		end
+	)
+
+	t.test("sitting the tail is low and nearly still", function()
+		local s = M.new()
+		run(s, 3, { mode = "Wait", speed = 0, excited = 0.45, tailJoint = true })
+		local swing, lift =
+			tailRange(s, 1, { mode = "Wait", speed = 0, excited = 0.45, tailJoint = true })
+		t.expect(lift < -math.rad(5)).toBeTruthy()
+		t.expect(swing < math.rad(6)).toBeTruthy()
+	end)
+
+	t.test("tired after a long run the tail hangs low", function()
+		local s = M.new()
+		run(s, 30, { mode = "Follow", speed = 14, excited = 0 })
+		run(s, 1.5, { mode = "Follow", speed = 0, excited = 0 })
+		t.expect(s.tired > 0.3).toBeTruthy()
+		t.expect(s.tailLift < -math.rad(8)).toBeTruthy()
+	end)
+
+	t.test("swimming the tail streams out raised; wet ashore or cold it tucks", function()
+		local s = M.new()
+		run(s, 3, { mode = "Swim", speed = 3, excited = 0, wetness = 1 })
+		t.expect(s.tailLift > math.rad(10)).toBeTruthy()
+		local w = M.new()
+		run(w, 3, { mode = "Follow", speed = 0, excited = 0, wetness = 1 })
+		t.expect(w.tuck > 0.9).toBeTruthy()
+		t.expect(w.tailLift < -math.rad(30)).toBeTruthy()
+		local c = M.new()
+		run(c, 3, { mode = "Follow", speed = 8, excited = 0, cold = 1 })
+		t.expect(c.tuck > 0.9).toBeTruthy()
+		local d = M.new()
+		run(d, 3, { mode = "Follow", speed = 8, excited = 0, wetness = 0.1 })
+		t.expect(d.tuck < 0.05).toBeTruthy()
+	end)
+
 	t.test("aboard he leans into the turn and against the deck's roll", function()
 		local roll = M.leanTarget(Vector3.new(10, 0, 0), 0, 0) -- deck accelerating right: a right turn
 		t.expect(roll < 0).toBeTruthy() -- right side down
@@ -135,7 +206,7 @@ return function(t)
 	t.test("poses stay finite with odd input", function()
 		local s = M.new()
 		local pose = M.step(s, { dt = 5, mode = "Bogus", speed = -3, excited = 7 })
-		for _, cf in { pose.Root, pose.Neck, pose.Hips, pose.Ruff } do
+		for _, cf in { pose.Root, pose.Neck, pose.Hips, pose.Ruff, pose.Tail } do
 			local p = cf.Position
 			t.expect(p.X == p.X and p.Y == p.Y and p.Z == p.Z).toBeTruthy()
 		end

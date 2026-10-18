@@ -2,12 +2,13 @@
 -- DogController: Bosun's body language and his point-and-bark, on the client.
 --
 -- Motion: every dog in Workspace.Bosun (DogService) is the rigid M_Chr_Bosun model rigged with Motor6Ds
--- (Root, Neck, Hips, Ruff) on an invisible root the server moves. Each frame (PreSimulation) this
+-- (Root, Neck, Hips, Ruff, Tail) on an invisible root the server moves. Each frame (PreSimulation) this
 -- writes their Transforms from Shared.Dog.BosunMotion: breathing, the walk's bob and pitch while he
 -- follows, sitting when he stops (and while he waits ashore for a jet ski), his head turning to his
--- owner, a casualty or a passing glance, a rear wiggle for a tail wag, a float and paddle when he
--- swims, a shake when he climbs out, and a lean into the boat's motion aboard. Inputs come from the
--- replicated Mode attribute and the root's velocity. Transforms are local; the server owns position.
+-- owner, a casualty or a passing glance, a tail wag (carried high when excited or swimming, low when he
+-- sits or is tired, tucked when wet; a rear wiggle on the old model without a Tail joint), a float and
+-- paddle when he swims, a shake when he climbs out, and a lean into the boat's motion aboard. Inputs
+-- come from the replicated Mode and Wetness attributes and the root's velocity. Transforms are local; the server owns position.
 -- LOD: LOD1 / LOD2 copies start hidden; the client shows one by camera distance (local Transparency).
 --
 -- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
@@ -29,7 +30,7 @@ local SHOW_SECONDS = 2.2
 local OWNER_LOOK_RANGE = 28 -- studs: he watches his owner inside this
 local ARROW_COLOR = Color3.fromHex("3EE07A") -- Waypoint Green: where to go (docs 05 section 3.2)
 local BUBBLE_TEXT = Color3.fromHex("0A2A3B")
-local JOINTS = { "Root", "Neck", "Hips", "Ruff" }
+local JOINTS = { "Root", "Neck", "Hips", "Ruff", "Tail" }
 
 type DogState = {
 	model: Model,
@@ -286,6 +287,7 @@ local function stepDog(state: DogState, dt: number, now: number, camera: Camera?
 			excited = 0.45
 		end
 	end
+	local wetness = model:GetAttribute("Wetness")
 	local pose = BosunMotion.step(state.motion, {
 		dt = dt,
 		mode = mode,
@@ -295,6 +297,8 @@ local function stepDog(state: DogState, dt: number, now: number, camera: Camera?
 		accel = state.accel,
 		deckRoll = math.asin(math.clamp(cf.RightVector.Y, -1, 1)),
 		deckPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1)),
+		wetness = if type(wetness) == "number" then wetness else 0,
+		tailJoint = state.motors.Tail ~= nil and #state.motors.Tail > 0,
 	})
 	for name, list in state.motors do
 		local transform = (pose :: any)[name] :: CFrame?

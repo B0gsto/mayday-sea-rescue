@@ -1,14 +1,15 @@
 --!strict
 -- DogService: Bosun, every player's Newfoundland (docs 01: MVP follower who barks and points).
 --
--- Bosun is the uploaded rigid model M_Chr_Bosun (AssetLoader, by name; LOD0/1/2, six MeshParts each:
--- BodyHead, BodyFore, BodyHind, Harness, FurFront, FurRear). An invisible root part "Body" carries the
+-- Bosun is the uploaded rigid model M_Chr_Bosun (AssetLoader, by name; LOD0/1/2, nine MeshParts each:
+-- BodyHead, BodyFore, BodyHind, Tail, Harness, FurHead, FurFront, FurRear, FurTail; the older six-part
+-- upload without Tail / FurHead / FurTail still rigs). An invisible root part "Body" carries the
 -- physics: he follows his player on land (AlignPosition / AlignOrientation, no collisions: docs 02
 -- section 10.8), floats in his harness on water, and rides the RIB and bigger boats aft (welded to a
 -- DogSlot / the aft deck, out of the helm camera) while they sit in them. He never rides a first-person
 -- craft (the jet ski): he sits and waits ashore. Each LOD is rigged with Motor6Ds at BosunMotion.PIVOTS
--- (Root, Neck, Hips, Ruff; Harness / FurRear welded on) whose Transforms DogController writes locally;
--- LOD1 and LOD2 start hidden and the client picks the LOD by distance. Until the model loads (or if it
+-- (Root, Neck, Hips, Ruff, Tail; Harness, FurHead, FurRear, FurTail welded on) whose Transforms
+-- DogController writes locally; LOD1 and LOD2 start hidden and the client picks the LOD by distance. Until the model loads (or if it
 -- can't), a greybox placeholder stands in ("Placeholder" model) and the load is retried.
 --
 -- Attributes on the dog model for the client: Mode ("Follow" | "Wait" | "Ride" | "Swim"), Wetness
@@ -272,10 +273,25 @@ end
 
 -- The real model -----------------------------------------------------------------------------------
 
-local PART_KEYS =
-	{ "BodyHead", "BodyFore", "BodyHind", "Harness", "FurFront", "FurRear", "FurHead" }
-local FUR_KEYS = { FurFront = true, FurRear = true, FurHead = true }
-local ATTACH_ON = { ATT_Mouth = "BodyHead", ATT_HarnessHandle = "Harness", ATT_TowRing = "Harness" }
+-- Round 5 has 9 parts per LOD; the 6-part model (no Tail, FurHead, FurTail) still rigs.
+local PART_KEYS = {
+	"BodyHead",
+	"BodyFore",
+	"BodyHind",
+	"Tail",
+	"Harness",
+	"FurHead",
+	"FurFront",
+	"FurRear",
+	"FurTail",
+}
+local FUR_KEYS = { FurFront = true, FurRear = true, FurHead = true, FurTail = true }
+local ATTACH_ON = {
+	ATT_Mouth = "BodyHead",
+	ATT_HarnessHandle = "Harness",
+	ATT_TowRing = "Harness",
+	ATT_TailRoot = "Tail",
+}
 
 local function keyOf(name: string): string?
 	for _, key in PART_KEYS do
@@ -331,8 +347,8 @@ local function rigLod(body: BasePart, copy: Model, lod: number): boolean
 		)
 		return false
 	end
-	local function motor(name: string, part0: BasePart, part1: BasePart, pivot: Vector3)
-		local world = base * CFrame.new(pivot)
+	local function motor(name: string, part0: BasePart, part1: BasePart, pivot: Vector3 | CFrame)
+		local world = if typeof(pivot) == "CFrame" then pivot else base * CFrame.new(pivot)
 		local m = Instance.new("Motor6D")
 		m.Name = name
 		m.Part0 = part0
@@ -363,7 +379,20 @@ local function rigLod(body: BasePart, copy: Model, lod: number): boolean
 		weld(hind, parts.FurRear)
 	end
 	if parts.FurHead then
-		weld(head, parts.FurHead) -- a later upload may split the head's coat off FurFront
+		weld(head, parts.FurHead) -- turns with the head, not at RUFF_FOLLOW
+	end
+	-- the tail joint at ATT_TailRoot (on the PrimaryPart until moved below; every part's origin is the
+	-- authored origin, so the joint frame is the marker's position in the body's orientation)
+	local tail = parts.Tail
+	if tail then
+		local marker = copy:FindFirstChild("ATT_TailRoot", true)
+		local pivot: CFrame = if marker and marker:IsA("Attachment")
+			then CFrame.new(marker.WorldPosition) * base.Rotation
+			else base * CFrame.new(pivots.Tail)
+		motor("Tail", hind, tail, pivot)
+	end
+	if parts.FurTail then
+		weld(tail or hind, parts.FurTail) -- the cards move with the skin about the tail root
 	end
 	for _, p in extra do
 		weld(fore, p)

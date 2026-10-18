@@ -7,11 +7,15 @@
 --         rolling, breathing, the sit's nose-up, the swim's float, the lean on a moving deck, the shake;
 --   Neck  BodyFore -> BodyHead: head turns toward the look target (owner, a casualty, a glance), the
 --         gaze steadied against the walk;
---   Hips  BodyFore -> BodyHind (+ FurRear and the tail), pivot on the top line at the waist cut (the
---         seam stays shut on the back, the belly overlaps): the sit lowers the rear, the tail wag is a
---         happy rear wiggle (the tail is part of BodyHind), the walk's hip swing;
---   Ruff  BodyFore -> FurFront (the ruff, and the head's short coat until the art splits a FurHead): the
---         head turn at RUFF_FOLLOW, so the ruff hides the neck cut.
+--   Hips  BodyFore -> BodyHind (+ FurRear), pivot on the top line at the waist cut (the seam stays
+--         shut on the back, the belly overlaps): the sit lowers the rear, the walk's hip swing, and a
+--         happy rear wiggle with the wag (the whole wag on the old 6-part model, whose tail is part of
+--         BodyHind; a small one when input.tailJoint says the Tail joint exists);
+--   Tail  BodyHind -> Tail (+ FurTail welded on), pivot at ATT_TailRoot (PIVOTS.Tail without it): the
+--         wag side to side, carried high when excited or swimming (a rudder), low and still when he
+--         sits or is tired after a run, tucked down and under when he is cold or wet out of the water;
+--   Ruff  BodyFore -> FurFront (the ruff; FurHead is welded to BodyHead and turns with it): the head
+--         turn at RUFF_FOLLOW, so the ruff hides the neck cut.
 -- Pivots are in the authored frame: studs, origin on the ground between the feet, front -Z, up +Y.
 local BosunMotion = {}
 
@@ -20,6 +24,7 @@ BosunMotion.PIVOTS = {
 	Neck = Vector3.new(0, 1.95, -1.5),
 	Hips = Vector3.new(0, 2.25, -0.39),
 	Ruff = Vector3.new(0, 1.95, -1.5),
+	Tail = Vector3.new(0.0038, 1.6161, 1.1063), -- ATT_TailRoot (round 5 export), if the marker is missing
 }
 
 BosunMotion.MAX_YAW = math.rad(28) -- head turn either side (the neck cut shows past this)
@@ -32,6 +37,13 @@ BosunMotion.STRIDE = 3.2 -- studs per stride
 BosunMotion.MAX_STEP_HZ = 3.0
 BosunMotion.SHAKE_SECONDS = 0.9
 BosunMotion.MAX_LEAN = math.rad(9)
+-- tail (Tail joint; +X pitch lowers it, the tail runs back along +Z)
+BosunMotion.TAIL_WAG = math.rad(26) -- wag either side at full excitement
+BosunMotion.TAIL_RAISE = math.rad(30) -- carried up at full excitement
+BosunMotion.TAIL_SWIM_RAISE = math.rad(18) -- streamed out level behind him as a rudder
+BosunMotion.TAIL_SIT_DROP = math.rad(14) -- resting low on the ground
+BosunMotion.TAIL_TIRED_DROP = math.rad(16)
+BosunMotion.TAIL_TUCK = math.rad(38) -- clamped down between the hind legs
 
 export type Mode = "Follow" | "Wait" | "Ride" | "Swim"
 
@@ -44,6 +56,9 @@ export type Input = {
 	accel: Vector3?, -- Ride: the deck's acceleration in the body's frame, studs/s^2
 	deckRoll: number?, -- Ride: the deck's roll (radians, right side up +) and pitch (nose up +)
 	deckPitch: number?,
+	wetness: number?, -- 0..1 coat wetness (BosunWetness); wet out of the water tucks the tail
+	cold: number?, -- 0..1 cold (no source yet): tucks the tail
+	tailJoint: boolean?, -- the model has the Tail joint: the rear wiggle stays small
 }
 
 export type State = {
@@ -64,9 +79,12 @@ export type State = {
 	leanPitch: number,
 	shake: number, -- seconds of shake left
 	lastMode: string,
+	tailLift: number, -- radians, + up
+	tuck: number, -- 0..1
+	tired: number, -- 0..1
 }
 
-export type Pose = { Root: CFrame, Neck: CFrame, Hips: CFrame, Ruff: CFrame }
+export type Pose = { Root: CFrame, Neck: CFrame, Hips: CFrame, Ruff: CFrame, Tail: CFrame }
 
 local TAU = 2 * math.pi
 
@@ -93,6 +111,9 @@ function BosunMotion.new(): State
 		leanPitch = 0,
 		shake = 0,
 		lastMode = "Follow",
+		tailLift = 0,
+		tuck = 0,
+		tired = 0,
 	}
 end
 
@@ -125,7 +146,7 @@ function BosunMotion.leanTarget(
 	return math.clamp(roll, -m, m), math.clamp(pitch, -m, m)
 end
 
--- Advances `state` by input.dt and returns the four Motor6D Transforms.
+-- Advances `state` by input.dt and returns the Motor6D Transforms.
 function BosunMotion.step(state: State, input: Input): Pose
 	local dt = math.clamp(input.dt, 0, 0.1)
 	local mode = input.mode
@@ -166,9 +187,11 @@ function BosunMotion.step(state: State, input: Input): Pose
 	local breath = math.sin(state.breath)
 
 	-- tail wag
-	state.wag = approach(state.wag, math.clamp(input.excited, 0, 1), 4, dt)
-	state.wagPhase = (state.wagPhase + TAU * 2.4 * dt) % TAU
-	local wag = math.sin(state.wagPhase) * math.rad(4) * state.wag * (1 - 0.4 * state.sit)
+	local excited = math.clamp(input.excited, 0, 1)
+	state.wag = approach(state.wag, excited, 4, dt)
+	state.wagPhase = (state.wagPhase + TAU * (1.8 + 1.2 * state.wag) * dt) % TAU
+	local hipWag = if input.tailJoint then math.rad(1.4) else math.rad(4)
+	local wag = math.sin(state.wagPhase) * hipWag * state.wag * (1 - 0.4 * state.sit)
 
 	-- swimming paddle
 	state.paddle = (state.paddle + TAU * 1.3 * dt) % TAU
@@ -219,6 +242,37 @@ function BosunMotion.step(state: State, input: Input): Pose
 		wag * 0.4
 	)
 
+	-- tail: moods set the carriage, the wag rides on top
+	local tiredTarget = math.clamp((state.exertion - 0.25) / 0.5, 0, 1) * (1 - state.gait)
+	state.tired = approach(state.tired, tiredTarget, 1.5, dt)
+	local wetOut = math.clamp(((input.wetness or 0) - 0.3) / 0.4, 0, 1) * (1 - sw)
+	local tuckTarget = math.max(wetOut, math.clamp(input.cold or 0, 0, 1)) * (1 - 0.6 * excited)
+	state.tuck = approach(state.tuck, tuckTarget, 2, dt)
+	local tuck, tired, sit = state.tuck, state.tired, state.sit
+	local liftTarget = BosunMotion.TAIL_RAISE * state.wag * (1 - sit) * (1 - tuck)
+		+ BosunMotion.TAIL_SWIM_RAISE * sw
+		+ math.rad(6) * g -- carried a little higher on the move
+		- BosunMotion.TAIL_SIT_DROP * sit
+		- BosunMotion.TAIL_TIRED_DROP * tired * (1 - sw)
+		- BosunMotion.TAIL_TUCK * tuck
+	state.tailLift = approach(state.tailLift, liftTarget, 5, dt)
+	-- still when he sits, is tired or tucked; a slow rudder sway when swimming; swings with the stride
+	local wagAmp = BosunMotion.TAIL_WAG
+		* state.wag
+		* (1 - 0.85 * sit)
+		* (1 - 0.8 * tired)
+		* (1 - 0.9 * tuck)
+		* (1 - 0.7 * sw)
+	local tailYaw = math.sin(state.wagPhase) * wagAmp
+		+ sw * math.rad(7) * math.sin(state.paddle + 1.2)
+		+ g * math.rad(5) * math.sin(state.phase + 1.8) * (1 - tuck)
+		- shakeRoll * 1.6 -- whips with the shake
+	local tail = CFrame.fromEulerAnglesYXZ(
+		-state.tailLift,
+		tailYaw,
+		-tailYaw * 0.25 -- the sweep rolls the tip slightly
+	)
+
 	local f = BosunMotion.RUFF_FOLLOW
 	local ruff = CFrame.fromEulerAnglesYXZ(
 		headPitch * f + breath * math.rad(0.4),
@@ -226,7 +280,7 @@ function BosunMotion.step(state: State, input: Input): Pose
 		shakeHead * f
 	)
 
-	return { Root = root, Neck = neck, Hips = hips, Ruff = ruff }
+	return { Root = root, Neck = neck, Hips = hips, Ruff = ruff, Tail = tail }
 end
 
 -- Which LOD (0, 1, 2) to show at `distance` studs from the camera, with hysteresis around `current`.
