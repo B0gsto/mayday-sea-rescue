@@ -47,9 +47,9 @@ def scans(ids):
 LIC = texlib.LICENCE + "; procedural masks own work"
 AI = "assisted (code-written geometry, maps composited by Claude from real CC0 scans; no AI images)"
 ROWS = []
-furn = {"M_Road_StreetLamp": "5.45 m painted column on a cast base shroud, 0.7 m outreach, LED lantern (Lens part); ATT_Light, ATT_Base",
-        "M_Road_Bench": "1.84 m hardwood slats on cast-iron end frames + centre bearer, coach bolts; ATT_Seat, ATT_Base",
-        "M_Road_Bin": "open-top fluted round litter bin, muted gold LITTER band, galvanised liner; ATT_Opening, ATT_Base",
+furn = {"M_Road_StreetLamp": "5.45 m painted column on a cast base shroud and 0.40 m flange base plate (4 anchor nuts), 0.6 m outreach, 0.76 x 0.34 x 0.15 m LED road lantern (spigot sleeve, crowned canopy, fins, NEMA photocell, lens bezel; Lens part); ATT_Light, ATT_Base",
+        "M_Road_Bench": "1.84 m weathered teak/iroko slats (grey-brown, grain along the slats) on cast-iron end frames + centre bearer with rust bloom, 24 mm coach bolts on seat and back slats, hex nuts on the frame joints; ATT_Seat, ATT_Base",
+        "M_Road_Bin": "open-top fluted round litter bin, cast lid rim round the opening (4 screws), four dents, scuffed paint, muted gold LITTER band (UV wraps twice: LITTER front and back, true aspect), galvanised liner; ATT_Opening, ATT_Base",
         "M_Road_Bollard": "heritage cast-iron bollard 0.915 m, retroreflective band; ATT_Base"}
 for a, note in furn.items():
     ids = {lod: aid("assets/fbx/%s/%s_%s.fbx" % (a, a, lod), "Model") for lod in ("LOD0", "LOD1", "LOD2")}
@@ -58,24 +58,27 @@ for a, note in furn.items():
     status = "built+validated (hand-made LODs)+exported+turntable+uploaded (%s)+review renders; no Studio pass (batch rule); AD review pending" % (
         "/".join(sorted({ids[l][1] for l in ids})))
     ROWS.append([a, "P0", status, ids["LOD0"][0],
-                 "blender:art/source/roads/kit.py + streettex.py (R1a Opus 2026-10-18); scans " +
+                 "blender:art/source/roads/kit.py + streettex.py (R1a + R1a-fix Opus 2026-10-18); scans " +
                  scans(["rusty_painted_metal", "fine_grained_wood", "metal_plate"]), LIC, AI, "",
                  "LOD1 %s, LOD2 %s. Tris LOD0/1/2 %s/%s/%s, _COL. %s. Street atlas T_Street_Main (set Main, 1024, +_Wet; ALB %s) in "
-                 "B02's Street cells, trim regions street_layout.py. Sheet assets/review/R1a/contact.png. Reference photo board not "
-                 "collected (dims.md only). Atlas ids listed once under Textures.M_Road_StreetLamp.Main: I1 adds Bench/Bin/Bollard "
-                 "to AssetLoader.SHARED_SETS." % (ids["LOD1"][0], ids["LOD2"][0], t.get("LOD0"), t.get("LOD1"), t.get("LOD2"), note, alb[0])])
+                 "B02's Street cells, trim regions street_layout.py. Sheets assets/review/R1a/contact.png (R1a, 6/10) and contact_b.png (R1a-fix). Reference photo board not "
+                 "collected (dims.md only). Atlas ids listed once under Textures.M_Road_StreetLamp.Main; Bench/Bin/Bollard are in "
+                 "AssetLoader.SHARED_SETS (-> M_Road_StreetLamp)." % (ids["LOD1"][0], ids["LOD2"][0], t.get("LOD0"), t.get("LOD1"), t.get("LOD2"), note, alb[0])])
 sets = ["Asphalt", "Cobbles", "Gravel", "Kerb", "AsphaltTile", "CobblesTile", "GravelTile", "KerbTile", "Markings"]
 ids = {s: aid("assets/textures/M_Road_Ribbon/T_Road_%s_ALB.png" % s, "Image") for s in sets}
 mods = sorted({ids[s][1] for s in sets})
 ROWS.append(["M_Road_Ribbon (materials + decals)", "P0",
              "maps built+check_textures PASS+uploaded (%s)+review renders; ribbon mesh generator not built (I1 / R1 follow-up, INTEGRATION.md)" % "/".join(mods),
-             ids["Asphalt"][0], "textures:art/source/roads/roadmats.py (R1a Opus 2026-10-18); scans " +
+             ids["Asphalt"][0], "textures:art/source/roads/roadmats.py (R1a + R1a-fix Opus 2026-10-18); scans " +
              scans(["asphalt_04", "clean_asphalt", "cobblestone_04", "gravel_road", "granite_tile"]), LIC, AI, "",
              "ALB ids: " + ", ".join("%s %s" % (s, ids[s][0]) for s in sets) + ". 9 sets x ALB/NOR/RGH/MET + _Wet at 1024 "
              "(masters 2048). Strips Asphalt/Cobbles 8x6 m, Gravel 8x3.33 m, Kerb 1.8x0.4 m profile; tiles for MaterialVariants "
              "(assets/materials/roads_variants.json); Markings RGBA decal atlas (UK lines, give-way, cat's eyes; sizes verify), "
              "AlphaMode Transparency via gen_asset_ids ALPHA_TRANSPARENCY_SETS. MaterialVariants not wired into "
-             "MaterialService (B02 wire.py owns it)."])
+             "MaterialService (B02 wire.py owns it). R1a-fix: Cobbles/CobblesTile per-stone granite tones (labelled stones), "
+             "boosted relief, dark joints; Gravel/GravelTile Voronoi pebble layers of mixed rock; gravel wet white blotches fixed "
+             "(noise puddles at 0.05 roughness over full-relief normals: puddles now only in flat silted rut hollows, wet "
+             "roughness >= 0.12)."])
 out = os.path.join(GAME, "art/status/R1a.csv")
 with open(out, "w", newline="") as f:
     w = csv.writer(f)

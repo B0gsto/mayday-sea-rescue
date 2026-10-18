@@ -142,42 +142,65 @@ def asphalt(len_u, len_v, edges=True, seed=0):
 
 # ----------------------------------------------------------------------------------------------------------- cobbles
 def cobbles(len_u, len_v, edges=True, seed=20):
+    """Granite setts: cobblestone_04 scan detail, every stone labelled (periodic connected components of the scan's
+    displacement) and given its own granite tone / hue / roughness / height, dark gritty joints, boosted relief."""
     hw = (M, M)
     ppm_u, ppm_v = M / len_u, M / len_v
     x, y = grid(M, M, len_u, len_v)
     reps = int(round(len_u / 2.0))
     a, r, n, d = scan("cobblestone_04", (M / reps, 2.0 * ppm_v), hw)
-    a = T.grade(a, 112, 24, tint=(1.03, 1.0, 0.97), desat=0.55)
-    r = np.clip(0.70 + (r - r.mean()) * 0.9, 0.45, 0.95)
-    joint = 1 - T.sstep(0.25, 0.5, d)                                  # low displacement = joints
+    d = (d - np.percentile(d, 2)) / (np.percentile(d, 98) - np.percentile(d, 2) + 1e-6)
+    d = np.clip(d, 0, 1)
+    joint = 1 - T.sstep(0.22, 0.48, d)                                 # low displacement = joints
+    stone = 1 - joint
+    lab = T.stone_ids(d > np.percentile(d, 42), grow=10)
+    lid = np.where(lab < 0, 0, lab)
+    r1, r2, r3, r4, r5 = (T.hash01(lid + 13 * seed, k) for k in (1, 2, 3, 4, 5))
+    # scan detail as a luma ratio, contrast lifted; colour comes from each stone's own granite
+    y0 = T.luma(a)
+    det = np.clip(1 + 1.35 * (y0 / (y0.mean() + 1e-6) - 1), 0.45, 1.6)
+    pal = np.array([(118, 118, 116), (104, 110, 118), (142, 128, 108), (132, 112, 104), (84, 84, 84), (150, 146, 138),
+                    (112, 104, 94)], F32)                              # grey, blue-grey, buff, pink, dark, light, brown
+    pw = np.array([0.24, 0.16, 0.16, 0.12, 0.12, 0.10, 0.10])
+    k = np.searchsorted(np.cumsum(pw), r1 * 0.9999)
+    base = pal[k] * (0.80 + 0.40 * r2)[..., None]
+    speck = T.noise(hw, 260, seed + 7, 1)                              # feldspar / mica speckle
+    a = base * det[..., None] * (0.92 + 0.16 * speck[..., None])
     nz = T.noise(hw, 10, seed + 1, 3)
-    sand = np.dstack([128 + 14 * nz, 114 + 12 * nz, 92 + 8 * nz]).astype(F32)
-    a = T.blend(a, sand, joint * 0.55)
+    grit = np.dstack([62 + 22 * nz, 58 + 18 * nz, 50 + 12 * nz]).astype(F32)
+    sand = np.dstack([118 + 14 * nz, 106 + 12 * nz, 86 + 8 * nz]).astype(F32)
+    jc = T.blend(grit, sand, T.sstep(0.45, 0.75, T.noise(hw, 6, seed + 8, 3)) * 0.6)
+    a = T.blend(a, jc, joint * 0.85)
+    a = a * (1 - 0.22 * (T.sstep(0.55, 0.25, d) * stone)[..., None])   # stone shoulders fall into shadowed joints
     if edges:
         dist = np.minimum(y, len_v - y)
         mossy = np.clip(np.exp(-dist / 0.6) * 1.2, 0, 1)
     else:
         dist = np.full(hw, 9.0, F32)
         mossy = np.full(hw, 0.35, F32)
-    moss_c = np.dstack([76 + 20 * nz, 86 + 18 * nz, 58 + 8 * nz]).astype(F32)
+    moss_c = np.dstack([70 + 20 * nz, 84 + 18 * nz, 52 + 8 * nz]).astype(F32)
     moss = joint * mossy * T.sstep(0.45, 0.7, T.noise(hw, 16, seed + 2, 3))
     a = T.blend(a, moss_c, moss * 0.8)
-    r = r * (1 - joint) + 0.92 * joint
-    # dark tops worn smooth in the wheel tracks
+    r = np.clip(0.66 + (r - r.mean()) * 0.9 + (r3 - 0.5) * 0.16, 0.4, 0.95)
+    r = r * stone + 0.93 * joint
     if edges:
         track = np.zeros(hw, F32)
         for c in (0.8, 2.2, 3.8, 5.2):
             track = np.maximum(track, np.exp(-((y - c) / 0.32) ** 2))
-        top = (1 - joint) * track
-        a = a * (1 - 0.09 * top[..., None])
-        r = r - 0.16 * top
+        top = stone * T.sstep(0.5, 0.9, d) * track                     # stone crowns polished in the wheel tracks
+        a = a * (1 - 0.12 * top[..., None])
+        r = r - 0.2 * top
         grime = np.exp(-dist / 0.3) * T.noise(hw, 8, seed + 3, 3)
         a = a * (1 - 0.25 * grime[..., None])
-    a = a * (1 - 0.08 * (T.noise(hw, 3, seed + 4, 2)[..., None] - 0.5))   # large-scale tonal drift
+    a = a * (1 - 0.10 * (T.noise(hw, 3, seed + 4, 2)[..., None] - 0.5))   # large-scale tonal drift
+    # relief: scan normal boosted, plus a height built from the displacement and a per-stone proud / sunk offset
+    hgt = d * 0.030 + (r4 - 0.5) * 0.010 * T.sstep(0.3, 0.6, d) + (r5 - 0.5) * 0.004 * d
+    n = T.combine_normals(T.boost_normal(n, 1.5), T.height_normal_uv(hgt, ppm_u, ppm_v, 0.8))
     pool = joint * T.sstep(0.35, 0.6, T.noise(hw, 5, seed + 5, 3)) + (np.exp(-dist / 0.18) * 0.6 if edges else 0)
     pool = np.clip(pool, 0, 1)
     r = np.clip(r, 0.3, 0.97)
     wa, wr = T.wet(alb_ok(a), r, pool=pool)
+    wr = np.maximum(wr, 0.1)
     return a, r, n, (wa, wr)
 
 
@@ -187,15 +210,42 @@ def alb_ok(a):
 
 # ----------------------------------------------------------------------------------------------------------- gravel
 def gravel(len_u, len_v, edges=True, seed=40):
+    """gravel_road scan matrix plus two Voronoi pebble layers (25 to 40 mm chippings, sparse 60 to 110 mm stones), each
+    pebble its own rock (limestone, slate, granite, ochre sandstone, quartz), domed in the height / normal, aggregate
+    patches at metre scale. Puddles only sit in the silted rut hollows, whose normal is flat (the wet set shares NOR)."""
     hw = (M, M)
     ppm_u, ppm_v = M / len_u, M / len_v
     x, y = grid(M, M, len_u, len_v)
     reps = int(round(len_u / 2.0))
     a, r, n, d = scan("gravel_road", (M / reps, 2.0 * ppm_v), hw)
-    a = T.grade(a, 118, 22, tint=(1.03, 1.0, 0.95), desat=0.82)
+    a = T.desat(T.grade(a, 112, 26), 0.8, tint=(1.03, 1.0, 0.96))
     a = np.maximum(a, 40)
     r = np.clip(0.86 + (r - r.mean()) * 0.6, 0.65, 0.98)
-    pool = T.sstep(0.72, 0.82, T.noise(hw, 3, seed + 9, 3)) * 0.5
+    per_v = len_v if not edges else None
+    pal = np.array([(150, 148, 140), (76, 78, 82), (146, 126, 108), (138, 108, 76), (176, 172, 164), (110, 108, 104),
+                    (96, 88, 80)], F32)
+    y0 = T.luma(a)
+    det = np.clip(y0 / (y0.mean() + 1e-6), 0.6, 1.4)
+    hgt = d * 0.012
+    peb_all = np.zeros(hw, F32)
+    for cell, keep, rmin, rmax, salt in ((0.034, 0.55, 0.30, 0.46, 1), (0.20, 0.22, 0.22, 0.36, 2)):
+        f1, f2, cid = T.voronoi(x, y, cell, len_u, per_v, seed + salt)
+        h1, h2, h3, h4 = (T.hash01(cid, k) for k in (11, 12, 13, 14))
+        rad = cell * (rmin + (rmax - rmin) * h2)
+        shape = T.sstep(0.0, cell * 0.07, (f2 - f1) * 0.5) * T.sstep(rad, rad * 0.75, f1)
+        peb = shape * (h1 < keep)
+        k = np.minimum((h3 * len(pal)).astype(np.int64), len(pal) - 1)
+        col = pal[k] * (0.85 + 0.3 * h4)[..., None] * det[..., None]
+        a = T.blend(a, col, peb * 0.9)
+        a = a * (1 - 0.35 * (T.sstep(rad * 1.35, rad * 0.95, f1) * (1 - shape) * (h1 < keep))[..., None])   # contact shadow
+        dome = np.sqrt(np.clip(1 - (f1 / np.maximum(rad, 1e-4)) ** 2, 0, 1)) * rad * 0.55
+        hgt = np.maximum(hgt, peb * dome)
+        r = r * (1 - peb) + peb * np.clip(0.62 + 0.25 * h4, 0.5, 0.92)
+        peb_all = np.maximum(peb_all, peb)
+    patch = T.noise(hw, 3, seed + 7, 3)                                  # aggregate patches (metre scale)
+    a = a * (0.90 + 0.20 * patch[..., None])
+    a = T.blend(a, a * np.array([1.06, 1.0, 0.9], F32), T.sstep(0.55, 0.8, T.noise(hw, 4, seed + 8, 2)) * 0.6)
+    pool = None
     if edges:
         wob = (T.noise(hw, 3, seed + 1, 2) - 0.5) * 0.12
         rut = np.zeros(hw, F32)
@@ -205,8 +255,12 @@ def gravel(len_u, len_v, edges=True, seed=40):
         earth = np.dstack([96 + 18 * fine, 84 + 14 * fine, 68 + 10 * fine]).astype(F32)
         a = T.blend(a, earth, rut * 0.55)
         r = r * (1 - rut) + 0.82 * rut
-        n = T.flatten_normal(n, 0.55 * rut)
-        # loose centre with sparse grass, grassy earth verges
+        hgt = hgt * (1 - 0.7 * rut)
+        # silted hollows in the ruts: smooth, flat, darker fines (dry); the puddles of the wet set
+        hollow = np.clip(rut * T.sstep(0.55, 0.7, T.noise(hw, 4, seed + 6, 3)) * 1.4, 0, 1)
+        silt = np.dstack([88 + 10 * fine, 80 + 8 * fine, 68 + 6 * fine]).astype(F32)
+        a = T.blend(a, silt, T.sstep(0.15, 0.6, hollow) * 0.8)
+        hgt = hgt * (1 - T.sstep(0.1, 0.5, hollow))
         dist = np.minimum(y, len_v - y)
         verge = T.sstep(0.35, 0.0, dist + (T.noise(hw, 7, seed + 3, 3) - 0.5) * 0.3)
         tuft = T.sstep(0.62, 0.78, T.noise(hw, 26, seed + 4, 3))
@@ -216,9 +270,16 @@ def gravel(len_u, len_v, edges=True, seed=40):
         green = np.clip(verge * (0.4 + 0.6 * tuft) + centre * 0.7, 0, 1)
         a = T.blend(a, grass, green * 0.8)
         r = r * (1 - green) + 0.9 * green
-        pool = np.clip(rut * T.sstep(0.55, 0.7, T.noise(hw, 4, seed + 6, 3)) * 1.4, 0, 1)
+        pool = T.sstep(0.2, 0.7, hollow)
+    n = T.combine_normals(T.boost_normal(n, 1.2), T.height_normal_uv(hgt, ppm_u, ppm_v, 1.0))
+    if pool is not None:
+        n = T.flatten_normal(n, T.sstep(0.1, 0.5, pool))
+        r = r * (1 - T.sstep(0.1, 0.5, pool)) + 0.7 * T.sstep(0.1, 0.5, pool)
     r = np.clip(r, 0.3, 0.98)
-    wa, wr = T.wet(a, r, pool=pool)
+    # wet: one albedo / roughness pass; standing water only in the flat hollows, never below 0.12 roughness (the old
+    # pass took noise blotches to 0.05 roughness over full-relief stone normals: mirror-white sky hits)
+    wa, wr = T.wet(alb_ok(a), r, pool=pool)
+    wr = np.maximum(wr, 0.12)
     wy = T.luma(wa)[..., None]
     wa = wy + (wa - wy) * 0.85
     return a, r, n, (wa, wr)

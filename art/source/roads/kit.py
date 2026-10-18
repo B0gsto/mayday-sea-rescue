@@ -158,8 +158,9 @@ def _off(vals, t):
     return o
 
 
-def uv_piece(bm, asset, region, mode="box", center=(0.0, 0.0), axis="z"):
-    """UVs every face of bm into the region. mode: box | cyl (tiled), fitcyl | fitplane (whole piece)."""
+def uv_piece(bm, asset, region, mode="box", center=(0.0, 0.0), axis="z", wraps=1):
+    """UVs every face of bm into the region. mode: box | cyl (tiled), fitcyl | fitplane (whole piece). fitcyl maps U
+    `wraps` times round the circumference (seams on ring vertices at angle 0 and, for 2, at 180 degrees)."""
     uvl = bm.loops.layers.uv.verify()
     alt = "paint" if "paint" in SL.REGIONS[asset] else "iron"
     if SL.REGIONS[asset][region][1] == "fit":
@@ -183,8 +184,9 @@ def uv_piece(bm, asset, region, mode="box", center=(0.0, 0.0), axis="z"):
                 ab = [(a * max(rad, 0.02), c.z) for a, c in zip(angs, cos)]
             else:
                 ab = [((a % (2 * math.pi)) / (2 * math.pi) if i == 0 else a / (2 * math.pi), c.z) for i, (a, c) in enumerate(zip(angs, cos))]
-                base = math.floor(min(a for a in angs) / (2 * math.pi))
-                ab = [(a / (2 * math.pi) - base, c.z) for a, c in zip(angs, cos)]
+                tw = wraps / (2 * math.pi)
+                base = math.floor(min(angs) * tw + 1e-9)
+                ab = [(a * tw - base, c.z) for a, c in zip(angs, cos)]
         else:
             ax = max(range(3), key=lambda i: abs(n[i]))
             if axis != "z" and mode == "fitplane":
@@ -340,6 +342,17 @@ def street_lamp():
               (0.118, 0.80), (0.130, 0.82), (0.130, 0.86), (0.112, 0.88), (0.095, 0.95), (0.075, 0.97)]
     bm = lathe(shroud if LOD < 2 else shroud[::2] + shroud[-1:], seg(20))
     body.add(uv_piece(bm, A, "paintbase", "cyl"))
+    # flange base plate 0.40 m square x 25 mm on four anchor studs with hex nuts
+    plate0 = box((0.40, 0.40, 0.025), (0.0, 0.0, 0.0125), bevel=bev(0.004))
+    body.add(uv_piece(plate0, A, "paintbase", "box"))
+    for (px, py) in (((0.15, 0.15), (-0.15, 0.15), (0.15, -0.15), (-0.15, -0.15)) if LOD < 2 else ()):
+        nut = lathe([(0.0, 0.0), (0.020, 0.0), (0.020, 0.016), (0.015, 0.019), (0.0, 0.019)], 6)
+        transform(nut, Matrix.Translation((px, py, 0.025)))
+        body.add(uv_piece(nut, A, "galv", "box"))
+        if LOD == 0:
+            stud = lathe([(0.0, 0.0), (0.011, 0.0), (0.011, 0.012), (0.008, 0.015), (0.0, 0.015)], 6)
+            transform(stud, Matrix.Translation((px, py, 0.044)))
+            body.add(uv_piece(stud, A, "galv", "box"))
     door = box((0.10, 0.012, 0.30), (0.0, -0.127, 0.42), bevel=bev(0.003))
     if LOD < 2:
         body.add(uv_piece(door, A, "paintbase", "box"))
@@ -364,30 +377,56 @@ def street_lamp():
     brace = sweep([(0.0, 0.0, 4.95), (0.22, 0.0, 5.18), (0.40, 0.0, 5.50)], circle(0.012, seg(8, 4)))
     if LOD < 2:
         body.add(uv_piece(brace, A, "paint", "box"))
-    # LED lantern head: slim tapered housing 0.62 x 0.26 x 0.09 m, tilted 5 degrees up, cooling fins on the top
-    tilt = Matrix.Translation((0.70, 0.0, 5.62)) @ Matrix.Rotation(math.radians(5), 4, "Y")
-    sec = rounded_rect(0.26, 0.085, 0.03, 2 if LOD == 0 else (1 if LOD == 1 else 0))
-    hpath = [(-0.02, 0, 0), (0.06, 0, 0), (0.30, 0, 0), (0.56, 0, -0.004), (0.62, 0, -0.008)]
-    bm = sweep(hpath, [(a, b) for a, b in sec])
-    # taper the nose
+    # LED lantern head (modern UK road lantern, 0.76 x 0.34 x 0.15 m): spigot sleeve over the bracket end, crowned
+    # canopy, tapered nose, cooling fins over the driver bay, NEMA photocell on the top, lens bezel underneath; tilted 5 deg
+    tilt = Matrix.Translation((0.60, 0.0, 5.62)) @ Matrix.Rotation(math.radians(5), 4, "Y")
+    sleeve = lathe([(0.0, 0.0), (0.040, 0.0), (0.040, 0.12), (0.046, 0.125), (0.046, 0.15)], seg(14, 6))
+    transform(sleeve, tilt @ Matrix.Rotation(math.radians(90), 4, "Y"))
+    body.add(uv_piece(sleeve, A, "housing", "cyl"))
+    sec = rounded_rect(0.34, 0.13, 0.045, 3 if LOD == 0 else (2 if LOD == 1 else 1))
+    xs = [0.12, 0.16, 0.30, 0.48, 0.66, 0.80, 0.88] if LOD < 2 else [0.12, 0.30, 0.66, 0.88]
+    bm = sweep([(x, 0.0, 0.0) for x in xs], sec)
     for v in bm.verts:
-        t = max(0.0, (v.co.x - 0.3) / 0.32)
-        v.co.y *= 1.0 - 0.28 * t
-        v.co.z *= 1.0 - 0.25 * t
+        t = max(0.0, (v.co.x - 0.50) / 0.38)
+        v.co.y *= 1.0 - 0.30 * t * t
+        if v.co.z > 0:                                      # crowned canopy, lower toward the nose
+            v.co.z = v.co.z * (1.0 - 0.35 * t) + 0.028 * (1 - (v.co.y / 0.17) ** 2) * (1 - 0.6 * t)
+        else:
+            v.co.z *= 1.0 - 0.25 * t
+        if v.co.x < 0.125:                                  # rear end cap slightly drawn in
+            v.co.y *= 0.94
+            v.co.z *= 0.94
     transform(bm, tilt)
     body.add(uv_piece(bm, A, "housing", "box"))
-    for k in range(5 if LOD == 0 else 0):                    # fins
-        fin = box((0.36, 0.008, 0.018), (0.30, -0.08 + k * 0.04, 0.050), bevel=0.002)
+    bez = box((0.62, 0.29, 0.014), (0.53, 0.0, -0.068), bevel=bev(0.004))      # lens bezel / gasket frame
+    for v in bez.verts:
+        t = max(0.0, (v.co.x - 0.50) / 0.38)
+        v.co.y *= 1.0 - 0.30 * t * t
+    transform(bez, tilt)
+    body.add(uv_piece(bez, A, "galv", "box"))
+    for k in range(7 if LOD == 0 else (4 if LOD == 1 else 0)):                 # cooling fins over the driver bay
+        n = 7 if LOD == 0 else 4
+        fy = -0.11 + k * 0.22 / (n - 1)
+        fin = box((0.30, 0.007, 0.026), (0.30, fy, 0.090 - 0.02 * (fy / 0.17) ** 2), bevel=bev(0.002))
         transform(fin, tilt)
         body.add(uv_piece(fin, A, "housing", "box"))
-    # lens: flat frosted panel on the underside (own MeshPart: Neon / glow at night)
-    lb = box((0.46, 0.20, 0.008), (0.33, 0.0, -0.045), bevel=bev(0.003))
+    if LOD < 2:                                                                 # NEMA photocell on its socket
+        pc = lathe([(0.0, 0.0), (0.042, 0.0), (0.042, 0.012), (0.036, 0.016), (0.036, 0.055), (0.030, 0.065), (0.0, 0.068)],
+                   seg(12, 6))
+        transform(pc, tilt @ Matrix.Translation((0.68, 0.0, 0.070)))
+        body.add(uv_piece(pc, A, "housing", "cyl"))
+    # lens: the frosted diffuser panel in the bezel (own MeshPart: Neon / glow at night)
+    lb = box((0.54, 0.24, 0.010), (0.53, 0.0, -0.078), bevel=bev(0.003))
+    for v in lb.verts:
+        t = max(0.0, (v.co.x - 0.50) / 0.38)
+        v.co.y *= 1.0 - 0.30 * t * t
     transform(lb, tilt)
     lens.add(uv_piece(lb, A, "lens", "fitplane", axis="z"))
     mat = material(A)
     parts = {"Body": body.finish(mat), "Lens": lens.finish(mat)}
-    col = col_object(A + "_COL", [lathe([(0.17, 0.0), (0.17, 0.95), (0.075, 0.95), (0.052, 5.5)], 8, cap_bottom=True, cap_top=True)])
-    light_pos = tilt @ Vector((0.33, 0.0, -0.06))
+    col = col_object(A + "_COL", [box((0.40, 0.40, 0.045), (0.0, 0.0, 0.0225)),
+                                  lathe([(0.17, 0.0), (0.17, 0.95), (0.075, 0.95), (0.052, 5.5)], 8, cap_bottom=True, cap_top=True)])
+    light_pos = tilt @ Vector((0.53, 0.0, -0.09))
     att = [empty("ATT_Light", light_pos, (math.radians(180), 0, 0)), empty("ATT_Base", (0, 0, 0))]
     return parts, col, att
 
@@ -428,12 +467,29 @@ def bench():
         s = box((1.84, 0.028, 0.065), (0.0, 0.0, 0.0), bevel=bev(0.006))
         transform(s, Matrix.Translation((0.0, yc, zc)) @ Matrix.Rotation(-rake, 4, "X"))
         body.add(uv_piece(s, A, "wood", "box"))
-    # coach bolts (galvanised) through the slats into the frames
-    for x in ((-0.80, 0.0, 0.80) if LOD == 0 else (0.80,)):
-        for y in (seat_y if LOD == 0 else seat_y[:1]):
-            b = lathe([(0.0, 0.0), (0.009, 0.0), (0.008, 0.004), (0.0, 0.006)], 6)
-            transform(b, Matrix.Translation((x, y, 0.432 + 0.014 + (0.02 if y == seat_y[0] else 0) - 0.012 * 0)))
-            body.add(uv_piece(b, A, "galv", "box"))
+    # coach bolts (galvanised domes, 24 mm) through the seat and back slats into the frames
+    head = [(0.012, 0.0), (0.0105, 0.004), (0.0, 0.0072)]   # open bottom: sits on the slat
+    if LOD < 2:
+        for x in (-0.80, 0.0, 0.80):
+            for i, y in enumerate(seat_y if LOD == 0 else seat_y[::2]):
+                z = 0.432 + 0.012 * (1 - abs(seat_y.index(y) - 2) / 2.0) * -1 + (0.02 if y == seat_y[0] else 0) + 0.014
+                b = lathe(head, seg(8, 6))
+                transform(b, Matrix.Translation((x, y, z - 0.001)))
+                body.add(uv_piece(b, A, "galv", "box"))
+            for k in (range(4) if LOD == 0 else (0, 3)):
+                zc = 0.52 + k * 0.085
+                yc = 0.17 + (zc - 0.42) * math.tan(rake) + 0.035
+                b = lathe(head, seg(8, 6))
+                transform(b, Matrix.Translation((x, yc, zc)) @ Matrix.Rotation(-rake, 4, "X") @ Matrix.Translation((0.0, -0.013, 0.0))
+                          @ Matrix.Rotation(math.radians(90), 4, "X"))
+                body.add(uv_piece(b, A, "galv", "box"))
+        # hex nuts and bolt ends on the outer faces of the end frames (frame joints)
+        for x in (-0.80, 0.80):
+            sx = 1 if x > 0 else -1
+            for (y, z) in ((-0.215, 0.42), (0.17, 0.42), (0.19, 0.62), (-0.05, 0.40))[: 4 if LOD == 0 else 2]:
+                nut = lathe([(0.013, 0.0), (0.013, 0.009), (0.0, 0.011)], 6)
+                transform(nut, Matrix.Translation((x + sx * 0.014, y, z)) @ Matrix.Rotation(math.radians(90 * sx), 4, "Y"))
+                body.add(uv_piece(nut, A, "galv", "box"))
     mat = material(A)
     parts = {"Body": body.finish(mat)}
     col = col_object(A + "_COL", [box((1.86, 0.52, 0.46), (0.0, -0.01, 0.23)), transform(box((1.86, 0.08, 0.40), (0, 0, 0)),
@@ -447,23 +503,55 @@ def litter_bin():
     A = "M_Road_Bin"
     body = Part(A + "_LOD%d" % LOD)
     R = 0.21
+    # knocks from kerbside life: (angle, z, radius, depth) m; the -Y face is the front
+    dents = [(math.radians(-62), 0.31, 0.075, 0.009), (math.radians(-128), 0.17, 0.05, 0.007),
+             (math.radians(150), 0.56, 0.09, 0.007), (math.radians(20), 0.40, 0.06, 0.005)]
+
+    def dent(bm, scale=1.0):
+        for v in bm.verts:
+            rr = math.hypot(v.co.x, v.co.y)
+            if rr < 1e-6:
+                continue
+            th = math.atan2(v.co.y, v.co.x)
+            k = 0.0
+            for a0, z0, rad, dep in dents:
+                da = (th - a0 + math.pi) % (2 * math.pi) - math.pi
+                k += dep * math.exp(-((da * rr) ** 2 + (v.co.z - z0) ** 2) / (rad * rad))
+            f = (rr - k * scale) / rr
+            v.co.x *= f
+            v.co.y *= f
+        return bm
 
     def flute(th, z):
         return 1.0 + (0.025 * max(0.0, math.cos(th * 16)) if 0.13 < z < 0.74 else 0.0)
     prof = [(R + 0.02, 0.0), (R + 0.02, 0.05), (R + 0.005, 0.07), (R - 0.005, 0.12), (R - 0.005, 0.13), (R, 0.40), (R, 0.74),
             (R + 0.004, 0.75)]
-    bm = lathe(prof, seg(48, 12), flutes=flute)
-    lo = bmesh.new()
-    body.add(uv_piece(bm, A, "paintbase", "cyl"))
+    cuts = {0: [0.13 + 0.076 * k for k in range(1, 8)], 1: [0.20, 0.30, 0.50, 0.62], 2: []}[LOD]
+    bm = lathe(prof, seg(48, 12), flutes=flute, z_cuts=cuts)
+    body.add(uv_piece(dent(bm), A, "paintbase", "cyl"))
     band = lathe([(R + 0.006, 0.75), (R + 0.008, 0.76), (R + 0.008, 0.84), (R + 0.006, 0.85)], seg(32, 10))
-    body.add(uv_piece(band, A, "band", "fitcyl"))
-    rim = lathe([(R + 0.006, 0.85), (R + 0.018, 0.87), (R + 0.018, 0.895), (R + 0.004, 0.91), (R - 0.012, 0.905),
-                 (R - 0.016, 0.88)], seg(32, 10))
-    body.add(uv_piece(rim, A, "paint", "cyl"))
-    liner = lathe([(R - 0.016, 0.88), (R - 0.022, 0.86), (R - 0.022, 0.50), (R - 0.03, 0.49), (0.0, 0.49)], seg(24, 8))
+    body.add(uv_piece(band, A, "band", "fitcyl", wraps=2))     # LITTER front (-Y) and back (+Y), true aspect
+    # cast lid rim: rolled outer bead, a 45 mm flat annulus round the opening, lip turned down into the liner
+    rim = [(R + 0.006, 0.85), (R + 0.020, 0.858), (R + 0.023, 0.872), (R + 0.023, 0.892), (R + 0.015, 0.905), (R + 0.002, 0.910),
+           (R - 0.044, 0.910), (R - 0.054, 0.905), (R - 0.059, 0.893), (R - 0.060, 0.875)]
+    if LOD == 2:
+        rim = rim[:1] + rim[2:4] + rim[5:7] + rim[8:]
+    lid = lathe(rim, seg(32, 10))
+    for v in lid.verts:                                        # a knock on the bead, front right
+        th = math.atan2(v.co.y, v.co.x)
+        da = (th - math.radians(-40) + math.pi) % (2 * math.pi) - math.pi
+        if math.hypot(v.co.x, v.co.y) > R + 0.01:
+            v.co.z -= 0.004 * math.exp(-(da * 0.23 / 0.05) ** 2)
+    body.add(uv_piece(lid, A, "paint", "cyl"))
+    liner = lathe([(R - 0.060, 0.875), (R - 0.066, 0.86), (R - 0.066, 0.50), (R - 0.074, 0.49), (0.0, 0.49)], seg(24, 8))
     for f in liner.faces:
         f.normal_flip()
     body.add(uv_piece(liner, A, "galv", "cyl"))
+    for k in range(4 if LOD == 0 else 0):                      # lid fixing screws
+        th = math.radians(45 + 90 * k)
+        b = lathe([(0.0, 0.0), (0.008, 0.0), (0.007, 0.003), (0.0, 0.0045)], 6)
+        transform(b, Matrix.Translation(((R - 0.021) * math.cos(th), (R - 0.021) * math.sin(th), 0.910)))
+        body.add(uv_piece(b, A, "galv", "box"))
     for th in ((math.radians(-90 + 25), math.radians(-90 - 25)) if LOD == 0 else ()):         # fixing bolts on the plinth
         b = lathe([(0.0, 0.0), (0.012, 0.0), (0.011, 0.008), (0.0, 0.011)], 6)
         transform(b, Matrix.Translation(((R + 0.012) * math.cos(th), (R + 0.012) * math.sin(th), 0.05)))
@@ -495,7 +583,7 @@ def bollard():
 
 BUILDERS = {"M_Road_StreetLamp": street_lamp, "M_Road_Bench": bench, "M_Road_Bin": litter_bin, "M_Road_Bollard": bollard}
 DIMS = {  # real size (m), Blender X, Y, Z; matches art/reference/<Asset>/dims.md
-    "M_Road_StreetLamp": (1.49, 0.33, 5.67),
+    "M_Road_StreetLamp": (1.68, 0.40, 5.71),
     "M_Road_Bench": (1.84, 0.62, 0.84),
     "M_Road_Bin": (0.46, 0.46, 0.91),
     "M_Road_Bollard": (0.21, 0.21, 0.915),

@@ -2,7 +2,7 @@
  "asset": "M_Road_Bollard",
  "name": "M_Road_Bollard",
  "date": "2026-10-18",
- "commit": "42dc047+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -319,7 +319,7 @@
    0.915
   ],
   "validation_ok": true,
-  "seconds": 11.4
+  "seconds": 12.8
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_Bollard/M_Road_Bollard.blend",
  "ok": true,
@@ -850,7 +850,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.81; 14 renders in 11 s, maps M_Road_Bollard_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.81; 14 renders in 13 s, maps M_Road_Bollard_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -888,5 +888,5 @@
   0.6299999952316284,
   2.745000123977661
  ],
- "peak_rss_mb": 520.5
+ "peak_rss_mb": 499.3
 }

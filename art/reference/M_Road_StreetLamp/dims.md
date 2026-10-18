@@ -1,8 +1,9 @@
 # M_Road_StreetLamp
-dims_m: 1.49 x 0.33 x 5.67
+dims_m: 1.68 x 0.40 x 5.71
 Reference: town street lamp.
 - Column height 5 to 6 m (row, verify); lantern about 0.5 m long (verify).
 - Base diameter about 0.2 m (verify).
 Sources: none found (verify).
 
 - R1a (2026-10-18): axes are Blender X (width), Y (depth, front -Y), Z (up). Column 5.45 m to the cap on a 0.33 m cast base shroud, 0.7 m outreach bracket, LED lantern 0.62 x 0.26 x 0.09 m tilted 5 degrees; overall X includes the outreach (R1a design; UK 5 to 6 m residential columns, verify).
+- R1a-fix (2026-10-18): 0.40 m square flange base plate on 4 anchor studs (Y 0.40 m); LED road lantern enlarged to 0.76 x 0.34 x 0.15 m (typical UK LED lantern 0.6 to 0.8 m long, verify) on a spigot sleeve at 0.6 m outreach, NEMA photocell on top; overall 1.68 x 0.40 x 5.71 m.

@@ -82,7 +82,7 @@ end
 
 -- Asset name prefix -> shared texture folder in Appearances (kits that share one atlas, e.g. G1's
 -- T_FoliageLand_Main for every M_Veg_* plant)
-AssetLoader.SHARED_SETS = { M_Veg_ = "M_Veg_FoliageLand" } :: { [string]: string }
+AssetLoader.SHARED_SETS = { M_Veg_ = "M_Veg_FoliageLand", M_Road_Bench = "M_Road_StreetLamp", M_Road_Bin = "M_Road_StreetLamp", M_Road_Bollard = "M_Road_StreetLamp" } :: { [string]: string }
 
 local function appearanceFolder(asset: string): Instance?
 	if not appearances then

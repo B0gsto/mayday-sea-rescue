@@ -84,7 +84,7 @@ EditableMesh ribbon would also need the SurfaceAppearance cloned in. Use a gener
 
 `M_Road_StreetLamp`, `M_Road_Bench`, `M_Road_Bin` and `M_Road_Bollard` are uploaded as Models (LOD0/1/2) with `_COL`.
 Each one's `assets/textures/<Asset>/` holds an identical copy of the atlas, which is one upload by content hash.
-Because the copies are byte-identical, `gen_asset_ids.py` lists the atlas only once, under `Textures.M_Road_StreetLamp.Main` (and `Appearances.M_Road_StreetLamp/Main`). I1 must add the three others to `AssetLoader.SHARED_SETS` (`M_Road_Bench = "M_Road_StreetLamp"`, `M_Road_Bin = ...`, `M_Road_Bollard = ...`) or they load without a SurfaceAppearance. Place them with `AssetLoader.cloneStatic(asset, lod, true)`. The origin is on the ground at the post or centre.
+Because the copies are byte-identical, `gen_asset_ids.py` lists the atlas only once, under `Textures.M_Road_StreetLamp.Main` (and `Appearances.M_Road_StreetLamp/Main`). The three others are listed in `AssetLoader.SHARED_SETS` (src/server/Assets/AssetLoader.luau: `M_Road_Bench`, `M_Road_Bin`, `M_Road_Bollard` -> `"M_Road_StreetLamp"`, R1a-fix), so they resolve to that SurfaceAppearance. Place them with `AssetLoader.cloneStatic(asset, lod, true)`. The origin is on the ground at the post or centre.
 Attachments (`assets/fbx/<Asset>/<Asset>.attachments.json`):
 
 - `M_Road_StreetLamp`: `ATT_Light` sits under the LED lens and points down. Use a warm white SpotLight there, about

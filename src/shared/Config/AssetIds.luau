@@ -268,14 +268,14 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://121645364088634",
 	},
 	M_Road_Bench = {
-		LOD0 = "rbxassetid://94705063793365",
-		LOD1 = "rbxassetid://106992173054100",
-		LOD2 = "rbxassetid://92183886053949",
+		LOD0 = "rbxassetid://134886513362854",
+		LOD1 = "rbxassetid://129481464875693",
+		LOD2 = "rbxassetid://79350584999402",
 	},
 	M_Road_Bin = {
-		LOD0 = "rbxassetid://93190871411152",
-		LOD1 = "rbxassetid://83735951780720",
-		LOD2 = "rbxassetid://100328088034653",
+		LOD0 = "rbxassetid://134029436562812",
+		LOD1 = "rbxassetid://74395246529997",
+		LOD2 = "rbxassetid://84499251405659",
 	},
 	M_Road_Bollard = {
 		LOD0 = "rbxassetid://98319816146913",
@@ -283,9 +283,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://73920846578428",
 	},
 	M_Road_StreetLamp = {
-		LOD0 = "rbxassetid://112441388412806",
-		LOD1 = "rbxassetid://81774414445452",
-		LOD2 = "rbxassetid://135775678156076",
+		LOD0 = "rbxassetid://95570484438823",
+		LOD1 = "rbxassetid://132587152893236",
+		LOD2 = "rbxassetid://128988227477990",
 	},
 	M_Rock_Boulder_01 = {
 		LOD0 = "rbxassetid://83907500439876",
@@ -359,10 +359,10 @@ AssetIds.Models = {
 	},
 	M_Sea_AdmiraltyAnchor = {
 		LOD0 = "rbxassetid://84567332979216",
-		LOD1 = "rbxassetid://77484820368293",
-		LOD2 = "rbxassetid://94174945578296",
+		LOD1 = "rbxassetid://118196883025897",
+		LOD2 = "rbxassetid://121691102179678",
 	},
-	M_Sea_Bell = { LOD0 = "rbxassetid://117046329942236", LOD1 = "rbxassetid://128769409174483" },
+	M_Sea_Bell = { LOD0 = "rbxassetid://107971690911880", LOD1 = "rbxassetid://112288087873766" },
 	M_Sea_Morwenna = {
 		LOD0 = "rbxassetid://96948248325880",
 		LOD1 = "rbxassetid://85796063394020",
@@ -870,11 +870,11 @@ AssetIds.Textures = {
 	},
 	M_Hbr_PropAtlas = {
 		Metal = {
-			ALB = "rbxassetid://81286129782871",
+			ALB = "rbxassetid://78415629416389",
 			NOR = "rbxassetid://115226913972559",
 			RGH = "rbxassetid://135221035341261",
-			MET = "rbxassetid://95778966558451",
-			Wet = { ALB = "rbxassetid://81035287419057", RGH = "rbxassetid://102587953774423" },
+			MET = "rbxassetid://79470737965338",
+			Wet = { ALB = "rbxassetid://120397765889906", RGH = "rbxassetid://102587953774423" },
 		},
 		Rope = {
 			ALB = "rbxassetid://87394211689155",
@@ -938,28 +938,28 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://124268074036051", RGH = "rbxassetid://78753271475072" },
 		},
 		Cobbles = {
-			ALB = "rbxassetid://125516558272954",
-			NOR = "rbxassetid://87165854262803",
-			RGH = "rbxassetid://104690903087282",
-			Wet = { ALB = "rbxassetid://123784116287114", RGH = "rbxassetid://132363993924342" },
+			ALB = "rbxassetid://138594690455843",
+			NOR = "rbxassetid://104290301857498",
+			RGH = "rbxassetid://106475233628858",
+			Wet = { ALB = "rbxassetid://122376617489211", RGH = "rbxassetid://105914406325885" },
 		},
 		CobblesTile = {
-			ALB = "rbxassetid://107908172828448",
-			NOR = "rbxassetid://82654504556651",
-			RGH = "rbxassetid://105095528259235",
-			Wet = { ALB = "rbxassetid://113749982352115", RGH = "rbxassetid://133288027409177" },
+			ALB = "rbxassetid://88600153903036",
+			NOR = "rbxassetid://99015918454978",
+			RGH = "rbxassetid://71289810046190",
+			Wet = { ALB = "rbxassetid://113523985008548", RGH = "rbxassetid://106780471587631" },
 		},
 		Gravel = {
-			ALB = "rbxassetid://79272327505045",
-			NOR = "rbxassetid://134201291310891",
-			RGH = "rbxassetid://82841221162787",
-			Wet = { ALB = "rbxassetid://115555952753581", RGH = "rbxassetid://72547537861062" },
+			ALB = "rbxassetid://109443532425724",
+			NOR = "rbxassetid://126165604798180",
+			RGH = "rbxassetid://114558243965911",
+			Wet = { ALB = "rbxassetid://121777112154653", RGH = "rbxassetid://80760308842683" },
 		},
 		GravelTile = {
-			ALB = "rbxassetid://114175039332040",
-			NOR = "rbxassetid://124454632928505",
-			RGH = "rbxassetid://137974456692048",
-			Wet = { ALB = "rbxassetid://127721299303225", RGH = "rbxassetid://137194854377616" },
+			ALB = "rbxassetid://111527878983706",
+			NOR = "rbxassetid://118869839841081",
+			RGH = "rbxassetid://140253528968476",
+			Wet = { ALB = "rbxassetid://85485369782291", RGH = "rbxassetid://139178091224565" },
 		},
 		Kerb = {
 			ALB = "rbxassetid://87296064098283",
@@ -983,11 +983,11 @@ AssetIds.Textures = {
 	},
 	M_Road_StreetLamp = {
 		Main = {
-			ALB = "rbxassetid://110206867375587",
-			NOR = "rbxassetid://103783929826567",
-			RGH = "rbxassetid://134778098810423",
+			ALB = "rbxassetid://84025040956866",
+			NOR = "rbxassetid://82805169753801",
+			RGH = "rbxassetid://104947634191533",
 			MET = "rbxassetid://95883465980786",
-			Wet = { ALB = "rbxassetid://107200645693963", RGH = "rbxassetid://89263423144419" },
+			Wet = { ALB = "rbxassetid://90010393879368", RGH = "rbxassetid://80996778447548" },
 		},
 	},
 	M_Rock_Boulder_01 = {

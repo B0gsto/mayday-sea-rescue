@@ -195,3 +195,87 @@ def save_set(out_dir, stem, alb, rgh, nor, met=None, alpha=None, size=1024, wet_
         if img.size != tuple(sz):
             img = img.resize(tuple(sz), Image.LANCZOS)
         img.save(os.path.join(out_dir, "%s_%s.png" % (stem, k)), optimize=True)
+
+
+# ---------------------------------------------------------------------------------------------------- R1a-fix helpers
+def hash01(ids, salt):
+    """Deterministic 0..1 per integer id (vectorised integer hash)."""
+    h = (np.asarray(ids, np.uint64) * np.uint64(2654435761) + np.uint64(salt * 40503 + 977)) & np.uint64(0xFFFFFFFF)
+    h ^= h >> np.uint64(15)
+    h = (h * np.uint64(2246822519)) & np.uint64(0xFFFFFFFF)
+    h ^= h >> np.uint64(13)
+    return (h.astype(np.float64) / 4294967296.0).astype(np.float32)
+
+
+def voronoi(x, y, cell, per_u, per_v, seed):
+    """Jittered-grid Voronoi on metric coords x, y (m): (F1, F2, cell id). Periodic in U (per_u m) and in V when per_v."""
+    nu = max(1, int(round(per_u / cell)))
+    cu = per_u / nu
+    nv = max(1, int(round(per_v / cell))) if per_v else 0
+    cv = per_v / nv if per_v else cell
+    ix, iy = np.floor(x / cu).astype(np.int64), np.floor(y / cv).astype(np.int64)
+    f1 = np.full(x.shape, 1e9, np.float32)
+    f2 = np.full(x.shape, 1e9, np.float32)
+    best = np.zeros(x.shape, np.int64)
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            cx, cy = ix + dx, iy + dy
+            wx = np.mod(cx, nu)
+            wy = np.mod(cy, nv) if per_v else cy + 100000
+            cid = wx * 1000003 + wy * 7919 + seed * 104729
+            px = (cx + 0.1 + 0.8 * hash01(cid, 1)) * cu
+            py = (cy + 0.1 + 0.8 * hash01(cid, 2)) * cv
+            d = np.hypot(x - px, y - py).astype(np.float32)
+            closer = d < f1
+            f2 = np.where(closer, f1, np.minimum(f2, d))
+            best = np.where(closer, cid, best)
+            f1 = np.where(closer, d, f1)
+    return f1, f2, best
+
+
+def stone_ids(core, grow=8, iters=600):
+    """Connected-component labels (flat index of a member pixel) of a boolean mask, periodic both ways, then grown
+    `grow` px into the background so stone edges keep their stone's id. Background (never reached) = -1."""
+    h, w = core.shape
+    big = h * w
+    lab = np.where(core, np.arange(big, dtype=np.int64).reshape(h, w), big)
+    for _ in range(iters):
+        prev = lab
+        m = lab
+        for ax in (0, 1):
+            for sh in (1, -1):
+                m = np.minimum(m, np.roll(lab, sh, ax))
+        lab = np.where(core, m, big)
+        f = lab.ravel()
+        ok = f < big
+        g = f.copy()
+        g[ok] = f[f[ok]]
+        lab = g.reshape(h, w)
+        if np.array_equal(lab, prev):
+            break
+    for _ in range(grow):
+        m = lab
+        for ax in (0, 1):
+            for sh in (1, -1):
+                m = np.minimum(m, np.roll(lab, sh, ax))
+        lab = np.where(lab < big, lab, m)
+    return np.where(lab < big, lab, -1)
+
+
+def height_normal_uv(hgt, ppm_u, ppm_v, strength=1.0):
+    """height_normal with separate pixels-per-metre along U (x) and V (y)."""
+    dx = (np.roll(hgt, -1, 1) - np.roll(hgt, 1, 1)) * 0.5 * ppm_u
+    dy = (np.roll(hgt, 1, 0) - np.roll(hgt, -1, 0)) * 0.5 * ppm_v
+    n = np.dstack([-dx * strength, -dy * strength, np.ones_like(hgt)])
+    return (n / np.linalg.norm(n, axis=2, keepdims=True)).astype(np.float32)
+
+
+def boost_normal(n, k):
+    out = np.dstack([n[..., 0] * k, n[..., 1] * k, n[..., 2]])
+    return out / np.linalg.norm(out, axis=2, keepdims=True)
+
+
+def desat(rgb, k, tint=(1, 1, 1)):
+    """Saturation scaled by (1 - k) about luma, after any contrast grade (grade()'s contrast gain also scales chroma)."""
+    y = luma(rgb)[..., None]
+    return (y + (rgb - y) * (1.0 - k)) * np.array(tint, np.float32)

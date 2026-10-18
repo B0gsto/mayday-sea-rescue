@@ -50,7 +50,7 @@ def orange_peel(hw, strength, ppm, seed):
     return T.height_normal((T.noise(hw, max(4, hw[1] // 10), seed, 2) - 0.5) * 0.00012 * strength, 1.0, ppm)
 
 
-def paint(hw, tile_m, seed, base=(38, 42, 40), absz_h=None):
+def paint(hw, tile_m, seed, base=(38, 42, 40), absz_h=None, bloom=0.0, scuffs=0.0):
     """Black-painted iron / steel: scan breakup, chips to dark primer and rust, orange peel; absz adds splash and salt."""
     h, w = hw
     sa, sr, sn, sd = scan("rusty_painted_metal")
@@ -81,9 +81,39 @@ def paint(hw, tile_m, seed, base=(38, 42, 40), absz_h=None):
         out = T.blend(out, np.dstack([np.full(hw, c, F32) for c in (150, 150, 146)]), salt * 0.45)
         rgh = rgh + splash * 0.4 + salt * 0.2
         n = T.flatten_normal(n, splash * 0.5)
-    # streaks running down from the top of each tile (rain run-off)
-    streak = T.noise(hw, 6, seed + 5, 3, aniso=(0.12, 1.0))
+    # rain run-off streaks, running down the image (= down the part); noise aniso (x, small y) is smooth along V
+    streak = T.noise(hw, 6, seed + 5, 3, aniso=(1.0, 0.12))
     out = out * (1 + 0.10 * (streak[..., None] - 0.5))
+    if bloom > 0:   # rust bloom: blistered paint lifting round rust cores, orange halo, rust run-off running down
+        b = T.noise(hw, 10, seed + 6, 4)
+        core = T.sstep(0.70, 0.78, b) * bloom
+        halo = np.clip(T.sstep(0.58, 0.74, b) * (0.55 + 0.45 * T.noise(hw, 70, seed + 7, 2)), 0, 1) * bloom
+        run = halo.copy()
+        step = max(1, h // 90)
+        for i in range(1, 28):
+            run = np.maximum(run, np.roll(halo, i * step, 0) * (0.93 ** i))
+        run = run * T.sstep(0.45, 0.7, T.noise(hw, 30, seed + 8, 2, aniso=(1.0, 0.08)))
+        orange = np.dstack([128 + 18 * var, 70 + 8 * var, 38 + 4 * var]).astype(F32)
+        brown = np.dstack([78 + 10 * var, 46 + 6 * var, 30 + 3 * var]).astype(F32)
+        out = T.blend(out, orange, np.clip(halo * 0.75 + run * 0.45, 0, 1))
+        out = T.blend(out, brown, core)
+        rgh = rgh + halo * 0.3 + core * 0.2
+        n = T.combine_normals(n, T.height_normal((core * 0.5 + T.sstep(0.6, 0.66, b) * 0.5) * 0.0004 * bloom
+                                                 * (0.6 + 0.4 * T.noise(hw, 90, seed + 9, 2)), 1.0, ppm))
+    if scuffs > 0:  # scratches and kick scuffs through to primer and bright steel; denser low down
+        sc = T.noise(hw, 40, seed + 10, 2, aniso=(0.12, 1.0))       # smooth along U: horizontal strokes
+        line = (1 - T.sstep(0.0, 0.035, np.abs(sc - 0.5))) * T.sstep(0.55, 0.75, T.noise(hw, 5, seed + 11, 3))
+        sc2 = T.noise(hw, 70, seed + 12, 2, aniso=(0.3, 1.0))
+        line2 = (1 - T.sstep(0.0, 0.02, np.abs(sc2 - 0.5))) * T.sstep(0.5, 0.7, T.noise(hw, 7, seed + 13, 3))
+        if absz_h is not None:
+            zz = (1.0 - (np.arange(h, dtype=F32) + 0.5) / h)[:, None] * np.ones((1, w), F32)
+            line = line * (0.5 + 1.0 * (1 - zz))
+        m = np.clip((line + line2 * 0.7) * scuffs, 0, 1)
+        deep = m * T.sstep(0.5, 0.8, T.noise(hw, 60, seed + 14, 2))
+        out = T.blend(out, np.dstack([np.full(hw, c, F32) for c in (96, 92, 86)]), m * 0.8)
+        out = T.blend(out, np.dstack([np.full(hw, c, F32) for c in (150, 148, 142)]), deep * 0.6)
+        rgh = rgh + m * 0.15 - deep * 0.1
+        n = T.combine_normals(n, T.height_normal(-m * 0.00012, 1.0, ppm))
     return out, np.clip(rgh, 0.3, 0.95), n, np.zeros(hw, F32)
 
 
@@ -108,6 +138,9 @@ def galv(hw, tile_m, seed, dark=False):
 
 
 def wood(hw, tile_m, seed):
+    """Weathered teak / iroko slats: fine_grained_wood scan for figure, desaturated after grading (grade's contrast gain
+    scales chroma), a straight growth-ring grain along U (the slat length) with raised-grain relief, silver weathering
+    and checks that follow the grain (noise aniso small x = long along U)."""
     h, w = hw
     sa, sr, sn, sd = scan("fine_grained_wood")
     gx = np.abs(np.diff(T.luma(sa), axis=1)).mean()
@@ -116,18 +149,30 @@ def wood(hw, tile_m, seed):
         sa, sr = np.rot90(sa).copy(), np.rot90(sr).copy()
         sn = np.rot90(sn).copy()
         sn = np.dstack([-sn[..., 1], sn[..., 0], sn[..., 2]])
-    a = T.tile_to(sa, (w / max(1, round(tile_m[0] / 0.6)), h / max(1, round(tile_m[1] / 0.6))), hw)
-    n = T.tile_to(sn, (w / max(1, round(tile_m[0] / 0.6)), h / max(1, round(tile_m[1] / 0.6))), hw)
+    tp = (w / max(1, round(tile_m[0] / 0.6)), h / max(1, round(tile_m[1] / 0.6)))
+    a = T.tile_to(sa, tp, hw)
+    n = T.tile_to(sn, tp, hw)
     n = n / np.linalg.norm(n, axis=2, keepdims=True)
-    a = T.grade(a, 118, 20, tint=(1.10, 0.97, 0.84), desat=0.55)
-    grey = T.noise(hw, 5, seed, 3, aniso=(4.0, 1.0))
-    silver = T.grade(a, 132, 14, desat=0.9)
-    a = T.blend(a, silver, T.sstep(0.35, 0.75, grey) * 0.65)      # weathered silver-grey
-    checks = T.sstep(0.8, 0.9, T.noise(hw, 40, seed + 1, 2, aniso=(5.0, 1.0)))
-    a = a * (1 - 0.35 * checks[..., None])                        # surface checking / splits
-    rgh = 0.72 + 0.1 * grey + 0.1 * checks
-    n = T.combine_normals(n, T.height_normal(-checks * 0.0004, 1.0, w / tile_m[0]))
-    return a, np.clip(rgh, 0.4, 0.95), n, np.zeros(hw, F32)
+    ppm = w / tile_m[0]
+    a = T.desat(T.grade(a, 100, 22), 0.82, tint=(1.07, 1.0, 0.89))         # grey-brown teak
+    # growth rings: lines along U, spacing 5 to 9 mm, wandering with a low-frequency warp
+    yy = np.arange(h, dtype=F32)[:, None] * np.ones((1, w), F32) / ppm
+    warp = (T.noise(hw, 3, seed + 2, 3, aniso=(0.25, 1.0)) - 0.5) * 0.05
+    ph = (yy + warp) / 0.0068 + (T.noise(hw, 8, seed + 3, 2, aniso=(0.2, 1.0)) - 0.5) * 3
+    ring = np.abs(np.sin(np.pi * ph)) ** 3                                   # latewood lines
+    a = a * (1 - 0.20 * ring[..., None])
+    fib = T.noise(hw, 90, seed + 4, 2, aniso=(0.05, 1.0))                   # open-pore fibre streaks
+    a = a * (1 + 0.12 * (fib[..., None] - 0.5))
+    grey = T.noise(hw, 5, seed, 3, aniso=(0.25, 1.0))
+    silver = T.desat(T.grade(a, 124, 20), 0.95, tint=(1.0, 1.0, 0.98))
+    a = T.blend(a, silver, T.sstep(0.30, 0.70, grey) * 0.55)                 # weathered silver-grey, along the grain
+    checks = T.sstep(0.84, 0.92, T.noise(hw, 40, seed + 1, 2, aniso=(0.06, 1.0)))
+    a = a * (1 - 0.40 * checks[..., None])                                   # surface checks / splits along the grain
+    dirt = T.sstep(0.6, 0.85, T.noise(hw, 12, seed + 5, 3))
+    a = a * (1 - 0.12 * dirt[..., None])
+    rgh = 0.74 + 0.08 * grey + 0.1 * checks - 0.05 * ring
+    n = T.combine_normals(T.boost_normal(n, 0.6), T.height_normal(ring * 0.00025 - checks * 0.0005, 1.0, ppm))
+    return a, np.clip(rgh, 0.45, 0.95), n, np.zeros(hw, F32)
 
 
 def text_layer(hw, items, font_px):
@@ -159,7 +204,10 @@ def gold_band(hw, seed):
     h, w = hw
     a = np.dstack([np.full(hw, c, F32) for c in (168, 142, 98)])
     a = a * (1 + 0.06 * (T.noise(hw, 20, seed, 3)[..., None] - 0.5))
-    txt = text_layer(hw, [(w * 0.25, h * 0.5, "L I T T E R"), (w * 0.75, h * 0.5, "L I T T E R")], int(h * 0.62))
+    # the band region wraps half the circumference (0.685 m over w px, 0.10 m over h px): text widened to true aspect
+    sx = (0.10 / h) / (0.685 / w)
+    wide = text_layer((h, int(w / sx)), [(w / sx * 0.5, h * 0.5, "L I T T E R")], int(h * 0.6))
+    txt = np.asarray(Image.fromarray(wide, "F").resize((w, h), Image.BICUBIC), dtype=F32).clip(0, 1)
     lines = np.zeros(hw, F32)
     k = max(2, h // 16)
     lines[:k], lines[-k:] = 1, 1
@@ -168,7 +216,7 @@ def gold_band(hw, seed):
     wear = T.sstep(0.8, 0.88, T.noise(hw, 50, seed + 1, 2))
     a = T.blend(a, np.dstack([np.full(hw, c, F32) for c in (72, 66, 60)]), wear * 0.6)
     rgh = 0.45 + 0.05 * ink + wear * 0.3
-    n = T.height_normal(ink * 0.0002, 1.0, w / 1.35)
+    n = T.height_normal(ink * 0.0002, 1.0, w / 0.685)
     return a, rgh, n, np.zeros(hw, F32)
 
 
@@ -219,7 +267,9 @@ def build():
             hw = (y1 - y0, x1 - x0)
             seed += 7
             if mat == "paint_black":
-                res = paint(hw, (par[0], par[1]), seed, absz_h=par[1] if kind == "absz" else None)
+                res = paint(hw, (par[0], par[1]), seed, absz_h=par[1] if kind == "absz" else None,
+                            bloom={"M_Road_Bench": 1.0, "M_Road_Bin": 0.35}.get(asset, 0.0),
+                            scuffs={"M_Road_Bin": 1.0, "M_Road_Bollard": 0.4}.get(asset, 0.0))
             elif mat == "powder_grey":
                 res = powder_grey(hw, par, seed)
             elif mat in ("galv", "galv_dark"):

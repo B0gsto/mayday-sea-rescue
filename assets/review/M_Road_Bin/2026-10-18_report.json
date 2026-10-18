@@ -2,7 +2,7 @@
  "asset": "M_Road_Bin",
  "name": "M_Road_Bin",
  "date": "2026-10-18",
- "commit": "42dc047+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD0.fbx",
-   "bytes": 123020,
+   "bytes": 237164,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bin_COL",
@@ -50,16 +50,16 @@
     {
      "name": "M_Road_Bin_LOD0.001",
      "min": [
-      -0.69,
-      -0.69,
+      -0.699,
+      -0.699,
       0.0
      ],
      "max": [
-      0.69,
-      0.69,
-      2.73
+      0.699,
+      0.699,
+      2.7435
      ],
-     "polygons": 1400,
+     "polygons": 2424,
      "all_triangles": true,
      "uv": true
     }
@@ -74,7 +74,7 @@
   },
   {
    "file": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD1.fbx",
-   "bytes": 66764,
+   "bytes": 112492,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bin_LOD1"
@@ -83,16 +83,16 @@
     {
      "name": "M_Road_Bin_LOD1.001",
      "min": [
-      -0.69,
-      -0.69,
+      -0.699,
+      -0.699,
       0.0
      ],
      "max": [
-      0.69,
-      0.69,
+      0.699,
+      0.699,
       2.73
      ],
-     "polygons": 676,
+     "polygons": 996,
      "all_triangles": true,
      "uv": true
     }
@@ -107,7 +107,7 @@
   },
   {
    "file": "assets/fbx/M_Road_Bin/M_Road_Bin_LOD2.fbx",
-   "bytes": 50236,
+   "bytes": 55132,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bin_LOD2"
@@ -116,16 +116,16 @@
     {
      "name": "M_Road_Bin_LOD2.001",
      "min": [
-      -0.69,
+      -0.699,
       -0.6727,
       0.0
      ],
      "max": [
-      0.69,
+      0.699,
       0.6727,
       2.73
      ],
-     "polygons": 412,
+     "polygons": 432,
      "all_triangles": true,
      "uv": true
     }
@@ -190,72 +190,72 @@
   "frames": {
    "Front3Q": {
     "asset": [
-     0.223,
+     0.221,
      0.037,
-     0.76,
-     0.891
+     0.761,
+     0.89
     ],
     "mannequin": [
-     -0.863,
-     0.094,
-     0.01,
-     1.921
+     -0.854,
+     0.095,
+     0.011,
+     1.904
     ],
-    "fill": 0.854
+    "fill": 0.853
    },
    "Side": {
     "asset": [
-     0.262,
+     0.26,
      0.037,
-     0.738,
-     0.949
+     0.74,
+     0.948
     ],
     "mannequin": [
-     -0.708,
-     0.052,
+     -0.701,
+     0.053,
      0.056,
-     1.953
+     1.939
     ],
-    "fill": 0.912
+    "fill": 0.911
    },
    "Rear3Q": {
     "asset": [
-     0.223,
+     0.221,
      0.037,
-     0.76,
-     0.891
+     0.761,
+     0.89
     ],
     "mannequin": [
-     -0.863,
-     0.094,
-     0.01,
-     1.921
+     -0.854,
+     0.095,
+     0.011,
+     1.904
     ],
-    "fill": 0.854
+    "fill": 0.853
    },
    "High": {
     "asset": [
-     0.195,
-     0.085,
-     0.823,
+     0.193,
+     0.084,
+     0.825,
      0.963
     ],
     "mannequin": [
-     -2.272,
-     0.169,
+     -2.221,
+     0.171,
      0.052,
-     2.351
+     2.308
     ],
-    "fill": 0.878
+    "fill": 0.879
    }
   },
   "closeups": [
    {
     "name": "corner_FL",
     "target": [
-     0.6899999976158142,
-     -0.6899999976158142,
-     2.7300000190734863
+     0.6990000009536743,
+     -0.6990000009536743,
+     2.743499994277954
     ],
     "dist": 6.0,
     "az": 45.0,
@@ -265,9 +265,9 @@
    {
     "name": "corner_FR",
     "target": [
-     -0.6899999976158142,
-     -0.6899999976158142,
-     2.7300000190734863
+     -0.6990000009536743,
+     -0.6990000009536743,
+     2.743499994277954
     ],
     "dist": 6.0,
     "az": 315.0,
@@ -277,9 +277,9 @@
    {
     "name": "corner_RL",
     "target": [
-     0.6899999976158142,
-     0.6899999976158142,
-     2.7300000190734863
+     0.6990000009536743,
+     0.6990000009536743,
+     2.743499994277954
     ],
     "dist": 6.0,
     "az": 135.0,
@@ -289,9 +289,9 @@
    {
     "name": "corner_RR",
     "target": [
-     -0.6899999976158142,
-     0.6899999976158142,
-     2.7300000190734863
+     -0.6990000009536743,
+     0.6990000009536743,
+     2.743499994277954
     ],
     "dist": 6.0,
     "az": 225.0,
@@ -303,7 +303,7 @@
     "target": [
      0.0,
      0.0,
-     1.3650000095367432
+     1.371749997138977
     ],
     "dist": 6.0,
     "az": 35.0,
@@ -312,7 +312,7 @@
    }
   ],
   "closeup_px": 1024,
-  "min_fill": 0.854,
+  "min_fill": 0.853,
   "in_frame": true,
   "dims_m": [
    0.46,
@@ -320,7 +320,7 @@
    0.91
   ],
   "validation_ok": true,
-  "seconds": 10.4
+  "seconds": 9.7
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_Bin/M_Road_Bin.blend",
  "ok": true,
@@ -363,7 +363,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1400 of 8000"
+   "detail": "2424 of 8000"
   },
   {
    "subject": "M_Road_Bin_LOD0",
@@ -371,7 +371,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.94e-04, 184 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.97e-04, 184 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bin_LOD0",
@@ -403,7 +403,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 724 faces have no UV area"
+   "detail": "0 of 1260 faces have no UV area"
   },
   {
    "subject": "M_Road_Bin_LOD0",
@@ -411,7 +411,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "56 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "61 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Road_Bin_LOD1",
@@ -435,7 +435,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "676 of 8000"
+   "detail": "996 of 8000"
   },
   {
    "subject": "M_Road_Bin_LOD1",
@@ -443,7 +443,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.82e-03, 92 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.78e-03, 92 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bin_LOD1",
@@ -475,7 +475,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 344 faces have no UV area"
+   "detail": "0 of 504 faces have no UV area"
   },
   {
    "subject": "M_Road_Bin_LOD1",
@@ -483,7 +483,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.3% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.4% (max 15%)"
   },
   {
    "subject": "M_Road_Bin_LOD2",
@@ -507,7 +507,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "412 of 8000"
+   "detail": "432 of 8000"
   },
   {
    "subject": "M_Road_Bin_LOD2",
@@ -515,7 +515,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.21e-03, 56 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.16e-03, 56 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bin_LOD2",
@@ -547,7 +547,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 210 faces have no UV area"
+   "detail": "0 of 220 faces have no UV area"
   },
   {
    "subject": "M_Road_Bin_LOD2",
@@ -555,7 +555,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.7% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.2% (max 15%)"
   },
   {
    "subject": "M_Road_Bin_COL",
@@ -603,7 +603,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1400 of 2500 (large_prop, asset row)"
+   "detail": "2424 of 2500 (large_prop, asset row)"
   },
   {
    "subject": "M_Road_Bin",
@@ -611,7 +611,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "676 of 1250"
+   "detail": "996 of 1250"
   },
   {
    "subject": "M_Road_Bin",
@@ -619,7 +619,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "412 of 625"
+   "detail": "432 of 625"
   },
   {
    "subject": "M_Road_Bin",
@@ -635,7 +635,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.380 studs, real 0.460 m = 1.380 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "1.398 studs, real 0.460 m = 1.380 studs, off 1.3% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Road_Bin",
@@ -643,7 +643,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.380 studs, real 0.460 m = 1.380 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "1.398 studs, real 0.460 m = 1.380 studs, off 1.3% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Road_Bin",
@@ -651,7 +651,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2.730 studs, real 0.910 m = 2.730 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "2.743 studs, real 0.910 m = 2.730 studs, off 0.5% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Road_Bin",
@@ -763,7 +763,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bin_COL, M_Road_Bin_LOD0; 1428 triangles (scene 1428)"
+   "detail": "M_Road_Bin_COL, M_Road_Bin_LOD0; 2452 triangles (scene 2452)"
   },
   {
    "subject": "M_Road_Bin_LOD0.fbx",
@@ -803,7 +803,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bin_LOD1; 676 triangles (scene 676)"
+   "detail": "M_Road_Bin_LOD1; 996 triangles (scene 996)"
   },
   {
    "subject": "M_Road_Bin_LOD1.fbx",
@@ -843,7 +843,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bin_LOD2; 412 triangles (scene 412)"
+   "detail": "M_Road_Bin_LOD2; 432 triangles (scene 432)"
   },
   {
    "subject": "M_Road_Bin_LOD2.fbx",
@@ -867,22 +867,22 @@
    "name": "M_Road_Bin_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 412,
+   "triangles": 432,
    "texel_density": null
   },
   {
    "name": "M_Road_Bin_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 676,
+   "triangles": 996,
    "texel_density": null
   },
   {
    "name": "M_Road_Bin_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1400,
-   "texel_density": 56.3
+   "triangles": 2424,
+   "texel_density": 60.7
   },
   {
    "name": "M_Road_Bin_COL",
@@ -893,9 +893,9 @@
   }
  ],
  "bbox_studs": [
-  1.3799999952316284,
-  1.3799999952316284,
-  2.7300000190734863
+  1.3980000019073486,
+  1.3980000019073486,
+  2.743499994277954
  ],
- "peak_rss_mb": 543.5
+ "peak_rss_mb": 476.7
 }

@@ -2,7 +2,7 @@
  "asset": "M_Road_Bench",
  "name": "M_Road_Bench",
  "date": "2026-10-18",
- "commit": "42dc047+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD0.fbx",
-   "bytes": 155996,
+   "bytes": 201084,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bench_COL",
@@ -59,7 +59,7 @@
       0.9827,
       2.4732
      ],
-     "polygons": 1700,
+     "polygons": 2132,
      "all_triangles": true,
      "uv": true
     }
@@ -74,7 +74,7 @@
   },
   {
    "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD1.fbx",
-   "bytes": 51548,
+   "bytes": 78236,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bench_LOD1"
@@ -92,7 +92,7 @@
       0.9876,
       2.4732
      ],
-     "polygons": 516,
+     "polygons": 834,
      "all_triangles": true,
      "uv": true
     }
@@ -107,7 +107,7 @@
   },
   {
    "file": "assets/fbx/M_Road_Bench/M_Road_Bench_LOD2.fbx",
-   "bytes": 51548,
+   "bytes": 49692,
    "fbx_version": 7400,
    "meshes": [
     "M_Road_Bench_LOD2"
@@ -125,7 +125,7 @@
       0.9876,
       2.4732
      ],
-     "polygons": 516,
+     "polygons": 492,
      "all_triangles": true,
      "uv": true
     }
@@ -320,7 +320,7 @@
    0.84
   ],
   "validation_ok": true,
-  "seconds": 9.2
+  "seconds": 16.3
  },
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/roads/M_Road_Bench/M_Road_Bench.blend",
  "ok": true,
@@ -363,7 +363,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1700 of 8000"
+   "detail": "2132 of 8000"
   },
   {
    "subject": "M_Road_Bench_LOD0",
@@ -371,7 +371,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.25e-04, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.25e-04, 264 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bench_LOD0",
@@ -403,7 +403,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1084 faces have no UV area"
+   "detail": "0 of 1342 faces have no UV area"
   },
   {
    "subject": "M_Road_Bench_LOD0",
@@ -411,7 +411,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "74 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "76 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Road_Bench_LOD1",
@@ -435,7 +435,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "516 of 8000"
+   "detail": "834 of 8000"
   },
   {
    "subject": "M_Road_Bench_LOD1",
@@ -443,7 +443,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.60e-04, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.26e-04, 114 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bench_LOD1",
@@ -475,15 +475,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 264 faces have no UV area"
+   "detail": "0 of 474 faces have no UV area"
   },
   {
    "subject": "M_Road_Bench_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (hand-made LODs share the LOD0 trim mapping exactly (bounds 0.000); the 15.6% UV-area drop is the 6 mm slat edge bevels and coach bolts, LOD0 only (R1a)): UV bounds differ by 0.000 (max 0.02), UV area by 15.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 13.9% (max 15%)"
   },
   {
    "subject": "M_Road_Bench_LOD2",
@@ -507,7 +507,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "516 of 8000"
+   "detail": "492 of 8000"
   },
   {
    "subject": "M_Road_Bench_LOD2",
@@ -515,7 +515,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.60e-04, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.08e-02, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Road_Bench_LOD2",
@@ -539,7 +539,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.003 to 0.247, v 0.253 to 0.496"
+   "detail": "u 0.003 to 0.247, v 0.284 to 0.496"
   },
   {
    "subject": "M_Road_Bench_LOD2",
@@ -547,7 +547,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 264 faces have no UV area"
+   "detail": "0 of 246 faces have no UV area"
   },
   {
    "subject": "M_Road_Bench_LOD2",
@@ -555,7 +555,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (hand-made LODs share the LOD0 trim mapping exactly (bounds 0.000); the 15.6% UV-area drop is the 6 mm slat edge bevels and coach bolts, LOD0 only (R1a)): UV bounds differ by 0.000 (max 0.02), UV area by 15.6% (max 15%)"
+   "detail": "WAIVED (hand-made LODs share the LOD0 trim mapping exactly (bounds 0.000); the 15.6% UV-area drop is the 6 mm slat edge bevels and coach bolts, LOD0 only (R1a)): UV bounds differ by 0.031 (max 0.02), UV area by 10.4% (max 15%)"
   },
   {
    "subject": "M_Road_Bench_COL",
@@ -603,7 +603,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1700 of 2500 (large_prop, asset row)"
+   "detail": "2132 of 2500 (large_prop, asset row)"
   },
   {
    "subject": "M_Road_Bench",
@@ -611,7 +611,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "516 of 1250"
+   "detail": "834 of 1250"
   },
   {
    "subject": "M_Road_Bench",
@@ -619,7 +619,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "516 of 625"
+   "detail": "492 of 625"
   },
   {
    "subject": "M_Road_Bench",
@@ -763,7 +763,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bench_COL, M_Road_Bench_LOD0; 1724 triangles (scene 1724)"
+   "detail": "M_Road_Bench_COL, M_Road_Bench_LOD0; 2156 triangles (scene 2156)"
   },
   {
    "subject": "M_Road_Bench_LOD0.fbx",
@@ -803,7 +803,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bench_LOD1; 516 triangles (scene 516)"
+   "detail": "M_Road_Bench_LOD1; 834 triangles (scene 834)"
   },
   {
    "subject": "M_Road_Bench_LOD1.fbx",
@@ -843,7 +843,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Road_Bench_LOD2; 516 triangles (scene 516)"
+   "detail": "M_Road_Bench_LOD2; 492 triangles (scene 492)"
   },
   {
    "subject": "M_Road_Bench_LOD2.fbx",
@@ -859,7 +859,7 @@
    "ok": true,
    "waived": false,
    "info": true,
-   "detail": "asset in frame, fill >= 0.79; 14 renders in 9 s, maps M_Road_Bench_LOD0: ALB/MET/NOR/RGH"
+   "detail": "asset in frame, fill >= 0.79; 14 renders in 16 s, maps M_Road_Bench_LOD0: ALB/MET/NOR/RGH"
   }
  ],
  "meshes": [
@@ -867,22 +867,22 @@
    "name": "M_Road_Bench_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 516,
+   "triangles": 492,
    "texel_density": null
   },
   {
    "name": "M_Road_Bench_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 516,
+   "triangles": 834,
    "texel_density": null
   },
   {
    "name": "M_Road_Bench_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1700,
-   "texel_density": 74.5
+   "triangles": 2132,
+   "texel_density": 76.0
   },
   {
    "name": "M_Road_Bench_COL",
@@ -897,5 +897,5 @@
   1.8376700282096863,
   2.477829365991056
  ],
- "peak_rss_mb": 571.3
+ "peak_rss_mb": 414.3
 }
