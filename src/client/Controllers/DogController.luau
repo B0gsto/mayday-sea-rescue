@@ -10,6 +10,7 @@
 -- paddle when he swims, a shake when he climbs out, and a lean into the boat's motion aboard. Inputs
 -- come from the replicated Mode and Wetness attributes and the root's velocity. Transforms are local; the server owns position.
 -- LOD: LOD1 / LOD2 copies start hidden; the client shows one by camera distance (local Transparency).
+-- The harness stays hidden while the model attribute HideHarness is set (DogService: a life jacket on).
 --
 -- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
 -- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
@@ -144,9 +145,14 @@ local function rebuild(state: DogState)
 			local lod = d:GetAttribute("BosunLod")
 			if type(lod) == "number" then
 				local parts = {}
+				local hideHarness = state.model:GetAttribute("HideHarness") == true -- a life jacket on
 				for _, p in d:GetDescendants() do
 					if p:IsA("BasePart") then
-						table.insert(parts, p)
+						if hideHarness and string.find(p.Name, "_Harness", 1, true) then
+							p.Transparency = 1
+						else
+							table.insert(parts, p)
+						end
 					end
 				end
 				lods[lod] = parts
@@ -183,6 +189,10 @@ local function track(model: Instance)
 	end
 	table.insert(state.connections, model.DescendantAdded:Connect(markDirty))
 	table.insert(state.connections, model.DescendantRemoving:Connect(markDirty))
+	table.insert(
+		state.connections,
+		model:GetAttributeChangedSignal("HideHarness"):Connect(markDirty)
+	)
 	dogs[model] = state
 end
 

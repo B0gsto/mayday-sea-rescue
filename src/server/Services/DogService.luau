@@ -21,6 +21,13 @@
 --                                 position = Vector3, distance = number })
 -- The client (DogController) turns his head, shows a "Woof!" bubble and a small arrow.
 --
+-- Cosmetics (RP-M5): the player's Cos_Dog attribute picks the companion (Config/Cosmetics/Dog: Bosun, or
+-- a Water Dog Friends stand-in on Bosun's rig; same abilities) and Cos_DogHarness / Cos_DogBandana /
+-- Cos_DogJacket / Cos_DogHat what he wears (Config/Cosmetics/DogWear, geometry in Shared.Dog.DogWear): a
+-- tint on the harness SurfaceAppearances (dry and wet), and plain Parts in a "Wear" model welded to the
+-- LOD0 BodyFore / BodyHead (darkened while he is wet). A life jacket sets the model attribute HideHarness
+-- (DogController hides the harness locally). Model attributes DogId, DogName, Breed.
+--
 -- API (server): DogService.GetDog(player): Model?
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -31,6 +38,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BosunMotion = require(Shared:WaitForChild("Dog"):WaitForChild("BosunMotion"))
 local BosunWetness = require(Shared:WaitForChild("Dog"):WaitForChild("BosunWetness"))
+local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
@@ -77,9 +86,17 @@ type Dog = {
 	wetness: number,
 	wet: boolean,
 	lastSwim: boolean,
+	variant: string, -- Cos_Dog option id this model was built for
+	anchors: { [string]: { part: BasePart, rest: CFrame } }, -- LOD0 Fore / Head, rest pose in the authored frame
 }
 
+local WEAR_SLOTS = { "DogHarness", "DogBandana", "DogJacket", "DogHat" }
+local WEAR_KIND = { DogBandana = "Bandana", DogJacket = "Jacket", DogHat = "Hat" }
+local WET_DARKEN = 0.72 -- wet fabric drops about a quarter of its value (docs/05 3.3)
+
 local dogs: { [Player]: Dog } = {}
+local applyWear: (dog: Dog) -> ()
+local dogOption: (dog: Dog) -> { [string]: any }
 local folder: Folder
 
 local weather: any = nil
@@ -325,7 +342,7 @@ end
 
 -- Welds one LOD copy onto `body` with the BosunMotion joints. `visible` false hides it (the client
 -- shows the LOD it wants locally). Returns false if a body part is missing.
-local function rigLod(body: BasePart, copy: Model, lod: number): boolean
+local function rigLod(body: BasePart, copy: Model, lod: number, fur: boolean): boolean
 	local base = body.CFrame * CFrame.new(0, -LEG_HEIGHT, 0) -- the authored origin: the ground under him
 	copy:PivotTo(base)
 	local parts: { [string]: BasePart } = {}
@@ -333,7 +350,9 @@ local function rigLod(body: BasePart, copy: Model, lod: number): boolean
 	for _, d in copy:GetDescendants() do
 		if d:IsA("BasePart") then
 			local key = keyOf(d.Name)
-			if key and not parts[key] then
+			if key and FUR_KEYS[key] and not fur then
+				d:Destroy() -- a short-coated stand-in (Config/Cosmetics/Dog `fur = false`)
+			elseif key and not parts[key] then
 				parts[key] = d
 			else
 				table.insert(extra, d)
@@ -422,6 +441,114 @@ local function rigLod(body: BasePart, copy: Model, lod: number): boolean
 	return true
 end
 
+-- Cosmetics ---------------------------------------------------------------------------------------
+
+local function equipped(player: Player, slot: string): string
+	local v = player:GetAttribute(Cosmetics.attribute(slot))
+	return if type(v) == "string" then v else (Cosmetics.default(slot) or "")
+end
+
+function dogOption(dog: Dog): { [string]: any }
+	return (Cosmetics.option("Dog", dog.variant) or Cosmetics.option("Dog", "Bosun") or {}) :: any
+end
+
+local function lookOf(player: Player, slot: string): string?
+	local option = Cosmetics.option(slot, equipped(player, slot)) :: any
+	return option and option.look
+end
+
+local function wetColor(hex: string, wet: boolean): Color3
+	local c = Color3.fromHex(hex)
+	return if wet then Color3.new(c.R * WET_DARKEN, c.G * WET_DARKEN, c.B * WET_DARKEN) else c
+end
+
+-- Re-dresses the dog from the player's Cos_Dog* attributes (needs the uploaded model; the greybox
+-- placeholder wears nothing).
+function applyWear(dog: Dog)
+	local old = dog.model:FindFirstChild("Wear")
+	if old then
+		old:Destroy()
+	end
+	if not dog.real then
+		return
+	end
+	local player = dog.player
+	-- harness colour: a multiply tint on every harness SurfaceAppearance (dry, wet, every LOD)
+	local tint = DogWear.harnessTint(lookOf(player, "DogHarness"))
+	local color = if tint then Color3.new(tint[1], tint[2], tint[3]) else Color3.new(1, 1, 1)
+	for _, d in dog.model:GetDescendants() do
+		if d:IsA("SurfaceAppearance") then
+			local owner = d:FindFirstAncestorWhichIsA("BasePart")
+			if owner and keyOf(owner.Name) == "Harness" then
+				pcall(function()
+					(d :: any).Color = color
+				end)
+			end
+		end
+	end
+	local jacket = lookOf(player, "DogJacket")
+	dog.model:SetAttribute("HideHarness", if jacket and jacket ~= "None" then true else nil)
+	local wear = Instance.new("Model")
+	wear.Name = "Wear"
+	for _, slot in WEAR_SLOTS do
+		local kind = WEAR_KIND[slot]
+		if not kind then
+			continue
+		end
+		for _, spec in DogWear.parts(kind, lookOf(player, slot)) do
+			local anchor = dog.anchors[spec.on]
+			if not anchor then
+				continue
+			end
+			local p: BasePart
+			if spec.shape == "Wedge" then
+				p = Instance.new("WedgePart")
+			else
+				local plain = Instance.new("Part")
+				plain.Shape = if spec.shape == "Cylinder"
+					then Enum.PartType.Cylinder
+					else Enum.PartType.Block
+				p = plain
+			end
+			p.Name = spec.name
+			p.Size = spec.size
+			p.Material = (Enum.Material :: any)[spec.material] or Enum.Material.Fabric
+			p.Color = wetColor(spec.color, dog.wet)
+			p:SetAttribute("DryColor", spec.color)
+			p.CanCollide = false
+			p.CanTouch = false
+			p.CanQuery = false
+			p.Massless = true
+			p.Anchored = false
+			p.CastShadow = spec.size.Magnitude > 0.5
+			p.TopSurface = Enum.SurfaceType.Smooth
+			p.BottomSurface = Enum.SurfaceType.Smooth
+			p.CFrame = anchor.part.CFrame * anchor.rest:Inverse() * spec.cframe
+			local w = Instance.new("Weld")
+			w.Name = "WearWeld"
+			w.Part0 = anchor.part
+			w.Part1 = p
+			w.C0 = anchor.rest:Inverse() * spec.cframe
+			w.Parent = p
+			p.Parent = wear
+		end
+	end
+	wear.Parent = dog.model
+end
+
+local function wetWear(dog: Dog)
+	local wear = dog.model:FindFirstChild("Wear")
+	if not wear then
+		return
+	end
+	for _, p in wear:GetChildren() do
+		local hex = p:GetAttribute("DryColor")
+		if p:IsA("BasePart") and type(hex) == "string" then
+			p.Color = wetColor(hex, dog.wet)
+		end
+	end
+end
+
 -- Swaps the placeholder for the uploaded model (yields while it loads). False if LOD0 can't load.
 local function attachReal(dog: Dog): boolean
 	local body = dog.body
@@ -429,7 +556,7 @@ local function attachReal(dog: Dog): boolean
 	for i, lod in LODS do
 		local copy = AssetLoader.clone(ASSET, lod)
 		if copy then
-			if rigLod(body, copy, i - 1) then
+			if rigLod(body, copy, i - 1, dogOption(dog).fur ~= false) then
 				copies[i - 1] = copy
 			else
 				copy:Destroy()
@@ -458,6 +585,16 @@ local function attachReal(dog: Dog): boolean
 	end
 	dog.real = true
 	dog.model:SetAttribute("Placeholder", nil)
+	local base = body.CFrame * CFrame.new(0, -LEG_HEIGHT, 0)
+	for _, d in copies[0]:GetDescendants() do
+		local key = d:IsA("BasePart") and keyOf(d.Name)
+		local on = if key == "BodyFore" then "Fore" elseif key == "BodyHead" then "Head" else nil
+		if on then
+			dog.anchors[on] =
+				{ part = d :: BasePart, rest = base:ToObjectSpace((d :: BasePart).CFrame) }
+		end
+	end
+	applyWear(dog)
 	return true
 end
 
@@ -521,7 +658,13 @@ local function makeDog(player: Player, character: Model)
 		wetness = 0,
 		wet = false,
 		lastSwim = false,
+		variant = equipped(player, "Dog"),
+		anchors = {},
 	}
+	local option = dogOption(dog)
+	model:SetAttribute("DogId", dog.variant)
+	model:SetAttribute("DogName", option.name or "Bosun")
+	model:SetAttribute("Breed", option.breed or "Newfoundland")
 	dogs[player] = dog
 	task.spawn(upgrade, dog)
 end
@@ -807,6 +950,7 @@ local function updateWetness(dog: Dog, dt: number)
 		dog.wet = wet
 		dog.model:SetAttribute("Wet", wet)
 		AssetLoader.setWet(dog.model, wet)
+		wetWear(dog)
 	end
 end
 
@@ -842,6 +986,29 @@ end
 local function onPlayer(player: Player)
 	player.CharacterAdded:Connect(function(character)
 		onCharacter(player, character)
+	end)
+	for _, slot in WEAR_SLOTS do
+		player:GetAttributeChangedSignal(Cosmetics.attribute(slot)):Connect(function()
+			local dog = dogs[player]
+			if dog and dog.model.Parent then
+				applyWear(dog)
+			end
+		end)
+	end
+	-- a different companion: rebuild the dog where he stands (same follow / swim / ride / point)
+	player:GetAttributeChangedSignal(Cosmetics.attribute("Dog")):Connect(function()
+		local dog = dogs[player]
+		local character = player.Character
+		if not (dog and character) or dog.variant == equipped(player, "Dog") then
+			return
+		end
+		local at = dog.body.CFrame
+		removeDog(player)
+		makeDog(player, character)
+		local fresh = dogs[player]
+		if fresh then
+			fresh.body.CFrame = at
+		end
 	end)
 	if player.Character then
 		task.spawn(onCharacter, player, player.Character)

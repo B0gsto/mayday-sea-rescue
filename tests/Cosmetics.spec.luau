@@ -69,8 +69,11 @@ return function(t)
 		do
 			t.expect(table.find(slots, want) ~= nil).toBe(true)
 		end
-		t.expect(table.find(slots, "DogWear") ~= nil or table.find(slots, "DogCoat") ~= nil)
-			.toBe(true)
+		t.expect(
+			table.find(slots, "DogWear") ~= nil
+				or table.find(slots, "DogCoat") ~= nil
+				or table.find(slots, "DogBandana") ~= nil
+		).toBe(true)
 		for _, slot in slots do
 			local d = Cos.default(slot)
 			t.expect(d ~= nil).toBe(true)
