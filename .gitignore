@@ -11,3 +11,6 @@ assets/models/M_Chr_HumanBase_*
 assets/textures/M_Chr_HumanBase_*/
 assets/textures/T_HumanBase*
 assets/review/M_Chr_HumanBase_*/
+
+__pycache__/
+*.blend1
