@@ -11,9 +11,9 @@ import csv, datetime, hashlib, json, os, sys, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 GAME = os.path.abspath(os.path.join(HERE, "../../.."))
 sys.path.insert(0, HERE)
-from library import LIBRARY, TRIM, STUDS_PER_M  # noqa: E402
+from library import LIBRARY, TRIM, STUDS_PER_M, studs_per_tile  # noqa: E402
 
-MATERIAL_ENUM = {"Sand": 1296, "Sandstone": 912, "Salt": 1392, "Limestone": 820, "Pebble": 864, "Rock": 896, "Slate": 800,
+MATERIAL_ENUM = {"Sand": 1296, "Sandstone": 912, "Salt": 1392, "Limestone": 820, "Pebble": 864, "CrackedLava": 804, "Rock": 896, "Slate": 800,
                  "Basalt": 788, "Grass": 1280, "LeafyGrass": 1284, "Mud": 1344, "Ground": 1360, "Pavement": 836,
                  "Asphalt": 1376, "Cobblestone": 880, "Concrete": 816, "Granite": 832, "Plastic": 256}
 PATTERN_ENUM = {"Regular": 0, "Organic": 1}
@@ -76,7 +76,7 @@ def main():
             maps = {"ColorMap": tex % (name, "ALB" + sfx), "NormalMap": tex % (name, "NOR"),
                     "RoughnessMap": tex % (name, "RGH" + sfx), "MetalnessMap": tex % (name, "MET")}
             props = {k: "rbxassetid://%s" % aid(v) for k, v in maps.items()}
-            props.update({"BaseMaterial": {"Enum": MATERIAL_ENUM[base]}, "StudsPerTile": round(dims * STUDS_PER_M, 2),
+            props.update({"BaseMaterial": {"Enum": MATERIAL_ENUM[base]}, "StudsPerTile": studs_per_tile(name, dims),
                           "MaterialPattern": {"Enum": PATTERN_ENUM[pattern]}})
             props["Attributes"] = {"Attributes": {"Source": {"String": url}, "Licence": {"String": "CC0"}, "Wet": {"Bool": wet},
                                                   "DryTwin": {"String": name}}}
@@ -84,7 +84,7 @@ def main():
             for k, v in maps.items():
                 if wet and k in ("NormalMap", "MetalnessMap"):
                     continue
-                rows.append([name + sfx, base, terrain or "", k, v, aid(v), url, LICENCE, round(dims * STUDS_PER_M, 2), pattern, note])
+                rows.append([name + sfx, base, terrain or "", k, v, aid(v), url, LICENCE, studs_per_tile(name, dims), pattern, note])
         if terrain:
             overrides["%sName" % terrain] = name
 
@@ -133,7 +133,7 @@ def main():
         w.writerow(["asset", "priority", "status", "assetId", "source", "licence", "ai_used", "reviewer", "notes"])
         for name, pid, dims, base, terrain, pattern, note in LIBRARY:
             w.writerow(["MV_" + name, "P0", "round1 (look-dev pending review)", aid(tex % (name, "ALB")), "polyhaven:" + pid, "CC0", "no", "",
-                        "%s; base %s; terrain %s; %s studs/tile; wet twin %s_Wet" % (note, base, terrain or "-", round(dims * 3, 2), name)])
+                        "%s; base %s; terrain %s; %s studs/tile; wet twin %s_Wet" % (note, base, terrain or "-", studs_per_tile(name, dims), name)])
         w.writerow(["T_BldTrim_Sheet", "P0", "round1", aid(trim % "ALB"), "polyhaven:" + "+".join(sorted({t[1] for t in TRIM})), "CC0", "no", "",
                     "10 strips, layout.json"])
     print("variants", len(children), "overrides", len(overrides), "rows", len(rows), "missing ids", len(missing))

@@ -337,7 +337,7 @@ From the radio panel when no operation step is active: the UI hides, the camera 
 | Sandstone | Wet sand (swash band and below the tide line) |
 | Salt | Rippled seabed sand |
 | Limestone | Shell and maerl gravel on the seabed |
-| Pebble | Shingle |
+| CrackedLava | Shingle (Pebble is not a Terrain material; the unused CrackedLava slot carries it) |
 | Rock | Granite (cliff tops, reefs) |
 | Slate | Kelp-covered rock (seabed) |
 | Basalt | Dark wet rock in the splash zone |

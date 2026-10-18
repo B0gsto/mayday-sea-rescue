@@ -1,0 +1,95 @@
+{
+ "ocean": true,
+ "shots": [
+  {
+   "name": "Dunes",
+   "cam": [
+    1080,
+    9,
+    299
+   ],
+   "look": [
+    1339,
+    12,
+    362
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1080, 9, 299}, {1339, 12, 362}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "Headland",
+   "cam": [
+    1390,
+    26,
+    400
+   ],
+   "look": [
+    1664,
+    80,
+    848
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({1390, 26, 400}, {1664, 80, 848}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "Cove",
+   "cam": [
+    360,
+    16,
+    -70
+   ],
+   "look": [
+    240,
+    0,
+    50
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({360, 16, -70}, {240, 0, 50}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "HarbourHillside",
+   "cam": [
+    -100,
+    10,
+    250
+   ],
+   "look": [
+    -200,
+    20,
+    -400
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({-100, 10, 250}, {-200, 20, -400}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "Cliff",
+   "cam": [
+    -1330,
+    14,
+    220
+   ],
+   "look": [
+    -1444,
+    30,
+    -16
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({-1330, 14, 220}, {-1444, 30, -16}) return _G.LookDev.apply('Overcast', false)"
+  },
+  {
+   "name": "CoastRoad",
+   "cam": [
+    520,
+    12,
+    -46
+   ],
+   "look": [
+    820,
+    18,
+    40
+   ],
+   "settle": 2.5,
+   "lua": "_G.LookDev.shot({520, 12, -46}, {820, 18, 40}) return _G.LookDev.apply('Overcast', false)"
+  }
+ ]
+}

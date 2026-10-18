@@ -16,7 +16,7 @@
   "SandstoneName": "SandWet",
   "SaltName": "SeabedSand",
   "LimestoneName": "ShellGravel",
-  "PebbleName": "Shingle",
+  "CrackedLavaName": "Shingle",
   "RockName": "Granite",
   "SlateName": "KelpRock",
   "BasaltName": "SplashRock",
@@ -41,7 +41,7 @@
     "BaseMaterial": {
      "Enum": 1296
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -74,7 +74,7 @@
     "BaseMaterial": {
      "Enum": 1296
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -107,7 +107,7 @@
     "BaseMaterial": {
      "Enum": 912
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -140,7 +140,7 @@
     "BaseMaterial": {
      "Enum": 912
     },
-    "StudsPerTile": 6.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -173,7 +173,7 @@
     "BaseMaterial": {
      "Enum": 1392
     },
-    "StudsPerTile": 5.61,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -206,7 +206,7 @@
     "BaseMaterial": {
      "Enum": 1392
     },
-    "StudsPerTile": 5.61,
+    "StudsPerTile": 11,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -239,7 +239,7 @@
     "BaseMaterial": {
      "Enum": 820
     },
-    "StudsPerTile": 9.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -272,7 +272,7 @@
     "BaseMaterial": {
      "Enum": 820
     },
-    "StudsPerTile": 9.0,
+    "StudsPerTile": 12,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -303,7 +303,7 @@
     "RoughnessMap": "rbxassetid://82972536664554",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
-     "Enum": 864
+     "Enum": 804
     },
     "StudsPerTile": 12.0,
     "MaterialPattern": {
@@ -336,7 +336,7 @@
     "RoughnessMap": "rbxassetid://79541159091547",
     "MetalnessMap": "rbxassetid://88157078302939",
     "BaseMaterial": {
-     "Enum": 864
+     "Enum": 804
     },
     "StudsPerTile": 12.0,
     "MaterialPattern": {
@@ -371,7 +371,7 @@
     "BaseMaterial": {
      "Enum": 896
     },
-    "StudsPerTile": 7.14,
+    "StudsPerTile": 22,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -404,7 +404,7 @@
     "BaseMaterial": {
      "Enum": 896
     },
-    "StudsPerTile": 7.14,
+    "StudsPerTile": 22,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -437,7 +437,7 @@
     "BaseMaterial": {
      "Enum": 800
     },
-    "StudsPerTile": 6.51,
+    "StudsPerTile": 13,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -470,7 +470,7 @@
     "BaseMaterial": {
      "Enum": 800
     },
-    "StudsPerTile": 6.51,
+    "StudsPerTile": 13,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -503,7 +503,7 @@
     "BaseMaterial": {
      "Enum": 788
     },
-    "StudsPerTile": 7.26,
+    "StudsPerTile": 16,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -536,7 +536,7 @@
     "BaseMaterial": {
      "Enum": 788
     },
-    "StudsPerTile": 7.26,
+    "StudsPerTile": 16,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -569,7 +569,7 @@
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 7.5,
+    "StudsPerTile": 18,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -602,7 +602,7 @@
     "BaseMaterial": {
      "Enum": 1280
     },
-    "StudsPerTile": 7.5,
+    "StudsPerTile": 18,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -635,7 +635,7 @@
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 8.4,
+    "StudsPerTile": 20,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -668,7 +668,7 @@
     "BaseMaterial": {
      "Enum": 1284
     },
-    "StudsPerTile": 8.4,
+    "StudsPerTile": 20,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -701,7 +701,7 @@
     "BaseMaterial": {
      "Enum": 1344
     },
-    "StudsPerTile": 3.9,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -734,7 +734,7 @@
     "BaseMaterial": {
      "Enum": 1344
     },
-    "StudsPerTile": 3.9,
+    "StudsPerTile": 9,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -767,7 +767,7 @@
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 7.8,
+    "StudsPerTile": 14,
     "MaterialPattern": {
      "Enum": 1
     },
@@ -800,7 +800,7 @@
     "BaseMaterial": {
      "Enum": 1360
     },
-    "StudsPerTile": 7.8,
+    "StudsPerTile": 14,
     "MaterialPattern": {
      "Enum": 1
     },

@@ -30,17 +30,27 @@ parents that `Terrain` instance into Workspace (replacing any existing one). Lun
 (checked: the built place opens with the voxels). No base place file is needed. If `Terrain.rbxm` is missing, Build
 falls back to the old part-built ocean floor and land (Workspace attribute `WorldTerrain` says which).
 
-**Materials.** `materials()` in gen_terrain.py blends, per 4-stud voxel cell, by slope, height, curvature (hollows:
-box-blurred height minus height), distance to the sea and to the road edge: weights per material, then a dithered
-pick (white noise + fine value noise), so every area mixes 2-3 materials and Roblox's voxel blending gives soft
-transitions. Land: Grass (Turf) and LeafyGrass (Moor: straw grass / heath, more on cliff tops and the Beacon), worn
-Ground patches, Mud in hollows, Rock by slope plus outcrops, Basalt streaks on low steep faces; rocky shores Basalt /
-Rock / Slate (kelp rock) at the tide line; beaches Sandstone (wet sand) + Slate at the tide line, Sand, a Limestone
-(shell gravel / shingle) berm at the dune toe, marram (Grass + LeafyGrass) taking over the dunes; Pavement (gravel)
-and Ground along the road and track verges. Seabed (under the mesh ocean): Salt (SeabedSand), Limestone, Slate, Rock,
-Mud (harbour bed). Asphalt, Concrete (slipway), Cobblestone (quayside) under the road meshes. The Terrain writer's
-`colors` mode also sets `Terrain.Decoration` (wind-animated grass on Grass; colour = the Grass MaterialColor) and
-`GrassLength`. Look-dev capture: `tools/world/lookdev_capture.sh <round>` (play mode, `tools/world/lookdev-shots.json`).
+**Materials.** `materials()` in gen_terrain.py weighs every material per 4-stud voxel cell by slope (12-stud
+smoothed), height, curvature (hollows: box-blurred height minus height), distance to the sea and to the road edge,
+then `choose()` takes a soft argmax: log weight + a domain-warped multi-octave patch noise per material + a little
+per-cell jitter. Where weights compete the noise decides, so materials form coherent organic patches (10-200 studs)
+with 1-2 cell feathered borders that Roblox's voxel blending softens (terrain pass T2 replaced the old per-cell
+white-noise dither, which speckled 2-3 materials into blotches: 36 % of land neighbours differed, now about 10 %).
+Coastal layering: Sandstone (wet sand) -> Sand -> a CrackedLava-slot Shingle strand line at the dune toe -> marram dunes
+(Grass with sand blowouts, LeafyGrass heath on the back dunes) -> Grass (Turf) with LeafyGrass (Moor: heather /
+gorse) patches, more on cliff tops, windward swathes and the Beacon; Ground (Earth) in erosion gullies and on banks;
+Mud in wet hollows and on the harbour foreshore (with Shingle); Rock on every slope over about 37 deg (no grass on
+cliff faces), outcrops and crags; rocky shores Basalt / Rock / Slate (kelp rock) with Shingle at the cove backs
+(also the back of Harbour Cove); Pavement (gravel) and Ground along the verges, Rock in road cuttings. Seabed
+(under the mesh ocean): Salt (SeabedSand), Limestone, Slate, Rock, Mud (harbour bed). Asphalt, Concrete (slipway),
+Cobblestone (quayside) under the road meshes. **Micro-relief** (`micro_relief()`, land only): hummocks (up to about
+1.5 studs), sheep-track terracettes along the contours of 8-30 deg slopes, erosion gullies (2 studs deep) down the
+fall line of steeper banks; masked off beaches, dunes, the waterline, the town platform / harbour and 25-45 studs
+round points and POIs; roads and car parks are flattened over it. Tiles: `STUDS_PER_TILE` in
+art/source/materials/library.py (Turf 18, Moor 20, Granite 22 studs ...; real-scale 6-8 stud tiles showed a grid
+at range); run `art/source/materials/wire.py` after changing it (no re-upload). The Terrain writer's `colors` mode
+sets the MaterialColors (white, except an olive LeafyGrass multiplier that matches Moor's luma to Turf's) and
+`Terrain.Decoration` / `GrassLength`. Look-dev capture: `tools/world/lookdev_capture.sh <round>` (play mode, `tools/world/lookdev-shots.json`).
 
 **Open.** The shore bake for `Waves.luau` (doc 10 section 6.4), MaterialVariants, the doc 10 harbour re-lay (mouth
 at about 900 studs; gameplay code and tests still use z = 368), `GameConfig.MapRadius` 2,000 vs WorldConfig's 2,500.

@@ -6,13 +6,23 @@ parts-only variant. pattern: Organic (natural ground, breaks visible tiling) or 
 """
 STUDS_PER_M = 3
 
+# Terrain look pass T2: real-scale tiles (dims_m x 3, 6-8 studs) repeat every couple of metres and read as a visible
+# grid at landscape range, so the big natural terrain variants get larger tiles (macro variation then comes from the
+# generator's patch blending between Turf / Moor / Earth / Granite). Others keep dims_m x 3.
+STUDS_PER_TILE = {"Turf": 18, "Moor": 20, "Granite": 22, "SplashRock": 16, "KelpRock": 13, "Earth": 14,
+                  "SandDry": 12, "SandWet": 12, "SeabedSand": 11, "ShellGravel": 12, "Mud": 9}
+
+
+def studs_per_tile(name, dims_m):
+    return STUDS_PER_TILE.get(name, round(dims_m * STUDS_PER_M, 2))
+
 LIBRARY = [
     # name           source                 dims_m base           terrain        pattern    note (docs/10 6.1 look)
     ("SandDry",      "sand_03",              2.00, "Sand",        "Sand",        "Organic", "dry beach sand"),
     ("SandWet",      "damp_beach_sand",      2.00, "Sandstone",   "Sandstone",   "Organic", "wet sand: swash band and below the tide line"),
     ("SeabedSand",   "damp_beach_sand_02",   1.87, "Salt",        "Salt",        "Organic", "rippled seabed sand"),
     ("ShellGravel",  "shell_floor_01",       3.00, "Limestone",   "Limestone",   "Organic", "shell and maerl gravel on the seabed"),
-    ("Shingle",      "pebbles",              4.00, "Pebble",      "Pebble",      "Organic", "shingle"),
+    ("Shingle",      "pebbles",              4.00, "CrackedLava", "CrackedLava", "Organic", "shingle (Pebble is not a Terrain material: unused CrackedLava slot)"),
     ("Granite",      "rock_face",            2.38, "Rock",        "Rock",        "Organic", "granite: cliff tops, reefs"),
     ("KelpRock",     "low_tide_rocks",       2.17, "Slate",       "Slate",       "Organic", "kelp and wrack covered rock (seabed, intertidal)"),
     ("SplashRock",   "dark_rock",            2.42, "Basalt",      "Basalt",      "Organic", "dark wet rock in the splash zone"),

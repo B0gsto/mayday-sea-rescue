@@ -195,9 +195,13 @@ elseif ARGS.mode == "colors" then
 	do
 		tints[name] = { 255, 255, 255 }
 	end
-	for _, name in { "Pavement", "Asphalt", "Cobblestone", "Concrete" } do
+	for _, name in { "Pavement", "Asphalt", "Cobblestone", "Concrete", "CrackedLava" } do
 		tints[name] = { 255, 255, 255 }
 	end
+	-- Terrain look pass T2: Moor's albedo (mean 148, 126, 100, a pinkish straw) against Turf (114, 128, 68) read as
+	-- blotches; this olive multiplier brings it to about (128, 117, 80), the same luma as the turf, so heather /
+	-- gorse patches differ in hue and texture, not brightness
+	tints.LeafyGrass = { 220, 236, 205 }
 	for name, c in tints do
 		Terrain:SetMaterialColor((Enum.Material :: any)[name], Color3.fromRGB(c[1], c[2], c[3]))
 	end
