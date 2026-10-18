@@ -1,0 +1,168 @@
+{
+ "Name": "Appearances",
+ "ClassName": "Folder",
+ "Children": [
+  {
+   "Name": "M_Veh_RIB",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://85829276475872",
+        "RoughnessMap": "rbxassetid://130427434959650",
+        "MetalnessMap": "rbxassetid://94659326142284"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://85829276475872",
+        "RoughnessMap": "rbxassetid://114788016293868",
+        "MetalnessMap": "rbxassetid://94659326142284"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Decals",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://109571053771767",
+        "RoughnessMap": "rbxassetid://91370810531563",
+        "MetalnessMap": "rbxassetid://140266217416485"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://109571053771767",
+        "RoughnessMap": "rbxassetid://133828954922187",
+        "MetalnessMap": "rbxassetid://140266217416485"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Rig",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://129576769741854",
+        "RoughnessMap": "rbxassetid://76931272405487",
+        "MetalnessMap": "rbxassetid://81550009189148"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://129576769741854",
+        "RoughnessMap": "rbxassetid://136255431464966",
+        "MetalnessMap": "rbxassetid://81550009189148"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_JetSki",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://79648716365190",
+        "RoughnessMap": "rbxassetid://132298762972239",
+        "MetalnessMap": "rbxassetid://87581147490496"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://79648716365190",
+        "RoughnessMap": "rbxassetid://107429793348262",
+        "MetalnessMap": "rbxassetid://87581147490496"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Sled",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://131963329407593",
+        "RoughnessMap": "rbxassetid://127535253992608",
+        "MetalnessMap": "rbxassetid://94775411869752"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://131963329407593",
+        "RoughnessMap": "rbxassetid://84802728167462",
+        "MetalnessMap": "rbxassetid://94775411869752"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_RIB_Helm",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Console",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://97741296241790",
+        "RoughnessMap": "rbxassetid://135720549777349",
+        "MetalnessMap": "rbxassetid://78543084627618"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://97741296241790",
+        "RoughnessMap": "rbxassetid://73341652987292",
+        "MetalnessMap": "rbxassetid://78543084627618"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

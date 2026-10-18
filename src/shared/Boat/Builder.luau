@@ -74,6 +74,12 @@ local function newPart(
 	part.BottomSurface = Enum.SurfaceType.Smooth
 	part.Anchored = false
 	if ctx then
+		-- livery roles for the greybox hull (src/shared/LiveryPaint.luau)
+		if color == ORANGE then
+			part:SetAttribute("Paint", "Body")
+		elseif color == NAVY then
+			part:SetAttribute("Paint", "Secondary")
+		end
 		part.Massless = true
 		part.CanCollide = false
 		part.CanTouch = false
@@ -205,6 +211,7 @@ local function newCtx(
 	model.PrimaryPart = root
 
 	local body = newPart(nil, "Part", "Body", bodySize, CFrame.new(bodyOffset), bodyColor) :: Part
+	body:SetAttribute("Paint", if bodyColor == ORANGE then "Body" else "Secondary")
 	body.Massless = true
 	body.CanCollide = false
 	body.CanTouch = false

@@ -76,7 +76,7 @@ local function box(
 	color: Color3,
 	material: Enum.Material?
 ): Part
-	return part(
+	local p = part(
 		ctx,
 		name,
 		Vector3.new(sx * M, sy * M, sz * M),
@@ -84,6 +84,10 @@ local function box(
 		color,
 		material
 	)
+	if color == ctx.spec.bodyColor then
+		p:SetAttribute("Paint", "Body") -- livery role (src/shared/LiveryPaint.luau)
+	end
+	return p
 end
 
 local function glass(p: Part): Part
@@ -222,6 +226,7 @@ local function battenburg(ctx: Ctx, y: number, z0: number, z1: number, height: n
 					color
 				)
 				p.CanCollide = false
+				p:SetAttribute("Paint", if (i + row) % 2 == 0 then "Stripe1" else "Stripe2")
 			end
 		end
 	end
