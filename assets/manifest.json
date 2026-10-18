@@ -53,6 +53,15 @@
   "source": "assets/textures/M_Chr_HumanBase_M/T_HumanBaseM_Hair_ALB.png",
   "type": "Image"
  },
+ "Image:01832c8173d3bf5ddbf227b3a99a04d813463272360b247a589264e0299c08eb": {
+  "assetId": "104467284510962",
+  "imageId": "104467284510962",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c0",
+  "sha": "01832c8173d3bf5ddbf227b3a99a04d813463272360b247a589264e0299c08eb",
+  "source": "art/map/gale_isles_map_r1c0.png",
+  "type": "Image"
+ },
  "Image:02a8cb07d53df70155243f7b6b3d9bda8b88931fe18b21df38c0e93edfb08c14": {
   "assetId": "75875110907213",
   "imageId": "75875110907213",
@@ -2298,6 +2307,15 @@
   "source": "assets/textures/Materials/T_Mat_SeabedSand_RGH.png",
   "type": "Image"
  },
+ "Image:50dd9966fc51e95a0332c0f14adfd16b1ff46ccacad1df2fec648d9e3d6efbec": {
+  "assetId": "128096116168673",
+  "imageId": "128096116168673",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "50dd9966fc51e95a0332c0f14adfd16b1ff46ccacad1df2fec648d9e3d6efbec",
+  "source": "art/map/gale_isles_map_r1c1.png",
+  "type": "Image"
+ },
  "Image:517cda1ce7f717f2e2f0a37a1eef7a26c94ef82c010c4cf1dfa5029666d4165b": {
   "assetId": "70724701424465",
   "imageId": "70724701424465",
@@ -3801,6 +3819,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Bands_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:89ef8029d75b585cba4430e5b76c7d2a313c2f98723b6536e00c2f5e7b53c716": {
+  "assetId": "80765033638484",
+  "imageId": "80765033638484",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c1",
+  "sha": "89ef8029d75b585cba4430e5b76c7d2a313c2f98723b6536e00c2f5e7b53c716",
+  "source": "art/map/gale_isles_map_r0c1.png",
+  "type": "Image"
+ },
  "Image:8a280216ce09b4ae710f2332d80ab62053404475687068d739e0f7fe6655ca34": {
   "assetId": "76747465814971",
   "imageId": "76747465814971",
@@ -4989,6 +5016,15 @@
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:b0a75223776b9b35a35c022d1196dd03a21c5b910c361854ff046288ea029321": {
+  "assetId": "133613922451255",
+  "imageId": "133613922451255",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c0",
+  "sha": "b0a75223776b9b35a35c022d1196dd03a21c5b910c361854ff046288ea029321",
+  "source": "art/map/gale_isles_map_r0c0.png",
+  "type": "Image"
+ },
  "Image:b11901989ab570519354a125ee3db8894d8a2510adbfb67d349e77b49a583d3d": {
   "assetId": "136139160564565",
   "imageId": "136139160564565",
@@ -5296,6 +5332,15 @@
   "name": "T_CasualtySwimmer_Body_ALB",
   "sha": "bf468b81e6b64be8db21d24b4283dba3c4d478992eb154dc00a7fcd64cbb8ee4",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Body_ALB.png",
+  "type": "Image"
+ },
+ "Image:bfc690a6f6a1b6855edf80f5f4870048d95cca171dcc28d2204242a7f22a8c9e": {
+  "assetId": "134142057109373",
+  "imageId": "134142057109373",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map",
+  "sha": "bfc690a6f6a1b6855edf80f5f4870048d95cca171dcc28d2204242a7f22a8c9e",
+  "source": "art/map/gale_isles_map.png",
   "type": "Image"
  },
  "Image:bfc826445d1cc38e021624856211e03667f5ffe43c213491d892cc7a947e75f5": {

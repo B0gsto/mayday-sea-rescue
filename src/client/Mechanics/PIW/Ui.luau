@@ -125,10 +125,11 @@ function Ui.panel(parent: Instance, size: UDim2, pos: UDim2, anchor: Vector2?): 
 	end
 	f.Size = size
 	f.BackgroundColor3 = HudTheme.Colors.panel
-	f.BackgroundTransparency = 0.25
+	f.BackgroundTransparency = HudTheme.PromptTransparency
 	f.BorderSizePixel = 0
 	f.Parent = parent
 	HudTheme.corner(f)
+	HudTheme.stroke(f)
 	return f
 end
 
@@ -146,7 +147,7 @@ function Ui.text(
 	l.Position = pos
 	l.Font = if bold then HudTheme.BoldFont else HudTheme.BodyFont
 	l.TextColor3 = HudTheme.Colors.text
-	l.TextSize = textSize or 18
+	l.TextSize = textSize or HudTheme.TextSize.body
 	l.TextWrapped = true
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	l.Text = text
@@ -179,8 +180,21 @@ end
 
 -- The step header: plain label and the real term underneath (docs 09 principle 1).
 function Ui.header(parent: Instance, label: string, realTerm: string): (TextLabel, TextLabel)
-	local a = Ui.text(parent, label, UDim2.new(1, -24, 0, 24), UDim2.fromOffset(12, 8), 20, true)
-	local b = Ui.text(parent, realTerm, UDim2.new(1, -24, 0, 16), UDim2.fromOffset(12, 32), 14)
+	local a = Ui.text(
+		parent,
+		label,
+		UDim2.new(1, -24, 0, 24),
+		UDim2.fromOffset(12, 7),
+		HudTheme.TextSize.title,
+		true
+	)
+	local b = Ui.text(
+		parent,
+		realTerm,
+		UDim2.new(1, -24, 0, 18),
+		UDim2.fromOffset(12, 31),
+		HudTheme.TextSize.small
+	)
 	b.TextColor3 = HudTheme.Colors.textDim
 	b.Font = Enum.Font.BuilderSansMedium
 	return a, b
@@ -188,7 +202,13 @@ end
 
 -- Assist-only hint line: small, dim, never a glow over the world.
 function Ui.hint(parent: Instance, text: string, assist: boolean): TextLabel
-	local l = Ui.text(parent, text, UDim2.new(1, -24, 0, 18), UDim2.new(0, 12, 1, -24), 14)
+	local l = Ui.text(
+		parent,
+		text,
+		UDim2.new(1, -24, 0, 20),
+		UDim2.new(0, 12, 1, -25),
+		HudTheme.TextSize.small
+	)
 	l.TextColor3 = HudTheme.Colors.textDim
 	l.Visible = assist
 	return l
@@ -406,10 +426,10 @@ function Ui.meter(
 	holder.Position = pos
 	holder.Size = UDim2.fromOffset(width, 34)
 	holder.Parent = parent
-	local t = Ui.text(holder, title, UDim2.new(1, 0, 0, 14), UDim2.fromOffset(0, 0), 13)
+	local t = Ui.text(holder, title, UDim2.new(1, 0, 0, 17), UDim2.fromOffset(0, 0), 15)
 	t.TextColor3 = HudTheme.Colors.textDim
 	local track = Instance.new("Frame")
-	track.Position = UDim2.fromOffset(0, 18)
+	track.Position = UDim2.fromOffset(0, 20)
 	track.Size = UDim2.new(1, 0, 0, 10)
 	track.BackgroundColor3 = HudTheme.Colors.locked
 	track.BorderSizePixel = 0

@@ -19,8 +19,17 @@
 --
 -- Cold open (docs 09 9.1, a new player's first rescue on the jet ski): Layout.coldOpen() is true
 -- from the moment the player rides a ColdOpen craft until the player attribute ColdOpenDone; the
--- HUD shows only the objective line, the radio subtitle and the interaction prompt then.
+-- HUD shows only the objective line, the radio subtitle, the interaction prompt and the minimap
+-- then. The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance
+-- to the casualty (its objective pill and route line). The objective line shows only while no
+-- prompt panel is up, since a mechanic panel's header repeats the same step (show it once).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
+-- Layout.promptBusy() is true while any "prompt" region holds a visible panel;
+-- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
+--
+-- Phone check (844x390 landscape, ~750x330 usable): scale clamps to MIN_SCALE 0.7 (so 18 px body
+-- text draws at ~12.6 px, the smallest that stays readable), usable 1071x471 du; the objective
+-- region ends at 144 du, the prompt region spans 152-333 du, the minimap 303-459 du: no overlap.
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -37,7 +46,7 @@ Layout.NOTICE_HEIGHT = 120
 
 local REF_HEIGHT = 720 -- usable px at which the HUD draws 1:1
 local REF_WIDTH = 1200
-local MIN_SCALE = 0.62
+local MIN_SCALE = 0.7
 
 export type RegionName =
 	"objective"
@@ -240,6 +249,40 @@ local function evaluate()
 	end
 end
 
+local promptEvent = Instance.new("BindableEvent")
+local promptIsBusy = false
+
+local function anyPromptPanel(): boolean
+	for _, e in entries do
+		if e.name == "prompt" and e.frame.Visible and e.gui.Enabled and e.gui.Parent ~= nil then
+			for _, ch in e.frame:GetChildren() do
+				if ch:IsA("GuiObject") and ch.Visible then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function evaluatePrompt()
+	local busy = anyPromptPanel()
+	if busy ~= promptIsBusy then
+		promptIsBusy = busy
+		promptEvent:Fire(busy)
+	end
+end
+
+function Layout.promptBusy(): boolean
+	return promptIsBusy
+end
+
+function Layout.onPromptBusy(fn: (boolean) -> ()): RBXScriptConnection
+	local c = promptEvent.Event:Connect(fn)
+	task.spawn(fn, promptIsBusy)
+	return c
+end
+
 function Layout.coldOpen(): boolean
 	return coldOpenActive
 end
@@ -257,6 +300,7 @@ if RunService:IsClient() and Players.LocalPlayer then
 		if acc >= 0.25 then
 			acc = 0
 			evaluate()
+			evaluatePrompt()
 		end
 	end)
 	Players.LocalPlayer:GetAttributeChangedSignal("ColdOpenDone"):Connect(evaluate)

@@ -10,7 +10,7 @@ HudTheme.Colors = {
 	panelLight = Color3.fromHex("26323A"), -- raised slate (secondary buttons)
 	accent = Color3.fromHex("D9682E"), -- muted rescue orange
 	text = Color3.fromHex("ECEDEA"), -- off-white
-	textDim = Color3.fromHex("98A3AB"), -- rain grey
+	textDim = Color3.fromHex("B4BEC5"), -- rain grey (>= 9:1 on the panel; was too faint on a phone)
 	ready = Color3.fromHex("6FBF8E"), -- muted green ("ready" states)
 	locked = Color3.fromHex("2A3239"), -- slate
 	gold = Color3.fromHex("E3C88F"), -- pale brass (Cash)
@@ -19,6 +19,13 @@ HudTheme.Colors = {
 }
 
 HudTheme.PanelTransparency = 0.35
+HudTheme.PromptTransparency = 0.18 -- mechanic / interaction panels: denser, they carry body text
+-- Type sizes (px at UIScale 1; the Layout scale floor 0.7 keeps 18 at ~12.6 px on a phone).
+HudTheme.TextSize = {
+	title = 21, -- panel header
+	body = 18, -- instructions, readouts
+	small = 16, -- real term, hints (never below this in a panel)
+}
 HudTheme.EdgeTransparency = 0.85
 HudTheme.HeaderFont = Enum.Font.BuilderSansMedium
 HudTheme.BodyFont = Enum.Font.BuilderSans

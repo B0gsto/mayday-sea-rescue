@@ -5,7 +5,8 @@
 -- OpsController.UseBuiltInUi = false so the greybox UI stays hidden.
 -- Placement (UI/Layout): the step card in the "objective" region (top left), the pager and the
 -- casualty monitor stacked in the "right" column; the debrief is a centred modal. In the cold
--- open only the step line shows (the right column is hidden).
+-- open only the step line shows (the right column is hidden), and only while no mechanic panel
+-- (Layout.promptBusy) repeats it.
 local Players = game:GetService("Players")
 
 local Layout = require(script.Parent.Layout)
@@ -43,10 +44,16 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
 	local monitor = OpsConditionMonitor.new(right)
-	Layout.onColdOpen(function(active: boolean)
+	-- cold open: one objective on screen. The compact step line is that objective, except while a
+	-- mechanic panel is up (its header already says the same step), so it steps aside then.
+	local function applyColdOpen(_: boolean?)
+		local active = Layout.coldOpen()
 		right.Visible = not active
 		step.setCompact(active)
-	end)
+		objective.Visible = not (active and Layout.promptBusy())
+	end
+	Layout.onColdOpen(applyColdOpen)
+	Layout.onPromptBusy(applyColdOpen)
 	local debrief = OpsDebrief.new(gui)
 	local activeOp: string? = nil
 

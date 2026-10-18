@@ -22,10 +22,10 @@ export type Blip = {
 }
 
 local MapConfig = {
-	Image = "rbxassetid://95841555674892", -- art/map/gale_isles_map.png (2048 px)
+	Image = "rbxassetid://134142057109373", -- art/map/gale_isles_map.png (2048 px)
 	Tiles = {
-		{ "rbxassetid://98400170280559", "rbxassetid://73720441082997" }, -- r0c0, r0c1 (north)
-		{ "rbxassetid://89180774749183", "rbxassetid://101112605166784" }, -- r1c0, r1c1 (south)
+		{ "rbxassetid://133613922451255", "rbxassetid://80765033638484" }, -- r0c0, r0c1 (north)
+		{ "rbxassetid://104467284510962", "rbxassetid://128096116168673" }, -- r1c0, r1c1 (south)
 	},
 	ImagePixels = 2048,
 	Origin = Vector2.new(-2560, -2560), -- world (x, z) of the image's top-left corner
@@ -39,6 +39,29 @@ local MapConfig = {
 		easeSeconds = 0.8,
 	},
 	FullMap = { minRadius = 180, maxRadius = 2600, startRadius = 900 },
+
+	-- Place names on the full map, drawn live by MapController at a fixed screen size (not baked
+	-- into the image): a name is skipped when it would touch the legend, the title, the buttons, the
+	-- Roblox top bar (GuiService:GetGuiInset) or a name earlier in this list (list order = priority).
+	-- kind: region | town | place | water (italic). left = text starts at the point (else centred).
+	-- tools/world/make_map_image.py --labels reads these rows (keep each on one line).
+	Places = {
+		{ text = "PORT HAVEN", x = 0, z = -250, kind = "town" },
+		{ text = "HAVEN SANDS", x = 1080, z = 210, kind = "town" },
+		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "town" },
+		{ text = "GREAT GALE", x = -1300, z = -1500, kind = "region" },
+		{ text = "Calm Bay", x = 0, z = 170, kind = "water" },
+		{ text = "Harbour Mouth", x = 0, z = 450, kind = "water" },
+		{ text = "Harbour Light", x = 64, z = 322, kind = "place", left = true },
+		{ text = "Sandy Point", x = 560, z = 530, kind = "place" },
+		{ text = "Haven Head", x = 1560, z = 560, kind = "place" },
+		{ text = "Skerry Light outpost", x = 1800, z = 1850, kind = "place" },
+		{ text = "The Skerries", x = 2060, z = 1380, kind = "water" },
+		{ text = "West Ledges", x = -1200, z = 470, kind = "water" },
+		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
+		{ text = "Gannet Rock outpost >", x = 2150, z = 2440, kind = "water" },
+		{ text = "< Tempest Point Light", x = -2150, z = 600, kind = "place" },
+	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
 	-- Fixed places (positions from map/Build.luau and WorldConfig).
 	Blips = {

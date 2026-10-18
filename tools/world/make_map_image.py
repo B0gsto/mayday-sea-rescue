@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render the Gale Isles top-down map (the GTA-style minimap / full map texture) from the terrain bake.
 
-usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 2048] [--preview PATH]
+usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 2048] [--preview PATH] [--labels]
 
 Inputs (read only): map/generated/terrain.json + terrain_height.i16 + terrain_material.u8 (gen_terrain.py),
 src/shared/Config/WorldConfig.luau (road splines, car parks), the greybox harbour from tools/world/layout.py.
@@ -13,8 +13,9 @@ The transform is printed and must match src/shared/Config/MapConfig.luau (Origin
 
 Look: sea depth shading (shallow aqua to deep navy) with depth contours and a surf line, the seabed showing
 through the shallows (reefs, kelp, sand), land coloured by terrain material with elevation tint and NW
-hillshading, cliffs darkened by slope, the breakwater and harbour, roads with a casing, car parks, and
-labels for the main places. Needs numpy and Pillow; no heavy slot (about 5 s)."""
+multi-directional hillshade (3x relief), subtle hypsometric tint and 5 m / 20 m contours, cliffs greyed by
+slope, the breakwater and harbour, roads with a casing on top, car parks. Place names live in
+MapConfig.Places and are drawn by the game; --labels bakes them in for a preview. Needs numpy and Pillow; no heavy slot (about 5 s)."""
 
 import json, math, os, re, sys
 import numpy as np
@@ -47,6 +48,23 @@ DEPTH_STOPS = [  # depth below sea level (studs, 3 studs = 1 m) -> colour
     (0, (120, 214, 214)), (6, (82, 190, 204)), (18, (44, 150, 186)), (40, (26, 104, 156)),
     (80, (16, 70, 124)), (165, (8, 38, 82)),
 ]
+
+
+RELIEF_Z = 3.0  # vertical exaggeration for the hillshade
+HYPSO_STOPS = [  # elevation 0..1 (of 325 studs) -> tint blended over the material colour
+    (0.0, (96, 132, 74)), (0.25, (120, 136, 82)), (0.55, (150, 144, 104)), (0.8, (186, 178, 150)),
+    (1.0, (222, 218, 204)),
+]
+
+
+def lerp_rgb(t, stops):
+    out = np.zeros(t.shape + (3,), np.float32)
+    out[...] = stops[0][1]
+    for (t0, c0), (t1, c1) in zip(stops, stops[1:]):
+        k = np.clip((t - t0) / (t1 - t0), 0, 1)[..., None]
+        sel = (t >= t0)[..., None]
+        out = np.where(sel, np.array(c0) * (1 - k) + np.array(c1) * k, out)
+    return out
 
 
 def load_terrain():
@@ -94,6 +112,18 @@ def lerp_stops(depth):
     return out
 
 
+def parse_places():
+    """MapConfig.Places rows: { text = "...", x = N, z = N, kind = "...", left = true? }."""
+    src = open(os.path.join(ROOT, "src", "shared", "Config", "MapConfig.luau")).read()
+    body = src[src.index("Places = {"):]
+    body = body[:body.index("\n\t},")]
+    rows = []
+    for m in re.finditer(r'\{ text = "([^"]+)", x = (-?[\d.]+), z = (-?[\d.]+), kind = "(\w+)"(, left = true)? \}', body):
+        rows.append({"text": m.group(1), "x": float(m.group(2)), "z": float(m.group(3)), "kind": m.group(4),
+                     "left": m.group(5) is not None})
+    return rows
+
+
 def font(size, bold=True, italic=False):
     cands = [("/System/Library/Fonts/Avenir Next.ttc", 2 if bold and not italic else (3 if italic else 7)),
              ("/System/Library/Fonts/HelveticaNeue.ttc", 1 if bold else 0)]
@@ -121,28 +151,45 @@ def main():
     M = np.array(Image.fromarray(mat).resize((S, S), Image.NEAREST))
     land = H > 0.15
 
-    # hillshade (light from the north-west, 40 deg up); exaggerate relief for a readable map
+    # relief (GTA-like, muted): a multi-directional hillshade (key light from the north-west, softer
+    # fills from the west and north, 40 deg up) on a 3x vertical exaggeration so the moors and gullies
+    # read at map scale; shade is taken relative to flat ground so plains keep their colour
     stud = extent / S
     Hs = H.copy()
     for _ in range(3):  # cheap separable blur: smooth the speckle out of the hillshade
         Hs = (np.roll(Hs, 1, 0) + np.roll(Hs, -1, 0) + np.roll(Hs, 2, 0) + np.roll(Hs, -2, 0) + Hs) / 5
         Hs = (np.roll(Hs, 1, 1) + np.roll(Hs, -1, 1) + np.roll(Hs, 2, 1) + np.roll(Hs, -2, 1) + Hs) / 5
-    gz, gx = np.gradient(Hs * 1.6, stud)
-    az, alt = math.radians(315), math.radians(40)
-    lx, lz, ly = math.sin(az) * math.cos(alt), -math.cos(az) * math.cos(alt), math.sin(alt)
+    gz, gx = np.gradient(Hs * RELIEF_Z, stud)
     nrm = np.sqrt(gx * gx + gz * gz + 1)
-    shade = np.clip((-gx * lx - gz * lz + ly) / nrm, 0, 1)
-    slope = np.degrees(np.arctan(np.sqrt(gx * gx + gz * gz) / 1.6))
+    alt = math.radians(40)
+    shade = np.zeros_like(H)
+    for az_deg, wgt in ((315, 0.6), (270, 0.2), (0, 0.2)):
+        az = math.radians(az_deg)
+        lx, lz, ly = math.sin(az) * math.cos(alt), -math.cos(az) * math.cos(alt), math.sin(alt)
+        shade += wgt * np.clip((-gx * lx - gz * lz + ly) / nrm, 0, 1)
+    rel = shade - math.sin(alt)  # 0 on flat ground, + toward the light, - away
+    slope = np.degrees(np.arctan(np.sqrt(gx * gx + gz * gz) / RELIEF_Z))
 
     lut = np.array([MAT_RGB.get(n, (150, 150, 150)) for n in names], np.float32)
     base = lut[M]
-    # elevation tint: lowlands richer, moor tops paler
-    elev = np.clip(H / 320, 0, 1)[..., None]
-    base = base * (1 - 0.18 * elev) + np.array([236, 230, 210], np.float32) * 0.18 * elev
+    # hypsometric tint, subtle: lowland greens deepen a touch, the uplands drift to olive heath and
+    # the tops to pale moor (blended over the material colour, never replacing it)
+    elev = np.clip(H / 325, 0, 1)
+    hyp = lerp_rgb(elev, HYPSO_STOPS)
+    hw = (0.10 + 0.22 * elev)[..., None]
+    base = base * (1 - hw) + hyp * hw
     # cliffs: steep faces go to granite grey
     cliff = np.clip((slope - 32) / 18, 0, 1)[..., None]
     base = base * (1 - cliff) + np.array([118, 114, 106], np.float32) * cliff
-    land_rgb = base * (0.84 + 0.24 * shade[..., None])
+    land_rgb = base * np.clip(1 + 1.05 * rel, 0.55, 1.3)[..., None]
+    # elevation contours: a hairline every 5 m (15 studs), every 4th (20 m) a little stronger; the
+    # width test uses the gradient so the lines stay ~1 px on gentle and steep ground alike
+    grad = np.sqrt(gx * gx + gz * gz) / RELIEF_Z * stud + 1e-4  # studs of height per pixel
+    for interval, a in ((15, 0.10), (60, 0.20)):
+        q = Hs / interval
+        dist_px = np.abs(q - np.round(q)) * interval / grad
+        line = (dist_px < 0.6) & (Hs > interval * 0.5) & (slope < 40)
+        land_rgb[line] = land_rgb[line] * (1 - a) + np.array([62, 56, 40], np.float32) * a
 
     depth = np.clip(-H, 0, None)
     sea = lerp_stops(depth)
@@ -150,7 +197,7 @@ def main():
     see = np.clip(1 - depth / 22, 0, 1)[..., None] * 0.42
     sea = sea * (1 - see) + tint * see
     # gentle relief on the seabed too, so reefs and gullies read
-    sea = sea * (0.86 + 0.22 * shade[..., None])
+    sea = sea * np.clip(1 + 0.6 * rel, 0.75, 1.15)[..., None]
 
     rgb = np.where(land[..., None], land_rgb, sea)
 
@@ -216,25 +263,20 @@ def main():
         px, pz = to_px(x, z)
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
-    land_c, sea_c, minor = (255, 248, 232, 255), (196, 236, 246, 255), (238, 232, 214, 255)
     dot(44, 368, (255, 214, 90, 255))
     dot(1800, 1750, (255, 214, 90, 255))
-    region = (235, 240, 220, 255)
-    label("PORT HAVEN", 0, -250, 48, land_c)
-    label("Calm Bay", 0, 170, 38, sea_c, italic=True)
-    label("Harbour Mouth", 0, 450, 36, sea_c, italic=True)
-    label("Harbour Light", 64, 322, 34, minor, left=True)
-    label("Sandy Point", 560, 530, 36, minor)
-    label("HAVEN SANDS", 1080, 210, 40, land_c)
-    label("Haven Head", 1560, 560, 36, minor)
-    label("SKERRY ISLE", 1800, 1660, 40, land_c)
-    label("Skerry Light outpost", 1800, 1850, 30, minor)
-    label("The Skerries", 2060, 1380, 34, sea_c, italic=True)
-    label("West Ledges", -1200, 470, 36, sea_c, italic=True)
-    label("GREAT GALE", -1300, -1500, 64, region, spacing=1)
-    label("OPEN SEA", 0, 1900, 60, sea_c, italic=True)
-    label("Gannet Rock outpost >", 2150, 2440, 30, sea_c, italic=True)
-    label("< Tempest Point Light", -2150, 600, 30, minor)
+    # Place names are drawn live by MapController from MapConfig.Places (so they stay screen-size,
+    # dodge the legend / title / top bar and never sit under a panel). --labels bakes them in too,
+    # for a stand-alone preview.
+    if "--labels" in sys.argv:
+        style = {  # kind -> (px at 2048, colour, italic, letter spacing)
+            "region": (64, (235, 240, 220, 255), False, 1), "town": (46, (255, 248, 232, 255), False, 0),
+            "place": (34, (238, 232, 214, 255), False, 0), "water": (36, (196, 236, 246, 255), True, 0),
+        }
+        for p in parse_places():
+            size, colour, italic, spacing = style[p["kind"]]
+            label(p["text"], p["x"], p["z"], int(size * S / 2048), colour, italic=italic, spacing=spacing,
+                  left=p["left"])
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     img.save(OUT, optimize=True)

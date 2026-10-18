@@ -98,7 +98,7 @@ end
 
 -- Body text line under the header, returned so the mechanic can update it.
 function Step.line(s: S, text: string, y: number?): TextLabel
-	return Ui.text(s.panel, text, UDim2.new(1, -24, 0, 20), UDim2.fromOffset(12, y or 54), 16)
+	return Ui.text(s.panel, text, UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, y or 54))
 end
 
 -- The vehicle's cruise speed (studs/s) for ETA and route time: 80% of its top speed.

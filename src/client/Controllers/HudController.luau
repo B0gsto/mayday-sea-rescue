@@ -13,11 +13,16 @@
 --   the counter but looking past it (or teleported there) pressed E and nothing happened. Fallback:
 --   an unprocessed E / ButtonX within a store prompt's range opens the nearest store panel.
 --   Left: crew chip with a Leave button while in a crew (CrewJoin / CrewLeave echoes).
+--   Stock CoreGui that clashes with the HUD is off: the leaderboard (PlayerList, it sat over the
+--   status strip; rank and Cash live there), Backpack (no Tools in the game), Health (casualty
+--   and crew condition are the game's own readouts) and the Emotes menu. Chat stays on (crew
+--   talk and the TextChatService commands StormService registers).
 -- Data arrives as PlayerDataChanged snapshots; the first one is pulled via Progression_GetData.
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
@@ -365,7 +370,21 @@ local function applyColdOpen(active: boolean)
 	crewChip.Visible = inCrew and not active
 end
 
+local function hideCoreGui()
+	for _, t in
+		{
+			Enum.CoreGuiType.PlayerList,
+			Enum.CoreGuiType.Backpack,
+			Enum.CoreGuiType.Health,
+			Enum.CoreGuiType.EmotesMenu,
+		}
+	do
+		pcall(StarterGui.SetCoreGuiEnabled, StarterGui, t, false)
+	end
+end
+
 function HudController.Init()
+	hideCoreGui()
 	local playerGui = player:WaitForChild("PlayerGui")
 	gui = Instance.new("ScreenGui")
 	gui.Name = "Hud"
