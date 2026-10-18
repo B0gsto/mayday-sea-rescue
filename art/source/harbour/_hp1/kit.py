@@ -459,74 +459,112 @@ def band_mode(n, pts, zone, rnd):
                              v0 + (0.03 + min(0.94, max(0.0, (p.dot(va) - b0) * sc))) / ARMOUR_ZONES))
 
 
-def quarry_block(part, c, half, rnd, cell=0.42, amp=0.05):
-    """A big angular quarried granite block: a box chipped by 5..9 random plane cuts (split / spalled faces).
-    LOD0: every facet re-meshed (fan + barycentric grid) and displaced along its normal by noise that fades to zero
-    at the arrises (crisp edges, real relief on the faces); LOD1 / LOD2: the flat facets."""
+def quarry_block(c, half, rnd):
+    """POL1: a big angular quarried granite block in world metres (kit coords): a box split by 4..6 deep plane cuts
+    (split faces) and 4..7 shallow corner spalls, every facet planar. Returns (lod0 bmesh with a narrow 2..3.5 cm
+    arris chamfer, lod1 bmesh without it)."""
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1.0)
     for v in bm.verts:
         v.co = Vector((v.co.x * 2 * half[0], v.co.y * 2 * half[1], v.co.z * 2 * half[2]))
-    for _ in range(rnd.randint(5, 9)):
-        nrm = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-0.8, 1))).normalized()
+    cuts = [(Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-0.8, 1))), rnd.uniform(0.66, 0.86))
+            for _ in range(rnd.randint(4, 6))]
+    cuts += [(Vector((rnd.choice((-1, 1)) * rnd.uniform(0.6, 1), rnd.choice((-1, 1)) * rnd.uniform(0.6, 1),
+                      rnd.choice((-1, 1)) * rnd.uniform(0.5, 1))), rnd.uniform(0.82, 0.93)) for _ in range(rnd.randint(4, 7))]
+    for nrm, k in cuts:
+        nrm = Vector((nrm.x / half[0], nrm.y / half[1], nrm.z / half[2])).normalized()   # cut relative to the block shape
         sup = max(v.co.dot(nrm) for v in bm.verts)
-        res = bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=nrm * sup * rnd.uniform(0.62, 0.86),
-                                     plane_no=nrm, clear_outer=True)
-        del res
+        bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=nrm * sup * k,
+                               plane_no=nrm, clear_outer=True)
         bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=0)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=0.004)
     bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(1.0), verts=bm.verts[:], edges=bm.edges[:])
-    m = (Matrix.Rotation(rnd.uniform(0, 2 * math.pi), 3, "Z") @ Matrix.Rotation(rnd.uniform(-0.3, 0.3), 3, "X")
-         @ Matrix.Rotation(rnd.uniform(-0.3, 0.3), 3, "Y"))
+    bmesh.ops.dissolve_degenerate(bm, dist=0.01, edges=bm.edges[:])
+    m = (Matrix.Rotation(rnd.uniform(0, 2 * math.pi), 3, "Z") @ Matrix.Rotation(rnd.uniform(-0.25, 0.25), 3, "X")
+         @ Matrix.Rotation(rnd.uniform(-0.25, 0.25), 3, "Y"))
     cv = Vector(c)
-    ph = Vector((rnd.uniform(0, 50), rnd.uniform(0, 50), rnd.uniform(0, 50)))
-    facets = []
-    for f in bm.faces:
-        pts = [m @ v.co + cv for v in f.verts]
-        n = (m @ f.normal).normalized()
-        cz = sum(p.z for p in pts) / len(pts)
-        facets.append((pts, n, band_mode(n, pts, zone_of(cz, n.z, rnd), rnd)))
-    bm.free()
+    for v in bm.verts:
+        v.co = m @ v.co + cv
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    lod1 = bm.copy()
+    bmesh.ops.bevel(bm, geom=bm.edges[:], offset=rnd.uniform(0.02, 0.035), segments=1, affect="EDGES", profile=0.5,
+                    clamp_overlap=True)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    return bm, lod1
 
-    def disp(p, n, wc):
-        k = noise.noise(p * 2.3 + ph) * 0.65 + noise.noise(p * 6.5 + ph) * 0.3
-        return p + n * (amp * min(1.0, wc * 2.6) * (0.3 + k))
-    geo.LEVEL = (0,)
-    part.prim += 1
-    for pts, n, mode in facets:
-        C = sum(pts, Vector()) / len(pts)
-        ns = max(1, min(3, math.ceil(max((pts[i] - pts[i - 1]).length for i in range(len(pts))) / cell)))
-        for i in range(len(pts)):
-            A, B = pts[i], pts[(i + 1) % len(pts)]
 
-            def G(a, b):
-                wc = 1.0 - (a + b) / ns
-                return disp(C * wc + A * (a / ns) + B * (b / ns), n, wc)
-            for a in range(ns):
-                for b in range(ns - a):
-                    part.face([G(a, b), G(a + 1, b), G(a, b + 1)], mode, outward=n)
-                    if a + b < ns - 1:
-                        part.face([G(a + 1, b), G(a + 1, b + 1), G(a, b + 1)], mode, outward=n)
-    geo.LEVEL = (1, 2)
-    part.prim += 1
-    for pts, n, mode in facets:
-        part.face(pts, mode, outward=n)
-    L()
+def _move(bms, dz):
+    for b in bms:
+        for v in b.verts:
+            v.co.z += dz
+
+
+def _clip_below(b, z):
+    """cut a block flat at the seabed plane (the buried part goes; the cap closes the shell)."""
+    if min(v.co.z for v in b.verts) >= z - 1e-5:
+        return
+    bmesh.ops.bisect_plane(b, geom=b.verts[:] + b.edges[:] + b.faces[:], plane_co=Vector((0, 0, z)),
+                           plane_no=Vector((0, 0, -1)), clear_outer=True)
+    bmesh.ops.holes_fill(b, edges=[e for e in b.edges if e.is_boundary], sides=0)
+    bmesh.ops.remove_doubles(b, verts=b.verts[:], dist=1e-4)
+    bmesh.ops.recalc_face_normals(b, faces=b.faces[:])
 
 
 def quay_armour(rnd):
     """Breakwater rock armour: 3 m section of big quarried granite blocks (1.0 to 2.2 m) tipped against the wall
     face in 4 layers, crest about z -0.3 at the wall (above the waterline), toe 5 m out on the seabed; blocks overlap
-    the piece edges so neighbouring sections interlock."""
-    wall = Part("Wall", smooth_angle=40.0)
-    for zc, ymin, ymax, s, xs in ((-3.25, -4.9, -4.0, 1.9, -1.55), (-2.35, -3.5, -2.7, 1.75, -1.2),
-                                  (-1.45, -2.25, -1.7, 1.55, -1.6), (-0.65, -1.15, -0.85, 1.25, -1.35)):
+    the piece edges so neighbouring sections interlock.
+    POL1: planar quarried facets with crisp chamfered arrises (flat shaded, no noise relief / T-junction seams), and
+    every block is settled under gravity: dropped until it touches the seabed (z = FOOT) or a block below it, sunk a
+    few cm into its support, and clipped flat at the seabed plane. The pivot is then moved to the seabed plane (see
+    quay_spec), so the bottom of the rocks sits exactly at the pivot plane and nothing hovers."""
+    from mathutils.bvhtree import BVHTree
+    wall = Part("Wall", smooth_angle=6.0)
+    placed = []          # (lod0 bm, lod1 bm, BVHTree, layer)
+    for layer, (zc, ymin, ymax, s, xs) in enumerate( ((-3.25, -4.9, -4.0, 1.9, -1.55), (-2.35, -3.5, -2.7, 1.75, -1.2),
+                                  (-1.45, -2.25, -1.7, 1.4, -1.6), (-0.65, -1.15, -0.85, 0.9, -1.35))):
         x = xs + rnd.uniform(-0.1, 0.15)
         while x < 1.55:
             sz = s * rnd.uniform(0.8, 1.15)
             half = (sz * rnd.uniform(0.42, 0.58), sz * rnd.uniform(0.32, 0.45), sz * rnd.uniform(0.26, 0.38))
-            c = (x + half[0] * 0.75, rnd.uniform(ymin, ymax), max(zc + rnd.uniform(-0.12, 0.15), FOOT + half[2] * 0.6))
-            quarry_block(wall, c, half, rnd)
+            c = (x + half[0] * 0.75, rnd.uniform(ymin, ymax), zc + rnd.uniform(-0.12, 0.15) + 0.6)
+            b0, b1 = quarry_block(c, half, rnd)
+            zmin = min(v.co.z for v in b0.verts)
+            low = [v.co.copy() for v in b0.verts if v.co.z < zmin + 0.45 * half[2] * 2]
+            drop = 1e9
+            for p in low:
+                sup = FOOT
+                for _, _, tree, ly in placed:
+                    if ly >= layer:                # rests on the layers below (same-layer neighbours interlock)
+                        continue
+                    hit = tree.ray_cast(Vector((p.x, p.y, 6.0)), Vector((0, 0, -1)))
+                    if hit[0] is not None:
+                        sup = max(sup, hit[0].z)
+                drop = min(drop, p.z - sup)
+            sink = 0.18 if (zmin - drop < FOOT + 0.05 or layer == 3) else 0.12       # bed the toe into the sediment
+            _move((b0, b1), -(drop + sink))
+            _clip_below(b0, FOOT)
+            _clip_below(b1, FOOT)
+            placed.append((b0, b1, BVHTree.FromBMesh(b0), layer))
             x += half[0] * 1.55
+    print("[POL1] armour layer tops m", [round(max(max(v.co.z for v in b[0].verts) for b in placed if b[3] == k), 2)
+                                          for k in range(4)])
+    for b0, b1, _, _ in placed:
+        cv = sum((v.co for v in b1.verts), Vector()) / len(b1.verts)
+        for lods, b in (((0,), b0), ((1, 2), b1)):
+            geo.LEVEL = lods
+            wall.prim += 1
+            for f in b.faces:
+                pts = [v.co.copy() for v in f.verts]
+                n = f.normal.copy()
+                cz = sum(p.z for p in pts) / len(pts)
+                # one zone per facet (same draw for LOD0 / LOD1 would need matching facets; zones are coarse anyway)
+                wall.face(pts, band_mode(n, pts, zone_of(cz, n.z, rnd), rnd), outward=n)
+        b0.free()
+        b1.free()
+    L()
+    for i, (pts, uvs, lv, pid) in enumerate(wall.faces):       # pivot -> seabed plane (bottom of the rocks)
+        wall.faces[i] = ([Vector((p.x, p.y, p.z - FOOT)) for p in pts], uvs, lv, pid)
     return wall
 
 
@@ -796,10 +834,13 @@ def quay_spec(piece, rnd_seed, dims, closeups, extra_atts=()):
     elif piece == "Armour":
         wall = quay_armour(rnd)
         stone, top = Part("Stone"), Part("Top")
-        atts = [att("ATT_Snap_L", (-1.5, 0, 0), (-1, 0, 0)), att("ATT_Snap_R", (1.5, 0, 0), (1, 0, 0)),
-                att("ATT_WaterLine", (0, -1.6, SEA), (0, -1, 0))]
-        cols = [((-1.5, -1.3, FOOT), (1.5, 0.0, -0.45)), ((-1.5, -2.6, FOOT), (1.5, -1.3, -1.15)),
-                ((-1.5, -4.0, FOOT), (1.5, -2.6, -2.1)), ((-1.5, -5.4, FOOT), (1.5, -4.0, -3.0))]
+        # POL1: pivot on the seabed plane (rock bottoms at z 0); the snaps stay at quay-top level (+4 m) so the
+        # piece still snaps to the quay wall run, ATT_WaterLine at sea level (+2.667 m)
+        H = -FOOT
+        atts = [att("ATT_Snap_L", (-1.5, 0, H), (-1, 0, 0)), att("ATT_Snap_R", (1.5, 0, H), (1, 0, 0)),
+                att("ATT_WaterLine", (0, -1.6, SEA + H), (0, -1, 0))]
+        cols = [((-1.5, -1.3, 0.0), (1.5, 0.0, H - 0.45)), ((-1.5, -2.6, 0.0), (1.5, -1.3, H - 1.15)),
+                ((-1.5, -4.0, 0.0), (1.5, -2.6, H - 2.1)), ((-1.5, -5.4, 0.0), (1.5, -4.0, H - 3.0))]
     meshes = emit(name, [(wall, "Armour" if piece == "Armour" else "Tide", m["Wall"]), (stone, "Stone", m["Stone"]),
                          (top, "Cobbles", m["Top"])])
     meshes.append({"object": col_object(name, cols)})

@@ -17,13 +17,26 @@ import run as R  # noqa: E402
 import template  # noqa: E402
 import turntable as TT  # noqa: E402
 
-SHOTS = G + "assets/review/HP1/shots_b"   # HP1b fix round
+SHOTS = os.environ.get("HP1_SHOTS", G + "assets/review/HP1/shots_b")   # HP1b fix round; POL1: HP1_SHOTS=.../POL1/shots_A
 # per asset: (az, el) of the main 3/4 view; optional close-up (target m, dist m, az, el)
 VIEW = {"M_Hbr_QuayKit_Steps": (-30, 18), "M_Hbr_QuayKit_Head": (-20, 22), "M_Hbr_QuayKit_Armour": (-35, 20),
         "M_Hbr_Pontoon_Gangway": (-50, 22)}
-CLOSE = {"M_Hbr_QuayKit_Straight": ((0.3, -0.2, -1.0), 2.6, -25, 6),
+CLOSE = {"M_Hbr_QuayKit_Straight": ((0.3, -0.12, -1.6), 1.5, -18, 4),       # POL1: barnacle band at the tide zone
+         "M_Hbr_QuayKit_Armour": (None, 2.0, -30, 14),                       # POL1: toe block on the seabed (auto target)
          "M_Hbr_Pontoon_Straight6": ((1.1, 0.6, 0.0), 2.0, -60, 30),
          "M_Hbr_Ladder": ((0.0, 0.0, -1.6), 2.0, -30, 8)}
+CLOSE_LABEL = {"M_Hbr_QuayKit_Straight": "M_Hbr_QuayKit_Straight_barnacles", "M_Hbr_QuayKit_Armour": "M_Hbr_QuayKit_Armour_contact"}
+
+
+def seabed(lo, hi, z):
+    """POL1: CC0 seabed sand plane at the armour pivot plane (the rocks must read as resting on the ground)."""
+    size = max(hi.x - lo.x, hi.y - lo.y) + 30
+    bpy.ops.mesh.primitive_plane_add(size=size, location=((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, z))
+    pl = bpy.context.active_object
+    pl.data.uv_layers.active.name = common.UV_NAME
+    for d in pl.data.uv_layers.active.data:
+        d.uv = d.uv * (size / 6.0)                     # ~2 m tile (6 studs)
+    return pl
 
 
 def maps_for(spec, e, wet):
@@ -54,6 +67,7 @@ def shots(spec):
             o.hide_render = o not in objs
     # water plane at sea level for the quay / ladder / pontoon (semi-dark, glossy) to read the waterline
     lo, hi = TT.bounds(TT.corners(objs))
+    print("[POL1] %s bounds m" % name, tuple(round(c / 3, 3) for c in lo), tuple(round(c / 3, 3) for c in hi))
     sea_z = (-0.5 if "Pontoon" in name else -1.333) * 3.0
     bpy.ops.mesh.primitive_plane_add(size=1, location=((lo.x + hi.x) / 2, (lo.y + hi.y) / 2 - 6, sea_z))
     water = bpy.context.active_object
@@ -69,8 +83,14 @@ def shots(spec):
     except Exception:
         pass
     water.data.materials.append(wm)
-    if "Gangway" in name:
-        water.hide_render = True
+    if "Gangway" in name or "Armour" in name:
+        water.hide_render = True        # POL1: armour shown dry on its seabed (the 72 % water plane ghosted it)
+    bed = seabed(lo, hi, lo.z) if "Armour" in name else None
+    if bed is not None:
+        ct = None
+        vs = [o.matrix_world @ v.co for o in objs for v in o.data.vertices]
+        toe = min((v for v in vs if v.z < lo.z + 1.2), key=lambda v: v.y)
+        ct = Vector((toe.x, toe.y + 0.6, lo.z + 0.5))
     cam_data = bpy.data.cameras.new("CAM_HP1")
     cam_data.lens = 50
     cam = bpy.data.objects.new("CAM_HP1", cam_data)
@@ -83,6 +103,12 @@ def shots(spec):
             if mp and "ALB" in mp:
                 e["object"].data.materials.clear()
                 e["object"].data.materials.append(TT.pbr_material("MI_HP1_%s_%d" % (e["object"].name, wet), mp))
+        if bed is not None:
+            sd = G + "assets/textures/Materials"
+            bm_ = {k: common.map_file(sd, "T_Mat_SeabedSand_" + k + ("_Wet" if wet and k in ("ALB", "RGH") else ""))
+                   for k in common.MAP_KINDS}
+            bed.data.materials.clear()
+            bed.data.materials.append(TT.pbr_material("MI_HP1_Seabed_%d" % wet, {k: v for k, v in bm_.items() if v}))
         az, el = VIEW.get(name, (-35, 20))
         d = TT.view_dir(az, el)
         TT.fit(cam, TT.corners(objs), d)
@@ -91,15 +117,20 @@ def shots(spec):
         if name in CLOSE:
             t, dist, az2, el2 = CLOSE[name]
             d2 = TT.view_dir(az2, el2)
-            tv = Vector(t) * 3.0
+            tv = ct if t is None else Vector(t) * 3.0
             cam.matrix_world = template.look_matrix(-d2, location=tv + d2 * dist * 3.0)
-            scene.render.filepath = os.path.join(SHOTS, "%s_close_%s.png" % (name, "wet" if wet else "dry"))
+            wh = water.hide_render
+            water.hide_render = True    # close-ups are texture / contact checks: no water plane in front
+            scene.render.filepath = os.path.join(SHOTS, "%s_%s.png" % (CLOSE_LABEL.get(name, name + "_close"), "wet" if wet else "dry"))
             bpy.ops.render.render(write_still=True)
+            water.hide_render = wh
     for o, ms in restore:
         o.data.materials.clear()
         for m in ms:
             o.data.materials.append(m)
     bpy.data.objects.remove(water)
+    if bed is not None:
+        bpy.data.objects.remove(bed)
     bpy.data.objects.remove(cam)
 
 

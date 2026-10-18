@@ -148,6 +148,56 @@ def barnacles(shape, dens, seed, count=9000, rads=(2, 3, 3, 4, 4, 5)):
     return hgt, cov, pit
 
 
+def gblur(a, sig):
+    """wrap-around gaussian blur (FFT), sigma in px."""
+    h, w = a.shape
+    fy, fx = np.fft.fftfreq(h)[:, None], np.fft.fftfreq(w)[None, :]
+    return np.real(np.fft.ifft2(np.fft.fft2(a) * np.exp(-2 * (np.pi * sig) ** 2 * (fx * fx + fy * fy))))
+
+
+def acorn(shape, dens, seed, rmin=1.15, rmax=2.9, pack=1.2):
+    """POL1: acorn barnacles (Semibalanus / Chthamalus) at ~3.9 mm/px. Every barnacle is its own steep, slightly
+    hexagonal cone of 6 wall plates (0.9..2.3 cm across) with a dark central opening (operculum); positions are
+    importance-sampled from dens, so dens ~1 packs them into crowded clusters (smaller, taller, overlapping) and low
+    dens leaves scattered singles. Returns height 0..1, cover, opening, shell tone 0..1 and a crevice AO (0.45..1)."""
+    r = np.random.default_rng(seed)
+    h, w = shape
+    hgt, cov, pit, tone = np.zeros(shape), np.zeros(shape), np.zeros(shape), np.zeros(shape)
+    p = np.clip(dens, 0, 1).reshape(-1)
+    tot = p.sum()
+    mean_a = np.pi * ((rmin + rmax) * 0.45) ** 2
+    n = int(tot * pack / mean_a)
+    if n > 0:
+        idx = r.choice(p.size, size=n, p=p / tot)
+        for k in idx:
+            y, x = divmod(int(k), w)
+            dl = p[k]
+            rad = (rmin + (rmax - rmin) * r.random() ** 1.4) * (1.0 - 0.22 * dl)
+            fy, fx = y + r.random(), x + r.random()
+            e = int(np.ceil(rad * 1.2)) + 1
+            ys, xs = np.arange(y - e, y + e + 1), np.arange(x - e, x + e + 1)
+            dy, dx = ys[:, None] + 0.5 - fy, xs[None, :] + 0.5 - fx
+            ang = r.uniform(0, np.pi)
+            ca, sa = np.cos(ang), np.sin(ang)
+            u, v = (dx * ca + dy * sa), (-dx * sa + dy * ca) / r.uniform(0.78, 1.0)
+            d = np.sqrt(u * u + v * v) / rad
+            th = np.arctan2(v, u)
+            d2 = d * (1 + 0.07 * np.cos(6 * th + r.uniform(0, 6.3)))          # 6 wall plates -> blunt hexagon
+            o = r.uniform(0.26, 0.4)
+            op = smooth(o, o * 0.55, d)                                         # dark opening at the apex
+            hh = np.where(d2 < 1, np.clip(1 - d2, 0, 1) ** 0.55, 0) * (1 - 0.75 * op)
+            hh = hh * r.uniform(0.7, 1.0) * (1 + 0.35 * dl) * (1 + 0.06 * np.cos(12 * th))   # plate ribs
+            ix = np.ix_(ys % h, xs % w)
+            m = hh > hgt[ix]
+            hgt[ix] = np.where(m, hh, hgt[ix])
+            pit[ix] = np.where(m, op, pit[ix])
+            tone[ix] = np.where(m, r.uniform(0.0, 1.0) ** 0.7, tone[ix])
+            cov[ix] = np.maximum(cov[ix], smooth(1.08, 0.86, d2))
+    hgt = hgt / max(hgt.max(), 1e-6)
+    ao = np.clip(1 - 2.4 * np.clip(gblur(hgt, 2.2) - hgt, 0, 1) - 0.5 * np.clip(gblur(hgt, 5.0) - hgt * 0.6, 0, 1), 0.45, 1)
+    return hgt, cov, pit, tone, ao
+
+
 def write(stem, suffix, arr, mode, folder):
     os.makedirs(folder, exist_ok=True)
     Image.fromarray((np.clip(arr, 0, 1) * 255 + 0.5).astype(np.uint8), mode).save(os.path.join(folder, "%s_%s.png" % (stem, suffix)))
@@ -204,28 +254,34 @@ def clusters(s, seed, beta=2.3, aniso=(1.0, 1.0)):
     return fbm(s, beta, aniso=aniso, seed=seed) * 0.75 + fbm(s, 1.4, seed=seed + 1) * 0.25
 
 
-def growth(s, hs, seed, line):
-    """Shore growth fields from height above sea level hs (m): barnacle colonies that are dense low down and thin
-    out into scattered clusters ~0.7 m above the line, wrack clumps hanging below the line, a tar-lichen splash band,
-    green algae seeps and the always-wet stain. Returns dict of 0..1 masks + barnacle height / pits."""
+def growth(s, hs, seed, line, joint=None):
+    """Shore growth fields from height above sea level hs (m). POL1: individual acorn barnacles packed in small
+    clusters (3..15 cm), densest at low water (hs ~ -0.9), thinning upward into scattered singles, none above the
+    high-water line (hs ~ +0.7); extra dense along the mortar joints (joint mask). Wrack clumps hang below the line,
+    a soft dark Verrucaria splash band sits above the barnacles, green algae seeps and the always-wet stain.
+    Returns dict of 0..1 masks + barnacle height / opening / tone / crevice AO."""
     h = hs + 0.18 * (line - 0.5) * 2
     col = clusters(s, seed)
     fine = fbm(s, 1.1, seed=seed + 7)
-    # barnacles: colony threshold rises with height -> big crusts low, small clusters high, none above ~0.8 m
-    thr = 0.36 + 0.34 * smooth(-0.5, 0.75, h)
-    bmask = smooth(thr, thr + 0.05, col) * smooth(0.85, 0.4, h) * (1 - 0.75 * smooth(-0.6, -1.4, h))
-    bmask = np.maximum(bmask, smooth(0.93, 0.97, fine) * smooth(1.0, 0.5, h) * smooth(-1.6, -0.8, h) * 0.8)  # strays
-    bh, bcov, bpit = barnacles(s, bmask, seed + 3, count=60000, rads=(2, 2, 3, 3, 3, 4, 4, 5, 6))
+    bcl = fbm(s, 1.55, seed=seed + 3) * 0.7 + fbm(s, 2.4, seed=seed + 4) * 0.3       # small colony field
+    zone = smooth(-1.45, -0.9, h) * (1 - smooth(-0.15, 0.72, h))
+    thr = 0.4 + 0.26 * smooth(-0.9, 0.7, h)                                           # clusters shrink upward
+    dens = smooth(thr - 0.1, thr + 0.12, bcl) * zone
+    dens = np.maximum(dens, 0.1 * smooth(0.55, 0.7, bcl) * smooth(-2.3, -1.5, h) * (1 - smooth(-1.1, -0.9, h)))
+    if joint is not None:                                                             # larvae settle in the joints
+        dens = np.maximum(dens, joint * zone * (0.55 + 0.4 * smooth(0.3, 0.55, bcl)))
+    bh, bcov, bpit, btone, bao = acorn(s, dens, seed + 5)
     # wrack (Fucus / Ascophyllum) clumps: vertical drapes, cover grows with depth below the line
     drape = fbm(s, 2.2, aniso=(0.3, 1.0), seed=seed + 11)
     wthr = 0.62 - 0.3 * smooth(0.1, -1.2, h)
     weed = smooth(wthr, wthr + 0.08, drape * 0.7 + col * 0.3) * smooth(0.25, -0.15, h)
     strands = fbm(s, 1.3, aniso=(0.15, 1.0), seed=seed + 12)
-    tar = smooth(1.2, 0.9, h) * smooth(0.35, 0.6, h) * smooth(0.5, 0.64, clusters(s, seed + 20))
+    tar = smooth(1.3, 0.95, h) * smooth(0.45, 0.8, h) * (0.3 + 0.7 * smooth(0.3, 0.8, fbm(s, 1.4, seed=seed + 20)))
     alg = smooth(0.55, 0.1, h) * smooth(-0.6, -0.1, h) * smooth(0.55, 0.7, fbm(s, 2.4, aniso=(0.2, 1.0), seed=seed + 21))
     wet = smooth(0.62, 0.48, h)                 # the tidal zone is always damp
     sub = smooth(-0.3, -0.9, h)                 # permanently submerged: kelp / diatom film
-    return dict(b=bcov, bh=bh, bpit=bpit, weed=weed, strands=strands, tar=tar, alg=alg, wet=wet, sub=sub)
+    return dict(b=bcov, bh=bh, bpit=bpit, btone=btone, bao=bao, weed=weed * (1 - 0.6 * bcov), strands=strands,
+                tar=tar * (1 - bcov), alg=alg * (1 - bcov), wet=wet, sub=sub)
 
 
 def paint_shore(base, rough, g, fine, state):
@@ -234,18 +290,19 @@ def paint_shore(base, rough, g, fine, state):
     a = base * (0.6 if w else 1.0)
     a = mix(a, a * (0.62 if not w else 0.85), g["wet"])
     a = mix(a, rgb((52, 50, 42)) * (0.75 if w else 1.0), g["sub"] * 0.7)
-    a = mix(a, rgb((30, 30, 28)) * (0.85 + 0.3 * fine[..., None]), g["tar"] * 0.85)
+    a = mix(a, a * 0.55 + rgb((22, 22, 20)) * (0.8 + 0.4 * fine[..., None]), g["tar"] * 0.6)   # soft tar-lichen film
     a = mix(a, rgb((70, 98, 40)) * (0.7 if w else 0.9) * (0.8 + 0.4 * fine[..., None]), g["alg"] * 0.7)
     wc = mix(rgb((66, 56, 26)), rgb((96, 80, 34)), g["strands"]) * (0.8 + 0.35 * fine[..., None])
     a = mix(a, wc * (0.72 if w else 1.0), g["weed"] * 0.93)
-    bc = mix(rgb((150, 142, 124)), rgb((182, 176, 160)), fine) * (0.78 if w else 1.0)
-    a = mix(a, bc, g["b"] * 0.92)
-    a = a * (1 - 0.6 * g["bpit"][..., None])
+    bc = mix(rgb((146, 142, 132)), rgb((216, 212, 200)), g["btone"]) * (0.9 + 0.12 * fine[..., None]) * (0.7 if w else 1.0)
+    a = mix(a, bc, g["b"])
+    a = mix(a, rgb((40, 35, 30)) * (0.8 if w else 1.0), g["bpit"] * 0.92)        # operculum openings
+    a = a * g["bao"][..., None]                                                   # crevices between the cones
     r = rough * (0.42 if w else 1.0)
     r = mix(r, 0.34 if not w else 0.16, g["wet"] * (1 - g["b"]))
     r = mix(r, 0.9 if not w else 0.55, g["tar"] * 0.5)
     r = mix(r, 0.28 if not w else 0.1, g["weed"])
-    r = mix(r, 0.7 if not w else 0.4, g["b"] * 0.85)
+    r = mix(r, 0.74 if not w else 0.3, g["b"] * 0.9)
     return a, r
 
 
@@ -290,17 +347,17 @@ def quay_sets():
     base = regrade(A4, (150, 145, 136), contrast=1.05, sat=0.6) * (0.84 + 0.3 * tone_u[..., None]) * (0.95 + 0.1 * big4[..., None])
     warm = smooth(0.55, 0.8, fbm(s, 3.2, aniso=(0.05, 1.0), seed=17))
     base = mix(base, base * np.array([1.06, 1.0, 0.9]), warm * 0.7)
-    lich = smooth(0.72, 0.8, mid4 * 0.6 + fine4 * 0.4) * smooth(0.9, 1.6, hs)
-    base = mix(base, rgb((176, 172, 150)) * (0.85 + 0.3 * fine4[..., None]), lich * 0.5)
+    lich = smooth(0.66, 0.86, mid4 * 0.6 + fine4 * 0.4) * smooth(0.9, 1.6, hs)
+    base = mix(base, rgb((170, 168, 150)) * (0.85 + 0.3 * fine4[..., None]), lich * 0.3)
     mortar_m = (xx >= MORTAR_U[0] - 0.02).astype(np.float64)
     mort = rgb((168, 160, 144)) * (0.86 + 0.22 * fine4[..., None]) * (0.92 + 0.1 * mid4[..., None])
     base = mix(base, mort, mortar_m)
     rough = np.where(mortar_m > 0.5, 0.9, np.clip(0.76 + 0.07 * R4, 0.55, 0.92))
-    g = growth(s, hs, 30, line)
+    g = growth(s, hs, 30, line, joint=mortar_m)
     a_d, r_d = paint_shore(base, rough, g, fine4, "dry")
     a_w, r_w = paint_shore(base, rough, g, fine4, "wet")
     wgx, wgy = hgrad(g["weed"] * (0.6 + 0.6 * g["strands"]), 4.0)
-    bgx, bgy = hgrad(g["bh"], 2.6)
+    bgx, bgy = hgrad(g["bh"], 3.2)
     soften = 1 - 0.7 * g["weed"]
     mgx, mgy = hgrad(fine4 * mortar_m, 2.0)
     nor = nor_of(gx4 * soften * 1.3 * (1 - mortar_m) + bgx + wgx + mgx, gy4 * soften * 1.3 * (1 - mortar_m) + bgy + wgy + mgy)
@@ -321,7 +378,7 @@ def quay_sets():
             cor = smooth(0.6, 0.66, clusters(bs, 99))
         else:
             cor = np.zeros(bs)
-        lichd = smooth(0.66, 0.76, fbm(bs, 1.6, seed=95)) if k == 3 else np.zeros(bs)
+        lichd = smooth(0.62, 0.82, fbm(bs, 1.6, seed=95)) * 0.7 if k == 3 else np.zeros(bs)
         lo = smooth(0.82, 0.88, fbm(bs, 1.5, seed=96)) if k == 3 else np.zeros(bs)
         b0 = base[r0:r1]
         b0 = mix(b0, rgb((176, 174, 158)), lichd * 0.55)
@@ -332,7 +389,7 @@ def quay_sets():
             a = mix(a, rgb((150, 104, 110)) * (0.7 if st == "wet" else 1.0), cor * 0.6)
             A_[r0:r1], R_[r0:r1] = a, r
         wgx, wgy = hgrad(g["weed"] * (0.6 + 0.6 * g["strands"]), 4.0)
-        bgx, bgy = hgrad(g["bh"], 2.6)
+        bgx, bgy = hgrad(g["bh"], 3.2)
         soften = 1 - 0.7 * g["weed"]
         nor[r0:r1] = nor_of(gx4[r0:r1] * soften * 1.5 + bgx + wgx, gy4[r0:r1] * soften * 1.5 + bgy + wgy)
     save(out, "T_QuayKit_Armour", a_d, nor, r_d, np.zeros(s), alb_w=a_w, rgh_w=r_w)

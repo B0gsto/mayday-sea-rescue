@@ -2,12 +2,11 @@
  "asset": "M_Hbr_QuayKit_Armour",
  "name": "M_Hbr_QuayKit_Armour",
  "date": "2026-10-18",
- "commit": "013da692+dirty",
+ "commit": "a90a3654+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
-  "validate",
-  "export"
+  "validate"
  ],
  "scene": "art/blender/_template.blend",
  "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
@@ -21,132 +20,6 @@
   "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
   "roblox_tri_limit": 20000
  },
- "exports": [
-  {
-   "file": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "bytes": 348460,
-   "fbx_version": 7400,
-   "meshes": [
-    "M_Hbr_QuayKit_Armour_COL",
-    "M_Hbr_QuayKit_Armour_Wall_LOD0"
-   ],
-   "geometry": [
-    {
-     "name": "M_Hbr_QuayKit_Armour_COL.001",
-     "min": [
-      -4.5,
-      -16.2,
-      -12.0
-     ],
-     "max": [
-      4.5,
-      0.0,
-      -1.35
-     ],
-     "polygons": 48,
-     "all_triangles": true,
-     "uv": true
-    },
-    {
-     "name": "M_Hbr_QuayKit_Armour_Wall_LOD0.001",
-     "min": [
-      -6.1674,
-      -16.369,
-      -13.0025
-     ],
-     "max": [
-      8.6803,
-      -0.5185,
-      -0.1433
-     ],
-     "polygons": 5120,
-     "all_triangles": true,
-     "uv": true
-    }
-   ],
-   "unit_scale_factor": 100.0,
-   "axes": [
-    1,
-    1,
-    2,
-    1
-   ]
-  },
-  {
-   "file": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "bytes": 58620,
-   "fbx_version": 7400,
-   "meshes": [
-    "M_Hbr_QuayKit_Armour_Wall_LOD1"
-   ],
-   "geometry": [
-    {
-     "name": "M_Hbr_QuayKit_Armour_Wall_LOD1.001",
-     "min": [
-      -6.1674,
-      -16.369,
-      -13.0025
-     ],
-     "max": [
-      8.6803,
-      -0.5185,
-      -0.1433
-     ],
-     "polygons": 420,
-     "all_triangles": true,
-     "uv": true
-    }
-   ],
-   "unit_scale_factor": 100.0,
-   "axes": [
-    1,
-    1,
-    2,
-    1
-   ]
-  },
-  {
-   "file": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "bytes": 58620,
-   "fbx_version": 7400,
-   "meshes": [
-    "M_Hbr_QuayKit_Armour_Wall_LOD2"
-   ],
-   "geometry": [
-    {
-     "name": "M_Hbr_QuayKit_Armour_Wall_LOD2.001",
-     "min": [
-      -6.1674,
-      -16.369,
-      -13.0025
-     ],
-     "max": [
-      8.6803,
-      -0.5185,
-      -0.1433
-     ],
-     "polygons": 420,
-     "all_triangles": true,
-     "uv": true
-    }
-   ],
-   "unit_scale_factor": 100.0,
-   "axes": [
-    1,
-    1,
-    2,
-    1
-   ]
-  },
-  {
-   "file": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour.attachments.json",
-   "attachments": [
-    "ATT_Snap_L",
-    "ATT_Snap_R",
-    "ATT_WaterLine"
-   ]
-  }
- ],
  "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/harbour/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour.blend",
  "ok": true,
  "checks": [
@@ -188,7 +61,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5120 of 8000"
+   "detail": "1714 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD0",
@@ -196,7 +69,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.30e-03, 550 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.62e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD0",
@@ -220,7 +93,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 5120 faces have no UV area"
+   "detail": "0 of 1246 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD1",
@@ -244,7 +117,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "420 of 8000"
+   "detail": "560 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD1",
@@ -252,7 +125,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.74e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.90e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD1",
@@ -276,15 +149,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 389 faces have no UV area"
+   "detail": "0 of 517 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.044 (max 0.02), UV area by 0.6% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD2",
@@ -308,7 +181,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "420 of 8000"
+   "detail": "560 of 8000"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD2",
@@ -316,7 +189,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.74e-03, 0 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.90e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD2",
@@ -340,15 +213,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 389 faces have no UV area"
+   "detail": "0 of 517 faces have no UV area"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_Wall_LOD2",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+   "detail": "WAIVED (world-scale tiling UVs; hand-made LODs (blocks -> courses -> one plane)): UV bounds differ by 0.044 (max 0.02), UV area by 0.6% (max 15%)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour_COL",
@@ -396,7 +269,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "5120 of 8000 (large_prop, asset row)"
+   "detail": "1714 of 8000 (large_prop, asset row)"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour",
@@ -404,7 +277,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "420 of 4000"
+   "detail": "560 of 4000"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour",
@@ -412,7 +285,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "420 of 2000"
+   "detail": "560 of 2000"
   },
   {
    "subject": "M_Hbr_QuayKit_Armour",
@@ -509,126 +382,6 @@
    "waived": false,
    "info": false,
    "detail": "empty becomes an Attachment on import"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "check": "file naming",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD0.fbx"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "check": "units",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "check": "axes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "check": "meshes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "M_Hbr_QuayKit_Armour_COL, M_Hbr_QuayKit_Armour_Wall_LOD0; 5168 triangles (scene 5168)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD0.fbx",
-   "check": "UVs exported",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "check": "file naming",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD1.fbx"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "check": "units",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "check": "axes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "check": "meshes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "M_Hbr_QuayKit_Armour_Wall_LOD1; 420 triangles (scene 420)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD1.fbx",
-   "check": "UVs exported",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "check": "file naming",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "assets/fbx/M_Hbr_QuayKit_Armour/M_Hbr_QuayKit_Armour_LOD2.fbx"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "check": "units",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "check": "axes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "check": "meshes",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "M_Hbr_QuayKit_Armour_Wall_LOD2; 420 triangles (scene 420)"
-  },
-  {
-   "subject": "M_Hbr_QuayKit_Armour_LOD2.fbx",
-   "check": "UVs exported",
-   "ok": true,
-   "waived": false,
-   "info": false,
-   "detail": "UV layer on 1 of 1 visual meshes"
   }
  ],
  "meshes": [
@@ -636,21 +389,21 @@
    "name": "M_Hbr_QuayKit_Armour_Wall_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 5120,
+   "triangles": 1714,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_Armour_Wall_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 420,
+   "triangles": 560,
    "texel_density": null
   },
   {
    "name": "M_Hbr_QuayKit_Armour_Wall_LOD2",
    "role": "visual",
    "lod": "LOD2",
-   "triangles": 420,
+   "triangles": 560,
    "texel_density": null
   },
   {
@@ -662,9 +415,9 @@
   }
  ],
  "bbox_studs": [
-  14.847752094268799,
-  15.8505197763443,
-  12.859252333641052
+  14.678682327270508,
+  15.260519862174988,
+  11.98630142211914
  ],
- "peak_rss_mb": 517.9
+ "peak_rss_mb": 277.2
 }
