@@ -249,23 +249,21 @@ def metal_set():
     dark = sm(0.55, 0.85, fbm(M, 2, 12, 1.7, 32))           # silt / dark sulphide film
     b_alb = b_alb * (1 - 0.35 * dark[..., None])
     b_h = v["Displacement"] * 0.6 + fbm(M, 8, 80, 1.2, 33) * 0.4
-    b_rgh = 0.50 + 0.06 * (v["Rough"] - v["Rough"].mean()) - 0.08 * show
-    b_met = 0.35 * show
+    # POL2: matte verdigris (was 0.42..0.50 with 0.35 metal: the flared sound bow mirrored the inscription)
+    b_rgh = 0.60 + 0.06 * (v["Rough"] - v["Rough"].mean()) - 0.05 * show
+    b_met = 0.22 * show
     r_b = slice(M // 2, 3 * M // 4)
     alb[r_b], h[r_b], rgh[r_b], met[r_b] = b_alb[: M // 4], b_h[: M // 4], b_rgh[: M // 4], b_met[: M // 4]
     # lettering band (v 0..0.25): same patina, raised serif capitals, tops rubbed to bronze
     r_t = slice(3 * M // 4, M)
     H = M // 4
+    # POL2: the inscription is raised geometry on the bell; its face triangles (lettering.json, written by the bell's
+    # build.py in band UV) are rasterised here so the rubbed faces, bevel and silt feet sit exactly under the relief
     txt = Image.new("L", (M, H), 0)
     d = ImageDraw.Draw(txt)
-    font = ImageFont.truetype(FONT, int(H * 0.50))
-    msg = "MORWENNA   1902"
-    w = d.textlength(msg, font=font)
-    track = (M * 0.5 - w) / (len(msg) - 1)
-    x = M * 0.25
-    for ch in msg:
-        d.text((x, H * 0.20), ch, fill=255, font=font)
-        x += d.textlength(ch, font=font) + track
+    lj = json.load(open(G + "art/source/seabed/M_Sea_Bell/lettering.json"))
+    for tri in lj["tris"]:
+        d.polygon([(u * M, (0.25 - v) / 0.25 * H) for u, v in tri], fill=255)
     t0 = np.asarray(txt, np.float32) / 255.0
     # S1a-fix: crisp cast capitals: a narrow bevel (small blur, then a steep ramp) instead of the soft 1.6 px blur,
     # dark silt packed at the letter feet, and the faces rubbed back to bronze
@@ -281,8 +279,8 @@ def metal_set():
     t_alb = t_alb * (1 - rub) + bronze * 1.25 * rub
     alb[r_t] = t_alb
     h[r_t] = b_h[M // 4: M // 2] * 0.35 + raised * 4.5
-    rgh[r_t] = b_rgh[M // 4: M // 2] - 0.10 * rub[..., 0] + 0.05 * feet
-    met[r_t] = b_met[M // 4: M // 2] * 0.5 + 0.45 * rub[..., 0]
+    rgh[r_t] = b_rgh[M // 4: M // 2] - 0.06 * rub[..., 0] + 0.05 * feet
+    met[r_t] = b_met[M // 4: M // 2] * 0.5 + 0.30 * rub[..., 0]
     nor = normal(Image_blur(h, 0.45), 5.0)
     save("M_Sea_Morwenna", "T_Morwenna_Metal", alb, nor, np.clip(rgh, 0.38, 0.66), np.clip(met, 0, 0.42))
 
@@ -415,8 +413,68 @@ def encrust_set():
     save("M_Sea_Morwenna", "T_Morwenna_Encrust", alb, nor, np.clip(rgh, 0.38, 0.66), np.zeros((M, M)))
 
 
+def anchor_sand_set():
+    """POL2: T_AdmiraltyAnchor_Sand, the anchor's own sand bed (non-tiling, planar top-down over 6 x 6 m, mirrors
+    SAND_UV and the bed outline in M_Sea_AdmiraltyAnchor/build.py). Same sand base and silt grade as T_Morwenna_Silt
+    (the seabed / terrain stand-in) so the bed melts into the ground; current ripples (about 11 cm, sinuous and
+    bifurcating crests) with shell grit and dark detritus in the troughs, ripples smoothed out on the drifts banked
+    against the iron, and an alpha rim faded on a noisy outline just inside the mesh edge (AlphaMode Transparency)."""
+    U0, V0, SPAN = -3.0, -3.05, 6.0
+    yy, xx = np.mgrid[0:M, 0:M].astype(np.float32)
+    x = U0 + (xx + 0.5) / M * SPAN
+    y = V0 + (1.0 - (yy + 0.5) / M) * SPAN                  # image row 0 = v 1
+    s = fetch(SCANS["sand"])
+    small = {k: np.asarray(Image.fromarray(((s[k] - s[k].min()) / (np.ptp(s[k]) + 1e-6) * 255).astype(np.uint8)).resize((M // 3, M // 3), Image.LANCZOS), np.float32) / 255.0
+             for k in ("Diffuse", "Displacement", "Rough") if s[k].ndim == 2}
+    l = lum(s["Diffuse"])
+    l = np.asarray(Image.fromarray(((l - l.min()) / (np.ptp(l) + 1e-6) * 255).astype(np.uint8)).resize((M // 3, M // 3), Image.LANCZOS), np.float32) / 255.0
+    disp = small.get("Displacement", l)
+    l = np.tile(l, (4, 4))[:M, :M]                          # scan at 2 m per repeat
+    disp = np.tile(disp, (4, 4))[:M, :M]
+    l = (l - l.mean()) / (l.std() + 1e-6)
+
+    def seg(ax, ay, bx, by):
+        dx, dy = bx - ax, by - ay
+        t = np.clip(((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy), 0, 1)
+        return np.hypot(x - ax - t * dx, y - ay - t * dy)
+    yh, yc = -1.6, 1.6
+    drift = np.clip(np.exp(-seg(0, yh + 0.3, 0, yc) / 0.45) + np.exp(-seg(-1.6, yh + 0.12, 1.6, yh + 0.12) / 0.35)
+                    + np.exp(-np.hypot(x, y - yc) / 0.5), 0, 1)
+    # ripples: crests roughly along x (current along y), warped and broken by noise so they wander and fork
+    warp = fbm(M, 1.5, 6, 1.8, 81) - 0.5
+    warp2 = fbm(M, 4, 20, 1.6, 82) - 0.5
+    lam = 0.11
+    ph = 2 * np.pi * (y + 0.35 * warp + 0.04 * warp2 + 0.05 * np.sin(x * 2.3)) / lam
+    rip = 0.5 + 0.5 * np.sin(ph + 0.6 * np.sin(ph))       # asymmetric: steep lee face, long stoss side
+    fork = sm(0.35, 0.65, fbm(M, 3, 14, 1.6, 83))
+    rip = rip * (0.55 + 0.45 * fork) + (1 - fork) * 0.45 * (0.5 + 0.5 * np.sin(ph * 0.5 + 1.7))
+    calm = sm(0.15, 0.7, drift)                           # drifts banked on the iron are smooth, fresh sand
+    ripple_amp = (1 - calm) * (0.7 + 0.3 * fbm(M, 2, 8, 1.7, 84))
+    trough = sm(0.45, 0.1, rip) * ripple_amp
+    sand = np.array([0.42, 0.39, 0.32])
+    alb = sand * (1 + 0.16 * l[..., None])
+    silt = sm(0.4, 0.8, fbm(M, 2, 10, 1.8, 41))
+    alb = alb * (1 - 0.3 * silt[..., None]) + np.array([0.33, 0.32, 0.27]) * 0.3 * silt[..., None]
+    alb = alb * (1 + 0.10 * (rip - 0.5)[..., None] * ripple_amp[..., None])    # crests catch a little light
+    alb = alb * (1 - 0.22 * trough[..., None]) + np.array([0.24, 0.22, 0.17]) * 0.22 * trough[..., None]
+    grit = stamps(M, 2600, 1.2, 3.5, 0.25 + 0.75 * trough, 85, "barnacle")
+    alb = alb * (1 - 0.55 * grit[..., None]) + np.array([0.60, 0.57, 0.50]) * 0.55 * grit[..., None]
+    alb = alb * (1 + 0.06 * calm[..., None])                # fresh drift sand slightly paler
+    h = rip * ripple_amp * 1.6 + disp * 0.35 + grit * 0.4
+    rgh = 0.55 + 0.04 * (l / 3.0) - 0.03 * trough
+    # alpha rim: the bed outline from build.py (r on an anisotropic radius vs a 3-lobed noisy edge), faded 0.6 m in
+    th = np.arctan2(y, x * 1.1)
+    edge = 1.9 + 0.35 * np.sin(3 * th + 0.7) + 0.25 * np.sin(5 * th + 2.1) + 0.15 * np.sin(9 * th)
+    r = np.hypot(x * 1.1, y * 0.85) + 0.25 * (fbm(M, 3, 16, 1.6, 86) - 0.5)
+    alpha = sm(edge + 0.05, edge - 0.6, r)
+    alpha = np.clip(alpha * (0.85 + 0.3 * fbm(M, 6, 40, 1.4, 87)), 0, 1)
+    alpha = np.where(alpha > 0.97, 1.0, alpha)
+    nor = normal(Image_blur(h, 0.8), 5.0)
+    save("M_Sea_AdmiraltyAnchor", "T_AdmiraltyAnchor_Sand", alb, nor, np.clip(rgh, 0.45, 0.62), np.zeros((M, M)), alpha)
+
+
 if __name__ == "__main__":
     only = sys.argv[1:]
-    for f in (wood_set, metal_set, seabed_set, anchor_set, encrust_set):
+    for f in (wood_set, metal_set, seabed_set, anchor_set, encrust_set, anchor_sand_set):
         if not only or f.__name__ in only:
             f()

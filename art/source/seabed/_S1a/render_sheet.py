@@ -9,25 +9,20 @@ import os
 import sys
 
 G = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
-OUT = G + "assets/review/S1a/renders_b/"      # S1a-fix round (contact_b.png); round 1 stays in renders/
-SHEET = G + "assets/review/S1a/contact_b.png"
+OUT = G + "assets/review/POL2/renders/"       # POL2 polish (bell lettering, anchor sand); S1a rounds stay in S1a/renders*/
+SHEET = G + "assets/review/POL2/contact.png"
 TERRAIN = {"M_Sea_Morwenna": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna.instances.json",
            "M_Sea_AdmiraltyAnchor": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor.placement.json"}
 SHOTS = [  # (asset, shot, rig, target (m from base centre), distance m, azimuth deg, elevation deg, lens)
-    ("M_Sea_Morwenna", "uw_threequarter", "uw", (0.0, 0.0, 0.8), 30, 35, 32, 30),
-    ("M_Sea_Morwenna", "uw_high", "uw", (0.0, 0.0, 0.6), 30, 120, 62, 30),
-    ("M_Sea_Morwenna", "uw_bow_windlass_chain", "uw", (1.2, -11.0, 1.0), 6.5, 30, 28, 30),
-    ("M_Sea_Morwenna", "uw_broken_back", "uw", (0.6, 1.2, 1.0), 7.5, 75, 30, 30),
-    ("M_Sea_Morwenna", "uw_scour_meets_terrain", "uw", (6.5, 3.0, 1.6), 10, 75, 13, 30),
-    ("M_Sea_Morwenna", "uw_growth_frame_heads", "uw", (-2.6, -4.6, 3.4), 3.6, -55, 22, 35),
-    ("M_Sea_Morwenna", "neutral_threequarter", "neutral", (0.0, 0.0, 0.8), 30, 215, 30, 30),
-    ("M_Sea_Morwenna", "neutral_ballast_planks", "neutral", (0.5, -1.5, 1.8), 9, 160, 55, 30),
-    ("M_Sea_AdmiraltyAnchor", "uw_threequarter", "uw", (0.0, 0.0, 0.7), 6.0, 40, 25, 35),
-    ("M_Sea_AdmiraltyAnchor", "uw_crown_closeup", "uw", (0.0, 1.4, 1.0), 2.0, 60, 15, 35),
-    ("M_Sea_AdmiraltyAnchor", "neutral_threequarter", "neutral", (0.0, 0.0, 0.7), 6.0, 220, 25, 35),
-    ("M_Sea_Bell", "uw_lettering", "uw", (0.0, 0.0, 0.15), 0.75, 0, 8, 50),
+    ("M_Sea_Bell", "neutral_lettering_front", "neutral", (0.0, 0.0, 0.14), 0.75, 0, 6, 50),
+    ("M_Sea_Bell", "neutral_lettering_30deg", "neutral", (0.0, 0.0, 0.14), 0.75, 30, 12, 50),
+    ("M_Sea_Bell", "uw_lettering", "uw", (0.0, 0.0, 0.14), 0.75, -12, 8, 50),
+    ("M_Sea_Bell", "neutral_closeup_relief", "neutral", (0.0, -0.1, 0.14), 0.32, -25, 4, 50),
     ("M_Sea_Bell", "uw_mouth_clapper", "uw", (0.0, 0.0, 0.13), 0.8, 28, 14, 50),
-    ("M_Sea_Bell", "neutral_lettering", "neutral", (0.0, 0.0, 0.16), 0.8, 12, 12, 50),
+    ("M_Sea_AdmiraltyAnchor", "neutral_threequarter", "neutral", (0.0, 0.0, 0.7), 6.0, 220, 25, 35),
+    ("M_Sea_AdmiraltyAnchor", "neutral_sand_edge", "neutral", (1.4, 0.6, 0.0), 2.6, 150, 40, 35),
+    ("M_Sea_AdmiraltyAnchor", "neutral_high", "neutral", (0.0, 0.0, 0.3), 7.5, 30, 70, 35),
+    ("M_Sea_AdmiraltyAnchor", "uw_threequarter", "uw", (0.0, 0.0, 0.7), 6.0, 40, 25, 35),
 ]
 
 
@@ -56,7 +51,7 @@ def blender_main():
                 maps = {k: d + "%s_%s.png" % (stem, k) for k in ("ALB", "NOR", "RGH", "MET")}
                 m = turntable.pbr_material("MI_S1a_" + stem, maps)
                 nt = m.node_tree
-                if stem.endswith("Kelp"):
+                if stem.endswith(("Kelp", "AdmiraltyAnchor_Sand")):
                     alb = next(n for n in nt.nodes if n.type == "TEX_IMAGE" and "ALB" in n.image.name)
                     nt.links.new(alb.outputs["Alpha"], nt.nodes["Principled BSDF"].inputs["Alpha"])
                 mats[stem] = m
@@ -69,8 +64,9 @@ def blender_main():
             for st in ("Wood", "Metal", "Silt", "Kelp", "Encrust"):
                 if mn.endswith("Morwenna_" + st):
                     stem = ("T_Morwenna_" + st, G + "assets/textures/M_Sea_Morwenna/")
-            if mn.endswith("AdmiraltyAnchor_Iron"):
-                stem = ("T_AdmiraltyAnchor_Iron", tex)
+            for st in ("Iron", "Sand"):
+                if mn.endswith("AdmiraltyAnchor_" + st):
+                    stem = ("T_AdmiraltyAnchor_" + st, tex)
             if stem:
                 o.data.materials[0] = mat_for(*stem)
         if asset == "M_Sea_Morwenna":      # lay the bell at ATT_Bell for the review (integration does this in Studio)
@@ -182,8 +178,8 @@ def sheet():
     d = ImageDraw.Draw(im)
     f = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 16)
     fb = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 20)
-    d.text((10, 9), "S1a seabed wreck kit: Morwenna (1902 schooner, 28 m), Admiralty anchor (3.2 m shank), bell 0.26 m. "
-                    "S1a-fix round b. uw = underwater rig (7 m, blue-green depth falloff), neutral = studio HDRI; ground = terrain stand-in", fill=(230, 230, 230), font=f)
+    d.text((10, 9), "POL2 polish on S1a: bell 0.26 m (cast MORWENNA / 1902, raised), Admiralty anchor sand bed (ripples, faded rim). "
+                    "POL2. uw = underwater rig (7 m, blue-green depth falloff), neutral = studio HDRI; ground = terrain stand-in", fill=(230, 230, 230), font=f)
     for i, (asset, shot, *_r) in enumerate(SHOTS):
         x, y = (i % cols) * cell, head + (i // cols) * (cell + 24)
         p = OUT + "%s__%s.png" % (asset, shot)

@@ -2,7 +2,7 @@
  "asset": "M_Sea_Bell",
  "name": "M_Sea_Bell",
  "date": "2026-10-18",
- "commit": "013da692+dirty",
+ "commit": "a90a3654+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD0.fbx",
-   "bytes": 108252,
+   "bytes": 212780,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_Bell_LOD0"
@@ -43,7 +43,7 @@
       0.393,
       1.083
      ],
-     "polygons": 1484,
+     "polygons": 2613,
      "all_triangles": true,
      "uv": true
     }
@@ -58,7 +58,7 @@
   },
   {
    "file": "assets/fbx/M_Sea_Bell/M_Sea_Bell_LOD1.fbx",
-   "bytes": 61164,
+   "bytes": 118156,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_Bell_LOD1"
@@ -76,7 +76,7 @@
       0.393,
       1.083
      ],
-     "polygons": 742,
+     "polygons": 1306,
      "all_triangles": true,
      "uv": true
     }
@@ -137,7 +137,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1484 of 3000"
+   "detail": "2613 of 3000"
   },
   {
    "subject": "M_Sea_Bell_LOD0",
@@ -145,7 +145,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.65e-04, 166 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.59e-06, 659 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_Bell_LOD0",
@@ -169,7 +169,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 750 faces have no UV area"
+   "detail": "0 of 1498 faces have no UV area"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -193,7 +193,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "742 of 3000"
+   "detail": "1306 of 3000"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -201,7 +201,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.46e-05, 88 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.82e-05, 318 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
@@ -225,15 +225,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 742 faces have no UV area"
+   "detail": "0 of 1306 faces have no UV area"
   },
   {
    "subject": "M_Sea_Bell_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (lathe seam columns and the two canon loops merge under collapse; the LOD samples the same strips): UV bounds differ by 0.098 (max 0.02), UV area by 18.5% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 4.5% (max 15%)"
   },
   {
    "subject": "M_Sea_Bell",
@@ -241,7 +241,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1484 of 1500 (small_prop, asset row)"
+   "detail": "2613 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Sea_Bell",
@@ -249,7 +249,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "742 of 750"
+   "detail": "1306 of 1500"
   },
   {
    "subject": "M_Sea_Bell",
@@ -377,7 +377,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_Bell_LOD0; 1484 triangles (scene 1484)"
+   "detail": "M_Sea_Bell_LOD0; 2613 triangles (scene 2613)"
   },
   {
    "subject": "M_Sea_Bell_LOD0.fbx",
@@ -417,7 +417,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Sea_Bell_LOD1; 742 triangles (scene 742)"
+   "detail": "M_Sea_Bell_LOD1; 1306 triangles (scene 1306)"
   },
   {
    "subject": "M_Sea_Bell_LOD1.fbx",
@@ -433,14 +433,14 @@
    "name": "M_Sea_Bell_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1484,
+   "triangles": 2613,
    "texel_density": null
   },
   {
    "name": "M_Sea_Bell_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 742,
+   "triangles": 1306,
    "texel_density": null
   }
  ],
@@ -449,5 +449,5 @@
   0.7860000133514404,
   1.0830000638961792
  ],
- "peak_rss_mb": 278.6
+ "peak_rss_mb": 254.4
 }

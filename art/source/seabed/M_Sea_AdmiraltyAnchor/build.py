@@ -55,6 +55,9 @@ def crusty(ob, target, seed):
     versions.weighted_normals(ob)
 
 
+SAND_UV = (-3.0, -3.05, 6.0)   # POL2: u0, v0 (m, before the base shift) and span (m) of the sand set; maketex.py mirrors it
+
+
 def sand_bed(yh, yc, zc):
     """S1a-fix MeshPart _Sand (shares T_Morwenna_Silt): sand drifted over the stock, against the shank and over the
     buried arm, rippled just above the terrain (z = 0) and sinking under it along an irregular outline."""
@@ -88,12 +91,14 @@ def sand_bed(yh, yc, zc):
             q = [idx[i, j], idx[i + 1, j], idx[i + 1, j + 1], idx[i, j + 1]]
             if max(b.v[k].z for k in q) < -0.08:
                 continue
-            b.face(q, [(b.v[k].x / 4.0, b.v[k].y / 4.0) for k in q], True)
+            # POL2: planar top-down UV over the whole bed (SAND_UV, metres) onto its own non-tiling set
+            # T_AdmiraltyAnchor_Sand: ripples, grit in the troughs, smoothed drifts at the iron, alpha-faded rim
+            b.face(q, [((b.v[k].x - SAND_UV[0]) / SAND_UV[2], (b.v[k].y - SAND_UV[1]) / SAND_UV[2]) for k in q], True)
     used = sorted({k for f in b.f for k in f})
     remap = {o: n for n, o in enumerate(used)}
     b.v = [b.v[o] for o in used]
     b.f = [[remap[k] for k in f] for f in b.f]
-    return b.to_object(NAME + "_Sand_LOD0", "MI_Morwenna_Silt")
+    return b.to_object(NAME + "_Sand_LOD0", "MI_AdmiraltyAnchor_Sand")
 
 
 def build():
@@ -189,8 +194,8 @@ def build():
         "name": NAME, "budget": "large_prop", "tris": 8000, "tier": "standard",
         "dims_m": (None, None, 1.93), "size_note": "iron 3.35 x 4.0 m (dims.md); the _Sand bed (4.6 x 5.3 m) sets the footprint", "origin": "base", "tiling": True,
         "sets": [{"name": "AdmiraltyAnchor", "set": "Iron", "size": 1024, "wet": False},
-                 {"name": "Morwenna", "set": "Silt", "size": 1024, "wet": False, "dir": os.path.join(G, "assets/textures/M_Sea_Morwenna")}],
-        "meshes": [{"object": lod0, "set": "Iron"}, {"object": sand, "set": "Silt"}, {"object": col}], "attachments": atts,
+                 {"name": "AdmiraltyAnchor", "set": "Sand", "size": 1024, "wet": False}],
+        "meshes": [{"object": lod0, "set": "Iron"}, {"object": sand, "set": "Sand"}, {"object": col}], "attachments": atts,
         "closeups": [
             {"name": "crown_palm", "target": [0, (yc - 0.4) * 3, 1.2 * 3], "dist": 7, "az": 60, "el": 20},
             {"name": "ring_stock", "target": [0, (yh) * 3, 0.4 * 3], "dist": 6, "az": -30, "el": 30},

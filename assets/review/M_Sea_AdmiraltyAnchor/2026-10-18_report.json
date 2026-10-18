@@ -2,7 +2,7 @@
  "asset": "M_Sea_AdmiraltyAnchor",
  "name": "M_Sea_AdmiraltyAnchor",
  "date": "2026-10-18",
- "commit": "013da692+dirty",
+ "commit": "6d0c1140+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -25,7 +25,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD0.fbx",
-   "bytes": 570652,
+   "bytes": 570204,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_AdmiraltyAnchor_COL",
@@ -92,7 +92,7 @@
   },
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD1.fbx",
-   "bytes": 296620,
+   "bytes": 296380,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_AdmiraltyAnchor_LOD1",
@@ -142,7 +142,7 @@
   },
   {
    "file": "assets/fbx/M_Sea_AdmiraltyAnchor/M_Sea_AdmiraltyAnchor_LOD2.fbx",
-   "bytes": 166668,
+   "bytes": 166572,
    "fbx_version": 7400,
    "meshes": [
     "M_Sea_AdmiraltyAnchor_LOD2",
@@ -722,36 +722,36 @@
    "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_MET.png"
   },
   {
-   "subject": "T_Morwenna_Silt_ALB",
+   "subject": "T_AdmiraltyAnchor_Sand_ALB",
    "check": "PBR map",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_ALB.png"
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Sand_ALB.png"
   },
   {
-   "subject": "T_Morwenna_Silt_NOR",
+   "subject": "T_AdmiraltyAnchor_Sand_NOR",
    "check": "PBR map",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_NOR.png"
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Sand_NOR.png"
   },
   {
-   "subject": "T_Morwenna_Silt_RGH",
+   "subject": "T_AdmiraltyAnchor_Sand_RGH",
    "check": "PBR map",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_RGH.png"
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Sand_RGH.png"
   },
   {
-   "subject": "T_Morwenna_Silt_MET",
+   "subject": "T_AdmiraltyAnchor_Sand_MET",
    "check": "PBR map",
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_Morwenna/T_Morwenna_Silt_MET.png"
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Sand_MET.png"
   },
   {
    "subject": "ATT_Anchor",
@@ -946,5 +946,5 @@
   15.95615005493164,
   5.781778812408447
  ],
- "peak_rss_mb": 329.1
+ "peak_rss_mb": 333.6
 }
