@@ -200,6 +200,63 @@ local function grounded(spec: Swaps.Swap): Swaps.Swap
 	return out
 end
 
+-- spec.pad: raises the terrain under the footprint rectangle to the (grounded) pivot, so the plinth meets the
+-- ground all round on uneven voxel ground (the town's height field sits exactly on a voxel boundary). Measured in
+-- Studio: over a full voxel, a voxel of occupancy o meshes at its centre + 4 * o in a smooth material (Grass: 0.1 ->
+-- +0.4 studs), but the WoodPlanks slot meshes blocky (empty above full: the voxel top, 2 studs low; any occupancy: a
+-- full block, 2 studs high). So each column in the rectangle gets at least (top - centre) / 4 + PAD_EPS (+0.16
+-- studs, so every column meshes) in its layers, never lowered, and blocky or empty voxels there take the smooth
+-- material under the pivot (Grass if that is blocky too).
+local VOXEL = 4
+local PAD_EPS = 0.04
+local BLOCKY: { [Enum.Material]: boolean } = { [Enum.Material.WoodPlanks] = true }
+local function padTerrain(spec: Swaps.Swap)
+	local r = spec.pad
+	if not r then
+		return
+	end
+	local terrain = Workspace.Terrain
+	local a = spec.pivot * toLocal(r[1], r[2], 0)
+	local b = spec.pivot * toLocal(r[3], r[4], 0)
+	local top = spec.pivot.Y
+	local y0 = math.floor((top - VOXEL) / VOXEL) * VOXEL
+	local region = Region3.new(
+		Vector3.new(math.min(a.X, b.X), y0, math.min(a.Z, b.Z)),
+		Vector3.new(math.max(a.X, b.X), top + VOXEL, math.max(a.Z, b.Z))
+	):ExpandToGrid(VOXEL)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { terrain }
+	local hit = Workspace:Raycast(
+		spec.pivot.Position + Vector3.new(0, 40, 0),
+		Vector3.new(0, -80, 0),
+		params
+	)
+	local fill = if hit
+			and hit.Material ~= Enum.Material.Air
+			and not BLOCKY[hit.Material]
+		then hit.Material
+		else Enum.Material.Grass
+	local materials, occupancy = terrain:ReadVoxels(region, VOXEL)
+	local bottom = region.CFrame.Position.Y - region.Size.Y / 2
+	local n = occupancy.Size -- the tables carry a Size field: index them numerically
+	for ix = 1, n.X do
+		for iy = 1, n.Y do
+			local want = math.clamp((top - (bottom + (iy - 0.5) * VOXEL)) / VOXEL + PAD_EPS, 0, 1)
+			for iz = 1, n.Z do
+				local m = materials[ix][iy][iz]
+				if want > 0 and (m == Enum.Material.Air or BLOCKY[m]) then
+					materials[ix][iy][iz] = fill
+				end
+				if want > occupancy[ix][iy][iz] then
+					occupancy[ix][iy][iz] = want
+				end
+			end
+		end
+	end
+	terrain:WriteVoxels(region, VOXEL, materials, occupancy)
+end
+
 local function swap(key: string, authored: Swaps.Swap): boolean
 	local spec = grounded(authored)
 	local map = Workspace:FindFirstChild("Map")
@@ -230,6 +287,7 @@ local function swap(key: string, authored: Swaps.Swap): boolean
 		m:PivotTo(spec.pivot)
 		table.insert(if i <= #spec.shell then shellModels else interiorModels, m)
 	end
+	padTerrain(spec)
 	local base = root()
 	local shell = atomic(key, base)
 	shell:SetAttribute("SwappedFrom", table.concat(spec.greybox, "."))
@@ -294,7 +352,12 @@ local function swap(key: string, authored: Swaps.Swap): boolean
 		end
 		greybox:SetAttribute("SwappedTo", key)
 	elseif greybox then
+		local folder = greybox.Parent
 		greybox:Destroy()
+		-- a greybox group emptied by its swaps (Map.PortHaven.Houses, tagged GREYBOX) goes too
+		if folder and folder:IsA("Folder") and #folder:GetChildren() == 0 then
+			folder:Destroy()
+		end
 	end
 	print(`[WorldDressing] {key}: swapped in {#all} assets`)
 	return true
