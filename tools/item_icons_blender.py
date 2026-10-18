@@ -438,7 +438,7 @@ def ocean(size=400.0, wave=1.0, chop=1.0, wind=10.0, res=14, color=(0.004, 0.018
     return o
 
 
-def wood_table(size=3.0, z=0.0, tone=(0.16, 0.085, 0.04)):
+def wood_table(size=3.0, z=0.0, tone=(0.085, 0.042, 0.02)):
     """Oiled oak planks: fine grain along X, per-plank tone, plank seams."""
     m = mat("Oak", color=tone, rough=0.38, coat=0.2)
     nt = m.node_tree
@@ -804,7 +804,7 @@ def s_greatstorm():
         lightning(top, (top.x + L * 0.3, top.y, -1), seed=seed, strength=st, width=L * 0.02, branches=3)
 
 
-def s_sea_vehicle(kind, az, el, lens=45, calm=True, livery=None, bolt=False, wake=False, fill=0.92):
+def s_sea_vehicle(kind, az, el, lens=45, calm=True, livery=None, bolt=False, wake=False, fill=0.92, pitch=0.0, yaw=None):
     reset()
     if calm:
         sea = ocean(size=160, wave=0.8, chop=1.0, wind=8, res=15, seed=2, foam=0.2, color=(0.006, 0.03, 0.035))
@@ -817,8 +817,9 @@ def s_sea_vehicle(kind, az, el, lens=45, calm=True, livery=None, bolt=False, wak
     veh, objs = vehicle(kind)
     if livery:
         recolor(objs, livery[0], livery[1])
-    veh.rotation_euler = (0, 0, math.radians(0 if wake else -20))
-    float_on(sea, veh, objs, draft=0.25, follow=0.6)
+    veh.rotation_euler = (0, 0, math.radians(yaw if yaw is not None else (0 if wake else -20)))
+    float_on(sea, veh, objs, draft=0.25 if not pitch else 0.12, follow=0.6)
+    veh.rotation_euler.x -= math.radians(pitch)  # bow (-Y) up when planing
     if wake:
         wake_trail(objs)
     cam = frame(objs, az, el, lens=lens, fill=fill)
@@ -858,27 +859,31 @@ def wake_trail(objs):
     nt.links.new(mul.outputs["Value"], fade.inputs[0])
     nt.links.new(inv.outputs["Value"], fade.inputs[1])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.12
-    ramp.color_ramp.elements[1].position = 0.3
+    ramp.color_ramp.elements[0].position = 0.04
+    ramp.color_ramp.elements[1].position = 0.16
     nt.links.new(fade.outputs["Value"], ramp.inputs["Fac"])
     nt.links.new(ramp.outputs["Color"], bsdf(m).inputs["Alpha"])
-    w = (hi.x - lo.x) * 1.3
-    L = (hi.y - lo.y) * 5
+    w = (hi.x - lo.x) * 1.2
+    L = (hi.y - lo.y) * 7
     bpy.ops.mesh.primitive_plane_add(size=1)
     o = bpy.context.active_object
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.subdivide(number_cuts=20)
+    bpy.ops.object.mode_set(mode="OBJECT")
     o.scale = (w, L, 1)
     bpy.ops.object.transform_apply(scale=True)
     for v in o.data.vertices:  # V shape widening behind the stern
         t = (v.co.y + L / 2) / L
-        v.co.x *= 0.4 + 1.8 * (1 - t)
-    o.location = ((lo.x + hi.x) / 2, lo.y - L / 2 + (hi.y - lo.y) * 0.1, 0.05)
+        v.co.x *= 0.5 + 2.2 * t
+    o.location = ((lo.x + hi.x) / 2, hi.y + L / 2 - (hi.y - lo.y) * 0.15, 0.08)
     o.data.materials.append(m)
 
 
-def s_bosun(variants):
+def s_bosun(variants, back=(0.42, 0.43, 0.44)):
     reset()
-    product_studio(key_power=50, back=(0.2, 0.21, 0.22), scale=2.5)
-    area("DogRim", (0, 6, 4), (0, 0, 1), 900, size=2.5, color=(0.9, 0.93, 1.0))
+    product_studio(key_power=110, back=back, scale=2.5, world=1.2)
+    area("DogRim", (0, 6, 4), (0, 0, 1), 1600, size=2.5, color=(0.9, 0.93, 1.0))
+    area("DogFill", (3, -5, 2.5), (0, 0, 1), 500, size=4, color=(1.0, 0.97, 0.92))
     pts = []
     n = len(variants)
     for i, tint in enumerate(variants):
@@ -1001,23 +1006,191 @@ def s_logbook(season):
     frame(meshes(*subj), 18, 46, lens=70, fill=0.96, fstop=5.6)
 
 
+def crate(inner=(0.48, 0.30, 0.15), t=0.016):
+    wood = bpy.data.materials.get("Oak")
+    steel = mat("CrateBand", color=(0.25, 0.25, 0.26), rough=0.45, metal=1.0)
+    W, D, H = inner
+    parts = [obj_from("cube", "Floor", wood, loc=(0, 0, t / 2), scale=(W / 2 + t, D / 2 + t, t / 2), bevel=0.002)]
+    for sx in (-1, 1):
+        parts.append(obj_from("cube", "WallX", wood, loc=(sx * (W / 2 + t / 2), 0, H / 2 + t), scale=(t / 2, D / 2 + t, H / 2), bevel=0.002))
+    for sy in (-1, 1):
+        parts.append(obj_from("cube", "WallY", wood, loc=(0, sy * (D / 2 + t / 2), H / 2 + t), scale=(W / 2 + t, t / 2, H / 2), bevel=0.002))
+        for sx in (-1, 1):
+            parts.append(obj_from("cube", "Band", steel, loc=(sx * W * 0.32, sy * (D / 2 + t + 0.001), H / 2 + t), scale=(0.012, 0.0015, H / 2 + 0.002)))
+    parts.append(obj_from("cube", "Filler", bpy.data.materials["NoteEdge"], loc=(0, 0, H / 2), scale=(W / 2, D / 2, H / 2 - 0.02)))
+    return parts
+
+
+def cashbox(W=0.30, D=0.21, H=0.085):
+    paint = mat("BoxPaint", color=(0.08, 0.13, 0.1), rough=0.35, metal=0.6, coat=0.3)
+    add_noise_bump(paint, 300, 0.05)
+    chrome = mat("BoxChrome", color=(0.85, 0.85, 0.86), rough=0.15, metal=1.0)
+    t = 0.004
+    parts = [obj_from("cube", "Base", paint, loc=(0, 0, t / 2), scale=(W / 2, D / 2, t / 2), bevel=0.002)]
+    for sx in (-1, 1):
+        parts.append(obj_from("cube", "Side", paint, loc=(sx * (W / 2 - t / 2), 0, H / 2), scale=(t / 2, D / 2, H / 2), bevel=0.0015))
+    for sy in (-1, 1):
+        parts.append(obj_from("cube", "End", paint, loc=(0, sy * (D / 2 - t / 2), H / 2), scale=(W / 2, t / 2, H / 2), bevel=0.0015))
+    lid = obj_from("cube", "Lid", paint, loc=(0, 0, 0), scale=(W / 2 + 0.003, D / 2 + 0.003, 0.012), bevel=0.004)
+    for v in lid.data.vertices:  # hinge along the back edge
+        v.co.y += D / 2
+    lid.location = (0, D / 2, H)
+    lid.rotation_euler = (math.radians(105), 0, 0)
+    parts.append(lid)
+    parts.append(obj_from("torus", "Handle", chrome, major_radius=0.035, minor_radius=0.005, loc=(0, -D / 2 - 0.004, H * 0.7), scale=(1, 0.4, 1), smooth=True))
+    parts.append(obj_from("cube", "Filler", bpy.data.materials["NoteEdge"], loc=(0, 0, H / 2), scale=(W / 2 - t, D / 2 - t, H / 2 - 0.02)))
+    return parts
+
+
+def s_fund_crate():
+    reset()
+    wood_table()
+    mats = banknote_mats()
+    rng = random.Random(7)
+    subj = crate()
+    H = 0.15
+    for layer, (nx, ny) in enumerate(((3, 4), (2, 3), (1, 2))):
+        for i in range(nx):
+            for j in range(ny):
+                x = (i - (nx - 1) / 2) * (NOTE[0] + 0.002)
+                y = (j - (ny - 1) / 2) * (NOTE[1] + 0.002)
+                e, parts = bundle(mats, (x + rng.uniform(-0.004, 0.004), y, H - 0.012 + layer * 0.0125), rng.uniform(-0.06, 0.06))
+                subj += parts
+    for (x, y, rz) in ((0.18, -0.26, 0.5), (-0.12, -0.27, -0.3), (0.02, -0.25, 0.1)):
+        e, parts = bundle(mats, (x, y, 0), rz)
+        subj += parts
+    cash_lighting()
+    frame(subj, 24, 34, lens=70, fill=0.94, fstop=5.6)
+
+
+def s_double_box():
+    reset()
+    wood_table()
+    mats = banknote_mats()
+    subj = cashbox()
+    rng = random.Random(2)
+    for i in range(2):
+        for j in range(3):
+            x = (i - 0.5) * NOTE[0] * 0.86
+            y = (j - 1) * NOTE[1] * 0.9
+            e, parts = bundle(mats, (x, y, 0.079 + (i + j) % 2 * 0.004), rng.uniform(-0.05, 0.05))
+            e.scale = (0.9, 0.9, 1)
+            subj += parts
+    for (x, y, z, rz) in ((0.2, -0.13, 0, 0.6), (0.2, -0.13, 0.0125, 0.75)):
+        e, parts = bundle(mats, (x, y, z), rz)
+        subj += parts
+    cash_lighting()
+    frame(subj, 22, 38, lens=70, fill=0.94, fstop=5.6)
+
+
+def s_cashboost_hero():
+    reset()
+    wood_table()
+    mats = banknote_mats()
+    e1, p1 = bundle(mats, (-0.03, 0.06, 0), 0.25)
+    e2, p2 = bundle(mats, (-0.025, 0.062, 0.0125), 0.35)
+    sw = stopwatch((0.0, -0.01, 0.045), (math.radians(58), 0, math.radians(-8)), r=0.06)
+    cash_lighting()
+    frame(p1 + p2 + meshes(sw), 14, 30, lens=70, fill=0.96, fstop=4.0)
+
+
+def vhf(loc, rot):
+    body = mat("VHFBody", color=(0.025, 0.025, 0.028), rough=0.45)
+    add_noise_bump(body, 500, 0.08)
+    yellow = mat("VHFYellow", color=(0.85, 0.6, 0.02), rough=0.4)
+    rubber = mat("VHFRubber", color=(0.02, 0.02, 0.02), rough=0.8)
+    face = image_mat("VHFFace", os.path.join(TEX, "vhf_face.png"), rough=0.3)
+    W, D, H = 0.062, 0.034, 0.13
+    parts = [
+        obj_from("cube", "Body", body, loc=(0, 0, H / 2), scale=(W / 2, D / 2, H / 2), bevel=0.008),
+        obj_from("cube", "Bumper", yellow, loc=(0, 0, H * 0.22), scale=(W / 2 + 0.002, D / 2 + 0.002, H * 0.2), bevel=0.006),
+        obj_from("plane", "Face", face, loc=(0, -D / 2 - 0.0012, H * 0.6), rot=(math.pi / 2, 0, 0), scale=(W / 2 * 0.86, H * 0.36, 1), size=2),
+        obj_from("cylinder", "Antenna", rubber, vertices=24, radius=0.006, depth=0.15, loc=(W * 0.28, 0, H + 0.075), bevel=0.002, smooth=True),
+        obj_from("cylinder", "Knob", rubber, vertices=24, radius=0.008, depth=0.012, loc=(-W * 0.25, 0, H + 0.006), bevel=0.002, smooth=True),
+    ]
+    e = bpy.data.objects.new("VHF", None)
+    bpy.context.collection.objects.link(e)
+    for p in parts:
+        p.parent = e
+    e.location, e.rotation_euler = loc, rot
+    return e
+
+
+def s_crewboost_vhf():
+    reset()
+    wood_table()
+    mats = banknote_mats()
+    subj = []
+    for i, a in enumerate((-0.5, 0.0, 0.5)):
+        e, p = bundle(mats, (0.0, 0.03, i * 0.0126), a)
+        subj += p
+    # handheld crew VHF lying face-up across the fan, antenna away from camera
+    r = vhf((0.03, -0.05, 0.04), (math.radians(-80), 0, math.radians(-160)))
+    cash_lighting()
+    frame(subj + meshes(r), 12, 40, lens=70, fill=0.94, fstop=4.0)
+
+
+def s_starter_kit():
+    reset()
+    wood_table()
+    mats = banknote_mats()
+    e, notes = bundle(mats, (-0.07, 0.05, 0), 0.15)
+    e2, notes2 = bundle(mats, (-0.065, 0.052, 0.0125), 0.22)
+    bandana = image_mat("Bandana", os.path.join(TEX, "bandana.png"), rough=0.85)
+    add_noise_bump(bandana, 900, 0.25, 0.0003)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=0.12, radius2=0.0, depth=0.008, location=(0.09, 0.07, 0.004))
+    b = bpy.context.active_object
+    b.scale = (1.0, 0.62, 1.0)
+    b.rotation_euler = (0, 0, 0.5)
+    bv = b.modifiers.new("Bevel", "BEVEL")
+    bv.width, bv.segments = 0.003, 3
+    b.data.materials.append(bandana)
+    bpy.ops.object.shade_smooth()
+    # Station Orange livery swatch: gelcoat chip with a retroreflective band
+    orange = mat("Gelcoat", color=(0.9, 0.22, 0.02), rough=0.12, coat=0.8)
+    refl = mat("Reflective", color=(0.75, 0.76, 0.78), rough=0.35, metal=0.5)
+    sw = obj_from("cube", "Swatch", orange, loc=(0.06, -0.08, 0.003), scale=(0.075, 0.045, 0.003), rot=(0, 0, -0.25), bevel=0.003)
+    st = obj_from("cube", "Stripe", refl, loc=(0.06, -0.08, 0.0062), scale=(0.075, 0.009, 0.0002), rot=(0, 0, -0.25))
+    cash_lighting()
+    frame(notes + notes2 + [b, sw, st], 10, 62, lens=70, fill=0.94, fstop=8)
+
+
+def s_clipboard():
+    reset()
+    wood_table()
+    board = mat("Masonite", color=(0.32, 0.2, 0.1), rough=0.5)
+    add_noise_bump(board, 500, 0.08)
+    steel = mat("ClipSteel", color=(0.8, 0.8, 0.82), rough=0.2, metal=1.0)
+    c1 = image_mat("Task1", os.path.join(TEX, "tasking.png"), rough=0.8)
+    c2 = image_mat("Task2", os.path.join(TEX, "tasking2.png"), rough=0.8)
+    subj = [obj_from("cube", "Board", board, loc=(0, 0, 0.002), scale=(0.115, 0.16, 0.002), bevel=0.004),
+            obj_from("plane", "Card1", c1, loc=(0, -0.01, 0.0045), scale=(0.1, 0.14, 1), size=2),
+            obj_from("cube", "Clip", steel, loc=(0, 0.148, 0.008), scale=(0.05, 0.016, 0.004), bevel=0.003),
+            obj_from("cylinder", "Roll", steel, vertices=32, radius=0.006, depth=0.1, loc=(0, 0.16, 0.01), rot=(0, math.pi / 2, 0), smooth=True)]
+    card = obj_from("plane", "Card2", c2, scale=(0.1, 0.14, 1), size=2)
+    card.location, card.rotation_euler = (0.13, -0.05, 0.012), (0, math.radians(-4), 0.32)
+    subj.append(card)
+    cash_lighting()
+    frame(subj, 12, 58, lens=70, fill=0.94, fstop=8)
+
+
 SCENES = {
     "SmallBonus": s_small,
     "CrewPayroll": s_payroll,
     "StationBudget": s_budget,
-    "HarborFund": s_fund,
-    "CashBoost": s_cashboost,
-    "CrewBoost": s_crewboost,
+    "HarborFund": s_fund_crate,
+    "CashBoost": s_cashboost_hero,
+    "CrewBoost": s_crewboost_vhf,
     "CallTheStorm": s_storm,
     "CallTheGreatStorm": s_greatstorm,
-    "ChallengeReroll": lambda: s_logbook(False),
+    "ChallengeReroll": s_clipboard,
     "SeasonLogbook": lambda: s_logbook(True),
-    "DoubleCash": s_double,
+    "DoubleCash": s_double_box,
     "VipCrewCard": s_card,
-    "QuickLaunch": lambda: s_sea_vehicle("M_Veh_RIB", 35, 9),
-    "StarterKit": lambda: s_sea_vehicle("M_Veh_JetSki", 40, 10, fill=0.84),
-    "BosunsWardrobe": lambda: s_bosun([None]),
-    "WaterDogFriends": lambda: s_bosun([(0.5, 0.35, 1.9), None, (0.5, 0.2, 0.25)]),
+    "QuickLaunch": lambda: s_sea_vehicle("M_Veh_RIB", 32, 5, wake=True, pitch=7, yaw=-25, fill=0.9),
+    "StarterKit": s_starter_kit,
+    "BosunsWardrobe": lambda: s_bosun([(0.53, 1.3, 3.2), None, (0.5, 0.0, 4.5)]),
+    "WaterDogFriends": lambda: s_bosun([(0.55, 1.6, 6.0), (0.5, 0.2, 0.6)], back=(0.55, 0.45, 0.32)),
     "StormChaserLiveries": lambda: s_sea_vehicle("M_Veh_JetSki", 35, 8, calm=False, bolt=True, fill=0.82,
                                                  livery=({"PWCOrange", "PWCOrangeDark", "SledOrange"}, (0.02, 0.06, 0.2))),
     "CaptainsLocker": s_locker,

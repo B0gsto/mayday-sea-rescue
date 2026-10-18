@@ -203,17 +203,79 @@ def radio_dial(path):
     im.save(path)
 
 
+def vhf_face(path):
+    W, H = 600, 1000
+    im = Image.new("RGB", (W, H), (20, 20, 22))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([60, 60, W - 60, 380], radius=24, fill=(150, 170, 120))  # backlit LCD
+    d.text((W / 2, 170), "CH 16", font=font(COND, 120, 0), fill=(24, 30, 20), anchor="mm")
+    d.text((W / 2, 300), "DISTRESS · 25W", font=font(COND, 54, 2), fill=(24, 30, 20), anchor="mm")
+    for r in range(4):
+        for c in range(3):
+            x, y = 120 + c * 180, 470 + r * 120
+            d.rounded_rectangle([x - 60, y - 40, x + 60, y + 40], radius=18, fill=(46, 46, 50))
+            d.text((x, y), "123456789*0#"[r * 3 + c], font=font(COND, 54, 2), fill=(210, 210, 210), anchor="mm")
+    d.rounded_rectangle([W / 2 - 110, H - 80, W / 2 + 110, H - 30], radius=20, fill=(190, 30, 24))
+    im.save(path)
+
+
+def bandana(path):
+    S = 1024
+    im = Image.new("RGB", (S, S), (150, 18, 16))
+    d = ImageDraw.Draw(im)
+    rng = random.Random(12)
+    for _ in range(140):  # paisley-like teardrops
+        x, y, r = rng.randrange(S), rng.randrange(S), rng.randint(14, 34)
+        d.ellipse([x - r, y - r, x + r, y + r], outline=(236, 228, 214), width=4)
+        d.ellipse([x - r // 3, y - r // 3, x + r // 3, y + r // 3], fill=(20, 16, 18))
+    for k in (40, 70):
+        d.rectangle([k, k, S - k, S - k], outline=(236, 228, 214), width=8)
+    im.filter(ImageFilter.GaussianBlur(1.2)).save(path)
+
+
+def tasking(path, title, lines, stamp=None):
+    W, H = 1000, 1400
+    im = Image.new("RGB", (W, H), (238, 234, 222))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, W, 170], fill=(200, 70, 20))
+    d.text((60, 85), title, font=font(COND, 92, 0), fill=(250, 246, 236), anchor="lm")
+    y = 250
+    for lab, val in lines:
+        d.text((60, y), lab, font=font(COND, 48, 2), fill=(90, 86, 80))
+        d.text((380, y), val, font=font(COND, 56, 0), fill=(30, 30, 34))
+        d.line([(60, y + 80), (W - 60, y + 80)], fill=(200, 196, 186), width=3)
+        y += 120
+    for i in range(5):
+        d.rectangle([60, y + 40 + i * 90, 110, y + 90 + i * 90], outline=(60, 60, 64), width=5)
+        d.line([(150, y + 75 + i * 90), (W - 120 - (i * 70) % 240, y + 75 + i * 90)], fill=(150, 146, 140), width=6)
+    if stamp:
+        st = Image.new("L", (W, H), 0)
+        sd = ImageDraw.Draw(st)
+        sd.rounded_rectangle([520, 1080, 940, 1260], radius=20, outline=255, width=12)
+        sd.text((730, 1170), stamp, font=font(COND, 100, 0), fill=255, anchor="mm")
+        st = st.rotate(12, center=(730, 1170))
+        im.paste(Image.new("RGB", (W, H), (30, 90, 160)), (0, 0), st.point(lambda v: int(v * 0.8)))
+    im.save(path)
+
+
 def paint_textures():
     os.makedirs(TEX, exist_ok=True)
     for fn, f in (("note_face.png", note_face), ("band.png", band), ("dial.png", dial), ("logbook_cover.png", logbook_cover),
-                  ("vip_card.png", vip_card), ("grille.png", grille), ("radio_dial.png", radio_dial)):
+                  ("vip_card.png", vip_card), ("grille.png", grille), ("radio_dial.png", radio_dial),
+                  ("vhf_face.png", vhf_face), ("bandana.png", bandana)):
         f(os.path.join(TEX, fn))
+    tasking(os.path.join(TEX, "tasking.png"), "DAILY TASKING", (("TASK", "Tow 2 boats"), ("ZONE", "Calm Bay"), ("CREW", "Any")))
+    tasking(os.path.join(TEX, "tasking2.png"), "DAILY TASKING", (("TASK", "3 night calls"), ("ZONE", "Skerries"), ("CREW", "2+")), stamp="SWAPPED")
 
 
 # ------------------------------------------------------------------ post
 def finish(key, src, dst):
     im = Image.open(src).convert("RGB")
     S = im.width
+    vig = Image.new("L", (S, S), 0)
+    ImageDraw.Draw(vig).ellipse([-S * 0.25, -S * 0.25, S * 1.25, S * 1.25], fill=255)
+    vig = vig.filter(ImageFilter.GaussianBlur(S * 0.12)).point(lambda v: int(255 - (255 - v) * 0.45))
+    im = Image.composite(im, Image.new("RGB", (S, S), (0, 0, 0)), vig)
     label = LABELS.get(key)
     if label:
         grad = Image.new("L", (S, S), 0)
