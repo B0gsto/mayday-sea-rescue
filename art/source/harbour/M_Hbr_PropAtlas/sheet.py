@@ -1,5 +1,5 @@
-"""HP2a contact sheet (system python3 + Pillow): every prop dry | wet under the overcast-sea HDRI, then one close-up
-per kit -> assets/review/HP2a/contact.png (<= 1600 px wide)."""
+"""HP2a contact sheets (system python3 + Pillow), round b (HP2a-fix): every prop dry | wet under the overcast-sea HDRI
+-> assets/review/HP2a/contact_b.png, and the hero-distance close-ups -> assets/review/HP2a/contact_b2.png (both <= 1600 px)."""
 import json, os, sys
 from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,13 +20,10 @@ if os.path.exists(p):
     tris = json.load(open(p))
 assets = list(REFS)
 rows = (len(assets) * 2 + COLS - 1) // COLS
-closes = sorted(f for f in os.listdir(R) if f.startswith("closeup_"))
-cw = W // 3
-crow = (len(closes) + 2) // 3
-H = 40 + rows * (CELL + 18) + 30 + crow * (cw + 18) + 10
+H = 40 + rows * (CELL + 18) + 6
 sheet = Image.new("RGB", (W, H), (32, 33, 35))
 d = ImageDraw.Draw(sheet)
-d.text((10, 10), "HP2a harbour props (shared prop atlas: Metal + Rope/plastic sets). Each prop: DRY | WET, overcast-sea HDRI, Blender EEVEE",
+d.text((10, 10), "HP2a round b (fix): harbour props on the shared prop atlas. Each prop DRY | WET, overcast-sea HDRI, Blender EEVEE",
        font=FB, fill=(230, 230, 230))
 y0 = 40
 for i, a in enumerate(assets):
@@ -38,13 +35,18 @@ for i, a in enumerate(assets):
             sheet.paste(Image.open(f).convert("RGB").resize((CELL, CELL), Image.LANCZOS), (x, y))
         label = "%s %s%s" % (a.replace("M_Hbr_", ""), state.upper(), (" %s tris" % tris[a]) if a in tris and k == 0 else "")
         d.text((x + 3, y + CELL + 2), label, font=F, fill=(200, 200, 200))
-y = y0 + rows * (CELL + 18) + 4
-d.text((10, y), "Close-ups (hero distance, dry): one per kit", font=FB, fill=(230, 230, 230))
-y += 26
-for j, c in enumerate(closes):
-    x, yy = (j % 3) * cw, y + (j // 3) * (cw + 18)
-    sheet.paste(Image.open(os.path.join(R, c)).convert("RGB").resize((cw, cw), Image.LANCZOS), (x, yy))
-    d.text((x + 3, yy + cw + 2), c[8:-4], font=F, fill=(200, 200, 200))
 os.makedirs(OUT, exist_ok=True)
-sheet.save(os.path.join(OUT, "contact.png"), optimize=True)
-print("sheet", sheet.size, os.path.join(OUT, "contact.png"))
+sheet.save(os.path.join(OUT, "contact_b.png"), optimize=True)
+print("sheet", sheet.size, os.path.join(OUT, "contact_b.png"))
+closes = sorted(f for f in os.listdir(R) if f.startswith("closeup_"))
+C2, CC = 4, W // 4
+crow = (len(closes) + C2 - 1) // C2
+s2 = Image.new("RGB", (W, 40 + crow * (CC + 18)), (32, 33, 35))
+d = ImageDraw.Draw(s2)
+d.text((10, 10), "HP2a round b (fix): close-ups at hero distance, dry, overcast-sea HDRI", font=FB, fill=(230, 230, 230))
+for j, c in enumerate(closes):
+    x, yy = (j % C2) * CC, 40 + (j // C2) * (CC + 18)
+    s2.paste(Image.open(os.path.join(R, c)).convert("RGB").resize((CC, CC), Image.LANCZOS), (x, yy))
+    d.text((x + 3, yy + CC + 2), c[8:-4], font=F, fill=(200, 200, 200))
+s2.save(os.path.join(OUT, "contact_b2.png"), optimize=True)
+print("sheet", s2.size, os.path.join(OUT, "contact_b2.png"))

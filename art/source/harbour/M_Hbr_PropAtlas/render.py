@@ -26,12 +26,18 @@ TEX = os.path.join(G, "assets/textures", atlas.ATLAS_ASSET)
 CELL = 400
 CLOSE = 600
 # kit close-ups: asset, (az, el), target height fraction, distance factor of the bbox size
-CLOSEUPS = {"M_Hbr_Bollard_01": ("bollard_neck_rope_wear", 30, 18, 0.62, 0.9),
-            "M_Hbr_Fender_Cyl_01": ("fender_pvc", 30, 10, 0.55, 0.6),
-            "M_Hbr_LifebuoyStation": ("lifebuoy_ring_sign", 15, 8, 0.75, 0.55),
+CLOSEUPS = {"M_Hbr_Bollard_01": ("bollard_neck_rope_wear", 30, 15, 0.6, 0.75),
+            "M_Hbr_Bollard_02": ("bollard_tee_flange_bolts", 40, 35, 0.3, 0.8),
+            "M_Hbr_Cleat_02": ("cleat_galvanised", 30, 30, 0.5, 1.0),
+            "M_Hbr_Fender_Cyl_03": ("fender_pvc_waterline", 30, 8, 0.45, 0.85),
+            "M_Hbr_Fender_Ball": ("ball_fender_eye", 30, 15, 0.65, 0.8),
+            "M_Hbr_Fender_Tyre": ("tyre_rope_ties", 25, 12, 0.4, 0.9),
+            "M_Hbr_LifebuoyStation": ("lifebuoy_ring_tape", 15, 8, 0.62, 0.5),
+            "M_Hbr_LobsterPot_01": ("inkwell_funnel_frame", 30, 50, 0.6, 1.0),
             "M_Hbr_LobsterPot_02": ("creel_netting", 35, 30, 0.5, 0.9),
             "M_Hbr_NetPile": ("net_pile", 25, 35, 0.4, 0.55),
-            "M_Hbr_Rope_Coil": ("rope_coil", 20, 45, 0.3, 0.55)}
+            "M_Hbr_Rope_Flaked": ("rope_flaked_strands", 25, 40, 0.3, 0.5),
+            "M_Hbr_Rope_Chain": ("chain_links", 30, 50, 0.2, 0.9)}
 
 
 def material(set_name, wet):

@@ -111,8 +111,8 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://119341089660533",
 	},
 	M_Hbr_Fender_Tyre = {
-		LOD0 = "rbxassetid://130157337861840",
-		LOD1 = "rbxassetid://79637808775952",
+		LOD0 = "rbxassetid://126079009488048",
+		LOD1 = "rbxassetid://79187399486780",
 	},
 	M_Hbr_FishBox_01 = {
 		LOD0 = "rbxassetid://130109827346259",
@@ -128,16 +128,16 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://117362073738138",
 	},
 	M_Hbr_LifebuoyStation = {
-		LOD0 = "rbxassetid://130195930909228",
-		LOD1 = "rbxassetid://73843124544814",
+		LOD0 = "rbxassetid://96694712309655",
+		LOD1 = "rbxassetid://126858021267786",
 	},
 	M_Hbr_LobsterPot_01 = {
-		LOD0 = "rbxassetid://111121550908886",
-		LOD1 = "rbxassetid://75760602093481",
+		LOD0 = "rbxassetid://81540473904194",
+		LOD1 = "rbxassetid://131516979736560",
 	},
 	M_Hbr_LobsterPot_02 = {
-		LOD0 = "rbxassetid://98534087049091",
-		LOD1 = "rbxassetid://73620115585176",
+		LOD0 = "rbxassetid://75833182350164",
+		LOD1 = "rbxassetid://112814627662545",
 	},
 	M_Hbr_MooringBuoy = {
 		LOD0 = "rbxassetid://80183851473693",
@@ -189,7 +189,7 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://113412049082767",
 		LOD2 = "rbxassetid://138314659597287",
 	},
-	M_Hbr_NetPile = { LOD0 = "rbxassetid://107740675639511", LOD1 = "rbxassetid://104178692729329" },
+	M_Hbr_NetPile = { LOD0 = "rbxassetid://108769689167889", LOD1 = "rbxassetid://125546650919847" },
 	M_Hbr_PickupBuoy = {
 		LOD0 = "rbxassetid://120306872184966",
 		LOD1 = "rbxassetid://138467962525170",
@@ -251,13 +251,16 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://113088271242359",
 	},
 	M_Hbr_Rope_Chain = {
-		LOD0 = "rbxassetid://102080997453159",
-		LOD1 = "rbxassetid://83768058005616",
+		LOD0 = "rbxassetid://76957325685970",
+		LOD1 = "rbxassetid://85293937418013",
 	},
-	M_Hbr_Rope_Coil = { LOD0 = "rbxassetid://92092648982564", LOD1 = "rbxassetid://70652697140696" },
+	M_Hbr_Rope_Coil = {
+		LOD0 = "rbxassetid://116545210869864",
+		LOD1 = "rbxassetid://120420678094169",
+	},
 	M_Hbr_Rope_Flaked = {
-		LOD0 = "rbxassetid://72495371481479",
-		LOD1 = "rbxassetid://102532631258647",
+		LOD0 = "rbxassetid://78123498554138",
+		LOD1 = "rbxassetid://94659038910021",
 	},
 	M_Prop_Chandlery = {
 		LOD0 = "rbxassetid://118094905660470",

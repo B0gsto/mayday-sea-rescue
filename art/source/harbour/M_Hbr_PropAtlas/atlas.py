@@ -52,6 +52,11 @@ R = {
     "NetBlue":    (2, 4, 2, 2, "net", 0.40, "Rope", False),     # creel netting, blue (alpha)
     "NetOrange":  (4, 4, 2, 2, "net", 0.60, "Rope", True),      # trawl net, orange (alpha)
     "NetBlack":   (6, 4, 2, 2, "net", 0.40, "Rope", False),     # inkwell pot netting, black (alpha)
+    # HP2a-fix decals (U once round the body, V along the lathe profile / round the ring section)
+    "RingFit":    (0, 3, 4, 1, "fit", None, "Rope", True),      # SOLAS ring shell with the 4 retro bands painted in
+    "FenderWhite": (0, 6, 2, 2, "fit", None, "Rope", False),    # white PVC cylinder fender body (seams, scuffs, waterline)
+    "FenderNavy": (2, 6, 2, 2, "fit", None, "Rope", False),     # navy PVC cylinder fender body
+    "BallFit":    (4, 6, 4, 2, "fit", None, "Rope", True),      # orange ball fender body (pole to pole)
 }
 SETS = ("Metal", "Rope")
 ALPHA_REGIONS = ("NetGreen", "NetBlue", "NetOrange", "NetBlack")

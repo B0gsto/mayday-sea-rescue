@@ -8,18 +8,18 @@
    "parent": null,
    "blender": [
     0.0,
-    0.0,
+    0.0006,
     3.96
    ],
    "roblox_from_origin": [
     -0.0,
     3.96,
-    0.0
+    0.0006
    ],
    "roblox_from_bbox_centre": [
     -0.0,
-    1.9768,
-    0.0
+    1.9763,
+    0.0006
    ],
    "look": [
     0.0,

@@ -3,7 +3,7 @@
 REFS = {
     "M_Hbr_Bollard_01": "Cast-iron mushroom-head harbour bollard on a bolted base plate, about 0.5 to 0.6 m tall, 0.35 m body (verify); e.g. https://en.wikipedia.org/wiki/Bollard#Maritime",
     "M_Hbr_Bollard_02": "Cast-iron tee-head (cross-horn) quay bollard, about 0.6 m tall (verify); https://en.wikipedia.org/wiki/Bollard#Maritime",
-    "M_Hbr_Bollard_03": "Old muzzle-loading cannon reused as a bollard, muzzle up with a ball in the bore (Cornish harbours, e.g. Penzance, Mousehole; verify); https://en.wikipedia.org/wiki/Bollard#Maritime",
+    "M_Hbr_Bollard_03": "Old muzzle-loading cannon reused as a bollard, muzzle up with a ball in the bore, set in a bolted iron ground collar (Cornish harbours, e.g. Penzance, Mousehole; verify); https://en.wikipedia.org/wiki/Bollard#Maritime",
     "M_Hbr_Cleat_01": "Galvanised horn mooring cleat, 300 mm (catalogue range 0.3 to 0.45 m, verify)",
     "M_Hbr_Cleat_02": "Galvanised horn mooring cleat, 450 mm, 4-bolt base (verify)",
     "M_Hbr_Fender_Cyl_01": "PVC cylindrical boat fender with end eyes, 0.2 x 0.6 m (Polyform F-series class sizes, verify)",
@@ -18,6 +18,6 @@ REFS = {
     "M_Hbr_FishBox_02": "Stackable HDPE fish box, about 800 x 420 x 210 mm (verify), red",
     "M_Hbr_NetPile": "Heaped trawl net on the quay, about 2 x 1.5 x 0.6 m (verify)",
     "M_Hbr_Rope_Coil": "Stacked coil of 16 mm polypropylene three-strand (verify)",
-    "M_Hbr_Rope_Flaked": "24 mm braid mooring line flaked down on the quay with a spliced eye (verify)",
+    "M_Hbr_Rope_Flaked": "40 mm three-strand polyester mooring line flaked down on the quay in S-flakes with a spliced eye (verify)",
     "M_Hbr_Rope_Chain": "16 mm short-link mooring chain heap with a tail (verify)",
 }
