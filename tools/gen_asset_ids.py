@@ -37,7 +37,7 @@ MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "Me
 # The default, Overlay, shows the part Color through alpha 0, so the G1 plant cards rendered flat white.
 ALPHA_TRANSPARENCY = ("M_Veg_",)
 # Single texture sets that are alpha cards inside an otherwise opaque asset: (asset, set).
-ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime")}  # Bosun fur cards (DogService); station H3 grime decals
+ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Road_Ribbon", "Markings")}  # Bosun fur cards (DogService); station H3 grime decals
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
 
 RIG_SETS = ("Atlas",)  # texture sets a rigged (single skinned MeshPart) asset keeps

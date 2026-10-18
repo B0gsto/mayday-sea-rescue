@@ -62,7 +62,8 @@ for a, note in furn.items():
                  scans(["rusty_painted_metal", "fine_grained_wood", "metal_plate"]), LIC, AI, "",
                  "LOD1 %s, LOD2 %s. Tris LOD0/1/2 %s/%s/%s, _COL. %s. Street atlas T_Street_Main (set Main, 1024, +_Wet; ALB %s) in "
                  "B02's Street cells, trim regions street_layout.py. Sheet assets/review/R1a/contact.png. Reference photo board not "
-                 "collected (dims.md only)." % (ids["LOD1"][0], ids["LOD2"][0], t.get("LOD0"), t.get("LOD1"), t.get("LOD2"), note, alb[0])])
+                 "collected (dims.md only). Atlas ids listed once under Textures.M_Road_StreetLamp.Main: I1 adds Bench/Bin/Bollard "
+                 "to AssetLoader.SHARED_SETS." % (ids["LOD1"][0], ids["LOD2"][0], t.get("LOD0"), t.get("LOD1"), t.get("LOD2"), note, alb[0])])
 sets = ["Asphalt", "Cobbles", "Gravel", "Kerb", "AsphaltTile", "CobblesTile", "GravelTile", "KerbTile", "Markings"]
 ids = {s: aid("assets/textures/M_Road_Ribbon/T_Road_%s_ALB.png" % s, "Image") for s in sets}
 mods = sorted({ids[s][1] for s in sets})

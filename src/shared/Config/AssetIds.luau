@@ -212,6 +212,26 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://127622749765145",
 		LOD1 = "rbxassetid://121645364088634",
 	},
+	M_Road_Bench = {
+		LOD0 = "rbxassetid://94705063793365",
+		LOD1 = "rbxassetid://106992173054100",
+		LOD2 = "rbxassetid://92183886053949",
+	},
+	M_Road_Bin = {
+		LOD0 = "rbxassetid://93190871411152",
+		LOD1 = "rbxassetid://83735951780720",
+		LOD2 = "rbxassetid://100328088034653",
+	},
+	M_Road_Bollard = {
+		LOD0 = "rbxassetid://98319816146913",
+		LOD1 = "rbxassetid://84358288111349",
+		LOD2 = "rbxassetid://73920846578428",
+	},
+	M_Road_StreetLamp = {
+		LOD0 = "rbxassetid://112441388412806",
+		LOD1 = "rbxassetid://81774414445452",
+		LOD2 = "rbxassetid://135775678156076",
+	},
 	M_Rock_Boulder_01 = {
 		LOD0 = "rbxassetid://83907500439876",
 		LOD1 = "rbxassetid://72304120830687",
@@ -680,6 +700,15 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://102670288997005", RGH = "rbxassetid://73233560502338" },
 		},
 	},
+	M_Hbr_NavMark_Port = {
+		Buoy = {
+			ALB = "rbxassetid://81496633679514",
+			NOR = "rbxassetid://120838223587031",
+			RGH = "rbxassetid://90618006998451",
+			MET = "rbxassetid://113183353204254",
+			Wet = { ALB = "rbxassetid://73828201784550", RGH = "rbxassetid://130536984979014" },
+		},
+	},
 	M_Hbr_Pontoon = {
 		Kit = {
 			ALB = "rbxassetid://109704519567392",
@@ -740,10 +769,69 @@ AssetIds.Textures = {
 		},
 	},
 	M_Road_Ribbon = {
+		Asphalt = {
+			ALB = "rbxassetid://116430433359168",
+			NOR = "rbxassetid://72616696259485",
+			RGH = "rbxassetid://125245054023559",
+			Wet = { ALB = "rbxassetid://92542482437406", RGH = "rbxassetid://111056632057569" },
+		},
 		AsphaltTile = {
 			ALB = "rbxassetid://79143836298158",
 			NOR = "rbxassetid://103860084646107",
-			Wet = { ALB = "rbxassetid://124268074036051" },
+			RGH = "rbxassetid://71102419665268",
+			Wet = { ALB = "rbxassetid://124268074036051", RGH = "rbxassetid://78753271475072" },
+		},
+		Cobbles = {
+			ALB = "rbxassetid://125516558272954",
+			NOR = "rbxassetid://87165854262803",
+			RGH = "rbxassetid://104690903087282",
+			Wet = { ALB = "rbxassetid://123784116287114", RGH = "rbxassetid://132363993924342" },
+		},
+		CobblesTile = {
+			ALB = "rbxassetid://107908172828448",
+			NOR = "rbxassetid://82654504556651",
+			RGH = "rbxassetid://105095528259235",
+			Wet = { ALB = "rbxassetid://113749982352115", RGH = "rbxassetid://133288027409177" },
+		},
+		Gravel = {
+			ALB = "rbxassetid://79272327505045",
+			NOR = "rbxassetid://134201291310891",
+			RGH = "rbxassetid://82841221162787",
+			Wet = { ALB = "rbxassetid://115555952753581", RGH = "rbxassetid://72547537861062" },
+		},
+		GravelTile = {
+			ALB = "rbxassetid://114175039332040",
+			NOR = "rbxassetid://124454632928505",
+			RGH = "rbxassetid://137974456692048",
+			Wet = { ALB = "rbxassetid://127721299303225", RGH = "rbxassetid://137194854377616" },
+		},
+		Kerb = {
+			ALB = "rbxassetid://87296064098283",
+			NOR = "rbxassetid://87646521454224",
+			RGH = "rbxassetid://117409495445294",
+			MET = "rbxassetid://117503138894746",
+			Wet = { ALB = "rbxassetid://136060520144383", RGH = "rbxassetid://74194032015555" },
+		},
+		KerbTile = {
+			ALB = "rbxassetid://89687153004821",
+			NOR = "rbxassetid://100490866022478",
+			RGH = "rbxassetid://94961069619621",
+			Wet = { ALB = "rbxassetid://129819582335950", RGH = "rbxassetid://109300136254724" },
+		},
+		Markings = {
+			ALB = "rbxassetid://139245899925933",
+			NOR = "rbxassetid://100298867494335",
+			RGH = "rbxassetid://92559843548302",
+			Wet = { ALB = "rbxassetid://78122544529173", RGH = "rbxassetid://80180865104334" },
+		},
+	},
+	M_Road_StreetLamp = {
+		Main = {
+			ALB = "rbxassetid://110206867375587",
+			NOR = "rbxassetid://103783929826567",
+			RGH = "rbxassetid://134778098810423",
+			MET = "rbxassetid://95883465980786",
+			Wet = { ALB = "rbxassetid://107200645693963", RGH = "rbxassetid://89263423144419" },
 		},
 	},
 	M_Rock_Boulder_01 = {
@@ -1282,6 +1370,21 @@ AssetIds.Attachments = {
 	},
 	M_Prop_Chandlery_Stock = {
 		ATT_Light_Till = Vector3.new(-18.1546, 4.1248, 3.12),
+	},
+	M_Road_Bench = {
+		ATT_Seat = Vector3.new(0, 1.35, -0.15),
+		ATT_Base = Vector3.new(0, 0, 0),
+	},
+	M_Road_Bin = {
+		ATT_Opening = Vector3.new(0, 2.73, 0),
+		ATT_Base = Vector3.new(0, 0, 0),
+	},
+	M_Road_Bollard = {
+		ATT_Base = Vector3.new(0, 0, 0),
+	},
+	M_Road_StreetLamp = {
+		ATT_Light = Vector3.new(-3.0705, 16.5944, 0),
+		ATT_Base = Vector3.new(0, 0, 0),
 	},
 	M_Rock_Boulder_01 = {},
 	M_Rock_Boulder_02 = {},
