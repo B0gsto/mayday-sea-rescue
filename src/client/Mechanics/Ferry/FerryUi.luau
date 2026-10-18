@@ -340,7 +340,7 @@ FerryUi.NumberKeys = {
 
 ---------------------------------------------------------------- world
 
--- The Gale Queen greybox RescueService built for this operation (Model with CallId = opId).
+-- The Gale Queen RescueService built for this operation (Model with CallId = opId; C2 art or the greybox).
 function FerryUi.findFerry(opId: string): Model?
 	for _, d in workspace:GetDescendants() do
 		if d:IsA("Model") and d.Name == "GaleQueen" and d:GetAttribute("CallId") == opId then
@@ -348,6 +348,14 @@ function FerryUi.findFerry(opId: string): Model?
 		end
 	end
 	return nil
+end
+
+-- World position of a named mark on this operation's ferry (an Attachment such as "AirPocket", "HullAxis" or
+-- "ATT_Knock_03"), nil on the greybox or before her art has loaded.
+function FerryUi.ferryPoint(opId: string, name: string): Vector3?
+	local ferry = FerryUi.findFerry(opId)
+	local mark = ferry and ferry:FindFirstChild(name, true)
+	return if mark and mark:IsA("Attachment") then mark.WorldPosition else nil
 end
 
 function FerryUi.character(): (Model?, BasePart?)

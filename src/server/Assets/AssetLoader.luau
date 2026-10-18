@@ -55,6 +55,27 @@ AssetLoader.PART_SETS = {
 		Fittings = "Sled",
 		Bars = "Sled",
 	},
+	-- art/source/vessels/M_Veh_GaleQueen/build.py `mats` (RP-I1c)
+	M_Veh_GaleQueen = {
+		Hull = "Hull",
+		HullGear = "Hull",
+		Props = "Fittings",
+		Bulwark = "Super",
+		Decks = "Deck",
+		Saloon = "Super",
+		Wheelhouse = "Super",
+		Funnel = "Super",
+		Windows = "Glass",
+		Rails = "Fittings",
+		Rafts = "Fittings",
+		Mast = "Fittings",
+		DeckGear = "Fittings",
+		Fenders = "Fittings",
+		GrabLines = "Fittings",
+		Decals = "Decals",
+		Undamaged = "Fittings",
+		Damage = "Fittings",
+	},
 } :: { [string]: { [string]: string } }
 
 local appearances = script.Parent:FindFirstChild("Appearances")

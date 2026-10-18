@@ -35,6 +35,16 @@ local NpcFactory: any = (function()
 	end
 	return if ok then m else nil
 end)()
+local AssetLoader: any = (function()
+	local ok, m = pcall(require, script.Parent.Parent.Assets.AssetLoader)
+	if not ok then
+		warn(`[RescueService] AssetLoader unavailable ({m}): greybox ferry`)
+	end
+	return if ok then m else nil
+end)()
+local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
+local FerryRig = require(Shared:WaitForChild("Ferry"):WaitForChild("FerryRig"))
+local HullKnock = require(Shared:WaitForChild("Ferry"):WaitForChild("HullKnock"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
@@ -506,14 +516,11 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 	}
 end
 
-local function buildFerry(call: any, pos: Vector3)
-	local model = Instance.new("Model")
-	model.Name = "GaleQueen"
-	model:SetAttribute("CallId", call.id)
-	local f = newFloater(pos.X, pos.Z, -1.5)
-	f.yaw = math.rad(20)
-	f.sway = 0.02
-	f.tilt = CFrame.Angles(0, 0, math.rad(72)) -- lying on her side
+-- The Gale Queen greybox (fallback when the C2 art can't load): Hull 16x7x60 + Keel, Deckhouse, Bridge, Funnel,
+-- five LifeRaft cylinders. Its floater frame sits 1.5 studs under the sea (the old buildFerry).
+local GREYBOX_FERRY_DEPTH = -1.5
+local function greyboxFerry(model: Model, f: Floater)
+	f.depth = GREYBOX_FERRY_DEPTH
 	local white, red = Color3.fromRGB(236, 236, 230), Color3.fromRGB(196, 48, 40)
 	local hull = newPart(model, "Hull", Vector3.new(16, 7, 60), white)
 	addPart(f, hull, CFrame.new(0, 2.5, 0))
@@ -556,10 +563,256 @@ local function buildFerry(call: any, pos: Vector3)
 	label.TextColor3 = Color3.fromRGB(20, 40, 60)
 	label.Parent = gui
 	gui.Parent = hull
+	model:SetAttribute("Art", false)
+end
+
+local function ferryAtts(): FerryRig.Atts
+	return ((AssetIds :: any).Attachments or {})[FerryRig.FERRY] or {}
+end
+
+local function raftAtts(): FerryRig.Atts
+	return ((AssetIds :: any).Attachments or {})[FerryRig.RAFT] or {}
+end
+
+-- An attachment on `part` at a pivot-space point of an asset whose pivot is `pivot` (asset orientation).
+local function pivotAttachment(part: BasePart, pivot: CFrame, name: string, at: CFrame)
+	local a = Instance.new("Attachment")
+	a.Name = name
+	a.CFrame = part.CFrame:ToObjectSpace(pivot * at)
+	a.Parent = part
+end
+
+-- Moves an asset clone's parts onto floater `f` (anchored, riding `offset` * their place from the asset pivot).
+-- Returns the parts by C2 token.
+local function rideAsset(f: Floater, art: Model, offset: CFrame): { [string]: BasePart }
+	local pivot = art:GetPivot()
+	local byToken: { [string]: BasePart } = {}
+	for _, d in art:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+			d.CanCollide = false
+			d.CanTouch = false
+			addPart(f, d, offset * pivot:ToObjectSpace(d.CFrame))
+			byToken[FerryRig.token(d.Name)] = d
+		end
+	end
+	return byToken
+end
+
+-- Shows the parts of one ship state: "Capsized" (Damage + GrabLines) or "Upright" (Undamaged). Hidden parts
+-- leave the model and the floater; ferry.stash keeps them with their offsets.
+local function setFerryState(ferry: any, state: string)
+	local f: Floater = ferry.floater
+	ferry.state = state
+	local keepParts, keepOffsets = {}, {}
+	for i, part in f.parts do
+		if FerryRig.visibleIn(part.Name, state) then
+			table.insert(keepParts, part)
+			table.insert(keepOffsets, f.offsets[i])
+		else
+			table.insert(ferry.stash, { part = part, offset = f.offsets[i], parent = part.Parent })
+			part.Parent = nil
+		end
+	end
+	local still = {}
+	for _, s in ferry.stash do
+		if FerryRig.visibleIn(s.part.Name, state) then
+			s.part.Parent = s.parent
+			s.part.CFrame = f.cf * s.offset
+			table.insert(keepParts, s.part)
+			table.insert(keepOffsets, s.offset)
+		else
+			table.insert(still, s)
+		end
+	end
+	ferry.stash = still
+	-- arms are keyed by part index; the ferry has none
+	f.parts, f.offsets = keepParts, keepOffsets
+end
+
+-- The C2 Gale Queen on the floater; false when the asset can't load (the caller builds the greybox).
+local function dressFerry(ferry: any): boolean
+	local template = AssetLoader and AssetLoader.getTemplate(FerryRig.FERRY, FerryRig.LOD)
+	local model: Model, f: Floater = ferry.model, ferry.floater
+	if not (template and model.Parent and f.active) then
+		return false
+	end
+	local atts = ferryAtts()
+	local art = template:Clone()
+	art.Name = "Art"
+	local pivot = art:GetPivot()
+	local parts = rideAsset(f, art, FerryRig.ferryOffset(atts))
+	local hull = parts.Hull
+	if hull then
+		-- hull_knock.luau: FindFirstChild("Hull", true); HullAxis is its knock frame, AirPocket this op's pocket
+		hull.Name = "Hull"
+		hull.CanCollide = true -- the hull team stands on her upturned side
+		hull.CanQuery = true
+		model.PrimaryPart = hull
+		pivotAttachment(hull, pivot, "HullAxis", FerryRig.hullAxis(atts))
+		local pocket =
+			FerryRig.pocketPoint(atts, HullKnock.pocketCompartment(tostring(ferry.callId)))
+		if pocket then
+			pivotAttachment(hull, pivot, "AirPocket", CFrame.new(pocket))
+		end
+		model:SetAttribute("HullLength", FerryRig.HULL_LENGTH)
+	end
+	f.depth = FerryRig.AXIS_ABOVE_SEA
+	-- where the parts go on the next Heartbeat (the floater was already placed with the greybox depth)
+	for i, part in f.parts do
+		part.CFrame = f.cf * f.offsets[i]
+	end
+	if AssetLoader.setWet then
+		pcall(AssetLoader.setWet, art, true)
+	end
+	art.Parent = model
+	model:SetAttribute("Art", true)
+	setFerryState(ferry, ferry.state)
+	return true
+end
+
+-- A deployed liferaft, greybox until (or unless) the C2 raft loads: black tube ring, orange canopy.
+local function greyboxRaft(model: Model, f: Floater)
+	local tube = newPart(
+		model,
+		"Tubes",
+		Vector3.new(1.4, 8.9, 8.9),
+		Color3.fromRGB(30, 30, 32),
+		Enum.PartType.Cylinder
+	)
+	addPart(f, tube, CFrame.new(0, 0.2, 0) * CFrame.Angles(0, 0, math.pi / 2))
+	model.PrimaryPart = tube
+	local canopy = newPart(
+		model,
+		"Canopy",
+		Vector3.new(7.6, 5, 7.6),
+		Color3.fromRGB(240, 96, 30),
+		Enum.PartType.Ball
+	)
+	canopy.Transparency = 0.35
+	addPart(f, canopy, CFrame.new(0, 2.6, 0))
+	model:SetAttribute("Art", false)
+end
+
+local function dressRaft(raft: any): boolean
+	local template = AssetLoader and AssetLoader.getTemplate(FerryRig.RAFT, FerryRig.LOD)
+	if not (template and raft.model.Parent and raft.floater.active) then
+		return false
+	end
+	local art = template:Clone()
+	art.Name = "Art"
+	local parts = rideAsset(raft.floater, art, FerryRig.raftOffset(raftAtts()))
+	if AssetLoader.setWet then
+		pcall(AssetLoader.setWet, art, true)
+	end
+	art.Parent = raft.model
+	raft.model.PrimaryPart = parts.Tubes or art.PrimaryPart
+	raft.model:SetAttribute("Art", true)
+	return true
+end
+
+-- The raft's painter back to the canister cradle it floated off from (a sagging Beam; both ends ride floaters).
+local function rigPainter(ferry: any, raft: any)
+	local a0 = ferry.model:FindFirstChild(FerryRig.liferaftName(raft.canister), true)
+	local a1 = raft.model:FindFirstChild("ATT_Painter", true)
+	if not (a0 and a0:IsA("Attachment") and a1 and a1:IsA("Attachment")) then
+		return
+	end
+	local beam = Instance.new("Beam")
+	beam.Name = "Painter"
+	beam.Attachment0 = a0
+	beam.Attachment1 = a1
+	beam.Width0, beam.Width1 = 0.14, 0.14
+	beam.Segments = 16
+	beam.CurveSize0, beam.CurveSize1 = -3, 3
+	beam.FaceCamera = true
+	beam.LightInfluence = 1
+	beam.Color = ColorSequence.new(Color3.fromRGB(206, 196, 168))
+	beam.Parent = raft.model
+end
+
+-- Horizontal frame of the ferry floater (no tilt): x across (+ keel side), z along.
+local function ferryPlan(f: Floater): CFrame
+	return CFrame.new(f.x, 0, f.z) * CFrame.Angles(0, f.yaw, 0)
+end
+
+local function buildRaft(call: any, ferryF: Floater, spec: any, index: number): any
+	local model = Instance.new("Model")
+	model.Name = "Liferaft"
+	model:SetAttribute("CallId", call.id)
+	model:SetAttribute("Raft", index)
+	local at = (ferryPlan(ferryF) * CFrame.new(spec.x, 0, spec.z)).Position
+	local f = newFloater(at.X, at.Z, 0)
+	f.yaw = ferryF.yaw + spec.yaw
+	f.sway = 0.07
 	model.Parent = mapFolder
 	register(f)
 	call.props = call.props or {}
 	table.insert(call.props, { model = model, floater = f })
+	return { model = model, floater = f, canister = spec.canister, index = index }
+end
+
+-- The capsized Gale Queen and her deployed liferafts. The floaters exist at once (casualties sit in the rafts
+-- from the start); the C2 art loads in the background and the greybox stands in when it can't.
+-- Waterline check (I1c, Studio): the roll axis rides AXIS_ABOVE_SEA over the midships sea, so the Damage part's
+-- loose lines end FerryRig.lineEndDepth() under the calm surface.
+local function buildFerry(call: any, pos: Vector3): (Floater, { any })
+	local model = Instance.new("Model")
+	model.Name = "GaleQueen"
+	model:SetAttribute("CallId", call.id)
+	local f = newFloater(pos.X, pos.Z, FerryRig.AXIS_ABOVE_SEA)
+	f.yaw = math.rad(20)
+	f.sway = 0.02
+	f.tilt = CFrame.Angles(0, 0, FerryRig.TILT) -- lying on her side (keel side up)
+	model.Parent = mapFolder
+	register(f)
+	call.props = call.props or {}
+	table.insert(call.props, { model = model, floater = f })
+	local ferry = {
+		model = model,
+		floater = f,
+		callId = call.id,
+		state = "Capsized",
+		stash = {},
+		rafts = {},
+	}
+	call.ferry = ferry
+	for i, spec in FerryRig.RAFTS do
+		table.insert(ferry.rafts, buildRaft(call, f, spec, i))
+	end
+	task.spawn(function()
+		local ok, art = pcall(dressFerry, ferry)
+		if not (ok and art) then
+			if not ok then
+				warn(`[RescueService] Gale Queen art failed: {art}`)
+			end
+			if model.Parent and f.active then
+				greyboxFerry(model, f)
+			end
+		end
+		for _, raft in ferry.rafts do
+			local rok, rart = pcall(dressRaft, raft)
+			if not (rok and rart) then
+				if not rok then
+					warn(`[RescueService] liferaft art failed: {rart}`)
+				end
+				if raft.model.Parent and raft.floater.active then
+					greyboxRaft(raft.model, raft.floater)
+				end
+			elseif ok and art then
+				rigPainter(ferry, raft)
+			end
+		end
+	end)
+	return f, ferry.rafts
+end
+
+-- Upright (Undamaged shows) or Capsized (Damage + GrabLines show). The op spawns her capsized.
+function RescueService.SetFerryState(call: any, state: string)
+	local ferry = call.ferry
+	if ferry and (state == "Capsized" or state == "Upright") then
+		setFerryState(ferry, state)
+	end
 end
 
 -- Builds everything a call needs at call.position. Called by CallService on accept / big-call start.
@@ -579,10 +832,24 @@ function RescueService.SpawnCall(call: any, victimPositions: { Vector3 }?)
 	elseif call.kind == "Tow" then
 		buildDisabledBoat(call, pos)
 	elseif call.kind == "CapsizedFerry" then
-		buildFerry(call, pos)
+		local ferryF, rafts = buildFerry(call, pos)
 		local positions: { Vector3 } = victimPositions or {}
-		for _, p in positions do
-			table.insert(call.victims, spawnVictim(call, p))
+		local seats = FerryRig.assignSeats(#positions, #rafts)
+		local plan = ferryPlan(ferryF)
+		local rAtts = raftAtts()
+		for i, p in positions do
+			local seat = seats[i]
+			local raft = seat and rafts[seat.raft]
+			local offset = seat and FerryRig.seatOffset(rAtts, seat.seat)
+			if raft and offset then
+				table.insert(call.victims, spawnVictim(call, p, raft.floater, offset))
+			else
+				-- never inside the hull or under the superstructure
+				local rel = plan:PointToObjectSpace(Vector3.new(p.X, 0, p.Z))
+				local x, z = FerryRig.pushClear(rel.X, rel.Z)
+				local clear = plan:PointToWorldSpace(Vector3.new(x, 0, z))
+				table.insert(call.victims, spawnVictim(call, Vector3.new(clear.X, p.Y, clear.Z)))
+			end
 		end
 	end
 end
@@ -1351,6 +1618,139 @@ function RescueService.Cleanup(call: any)
 	call.props = nil
 end
 
+-- Studio dev hook (RP-I1c ferry check): ServerStorage.FerryDev:Invoke(cmd). "start" the big call, "info" the ferry and rafts as built,
+-- "lines" how deep the Damage part's loose lines end under the sea over ~4 s, "toggle" Upright and back,
+-- "board" a raft casualty into a RIB spawned for the first player.
+local function liveFerry(): any?
+	for call in liveCalls do
+		if call.kind == "CapsizedFerry" and call.ferry then
+			return call
+		end
+	end
+	return nil
+end
+
+local function present(model: Instance, token: string): boolean
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") and FerryRig.token(d.Name) == token then
+			return true
+		end
+	end
+	return false
+end
+
+local function ferryDev(cmd: string): any
+	if cmd == "start" then
+		callService().ForceBigCall()
+		return liveFerry() ~= nil
+	end
+	local call = liveFerry()
+	if not call then
+		return "no ferry"
+	end
+	local ferry = call.ferry
+	local f: Floater = ferry.floater
+	if cmd == "info" then
+		local hull = ferry.model:FindFirstChild("Hull", true)
+		local marks = {}
+		for _, d in ferry.model:GetDescendants() do
+			if d:IsA("Attachment") then
+				table.insert(marks, d.Name)
+			end
+		end
+		table.sort(marks)
+		local rafts = {}
+		for _, r in ferry.rafts do
+			local seated = 0
+			for _, v in call.victims do
+				if v.floater and v.floater.parent == r.floater then
+					seated += 1
+				end
+			end
+			table.insert(rafts, {
+				art = r.model:GetAttribute("Art"),
+				seated = seated,
+				painter = r.model:FindFirstChild("Painter", true) ~= nil,
+				pos = r.floater.cf.Position,
+			})
+		end
+		return {
+			art = ferry.model:GetAttribute("Art"),
+			hull = hull and hull:IsA("BasePart") and { hull.Name, hull.Size, hull.CanCollide }
+				or false,
+			hullLength = ferry.model:GetAttribute("HullLength"),
+			marks = table.concat(marks, ","),
+			damage = present(ferry.model, "Damage"),
+			grab = present(ferry.model, "GrabLines"),
+			undamaged = present(ferry.model, "Undamaged"),
+			parts = #f.parts,
+			depth = f.depth,
+			pocket = HullKnock.pocketCompartment(tostring(call.id)),
+			rafts = rafts,
+			victims = #call.victims,
+			opId = call.id,
+		}
+	elseif cmd == "lines" then
+		local depths = {}
+		for _ = 1, 20 do
+			local now = Workspace:GetServerTimeNow()
+			local plan = ferryPlan(f)
+			for z = -25, 25, 10 do
+				local at = plan:PointToWorldSpace(
+					Vector3.new(FerryRig.rolledAcross(Vector3.new(9, 10, 0)), 0, z)
+				)
+				local water = heightAt(at, now)
+				local axisY = (f.cf * CFrame.new(0, 0, z)).Position.Y
+				table.insert(depths, water - (axisY - FerryRig.LINE_END_BELOW_AXIS))
+			end
+			task.wait(0.2)
+		end
+		table.sort(depths)
+		local sum = 0
+		for _, d in depths do
+			sum += d
+		end
+		return { min = depths[1], max = depths[#depths], mean = sum / #depths, n = #depths }
+	elseif cmd == "toggle" then
+		setFerryState(ferry, "Upright")
+		local up = { present(ferry.model, "Undamaged"), present(ferry.model, "Damage") }
+		setFerryState(ferry, "Capsized")
+		local cap = { present(ferry.model, "Undamaged"), present(ferry.model, "Damage") }
+		return { upright = up, capsized = cap }
+	elseif cmd == "board" then
+		local player = Players:GetPlayers()[1]
+		local index, victim = nil, nil
+		for i, v in call.victims do
+			if v.state == "Water" and v.floater and v.floater.parent then
+				index, victim = i, v
+				break
+			end
+		end
+		if not (player and index and victim) then
+			return "no raft casualty"
+		end
+		local at = victim.floater.cf.Position
+		local ok, boat = try(
+			"VehicleService",
+			"SpawnSeated",
+			player,
+			"RIB",
+			CFrame.new(at.X + 10, at.Y + 2, at.Z),
+			0,
+			"Scripted"
+		)
+		task.wait(2)
+		local boarded = RescueService.BoardVictim(call, index, player)
+		return {
+			spawned = ok and boat ~= nil,
+			boarded = boarded,
+			state = victim.state,
+			index = index,
+		}
+	end
+	return "unknown"
+end
+
 function RescueService.Init()
 	local existing = Workspace:FindFirstChild("CallProps")
 	if existing and existing:IsA("Folder") then
@@ -1365,6 +1765,15 @@ end
 function RescueService.Start()
 	if CasualtyAsset then
 		CasualtyAsset.preload()
+	end
+	if AssetLoader then
+		AssetLoader.preload({ FerryRig.FERRY, FerryRig.RAFT })
+	end
+	if RunService:IsStudio() then
+		local dev = Instance.new("BindableFunction")
+		dev.Name = "FerryDev"
+		dev.OnInvoke = ferryDev
+		dev.Parent = game:GetService("ServerStorage")
 	end
 	local accum, poseAccum = 0, 0
 	RunService.Heartbeat:Connect(function(dt)

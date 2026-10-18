@@ -5,7 +5,7 @@
 -- away (with a direction), nothing further off. Every reply is a 3D sound, a subtitle and a
 -- visual ripple on the hull. The team marks the compartment and radios it.
 -- First person on foot: the player's own position along the hull picks the compartment; when the
--- character is not on the hull (greybox ferry, or still climbing) A/D walk a cursor along it.
+-- character is not on the hull (in the water, on a boat, or still climbing) A/D walk a cursor along it.
 -- Result metrics: rightCompartment (bool), compartment (number, the server can recheck it with
 -- HullKnock.pocketCompartment), knocks (patterns knocked), listens.
 local Players = game:GetService("Players")
@@ -13,6 +13,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+local FerryRig =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local FerryUi = require(script.Parent:WaitForChild("Ferry"):WaitForChild("FerryUi"))
 local HullKnock = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ferry"):WaitForChild("HullKnock")
@@ -31,20 +33,33 @@ function hull_knock.start(
 	local opId: string = ctx.operation.id
 	local pocket = HullKnock.pocketCompartment(opId)
 
-	-- hull frame: centre, length axis, up face
+	-- hull frame: centre, length axis (local Z). The C2 Gale Queen (RescueService) carries a HullAxis attachment
+	-- at midships on her roll axis in the asset's orientation, a HullLength attribute and the five ATT_Knock_nn
+	-- compartment marks on her up (keel) side; the greybox Hull part is its own frame (Size.Z long).
 	local ferry = FerryUi.findFerry(opId)
-	local hullPart = ferry and ferry:FindFirstChild("Hull")
+	local hullPart = ferry and ferry:FindFirstChild("Hull", true)
+	local axis = hullPart and hullPart:FindFirstChild("HullAxis")
 	local length = 60
 	local function hullCFrame(): CFrame
+		if axis and axis:IsA("Attachment") then
+			return axis.WorldCFrame
+		end
 		if hullPart and hullPart:IsA("BasePart") then
 			return hullPart.CFrame
 		end
 		return CFrame.new(ctx.operation.position + Vector3.new(0, 3, 0))
 	end
-	if hullPart and hullPart:IsA("BasePart") then
+	local hullLength = ferry and ferry:GetAttribute("HullLength")
+	if type(hullLength) == "number" then
+		length = hullLength
+	elseif hullPart and hullPart:IsA("BasePart") then
 		length = hullPart.Size.Z
 	end
 	local function compartmentPos(i: number): Vector3
+		local mark = ferry and ferry:FindFirstChild(FerryRig.knockName(i), true)
+		if mark and mark:IsA("Attachment") then
+			return mark.WorldPosition + Vector3.new(0, 1, 0)
+		end
 		return (hullCFrame() * CFrame.new(0, 0, HullKnock.offsetAlong(i, length))).Position
 			+ Vector3.new(0, 3, 0)
 	end

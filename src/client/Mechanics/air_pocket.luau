@@ -17,6 +17,8 @@ local UserInputService = game:GetService("UserInputService")
 
 local Dive =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ferry"):WaitForChild("Dive"))
+local FerryRig =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local FerryUi = require(script.Parent:WaitForChild("Ferry"):WaitForChild("FerryUi"))
 
 local C = FerryUi.Theme.Colors
@@ -380,6 +382,17 @@ function air_pocket.start(
 		calmed = false
 		legText.Text = "In the air pocket."
 		FerryUi.playAction("surface_in_pocket")
+		-- the hull team on deck sees the diver's bubbles break over the pocket (RescueService AirPocket mark)
+		local pocketAt = FerryUi.ferryPoint(ctx.operation.id, "AirPocket")
+		local axisAt = FerryUi.ferryPoint(ctx.operation.id, "HullAxis")
+		if pocketAt and axisAt then
+			local sea = axisAt.Y - FerryRig.AXIS_ABOVE_SEA
+			FerryUi.ripple(
+				Vector3.new(pocketAt.X, sea, pocketAt.Z),
+				0.8,
+				Color3.fromRGB(220, 240, 245)
+			)
+		end
 		say(
 			if trip == 1
 				then "You surface in a pocket of air under the car deck. Torchlight on two faces."
