@@ -1,0 +1,152 @@
+{
+ "asset": "M_Kit_ChartTablet",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.03
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.03,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0001,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Screen",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0582
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0582,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.0283,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mount",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0054
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0054,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.0245,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lanyard",
+   "parent": null,
+   "blender": [
+    -0.297,
+    -0.1725,
+    0.0064
+   ],
+   "roblox_from_origin": [
+    0.297,
+    0.0064,
+    -0.1725
+   ],
+   "roblox_from_bbox_centre": [
+    0.297,
+    -0.0236,
+    -0.1725
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Port",
+   "parent": null,
+   "blender": [
+    -0.018,
+    0.2643,
+    0.0384
+   ],
+   "roblox_from_origin": [
+    0.018,
+    0.0384,
+    0.2643
+   ],
+   "roblox_from_bbox_centre": [
+    0.018,
+    0.0085,
+    0.2643
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,152 @@
+{
+ "asset": "M_Kit_StretcherBasket",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Lift_FL",
+   "parent": null,
+   "blender": [
+    0.6355,
+    -2.715,
+    0.5488
+   ],
+   "roblox_from_origin": [
+    -0.6355,
+    0.5488,
+    -2.715
+   ],
+   "roblox_from_bbox_centre": [
+    -0.6355,
+    0.2428,
+    -2.715
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lift_FR",
+   "parent": null,
+   "blender": [
+    -0.6355,
+    -2.715,
+    0.5488
+   ],
+   "roblox_from_origin": [
+    0.6355,
+    0.5488,
+    -2.715
+   ],
+   "roblox_from_bbox_centre": [
+    0.6355,
+    0.2428,
+    -2.715
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lift_RL",
+   "parent": null,
+   "blender": [
+    0.6355,
+    2.715,
+    0.504
+   ],
+   "roblox_from_origin": [
+    -0.6355,
+    0.504,
+    2.715
+   ],
+   "roblox_from_bbox_centre": [
+    -0.6355,
+    0.1979,
+    2.715
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lift_RR",
+   "parent": null,
+   "blender": [
+    -0.6355,
+    2.715,
+    0.504
+   ],
+   "roblox_from_origin": [
+    0.6355,
+    0.504,
+    2.715
+   ],
+   "roblox_from_bbox_centre": [
+    0.6355,
+    0.1979,
+    2.715
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Casualty",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.45,
+    0.1845
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.1845,
+    -0.45
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.1216,
+    -0.45
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

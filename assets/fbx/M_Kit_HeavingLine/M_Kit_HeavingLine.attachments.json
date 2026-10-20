@@ -1,0 +1,123 @@
+{
+ "asset": "M_Kit_HeavingLine",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    -0.5695,
+    -0.0083,
+    0.0542
+   ],
+   "roblox_from_origin": [
+    0.5695,
+    0.0542,
+    -0.0083
+   ],
+   "roblox_from_bbox_centre": [
+    0.5695,
+    -0.08,
+    -0.0083
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Throw",
+   "parent": null,
+   "blender": [
+    0.3986,
+    -0.2192,
+    0.1793
+   ],
+   "roblox_from_origin": [
+    -0.3986,
+    0.1793,
+    -0.2192
+   ],
+   "roblox_from_bbox_centre": [
+    -0.3986,
+    0.0451,
+    -0.2192
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LineExit",
+   "parent": null,
+   "blender": [
+    0.3318,
+    -0.1829,
+    0.0929
+   ],
+   "roblox_from_origin": [
+    -0.3318,
+    0.0929,
+    -0.1829
+   ],
+   "roblox_from_bbox_centre": [
+    -0.3318,
+    -0.0413,
+    -0.1829
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LineEnd",
+   "parent": null,
+   "blender": [
+    0.588,
+    -0.3076,
+    0.0152
+   ],
+   "roblox_from_origin": [
+    -0.588,
+    0.0152,
+    -0.3076
+   ],
+   "roblox_from_bbox_centre": [
+    -0.588,
+    -0.119,
+    -0.3076
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

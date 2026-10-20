@@ -1,0 +1,36 @@
+{
+ "asset": "M_Sea_MooringBlock",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_ChainRiser",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    1.95
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.95,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.933,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

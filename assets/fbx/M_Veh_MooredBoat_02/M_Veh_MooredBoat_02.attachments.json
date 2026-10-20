@@ -1,0 +1,152 @@
+{
+ "asset": "M_Veh_MooredBoat_02",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.3785,
+    -4.935,
+    0.2925
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_Bow",
+   "parent": null,
+   "blender": [
+    0.0,
+    -13.05,
+    2.5453
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.5453,
+    -13.05
+   ],
+   "roblox_from_bbox_centre": [
+    -0.3785,
+    -2.3897,
+    -12.7575
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_Stern",
+   "parent": null,
+   "blender": [
+    3.42,
+    12.54,
+    3.8864
+   ],
+   "roblox_from_origin": [
+    -3.42,
+    3.8864,
+    12.54
+   ],
+   "roblox_from_bbox_centre": [
+    -3.7985,
+    -1.0486,
+    12.8325
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Port",
+   "parent": null,
+   "blender": [
+    4.26,
+    1.2,
+    3.6
+   ],
+   "roblox_from_origin": [
+    -4.26,
+    3.6,
+    1.2
+   ],
+   "roblox_from_bbox_centre": [
+    -4.6385,
+    -1.335,
+    1.4925
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Stbd",
+   "parent": null,
+   "blender": [
+    -4.26,
+    1.2,
+    3.6
+   ],
+   "roblox_from_origin": [
+    4.26,
+    3.6,
+    1.2
+   ],
+   "roblox_from_bbox_centre": [
+    3.8815,
+    -1.335,
+    1.4925
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

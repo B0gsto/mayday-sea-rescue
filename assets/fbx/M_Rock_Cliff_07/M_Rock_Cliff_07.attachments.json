@@ -1,0 +1,36 @@
+{
+ "asset": "M_Rock_Cliff_07",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    4.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    4.5,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -10.5491,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+{
+ "asset": "M_Kit_TriageTags",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Tie_Red",
+   "parent": null,
+   "blender": [
+    -0.3198,
+    -0.2124,
+    0.0433
+   ],
+   "roblox_from_origin": [
+    0.3198,
+    0.0433,
+    -0.2124
+   ],
+   "roblox_from_bbox_centre": [
+    0.3198,
+    0.0216,
+    -0.2124
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tie_Yellow",
+   "parent": null,
+   "blender": [
+    -0.3191,
+    0.2314,
+    0.0418
+   ],
+   "roblox_from_origin": [
+    0.3191,
+    0.0418,
+    0.2314
+   ],
+   "roblox_from_bbox_centre": [
+    0.3191,
+    0.0201,
+    0.2314
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tie_Green",
+   "parent": null,
+   "blender": [
+    -0.3283,
+    0.6053,
+    0.0408
+   ],
+   "roblox_from_origin": [
+    0.3283,
+    0.0408,
+    0.6053
+   ],
+   "roblox_from_bbox_centre": [
+    0.3283,
+    0.0192,
+    0.6053
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

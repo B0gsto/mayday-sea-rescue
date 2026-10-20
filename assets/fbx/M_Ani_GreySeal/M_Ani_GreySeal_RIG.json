@@ -1,0 +1,18 @@
+{
+ "asset": "M_Ani_GreySeal",
+ "file": "build/prod/M_Ani_GreySeal/fbx/M_Ani_GreySeal/M_Ani_GreySeal_RIG.fbx",
+ "rig": "RIG_Seal",
+ "meshes": [
+  "M_Ani_GreySeal_Body_LOD0",
+  "M_Ani_GreySeal_Head_LOD0"
+ ],
+ "clips": [
+  "A_Seal_Flee",
+  "A_Seal_HaulOut",
+  "A_Seal_Look",
+  "A_Seal_Surface",
+  "A_Seal_Swim"
+ ],
+ "settings": "rbxkit axis/scale (roblox = (-bx, bz, by), 1 BU = 1 stud), skinning on, one animation per action",
+ "next": "Roblox upload: FBX with skinning + animations (docs/12 2.10 AN1); clips also authored in-clips.py"
+}

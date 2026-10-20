@@ -1,0 +1,65 @@
+{
+ "asset": "M_Sea_LostPot",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grab",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.102,
+    0.888
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.888,
+    0.102
+   ],
+   "roblox_from_bbox_centre": [
+    0.3347,
+    0.506,
+    0.0721
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RopeEnd",
+   "parent": null,
+   "blender": [
+    2.685,
+    -0.435,
+    0.135
+   ],
+   "roblox_from_origin": [
+    -2.685,
+    0.135,
+    -0.435
+   ],
+   "roblox_from_bbox_centre": [
+    -2.3503,
+    -0.247,
+    -0.4649
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

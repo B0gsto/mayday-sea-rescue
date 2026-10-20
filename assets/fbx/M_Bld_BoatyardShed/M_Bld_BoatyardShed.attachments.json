@@ -1,0 +1,645 @@
+{
+ "asset": "M_Bld_BoatyardShed",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_RollerDoor",
+   "parent": null,
+   "blender": [
+    30.45,
+    -4.5,
+    0.18
+   ],
+   "roblox_from_origin": [
+    -30.45,
+    0.18,
+    -4.5
+   ],
+   "roblox_from_bbox_centre": [
+    -30.45,
+    -15.135,
+    -4.5
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_HoistBay",
+   "parent": null,
+   "blender": [
+    48.0,
+    0.0,
+    0.06
+   ],
+   "roblox_from_origin": [
+    -48.0,
+    0.06,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -48.0,
+    -15.255,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PersonnelDoor",
+   "parent": null,
+   "blender": [
+    30.45,
+    14.1,
+    0.15
+   ],
+   "roblox_from_origin": [
+    -30.45,
+    0.15,
+    14.1
+   ],
+   "roblox_from_bbox_centre": [
+    -30.45,
+    -15.165,
+    14.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Door",
+   "parent": null,
+   "blender": [
+    29.91,
+    14.1,
+    7.86
+   ],
+   "roblox_from_origin": [
+    -29.91,
+    7.86,
+    14.1
+   ],
+   "roblox_from_bbox_centre": [
+    -29.91,
+    -7.455,
+    14.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Sign",
+   "parent": null,
+   "blender": [
+    30.36,
+    -4.2,
+    23.76
+   ],
+   "roblox_from_origin": [
+    -30.36,
+    23.76,
+    -4.2
+   ],
+   "roblox_from_bbox_centre": [
+    -30.36,
+    8.445,
+    -4.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Sign_01",
+   "parent": null,
+   "blender": [
+    31.02,
+    -13.2,
+    25.92
+   ],
+   "roblox_from_origin": [
+    -31.02,
+    25.92,
+    -13.2
+   ],
+   "roblox_from_bbox_centre": [
+    -31.02,
+    10.605,
+    -13.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Sign_02",
+   "parent": null,
+   "blender": [
+    31.02,
+    2.7,
+    25.92
+   ],
+   "roblox_from_origin": [
+    -31.02,
+    25.92,
+    2.7
+   ],
+   "roblox_from_bbox_centre": [
+    -31.02,
+    10.605,
+    2.7
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Yard",
+   "parent": null,
+   "blender": [
+    37.5,
+    -31.8,
+    16.2
+   ],
+   "roblox_from_origin": [
+    -37.5,
+    16.2,
+    -31.8
+   ],
+   "roblox_from_bbox_centre": [
+    -37.5,
+    0.885,
+    -31.8
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SideDoor",
+   "parent": null,
+   "blender": [
+    21.6,
+    -23.1,
+    0.15
+   ],
+   "roblox_from_origin": [
+    -21.6,
+    0.15,
+    -23.1
+   ],
+   "roblox_from_bbox_centre": [
+    -21.6,
+    -15.165,
+    -23.1
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Side",
+   "parent": null,
+   "blender": [
+    21.6,
+    -23.04,
+    6.99
+   ],
+   "roblox_from_origin": [
+    -21.6,
+    6.99,
+    -23.04
+   ],
+   "roblox_from_bbox_centre": [
+    -21.6,
+    -8.325,
+    -23.04
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light_Bay_01",
+   "parent": null,
+   "blender": [
+    -30.0,
+    0.0,
+    24.9
+   ],
+   "roblox_from_origin": [
+    30.0,
+    24.9,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    30.0,
+    9.585,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light_Bay_02",
+   "parent": null,
+   "blender": [
+    -9.0,
+    0.0,
+    24.9
+   ],
+   "roblox_from_origin": [
+    9.0,
+    24.9,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    9.0,
+    9.585,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Light_Bay_03",
+   "parent": null,
+   "blender": [
+    12.0,
+    0.0,
+    24.9
+   ],
+   "roblox_from_origin": [
+    -12.0,
+    24.9,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -12.0,
+    9.585,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_YardGate",
+   "parent": null,
+   "blender": [
+    117.9,
+    0.0,
+    0.15
+   ],
+   "roblox_from_origin": [
+    -117.9,
+    0.15,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -117.9,
+    -15.165,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cradle_01",
+   "parent": null,
+   "blender": [
+    49.8,
+    14.7,
+    0.84
+   ],
+   "roblox_from_origin": [
+    -49.8,
+    0.84,
+    14.7
+   ],
+   "roblox_from_bbox_centre": [
+    -49.8,
+    -14.475,
+    14.7
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DryBerth_01",
+   "parent": null,
+   "blender": [
+    49.8,
+    14.7,
+    0.06
+   ],
+   "roblox_from_origin": [
+    -49.8,
+    0.06,
+    14.7
+   ],
+   "roblox_from_bbox_centre": [
+    -49.8,
+    -15.255,
+    14.7
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PropStand_01",
+   "parent": null,
+   "blender": [
+    73.2,
+    -16.2,
+    0.06
+   ],
+   "roblox_from_origin": [
+    -73.2,
+    0.06,
+    -16.2
+   ],
+   "roblox_from_bbox_centre": [
+    -73.2,
+    -15.255,
+    -16.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PropStand_02",
+   "parent": null,
+   "blender": [
+    81.0,
+    -16.2,
+    0.06
+   ],
+   "roblox_from_origin": [
+    -81.0,
+    0.06,
+    -16.2
+   ],
+   "roblox_from_bbox_centre": [
+    -81.0,
+    -15.255,
+    -16.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_FuelDiesel",
+   "parent": null,
+   "blender": [
+    68.34,
+    43.2,
+    3.42
+   ],
+   "roblox_from_origin": [
+    -68.34,
+    3.42,
+    43.2
+   ],
+   "roblox_from_bbox_centre": [
+    -68.34,
+    -11.895,
+    43.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_FuelPetrol",
+   "parent": null,
+   "blender": [
+    75.06,
+    43.2,
+    3.42
+   ],
+   "roblox_from_origin": [
+    -75.06,
+    3.42,
+    43.2
+   ],
+   "roblox_from_bbox_centre": [
+    -75.06,
+    -11.895,
+    43.2
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_FuelIsland",
+   "parent": null,
+   "blender": [
+    72.0,
+    42.0,
+    0.69
+   ],
+   "roblox_from_origin": [
+    -72.0,
+    0.69,
+    42.0
+   ],
+   "roblox_from_bbox_centre": [
+    -72.0,
+    -14.625,
+    42.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PriceBoard",
+   "parent": null,
+   "blender": [
+    42.6,
+    -59.4,
+    3.45
+   ],
+   "roblox_from_origin": [
+    -42.6,
+    3.45,
+    -59.4
+   ],
+   "roblox_from_bbox_centre": [
+    -42.6,
+    -11.865,
+    -59.4
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

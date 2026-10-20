@@ -1,0 +1,123 @@
+{
+ "asset": "M_Kit_TowLine",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    -0.1853,
+    0.1612,
+    0.1537
+   ],
+   "roblox_from_origin": [
+    0.1853,
+    0.1537,
+    0.1612
+   ],
+   "roblox_from_bbox_centre": [
+    0.1853,
+    0.033,
+    0.1612
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Eye",
+   "parent": null,
+   "blender": [
+    0.7147,
+    -0.4088,
+    0.0367
+   ],
+   "roblox_from_origin": [
+    -0.7147,
+    0.0367,
+    -0.4088
+   ],
+   "roblox_from_bbox_centre": [
+    -0.7147,
+    -0.084,
+    -0.4088
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Shackle",
+   "parent": null,
+   "blender": [
+    0.7327,
+    -0.4088,
+    0.2257
+   ],
+   "roblox_from_origin": [
+    -0.7327,
+    0.2257,
+    -0.4088
+   ],
+   "roblox_from_bbox_centre": [
+    -0.7327,
+    0.105,
+    -0.4088
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LineEnd",
+   "parent": null,
+   "blender": [
+    0.1038,
+    -0.7564,
+    0.0367
+   ],
+   "roblox_from_origin": [
+    -0.1038,
+    0.0367,
+    -0.7564
+   ],
+   "roblox_from_bbox_centre": [
+    -0.1038,
+    -0.084,
+    -0.7564
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

@@ -1,0 +1,123 @@
+{
+ "asset": "M_Veg_Kelp_Kit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Holdfast_01",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.6161
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.6161,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    10.8317,
+    -2.06,
+    0.3081
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Holdfast_02",
+   "parent": null,
+   "blender": [
+    6.0,
+    0.0,
+    0.684
+   ],
+   "roblox_from_origin": [
+    -6.0,
+    0.684,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    4.8317,
+    -1.9921,
+    0.3081
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Holdfast_03",
+   "parent": null,
+   "blender": [
+    12.0,
+    0.0,
+    0.7847
+   ],
+   "roblox_from_origin": [
+    -12.0,
+    0.7847,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -1.1683,
+    -1.8914,
+    0.3081
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Holdfast_04",
+   "parent": null,
+   "blender": [
+    18.0,
+    0.0,
+    0.8642
+   ],
+   "roblox_from_origin": [
+    -18.0,
+    0.8642,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -7.1683,
+    -1.8118,
+    0.3081
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

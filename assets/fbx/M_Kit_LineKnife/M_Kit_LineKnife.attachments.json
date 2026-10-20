@@ -1,0 +1,65 @@
+{
+ "asset": "M_Kit_LineKnife",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Grip",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.18,
+    0.018
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.018,
+    -0.18
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.009,
+    -0.153
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lanyard",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.336,
+    0.018
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.018,
+    -0.336
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.009,
+    -0.309
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
