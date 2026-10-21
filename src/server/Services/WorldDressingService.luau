@@ -573,7 +573,20 @@ function WorldDressingService.Start()
 	if seamarks then
 		task.spawn((require :: any)(seamarks).place, base)
 	end
+	-- the cities (WorldConfig.Towns): road / pavement terrain first, so Street's junction fill and kerbs see it
+	local Town = require(script.Parent.Parent.World:WaitForChild("Town")) :: any
+	local tOk, tErr = pcall(Town.paint)
+	if not tOk then
+		warn(`[WorldDressing] town paint failed: {tErr}`)
+	end
 	task.spawn(Street.start)
+	-- I2 ship batches: each owns one module in World/ with place(base); absent modules are skipped
+	for _, name in { "Town", "TownExtras", "RoadsShore", "CoastArt", "SeabedLife" } do
+		local mod = script.Parent.Parent.World:FindFirstChild(name)
+		if mod then
+			task.spawn((require :: any)(mod).place, base)
+		end
+	end
 	local ok, rocks, plants, parts = pcall(scatterAll)
 	if not ok then
 		warn(`[WorldDressing] scatter failed: {rocks}`)

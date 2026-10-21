@@ -1,6 +1,11 @@
 --!strict
 -- Operation 1: Person in the Water (docs/09-rescue-operations.md section 5.1). Data only.
 -- Absorbs the old Swimmer and DriftingCraft calls as scene variants.
+-- 2026-10-21 (user): "just get near him, and he gets on whatever you are driving". The plan is
+-- answer -> get aboard your boat -> drive up close and steady (auto_board: they climb on, if
+-- there is room) -> bring them home (they climb off at the drop-off). No kit, no approach
+-- coaching, no grab/throw choice, no swimming rescue, no first-person care. Running out of time
+-- (condition Critical or the cap) is the fail: zero pay and an NPC boat picks them up instead.
 local Types = require(script.Parent.Parent.Types)
 
 local def: Types.OperationDef = {
@@ -24,182 +29,48 @@ local def: Types.OperationDef = {
 			mechanicId = "radio_ack",
 			gradeBands = {
 				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
-				-- voice procedure (RadioFormat.grade, 0..1; thirds: callsigns, message, proword)
-				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
 			},
 			serverMetrics = { "elapsed" },
-			weight = 1,
+			weight = 0.5,
 			timeoutSec = 45,
 			onFail = "npc",
 			npcSeconds = 8,
 			tip = "Answer the Coastguard quickly; every second counts for the casualty.",
 		},
 		{
-			id = "kit_launch",
-			label = "Kit up and launch",
-			realTerm = "Kit and launch",
+			id = "launch",
+			label = "Get aboard your boat",
+			realTerm = "Launch",
 			role = "Helm",
-			mechanicId = "kit_launch",
+			mechanicId = "launch",
 			gradeBands = {
-				{ metric = "kitFit", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
-				{ metric = "elapsed", gold = 25, silver = 35, bronze = 60 },
+				{ metric = "elapsed", gold = 25, silver = 40, bronze = 90 },
 			},
 			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 60,
-			onFail = "npc",
-			npcSeconds = 15,
-			tip = "Read the tasking: it tells you which kit the casualty needs.",
-		},
-		{
-			id = "passage",
-			label = "Get there safely",
-			realTerm = "Passage and ETA",
-			role = "Helm",
-			mechanicId = "passage",
-			gradeBands = {
-				{ metric = "routeRatio", gold = 1.1, silver = 1.3, bronze = 1.6 },
-				{ metric = "etaError", gold = 0.25, silver = 0.4, bronze = 0.7 },
-			},
-			weight = 1,
-			timeoutSec = 180,
-			onFail = "continue", -- never fails: you always get there (graded on time)
-			npcSeconds = 30,
-			tip = "Take waves at an angle and ease off on the crests; slamming loses time.",
-		},
-		{
-			id = "search",
-			label = "Find them",
-			realTerm = "Search",
-			role = "Navigator",
-			mechanicId = "search",
-			gradeBands = {
-				{ metric = "startError", gold = 40, silver = 80, bronze = 160 },
-				{ metric = "lostSight", gold = 0, silver = 1, bronze = 3 },
-				-- server: share of the search on the expanding square (1 below pattern rank)
-				{
-					metric = "onPattern",
-					gold = 0.7,
-					silver = 0.4,
-					bronze = 0,
-					higherIsBetter = true,
-				},
-			},
-			serverMetrics = { "onPattern" },
-			weight = 1,
-			timeoutSec = 120,
+			weight = 0.5,
+			timeoutSec = 180, -- never skipped: the step ends only aboard (retry restarts it)
 			onFail = "retry",
 			npcAllowed = false,
-			tip = "Start your search down-drift of the datum, and never look away once you see them.",
-		},
-		{
-			id = "approach",
-			label = "Come in from downwind, slowly",
-			realTerm = "Approach",
-			role = "Helm",
-			mechanicId = "approach",
-			gradeBands = {
-				-- s over 3 knots in the last 30 m (0.5 s grace for a wave surge)
-				{ metric = "overSpeedSec", gold = 0.5, silver = 2, bronze = 5 },
-				{ metric = "neutralDistance", gold = 8, silver = 12, bronze = 20 },
-				{
-					metric = "fromDownwind",
-					gold = 1,
-					silver = 1,
-					bronze = 0,
-					higherIsBetter = true,
-				},
-			},
-			allowedEvents = { wash = 2 },
-			weight = 1,
-			timeoutSec = 60,
-			onFail = "retry",
-			npcAllowed = false,
-			tip = "Come in from downwind, so your wash doesn't hit them.",
-		},
-		{
-			id = "calm",
-			label = "Calm them first",
-			realTerm = "Panicking casualty",
-			role = "Crew",
-			mechanicId = "panic_calm",
-			when = "Panicking",
-			gradeBands = {
-				-- docs 09 5.4: Gold no grab and under 20 s, Silver one grab, Bronze more
-				{ metric = "calmSeconds", gold = 20, silver = 30, bronze = 45 },
-				{ metric = "grabbed", gold = 0, silver = 1, bronze = 3 },
-			},
-			weight = 1,
-			timeoutSec = 45,
-			onFail = "retry",
-			npcSeconds = 18,
-			tip = "Keep a panicking swimmer at arm's length and offer the tube, never your hand.",
+			tip = "Your boat waits at your bay: run straight down the pier and jump aboard.",
 		},
 		{
 			id = "recovery",
-			label = "Get them aboard",
+			label = "Pick them up",
 			realTerm = "Recovery",
-			role = "Crew",
-			mechanicId = "recover_throwbag",
-			mechanicByState = {
-				Panicking = "recover_swimmer",
-				Exhausted = "recover_swimmer",
-				VeryCold = "recover_swimmer",
-				Unresponsive = "recover_swimmer",
-			},
+			role = "Helm",
+			mechanicId = "auto_board",
 			gradeBands = {
-				{ metric = "rightMethod", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
-				{ metric = "score", gold = 0.8, silver = 0.5, bronze = 0.2, higherIsBetter = true },
-			},
-			allowedEvents = { wrongHandling = 1 },
-			weight = 2,
-			timeoutSec = 60,
-			onFail = "retry",
-			npcAllowed = false,
-			effect = "board",
-			tip = "Pick the recovery for the casualty you see: cold or still means a horizontal lift.",
-		},
-		{
-			id = "survey",
-			label = "Check them over",
-			realTerm = "Primary survey",
-			role = "Medic",
-			mechanicId = "primary_survey",
-			gradeBands = {
-				{ metric = "correct", gold = 1, silver = 0.8, bronze = 0.5, higherIsBetter = true },
-				{ metric = "elapsed", gold = 25, silver = 35, bronze = 50 },
+				-- server-timed: take the call to them aboard
+				{ metric = "elapsed", gold = 60, silver = 120, bronze = 240 },
 			},
 			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 50,
-			onFail = "npc",
-			npcSeconds = 25,
-			effect = "survey",
-			tip = "Survey first, then treat: DR ABCDE finds the hidden problem.",
-		},
-		{
-			id = "treatment",
-			label = "Treat what you found",
-			realTerm = "Treatment",
-			role = "Medic",
-			mechanicId = "treat",
-			gradeBands = {
-				{
-					metric = "matches",
-					gold = 1,
-					silver = 0.75,
-					bronze = 0.5,
-					higherIsBetter = true,
-				},
-				{ metric = "harmful", gold = 0, silver = 0, bronze = 1 },
-			},
-			allowedEvents = { harmfulTreatment = 2, wrongHandling = 1 },
-			weight = 1,
-			timeoutSec = 45,
-			onFail = "npc",
-			npcSeconds = 20,
-			effect = "treat",
-			tip = "Shelter and wrap a cold casualty and keep them flat; never rub their limbs.",
+			allowedEvents = { bump = 2 }, -- ran into them
+			weight = 2,
+			timeoutSec = 300,
+			onFail = "takeover", -- an NPC boat picks them up (never on the first missions)
+			npcAllowed = false,
+			effect = "board",
+			tip = "Come in slow and hold her steady beside them: they climb on by themselves.",
 		},
 		{
 			id = "transport",
@@ -232,23 +103,6 @@ local def: Types.OperationDef = {
 			npcSeconds = 45,
 			effect = "deliver",
 			tip = "Ease off on the crests on the way home: every slam hurts a cold casualty.",
-		},
-		{
-			id = "handover",
-			label = "Hand over to the ambulance",
-			realTerm = "Handover (ATMIST)",
-			role = "Medic",
-			mechanicId = "handover",
-			gradeBands = {
-				{ metric = "correct", gold = 6, silver = 5, bronze = 3, higherIsBetter = true },
-				{ metric = "elapsed", gold = 20, silver = 30, bronze = 45 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 45,
-			onFail = "npc",
-			npcSeconds = 20,
-			tip = "ATMIST: Age, Time, Mechanism, Injuries, Signs, Treatment, in that order.",
 		},
 	},
 }

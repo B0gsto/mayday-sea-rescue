@@ -7,6 +7,7 @@
 --   StreetLayout.offset(sample, side, d)          -> Vector3              side +1 = right of travel, -1 = left
 --   StreetLayout.dashes(points, mark, gap)        -> { { a, b } }         centre-line dashes (mark on, gap off)
 --   StreetLayout.chain(points, seg, side, d)      -> { { a, b } }         a continuous line `d` off the centre, in segments
+--   StreetLayout.faceYaw(face)                    -> number               yaw that turns the local forward (-Z) toward `face`
 --   StreetLayout.lampYaw(toward)                  -> number               yaw (radians) that turns the lamp's bracket
 --                                                                         (asset -X) to point along `toward`
 --   StreetLayout.distToPolyline(p, points)        -> number               XZ distance to the polyline
@@ -84,6 +85,12 @@ function StreetLayout.chain(points: { Vector3 }, seg: number, side: number, d: n
 		})
 	end
 	return out
+end
+
+-- CFrame.Angles(0, yaw, 0) maps local -Z to (-sin yaw, 0, -cos yaw); a vehicle's forward is its local -Z.
+function StreetLayout.faceYaw(face: Vector3): number
+	local f = flat(face).Unit
+	return math.atan2(-f.X, -f.Z)
 end
 
 -- CFrame.Angles(0, yaw, 0) maps local +X to (cos yaw, 0, -sin yaw); the bracket is local -X, so -X = toward.

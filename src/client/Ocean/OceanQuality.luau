@@ -11,7 +11,9 @@
 -- slides. updateHz = 0 means every frame.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local SettingsRules =
@@ -31,7 +33,7 @@ export type Tier = {
 
 local OceanQuality = {}
 
--- Vertex counts: High 1089 near + 576 ring; Medium 625 + 392; Low 169 + 264.
+-- Vertex counts: High 1089 near + 576 ring; Medium 625 + 392; Low 121 + 264.
 OceanQuality.TIERS = table.freeze({
 	High = table.freeze({
 		name = "High",
@@ -57,12 +59,12 @@ OceanQuality.TIERS = table.freeze({
 	}),
 	Low = table.freeze({
 		name = "Low",
-		nearCells = 12,
-		nearCell = 10,
+		nearCells = 10,
+		nearCell = 12,
 		outerCells = 16,
 		outerCell = 20,
 		holeCells = 6,
-		updateHz = 15,
+		updateHz = 12,
 		fallbackCells = 8,
 		fallbackCell = 16,
 	}),
@@ -89,6 +91,13 @@ local function savedLevel(): number?
 end
 
 function OceanQuality.current(): Tier
+	-- Studio perf runs (RP-P1) force a tier through Workspace.PerfQuality; never read outside Studio.
+	if RunService:IsStudio() then
+		local forced = Workspace:GetAttribute("PerfQuality")
+		if forced == "High" or forced == "Medium" or forced == "Low" then
+			return OceanQuality.TIERS[forced] or OceanQuality.TIERS.High
+		end
+	end
 	local touchOnly = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	local name = SettingsRules.qualityTier(Comfort.get("oceanQuality"), savedLevel(), touchOnly)
 	return OceanQuality.TIERS[name] or OceanQuality.TIERS.High
@@ -102,6 +111,9 @@ function OceanQuality.onChanged(callback: () -> ()): RBXScriptConnection?
 			callback()
 		end
 	end)
+	if RunService:IsStudio() then
+		Workspace:GetAttributeChangedSignal("PerfQuality"):Connect(callback)
+	end
 	local settings = userGameSettings()
 	if not settings then
 		return nil

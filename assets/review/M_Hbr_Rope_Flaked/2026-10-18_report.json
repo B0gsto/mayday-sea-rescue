@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Rope_Flaked",
  "name": "M_Hbr_Rope_Flaked",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Rope_Flaked/M_Hbr_Rope_Flaked_LOD0.fbx",
-   "bytes": 184012,
+   "bytes": 225644,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Flaked_LOD0"
@@ -33,16 +33,16 @@
     {
      "name": "M_Hbr_Rope_Flaked_LOD0.001",
      "min": [
-      -2.366,
-      -0.968,
+      -1.7139,
+      -0.4004,
       0.0
      ],
      "max": [
-      2.366,
-      0.968,
-      0.1464
+      1.7139,
+      0.4004,
+      0.2755
      ],
-     "polygons": 1328,
+     "polygons": 2806,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Rope_Flaked/M_Hbr_Rope_Flaked_LOD1.fbx",
-   "bytes": 88828,
+   "bytes": 133132,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Flaked_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_Rope_Flaked_LOD1.001",
      "min": [
-      -2.3588,
-      -0.968,
-      -0.0062
+      -1.7139,
+      -0.4009,
+      -0.0
      ],
      "max": [
-      2.366,
-      0.968,
-      0.1441
+      1.7139,
+      0.4004,
+      0.2755
      ],
-     "polygons": 664,
+     "polygons": 1402,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1328 of 3000"
+   "detail": "2806 of 3000"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.37e-03, 2652 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.48e-06, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.376 to 0.499, v 0.001 to 0.124"
+   "detail": "u 0.251 to 0.374, v 0.001 to 0.124"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 662 faces have no UV area"
+   "detail": "0 of 1397 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "511 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "283 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "664 of 3000"
+   "detail": "1402 of 3000"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.35e-03, 1502 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.25e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.376 to 0.499, v 0.001 to 0.124"
+   "detail": "u 0.251 to 0.374, v 0.001 to 0.128"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1",
@@ -248,7 +248,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 664 faces have no UV area"
+   "detail": "0 of 1402 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1",
@@ -256,7 +256,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 49.9% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.005 (max 0.02), UV area by 16.5% (max 15%)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1328 of 2500 (small_prop, asset row)"
+   "detail": "2806 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "664 of 1250"
+   "detail": "1402 of 1500"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 1.577 x 0.645 x 0.049 m, spec 1.577 x 0.645 x 0.049 m (art/reference/M_Hbr_Rope_Flaked/dims.md)"
+   "detail": "dims.md 1.143 x 0.267 x 0.092 m, spec 1.143 x 0.267 x 0.092 m (art/reference/M_Hbr_Rope_Flaked/dims.md)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4.732 studs, real 1.577 m = 4.731 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "3.428 studs, real 1.143 m = 3.429 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -296,7 +296,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.936 studs, real 0.645 m = 1.935 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "0.801 studs, real 0.267 m = 0.801 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0.146 studs, real 0.049 m = 0.147 studs, off 0.4% (5% free, 15% with a note)"
+   "detail": "0.276 studs, real 0.092 m = 0.276 studs, off 0.2% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Rope_Flaked_LOD0; 1328 triangles (scene 1328)"
+   "detail": "M_Hbr_Rope_Flaked_LOD0; 2806 triangles (scene 2806)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Rope_Flaked_LOD1; 664 triangles (scene 664)"
+   "detail": "M_Hbr_Rope_Flaked_LOD1; 1402 triangles (scene 1402)"
   },
   {
    "subject": "M_Hbr_Rope_Flaked_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Rope_Flaked_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1328,
-   "texel_density": 510.8
+   "triangles": 2806,
+   "texel_density": 283.2
   },
   {
    "name": "M_Hbr_Rope_Flaked_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 664,
+   "triangles": 1402,
    "texel_density": null
   }
  ],
  "bbox_studs": [
-  4.731942176818848,
-  1.9359058141708374,
-  0.1463768482208252
+  3.4277238845825195,
+  0.8008069396018982,
+  0.27550095319747925
  ],
- "peak_rss_mb": 298.8
+ "peak_rss_mb": 252.6
 }

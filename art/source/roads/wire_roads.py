@@ -13,7 +13,8 @@ GAME = os.path.abspath(os.path.join(HERE, "../../.."))
 sys.path.insert(0, os.path.join(GAME, "art/source/materials"))
 from wire import Ids, MATERIAL_ENUM, PATTERN_ENUM  # noqa: E402
 
-SLOTS = {"Asphalt": "RoadAsphaltWorn", "Cobblestone": "RoadHarbourCobbles", "Pavement": "RoadGravelTrack"}
+# Asphalt: the plain B02 asphalt_02 variant; RoadAsphaltWorn tiles its baked repair patches into a visible grid
+SLOTS = {"Asphalt": "Asphalt", "Cobblestone": "RoadHarbourCobbles", "Pavement": "RoadGravelTrack"}
 TEX = "assets/textures/M_Road_Ribbon/T_Road_%s_%s.png"
 
 

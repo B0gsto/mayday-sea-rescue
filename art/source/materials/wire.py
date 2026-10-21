@@ -74,7 +74,8 @@ def main():
         url = "https://polyhaven.com/a/%s" % pid
         for wet in (False, True):
             sfx = "_Wet" if wet else ""
-            maps = {"ColorMap": tex % (name, "ALB" + sfx), "NormalMap": tex % (name, "NOR"),
+            # Granite wears the grey KelpRock (slate) albedo: its own averaged brown and read as brown cliffs from the air
+            maps = {"ColorMap": tex % ("KelpRock" if name == "Granite" else name, "ALB" + sfx), "NormalMap": tex % (name, "NOR"),
                     "RoughnessMap": tex % (name, "RGH" + sfx), "MetalnessMap": tex % (name, "MET")}
             props = {k: "rbxassetid://%s" % aid(v) for k, v in maps.items()}
             props.update({"BaseMaterial": {"Enum": MATERIAL_ENUM[base]}, "StudsPerTile": studs_per_tile(name, dims),

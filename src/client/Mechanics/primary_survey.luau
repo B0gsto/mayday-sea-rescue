@@ -1,10 +1,18 @@
 --!strict
--- primary_survey (docs 09 step 7, section 5.5): DR ABCDE, "first aid check, the way lifeboat
--- crews do it". One card per letter: read the cue (what you see and hear), pick the finding.
--- For Breathing the Medic watches the chest for 5 s and taps with each rise (the count is the
--- cue). On the jet ski only Response, Breathing and Cold fit. Metric: correct (fraction right);
--- the server times it (elapsed). Controls: cards 1-4 / tap / A B X Y; breath taps left click,
--- Space, a pad, or LB/RB.
+-- primary_survey (docs 09 step 7, section 5.5): DR ABCDE as hands on the casualty, no cards
+-- (docs 14 section 2). Look over the casualty: the head, chest, arm and body glow as you look at
+-- them; hold E / X (touch: press and hold the spot) to check one. What you find shows on the body,
+-- never as text: their voice or silence and the head tilted back (Response, Airway), breath puffs
+-- at their rate, none when they are not breathing (Breathing), blue lips or a red graze
+-- (Circulation), shivering or a still body (Disability, Exposure). Any order. After 5 s idle the
+-- next spot pulses; after 10 s the Medic checks it. Jet ski: head, chest, body. Danger is the scene.
+-- Metric: correct = share of the areas the player checked (0..1); the server times it.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Care = require(script.Parent.PIW.Care)
+local CasualtyCare = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("CasualtyCare")
+)
 local Medical = require(script.Parent.PIW.Medical)
 local Record = require(script.Parent.PIW.Record)
 local Step = require(script.Parent.PIW.Step)
@@ -13,131 +21,107 @@ local World = require(script.Parent.PIW.World)
 
 local Survey = {}
 
-Survey.WATCH = 5 -- s of watching the chest
+Survey.CHECK = 1 -- s of holding per area
+Survey.HINT = 5 -- s idle before the next area pulses
+Survey.IDLE = 10 -- s idle before the Medic checks it
+Survey.SHOW = 1.5 -- s the last finding shows before the step ends
 
 function Survey.start(
 	ctx: { [string]: any },
 	finish: (result: { [string]: any }) -> ()
 ): (() -> ())?
-	local s = Step.new(ctx, finish, "Survey", 96)
+	local s = Step.new(ctx, finish, "Survey", 96, true)
 	if Step.autoStub(s, { correct = 1 }) then
 		return Step.cleanup(s)
 	end
+	s.panel.Visible = false
 	local profile = Record.profile(ctx)
 	local jet = World.isJetSki(World.vehicle(ctx))
-	local cards = Medical.surveyCards(profile, jet, ctx.operation.storm == true)
-	local picks: { [string]: number } = {}
-	local status = Step.line(s, "First aid check, the way lifeboat crews do it.", 54)
-	Ui.hands("survey_check")
-	local index = 0
-	local current: Frame? = nil
-
-	local nextCard: () -> ()
-	local function show(card: Medical.Card, cue: string)
-		current = Ui.cards(s.bag, s.gui, {
-			title = card.title,
-			cue = cue,
-			options = card.options,
-			answer = card.answer,
-			assist = s.assist,
-		}, function(i)
-			picks[card.letter] = i
-			if current then
-				current:Destroy()
-			end
-			nextCard()
-		end)
-		Ui.add(s.bag, current)
+	local letters: { string } = {}
+	local answer: { [string]: number } = {}
+	for _, c in Medical.surveyCards(profile, jet, ctx.operation.storm == true) do
+		table.insert(letters, c.letter)
+		answer[c.letter] = c.answer
 	end
+	local areas = CasualtyCare.surveyAreas(letters)
+	local body = Care.body(ctx, s.bag)
+	local checked: { string } = {}
+	local mine = 0
+	local last = os.clock()
+	local holdArea: string?, progress = nil, 0
+	local picker = Care.picker(s.bag, body.folder, function() end)
 
-	local function watchChest(card: Medical.Card)
-		-- the chest rises at the casualty's real rate; the Medic counts with taps
-		local rate = Medical.breathRate(profile)
-		local frame = Ui.panel(s.gui, UDim2.fromOffset(420, 120), UDim2.new(0.5, 0, 1, -24))
-		Ui.add(s.bag, frame)
-		Ui.text(
-			frame,
-			"B  Breathing: watch the chest, tap with each rise",
-			UDim2.new(1, -24, 0, 22),
-			UDim2.fromOffset(12, 8),
-			17,
-			true
-		)
-		local chest = Instance.new("Frame")
-		chest.AnchorPoint = Vector2.new(0.5, 1)
-		chest.Position = UDim2.new(0.5, 0, 1, -14)
-		chest.Size = UDim2.fromOffset(180, 20)
-		chest.BackgroundColor3 = Color3.fromRGB(200, 120, 60) -- the casualty's jacket, rising and falling
-		chest.BorderSizePixel = 0
-		chest.Parent = frame
-		Ui.Theme.corner(chest, 10)
-		local counted =
-			Ui.text(frame, "Taps: 0", UDim2.fromOffset(120, 20), UDim2.fromOffset(12, 36), 15)
-		local taps = 0
-		local t0 = os.clock()
-		local function tap()
-			taps += 1
-			counted.Text = `Taps: {taps}`
+	local function nextArea(): string?
+		for _, a in areas do
+			if not table.find(checked, a) then
+				return a
+			end
 		end
-		local unbind = Ui.bind(
-			s.bag,
-			"Breath",
-			function(state)
-				if state == "Begin" then
-					tap()
-				end
-			end,
-			Enum.KeyCode.Space,
-			Enum.UserInputType.MouseButton1,
-			Enum.KeyCode.ButtonL1,
-			Enum.KeyCode.ButtonR1
-		)
-		local tapButton =
-			Ui.button(frame, "Rise", UDim2.fromOffset(96, 52), UDim2.new(1, -108, 0, 40), tap)
-		tapButton.Visible = Ui.isTouch()
-		local conn: RBXScriptConnection? = nil
-		conn = game:GetService("RunService").Heartbeat:Connect(function()
-			local t = os.clock() - t0
-			local rise = if rate > 0 then math.max(0, math.sin(t * rate / 60 * 2 * math.pi)) else 0
-			chest.Size = UDim2.fromOffset(180, 20 + 22 * rise)
-			if t >= Survey.WATCH then
-				if conn then
-					conn:Disconnect()
-				end
-				unbind()
-				frame:Destroy()
-				local perMinute = taps * 60 / Survey.WATCH
-				show(
-					card,
-					`{card.cue} You counted {taps} in 5 s (about {math.floor(perMinute)} a minute).`
-				)
-			end
-		end)
-		Ui.add(s.bag, conn)
+		return nil
 	end
 
-	nextCard = function()
-		index += 1
-		local card = cards[index]
-		if not card then
+	local function check(area: string, byPlayer: boolean)
+		table.insert(checked, area)
+		mine += if byPlayer then 1 else 0
+		picker.remove(area)
+		picker.hint(nil)
+		if byPlayer then
+			Ui.hands("survey_check")
+		end
+		for _, letter in CasualtyCare.lettersAt(area, letters) do
+			Care.finding(s.bag, body, letter, answer[letter], s.say)
+		end
+		last = os.clock()
+		if nextArea() == nil then
 			local e = Record.get(ctx.operation.id)
-			e.findings = picks
+			for letter, a in answer do
+				e.findings[letter] = a
+			end
 			e.surveyed = true
-			Step.finish(s, {
-				metrics = {
-					correct = math.floor(Medical.surveyCorrect(cards, picks) * 100 + 0.5) / 100,
-				},
-			})
+			local correct = CasualtyCare.share(mine, #areas)
+			Ui.add(
+				s.bag,
+				task.delay(Survey.SHOW, function()
+					Step.finish(s, { metrics = { correct = correct } })
+				end)
+			)
+		end
+	end
+
+	for _, a in areas do
+		picker.set(a, function()
+			return body.at(a)
+		end)
+	end
+
+	Step.heartbeat(s, function(dt)
+		if nextArea() == nil then
 			return
 		end
-		status.Text = `{index} of {#cards}: {card.title}`
-		if card.letter == "Breathing" then
-			watchChest(card)
-		else
-			show(card, card.cue)
+		local a = picker.aimed()
+		if picker.down() and a then
+			if a ~= holdArea then
+				holdArea, progress = a, 0
+			end
+			progress += dt / Survey.CHECK
+			picker.fill(progress)
+			last = os.clock()
+			if progress >= 1 then
+				holdArea, progress = nil, 0
+				picker.fill(nil)
+				check(a, true)
+			end
+			return
 		end
-	end
-	nextCard()
+		holdArea, progress = nil, 0
+		picker.fill(nil)
+		local idle = os.clock() - last
+		if idle > Survey.IDLE then
+			check(nextArea() :: string, false) -- the Medic checks it (nobody gets stuck)
+		elseif idle > Survey.HINT then
+			picker.hint(nextArea())
+		end
+	end)
 	return Step.cleanup(s)
 end
 

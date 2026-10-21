@@ -23,7 +23,7 @@ TEX = os.path.join(HERE, "textures")
 HDRI = os.path.join(REPO, "art", "blender", "hdri", "gray_pier_2k.hdr")
 a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 TAG = a[a.index("--tag") + 1] if "--tag" in a else "r4"         # review round: r4, r5, ...
-OUT = os.path.join(REPO, "assets", "review", ASSET, TAG)
+OUT = a[a.index("--out") + 1] if "--out" in a else os.path.join(REPO, "assets", "review", ASSET, TAG)   # r6: build/prod/...
 SHEET = os.path.join(REPO, "assets", "review", ASSET, TAG + "_contact.png")
 SAMPLES = int(a[a.index("--samples") + 1]) if "--samples" in a else 48
 PX = int(a[a.index("--px") + 1]) if "--px" in a else 800
@@ -39,6 +39,17 @@ SHOTS = [
     ("q34_dry_storm", "dog", (-0.62, -0.72, 0.30), False, "storm", 0.90, "3/4 dry - dim storm"),
     ("q34_wet_storm", "dog", (-0.62, -0.72, 0.30), True, "storm", 0.90, "3/4 wet - dim storm"),
 ]
+
+# round 6 compare set (--shots r6): 4 angles + head close-up, all dry overcast
+if "--shots" in a and a[a.index("--shots") + 1] == "r6":
+    SHOTS = [
+        ("q34_front", "dog", (-0.62, -0.72, 0.22), False, "overcast", 0.90, "3/4 front"),
+        ("side", "dog", (-1.0, 0.0, 0.06), False, "overcast", 0.92, "side"),
+        ("front", "dog", (-0.08, -1.0, 0.12), False, "overcast", 0.90, "front"),
+        ("q34_rear", "dog", (-0.60, 0.74, 0.30), False, "overcast", 0.90, "3/4 rear"),
+        ("head", "head", (-0.55, -0.80, 0.12), False, "overcast", 0.88, "head close-up"),
+        ("head_wet", "head", (-0.55, -0.80, 0.12), True, "overcast", 0.88, "head wet"),
+    ]
 
 
 def set_of(name):
@@ -238,7 +249,8 @@ def main():
         bpy.ops.render.render(write_still=True)
         paths.append((scene.render.filepath, label))
         print("[r4] rendered", name)
-    contact(paths)
+    if "--out" not in a:
+        contact(paths)
 
 
 def contact(paths):

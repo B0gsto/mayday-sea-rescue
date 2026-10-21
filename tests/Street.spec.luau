@@ -53,6 +53,20 @@ return function(t)
 		end
 	end)
 
+	t.test("face yaw turns a vehicle's forward (-Z) along the parking direction", function()
+		for _, face in
+			{
+				Vector3.new(0, 0, -1),
+				Vector3.new(1, 0, 0),
+				Vector3.new(-0.4, 0, 0.9),
+			}
+		do
+			local cf = CFrame.Angles(0, StreetLayout.faceYaw(face), 0)
+			local forward = cf:VectorToWorldSpace(Vector3.new(0, 0, -1))
+			t.expect((forward - face.Unit).Magnitude < 1e-6).toBe(true)
+		end
+	end)
+
 	t.test("clearance: blockers, keep-out rects and distance to a road", function()
 		local block = { { pos = Vector3.new(10, 0, 10), r = 5 } }
 		t.expect(StreetLayout.clear(Vector3.new(12, 99, 12), block)).toBe(false)

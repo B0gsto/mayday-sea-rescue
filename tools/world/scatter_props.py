@@ -50,7 +50,7 @@ AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
 
 SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
-PLANT_CAP = 4740 + 1660  # T7: +1260 strand debris (<400 tris each, beaches = seen), +400 turf clumps (Decoration off)
+PLANT_CAP = 4740 + 1660 + 314  # T8: +260 inland hedge gorse, +54 hedge hawthorns; T7: +1260 strand debris (<400 tris each, beaches = seen), +400 turf clumps (Decoration off)
 # T6 cap was 4740  # T6: +340 gorse / heather / bracken on the harbour hillside; T4: +900 turf / marram clumps (small, low-poly; ScatterController Low keeps 50% seen / 15% filler)
 WIND_YAW = 45.0  # hawthorns share a heading (prevailing south-westerly), +-18 deg jitter
 
@@ -66,11 +66,11 @@ PLANT_BUDGET = {
     "marram": {"HavenSands": 900, "WestCoast": 150},
     "turf": {"Town": 400 + 160, "CoastRoad": 450 + 180, "HavenSands": 230, "HavenHead": 200, "Inland": 210 + 60,
              "WestCoast": 170, "SkerryIsle": 60},  # T7: +400 clumps (Terrain.Decoration off, see README T7)
-    "gorse": {"HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 150},
+    "gorse": {"Inland": 260, "HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 150},
     "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60, "Town": 130},
     "thrift": {"HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
     "bracken": {"Inland": 90, "CoastRoad": 60, "Town": 130, "WestCoast": 40, "HavenHead": 20},
-    "hawthorn": {"CoastRoad": 12, "Town": 8, "HavenHead": 6, "WestCoast": 8, "Inland": 6},
+    "hawthorn": {"CoastRoad": 12, "Town": 8, "HavenHead": 6, "WestCoast": 8, "Inland": 60},
     "strand": {"HavenSands": 760, "CoastRoad": 160, "WestCoast": 120, "HavenHead": 60, "Town": 160},
 }
 # kind: (assets with weights, cluster sigma studs, mean members per cluster, spacing factor)
@@ -191,7 +191,7 @@ class Terrain:
                 sl = (slice(max(j0 - r, 0), j0 + r + 1), slice(max(i0 - r, 0), i0 + r + 1))
                 np.minimum(target[sl], np.hypot(X[sl] - px, Z[sl] - pz) - hw, out=target[sl])
         self.park_edge = np.full(X.shape, 1e9)
-        for cp in L.CAR_PARKS:
+        for cp in L.CAR_PARKS + L.FARMS:
             cx, cz = cp["center"]
             sx, sz = cp["size"]
             a = math.radians(cp["yaw"])
@@ -291,15 +291,19 @@ def plant_weights(T, seed):
         * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.8})
     # T6: the harbour hillside's field patchwork (gen_terrain.hill_relief): gorse along the hedge banks, heather in the
     # heath fields, bracken in the bracken fields and on the bank feet
-    hill = G.harbour_hill(X, Z) * dry * (slope < 0.7)
+    # T8: gen_terrain's inland farmland mask too (fields + hedges across the island)
+    hill = np.maximum(G.harbour_hill(X, Z), smooth(60, 180, dl) * smooth(230, 170, h)
+                      * smooth(14, 40, np.hypot(np.maximum(np.maximum(L.TOWN_PLATFORM["minX"] - X, X - L.TOWN_PLATFORM["maxX"]), 0),
+                                                np.maximum(np.maximum(L.TOWN_PLATFORM["minZ"] - Z, Z - L.TOWN_PLATFORM["maxZ"]), 0)))) * dry * (slope < 0.7)
     edge, cid = G.field_cells(X, Z, L.SEED)
     hedge = smooth(5.0, 1.2, edge)
-    heath, brack = ((cid >= 0.7) & (cid < 0.86)), (cid >= 0.86)
+    heath, brack = ((cid >= G.FIELD_STRAW) & (cid < G.FIELD_HEATH)), (cid >= G.FIELD_HEATH)
     leafy = mw({"LeafyGrass": 1.0, "Grass": 0.5, "Snow": 0.6, "WoodPlanks": 0.5, "Brick": 0.6, "Ground": 0.4})
     w["gorse"] = w["gorse"] + hill * leafy * (1.2 * hedge + 0.25 * heath) * (0.3 + 0.7 * patch(60, 7))
     w["heather"] = w["heather"] + hill * leafy * (1.0 * heath + 0.15 * hedge) * (0.3 + 0.7 * patch(40, 8))
     w["bracken"] = w["bracken"] + hill * leafy * (1.0 * brack + 0.5 * smooth(9.0, 4.0, edge) * (1 - hedge)) \
         * (0.3 + 0.7 * patch(45, 9))
+    w["hawthorn"] = w["hawthorn"] + 0.6 * hill * hedge * (0.2 + 0.8 * patch(90, 11))  # T8: wind-bent hedge thorns
     # T7: strand-line debris on the wrack / shingle / upper dry sand of beaches and cove backs and at the dune toe
     strand_m = mw({"Ice": 1.0, "CrackedLava": 0.7, "Sand": 0.6, "Glacier": 0.35, "Sandstone": 0.25})
     w["strand"] = ((h > 0.6) & (h < 9) & (slope < 0.35) & ((wb > 0.5) | (T.near_shore & (wc + wr > 0.5)) | T.cove_back)) \

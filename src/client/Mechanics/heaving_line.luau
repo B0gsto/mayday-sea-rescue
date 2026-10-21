@@ -56,10 +56,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		end
 	end
 
-	Kit.brief(
-		gui,
-		"Hold her upwind of the casualty, about 5 to 12 metres off. Then throw across their deck."
-	)
+	Kit.brief(gui, "Upwind · 5-12 m" .. Kit.chip("Hold LMB", "Hold A") .. " Throw")
 
 	local function deckBox(): { cframe: CFrame, size: Vector3 }?
 		if not hull then
@@ -154,7 +151,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 					local call = if verdict == "short"
 						then "Short! Coil it and go again."
 						elseif verdict == "long" then "Over the top! Coil and rethrow."
-						else "Wide, the wind took it. Aim off upwind."
+						else "Wide. Aim off upwind."
 					Kit.say(gui, "Crew", call, 3)
 					state = "coiling"
 					Kit.hands("coil_line")
@@ -179,7 +176,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 					charge = 0
 					Kit.hands("ready_heaving_line")
 				else
-					Kit.say(gui, "Crew", "Get us upwind of her first, and steady.", 2.5)
+					Kit.say(gui, "Crew", "Upwind of her first. Steady.", 2.5)
 				end
 			end
 		elseif inputState == Enum.UserInputState.End then
@@ -218,18 +215,13 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 				if flatD < RANGE_MIN then
 					Kit.say(gui, "Crew", "Too close! Back off a touch.", 2.5)
 				elseif up <= 0.35 then
-					Kit.say(
-						gui,
-						"Crew",
-						"We're downwind of her. Go round and come up to windward.",
-						3
-					)
+					Kit.say(gui, "Crew", "We're downwind. Go round, windward.", 3)
 				elseif flatD > RANGE_MAX then
-					Kit.say(gui, "Crew", "Bit closer, it won't reach from here.", 2.5)
+					Kit.say(gui, "Crew", "Bit closer, it won't reach.", 2.5)
 				elseif speed >= STATION_SPEED then
 					Kit.say(gui, "Crew", "Ease off, hold her there.", 2.5)
 				else
-					Kit.say(gui, "Crew", "That's it, hold her there. Throw when ready.", 2.5)
+					Kit.say(gui, "Crew", "Hold her there. Throw!", 2.5)
 				end
 			end
 			if state == "charging" then

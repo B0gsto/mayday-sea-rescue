@@ -8,6 +8,7 @@ local AvatarCosmetics = require(
 )
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
+local RadioFormat = require(script.Parent.RadioFormat)
 
 export type Panel = {
 	gui: ScreenGui,
@@ -100,7 +101,7 @@ function RadioPanel.new(playerGui: Instance): Panel
 	local header = text(lcd, "Header", Enum.Font.Code, 14, LCD_DIM)
 	header.Position = UDim2.fromOffset(10, 6)
 	header.Size = UDim2.new(1, -90, 0, 16)
-	header.Text = "CH 16  DSC  25W"
+	header.Text = "📻"
 	local lamp = Instance.new("Frame")
 	lamp.Name = "Lamp"
 	lamp.AnchorPoint = Vector2.new(1, 0)
@@ -139,10 +140,16 @@ function RadioPanel.new(playerGui: Instance): Panel
 	line.Position = UDim2.fromOffset(10, 46)
 	line.Size = UDim2.new(1, -20, 1, -50)
 	line.TextScaled = true
+	line.TextWrapped = false
+	line.TextTruncate = Enum.TextTruncate.AtEnd
 	local limit = Instance.new("UITextSizeConstraint")
-	limit.MaxTextSize = 19
-	limit.MinTextSize = 13
 	limit.Parent = line
+	local function applyTextScale()
+		limit.MaxTextSize = HudTheme.scaled(19)
+		limit.MinTextSize = HudTheme.scaled(13)
+	end
+	Layout.onTextScale(applyTextScale)
+	applyTextScale()
 
 	-- the radio log, unfolded above the set while the wheel is open
 	local log = Instance.new("Frame")
@@ -183,8 +190,11 @@ function RadioPanel.new(playerGui: Instance): Panel
 				)
 				else nil
 			local gold = `<font color="#{HudTheme.Colors.gold:ToHex()}"><b>{tag or ""}</b></font>`
-			speaker.Text = if tag then `{escape(who)}  {gold}` else escape(who)
-			line.Text = msg
+			-- the speaker's name without the station ("Chief Aggie · Port Haven")
+			local name = escape(string.match(who, "^(.-) · ") or who)
+			speaker.Text = if tag then `🎙 {name}  {gold}` else `🎙 {name}`
+			-- at a glance: three words; the whole line is in the log
+			line.Text = RadioFormat.caption(msg, 3)
 			local tx = m == "tx"
 			mode.Text = if tx then "TX" elseif m == "intercom" then "ICM" else "RX"
 			lamp.BackgroundColor3 = if tx then LAMP_TX else LAMP_RX
@@ -224,8 +234,8 @@ function RadioPanel.new(playerGui: Instance): Panel
 			if visible then
 				body.Visible = true
 				if speaker.Text == "" then
-					speaker.Text = "Gale Isles Coastguard"
-					line.Text = "Listening on channel 16."
+					speaker.Text = "🎙 Gale Isles Coastguard"
+					line.Text = "Listening"
 				end
 			end
 		end,

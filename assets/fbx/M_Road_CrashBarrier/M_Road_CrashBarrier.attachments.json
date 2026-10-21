@@ -1,0 +1,94 @@
+{
+ "asset": "M_Road_CrashBarrier",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Snap_Start",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    5.9325,
+    -1.08,
+    0.0719
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_End",
+   "parent": null,
+   "blender": [
+    12.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -12.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -6.0675,
+    -1.08,
+    0.0719
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Base",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    5.9325,
+    -1.08,
+    0.0719
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

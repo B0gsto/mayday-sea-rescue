@@ -5,7 +5,7 @@
 --
 -- Every id below is a real Roblox catalog asset, looked up with the public catalog / economy APIs
 -- on 2026-10-18 (name and creator in the comment). No custom human meshes (docs/06 section 2.1a).
--- The approved custom swimmer (M_Chr_Casualty_Swimmer, Assets/CasualtyAsset) is not built here.
+-- The Person in the Water casualty is the "Swimmer" role, built by Assets/CasualtyAsset (docs/14 section 4).
 --
 -- Fields of an outfit:
 --   name        debug name of the variant
@@ -209,7 +209,7 @@ NpcOutfits.Roles = {
 			scale = OLDER,
 		}),
 	},
-	-- Fallback for the person in the water when the approved custom swimmer fails to load:
+	-- The person in the water (Assets/CasualtyAsset; also the RescueService greybox upgrade):
 	-- beachgoer, kayaker, shore angler and coastal walker, each with buoyancy.
 	Swimmer = {
 		outfit({

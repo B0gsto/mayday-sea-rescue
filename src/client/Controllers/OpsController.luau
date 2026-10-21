@@ -15,6 +15,7 @@
 -- While a cinematic plays (LocalPlayer attribute CinematicPlaying) the Ops ScreenGuis are hidden.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
@@ -296,7 +297,7 @@ end
 -- ScreenGui is disabled and afterwards only the ones that were enabled (or that opened mid-shot,
 -- e.g. a debrief arriving) come back. Every game ScreenGui counts (see KEEP_GUIS). HIDE_ONLY guis follow
 -- held input and are never re-opened. LocalPlayer attribute OpsUiHidden mirrors the state.
-local HIDE_ONLY: { [string]: boolean } = { RadioWheel = true }
+local HIDE_ONLY: { [string]: boolean } = {}
 type Hidden = { wanted: boolean, conn: RBXScriptConnection? }
 local hidden: { [ScreenGui]: Hidden } = {}
 local cinematicOn = false
@@ -381,6 +382,20 @@ function OpsController.GetState(): { [string]: any }?
 end
 
 function OpsController.Init()
+	-- Space jumps a seated character out of the seat (Roblox default). Until the cold open is done
+	-- and during any operation step, keep the rider in it; a mechanic's own Space taps come through
+	-- CAS first.
+	RunService.Stepped:Connect(function()
+		local coldOpen = player:GetAttribute("ColdOpenDone") ~= true
+		if not (running or state or coldOpen) then
+			return
+		end
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if humanoid and humanoid.SeatPart and humanoid.Jump then
+			humanoid.Jump = false
+		end
+	end)
 	mechanicsFolder = script.Parent.Parent:WaitForChild("Mechanics", 10)
 	gui = Instance.new("ScreenGui")
 	gui.Name = "OpsGreybox"
@@ -413,6 +428,13 @@ function OpsController.Init()
 	radioLabel.Visible = false
 	gui.Parent = player:WaitForChild("PlayerGui")
 	watchCinematics(gui.Parent :: Instance)
+	-- the rip off Haven Sands (docs/09 section 8.4): its channel shows near the beach, and a rip
+	-- tasking speaks its radio line (Mechanics/Rip/View; required through any so its require of
+	-- RadioController does not type as a cycle through this controller)
+	local RipView = (require :: any)(
+		script.Parent.Parent:WaitForChild("Mechanics"):WaitForChild("Rip"):WaitForChild("View")
+	)
+	RipView.start()
 
 	Remotes.event("Ops_Offered").OnClientEvent:Connect(function(data)
 		OpsController.OnOffer:Fire(data)
@@ -423,6 +445,7 @@ function OpsController.Init()
 	end)
 	Remotes.event("Ops_State").OnClientEvent:Connect(function(s)
 		state = s
+		RipView.sync(s)
 		if offerId == s.opId then
 			offerFrame.Visible = false
 		end
@@ -460,6 +483,10 @@ function OpsController.Init()
 		if offerId == c.opId then
 			offerFrame.Visible = false
 			offerId = nil
+		end
+		-- a closed op (abandoned, expired, taken over) takes its mechanic panel with it
+		if running and running.opId == c.opId then
+			cancelRunning()
 		end
 		OpsController.OnClosed:Fire(c)
 	end)

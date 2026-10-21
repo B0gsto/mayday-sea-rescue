@@ -8,6 +8,8 @@
 --   * Dive: C, gamepad B or the DIVE touch button (ContextActionService, bound only while
 --     swimming); while diving, forward input follows the camera pitch; Jump / the same button
 --     surfaces; out of breath it surfaces by itself. A breath bar shows in the "gauges" region.
+--   * Jump (Space, gamepad A, touch jump) is taken off the Humanoid before physics (Stepped):
+--     the engine's own jump / swim handling outside Terrain water must never move the swimmer.
 --   * Fins gear swims faster (PlayerDataChanged gear.Fins).
 -- Hands off while seated, anchored, climbing, dead, or while the player attribute SwimLocked is true
 -- (CONTRACT: a mechanic that moves the character itself in the water sets SwimLocked).
@@ -18,10 +20,13 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local Net = require(Shared:WaitForChild("Net"))
 local OceanController = require(script.Parent.OceanController)
+local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
 local Snorkel = require(Shared:WaitForChild("Explore"):WaitForChild("Snorkel"))
 
 local SwimController = {}
@@ -43,9 +48,11 @@ local mode: Snorkel.Mode = "surface"
 local breath = Snorkel.BREATH
 local diveStarted = 0
 local divePressed, surfacePressed = false, false
+local jumpPressed = false -- set in Stepped, read in step
 local finsLevel = 0
 local lv: LinearVelocity? = nil
 local swimHumanoid: Humanoid? = nil
+local stroke: Sound? = nil
 local fallbackTracks: { AnimationTrack } = {}
 local swimSince = 0
 local rayParams = RaycastParams.new()
@@ -123,6 +130,11 @@ local function exitSwim()
 		lv:Destroy()
 		lv = nil
 	end
+	if stroke then
+		local s = stroke :: Sound
+		s:Destroy()
+		stroke = nil
+	end
 	stopFallback()
 	local humanoid = swimHumanoid
 	swimHumanoid = nil
@@ -160,6 +172,10 @@ local function enterSwim(humanoid: Humanoid, root: BasePart)
 	ContextActionService:BindAction(ACTION, onAction, true, Enum.KeyCode.C, Enum.KeyCode.ButtonB)
 	ContextActionService:SetTitle(ACTION, "DIVE")
 	ContextActionService:SetPosition(ACTION, UDim2.new(1, -150, 1, -150))
+	AudioController.play("Splash_Entry", root.Position, 0.9, 1)
+	local s = AudioController.newSound("Swim_Stroke", root, true)
+	s.RollOffMaxDistance = 70
+	stroke = s
 end
 
 -- The default Animate script may not play swim tracks outside Terrain water: play its own swim
@@ -209,6 +225,66 @@ local function surfaceAt(x: number, z: number): number
 	return if ok and type(h) == "number" then h else 0
 end
 
+-- Haul out: in the water and pushing into a quay / slipway / pier edge whose top is within reach of the water,
+-- the character pulls itself up onto it (the jump is 3 studs, the quay top 4 above the sea: without this the
+-- harbour walls trap anyone in the water away from a ladder or the steps).
+local HAUL_REACH = 3.5 -- studs from the root to the wall
+local HAUL_MAX = 5.5 -- highest ledge above the water surface
+local HAUL_PUSH = 0.3 -- s of pushing into the wall first
+local pushing = 0
+local function haulOut(
+	character: Model,
+	humanoid: Humanoid,
+	root: BasePart,
+	surfaceY: number,
+	dt: number
+): boolean
+	local move = humanoid.MoveDirection * Vector3.new(1, 0, 1)
+	local wall = move.Magnitude > 0.5
+		and Workspace:Raycast(root.Position, move.Unit * HAUL_REACH, rayParams)
+	if not wall or wall.Normal.Y > 0.5 then
+		pushing = 0
+		return false
+	end
+	pushing += dt
+	if pushing < HAUL_PUSH then
+		return false
+	end
+	local dir = move.Unit
+	local over = wall.Position + dir * 1.5
+	local ledge = Workspace:Raycast(
+		Vector3.new(over.X, surfaceY + HAUL_MAX + 0.5, over.Z),
+		Vector3.new(0, -(HAUL_MAX + 4), 0),
+		rayParams
+	)
+	if not ledge or ledge.Normal.Y < 0.7 or ledge.Position.Y < root.Position.Y - 1 then
+		return false
+	end
+	-- open above the ledge (a taller wall or a roof blocks the horizontal or the vertical ray)
+	local head = ledge.Position.Y + 2.5
+	if
+		Workspace:Raycast(root.Position, Vector3.new(0, head - root.Position.Y, 0), rayParams)
+		or Workspace:Raycast(
+			Vector3.new(root.Position.X, head, root.Position.Z),
+			dir * (HAUL_REACH + 1.5),
+			rayParams
+		)
+		or Workspace:Raycast(
+			ledge.Position + Vector3.new(0, 0.1, 0),
+			Vector3.new(0, 4.5, 0),
+			rayParams
+		)
+	then
+		return false
+	end
+	pushing = 0
+	exitSwim()
+	local stand = ledge.Position + Vector3.new(0, humanoid.HipHeight + root.Size.Y / 2 + 0.1, 0)
+	root.AssemblyLinearVelocity = Vector3.zero
+	character:PivotTo(CFrame.lookAt(stand, stand + dir))
+	return true
+end
+
 local function step(dt: number)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -242,6 +318,10 @@ local function step(dt: number)
 	elseif not should and swimming then
 		exitSwim()
 	end
+	-- in the water (swimming, or wading on the bottom where the jump cannot clear the wall)
+	if pos.Y < surfaceY + 1 and haulOut(character, humanoid, root, surfaceY, dt) then
+		return
+	end
 
 	local eyeY = if head then head.Position.Y else pos.Y + 1.5
 	local under = swimming and eyeY < surfaceY - 0.3
@@ -257,12 +337,10 @@ local function step(dt: number)
 		return
 	end
 
-	if humanoid.Jump then
-		humanoid.Jump = false
-		if mode == "dive" then
-			surfacePressed = true
-		end
+	if jumpPressed and mode == "dive" then
+		surfacePressed = true
 	end
+	jumpPressed = false
 	local prev = mode
 	mode = Snorkel.nextMode(mode, surfaceY - eyeY, breath, divePressed, surfacePressed)
 	divePressed, surfacePressed = false, false
@@ -298,8 +376,26 @@ local function step(dt: number)
 		forward,
 		os.clock() - diveStarted
 	)
-	lv.VectorVelocity = Vector3.new(horizontal.X, vy, horizontal.Z)
+	-- the rip off Haven Sands (docs/09 section 8.4): stroke plus the current, so swimming
+	-- straight back against it barely moves and going across it leaves the channel
+	local flow = RipCurrent.velocityAt(RipCurrent.HavenSands, Vector3.new(pos.X, 0, pos.Z))
+	-- mass changes after entry (VehicleService makes a rider massless and restores it once off the
+	-- seat): a force sized at entry could not hold the swimmer up and they sank to the seabed
+	lv.MaxForce = root.AssemblyMass * (Workspace.Gravity + 80)
+	lv.VectorVelocity = Vector3.new(horizontal.X + flow.X, vy, horizontal.Z + flow.Z)
 	ensureAnimation(character, humanoid, move.Magnitude > 0.1)
+	if stroke then
+		local s = stroke :: Sound
+		local want = if move.Magnitude > 0.1
+			then AudioConfig.Clips.Swim_Stroke.volume * (if mode == "dive" then 0.7 else 1)
+			else 0
+		s.Volume += (want - s.Volume) * (1 - math.exp(-8 * dt))
+		if s.Volume > 0.01 and not s.IsPlaying then
+			s:Play()
+		elseif s.Volume <= 0.01 and s.IsPlaying then
+			s:Stop()
+		end
+	end
 end
 
 function SwimController.Init()
@@ -318,7 +414,18 @@ function SwimController.Init()
 	end)
 end
 
+-- Stepped runs after the ControlModule sets Humanoid.Jump (render step) and before physics, so the
+-- Humanoid never acts on a jump while swimming (F-4: Space sank the swimmer to the seabed).
+local function eatJump()
+	local humanoid = swimHumanoid
+	if swimming and humanoid and humanoid.Jump then
+		humanoid.Jump = false
+		jumpPressed = true
+	end
+end
+
 function SwimController.Start()
+	RunService.Stepped:Connect(eatJump)
 	RunService.Heartbeat:Connect(function(dt)
 		xpcall(step, function(err)
 			warn(`[SwimController] {err}`)

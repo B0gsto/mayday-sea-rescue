@@ -51,8 +51,10 @@ return function(t)
 			end
 		end
 		for _, kind in { "GamePasses", "Products" } do
-			for key in Config[kind] do
-				t.expect(onShelf[`{kind}/{key}`]).toBe(true)
+			for key, it in Config[kind] do
+				if it.vehicle == nil then -- vehicle passes sell on the phone's Vehicles app
+					t.expect(onShelf[`{kind}/{key}`]).toBe(true)
+				end
 			end
 		end
 		local count = 0
@@ -157,5 +159,28 @@ return function(t)
 		t.expect(Shelves.stormBoardText(0)).toBe("STORM QUEUE\nNone waiting")
 		t.expect(Shelves.stormBoardText(1)).toBe("STORM QUEUE\n1 of 2 waiting")
 		t.expect(Shelves.stormBoardText(2)).toBe("STORM QUEUE\nFull, try again soon")
+	end)
+
+	t.test("the phone Store splits passes, day passes and items, in order", function()
+		local seen = {}
+		for _, tab in Shelves.STORE_TABS do
+			local last = -math.huge
+			for _, ref in Shelves.storeItems(Config, tab, true) do
+				local item = Config[ref.kind][ref.key]
+				t.expect(item.order >= last).toBe(true)
+				last = item.order
+				t.expect(item.dayPassFor ~= nil).toBe(tab == "DayPasses")
+				t.expect(ref.kind == "GamePasses").toBe(tab == "Passes")
+				seen[`{ref.kind}/{ref.key}`] = true
+			end
+		end
+		for _, kind in { "GamePasses", "Products" } do
+			for key in Config[kind] do
+				t.expect(seen[`{kind}/{key}`]).toBe(true) -- Studio lists everything once
+			end
+		end
+		for _, ref in Shelves.storeItems(Config, "Passes", false) do
+			t.expect(Config.GamePasses[ref.key].ready ~= false).toBe(true)
+		end
 	end)
 end

@@ -1,33 +1,29 @@
 --!strict
--- BosunMotion: Bosun's scripted body language on the rigid M_Chr_Bosun model, pure logic
--- (tests/BosunMotion.spec.luau). The model has no bones: DogService welds its parts with four Motor6Ds
--- at PIVOTS and DogController writes the Transforms this module returns, every frame, client side.
+-- BosunMotion: Bosun's procedural body language on the code-built placeholder dog (Shared.Dog.BosunRig),
+-- pure logic (tests/BosunMotion.spec.luau). DogService joins the rig's Parts with Motor6Ds named after the
+-- Pose keys and DogController writes the Transforms this module returns, every frame, client side.
 -- The server owns where he is (AlignPosition, the ride weld); this is only how he holds himself:
---   Root  invisible Body -> BodyFore, pivot on the ground under the front paws: walk bob, rocking and
---         rolling, breathing, the sit's nose-up, the swim's float, the lean on a moving deck, the shake;
---   Neck  BodyFore -> BodyHead: head turns toward the look target (owner, a casualty, a glance), the
---         gaze steadied against the walk;
---   Hips  BodyFore -> BodyHind (+ FurRear), pivot on the top line at the waist cut (the seam stays
---         shut on the back, the belly overlaps): the sit lowers the rear, the walk's hip swing, and a
---         happy rear wiggle with the wag (the whole wag on the old 6-part model, whose tail is part of
---         BodyHind; a small one when input.tailJoint says the Tail joint exists);
---   Tail  BodyHind -> Tail (+ FurTail welded on), pivot at ATT_TailRoot (PIVOTS.Tail without it): the
---         wag side to side, carried high when excited or swimming (a rudder), low and still when he
---         sits or is tired after a run, tucked down and under when he is cold or wet out of the water;
---   Ruff  BodyFore -> FurFront (the ruff; FurHead is welded to BodyHead and turns with it): the head
---         turn at RUFF_FOLLOW, so the ruff hides the neck cut.
--- Pivots are in the authored frame: studs, origin on the ground between the feet, front -Z, up +Y.
+--   Root   Body -> Torso, pivot on the ground under the front legs: walk bob, rocking and rolling,
+--          breathing, the sit (pitched nose up about the hips, rear lowered), the swim's float, the lean
+--          on a moving deck, the shake;
+--   Neck   Torso -> Head (neck and head), pivot at the neck base: the head turns toward the look target;
+--   Jaw    Head -> Jaw: panting after a run;
+--   Tail1, Tail2: the wag (the tip follows a beat late), carried high when excited or swimming, low and
+--          still when he sits or is tired, tucked when he is cold or wet out of the water;
+--   <Front|Back><Left|Right><Upper|Lower>: a trot (diagonal pairs), the sit (front legs kept upright,
+--          hind legs folded under), the swim's paddle.
+-- Transforms are in the authored frame's axes (+X pitch swings a hanging leg forward and lowers the tail).
 local BosunMotion = {}
 
-BosunMotion.PIVOTS = {
-	Root = Vector3.new(0, 0, -1.1),
-	Neck = Vector3.new(0, 1.95, -1.5),
-	Hips = Vector3.new(0, 2.25, -0.39),
-	Ruff = Vector3.new(0, 1.95, -1.5),
-	Tail = Vector3.new(0.0038, 1.6161, 1.1063), -- ATT_TailRoot (round 5 export), if the marker is missing
-}
+BosunMotion.LEGS = { "FrontLeft", "FrontRight", "BackLeft", "BackRight" }
+-- the hips relative to the Root pivot (BosunRig: hip (0, 1.5, 0.92), Root pivot (0, 0, -0.85))
+BosunMotion.SIT_PIVOT = Vector3.new(0, 1.5, 1.77)
+BosunMotion.SIT_PITCH = math.rad(35)
+BosunMotion.SIT_DROP = 1.0 -- studs the hips drop (about the shoulder-hip span * sin SIT_PITCH)
+BosunMotion.LEG_SWING = math.rad(26) -- trot swing either side at full gait
+BosunMotion.KNEE_LIFT = math.rad(38) -- lower leg folds back while the paw swings forward
 
-BosunMotion.MAX_YAW = math.rad(28) -- head turn either side (the neck cut shows past this)
+BosunMotion.MAX_YAW = math.rad(28) -- head turn either side
 BosunMotion.MAX_PITCH_UP = math.rad(16)
 BosunMotion.MAX_PITCH_DOWN = math.rad(-12)
 BosunMotion.RUFF_FOLLOW = 0.5
@@ -37,7 +33,7 @@ BosunMotion.STRIDE = 3.2 -- studs per stride
 BosunMotion.MAX_STEP_HZ = 3.0
 BosunMotion.SHAKE_SECONDS = 0.9
 BosunMotion.MAX_LEAN = math.rad(9)
--- tail (Tail joint; +X pitch lowers it, the tail runs back along +Z)
+-- tail (Tail1 joint; +X pitch lowers it, the tail runs back along +Z)
 BosunMotion.TAIL_WAG = math.rad(26) -- wag either side at full excitement
 BosunMotion.TAIL_RAISE = math.rad(30) -- carried up at full excitement
 BosunMotion.TAIL_SWIM_RAISE = math.rad(18) -- streamed out level behind him as a rudder
@@ -58,7 +54,6 @@ export type Input = {
 	deckPitch: number?,
 	wetness: number?, -- 0..1 coat wetness (BosunWetness); wet out of the water tucks the tail
 	cold: number?, -- 0..1 cold (no source yet): tucks the tail
-	tailJoint: boolean?, -- the model has the Tail joint: the rear wiggle stays small
 }
 
 export type State = {
@@ -84,7 +79,7 @@ export type State = {
 	tired: number, -- 0..1
 }
 
-export type Pose = { Root: CFrame, Neck: CFrame, Hips: CFrame, Ruff: CFrame, Tail: CFrame }
+export type Pose = { [string]: CFrame } -- Root, Neck, Jaw, Tail1, Tail2 and the eight leg joints
 
 local TAU = 2 * math.pi
 
@@ -190,9 +185,6 @@ function BosunMotion.step(state: State, input: Input): Pose
 	local excited = math.clamp(input.excited, 0, 1)
 	state.wag = approach(state.wag, excited, 4, dt)
 	state.wagPhase = (state.wagPhase + TAU * (1.8 + 1.2 * state.wag) * dt) % TAU
-	local hipWag = if input.tailJoint then math.rad(1.4) else math.rad(4)
-	local wag = math.sin(state.wagPhase) * hipWag * state.wag * (1 - 0.4 * state.sit)
-
 	-- swimming paddle
 	state.paddle = (state.paddle + TAU * 1.3 * dt) % TAU
 	local sw = state.swim
@@ -222,25 +214,54 @@ function BosunMotion.step(state: State, input: Input): Pose
 
 	local gaitPitch = g * math.rad(2.2) * math.sin(state.phase + 0.6)
 	local rootPitch = gaitPitch
-		+ state.sit * math.rad(6)
 		+ sw * (math.rad(9) + math.rad(2.5) * math.sin(state.paddle))
 		+ state.leanPitch
 	local rootRoll = g * math.rad(1.6) * math.sin(state.phase) + state.leanRoll + shakeRoll
 	local rootY = g * 0.08 * math.sin(2 * state.phase)
 		+ breath * (0.012 + 0.01 * state.exertion)
-		+ state.sit * 0.1
+		- state.sit * BosunMotion.SIT_DROP
 		- sw * (0.85 - 0.05 * math.sin(2 * state.paddle))
-	local root = CFrame.new(0, rootY, 0) * CFrame.fromEulerAnglesYXZ(rootPitch, 0, rootRoll)
+	local sitPitch = state.sit * BosunMotion.SIT_PITCH
+	local hip = BosunMotion.SIT_PIVOT
+	local root = CFrame.new(0, rootY, 0)
+		* CFrame.new(hip)
+		* CFrame.Angles(sitPitch, 0, 0)
+		* CFrame.new(-hip)
+		* CFrame.fromEulerAnglesYXZ(rootPitch, 0, rootRoll)
 
 	-- the head keeps the gaze level against the rocking, the sit's tilt and the swim's nose-up
-	local headPitch = state.pitch - 0.6 * gaitPitch - state.sit * math.rad(3) - sw * math.rad(5)
+	local headPitch = state.pitch - 0.6 * gaitPitch - sitPitch * 0.8 - sw * math.rad(5)
 	local neck = CFrame.fromEulerAnglesYXZ(headPitch, state.yaw, shakeHead)
+	-- panting after a run: the mouth opens with each breath
+	local jawOpen = math.rad(3) + math.rad(12) * state.exertion * (0.5 + 0.5 * breath)
+	local jaw = CFrame.Angles(-jawOpen, 0, 0)
 
-	local hips = CFrame.fromEulerAnglesYXZ(
-		state.sit * math.rad(14) + breath * math.rad(0.3),
-		g * math.rad(2.5) * math.sin(state.phase) + wag,
-		wag * 0.4
-	)
+	local pose: Pose = { Root = root, Neck = neck, Jaw = jaw }
+
+	-- legs: a trot in diagonal pairs, the sit, the paddle
+	local sit = state.sit
+	for i, leg in BosunMotion.LEGS do
+		local front = i <= 2
+		local offset = if i == 1 or i == 4 then 0 else math.pi
+		local p = state.phase + offset
+		local swing = g * BosunMotion.LEG_SWING * math.sin(p)
+		local knee = g * BosunMotion.KNEE_LIFT * math.max(0, math.cos(p))
+		local q = state.paddle + offset
+		local upper, lower
+		if front then
+			-- upright under the shoulders when he sits; a reaching paddle when he swims
+			upper = swing * (1 - sw) - sitPitch + sw * math.rad(35) * math.sin(q)
+			lower = -knee * (1 - sw) - sw * math.rad(30) * (0.5 + 0.5 * math.cos(q))
+		else
+			-- folded under him when he sits: thigh forward, shin back along the ground
+			upper = (swing * (1 - sw) + sw * math.rad(20) * math.sin(q)) * (1 - sit)
+				+ sit * math.rad(35)
+			lower = (-knee * (1 - sw) - sw * math.rad(15) * (0.5 + 0.5 * math.cos(q))) * (1 - sit)
+				- sit * math.rad(150)
+		end
+		pose[leg .. "Upper"] = CFrame.Angles(upper, 0, 0)
+		pose[leg .. "Lower"] = CFrame.Angles(lower, 0, 0)
+	end
 
 	-- tail: moods set the carriage, the wag rides on top
 	local tiredTarget = math.clamp((state.exertion - 0.25) / 0.5, 0, 1) * (1 - state.gait)
@@ -248,7 +269,7 @@ function BosunMotion.step(state: State, input: Input): Pose
 	local wetOut = math.clamp(((input.wetness or 0) - 0.3) / 0.4, 0, 1) * (1 - sw)
 	local tuckTarget = math.max(wetOut, math.clamp(input.cold or 0, 0, 1)) * (1 - 0.6 * excited)
 	state.tuck = approach(state.tuck, tuckTarget, 2, dt)
-	local tuck, tired, sit = state.tuck, state.tired, state.sit
+	local tuck, tired = state.tuck, state.tired
 	local liftTarget = BosunMotion.TAIL_RAISE * state.wag * (1 - sit) * (1 - tuck)
 		+ BosunMotion.TAIL_SWIM_RAISE * sw
 		+ math.rad(6) * g -- carried a little higher on the move
@@ -267,38 +288,16 @@ function BosunMotion.step(state: State, input: Input): Pose
 		+ sw * math.rad(7) * math.sin(state.paddle + 1.2)
 		+ g * math.rad(5) * math.sin(state.phase + 1.8) * (1 - tuck)
 		- shakeRoll * 1.6 -- whips with the shake
-	local tail = CFrame.fromEulerAnglesYXZ(
+	pose.Tail1 = CFrame.fromEulerAnglesYXZ(
 		-state.tailLift,
 		tailYaw,
 		-tailYaw * 0.25 -- the sweep rolls the tip slightly
 	)
-
-	local f = BosunMotion.RUFF_FOLLOW
-	local ruff = CFrame.fromEulerAnglesYXZ(
-		headPitch * f + breath * math.rad(0.4),
-		state.yaw * f,
-		shakeHead * f
-	)
-
-	return { Root = root, Neck = neck, Hips = hips, Ruff = ruff, Tail = tail }
-end
-
--- Which LOD (0, 1, 2) to show at `distance` studs from the camera, with hysteresis around `current`.
-BosunMotion.LOD_AT = { 45, 130 }
-function BosunMotion.lodFor(distance: number, current: number?): number
-	local margin = 6
-	local want = if distance < BosunMotion.LOD_AT[1]
-		then 0
-		elseif distance < BosunMotion.LOD_AT[2] then 1
-		else 2
-	if current and current ~= want then
-		-- stay unless clearly past the boundary between current and want
-		local edge = BosunMotion.LOD_AT[math.min(current, want) + 1]
-		if math.abs(distance - edge) < margin then
-			return current
-		end
-	end
-	return want
+	-- the tip follows the wag a beat late and curls up a little more when carried high
+	local tipYaw = math.sin(state.wagPhase - 0.9) * wagAmp * 0.8
+		+ sw * math.rad(5) * math.sin(state.paddle)
+	pose.Tail2 = CFrame.fromEulerAnglesYXZ(-0.35 * state.tailLift, tipYaw, 0)
+	return pose
 end
 
 return BosunMotion

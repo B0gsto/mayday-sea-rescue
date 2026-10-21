@@ -134,6 +134,8 @@ export type Visual = {
 	bowSpread: { number }, -- SpreadAngle X, Y
 	bowColor: Color3,
 	bowTransparency: number, -- at birth
+	ribbon: number, -- 0..1: the faint coloured trail from the stern (0 = none)
+	ribbonColor: Color3, -- the trail / foam tint
 }
 
 Wake.FOAM = Color3.fromHex("#E8EEEC")
@@ -173,8 +175,10 @@ function Wake.visual(style: { [string]: any }?, night: number?): Visual
 	local function op(t: number): number -- scale opacity (1 - transparency), keep the 0..1 range
 		return 1 - math.clamp((1 - t) * opacity, 0, 0.92)
 	end
-	local color = hex(s, "tint") or Wake.FOAM
-	local bowColor = Wake.SPRAY
+	local tint = hex(s, "tint")
+	local color = tint or Wake.FOAM
+	-- a tinted wake tints the spray too (G38): a gold wake reads gold by day, not just at night
+	local bowColor = if tint then tint:Lerp(Color3.new(1, 1, 1), 0.12) else Wake.SPRAY
 	local emission, influence = 0, 1
 	local glow = hex(s, "glow")
 	if glow and n > 0 then
@@ -205,6 +209,8 @@ function Wake.visual(style: { [string]: any }?, night: number?): Visual
 		bowSpread = { math.min(70 * bowSpread, 120), 20 * bowSpread },
 		bowColor = bowColor,
 		bowTransparency = op(0.35),
+		ribbon = num(s, "trail", 0, 0, 1),
+		ribbonColor = color,
 	}
 end
 

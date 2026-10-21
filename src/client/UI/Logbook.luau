@@ -2,10 +2,10 @@
 -- Logbook: the exploration logbook panel, its discovery notice and the On watch / Off duty switch
 -- (docs 10 sections 5.1 and 5.2). Built by ExplorationController; data from Shared.Explore.Discovery.
 --
---   panel    centred, 600 x 420 du (fits the 1071 x 471 du phone area): header with the count and
---            Cash earned, the duty switch, page tabs on the left and the page's entries on the
---            right (found: name, era, story line; unfound: where to look). Shown in the phone's
---            Logbook app (J, gamepad L3 or the icon); closes with X or gamepad B. Gamepad selection starts on the first page tab.
+--   panel    upright, 340 x 620 du (the upright phone's app page): title, the count and Cash earned,
+--            the duty switch, a row of page chips, then the page's entries top to bottom (found:
+--            name, era, Cash; unfound: where to look). Shown in the phone's Logbook app (J, gamepad
+--            L3 or the icon); closes with X or gamepad B. Gamepad selection starts on the page chip.
 --   notice   a short "Logged" card in the Layout "notice" region for 6 s after each discovery.
 --
 -- CONTRACT (radio panel owner): docs 10 puts the logbook on a radio panel tab and the duty switch on
@@ -22,8 +22,8 @@ local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
 
 local C = HudTheme.Colors
-local WIDTH, HEIGHT = 600, 420
-local TAB_WIDTH = 196
+local WIDTH, HEIGHT = 340, 620
+local SMALL = 18 -- du: the smallest type (a du can draw at 0.7 px on a phone)
 local NOTICE_TIME = 6
 
 export type Logbook = {
@@ -55,10 +55,13 @@ local function text(
 	return l
 end
 
+-- one half of the iOS-style segmented switch
 local function segment(name: string, parent: Instance, str: string, x: number): TextButton
-	local b = HudTheme.button(name, str, UDim2.fromOffset(150, HudTheme.MinButtonHeight), parent)
-	b.Position = UDim2.fromOffset(x, 0)
-	b.TextSize = 17
+	local b = HudTheme.button(name, str, UDim2.new(0.5, -4, 1, -6), parent)
+	b.AnchorPoint = Vector2.new(x, 0.5)
+	b.Position = UDim2.new(x, if x == 0 then 3 else -3, 0.5, 0)
+	b.TextSize = HudTheme.scaled(20)
+	HudTheme.corner(b, 12)
 	return b
 end
 
@@ -90,6 +93,8 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	scale.Parent = holder
 	Layout.onMetrics(function(mt)
 		scale.Scale = mt.scale
+		holder.Size =
+			UDim2.fromOffset(math.min(WIDTH, mt.usable.X - 40), math.min(HEIGHT, mt.usable.Y - 24))
 	end)
 
 	local panel = HudTheme.panel("Logbook", UDim2.fromScale(1, 1), holder)
@@ -104,9 +109,12 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 		HudTheme.TextSize.title + 1,
 		panel
 	)
-	title.TextColor3 = C.text
-	local summary = text("Summary", panel, "", HudTheme.TextSize.small, C.textDim)
-	summary.Position = UDim2.fromOffset(0, 30)
+	title.Text = "Logbook"
+	title.TextSize = HudTheme.scaled(30)
+	title.Size = UDim2.new(1, -60, 0, 36)
+	local summary = text("Summary", panel, "", 20, C.gold)
+	summary.Font = HudTheme.HeaderFont
+	summary.Position = UDim2.fromOffset(0, 40)
 
 	local close = HudTheme.button("Close", "X", UDim2.fromOffset(48, 40), panel)
 	close.AnchorPoint = Vector2.new(1, 0)
@@ -117,48 +125,46 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	-- the duty switch
 	local duty = Instance.new("Frame")
 	duty.Name = "Duty"
-	duty.BackgroundTransparency = 1
-	duty.Position = UDim2.fromOffset(0, 64)
+	duty.BackgroundColor3 = C.panelLight
+	duty.BorderSizePixel = 0
+	duty.Position = UDim2.fromOffset(0, 76)
 	duty.Size = UDim2.new(1, 0, 0, HudTheme.MinButtonHeight)
+	HudTheme.corner(duty, 14)
 	duty.Parent = panel
-	local onBtn = segment("OnWatch", duty, "ON WATCH", 0)
-	local offBtn = segment("OffDuty", duty, "OFF DUTY", 156)
-	local dutyNote = HudTheme.label(
-		"Note",
-		"",
-		UDim2.new(1, -318, 1, 0),
-		HudTheme.BodyFont,
-		HudTheme.TextSize.small,
-		duty
-	)
-	dutyNote.Position = UDim2.fromOffset(318, 0)
+	local onBtn = segment("OnWatch", duty, "On watch", 0)
+	local offBtn = segment("OffDuty", duty, "Off duty", 1)
+	local dutyNote =
+		HudTheme.label("Note", "", UDim2.new(1, 0, 0, 26), HudTheme.BodyFont, SMALL, panel)
+	dutyNote.Position = UDim2.fromOffset(0, 76 + HudTheme.MinButtonHeight + 4)
 	dutyNote.TextColor3 = C.textDim
-	dutyNote.TextWrapped = true
-	dutyNote.TextTruncate = Enum.TextTruncate.None
+	dutyNote.TextXAlignment = Enum.TextXAlignment.Center
 
-	-- body: page tabs | entries
-	local bodyTop = 64 + HudTheme.MinButtonHeight + 12
+	-- body: a row of page chips, then the entries
+	local tabsTop = 76 + HudTheme.MinButtonHeight + 36
 	local tabs = Instance.new("ScrollingFrame")
 	tabs.Name = "Pages"
 	tabs.BackgroundTransparency = 1
 	tabs.BorderSizePixel = 0
-	tabs.Position = UDim2.fromOffset(0, bodyTop)
-	tabs.Size = UDim2.new(0, TAB_WIDTH, 1, -bodyTop)
-	tabs.ScrollBarThickness = 4
-	tabs.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	tabs.Position = UDim2.fromOffset(0, tabsTop)
+	tabs.Size = UDim2.new(1, 0, 0, 50)
+	tabs.ScrollBarThickness = 0
+	tabs.ScrollingDirection = Enum.ScrollingDirection.X
+	tabs.AutomaticCanvasSize = Enum.AutomaticSize.X
 	tabs.CanvasSize = UDim2.new()
 	tabs.Parent = panel
 	local tabList = Instance.new("UIListLayout")
-	tabList.Padding = UDim.new(0, 6)
+	tabList.FillDirection = Enum.FillDirection.Horizontal
+	tabList.Padding = UDim.new(0, 8)
 	tabList.SortOrder = Enum.SortOrder.LayoutOrder
 	tabList.Parent = tabs
+	local bodyTop = tabsTop + 58
 
 	local list = Instance.new("ScrollingFrame")
 	list.Name = "Entries"
 	list.BackgroundTransparency = 1
 	list.BorderSizePixel = 0
-	list.Position = UDim2.fromOffset(TAB_WIDTH + 14, bodyTop)
-	list.Size = UDim2.new(1, -(TAB_WIDTH + 14), 1, -bodyTop)
+	list.Position = UDim2.fromOffset(0, bodyTop)
+	list.Size = UDim2.new(1, 0, 1, -bodyTop)
 	list.ScrollBarThickness = 4
 	list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	list.CanvasSize = UDim2.new()
@@ -172,16 +178,15 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	local render: () -> ()
 
 	for i, p in Discovery.Pages do
-		local b = HudTheme.button(`Tab_{p.id}`, "", UDim2.new(1, -6, 0, 46), tabs)
+		local b = HudTheme.button(`Tab_{p.id}`, "", UDim2.fromOffset(0, 46), tabs)
 		b.LayoutOrder = i
-		b.TextXAlignment = Enum.TextXAlignment.Left
-		b.Font = HudTheme.BodyFont
-		b.TextSize = HudTheme.TextSize.small
+		b.AutomaticSize = Enum.AutomaticSize.X
+		b.TextSize = HudTheme.scaled(SMALL)
 		b.TextWrapped = false
-		b.TextTruncate = Enum.TextTruncate.AtEnd
+		HudTheme.corner(b, 23)
 		local pad = Instance.new("UIPadding")
-		pad.PaddingLeft = UDim.new(0, 10)
-		pad.PaddingRight = UDim.new(0, 8)
+		pad.PaddingLeft = UDim.new(0, 16)
+		pad.PaddingRight = UDim.new(0, 16)
 		pad.Parent = b
 		b.Activated:Connect(function()
 			pageId = p.id
@@ -199,8 +204,8 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 		row.BorderSizePixel = 0
 		row.Size = UDim2.new(1, -8, 0, 0)
 		row.AutomaticSize = Enum.AutomaticSize.Y
-		HudTheme.corner(row, 4)
-		HudTheme.padding(row, 10)
+		HudTheme.corner(row, 16)
+		HudTheme.padding(row, 12)
 		local rl = Instance.new("UIListLayout")
 		rl.Padding = UDim.new(0, 2)
 		rl.SortOrder = Enum.SortOrder.LayoutOrder
@@ -210,20 +215,16 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 			text("Name", row, "", HudTheme.TextSize.body, if got then C.text else C.textDim)
 		head.LayoutOrder = 1
 		head.Font = HudTheme.BoldFont
-		local line = text("Line", row, "", HudTheme.TextSize.small, C.textDim)
+		local line = text("Line", row, "", SMALL, C.textDim)
 		line.LayoutOrder = 2
-		line.TextWrapped = true
-		line.TextTruncate = Enum.TextTruncate.None
-		line.AutomaticSize = Enum.AutomaticSize.Y
-		line.Size = UDim2.fromScale(1, 0)
 		if got then
-			head.Text = if e.era ~= "" then `{e.name}  ·  {e.era}` else e.name
-			line.Text = e.blurb
-			local paid =
-				text("Paid", row, `Logged  ·  {HudTheme.formatNumber(e.reward)} Cash`, 15, C.gold)
+			head.Text = `✓  {e.name}`
+			line.Text = if e.era ~= "" then e.era else ""
+			line.Visible = e.era ~= ""
+			local paid = text("Paid", row, `+{HudTheme.formatNumber(e.reward)} Cash`, SMALL, C.gold)
 			paid.LayoutOrder = 3
 		else
-			head.Text = "Not yet logged"
+			head.Text = "?  ???"
 			line.Text = HINTS[e.mode] or HINTS.any
 		end
 		row.Parent = list
@@ -237,11 +238,11 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 				cash += e.reward
 			end
 		end
-		summary.Text = `{have}/{total}  ·  {HudTheme.formatNumber(cash)} Cash`
+		summary.Text = `{have}/{total}   ·   {HudTheme.formatNumber(cash)} Cash`
 		for _, p in Discovery.Pages do
 			local got, configured, target = Discovery.pageProgress(foundSet, p.id)
 			local b = tabButtons[p.id]
-			b.Text = `{p.title}   {got}/{target}`
+			b.Text = `{p.title}  {got}/{target}`
 			local selected = p.id == pageId
 			b.BackgroundColor3 = if selected then C.accent else C.panelLight
 			b.TextColor3 = if configured > 0 or selected then C.text else C.textDim
@@ -260,10 +261,9 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 		end
 		local p = Discovery.page(pageId)
 		local got, configured, target = Discovery.pageProgress(foundSet, pageId)
-		local foot = text("Footer", list, "", HudTheme.TextSize.small, C.textDim)
+		local foot = text("Footer", list, "", SMALL, C.gold)
 		foot.LayoutOrder = order + 1
-		foot.TextWrapped = true
-		foot.TextTruncate = Enum.TextTruncate.None
+		foot.TextXAlignment = Enum.TextXAlignment.Center
 		foot.Size = UDim2.new(1, -8, 0, 44)
 		if configured == 0 then
 			foot.Text = "Soon"
@@ -271,7 +271,7 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 			foot.Text = "Complete ✓"
 		elseif p then
 			local prize = if p.cosmetic then ` + {p.cosmetic}` else ""
-			foot.Text = `{target}/{target}: {HudTheme.formatNumber(p.reward)} Cash{prize}`
+			foot.Text = `{target}/{target}  →  {HudTheme.formatNumber(p.reward)} Cash{prize}`
 		end
 		-- the duty switch
 		onBtn.BackgroundColor3 = if isOff then C.panelLight else C.accent

@@ -1,0 +1,13 @@
+{
+ "offset": [
+  -0.0,
+  -6.8853,
+  -0.0
+ ],
+ "bbox_studs": [
+  5.895,
+  13.2295,
+  5.578
+ ],
+ "note": "offset added to the authored model frame; Blender studs, origin bottom-centre"
+}

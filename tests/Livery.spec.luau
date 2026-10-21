@@ -3,6 +3,7 @@
 -- "Paint" attribute roles, the signal-colour clearance (docs/05 3.2) and the wet darkening.
 return function(t)
 	local P = t.load("src/shared/LiveryPaint.luau")
+	local Pattern = t.load("src/shared/LiveryPattern.luau")
 	local config = t.load("src/shared/Config/Cosmetics/Livery.luau")
 	local Cos = t.load("src/shared/Cosmetics.luau")
 
@@ -65,6 +66,14 @@ return function(t)
 		t.expect(P.meshRule("M_Veh_RIB_Helm_Seats_LOD0")).toBeNil()
 		t.expect(P.setKey("M_Veh_JetSki_Sled_LOD0")).toBe("M_Veh_JetSki/Sled")
 		t.expect(P.meshRule("M_Veh_JetSki_CloseUp_Console_LOD0")).toBeNil()
+		t.expect(P.meshRule("M_Veh_LifeguardPickup_Body_LOD0").role).toBe("primary")
+		t.expect(P.setKey("M_Veh_LifeguardPickup_BodyDetail_LOD0"))
+			.toBe("M_Veh_LifeguardPickup/Body")
+		t.expect(P.meshRule("M_Veh_LifeguardPickup_Wheel_FL_LOD0")).toBeNil()
+		t.expect(P.meshRule("M_Veh_Coastguard4x4_Body_LOD0").role).toBe("primary")
+		t.expect(P.setKey("M_Veh_Coastguard4x4_BodyDetail_LOD0")).toBe("M_Veh_Coastguard4x4/Body")
+		t.expect(P.meshRule("M_Veh_ATV_Fenders_LOD0").role).toBe("primary")
+		t.expect(P.meshRule("M_Veh_ATV_Sled_LOD0")).toBeNil()
 		t.expect(P.colorFor(opt("StationOrange"), "trim")).toBeNil()
 	end)
 
@@ -79,6 +88,30 @@ return function(t)
 		t.expect(P.colorFor(o, "stripe2")).toBe(o.secondary)
 		t.expect(P.colorFor(nil, "primary")).toBeNil()
 		t.expect(P.colorFor(opt("VipGold"), "primary")).toBe(opt("VipGold").primary)
+	end)
+
+	t.test("G38: every painting livery names a known trim pattern", function()
+		for _, o in config.options do
+			if P.paints(o) then
+				t.expect(Pattern.known(o.pattern)).toBe(true)
+			end
+		end
+		t.expect(opt("Season1").pattern).toBe("chevron")
+		t.expect(opt("Month2026-10").pattern).toBe("stripes")
+		t.expect(opt("Halloween").pattern).toBe("glow")
+		t.expect(opt("Halloween").earn).toBe("halloween:livery")
+	end)
+
+	t.test("G38: two-tone contrast is strong (primary vs secondary vs stripe)", function()
+		for _, o in config.options do
+			if P.paints(o) then
+				local function dist(a: Color3, b: Color3): number
+					return math.abs(a.R - b.R) + math.abs(a.G - b.G) + math.abs(a.B - b.B)
+				end
+				t.expect(dist(o.primary, o.secondary) > 0.35).toBe(true)
+				t.expect(dist(o.stripe, o.primary) > 0.25).toBe(true)
+			end
+		end
 	end)
 
 	t.test("wet paint is darker by the wet factor; skipped vehicles", function()

@@ -12,6 +12,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local HudTheme = require(script.Parent.HudTheme)
+local InputGlyph = require(script.Parent.InputGlyph)
 local ProductCard = require(script.Parent.ProductCard)
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
@@ -37,14 +38,8 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 	frame.Visible = false
 	HudTheme.padding(frame, 14)
 
-	local title = HudTheme.label(
-		"Title",
-		"CHANDLERY GEAR COUNTER",
-		UDim2.new(1, -60, 0, 36),
-		HudTheme.HeaderFont,
-		24,
-		frame
-	)
+	local title =
+		HudTheme.label("Title", "GEAR", UDim2.new(1, -60, 0, 36), HudTheme.HeaderFont, 24, frame)
 	title.TextColor3 = C.accent
 
 	local close = HudTheme.button("Close", "X", UDim2.fromOffset(48, 48), frame)
@@ -123,9 +118,19 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 	local open = false
 	local cardOpenedAt = -math.huge
 	local card: ProductCard.Card
+	local modal: InputGlyph.Modal
+	local api: Shop
+	local firstBuy = rows[ProgressionConfig.GearOrder[1]]
 	local function setOpen(value: boolean)
 		if value and os.clock() - cardOpenedAt < CARD_GRACE then
 			return
+		end
+		if value ~= open then
+			if value then
+				modal.open(if firstBuy then firstBuy.buy else close)
+			else
+				modal.close()
+			end
 		end
 		open = value
 		frame.Visible = value
@@ -133,6 +138,9 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 			card.close()
 		end
 	end
+	modal = InputGlyph.modal("GearCounter", function()
+		api.setOpen(false) -- through the table: HudController wraps setOpen
+	end)
 	card = ProductCard.mount(function()
 		cardOpenedAt = os.clock()
 		setOpen(false)
@@ -166,7 +174,7 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 		end
 	end
 
-	return {
+	api = {
 		frame = frame,
 		setOpen = setOpen,
 		isOpen = function()
@@ -174,6 +182,7 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 		end,
 		update = update,
 	}
+	return api
 end
 
 return HudShop

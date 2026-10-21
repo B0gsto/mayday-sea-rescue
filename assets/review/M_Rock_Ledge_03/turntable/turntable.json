@@ -1,0 +1,140 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Rock_Ledge_03/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Rock_Ledge_03_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Ledge03_Granite"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.23,
+    0.243,
+    0.953,
+    0.598
+   ],
+   "mannequin": [
+    0.037,
+    0.372,
+    0.139,
+    0.619
+   ],
+   "fill": 0.723
+  },
+  "Side": {
+   "asset": [
+    0.251,
+    0.296,
+    0.963,
+    0.571
+   ],
+   "mannequin": [
+    0.127,
+    0.36,
+    0.228,
+    0.637
+   ],
+   "fill": 0.712
+  },
+  "Rear3Q": {
+   "asset": [
+    0.23,
+    0.243,
+    0.953,
+    0.598
+   ],
+   "mannequin": [
+    0.037,
+    0.372,
+    0.139,
+    0.619
+   ],
+   "fill": 0.723
+  },
+  "High": {
+   "asset": [
+    0.256,
+    0.157,
+    0.963,
+    0.753
+   ],
+   "mannequin": [
+    0.046,
+    0.421,
+    0.17,
+    0.613
+   ],
+   "fill": 0.707
+  }
+ },
+ "closeups": [
+  {
+   "name": "top",
+   "target": [
+    0.0,
+    0.0,
+    3.592854380607605
+   ],
+   "dist": 5.452226686477661,
+   "az": 30.0,
+   "el": 35.0,
+   "file": "closeup_top.png"
+  },
+  {
+   "name": "waterline",
+   "target": [
+    0.0,
+    -4.49717960357666,
+    1.5968241691589355
+   ],
+   "dist": 6.387296676635742,
+   "az": 0.0,
+   "el": 12.0,
+   "file": "closeup_waterline.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.707,
+ "in_frame": true,
+ "dims_m": [
+  4.039,
+  3.748,
+  1.331
+ ],
+ "validation_ok": true,
+ "seconds": 3.9
+}

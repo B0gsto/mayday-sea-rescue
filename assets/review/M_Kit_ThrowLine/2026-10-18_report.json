@@ -1,0 +1,708 @@
+{
+ "asset": "M_Kit_ThrowLine",
+ "name": "M_Kit_ThrowLine",
+ "date": "2026-10-18",
+ "commit": "9d39bf5d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD0.fbx",
+   "bytes": 706940,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThrowLine_COL",
+    "M_Kit_ThrowLine_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThrowLine_COL.001",
+     "min": [
+      -0.7638,
+      -0.6363,
+      0.0
+     ],
+     "max": [
+      0.7638,
+      0.6363,
+      0.1293
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_ThrowLine_LOD0.001",
+     "min": [
+      -0.7638,
+      -0.6363,
+      0.0
+     ],
+     "max": [
+      0.7638,
+      0.6363,
+      0.1293
+     ],
+     "polygons": 6776,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD1.fbx",
+   "bytes": 338332,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThrowLine_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThrowLine_LOD1.001",
+     "min": [
+      -0.7628,
+      -0.6361,
+      0.0011
+     ],
+     "max": [
+      0.764,
+      0.6359,
+      0.129
+     ],
+     "polygons": 3388,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD2.fbx",
+   "bytes": 184636,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThrowLine_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThrowLine_LOD2.001",
+     "min": [
+      -0.7624,
+      -0.6365,
+      0.0002
+     ],
+     "max": [
+      0.7648,
+      0.6306,
+      0.1285
+     ],
+     "polygons": 1694,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine.attachments.json",
+   "attachments": [
+    "ATT_Grip",
+    "ATT_LineEnd"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_ThrowLine/M_Kit_ThrowLine.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThrowLine_LOD0"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6776 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.01e-05, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.498, v 0.252 to 0.498"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3380 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1564 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThrowLine_LOD1"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3388 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.18e-05, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.248 to 0.498, v 0.247 to 0.536"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3388 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.038 (max 0.02), UV area by 15.4% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThrowLine_LOD2"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1694 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.17e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.247 to 0.498, v 0.247 to 0.535"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1694 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.037 (max 0.02), UV area by 32.6% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThrowLine_COL"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6776 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3388 of 4000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1694 of 2000"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x 0.42 x - m, spec - x 0.42 x - m (art/reference/M_Kit_ThrowLine/dims.md)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1.273 studs, real 0.420 m = 1.260 studs, off 1.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThrowLine_COL"
+  },
+  {
+   "subject": "M_Kit_ThrowLine",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Soft_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Soft_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Soft_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Soft_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Soft_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Soft_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Soft_MET.png"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_LineEnd",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThrowLine_COL, M_Kit_ThrowLine_LOD0; 6788 triangles (scene 6788)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThrowLine_LOD1; 3388 triangles (scene 3388)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThrowLine_LOD2; 1694 triangles (scene 1694)"
+  },
+  {
+   "subject": "M_Kit_ThrowLine_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_ThrowLine_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6776,
+   "texel_density": 1563.6
+  },
+  {
+   "name": "M_Kit_ThrowLine_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3388,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_ThrowLine_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1694,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_ThrowLine_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.5275754928588867,
+  1.2725223302841187,
+  0.12926839292049408
+ ],
+ "peak_rss_mb": 268.6
+}

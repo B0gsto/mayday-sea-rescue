@@ -8,6 +8,7 @@
 -- so the ids are entered by hand.
 --
 --   name, description   the Creator Hub text (keep them in sync when creating the badge)
+--   icon                one-line icon concept for the Creator Hub image
 --   count               counted badges: awarded when the counter reaches this (1 = the first time)
 --   rank                rank badges: awarded on reaching this ProgressionConfig rank id
 --   awardedBy           who calls BadgeService.Award for it, when it is not OperationService's debrief
@@ -16,6 +17,7 @@ export type Badge = {
 	id: number,
 	name: string,
 	description: string,
+	icon: string?,
 	count: number?,
 	rank: string?,
 	awardedBy: string?,
@@ -23,12 +25,25 @@ export type Badge = {
 
 local BadgeConfig = {}
 
+-- Every operation kind, once each, for the EveryCall badge.
+BadgeConfig.OpKinds = table.freeze({
+	"PersonInWater",
+	"DisabledVessel",
+	"CapsizedFerry",
+	"CliffCasualty",
+	"RipCurrent",
+	"SinkingVessel",
+	"VesselFire",
+	"WildlifeRescue",
+})
+
 -- order = the order of the table below (the Creator Hub list); keys are stable, never rename one
 BadgeConfig.Order = table.freeze({
 	"FirstRescue",
 	"CertHelm",
 	"CertCasualtyCare",
 	"CertRescueSwimmer",
+	"CertCoxswain",
 	"Downwind",
 	"TowTruck",
 	"StormChaser",
@@ -37,6 +52,24 @@ BadgeConfig.Order = table.freeze({
 	"FerryHero",
 	"AirPocket",
 	"FirstWreck",
+	"FirstWildlife",
+	"AllWildlife",
+	"FirstPet",
+	"LegendaryRescue",
+	"GoldenGull",
+	"AlbumSet",
+	"AlbumComplete",
+	"Streak7",
+	"Streak30",
+	"GreatStormRescue",
+	"GhostShip",
+	"SeasonTier10",
+	"SeasonTier30",
+	"EveryCall",
+	"LifeboatBought",
+	"RankAdmiral",
+	"FriendCrew",
+	"PhotoFirst",
 })
 
 BadgeConfig.Badges = table.freeze({
@@ -62,6 +95,12 @@ BadgeConfig.Badges = table.freeze({
 		id = 0,
 		name = "Rescue Swimmer",
 		description = "Pass the Rescue Swimmer certification.",
+		awardedBy = "certifications (RP-C1)",
+	},
+	CertCoxswain = {
+		id = 0,
+		name = "Coxswain",
+		description = "Pass the Coxswain certification.",
 		awardedBy = "certifications (RP-C1)",
 	},
 	Downwind = {
@@ -111,6 +150,133 @@ BadgeConfig.Badges = table.freeze({
 		name = "First Wreck",
 		description = "Find the Morwenna in Calm Bay.",
 		awardedBy = "exploration logbook (RP-X1)",
+	},
+	FirstWildlife = {
+		id = 0,
+		name = "First Wildlife Rescue",
+		description = "Free your first animal in a wildlife rescue.",
+		icon = "A life ring with a paw print in the middle",
+		count = 1,
+	},
+	AllWildlife = {
+		id = 0,
+		name = "Sanctuary Five",
+		description = "Rescue all five wildlife species.",
+		icon = "Five animal silhouettes around a life ring",
+		count = 5,
+	},
+	FirstPet = {
+		id = 0,
+		name = "First Pet",
+		description = "Adopt your first pet at the sanctuary.",
+		icon = "A paw print inside a heart",
+		count = 1,
+	},
+	LegendaryRescue = {
+		id = 0,
+		name = "Legendary Rescue",
+		description = "Finish a Legendary rarity call.",
+		icon = "A gold star over a rescue boat",
+		count = 1,
+	},
+	GoldenGull = {
+		id = 0,
+		name = "Golden Gull",
+		description = "Bring in the Golden Gull.",
+		icon = "A golden gull with spread wings",
+		count = 1,
+	},
+	AlbumSet = {
+		id = 0,
+		name = "Set Complete",
+		description = "Complete any Rescue Album set.",
+		icon = "A full page of stickers with one gold frame",
+		count = 1,
+	},
+	AlbumComplete = {
+		id = 0,
+		name = "Full Album",
+		description = "Collect every sticker in the Rescue Album.",
+		icon = "A closed sticker album with a gold clasp",
+		count = 1,
+	},
+	Streak7 = {
+		id = 0,
+		name = "Seven-Day Streak",
+		description = "Open the daily crate seven days in a row.",
+		icon = "Seven lit lanterns in a row",
+		count = 1,
+	},
+	Streak30 = {
+		id = 0,
+		name = "Thirty-Day Streak",
+		description = "Open the daily crate thirty days in a row.",
+		icon = "A calendar page with thirty lit lanterns",
+		count = 1,
+	},
+	GreatStormRescue = {
+		id = 0,
+		name = "Great Storm Rescue",
+		description = "Finish a rescue during a Great Storm.",
+		icon = "A boat on a huge wave under a dark sky",
+		count = 1,
+	},
+	GhostShip = {
+		id = 0,
+		name = "Ghost Ship",
+		description = "Finish a Ghost Ship rescue during Halloween 2026.",
+		icon = "A green-glowing ghost ferry in fog",
+		count = 1,
+	},
+	SeasonTier10 = {
+		id = 0,
+		name = "Season One: Tier 10",
+		description = "Reach tier 10 of Season 1.",
+		icon = "A bronze season badge with a 10",
+		count = 1,
+	},
+	SeasonTier30 = {
+		id = 0,
+		name = "Season One: Tier 30",
+		description = "Reach tier 30 of Season 1.",
+		icon = "A gold season badge with a 30",
+		count = 1,
+	},
+	EveryCall = {
+		id = 0,
+		name = "Every Call",
+		description = "Complete every operation type once: swimmer, tow, ferry, cliff, rip current, sinking, fire and wildlife.",
+		icon = "Eight small icons in a ring",
+		count = 8,
+	},
+	LifeboatBought = {
+		id = 0,
+		name = "Lifeboat",
+		description = "Buy the All-Weather Lifeboat.",
+		icon = "A lifeboat bow on over a crest",
+		count = 1,
+	},
+	RankAdmiral = {
+		id = 0,
+		name = "Admiral",
+		description = "Reach the rank of Admiral.",
+		icon = "An admiral's shoulder board with four stars",
+		rank = "Admiral",
+	},
+	FriendCrew = {
+		id = 0,
+		name = "Crew Up",
+		description = "Join a crew with a friend.",
+		icon = "Two clasped hands over a boat deck",
+		count = 1,
+	},
+	PhotoFirst = {
+		id = 0,
+		name = "First Shot",
+		description = "Take your first photo in photo mode.",
+		icon = "A camera shutter with a wave inside",
+		count = 1,
+		awardedBy = "photo mode (no server remote yet)",
 	},
 } :: { [string]: Badge })
 

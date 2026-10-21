@@ -1,10 +1,17 @@
 --!strict
--- transport (docs 09 step 9, section 5.7): pick the destination on the radio, then bring them in
--- with a ride comfort needle that jumps on every hard landing. Hard slams hurt a cold casualty
--- (the server turns `slam` events into condition, cap 6). The server grades conditionAtEnd when
--- the boat reaches a pad; this client reports when it is slow and close to one.
--- Extra metric: destinationRight (bool, not banded yet). Controls: destination cards, then drive.
+-- transport (docs 09 step 9, section 5.7): the pad you drive to is the choice. The right one is lit
+-- (blue ambulance beacon, or a white heli beacon at the station for a heli case); a ride comfort
+-- needle jumps on every hard landing. Hard slams hurt a cold casualty (the server turns `slam`
+-- events into condition, cap 6). The server measures conditionAtEnd and destinationRight when the
+-- boat reaches a pad; this client reports when it is home: the boat slow and close to a pad or a
+-- shore point (station slipway, Haven Sands), or the player ashore on foot at one (they landed the
+-- casualty and walked up; the step used to hang until its timeout then). Controls: drive.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
+
+local BoatColdOpen =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Boat"):WaitForChild("ColdOpen"))
 
 local Record = require(script.Parent.PIW.Record)
 local Step = require(script.Parent.PIW.Step)
@@ -17,28 +24,78 @@ local Transport = {}
 Transport.HARD_SLAM = 9 -- telemetry slam strength felt as a hard landing -- tune
 Transport.PAD_RANGE = 60 -- studs from a drop-off pad, slow: alongside
 
-local function nearestPad(p: Vector3): (Vector3?, number)
+local function pads(): { BasePart }
 	local map = Workspace:FindFirstChild("Map")
 	local folder = map and map:FindFirstChild("DropOffs")
+	local out = {}
+	for _, pad in if folder then folder:GetChildren() else {} do
+		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
+			table.insert(out, pad)
+		end
+	end
+	return out
+end
+
+local function nearestPad(p: Vector3): (Vector3?, number)
 	local best: Vector3?, bestD = nil, math.huge
-	if folder then
-		for _, pad in folder:GetChildren() do
-			if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
-				local d = Units.flatDistance(pad.Position, p)
-				if d < bestD then
-					best, bestD = pad.Position, d
-				end
-			end
+	for _, pad in pads() do
+		local d = Units.flatDistance(pad.Position, p)
+		if d < bestD then
+			best, bestD = pad.Position, d
 		end
 	end
 	return best, bestD
+end
+
+-- Home: by a drop-off pad or at a shore point (where the first mission lands its casualty).
+function Transport.isHome(p: Vector3): boolean
+	local _, d = nearestPad(p)
+	local _, shore = BoatColdOpen.nearestShore(p)
+	return d <= Transport.PAD_RANGE or shore <= BoatColdOpen.SHORE_RADIUS
+end
+
+-- The pad that suits the casualty (mirrors PiwMetrics.destinationRight): a heli case goes to the
+-- station ("Dock"), anyone else to the ambulance at the hospital pontoon (else the station).
+local function rightPad(needsHeli: boolean): BasePart?
+	local dock, hospital
+	for _, pad in pads() do
+		local name = pad:GetAttribute("DropOff")
+		if name == "Dock" then
+			dock = pad
+		elseif name == "Hospital" then
+			hospital = pad
+		end
+	end
+	return if needsHeli then dock else hospital or dock
+end
+
+-- A code-built beacon over the pad: blinking blue (ambulance) or steady white (helicopter).
+local function beacon(pad: BasePart, heli: boolean): BasePart
+	local b = Instance.new("Part")
+	b.Name = "TransportBeacon"
+	b.Shape = Enum.PartType.Ball
+	b.Size = Vector3.one * 3
+	b.Material = Enum.Material.Neon
+	b.Color = if heli then Color3.new(1, 1, 1) else Color3.fromRGB(40, 110, 255)
+	b.Anchored = true
+	b.CanCollide = false
+	b.CanQuery = false
+	b.CastShadow = false
+	b.Position = pad.Position + Vector3.new(0, pad.Size.Y / 2 + 8, 0)
+	local light = Instance.new("PointLight")
+	light.Color = b.Color
+	light.Range = 40
+	light.Brightness = 4
+	light.Parent = b
+	b.Parent = Workspace
+	return b
 end
 
 function Transport.start(
 	ctx: { [string]: any },
 	finish: (result: { [string]: any }) -> ()
 ): (() -> ())?
-	local s = Step.new(ctx, finish, "Transport", 120)
+	local s = Step.new(ctx, finish, "Transport", 72)
 	if Step.autoStub(s) then
 		return Step.cleanup(s)
 	end
@@ -48,14 +105,21 @@ function Transport.start(
 	local cold = profile.state == "VeryCold"
 		or profile.state == "Unresponsive"
 		or profile.state == "Exhausted"
-	local info = Step.line(s, "Where are they going?", 54)
-	local destinationRight = true
+	local pad = rightPad(needsHeli)
+	local lamp = if pad then Ui.add(s.bag, beacon(pad, needsHeli)) else nil
 	local slams = 0
 	local comfort = 0
 
 	local function drive()
-		local setMeter = Ui.meter(s.panel, "Ride comfort (casualty)", UDim2.fromOffset(12, 76), 436)
+		-- ride comfort, wordless: waves icon + a bar whose green end is a smooth ride
+		local waves =
+			Ui.text(s.panel, "🌊", UDim2.fromOffset(24, 24), UDim2.fromOffset(12, 38), 18)
+		waves.TextXAlignment = Enum.TextXAlignment.Center
+		local setMeter = Ui.meter(s.panel, "", UDim2.fromOffset(44, 41), 404)
 		Step.heartbeat(s, function(dt)
+			if lamp and not needsHeli then
+				lamp.Transparency = if os.clock() % 0.8 < 0.4 then 0 else 0.9
+			end
 			local slam = World.slam()
 			if slam > Transport.HARD_SLAM then
 				slams += 1
@@ -74,41 +138,25 @@ function Transport.start(
 			comfort = math.max(0, comfort - 0.12 * dt)
 			setMeter(1 - comfort, 0.6, 1)
 			local h = World.hull(World.vehicle(ctx))
-			if h then
-				local _, d = nearestPad(h.position)
-				if d <= Transport.PAD_RANGE and h.velocity.Magnitude < 8 then
-					Step.finish(s, {
-						metrics = { destinationRight = destinationRight },
-						events = if slams > 0 then { slam = slams } else nil,
-					})
-				end
+			local char = Players.LocalPlayer.Character
+			local hum = char and char:FindFirstChildOfClass("Humanoid")
+			local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+			local onFoot = hum ~= nil and hum.SeatPart == nil and root ~= nil
+			local boatHome = h ~= nil and h.velocity.Magnitude < 8 and Transport.isHome(h.position)
+			local walkedHome = onFoot and root ~= nil and Transport.isHome(root.Position)
+			if boatHome or walkedHome then
+				Step.finish(s, {
+					metrics = {},
+					events = if slams > 0 then { slam = slams } else nil,
+				})
 			end
 		end)
 	end
 
-	local cards: Frame? = nil
-	cards = Ui.cards(s.bag, s.gui, {
-		title = "Destination",
-		cue = if needsHeli
-			then "They're getting worse. Who can get them to hospital fastest?"
-			else "Talking, warming up slowly.",
-		options = { "Station slipway (ambulance)", "Hospital pontoon", "Request Rescue Gale One" },
-		answer = if needsHeli then 3 else 1,
-		assist = s.assist,
-	}, function(i)
-		destinationRight = (i == 3) == needsHeli
-		if cards then
-			cards:Destroy()
-		end
-		if i == 3 then
-			s.say('Coastguard: "Rescue Gale One will meet you at the station."', 3)
-		end
-		info.Text = if cold
-			then "Cold casualty: quarter the waves, ease off on every crest."
-			else "Bring them home."
-		drive()
-	end)
-	Ui.add(s.bag, cards)
+	if needsHeli then
+		s.say('Coastguard: "Rescue Gale One meets you ashore."', 3)
+	end
+	drive()
 	return Step.cleanup(s)
 end
 

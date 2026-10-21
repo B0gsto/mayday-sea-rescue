@@ -20,6 +20,7 @@ local Swimmer = require(script.Parent.Swimmer)
 local Throw = require(script.Parent.Throw)
 local Ui = require(script.Parent.Ui)
 local Units = require(script.Parent.Units)
+local Ways = require(script.Parent.Ways)
 local World = require(script.Parent.World)
 
 local Recovery = {}
@@ -32,16 +33,7 @@ Recovery.BOOK = {
 	Unresponsive = "horizontal",
 }
 Recovery.METHODS = { "throwbag", "swimmer", "horizontal" }
-Recovery.LABELS = { "Throw bag", "Swimmer with a tube", "Horizontal lift" }
 Recovery.MAX_THROWS = 4
-
-local CUES = {
-	Alert = "Waving both arms, calling out. Gripping the lifejacket straps.",
-	Panicking = "Splashing, climbing at the water, head back.",
-	Exhausted = "Low in the water, mouth near the surface, arms still.",
-	VeryCold = 'Not shivering, slow speech: "m-m-my hands..."',
-	Unresponsive = "Face up in the lifejacket, eyes closed, no answer.",
-}
 
 -- "One, two, three!": press Action on three. Returns timing 0..1 through done.
 local function pullAboard(s: Step.S, done: (number) -> ())
@@ -69,7 +61,7 @@ local function pullAboard(s: Step.S, done: (number) -> ())
 			if q >= 1
 				then "Together! Aboard."
 				elseif q > 0.3 then "A bit off, but aboard."
-				else "Out of time: a heavy, clumsy lift.",
+				else "Out of time: heavy lift.",
 			2
 		)
 		Ui.clean(bag)
@@ -88,7 +80,7 @@ local function pullAboard(s: Step.S, done: (number) -> ())
 			end
 			if t > beat * 2 + 1 and not pressed then
 				pressed = true
-				s.say("The crewmate lifts alone: a heavy lift.", 2)
+				s.say("Crewmate lifts alone.", 2)
 				Ui.clean(bag)
 				done(0)
 			end
@@ -118,7 +110,7 @@ local function rhythmDistance(
 	Ui.add(bag, frame)
 	Ui.text(frame, title, UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, 8), 18, true)
 	local line = Ui.text(frame, "", UDim2.new(1, -24, 0, 20), UDim2.fromOffset(12, 34), 16)
-	local hint = Ui.hint(frame, "Left, right, left... steady, not fast.", s.assist)
+	local hint = Ui.hint(frame, "Steady, not fast", s.assist)
 	hint.Position = UDim2.fromOffset(12, 58)
 	local finished = false
 	Ui.pads(bag, s.gui, function(hand)
@@ -133,7 +125,7 @@ local function rhythmDistance(
 			d -= perPull * 0.6
 			if dipsOnFast then
 				dips += 1
-				s.say("Too fast! Their face is going under.", 1.5)
+				s.say("Too fast! Face under!", 1.5)
 			end
 		elseif res == "slow" then
 			d -= perPull * 0.8
@@ -164,15 +156,8 @@ local function horizontalLift(s: Step.S, vehicle: Model?, done: (number) -> ())
 	end)
 	local frame = Ui.panel(s.gui, UDim2.fromOffset(460, 110), UDim2.new(0.5, 0, 1, -24))
 	Ui.add(bag, frame)
-	Ui.text(
-		frame,
-		"Horizontal lift: shoulders and knees, keep them flat",
-		UDim2.new(1, -24, 0, 22),
-		UDim2.fromOffset(12, 8),
-		17,
-		true
-	)
-	local setLevel = Ui.meter(frame, "Level (keep in the band)", UDim2.fromOffset(12, 36), 436)
+	Ui.text(frame, "Horizontal lift", UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, 8), 17, true)
+	local setLevel = Ui.meter(frame, "Level", UDim2.fromOffset(12, 36), 436)
 	local setProgress = Ui.meter(frame, "Lift (hold Action)", UDim2.fromOffset(12, 70), 436)
 	local band = if s.assist then 0.16 else 0.12
 	local tilt, progress, inBand, total = 0, 0, 0, 0
@@ -225,7 +210,7 @@ local function horizontalLift(s: Step.S, vehicle: Model?, done: (number) -> ())
 			setProgress(progress)
 			if progress >= 1 then
 				Ui.clean(bag)
-				s.say("Flat on the deck. Gently does it.", 2)
+				s.say("Flat on deck. Gently.", 2)
 				done(if total > 0 then inBand / total else 0)
 			end
 		end)
@@ -256,7 +241,7 @@ local function throwBag(
 	Ui.add(bag, frame)
 	Ui.text(
 		frame,
-		"Throw bag: beyond them and upwind, never at their head",
+		"Throw beyond · upwind",
 		UDim2.new(1, -24, 0, 22),
 		UDim2.fromOffset(12, 8),
 		16,
@@ -264,7 +249,7 @@ local function throwBag(
 	)
 	local status = Ui.text(
 		frame,
-		"Look past them, hold to wind up, release.",
+		"Hold · aim · release",
 		UDim2.new(1, -24, 0, 20),
 		UDim2.fromOffset(12, 34),
 		15
@@ -354,12 +339,12 @@ local function throwBag(
 				flying = false
 				if a.result == "over" then
 					if not canGrip then
-						s.say("Line's over them, but they can't hold it. Swimmer in!", 3)
+						s.say("Can't hold it. Swimmer in!", 3)
 						Ui.clean(bag)
 						done(0.2, false)
 						return
 					end
-					s.say('Line over them! "Grab the line!" They\'ve got it.', 2.5)
+					s.say('"Grab the line!" Got it!', 2.5)
 					Ui.hands("take_line")
 					local ts = Throw.throwScore(throws, headHits)
 					local dist = Units.flatDistance(o, cas)
@@ -383,7 +368,7 @@ local function throwBag(
 				s.say(({
 					head = "Not at their head! Beyond them.",
 					short = "Short. Recoil and throw again.",
-					downwind = "Downwind of them: the line drifts away.",
+					downwind = "Downwind: the line drifts.",
 					wide = "Wide. Recoil and throw again.",
 				} :: { [string]: string })[a.result] or "Missed.", 2.5)
 				if throws >= Recovery.MAX_THROWS then
@@ -398,7 +383,7 @@ local function throwBag(
 					bagPart:Destroy()
 					linePart:Destroy()
 					if status.Parent then
-						status.Text = `Throw {throws + 1}: look past them, hold, release.`
+						status.Text = `Throw {throws + 1}`
 					end
 				end)
 			end
@@ -464,26 +449,18 @@ function Recovery.run(s: Step.S, ctx: { [string]: any })
 			local dist = if h
 				then math.max(8, Units.flatDistance(h.position, World.casualtyPos(ctx, victim)))
 				else 18
-			rhythmDistance(
-				s,
-				"Tow them back: steady strokes",
-				dist,
-				0.7,
-				1.8,
-				false,
-				function(evenness)
-					if cold then
-						-- hauled upright over the sponson by the arms: afterdrop risk
-						wrongHandling = 1
-						s.say('Medic: "Not upright! Keep them flat!"', 2.5)
-					end
-					pullAboard(s, function(q)
-						finishWith(
-							(0.4 * math.clamp(contact, 0, 1) + 0.3 * evenness + 0.3 * q) - penalty
-						)
-					end)
+			rhythmDistance(s, "Tow back", dist, 0.7, 1.8, false, function(evenness)
+				if cold then
+					-- hauled upright over the sponson by the arms: afterdrop risk
+					wrongHandling = 1
+					s.say('Medic: "Not upright! Keep them flat!"', 2.5)
 				end
-			)
+				pullAboard(s, function(q)
+					finishWith(
+						(0.4 * math.clamp(contact, 0, 1) + 0.3 * evenness + 0.3 * q) - penalty
+					)
+				end)
+			end)
 		end)
 	end
 
@@ -517,49 +494,19 @@ function Recovery.run(s: Step.S, ctx: { [string]: any })
 			end
 			if dist > 6 then
 				Ui.hands("swimmer_entry")
-				rhythmDistance(
-					s,
-					"Swimmer: bring them alongside, parallel",
-					dist,
-					0.7,
-					1.8,
-					false,
-					function(e)
-						lift(e)
-					end
-				)
+				rhythmDistance(s, "Alongside", dist, 0.7, 1.8, false, function(e)
+					lift(e)
+				end)
 			else
 				lift(nil)
 			end
 		end
 	end
 
-	local opts = {}
-	for i, m in Recovery.METHODS do
-		opts[i] = Recovery.LABELS[i]
-		if
-			m == "horizontal"
-			and not Record.carried(ctx.operation.id, "strop")
-			and not World.isJetSki(vehicle)
-		then
-			opts[i] = "Horizontal lift (no strop)"
-		end
-	end
-	local cards: Frame? = nil
-	cards = Ui.cards(s.bag, s.gui, {
-		title = "How do you get them aboard?",
-		cue = CUES[state] or CUES.Alert,
-		options = opts,
-		answer = table.find(Recovery.METHODS, Recovery.BOOK[state] or "throwbag"),
-		assist = s.assist,
-	}, function(i)
-		if cards then
-			cards:Destroy()
-		end
-		first = Recovery.METHODS[i]
-		runMethod(Recovery.METHODS[i], 0)
-	end)
-	Ui.add(s.bag, cards)
+	-- no method picker (CLAUDE.md: no choice UI): the crew runs the method the book calls for
+	local book = Recovery.BOOK[state] or "throwbag"
+	first = book
+	runMethod(book, 0)
 end
 
 function Recovery.start(
@@ -575,8 +522,18 @@ function Recovery.start(
 	then
 		return Step.cleanup(s)
 	end
-	Step.line(s, "Read the casualty, then pick the recovery.", 54)
-	Recovery.run(s, ctx)
+	if Ways.available(ctx) then
+		-- docs/14 section 3: drag, throw or let them come; no method cards, no step panel (the
+		-- OpsStepCard keeps the short objective)
+		s.panel.Visible = false
+		Ways.run(
+			s,
+			ctx,
+			Recovery.BOOK[ctx.casualty and ctx.casualty.state or "Alert"] or "throwbag"
+		)
+	else
+		Recovery.run(s, ctx)
+	end
 	return Step.cleanup(s)
 end
 

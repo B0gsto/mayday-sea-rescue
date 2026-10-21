@@ -48,12 +48,12 @@ Research source: [`research/store-page-and-monetization.md`](research/store-page
 
 | | A: The dog | B: The winch | C: The wave |
 |---|---|---|---|
-| Subject | Bosun, the realistic Newfoundland, head and shoulders out of the water, wet fur, orange harness, a lifebuoy in his mouth | The rescue helicopter from below at an angle in rain, searchlight on, a crew member on the hoist line reaching down | The all-weather lifeboat punching through a breaking wave, bow up, green water off the deck |
+| Subject | Bosun, the low-poly Newfoundland (faceted black coat, matching the in-game model), head and shoulders out of the water, orange harness, a lifebuoy in his mouth | The rescue helicopter from below at an angle in rain, searchlight on, a crew member on the hoist line reaching down | The all-weather lifeboat punching through a breaking wave, bow up, green water off the deck |
 | Background | Overcast grey-green sea, one foam crest, spray drops | Storm cloud base, a ring of downwash spray | Slate storm sky, spindrift, a lighthouse beam behind |
 | Focal point | The dog's eyes and the lifebuoy | The outstretched gloved hand | The bow and the crest |
 | Emotion | Warm, trustworthy | Heroic, tense | Thrilling, bold |
-| Strength | Unique on Roblox; a photoreal dog face reads at tiny sizes; all ages | Says "rescue" instantly | Says "storms" and "ocean" instantly; shows off the ocean |
-| Risk | May read as a pet game; fur must hold up close (the dog's hero LOD) | Busy at 150 px; a helicopter can look like Blackhawk Rescue | Boat-on-wave icons are common; depends on the ocean passing spike O3 |
+| Strength | Unique on Roblox; a bold low-poly dog face reads at tiny sizes; all ages | Says "rescue" instantly | Says "storms" and "ocean" instantly; shows off the ocean |
+| Risk | May read as a pet game; the dog must match the in-game low-poly Bosun | Busy at 150 px; a helicopter can look like Blackhawk Rescue | Boat-on-wave icons are common; depends on the ocean passing spike O3 |
 
 **Recommendation:** start with A as the main icon (distinct and warm), keep C ready for storm-focused updates. Roblox has no built-in icon split test in our research, so compare icons by swapping them between updates and watching play-through rate, knowing the comparison is rough.
 

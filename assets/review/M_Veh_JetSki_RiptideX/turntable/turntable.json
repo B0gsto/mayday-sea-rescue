@@ -1,0 +1,207 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_RiptideX/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_JetSki_RiptideX_Hull_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_RiptideX_HullSeat_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_RiptideX_HullTrim_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_RiptideX_Sled_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_RiptideX_SledFittings_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_RiptideX_SledCockpit_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_RiptideX_Hull",
+  "T_RiptideX_Sled"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.037,
+    0.216,
+    0.787,
+    0.637
+   ],
+   "mannequin": [
+    -0.113,
+    0.382,
+    0.042,
+    0.731
+   ],
+   "fill": 0.75
+  },
+  "Side": {
+   "asset": [
+    0.228,
+    0.358,
+    0.963,
+    0.544
+   ],
+   "mannequin": [
+    0.05,
+    0.37,
+    0.147,
+    0.628
+   ],
+   "fill": 0.735
+  },
+  "Rear3Q": {
+   "asset": [
+    0.226,
+    0.174,
+    0.93,
+    0.597
+   ],
+   "mannequin": [
+    0.037,
+    0.298,
+    0.183,
+    0.656
+   ],
+   "fill": 0.704
+  },
+  "High": {
+   "asset": [
+    0.201,
+    0.037,
+    0.943,
+    0.745
+   ],
+   "mannequin": [
+    -0.15,
+    0.401,
+    0.068,
+    0.694
+   ],
+   "fill": 0.742
+  }
+ },
+ "closeups": [
+  {
+   "name": "scoop_grille_1m",
+   "target": [
+    0.0,
+    -6.221,
+    2.95
+   ],
+   "dist": 3.0,
+   "az": 25.0,
+   "el": 18.0,
+   "file": "closeup_scoop_grille_1m.png"
+  },
+  {
+   "name": "seat_bolsters",
+   "target": [
+    0.0,
+    -0.921,
+    2.7
+   ],
+   "dist": 5.0,
+   "az": 120.0,
+   "el": 35.0,
+   "file": "closeup_seat_bolsters.png"
+  },
+  {
+   "name": "side_slashes",
+   "target": [
+    1.9,
+    -4.921,
+    1.4
+   ],
+   "dist": 5.5,
+   "az": 70.0,
+   "el": 8.0,
+   "file": "closeup_side_slashes.png"
+  },
+  {
+   "name": "wordmark",
+   "target": [
+    2.0,
+    -1.121,
+    1.35
+   ],
+   "dist": 4.5,
+   "az": 90.0,
+   "el": 5.0,
+   "file": "closeup_wordmark.png"
+  },
+  {
+   "name": "stern_sled",
+   "target": [
+    0.0,
+    4.179,
+    1.4
+   ],
+   "dist": 6.0,
+   "az": 150.0,
+   "el": 30.0,
+   "file": "closeup_stern_sled.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.704,
+ "in_frame": true,
+ "dims_m": [
+  1.293,
+  5.012,
+  1.207
+ ],
+ "validation_ok": true,
+ "seconds": 12.3
+}

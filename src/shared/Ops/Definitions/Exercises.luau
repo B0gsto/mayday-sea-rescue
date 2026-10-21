@@ -69,6 +69,17 @@ local list: { ExerciseInfo } = {
 		minutes = 2.5,
 		summary = "Arm's length, talk down a panicking instructor, break free, tube tow and recovery.",
 	},
+	{
+		id = "ExerciseCoxswain",
+		def = require(script.Parent.ExerciseCoxswain),
+		certification = "Coxswain",
+		optional = false,
+		cannotFail = false,
+		vehicle = "Lifeboat",
+		venue = "Pontoon",
+		minutes = 3.5,
+		summary = "Take the lifeboat round the marks and come alongside a casualty vessel.",
+	},
 }
 
 -- Board order: the drill first, then the ladder order of the certifications.
@@ -133,7 +144,7 @@ function Exercises.get(id: string): ExerciseInfo?
 					requirement = `{cert.displayName}: {table.concat(parts, ", ")}{live}`
 				end
 			else
-				requirement = "Optional: no certification. Cannot be failed."
+				requirement = "◇ Optional · no cert"
 			end
 			local ok, reason = Rules.canStartExercise(data, exId, busy)
 			table.insert(rows, {
@@ -219,7 +230,7 @@ function Exercises.board(data: Rules.PlayerData, busy: boolean?): { BoardRow }
 				requirement = `{cert.displayName}: {table.concat(parts, ", ")}{live}`
 			end
 		else
-			requirement = "Optional: no certification. Cannot be failed."
+			requirement = "◇ Optional · no cert"
 		end
 		local ok, reason = Rules.canStartExercise(data, id, busy)
 		table.insert(rows, {

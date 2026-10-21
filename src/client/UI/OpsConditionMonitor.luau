@@ -1,9 +1,10 @@
 --!strict
 -- OpsConditionMonitor: the casualty's condition as a portable patient monitor (Assist only; hidden
 -- in Pro, where the casualty is read from their behaviour). A sweeping ECG trace whose rate and
--- amplitude follow the condition meter, heart rate, an estimated core temperature (hypothermia
--- drops both), the plain-language band ("Struggling") and a trend arrow. On a big call it follows
--- the casualty in the worst state.
+-- amplitude follow the condition meter, a heart with the rate, a thermometer with an estimated core
+-- temperature (hypothermia drops both), a status face and a trend arrow; a lifejacket icon (struck
+-- when they have none). No words (docs/14 section 2). On a big call it follows the casualty in the
+-- worst state.
 local RunService = game:GetService("RunService")
 
 local HudTheme = require(script.Parent.HudTheme)
@@ -15,6 +16,10 @@ local TRACE = Color3.fromHex("3EE07A")
 local AMBER = Color3.fromHex("FFB020")
 local RED = Color3.fromHex("FF4D3A")
 local SAMPLES = 48
+
+-- condition band -> status face (VeryCold reads as cold, not "not responding")
+local FACE: { [string]: string } =
+	{ Stable = "🙂", Concern = "😟", Serious = "😵", Critical = "🚨" }
 
 local OpsConditionMonitor = {}
 
@@ -71,12 +76,14 @@ function OpsConditionMonitor.new(gui: GuiBase2d): Monitor
 		l.Parent = screen
 		return l
 	end
-	local who = txt("Who", 8, 4, 200, 13, HudTheme.Colors.textDim)
-	local hr = txt("HR", 8, 74, 90, 26, TRACE)
-	local hrUnit = txt("HRUnit", 8, 98, 90, 11, TRACE)
-	hrUnit.Text = "HR /min"
-	local temp = txt("Temp", 100, 74, 110, 22, AMBER)
-	local band = txt("Band", 100, 98, 110, 13, HudTheme.Colors.text)
+	local who = txt("Who", 8, 4, 200, 16, HudTheme.Colors.textDim)
+	who.Font = HudTheme.BoldFont
+	local hr = txt("HR", 8, 80, 80, 22, TRACE)
+	hr.Font = HudTheme.BoldFont
+	local temp = txt("Temp", 86, 80, 84, 20, AMBER)
+	temp.Font = HudTheme.BoldFont
+	local band = txt("Band", 166, 78, 44, 22, HudTheme.Colors.text)
+	band.TextXAlignment = Enum.TextXAlignment.Right
 
 	-- the trace: dots on a sweeping cursor
 	local dots: { Frame } = {}
@@ -154,20 +161,21 @@ function OpsConditionMonitor.new(gui: GuiBase2d): Monitor
 				d.BackgroundColor3 = color
 			end
 			hr.TextColor3 = color
-			hrUnit.TextColor3 = color
 			local bpm = math.floor(38 + 54 * math.clamp(cond / 100, 0, 1) + 0.5)
-			hr.Text = tostring(bpm)
+			hr.Text = `❤ {bpm}`
 			-- an estimate a crew would make: 36.8 when fine, ~31 at critical
-			temp.Text = string.format("%.1f°C", 31 + 5.8 * math.clamp(cond / 100, 0, 1))
-			local arrow = if trend < -0.05 then "▼" elseif trend > 0.05 then "▲" else "■"
-			band.Text = `{arrow} {worst.label or ""}`
+			temp.Text = string.format("🌡%.1f°", 31 + 5.8 * math.clamp(cond / 100, 0, 1))
+			local arrow = if trend < -0.05 then "▼" elseif trend > 0.05 then "▲" else ""
+			local face = if worst.state == "VeryCold" and worst.band == "Serious"
+				then "🥶"
+				else FACE[worst.band or ""] or "🙂"
+			band.Text = face .. arrow
 			band.TextColor3 = color
 			local count = #casualties
+			local jacket = if worst.lifejacket then "🦺" else "🚫🦺"
 			who.Text = if count > 1
-				then `CASUALTY {worst.index or "?"} OF {count} · {worst.tag or "UNTAGGED"}`
-				else "CASUALTY · " .. (if worst.lifejacket
-					then "LIFEJACKET"
-					else "NO LIFEJACKET")
+				then `👤 {worst.index or "?"}/{count}  {jacket}  {worst.tag or ""}`
+				else `👤  {jacket}`
 			body.Visible = true
 			start()
 		end,

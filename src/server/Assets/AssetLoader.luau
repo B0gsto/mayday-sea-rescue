@@ -19,6 +19,7 @@
 
 local CollectionService = game:GetService("CollectionService")
 local InsertService = game:GetService("InsertService")
+local MaterialService = game:GetService("MaterialService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 
@@ -55,6 +56,48 @@ AssetLoader.PART_SETS = {
 		Fittings = "Sled",
 		Bars = "Sled",
 	},
+	-- land fleet (I2b): art/source/vehicles/<asset>/build.py `build_set` calls
+	M_Veh_LifeguardPickup = {
+		Body = "Body",
+		BodyDetail = "Body",
+		Cab = "Cab",
+		Glass = "Cab",
+		Wheel = "Wheels",
+		Underbody = "Wheels",
+		Rack = "Rack",
+	},
+	M_Veh_Coastguard4x4 = {
+		Body = "Body",
+		BodyDetail = "Body",
+		Rack = "Rack",
+		Cab = "Cab",
+		Glass = "Cab",
+		Wheel = "Wheels",
+		Spare = "Wheels",
+		Underbody = "Wheels",
+	},
+	M_Veh_Ambulance = {
+		Body = "Body",
+		BodyDetail = "Body",
+		Box = "Box",
+		BoxDetail = "Box",
+		Cab = "Cab",
+		Glass = "Cab",
+		Windscreen = "Cab",
+		Wheel = "Wheels",
+		Underbody = "Wheels",
+	},
+	M_Veh_ATV = {
+		Body = "Body",
+		BodyDetail = "Body",
+		Fenders = "Body",
+		Wheel = "Gear",
+		Chassis = "Gear",
+		Rack = "Gear",
+		Sled = "Gear",
+	},
+	M_Veh_BoatTrailer_RIB = { Frame = "Galv", Wheel = "Galv" },
+	M_Veh_BoatTrailer_JetSki = { Frame = "Galv", Wheel = "Galv" },
 	-- art/source/vessels/M_Veh_GaleQueen/build.py `mats` (RP-I1c)
 	M_Veh_GaleQueen = {
 		Hull = "Hull",
@@ -75,6 +118,61 @@ AssetLoader.PART_SETS = {
 		Decals = "Decals",
 		Undamaged = "Fittings",
 		Damage = "Fittings",
+	},
+	-- G76: art/source/characters/M_Ani_GreySeal (Body | Head parts, Coat | Face sets)
+	M_Ani_GreySeal = { Body = "Coat", Head = "Face" },
+	-- P2: a set that is not in the asset's Appearances folder but names a MaterialService variant (the B02 "Mat"
+	-- sets in build.py) is applied as Material + MaterialVariant. Without these the parts rendered plain white.
+	-- art/source/harbour/_hp1/kit.py quay_spec (keyed by the shared folder, so every QuayKit piece uses it)
+	M_Hbr_QuayKit = { Wall = "Tide", Top = "Cobbles" },
+	M_Hbr_QuayKit_Armour = { Wall = "Armour", Top = "Cobbles" },
+	-- art/source/harbour/M_Hbr_PropAtlas/props.py PROPS (one shared atlas, Metal | Rope)
+	M_Hbr_PropAtlas = {
+		Bollard = "Metal",
+		Cleat = "Metal",
+		Chain = "Metal",
+		Housing = "Metal",
+		Ring = "Rope",
+		Fender = "Rope",
+		LobsterPot = "Rope",
+		FishBox = "Rope",
+		NetPile = "Rope",
+		Coil = "Rope",
+		Flaked = "Rope",
+	},
+	-- art/source/buildings/M_Bld_Slipway/build.py mats (Steel / Tide / WallTide match by name)
+	M_Bld_Slipway = {
+		Ramp = "Concrete",
+		Weedy = "WeedyConcrete",
+		Wall = "QuayStone",
+		Rock = "KelpRock",
+	},
+	-- art/source/buildings/M_Bld_Station/build.py mats
+	M_Bld_Station = {
+		Trim = "M_Bld_TrimSheet/Sheet",
+		Stone = "Granite",
+		Plinth = "GraniteBase",
+		Roof = "Slate",
+		BayDoor = "Details",
+		GlassLit = "Details",
+	},
+	-- art/source/buildings/M_Bld_Chandlery_Ext|Int/build.py mats (Granite is the B02 MaterialVariant)
+	M_Bld_Chandlery_Ext = {
+		Granite = "Granite",
+		Roof = "Slate",
+		Trim = "M_Bld_TrimSheet/Sheet",
+		Shopfront = "Details",
+		Glass = "Details",
+		Door = "Details",
+		DoorGlass = "Details",
+		Glow = "Details",
+	},
+	M_Bld_Chandlery_Int = {
+		Floor = "Pine",
+		Structure = "Joinery",
+		Trim = "M_Bld_TrimSheet/Sheet",
+		Glow = "Details",
+		Hardware = "Details",
 	},
 } :: { [string]: { [string]: string } }
 
@@ -109,6 +207,16 @@ AssetLoader.SHARED_SETS = {
 	M_Road_Bench = "M_Road_StreetLamp",
 	M_Road_Bin = "M_Road_StreetLamp",
 	M_Road_Bollard = "M_Road_StreetLamp",
+	M_Hbr_QuayKit_ = "M_Hbr_QuayKit",
+	M_Hbr_Pontoon_ = "M_Hbr_Pontoon",
+	M_Hbr_Bollard_ = "M_Hbr_PropAtlas",
+	M_Hbr_Cleat_ = "M_Hbr_PropAtlas",
+	M_Hbr_Fender_ = "M_Hbr_PropAtlas",
+	M_Hbr_FishBox_ = "M_Hbr_PropAtlas",
+	M_Hbr_LobsterPot_ = "M_Hbr_PropAtlas",
+	M_Hbr_NetPile = "M_Hbr_PropAtlas",
+	M_Hbr_Rope_ = "M_Hbr_PropAtlas",
+	M_Hbr_LifebuoyStation = "M_Hbr_PropAtlas",
 } :: { [string]: string }
 
 local function appearanceFolder(asset: string): Instance?
@@ -138,7 +246,7 @@ local function setFor(asset: string, partName: string): string?
 	if not sets then
 		return nil
 	end
-	local tokens = AssetLoader.PART_SETS[asset]
+	local tokens = AssetLoader.PART_SETS[asset] or AssetLoader.PART_SETS[sets.Name]
 	if tokens then
 		for token, set in tokens do
 			if
@@ -167,8 +275,22 @@ end
 
 local function applyAppearance(asset: string, part: MeshPart)
 	local setName = setFor(asset, part.Name)
-	local set = setName and appearanceFolder(asset)
-	set = set and set:FindFirstChild(setName :: string)
+	local folder = appearanceFolder(asset)
+	-- "Folder/Set" in PART_SETS: a set shared from another asset's folder (e.g. the BldTrim sheet)
+	local shared, sharedSet = string.match(setName or "", "^(.+)/(.+)$")
+	if shared and appearances then
+		folder, setName = (appearances :: Instance):FindFirstChild(shared), sharedSet
+	end
+	local set = if setName and folder then folder:FindFirstChild(setName :: string) else nil
+	local variant = if setName and not set
+		then MaterialService:FindFirstChild(setName :: string)
+		else nil
+	if variant and variant:IsA("MaterialVariant") then
+		part.Material = variant.BaseMaterial
+		part.MaterialVariant = variant.Name
+		part.Color = Color3.new(1, 1, 1) -- the variant's albedo carries the colour
+		return
+	end
 	if not set then
 		warn(`[AssetLoader] {asset}: no texture set for {part.Name}`)
 		return

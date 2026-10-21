@@ -19,9 +19,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local LiveryPaint = require(Shared:WaitForChild("LiveryPaint"))
+local LiveryPattern = require(Shared:WaitForChild("LiveryPattern"))
 
 local SLOT = "Livery"
 local METALLIC_REFLECTANCE = 0.06
+local TRIM_NAME = "CosmeticLiveryTrim"
 
 local Liveries = {}
 
@@ -51,9 +53,10 @@ local function install(part: BasePart, dry: SurfaceAppearance?, wet: SurfaceAppe
 	if other then
 		local variants = part:FindFirstChild("SurfaceVariants")
 		if not variants then
-			variants = Instance.new("Configuration")
-			variants.Name = "SurfaceVariants"
-			variants.Parent = part
+			local made = Instance.new("Configuration")
+			made.Name = "SurfaceVariants"
+			made.Parent = part
+			variants = made
 		end
 		other.Name = if other == wet then "SurfaceAppearance_Wet" else "SurfaceAppearance_Dry"
 		other.Parent = variants
@@ -139,6 +142,61 @@ local function paintMesh(part: BasePart, key: string, color: Color3?)
 	install(part, newDry, newWet)
 end
 
+-- G38: the code-made trim (band / twin / stripes / chevron / glow) welded to the hull sides, the
+-- tubes and the deck sole. The uploaded meshes only take flat tints, so this is what carries the
+-- scheme at 30-60 studs. Both hull sides and the deck are planned per pattern.
+local function band(parent: Model, anchor: BasePart, spec: any, color: Color3, glow: boolean)
+	local p = Instance.new("Part")
+	p.Name = "LiveryTrim"
+	p.Size = spec.size
+	p.CFrame = anchor.CFrame * CFrame.new(spec.offset) * CFrame.Angles(0, spec.yaw, 0)
+	p.Color = color
+	p.Material = if glow then Enum.Material.Neon else Enum.Material.SmoothPlastic
+	p.Anchored = false
+	p.CanCollide = false
+	p.CanQuery = false
+	p.CanTouch = false
+	p.Massless = true
+	p.CastShadow = false
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Parent = parent
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = anchor
+	weld.Part1 = p
+	weld.Parent = p
+end
+
+local function trim(model: Model, option: any, hull: BasePart?, tubes: BasePart?)
+	local old = model:FindFirstChild(TRIM_NAME)
+	if old then
+		old:Destroy()
+	end
+	if not option or not LiveryPattern.known(option.pattern) then
+		return
+	end
+	local color = LiveryPaint.colorFor(option, "stripe")
+	if not color then
+		return
+	end
+	local glowColor = typeof(option.glow) == "Color3" and option.glow or color
+	local trimModel = Instance.new("Model")
+	trimModel.Name = TRIM_NAME
+	local function lay(anchor: BasePart, surface: string)
+		for _, spec in LiveryPattern.plan(option.pattern, surface, anchor.Size) do
+			band(trimModel, anchor, spec, if spec.glow then glowColor else color, spec.glow)
+		end
+	end
+	if hull then
+		lay(hull, "hull")
+		lay(hull, "deck") -- the hull bbox top is the deck sole
+	end
+	if tubes and tubes ~= hull then
+		lay(tubes, "tube")
+	end
+	trimModel.Parent = model
+end
+
 local function paintPart(part: BasePart, color: Color3?, metallic: boolean, isCar: boolean)
 	local stockColor = part:GetAttribute("LiveryStockColor")
 	if not color then
@@ -166,8 +224,11 @@ function Liveries.apply(model: Model, id: string?)
 	end
 	local option = if id then Cosmetics.option(SLOT, id) else nil
 	local painting = LiveryPaint.paints(option)
-	local metallic = painting and option.metallic == true
+	local metallic = painting and option ~= nil and option.metallic == true
 	local isCar = model:GetAttribute("LandVehicle") ~= nil
+	local primary: BasePart? = nil
+	local secondary: BasePart? = nil
+	local tubes: BasePart? = nil
 	for _, d in model:GetDescendants() do
 		if not d:IsA("BasePart") then
 			continue
@@ -176,7 +237,20 @@ function Liveries.apply(model: Model, id: string?)
 			local rule = LiveryPaint.meshRule(d.Name)
 			local key = LiveryPaint.setKey(d.Name)
 			if rule and key then
-				paintMesh(d, key, if painting then LiveryPaint.colorFor(option, rule.role) else nil)
+				if rule.role == "primary" and not primary then
+					primary = d
+				elseif rule.role == "secondary" and not secondary then
+					secondary = d
+				end
+				local _, token = LiveryPaint.parseName(d.Name)
+				if token == "Tubes" then
+					tubes = d
+				end
+				paintMesh(
+					d,
+					key,
+					if painting then LiveryPaint.colorFor(option, rule.role :: any) else nil
+				)
 				continue
 			end
 		end
@@ -184,13 +258,21 @@ function Liveries.apply(model: Model, id: string?)
 		if role then
 			paintPart(
 				d,
-				if painting then LiveryPaint.colorFor(option, role) else nil,
+				if painting then LiveryPaint.colorFor(option, role :: any) else nil,
 				metallic,
 				isCar
 			)
 		end
 	end
 	model:SetAttribute("Livery", if painting then id else nil)
+	-- the trim is for the boats: car bodies have their own shaped panels, and a bbox band would
+	-- float off the doors. The galvanised trailer / ambulance never get here (SKIP_VEHICLES).
+	if not isCar then
+		-- the RIB's primary is the tube pair: its hull / deck trim goes on the GRP hull below.
+		-- The jet ski's primary is the whole hull, and its secondary sled sits under the water.
+		local hullAnchor = if tubes then (secondary or primary) else primary
+		trim(model, if painting then option else nil, hullAnchor, tubes)
+	end
 end
 
 local function track(player: Player, model: Model)
@@ -230,7 +312,7 @@ function Liveries.Start()
 		if slot ~= SLOT then
 			return
 		end
-		for model in vehicles[player] or {} do
+		for model in (vehicles[player] or {}) :: { [Model]: boolean } do
 			if model.Parent then
 				Liveries.apply(model, id)
 			end

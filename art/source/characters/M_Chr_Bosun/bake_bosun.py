@@ -278,7 +278,7 @@ def body_graph(g, wet):
     bump_k = g.math("MULTIPLY", smooth_k, 0.85 if wet else 0.7)
 
     # ---- albedo (linear). Coat: brown-black, sRGB ~25-35 around (31,27,24), R > G > B, warm undertone
-    c_dark, c_mid, c_light = srgb((26, 22, 19)), srgb((33, 27, 22)), srgb((42, 33, 26))   # round 5: brown-black 25-40
+    c_dark, c_mid, c_light = srgb((44, 34, 26)), srgb((60, 46, 33)), srgb((78, 59, 41))   # r6: charcoal-brown, luma ~34-56 (r5 25-40 read as a silhouette)
     tone = g.math("ADD", g.math("MULTIPLY", strands, 0.55), g.math("MULTIPLY", clump, 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", streak, 0.5), 0.25), clamp=True)
     tone = g.math("ADD", tone, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.45), clamp=True)
@@ -288,15 +288,18 @@ def body_graph(g, wet):
     tips = g.remap(strands, 0.40, 0.72)
     fadek = g.math("MULTIPLY", g.math("POWER", g.math("MAXIMUM", fade, 0.0), 0.7), g.math("ADD", 0.55, g.math("MULTIPLY", tips, 0.6)))
     fadek = g.math("MULTIPLY", fadek, g.math("ADD", 0.6, g.math("MULTIPLY", g.math("ADD", big, patch), 0.55)), clamp=True)
-    fade_col = g.lerp(srgb((74, 57, 41)), srgb((108, 80, 54)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
+    fade_col = g.lerp(srgb((96, 72, 50)), srgb((130, 96, 64)), g.math("MULTIPLY", tips, g.remap(fade, 0.4, 0.9)))
     col = g.lerp(col, fade_col, fadek)
+    # r6: warm tip sheen on the clump crests (Roblox has no sheen lobe: albedo + lower roughness carry it)
+    crest = g.math("MULTIPLY", g.math("MULTIPLY", g.remap(clump, 0.55, 1.0), tips), g.math("SUBTRACT", 1.0, short), clamp=True)
+    col = g.lerp(col, srgb((88, 68, 49)), g.math("MULTIPLY", crest, 0.30 if wet else 0.45))
     # crease AO and clump partings (shallow: the floor below keeps the 1st percentile up)
     occl = g.math("MULTIPLY", g.remap(ao, 0.2, 1.0, 0.84, 1.0), g.remap(clump, 0.0, 0.5, 0.92, 1.0))
     col = colscale(g, col, g.lerp(1.0, occl, coat))
     # tear stain (wet fur below the inner corner)
-    col = g.lerp(col, srgb((25, 22, 20)), g.math("MULTIPLY", tear, 0.6))
+    col = g.lerp(col, srgb((32, 27, 24)), g.math("MULTIPLY", tear, 0.6))
     # nose leather: dark grey-brown pebbles, darker cracks; nostrils near-black (tiny, exempt from the floor)
-    leather = g.lerp(srgb((26, 24, 23)), srgb((34, 31, 29)), pebble)
+    leather = g.lerp(srgb((28, 26, 25)), srgb((46, 42, 39)), pebble)          # r6: matte grey-brown pebbles, dark cracks
     col = g.lerp(col, leather, nose)
     # lips / flews darker
     col = g.lerp(col, srgb((30, 26, 24)), g.math("MINIMUM", g.math("MULTIPLY", lip, 0.9), 0.8))   # softer lip line (seam)
@@ -307,10 +310,10 @@ def body_graph(g, wet):
     # eyelid rim
     col = g.lerp(col, srgb((24, 22, 21)), lid)
     if wet:
-        col = colscale(g, col, g.lerp(0.52, 0.78, skin))                  # linear; soaked coat ~(25,22,19), median luma ~22
+        col = colscale(g, col, g.lerp(0.40, 0.78, skin))                  # linear; soaked coat ~(25,22,19), median luma ~22
     # luma floor (check_textures non-metal 20): per-channel max keeps the warm hue; dry (23,21,19) ~21.3, wet (22,20,18) ~20.3
     col = colscale(g, col, g.math("SUBTRACT", 1.0, g.math("MULTIPLY", A(g, "harn_ao"), 0.55)))   # r5: strap contact shadow
-    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((24, 21, 18)))
+    col = g.vmath("MAXIMUM", col, srgb((22, 20, 18)) if wet else srgb((26, 22, 19)))
     col = g.lerp(col, srgb((17, 16, 16)), g.math("MULTIPLY", nostrils, nose))
     # mouth: dark gums / inner mouth, pink tongue with paler papillae and a darker groove (not darkened when wet)
     gum = g.lerp(srgb((52, 30, 31)), srgb((66, 39, 38)), g.noise(P, 1.0 / (0.006 * L), 2.0))
@@ -324,8 +327,8 @@ def body_graph(g, wet):
     pupil = g.remap(eye_r, 0.34 * R, 0.38 * R, 1.0, 0.0)
     limbal = g.math("MULTIPLY", g.remap(eye_r, 0.76 * R, 0.95 * R), iris_m)
     fibres = g.noise(P, 900.0, 2.0, 0.6)
-    iris_col = g.lerp(srgb((68, 43, 26)), srgb((46, 30, 20)), g.remap(fibres, 0.35, 0.65))
-    iris_col = g.lerp(iris_col, srgb((84, 56, 32)), g.math("MULTIPLY", g.remap(eye_r, 0.38 * R, 0.52 * R, 1.0, 0.0), 0.55))
+    iris_col = g.lerp(srgb((112, 70, 34)), srgb((76, 47, 24)), g.remap(fibres, 0.35, 0.65))   # r6: readable warm brown
+    iris_col = g.lerp(iris_col, srgb((140, 92, 44)), g.math("MULTIPLY", g.remap(eye_r, 0.38 * R, 0.52 * R, 1.0, 0.0), 0.55))
     iris_col = g.lerp(iris_col, srgb((28, 21, 17)), limbal)
     eye_col = g.lerp(srgb((44, 34, 30)), iris_col, iris_m)
     eye_col = g.lerp(eye_col, srgb((12, 11, 11)), pupil)
@@ -333,20 +336,21 @@ def body_graph(g, wet):
 
     # ---- roughness
     if wet:
-        rgh = g.math("ADD", 0.26, g.math("MULTIPLY", strands, 0.06))       # round 4: soaked coat ~0.25-0.35
+        rgh = g.math("ADD", 0.19, g.math("MULTIPLY", strands, 0.08))       # round 4: soaked coat ~0.25-0.35
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", 1.0, clump), 0.05))
         rgh = g.lerp(rgh, 0.08, runs)                                      # water runnels
         rgh = g.lerp(rgh, 0.03, dmask)                                     # droplets
     else:
-        rgh = g.math("ADD", 0.62, g.math("MULTIPLY", strands, 0.10))       # round 4: dry ~0.7
-        rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", 1.0, clump), 0.06))
+        rgh = g.math("ADD", 0.52, g.math("MULTIPLY", strands, 0.26))       # r6: dry range ~0.45-0.85 (r5 0.66-0.74)
+        rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", 1.0, clump), 0.12))   # partings dull
         rgh = g.math("ADD", rgh, g.math("MULTIPLY", fadek, 0.06))           # sun-faded tips drier
-        rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.10))  # patchy sheen
+        rgh = g.math("ADD", rgh, g.math("MULTIPLY", g.math("SUBTRACT", patch, 0.5), 0.14))  # patchy sheen
+        rgh = g.math("SUBTRACT", rgh, g.math("MULTIPLY", crest, 0.28))      # glossy clump crests (tip sheen)
     moist = g.remap(g.noise(P, 40.0, 2.0, 0.5), 0.45, 0.65)
-    nose_r = g.lerp(0.26 if not wet else 0.16, 0.18 if not wet else 0.10, pebble)   # round 4: wet-looking nose
-    nose_r = g.lerp(nose_r, 0.16 if not wet else 0.10, g.math("MULTIPLY", moist, pebble))
+    nose_r = g.lerp(0.86 if not wet else 0.52, 0.72 if not wet else 0.40, pebble)   # r6: matte leather (r5 0.18-0.26 read as a shiny blob)
+    nose_r = g.lerp(nose_r, 0.62 if not wet else 0.34, g.math("MULTIPLY", moist, g.math("MULTIPLY", pebble, 0.6)))
     rgh = g.lerp(rgh, nose_r, nose)
-    rgh = g.lerp(rgh, 0.20 if wet else 0.32, g.math("MINIMUM", lip, 1.0))
+    rgh = g.lerp(rgh, 0.24 if wet else 0.50, g.math("MINIMUM", lip, 1.0))
     rgh = g.lerp(rgh, g.lerp(0.42 if wet else 0.78, 0.36 if wet else 0.66, papil), pad)
     rgh = g.lerp(rgh, 0.30 if wet else 0.62, web)
     rgh = g.lerp(rgh, g.lerp(0.20 if wet else 0.30, 0.26 if wet else 0.40, ridges), nail)

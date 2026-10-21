@@ -7,13 +7,17 @@
 -- falls back to calm open-sea params and retries every few seconds, so it never stops drawing.
 -- CONTRACT: Weather.getWaveParams(position: Vector3, now: number?): Waves.WaveParams
 
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Waves = require(Shared:WaitForChild("Waves"))
+local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 
 type WeatherApi = {
 	getWaveParams: (position: Vector3, now: number?) -> Waves.WaveParams,
+	getZoneAt: (position: Vector3) -> any,
+	getWindDirection: () -> number,
 }
 
 local RETRY_SECONDS = 3
@@ -26,6 +30,32 @@ local nextRetry = 0
 local warned = false
 local calmParams = Waves.paramsFor(0, 0, 0)
 local frameParams: Waves.WaveParams = calmParams -- params at the camera for the current frame
+local overrides: { [string]: { q: number, wind: number, params: Waves.WaveParams } } = {}
+local heldIntensity: number? = nil -- WeatherController's LocalStormIntensity, read once a frame
+
+-- WeatherController's held storm intensity (the cold open, then a 5 s blend back). Absent on the
+-- server and in tests: use the shared weather exactly then.
+local function paramsAt(x: number, z: number, t: number): Waves.WaveParams
+	local api = weather
+	if not api then
+		return calmParams
+	end
+	local intensity = heldIntensity
+	if intensity == nil then
+		return api.getWaveParams(Vector3.new(x, Waves.SEA_LEVEL, z), t)
+	end
+	local at = Vector3.new(x, Waves.SEA_LEVEL, z)
+	local zone = api.getZoneAt(at)
+	local q = WeatherMath.quantize(math.clamp(intensity, 0, 1))
+	local wind = api.getWindDirection() -- getSnapshot clones a table: not per sample
+	local entry = overrides[zone.id]
+	if entry and entry.q == q and entry.wind == wind then
+		return entry.params
+	end
+	local params = Waves.paramsFor(q, zone.shelter, wind)
+	overrides[zone.id] = { q = q, wind = wind, params = params }
+	return params
+end
 
 local function tryLoadWeather()
 	local module = Shared:FindFirstChild("Weather")
@@ -51,9 +81,12 @@ function WaveField.beginFrame(t: number, at: Vector3?)
 		nextRetry = os.clock() + RETRY_SECONDS
 		tryLoadWeather()
 	end
+	local held = Lighting:GetAttribute("LocalStormIntensity")
+	heldIntensity = if type(held) == "number" then held else nil
 	local api = weather
 	if api then
-		local ok, result = pcall(api.getWaveParams, at or Vector3.zero, t)
+		local p = at or Vector3.zero
+		local ok, result = pcall(paramsAt, p.X, p.Z, t)
 		weatherOk = ok
 		frameParams = if ok then result else calmParams
 		local err = result
@@ -85,19 +118,16 @@ end
 -- World Y of the water at (x, z) at time t. Allocation-free (Vector3 is a value type in Luau);
 -- cost is one zone lookup (cached params per zone and frame in Weather) plus Waves.COUNT sines.
 function WaveField.heightAt(x: number, z: number, t: number): number
-	local api = weather
-	if weatherOk and api then
-		return Waves.heightAt(x, z, t, api.getWaveParams(Vector3.new(x, Waves.SEA_LEVEL, z), t))
+	if weatherOk then
+		return Waves.heightAt(x, z, t, paramsAt(x, z, t))
 	end
 	return Waves.heightAt(x, z, t, calmParams)
 end
 
 -- Height plus slope (dY/dX, dY/dZ), for the Part fallback's tile tilt.
 function WaveField.gradientAt(x: number, z: number, t: number): (number, number, number)
-	local api = weather
-	if weatherOk and api then
-		local params = api.getWaveParams(Vector3.new(x, Waves.SEA_LEVEL, z), t)
-		return Waves.gradientAt(x, z, t, params)
+	if weatherOk then
+		return Waves.gradientAt(x, z, t, paramsAt(x, z, t))
 	end
 	return Waves.gradientAt(x, z, t, calmParams)
 end

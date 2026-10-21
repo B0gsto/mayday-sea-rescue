@@ -2,12 +2,16 @@
 -- ProgressionService: Cash, Rep, rank, gear and vehicle ownership on top of DataService.
 --
 -- API (server, see CONTRACT.md):
---   ProgressionService.Award(player, cash, rep, reason)   applies the storm and paid Cash multipliers
---     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; Rep is never multiplied)
+--   ProgressionService.Award(player, cash, rep, reason, flat?)   applies the storm and paid Cash multipliers
+--     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; Rep is never multiplied);
+--     flat = true skips every multiplier (Great Storm Rep x2 and friends included) for passive rewards;
+--     the snapshot carries rankUp and, past Admiral, starUp (Service Stars, docs 03 section 3)
 --   ProgressionService.Refresh(player, extra?)  re-push the snapshot (after a purchase grant)
 --   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, gear, vehicles, ... }?
---   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason)
+--   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason; Cash-owned OR pass-owned)
+--   ProgressionService.OwnsVehiclePass(player, vehicleId) -> boolean
 --   ProgressionService.GetGearBonus(player, stat) -> multiplier (1 by default)
+--   ProgressionService.BuyStock(player, price, key, isGear) -> ok, reason (H3 Chandlery stock)
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
@@ -23,12 +27,15 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local FriendBonus = require(Shared:WaitForChild("FriendBonus"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 
+local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local CashEffects = require(script.Parent:WaitForChild("Monetization"):WaitForChild("CashEffects"))
 local DataService = require(script.Parent.DataService)
+local FriendService = require(script.Parent:WaitForChild("FriendService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService")) -- RP-A1 analytics
 
 local ProgressionService = {}
@@ -66,6 +73,27 @@ local function weatherState(): (string, boolean)
 	return if type(state) == "string" then state else "Calm", isGreat
 end
 
+-- LiveOps (G60): GoldenHour adds a x2 Cash and Rep multiplier to live awards only (flat stays
+-- flat). Lazy: LiveOpsService loads after this service.
+local liveOpsModule: any = nil
+local function liveOpsMultipliers(): (number, number)
+	if liveOpsModule == nil then
+		local module = script.Parent:FindFirstChild("LiveOpsService")
+		if module then
+			local ok, result = pcall(require, module)
+			liveOpsModule = if ok then result else false
+		end
+	end
+	if not liveOpsModule then
+		return 1, 1
+	end
+	local ok, multipliers = pcall(liveOpsModule.Multipliers)
+	if not ok or type(multipliers) ~= "table" then
+		return 1, 1
+	end
+	return tonumber(multipliers.cash) or 1, tonumber(multipliers.rep) or 1
+end
+
 local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 	local stats = player:FindFirstChild("leaderstats")
 	if not stats then
@@ -91,6 +119,7 @@ local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 		rank.Value = ProgressionConfig.Ranks[rankIndex].displayName
 	end
 	player:SetAttribute("RankIndex", rankIndex)
+	player:SetAttribute("ServiceStars", Rules.serviceStars(data))
 	-- CertHelm, CertCasualtyCare, CertRescueSwimmer: read by OperationService and the mechanics
 	for _, id in ProgressionConfig.CertOrder do
 		player:SetAttribute(`Cert{id}`, if data.certs[id] then true else nil)
@@ -109,20 +138,36 @@ local function push(player: Player, data: Rules.PlayerData, extra: { [string]: a
 	Telemetry.CashFlow(player, extra, data.cash) -- every Cash source travels as extra.award
 end
 
-function ProgressionService.Award(player: Player, cash: number, rep: number, reason: string)
+function ProgressionService.Award(
+	player: Player,
+	cash: number,
+	rep: number,
+	reason: string,
+	flat: boolean?
+)
 	local data = DataService.Get(player)
 	if not data then
 		warn(`[ProgressionService] Award to {player.Name} before data loaded ({reason}); dropped`)
 		return
 	end
-	local state, isGreat = weatherState()
-	local paid = CashEffects.multiplier(player) -- Cash only (docs/04 sections 3 and 4.2)
-	local finalCash, finalRep, mult = Rules.applyAward(cash * paid, rep, state, isGreat)
-	mult *= paid
+	local state, isGreat, paid, repMult = nil, false, 1, 1
+	if not flat then
+		state, isGreat = weatherState()
+		paid = CashEffects.multiplier(player) -- Cash only (docs/04 sections 3 and 4.2)
+		paid *= FriendBonus.multiplier(FriendService.Count(player)) -- +10% per friend in server, cap +30% (docs/15 H9)
+		repMult = if player:GetAttribute("EventGreatStorm") == true then 2 else 1
+		local liveCash, liveRep = liveOpsMultipliers() -- GoldenHour (G60), capped at x2
+		paid *= liveCash
+		repMult *= liveRep
+	end
+	local finalCash, finalRep, mult =
+		Rules.applyAward(cash, rep, state, isGreat, paid, repMult, flat)
 	local oldRank = Rules.rankIndex(data)
+	local oldStars = Rules.serviceStars(data)
 	data.cash += finalCash
 	data.rep += finalRep
 	local newRank = Rules.rankIndex(data)
+	local newStars = Rules.serviceStars(data)
 	DataService.MarkDirty(player)
 	local extra: { [string]: any } = {
 		award = { cash = finalCash, rep = finalRep, multiplier = mult, reason = reason },
@@ -131,6 +176,9 @@ function ProgressionService.Award(player: Player, cash: number, rep: number, rea
 		local rankDef = ProgressionConfig.Ranks[newRank]
 		extra.rankUp =
 			{ rankIndex = newRank, rank = rankDef.displayName, unlocks = rankDef.unlocks }
+	end
+	if newStars > oldStars then
+		extra.starUp = { stars = newStars }
 	end
 	push(player, data, extra)
 	if newRank ~= oldRank then
@@ -153,6 +201,7 @@ function ProgressionService.RecordTraining(
 	if not data then
 		return nil
 	end
+	local starsBefore = Rules.serviceStars(data)
 	local result = if isExercise
 		then Rules.recordExercise(data, kind, grade, steps, player.UserId, cannotFail)
 		else Rules.recordOperation(data, kind, steps, player.UserId)
@@ -177,14 +226,19 @@ function ProgressionService.RecordTraining(
 	-- a rank-up the certification brings (the Rep was already there): Award cannot see it
 	if result.rankAfter > result.rankBefore then
 		local rankDef = ProgressionConfig.Ranks[result.rankAfter]
-		push(player, data, {
+		local extra: { [string]: any } = {
 			certsEarned = result.earned,
 			rankUp = {
 				rankIndex = result.rankAfter,
 				rank = rankDef.displayName,
 				unlocks = rankDef.unlocks,
 			},
-		})
+		}
+		local starsAfter = Rules.serviceStars(data)
+		if starsAfter > starsBefore then
+			extra.starUp = { stars = starsAfter }
+		end
+		push(player, data, extra)
 		rankChanged:Fire(player, result.rankAfter, result.rankBefore)
 	elseif not paid then
 		push(player, data, { certsEarned = result.earned })
@@ -250,12 +304,23 @@ function ProgressionService.SetFlag(player: Player, name: string, value: any): b
 	return true
 end
 
+-- The vehicle's Game Pass is owned: MonetizationService's server-set Pass_<Key> attribute (a client
+-- can't write it), so the Robux ownership is never taken from the client.
+function ProgressionService.OwnsVehiclePass(player: Player, vehicleId: string): boolean
+	local key = Rules.vehiclePass(vehicleId)
+	return key ~= nil and player:GetAttribute("Pass_" .. key) == true
+end
+
 function ProgressionService.CanUseVehicle(player: Player, vehicleId: string): (boolean, string)
 	local data = DataService.Get(player)
 	if not data then
 		return false, "Data not loaded"
 	end
-	return Rules.canUseVehicle(data, vehicleId)
+	return Rules.canUseVehicle(
+		data,
+		vehicleId,
+		ProgressionService.OwnsVehiclePass(player, vehicleId)
+	)
 end
 
 function ProgressionService.GetGearBonus(player: Player, stat: string): number
@@ -285,7 +350,8 @@ local function buy(player: Player, itemId: any): (boolean, string)
 		data.gear[itemId] = (data.gear[itemId] or 0) + 1
 		Telemetry.CashSpent(player, price, data.cash, "Gear", itemId)
 	elseif ProgressionConfig.Vehicles[itemId] then
-		local ok, reason, price = Rules.canBuyVehicle(data, itemId)
+		local ok, reason, price =
+			Rules.canBuyVehicle(data, itemId, ProgressionService.OwnsVehiclePass(player, itemId))
 		if not ok then
 			return false, reason
 		end
@@ -295,9 +361,54 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	else
 		return false, "Unknown item"
 	end
+	Telemetry.Funnel(player, "FirstUnlock") -- RP-A1 onboarding: the first gear or vehicle
 	DataService.MarkDirty(player)
 	push(player, data, { bought = itemId })
 	task.spawn(DataService.Save, player, false) -- purchases are saved right away
+	if itemId == "Lifeboat" then
+		BadgeService.Count(player, "LifeboatBought")
+	end
+	return true, "ok"
+end
+
+-- Chandlery stock (docs/15 H3): StockService validated the rotating slot; pay and grant here.
+-- Gear stock grants one level of the existing gear (its real effect); trims and decor are data-only
+-- cosmetic flags in data.flags.stock until they have art.
+function ProgressionService.BuyStock(
+	player: Player,
+	price: number,
+	key: string,
+	isGear: boolean
+): (boolean, string)
+	local data = DataService.Get(player)
+	if not data then
+		return false, "Data not loaded"
+	end
+	if type(price) ~= "number" or price < 0 or price ~= price or data.cash < price then
+		return false, "Need Cash"
+	end
+	if isGear then
+		if not ProgressionConfig.Gear[key] or (data.gear[key] or 0) >= Rules.maxGearLevel() then
+			return false, "Max level"
+		end
+		data.gear[key] = (data.gear[key] or 0) + 1
+	else
+		local owned = if type(data.flags.stock) == "table" then data.flags.stock else {}
+		if owned[key] == true then
+			return false, "Owned" -- a trim is one-time: never take Cash for it twice
+		end
+		owned[key] = true
+		if not ProgressionService.SetFlag(player, "stock", owned) then
+			return false, "Full"
+		end
+	end
+	data.cash -= price
+	Telemetry.CashSpent(player, price, data.cash, if isGear then "Gear" else "Stock", key)
+	Telemetry.Custom(player, "StockBuy", 1, if isGear then "Gear" else "Cosmetic", key)
+	Telemetry.Funnel(player, "FirstUnlock") -- docs/15 section 3 step 9: the first unlock
+	DataService.MarkDirty(player)
+	push(player, data, { bought = key })
+	task.spawn(DataService.Save, player, false)
 	return true, "ok"
 end
 
@@ -319,6 +430,15 @@ function ProgressionService.Init()
 					tonumber(rep) or 0,
 					"Studio dev grant"
 				)
+			elseif cmd == "certs" then
+				local d = DataService.Get(p)
+				if d then
+					for _, id in ProgressionConfig.CertOrder do
+						d.certs[id] = true
+					end
+					DataService.MarkDirty(p)
+					ProgressionService.Refresh(p)
+				end
 			end
 			return ProgressionService.GetData(p)
 		end

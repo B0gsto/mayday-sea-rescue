@@ -241,12 +241,8 @@ return function(t)
 		t.expect(l.lost).toBe(1)
 	end)
 
-	t.test("passage: route ratio and ETA cards", function()
+	t.test("passage: route ratio", function()
 		t.expect(Units.routeRatio(110, 1000, 10)).toBeCloseTo(1.1, 1e-9)
-		t.expect(Units.etaError(100, 125)).toBeCloseTo(0.25, 1e-9)
-		local opts, right = Units.etaOptions(3000, 40, 0.1)
-		t.expect(#opts).toBe(3)
-		t.expect(opts[right]).toBe(math.floor(3000 / 40 / 60 * 1.15 + 0.5))
 		t.expect(Units.hash01("abc")).toBe(Units.hash01("abc"))
 	end)
 end

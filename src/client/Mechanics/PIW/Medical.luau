@@ -94,39 +94,6 @@ function Medical.kitNeeded(state: string, lifejacket: boolean, isJetSki: boolean
 	return out
 end
 
--- kitFit 0..1: the share of the needed kit loaded, minus a little for dead weight.
-function Medical.kitFit(picked: { string }, needed: { string }): number
-	if #needed == 0 then
-		return 1
-	end
-	local hit, junk = 0, 0
-	for _, id in picked do
-		if table.find(needed, id) then
-			hit += 1
-		elseif id == "towline" or id == "fenders" then
-			junk += 1
-		end
-	end
-	return math.clamp(hit / #needed - 0.15 * junk, 0, 1)
-end
-
--- The tasking clue line ("about ten minutes, no lifejacket, not answering").
-function Medical.kitClue(p: Profile): string
-	local parts = { `in the water about {p.minutesBefore} minutes` }
-	table.insert(parts, if p.lifejacket then "wearing a lifejacket" else "no lifejacket")
-	local s = p.state
-	table.insert(
-		parts,
-		if s == "Alert"
-			then "waving, calling for help"
-			elseif s == "Panicking" then "splashing, going under"
-			elseif s == "Exhausted" then "low in the water, tired"
-			elseif s == "VeryCold" then "slow to answer, very cold"
-			else "not answering the informant"
-	)
-	return table.concat(parts, ", ")
-end
-
 ----------------------------------------------------------------------------------------------
 -- Primary survey: DR ABCDE (docs 09 section 5.5).
 
@@ -215,24 +182,8 @@ function Medical.surveyCards(p: Profile, isJetSki: boolean, storm: boolean): { C
 	return out
 end
 
--- Breaths a minute shown by the chest rise (tap-count cue for the B card).
-function Medical.breathRate(p: Profile): number
-	local _, _, answer = cue(p, "Breathing", false)
-	return ({ 14, 28, 7, 0 })[answer]
-end
-
-function Medical.surveyCorrect(cards: { Card }, picks: { [string]: number }): number
-	if #cards == 0 then
-		return 1
-	end
-	local right = 0
-	for _, c in cards do
-		if picks[c.letter] == c.answer then
-			right += 1
-		end
-	end
-	return right / #cards
-end
+-- Breaths a minute the casualty shows (breath puffs) for each Breathing answer.
+Medical.BREATHS = { 14, 28, 7, 0 }
 
 ----------------------------------------------------------------------------------------------
 -- Treatment (docs 09 section 5.6). Items are applied in order onto the casualty.
@@ -249,41 +200,27 @@ Medical.Treatments = {
 	{ id = "drink", label = "Warm sweet drink" },
 	{ id = "dressing", label = "Dressing on the graze", needs = "firstAid" },
 	{ id = "cpr", label = "Start CPR" },
-	{ id = "rub", label = "Rub arms and legs" },
-	{ id = "hotpack", label = "Hot packs on bare skin" },
-	{ id = "sitUp", label = "Sit them up" },
-	{ id = "thrusts", label = "Abdominal thrusts" },
 } :: { Treat }
 
--- What the book calls for, in order; and what is harmful for this casualty.
-function Medical.treatmentPlan(
-	p: Profile,
-	carried: { [string]: boolean }?
-): ({ string }, { [string]: boolean })
+-- What the book calls for, in order (the crew hands the items over while the Medic holds on).
+function Medical.treatmentPlan(p: Profile, carried: { [string]: boolean }?): { string }
 	local s = p.state
 	local has = function(id: string): boolean
 		return carried == nil or carried[id] == true
 	end
-	local need: { string } = {}
-	local harmful: { [string]: boolean } = { rub = true, hotpack = true, thrusts = true }
+	local need: { string }
 	if p.notBreathing then
 		need = { "cpr", "recovery", "casualtyBag" }
-		harmful.sitUp, harmful.drink = true, true
 	elseif s == "Unresponsive" then
 		need = { "recovery", "oxygen", "casualtyBag" }
-		harmful.sitUp, harmful.drink = true, true
 	elseif s == "VeryCold" then
 		need = { "horizontal", "shelter", "casualtyBag", "oxygen" }
-		harmful.sitUp, harmful.drink = true, true
 	elseif s == "Exhausted" then
 		need = { "shelter", "casualtyBag", "oxygen" }
-		harmful.drink = true
 	else
 		need = { "shelter", "casualtyBag", "hat" }
 		if s == "Alert" then
 			table.insert(need, "drink")
-		else
-			harmful.drink = true
 		end
 	end
 	if p.scrape and s ~= "Unresponsive" then
@@ -295,46 +232,13 @@ function Medical.treatmentPlan(
 			table.insert(out, id)
 		end
 	end
-	return out, harmful
-end
-
--- matches 0..1 and the harmful count for an applied sequence. Doing the graze before the cold
--- items, or CPR late, costs order credit.
-function Medical.treatmentScore(
-	applied: { string },
-	need: { string },
-	harmful: { [string]: boolean }
-): (number, number)
-	local hit, bad = 0, 0
-	for _, id in applied do
-		if harmful[id] then
-			bad += 1
-		elseif table.find(need, id) then
-			hit += 1
-		end
-	end
-	local matches = if #need > 0 then hit / #need else 1
-	local d = table.find(applied, "dressing")
-	if d then
-		for _, id in need do
-			local i = table.find(applied, id)
-			if id ~= "dressing" and i and i > d then
-				matches -= 0.25
-				break
-			end
-		end
-	end
-	if table.find(need, "cpr") and applied[1] ~= "cpr" then
-		matches -= 0.25
-	end
-	return math.clamp(matches, 0, 1), bad
+	return out
 end
 
 ----------------------------------------------------------------------------------------------
 -- Handover: ATMIST (docs 09 section 5.8).
 
 export type Observed = {
-	findings: { [string]: number }?, -- survey picks
 	applied: { string }?, -- treatments in order
 	minutesOnScene: number,
 }
@@ -368,78 +272,24 @@ local function signsText(p: Profile): string
 	return "Alert, breathing normally, shivering"
 end
 
-local function rotate(options: { string }, answer: string, seed: number): ({ string }, number)
-	local opts = table.clone(options)
-	if not table.find(opts, answer) then
-		opts[1] = answer
-	end
-	local shift = math.floor(seed * #opts) % #opts
-	local out = {}
-	for i = 1, #opts do
-		out[i] = opts[(i - 1 + shift) % #opts + 1]
-	end
-	return out, table.find(out, answer) or 1
-end
+export type Line = { letter: string, title: string, text: string }
 
-function Medical.atmistCards(p: Profile, id: string, observed: Observed): { Card }
+-- The ATMIST record the crew reads to the paramedic: the truth from what this crew saw and did.
+function Medical.atmist(p: Profile, observed: Observed): { Line }
 	local total = p.minutesBefore + observed.minutesOnScene
 	local nearest = math.clamp(math.floor(total / 10 + 0.5) * 10, 10, 40)
-	local cards = {}
-	local function add(
-		letter: string,
-		title: string,
-		c: string,
-		options: { string },
-		answer: string,
-		salt: number
-	)
-		local opts, right = rotate(options, answer, Units.hash01(id, salt))
-		table.insert(
-			cards,
-			{ letter = letter, title = title, cue = c, options = opts, answer = right }
-		)
-	end
-	add("A", "A  Age", "Who you pulled out", { "Child", "Adult", "Older adult" }, p.ageBand, 11)
-	add(
-		"T",
-		"T  Time",
-		"Datum time plus your time on scene",
-		{ "In the water about 10 min", "about 20 min", "about 30 min", "about 40 min" },
-		if nearest == 10 then "In the water about 10 min" else `about {nearest} min`,
-		12
-	)
-	add(
-		"M",
-		"M  Mechanism",
-		"What the informant and the casualty said",
-		Medical.Mechanisms,
-		p.mechanism,
-		13
-	)
-	add(
-		"I",
-		"I  Injuries",
-		"What your survey found",
-		{ "None seen", "Scrape on the arm" },
-		if p.scrape then "Scrape on the arm" else "None seen",
-		14
-	)
-	add("S", "S  Signs", "AVPU, breathing, shivering", {
-		"Alert, breathing normally, shivering",
-		"Responds to voice, not shivering, drowsy",
-		"Unresponsive, breathing slowly",
-		"Responds to voice, breathing fast, shivering",
-	}, signsText(p), 15)
-	local done = treatmentText(observed.applied or {})
-	add(
-		"T2",
-		"T  Treatment",
-		"What you actually did, in order",
-		{ done, "Hot drink, rubbed warm", "Sat them up, oxygen" },
-		done,
-		16
-	)
-	return cards
+	return {
+		{ letter = "A", title = "Age", text = p.ageBand },
+		{ letter = "T", title = "Time", text = `In the water about {nearest} min` },
+		{ letter = "M", title = "Mechanism", text = p.mechanism },
+		{
+			letter = "I",
+			title = "Injuries",
+			text = if p.scrape then "Scrape on the arm" else "None seen",
+		},
+		{ letter = "S", title = "Signs", text = signsText(p) },
+		{ letter = "T", title = "Treatment", text = treatmentText(observed.applied or {}) },
+	}
 end
 
 return Medical

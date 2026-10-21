@@ -13,7 +13,8 @@
 --   Cosmetics.option(slot, id): Option?
 --   Cosmetics.default(slot): string?                the free default option id
 --   Cosmetics.attribute(slot): string               "Cos_<Slot>", the player attribute
---   Cosmetics.canEquip(slot, id, owns): boolean     the option exists and is free or its pass owned
+--   Cosmetics.canEquip(slot, id, owns): boolean     the option exists and is free, its pass owned,
+--                                                 or its `earn` key owned (earned rewards)
 --   Cosmetics.sanitize(saved, owns): { [slot]: id } every slot, default where not allowed
 --   Cosmetics.ownedOptions(slot, owns): { Option }  the equippable options, in config order
 --   Cosmetics.cycle(slot, current, owns, step): id  the next / previous equippable option
@@ -43,6 +44,8 @@ local SLOT_ORDER = {
 	"Outfit",
 	"Badge",
 	"Livery",
+	"Decal",
+	"Title",
 	"Horn",
 	"Siren",
 	"LightBar",
@@ -87,6 +90,9 @@ local function build(modules: { any })
 				end
 				if option.pass ~= nil and type(option.pass) ~= "string" then
 					table.insert(problems, `{slot.slot}.{option.id} pass must be a string`)
+				end
+				if option.earn ~= nil and type(option.earn) ~= "string" then
+					table.insert(problems, `{slot.slot}.{option.id} earn must be a string`)
 				end
 			end
 		end
@@ -153,7 +159,13 @@ local function build(modules: { any })
 	end
 
 	local function allowed(option: Option, owns: Owns): boolean
-		return option.pass == nil or owns(option.pass) == true
+		if option.pass ~= nil and owns(option.pass) ~= true then
+			return false
+		end
+		if option.earn ~= nil and owns(option.earn) ~= true then
+			return false
+		end
+		return true
 	end
 
 	function R.canEquip(slot: string, id: string, owns: Owns): boolean

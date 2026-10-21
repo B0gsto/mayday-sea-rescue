@@ -12,6 +12,8 @@ local UserInputService = game:GetService("UserInputService")
 
 local HudTheme = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
+local RadioFormat =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioFormat"))
 
 local Ui = {}
 Ui.Theme = HudTheme
@@ -178,8 +180,8 @@ function Ui.button(
 	return b
 end
 
--- The step header: plain label and the real term underneath (docs 09 principle 1).
-function Ui.header(parent: Instance, label: string, realTerm: string): (TextLabel, TextLabel)
+-- The step header: a short label, and the real term underneath only when one is given.
+function Ui.header(parent: Instance, label: string, realTerm: string?): (TextLabel, TextLabel?)
 	local a = Ui.text(
 		parent,
 		label,
@@ -188,6 +190,9 @@ function Ui.header(parent: Instance, label: string, realTerm: string): (TextLabe
 		HudTheme.TextSize.title,
 		true
 	)
+	if not realTerm then
+		return a, nil
+	end
 	local b = Ui.text(
 		parent,
 		realTerm,
@@ -200,18 +205,61 @@ function Ui.header(parent: Instance, label: string, realTerm: string): (TextLabe
 	return a, b
 end
 
--- Assist-only hint line: small, dim, never a glow over the world.
-function Ui.hint(parent: Instance, text: string, assist: boolean): TextLabel
-	local l = Ui.text(
-		parent,
-		text,
-		UDim2.new(1, -24, 0, 20),
-		UDim2.new(0, 12, 1, -25),
-		HudTheme.TextSize.small
+-- Pure: the first `max` words of a line.
+function Ui.words(text: string, max: number): string
+	local out, n = {}, 0
+	for w in string.gmatch(text, "%S+") do
+		n += 1
+		if n > max then
+			break
+		end
+		out[n] = w
+	end
+	return table.concat(out, " ")
+end
+
+-- Assist-only hint line: one icon and at most three words, never a glow over the world.
+function Ui.hint(
+	parent: Instance,
+	text: string,
+	assist: boolean,
+	glyph: string?
+): (Frame, TextLabel)
+	local row = Instance.new("Frame")
+	row.Name = "Hint"
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.new(1, -24, 0, 20)
+	row.Position = UDim2.new(0, 12, 1, -25)
+	row.Visible = assist
+	row.Parent = parent
+	local icon = Instance.new("Frame")
+	icon.Name = "Icon"
+	icon.AnchorPoint = Vector2.new(0, 0.5)
+	icon.Position = UDim2.fromScale(0, 0.5)
+	icon.Size = UDim2.fromOffset(18, 18)
+	icon.BackgroundColor3 = HudTheme.Colors.textDim
+	icon.BorderSizePixel = 0
+	icon.Parent = row
+	HudTheme.corner(icon, 9)
+	local mark = Instance.new("TextLabel")
+	mark.BackgroundTransparency = 1
+	mark.Size = UDim2.fromScale(1, 1)
+	mark.Font = HudTheme.BoldFont
+	mark.TextSize = 12
+	mark.TextColor3 = HudTheme.Colors.panel
+	mark.Text = glyph or "i"
+	mark.Parent = icon
+	local l = HudTheme.label(
+		"HintText",
+		Ui.words(text, 3),
+		UDim2.new(1, -24, 1, 0),
+		HudTheme.BodyFont,
+		HudTheme.TextSize.small,
+		row
 	)
+	l.Position = UDim2.fromOffset(24, 0)
 	l.TextColor3 = HudTheme.Colors.textDim
-	l.Visible = assist
-	return l
+	return row, l
 end
 
 -- A crew call-out line ("Five metres... three... neutral!") near the top of the screen.
@@ -233,7 +281,7 @@ function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 	return function(text: string, seconds: number?)
 		n += 1
 		local mine = n
-		l.Text = text
+		l.Text = RadioFormat.capLine(text, 6) -- subtitles stay at six words, like the radio
 		task.delay(seconds or 2.5, function()
 			if n == mine and l.Parent then
 				l.Text = ""
@@ -242,104 +290,31 @@ function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 	end
 end
 
--- Hands on screen: the camera stream's viewmodel (may not exist yet).
-function Ui.hands(name: string)
+-- Hands on screen: the camera stream's viewmodel (may not exist yet). opts: { loop: boolean? }.
+local function withViewmodel(fn: (any) -> ())
 	task.spawn(function()
 		pcall(function()
 			local client = script.Parent.Parent.Parent
 			local cam = client:FindFirstChild("Camera")
 			local vm = cam and cam:FindFirstChild("Viewmodel")
 			if vm and vm:IsA("ModuleScript") then
-				local Viewmodel = (require :: any)(vm)
-				if type(Viewmodel.playAction) == "function" then
-					Viewmodel.playAction(name)
-				end
+				fn((require :: any)(vm))
 			end
 		end)
 	end)
 end
 
-local FACE =
-	{ Enum.KeyCode.ButtonA, Enum.KeyCode.ButtonB, Enum.KeyCode.ButtonX, Enum.KeyCode.ButtonY }
-local FACE_NAMES = { "A", "B", "X", "Y" }
-local NUMBERS = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyCode.Four }
+function Ui.hands(name: string, opts: { loop: boolean? }?)
+	withViewmodel(function(Viewmodel)
+		Viewmodel.playAction(name, opts)
+	end)
+end
 
-export type CardSpec = {
-	title: string,
-	cue: string,
-	options: { string },
-	answer: number?, -- only used for the Assist glow
-	assist: boolean,
-	disabled: { [number]: boolean }?,
-}
-
--- 2 to 4 choice cards: number keys / tap / A B X Y. Calls onPick(i) once.
-function Ui.cards(bag: Bag, parent: Instance, spec: CardSpec, onPick: (number) -> ()): Frame
-	local n = math.min(#spec.options, 4)
-	local frame = Ui.panel(parent, UDim2.fromOffset(640, 168), UDim2.new(0.5, 0, 1, -24))
-	Ui.text(frame, spec.title, UDim2.new(1, -24, 0, 22), UDim2.fromOffset(12, 8), 18, true)
-	local cueLabel =
-		Ui.text(frame, spec.cue, UDim2.new(1, -24, 0, 40), UDim2.fromOffset(12, 32), 16)
-	cueLabel.TextColor3 = HudTheme.Colors.text
-	local picked = false
-	local unbind: () -> () = function() end
-	local buttons: { TextButton } = {}
-	local localBag = Ui.bag()
-	local function pick(i: number)
-		if picked or i > n or (spec.disabled and spec.disabled[i]) then
-			return
-		end
-		picked = true
-		unbind()
-		Ui.clean(localBag)
-		onPick(i)
-	end
-	local w = (616 - (n - 1) * 8) / n
-	for i = 1, n do
-		local key = if Ui.isGamepad() then FACE_NAMES[i] else tostring(i)
-		local b = Ui.button(
-			frame,
-			`{key}  {spec.options[i]}`,
-			UDim2.fromOffset(w, 74),
-			UDim2.fromOffset(12 + (i - 1) * (w + 8), 82),
-			function()
-				pick(i)
-			end
-		)
-		b.TextSize = 16
-		if spec.disabled and spec.disabled[i] then
-			b.BackgroundColor3 = HudTheme.Colors.locked
-			b.TextColor3 = HudTheme.Colors.textDim
-		end
-		table.insert(buttons, b)
-	end
-	local keys = {}
-	for i = 1, n do
-		table.insert(keys, NUMBERS[i])
-		table.insert(keys, FACE[i])
-	end
-	unbind = Ui.bind(bag, "Cards", function(state, input)
-		if state ~= "Begin" then
-			return
-		end
-		for i = 1, n do
-			if input.KeyCode == NUMBERS[i] or input.KeyCode == FACE[i] then
-				pick(i)
-			end
-		end
-	end, table.unpack(keys))
-	if spec.assist and spec.answer then
-		local answer = spec.answer
-		Ui.add(
-			localBag,
-			task.delay(5, function()
-				if not picked and buttons[answer] and buttons[answer].Parent then
-					HudTheme.stroke(buttons[answer], HudTheme.Colors.ready, 2)
-				end
-			end)
-		)
-	end
-	return frame
+-- Ends a looping hands clip (back to hidden arms).
+function Ui.handsStop()
+	withViewmodel(function(Viewmodel)
+		Viewmodel.stopAction()
+	end)
 end
 
 -- Two-hand rhythm: left/right click, LB/RB, or two touch pads. onTap("L" | "R").
@@ -414,7 +389,8 @@ function Ui.action(
 	return b
 end
 
--- A horizontal bar with a moving needle and an optional good band (comfort, level, panic).
+-- A horizontal bar with a moving needle and an optional green good band (comfort, level, panic).
+-- An empty title leaves the bar alone at the top of its slot (an icon beside it says what it is).
 function Ui.meter(
 	parent: Instance,
 	title: string,
@@ -424,19 +400,21 @@ function Ui.meter(
 	local holder = Instance.new("Frame")
 	holder.BackgroundTransparency = 1
 	holder.Position = pos
-	holder.Size = UDim2.fromOffset(width, 34)
+	holder.Size = UDim2.fromOffset(width, if title == "" then 18 else 34)
 	holder.Parent = parent
-	local t = Ui.text(holder, title, UDim2.new(1, 0, 0, 17), UDim2.fromOffset(0, 0), 15)
-	t.TextColor3 = HudTheme.Colors.textDim
+	if title ~= "" then
+		local t = Ui.text(holder, title, UDim2.new(1, 0, 0, 17), UDim2.fromOffset(0, 0), 15)
+		t.TextColor3 = HudTheme.Colors.textDim
+	end
 	local track = Instance.new("Frame")
-	track.Position = UDim2.fromOffset(0, 20)
+	track.Position = UDim2.fromOffset(0, if title == "" then 4 else 20)
 	track.Size = UDim2.new(1, 0, 0, 10)
 	track.BackgroundColor3 = HudTheme.Colors.locked
 	track.BorderSizePixel = 0
 	track.Parent = holder
 	HudTheme.corner(track, 5)
 	local band = Instance.new("Frame")
-	band.BackgroundColor3 = HudTheme.Colors.panelLight
+	band.BackgroundColor3 = HudTheme.Colors.ready
 	band.BorderSizePixel = 0
 	band.Size = UDim2.fromScale(0, 1)
 	band.Parent = track

@@ -18,7 +18,7 @@ export type CameraMode = "FirstPerson" | "Chase"
 export type VehicleSpec = {
 	id: string,
 	displayName: string,
-	-- FirstPerson: locked first person from DriverSeat.EyePoint (on foot and on the jet ski);
+	-- FirstPerson: locked first person from DriverSeat.EyePoint (a craft with no chase view);
 	-- Chase: third-person chase camera, with an optional helm view at EyePoint. A camera stream
 	-- implements both (CONTRACT: not built by stream B).
 	cameraMode: CameraMode,
@@ -54,6 +54,10 @@ export type VehicleSpec = {
 	canCapsize: boolean,
 	canTow: boolean,
 	firePump: boolean,
+	-- Premium fleet: the hand-built hull / art layout it borrows ("JetSki" | "RIB" | "Lifeboat"; nil =
+	-- its own id) and the uploaded AssetIds model the spawner clones (nil = the base's art, or greybox).
+	base: string?,
+	model: string?,
 }
 
 local VehicleConfig = {}
@@ -65,7 +69,7 @@ VehicleConfig.KNOT = KNOT
 VehicleConfig.JetSki = {
 	id = "JetSki",
 	displayName = "Jet Ski",
-	cameraMode = "FirstPerson",
+	cameraMode = "Chase",
 	eyePoint = Vector3.new(0, 4.0, -0.4), -- 1.6 m above the footwell deck (rider half standing)
 	topSpeed = 45 * KNOT, -- 69.4 studs/s (23.1 m/s)
 	accel = 24, -- 0.82 g off the line -- tune
@@ -136,7 +140,7 @@ VehicleConfig.RIB = {
 	killCord = true, -- the helm wears one too
 	ejectOnCapsize = false, -- crew in jockey seats hold on; the RIB self-rights (docs 02)
 	seats = 3, -- 3 crew (docs 02)
-	survivorCapacity = 2, -- docs 02
+	survivorCapacity = 3, -- 2026-10-21 (user): jet ski 1, RIB 3, lifeboat 8
 	hullSize = Vector3.new(8.55, 3.3, 25.3), -- 2.85 m x 1.1 m x 8.44 m
 	massHint = 2100 * KG, -- 56.8 RMU
 	draft = 1.6, -- 0.53 m
@@ -156,8 +160,141 @@ VehicleConfig.RIB = {
 	firePump = true, -- small fire pump (docs 02)
 } :: VehicleSpec
 
+-- Severn-class all-weather lifeboat: 17.3 m x 5.9 m, 1.5 m draft, 41 t, 25 knots. Heavy and
+-- steady: 4 crew, 8 survivors, a strong tow, self-righting (never capsizes), holds her course in
+-- big seas. Slower and much heavier than the RIB; the placeholder hull is code-built (Builder).
+VehicleConfig.Lifeboat = {
+	id = "Lifeboat",
+	displayName = "All-Weather Lifeboat",
+	cameraMode = "Chase",
+	eyePoint = Vector3.new(0, 2.8, -0.5), -- helm in the wheelhouse, about 1.6 m above the seat
+	topSpeed = 29 * KNOT, -- 44.7 studs/s (25 knots); docs 02 section 4: 45 studs/s
+	accel = 6, -- 0.2 g: 41 t takes her time to gather way -- tune
+	brakeDecel = 8, -- big propellers astern -- tune
+	turnRate = 26, -- degrees/s cap: heavier than the RIB -- tune
+	turnRadiusSlow = 40, -- 13 m, about 0.75 lengths -- tune
+	maxLateralG = 0.5, -- wide, steady turning circle at speed -- tune
+	pivotSpeed = 3, -- twin props walk her round at a standstill -- tune
+	offThrottleSteer = 0.6, -- a big rudder still bites -- tune
+	humpSpeed = 0.25,
+	planingSpeed = 0.5, -- displacement hull: never fully on the plane
+	humpTrim = 3,
+	runningTrim = 1.5,
+	squatTrim = 1,
+	planingLift = 0.12,
+	leanFactor = 0.25, -- she heels little in a turn -- tune
+	maxLean = 8,
+	dampingRatio = 0.55, -- a heavy hull: little bounce, holds her course in a big sea
+	idleCreep = 0, -- props in neutral
+	approachSpeed = 4.5 * KNOT, -- under 5 knots
+	killCord = true,
+	ejectOnCapsize = false, -- self-righting (docs 02)
+	seats = 4, -- 4 crew (docs 02)
+	survivorCapacity = 8, -- docs 02
+	hullSize = Vector3.new(17.7, 7.5, 51.9), -- 5.9 m x 2.5 m x 17.3 m
+	massHint = 41000 * KG, -- 1108 RMU
+	draft = 4.5, -- 1.5 m
+	floatPoints = {
+		Vector3.new(-5.5, -3, -20),
+		Vector3.new(5.5, -3, -20),
+		Vector3.new(-6.5, -3, -7),
+		Vector3.new(6.5, -3, -7),
+		Vector3.new(-6.5, -3, 7),
+		Vector3.new(6.5, -3, 7),
+		Vector3.new(-5.5, -3, 20),
+		Vector3.new(5.5, -3, 20),
+	},
+	lateralGrip = 0.95, -- a deep keel and bilge keels: minimal leeway
+	canCapsize = false,
+	canTow = true, -- strong tow (docs 02)
+	firePump = true, -- fire monitor (docs 02)
+} :: VehicleSpec
+
+-- Premium fleet (2026-10-21, user): Robux only (ProgressionConfig.Vehicles passOnly). Each copies a
+-- base spec and retunes it. Placeholder art: `model` is the base's mesh until its own one is uploaded
+-- (swap the string; the mesh must carry the base's ATT_ markers, see Boat/Builder).
+local function variant(baseId: string, over: { [string]: any }): VehicleSpec
+	local spec = table.clone((VehicleConfig :: any)[baseId]) :: any
+	for k, v in over do
+		spec[k] = v
+	end
+	spec.base = baseId
+	return spec :: VehicleSpec
+end
+
+-- Offshore powerboat (Cigarette / Fountain class): stepped deep V, 58 knots, carves hard.
+VehicleConfig.StormRunner = variant("RIB", {
+	id = "StormRunner",
+	displayName = "Storm Runner",
+	model = "M_Veh_RIB", -- placeholder: M_Veh_StormRunner
+	topSpeed = 58 * KNOT, -- 89.5 studs/s -- tune
+	accel = 13, -- twice the RIB's punch -- tune
+	brakeDecel = 16,
+	turnRate = 58,
+	maxLateralG = 1.05,
+	planingSpeed = 0.34,
+	runningTrim = 4.5,
+	leanFactor = 0.4,
+	maxLean = 14,
+	dampingRatio = 0.5,
+	lateralGrip = 0.88,
+	firePump = false,
+})
+
+-- Luxury catamaran: two hulls, dead flat in a turn, soft over a swell, never capsizes; 6 casualties.
+VehicleConfig.Tidewalker = variant("Lifeboat", {
+	id = "Tidewalker",
+	displayName = "Tidewalker",
+	-- no model: the lifeboat greybox until M_Veh_Tidewalker lands
+	topSpeed = 36 * KNOT, -- 55.5 studs/s, faster than the lifeboat -- tune
+	accel = 9,
+	brakeDecel = 9,
+	turnRate = 34,
+	turnRadiusSlow = 30,
+	maxLateralG = 0.6,
+	pivotSpeed = 4, -- twin engines spin a cat on the spot
+	leanFactor = 0.06,
+	maxLean = 3,
+	dampingRatio = 0.75, -- smooth ride
+	survivorCapacity = 6, -- between the RIB's 3 and the lifeboat's 8
+	canTow = true,
+	firePump = false,
+})
+
+-- Sport jet ski (stand-up race class): the quickest thing on the water, light and twitchy.
+VehicleConfig.RiptideX = variant("JetSki", {
+	id = "RiptideX",
+	displayName = "Riptide X",
+	model = "M_Veh_JetSki", -- placeholder: M_Veh_RiptideX
+	topSpeed = 62 * KNOT, -- 95.7 studs/s -- tune
+	accel = 32,
+	turnRate = 115,
+	turnRadiusSlow = 6,
+	maxLateralG = 1.55,
+	pivotSpeed = 8,
+	leanFactor = 0.65,
+	maxLean = 30,
+	lateralGrip = 0.74,
+})
+
+-- Gold luxe jet ski: fast, planted and smooth rather than wild.
+VehicleConfig.GildedGull = variant("JetSki", {
+	id = "GildedGull",
+	displayName = "Gilded Gull",
+	model = "M_Veh_JetSki", -- placeholder: M_Veh_GildedGull
+	topSpeed = 54 * KNOT, -- 83.3 studs/s -- tune
+	accel = 27,
+	turnRate = 100,
+	maxLateralG = 1.4,
+	leanFactor = 0.45,
+	maxLean = 20,
+	dampingRatio = 0.8, -- glides over chop
+	lateralGrip = 0.82,
+})
+
 -- Every vehicle id, in shop / bay menu order.
-VehicleConfig.Order = { "JetSki", "RIB" }
+VehicleConfig.Order =
+	{ "JetSki", "RiptideX", "GildedGull", "RIB", "StormRunner", "Tidewalker", "Lifeboat" }
 
 function VehicleConfig.get(id: string): VehicleSpec?
 	local spec = (VehicleConfig :: any)[id]
@@ -165,6 +302,12 @@ function VehicleConfig.get(id: string): VehicleSpec?
 		return spec :: VehicleSpec
 	end
 	return nil
+end
+
+-- A one-rider jet ski: the JetSki or a premium jet ski built on it.
+function VehicleConfig.isJetSki(id: any): boolean
+	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+	return spec ~= nil and (spec.base or spec.id) == "JetSki"
 end
 
 return VehicleConfig

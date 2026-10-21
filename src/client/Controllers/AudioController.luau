@@ -17,19 +17,24 @@
 --
 -- What it plays: wind (3 layers by Weather.getIntensity and apparent wind), sea beds (harbour /
 -- open / storm by zone shelter and height above the surface), rain on the water, the marina bed,
--- halyards clinking on masts with the wind, a bell buoy off the harbour mouth, gulls (quiet in a
--- storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski and RIB, two
--- layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and hull slams
--- for the driven boat, a soft click on every HUD button, and two music cues (operation underway,
--- debrief). The car engine, horn and tyres are in CarController; rain loop and thunder in
--- WeatherController; squelch and static in RadioController (ids from VoiceManifest.Sfx).
+-- the town murmur, halyards clinking on masts with the wind, a bell buoy off the harbour mouth,
+-- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
+-- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
+-- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
+-- a soft click on every HUD button, and two music cues (operation underway, debrief). The car
+-- engine, horn and tyres are in CarController; rain loop and thunder in WeatherController; squelch
+-- and static in RadioController (ids from VoiceManifest.Sfx); the swim splash and strokes in
+-- SwimController; Bosun's bark in DogController.
 
 local CollectionService = game:GetService("CollectionService")
 local ContentProvider = game:GetService("ContentProvider")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -498,7 +503,9 @@ local function randomAround(centre: Vector3, minR: number, maxR: number, height:
 end
 
 local function updateAmbience(dt: number, now: number, camPos: Vector3)
-	local intensity = math.clamp(Weather.getIntensity(), 0, 1)
+	local held = Lighting:GetAttribute("LocalStormIntensity")
+	local intensity =
+		math.clamp(if type(held) == "number" then held else Weather.getIntensity(), 0, 1)
 	local surface = Weather.heightAt(camPos)
 	local above = camPos.Y - surface
 	setUnderwater(above < -0.3)
@@ -540,6 +547,17 @@ local function updateAmbience(dt: number, now: number, camPos: Vector3)
 	-- marina bed (3D at the harbour centre) and halyards on masts, more with the wind
 	local inHarbour = harbourDist < AudioConfig.HarbourRadius + 150
 	setBed(beds.Amb_Harbour, if inHarbour and not underwater then 1 - 0.6 * intensity else 0, dt, 1)
+	local townDist = (Vector3.new(camPos.X, 0, camPos.Z) - Vector3.new(
+		AudioConfig.TownCentre.X,
+		0,
+		AudioConfig.TownCentre.Z
+	)).Magnitude
+	setBed(
+		beds.Amb_Town,
+		if townDist < AudioConfig.TownRadius and not underwater then 1 - 0.5 * intensity else 0,
+		dt,
+		1
+	)
 	if inHarbour and not underwater then
 		riggingCarry += dt * MIX.riggingRate * math.clamp(
 			0.25 + w.light * 0.3 + w.strong * 0.7 + w.gale,
@@ -611,7 +629,33 @@ end
 ---------------------------------------------------------------- UI clicks
 
 local hooked: { [GuiButton]: boolean } = setmetatable({}, { __mode = "k" }) :: any
+local bounceSerial: { [GuiButton]: number } = setmetatable({}, { __mode = "k" }) :: any
 local lastClick = 0
+
+-- A small scale dip on press, so every button answers the hand as well as the ear.
+local function pressBounce(b: GuiButton)
+	local scale = b:FindFirstChildOfClass("UIScale")
+	if not scale then
+		local made = Instance.new("UIScale")
+		made.Parent = b
+		scale = made
+	end
+	local s = scale :: UIScale
+	local stored = b:GetAttribute("PressScale")
+	local base: number = if typeof(stored) == "number" then stored else s.Scale
+	if typeof(stored) ~= "number" then
+		b:SetAttribute("PressScale", base)
+	end
+	bounceSerial[b] = (bounceSerial[b] or 0) + 1
+	local serial = bounceSerial[b]
+	TweenService:Create(s, TweenInfo.new(0.06), { Scale = base * 0.9 }):Play()
+	task.delay(0.07, function()
+		if bounceSerial[b] == serial and s.Parent then
+			TweenService:Create(s, TweenInfo.new(0.12, Enum.EasingStyle.Back), { Scale = base })
+				:Play()
+		end
+	end)
+end
 
 local function hookButton(b: Instance)
 	if not b:IsA("GuiButton") or hooked[b] then
@@ -619,6 +663,7 @@ local function hookButton(b: Instance)
 	end
 	hooked[b] = true
 	b.Activated:Connect(function()
+		pressBounce(b)
 		local t = os.clock()
 		if t - lastClick < 0.05 then
 			return
@@ -635,7 +680,28 @@ local function hookButton(b: Instance)
 	end)
 end
 
----------------------------------------------------------------- lifecycle
+--- UI ticks: world prompts, awards, completed steps and the debrief (the button clicks are above).
+local lastResultOp: string? = nil
+local lastResults = 0
+
+local function hookTicks()
+	ProximityPromptService.PromptTriggered:Connect(function()
+		AudioController.play("UI_Prompt", nil, 1, rng:NextNumber(0.97, 1.05))
+	end)
+	task.spawn(function()
+		local net = ReplicatedStorage:WaitForChild("Net", 30)
+		local ev = net and net:WaitForChild("PlayerDataChanged", 30)
+		if ev and ev:IsA("RemoteEvent") then
+			ev.OnClientEvent:Connect(function(data: any)
+				if type(data) == "table" and type(data.award) == "table" then
+					AudioController.play("UI_Pickup", nil, 1, rng:NextNumber(0.98, 1.06))
+				end
+			end)
+		end
+	end)
+end
+
+--------------------------------------------------------------- lifecycle
 
 function AudioController.Init()
 	ensureGroups()
@@ -658,6 +724,11 @@ function AudioController.Init()
 	local hb = bed("Amb_Harbour", harbour)
 	hb.sound.RollOffMinDistance = 60
 	hb.sound.RollOffMaxDistance = AudioConfig.HarbourRadius + 150
+	local town = emitterAt(AudioConfig.TownCentre)
+	town.Name = "TownBed"
+	local tb = bed("Amb_Town", town)
+	tb.sound.RollOffMinDistance = 40
+	tb.sound.RollOffMaxDistance = AudioConfig.TownRadius
 	for _, name in { "Music_Operation", "Music_Debrief" } do
 		local b: Bed = {
 			sound = AudioController.newSound(name, SoundService, true),
@@ -695,13 +766,26 @@ function AudioController.Start()
 	end
 	BoatController = sibling("BoatController")
 	OpsController = sibling("OpsController")
+	hookTicks()
+	if OpsController and OpsController.OnState then
+		OpsController.OnState:Connect(function(s: any)
+			local n = if type(s.results) == "table" then #s.results else 0
+			if s.opId ~= lastResultOp then
+				lastResultOp, lastResults = s.opId, n
+			elseif n > lastResults then
+				AudioController.play("UI_Step")
+			end
+			lastResults = n
+		end)
+	end
 	if OpsController and OpsController.OnDebrief then
-		OpsController.OnDebrief:Connect(function()
+		OpsController.OnDebrief:Connect(function(d: any)
 			debriefUntil = os.clock() + 70
 			local b = music.Music_Debrief
 			if b then
 				b.sound.TimePosition = 0
 			end
+			AudioController.play(if d and d.grade == "Fail" then "UI_Fail" else "UI_Success")
 		end)
 	end
 

@@ -1,0 +1,621 @@
+{
+ "asset": "M_Rock_Ledge_03",
+ "name": "M_Rock_Ledge_03",
+ "date": "2026-10-17",
+ "commit": "951c085+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Rock_Ledge_03/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Rock_Ledge_03_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Ledge03_Granite"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.23,
+     0.243,
+     0.953,
+     0.598
+    ],
+    "mannequin": [
+     0.037,
+     0.372,
+     0.139,
+     0.619
+    ],
+    "fill": 0.723
+   },
+   "Side": {
+    "asset": [
+     0.251,
+     0.296,
+     0.963,
+     0.571
+    ],
+    "mannequin": [
+     0.127,
+     0.36,
+     0.228,
+     0.637
+    ],
+    "fill": 0.712
+   },
+   "Rear3Q": {
+    "asset": [
+     0.23,
+     0.243,
+     0.953,
+     0.598
+    ],
+    "mannequin": [
+     0.037,
+     0.372,
+     0.139,
+     0.619
+    ],
+    "fill": 0.723
+   },
+   "High": {
+    "asset": [
+     0.256,
+     0.157,
+     0.963,
+     0.753
+    ],
+    "mannequin": [
+     0.046,
+     0.421,
+     0.17,
+     0.613
+    ],
+    "fill": 0.707
+   }
+  },
+  "closeups": [
+   {
+    "name": "top",
+    "target": [
+     0.0,
+     0.0,
+     3.592854380607605
+    ],
+    "dist": 5.452226686477661,
+    "az": 30.0,
+    "el": 35.0,
+    "file": "closeup_top.png"
+   },
+   {
+    "name": "waterline",
+    "target": [
+     0.0,
+     -4.49717960357666,
+     1.5968241691589355
+    ],
+    "dist": 6.387296676635742,
+    "az": 0.0,
+    "el": 12.0,
+    "file": "closeup_waterline.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.707,
+  "in_frame": true,
+  "dims_m": [
+   4.039,
+   3.748,
+   1.331
+  ],
+  "validation_ok": true,
+  "seconds": 3.9
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/rocks/M_Rock_Ledge_03/M_Rock_Ledge_03.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "boulder"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Ledge_03_LOD0"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5999 of 8000"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.09e-06, 108 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.997"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 5999 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "58 px/stud at 1024 px, background tier 25 or more px/stud (pass at 22)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Ledge_03_LOD1"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2398 of 8000"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.09e-06, 95 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.996"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2398 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 5.6% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Ledge_03_LOD2"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "898 of 8000"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.09e-06, 67 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.994, v 0.002 to 0.995"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 898 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD2 of a decimated scan keeps the same UVs; area drift from collapsed micro-faces only): UV bounds differ by 0.004 (max 0.02), UV area by 15.2% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Ledge_03_COL"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "66 of 8000"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Rock_Ledge_03_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "66 of 1000"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5999 of 6000 (boulder, asset row)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2398 of 2400"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "898 of 900"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 4.039 x 3.748 x 1.331 m, spec 4.039 x 3.748 x 1.331 m (art/reference/M_Rock_Ledge_03/dims.md)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12.106 studs, real 4.039 m = 12.117 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11.245 studs, real 3.748 m = 11.244 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.955 studs, real 1.331 m = 3.993 studs, off 0.9% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Rock_Ledge_03_COL"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 1 sets)"
+  },
+  {
+   "subject": "T_Ledge03_Granite_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_ALB.png"
+  },
+  {
+   "subject": "T_Ledge03_Granite_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Ledge03_Granite_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_NOR.png"
+  },
+  {
+   "subject": "T_Ledge03_Granite_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_RGH.png"
+  },
+  {
+   "subject": "T_Ledge03_Granite_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Ledge03_Granite_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Ledge_03/T_Ledge03_Granite_MET.png"
+  },
+  {
+   "subject": "ATT_Waterline",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Rock_Ledge_03",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.71; 11 renders in 4 s, maps M_Rock_Ledge_03_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Rock_Ledge_03_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 5999,
+   "texel_density": 57.7
+  },
+  {
+   "name": "M_Rock_Ledge_03_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 66,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Ledge_03_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2398,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Ledge_03_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 898,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  12.106422424316406,
+  11.244735717773438,
+  3.955226421356201
+ ],
+ "peak_rss_mb": 640.5
+}

@@ -1,0 +1,20 @@
+{
+ "note": "M_Road_FieldGate's MaterialVariant row (docs/12 2.4 asks for trim + MaterialVariant). Paste into assets/materials/roads_variants.json 'variants' through B02's writer art/source/materials/wire.py; this asset did not touch that file or wire.py.",
+ "row": {
+  "name": "RoadFieldGateTimber",
+  "set": "Timber",
+  "base": "Wood",
+  "studsPerTile": 5.4,
+  "pattern": "Regular",
+  "use": "timber field gates, fence posts and rails built from Parts beside the roads; matches the M_Road_FieldGate model",
+  "maps": {
+   "ColorMap": "AssetIds.Textures.M_Road_FieldGate.Timber",
+   "NormalMap": "AssetIds.Textures.M_Road_FieldGate.Timber",
+   "RoughnessMap": "AssetIds.Textures.M_Road_FieldGate.Timber",
+   "MetalnessMap": "AssetIds.Textures.M_Road_FieldGate.Timber"
+  },
+  "wetTwin": "RoadFieldGateTimber_Wet",
+  "wetMaps": ["ALB_Wet", "RGH_Wet"],
+  "tileM": [1.8, 1.6]
+ }
+}

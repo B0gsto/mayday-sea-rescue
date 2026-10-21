@@ -1,8 +1,9 @@
 --!strict
 -- MapController: the GTA-style map that replaces 3D guidance arrows (docs 05 HUD style).
 --
---   * Minimap (bottom-left, circular): the player at the centre, the map rotating with the camera
---     heading, a north marker on the rim, zoom from speed (close on foot, wide at speed in a boat),
+--   * Minimap (bottom left, top left on touch, Layout region): the player at the centre, the map
+--     rotating with the camera heading, a north marker on the rim, zoom from speed (close on foot,
+--     wide at speed in a boat),
 --     blips (the operation's casualty / vessel pulsing, the drop-off when transporting, offers,
 --     the station, Chandlery, quay desk, car park, your vehicles, other crew, storm areas, your
 --     waypoint) with objective blips clamped to the rim, a dotted line to the current objective and
@@ -56,7 +57,7 @@ type Pool = { parent: GuiObject, items: { [string]: Frame }, used: { [string]: b
 
 local OpsController: any = nil
 local gui: ScreenGui -- the full map (whole screen)
-local miniGui: ScreenGui -- the minimap, in the Layout "minimap" region (bottom left, safe area)
+local miniGui: ScreenGui -- the minimap, in the Layout "minimap" region (safe area)
 local mini: { [string]: any } = {}
 local full: { [string]: any } = {}
 local waypoint: Vector3? = nil
@@ -65,6 +66,7 @@ local offers: { [string]: { position: Vector3, expires: number } } = {}
 local closedOps: { [string]: boolean } = {}
 local isOpen = false
 local objective: Vector3?, objectiveLabel: string? = nil, nil
+local PRE_LAUNCH = { tasking = true, relay = true, kit_launch = true, launch = true }
 -- extra static blips other systems hand in (SetBlips), keyed by group: the logbook's discoveries
 local extraBlips: { [string]: { BlipDraw } } = {}
 
@@ -355,7 +357,8 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				)
 			end
 			objective, objectiveLabel = nearestDropOff(me), "Drop-off"
-		elseif target then
+		elseif target and not PRE_LAUNCH[s.current and s.current[1] and s.current[1].id or ""] then
+			-- before you are aboard the step card is the one objective; the casualty blip stays
 			objective, objectiveLabel = target, if vessel then "Vessel" else "Casualty"
 		end
 	end
@@ -494,6 +497,14 @@ local function buildMinimap()
 	pt.Size = UDim2.fromScale(1, 1)
 	pt.ZIndex = 10
 	mini.pill, mini.pillText = pill, pt
+	-- desktop: above the square (HudLayout leaves PILL_HEIGHT for it); touch: the minimap sits at
+	-- the top edge, so the pill goes inside the square's bottom edge instead
+	local function placePill(mt: Layout.Metrics)
+		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -4) else UDim2.new(0.5, 0, 0, -6)
+		pill.Size = if mt.touch then UDim2.new(1, -8, 0, 30) else UDim2.fromOffset(170, 30)
+	end
+	placePill(Layout.current())
+	Layout.onMetrics(placePill)
 
 	if UserInputService.TouchEnabled then
 		-- in the square's empty top-right corner, so it stays inside the minimap region
@@ -643,10 +654,11 @@ local LEGEND_WIDTH = 210
 local LEGEND_HEAD = 34 -- collapsed height
 local LEGEND_ROW = 24
 local PLACE_STYLE: { [string]: { size: number, color: Color3, halo: Color3 } } = {
-	region = { size = 22, color = Color3.fromRGB(235, 240, 220), halo = Color3.fromRGB(10, 25, 45) },
-	town = { size = 20, color = Color3.fromRGB(255, 248, 232), halo = Color3.fromRGB(10, 25, 45) },
-	place = { size = 16, color = Color3.fromRGB(238, 232, 214), halo = Color3.fromRGB(10, 25, 45) },
-	water = { size = 17, color = Color3.fromRGB(196, 236, 246), halo = Color3.fromRGB(8, 34, 64) },
+	region = { size = 24, color = Color3.fromRGB(235, 240, 220), halo = Color3.fromRGB(10, 25, 45) },
+	town = { size = 24, color = Color3.fromRGB(255, 248, 232), halo = Color3.fromRGB(10, 25, 45) },
+	place = { size = 19, color = Color3.fromRGB(238, 232, 214), halo = Color3.fromRGB(10, 25, 45) },
+	water = { size = 19, color = Color3.fromRGB(196, 236, 246), halo = Color3.fromRGB(8, 34, 64) },
+	street = { size = 16, color = Color3.fromRGB(255, 250, 238), halo = Color3.fromRGB(10, 25, 45) },
 }
 
 local function legendRow(parent: Instance, style: Style, order: number)
@@ -687,10 +699,15 @@ local function buildFullMap()
 	full.hit = hit
 	full.blips = frame("Blips", canvas, { Size = UDim2.fromScale(1, 1) })
 	full.pool = poolNew(full.blips)
-	local me = text("Player", canvas, "▲", 28, Color3.fromRGB(255, 255, 255))
+	-- you: a big white arrow on a blue disc, outlined, turned to your heading
+	local me = text("Player", canvas, "▲", 34, Color3.fromRGB(255, 255, 255))
 	me.AnchorPoint = Vector2.new(0.5, 0.5)
-	me.Size = UDim2.fromOffset(30, 30)
-	me.TextStrokeTransparency = 0.1
+	me.Size = UDim2.fromOffset(44, 44)
+	me.BackgroundTransparency = 0.1
+	me.BackgroundColor3 = Color3.fromRGB(30, 120, 255)
+	corner(me)
+	stroke(me, Color3.fromRGB(255, 255, 255), 3)
+	me.TextStrokeTransparency = 0.2
 	full.me = me
 	local cross = text("Cross", canvas, "+", 34, Color3.fromRGB(255, 255, 255))
 	cross.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -719,9 +736,17 @@ local function buildFullMap()
 		t.Visible = false
 		local halo = Instance.new("UIStroke")
 		halo.Color = st.halo
-		halo.Thickness = 2
-		halo.Transparency = 0.15
+		halo.Thickness = 3 -- thick enough to read over the baked road lines
+		halo.Transparency = 0
 		halo.Parent = t
+		if pl.kind == "street" then -- a dark plate: a street name sits on its road
+			t.BackgroundColor3 = st.halo
+			t.BackgroundTransparency = 0.3
+			corner(t, 6)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 4), UDim.new(0, 4)
+			pad.Parent = t
+		end
 		table.insert(full.places, { label = t, x = pl.x, z = pl.z, kind = pl.kind, left = pl.left })
 	end
 	-- the blips, you and the crosshair draw over the names
@@ -888,6 +913,8 @@ local function layoutSafe(size: Vector2)
 	full.hint.Visible = size.X - 2 * (LEGEND_WIDTH + 32) >= 300
 end
 
+local MARK_GAP = 6 -- px of clear map kept between a place name and any marker
+
 local function rectsTouch(a0: Vector2, a1: Vector2, b0: Vector2, b1: Vector2): boolean
 	return a0.X < b1.X and b0.X < a1.X and a0.Y < b1.Y and b0.Y < a1.Y
 end
@@ -895,7 +922,7 @@ end
 -- Place names at a fixed screen size; a name is drawn only where it touches no panel, the top bar
 -- or a name placed before it (MapConfig.Places order = priority). Region names show zoomed out,
 -- minor places zoomed in.
-local function placeNames(c: Vector2, scale: number, size: Vector2)
+local function placeNames(c: Vector2, scale: number, size: Vector2, marks: { { Vector2 } })
 	local origin = full.root.AbsolutePosition
 	local tl = GuiService:GetGuiInset()
 	local blocked: { { Vector2 } } = {
@@ -914,17 +941,43 @@ local function placeNames(c: Vector2, scale: number, size: Vector2)
 	local r = full.radius :: number
 	for _, pl in full.places do
 		local t = pl.label :: TextLabel
-		local show = (pl.kind ~= "region" or r >= 700) and (pl.kind ~= "place" or r <= 1600)
+		local show = (pl.kind ~= "region" or r >= 700)
+			and (pl.kind ~= "place" or r <= 1600)
+			and (pl.kind ~= "street" or r <= 700)
 		if show then
 			local x, y = size.X / 2 + (pl.x - c.X) * scale, size.Y / 2 + (pl.z - c.Y) * scale
+			if pl.left then
+				x += 10 -- clear of the landmark's dot baked into the map art
+			end
 			local wh = t.TextBounds
 			if wh.X < 1 then
 				wh = Vector2.new(#t.Text * t.TextSize * 0.55, t.TextSize)
 			end
-			wh += Vector2.new(4, 4) -- the halo
+			wh += Vector2.new(6, 6) -- the 3 px halo each side
 			local x0 = if pl.left then x else x - wh.X / 2
+			-- a name under a map marker slides below it, else above it (one or two steps); a name with
+			-- no clear spot is dropped, never drawn over a marker
+			local covered = true
+			local step = wh.Y / 2 + 18
+			for _, dy in { 0, step, -step, 2 * step, -2 * step } do
+				local clear = true
+				for _, m in marks do
+					local b0, b1 =
+						Vector2.new(x0 - MARK_GAP, y + dy - wh.Y / 2 - MARK_GAP),
+						Vector2.new(x0 + wh.X + MARK_GAP, y + dy + wh.Y / 2 + MARK_GAP)
+					if rectsTouch(b0, b1, m[1], m[2]) then
+						clear = false
+						break
+					end
+				end
+				if clear then
+					y += dy
+					covered = false
+					break
+				end
+			end
 			local a0, a1 = Vector2.new(x0, y - wh.Y / 2), Vector2.new(x0 + wh.X, y + wh.Y / 2)
-			show = a1.X > 0 and a0.X < size.X and a1.Y > 0 and a0.Y < size.Y
+			show = not covered and a1.X > 0 and a0.X < size.X and a1.Y > 0 and a0.Y < size.Y
 			for _, b in blocked do
 				if show and rectsTouch(a0, a1, b[1], b[2]) then
 					show = false
@@ -978,24 +1031,53 @@ local function updateFullMap(now: number)
 		end
 	end
 	local pool = full.pool :: Pool
+	local marks: { { Vector2 } } = {}
+	if root then -- blips stack off your arrow, never under it
+		local x, y = at(me)
+		table.insert(marks, { Vector2.new(x - 24, y - 24), Vector2.new(x + 24, y + 24) })
+	end
 	for _, b in collect(me, vehicle) do
 		local x, y = at(b.pos)
-		local f = poolGet(pool, b.id, b.style, math.floor((b.size or 20) * 1.15), b.pulse)
-		f.Position = UDim2.fromOffset(x, y)
+		local px = math.floor((b.size or 20) * 1.15)
+		local f = poolGet(pool, b.id, b.style, px, b.pulse)
+		-- a blip that would overlap one drawn before it steps out round a ring (8 slots, then wider)
+		local half = Vector2.new(px, px) / 2 + Vector2.new(3, 3)
+		local p = Vector2.new(x, y)
+		for k = 0, 16 do
+			local q = if k == 0
+				then p
+				else p
+					+ Vector2.new(math.cos(k * math.pi / 4), math.sin(k * math.pi / 4))
+						* (px + 4)
+						* (1 + math.floor((k - 1) / 8))
+			local clear = true
+			for _, m in marks do
+				if rectsTouch(q - half, q + half, m[1], m[2]) then
+					clear = false
+					break
+				end
+			end
+			if clear then
+				p = q
+				break
+			end
+		end
+		f.Position = UDim2.fromOffset(p.X, p.Y)
+		table.insert(marks, { p - half, p + half })
 	end
 	poolFlush(pool)
 	pulseAll(pool, now)
 	full.clear.Visible = waypoint ~= nil
 	layoutSafe(size)
-	placeNames(c, scale, size)
+	placeNames(c, scale, size, marks)
 	local pad = UserInputService.GamepadEnabled and not UserInputService.MouseEnabled
 	full.cross.Visible = pad
 	full.hint.Text = if pad
-		then "Left stick pan, triggers zoom, A waypoint, X clear, Y legend, B close"
+		then "LS Pan · RT Zoom · A Point · X Clear · Y Legend · B Close"
 		elseif
 			UserInputService.TouchEnabled and not UserInputService.MouseEnabled
-		then "Drag to pan, pinch to zoom, tap to set a waypoint"
-		else "Drag to pan, wheel to zoom, click to set a waypoint, M or Esc closes"
+		then "Drag Pan · Pinch Zoom · Tap Point"
+		else "Drag Pan · Wheel Zoom · Click Point · M Close"
 end
 
 -- ---------------------------------------------------------------- input

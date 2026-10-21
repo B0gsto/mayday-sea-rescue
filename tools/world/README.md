@@ -118,6 +118,12 @@ Decoration blades break into patches; GrassLength 0.3. Harbour Cove: fuller uppe
 foreground sits above the calm swell (it washed a dark sheet over the T5 foreground) and damp patches only near the
 tide. `assets/review/terrain/t6_contact.png` (T5 row, T6 row; `t6_shots.json`).
 
+**Ground pass (aerial greens).** From the air (and on low graphics quality) terrain draws near each variant's average
+albedo, which was khaki / brown for every sward, so the island read ~45% brown. `write_terrain.luau` `colors` now sets
+green MaterialColor multipliers on Grass / WoodPlanks / Snow / Brick, a dark purple-brown on LeafyGrass (moor, hedge
+banks) and a cool grey on Rock, whose Granite variant wears the grey KelpRock albedo (`wire.py`). No bake change.
+`assets/review/city/country.png`.
+
 **Terrain pass T7.** Grass Decoration A/B (GrassLength 0.1 vs off, RoadVerge + SlopeOutcrops, lower 40% of frame):
 the 0.1 blades still covered 28% of the SlopeOutcrops foreground, raised saturation (104 vs 92) and lowered fine
 detail (edge energy 4.7 vs 7.4), so Decoration is OFF (`studio_terrain.py` passes "false"); compensated by +400 turf
@@ -127,3 +133,16 @@ tiny flat meshes (`art/source/veg/Strand`: shells, pebbles, wrack clump, driftwo
 upper half of the beach-rescue strip: non-colliding). `process.py` RIPPLE: stronger wind ripples (~10 cm crests) on
 SandDry, SandRipple, Wrack and faint ones on SandWet. Harbour hillside: heath fields and hedge banks no longer solid
 Moor (the dark mossy foreground blotch), heath patchy over the field sward. `t7_contact.png` (T6 row, T7 row).
+
+**Terrain pass T8.** The T6 field pattern (Cornish hedges, one sward per field) covers all gentle inland ground below
+about Y 200 (`farm` mask in `bake()`, mirrored in scatter_props.py with hedge gorse and wind-bent hawthorns), and land
+ramps under the sea over the last 200 studs of the bake window so the cut edge is no longer a wall seen from the air.
+
+
+**Ground pass (city).** The island closes inside the bake window: `bake()` takes the min of the polygon coast and a
+rounded (superellipse), noise-wandering cliff / rocky shore about 2,200 studs out, so Great Gale meets the sea all round
+(the HighRoad ends at z -2,060). Farmland: field classes by hash (`FIELD_*`: 50 % green pasture, 28 % lush olive, 10 %
+hay / straw, 6 % heath, 6 % bracken), field floors calmed (no worn turf / earth / moor / outcrop dither, micro-relief
+outcrops and hummocks x 0.15 under the farm mask), hedges a narrow Rock + LeafyGrass line; LeafyGrass moor only on high
+ground (upland) and cliff tops; less straw elsewhere. The town platform (x +-720, z -560..-20) is Grass inside, Grass /
+lush olive on its blend ring. `FARMS` yards are flattened and gravelled like car parks.

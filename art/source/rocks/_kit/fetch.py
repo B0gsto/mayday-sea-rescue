@@ -7,7 +7,10 @@ UA = {"User-Agent": "MaydayK1/1.0"}
 def get(url):
     return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120).read()
 
+only = set(sys.argv[1:])
 for asset, pid, *_ in KIT:
+    if only and asset not in only:
+        continue
     d = SRC + pid + "/"
     os.makedirs(d + "textures", exist_ok=True)
     files = json.loads(get("https://api.polyhaven.com/files/" + pid))

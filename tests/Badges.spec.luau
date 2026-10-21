@@ -3,6 +3,7 @@ return function(t)
 	local BadgeConfig = t.require("Config/BadgeConfig")
 	local BadgeRules = t.require("BadgeRules")
 	local ProgressionConfig = t.require("Config/ProgressionConfig")
+	local Wildlife = t.load("src/shared/Config/Wildlife.luau")
 
 	local ME, OTHER = 101, 202
 	local function snap(over)
@@ -124,6 +125,67 @@ return function(t)
 			.toEqual({ "FirstRescue", "Downwind" })
 		t.expect(counters.Downwind).toBe(11)
 		t.expect(#BadgeRules.apply(counters, { Unknown = 3 })).toBe(0)
+		t.expect(counters.Unknown).toBe(3) -- seen tokens persist, they are just not badges
+	end)
+
+	t.test("once counts each token only the first time", function()
+		local counters = {}
+		for i, species in Wildlife.SpeciesOrder do
+			local due = BadgeRules.once(counters, "AllWildlife", species)
+			t.expect(due.AllWildlife).toBe(1)
+			t.expect(due[`seen:AllWildlife:{species}`]).toBe(1)
+			BadgeRules.apply(counters, due)
+			t.expect(counters.AllWildlife).toBe(i)
+		end
+		t.expect(counters.AllWildlife).toBe(5)
+		t.expect(BadgeConfig.Badges.AllWildlife.count).toBe(#Wildlife.SpeciesOrder)
+		t.expect(BadgeRules.once(counters, "AllWildlife", "Gull")).toEqual({})
+	end)
+
+	t.test("Every Call lists every operation kind once", function()
+		local seen = {}
+		for _, kind in BadgeConfig.OpKinds do
+			t.expect(seen[kind]).toBeNil()
+			seen[kind] = true
+		end
+		t.expect(BadgeConfig.Badges.EveryCall.count).toBe(#BadgeConfig.OpKinds)
+	end)
+
+	t.test("completed only for a finished, not failed or taken-over op", function()
+		t.expect(BadgeRules.completed(snap())).toBe(true)
+		t.expect(BadgeRules.completed(snap({ reason = "Timer" }))).toBe(false)
+		t.expect(BadgeRules.completed(snap({ grade = "Takeover" }))).toBe(false)
+		t.expect(BadgeRules.completed(snap({ grade = "Fail" }))).toBe(false)
+	end)
+
+	t.test("new badges are well formed and Admiral is a rank", function()
+		for _, key in
+			{
+				"FirstWildlife",
+				"AllWildlife",
+				"FirstPet",
+				"LegendaryRescue",
+				"GoldenGull",
+				"AlbumSet",
+				"AlbumComplete",
+				"Streak7",
+				"Streak30",
+				"GreatStormRescue",
+				"GhostShip",
+				"SeasonTier10",
+				"SeasonTier30",
+				"EveryCall",
+				"LifeboatBought",
+				"RankAdmiral",
+				"FriendCrew",
+				"PhotoFirst",
+			}
+		do
+			local b = BadgeConfig.Badges[key]
+			t.expect(b).toBeTruthy()
+			t.expect(#(b :: any).icon > 0).toBe(true)
+		end
+		t.expect(BadgeConfig.Badges.RankAdmiral.rank).toBe("Admiral")
 	end)
 
 	t.test("rank badges at or below the current rank", function()

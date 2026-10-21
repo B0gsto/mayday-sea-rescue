@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Rope_Chain",
  "name": "M_Hbr_Rope_Chain",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD0.fbx",
-   "bytes": 252892,
+   "bytes": 215356,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Chain_LOD0"
@@ -33,16 +33,16 @@
     {
      "name": "M_Hbr_Rope_Chain_LOD0.001",
      "min": [
-      -1.2272,
-      -0.8519,
+      -0.9167,
+      -1.4737,
       0.0
      ],
      "max": [
-      1.2272,
-      0.8519,
-      0.5037
+      0.9167,
+      1.4737,
+      0.3406
      ],
-     "polygons": 2304,
+     "polygons": 2880,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Rope_Chain/M_Hbr_Rope_Chain_LOD1.fbx",
-   "bytes": 171692,
+   "bytes": 128748,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Chain_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_Rope_Chain_LOD1.001",
      "min": [
-      -1.2275,
-      -0.859,
-      -0.0075
+      -0.9215,
+      -1.4774,
+      -0.0037
      ],
      "max": [
-      1.2206,
-      0.8519,
-      0.5037
+      0.9181,
+      1.4737,
+      0.3452
      ],
-     "polygons": 1152,
+     "polygons": 1440,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2304 of 3000"
+   "detail": "2880 of 3000"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.67e-04, 768 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 9.41e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.626 to 0.749, v 0.001 to 0.123"
+   "detail": "u 0.626 to 0.749, v 0.001 to 0.124"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1152 faces have no UV area"
+   "detail": "0 of 1440 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "177 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "403 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1152 of 3000"
+   "detail": "1440 of 3000"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.98e-04, 672 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.06e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.626 to 0.748, v 0.001 to 0.123"
+   "detail": "u 0.626 to 0.749, v 0.001 to 0.124"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1",
@@ -248,15 +248,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1152 faces have no UV area"
+   "detail": "0 of 1440 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 30.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2304 of 2500 (small_prop, asset row)"
+   "detail": "2880 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1152 of 1250"
+   "detail": "1440 of 1500"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.818 x 0.568 x 0.168 m, spec 0.818 x 0.568 x 0.168 m (art/reference/M_Hbr_Rope_Chain/dims.md)"
+   "detail": "dims.md 0.611 x 0.982 x 0.114 m, spec 0.611 x 0.982 x 0.114 m (art/reference/M_Hbr_Rope_Chain/dims.md)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -288,7 +288,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2.454 studs, real 0.818 m = 2.454 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "1.833 studs, real 0.611 m = 1.833 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -296,7 +296,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.704 studs, real 0.568 m = 1.704 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "2.947 studs, real 0.982 m = 2.946 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0.504 studs, real 0.168 m = 0.504 studs, off 0.1% (5% free, 15% with a note)"
+   "detail": "0.341 studs, real 0.114 m = 0.342 studs, off 0.4% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Rope_Chain",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Rope_Chain_LOD0; 2304 triangles (scene 2304)"
+   "detail": "M_Hbr_Rope_Chain_LOD0; 2880 triangles (scene 2880)"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Rope_Chain_LOD1; 1152 triangles (scene 1152)"
+   "detail": "M_Hbr_Rope_Chain_LOD1; 1440 triangles (scene 1440)"
   },
   {
    "subject": "M_Hbr_Rope_Chain_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Rope_Chain_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2304,
-   "texel_density": 177.3
+   "triangles": 2880,
+   "texel_density": 402.8
   },
   {
    "name": "M_Hbr_Rope_Chain_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 1152,
+   "triangles": 1440,
    "texel_density": null
   }
  ],
  "bbox_studs": [
-  2.4543323516845703,
-  1.7037928104400635,
-  0.5037109851837158
+  1.8333117961883545,
+  2.9474668502807617,
+  0.34063026309013367
  ],
- "peak_rss_mb": 299.0
+ "peak_rss_mb": 252.6
 }

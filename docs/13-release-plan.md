@@ -1,17 +1,23 @@
 # 13 · Release plan
 
-Audit of the repo against chapters 01 to 12 and [`CONTRACT.md`](../CONTRACT.md), and the work left before the public launch. Snapshot: 2026-10-18, private test place 85419402278824 at v13 (universe 10771468869), `tools/check.sh` green (238 Lune tests pass).
+Audit of the repo against chapters 01 to 15 and [`CONTRACT.md`](../CONTRACT.md), and the work left before the public launch. Snapshot: 2026-10-20, private test place 85419402278824 at v14 (universe 10771468869). `tools/check.sh` is red today: 766 pass, 4 `RescueAlbum` failures from the in-flight G63 variants.
+
+## Status 2026-10-20
+
+Playable on the private test place (v14): the cold open, eight operation kinds (PIW, tow, ferry, rip, cliff, sinking, fire, wildlife) plus the certification exercises, ranks 1-8 and Service Stars, certifications, storms and clock events, season, streaks, pets, stock, friends, vehicle upgrades, settings and accessibility, plus 11 paid items live on the test universe. Dozens of systems landed since 2026-10-18; most are tested in Lune and unverified in Studio.
+
+Unverified: every item in `docs/research/studio-pending.md`, the persistence round-trip (no DataStore in an unpublished place), a real phone, the analytics dashboard, and any live purchase. Biggest risks: G63 is mid-flight and has the check red, store art and the dispatcher voice are still absent, badges are dark, the first-session funnel is unmeasured, and the art set has no AD sign-off.
 
 ## 0. Summary and the scope decision
 
-The game loop is real and deep: all three MVP operations run end to end, with every step backed by a real mechanic module and no step on the `Default` stub. What blocks a public launch is everything around that loop:
+The game loop is real and deep: the three MVP operations and five more kinds run end to end, with every step backed by a real mechanic module and no step on the `Default` stub. What blocks a public launch is now verification and media, not core systems:
 
-1. **No monetization code at all.** No `MarketplaceService`, no `ProcessReceipt`, no `MonetizationConfig.luau`, and no passes or products on the universe (`deploy/state.json` lists none).
-2. **No settings menu.** The comfort settings exist as saved data (`src/client/Camera/Comfort.luau`), but no UI calls `Comfort.set`. There is no graphics, audio or Assist/Pro toggle.
-3. **No certifications or training exercises.** These are in the MVP keep list (docs/01 §9.1), but rank-ups are Rep only.
-4. **Almost no audio.** No engine sounds, no music, no recorded voice. The radio works as subtitles only (the docs/11 §6 fallback).
-5. **Art is half done.** Wave 1 and 2a assets are uploaded but still waiting on art-director (AD) sign-off. About half of the P0 rows and all P1 rows are not started. The capsized ferry *Gale Queen*, the hospital, the dock, six houses, the Harbour Light, the breakwater and the seabed POIs are still built from parts.
-6. **No analytics, badges, leaderboards, daily challenges, logbook or store page.**
+1. **Monetization is built.** `MonetizationConfig`, idempotent receipts, the policy gate and diegetic cards are in; 11 `ready` items exist on the test universe. Launch-universe ids and a live purchase round-trip are open.
+2. **Settings and accessibility are built.** Comfort, Seasick preset, graphics, volumes, voice, Assist/Pro, colour assist, text size, reduce motion and hold-to-tap all save; the Studio panel pass is pending.
+3. **Certifications and exercises are built.** Helm, Casualty Care, Rescue Swimmer and Coxswain gate the ranks; the Reopening Day drill exists.
+4. **Audio is wired with stand-in clips.** Engines, weather, radio, UI and music stings play; the recorded dispatcher voice is still missing (`VoiceManifest` is empty).
+5. **Art is largely shipped.** I2a-c and I2f put the harbour, roads, houses, vehicles, hospital and boatyard in game, and the C2 ferry is wired through `FerryRig`. AD sign-off, C1 casualty craft and the store media are open.
+6. **Analytics, badges, leaderboards, challenges, logbook and photo mode are built.** All 31 badges are `id = 0` until U-6; the dashboard is unverified.
 
 **Scope decision (user).** By docs/01 §9, `[L]` "public launch" means the MVP plus the full main island, the Skerries and two outer islands, a player-flown helicopter, five more operations, eight ranks and more. That is several months of work. This plan recommends a two-step release:
 
@@ -24,43 +30,61 @@ If the user wants the full `[L]` list in 1.0, the LU packages move in front of R
 
 | Area | State | What's missing | Effort |
 |---|---|---|---|
-| Op 1 Person in the Water | Done end to end (11 steps, `src/shared/Ops/Definitions/PersonInWater.luau`, PIW mechanics, tests) | Expanding-square and sector search [L]; AD/feel playtest | S |
-| Op 2 Disabled Vessel | Done end to end (11 steps, Tow mechanics, `MechTow.spec`) | Drifting Craft two-casualty variant [L] | S |
-| Op 3 Capsized Ferry | Done end to end (8 steps, Ferry mechanics, 3 specs) | The *Gale Queen* hull is parts built at run time (`RescueService.buildFerry`); needs C2 art | M (art) |
-| Ops 8.1 to 8.5 (sinking, fire, winch, rip, cliff) | Not started | Everything | L each, [L] |
-| Assist / Pro | Server grading has assist logic (`OperationService`, `Grading`) | No player-facing toggle | S |
-| Certifications and exercises (docs/09 §9.2, §11) | Not started; ranks have no certification gate | Helm, Casualty Care and Rescue Swimmer exercises and certifications, plus the Reopening Day drill (MVP) | M |
-| Progression (docs/03) | 3 ranks, Cash and Rep, gear levels 1 to 3, RIB purchase (`ProgressionConfig`, `ProgressionService`, `HudShop`) | Ranks 4 to 8 and Service Stars [L]; rank-up ceremony; payouts tuned against the pacing model | M |
-| Saving (`DataService`) | UpdateAsync with a session lock, retries and backoff, autosave every 60 s, `BindToClose`, memory fallback in Studio | Schema version and migration; receipt ledger; request-budget checks; save right after a purchase; a cap on how long `BindToClose` waits | S |
-| Crew | Player crews of up to 4 (`CrewService`), NPC crew fill empty seats | Role picker for Helm, Nav, Swimmer and Medic (docs/09 §4); crew invite UI | M |
-| Vehicles | Jet ski, RIB (`VehicleService`); pickup, Coastguard 4x4, ATV, boat trailer and ambulance (`LandVehicleConfig`, `Car/Trailer.luau`) | Lifeboat and helicopter [L]; final art for the pickup (V3), ambulance (V4), 4x4, trailer and ATV (V5) | M |
-| Store (Chandlery and BoatDesk) | Walk-in Chandlery swapped to production art; BoatDesk launch UI; Cash purchases rate limited on the server | Robux product cards on the shelves; the harbourmaster desk for Storm Summon; the boatyard (H4) | M |
-| Dispatcher and voice (docs/11) | Text radio works: `RadioPanel` subtitles, `RadioStitch`, `RadioTemplates`, `RadioWheel`, `VoiceManifest`; `assets/voice/lines.csv` script | Recorded lines (ElevenLabs credits, user); squelch and static SFX for the subtitle-only path | S code, M voice |
-| Weather and storms | `StormService` full cycle; `WeatherController` rain and lighting; dev chat commands work in Studio only | Storm Summon product queue (docs/04 §5); FX1 and FX2 VFX art | M |
-| Exploration (docs/10 §5) | 6 seabed and shore POIs in `WorldConfig.POIs`; 3 wrecks built from parts | Discovery detection, the logbook UI and its rewards; On watch / Off duty; snorkelling and duck dives (no code found); photo mode [L] | M |
-| Map | 5,120 x 5,120 stud terrain (`map/generated`), streaming on, GTA-style map and minimap (`MapController`), road ribbons | The full island, the Skerries and the outer islands [L] (MVP coast only today) | L, [L] |
-| Cold open and tutorial | Cold open on a jet ski, mid-rescue (`ColdOpenFlow.spec`, `BoatColdOpen.spec`), objective HUD | Arrival cinematic polish; first-session funnel measurement (RP-A1) | S |
-| Settings | Comfort data model (FOV, head bob, shake, horizon stabilisation, speed FOV, G-lean, motion blur) saved on the profile; ocean and scatter read `SavedQualityLevel` | The settings panel; graphics override; audio volumes; voice on/off; Assist/Pro; a seasickness preset | M |
-| Mobile and gamepad | 24 client files handle touch or gamepad; mechanic panels list touch and pad controls | Device pass on a real phone and a controller; safe-area check on every mechanic panel | M |
-| Audio (docs/12 §4) | Only `assets/audio/candidates.csv`; a few SoundIds (weather, tow creak and snap, ferry UI) | Engines, hull slap, wind and sea ambience, UI, music, Bosun barks | M |
-| Monetization (docs/04) | Nothing coded; no ids | `MonetizationConfig`, receipt processing, pass checks, effects, product cards | L |
-| Analytics | None | `AnalyticsService` funnel, economy and custom events | S |
-| Badges, leaderboards, challenges | None (the stock PlayerList is hidden) | `BadgeService` badges (docs/03 §8); leaderboards (OrderedDataStore); daily and weekly challenges [L] | M |
-| Text safety | No player text input anywhere (no TextBox); chat is the stock TextChatService (filtered by Roblox) | Keep it that way. A future crew name or photo caption must go through `TextService:FilterStringAsync` | S |
-| Policy | No paid random items; docs/04 §8 rules | `PolicyService` check before showing paid items, for regions where they are restricted | S |
-| Performance | Streaming on (min 384, target 2048), LowMemory stream-out; LODs in the asset pipeline | No measured mobile budget. Need Low-tier measurements: memory, instances (≤ about 20k streamed, docs/10 §6.7), frame time | M |
-| Store page (docs/07) | Specs, three icon concepts, a description draft (§7) | Icon (1024 PNG), 5 to 10 thumbnails, the 30 s video, final description, genre, social links | M |
-| Art P0 done (uploaded, AD sign-off pending) | V1 jet ski, V2 RIB, H1 station and slipway, H2 Chandlery, K1 boulders, cliffs 01-05 and ledges 01-03, G1 land plants, B02 materials, CH1 swimmer casualty with R15 rig, CH6 Bosun model | AD sign-off for each | S |
-| Art P0 in progress now | HP1 quay, HP2a harbour props, HP2b buoys and nav marks, R1a roads, H3 cottages, S1a *Morwenna* wreck, terrain pass, dune-plant fix | Finish (owned by other agents) | n/a |
-| Art P0 not started | R1b street furniture, signs and beach flags; H6 Harbour Light and lifeguard tower; K1b cliffs 06-08, Ledge_04 and the Needle's Eye; S1b bell and Admiralty anchor; S2 kelp and wrack; E1 hand-held kit; E2 rigging kit; V3 lifeguard pickup; CH4 FP arms; CH5 casualty clips; CH7 Bosun rig and clips; AN1 gull; FX1 spray and foam; FX2 rain and flares | All of these | L |
-| Art paused | CH1 custom humans and CH3 crew are replaced by R15 avatars (`NpcFactory`, `NpcOutfits`) | Nothing (decision stands) | n/a |
-| Art P1 (needed before launch) | Not started | V4 ambulance, H4 harbourmaster and boatyard, H5 hospital, H7 town extras, C2 *Gale Queen* and liferaft, C3 moored boats; C1 *Optimist*, kayak and paddleboard (2a, not started) | L |
-| Greybox left | `map/Build.luau` tags children of PortHaven, HarbourLight and Breakwater as `GREYBOX`. Swapped: Station, Slipway, Chandlery | Still greybox: Dock, Hospital, Houses (6), BoatDesk, HarbourLight, Breakwater. Also built from parts: HavenSands, DropOffs, the 3 seabed wrecks (`buildSchooner`, `buildSeaplane`, `buildAnchor`), the *Gale Queen*. That makes 12 visible greybox models plus 6 houses. Fallbacks (NPC block people, Bosun placeholder) are fine as is | M (I1 swaps) |
-| TODO / FIXME | `grep TODO\|FIXME\|XXX` in `src/` and `map/` finds 0 hits. Every `greybox` hit is a documented fallback path | None | n/a |
+| Op 1 Person in the Water | done — 11 steps, PIW mechanics, drag / throw arc / 10 s swim-to-player variants (RP-R1), tests | AD/feel playtest | S |
+| Op 2 Disabled Vessel | done — 11 steps, Tow mechanics, live tow length, server-side parting, POB per vessel | Real-input play of the tow variants | S |
+| Op 3 Capsized Ferry | done — 8 steps, 3 specs; `FerryRig` wires the C2 *Gale Queen* and liferafts (greybox fallback); `art/status/C2.csv` is stale | Studio look at the ferry art | S |
+| Ops 8.1, 8.2, 8.4, 8.5 (sinking, fire, rip, cliff) | done — definitions, scenes, mechanics, specs; `soak.py` plays all four | Vessel fire with real input (G11 open) | S |
+| Op 8.3 winch | missing — needs the player helicopter (LU-4) | Everything | L, [L] |
+| Assist / Pro | done — `SettingsPanel` + `SettingsService` write `OpsPro`; the cold open forces Assist | Studio toggle check | S |
+| Certifications and exercises (docs/09 §9.2, §11) | done — Helm, Casualty Care, Rescue Swimmer and Coxswain exercises; Reopening Day drill; rank gates live | O7: prove the care actions with real keys; Studio board pass | S |
+| Progression (docs/03) | done — ranks 1-8, Service Stars, rank-up ceremony, pacing sim asserts its bands | Rank 2 lands at ~14-16 min (design call); live payout tuning | S |
+| Saving (`DataService`) | done — schema version + migrations, receipt ledger, request-budget checks, save after grant, `BindToClose` cap | Round-trip on a published place (G25b skipped it) | S |
+| Crew | done — roles by action, role icons, invite, crew-up flare; NPC crew fills empty seats | Real-friend and 4-player crew paths untested | S |
+| Vehicles | done — jet ski, RIB, lifeboat, land fleet with art, trailer launch; 3 upgrades per boat | Helicopter (LU-4); real-phone driving feel | M, [L] |
+| Store (Chandlery and BoatDesk) | done — diegetic cards, harbourmaster storm desk, boatyard, Chandlery art; 11 `ready` items have test-universe ids | Launch-universe ids and a live purchase | S |
+| Dispatcher and voice (docs/11) | partial — text radio, subtitles and squelch path work; the 1,818-line script exists | Record and upload the lines; paste ids into `VoiceManifest` | M voice |
+| Weather and storms | done — full cycle, hourly Great Storm, Ghost Light, storm queue, FX flipbooks | Studio check of the summon queue | S |
+| Exploration (docs/10 §5) | done — all `WorldConfig.POIs`, logbook, rewards, On watch / Off duty, snorkel and duck dive, photo mode | Swimming and dive feel unverified in Studio | S |
+| Map | partial — 5,120 stud coast map, streaming, GTA-style map and minimap | The rest of the main island, the Skerries and outer islands (LU-5) | L, [L] |
+| Cold open and tutorial | done — reward at 0:42 on a fresh profile with real keys (O2), staged HUD, auto-aim after 2 misses | Funnel targets and day-2 return are not measured | S |
+| Settings | done — comfort + Seasick preset, graphics, volumes, voice, Assist/Pro, colour assist, text size, reduce motion, hold-to-tap; all saved | Studio panel pass | S |
+| Mobile and gamepad | partial — input audit, touch rects and 44 px targets, gamepad bindings | Real phone/tablet pass; controller-only play of every op | M |
+| Audio (docs/12 §4) | partial — engines, weather, radio, UI, music stings and barks wired; some stand-ins (puffin, otter) | Recorded dispatcher voice; final recordings | M |
+| Monetization (docs/04) | done — config, idempotent receipts, policy gate, effects, cards; 11 `ready` items live on the test universe | Launch ids and a real purchase round-trip | S |
+| Analytics | done — 15-step onboarding funnel, 21 custom events, every Cash source and sink | Creator Dashboard visibility unverified | S |
+| Badges, leaderboards, challenges | partial — leaderboards and daily/weekly challenges done; all 31 badges are `id = 0` | U-6 badge ids, or ship with badges off | S |
+| Text safety | done — no TextBox anywhere; stock TextChatService only | Keep it that way | S |
+| Policy | done for 1.0 — nothing paid-random is on sale; the gate exists for later Sea Chests | Maturity questionnaire (U-3) | S |
+| Performance | partial — Low-tier caps and streaming numbers in docs/06, measured on desktop Studio | Real-phone memory, instances and frame time (U-10) | M |
+| Store page (docs/07) | partial — description draft and 3 in-engine shots in `marketing/thumbnails` | Icon, 5-10 thumbnails, 30 s video, genre and server size (O4, RP-SP1..3) | M |
+| Art P0 shipped | partial — V1, V2, H1, H2, K1, G1, B02, CH1, CH6 and the I2f batch are in game | One AD sign-off of the set | S |
+| Art P0 in progress | done — HP1, HP2a, HP2b, R1a, H3, S1a, terrain and dune pass shipped (I2a-c) | — | n/a |
+| Art P0 not started | done — R1b, H6, K1b, S1b, S2, E1, V3, AN1, FX1, FX2 shipped; CH4 and CH7 replaced by RP-ARMS1 / RP-DOG1 | E2 horizontal lift held (WEAK); CH5 casualty clips unverified | S |
+| Art paused | done — R15 avatars replace CH1/CH3 | Decision stands | n/a |
+| Art P1 (needed before launch) | partial — V4, H4, H5, C3 shipped; C2 *Gale Queen* + liferaft wired | C1 *Optimist*, kayak and paddleboard; H7 town extras | M |
+| Greybox left | partial — houses, station, Chandlery, hospital, harbourmaster, Harbour Light, dock and breakwater swapped; Morwenna and anchor art placed | Fresh `GREYBOX` count (the Chandlery greybox is still tagged in `map/Build.luau`); seaplane wreck still parts (I2d deferred) | S |
+| TODO / FIXME | done — 0 hits in `src/` and `map/` | None | n/a |
+| Server clock events (docs/15 H1) | done — `EventClock` / `EventService`, hourly Great Storm, 3-hourly Ghost Light, lantern boat | Studio events-board pass (G52) | S |
+| Rare calls + Rescue Album (H2) | done — 5 rarities, album, sets, wildlife rows; G63 adds ~16 variants | G63 is red: 4 `RescueAlbum.spec` failures right now | S |
+| Rotating Chandlery stock (H3) | done — 10-min UTC restock, 6-8 items, per-player limits, Cash only | Studio shelf and clock check (G17/G62) | S |
+| Animal sanctuary + pets (H4) | done — WildlifeRescue, 6 pens, 10-min recovery, adopt, tricks, bond vest | Studio pet visuals (G48/G62) | S |
+| Daily streak + welcome back (H5) | done — porch crate, calm day, drop 3 never zero, welcome-back crate | Studio crate check (G19/G62) | S |
+| Station idle income (H6) | done — strongbox pot, workshop/radio/kennel levels, capped and flat | Touch/pad is prompt-only; Studio check | S |
+| Season Logbook (H8) | done — 30-tier free track, desk + phone app; paid track stays `ready = false` | Studio phone pass | S |
+| Friends (H9) | done — +10% Cash per friend (cap 3), crew-up flare, friend spawn | Real-friend path untested solo | S |
+| Live ops (G60) | done — MessagingService/MemoryStore, 4 events, board row, `tools/liveops.py` | Studio fake-message test pending | S |
+| Come-back notifications (G49) | done code — opt-in, `NotifyDue`, `tools/notify.py` dry run green | User: 3 notification templates and ids; launchd sender | S |
+| Seasonal events (H7, G21/G56) | done — Halloween 24 Oct-2 Nov, Frost Fleet 12 Dec-4 Jan, stalls, liveries, collars | Studio checks (G21/G56) | S |
+| Vehicle upgrades (G66) | done — 3 upgrades per boat, real stat deltas, visible parts, bitmask save | Fit stands need a Studio look | S |
+| Lighthouse missions (G67) | partial — G67 running: relight 4 lights, zone unlocks | Finish, then Studio | S |
+| Accessibility (G61) | done — colour-assist symbols, text size, reduce motion, hold-to-tap | Studio check (studio-pending item 12) | S |
+| Group reward (G68) | done code — pennant, noticeboard sign, flat +10% crate | User creates the group and pastes `GroupId` | S |
 
 ## 2. Work packages
 
 Each package is sized at 40 agent turns or fewer. **Files** lists what the package owns. Two packages can run in parallel only if their file sets don't overlap. Tags: `code`, `asset` (Blender, heavy), `studio-heavy` (Studio or a simulator, so it takes a heavy-job slot and obeys the 2-heavy-jobs limit), `user-only`.
+
+**Status 2026-10-20:** Waves A and B landed (monetization, data hardening, settings, analytics, certifications, badges, logbook, audio, effects, cards). Wave C shipped through I2a-c, I2f and C2; AD sign-off and C1 remain. This section stays as the plan of record; running and queued work is tracked in [`art/bench/QUEUE.md`](../art/bench/QUEUE.md).
 
 ### 2.1 Wave A: core systems (all can start now, in parallel)
 
@@ -82,10 +106,15 @@ Each package is sized at 40 agent turns or fewer. **Files** lists what the packa
 | RP-M2 | Effects that need no new art: 2x Cash, Starter Kit (Cash only until its livery exists), Quick Launch, the 4 Cash packs, Cash Boost, Crew Boost, Call the Storm and Call the Great Storm (queue of 2, cooldown, docs/04 §5). Cosmetic passes (VIP, Wardrobe, Water Dog Friends, liveries, horn and siren packs, Shanty Radio) stay `ready = false` | `src/server/Services/ProgressionService.luau` (Award multiplier), `src/server/Services/StormService.luau` (summon queue), `src/server/Services/VehicleService.luau` (Quick Launch path only), `MonetizationConfig.luau` (`ready` flags) | code | RP-M1, RP-D1 |
 | RP-M3 | Diegetic product cards: Chandlery shelf cards, the BoatDesk Quick Launch card, a harbourmaster storm desk (a greybox desk on the quay until H4), "the player opens every prompt" (docs/04 §1) | `src/client/UI/HudShop.luau`, `src/client/UI/ProductCard.luau` (new), `src/server/World/ChandleryRig.luau`, `map/Build.luau` (`buildHarbourmasterDesk` only) | code | RP-M1 |
 | RP-M4 | Create the items: `tools/make-item-icons.py`, then `deploy.py <dir> <universe> <place> --steps monetize,config --dry-run`, then a real run on the test universe, then on the launch universe after U-1 | `marketing/items/*.png`, `deploy/state.json`, `MonetizationConfig.luau` (ids) | code + user-only (API key scopes) | RP-M2, U-2 |
+| RP-M5 (after launch, LU-7) | Rep monetization (docs/04 §3, §4.4): 2x Reputation pass, Rep Boost, Crew Rep Boost, Sea Time Credit (half-band cap per rank), Fast-Track (offered from 75% of a band, price by next rank); Rep multipliers in `ProgressionService.Award`; promotion still waits for its certification; the 5 R$ row (docs/04 §4.6) | `src/shared/MonetizationEffects.luau`, `src/server/Services/Monetization/RepEffects.luau` (new), `src/shared/Config/MonetizationConfig.luau`, tests | code | RP-M2 |
+| RP-M6 (after launch, LU-7) | Sea Chests (docs/04 §4.5): odds tables in config, duplicate protection with Cash refunds, pity counter on the profile, `PolicyService` gating with the Cash Driftwood Chest as the unpaid path, salvage-corner chests and the odds slate, lid-lift open in first person | `src/server/Services/Monetization/Chests.luau` (new), `src/shared/Config/ChestConfig.luau` (new), Chandlery props, tests | code + art | RP-M3, cosmetic items |
+| RP-M7 (after launch, LU-7) | Signature Vehicles (docs/04 §3.4): four variants (models, engine notes, horns), hooded bay display and plaque, rank-gated drive check in `VehicleService`, unveil at promotion | `src/server/Services/VehicleService.luau`, vehicle art | code + art | RP-M2, vehicle art |
 
 **Open Cloud is possible.** `~/RobloxProjects/tools/deploy.py` already creates game passes (`/game-passes/v1/universes/{u}/game-passes`) and developer products (`/developer-products/v2/universes/{u}/developer-products`). It sets prices and icons, adopts existing items with the same name, writes the real ids back into `MonetizationConfig.luau`, and skips items with `ready = false`. TameATitan already uses it. Mayday's `tools/publish.py` deliberately never calls `monetize`. The API key in `~/RobloxProjects/.roblox-api-key` needs the game-pass and developer-product write scopes for the Mayday universe (U-2). Badges have no such helper and are made by hand (U-6).
 
 ### 2.3 Wave C: art to ship quality (asset packages, 2 heavy jobs at a time)
+
+> **Resumed 2026-10-20:** the core landed and the queue shipped through I2f. Remaining art work is RP-ART-AD1, C1, the E2 horizontal lift retry and the store media.
 
 The batches in progress now (HP1, HP2a, HP2b, R1a, H3, S1a, the terrain pass, the dune-plant fix) belong to other agents and are not repeated here. Each package below is one docs/12 batch: Blender build, validation, upload, a Studio pass, and an `art/status/<ID>.csv` row. Files: `art/source/<group>/<asset>/`, `art/status/<ID>.csv`, `assets/models|textures/<asset>*`, and the generated `AssetIds.luau` entries. These are disjoint per batch.
 
@@ -100,9 +129,9 @@ The batches in progress now (HP1, HP2a, HP2b, R1a, H3, S1a, the terrain pass, th
 | RP-ART-E1 | Hand-held kit (throw bag, tube, lifebuoy, blanket, bags, VHF, tablet, flares) | asset |
 | RP-ART-E2 | Rigging kit (horizontal lift, fenders and lines from HP2) | asset |
 | RP-ART-V3 | Lifeguard pickup | asset |
-| RP-ART-CH4 | FP arms (sleeve and glove variants) | asset |
+| ~~RP-ART-CH4~~ | ~~FP arms~~ Cancelled 2026-10-18: simple arms (RP-ARMS1) | n/a |
 | RP-ART-CH5 | Casualty clips on the CH1 R15 rig (tread water, wave, panic, float, shiver, sit wrapped) | asset + studio-heavy |
-| RP-ART-CH7 | Bosun rig and clips | asset |
+| ~~RP-ART-CH7~~ | ~~Bosun rig and clips~~ Cancelled 2026-10-18: Bosun goes simple (RP-DOG1) | n/a |
 | RP-ART-FX1 / FX2 | Spray and foam flipbooks; rain and flare flipbooks | asset |
 | RP-ART-AN1 | Herring gull and clips | asset |
 | RP-ART-C1 | *The Optimist*, kayak, paddleboard (the PIW and DV casualty craft) | asset |
@@ -133,6 +162,23 @@ The batches in progress now (HP1, HP2a, HP2b, R1a, H3, S1a, the terrain pass, th
 | LU-4 | Player helicopter, Pilot and Winch certifications, winch operations | code + asset |
 | LU-5 | Map expansion: the rest of the main island, the Skerries, Puffin Isle, Gannet Rock, lighthouse missions, Trawler on the Rocks | asset + studio-heavy |
 | LU-6 | Cosmetic passes (liveries, Bosun's Wardrobe, Water Dog Friends, horns and sirens), the Season Logbook, photo mode, voiced dispatcher (after U-7) | code + asset |
+| LU-7 | RP-M5 Rep products, RP-M6 Sea Chests, RP-M7 Signature Vehicles (moved out of 1.0 on 2026-10-18 to ship sooner; 1.0 sells the 11 `ready` items) | code + art |
+
+### 2.7 Playtest feedback packages (2026-10-18)
+
+From the user playtest in [document 14](14-playtest-feedback-and-direction.md). These come before Wave D: a launch with the F-1 to F-4 issues open is not launch-ready.
+
+| ID | Deliverable | Tag | Depends on |
+|---|---|---|---|
+| RP-UX1 | UI audit: icons and short labels instead of text; every element works on keyboard, touch and gamepad (14 §1 F-1, F-2) | code | none |
+| RP-UX2 | Cold open rework so the goal reads from the world (14 §1 F-3, §3) | code | RP-R1 |
+| RP-UX3 | Space never sinks the swimmer to the seabed (14 §1 F-4) | code | none |
+| RP-R1 | Person in the Water rescue variants: drag, throw with aim arc and ghost, casualty swims to the player within 10 s (14 §3) | code | none |
+| RP-CH1 | Dressed R15 casualty replaces `M_Chr_Casualty_Swimmer`; R15 clips (14 §4) | code | none |
+| RP-DOG1 | Simple Bosun: low-poly dog, no fur cards, simple rig, Roblox animations; refit the harness and Wardrobe cosmetics (14 §4). Replaces RP-ART-CH7 | code + asset | none |
+| RP-ARMS1 | First person: hide the body; simple arms only during action animations (wave, phone, throw, haul, grab, CPR and more) (14 §1 F-5, §4). Replaces RP-ART-CH4 | code | none |
+| RP-NPC1 | Living town: walkers, joggers, dog walkers, residents at their houses, traffic, weather routines, per-tier caps (14 §5) | code | none |
+| RP-PH1 | The phone: free cursor, simple app icons, no shop (14 §6) | code | RP-UX1 |
 
 ### 2.6 Parallel schedule (file-set safe)
 
@@ -143,31 +189,61 @@ The batches in progress now (HP1, HP2a, HP2b, R1a, H3, S1a, the terrain pass, th
 
 ## 3. Definition of launch-ready
 
-All of these hold on the launch universe's published build:
+All of these hold on the launch universe's published build. A tick means true today in code and tests; a bracket left open means unverified or unfinished.
 
-1. `tools/check.sh` passes. The RP-Q1 soak shows no server or client errors. Data saves and loads across a forced shutdown, and a purchase granted mid-shutdown is never lost or duplicated (receipt ledger).
-2. A new player reaches the first completed rescue in under 3 minutes from joining (measured by the RP-A1 funnel in playtests). All 3 operations, the storm and the Capsized Ferry can be completed solo with NPC crew and in a 4-player crew, on keyboard and mouse, touch and gamepad.
-3. Zero `GREYBOX`-tagged models and zero part-built hero objects anywhere a player can see. Every P0 and P1 row in docs/12 §2 has passed AD sign-off. The custom-human rows count as done through the R15 decision.
-4. Every audible event has sound. The radio works with voice off (subtitles plus squelch).
-5. Settings: the comfort options (FOV, head bob, shake, horizon stabilisation, seasick preset), graphics, volumes and Assist/Pro, all saved.
-6. Performance on the Low tier: at least 30 fps on the reference phone in a storm. Memory and instance counts are inside the RP-P1 budget.
-7. Monetization: every `ready` item has a real id, grants once, survives rejoin, and is shown only at a diegetic counter. Nothing in the docs/04 §7 "never sell" list is for sale. `PolicyService` gating is in place.
-8. Store page: icon, 5 or more thumbnails, the video, description, genre and server size set. Everything shown exists in the game.
-9. Analytics funnel and economy events are visible in the Creator Dashboard from the test universe.
-10. Every user-only item in §4 is done.
+1. [ ] `tools/check.sh` passes. **Today 766 pass, 4 fail** (`RescueAlbum`, G63 in flight). The RP-Q1 soak was 0 errors (10 min, 43 ops). Data saves and loads across a forced shutdown: unverified; the receipt ledger exists but no live purchase round-trip has run.
+2. [ ] A new player reaches the first completed rescue under 3 minutes. O2 measured the cold-open reward at 0:42 with real keys on a fresh profile; the 95/70/50 funnel, day-2 return, 4-player crew and the keyboard, touch and gamepad paths are unmeasured.
+3. [ ] Zero `GREYBOX`-tagged models and zero part-built hero objects; every P0/P1 row AD-signed. Most swaps shipped and C2 is wired; a fresh greybox count and the AD sign-off are open.
+4. [x] Every audible event has sound; the radio works with voice off (subtitles plus squelch). Stand-in clips only; the recorded dispatcher voice is still absent.
+5. [ ] Settings: comfort, graphics, volumes, Assist/Pro and accessibility all saved. Code complete; Studio panel pass pending.
+6. [ ] Low tier: 30 fps on the reference phone in a storm, memory and instances inside the RP-P1 budget. Desktop Studio numbers only.
+7. [ ] Monetization: every `ready` item has a real id, grants once, survives rejoin, and is sold only at a diegetic counter. 11 items exist on the test universe; launch ids and a live purchase are open. Nothing on the docs/04 §7 "never sell" list is for sale; the `PolicyService` gate is in.
+8. [ ] Store page: icon, 5+ thumbnails, video, description, genre, server size, and everything shown exists in the game. O4 is queued.
+9. [ ] Analytics funnel and economy events visible in the Creator Dashboard. Code done; dashboard unverified.
+10. [ ] Every user-only item in §4 is done.
+
+### What's left, by owner
+
+**(a) Agent work running or queued** (`art/bench/QUEUE.md`, 2026-10-20):
+
+- G62 Studio verify batch 1 (touch HUD, pets, cosmetics, lifeboat, winter) — running.
+- G63 ~16 rescue variants and seasonal stickers — running; 4 `RescueAlbum` tests red.
+- O4 store art capture path and icon — queued (Opus slot).
+- O7 real-key care actions and the PIW debrief — running.
+- G67 lighthouse missions — running.
+- G68 group reward and board text — running.
+- G69 call offer pacing — running.
+- G70 this document — running.
+
+**(b) Studio checks pending** — one look each, in this order from `docs/research/studio-pending.md`: fresh-profile journey; casualty care as world actions (O5/O7); the G50 bug batch; touch HUD (G51); pets (G48); cosmetics (G38); lifeboat (G39); platform prompts (G47); events board and winter (G52/G56), next-goal and pulse (G58), LiveOps fake message (G60); persistence round-trip (G25b, needs a published place); store art (O4); accessibility (G61); vehicle upgrades (G66).
+
+**(c) The user's own steps:**
+
+- **Badges:** create the 31 badges in Creator Hub and paste ids into `BadgeConfig`, or ship with badges off (`marketing/badges.md`).
+- **Group:** create the Roblox group, upload its emblem, paste the id into `SocialConfig.GroupId` (`marketing/products.md`).
+- **Notification templates:** create the 3 notification strings, paste their ids into `marketing/notifications.json`, confirm the API key's notification and DataStore scopes, and install the launchd sender if wanted (`marketing/notifications.md`).
+- **Products:** after U-1, run `deploy.py ... --steps monetize` on the launch universe so the 11 `ready` items get real ids (`marketing/products.md`).
+- **Published test place:** publish a place with API access for the persistence round-trip and the G25b sweep; Studio cannot test DataStore.
+- **Real phone test:** one low-end Android or older iPhone for RP-P1/RP-C2 and the touch layout.
+- **Store art review:** approve the O4 icon and thumbnail contact sheet, then upload via U-5.
+- **Launch deploy:** U-1 to U-11, then RP-L1 and `--public`.
 
 ## 4. Items only the user can do
 
 | # | Item | When |
 |---|---|---|
-| U-1 | Decide the launch scope (§0): MVP-plus-polish 1.0 or the full `[L]` list. Decide whether to launch on a new production experience (recommended: keep "Mayday: Sea Rescue (Test)" for staging) or to rename and open the test universe | Now |
-| U-2 | Give the Open Cloud API key game-pass and developer-product write scopes (and place publish, universe update) for the launch universe; create the launch experience in Creator Hub if a new one is used | Before RP-M4 |
+| U-1 | **Done 2026-10-20:** the launch experience "Mayday: Sea Rescue" is published (private, Team Create off) under the Brightwake Games group: universe 10772117922, place 74810284434342 (`deploy/launch-target.json`, key `.roblox-api-key-brightwake`). "Mayday: Sea Rescue (Test)" stays as staging. Still open: decide the launch scope (§0): MVP-plus-polish 1.0 or the full `[L]` list | Now |
+| U-2 | ~~Give the Open Cloud API key game-pass and developer-product write scopes~~ **Done (user, 2026-10-18):** the key already has these scopes from the other published games. Still create the launch experience in Creator Hub if a new one is used | Done |
 | U-3 | Fill in the Maturity and Compliance questionnaire (content maturity label) in Creator Hub. This game has mild peril, unconscious casualties, CPR and drowning risk; answer honestly | Before going public |
-| U-4 | Experience settings in Creator Hub: genre, devices (phone, tablet, console, desktop), Allow Third-Party Sales and Teleports (both off), private servers (docs/04 §6.1 price), social links (Discord, X, YouTube: the user's own accounts, age-gated by Roblox), voice-chat setting | Before going public |
-| U-5 | Upload the source-language (English) icon and thumbnails in the Creator Dashboard (`deploy.py media` reports these as "manual"); the video upload (3 per month limit) | After RP-SP1 and RP-SP2 |
-| U-6 | Create the badges in Creator Hub (the first 5 per day are free; check the current fee) and paste their ids, or approve RP-B1 shipping with badges off | Before RP-B1 goes live |
-| U-7 | Buy ElevenLabs credits for the dispatcher voice (docs/11 §4 line counts and cost), or ship 1.0 with subtitles only | Any time; optional for 1.0 |
-| U-8 | Audio and asset rights: uploaded audio must be owned by the publishing account or group (or be public Roblox library audio). If the launch universe sits under a different owner (for example a group), assets and audio must be re-uploaded or shared to it | Before RP-L1 |
+| U-4 | **Partly done 2026-10-20 (API):** name, description, server size 16, Discord link (title "Join the crew"; "Discord" is moderated), private servers R$25. Still in Creator Hub: genre, Third-Party Sales/Teleports off check. Experience settings in Creator Hub: genre, devices (phone, tablet, console, desktop), Allow Third-Party Sales and Teleports (both off), private servers (docs/04 §6.1 price), social links (Discord, X, YouTube: the user's own accounts, age-gated by Roblox), voice-chat setting | Before going public |
+| U-5 | Review the O4 icon and thumbnail contact sheet, then upload the source-language (English) icon and thumbnails in the Creator Dashboard (`deploy.py media` reports these as "manual"); the video upload (3 per month limit) | After O4, RP-SP1 and RP-SP2 |
+| U-6 | Create the 31 badges in Creator Hub (the first 5 per day are free; check the current fee) and paste their ids, or approve shipping with badges off. Names, descriptions and icon concepts are in `marketing/badges.md` | Before RP-B1 goes live |
+| U-7 | ~~Buy ElevenLabs credits for the dispatcher voice~~ **Done (user, 2026-10-18)** | Done |
+| U-8 | **Done 2026-10-20:** 1,758 user-owned assets granted Use to universe 10772117922 (asset-permissions API); a server preload probe matches the test universe exactly. Audio and asset rights: uploaded audio must be owned by the publishing account or group (or be public Roblox library audio). If the launch universe sits under a different owner (for example a group), assets and audio must be re-uploaded or shared to it | Before RP-L1 |
 | U-9 | Roblox account items: ID or age verification if Roblox asks for it before monetization or a public launch; DevEx and payout settings; accepting the Terms of Use and community standards for a monetized experience | Before going public |
 | U-10 | A real-phone playtest (RP-P1 and RP-C2 need one low-end Android or older iPhone) and a final play-through sign-off | Before going public |
 | U-11 | Press "Public" (or let `deploy.py --public` run after U-1 to U-10) | Launch day |
+| U-12 | **Done:** Brightwake Games (548313786) owns the launch experience; `SocialConfig.GroupId` set. Create the Roblox group, upload its emblem, and paste the numeric id into `SocialConfig.GroupId` (0 keeps the sign, pennant and crate bonus off) | Before the group reward goes live |
+| U-13 | Create the 3 notification strings in Creator Dashboard, paste their ids into `marketing/notifications.json`, and confirm the API key's `user-notification:write` and universe DataStore scopes | Before `tools/notify.py --send` |
+| U-14 | **Done 2026-10-20 except the live purchase:** the 11 `ready` items exist on universe 10772117922 and their ids are in `MonetizationConfig` (`deploy/state-launch.json`; staging ids stay in `deploy/state.json`). Create the 11 `ready` products on the launch universe with `deploy.py ... --steps monetize` after U-1, then run one real purchase round-trip | Before RP-L1 |
+| U-15 | Publish a test place with API access and let the G25b sweep prove the persistence round-trip | Before RP-L1 |

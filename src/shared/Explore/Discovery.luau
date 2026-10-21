@@ -120,7 +120,7 @@ Discovery.EXTRA = {
 		kind = "Lighthouse",
 		name = "Harbour Light",
 		era = "1868",
-		blurb = "The red and white light on the east breakwater head, kept by Tobias's family for three generations.",
+		blurb = "East breakwater light since 1868.",
 		position = Vector3.new(40.5, 11.1, 355.8), -- M_Bld_HarbourLight ATT_Plaque (Street.swaps pivot 44, 6, 360)
 	},
 }

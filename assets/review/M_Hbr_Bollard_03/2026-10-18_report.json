@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Bollard_03",
  "name": "M_Hbr_Bollard_03",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "37bfa7b9+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Bollard_03/M_Hbr_Bollard_03_LOD0.fbx",
-   "bytes": 73852,
+   "bytes": 208812,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Bollard_03_COL",
@@ -34,14 +34,14 @@
     {
      "name": "M_Hbr_Bollard_03_COL.001",
      "min": [
-      -0.6,
-      -0.6,
+      -0.81,
+      -0.81,
       0.0
      ],
      "max": [
-      0.6,
-      0.6,
-      1.86
+      0.81,
+      0.81,
+      1.863
      ],
      "polygons": 12,
      "all_triangles": true
@@ -49,16 +49,16 @@
     {
      "name": "M_Hbr_Bollard_03_LOD0.001",
      "min": [
-      -0.63,
-      -0.6204,
+      -0.81,
+      -0.81,
       0.0
      ],
      "max": [
-      0.63,
-      0.6204,
-      1.86
+      0.81,
+      0.81,
+      1.863
      ],
-     "polygons": 792,
+     "polygons": 2888,
      "all_triangles": true,
      "uv": true
     }
@@ -73,7 +73,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Bollard_03/M_Hbr_Bollard_03_LOD1.fbx",
-   "bytes": 49164,
+   "bytes": 131788,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Bollard_03_LOD1"
@@ -82,16 +82,16 @@
     {
      "name": "M_Hbr_Bollard_03_LOD1.001",
      "min": [
-      -0.6291,
-      -0.6204,
+      -0.81,
+      -0.81,
       0.0
      ],
      "max": [
-      0.6291,
-      0.6204,
-      1.86
+      0.81,
+      0.81,
+      1.863
      ],
-     "polygons": 364,
+     "polygons": 1444,
      "all_triangles": true,
      "uv": true
     }
@@ -152,7 +152,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "792 of 3000"
+   "detail": "2888 of 3000"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD0",
@@ -160,7 +160,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 7.65e-03, 152 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.55e-04, 152 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD0",
@@ -192,7 +192,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 382 faces have no UV area"
+   "detail": "0 of 1464 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD0",
@@ -200,7 +200,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "87 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "106 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD1",
@@ -224,7 +224,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "364 of 3000"
+   "detail": "1444 of 3000"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD1",
@@ -232,7 +232,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 4.77e-03, 88 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.64e-04, 132 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD1",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 364 faces have no UV area"
+   "detail": "0 of 1444 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD1",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 14.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 7.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_Bollard_03_COL",
@@ -320,7 +320,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "792 of 800 (small_prop, asset row)"
+   "detail": "2888 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -328,7 +328,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "364 of 400"
+   "detail": "1444 of 1500"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -336,7 +336,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.42 x 0.414 x 0.62 m, spec 0.42 x 0.414 x 0.62 m (art/reference/M_Hbr_Bollard_03/dims.md)"
+   "detail": "dims.md 0.54 x 0.54 x 0.621 m, spec 0.54 x 0.54 x 0.621 m (art/reference/M_Hbr_Bollard_03/dims.md)"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -344,7 +344,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.260 studs, real 0.420 m = 1.260 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "1.620 studs, real 0.540 m = 1.620 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -352,7 +352,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.241 studs, real 0.414 m = 1.242 studs, off 0.1% (5% free, 15% with a note)"
+   "detail": "1.620 studs, real 0.540 m = 1.620 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -360,7 +360,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1.860 studs, real 0.620 m = 1.860 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "1.863 studs, real 0.621 m = 1.863 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Bollard_03",
@@ -472,7 +472,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Bollard_03_COL, M_Hbr_Bollard_03_LOD0; 804 triangles (scene 804)"
+   "detail": "M_Hbr_Bollard_03_COL, M_Hbr_Bollard_03_LOD0; 2900 triangles (scene 2900)"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD0.fbx",
@@ -512,7 +512,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Bollard_03_LOD1; 364 triangles (scene 364)"
+   "detail": "M_Hbr_Bollard_03_LOD1; 1444 triangles (scene 1444)"
   },
   {
    "subject": "M_Hbr_Bollard_03_LOD1.fbx",
@@ -528,14 +528,14 @@
    "name": "M_Hbr_Bollard_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 792,
-   "texel_density": 86.7
+   "triangles": 2888,
+   "texel_density": 105.6
   },
   {
    "name": "M_Hbr_Bollard_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 364,
+   "triangles": 1444,
    "texel_density": null
   },
   {
@@ -547,9 +547,9 @@
   }
  ],
  "bbox_studs": [
-  1.2599999904632568,
-  1.240857720375061,
-  1.8600000143051147
+  1.6200001239776611,
+  1.6200001239776611,
+  1.8629999160766602
  ],
- "peak_rss_mb": 290.3
+ "peak_rss_mb": 261.3
 }

@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Cleat_02",
  "name": "M_Hbr_Cleat_02",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Cleat_02/M_Hbr_Cleat_02_LOD0.fbx",
-   "bytes": 35500,
+   "bytes": 75468,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Cleat_02_LOD0"
@@ -40,9 +40,9 @@
      "max": [
       0.675,
       0.165,
-      0.417
+      0.4079
      ],
-     "polygons": 306,
+     "polygons": 948,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Cleat_02/M_Hbr_Cleat_02_LOD1.fbx",
-   "bytes": 30380,
+   "bytes": 50812,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Cleat_02_LOD1"
@@ -73,9 +73,9 @@
      "max": [
       0.6751,
       0.165,
-      0.4134
+      0.4088
      ],
-     "polygons": 152,
+     "polygons": 474,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "306 of 3000"
+   "detail": "948 of 3000"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.30e-03, 44 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 7.55e-05, 160 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.501 to 0.864, v 0.001 to 0.123"
+   "detail": "u 0.501 to 0.624, v 0.001 to 0.124"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 139 faces have no UV area"
+   "detail": "0 of 460 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "118 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "149 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "152 of 3000"
+   "detail": "474 of 3000"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.08e-04, 28 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.78e-05, 124 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.501 to 0.864, v 0.001 to 0.123"
+   "detail": "u 0.501 to 0.624, v 0.001 to 0.124"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1",
@@ -248,15 +248,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 152 faces have no UV area"
+   "detail": "0 of 474 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": true,
+   "waived": false,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 19.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.7% (max 15%)"
   },
   {
    "subject": "M_Hbr_Cleat_02",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "306 of 500 (small_prop, asset row)"
+   "detail": "948 of 1200 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Cleat_02",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "152 of 250"
+   "detail": "474 of 600"
   },
   {
    "subject": "M_Hbr_Cleat_02",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.45 x 0.11 x 0.139 m, spec 0.45 x 0.11 x 0.139 m (art/reference/M_Hbr_Cleat_02/dims.md)"
+   "detail": "dims.md 0.45 x 0.11 x 0.136 m, spec 0.45 x 0.11 x 0.136 m (art/reference/M_Hbr_Cleat_02/dims.md)"
   },
   {
    "subject": "M_Hbr_Cleat_02",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0.417 studs, real 0.139 m = 0.417 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "0.408 studs, real 0.136 m = 0.408 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Cleat_02",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Cleat_02_LOD0; 306 triangles (scene 306)"
+   "detail": "M_Hbr_Cleat_02_LOD0; 948 triangles (scene 948)"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Cleat_02_LOD1; 152 triangles (scene 152)"
+   "detail": "M_Hbr_Cleat_02_LOD1; 474 triangles (scene 474)"
   },
   {
    "subject": "M_Hbr_Cleat_02_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Cleat_02_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 306,
-   "texel_density": 117.7
+   "triangles": 948,
+   "texel_density": 149.3
   },
   {
    "name": "M_Hbr_Cleat_02_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 152,
+   "triangles": 474,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   1.3499999046325684,
   0.32999998331069946,
-  0.4169582724571228
+  0.4079374074935913
  ],
- "peak_rss_mb": 291.0
+ "peak_rss_mb": 252.6
 }

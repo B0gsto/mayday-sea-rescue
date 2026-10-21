@@ -20,7 +20,8 @@
 --   Radio.callsign(): "HR11"|"HR21"|"HR31"            the player's unit
 --   Radio.repeatLast()                                   "I say again" + the last Coastguard line
 --   Radio.OnReply: { Connect(self, fn(msg)) }            every player transmission
---   opts = { priority: number?, from: string?, mode: "radio"|"intercom"?, interrupt: boolean? }
+--   opts = { priority: number?, from: string?, mode: "radio"|"intercom"?, interrupt: boolean?,
+--            force: boolean? (skip the 180 s same-line repeat guard) }
 --   Handle = { done: boolean, wait: (self) -> (), cancel: (self) -> () }
 -- Ops_Radio payloads may carry { template, params } or { lineId } instead of plain text.
 local CollectionService = game:GetService("CollectionService")
@@ -83,6 +84,10 @@ local panel: RadioPanel.Panel
 local lastCoastguard: Line? = nil
 local lastTransmitAt = os.clock()
 local lastSitrepAsk = 0
+-- The same radio/intercom line is voiced at most once per REPEAT_COOLDOWN: re-broadcasts (offer
+-- refreshes, server loops) only refresh the subtitle. Player transmissions and "say again" are exempt.
+local REPEAT_COOLDOWN = 180
+local lastVoicedAt: { [string]: number } = {}
 
 local replyListeners: { (any) -> () } = {}
 Radio.OnReply = {
@@ -309,10 +314,26 @@ local pump: () -> ()
 
 local function enqueue(line: Line, speaker: string, opts: { [string]: any }?): Handle
 	local o: { [string]: any } = opts or {}
+	local mode = o.mode or "radio"
+	if mode ~= "tx" and not o.force then
+		local last = lastVoicedAt[line.text]
+		if last and os.clock() - last < REPEAT_COOLDOWN then
+			if not current and #queue == 0 then
+				panel.show(o.from or speaker, line.text, mode, RadioStitch.readSeconds(line.text))
+			end
+			if o.onStart then
+				task.spawn(o.onStart)
+			end
+			local h = newHandle()
+			h.done = true
+			return h
+		end
+		lastVoicedAt[line.text] = os.clock()
+	end
 	local e: Entry = {
 		line = line,
 		speaker = o.from or speaker,
-		mode = o.mode or "radio",
+		mode = mode,
 		priority = o.priority or P.Reply,
 		at = os.clock(),
 		handle = newHandle(),
@@ -551,7 +572,7 @@ function Radio.repeatLast(): Handle?
 		return nil
 	end
 	-- the repeat alone: a separate "I say again." card showed with nothing before it (playtest)
-	return enqueue(last, "Gale Isles Coastguard", { priority = P.Reply })
+	return enqueue(last, "Gale Isles Coastguard", { priority = P.Reply, force = true })
 end
 
 ---------------------------------------------------------------- push-to-talk

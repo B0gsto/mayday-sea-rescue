@@ -8,6 +8,7 @@
 --     (ATT_Lamp_Window_NN), on with the glow;
 --   * a subtle smoke ParticleEmitter per chimney stack (the first ATT_Smoke_NN pot of each stack) in cold
 --     weather (anything but a clear day) or a storm, drifting with the wind.
+-- Shell attributes RigLights / RigSmoke = false skip the PointLights / the smoke (Town sets them on most terraces).
 -- Rules in CottageLights (pure). Re-evaluated on Weather.changed, Lighting WeatherBase, ClockTime and
 -- GeographicLatitude changes; no per-frame loop. New attachments go on the PrimaryPart (world-aligned), so apply()
 -- works before or after the caller positions the model.
@@ -21,6 +22,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local CottageLights = require(script.Parent:WaitForChild("CottageLights"))
+local SharedSetsRig = require(script.Parent:WaitForChild("SharedSetsRig"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local CottageRig = {}
@@ -28,7 +30,9 @@ local CottageRig = {}
 local RIG_ATTR = "CottageRig" -- on every Instance this module creates
 local WARM_2700K = Color3.fromRGB(255, 177, 110)
 local ROOM_2400K = Color3.fromRGB(255, 160, 92)
-local GLOW_ON = Color3.fromRGB(236, 166, 100)
+-- lit rooms: a soft warm off-white interior glow, not a saturated lamp (Neon bloom pushed the old amber to yellow);
+-- a little see-through so the dark glass behind dims it
+local GLOW_ON, GLOW_TRANSPARENCY = Color3.fromRGB(178, 150, 116), 0.25
 local GLASS_COLOR = Color3.fromRGB(64, 76, 84)
 local GLASS_TRANSPARENCY, GLASS_REFLECTANCE = 0.35, 0.15
 
@@ -98,6 +102,8 @@ function CottageRig.apply(shell: Model): () -> ()
 	if previous then
 		previous()
 	end
+	local render = shell:GetAttribute("Render") -- Town: the lot's wall colour; nil = the variant's own
+	SharedSetsRig.cottage(shell, if type(render) == "string" then render else nil)
 	local created: { Instance } = {}
 	local connections: { RBXScriptConnection } = {}
 	local lights: { Light } = {}
@@ -149,6 +155,9 @@ function CottageRig.apply(shell: Model): () -> ()
 		if not a then
 			return
 		end
+		if shell:GetAttribute("RigLights") == false then
+			return -- Town: only a subset of the terraces carry real lights (the Neon panes still glow)
+		end
 		local pl = Instance.new("PointLight")
 		pl.Color = color
 		pl.Brightness = brightness
@@ -171,7 +180,36 @@ function CottageRig.apply(shell: Model): () -> ()
 	for _, m in pots do
 		table.insert(positions, m.WorldPosition)
 	end
-	for _, i in CottageLights.stacks(positions) do
+	-- the H3 stacks are part of the Walls mesh and render white: a granite sleeve over each, under its pots
+	-- (pots stand 0.55 to 0.9 m on the cap: the sleeve tops out about 2.2 studs under the lowest pot top)
+	local meshed = shell:FindFirstChildWhichIsA("MeshPart", true) ~= nil -- not the code-built terraces' stacks
+	local sleeves: { number } = if meshed then CottageLights.stacks(positions) else {}
+	for _, i in sleeves do
+		local sum, count, low = Vector3.zero, 0, math.huge
+		for _, p in positions do
+			if (p - positions[i]).Magnitude < 2.5 then
+				sum += p
+				count += 1
+				low = math.min(low, p.Y)
+			end
+		end
+		local c = sum / count
+		local sleeve = Instance.new("Part")
+		sleeve.Name = "Rig_StackSleeve"
+		sleeve.Anchored = true
+		sleeve.CanCollide, sleeve.CanTouch, sleeve.CanQuery = false, false, false
+		sleeve.Size = Vector3.new(3.3, 4.8, 2.8)
+		sleeve.CFrame = CFrame.new(c.X, low - 2.2 - 2.4, c.Z) * pivot.Rotation
+		sleeve.Material = Enum.Material.Granite
+		sleeve.Color = Color3.fromRGB(150, 146, 138)
+		sleeve:SetAttribute(RIG_ATTR, true)
+		sleeve.Parent = shell
+		table.insert(created, sleeve)
+	end
+	local stacks: { number } = if shell:GetAttribute("RigSmoke") == false
+		then {}
+		else CottageLights.stacks(positions)
+	for _, i in stacks do
 		local a = point(`Rig_{pots[i].Name}`, positions[i])
 		if a then
 			local e = smokeEmitter()
@@ -195,9 +233,10 @@ function CottageRig.apply(shell: Model): () -> ()
 				l.Enabled = on
 			end
 			for _, p in glow do
-				p.Transparency = if on then 0 else 1
+				p.Transparency = if on then GLOW_TRANSPARENCY else 1
 				p.Material = if on then Enum.Material.Neon else Enum.Material.SmoothPlastic
-				p.Color = GLOW_ON
+				local own = p:GetAttribute("Glow")
+				p.Color = if typeof(own) == "Color3" then own else GLOW_ON -- big panes (shop windows) carry a dimmer one
 			end
 		end
 		local puff = CottageLights.smokeOn(preset, Weather.getState())

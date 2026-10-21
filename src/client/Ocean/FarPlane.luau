@@ -162,6 +162,7 @@ function FarPlane._strip(
 		local p = Instance.new("Part")
 		p.Size = Vector3.new(size.X, 0.2, size.Z)
 		p.Material = Enum.Material.SmoothPlastic
+		p.MaterialVariant = "OceanWater" -- PartGrid's water normal map (plain plastic if absent)
 		p.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
 		p.Reflectance = 0.05 -- tune
 		p.TopSurface = Enum.SurfaceType.Smooth

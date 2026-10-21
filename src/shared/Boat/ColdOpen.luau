@@ -13,6 +13,12 @@
 --    easeRadius) is braked to EASE_TARGET (under the 3 knot slow mark); the ease lets go once it
 --    is that slow, so the player can still creep in or open out.
 -- 3. Grade. An eased approach is Silver at best (EASE_GRADE_CAP).
+-- 4. Show, don't tell (docs/14 F-3, RP-UX2). The casualty is placed DISTANCE studs dead ahead,
+--    on screen at spawn and well inside HANDOVER_DISTANCE (so the auto-throttle hands over at
+--    once and an idling jet creeps on toward them). PLAN skips the graded approach: the recovery
+--    step (docs/14 section 3 ways: drag, throw, or stop and they swim to you) runs from the
+--    first second. The radio says a few words; the world (client UI/ColdOpenCue) does the rest,
+--    and pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
 local Buoyancy = require(script.Parent.Buoyancy)
 
 local KNOT = 1.543 -- studs/s
@@ -107,6 +113,73 @@ function ColdOpen.serverSawEase(
 	return assist
 		and distance < ColdOpen.easeRadius(speed, brakeDecel) + ColdOpen.SERVER_RADIUS_SLACK
 		and speed > ColdOpen.EASE_TRIGGER + ColdOpen.SERVER_SPEED_MARGIN
+end
+
+-- 4. Cold open setup (read by OperationService.StartColdOpen) and its world cues.
+-- 2026-10-21: recovery is auto_board (close and steady, they climb on the sled), then the ride home
+-- (transport): at the slipway they climb off and wave
+ColdOpen.PLAN = { "tasking", "recovery", "transport" }
+-- Spawn inside the breakwater, facing away from the station slipway (SHORE[1]): the casualty is
+-- dead ahead and the way home is a straight, clear run back (Studio raycast checked; outside the
+-- Harbour Mouth the breakwater sat across the line home).
+ColdOpen.SPAWN = Vector3.new(-140, 0, 200)
+ColdOpen.DISTANCE = { 70, 85 } -- studs dead ahead of the spawn: on screen, about 23 m -- tune
+ColdOpen.RADIO = "Person in the water. Dead ahead!"
+-- compact step line, by PiwMode: before they hold on, then on the way in (UI/ColdOpenCue)
+ColdOpen.STEP_SHORT = { reach = "Go to them", home = "Bring them home" }
+ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
+ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
+ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)
+
+export type Nudge = { best: number, since: number }
+
+function ColdOpen.newNudge(now: number): Nudge
+	return { best = math.huge, since = now }
+end
+
+-- True when the world should help now (pop a flare): NUDGE_AFTER s with no headway toward the
+-- casualty while still out of NUDGE_NEAR. Then the clock starts again from where they are.
+function ColdOpen.nudge(n: Nudge, now: number, distance: number): boolean
+	if distance <= ColdOpen.NUDGE_NEAR or distance < n.best - ColdOpen.NUDGE_PROGRESS then
+		n.best, n.since = distance, now
+		return false
+	end
+	if now - n.since >= ColdOpen.NUDGE_AFTER then
+		n.best, n.since = distance, now
+		return true
+	end
+	return false
+end
+
+-- 5. The first mission ends on land (docs/14 section 3). The recovery only completes once the
+--    casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the station
+--    slipway (Map.Slipways.StationSlipway, waterline about z 30) or the Haven Sands slipway
+--    (WorldConfig.Slipways.SandsSlipway). `dry` is where the shore party takes them over.
+ColdOpen.SHORE = {
+	{ id = "Station", water = Vector3.new(-165, 0, 38), dry = Vector3.new(-171, 0, 18) },
+	{ id = "Sands", water = Vector3.new(1000, 0, 282), dry = Vector3.new(970, 0, 250) },
+}
+ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
+ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in
+ColdOpen.WELCOME = { from = "Chief Aggie", text = "Welcome to the crew." }
+ColdOpen.NEXT_CALL_DELAY = 30 -- s after the cold open before the first real call (Aggie's welcome) -- tune
+
+-- The nearest shore point to `pos` (flat) and its distance.
+function ColdOpen.nearestShore(pos: Vector3): (any, number)
+	local best, bestD = ColdOpen.SHORE[1], math.huge
+	for _, s in ColdOpen.SHORE do
+		local d = Vector3.new(pos.X - s.water.X, 0, pos.Z - s.water.Z).Magnitude
+		if d < bestD then
+			best, bestD = s, d
+		end
+	end
+	return best, bestD
+end
+
+-- True when the cold open's recovery may complete: held, and at a shore point.
+function ColdOpen.landed(mode: any, casualty: Vector3): boolean
+	local _, d = ColdOpen.nearestShore(casualty)
+	return mode == "held" and d <= ColdOpen.SHORE_RADIUS
 end
 
 local RANK = { Gold = 4, Silver = 3, Bronze = 2, Fail = 1 }

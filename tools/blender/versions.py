@@ -84,6 +84,14 @@ def weighted_normals(obj):
     obj.data = new
     bpy.data.meshes.remove(mesh)
     new.name = name
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(new)
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+        bm.to_mesh(new)
+    bm.free()
 
 
 def run_lod(spec):

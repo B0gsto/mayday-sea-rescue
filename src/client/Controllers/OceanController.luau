@@ -7,8 +7,8 @@
 --   outer ring  coarser EditableMesh grid with a hole the near patch fills; waves fade to flat
 --               sea over its outer part so it meets the far plane
 --   far plane   four flat SurfaceAppearance strips out to a 700-stud square (Ocean/FarPlane)
---   horizon     vertex-coloured sectors from that square out to ~4200 studs, fading the water
---               tint to the Atmosphere haze colour: no hard horizon line (Ocean/Horizon)
+--   horizon     sectors from that square out to ~4200 studs: the inner ring in the far plane's
+--               material, the outer ring fading to the Atmosphere haze colour (Ocean/Horizon)
 -- Round 2 also adds Ocean/Seabed (caustics and depth-tint slices over shallow seabed), takes the
 -- water and haze colours from WeatherController (Lighting attributes OceanWaterColor /
 -- OceanHazeColor) and publishes its cost on workspace.ClientOcean (attributes StepMs, Tier, Mode).
@@ -67,8 +67,8 @@ local DRIFT_SPEED = 0.9 -- studs/s the ripple normal map drifts downwind (High t
 local STORM_ON, STORM_OFF = 0.55, 0.45 -- intensity hysteresis for the storm material -- tune
 local FOAM_SINK = -0.9 -- foam overlay offset where there is no foam (hidden under the water)
 local FOAM_LIFT = 0.06 -- foam overlay offset on full-foam crests -- tune
--- See-through shallows: surface transparency from the seabed depth under the camera. -- tune
--- The Seabed depth slices carry the depth colour, so the surface itself can be clearer.
+-- Shallows: the seabed depth under the camera lightens the whole sea's tint (never per-part
+-- transparency, which drew a hard-edged rectangle over the harbour). -- tune
 local CLEAR_DEPTH, OPAQUE_DEPTH, MAX_CLEAR = 4, 30, 0.72
 local SPRAY_RATE = 70 -- spindrift particles/s at full storm (High) -- tune
 -- Water albedo tints (part.Color under the Overlay SurfaceAppearance). WeatherController publishes
@@ -115,7 +115,7 @@ local sprayEmitter: ParticleEmitter? = nil
 local streakEmitter: ParticleEmitter? = nil -- FX1 crest foam streaks left on the crest (High tier only)
 local streakEvery = 0
 local underwater: Underwater.Underwater? = nil
-local clarity = 0 -- current surface transparency
+local clarity = 0 -- 0 over deep water .. MAX_CLEAR over sand: drives the shallow tint
 local depthCheckAt = 0
 local surfaceKind = "Calm"
 local tint: Color3 = TINT_CALM
@@ -156,8 +156,9 @@ local function fadeWeight(dx: number, dz: number): number
 	return 1 - smoothstep(fadeStart, fadeEnd, d)
 end
 
-local function fallbackGradient(x: number, z: number): (number, number, number)
-	return WaveField.gradientAt(x, z, frameT)
+-- Fallback grid height: waves fade to flat at the grid edge so it meets the far plane seamlessly.
+local function fallbackHeight(x: number, z: number): number
+	return SEA + (WaveField.heightAt(x, z, frameT) - SEA) * fadeWeight(x - centreX, z - centreZ)
 end
 
 local function teardown()
@@ -274,7 +275,7 @@ local function buildMesh(parent: Instance): boolean
 		warn(`[Ocean] outer ring unavailable ({ringErr}); near patch only`)
 		far = FarPlane.new(parent, nearGrid.half, SEA, surfaceKind, Horizon.INNER_HALF)
 	end
-	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT)
+	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind)
 	seabed = Seabed.new(parent)
 	if tier.name ~= "Low" then
 		-- Foam overlay: half the near patch's resolution; round 4 widens it (up to twice the near
@@ -371,8 +372,9 @@ end
 local function buildFallback(parent: Instance)
 	local grid = PartGrid.new(parent, tier.fallbackCells, tier.fallbackCell)
 	fallback = grid
+	fadeStart, fadeEnd = grid.half * 0.6, grid.half -- tune
 	far = FarPlane.new(parent, grid.half, SEA, surfaceKind, Horizon.INNER_HALF)
-	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT)
+	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind)
 	snapStep = tier.fallbackCell
 	mode = "Parts"
 end
@@ -516,6 +518,9 @@ local function updateLook()
 		if far then
 			FarPlane.setSurface(far, kind)
 		end
+		if horizon then
+			Horizon.setSurface(horizon, kind)
+		end
 	end
 	local water = Lighting:GetAttribute("OceanWaterColor")
 	local haze = Lighting:GetAttribute("OceanHazeColor")
@@ -527,7 +532,7 @@ local function updateLook()
 	if horizon then
 		Horizon.setColours(
 			horizon,
-			deepTint,
+			newTint, -- the same tint as the far plane it meets
 			if typeof(haze) == "Color3" then haze else HAZE_DEFAULT
 		)
 	end
@@ -567,14 +572,10 @@ local function updateLook()
 			end
 		end
 		local target = MAX_CLEAR * (1 - smoothstep(CLEAR_DEPTH, OPAQUE_DEPTH, depth))
+		-- Tint only: a see-through near tile and ring over an opaque far plane drew a hard-edged
+		-- light rectangle over the harbour basin (Transparency is per part, not per vertex).
 		if math.abs(target - clarity) > 0.01 then
 			clarity = target
-			if near then
-				near.part.Transparency = target
-			end
-			if ring then
-				ring.part.Transparency = target * 0.8
-			end
 		end
 	end
 	local emitter = sprayEmitter
@@ -651,6 +652,9 @@ local function step(dt: number)
 	frameT = t
 	lastT = t
 	WaveField.beginFrame(t, pos)
+	if horizon then
+		Horizon.setHigh(horizon, pos.Y > SEA + 60)
+	end
 	if snapped then
 		shiftFoam(cx - centreX, cz - centreZ)
 		centreX, centreZ = cx, cz
@@ -691,7 +695,8 @@ local function step(dt: number)
 			folder:SetAttribute("Mode", mode)
 		end
 	elseif fallback then
-		PartGrid.update(fallback, centreX, centreZ, SEA, fallbackGradient)
+		PartGrid.update(fallback, centreX, centreZ, SEA, fallbackHeight, tint)
+		updateLook()
 	end
 end
 
@@ -706,7 +711,10 @@ local function build()
 		teardown()
 		tier = OceanQuality.current()
 		local parent = folder :: Folder
-		if not buildMesh(parent) then
+		-- Studio only: Workspace attribute OceanForceParts previews the live-client fallback.
+		local forceParts = RunService:IsStudio()
+			and Workspace:GetAttribute("OceanForceParts") == true
+		if forceParts or not buildMesh(parent) then
 			teardown()
 			buildFallback(parent)
 		end
@@ -736,10 +744,10 @@ end
 function OceanController.GetVisualHeight(x: number, z: number): number
 	local t = lastT or Workspace:GetServerTimeNow()
 	local h = WaveField.heightAt(x, z, t)
-	if mode == "Mesh" then
-		return SEA + (h - SEA) * fadeWeight(x - centreX, z - centreZ)
+	if mode == "None" then
+		return h
 	end
-	return h
+	return SEA + (h - SEA) * fadeWeight(x - centreX, z - centreZ)
 end
 
 -- Average CPU cost of one ocean update in ms (EMA), and the tier name. For profiling.

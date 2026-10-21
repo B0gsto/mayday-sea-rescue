@@ -5,6 +5,9 @@
 -- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, Assist /
 -- Pro, and "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
+-- Layout: the stock iOS Settings look, a dark grouped list in one ScrollingFrame (icon tile,
+-- 1-3 word label, switch / slider / segmented control per row).
+--
 -- Lives on the phone: its Settings app (gamepad Start opens it) borrows the panel frame onto the
 -- phone screen. setOpen still shows it standalone (X or gamepad B closes).
 -- Values live in Camera/Comfort (saved on the profile; keys and rules in shared/SettingsRules).
@@ -23,6 +26,7 @@ local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
@@ -35,14 +39,12 @@ local Layout = require(script.Parent:WaitForChild("Layout"))
 local SettingsRules =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("SettingsRules"))
 
-local C = HudTheme.Colors
 local player = Players.LocalPlayer
 
 local SettingsPanel = {}
 
 local DISPLAY_ORDER = 40 -- above the store panels (35), below Cinematic (50)
-local ROW = 56 -- du per row
-local PANEL_W = 600
+local PANEL_W = 340
 local PANEL_H = 620
 
 local gui: ScreenGui? = nil
@@ -137,6 +139,31 @@ end
 
 ---------------------------------------------------------------- widgets
 
+-- iOS-style dark grouped list: black page, #1C1C1E groups, a coloured icon tile per row.
+local BG = Color3.fromHex("000000")
+local GROUP = Color3.fromHex("1C1C1E")
+local HAIR = Color3.fromHex("38383A")
+local DIM = Color3.fromHex("98989F")
+local SEG = Color3.fromHex("313135")
+local SEG_ON = Color3.fromHex("636366")
+local OFF = Color3.fromHex("39393D")
+local Tint = {
+	red = Color3.fromHex("FF453A"),
+	orange = Color3.fromHex("FF9F0A"),
+	yellow = Color3.fromHex("E5B800"),
+	green = Color3.fromHex("30D158"),
+	teal = Color3.fromHex("40C8E0"),
+	blue = Color3.fromHex("0A84FF"),
+	indigo = Color3.fromHex("5E5CE6"),
+	purple = Color3.fromHex("BF5AF2"),
+	pink = Color3.fromHex("FF375F"),
+	grey = Color3.fromHex("8E8E93"),
+}
+local LINE = 52 -- du: one-line row (icon, label, control on the right)
+local TALL = 104 -- du: label line + a full-width slider or segmented control under it
+local INSET = 54 -- du: label x (12 margin + 30 tile + 12 gap); separators start here
+local SWITCH = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
 local function refresh(key: string)
 	local list = refreshers[key]
 	if list then
@@ -165,113 +192,158 @@ local function noteFirst(obj: GuiObject)
 	end
 end
 
-local function smallButton(name: string, text: string, w: number, parent: Instance): TextButton
-	local b = HudTheme.button(name, text, UDim2.fromOffset(w, 44), parent)
-	b.BackgroundColor3 = C.panelLight
-	b.TextSize = HudTheme.scaled(HudTheme.TextSize.body)
-	b.Font = HudTheme.BodyFont
-	return b
+local function hairline(parent: Instance, x: number)
+	local h = Instance.new("Frame")
+	h.Name = "Hairline"
+	h.Position = UDim2.fromOffset(x, 0)
+	h.Size = UDim2.new(1, -x, 0, 1)
+	h.BackgroundColor3 = HAIR
+	h.BorderSizePixel = 0
+	h.Parent = parent
 end
 
 local order = 0
-local function row(parent: Instance, name: string, label: string): (Frame, TextLabel)
+local rowsIn: { [Instance]: number } = {}
+
+-- A row in a group: icon tile + label on the top line. `reserve` keeps the label clear of the
+-- control on its right.
+local function row(
+	group: Frame,
+	name: string,
+	glyph: string,
+	tint: Color3,
+	label: string,
+	height: number,
+	reserve: number
+): Frame
 	order += 1
 	local f = Instance.new("Frame")
 	f.Name = name
-	f.Size = UDim2.new(1, 0, 0, ROW)
+	f.Size = UDim2.new(1, 0, 0, height)
 	f.BackgroundTransparency = 1
 	f.LayoutOrder = order
-	f.Parent = parent
+	f.Parent = group
+	local n = (rowsIn[group] or 0) + 1
+	rowsIn[group] = n
+	if n > 1 then
+		hairline(f, INSET)
+	end
+	local tile = Instance.new("Frame")
+	tile.Name = "Icon"
+	tile.Position = UDim2.fromOffset(12, (LINE - 30) / 2)
+	tile.Size = UDim2.fromOffset(30, 30)
+	tile.BackgroundColor3 = tint
+	tile.BorderSizePixel = 0
+	tile.Parent = f
+	HudTheme.corner(tile, 7)
+	local g = Instance.new("TextLabel")
+	g.Name = "Glyph"
+	g.Size = UDim2.fromScale(1, 1)
+	g.BackgroundTransparency = 1
+	g.Text = glyph
+	g.Font = HudTheme.HeaderFont
+	g.TextSize = 18
+	g.TextColor3 = Color3.new(1, 1, 1)
+	g.Parent = tile
 	local l = HudTheme.label(
 		"Label",
 		label,
-		UDim2.new(0.42, -8, 1, 0),
+		UDim2.new(1, -INSET - reserve, 0, LINE),
 		HudTheme.BodyFont,
-		HudTheme.TextSize.body,
+		20,
 		f
 	)
-	l.TextColor3 = C.text
-	return f, l
+	l.Position = UDim2.fromOffset(INSET, 0)
+	l.TextColor3 = Color3.new(1, 1, 1)
+	return f
 end
 
-local function section(parent: Instance, title: string)
+-- A small caps header and the rounded group under it; rows go in the returned group.
+local function section(parent: Instance, title: string): Frame
 	order += 1
 	local l = HudTheme.label(
 		"Section_" .. title,
 		string.upper(title),
-		UDim2.new(1, 0, 0, 34),
-		HudTheme.HeaderFont,
-		HudTheme.TextSize.small,
+		UDim2.new(1, 0, 0, 40),
+		HudTheme.BodyFont,
+		18,
 		parent
 	)
-	l.TextColor3 = C.textDim
+	l.TextColor3 = DIM
 	l.TextYAlignment = Enum.TextYAlignment.Bottom
 	l.LayoutOrder = order
-	local rule = Instance.new("Frame")
-	rule.Name = "Rule"
-	rule.AnchorPoint = Vector2.new(0, 1)
-	rule.Position = UDim2.new(0, 0, 1, 2)
-	rule.Size = UDim2.new(1, 0, 0, 1)
-	rule.BackgroundColor3 = C.edge
-	rule.BackgroundTransparency = 0.85
-	rule.BorderSizePixel = 0
-	rule.Parent = l
-end
-
-local function note(parent: Instance, text: string): TextLabel
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 14)
+	pad.PaddingBottom = UDim.new(0, 6)
+	pad.Parent = l
 	order += 1
-	local l = HudTheme.label(
-		"Note",
-		text,
-		UDim2.fromScale(1, 0),
-		HudTheme.BodyFont,
-		HudTheme.TextSize.small,
-		parent
-	)
-	l.AutomaticSize = Enum.AutomaticSize.Y
-	l.TextWrapped = true
-	l.TextTruncate = Enum.TextTruncate.None
-	l.TextColor3 = C.textDim
-	l.LayoutOrder = order
-	return l
+	local g = Instance.new("Frame")
+	g.Name = "Group_" .. title
+	g.Size = UDim2.fromScale(1, 0)
+	g.AutomaticSize = Enum.AutomaticSize.Y
+	g.BackgroundColor3 = GROUP
+	g.BorderSizePixel = 0
+	g.LayoutOrder = order
+	g.Parent = parent
+	HudTheme.corner(g, 12)
+	local list = Instance.new("UIListLayout")
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = g
+	return g
 end
 
--- A number slider: [-] track [+] value. Mouse and touch drag the track; gamepad and taps use the
--- buttons (`step` each).
+-- right-aligned grey value on a row's top line
+local function valueLabel(f: Frame, w: number): TextLabel
+	local v = HudTheme.label("Value", "", UDim2.fromOffset(w, LINE), HudTheme.BodyFont, 18, f)
+	v.AnchorPoint = Vector2.new(1, 0)
+	v.Position = UDim2.new(1, -12, 0, 0)
+	v.TextXAlignment = Enum.TextXAlignment.Right
+	v.TextColor3 = DIM
+	return v
+end
+
+-- the full-width strip under a tall row's label line
+local function strip(f: Frame): Frame
+	local c = Instance.new("Frame")
+	c.Name = "Control"
+	c.Position = UDim2.fromOffset(12, LINE - 2)
+	c.Size = UDim2.new(1, -24, 0, 44)
+	c.BackgroundTransparency = 1
+	c.Parent = f
+	return c
+end
+
+local function stepButton(name: string, text: string, parent: Instance): TextButton
+	local b = HudTheme.button(name, text, UDim2.fromOffset(44, 44), parent)
+	b.BackgroundTransparency = 1
+	b.AutoButtonColor = false
+	b.TextColor3 = DIM
+	b.Font = HudTheme.HeaderFont
+	return b
+end
+
+-- A number slider: [-] track [+], value on the label line. Mouse and touch drag the track;
+-- gamepad and taps use the buttons (`step` each).
 local function slider(
-	parent: Instance,
+	group: Frame,
 	key: string,
+	glyph: string,
+	tint: Color3,
 	label: string,
 	step: number,
 	format: (number) -> string
 )
 	local range = SettingsRules.Ranges[key]
 	local lo, hi = range[1], range[2]
-	local f = row(parent, key, label)
-	local control = Instance.new("Frame")
-	control.Name = "Control"
-	control.AnchorPoint = Vector2.new(1, 0.5)
-	control.Position = UDim2.fromScale(1, 0.5)
-	control.Size = UDim2.new(0.58, 0, 0, 44)
-	control.BackgroundTransparency = 1
-	control.Parent = f
+	local f = row(group, key, glyph, tint, label, TALL, 70)
+	local value = valueLabel(f, 64)
+	local control = strip(f)
 
-	local minus = smallButton("Minus", "−", 44, control)
+	local minus = stepButton("Minus", "−", control)
 	noteFirst(minus)
-	local plus = smallButton("Plus", "+", 44, control)
+	local plus = stepButton("Plus", "+", control)
 	plus.AnchorPoint = Vector2.new(1, 0)
-	plus.Position = UDim2.new(1, -64, 0, 0)
-	local value = HudTheme.label(
-		"Value",
-		"",
-		UDim2.fromOffset(60, 44),
-		HudTheme.BodyFont,
-		HudTheme.TextSize.body,
-		control
-	)
-	value.AnchorPoint = Vector2.new(1, 0)
-	value.Position = UDim2.fromScale(1, 0)
-	value.TextXAlignment = Enum.TextXAlignment.Right
+	plus.Position = UDim2.fromScale(1, 0)
 
 	local track = Instance.new("TextButton")
 	track.Name = "Track"
@@ -279,22 +351,22 @@ local function slider(
 	track.AutoButtonColor = false
 	track.Selectable = false
 	track.BackgroundTransparency = 1
-	track.Position = UDim2.fromOffset(54, 0)
-	track.Size = UDim2.new(1, -54 - 54 - 64, 1, 0)
+	track.Position = UDim2.fromOffset(56, 0)
+	track.Size = UDim2.new(1, -112, 1, 0)
 	track.Parent = control
 	local rail = Instance.new("Frame")
 	rail.Name = "Rail"
 	rail.AnchorPoint = Vector2.new(0, 0.5)
 	rail.Position = UDim2.fromScale(0, 0.5)
 	rail.Size = UDim2.new(1, 0, 0, 4)
-	rail.BackgroundColor3 = C.panelLight
+	rail.BackgroundColor3 = OFF
 	rail.BorderSizePixel = 0
 	rail.Parent = track
 	HudTheme.corner(rail, 2)
 	local fill = Instance.new("Frame")
 	fill.Name = "Fill"
 	fill.Size = UDim2.fromScale(0, 1)
-	fill.BackgroundColor3 = C.bar
+	fill.BackgroundColor3 = Tint.blue
 	fill.BorderSizePixel = 0
 	fill.Parent = rail
 	HudTheme.corner(fill, 2)
@@ -302,11 +374,11 @@ local function slider(
 	knob.Name = "Knob"
 	knob.AnchorPoint = Vector2.new(0.5, 0.5)
 	knob.Position = UDim2.fromScale(0, 0.5)
-	knob.Size = UDim2.fromOffset(16, 16)
-	knob.BackgroundColor3 = C.text
+	knob.Size = UDim2.fromOffset(26, 26)
+	knob.BackgroundColor3 = Color3.new(1, 1, 1)
 	knob.BorderSizePixel = 0
 	knob.Parent = rail
-	HudTheme.corner(knob, 8)
+	HudTheme.corner(knob, 13)
 
 	onRefresh(key, function()
 		local v = Comfort.get(key) :: number
@@ -363,57 +435,123 @@ local function slider(
 	end)
 end
 
--- A row of mutually exclusive buttons; `options` are { label, value } pairs.
+-- An iOS segmented control under the label; `options` are { label, value } pairs. Returns the row
+-- (its top line has room for a value label).
 local function segmented(
-	parent: Instance,
+	group: Frame,
 	key: string,
+	glyph: string,
+	tint: Color3,
 	label: string,
-	options: { { any } },
-	onPick: ((any) -> ())?
-)
-	local f = row(parent, key, label)
-	local control = Instance.new("Frame")
-	control.Name = "Control"
-	control.AnchorPoint = Vector2.new(1, 0.5)
-	control.Position = UDim2.fromScale(1, 0.5)
-	control.Size = UDim2.new(0.58, 0, 0, 44)
-	control.BackgroundTransparency = 1
-	control.Parent = f
+	options: { { any } }
+): Frame
+	local f = row(group, key, glyph, tint, label, TALL, 100)
+	local control = strip(f)
+	control.BackgroundColor3 = SEG
+	control.BackgroundTransparency = 0
+	HudTheme.corner(control, 9)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 3)
+	pad.PaddingRight = UDim.new(0, 3)
+	pad.PaddingTop = UDim.new(0, 3)
+	pad.PaddingBottom = UDim.new(0, 3)
+	pad.Parent = control
 	local list = Instance.new("UIListLayout")
 	list.FillDirection = Enum.FillDirection.Horizontal
-	list.Padding = UDim.new(0, 6)
+	list.Padding = UDim.new(0, 2)
 	list.SortOrder = Enum.SortOrder.LayoutOrder
 	list.Parent = control
 	local n = #options
 	local buttons: { TextButton } = {}
 	for i, opt in options do
-		local b = smallButton(`Opt_{tostring(opt[2])}`, opt[1] :: string, 0, control)
-		b.Size = UDim2.new(1 / n, -6 * (n - 1) / n, 1, 0)
+		local b = HudTheme.button(`Opt_{tostring(opt[2])}`, opt[1] :: string, UDim2.new(), control)
+		b.Size = UDim2.new(1 / n, -2 * (n - 1) / n, 1, 0)
 		b.LayoutOrder = i
-		b.TextSize = HudTheme.scaled(HudTheme.TextSize.small)
+		b.AutoButtonColor = false
+		b.BackgroundColor3 = SEG_ON
+		HudTheme.corner(b, 7)
 		noteFirst(b)
 		buttons[i] = b
 		b.Activated:Connect(function()
-			if onPick then
-				onPick(opt[2])
-			else
-				Comfort.set(key, opt[2])
-			end
+			Comfort.set(key, opt[2])
 		end)
 	end
 	onRefresh(key, function()
 		local v = Comfort.get(key)
 		for i, b in buttons do
 			local on = options[i][2] == v
-			b.BackgroundColor3 = if on then C.accent else C.panelLight
-			b.TextColor3 = if on then C.text else C.textDim
+			b.BackgroundTransparency = if on then 0 else 1
+			b.TextColor3 = if on then Color3.new(1, 1, 1) else DIM
 			b.Font = if on then HudTheme.HeaderFont else HudTheme.BodyFont
 		end
 	end)
+	return f
 end
 
-local function toggle(parent: Instance, key: string, label: string)
-	segmented(parent, key, label, { { "Off", false }, { "On", true } })
+-- An iOS pill switch (green on, knob slides). The hit area is the row's whole right end.
+local function toggle(group: Frame, key: string, glyph: string, tint: Color3, label: string)
+	local f = row(group, key, glyph, tint, label, LINE, 76)
+	local hit = Instance.new("TextButton")
+	hit.Name = "Switch"
+	hit.Text = ""
+	hit.AutoButtonColor = false
+	hit.BackgroundTransparency = 1
+	hit.AnchorPoint = Vector2.new(1, 0)
+	hit.Position = UDim2.fromScale(1, 0)
+	hit.Size = UDim2.new(0, 76, 1, 0)
+	hit.Parent = f
+	noteFirst(hit)
+	local pill = Instance.new("Frame")
+	pill.Name = "Pill"
+	pill.AnchorPoint = Vector2.new(1, 0.5)
+	pill.Position = UDim2.new(1, -12, 0.5, 0)
+	pill.Size = UDim2.fromOffset(52, 32)
+	pill.BorderSizePixel = 0
+	pill.Parent = hit
+	HudTheme.corner(pill, 16)
+	local knob = Instance.new("Frame")
+	knob.Name = "Knob"
+	knob.AnchorPoint = Vector2.new(0, 0.5)
+	knob.Size = UDim2.fromOffset(28, 28)
+	knob.BackgroundColor3 = Color3.new(1, 1, 1)
+	knob.BorderSizePixel = 0
+	knob.Parent = pill
+	HudTheme.corner(knob, 14)
+	hit.Activated:Connect(function()
+		Comfort.set(key, Comfort.get(key) ~= true)
+	end)
+	onRefresh(key, function()
+		local on = Comfort.get(key) == true
+		TweenService:Create(pill, SWITCH, { BackgroundColor3 = if on then Tint.green else OFF })
+			:Play()
+		TweenService:Create(knob, SWITCH, { Position = UDim2.new(0, if on then 22 else 2, 0.5, 0) })
+			:Play()
+	end)
+end
+
+-- A tappable row (the whole row is the button); returns the row's right-side mark.
+local function action(
+	group: Frame,
+	name: string,
+	glyph: string,
+	tint: Color3,
+	label: string,
+	onTap: () -> ()
+): TextLabel
+	local f = row(group, name, glyph, tint, label, LINE, 40)
+	local hit = Instance.new("TextButton")
+	hit.Name = "Tap"
+	hit.Text = ""
+	hit.AutoButtonColor = false
+	hit.BackgroundTransparency = 1
+	hit.Size = UDim2.fromScale(1, 1)
+	hit.Parent = f
+	noteFirst(hit)
+	hit.Activated:Connect(onTap)
+	local mark = valueLabel(f, 30)
+	mark.TextColor3 = Tint.blue
+	mark.Font = HudTheme.HeaderFont
+	return mark
 end
 
 local function pct(v: number): string
@@ -451,46 +589,61 @@ local function build()
 	local p = HudTheme.panel("Panel", UDim2.fromOffset(PANEL_W, PANEL_H), g)
 	p.AnchorPoint = Vector2.new(0.5, 0.5)
 	p.Position = UDim2.fromScale(0.5, 0.5)
-	p.BackgroundTransparency = HudTheme.PromptTransparency
+	p.BackgroundColor3 = BG
+	p.BackgroundTransparency = 0
+	p.ClipsDescendants = true
 	p.Active = true
 	local scale = Instance.new("UIScale")
 	scale.Parent = p
-	HudTheme.padding(p, 16)
 	panel = p
 
-	local title = HudTheme.label(
-		"Title",
-		"Settings",
-		UDim2.new(1, -60, 0, 44),
-		HudTheme.HeaderFont,
-		HudTheme.TextSize.title,
-		p
-	)
-	title.TextColor3 = C.text
-	local close = smallButton("Close", "✕", 44, p)
+	local close = HudTheme.button("Close", "✕", UDim2.fromOffset(44, 44), p)
 	close.AnchorPoint = Vector2.new(1, 0)
-	close.Position = UDim2.fromScale(1, 0)
+	close.Position = UDim2.new(1, -10, 0, 10)
+	close.BackgroundColor3 = GROUP
+	close.TextColor3 = DIM
+	close.ZIndex = 2
+	HudTheme.corner(close, 22)
 	close.Activated:Connect(function()
 		SettingsPanel.setOpen(false)
 	end)
 
-	-- preset strip
-	local presets = Instance.new("Frame")
-	presets.Name = "Presets"
-	presets.Position = UDim2.fromOffset(0, 52)
-	presets.Size = UDim2.new(1, 0, 0, 44)
-	presets.BackgroundTransparency = 1
-	presets.Parent = p
-	local seasick = smallButton("Seasick", "Seasick-safe", 0, presets)
-	seasick.Size = UDim2.new(0.5, -4, 1, 0)
-	local reset = smallButton("Reset", "Reset comfort", 0, presets)
-	reset.AnchorPoint = Vector2.new(1, 0)
-	reset.Position = UDim2.fromScale(1, 0)
-	reset.Size = UDim2.new(0.5, -4, 1, 0)
-	seasick.Activated:Connect(function()
+	local s = Instance.new("ScrollingFrame")
+	s.Name = "List"
+	s.Size = UDim2.fromScale(1, 1)
+	s.BackgroundTransparency = 1
+	s.BorderSizePixel = 0
+	s.ScrollBarThickness = 3
+	s.ScrollBarImageColor3 = DIM
+	s.ScrollingDirection = Enum.ScrollingDirection.Y
+	s.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	s.CanvasSize = UDim2.new()
+	s.Selectable = false
+	s.Parent = p
+	scroller = s
+	local inner = Instance.new("UIPadding")
+	inner.PaddingLeft = UDim.new(0, 12)
+	inner.PaddingRight = UDim.new(0, 12)
+	inner.PaddingTop = UDim.new(0, 8)
+	inner.PaddingBottom = UDim.new(0, 28)
+	inner.Parent = s
+	local list = Instance.new("UIListLayout")
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = s
+
+	-- iOS large title (scrolls with the list)
+	order += 1
+	local title =
+		HudTheme.label("Title", "Settings", UDim2.new(1, -56, 0, 52), HudTheme.HeaderFont, 32, s)
+	title.Position = UDim2.fromOffset(4, 0)
+	title.TextColor3 = Color3.new(1, 1, 1)
+	title.LayoutOrder = order
+
+	local comfort = section(s, "Comfort")
+	local seasick = action(comfort, "Seasick", "≈", Tint.teal, "Seasick-safe", function()
 		Comfort.setMany(SettingsRules.SEASICK)
 	end)
-	reset.Activated:Connect(function()
+	action(comfort, "Reset", "↺", Tint.grey, "Reset", function()
 		local d: { [string]: any } = {}
 		for _, k in SettingsRules.COMFORT_KEYS do
 			d[k] = (SettingsRules.Defaults :: any)[k]
@@ -499,108 +652,75 @@ local function build()
 	end)
 	table.insert(extraRefresh, function()
 		local on = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
-		seasick.BackgroundColor3 = if on then C.accent else C.panelLight
-		seasick.Text = if on then "Seasick-safe  ✓" else "Seasick-safe"
+		seasick.Text = if on then "✓" else ""
 	end)
-
-	local s = Instance.new("ScrollingFrame")
-	s.Name = "List"
-	s.Position = UDim2.fromOffset(0, 104)
-	s.Size = UDim2.new(1, 0, 1, -104)
-	s.BackgroundTransparency = 1
-	s.BorderSizePixel = 0
-	s.ScrollBarThickness = 4
-	s.ScrollBarImageColor3 = C.textDim
-	s.ScrollingDirection = Enum.ScrollingDirection.Y
-	s.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	s.CanvasSize = UDim2.new()
-	s.Selectable = false
-	s.Parent = p
-	scroller = s
-	local inner = Instance.new("UIPadding")
-	inner.PaddingRight = UDim.new(0, 12)
-	inner.Parent = s
-	local list = Instance.new("UIListLayout")
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-	list.Padding = UDim.new(0, 2)
-	list.Parent = s
-
-	section(s, "Comfort")
-	slider(s, "horizonStab", "Horizon stabilisation", 0.05, pct)
-	slider(s, "fov", "Field of view", 5, function(v)
+	slider(comfort, "horizonStab", "↔", Tint.blue, "Horizon lock", 0.05, pct)
+	slider(comfort, "fov", "◎", Tint.indigo, "Field of view", 5, function(v)
 		return `{math.round(v)}°`
 	end)
-	slider(s, "headBob", "Head bob", 0.05, pct)
-	slider(s, "shake", "Camera shake", 0.05, pct)
-	slider(s, "gLean", "G-force lean", 0.05, pct)
-	slider(s, "sensitivity", "Look sensitivity", 0.1, function(v)
+	slider(comfort, "headBob", "↕", Tint.orange, "Head bob", 0.05, pct)
+	slider(comfort, "shake", "≋", Tint.red, "Shake", 0.05, pct)
+	slider(comfort, "gLean", "G", Tint.purple, "G-lean", 0.05, pct)
+	slider(comfort, "sensitivity", "⊕", Tint.teal, "Sensitivity", 0.1, function(v)
 		return string.format("%.1fx", v)
 	end)
-	toggle(s, "speedFov", "Speed FOV kick")
-	toggle(s, "motionBlur", "Motion blur")
-	toggle(s, "lensSpray", "Lens spray")
+	toggle(comfort, "speedFov", "»", Tint.orange, "Speed FOV")
+	toggle(comfort, "motionBlur", "≡", Tint.indigo, "Motion blur")
+	toggle(comfort, "lensSpray", "∴", Tint.blue, "Lens spray")
 
-	section(s, "Accessibility")
-	segmented(s, "colourAssist", "Colour assist", {
+	local access = section(s, "Accessibility")
+	segmented(access, "colourAssist", "◑", Tint.pink, "Colour assist", {
 		{ "Off", "Off" },
 		{ "Deut", "Deuteranopia" },
 		{ "Prot", "Protanopia" },
 		{ "Trit", "Tritanopia" },
 	})
-	segmented(s, "textSize", "Text size", {
+	segmented(access, "textSize", "A", Tint.blue, "Text size", {
 		{ "100%", 100 },
 		{ "125%", 125 },
 		{ "150%", 150 },
 	})
-	toggle(s, "reduceMotion", "Reduce motion")
-	toggle(s, "holdToTap", "Hold to tap")
+	toggle(access, "reduceMotion", "∥", Tint.green, "Reduce motion")
+	toggle(access, "holdToTap", "⊙", Tint.orange, "Hold to tap")
 
-	section(s, "Graphics")
+	local gfx = section(s, "Graphics")
 	local q = { { "Auto", "Auto" }, { "High", "High" }, { "Med", "Medium" }, { "Low", "Low" } }
-	segmented(s, "oceanQuality", "Ocean detail", q)
-	segmented(s, "scatterQuality", "Rocks and plants", q)
+	segmented(gfx, "oceanQuality", "≈", Tint.blue, "Ocean", q)
+	segmented(gfx, "scatterQuality", "▲", Tint.green, "Rocks & plants", q)
 
-	section(s, "Audio")
-	slider(s, "volMaster", "Master", 0.05, pct)
-	slider(s, "volSfx", "Effects", 0.05, pct)
-	slider(s, "volRadio", "Radio", 0.05, pct)
-	slider(s, "volMusic", "Music", 0.05, pct)
-	toggle(s, "voice", "Radio voices")
-	toggle(s, "muteHorns", "Mute horns")
-	toggle(s, "muteSirens", "Mute sirens")
-	toggle(s, "muteRadios", "Mute radios")
+	local audio = section(s, "Audio")
+	slider(audio, "volMaster", "♪", Tint.red, "Master", 0.05, pct)
+	slider(audio, "volSfx", "✦", Tint.orange, "Effects", 0.05, pct)
+	slider(audio, "volRadio", "∿", Tint.teal, "Radio", 0.05, pct)
+	slider(audio, "volMusic", "♫", Tint.pink, "Music", 0.05, pct)
+	toggle(audio, "voice", "“", Tint.purple, "Voices")
+	toggle(audio, "muteHorns", "◁", Tint.grey, "Mute horns")
+	toggle(audio, "muteSirens", "✹", Tint.red, "Mute sirens")
+	toggle(audio, "muteRadios", "⊘", Tint.grey, "Mute radios")
 
-	section(s, "Operations")
-	segmented(s, "pro", "Mode", { { "Assist", false }, { "Pro", true } })
-	local proNote = note(s, "")
+	local ops = section(s, "Operations")
+	local mode =
+		segmented(ops, "pro", "★", Tint.yellow, "Mode", { { "Assist", false }, { "Pro", true } })
+	local proNote = valueLabel(mode, 96)
 	local function updateProNote()
 		local want = Comfort.get("pro") == true
 		local active = player:GetAttribute("OpsPro") == true
-		local base = if want then "No hints · +20% Rep" else "Hints on"
-		if want and not active then
-			base ..= "\nNext op"
-		end
-		proNote.Text = base
+		proNote.Text = if not want then "Hints" elseif active then "+20% Rep" else "Next op"
 	end
 	table.insert(extraRefresh, updateProNote)
 	player:GetAttributeChangedSignal("OpsPro"):Connect(updateProNote)
 	updateProNote()
 
 	-- Owned items (RP-M5): one cycler per cosmetic slot whose game pass the player owns
-	section(s, "Owned items")
-	order += 1
-	local owned = Instance.new("Frame")
+	local owned = section(s, "Owned items")
 	owned.Name = "OwnedItems"
-	owned.Size = UDim2.fromScale(1, 0)
-	owned.AutomaticSize = Enum.AutomaticSize.Y
-	owned.BackgroundTransparency = 1
-	owned.LayoutOrder = order
-	owned.Parent = s
-	local ownedList = Instance.new("UIListLayout")
-	ownedList.SortOrder = Enum.SortOrder.LayoutOrder
-	ownedList.Padding = UDim.new(0, 8)
-	ownedList.Parent = owned
-	local ownedNote = note(s, "")
+	local ownedPad = Instance.new("UIPadding")
+	ownedPad.PaddingLeft = UDim.new(0, 12)
+	ownedPad.PaddingRight = UDim.new(0, 12)
+	ownedPad.Parent = owned
+	local ownedNote =
+		HudTheme.label("Note", "", UDim2.new(1, 0, 0, LINE), HudTheme.BodyFont, 18, owned)
+	ownedNote.TextColor3 = DIM
 	local pickers: { CosmeticPicker.Picker } = {}
 	local function ownsPass(key: string): boolean
 		return player:GetAttribute("Pass_" .. key) == true
@@ -612,10 +732,15 @@ local function build()
 		table.clear(pickers)
 		for i, slot in Cosmetics.slots() do
 			if Cosmetics.ownsSlot(slot, ownsPass) then
-				table.insert(pickers, CosmeticPicker.new(owned, slot, { layoutOrder = i }))
+				local picker = CosmeticPicker.new(owned, slot, { layoutOrder = i, height = LINE })
+				if #pickers > 0 then
+					hairline(picker.frame, 0)
+				end
+				table.insert(pickers, picker)
 			end
 		end
-		ownedNote.Text = if #pickers == 0 then "None · Chandlery" else ""
+		ownedNote.Text = "None · Chandlery"
+		ownedNote.Visible = #pickers == 0
 	end
 	rebuildOwned()
 	player.AttributeChanged:Connect(function(attr: string)

@@ -32,6 +32,20 @@ LiveryPaint.MESH_RULES = {
 		Decals = { set = "Hull", role = "stripe" },
 		Sled = { set = "Sled", role = "secondary" },
 	},
+	-- land fleet (I2b): the uploaded bodies replace the greybox Paint parts
+	M_Veh_LifeguardPickup = {
+		Body = { set = "Body", role = "primary" },
+		BodyDetail = { set = "Body", role = "secondary" },
+	},
+	M_Veh_Coastguard4x4 = {
+		Body = { set = "Body", role = "primary" },
+		BodyDetail = { set = "Body", role = "secondary" },
+	},
+	M_Veh_ATV = {
+		Body = { set = "Body", role = "primary" },
+		BodyDetail = { set = "Body", role = "secondary" },
+		Fenders = { set = "Body", role = "primary" },
+	},
 } :: { [string]: { [string]: MeshRule } }
 
 -- longest first so M_Veh_JetSki_CloseUp is never read as M_Veh_JetSki + "CloseUp"

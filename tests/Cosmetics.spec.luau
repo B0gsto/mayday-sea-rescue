@@ -78,7 +78,10 @@ return function(t)
 			local d = Cos.default(slot)
 			t.expect(d ~= nil).toBe(true)
 			t.expect(Cos.option(slot, d).pass).toBeNil()
-			t.expect(#Cos.passesForSlot(slot) > 0).toBe(true)
+			-- Decal and Title are earned-only slots (G28), so no game pass sells them
+			if slot ~= "Decal" and slot ~= "Title" then
+				t.expect(#Cos.passesForSlot(slot) > 0).toBe(true)
+			end
 			for _, pass in Cos.passesForSlot(slot) do
 				t.expect(Config.GamePasses[pass] ~= nil).toBe(true)
 			end

@@ -1,0 +1,613 @@
+{
+ "asset": "M_Rock_Cliff_02",
+ "name": "M_Rock_Cliff_02",
+ "date": "2026-10-17",
+ "commit": "951c085+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Rock_Cliff_02/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Rock_Cliff_02_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Cliff02_Granite"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.078,
+     0.037,
+     0.908,
+     0.793
+    ],
+    "mannequin": [
+     -0.191,
+     0.214,
+     0.005,
+     0.64
+    ],
+    "fill": 0.83
+   },
+   "Side": {
+    "asset": [
+     0.312,
+     0.105,
+     0.963,
+     0.841
+    ],
+    "mannequin": [
+     0.135,
+     0.206,
+     0.288,
+     0.639
+    ],
+    "fill": 0.736
+   },
+   "Rear3Q": {
+    "asset": [
+     0.078,
+     0.037,
+     0.908,
+     0.793
+    ],
+    "mannequin": [
+     -0.191,
+     0.214,
+     0.005,
+     0.64
+    ],
+    "fill": 0.83
+   },
+   "High": {
+    "asset": [
+     0.289,
+     0.137,
+     0.963,
+     0.847
+    ],
+    "mannequin": [
+     0.088,
+     0.344,
+     0.245,
+     0.596
+    ],
+    "fill": 0.71
+   }
+  },
+  "closeups": [
+   {
+    "name": "top",
+    "target": [
+     0.0,
+     0.0,
+     6.6743105292320255
+    ],
+    "dist": 3.6601146876811983,
+    "az": 30.0,
+    "el": 35.0,
+    "file": "closeup_top.png"
+   },
+   {
+    "name": "flank",
+    "target": [
+     0.0,
+     0.0,
+     3.3371552646160128
+    ],
+    "dist": 4.0667940974235535,
+    "az": 200.0,
+    "el": 10.0,
+    "file": "closeup_flank.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.71,
+  "in_frame": true,
+  "dims_m": [
+   2.711,
+   2.127,
+   2.472
+  ],
+  "validation_ok": true,
+  "seconds": 3.3
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/rocks/M_Rock_Cliff_02/M_Rock_Cliff_02.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "rock"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Cliff_02_LOD0"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8999 of 10000"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.53e-05, 433 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.997, v 0.004 to 0.993"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 8999 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "87 px/stud at 1024 px, background tier 25 or more px/stud (pass at 22)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Cliff_02_LOD1"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3599 of 10000"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.52e-04, 295 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.989"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3599 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 3.0% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Cliff_02_LOD2"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1349 of 10000"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (photogrammetry scan surface: the open underside and scan edges sit inside the terrain (CC0 scan, kit rock)): 1 loose verts, smallest face 5.13e-04, 184 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.990"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1349 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 8.4% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Cliff_02_COL"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 10000"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Rock_Cliff_02_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 of 1000"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8999 of 9000 (rock, asset row)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3599 of 3600"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1349 of 1350"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 2.711 x 2.127 x 2.472 m, spec 2.711 x 2.127 x 2.472 m (art/reference/M_Rock_Cliff_02/dims.md)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.133 studs, real 2.711 m = 8.133 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6.384 studs, real 2.127 m = 6.381 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7.425 studs, real 2.472 m = 7.416 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Rock_Cliff_02_COL"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 1 sets)"
+  },
+  {
+   "subject": "T_Cliff02_Granite_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_ALB.png"
+  },
+  {
+   "subject": "T_Cliff02_Granite_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Cliff02_Granite_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_NOR.png"
+  },
+  {
+   "subject": "T_Cliff02_Granite_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_RGH.png"
+  },
+  {
+   "subject": "T_Cliff02_Granite_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Cliff02_Granite_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Cliff_02/T_Cliff02_Granite_MET.png"
+  },
+  {
+   "subject": "M_Rock_Cliff_02",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.71; 11 renders in 3 s, maps M_Rock_Cliff_02_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Rock_Cliff_02_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 8999,
+   "texel_density": 87.4
+  },
+  {
+   "name": "M_Rock_Cliff_02_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 68,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Cliff_02_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3599,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Cliff_02_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1349,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  8.132712364196777,
+  6.383742332458496,
+  7.42520809173584
+ ],
+ "peak_rss_mb": 646.7
+}

@@ -1,0 +1,207 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_GildedGull/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_JetSki_GildedGull_Hull_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_GildedGull_HullSeat_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_GildedGull_HullTrim_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_GildedGull_Sled_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_GildedGull_SledFittings_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_JetSki_GildedGull_SledCockpit_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_GildedGull_Hull",
+  "T_GildedGull_Sled"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.037,
+    0.234,
+    0.77,
+    0.632
+   ],
+   "mannequin": [
+    -0.11,
+    0.391,
+    0.035,
+    0.715
+   ],
+   "fill": 0.733
+  },
+  "Side": {
+   "asset": [
+    0.219,
+    0.355,
+    0.963,
+    0.547
+   ],
+   "mannequin": [
+    0.05,
+    0.37,
+    0.147,
+    0.628
+   ],
+   "fill": 0.744
+  },
+  "Rear3Q": {
+   "asset": [
+    0.223,
+    0.197,
+    0.94,
+    0.598
+   ],
+   "mannequin": [
+    0.037,
+    0.309,
+    0.177,
+    0.651
+   ],
+   "fill": 0.717
+  },
+  "High": {
+   "asset": [
+    0.215,
+    0.037,
+    0.958,
+    0.734
+   ],
+   "mannequin": [
+    -0.116,
+    0.406,
+    0.085,
+    0.682
+   ],
+   "fill": 0.743
+  }
+ },
+ "closeups": [
+  {
+   "name": "seat_quilt_1m",
+   "target": [
+    0.0,
+    -1.321,
+    2.72
+   ],
+   "dist": 3.0,
+   "az": 115.0,
+   "el": 40.0,
+   "file": "closeup_seat_quilt_1m.png"
+  },
+  {
+   "name": "gull_wing",
+   "target": [
+    2.0,
+    1.279,
+    2.2
+   ],
+   "dist": 4.5,
+   "az": 125.0,
+   "el": 22.0,
+   "file": "closeup_gull_wing.png"
+  },
+  {
+   "name": "emblem_pinstripe",
+   "target": [
+    1.9,
+    -4.921,
+    1.4
+   ],
+   "dist": 4.5,
+   "az": 75.0,
+   "el": 8.0,
+   "file": "closeup_emblem_pinstripe.png"
+  },
+  {
+   "name": "wordmark",
+   "target": [
+    2.0,
+    -1.221,
+    1.35
+   ],
+   "dist": 4.5,
+   "az": 90.0,
+   "el": 5.0,
+   "file": "closeup_wordmark.png"
+  },
+  {
+   "name": "teak_footwell",
+   "target": [
+    0.9,
+    -2.121,
+    1.6
+   ],
+   "dist": 4.5,
+   "az": 55.0,
+   "el": 50.0,
+   "file": "closeup_teak_footwell.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.717,
+ "in_frame": true,
+ "dims_m": [
+  1.722,
+  5.012,
+  1.207
+ ],
+ "validation_ok": true,
+ "seconds": 11.4
+}

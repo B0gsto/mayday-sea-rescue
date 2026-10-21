@@ -1,6 +1,6 @@
 --!strict
 -- Triage sieve for the Capsized Ferry (docs/09 section 7 step 4). Pure: Lune-tested in
--- tests/MechFerryTriage.spec.luau, used by src/client/Mechanics/triage.luau and the server.
+-- tests/MechFerryTriage.spec.luau, used by the server (FerryValidate.driftFactor).
 --
 -- The real UK sieve (verify: NARU / NHS major incident guidance) in the order a medic runs it:
 --   1. Can they walk?                      yes -> P3 (Green, "can wait")
@@ -131,10 +131,8 @@ function Triage.sieve(o: Observation): Tag
 	return "Yellow"
 end
 
--- The real sieve order. A medic may stop as soon as a check decides the tag.
-Triage.Checks = { "walk", "airway", "responsive", "rate", "refill" }
-
--- The checks the sieve needs before the tag is decided (for grading the order and for hints).
+-- The checks in the real sieve order, stopping once one decides the tag (the client runs them
+-- one by one while the medic holds on the casualty).
 function Triage.checksNeeded(o: Observation): { string }
 	if o.walks then
 		return { "walk" }
@@ -151,19 +149,6 @@ function Triage.checksNeeded(o: Observation): { string }
 	end
 	table.insert(out, "refill")
 	return out
-end
-
--- True when every check done follows the sieve order (skipping ahead is fine once decided).
-function Triage.orderFollowed(done: { string }): boolean
-	local last = 0
-	for _, c in done do
-		local i = table.find(Triage.Checks, c)
-		if not i or i < last then
-			return false
-		end
-		last = i
-	end
-	return true
 end
 
 -- Breath counting: the medic counts over 15 s and multiplies by 4. The game runs the 15 s at

@@ -1,0 +1,642 @@
+{
+ "asset": "M_Veg_SeaThrift_01",
+ "name": "M_Veg_SeaThrift_01",
+ "date": "2026-10-17",
+ "commit": "7e4b3fa+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD0.fbx",
+   "bytes": 93820,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_SeaThrift_01_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_SeaThrift_01_LOD0.001",
+     "min": [
+      -0.45,
+      -0.42,
+      0.0
+     ],
+     "max": [
+      0.45,
+      0.42,
+      0.72
+     ],
+     "polygons": 752,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD1.fbx",
+   "bytes": 43900,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_SeaThrift_01_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_SeaThrift_01_LOD1.001",
+     "min": [
+      -0.4607,
+      -0.4367,
+      -0.0374
+     ],
+     "max": [
+      0.4495,
+      0.4129,
+      0.7203
+     ],
+     "polygons": 196,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD2.fbx",
+   "bytes": 30796,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_SeaThrift_01_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_SeaThrift_01_LOD2.001",
+     "min": [
+      -0.4331,
+      -0.3752,
+      -0.0195
+     ],
+     "max": [
+      0.4975,
+      0.4198,
+      0.7203
+     ],
+     "polygons": 88,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01.attachments.json",
+   "attachments": []
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/veg/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "vegetation"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_SeaThrift_01_LOD0"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "752 of 6000"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.95e-02, 1128 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.250 to 0.500, v 0.000 to 0.500"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 376 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1856 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_SeaThrift_01_LOD1"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "196 of 6000"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.13e-02, 392 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.250 to 0.500, v 0.000 to 0.500"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 98 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (card LODs drop cards by design (docs/12 2.5: cards reduce at distance); same atlas cells, LOD1 ~50% / LOD2 ~25% of the cards, widened): UV bounds differ by 0.000 (max 0.02), UV area by 47.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_SeaThrift_01_LOD2"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 of 6000"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.31e-02, 176 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.250 to 0.500, v 0.000 to 0.500"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 44 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (card LODs drop cards by design (docs/12 2.5: cards reduce at distance); same atlas cells, LOD1 ~50% / LOD2 ~25% of the cards, widened): UV bounds differ by 0.000 (max 0.02), UV area by 76.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "752 of 800 (vegetation, asset row)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "196 of 400"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "88 of 200"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 0.3 x 0.28 x 0.24 m, spec 0.3 x 0.28 x 0.24 m (art/reference/M_Veg_SeaThrift_01/dims.md)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.900 studs, real 0.300 m = 0.900 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.840 studs, real 0.280 m = 0.840 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.720 studs, real 0.240 m = 0.720 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas FoliageLand"
+  },
+  {
+   "subject": "T_FoliageLand_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_NOR.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_MET.png"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_SeaThrift_01_LOD0; 752 triangles (scene 752)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_SeaThrift_01_LOD1; 196 triangles (scene 196)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_SeaThrift_01_LOD2; 88 triangles (scene 88)"
+  },
+  {
+   "subject": "M_Veg_SeaThrift_01_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veg_SeaThrift_01_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 752,
+   "texel_density": 1855.6
+  },
+  {
+   "name": "M_Veg_SeaThrift_01_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 196,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veg_SeaThrift_01_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 88,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.8999999761581421,
+  0.8399999737739563,
+  0.7199999690055847
+ ],
+ "peak_rss_mb": 297.9
+}

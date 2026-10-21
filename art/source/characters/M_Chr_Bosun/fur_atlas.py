@@ -477,14 +477,14 @@ def assemble(tag, cache, size, out=OUT):
 
     # ---- albedo in sRGB terms, per strand: warm brown-black root -> body with a grey-brown sheen down the strand
     #      centre -> (guards / some mid) sun-bleached warm-brown tips
-    base = np.array([38.0, 31.0, 25.0]) * (0.88 + 0.24 * tone)[..., None]     # round 5: brown-black, luma ~28-38
-    root = np.array([27.0, 23.0, 20.0]) * (0.95 + 0.10 * tone)[..., None]     # undercoat at the skin ~25
+    base = np.array([60.0, 46.0, 34.0]) * (0.86 + 0.28 * tone)[..., None]     # r6: charcoal-brown, luma ~38-50 (r5 28-38)
+    root = np.array([36.0, 30.0, 25.0]) * (0.95 + 0.10 * tone)[..., None]     # undercoat at the skin ~31
     srgb = root + (base - root) * smooth(0.0, 0.40, tt)[..., None]
     face = np.clip(un["nz"], 0, 1) ** 2                                   # strand centre (faces the card normal)
     band = smooth(0.20, 0.55, tt) * (1.0 - 0.6 * smooth(0.80, 1.0, tt))
     sheen = (0.25 + 0.55 * tone) * band * face * (0.45 + 0.55 * (layer > 0.25)) * (0.3 if wet else 1.0)
-    srgb = srgb + (np.array([84.0, 66.0, 49.0]) - srgb) * sheen[..., None]     # r5: warmer, stronger sheen band
-    tip = np.array([126.0, 92.0, 61.0])                                    # r5: sun-bleached warm brown tips
+    srgb = srgb + (np.array([106.0, 83.0, 60.0]) - srgb) * sheen[..., None]   # r6 lifted     # r5: warmer, stronger sheen band
+    tip = np.array([142.0, 106.0, 71.0])                                   # r6 lifted                                    # r5: sun-bleached warm brown tips
     sun = np.clip(bleach * 1.5, 0, 1) + 0.30 * (layer > 0.25)         # some strong, all mid/guard tips clearly
     fade = np.clip(sun, 0, 1) * smooth(0.45, 1.0, tt) ** 1.4 * (0.3 if wet else 1.0)
     srgb = srgb + (tip - srgb) * fade[..., None]
@@ -492,7 +492,7 @@ def assemble(tag, cache, size, out=OUT):
     occl = (0.85 + 0.15 * ao) * (0.92 + 0.08 * smooth(0.0, 0.3, tt))         # AO + root darkening
     lin = lin * occl[..., None]
     if wet:
-        lin = lin * 0.50                                                   # soaked: dark, clearly apart from dry
+        lin = lin * 0.40                                                   # r6 (r5 0.50) soaked: dark, clearly apart from dry
     # sRGB luma floor: dry keeps its darkest texels at the non-metal albedo floor (check_textures: 1st pct >= 20);
     # wet gets a soft knee into 18..22 so finalize.py's luma_clamp(18) never flattens the soaked coat
     y = (lin_to_srgb8(lin).astype(np.float32) * np.array([0.2126, 0.7152, 0.0722], np.float32)).sum(-1)
@@ -514,10 +514,11 @@ def assemble(tag, cache, size, out=OUT):
 
     # ---- roughness
     if wet:
-        rg = 0.35 - 0.08 * smooth(0.2, 1.0, tt) - 0.02 * layer + 0.02 * (tone - 0.5)   # ~0.25-0.35
+        rg = 0.29 - 0.08 * smooth(0.2, 1.0, tt) - 0.02 * layer + 0.02 * (tone - 0.5)   # ~0.25-0.35
     else:
-        rg = 0.70 + 0.04 * (tone - 0.5) - 0.04 * layer - 0.14 * layer * smooth(0.45, 1.0, tt) + 0.03 * (layer < 0.25)
-    rg = np.clip(rg, 0.15, 0.75)
+        # r6: wider range, glossy guard-hair tips (tip sheen), dull undercoat
+        rg = 0.72 + 0.12 * (tone - 0.5) - 0.05 * layer - 0.34 * layer * smooth(0.45, 1.0, tt) + 0.06 * (layer < 0.25)
+    rg = np.clip(rg, 0.15, 0.82)
 
     # ---- dilate everything into empty texels (weights = coverage, so the background never leaks in)
     wgt = smooth(0.02, 0.6, A)

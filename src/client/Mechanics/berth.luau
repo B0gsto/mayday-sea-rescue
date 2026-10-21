@@ -1,16 +1,14 @@
 --!strict
 -- Berth and release (docs 09 section 6 step 9). Steer the lashed pair (heavier, slower to stop
--- and turn) onto the pontoon at a shallow angle and under the slow mark, pass lines to the
--- harbour staff, then release in the right order: the casualty made fast to the pontoon first,
--- our lashings off, and the tow line coiled and stowed (no line left in the water).
--- Metrics: contactSpeed (studs/s), lineInWater (0/1), lineOrderRight (1/0).
--- With nothing in tow (ctx.step.noTow, the boat-handling exercise's "alongside the pontoon") the
--- tow-line parts are skipped: no lashed-pair drag, and the step ends once the lines are on, graded
--- on the contact speed and the berthing line order (Procedures.noTowBerthMetrics).
+-- and turn) onto the pontoon at a shallow angle and under the slow mark. The harbour staff take
+-- the lines, then the crew release her: her lines on the pontoon, our lashings off, the tow line
+-- coiled and stowed.
+-- Metrics: contactSpeed (studs/s).
+-- With nothing in tow (ctx.step.noTow, the boat-handling exercise's "alongside the pontoon") there
+-- is no lashed-pair drag and no release: the step ends once the lines are on.
 local RunService = game:GetService("RunService")
 
 local Kit = require(script.Parent:WaitForChild("Tow"):WaitForChild("Kit"))
-local Procedures = require(script.Parent:WaitForChild("Tow"):WaitForChild("Procedures"))
 
 local M = {}
 
@@ -21,12 +19,12 @@ local PAIR_DRAG = 0.6 -- extra drag per unit mass from the lashed hull (tune)
 function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 	local gui = Kit.gui("TowBerth")
 	local complete, cleanup, bag = Kit.session(gui, finish)
-	if Kit.autoStub(complete, { contactSpeed = 2, lineInWater = 0, lineOrderRight = 1 }) then
+	if Kit.autoStub(complete, { contactSpeed = 2 }) then
 		return cleanup
 	end
 	local root = Kit.vehicleRoot(ctx)
 	if not root then
-		task.delay(2, complete, { metrics = { contactSpeed = 8, lineInWater = 1 }, failed = true })
+		task.delay(2, complete, { metrics = { contactSpeed = 8 }, failed = true })
 		return cleanup
 	end
 	local r = root :: BasePart
@@ -63,101 +61,67 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		speedLabel = lbl
 	end
 	if noTow then
-		Kit.brief(
-			gui,
-			"Bring her alongside the pontoon at a shallow angle, under the slow mark, and let her kiss it."
-		)
-		Kit.say(gui, "Chief Aggie", "Alongside the pontoon to finish. Gently does it.", 4)
+		Kit.brief(gui, "Pontoon · shallow · slow")
+		Kit.say(gui, "Chief Aggie", "Pontoon to finish. Gently.", 4)
 	else
-		Kit.brief(
-			gui,
-			"Bring her onto the pontoon at a shallow angle, dead slow. She's heavy now: start slowing early."
-		)
-		Kit.say(gui, "Haven Harbour", "Berth on the visitors' pontoon, we'll take your lines.", 4)
+		Kit.brief(gui, "Pontoon · shallow · dead slow")
+		Kit.say(gui, "Haven Harbour", "Visitors' pontoon. We'll take lines.", 4)
+	end
+
+	-- a few spoken beats with the crew's hands, then `after`
+	local function beats(list: { { string } }, after: () -> ())
+		for i, b in list do
+			task.delay((i - 1) * 1.4, function()
+				if gui.Parent then
+					Kit.hands(b[3])
+					Kit.say(gui, b[1], b[2], 1.4)
+				end
+			end)
+		end
+		task.delay(#list * 1.4, function()
+			if gui.Parent then
+				after()
+			end
+		end)
 	end
 
 	local function release()
 		phase = "release"
-		local remaining = { "springs", "coil", "casualtyFast", "bow", "stern" }
-		local order: { string } = {}
-		Kit.brief(gui, "Release her: pick the order.")
-		local function nextStep()
-			local choices: { Kit.Choice } = {}
-			for _, id in remaining do
-				if #choices < 4 then
-					table.insert(choices, { id = id, text = Procedures.RELEASE_TEXT[id] })
-				end
+		beats({
+			{ "Skipper", "Our lines are on the pontoon.", "cast_off" },
+			{ "Crew", "Lashings off!", "cast_off" },
+			{ "Crew", "Tow line coiled and stowed.", "coil_line" },
+		}, function()
+			if link then
+				link.lashed = nil
+				Kit.release(link)
 			end
-			local cancel = Kit.choose(gui, `Step {#order + 1}`, choices, function(id)
-				table.insert(order, id)
-				table.remove(remaining, table.find(remaining, id) :: number)
-				Kit.hands(if id == "coil" then "coil_line" else "cast_off")
-				if id == "casualtyFast" and #order > 1 then
-					Kit.say(gui, "Skipper", "We're drifting off! Grab the pontoon!", 2.5)
+			local trailing = Kit.shared(ctx).trailingRope
+			if trailing then
+				for _, inst in trailing do
+					inst:Destroy()
 				end
-				if #remaining > 0 then
-					nextStep()
-					return
-				end
-				local coilLast = order[#order] == "coil"
-				local right = Procedures.orderScore(order, Procedures.RELEASE_ORDER) >= 1
-				if link then
-					link.lashed = nil
-					Kit.release(link)
-				end
-				local trailing = Kit.shared(ctx).trailingRope
-				if trailing then
-					for _, inst in trailing do
-						inst:Destroy()
-					end
-					Kit.shared(ctx).trailingRope = nil
-				end
-				Kit.say(gui, "Skipper", "Thank you so much. Drinks are on me.", 3)
-				complete({
-					metrics = {
-						contactSpeed = contactSpeed,
-						lineInWater = if coilLast then 0 else 1,
-						lineOrderRight = if right then 1 else 0,
-					},
-				})
-			end, ctx.isAssist, Procedures.RELEASE_ORDER[#order + 1])
-			table.insert(bag, cancel)
-		end
-		nextStep()
+				Kit.shared(ctx).trailingRope = nil
+			end
+			Kit.say(gui, "Skipper", "Thank you! Drinks on me.", 3)
+			complete({ metrics = { contactSpeed = contactSpeed } })
+		end)
 	end
 
 	local function passLines()
 		phase = "lines"
-		local remaining = { "stern", "bow", "aftSpring", "fwdSpring" }
-		local given: { string } = {}
-		Kit.brief(gui, "Pass your lines to the harbour staff.")
-		local function nextLine()
-			local choices: { Kit.Choice } = {}
-			for _, id in remaining do
-				table.insert(choices, { id = id, text = Procedures.LINE_TEXT[id] })
+		Kit.brief(gui, "")
+		beats({
+			{ "Haven Harbour", "Got your bow line.", "throw_line" },
+			{ "Haven Harbour", "Stern line and springs on.", "throw_line" },
+		}, function()
+			if noTow then
+				Kit.say(gui, "Chief Aggie", "Made fast. That'll do nicely.", 2.5)
+				complete({ metrics = { contactSpeed = contactSpeed } })
+			else
+				release()
 			end
-			local cancel = Kit.choose(gui, `Line {#given + 1}`, choices, function(id)
-				table.insert(given, id)
-				table.remove(remaining, table.find(remaining, id) :: number)
-				Kit.hands("throw_line")
-				Kit.say(
-					gui,
-					"Haven Harbour",
-					`Got your {string.lower(Procedures.LINE_TEXT[id])}.`,
-					1.5
-				)
-				if #remaining > 0 then
-					nextLine()
-				elseif noTow then
-					Kit.say(gui, "Chief Aggie", "Made fast. That'll do nicely.", 2.5)
-					complete({ metrics = Procedures.noTowBerthMetrics(contactSpeed, given) })
-				else
-					release()
-				end
-			end, ctx.isAssist, Procedures.BERTH_ORDER[#given + 1])
-			table.insert(bag, cancel)
-		end
-		nextLine()
+		end)
 	end
 
 	table.insert(
@@ -198,14 +162,9 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 				local angle =
 					math.deg(math.acos(math.clamp(math.abs(r.CFrame.LookVector:Dot(along)), 0, 1)))
 				if contactSpeed > SLOW_MARK * 2 then
-					Kit.say(
-						gui,
-						"Haven Harbour",
-						"Steady! You'll have the pontoon off its piles.",
-						3
-					)
+					Kit.say(gui, "Haven Harbour", "Steady! Easy on the pontoon.", 3)
 				elseif angle > 35 then
-					Kit.say(gui, "Crew", "Bit steep on the approach, but we're on.", 2.5)
+					Kit.say(gui, "Crew", "Bit steep, but we're on.", 2.5)
 				else
 					Kit.say(gui, "Haven Harbour", "Nicely done. Lines please.", 2.5)
 				end

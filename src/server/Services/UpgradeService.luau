@@ -39,7 +39,11 @@ local function fit(player: Player, vehicleId: string, upgradeId: string): (boole
 		mask,
 		data.cash,
 		ProgressionRules.rankIndex(data),
-		ProgressionRules.ownsVehicle(data, vehicleId)
+		ProgressionRules.ownsVehicle(
+			data,
+			vehicleId,
+			ProgressionService.OwnsVehiclePass(player, vehicleId)
+		)
 	)
 	if not ok then
 		return false, reason

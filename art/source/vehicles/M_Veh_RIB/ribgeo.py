@@ -33,10 +33,10 @@ def hexcol(h):
 
 
 PALETTE = {
-    # name: (sRGB hex, roughness, metal). V2 fix batch livery: saturated orange Hypalon tubes, dark navy GRP hull,
+    # name: (sRGB hex, roughness, metal). V2 fix batch livery: saturated orange Hypalon tubes, charcoal GRP hull (de-RNLI 2026-10-18: no navy anywhere),
     # grey rub strakes, white waterline stripe, oxblood antifoul, Hull Orange console / A-frame.
-    "HullCharcoal": ("#1F2836", 0.36, 0.0),
-    "HullBody": ("#1F2836", 0.36, 0.0),         # z-banded: antifoul / waterline stripe / navy (HULL_BANDS)     # dark navy gelcoat (name kept for the slot layout)
+    "HullCharcoal": ("#26282C", 0.36, 0.0),
+    "HullBody": ("#26282C", 0.36, 0.0),         # z-banded: antifoul / waterline stripe / charcoal (HULL_BANDS)     # charcoal gelcoat (name kept for the slot layout)
     "HullOrange": ("#F2620F", 0.36, 0.0),
     "BootStripe": ("#D9DBD7", 0.38, 0.0),       # white waterline stripe
     "TubeGrey": ("#C8522C", 0.62, 0.0),         # red-orange Hypalon (fix round 3: less saturated, darker; name kept)
@@ -47,7 +47,7 @@ PALETTE = {
     "Reflective": ("#C4C8CA", 0.28, 0.0),
     "RubStrake": ("#7B8085", 0.72, 0.0),        # grey rub strake
     "Rope": ("#4A5058", 0.88, 0.0),
-    "Webbing": ("#2F3842", 0.85, 0.0),
+    "Webbing": ("#323438", 0.85, 0.0),
     "NonSlip": ("#4A5054", 0.88, 0.0),
     "Gelcoat": ("#9DA2A4", 0.42, 0.0),
     "GelcoatWhite": ("#D9DBD7", 0.38, 0.0),
@@ -71,12 +71,12 @@ PALETTE = {
     "ScreenChart": ("#3E5866", 0.10, 0.0),
     "Vinyl": ("#2C2F33", 0.58, 0.0),
     "PodGrey": ("#6B7074", 0.45, 0.0),
-    "Strap": ("#2B3440", 0.86, 0.0),
+    "Strap": ("#2E3034", 0.86, 0.0),
     "PanelOrange": ("#C8522C", 0.60, 0.0),       # matches the tube orange (lettering sits on it)
     "PanelConsole": ("#F2620F", 0.40, 0.0),     # matches the console Hull Orange
-    "PanelNavy": ("#1F2836", 0.45, 0.0),
+    "PanelCharcoal": ("#26282C", 0.45, 0.0),
     "LetterWhite": ("#E6E7E3", 0.45, 0.0),
-    "LetterNavy": ("#1F2836", 0.45, 0.0),
+    "LetterCharcoal": ("#26282C", 0.45, 0.0),
     "ChevronYellow": ("#E8D21C", 0.32, 0.0),    # retroreflective yellow
     "ChevronSilver": ("#C9CDCF", 0.26, 0.0),
     "CrestCharcoal": ("#2B2F33", 0.45, 0.0),
@@ -87,7 +87,7 @@ PALETTE = {
 # mottle (noise scale, amount), grime (colour, amount), streak (colour, amount: vertical water streaks),
 # rough_var, bump (kind, strength, scale)
 PROC = {
-    "HullCharcoal": dict(mottle=(2, 0.06), grime=("#2A3442", 0.25), streak=("#3C4654", 0.30), rough_var=0.10, bump=("peel", 0.04, 10)),
+    "HullCharcoal": dict(mottle=(2, 0.06), grime=("#303236", 0.25), streak=("#46484C", 0.30), rough_var=0.10, bump=("peel", 0.04, 10)),
     "Antifoul": dict(mottle=(3, 0.12), grime=("#3A2826", 0.35), streak=("#6E5A4E", 0.25), rough_var=0.10, bump=("peel", 0.08, 10)),
     "BootStripe": dict(mottle=(5, 0.06), grime=("#9EA19A", 0.30), streak=("#8E918A", 0.30), rough_var=0.10),
     "HullOrange": dict(mottle=(2, 0.05), grime=("#A85A2C", 0.20), streak=("#C06A38", 0.22), rough_var=0.10, bump=("peel", 0.03, 10)),
@@ -111,7 +111,7 @@ PROC = {
     "CowlLight": dict(mottle=(2, 0.04), grime=("#33373A", 0.22), streak=("#5E6468", 0.20), salt=("#8A8E8E", 0.15), rough_var=0.05),
     "PanelOrange": dict(mottle=(0.8, 0.06), grime=("#7A3A24", 0.25), salt=("#C9B6A6", 0.22), rough_var=0.10),
     "PanelConsole": dict(mottle=(5, 0.06), grime=("#A85A2C", 0.22), rough_var=0.10),
-    "PanelNavy": dict(mottle=(4, 0.05), grime=("#3A3F44", 0.18), rough_var=0.08),
+    "PanelCharcoal": dict(mottle=(4, 0.05), grime=("#3A3F44", 0.18), rough_var=0.08),
     "LetterWhite": dict(mottle=(4, 0.04), grime=("#B4B5AE", 0.25), rough_var=0.08),
 }
 # bump only (constant base / roughness; metals keep a clean 180-250 albedo)
@@ -351,11 +351,11 @@ def _proc_tree(mat, name, bsdf, hexc, rough, metal, bump=True):
         L(_bump_tree(nt, bmp[0], bmp[1], bmp[2], coord), bsdf.inputs["Normal"])
 
 
-HULL_BANDS = ((1.00, "Antifoul"), (1.13, "BootStripe"), (99.0, "HullCharcoal"))   # fix round 3: waterline lowered so the navy topsides show   # object z (studs) upper bounds
+HULL_BANDS = ((1.00, "Antifoul"), (1.13, "BootStripe"), (99.0, "HullCharcoal"))   # fix round 3: waterline lowered so the charcoal topsides show   # object z (studs) upper bounds
 
 
 def _band_tree(mat, bsdf):
-    """HullBody: one slot whose colour / roughness switch by object Z (antifoul, waterline stripe, navy topsides)."""
+    """HullBody: one slot whose colour / roughness switch by object Z (antifoul, waterline stripe, charcoal topsides)."""
     nt = mat.node_tree
     L = nt.links.new
     N = nt.nodes.new

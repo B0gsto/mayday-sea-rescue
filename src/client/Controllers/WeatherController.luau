@@ -22,6 +22,7 @@
 -- API: WeatherController.SetBasePreset("Clear" | "Calm" | "Overcast" | "Night"): a day base, or
 -- "Night" to move the clock to night (the Night look itself follows the sun).
 
+local ContentProvider = game:GetService("ContentProvider")
 local Debris = game:GetService("Debris")
 local GuiService = game:GetService("GuiService")
 local Lighting = game:GetService("Lighting")
@@ -40,6 +41,7 @@ local LightingPresets = require(Shared:WaitForChild("Config"):WaitForChild("Ligh
 local Net = require(Shared:WaitForChild("Net"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
+local OnboardingWeather = require(Shared:WaitForChild("OnboardingWeather"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
@@ -239,24 +241,49 @@ local function applySky(key: string)
 	skyKey = key
 	local faces = SkyAssets and SkyAssets[key]
 	if faces then
-		sky.SkyboxBk = faces.Bk
-		sky.SkyboxDn = faces.Dn
-		sky.SkyboxFt = faces.Ft
-		sky.SkyboxLf = faces.Lf
-		sky.SkyboxRt = faces.Rt
-		sky.SkyboxUp = faces.Up
+		-- Preload before assigning: the sky's specular environment map is captured from the faces as set, and faces
+		-- still loading are captured black, so the glossy water reflected black blobs at grazing angles (play3 s4).
+		task.spawn(function()
+			local ids = { faces.Bk, faces.Dn, faces.Ft, faces.Lf, faces.Rt, faces.Up }
+			pcall(ContentProvider.PreloadAsync, ContentProvider, ids)
+			if skyKey ~= key then
+				return
+			end
+			sky.SkyboxBk = faces.Bk
+			sky.SkyboxDn = faces.Dn
+			sky.SkyboxFt = faces.Ft
+			sky.SkyboxLf = faces.Lf
+			sky.SkyboxRt = faces.Rt
+			sky.SkyboxUp = faces.Up
+		end)
 	end
 	-- No sun or moon disc behind a solid cloud deck.
 	sky.CelestialBodiesShown = key ~= "Storm" and key ~= "Overcast"
 end
 
 -- The full blend for this moment: day base -> Night by the sun, -> Storm by intensity.
+-- A new player's cold open stays calm on their client even when a storm is already running
+-- (G81): OnboardingWeather holds the level at 1 until the cold open ends, then eases it out.
+local startedAt = os.clock()
+local calmLevel = 0
+
+local function calmTarget(): number
+	local player = Players.LocalPlayer
+	local active = player:GetAttribute("ColdOpenActive") == true
+	local done = player:GetAttribute("ColdOpenDone") == true
+	return OnboardingWeather.target(active, done, os.clock() - startedAt)
+end
+
 local function computeBlend(intensity: number): Preset
 	local override = Lighting:GetAttribute("WeatherBase")
 	local name = basePresetName
 	if type(override) == "string" and DAY_PRESETS[override] then
 		name = override
 	end
+	if calmLevel > 0.5 then
+		name = "Calm"
+	end
+	Lighting:SetAttribute("LocalStormIntensity", intensity) -- the client sea, boats and audio
 	local day = DAY_PRESETS[name]
 	local n = nightFactor()
 	local dayMix = if n > 0.001 then LightingPresets.blend(day, LightingPresets.Night, n) else day
@@ -592,7 +619,7 @@ local function showBanner(text: string)
 end
 
 local function onStateChanged(state: string)
-	if state == "Warning" then
+	if state == "Warning" and calmLevel < 0.5 then
 		showBanner(if Weather.isGreatStorm() then "Great Storm incoming!" else "Storm incoming!")
 		playIfReal(sirenSound)
 	end
@@ -628,7 +655,7 @@ function WeatherController.Init()
 	-- The phase cue: a Storm upgraded to a Great Storm mid-phase gets its own banner.
 	Net.event("StormChanged").OnClientEvent:Connect(function(payload: any)
 		if type(payload) == "table" and payload.state == "Storm" and payload.isGreatStorm then
-			if Weather.getState() == "Storm" then
+			if Weather.getState() == "Storm" and calmLevel < 0.5 then
 				showBanner("GREAT STORM!")
 			end
 		end
@@ -637,7 +664,8 @@ end
 
 function WeatherController.Start()
 	Lighting.ClockTime = basePreset.ClockTime -- once; storms never move the sun
-	local intensity = Weather.getIntensity()
+	calmLevel = calmTarget()
+	local intensity = OnboardingWeather.localIntensity(Weather.getIntensity(), calmLevel)
 	current = computeBlend(intensity)
 	applyBlend(current)
 	if Weather.getState() == "Warning" then
@@ -654,8 +682,9 @@ function WeatherController.Start()
 		local now = Workspace:GetServerTimeNow()
 		sinceBlend += dt
 		if sinceBlend >= 1 / BLEND_HZ then
+			calmLevel = OnboardingWeather.step(calmLevel, calmTarget(), sinceBlend)
 			sinceBlend = 0
-			intensity = Weather.getIntensity(now)
+			intensity = OnboardingWeather.localIntensity(Weather.getIntensity(now), calmLevel)
 			current = computeBlend(intensity)
 			applyBlend(current)
 		end
@@ -665,7 +694,9 @@ function WeatherController.Start()
 			checkRoof(camera)
 		end
 		updateRain(camera, intensity)
-		updateLightning(camera, now)
+		if intensity > 0.01 then
+			updateLightning(camera, now)
+		end
 		applyFlash(os.clock())
 	end)
 end

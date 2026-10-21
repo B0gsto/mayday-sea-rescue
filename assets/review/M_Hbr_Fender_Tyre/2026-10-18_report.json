@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Fender_Tyre",
  "name": "M_Hbr_Fender_Tyre",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Fender_Tyre/M_Hbr_Fender_Tyre_LOD0.fbx",
-   "bytes": 118188,
+   "bytes": 209756,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Tyre_LOD0"
@@ -34,15 +34,15 @@
      "name": "M_Hbr_Fender_Tyre_LOD0.001",
      "min": [
       -0.93,
-      -0.312,
+      -0.351,
       0.0
      ],
      "max": [
       0.93,
-      0.312,
-      3.9663
+      0.351,
+      3.9674
      ],
-     "polygons": 1120,
+     "polygons": 2616,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Fender_Tyre/M_Hbr_Fender_Tyre_LOD1.fbx",
-   "bytes": 75932,
+   "bytes": 131772,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Tyre_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_Fender_Tyre_LOD1.001",
      "min": [
-      -0.9304,
-      -0.3156,
-      -0.0004
+      -0.9263,
+      -0.3503,
+      0.0038
      ],
      "max": [
-      0.9294,
-      0.3156,
-      3.9663
+      0.9267,
+      0.3505,
+      3.9674
      ],
-     "polygons": 559,
+     "polygons": 1308,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1120 of 3000"
+   "detail": "2616 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.37e-03, 1004 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.22e-06, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.376 to 0.749, v 0.001 to 0.249"
+   "detail": "u 0.251 to 0.749, v 0.001 to 0.211"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 558 faces have no UV area"
+   "detail": "0 of 1306 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "197 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "261 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "559 of 3000"
+   "detail": "1308 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.61e-04, 925 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.81e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.376 to 0.749, v 0.001 to 0.249"
+   "detail": "u 0.251 to 0.749, v 0.001 to 0.211"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1",
@@ -248,15 +248,15 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 559 faces have no UV area"
+   "detail": "0 of 1308 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1",
    "check": "LOD UV layout",
    "ok": true,
-   "waived": false,
+   "waived": true,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 13.2% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 21.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1120 of 1200 (small_prop, asset row)"
+   "detail": "2616 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "559 of 600"
+   "detail": "1308 of 1500"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.62 x 0.208 x 1.322 m, spec 0.62 x 0.208 x 1.322 m (art/reference/M_Hbr_Fender_Tyre/dims.md)"
+   "detail": "dims.md 0.62 x 0.234 x 1.322 m, spec 0.62 x 0.234 x 1.322 m (art/reference/M_Hbr_Fender_Tyre/dims.md)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -296,7 +296,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0.624 studs, real 0.208 m = 0.624 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "0.702 studs, real 0.234 m = 0.702 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3.966 studs, real 1.322 m = 3.966 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "3.967 studs, real 1.322 m = 3.966 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Tyre_LOD0; 1120 triangles (scene 1120)"
+   "detail": "M_Hbr_Fender_Tyre_LOD0; 2616 triangles (scene 2616)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Tyre_LOD1; 559 triangles (scene 559)"
+   "detail": "M_Hbr_Fender_Tyre_LOD1; 1308 triangles (scene 1308)"
   },
   {
    "subject": "M_Hbr_Fender_Tyre_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Fender_Tyre_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1120,
-   "texel_density": 196.7
+   "triangles": 2616,
+   "texel_density": 261.1
   },
   {
    "name": "M_Hbr_Fender_Tyre_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 559,
+   "triangles": 1308,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   1.8600000143051147,
-  0.6240001320838928,
-  3.9663076400756836
+  0.7019020318984985,
+  3.9674248695373535
  ],
- "peak_rss_mb": 294.9
+ "peak_rss_mb": 252.6
 }

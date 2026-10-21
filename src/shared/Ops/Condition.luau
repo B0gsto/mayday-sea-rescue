@@ -38,6 +38,7 @@ Condition.Rates = table.freeze({
 -- One-off events (tune). A client mechanic reports them; the server applies them, capped per step.
 Condition.Events = table.freeze({
 	wash = -8, -- approached too fast, bow wave over the casualty
+	bump = -6, -- ran into them (auto_board): knocked back, it hurts
 	slam = -3, -- hard slam in transport (only hurts a cold casualty)
 	wrongHandling = -10, -- upright lift when hypothermic, rubbing limbs; once per casualty
 	harmfulTreatment = -10,

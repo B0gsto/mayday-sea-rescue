@@ -4,8 +4,8 @@ This file owns every progression number: payouts, rank thresholds, prices in Cas
 
 ## 1. Principles
 
-1. **Reputation is earned only by playing.** Operations, exercises, challenges and big calls give it. Nothing sold for Robux adds it, including Cash packs and 2x Cash.
-2. **Rank and certification open doors, Cash buys the key.** A rank (plus, for some, a certification) unlocks the right to buy a vehicle or relight a lighthouse. Cash pays for it. So a player who buys Cash still has to earn the rank and pass the certification.
+1. **Reputation is earned by playing, and can be sped up.** Operations, exercises, challenges and big calls give it. Robux can multiply or add it inside fixed caps (2x Reputation, Rep Boosts, Sea Time Credit, Fast-Track; [document 04](04-monetization.md), section 4.4). Cash packs and 2x Cash never add Rep. The free pacing below is the floor and never counts on paid Rep.
+2. **Rank and certification open doors, Cash buys the key.** A rank (plus, for some, a certification) unlocks the right to buy a vehicle or relight a lighthouse. Cash pays for it. Paid Rep can bring a rank sooner, but the certification must still be passed, and Signature Vehicles bought for Robux are drivable only at the same rank and certification ([document 04](04-monetization.md), section 3.4).
 3. **Skill is earned, never bought.** Grades, certifications and Pro mode come only from how a player performs. Gear upgrades change what a player can do (range, speed, capacity), never how a step is graded: grade bands are measured against the kit in use (for example, tow tension is graded as a share of the line's own rating), so a better rope does not make a careless tow Gold.
 4. **Always one next thing.** At every point the HUD shows the next unlock, how far away it is (in Rep, Cash or certification steps) and where in the world to get it ("at the boatyard", "at the Chandlery"); tapping it sets a waypoint. There is no shop button: everything is bought in person ([document 02](02-core-loop-and-mechanics.md), section 13).
 5. **Early unlocks are fast, late ones are slow.** First rank in about 10 minutes, an unlock every 10 to 15 minutes for the first 2 hours, the helicopter in week 1, Admiral in about six weeks, then endless Service Stars. The model assumes 25-minute sessions, two a day (section 10).
@@ -25,11 +25,11 @@ Base payout per operation, before the operation's weight ([document 02](02-core-
 
 Zones are areas on the map ([document 10](10-world-and-map.md), section 1.2): beach and cliff operations at Long Strand, Gull Cove, Kittiwake Cliffs and the Saltings pay at the Skerries rate.
 
-**Final payout** = base x operation weight x grade (Gold 1.25, Silver 1.0, Bronze 0.75) x storm (1.5 for operations tasked in the Storm phase; 2 for Cash in a Great Storm; paid storms boost Cash only, Rep stays at the normal rate) x crew bonus (1.0 to 1.3, human crew only) x Pro mode (Rep x1.2, tune) x 2x Cash pass (Cash only).
+**Final payout** = base x operation weight x grade (Gold 1.25, Silver 1.0, Bronze 0.75) x storm (1.5 for operations tasked in the Storm phase; 2 for Cash in a Great Storm; paid storms boost Cash only, Rep stays at the normal rate) x crew bonus (1.0 to 1.3, human crew only) x Pro mode (Rep x1.2, tune) x 2x Cash pass or Cash Boost (Cash only) x 2x Reputation pass x Rep Boost (2x) x Crew Rep Boost (+50%) (Rep only; [document 04](04-monetization.md), section 4.4).
 
 Other payout rules (tune):
 
-- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash and 160 Rep each.
+- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash each and 200 then 160 Rep (op 2 was 160: the first rank lands at ~10 min, `tests/NewPlayerPace.spec.luau`).
 - **Exercises** ([document 09](09-rescue-operations.md), section 9.2) pay 200 Cash and 50 Rep the first time each is passed, nothing on repeats.
 - **Crew members** are paid only if they completed a step on the operation ([document 02](02-core-loop-and-mechanics.md), section 7); otherwise they get the 10% share.
 - **By the Book** [L] (flew or drove the full expanding square or sector search): +10% Rep.
@@ -283,7 +283,7 @@ Rough targets for a player who plays the game's way: takes operations in Assist 
 
 ### 10.1 How the numbers were built
 
-- **Session 1:** tutorial chain (three operations, ~13 minutes) gives ~470 Rep and ~1,700 Cash. Three exercises (~6 minutes, first pass) give 150 Rep and 600 Cash. The remaining ~6 minutes in the Skerries and the harbor mouth storm (~1,950 Rep/h, ~8,700 Cash/h) give ~200 Rep and ~900 Cash. Total ~820 to 900 Rep and ~3,200 Cash, minus 300 for the first gear level; Rescue Swimmer lands at about 0:27 (tune; it may slip into session 2 for slower players, which the watch list tracks).
+- **Session 1:** tutorial chain (three operations, ~13 minutes) gives ~510 Rep and ~1,700 Cash. Three exercises (~6 minutes, first pass) give 150 Rep and 600 Cash. The remaining ~6 minutes in the Skerries and the harbor mouth storm (~1,950 Rep/h, ~8,700 Cash/h) give ~200 Rep and ~900 Cash. Total ~820 to 900 Rep and ~3,200 Cash, minus 300 for the first gear level; Rescue Swimmer lands at about 0:27 (tune; it may slip into session 2 for slower players, which the watch list tracks).
 - **Sessions 2 to 5:** the Skerries to Coxswain (~1:15), Gannet Rock mission, then Open Sea, plus three daily sets (the Skerries day 1, Open Sea days 2 and 3: about 540 to 760 Rep and 4,800 to 7,300 Cash each) gives ~6,300 Rep and ~39,000 Cash earned. Spent by 2 hours: RIB 4,000, RIB engine 1,000, lifeboat 12,000, gear ~3,300.
 - **Sessions 6 to 14:** 3.75 hours of Open Sea (~8,800 Rep, ~47,600 Cash), four more daily sets (~3,100 Rep, ~29,200 Cash) and one weekly set (~3,250 Rep, ~35,000 Cash). Week 1 total: **~21,500 Rep and ~151,000 Cash**.
 - **Week 1 spending:** RIB with all upgrades 11,000; lifeboat with two upgrades 21,000; helicopter 75,000; five gear items to level 3 27,500; Radio Room 1 and 2 10,000; Kennel 1 3,000; jet ski upgrades 2,600. Total **~150,000**, so the Owns column fits what was earned. Rescue Pilot arrives on day 4 (~2.7 hours); the Cash for the helicopter on day 5 or 6.
@@ -294,9 +294,27 @@ Rough targets for a player who plays the game's way: takes operations in Assist 
 
 - **First rescue in under 2 minutes** (the cold open) for at least 90% of new players, and **first rank in under 15 minutes** for at least 80% (tune).
 - **Operation length.** Standard operations should land at 4 to 7 minutes. If one runs long, cut a step's length (section 10 of [document 09](09-rescue-operations.md)) before raising its pay.
+- **Paid Rep.** Track how fast 2x Reputation and Rep Boost owners reach Admiral. If paying players run out of content, add Service Star rewards and content updates; never raise the free Rep thresholds to slow non-payers.
 - **Certification friction.** If more than 30% of players reach a rank's Rep without its certification, make the certification's exercise easier or let more operation types count; never lower the procedure bar.
 - **Unlock cadence.** No gap over 20 minutes in the first 2 hours. If a gap opens, move a price or threshold before raising payouts.
 - **The hook in session 1.** At least 80% of new players finish a storm operation (harbor mouth or ride-along) in their first session (tune).
 - **Helicopter in week 1** is the big retention promise. If it slips past 8 hours of play, cut its price before raising payouts.
 - **Late-game Cash** piles up at Storm Front rates. Liveries, vehicle upgrades and [P2] station decoration must soak it up, or Cash loses meaning for Captains and above.
 - **2x Cash pass effect.** A 2x Cash owner reaches the helicopter's Cash price by about session 7 (~3 hours), about when they reach Rescue Pilot (~2.7 hours). Rank stays the gate, by design.
+
+**New Cash and Rep sources (G34).** `tests/Pacing.spec.luau` replays section 10 with the real config and rules. The only number changes are the station pot caps and the early Season Logbook tiers:
+
+| Source | Tuned number | Why |
+|---|---|---|
+| Station crew idle ([document 15](15-retention-and-new-players.md), H6) | Pot caps **1 / 1.5 / 2 / 2.5 h** (was 4 / 6 / 8 / 12 h) at the same 1,000 to 3,600 Cash/h | Two daily collections made level 3 pay about four times a day's active Cash; now about one times, and level 0 about 1,000 a session |
+| Season Logbook tier Cash ([document 15](15-retention-and-new-players.md), H8) | Tiers 2 to 8 pay **150 to 450** (was 250 to 900) | Early tiers arrive every few minutes and bought the lifeboat about 20 minutes early |
+| Streak crates, challenges, stock prices, friend bonus, Great Storm Rep x2, album sets | Unchanged | Measured effect stays inside the bands below |
+
+| Unlock | Before the new sources | Now | Target |
+|---|---|---|---|
+| RIB | 0:35 | 0:35 | ~0:30 |
+| Lifeboat | 1:32 | 1:15 | ~1:35 |
+| Rescue Pilot / helicopter | 3:20 / 5:00 | 2:55 / 4:10 | ~2:42 / week 1 |
+| Admiral | 30:25 | 29:10 | ~32 h |
+
+The spec asserts: first rescue under 3 minutes, first rank 10 to 16 minutes, RIB 24 to 38, lifeboat 60 to 100, Rescue Pilot 140 to 220, helicopter 170 minutes to 8 hours, Admiral 25 to 38 hours, and no modeled unlock gap over 30 minutes before the lifeboat.

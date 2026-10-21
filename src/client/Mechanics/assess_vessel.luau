@@ -1,23 +1,30 @@
 --!strict
 -- Assessment of a disabled vessel (docs 09 section 6 step 3): stand off, drive a slow lap round
--- her at stand-off distance (the ring), hail the skipper with question cards, look her over for
--- hazards (a rope trailing over the stern will foul your propeller later), report POB and decide.
--- Metrics: ringHeld (fraction of the lap inside the ring), questions (key questions asked),
--- pob (the number reported), hazardSpotted (1/0).
+-- her at stand-off distance (the ring), sound the horn near her and her skipper calls back
+-- everything (POB, problem, injuries...), and keep your view on a rope trailing over her stern
+-- (it will foul your propeller later) to spot it. The decision is always to tow. Ends once the
+-- skipper has answered and the lap is done (or after LAP_LIMIT s of lap).
+-- Metrics: ringHeld (fraction of the lap inside the ring), hazardSpotted (1/0).
+local ContextActionService = game:GetService("ContextActionService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
+local AudioController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
 local Kit = require(script.Parent:WaitForChild("Tow"):WaitForChild("Kit"))
 local Procedures = require(script.Parent:WaitForChild("Tow"):WaitForChild("Procedures"))
 
 local M = {}
 
-local HAIL_SPEED = 10 -- studs/s: faster than this and they can't hear you over the engine (tune)
+local HAIL_SPEED = 10 -- studs/s: slow lap speed (tune)
+local LAP_LIMIT = 40 -- s of lap after which a part lap is enough to move on
+local HELP_AFTER = 10 -- s before the world nudges (skipper calls, rope flashes)
+local HORN = "TowHorn"
 
 function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 	local gui = Kit.gui("TowAssess")
 	local complete, cleanup, bag = Kit.session(gui, finish)
-	if Kit.autoStub(complete, { ringHeld = 0.8, questions = 0.75, pob = 1, hazardSpotted = 1 }) then
+	if Kit.autoStub(complete, { ringHeld = 0.8, hazardSpotted = 1 }) then
 		return cleanup
 	end
 	local scenario = Kit.scenario(ctx)
@@ -26,6 +33,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 
 	-- the hazard: a line trailing from her stern, floating in the water (only seen from aft)
 	local ropeEnd: Attachment? = nil
+	local ropeBeam: Beam? = nil
 	if scenario.trailingRope and hull then
 		local a0 = Instance.new("Attachment")
 		a0.Name = "TrailingRopeA0"
@@ -44,11 +52,12 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		beam.Color = ColorSequence.new(Color3.fromRGB(200, 190, 160))
 		beam.Parent = hull
 		ropeEnd = a1
+		ropeBeam = beam
 		Kit.shared(ctx).trailingRope = { a0, a1, beam } :: { Instance }
 	end
 
-	local asked: { [string]: boolean } = {}
-	local askedCount = 0
+	local answered = false
+	local answeredAt = 0
 	local firstInRing: number? = nil
 	local inRingTime, lapTime = 0, 0
 	local sectors: { [number]: boolean } = {}
@@ -56,12 +65,11 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 	local gaze = 0
 	local phase = "lap"
 	local warnedFast = false
+	local nudged = false
+	local started = os.clock()
 
-	Kit.brief(
-		gui,
-		"Stand off and circle her slowly. Hail the skipper when you're close enough to talk."
-	)
-	Kit.say(gui, "Skipper", "Ahoy! Thanks for coming. She just won't go.", 4)
+	Kit.brief(gui, "Circle her" .. Kit.chip("H", "L3"))
+	Kit.say(gui, "Skipper", "Ahoy! She just won't go.", 4)
 
 	local function sectorCount(): number
 		local n = 0
@@ -71,122 +79,50 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		return n
 	end
 
-	local function finishUp(pob: number, decision: string)
-		local right = Procedures.rightDecision(scenario, false)
+	local function finishUp()
+		phase = "done"
 		local ringHeld = if lapTime > 0 then inRingTime / lapTime else 0
 		ringHeld *= math.clamp(sectorCount() / Procedures.RING_SECTORS + 0.1, 0, 1)
-		complete({
+		Kit.hands("radio_handset")
+		Kit.say(gui, "You", `On scene, {scenario.pob} POB, preparing tow.`, 3)
+		task.delay(3, complete, {
 			metrics = {
 				ringHeld = math.clamp(ringHeld, 0, 1),
-				questions = Procedures.questionScore(asked),
-				pob = pob,
 				hazardSpotted = if spotted then 1 else 0,
-				decisionRight = decision == right,
 			},
 		})
 	end
 
-	local function decide(pob: number)
-		phase = "decide"
-		Kit.brief(gui, "Your call: tow her, take the crew off, or have them anchor first.")
-		local cancel = Kit.choose(gui, "Decision", {
-			{ id = "tow", text = "Tow her in" },
-			{ id = "evacuate", text = "Take the crew off" },
-			{ id = "anchor", text = "Anchor first" },
-		}, function(id)
-			finishUp(pob, id)
-		end, ctx.isAssist, Procedures.rightDecision(scenario, false))
-		table.insert(bag, cancel)
-	end
-
-	local function reportPob()
-		phase = "pob"
-		Kit.hands("radio_handset")
-		Kit.brief(gui, "Report persons on board to the Coastguard.")
-		local cancel = Kit.choose(gui, "POB to Coastguard", {
-			{ id = "1", text = "One aboard" },
-			{ id = "2", text = "Two aboard" },
-			{ id = "3", text = "Three aboard" },
-			{ id = "4", text = "Four aboard" },
-		}, function(id)
-			local n = tonumber(id) or 0
-			Kit.say(
-				gui,
-				"You",
-				`Coastguard, Haven Lifeboat: on scene, {n} POB, preparing to tow.`,
-				4
-			)
-			decide(n)
-		end, ctx.isAssist, tostring(scenario.pob))
-		table.insert(bag, cancel)
-	end
-
-	local cancelCards: (() -> ())? = nil
-	local function showQuestions()
-		if phase ~= "lap" then
+	-- the horn: near her, the skipper calls back everything; far off, nobody answers
+	local function horn()
+		local root = Kit.vehicleRoot(ctx)
+		if answered or not root or not hull then
 			return
 		end
-		local choices: { Kit.Choice } = {}
-		for _, q in Procedures.QUESTIONS do
-			if not asked[q.id] and #choices < (if askedCount >= 2 then 3 else 4) then
-				table.insert(choices, { id = q.id, text = q.text })
-			end
+		AudioController.play("Horn_Tug", root.Position)
+		if (hull.Position - root.Position).Magnitude > Procedures.RING_MAX + 12 then
+			return
 		end
-		if askedCount >= 2 then
-			table.insert(choices, { id = "_done", text = "That's all, stand by" })
-		end
-		local nextKey: string? = nil
-		for _, q in Procedures.QUESTIONS do
-			if q.key and not asked[q.id] then
-				nextKey = q.id
-				break
-			end
-		end
-		cancelCards = Kit.choose(gui, "Hail the skipper", choices, function(id)
-			cancelCards = nil
-			if id == "_done" then
-				reportPob()
-				return
-			end
-			local root = Kit.vehicleRoot(ctx)
-			local ok = hull ~= nil
-				and root ~= nil
-				and Procedures.inRing(hull.Position, root.Position)
-			local close = hull ~= nil
-				and root ~= nil
-				and (hull.Position - root.Position).Magnitude <= Procedures.RING_MAX + 12
-			if not close then
-				Kit.say(gui, "Crew", "They can't hear us from here. Get in closer.", 3)
-			elseif root and Kit.speed(root) > HAIL_SPEED then
-				Kit.say(gui, "Crew", "Ease off, they can't hear you over the engine.", 3)
-			else
-				Kit.hands("hail")
-				asked[id] = true
-				askedCount += 1
-				local qText = ""
-				for _, q in Procedures.QUESTIONS do
-					if q.id == id then
-						qText = q.text
-					end
+		answered = true
+		answeredAt = os.clock()
+		Kit.hands("hail")
+		for i, id in Procedures.ANSWER_ORDER do
+			task.delay(1 + (i - 1) * 2.6, function()
+				if gui.Parent then
+					Kit.say(gui, "Skipper", Procedures.answer(scenario, id), 2.6)
 				end
-				Kit.say(gui, "You", qText, 1.6)
-				task.delay(1.6, function()
-					if gui.Parent then
-						Kit.say(gui, "Skipper", Procedures.answer(scenario, id), 4)
-					end
-				end)
-				if not ok then
-					Kit.say(gui, "Crew", "Watch your distance, don't drift down on her.", 3)
-				end
-			end
-			task.delay(1.2, showQuestions)
-		end, ctx.isAssist, nextKey)
+			end)
+		end
 	end
-	showQuestions()
-	table.insert(bag, function()
-		if cancelCards then
-			cancelCards()
+	ContextActionService:BindAction(HORN, function(_, inputState)
+		if inputState == Enum.UserInputState.Begin then
+			horn()
 		end
+		return Enum.ContextActionResult.Pass -- a cosmetic horn on H still plays
+	end, true, Enum.KeyCode.H, Enum.KeyCode.ButtonL3)
+	ContextActionService:SetTitle(HORN, "Horn")
+	table.insert(bag, function()
+		ContextActionService:UnbindAction(HORN)
 	end)
 
 	table.insert(
@@ -210,11 +146,29 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 				end
 				if Kit.speed(root) > HAIL_SPEED * 1.8 and not warnedFast then
 					warnedFast = true
-					Kit.say(gui, "Crew", "Slow lap, Helm. We're throwing wash at her.", 3)
+					Kit.say(gui, "Crew", "Slow down, Helm. Wash!", 3)
 				end
-				if sectorCount() >= Procedures.RING_SECTORS then
-					Kit.brief(gui, "Lap done. Finish your questions, then report POB.")
+				local lapDone = sectorCount() >= Procedures.RING_SECTORS
+				if lapDone then
+					Kit.brief(gui, if answered then "" else "Horn" .. Kit.chip("H", "L3"))
 				end
+				if not answered and not nudged and os.clock() - started > HELP_AFTER then
+					nudged = true
+					Kit.say(gui, "Skipper", "Blast your horn!", 3)
+				end
+				-- let the skipper finish talking; then the lap (or enough of it) ends the step
+				local talked = os.clock() - answeredAt > 1 + #Procedures.ANSWER_ORDER * 2.6
+				if answered and talked and (lapDone or lapTime >= LAP_LIMIT) then
+					finishUp()
+				end
+			end
+			-- after a while the trailing rope catches the light, so it is easy to spot
+			if ropeBeam and not spotted and lapTime > HELP_AFTER then
+				ropeBeam.Color = ColorSequence.new(
+					if (os.clock() * 2) % 1 < 0.5
+						then Color3.fromRGB(255, 200, 80)
+						else Color3.fromRGB(200, 190, 160)
+				)
 			end
 			-- spotting the trailing rope: keep your eyes on it from aft for a moment
 			if not spotted and ropeEnd then
@@ -231,12 +185,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 				if gaze > 0.8 then
 					spotted = true
 					Kit.hands("point")
-					Kit.say(
-						gui,
-						"You",
-						"There's a line trailing off your stern! Pull it aboard before we pass the tow.",
-						4
-					)
+					Kit.say(gui, "You", "Line trailing astern! Pull it in!", 4)
 					task.delay(3, function()
 						local s = Kit.shared(ctx).trailingRope
 						if s then

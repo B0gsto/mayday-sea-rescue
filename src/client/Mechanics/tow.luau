@@ -35,7 +35,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 	local link =
 		Kit.link(ctx, rig.lengthStuds, { bridle = rig.bridle, strongPoint = rig.strongPoint })
 	if not link then
-		Kit.brief(gui, "Can't see the casualty or our boat.")
+		Kit.brief(gui, "No casualty")
 		task.delay(
 			2,
 			complete,
@@ -73,14 +73,11 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 
 	Kit.brief(
 		gui,
-		`Tow her home slowly: under {math.floor(safe / Kit.KNOT + 0.5)} knots, wide turns. Q/E to step the tow out or in.`
+		`Tow home  < {math.floor(safe / Kit.KNOT + 0.5)} kn`
+			.. Kit.chip("Q/E", "D-pad")
+			.. " Length"
 	)
-	Kit.say(
-		gui,
-		"Navigator",
-		"Coastguard, Haven Lifeboat: tow established, heading for Haven Harbour.",
-		4
-	)
+	Kit.say(gui, "Navigator", "Tow established, heading for harbour.", 4)
 
 	local function change(dir: number)
 		local len = math.clamp(l.lengthStuds + dir * STEP, MIN_LEN, MAX_LEN)
@@ -119,7 +116,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 			if repassing <= 0 then
 				TowLine.rejoin(line)
 				Kit.hands("throw_heaving_line")
-				Kit.say(gui, "Crew", "Line's back on. Take the strain gently.", 3)
+				Kit.say(gui, "Crew", "Line's back on. Gently now.", 3)
 			end
 			return
 		end
@@ -149,7 +146,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 			inRed = false
 			Kit.snapSound(lk.ropeA0)
 			Kit.hands("duck")
-			Kit.say(gui, "Crew", "Line's parted! Heads down! Stop, we'll pass it again.", 4)
+			Kit.say(gui, "Crew", "Line's parted! Heads down! Stop!", 4)
 			repassing = REPASS_SECONDS
 			return
 		end
@@ -166,12 +163,10 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 			inStepTime += dt
 		end
 		if stepLabel then
-			stepLabel.Text = if good
-				then "In step: riding the waves together"
-				else "Out of step: try another length"
+			stepLabel.Text = if good then "In step" else "Out of step"
 		end
 		if swell and good and not wasInStep then
-			Kit.say(gui, "Crew", "That's it, we're both on the crest together.", 2.5)
+			Kit.say(gui, "Crew", "That's it, crest together.", 2.5)
 		end
 		wasInStep = good
 		if line.snatch > 0.2 and os.clock() - lastCall > 3 then
@@ -181,18 +176,13 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		local speed = Kit.speed(lk.root)
 		if speed > hullSpeed and os.clock() - lastCall > 5 then
 			lastCall = os.clock()
-			Kit.say(gui, "Crew", "Too fast, she's climbing her own bow wave!", 2.5)
+			Kit.say(gui, "Crew", "Too fast, she's climbing!", 2.5)
 		end
 		local hx, hz = TowLine.hullPosition(line)
 		local _, d = Kit.nearestPad(Vector3.new(hx, 0, hz))
 		if d <= HARBOUR_RANGE and total > 5 then
 			lk.onUpdate = nil
-			Kit.say(
-				gui,
-				"Navigator",
-				"Harbour entrance. Stop the tow, we'll take her alongside.",
-				4
-			)
+			Kit.say(gui, "Navigator", "Harbour entrance. Stop, alongside now.", 4)
 			complete({
 				metrics = {
 					amberFraction = if total > 0 then math.clamp(amber / total, 0, 1) else 0,

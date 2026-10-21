@@ -9,7 +9,7 @@ local Drivetrain = require(script.Parent.Parent.Car.Drivetrain)
 
 local KMH = 3 / 3.6 -- studs/s per km/h
 
-export type VehicleClass = "Pickup" | "Response" | "ATV" | "Trailer" | "Ambulance"
+export type VehicleClass = "Pickup" | "Response" | "ATV" | "Trailer" | "Ambulance" | "Coupe"
 export type DriveLayout = "4WD" | "RWD" | "FWD" | "None"
 
 export type Spec = {
@@ -74,6 +74,9 @@ export type Spec = {
 	bodyColor: Color3,
 	stripeColor: Color3,
 	stripeColor2: Color3,
+	-- uploaded AssetIds model (premium fleet; Car/ArtLayout.assetFor reads it before ASSETS). The art
+	-- aligns on its ATT_Wheel_* hubs, so wheelbase / track / wheelRadius must match the mesh.
+	model: string?,
 }
 
 local LandVehicleConfig = {}
@@ -447,8 +450,146 @@ LandVehicleConfig.Ambulance = {
 	stripeColor2 = Color3.fromRGB(30, 60, 160),
 } :: Spec
 
+-- Premium fleet (2026-10-21, user): Robux only (ProgressionConfig.Vehicles passOnly), any rank. A
+-- copy of a station vehicle, retuned; `clear` drops base fields (light bars: civilian cars).
+local function variant(baseId: string, over: { [string]: any }, clear: { string }): Spec
+	local spec = table.clone((LandVehicleConfig :: any)[baseId]) :: any
+	for k, v in over do
+		spec[k] = v
+	end
+	for _, k in clear do
+		spec[k] = nil
+	end
+	return spec :: Spec
+end
+
+-- Sports coupe (generic grand tourer): 4.55 m x 1.95 m x 1.25 m, 2.65 m wheelbase, 3.0 L twin-turbo
+-- petrol 470 N m, seven-speed, rear-wheel drive, 1,600 kg. Code-built coupe greybox until
+-- M_Veh_HarbourGT lands (set `model`, match the wheel geometry).
+LandVehicleConfig.HarbourGT = variant("CoastguardResponse", {
+	id = "HarbourGT",
+	displayName = "Harbour GT",
+	class = "Coupe",
+	eyePoint = Vector3.new(0, 1.9, 0),
+	unlockRank = 1,
+	seats = 2,
+	roles = { "Explore" },
+	topSpeed = 125, -- 150 km/h, the fastest thing on the island's roads -- tune
+	reverseSpeed = 20 * KMH,
+	mass = 1600,
+	length = 4.55,
+	width = 1.95,
+	height = 1.25,
+	wheelbase = 2.65,
+	track = 1.62,
+	wheelRadius = 0.35,
+	wheelWidth = 0.285,
+	groundClearance = 0.12,
+	cgHeight = 0.45,
+	frontWeight = 0.48,
+	frontOverhang = 0.95,
+	travel = 0.12,
+	frequencyFront = 2.0,
+	frequencyRear = 2.2,
+	dampingRatio = 0.45,
+	antiRollFront = 0.5,
+	antiRollRear = 0.3,
+	tyreMu = 1.2, -- sticky sports tyres
+	latB = 15,
+	engine = {
+		idleRpm = 850,
+		stallRpm = 2800,
+		redlineRpm = 7200,
+		torqueCurve = {
+			{ 850, 250 },
+			{ 2000, 450 },
+			{ 5000, 470 },
+			{ 6500, 420 },
+			{ 7200, 350 },
+		},
+		engineBrakeNm = 80,
+		converterGain = 1.6,
+	},
+	gearbox = {
+		ratios = { 2.9, 2.1, 1.55, 1.2, 1.0, 0.82, 0.68 },
+		reverse = 3.0,
+		finalDrive = 3.4,
+		lowRange = 1,
+		efficiency = 0.9,
+		shiftUpLight = 2600,
+		shiftUpFull = 6800,
+		shiftDown = 1500,
+		shiftTime = 0.15,
+	},
+	drive = "RWD",
+	brakeG = 1.15,
+	brakeFrontBias = 0.6,
+	handbrakeG = 0.5,
+	steerLock = 34,
+	steerLockHigh = 4,
+	steerFadeSpeed = 22,
+	steerRate = 160,
+	cdA = 0.62,
+	canTow = false,
+	bodyColor = Color3.fromRGB(176, 18, 32), -- racing red
+	stripeColor = Color3.fromRGB(24, 24, 26),
+	stripeColor2 = Color3.fromRGB(235, 235, 235),
+}, { "lightBar", "lightBarColors", "topSpeedTowing" })
+
+-- Luxury SUV (generic full-size): the Coastguard 4x4's chassis with a 3.0 L 600 N m engine, an
+-- eight-speed box and soft air suspension. Placeholder art: the Coastguard 4x4 mesh (same wheel
+-- geometry) until M_Veh_LighthouseCruiser lands.
+LandVehicleConfig.LighthouseCruiser = variant("CoastguardResponse", {
+	id = "LighthouseCruiser",
+	displayName = "Lighthouse Cruiser",
+	model = "M_Veh_Coastguard4x4", -- placeholder: M_Veh_LighthouseCruiser
+	unlockRank = 1,
+	roles = { "Explore", "TowJetSkiTrailer" },
+	topSpeed = 95, -- 114 km/h -- tune
+	topSpeedTowing = 60,
+	mass = 2500,
+	frequencyFront = 1.2,
+	frequencyRear = 1.3,
+	dampingRatio = 0.35, -- floats over bumps
+	antiRollFront = 0.4,
+	antiRollRear = 0.25,
+	tyreMu = 1.05,
+	engine = {
+		idleRpm = 700,
+		stallRpm = 2200,
+		redlineRpm = 4600,
+		torqueCurve = {
+			{ 700, 300 },
+			{ 1500, 600 },
+			{ 3000, 600 },
+			{ 4000, 500 },
+			{ 4600, 380 },
+		},
+		engineBrakeNm = 110,
+		converterGain = 1.9,
+	},
+	gearbox = {
+		ratios = { 4.7, 3.0, 2.1, 1.7, 1.3, 1.0, 0.84, 0.67 },
+		reverse = 3.3,
+		finalDrive = 3.3,
+		lowRange = 2.6,
+		efficiency = 0.88,
+		shiftUpLight = 1800,
+		shiftUpFull = 4300,
+		shiftDown = 1100,
+		shiftTime = 0.2,
+	},
+	brakeG = 1.0,
+	steerRate = 120,
+	cdA = 1.1,
+	bodyColor = Color3.fromRGB(22, 30, 48), -- midnight navy
+	stripeColor = Color3.fromRGB(212, 175, 55), -- gold
+	stripeColor2 = Color3.fromRGB(200, 200, 205),
+}, { "lightBar", "lightBarColors" })
+
 -- Driveable vehicles, in menu order.
-LandVehicleConfig.Order = { "LifeguardPickup", "BeachATV", "CoastguardResponse" }
+LandVehicleConfig.Order =
+	{ "LifeguardPickup", "BeachATV", "CoastguardResponse", "HarbourGT", "LighthouseCruiser" }
 
 -- Which boat a trailer carries: the first the player may use (VehicleConfig ids).
 LandVehicleConfig.TrailerBoats = { "RIB", "JetSki" }
@@ -480,7 +621,7 @@ LandVehicleConfig.SpawnPoints = {
 		cframe = CFrame.lookAt(Vector3.new(-196, 4, -74), Vector3.new(-196, 4, 0)),
 		step = Vector3.new(-10, 0, 0),
 		bays = 4,
-		vehicles = { "LifeguardPickup", "CoastguardResponse" },
+		vehicles = { "LifeguardPickup", "CoastguardResponse", "HarbourGT", "LighthouseCruiser" },
 		trailers = false,
 	},
 	{
@@ -500,7 +641,7 @@ LandVehicleConfig.SpawnPoints = {
 		cframe = CFrame.lookAt(Vector3.new(200, 4, -90), Vector3.new(200, 4, 0)),
 		step = Vector3.new(-10, 0, 0),
 		bays = 3,
-		vehicles = { "LifeguardPickup" },
+		vehicles = { "LifeguardPickup", "HarbourGT", "LighthouseCruiser" },
 		trailers = false,
 	},
 	{
@@ -521,6 +662,11 @@ LandVehicleConfig.AmbulancePoints = {
 		id = "HavenSands",
 		-- TODO(WorldConfig): Haven Sands car park, rear doors toward the beach
 		cframe = CFrame.lookAt(Vector3.new(176, 4, -70), Vector3.new(176, 4, -200)),
+	},
+	{
+		-- the Haven Head cliff-top rescue point, rear doors toward the anchor (docs/09 8.5)
+		id = "HavenHeadCliff",
+		cframe = CFrame.lookAt(Vector3.new(1722, 118, 800), Vector3.new(1722, 118, 720)),
 	},
 }
 

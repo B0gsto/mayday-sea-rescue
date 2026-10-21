@@ -5,33 +5,47 @@ return function(t)
 	local Core = t.load("src/server/Services/Monetization/Core.luau")
 
 	-- docs/04 sections 3, 3.1, 3.2, 4.1 and 4.2
+	-- docs/04 section 2.1: launch prices (user, 2026-10-21); unbuilt items keep their list price
 	local DOC_PRICES = {
 		GamePasses = {
-			DoubleCash = 199,
+			DoubleCash = 75,
 			VipCrewCard = 299,
-			QuickLaunch = 149,
+			QuickLaunch = 49,
 			BosunsWardrobe = 129,
 			WaterDogFriends = 199,
 			StormChaserLiveries = 249,
 			CaptainsLocker = 99,
 			SeaShantyRadio = 79,
-			StarterKit = 99,
+			StarterKit = 25,
 			HornPack = 79,
 			SirenPack = 99,
 			LightBars = 129,
 			WakeTrails = 149,
+			-- vehicle passes (user 2026-10-21): proposed, not in docs/04 yet
+			RIBPass = 49,
+			LifeboatPass = 129,
+			BeachATVPass = 25,
+			CoastguardResponsePass = 49,
+			StormRunnerPass = 199,
+			TidewalkerPass = 249,
+			RiptideXPass = 129,
+			GildedGullPass = 199,
+			HarbourGTPass = 179,
+			LighthouseCruiserPass = 149,
 		},
 		Products = {
-			SmallBonus = 39,
-			CrewPayroll = 99,
-			StationBudget = 249,
-			HarborFund = 599,
-			CashBoost = 49,
-			CrewBoost = 49,
+			SmallBonus = 10,
+			CrewPayroll = 25,
+			StationBudget = 75,
+			HarborFund = 149,
+			CashBoost = 15,
+			CrewBoost = 15,
 			ChallengeReroll = 19,
-			CallTheStorm = 249,
-			CallTheGreatStorm = 699,
+			CallTheStorm = 49,
+			CallTheGreatStorm = 149,
 			SeasonLogbook = 399,
+			DayDoubleCash = 15, -- day passes: proposed, not in docs/04 yet
+			DayQuickLaunch = 10,
 		},
 	}
 

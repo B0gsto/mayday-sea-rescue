@@ -252,7 +252,7 @@ The per-MeshPart triangle cap is reported at about 20,000 to 21,000 (vendor sour
 | Rescue helicopter | 60,000 | 10,000 | 25,000 | 6,000 | 5 to 6, plus rotor blur discs |
 | Big-call ship (ferry, trawler) | 90,000 | 10,000 | 30,000 | 8,000 | 6 to 8, plus trim sheet |
 | NPC person (casualty, crew) | 20,000 | 10,000 | 8,000 | 2,000 | 2 (body, head) plus hair cards |
-| Newfoundland dog | 25,000 plus fur cards up to 15,000 | 10,000 | 10,000 | 3,000 | 2 to 3 (body, fur cards, harness) |
+| Newfoundland dog (low poly, no fur cards: section 8.3) | 5,000 | 10,000 | 2,000 | 800 | 1 to 2 (body, harness) |
 | Player crew kit (layered clothing, accessories) | Within Roblox layered clothing and accessory limits (verify) | n/a | n/a | n/a | 1 to 2 per item |
 | Hero building (station, lighthouse, Chandlery interior) | 40,000 | 10,000 | 15,000 | 3,000 | 4 plus trim sheet |
 | First-person viewmodel (arms, gloves, sleeves, the handset) | 12,000 | 10,000 | n/a (only ever close) | n/a | 2 (arms and gloves, sleeves), 2048 if the texture spike allows (verify) |
@@ -403,11 +403,15 @@ All built with `ParticleEmitter`, `Beam` and `Trail`, using flipbooks rendered i
 
 ### 8.2 NPC casualties and crew
 
+> **Superseded 2026-10-18:** all characters are simple Roblox R15 characters, not custom realistic rigs ([document 14](14-playtest-feedback-and-direction.md), section 4). The variety and tone rules below still apply.
+
 - **Custom realistic rigs:** human NPCs use realistic skinned meshes on an R15-compatible skeleton so they share animations with avatars (verify skinned realistic meshes on R15). Realistic heads with skin PBR; no subsurface scattering exists, so faces stay mostly at working distance, with hoods, hats and wet hair.
 - **Variety:** kayakers in buoyancy aids, swimmers, fishermen in oilskins, ferry passengers in SOLAS lifejackets, paddleboarders, lighthouse keepers, station crew. Age, build and skin tone vary.
 - **Tone:** casualties are cold, tired and relieved, never injured. No blood, no wounds, no lifeless bodies.
 
 ### 8.3 Bosun, the Newfoundland
+
+> **Superseded 2026-10-18 (user):** Bosun is a simple low-poly dog with no fur cards, because fur is too heavy on phones ([document 14](14-playtest-feedback-and-direction.md), section 4). The look notes below (black coat, size, Hull Orange harness, no cross) still guide the simple model.
 
 - A **realistic Newfoundland**: black coat with brown highlights in sun, about 2.1 studs at the shoulder, heavy body, webbed paws, a broad head (section 4.1).
 - **Custom quadruped rig** in Blender (spine, tail, ears, jowls, front and back legs); not Mixamo, which is humanoid only (research section 5). RigEdit Lite is listed as a plugin for extra joints (verify).
@@ -428,6 +432,8 @@ All built with `ParticleEmitter`, `Beam` and `Trail`, using flipbooks rendered i
 - **Cinematics** are shot like film: real focal lengths (24 to 85 mm equivalent), slow dollies and cranes, depth of field, a few motivated cuts, no spinning orbits ([document 02](02-core-loop-and-mechanics.md), section 12). Golden hour for the arrival is a variant of the Clear day preset (section 6.2): a sun about 6° above the horizon, a warmer `ColorShift_Top` and longer shadows (values tune), applied on the client for the shot only and blended back to the server's weather afterward ([document 06](06-tools-and-pipeline.md), section 3.6). They reuse the game's animation; only Chief Aggie's slipway walk, the rank-up badge pinning and crowd reactions are authored for them.
 
 ### 8.5 First-person viewmodel and close-up detail
+
+> **Superseded for the arms 2026-10-18 (user):** the arms are simple, not a Blender hero rig. The body is hidden in first person, and the arms appear only during action animations, with many clips for many situations ([document 14](14-playtest-feedback-and-direction.md), section 4). The vehicle and cockpit notes below still apply.
 
 In first person the player looks at their own arms and their vehicle from less than a metre for most of a session, so these are the highest-detail assets per pixel in the game.
 

@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Rope_Coil",
  "name": "M_Hbr_Rope_Coil",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx",
-   "bytes": 328028,
+   "bytes": 288604,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Coil_LOD0"
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD1.fbx",
-   "bytes": 174924,
+   "bytes": 137788,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Rope_Coil_LOD1"
@@ -66,14 +66,14 @@
     {
      "name": "M_Hbr_Rope_Coil_LOD1.001",
      "min": [
-      -1.5117,
-      -0.6991,
-      0.0007
+      -1.5192,
+      -0.6951,
+      0.0009
      ],
      "max": [
-      1.5117,
-      0.6991,
-      0.1444
+      1.5119,
+      0.6898,
+      0.1468
      ],
      "polygons": 1148,
      "all_triangles": true,
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.37e-03, 4590 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.37e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Coil_LOD0",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 6.88e-04, 2462 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.88e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Rope_Coil_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.124, v 0.001 to 0.124"
+   "detail": "u 0.001 to 0.124, v 0.001 to 0.125"
   },
   {
    "subject": "M_Hbr_Rope_Coil_LOD1",
@@ -256,7 +256,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 50.0% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.001 (max 0.02), UV area by 23.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_Rope_Coil",
@@ -488,5 +488,5 @@
   1.398217797279358,
   0.144428551197052
  ],
- "peak_rss_mb": 298.4
+ "peak_rss_mb": 252.6
 }

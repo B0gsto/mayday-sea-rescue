@@ -17,7 +17,7 @@
 --   Ops_TowLength   C->S  (opId, studs) the Crew stepped the tow out or in (server clamps 30..150)
 --   Ops_StartExercise    C->S  (exerciseId) start a station exercise from the exercise board
 --   Ops_ExerciseRefused  S->C  { exerciseId, reason } the board's Start was refused (RP-C1b)
---   Ops_Board       S->C  { opId, osc, npc, assigned, tasksCovered, reportCorrect, board? } the
+--   Ops_Board       S->C  { opId, osc, npc, assigned, tasksCovered?, board? } the
 --                         on-scene commander's scene board (ferry), to every crew on the operation
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

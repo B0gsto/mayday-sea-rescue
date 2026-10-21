@@ -100,10 +100,10 @@ return function(t)
 			t.expect(p.size.X > 0 and p.size.Y > 0 and p.size.Z > 0).toBeTruthy()
 			t.expect(#p.color).toBe(6)
 			local pos = p.cframe.Position
-			-- inside Bosun's LOD0 bounds plus a coat's depth (studs, authored frame)
-			t.expect(math.abs(pos.X) < 1.0).toBeTruthy()
-			t.expect(pos.Y > 0.8 and pos.Y < 3.0).toBeTruthy()
-			t.expect(pos.Z > -1.9 and pos.Z < 1.4).toBeTruthy()
+			-- on BosunRig's body or head (studs, authored frame)
+			t.expect(math.abs(pos.X) < 0.8).toBeTruthy()
+			t.expect(pos.Y > 1.0 and pos.Y < 3.3).toBeTruthy()
+			t.expect(pos.Z > -2.2 and pos.Z < 1.4).toBeTruthy()
 			local r, u = p.cframe.RightVector, p.cframe.UpVector
 			t.expect(math.abs(r:Dot(u)) < 1e-4).toBeTruthy()
 			names[p.name] = true

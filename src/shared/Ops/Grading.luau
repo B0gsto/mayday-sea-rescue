@@ -22,10 +22,11 @@ Grading.Payout = table.freeze({
 	CrewBonusPerMember = 0.1, -- human crew only, 1.0 to 1.3
 	CrewBonusMax = 0.3,
 	ShareWithoutStep = 0.1, -- crew on the op who completed no step: 10% Cash
-	TakeoverRate = 0.5, -- completed steps pay half their share, no completion share
 	Tutorial = table.freeze({
 		table.freeze({ cash = 500, rep = 150 }),
-		table.freeze({ cash = 600, rep = 160 }),
+		-- 200, not 160: with the Helm exercise (50) a new player has Lifeguard's 400 Rep at the
+		-- ~10 min certification without needing a lucky daily (tests/NewPlayerPace.spec.luau)
+		table.freeze({ cash = 600, rep = 200 }),
 		table.freeze({ cash = 600, rep = 160 }),
 	}),
 	BigCasualtyShare = 0.3, -- x zone base, to the player who hands the casualty over
@@ -178,33 +179,21 @@ function Grading.payout(
 	return { cash = round(P.BaseCash * m), rep = round(P.BaseRep * m) }
 end
 
--- Takeover payout: each completed step pays half its share (its weight over the total weight)
--- of the payout at that step's grade; no completion share. `assisted` adds the stand-by step,
--- paid like a Silver step of weight 1.
+-- Takeover payout (2026-10-21, user: "do not give the player points/cash for failing"): nothing for
+-- a casualty someone else picked up. On a call with several casualties only the ones the player
+-- brought home pay, each its share of a Bronze payout.
 function Grading.takeoverPayout(
 	opWeight: number,
-	steps: { ScoredStep },
-	totalWeight: number,
-	humanCrew: number?,
-	assisted: boolean?
+	saved: number,
+	total: number,
+	humanCrew: number?
 ): Reward
-	local P = Grading.Payout
-	local crew = Grading.crewMultiplier(humanCrew or 1)
-	local W = math.max(totalWeight, 1)
-	local cash, rep = 0, 0
-	for _, s in steps do
-		if s.grade ~= "Fail" then
-			local share = s.weight / W * opWeight * P.GradeMult[s.grade] * P.TakeoverRate * crew
-			cash += P.BaseCash * share
-			rep += P.BaseRep * share
-		end
+	if saved <= 0 or total <= 0 then
+		return { cash = 0, rep = 0 }
 	end
-	if assisted then
-		local share = 1 / W * opWeight * crew
-		cash += P.BaseCash * share
-		rep += P.BaseRep * share
-	end
-	return { cash = round(cash), rep = round(rep) }
+	local full = Grading.payout(opWeight, "Bronze", humanCrew)
+	local share = math.min(saved / total, 1)
+	return { cash = round(full.cash * share), rep = round(full.rep * share) }
 end
 
 -- Crew member on the operation who completed no step: 10% Cash, no Rep.

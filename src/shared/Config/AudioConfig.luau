@@ -85,6 +85,9 @@ AudioConfig.Clips = {
 	Hull_Slap = rl(9119479417, 0.6, "Splashes Large Objects Thrown In Water 6 (SFX)"),
 	Hull_Slam = rl(9120611452, 0.75, "Wave Crashes Single Large Impacts 6 (SFX)"),
 	Hull_SprayHiss = rl(9120502958, 0.4, "Water Burst Boom Blast Hissing Spray 1 (SFX)"),
+	-- SwimController: the entry splash and the stroke loop while swimming.
+	Splash_Entry = rl(9120585252, 0.6, "Water Splash Big Water Splash Dive In 1 (SFX)"),
+	Swim_Stroke = rl(9120589166, 0.35, "Water Splashing Swimming Stroke 2 (SFX)", "looped"),
 
 	-- Sea beds.
 	Wave_Harbour = rl(9113665479, 0.45, "Calm Water Lap 1 (SFX)"),
@@ -104,6 +107,12 @@ AudioConfig.Clips = {
 
 	-- Harbour and coast.
 	Amb_Harbour = rl(9112829678, 0.5, "Marina Ambience 5 (SFX)"),
+	Amb_Town = rl(
+		9116203080,
+		0.22,
+		"Korean Walla Single Male Female Voice 2 (SFX)",
+		"distant murmur"
+	),
 	Rigging_Clink_1 = rl(9114462292, 0.25, "Flagpole Hit 1 (SFX)", "halyard on a mast"),
 	Rigging_Clink_2 = rl(9114462293, 0.25, "Flagpole Hit 3 (SFX)"),
 	Rigging_Clink_3 = rl(9114462450, 0.25, "Flagpole Hit 4 (SFX)"),
@@ -112,6 +121,13 @@ AudioConfig.Clips = {
 	Gull_Call_1 = rl(9118858259, 0.35, "Seagull Squawks 3 (SFX)"),
 	Gull_Call_2 = rl(9118858279, 0.35, "Seagull Squawks 1 (SFX)"),
 	Gull_Flock = rl(9112870623, 0.25, "Seagulls 1 (SFX)"),
+	-- Bosun's point bark (DogController).
+	Dog_Bark = rl(
+		9113956178,
+		0.55,
+		"Coyotes Gruff Barking 14 (SFX)",
+		"stand-in for a Newfoundland"
+	),
 
 	-- Underwater (camera below the surface).
 	Under_Ambience = rl(9112889917, 0.6, "Underwater Ambience 1 (SFX)"),
@@ -125,13 +141,60 @@ AudioConfig.Clips = {
 	-- Interface: one soft switch click, quiet.
 	UI_Click = rl(9119717529, 0.18, "Switch Click On Or Off Toggle Button 1 (SFX)"),
 	UI_Back = rl(9119717523, 0.16, "Switch Click On Or Off Toggle Button 2 (SFX)"),
+	UI_Prompt = rl(9118138365, 0.12, "Relay Clicks 9 (SFX)", "world prompt tick"),
+	UI_Pickup = rl(9116729826, 0.2, "Metallic Beeps Quick Tones 2 (SFX)", "Cash / Rep pickup"),
+	UI_Step = rl(9116729822, 0.22, "Metallic Beeps Quick Tones 1 (SFX)", "step complete"),
+	UI_Success = rl(9113399926, 0.3, "Beeps Simple Multiple Variations 5 (SFX)"),
+	UI_Fail = rl(9113085665, 0.26, "Alarm Buzzer 3 (SFX)"),
 
 	-- RP-M5 stream E2 (Captain's Locker whistle emote): verified public (audio-search.py verify),
 	-- candidates.csv SFX_Casualty_Whistle. 3D at the player's head, rolled off by 140 studs.
 	Emote_Whistle = rl(9117258228, 0.9, "Pealess Whistle Referee Fox 40 2 (SFX)"),
 	-- end RP-M5 stream E2
 
+	-- G43: rewards, shops, the album, pets and the seasonal events.
+	Crate_Lid = rl(9120881884, 0.55, "Wood Groan Creak Opening Wood Chest Coffin 8 (SFX)"),
+	Cash_Coins = rl(9113704200, 0.4, "Candy Machine Coin Drops Insert Vending 5 (SFX)"),
+	Chandlery_Bell = rl(9125485591, 0.45, "Desk Bell Counter Service Single Ringing Din (SFX)"),
+	Chandlery_Till = rl(9113728648, 0.55, "Cash Register 4 (SFX)"),
+	Logbook_Page = rl(9118835414, 0.4, "Scrapbook Open And Turn Pages 2 (SFX)"),
+	Logbook_Chime = rl(9116394545, 0.35, "Magic Glows Soft Clusters Of Chiming Hits 1 (SFX)"),
+	Album_Sticker = rl(9113263851, 0.45, "Balloon Pops Slap Clap Smack 1 (SFX)", "sticker slap"),
+	Album_Sparkle = rl(9126073001, 0.35, "Synth Sparkle Tone High Pitch Bell Tone Ding (SFX)"),
+	Pet_Seal = rl(9125919816, 0.45, "Seal Bark Human Like Grunt Heaving Rhythmic (SFX)"),
+	Pet_Puffin = rl(9117236763, 0.35, "Parakeet Chirps 3 (SFX)", "stand-in puffin call"),
+	Pet_Otter = rl(
+		9125994570,
+		0.3,
+		"Squeeze Toy Squeaky Rubber With Noisemaker H (SFX)",
+		"stand-in otter squeak"
+	),
+	Pet_Gull = rl(9118858259, 0.3, "Seagull Squawks 3 (SFX)", "reused from Gull_Call_1"),
+	Pet_Turtle = rl(
+		9120585252,
+		0.4,
+		"Water Splash Big Water Splash Dive In 1 (SFX)",
+		"reused from Splash_Entry"
+	),
+	Amb_Sanctuary = rl(
+		9119383479,
+		0.25,
+		"Sonoma Morning Birds California Chirping 1 (SFX)",
+		"looped near the pens"
+	),
+	Halloween_Sting = rl(
+		9125641284,
+		0.4,
+		"Magic Synth Stinger Glassine Multi Tone Burs (SFX)",
+		"playful, not scary"
+	),
+	GhostShip_Call = rl(9119464660, 0.5, "Spirit Fly Bys Spooky Windy Airy Pass Bys 7 (SFX)"),
+	Rank_Cheer = rl(9113137529, 0.45, "Applause Nightclub 1 (SFX)"),
+	UI_FriendPop = rl(9112752910, 0.22, "Bubble Wobble Comic Bloops Slight Rhythm 4 (SFX)"),
+
 	-- Music (APM via Roblox). Two cues: an operation underway, and the debrief.
+	Music_CrateFanfare = rl(1837762472, 0.5, "Victory Dance (sting a) (APM)", "day-7 crate"),
+	Music_Legendary = rl(85130118995016, 0.5, "Arc Of Triumph (Sting) (APM)", "Legendary call"),
 	Music_Operation = rl(1837463124, 0.35, "Tension Bed for One (APM, The Box)"),
 	Music_Debrief = rl(
 		84002131639340,
@@ -188,6 +251,8 @@ end
 -- harbour mouth (MapConfig.Places "Harbour Mouth").
 AudioConfig.HarbourCentre = Vector3.new(0, 4, -150)
 AudioConfig.HarbourRadius = 320 -- the marina bed and rigging fade out past this
+AudioConfig.TownCentre = Vector3.new(0, 4, -250) -- MapConfig "PORT HAVEN"
+AudioConfig.TownRadius = 260 -- the town murmur fades out past this
 AudioConfig.BellBuoy = Vector3.new(-60, 5.25, 880) -- SeamarkRules No2Bell, ATT_Bell height
 AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
 
@@ -199,6 +264,8 @@ AudioConfig.Mix = {
 	seaNearHeight = 70, -- studs above the surface where the sea bed has faded out
 	gullMinGap = 6, -- s between gull calls
 	gullMaxGap = 22,
+	petVoiceMinGap = 18, -- s between a following pet's calls
+	petVoiceMaxGap = 32,
 	bellMinGap = 3.5, -- s between bell strokes in a calm (shorter in a storm)
 	bellMaxGap = 9,
 	riggingRate = 0.6, -- clinks per second at full wind

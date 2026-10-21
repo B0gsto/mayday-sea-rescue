@@ -32,6 +32,9 @@ export type Item = {
 	boostMinutes: number?, -- timed boosts: minutes of playtime
 	dailyLimit: number?, -- per account per day (Cash packs share one limit, see CashPackDailyLimit)
 	stormTier: string?, -- Storm Summons: "Storm" or "GreatStorm" (docs/04 section 5)
+	dayPassFor: string?, -- day passes: the GamePasses key whose effect this product lends
+	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
+	vehicle: string?, -- vehicle passes: the VehicleConfig / LandVehicleConfig id it owns (any rank)
 }
 
 local MonetizationConfig = {
@@ -133,6 +136,28 @@ local MonetizationConfig = {
 			price = 399,
 			order = 10,
 			ready = false,
+		},
+		-- Day passes (proposed prices, not in docs/04 yet): a game pass's effect for 24 hours of real
+		-- time. MonetizationService.OwnsPass accepts a running one. No Day VIP until VipCrewCard is ready.
+		DayDoubleCash = {
+			id = 0,
+			name = "Day 2x Cash",
+			description = "The 2x Cash pass for 24 hours of real time. The clock keeps running while you are away. Buy again to add a day.",
+			price = 15,
+			order = 11,
+			ready = true,
+			dayPassFor = "DoubleCash",
+			dayPassHours = 24,
+		},
+		DayQuickLaunch = {
+			id = 0,
+			name = "Day Quick Launch",
+			description = "The Quick Launch pass for 24 hours of real time. The clock keeps running while you are away. Buy again to add a day.",
+			price = 10,
+			order = 12,
+			ready = true,
+			dayPassFor = "QuickLaunch",
+			dayPassHours = 24,
 		},
 	} :: { [string]: Item },
 
@@ -243,6 +268,98 @@ local MonetizationConfig = {
 			price = 149,
 			order = 13,
 			ready = false,
+		},
+		-- Vehicle passes (2026-10-21, user): own the vehicle at any rank (ProgressionRules.vehiclePass);
+		-- the premium six are Robux only (ProgressionConfig.Vehicles passOnly). Prices proposed -- tune.
+		RIBPass = {
+			id = 0,
+			name = "RIB Inflatable",
+			description = "The RIB Inflatable: 3 crew, 3 casualties, fast and tough. Yours at any rank.",
+			price = 49,
+			order = 14,
+			ready = true,
+			vehicle = "RIB",
+		},
+		LifeboatPass = {
+			id = 0,
+			name = "All-Weather Lifeboat",
+			description = "The All-Weather Lifeboat: 8 casualties, self-righting, a strong tow. Yours at any rank.",
+			price = 129,
+			order = 15,
+			ready = true,
+			vehicle = "Lifeboat",
+		},
+		BeachATVPass = {
+			id = 0,
+			name = "Beach ATV",
+			description = "The Beach ATV quad bike for the sand. Yours at any rank.",
+			price = 25,
+			order = 16,
+			ready = true,
+			vehicle = "BeachATV",
+		},
+		CoastguardResponsePass = {
+			id = 0,
+			name = "Coastguard Response 4x4",
+			description = "The Coastguard Response 4x4 with blue lights and a boat trailer. Yours at any rank.",
+			price = 49,
+			order = 17,
+			ready = true,
+			vehicle = "CoastguardResponse",
+		},
+		StormRunnerPass = {
+			id = 0,
+			name = "Storm Runner",
+			description = "Storm Runner offshore powerboat: the fastest boat on the water. Robux only.",
+			price = 199,
+			order = 18,
+			ready = true,
+			vehicle = "StormRunner",
+		},
+		TidewalkerPass = {
+			id = 0,
+			name = "Tidewalker",
+			description = "Tidewalker luxury catamaran: smooth in any sea, room for 6 casualties. Robux only.",
+			price = 249,
+			order = 19,
+			ready = true,
+			vehicle = "Tidewalker",
+		},
+		RiptideXPass = {
+			id = 0,
+			name = "Riptide X",
+			description = "Riptide X sport jet ski: the quickest jet ski there is. Robux only.",
+			price = 129,
+			order = 20,
+			ready = true,
+			vehicle = "RiptideX",
+		},
+		GildedGullPass = {
+			id = 0,
+			name = "Gilded Gull",
+			description = "Gilded Gull gold luxe jet ski: fast, steady and shining. Robux only.",
+			price = 199,
+			order = 21,
+			ready = true,
+			vehicle = "GildedGull",
+		},
+		HarbourGTPass = {
+			id = 0,
+			name = "Harbour GT",
+			description = "Harbour GT sports coupe: the fastest car on the island. Robux only.",
+			price = 179,
+			order = 22,
+			ready = true,
+			vehicle = "HarbourGT",
+		},
+		LighthouseCruiserPass = {
+			id = 0,
+			name = "Lighthouse Cruiser",
+			description = "Lighthouse Cruiser luxury SUV: 7 seats, quick and comfortable. Robux only.",
+			price = 149,
+			order = 23,
+			ready = true,
+			vehicle = "LighthouseCruiser",
 		},
 	} :: { [string]: Item },
 

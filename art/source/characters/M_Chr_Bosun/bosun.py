@@ -226,7 +226,7 @@ def bvh_of(me):
 
 BODY_SPACING = {"spine": 0.075, "neck": 0.060, "head": 0.040, "tail": 0.100, "fl_l": 0.090, "fl_r": 0.090,
                 "hl_l": 0.090, "hl_r": 0.090}      # skeleton node spacing for the body (SPACING stays for the harness)
-EYE_A, EYE_B, EYE_R = 0.0165, 0.0102, 0.0125      # eye opening half-width / half-height, eyeball radius (m)
+EYE_A, EYE_B, EYE_R = 0.0200, 0.0128, 0.0152      # r6: ~22% larger (r5 0.0165 / 0.0102 / 0.0125)      # eye opening half-width / half-height, eyeball radius (m)
 TOE_X = (-0.036, -0.012, 0.012, 0.036)            # toe centres across each paw, from the paw centre line (m)
 HEADM = {}                                        # measured head landmarks (build metres)
 PAWS = []                                         # (chain, centre x, front y) per paw
@@ -310,14 +310,14 @@ def head_box(V, o, axis, t, rad, dirs, o_s):
     rho, phi = np.hypot(u, v), np.arctan2(v, u)
     top = v > 0
     # skull: squared on top (flat, wide crown), rounder under the jaw
-    cx, cz = squircle(phi, np.where(top, 2.05, 2.3))          # round 4: domed skull (p ~2 = round)
-    sk = (ex[None] * (rho * cx * r * 1.26)[:, None] +
+    cx, cz = squircle(phi, np.where(top, 2.7, 2.3))          # r6: broad, slightly arched crown (r4 2.05 domed)
+    sk = (ex[None] * (rho * cx * r * 1.56)[:, None] +
           ez * (rho * cz * r * np.where(top, 1.06, 1.0))[:, None] + a[:, None] * dirs)
     # muzzle box (world heights): top nearly level, a deep square front, flews hang from the lower corners
     y = V[:, 1]
     q = np.clip((y + 0.775) / (-0.872 + 0.775), 0, 1)
     Xw = 0.091 - 0.005 * q
-    Zt, Zb = 0.843 - 0.013 * q, 0.690 + 0.010 * q
+    Zt, Zb = 0.815 - 0.010 * q, 0.680 + 0.010 * q             # r6: deeper muzzle (r5 Zb 0.690)
     zc = (Zt + Zb) / 2
     bx, bz = squircle(phi, np.where(top, 3.0, 3.6))
     hz = np.where(top, Zt - zc, zc - Zb)
@@ -341,7 +341,7 @@ def shape(V):
             y = V[:, 1]
             s[:, 0] = 1.08 + 0.08 * smoothstep(-0.45, -0.22, y) * (1 - smoothstep(-0.06, 0.10, y))   # barrel ribs
             below = o[:, 2] < 0
-            deep = 1.27 - 0.22 * smoothstep(-0.26, 0.08, y)            # deep heavy brisket, little tuck-up
+            deep = 1.20 - 0.40 * smoothstep(-0.20, 0.06, y)            # r6: brisket to the elbow, slight tuck-up (r5 1.27 / 0.22)
             s[:, 2] = np.where(below, deep, 0.90)                       # flat, level topline
         elif name == "neck":
             s[:, 0] = 1.20                                              # thick neck under the ruff
@@ -369,16 +369,18 @@ def shape(V):
     head_w = w[:, names.index("head")]
     crown = np.exp(-(((V[:, 1] + 0.665) / 0.06) ** 2)) * smoothstep(0.88, 0.93, V[:, 2]) * head_w
     V[:, 2] += 0.008 * crown * np.exp(-(V[:, 0] / 0.09) ** 2)      # round 4: domed crown
-    stop = np.exp(-(((V[:, 1] + 0.752) / 0.016) ** 2) - ((V[:, 2] - 0.862) / 0.022) ** 2 - (V[:, 0] / 0.05) ** 2) * head_w
-    V[:, 1] += 0.016 * stop
-    V[:, 2] -= 0.012 * stop
+    stop = np.exp(-(((V[:, 1] + 0.752) / 0.020) ** 2) - ((V[:, 2] - 0.862) / 0.026) ** 2 - (V[:, 0] / 0.055) ** 2) * head_w
+    V[:, 1] += 0.030 * stop                                    # r6: a clear stop (r5 0.016 / 0.012)
+    V[:, 2] -= 0.024 * stop
+    bridge = smoothstep(-0.745, -0.770, V[:, 1]) * smoothstep(0.80, 0.84, V[:, 2]) * np.exp(-(V[:, 0] / 0.07) ** 2) * head_w
+    V[:, 2] -= 0.012 * bridge                                  # r6: muzzle bridge steps down below the forehead
     # flews: the upper lips hang below the lower jaw at the sides; the chin (lower jaw) is narrower and higher
     flew = flew_profile(V) * smoothstep(0.770, 0.715, V[:, 2]) * head_w
-    V[:, 2] -= 0.036 * flew                                    # round 4: pendulous flews
-    V[:, 0] += np.sign(V[:, 0]) * 0.011 * flew
+    V[:, 2] -= 0.042 * flew                                    # r6: heavy hanging flews (r4 0.036)
+    V[:, 0] += np.sign(V[:, 0]) * 0.026 * flew                # r6: wide square flews, not a long slab
     ax = np.abs(V[:, 0])
     chin = smoothstep(-0.77, -0.81, V[:, 1]) * (1 - smoothstep(0.018, 0.042, ax)) * smoothstep(0.725, 0.695, V[:, 2]) * head_w
-    V[:, 2] += 0.005 * chin
+    V[:, 2] += 0.009 * chin                                    # r6: chin tucked up behind the flews
     # paws on the ground
     V[:, 2] = np.maximum(V[:, 2], 0.0)
     return V
@@ -475,14 +477,14 @@ def head_detail(V, N, hw, masks):
     tip = (y < yf + 0.035) * hw
     d = np.zeros(len(V))
     brow = gauss(V, (0.060, -0.727, 0.879), (0.026, 0.016, 0.009)) * hw
-    d += 0.011 * brow
+    d += 0.022 * brow                                                                 # r6: heavier brows over the stop
     d += 0.008 * gauss(V, (0.088, -0.680, 0.805), (0.030, 0.040, 0.030)) * hw          # cheek muscles
-    d += 0.010 * gauss(V, (0.072, -0.718, 0.718), (0.028, 0.030, 0.024)) * hw          # heavy jowls
+    d += 0.024 * gauss(V, (0.078, -0.730, 0.712), (0.030, 0.030, 0.026)) * hw          # r6: heavy jowls
     d += 0.004 * gauss(V, (0.0, -0.615, 0.935), (0.020, 0.030, 0.020)) * hw            # occiput
     d -= 0.004 * np.exp(-(x / 0.009) ** 2) * band(y, -0.765, -0.665, 0.01) * smoothstep(0.85, 0.875, z) * hw
-    ne = (x / 0.039) ** 2 + ((z - ncz) / 0.027) ** 2
+    ne = (x / 0.045) ** 2 + ((z - ncz) / 0.030) ** 2          # r6: broader, flatter nose pad
     nose = (1 - smoothstep(0.80, 1.05, ne)) * fy * tip
-    d += 0.005 * (1 - smoothstep(0.6, 1.0, ne)) * fy * tip                            # leather stands proud
+    d += 0.007 * (1 - smoothstep(0.6, 1.0, ne)) * fy * tip                            # leather stands proud (r6 broader pad)
     nostril = np.zeros(len(V))
     for s in (1, -1):
         nostril = np.maximum(nostril, np.exp(-(((x - s * 0.016) / 0.0072) ** 2 + ((z - ncz + 0.003) / 0.0042) ** 2)))
@@ -498,10 +500,10 @@ def head_detail(V, N, hw, masks):
     zm0 = ncz - 0.050
     HEADM["mouth_z"] = zm0
     zm = zm0 - 0.012 * np.clip(x / 0.06, -1, 1) ** 2
-    hh = 0.0095 * (1 - 0.45 * np.clip((x / 0.06) ** 2, 0, 1))
+    hh = 0.0045 * (1 - 0.45 * np.clip((x / 0.06) ** 2, 0, 1))      # r6: tighter mouth (r5 0.0095)
     mouth = np.exp(-((z - zm) / hh) ** 2) * smoothstep(-0.15, -0.55, N[:, 1]) * (1 - smoothstep(0.045, 0.068, ax))
     mouth *= (y < yf + 0.045) * hw
-    d -= 0.020 * mouth
+    d -= 0.007 * mouth                                            # r6: mouth closed, a dark lip line
     masks.update(brow=np.clip(brow, 0, 1), nose=np.clip(np.maximum(nose, nostril), 0, 1),
                  lip=np.clip(np.maximum(crease * 1.4, phil), 0, 1) * (1 - smoothstep(0.3, 0.6, mouth)),
                  mouth_inner=np.clip(1.6 * mouth - 0.2, 0, 1))
@@ -581,7 +583,7 @@ def eyeball(center, axis, radius):
     return bm
 
 
-def cornea(eye, Rc=0.0095, bulge=0.0020, rings=4, segs=12, max_ang=1.12):
+def cornea(eye, Rc=0.0100, bulge=0.0027, rings=4, segs=12, max_ang=1.12):
     """A bulged cornea cap in front of the eyeball (spherical cap, smaller radius, 1.6 mm proud of the eyeball)."""
     ax, sd, up = eye["axis"], eye["side"], eye["up"]
     cc = eye["centre"] + ax * (EYE_R - Rc + bulge)
@@ -623,12 +625,12 @@ def lid_rims(eye, skin_tree, segs=24, around=5):
     for i in range(segs):
         th = 2 * math.pi * i / segs
         st = math.sin(th)
-        p = loc + sd * (EYE_A * 0.95 * math.cos(th)) + up * (EYE_B * 0.95 * st * (0.65 + 0.35 * abs(st)) * (1.08 if st < 0 else 1.0))
+        p = loc + sd * (EYE_A * 0.95 * math.cos(th)) + up * (EYE_B * 0.95 * st * (0.65 + 0.35 * abs(st)) * (1.16 if st < 0 else 1.0))
         dirc = (p - ctr).normalized()
         eyept = ctr + dirc * EYE_R
         s = skin_tree.find_nearest(p)[0] or p
         gap = (s - eyept).length
-        rt = min(max(0.35 * gap + 0.0005, 0.0013 if st < 0 else 0.0017), 0.0030)
+        rt = min(max(0.35 * gap + 0.0005, 0.0030 if st < 0 else 0.0026), 0.0040)   # r6: a full lower lid (r5 0.0013)
         mids.append(eyept * 0.65 + s * 0.35)
         rts.append(rt)
         lower.append(1.0 if st < -0.2 else 0.0)
@@ -678,8 +680,8 @@ def ear(sx, head_tree):
                 loc = np.array([sx * hang_x[j], loc[1], loc[2]])
                 nrm = np.array([sx * 1.0, 0.0, 0.0])
             hang_x[j] = max(hang_x.get(j, 0.0), abs(loc[0]))
-            gap = -0.005 if i == 0 else 0.0015 + 0.003 * t
-            th = (0.017 * (1 - t) + 0.006) * (1 - 0.55 * (2 * u) ** 2)
+            gap = -0.005 if i == 0 else 0.0025 + 0.009 * t          # r6: hangs a little off the cheek
+            th = (0.013 * (1 - t) + 0.004) * (1 - 0.55 * (2 * u) ** 2)
             inner[i, j] = bm.verts.new((loc + nrm * gap).tolist())
             outer[i, j] = bm.verts.new((loc + nrm * (gap + th)).tolist())
             tpar += [t, t]
@@ -743,11 +745,12 @@ def tongue(skin_tree):
         return hit[0].y if hit[0] is not None else HEADM["y_front"]
 
     y_in, y_ll = front_y(zm0), front_y(zm0 - 0.017)
-    path = [np.array(p) for p in ((0, y_in + 0.012, zm0 + 0.000), (0, y_in - 0.001, zm0 - 0.003),
-                                  (0, y_ll - 0.004, zm0 - 0.010), (0, y_ll - 0.008, zm0 - 0.019),
-                                  (0, y_ll - 0.009, zm0 - 0.028), (0, y_ll - 0.007, zm0 - 0.034))]
-    widths = (0.036, 0.040, 0.041, 0.039, 0.033, 0.020)
-    th, segs = 0.0085, 10
+    # r6: short and tight, the tip just over the lower lip (r5 draped 34 mm down in front of the chin)
+    path = [np.array(p) for p in ((0, y_in + 0.012, zm0 + 0.000), (0, y_in + 0.000, zm0 - 0.003),
+                                  (0, y_ll - 0.002, zm0 - 0.008), (0, y_ll - 0.004, zm0 - 0.013),
+                                  (0, y_ll - 0.004, zm0 - 0.017), (0, y_ll - 0.002, zm0 - 0.020))]
+    widths = (0.030, 0.033, 0.033, 0.031, 0.026, 0.015)
+    th, segs = 0.0075, 10
     bm = bmesh.new()
     rings = []
     for k, (c, wk) in enumerate(zip(path, widths)):
@@ -831,8 +834,8 @@ def build_body(level=2):
         eb, t = ear(sx, skin_tree)
         add(eb, TAG_EAR, et=t)
     add(nails(skin_tree), TAG_NAIL)
-    tb, MOUTH = tongue(skin_tree)
-    add(tb, TAG_TONGUE)
+    tb, MOUTH = tongue(skin_tree)                      # r6: mouth closed: the tongue piece is dropped (MOUTH kept for ATT_Mouth)
+    tb.free()
     bm.to_mesh(me)
     bm.free()
     for p in me.polygons:
@@ -845,8 +848,10 @@ def build_body(level=2):
     return me, eyes
 
 
-MUZZLE_Y0, MUZZLE_K, MUZZLE_DEEP = -0.765, 0.24, 0.16
-CARRIAGE = (-0.035, -0.045)       # head forward / down (m): neck ~45 deg, not upright
+MUZZLE_Y0, MUZZLE_K, MUZZLE_DEEP = -0.765, 0.24, 0.17   # r6: deeper flews / jaw (r5 0.16)
+CARRIAGE = (0.000, 0.105)        # r6: head carried up, above the topline (r5 -0.035 / -0.045: low, forward)
+HEAD_SCALE, HEAD_PIVOT = 1.17, (0.0, -0.585, 0.790)   # r6: a massive head (uniform about the back of the skull)
+WITHERS_LIFT = 0.030              # r6: withers raised over the shoulder blades
 
 
 def head_warp(V):
@@ -860,6 +865,12 @@ def head_warp(V):
     V[:, 1] = y - MUZZLE_K * d * m
     zc = 0.772
     V[:, 2] = z - MUZZLE_DEEP * np.maximum(zc - z, 0.0) * m * smoothstep(MUZZLE_Y0, MUZZLE_Y0 - 0.08, y)
+    # r6: the whole head scaled up about the back of the skull (fades in over the upper neck)
+    hs = smoothstep(-0.55, -0.66, V[:, 1]) * smoothstep(0.45, 0.58, V[:, 2])
+    k = 1.0 + (HEAD_SCALE - 1.0) * hs
+    V = np.array(HEAD_PIVOT) + (V - np.array(HEAD_PIVOT)) * k[:, None]
+    # r6: withers: the top of the trunk over the shoulder blades raised
+    V[:, 2] += WITHERS_LIFT * np.exp(-((V[:, 1] + 0.34) / 0.13) ** 2) * smoothstep(0.50, 0.66, V[:, 2])
     c = smoothstep(-0.44, -0.62, V[:, 1]) * smoothstep(0.40, 0.60, V[:, 2])
     V[:, 1] += CARRIAGE[0] * c
     V[:, 2] += CARRIAGE[1] * c
@@ -1291,7 +1302,7 @@ def to_studs(me):
 XFORM = {"shift": np.zeros(3), "k": 1.0}      # build metres -> studs: (v + shift) * k * S
 
 
-LEG_LIFT, LEG_Z = 0.032, (0.03, 0.30)   # round 5: longer legs: z in LEG_Z stretched, everything above raised
+LEG_LIFT, LEG_Z = 0.108, (0.03, 0.30)   # r6: legs ~+12% vs r5 (0.032); round 5: longer legs: z in LEG_Z stretched, everything above raised
 
 
 def leg_warp(V):

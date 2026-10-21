@@ -6,11 +6,12 @@
 -- From the pattern rank the Navigator may run an expanding square from the start.
 -- Metrics: startError (studs from the casualty), lostSight (count). Extra: onPattern (0..1).
 -- Controls: place the start with the reticle / mouse on the water + left click (tap the water,
--- A on gamepad); lookout: hold right click (finger on them, RB) with the reticle on them.
+-- A on gamepad); lookout is automatic: keep them on screen (docs/14 section 7: right click is throw aim now).
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
+local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local Search = require(script.Parent.PIW.Search)
 local Step = require(script.Parent.PIW.Step)
 local Ui = require(script.Parent.PIW.Ui)
@@ -43,17 +44,19 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 	if lifejacket and (storm or env.lowLight) then
 		World.strobe(s.bag, victim)
 	end
-	local info = Step.line(s, "Place the search start down-drift of the datum.", 54)
+	local info = Step.line(s, "Drop start marker", 54)
 	local sub = Step.line(s, "", 76)
 	local lookout = Search.lookout()
 	local startError: number? = nil
 	local pattern: { Vector3 }? = nil
 	local onPatternTime, patternTime = 0, 0
-	local eyesHeld = false
 	local touchPos: Vector2? = nil
 	local solo = World.isDriver(World.vehicle(ctx))
 	local rankIndex = Players.LocalPlayer:GetAttribute("RankIndex")
 	local mayPattern = type(rankIndex) == "number" and rankIndex >= Search.PATTERN_RANK_INDEX
+	-- first calls (docs/15 section 3): the start drops itself and they stay in view, so the world
+	-- alone (beacon, cue, casualty) finds them
+	local guided = Layout.newPlayer()
 
 	-- Assist: the datum is pinned (a small buoy) and the drift is drawn from it
 	local truePos = World.casualtyPos(ctx, victim)
@@ -83,16 +86,8 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 		})
 	end
 
-	local function placeStart(screen: Vector2?)
-		if startError ~= nil then
-			return
-		end
+	local function placeAt(p: Vector3)
 		local waterY = World.casualtyPos(ctx, victim).Y
-		local p = World.screenToWater(screen, waterY)
-		if not p then
-			s.say("Point at the water to drop the start marker.")
-			return
-		end
 		startError = Search.startError(p, World.casualtyPos(ctx, victim))
 		World.marker(s.bag, p, wind, true)
 		env.smoke = true
@@ -111,10 +106,25 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 					)
 				end
 			end
-			info.Text = "Expanding square: first leg into the wind. Lookouts, scan."
+			info.Text = "Square · into wind"
 		else
-			info.Text = "Lookouts: scan the water. Watch the crests."
+			info.Text = "Scan the water"
 		end
+	end
+
+	local function placeStart(screen: Vector2?)
+		if startError ~= nil then
+			return
+		end
+		local p = World.screenToWater(screen, World.casualtyPos(ctx, victim).Y)
+		if not p then
+			s.say("◉ Point at water")
+			return
+		end
+		placeAt(p)
+	end
+	if guided then
+		placeAt(datum)
 	end
 
 	-- placing the start: click / tap / A at the reticle
@@ -136,13 +146,7 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 			end
 		end)
 	)
-	-- lookout: hold right click / RB, or keep a finger on them
-	Ui.bind(s.bag, "SearchEyes", function(state)
-		eyesHeld = state == "Begin" or (state == "Change" and eyesHeld)
-		if state == "End" then
-			eyesHeld = false
-		end
-	end, Enum.UserInputType.MouseButton2, Enum.KeyCode.ButtonR1)
+	-- touch: tapping them sights them (the lookout itself is automatic while they are on screen)
 	Ui.add(
 		s.bag,
 		UserInputService.TouchStarted:Connect(function(input, processed)
@@ -169,11 +173,16 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 	Step.heartbeat(s, function(dt)
 		t += dt
 		local cas = World.casualtyPos(ctx, victim)
-		local h = World.hull(World.vehicle(ctx))
-		local cf = World.camera().CFrame
-		local eye = if h then h.position else cf.Position
+		local h = World.aboardHull(ctx)
+		-- measured from the boat or the swimmer, like the minimap's casualty chip (one number)
+		local me = Players.LocalPlayer.Character
+		local hrp = me and me:FindFirstChild("HumanoidRootPart") :: BasePart?
+		local eye = if h
+			then h.position
+			elseif hrp then hrp.Position
+			else World.camera().CFrame.Position
 		local distance = Units.flatDistance(eye, cas)
-		local visible = Search.visible(t, seed, distance, env)
+		local visible = guided or Search.visible(t, seed, distance, env)
 		-- the swell hides their head between crests (local only; the server keeps the model)
 		if victim and visible ~= wasVisible then
 			wasVisible = visible
@@ -190,21 +199,15 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 			end
 		end
 		if startError == nil then
-			sub.Text = if s.assist
-				then "Drift arrow from the datum shows where they've gone."
-				else "Read the drift from the foam lines."
+			sub.Text = if s.assist then "Drift arrow shows" else "Read foam lines"
 			return
 		end
-		local onTarget: boolean
-		if touchPos then
-			local sp = World.onScreen(cas)
-			onTarget = sp ~= nil and (sp - touchPos).Magnitude < 70
-		else
-			onTarget = eyesHeld and World.lookError(cas) <= Search.ON_TARGET_DEG * 1.6
-		end
+		local sp = World.onScreen(cas)
+		local onTarget = sp ~= nil -- lookout: eyes on while they are in view, any input
+		local touched = sp ~= nil and touchPos ~= nil and (sp - touchPos).Magnitude < 70
 		local reticleOn = World.lookError(cas) <= Search.ON_TARGET_DEG
 		if not lookout.sighted then
-			if visible and (reticleOn or (touchPos and onTarget)) then
+			if visible and (reticleOn or touched or (guided and onTarget)) then
 				lookout.sighted = true
 				Ui.hands("point")
 				s.say(
@@ -213,17 +216,15 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 						else '"Casualty in sight! Keep eyes on!"',
 					3
 				)
-				info.Text = if solo
-					then "Close in. The crew keeps pointing."
-					else "Keep eyes on: hold right click / RB on them."
+				info.Text = if solo then "Close in · crew points" else "Keep eyes on"
 			end
-			sub.Text = `Range {math.floor(distance / Units.STUDS_PER_M)} m to search area`
+			sub.Text = "" -- the minimap chip already shows the casualty range
 			return
 		end
 		if solo then
 			-- solo helm: you marked them, an NPC keeps pointing
-			sub.Text = `{math.floor(distance / Units.STUDS_PER_M)} m`
-			if distance <= Mech.CLOSE then
+			sub.Text = ""
+			if distance <= Mech.CLOSE and World.afloat() then
 				finishSearch()
 			end
 			return
@@ -237,7 +238,10 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 			s.say('"Lost them! Where are they?"', 2)
 		end
 		sub.Text = `Eyes on {math.floor(lookout.onSeconds)} / {Mech.EYES_ON_SECONDS}s`
-		if lookout.onSeconds >= Mech.EYES_ON_SECONDS or distance <= Mech.CLOSE then
+		-- on scene means on the water: a sighting from the quay waits for a boat or a swim
+		if
+			World.afloat() and (lookout.onSeconds >= Mech.EYES_ON_SECONDS or distance <= Mech.CLOSE)
+		then
 			finishSearch()
 		end
 	end)
@@ -250,7 +254,7 @@ function Mech.start(ctx: { [string]: any }, finish: (result: { [string]: any }) 
 			end
 		end
 	end)
-	Ui.hint(s.panel, "Both arms waving, a strobe, orange smoke: look for real signs.", s.assist)
+	Ui.hint(s.panel, "Watch for signs", s.assist)
 	return Step.cleanup(s)
 end
 

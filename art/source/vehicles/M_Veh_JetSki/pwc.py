@@ -7,7 +7,7 @@ build.py recentres it ("base" origin) and writes frame_offset.json for the close
 Generic three-seat rescue PWC (no maker shapes or marks): deep-V hull 3.37 m with a spray-rail chine, rub rail,
 footwells, a long two-tone saddle, steering pod with bars and mirrors, nav lights, all-round white on a short stern
 pole, tow eye, bow eye, jet nozzle with reverse bucket, and a rescue sled (board with six handles) on two stainless
-arms at the stern. Gale Isles Coastguard livery: muted Hull Orange topsides, navy bottom, white lettering on a navy
+arms at the stern. Gale Isles Coastguard livery: muted Hull Orange topsides, charcoal bottom, white lettering on a charcoal
 band, fleet number GI-17, the lighthouse-and-compass crest, RESCUE on the sled.
 """
 import math
@@ -267,18 +267,18 @@ OFF = 0.025
 def decals(g):
     for sx in (1, -1):
         y0, y1, t0, t1 = BAND
-        _topside_patch(g, sx, y0, y1, t0, t1, M(g, "PanelNavy"), OFF, 40 if g.hi else 18, 4 if g.hi else 2)
+        _topside_patch(g, sx, y0, y1, t0, t1, M(g, "PanelCharcoal"), OFF, 40 if g.hi else 18, 4 if g.hi else 2)
         y0n, y1n, t0n, t1n = NUMBER
         _topside_patch(g, sx, y0n, y1n, t0n, t1n, M(g, "PWCOrange"), OFF, 16 if g.hi else 8, 4 if g.hi else 2)
         yc, tc, r = CREST
-        _topside_disc(g, sx, yc, tc, r, M(g, "PanelNavy"), OFF, n=28 if g.hi else 16)
+        _topside_disc(g, sx, yc, tc, r, M(g, "PanelCharcoal"), OFF, n=28 if g.hi else 16)
         if g.hi:
             _topside_text(g, sx, (y0 + y1) / 2, 0.5 - 0.02, "GALE ISLES COASTGUARD", 0.30, "LetterWhite", OFF + 0.004, 0.95)
-            _topside_text(g, sx, (y0n + y1n) / 2, 0.5 - 0.03, "GI-17", 0.34, "LetterNavy", OFF + 0.004, 1.0)
-            # crest: white compass star, orange rim ring, navy lighthouse with a white lamp
+            _topside_text(g, sx, (y0n + y1n) / 2, 0.5 - 0.03, "GI-17", 0.34, "LetterCharcoal", OFF + 0.004, 1.0)
+            # crest: white compass star, orange rim ring, charcoal lighthouse with a white lamp
             _topside_disc(g, sx, yc, tc, r * 0.82, "LetterWhite", OFF + 0.003, n=16, star=r * 0.3)
             _topside_disc(g, sx, yc, tc, r * 0.34, "PWCOrange", OFF + 0.005, n=16)
-            _topside_text(g, sx, yc, tc + 0.02 / side_len(yc), "I", 0.3, "LetterNavy", OFF + 0.007, 1.6)
+            _topside_text(g, sx, yc, tc + 0.02 / side_len(yc), "I", 0.3, "LetterCharcoal", OFF + 0.007, 1.6)
 
 
 # =========================================================================== fittings (Sled set)

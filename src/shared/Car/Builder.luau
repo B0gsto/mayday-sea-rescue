@@ -607,6 +607,35 @@ local function responseBody(ctx: Ctx)
 	battenburg(ctx, base + 0.15, 0.4, L - 0.1, 0.5)
 end
 
+-- Sports coupe greybox (premium HarbourGT until its mesh lands): low body, glass greenhouse, spoiler.
+local function coupeBody(ctx: Ctx)
+	local s = ctx.spec
+	local L, W, H = s.length, s.width, s.height
+	local base, belt = s.groundClearance + 0.08, H * 0.6
+	local c = s.bodyColor
+	box(ctx, "Splitter", W, 0.05, 0.3, 0, base, 0.15, DARK)
+	box(ctx, "Nose", W, belt - base - 0.1, 1.1, 0, (base + belt - 0.1) / 2, 0.55, c)
+	box(ctx, "BodyLower", W, belt - base, L - 1.1, 0, (base + belt) / 2, (1.1 + L) / 2, c)
+	headlamps(ctx, belt - 0.22, 0.2)
+	glass(
+		box(
+			ctx,
+			"Greenhouse",
+			W * 0.8,
+			H - belt,
+			L * 0.4,
+			0,
+			(belt + H) / 2,
+			L * 0.52,
+			GLASS,
+			Enum.Material.Glass
+		)
+	)
+	box(ctx, "Roof", W * 0.78, 0.06, L * 0.3, 0, H - 0.03, L * 0.52, c)
+	box(ctx, "Spoiler", W * 0.9, 0.05, 0.3, 0, belt + 0.18, L - 0.2, s.stripeColor)
+	rearLamps(ctx, belt - 0.15, L)
+end
+
 -- Utility quad: tub, fuel tank and saddle, bars, racks with the rescue board, a beacon mast.
 local function atvBody(ctx: Ctx)
 	local s = ctx.spec
@@ -853,6 +882,8 @@ function Builder.build(spec: Spec, extraMassKg: number?): (Model, Chassis.Derive
 		atvBody(ctx)
 	elseif spec.class == "Ambulance" then
 		ambulanceBody(ctx)
+	elseif spec.class == "Coupe" then
+		coupeBody(ctx)
 	else
 		trailerBody(ctx)
 	end
@@ -866,6 +897,9 @@ function Builder.build(spec: Spec, extraMassKg: number?): (Model, Chassis.Derive
 	local W = spec.width
 	if spec.class == "ATV" then
 		seatAt("DriverSeat", 0, 1.35, true)
+	elseif spec.class == "Coupe" then
+		seatAt("DriverSeat", W * 0.22, spec.length * 0.5, true)
+		seatAt("Seat2", -W * 0.22, spec.length * 0.5, false)
 	elseif spec.class == "Pickup" or spec.class == "Response" or spec.class == "Ambulance" then
 		local frontZ = if spec.class == "Pickup"
 			then 2.35

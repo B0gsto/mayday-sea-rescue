@@ -1,0 +1,297 @@
+{
+ "asset": "M_Road_Sign_Kit",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Fingerpost",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    17.1946,
+    -4.425,
+    -0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Read_Fingerpost",
+   "parent": null,
+   "blender": [
+    1.65,
+    -0.06,
+    6.06
+   ],
+   "roblox_from_origin": [
+    -1.65,
+    6.06,
+    -0.06
+   ],
+   "roblox_from_bbox_centre": [
+    15.5446,
+    1.635,
+    -0.255
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TideBoard",
+   "parent": null,
+   "blender": [
+    9.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -9.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    8.1946,
+    -4.425,
+    -0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Read_TideBoard",
+   "parent": null,
+   "blender": [
+    9.0,
+    -0.2061,
+    4.125
+   ],
+   "roblox_from_origin": [
+    -9.0,
+    4.125,
+    -0.2061
+   ],
+   "roblox_from_bbox_centre": [
+    8.1946,
+    -0.3,
+    -0.4011
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LaunchSign",
+   "parent": null,
+   "blender": [
+    18.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -18.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.8054,
+    -4.425,
+    -0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Read_LaunchSign",
+   "parent": null,
+   "blender": [
+    18.0,
+    -0.2061,
+    5.85
+   ],
+   "roblox_from_origin": [
+    -18.0,
+    5.85,
+    -0.2061
+   ],
+   "roblox_from_bbox_centre": [
+    -0.8054,
+    1.425,
+    -0.4011
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CarPark",
+   "parent": null,
+   "blender": [
+    27.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -27.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -9.8054,
+    -4.425,
+    -0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Read_CarPark",
+   "parent": null,
+   "blender": [
+    27.0,
+    -0.2061,
+    6.36
+   ],
+   "roblox_from_origin": [
+    -27.0,
+    6.36,
+    -0.2061
+   ],
+   "roblox_from_bbox_centre": [
+    -9.8054,
+    1.935,
+    -0.4011
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CliffWarning",
+   "parent": null,
+   "blender": [
+    36.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -36.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -18.8054,
+    -4.425,
+    -0.195
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Read_CliffWarning",
+   "parent": null,
+   "blender": [
+    36.0,
+    -0.2061,
+    5.8185
+   ],
+   "roblox_from_origin": [
+    -36.0,
+    5.8185,
+    -0.2061
+   ],
+   "roblox_from_bbox_centre": [
+    -18.8054,
+    1.3935,
+    -0.4011
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

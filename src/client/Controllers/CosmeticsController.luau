@@ -10,7 +10,8 @@
 --   ctx.onEvent(name, fn(...)) -> disconnect()    Cosmetics_Event from the server, by name
 --   ctx.equipped(player, slot): string            that player's "Cos_<Slot>" (default when unset)
 --   ctx.onEquipped(player, slot, fn(id)) -> RBXScriptConnection   fires on change (not now)
---   ctx.owns(passKey): boolean                    the local player's "Pass_<Key>"
+--   ctx.owns(key): boolean                        the local player's "Pass_<Key>" or earned
+--                                                 "CosOwned" flag key (src/shared/CosmeticLoadout)
 --   ctx.muted(kind): boolean                      kind "Horns" | "Sirens" | "Radios": the local
 --                                                 player muted OTHER players' sounds of that kind
 --   ctx.currentVehicle(): (Model?, kind?)         the vehicle the local player is seated in;
@@ -27,9 +28,11 @@ local UserInputService = game:GetService("UserInputService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local CosmeticLoadout = require(Shared:WaitForChild("CosmeticLoadout"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local player = Players.LocalPlayer
 
@@ -64,7 +67,7 @@ local function kindOf(model: Instance?): string?
 		return "Car"
 	end
 	local id = model:GetAttribute("VehicleId")
-	if id == "JetSki" then
+	if VehicleConfig.isJetSki(id) then
 		return "JetSki"
 	elseif type(id) == "string" then
 		return "Boat"
@@ -253,8 +256,22 @@ function ctx.onEquipped(who: Player, slot: string, fn: (string) -> ()): RBXScrip
 	end)
 end
 
-function ctx.owns(passKey: string): boolean
-	return player:GetAttribute("Pass_" .. passKey) == true
+local ownedRaw = ""
+local ownedSet: { [string]: boolean } = {}
+
+function ctx.owns(key: string): boolean
+	if player:GetAttribute("Pass_" .. key) == true then
+		return true
+	end
+	local raw = player:GetAttribute("CosOwned")
+	if type(raw) ~= "string" then
+		return false
+	end
+	if raw ~= ownedRaw then
+		ownedRaw = raw
+		ownedSet = CosmeticLoadout.decode(raw)
+	end
+	return ownedSet[key] == true
 end
 
 function ctx.muted(kind: string): boolean

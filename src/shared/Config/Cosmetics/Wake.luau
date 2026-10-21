@@ -19,6 +19,7 @@
 --   bowLife    spray particle lifetime multiplier
 --   bowSpread  spray fan angle multiplier
 --   glow       night tint (hex) blended in by the night factor; glowEmission its LightEmission
+--   trail      0..1 strength of the faint coloured ribbon trailing the stern (G38; default 0)
 type Option = { id: string, name: string, pass: string?, [string]: any }
 
 local options: { Option } = {
@@ -78,6 +79,49 @@ local options: { Option } = {
 		pass = "WakeTrails",
 		-- the standard wake by day; at night a faint blue-green plankton glow in the churned water
 		style = { glow = "#46BCCB", glowEmission = 0.45 },
+	},
+	{
+		id = "StockTurquoise",
+		name = "Turquoise wake",
+		earn = "stock:wake_turquoise",
+		-- Chandlery tint: clean turquoise water in the churn, brighter at night
+		style = {
+			tint = "#58C8BD",
+			opacity = 1.3,
+			trail = 0.35,
+			glow = "#58C8BD",
+			glowEmission = 0.35,
+		},
+	},
+	{
+		id = "StockGold",
+		name = "Gold wake",
+		earn = "stock:wake_gold",
+		-- Chandlery tint: warm brass foam, a faint lit edge after dark
+		style = {
+			tint = "#F2C24E",
+			opacity = 1.35,
+			hold = 0.55,
+			length = 1.25,
+			trail = 0.45,
+			glow = "#F6CE60",
+			glowEmission = 0.3,
+		},
+	},
+	{
+		id = "Season1",
+		name = "Season 1 wake",
+		earn = "season:Wake_Season1",
+		-- the logbook's winter sea: pale blue foam with a cold plankton glow
+		style = {
+			tint = "#CFE6EF",
+			length = 1.35,
+			opacity = 1.2,
+			hold = 0.55,
+			trail = 0.2,
+			glow = "#4FA8C8",
+			glowEmission = 0.4,
+		},
 	},
 }
 

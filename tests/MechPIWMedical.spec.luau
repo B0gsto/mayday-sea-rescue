@@ -39,12 +39,8 @@ return function(t)
 				t.expect(#rib <= Medical.kitSlots(false)).toBeTruthy()
 				t.expect(#jet <= Medical.kitSlots(true)).toBeTruthy()
 				t.expect(table.find(jet, "oxygen")).toBeNil()
-				t.expect(Medical.kitFit(rib, rib)).toBe(1)
 			end
 		end
-		local need = Medical.kitNeeded("Alert", true, false)
-		t.expect(Medical.kitFit({ "towline", "fenders" }, need)).toBe(0)
-		t.expect(Medical.kitFit({ need[1] }, need) < 0.6).toBeTruthy()
 		t.expect(table.find(Medical.kitNeeded("Alert", false, false), "lifejacket") ~= nil)
 			.toBeTruthy()
 	end)
@@ -55,13 +51,10 @@ return function(t)
 			local cards = Medical.surveyCards(p, false, false)
 			t.expect(#cards).toBe(7)
 			t.expect(#Medical.surveyCards(p, true, false)).toBe(3)
-			local picks = {}
 			for _, c in cards do
 				t.expect(#c.options >= 2 and #c.options <= 4).toBeTruthy()
 				t.expect(c.answer >= 1 and c.answer <= #c.options).toBeTruthy()
-				picks[c.letter] = c.answer
 			end
-			t.expect(Medical.surveyCorrect(cards, picks)).toBe(1)
 		end
 		local cold = Medical.surveyCards(Medical.profile("q", "VeryCold", true), false, false)
 		for _, c in cold do
@@ -71,45 +64,26 @@ return function(t)
 		end
 	end)
 
-	t.test(
-		"treatment: the book scores 1 with nothing harmful; rubbing and drinks are harmful",
-		function()
-			for _, st in STATES do
-				for _, lj in { true, false } do
-					local p = Medical.profile("t" .. st, st, lj)
-					local need, harmful = Medical.treatmentPlan(p, nil)
-					t.expect(#need >= 2).toBeTruthy()
-					local m, bad = Medical.treatmentScore(need, need, harmful)
-					t.expect(m).toBe(1)
-					t.expect(bad).toBe(0)
-					t.expect(harmful.rub).toBe(true)
-				end
+	t.test("treatment: the plan follows the state; CPR first only when not breathing", function()
+		for _, st in STATES do
+			for _, lj in { true, false } do
+				local need = Medical.treatmentPlan(Medical.profile("t" .. st, st, lj), nil)
+				t.expect(#need >= 2).toBeTruthy()
 			end
-			local drowsy = Medical.profile("d", "VeryCold", true)
-			local need, harmful = Medical.treatmentPlan(drowsy, nil)
-			t.expect(harmful.drink).toBe(true)
-			t.expect(need[1]).toBe("horizontal")
-			local _, bad = Medical.treatmentScore({ "rub", "drink" }, need, harmful)
-			t.expect(bad).toBe(2)
-			local cpr = Medical.profile("c", "Unresponsive", false)
-			local cneed = Medical.treatmentPlan(cpr, nil)
-			t.expect(cneed[1]).toBe("cpr")
 		end
-	)
-
-	t.test("treatment: dressing the graze before the cold costs order credit", function()
+		t.expect(Medical.treatmentPlan(Medical.profile("d", "VeryCold", true), nil)[1])
+			.toBe("horizontal")
+		t.expect(Medical.treatmentPlan(Medical.profile("c", "Unresponsive", false), nil)[1])
+			.toBe("cpr")
 		local p = Medical.profile("g", "Alert", true)
 		p.scrape = true
-		local need, harmful = Medical.treatmentPlan(p, nil)
-		local late = {}
-		table.insert(late, "dressing")
-		for _, id in need do
-			if id ~= "dressing" then
-				table.insert(late, id)
-			end
-		end
-		local m = Medical.treatmentScore(late, need, harmful)
-		t.expect(m < 1).toBeTruthy()
+		local need = Medical.treatmentPlan(p, nil)
+		t.expect(need[#need]).toBe("dressing") -- after the cold is dealt with
+	end)
+
+	t.test("survey: every Breathing answer has a breath rate, none when not breathing", function()
+		t.expect(#Medical.BREATHS).toBe(4)
+		t.expect(Medical.BREATHS[4]).toBe(0)
 	end)
 
 	t.test("treatment: kit not carried drops out of the plan", function()
@@ -119,48 +93,26 @@ return function(t)
 		t.expect(table.find(need, "oxygen")).toBeNil()
 	end)
 
-	t.test("atmist: six cards, the truth among the options, treatment read back", function()
+	t.test("atmist: six lines read back the truth and the treatment", function()
 		local p = Medical.profile("h", "Exhausted", true)
-		local cards = Medical.atmistCards(
-			p,
-			"h",
-			{ applied = { "shelter", "casualtyBag" }, minutesOnScene = 8 }
-		)
-		t.expect(#cards).toBe(6)
-		for _, c in cards do
-			t.expect(c.answer >= 1 and c.answer <= #c.options).toBeTruthy()
-		end
-		t.expect(cards[1].options[cards[1].answer]).toBe(p.ageBand)
-		t.expect(cards[6].options[cards[6].answer]).toBe("Shelter from the wind, Casualty bag")
-		t.expect(cards[2].options[cards[2].answer]).toBe("about 20 min")
+		local lines =
+			Medical.atmist(p, { applied = { "shelter", "casualtyBag" }, minutesOnScene = 8 })
+		t.expect(#lines).toBe(6)
+		t.expect(lines[1].text).toBe(p.ageBand)
+		t.expect(lines[2].text).toBe("In the water about 20 min")
+		t.expect(lines[6].text).toBe("Shelter from the wind, Casualty bag")
 	end)
 
-	t.test("bands: the book play grades Gold on every PIW mechanic step", function()
-		t.expect(Grading.stepGrade(step("kit_launch"), { kitFit = 1, elapsed = 20 })).toBe("Gold")
-		t.expect(Grading.stepGrade(step("passage"), { routeRatio = 1.05, etaError = 0.1 }))
-			.toBe("Gold")
+	-- 2026-10-21: the PIW plan is tasking, launch, recovery (auto_board), transport; kit, approach,
+	-- care and handover moved out of it (their mechanics stay for the other calls)
+	t.test("bands: a quick, smooth Person in the Water grades Gold on every step", function()
+		t.expect(Grading.stepGrade(step("tasking"), { elapsed = 10 })).toBe("Gold")
+		t.expect(Grading.stepGrade(step("launch"), { elapsed = 20 })).toBe("Gold")
+		t.expect(Grading.stepGrade(step("recovery"), { elapsed = 50 })).toBe("Gold")
+		t.expect(Grading.stepGrade(step("recovery"), { elapsed = 200 })).toBe("Bronze")
 		t.expect(
-			Grading.stepGrade(step("search"), { startError = 30, lostSight = 0, onPattern = 1 })
+			Grading.stepGrade(step("transport"), { conditionAtEnd = 80, destinationRight = true })
 		)
 			.toBe("Gold")
-		t.expect(
-			Grading.stepGrade(
-				step("approach"),
-				{ overSpeedSec = 0, neutralDistance = 6, fromDownwind = true }
-			)
-		).toBe("Gold")
-		t.expect(Grading.stepGrade(step("calm"), { calmSeconds = 12, grabbed = 0 })).toBe("Gold")
-		t.expect(Grading.stepGrade(step("recovery"), { rightMethod = true, score = 0.85 }))
-			.toBe("Gold")
-		t.expect(Grading.stepGrade(step("survey"), { correct = 1, elapsed = 24 })).toBe("Gold")
-		t.expect(Grading.stepGrade(step("treatment"), { matches = 1, harmful = 0 })).toBe("Gold")
-		t.expect(Grading.stepGrade(step("handover"), { correct = 6, elapsed = 18 })).toBe("Gold")
-		-- an overrun neutral shift or a wake-chasing approach is not Gold
-		t.expect(
-			Grading.stepGrade(
-				step("approach"),
-				{ overSpeedSec = 0, neutralDistance = 15, fromDownwind = true }
-			) ~= "Gold"
-		).toBeTruthy()
 	end)
 end

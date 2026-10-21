@@ -1,0 +1,733 @@
+{
+ "asset": "M_Kit_ThermalBlanketDraped",
+ "name": "M_Kit_ThermalBlanketDraped",
+ "date": "2026-10-18",
+ "commit": "9c136b5b+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "bytes": 559692,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThermalBlanketDraped_COL",
+    "M_Kit_ThermalBlanketDraped_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThermalBlanketDraped_COL.001",
+     "min": [
+      -1.7722,
+      -3.1701,
+      0.0
+     ],
+     "max": [
+      1.7722,
+      3.1701,
+      0.7587
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_ThermalBlanketDraped_LOD0.001",
+     "min": [
+      -1.7722,
+      -3.1701,
+      0.0
+     ],
+     "max": [
+      1.7722,
+      3.1701,
+      0.7587
+     ],
+     "polygons": 6200,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "bytes": 288300,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThermalBlanketDraped_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThermalBlanketDraped_LOD1.001",
+     "min": [
+      -1.7722,
+      -3.1701,
+      -0.0139
+     ],
+     "max": [
+      1.7722,
+      3.1701,
+      0.7552
+     ],
+     "polygons": 3099,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "bytes": 152236,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_ThermalBlanketDraped_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_ThermalBlanketDraped_LOD2.001",
+     "min": [
+      -1.7727,
+      -3.1701,
+      -0.0258
+     ],
+     "max": [
+      1.7688,
+      3.1726,
+      0.7687
+     ],
+     "polygons": 1550,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped.attachments.json",
+   "attachments": [
+    "ATT_Head",
+    "ATT_Casualty",
+    "ATT_Grip"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThermalBlanketDraped_LOD0"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6200 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.51e-04, 324 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3100 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "350 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThermalBlanketDraped_LOD1"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3099 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.77e-04, 261 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 1.000, v 0.002 to 1.000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3099 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 5.3% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThermalBlanketDraped_LOD2"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1550 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.59e-03, 186 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 1.000, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1550 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 10.3% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_ThermalBlanketDraped_COL"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6200 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3099 of 4000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1550 of 2000"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.3 x 2.1 x 0.246 m, spec 1.3 x 2.1 x 0.246 m (art/reference/M_Kit_ThermalBlanketDraped/dims.md)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.544 studs, real 1.300 m = 3.900 studs, off 9.1% (5% free, 15% with a note); NOTE: E1b: the bbox includes the accessories (lines, loops, straps, buckles, light, pins); dims.md dims_m is the class size in the authored orientation, '-' where accessories set the bbox"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6.340 studs, real 2.100 m = 6.300 studs, off 0.6% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.759 studs, real 0.246 m = 0.738 studs, off 2.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThermalBlanketDraped_COL"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Foil_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Foil_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Foil_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Foil_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Foil_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Foil_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Foil_MET.png"
+  },
+  {
+   "subject": "ATT_Head",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Casualty",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThermalBlanketDraped_COL, M_Kit_ThermalBlanketDraped_LOD0; 6212 triangles (scene 6212)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThermalBlanketDraped_LOD1; 3099 triangles (scene 3099)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_ThermalBlanketDraped_LOD2; 1550 triangles (scene 1550)"
+  },
+  {
+   "subject": "M_Kit_ThermalBlanketDraped_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_ThermalBlanketDraped_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6200,
+   "texel_density": 349.5
+  },
+  {
+   "name": "M_Kit_ThermalBlanketDraped_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3099,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_ThermalBlanketDraped_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1550,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_ThermalBlanketDraped_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.544328212738037,
+  6.340251922607422,
+  0.7586824893951416
+ ],
+ "peak_rss_mb": 225.5
+}

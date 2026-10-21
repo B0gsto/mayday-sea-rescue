@@ -17,6 +17,10 @@ KIT = [
     ("M_Rock_Ledge_01", "coast_land_rocks_02", "boulder", 7800, "background", "shore", "Ledge01"),
     ("M_Rock_Ledge_02", "coast_land_rocks_03", "boulder", 7800, "background", "shore", "Ledge02"),
     ("M_Rock_Ledge_03", "coast_rocks_05", "boulder", 6000, "background", "shore", "Ledge03"),
+    ("M_Rock_Cliff_06", "coastal_cliff_01", "rock", 9500, "background", "lichen", "Cliff06"),
+    ("M_Rock_Cliff_07", "coastal_cliff_02", "rock", 9500, "background", "shore", "Cliff07"),
+    ("M_Rock_Cliff_08", "coastal_cliff_04", "rock", 9500, "background", "lichen", "Cliff08"),
+    ("M_Rock_Ledge_04", "coast_land_rocks_04", "boulder", 6000, "background", "shore", "Ledge04"),
 ]
 ROOT = "/Users/bogdan/RobloxProjects/MaydaySeaRescue/"
 SRC = ROOT + "build/k1/src/"      # downloads (data only)
@@ -33,7 +37,10 @@ def piece(asset):
 
 
 # export size per piece: the two biggest faces ship at 2048 to hold the background texel tier (25 px/stud)
-SIZE = {"M_Rock_Cliff_03": 2048, "M_Rock_Cliff_05": 2048}
+SIZE = {"M_Rock_Cliff_03": 2048, "M_Rock_Cliff_05": 2048,
+        "M_Rock_Cliff_06": 2048, "M_Rock_Cliff_07": 2048, "M_Rock_Cliff_08": 2048}
+# 40-92 m headland wall scans: 2048 master is the scan's own resolution; 25 px/stud would need an upscaled 4k map
+TEXEL_WAIVED = {"M_Rock_Cliff_06", "M_Rock_Cliff_07", "M_Rock_Cliff_08"}
 
 
 def size(asset):

@@ -13,6 +13,7 @@
 --   ticketStorm, ticketGreat  Storm Tickets: a paid storm not yet run (docs/04 section 5 rule 7)
 --   anon                   the buyer hides their name from storm announcements (rule 5)
 --   callerHour             UTC hour (os.time() // 3600) until which the "Storm Caller" title shows
+--   day<PassKey>           day passes: UTC hour (os.time() // 3600) the pass's effect runs until (real time)
 
 local Effects = {}
 
@@ -83,6 +84,21 @@ end
 
 function Effects.addBoost(shop: Shop, field: string, seconds: number)
 	shop[field] = math.min(Effects.BOOST_CAP_SECONDS, num(shop[field]) + math.max(seconds, 0))
+end
+
+-- Day passes (MonetizationConfig Products with dayPassFor / dayPassHours): unix second the pass ends (0 = none).
+function Effects.dayPassEnds(shop: Shop?, passKey: string): number
+	return if shop then num(shop["day" .. passKey]) * 3600 else 0
+end
+
+-- Adds hours of real time from now, or from the current end when one is running; returns the new end.
+-- shortcut: saved as a whole hour (the flag limit is 1e6), so the end rounds up and a buyer gets up to
+-- an hour extra; store seconds if the flag rules ever allow bigger numbers.
+function Effects.addDayPass(shop: Shop, passKey: string, hours: number, now: number): number
+	local from = math.max(Effects.dayPassEnds(shop, passKey), now)
+	local hour = math.ceil((from + math.max(hours, 0) * 3600) / 3600)
+	shop["day" .. passKey] = hour
+	return hour * 3600
 end
 
 -- Counts boost time down by dt seconds of playtime; true when anything changed.

@@ -1,6 +1,7 @@
 --!strict
 -- CrewPay: the phone's Crew Pay and Pay Rise apps (docs/15 H6), drawn on an app page by
--- StationController (it owns the numbers and the remotes). Icons and numbers only.
+-- StationController (it owns the numbers and the remotes). Icons and numbers only, laid out top to
+-- bottom for the upright phone (the big action pill sits at the bottom, under the thumb).
 --   Crew Pay   the station pot: coin + Cash, a fill meter, the clock to full (`2:14`, ✓ when
 --              full), the hourly rate and Collect.
 --   Pay Rise   the workshop level as 3 brass pips, the next level's rate and cost, and Upgrade
@@ -110,24 +111,20 @@ local function row(parent: Instance, name: string, y: number, h: number, gap: nu
 	return f
 end
 
--- the centred card both apps sit on
+-- the card both apps sit on: the whole upright page
 local function card(page: Instance, name: string): Frame
-	local f = frame(page, name, C.panel, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(620, 360))
-	f.AnchorPoint = Vector2.new(0.5, 0.5)
+	local f = frame(page, name, C.panel, UDim2.fromOffset(0, 6), UDim2.new(1, 0, 1, -12))
 	f.BackgroundTransparency = 0.25
 	HudTheme.corner(f, 24)
 	HudTheme.stroke(f, C.gold, 2).Transparency = 0.55
-	local fit = Instance.new("UISizeConstraint")
-	fit.MaxSize = Vector2.new(620, 360)
-	fit.Parent = f
-	f.Size = UDim2.fromScale(0.9, 0.92)
 	return f
 end
 
-local function action(parent: Instance, label: string, y: number): TextButton
-	local b = HudTheme.button("Action", label, UDim2.fromOffset(280, 63), parent)
-	b.AnchorPoint = Vector2.new(0.5, 0)
-	b.Position = UDim2.new(0.5, 0, 0, y)
+-- the big pill at the card's foot
+local function action(parent: Instance, label: string): TextButton
+	local b = HudTheme.button("Action", label, UDim2.new(1, -32, 0, 63), parent)
+	b.AnchorPoint = Vector2.new(0.5, 1)
+	b.Position = UDim2.new(0.5, 0, 1, -16)
 	b.TextSize = 26
 	HudTheme.corner(b, 16)
 	local sheen = Instance.new("UIGradient")
@@ -139,30 +136,29 @@ end
 
 function CrewPay.pot(page: Instance): Pot
 	local f = card(page, "CrewPay")
-	local top = row(f, "Cash", 34, 80, 16)
-	coin(top, 64).LayoutOrder = 1
-	local cash = text(top, "Amount", "0", 64, C.gold)
-	cash.LayoutOrder = 2
+	local top = row(f, "Coin", 24, 100, 0)
+	coin(top, 96).LayoutOrder = 1
+	local amount = row(f, "Cash", 130, 64, 0)
+	local cash = text(amount, "Amount", "0", 56, C.gold)
+	cash.LayoutOrder = 1
 
-	local meter = frame(f, "Meter", IRON, UDim2.new(0.5, 0, 0, 140), UDim2.new(1, -96, 0, 26))
+	local meter = frame(f, "Meter", IRON, UDim2.new(0.5, 0, 0, 208), UDim2.new(1, -40, 0, 26))
 	meter.AnchorPoint = Vector2.new(0.5, 0)
 	meter.ClipsDescendants = true
 	HudTheme.corner(meter, 13)
 	local fill = frame(meter, "Fill", COIN, UDim2.new(), UDim2.fromScale(0, 1))
 	HudTheme.corner(fill, 13)
 
-	local info = row(f, "Info", 184, 48, 14)
+	local info = row(f, "Info", 252, 48, 14)
 	clock(info, 36).LayoutOrder = 1
 	local time = text(info, "Time", "0:00", 32, C.text)
 	time.LayoutOrder = 2
-	local spacer = frame(info, "Gap", C.panel, UDim2.new(), UDim2.fromOffset(28, 1))
-	spacer.BackgroundTransparency = 1
-	spacer.LayoutOrder = 3
-	coin(info, 30).LayoutOrder = 4
-	local rate = text(info, "Rate", "0/h", 28, C.textDim)
-	rate.LayoutOrder = 5
+	local rateRow = row(f, "Rate", 306, 44, 12)
+	coin(rateRow, 30).LayoutOrder = 1
+	local rate = text(rateRow, "Rate", "0/h", 28, C.textDim)
+	rate.LayoutOrder = 2
 
-	local button = action(f, "Collect", 262)
+	local button = action(f, "Collect")
 	return {
 		button = button,
 		update = function(
@@ -189,24 +185,25 @@ end
 
 function CrewPay.rise(page: Instance): Rise
 	local f = card(page, "PayRise")
-	local pipsRow = row(f, "Level", 34, 80, 22)
-	local arrow = text(pipsRow, "Arrow", "▲", 56, C.gold)
-	arrow.LayoutOrder = 0
+	local arrowRow = row(f, "Arrow", 20, 72, 0)
+	local arrow = text(arrowRow, "Arrow", "▲", 60, C.gold)
+	arrow.LayoutOrder = 1
+	local pipsRow = row(f, "Level", 102, 64, 18)
 	local pips = {}
 	for i = 1, 3 do
-		local pip = frame(pipsRow, `Pip{i}`, IRON, UDim2.new(), UDim2.fromOffset(52, 52))
+		local pip = frame(pipsRow, `Pip{i}`, IRON, UDim2.new(), UDim2.fromOffset(60, 60))
 		pip.LayoutOrder = i
 		HudTheme.corner(pip, 12)
 		HudTheme.stroke(pip, C.gold, 2).Transparency = 0.4
 		pips[i] = pip
 	end
 
-	local info = row(f, "Rate", 132, 48, 14)
+	local info = row(f, "Rate", 186, 48, 14)
 	coin(info, 30).LayoutOrder = 1
 	local rate = text(info, "Rate", "0/h", 30, C.textDim)
 	rate.LayoutOrder = 2
 
-	local price = row(f, "Cost", 186, 60, 14)
+	local price = row(f, "Cost", 248, 60, 14)
 	local priceCoin = coin(price, 44)
 	priceCoin.LayoutOrder = 1
 	local cost = text(price, "Amount", "0", 48, C.text)
@@ -215,7 +212,7 @@ function CrewPay.rise(page: Instance): Rise
 	maxedMark.LayoutOrder = 3
 	maxedMark.Visible = false
 
-	local button = action(f, "Upgrade", 262)
+	local button = action(f, "Upgrade")
 	local flashSerial = 0
 	return {
 		button = button,

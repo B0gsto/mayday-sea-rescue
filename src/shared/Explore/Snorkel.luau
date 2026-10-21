@@ -14,7 +14,7 @@
 local Snorkel = {}
 
 Snorkel.STUDS_PER_M = 3
-Snorkel.WADE_DEPTH = 4.6 -- studs of water (surface - seabed) before the player swims -- tune
+Snorkel.WADE_DEPTH = 3.8 -- studs of water before the player swims: an R15 eye stands ~4.6 above the floor, so 4.6 left the head and camera under water on the bed (slipway walk-in) -- tune
 Snorkel.ENTER_MARGIN = 0.4 -- the root must be at least this far below the surface to start swimming
 Snorkel.BREATH = 25 -- s -- tune
 Snorkel.REFILL = 2.5

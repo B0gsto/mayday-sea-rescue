@@ -19,7 +19,7 @@
 --                 all-round on the PWC), NavStern white (aft). Each holds a light named "NavLight",
 --                 off when built; BoatController switches them on at night and in storms (NavLights).
 -- Real dimensions at 1 m = 3 studs (docs 05 section 4.1): PWC 3.3 x 1.2 m, Atlantic 85 8.4 x 2.85 m.
--- Colour scheme: rescue orange with white; the RIB has an RNLI navy hull and orange tubes.
+-- Colour scheme: rescue orange with white; the RIB has a charcoal hull and orange tubes.
 --
 -- Real models: Builder.build(spec, visuals) with the uploaded models (RIB: M_Veh_RIB +
 -- M_Veh_RIB_Helm; jet ski: M_Veh_JetSki + the rider-only first-person set M_Veh_JetSki_CloseUp, see
@@ -31,6 +31,7 @@
 -- "Greybox".
 
 local AssetIds = require(script.Parent.Parent.Config.AssetIds)
+local PetSeat = require(script.Parent.Parent.PetSeat)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
 
 type VehicleSpec = VehicleConfig.VehicleSpec
@@ -39,12 +40,13 @@ local ORANGE = Color3.fromRGB(255, 102, 0)
 local WHITE = Color3.fromRGB(240, 240, 236)
 local DARK = Color3.fromRGB(45, 48, 54)
 local GLASS = Color3.fromRGB(120, 170, 200)
-local NAVY = Color3.fromRGB(28, 42, 82)
+local CHARCOAL = Color3.fromRGB(38, 40, 44)
 local GREY = Color3.fromRGB(110, 114, 120)
 local RED_LIGHT = Color3.fromRGB(255, 40, 30)
 local GREEN_LIGHT = Color3.fromRGB(40, 255, 90)
 local WHITE_LIGHT = Color3.fromRGB(255, 244, 225)
 local BLUE_LIGHT = Color3.fromRGB(40, 110, 255)
+local NAVY = Color3.fromRGB(22, 48, 78)
 local SIDELIGHT_YAW = math.rad(56.25) -- centre of the dead-ahead .. 22.5 deg abaft the beam sector
 
 local Builder = {}
@@ -77,7 +79,7 @@ local function newPart(
 		-- livery roles for the greybox hull (src/shared/LiveryPaint.luau)
 		if color == ORANGE then
 			part:SetAttribute("Paint", "Body")
-		elseif color == NAVY then
+		elseif color == CHARCOAL or color == NAVY then
 			part:SetAttribute("Paint", "Secondary")
 		end
 		part.Massless = true
@@ -266,6 +268,10 @@ local function finish(
 	end
 	attach(root, "TowHitch", towHitch)
 	attach(root, "BowPoint", bow)
+	local petSeat = PetSeat.builderPoint(spec.id, slots)
+	if petSeat then
+		attach(root, "PetSeat", petSeat)
+	end
 
 	local driverSeat = ctx.model:FindFirstChild("DriverSeat")
 	if driverSeat then
@@ -316,11 +322,11 @@ local function buildJetSki(spec: VehicleSpec): Model
 end
 
 -- Atlantic 85-class RIB, 8.4 m x 2.85 m (25.3 x 8.55 studs). Collision box 3.3 studs deep: keel
--- at y -1.65, tube tops at +1.65, deck at 0. Navy deep-V hull inside 0.55 m orange tubes,
+-- at y -1.65, tube tops at +1.65, deck at 0. Charcoal deep-V hull inside 0.55 m orange tubes,
 -- centre console with screen, jockey seats behind it, twin outboards, A-frame with radar and lights.
 local function buildRIB(spec: VehicleSpec): Model
-	local ctx = newCtx(spec, Vector3.new(6.2, 1.7, 22.6), Vector3.new(0, -0.85, 0.9), NAVY)
-	deco(ctx, "Keel", Vector3.new(2.2, 0.6, 21.0), Vector3.new(0, -1.5, 0.6), NAVY)
+	local ctx = newCtx(spec, Vector3.new(6.2, 1.7, 22.6), Vector3.new(0, -0.85, 0.9), CHARCOAL)
+	deco(ctx, "Keel", Vector3.new(2.2, 0.6, 21.0), Vector3.new(0, -1.5, 0.6), CHARCOAL)
 	deco(ctx, "Deck", Vector3.new(5.6, 0.1, 19.0), Vector3.new(0, 0.02, 1.4), GREY)
 	local d = 1.65 -- tube diameter (0.55 m)
 	tube(ctx, "TubeL", 20.6, d, Vector3.new(-3.45, 0.82, 2.3), true)
@@ -431,7 +437,7 @@ end
 Builder.RIB_ORIGIN = Vector3.new(0, -2.1, -0.0761)
 
 local function buildRIBAsset(spec: VehicleSpec, visuals: { Model }): Model
-	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
+	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, CHARCOAL)
 	local origin = Builder.RIB_ORIGIN
 	local atts = AssetIds.Attachments.M_Veh_RIB or {}
 	local function at(name: string, fallback: Vector3): Vector3
@@ -590,6 +596,731 @@ local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 	return model
 end
 
+local STEEL = Color3.fromRGB(178, 184, 190)
+local DECK_GREY = Color3.fromRGB(146, 152, 156)
+local GLASS_TINT = Color3.fromRGB(26, 42, 56)
+
+-- A flat plate through four corners (bottomA/bottomB, topA/topB): the hull chine and flare.
+local function plate(
+	ctx: Ctx,
+	name: string,
+	bottomA: Vector3,
+	bottomB: Vector3,
+	topA: Vector3,
+	topB: Vector3,
+	thickness: number,
+	color: Color3,
+	material: Enum.Material?
+): BasePart
+	local up = ((topA + topB) - (bottomA + bottomB)) * 0.5
+	local along = ((bottomB + topB) - (bottomA + topA)) * 0.5
+	local yAxis = up.Unit
+	local zAxis = (along - yAxis * along:Dot(yAxis)).Unit
+	local xAxis = yAxis:Cross(zAxis).Unit
+	local centre = (bottomA + bottomB + topA + topB) * 0.25
+	local cf = CFrame.fromMatrix(centre, xAxis, yAxis, zAxis)
+	return newPart(
+		ctx,
+		"Part",
+		name,
+		Vector3.new(thickness, up.Magnitude + 0.08, along.Magnitude + 0.18),
+		cf,
+		color,
+		material
+	)
+end
+
+-- A square-section bar between two points (rails, lifelines, stays, fender ropes).
+local function strut(
+	ctx: Ctx,
+	name: string,
+	a: Vector3,
+	b: Vector3,
+	thickness: number,
+	color: Color3,
+	material: Enum.Material?
+): BasePart
+	local d = b - a
+	return newPart(
+		ctx,
+		"Part",
+		name,
+		Vector3.new(thickness, thickness, d.Magnitude),
+		CFrame.lookAt((a + b) * 0.5, b),
+		color,
+		material
+	)
+end
+
+local function disc(
+	ctx: Ctx,
+	name: string,
+	size: Vector3,
+	cf: CFrame,
+	color: Color3,
+	material: Enum.Material?
+): Part
+	local part = newPart(ctx, "Part", name, size, cf, color, material) :: Part
+	part.Shape = Enum.PartType.Cylinder
+	return part
+end
+
+-- A half-bow volume: a WedgePart on its side so its triangular plan tapers to the centre line
+-- at `zBack - depth` and its full half beam sits at `zBack` (the raked, flared bow).
+local function bowHalf(
+	ctx: Ctx,
+	name: string,
+	halfBeam: number,
+	height: number,
+	depth: number,
+	y: number,
+	zBack: number,
+	sx: number,
+	color: Color3,
+	material: Enum.Material?
+): BasePart
+	local cf = CFrame.new(sx * halfBeam * 0.5, y, zBack - depth * 0.5)
+		* CFrame.Angles(0, 0, if sx > 0 then -math.pi / 2 else math.pi / 2)
+	return newPart(
+		ctx,
+		"WedgePart",
+		name,
+		Vector3.new(height, halfBeam, depth),
+		cf,
+		color,
+		material
+	)
+end
+
+-- A life ring in the XY plane, facing +Z.
+local function lifeRing(
+	ctx: Ctx,
+	name: string,
+	centre: Vector3,
+	radius: number,
+	girth: number,
+	depth: number
+)
+	local segments = 12
+	for i = 1, segments do
+		local a1 = (i - 1) / segments * math.pi * 2
+		local a2 = i / segments * math.pi * 2
+		local x1, y1 = math.cos(a1) * radius, math.sin(a1) * radius
+		local x2, y2 = math.cos(a2) * radius, math.sin(a2) * radius
+		local mid = centre + Vector3.new((x1 + x2) * 0.5, (y1 + y2) * 0.5, 0)
+		local radial = Vector3.new(x1 + x2, y1 + y2, 0).Unit
+		local tangent = Vector3.new(x2 - x1, y2 - y1, 0).Unit
+		local cf = CFrame.fromMatrix(mid, Vector3.new(0, 0, 1), radial, tangent)
+		newPart(
+			ctx,
+			"Part",
+			`{name}{i}`,
+			Vector3.new(depth, girth, (Vector3.new(x2 - x1, y2 - y1, 0)).Magnitude + 0.04),
+			cf,
+			if i >= 10 or i <= 2 then ORANGE else WHITE
+		)
+	end
+end
+
+-- All-weather lifeboat, 17.3 m x 5.9 m (51.9 x 17.7 studs). Collision box unchanged: 7.5 studs
+-- deep, keel at -3.75, deck at +2.95. The Severn-style shell is a navy displacement hull (flared
+-- lower panels, hard chine, a raked and plan-tapered bow in WedgeParts), an orange wheelhouse with
+-- dark windows and a white roof, mast/radar, fender rail and grab lines, and a towing post aft.
+-- The blue beacon starts off; the client flashes it only while this boat's owner is on a call.
+local function buildLifeboat(spec: VehicleSpec): Model
+	-- the visible Body sits inside the shell: a greybox slab must not show through the bow taper
+	local ctx = newCtx(spec, Vector3.new(6.0, 4.0, 36), Vector3.new(0, -0.6, 2.0), NAVY)
+	local KEEL_Y, CHINE_Y, SHEER_Y = -2.8, 0.9, 3.15
+	local stations = {
+		{ z = 25.1, keel = 3.3, chine = 8.0, sheer = 8.55 },
+		{ z = 19.0, keel = 3.4, chine = 8.1, sheer = 8.6 },
+		{ z = 8.0, keel = 3.5, chine = 8.1, sheer = 8.6 },
+		{ z = -4.0, keel = 3.5, chine = 8.05, sheer = 8.55 },
+		{ z = -13.0, keel = 3.0, chine = 7.5, sheer = 8.1 },
+		{ z = -18.5, keel = 2.0, chine = 6.0, sheer = 6.7 },
+		{ z = -22.5, keel = 1.0, chine = 3.4, sheer = 4.2 },
+		{ z = -25.0, keel = 0.35, chine = 0.85, sheer = 1.15 },
+	}
+	for _, sx in { -1, 1 } do
+		local side = if sx > 0 then "S" else "P"
+		-- the parallel-body hull: two flat panels meeting at the hard chine
+		for i = 1, 5 do
+			local a, b = stations[i], stations[i + 1]
+			plate(
+				ctx,
+				`HullLower{i}{side}`,
+				Vector3.new(sx * a.keel, KEEL_Y, a.z),
+				Vector3.new(sx * b.keel, KEEL_Y, b.z),
+				Vector3.new(sx * a.chine, CHINE_Y, a.z),
+				Vector3.new(sx * b.chine, CHINE_Y, b.z),
+				0.36,
+				NAVY
+			)
+			plate(
+				ctx,
+				`HullUpper{i}{side}`,
+				Vector3.new(sx * a.chine, CHINE_Y, a.z),
+				Vector3.new(sx * b.chine, CHINE_Y, b.z),
+				Vector3.new(sx * a.sheer, SHEER_Y, a.z),
+				Vector3.new(sx * b.sheer, SHEER_Y, b.z),
+				0.36,
+				NAVY
+			)
+			strut(
+				ctx,
+				`Chine{i}{side}`,
+				Vector3.new(sx * (a.chine + 0.12), CHINE_Y, a.z),
+				Vector3.new(sx * (b.chine + 0.12), CHINE_Y, b.z),
+				0.32,
+				STEEL
+			)
+			strut(
+				ctx,
+				`SheerBand{i}{side}`,
+				Vector3.new(sx * (a.sheer - 0.02), 2.76, a.z),
+				Vector3.new(sx * (b.sheer - 0.02), 2.76, b.z),
+				0.42,
+				ORANGE
+			)
+			strut(
+				ctx,
+				`SheerCap{i}{side}`,
+				Vector3.new(sx * a.sheer, SHEER_Y + 0.08, a.z),
+				Vector3.new(sx * b.sheer, SHEER_Y + 0.08, b.z),
+				0.5,
+				WHITE
+			)
+		end
+		-- the lower bow is lofted like the body, so the flare and chine run right to the stem
+		for i = 5, 7 do
+			local a, b = stations[i], stations[i + 1]
+			plate(
+				ctx,
+				`BowLower{i}{side}`,
+				Vector3.new(sx * a.keel, KEEL_Y, a.z),
+				Vector3.new(sx * b.keel, KEEL_Y, b.z),
+				Vector3.new(sx * a.chine, CHINE_Y, a.z),
+				Vector3.new(sx * b.chine, CHINE_Y, b.z),
+				0.36,
+				NAVY
+			)
+		end
+		-- the upper bow is one solid WedgePart per side: a raked, flared entry
+		bowHalf(ctx, `BowUpper{side}`, 8.05, 3.85, 12.2, (SHEER_Y + CHINE_Y) * 0.5, -13.0, sx, NAVY)
+		strut(
+			ctx,
+			`BowChine{side}`,
+			Vector3.new(sx * 7.5, CHINE_Y, -13.0),
+			Vector3.new(sx * 0.15, CHINE_Y, -25.2),
+			0.4,
+			STEEL
+		)
+		strut(
+			ctx,
+			`BowBand{side}`,
+			Vector3.new(sx * 8.05, 2.76, -13.0),
+			Vector3.new(sx * 0.1, 4.15, -25.2),
+			0.42,
+			ORANGE
+		)
+		strut(
+			ctx,
+			`BowCap{side}`,
+			Vector3.new(sx * 8.1, SHEER_Y + 0.08, -13.0),
+			Vector3.new(0, 4.53, -25.2),
+			0.5,
+			WHITE
+		)
+		-- the raised bow bulwark: the classic lifeboat sheer, one plate per bow station
+		for i = 5, 7 do
+			local a, b = stations[i], stations[i + 1]
+			local capA = 3.15 + (-13.0 - a.z) / 12.2 * 1.3
+			local capB = 3.15 + (-13.0 - b.z) / 12.2 * 1.3
+			plate(
+				ctx,
+				`BowBulwark{i}{side}`,
+				Vector3.new(sx * a.sheer, SHEER_Y, a.z),
+				Vector3.new(sx * b.sheer, SHEER_Y, b.z),
+				Vector3.new(sx * a.sheer, capA, a.z),
+				Vector3.new(sx * b.sheer, capB, b.z),
+				0.45,
+				WHITE
+			)
+		end
+		-- grey foredeck on the wedge top
+		bowHalf(ctx, `Foredeck{side}`, 7.95, 0.12, 12.2, 3.2, -13.0, sx, DECK_GREY)
+	end
+	-- keel, raked stem, transom
+	deco(ctx, "Keel", Vector3.new(6.4, 1.7, 38.5), Vector3.new(0, -2.55, 4.0), NAVY)
+	deco(ctx, "KeelStrip", Vector3.new(1.4, 0.45, 37.0), Vector3.new(0, -3.45, 4.5), DARK)
+	newPart(
+		ctx,
+		"Part",
+		"Stem",
+		Vector3.new(1.0, 6.9, 1.5),
+		CFrame.new(0, 0.0, -25.2) * CFrame.Angles(math.rad(-6), 0, 0),
+		NAVY
+	)
+	deco(ctx, "StemBand", Vector3.new(1.2, 6.5, 0.3), Vector3.new(0, 0.0, -25.9), STEEL)
+	deco(ctx, "Transom", Vector3.new(16.3, 6.2, 0.6), Vector3.new(0, -0.1, 25.25), NAVY)
+	deco(ctx, "TransomBand", Vector3.new(16.5, 0.45, 0.75), Vector3.new(0, 2.76, 25.25), ORANGE)
+	deco(ctx, "TransomCap", Vector3.new(16.6, 0.5, 0.8), Vector3.new(0, 3.23, 25.25), WHITE)
+	deco(ctx, "Nameplate", Vector3.new(6.4, 1.0, 0.2), Vector3.new(0, 1.4, 25.6), WHITE)
+	deco(ctx, "Deck", Vector3.new(15.0, 0.2, 37.5), Vector3.new(0, 2.85, 5.75), DECK_GREY)
+	-- wheelhouse: orange, faceted rounded front, dark glass, white roof
+	deco(ctx, "CabinSkirt", Vector3.new(13.2, 0.6, 17.8), Vector3.new(0, 3.15, -6.0), WHITE)
+	deco(ctx, "Cabin", Vector3.new(12.8, 5.2, 17.6), Vector3.new(0, 5.6, -6.0), ORANGE)
+	deco(ctx, "CabinFront", Vector3.new(9.0, 5.2, 0.5), Vector3.new(0, 5.6, -15.6), ORANGE)
+	for _, sx in { -1, 1 } do
+		plate(
+			ctx,
+			`CabinChamfer{sx}`,
+			Vector3.new(sx * 6.35, 3.0, -14.4),
+			Vector3.new(sx * 4.55, 3.0, -15.55),
+			Vector3.new(sx * 6.35, 8.2, -14.4),
+			Vector3.new(sx * 4.55, 8.2, -15.55),
+			0.5,
+			ORANGE
+		)
+		strut(
+			ctx,
+			`ChamferTrimTop{sx}`,
+			Vector3.new(sx * 6.35, 8.12, -14.5),
+			Vector3.new(sx * 4.55, 8.12, -15.62),
+			0.18,
+			WHITE
+		)
+	end
+	deco(ctx, "Roof", Vector3.new(14.2, 0.45, 19.2), Vector3.new(0, 8.45, -6.0), WHITE)
+	deco(ctx, "RoofVisor", Vector3.new(13.0, 0.3, 0.9), Vector3.new(0, 8.25, -15.75), WHITE)
+	for _, sx in { -1, 1 } do
+		deco(
+			ctx,
+			`RoofRail{sx}`,
+			Vector3.new(0.22, 0.3, 15.0),
+			Vector3.new(sx * 6.9, 8.75, -6.0),
+			STEEL
+		)
+	end
+	local screen = deco(
+		ctx,
+		"Windscreen",
+		Vector3.new(7.7, 2.0, 0.16),
+		Vector3.new(0, 7.35, -15.9),
+		GLASS_TINT
+	)
+	screen.Transparency = 0.18
+	screen.Material = Enum.Material.Glass
+	for _, x in { -2.0, 2.0 } do
+		deco(
+			ctx,
+			`WindscreenPost{x}`,
+			Vector3.new(0.18, 2.15, 0.2),
+			Vector3.new(x, 7.35, -15.95),
+			WHITE
+		)
+	end
+	deco(ctx, "WindscreenSill", Vector3.new(8.2, 0.2, 0.35), Vector3.new(0, 6.28, -15.95), WHITE)
+	deco(ctx, "WindscreenHead", Vector3.new(8.2, 0.22, 0.35), Vector3.new(0, 8.38, -15.95), WHITE)
+	for _, sx in { -1, 1 } do
+		local chamferWindow = plate(
+			ctx,
+			`ChamferWindow{sx}`,
+			Vector3.new(sx * 6.0, 6.35, -14.5),
+			Vector3.new(sx * 4.55, 6.35, -15.42),
+			Vector3.new(sx * 6.0, 8.15, -14.5),
+			Vector3.new(sx * 4.55, 8.15, -15.42),
+			0.14,
+			GLASS_TINT
+		)
+		chamferWindow.Transparency = 0.2
+		chamferWindow.Material = Enum.Material.Glass
+		-- four side windows with white frames and mullions
+		for i = 1, 4 do
+			local z = -12.4 + (i - 1) * 3.6
+			local win = deco(
+				ctx,
+				`SideWindow{i}{sx}`,
+				Vector3.new(0.16, 1.85, 3.0),
+				Vector3.new(sx * 6.48, 7.15, z),
+				GLASS_TINT
+			)
+			win.Transparency = 0.22
+			win.Material = Enum.Material.Glass
+			deco(
+				ctx,
+				`WindowSill{i}{sx}`,
+				Vector3.new(0.24, 0.16, 3.2),
+				Vector3.new(sx * 6.55, 6.2, z),
+				WHITE
+			)
+			deco(
+				ctx,
+				`WindowHead{i}{sx}`,
+				Vector3.new(0.24, 0.16, 3.2),
+				Vector3.new(sx * 6.55, 8.1, z),
+				WHITE
+			)
+		end
+		for i = 1, 3 do
+			deco(
+				ctx,
+				`WindowPost{i}{sx}`,
+				Vector3.new(0.24, 2.0, 0.22),
+				Vector3.new(sx * 6.55, 7.15, -10.6 + (i - 1) * 3.6),
+				WHITE
+			)
+		end
+		deco(
+			ctx,
+			`CabinGrab{sx}`,
+			Vector3.new(0.14, 0.14, 6.4),
+			Vector3.new(sx * 6.55, 5.3, -6.2),
+			WHITE
+		)
+	end
+	local rearWindow = deco(
+		ctx,
+		"RearWindow",
+		Vector3.new(10.4, 1.75, 0.16),
+		Vector3.new(0, 7.1, 2.86),
+		GLASS_TINT
+	)
+	rearWindow.Transparency = 0.22
+	rearWindow.Material = Enum.Material.Glass
+	for _, x in { -1.7, 1.7 } do
+		deco(ctx, `RearWindowPost{x}`, Vector3.new(0.2, 1.9, 0.2), Vector3.new(x, 7.1, 2.88), WHITE)
+	end
+	deco(ctx, "RearDoor", Vector3.new(2.4, 3.4, 0.2), Vector3.new(0, 4.85, 2.9), WHITE)
+	disc(
+		ctx,
+		"DoorPorthole",
+		Vector3.new(0.16, 0.8, 0.8),
+		CFrame.new(0, 6.25, 3.02) * CFrame.Angles(math.pi / 2, 0, 0),
+		GLASS_TINT,
+		Enum.Material.Glass
+	)
+	lifeRing(ctx, "LifeRing", Vector3.new(4.3, 4.55, 2.96), 0.8, 0.22, 0.2)
+	-- crew seats, pedestals and the helm console (seat parts keep the controller's layout)
+	deco(ctx, "HelmConsole", Vector3.new(5.4, 1.7, 1.1), Vector3.new(0, 4.9, -9.6), DARK)
+	deco(ctx, "HelmDash", Vector3.new(5.6, 0.2, 1.35), Vector3.new(0, 5.8, -9.6), GREY)
+	disc(
+		ctx,
+		"HelmWheel",
+		Vector3.new(0.16, 1.5, 1.5),
+		CFrame.new(0, 6.2, -9.05) * CFrame.Angles(math.pi / 2, 0, 0),
+		DARK
+	)
+	deco(ctx, "HelmScreen", Vector3.new(1.8, 0.62, 0.12), Vector3.new(0, 5.55, -9.95), GLASS_TINT)
+	for _, x in { 0.9, 1.25 } do
+		deco(ctx, `Throttle{x}`, Vector3.new(0.14, 0.7, 0.14), Vector3.new(x, 6.1, -9.3), DARK)
+	end
+	local seatSpots = {
+		{ name = "Driver", x = 0, z = -7.4, driver = true },
+		{ name = "Passenger1", x = 2.9, z = -2.4, driver = false },
+		{ name = "Passenger2", x = -2.9, z = -2.4, driver = false },
+		{ name = "Passenger3", x = 0, z = 1.2, driver = false },
+	}
+	for _, spot in seatSpots do
+		if spot.driver then
+			seat(ctx, true, "DriverSeat", Vector3.new(1.6, 0.6, 2.2), Vector3.new(0, 4.5, -7.4))
+		end
+		deco(
+			ctx,
+			`{spot.name}Pedestal`,
+			Vector3.new(2.0, 1.35, 2.4),
+			Vector3.new(spot.x, 3.62, spot.z),
+			GREY
+		)
+		deco(
+			ctx,
+			`{spot.name}Cushion`,
+			Vector3.new(1.65, 0.14, 2.25),
+			Vector3.new(spot.x, 4.82, spot.z),
+			WHITE
+		)
+		deco(
+			ctx,
+			`{spot.name}Back`,
+			Vector3.new(1.65, 1.0, 0.28),
+			Vector3.new(spot.x, 5.25, spot.z + 1.16),
+			WHITE
+		)
+	end
+	for i = 1, spec.seats - 1 do
+		local x = if i == 1 then 2.9 elseif i == 2 then -2.9 else 0
+		local z = if i == 3 then 1.2 else -2.4
+		seat(ctx, false, `PassengerSeat{i}`, Vector3.new(1.5, 0.6, 2.0), Vector3.new(x, 4.5, z))
+	end
+	-- aft survivor well: eight places, side benches, engine hatch
+	local slots = {}
+	for i = 1, spec.survivorCapacity do
+		local side = if i % 2 == 1 then -1 else 1
+		local row = math.floor((i - 1) / 2)
+		table.insert(slots, Vector3.new(side * 3.4, 3.0, 7.5 + row * 3.4))
+	end
+	for _, sx in { -1, 1 } do
+		deco(
+			ctx,
+			`Bench{sx}`,
+			Vector3.new(1.1, 0.55, 9.0),
+			Vector3.new(sx * 6.3, 3.35, 11.0),
+			WHITE
+		)
+		deco(
+			ctx,
+			`BenchRail{sx}`,
+			Vector3.new(0.16, 0.3, 9.0),
+			Vector3.new(sx * 6.75, 3.75, 11.0),
+			ORANGE
+		)
+	end
+	deco(ctx, "EngineHatch", Vector3.new(7.4, 0.8, 2.8), Vector3.new(0, 3.35, 19.5), ORANGE)
+	deco(ctx, "EngineHatchTop", Vector3.new(7.5, 0.14, 2.9), Vector3.new(0, 3.8, 19.5), WHITE)
+	-- towing post, winch and stern gear
+	deco(ctx, "TowBase", Vector3.new(2.0, 1.2, 2.0), Vector3.new(0, 3.55, 22.8), DARK)
+	deco(ctx, "TowPost", Vector3.new(0.9, 3.4, 0.9), Vector3.new(0, 5.45, 22.8), GREY)
+	deco(ctx, "TowCrossbar", Vector3.new(4.4, 0.45, 0.7), Vector3.new(0, 6.7, 22.8), GREY)
+	deco(ctx, "TowFairlead", Vector3.new(0.9, 0.5, 0.5), Vector3.new(0, 2.65, 25.2), DARK)
+	disc(
+		ctx,
+		"WinchDrum",
+		Vector3.new(2.4, 0.7, 0.7),
+		CFrame.new(0, 4.1, 20.8) * CFrame.Angles(0, 0, math.pi / 2),
+		DARK
+	)
+	for _, sx in { -1, 1 } do
+		deco(
+			ctx,
+			`WinchPlate{sx}`,
+			Vector3.new(0.24, 1.4, 1.4),
+			Vector3.new(sx * 1.3, 4.1, 20.8),
+			STEEL
+		)
+	end
+	deco(ctx, "SternPlatform", Vector3.new(9.0, 0.2, 1.6), Vector3.new(0, 1.2, 25.7), GREY)
+	for i = 1, 3 do
+		deco(
+			ctx,
+			`SternStep{i}`,
+			Vector3.new(1.4, 0.14, 0.5),
+			Vector3.new(-6.3, 2.55 - (i - 1) * 0.5, 25.8),
+			STEEL
+		)
+	end
+	-- mast, yard, radar, antennas, lights
+	deco(ctx, "MastBase", Vector3.new(1.8, 0.5, 2.0), Vector3.new(0, 8.85, -6.2), WHITE)
+	deco(ctx, "Mast", Vector3.new(0.55, 6.4, 0.55), Vector3.new(0, 12.2, -6.2), WHITE)
+	deco(ctx, "MastTop", Vector3.new(0.35, 2.0, 0.35), Vector3.new(0, 16.2, -6.2), WHITE)
+	deco(ctx, "Yard", Vector3.new(9.2, 0.25, 0.25), Vector3.new(0, 14.8, -6.2), WHITE)
+	deco(ctx, "RadarPedestal", Vector3.new(0.6, 0.7, 0.6), Vector3.new(0, 15.0, -6.2), DARK)
+	disc(
+		ctx,
+		"Radar",
+		Vector3.new(4.6, 0.35, 0.35),
+		CFrame.new(0, 15.55, -6.2),
+		WHITE,
+		Enum.Material.Metal
+	)
+	for _, sx in { -1, 1 } do
+		strut(
+			ctx,
+			`Stay{sx}`,
+			Vector3.new(0, 16.2, -6.2),
+			Vector3.new(sx * 6.7, 8.6, -13.6),
+			0.1,
+			STEEL
+		)
+		strut(
+			ctx,
+			`Antenna{sx}`,
+			Vector3.new(sx * 1.0, 8.85, -2.0),
+			Vector3.new(sx * 2.2, 14.0, -1.0),
+			0.1,
+			WHITE
+		)
+		deco(
+			ctx,
+			`GpsBase{sx}`,
+			Vector3.new(1.1, 0.16, 1.1),
+			Vector3.new(sx * 3.2, 8.75, 0.8),
+			DARK
+		)
+		disc(
+			ctx,
+			`Gps{sx}`,
+			Vector3.new(0.5, 0.9, 0.9),
+			CFrame.new(sx * 3.2, 8.95, 0.8) * CFrame.Angles(0, 0, math.pi / 2),
+			WHITE
+		)
+	end
+	-- the beacon: dark blue glass when off, Neon and a PointLight only while on a call
+	disc(
+		ctx,
+		"BeaconBase",
+		Vector3.new(1.0, 0.3, 1.0),
+		CFrame.new(0, 17.25, -6.2) * CFrame.Angles(0, 0, math.pi / 2),
+		DARK
+	)
+	local beacon = disc(
+		ctx,
+		"Beacon",
+		Vector3.new(0.8, 0.75, 0.75),
+		CFrame.new(0, 17.68, -6.2) * CFrame.Angles(0, 0, math.pi / 2),
+		Color3.fromRGB(24, 42, 72)
+	)
+	beacon.Transparency = 0.08
+	beacon:SetAttribute("LifeboatBeacon", true)
+	beacon:SetAttribute("BeaconColor", BLUE_LIGHT)
+	local glow = Instance.new("PointLight")
+	glow.Name = "BeaconLight"
+	glow.Color = BLUE_LIGHT
+	glow.Range = 22
+	glow.Brightness = 2.5
+	glow.Shadows = false
+	glow.Enabled = false
+	glow.Parent = beacon
+	navLight(ctx, "NavMasthead", Vector3.new(0, 15.15, -7.0), WHITE_LIGHT, 0, 225)
+	navLight(ctx, "NavStern", Vector3.new(0, 5.8, 24.4), WHITE_LIGHT, math.pi, 135)
+	for _, sx in { -1, 1 } do
+		deco(
+			ctx,
+			`NavHousing{sx}`,
+			Vector3.new(0.3, 0.5, 0.55),
+			Vector3.new(sx * 6.55, 6.85, -12.4),
+			WHITE
+		)
+	end
+	navLight(ctx, "NavPort", Vector3.new(-6.55, 6.9, -12.75), RED_LIGHT, SIDELIGHT_YAW, 112.5)
+	navLight(
+		ctx,
+		"NavStarboard",
+		Vector3.new(6.55, 6.9, -12.75),
+		GREEN_LIGHT,
+		-SIDELIGHT_YAW,
+		112.5
+	)
+	for _, sx in { -1, 1 } do
+		disc(
+			ctx,
+			`Horn{sx}`,
+			Vector3.new(0.6, 0.35, 0.35),
+			CFrame.new(sx * 0.8, 8.3, -15.5) * CFrame.Angles(math.pi / 2, 0, 0),
+			DARK
+		)
+	end
+	disc(
+		ctx,
+		"Searchlight",
+		Vector3.new(0.6, 0.7, 0.7),
+		CFrame.new(0.9, 8.85, -14.5) * CFrame.Angles(math.pi / 2, 0, 0),
+		WHITE
+	)
+	-- bow gear and jackstaff
+	deco(ctx, "BowRoller", Vector3.new(0.7, 0.3, 1.4), Vector3.new(0, 3.3, -24.4), STEEL)
+	deco(ctx, "Anchor", Vector3.new(1.4, 1.6, 0.5), Vector3.new(0, 1.5, -24.8), DARK)
+	deco(ctx, "AnchorStock", Vector3.new(2.4, 0.28, 0.35), Vector3.new(0, 2.2, -24.8), DARK)
+	deco(ctx, "Jackstaff", Vector3.new(0.12, 2.0, 0.12), Vector3.new(0, 4.2, -24.9), WHITE)
+	deco(ctx, "JackFlag", Vector3.new(0.9, 0.55, 0.08), Vector3.new(0.5, 4.9, -24.9), ORANGE)
+	-- fender rail, stanchions, lifelines and fenders
+	for _, sx in { -1, 1 } do
+		deco(
+			ctx,
+			`SideRail{sx}`,
+			Vector3.new(0.2, 0.2, 25.0),
+			Vector3.new(sx * 8.55, 4.05, 11.5),
+			WHITE
+		)
+		deco(
+			ctx,
+			`GrabLine{sx}`,
+			Vector3.new(0.1, 0.1, 25.0),
+			Vector3.new(sx * 8.45, 3.5, 11.5),
+			DARK
+		)
+		for _, z in { -1.0, 3.2, 7.4, 11.6, 15.8, 20.0, 23.6 } do
+			deco(
+				ctx,
+				`Stanchion{sx}{z}`,
+				Vector3.new(0.16, 1.0, 0.16),
+				Vector3.new(sx * 8.55, 3.6, z),
+				WHITE
+			)
+		end
+		local railPoints = {
+			Vector3.new(sx * 8.55, 4.05, -1.0),
+			Vector3.new(sx * 8.05, 4.45, -13.0),
+			Vector3.new(sx * 6.65, 4.95, -18.5),
+			Vector3.new(sx * 4.15, 5.35, -22.5),
+			Vector3.new(0, 5.55, -25.2),
+		}
+		for i = 1, #railPoints - 1 do
+			strut(ctx, `BowRail{sx}{i}`, railPoints[i], railPoints[i + 1], 0.2, WHITE)
+		end
+		local capAt = { 3.23, 3.23, 3.82, 4.22, 4.45 }
+		for i = 2, #railPoints - 1 do
+			local h = railPoints[i].Y - capAt[i]
+			deco(
+				ctx,
+				`BowStanchion{sx}{i}`,
+				Vector3.new(0.16, h, 0.16),
+				Vector3.new(railPoints[i].X, capAt[i] + h * 0.5, railPoints[i].Z),
+				WHITE
+			)
+		end
+		for _, z in { -6.0, 5.0, 16.0 } do
+			disc(
+				ctx,
+				`Fender{sx}{z}`,
+				Vector3.new(1.9, 0.9, 0.9),
+				CFrame.new(sx * 8.85, 1.7, z) * CFrame.Angles(0, 0, math.pi / 2),
+				WHITE
+			)
+			for _, y in { 1.0, 2.4 } do
+				disc(
+					ctx,
+					`FenderBand{sx}{z}{y}`,
+					Vector3.new(0.3, 0.94, 0.94),
+					CFrame.new(sx * 8.85, y, z) * CFrame.Angles(0, 0, math.pi / 2),
+					ORANGE
+				)
+			end
+			strut(
+				ctx,
+				`FenderLine{sx}{z}`,
+				Vector3.new(sx * 8.55, 4.05, z),
+				Vector3.new(sx * 8.85, 2.6, z),
+				0.08,
+				DARK
+			)
+		end
+	end
+	strut(ctx, "SternRail", Vector3.new(-8.4, 4.05, 24.2), Vector3.new(8.4, 4.05, 24.2), 0.2, WHITE)
+	for _, x in { -8.4, -4.0, 4.0, 8.4 } do
+		deco(
+			ctx,
+			`SternStanchion{x}`,
+			Vector3.new(0.16, 1.0, 0.16),
+			Vector3.new(x, 3.6, 24.2),
+			WHITE
+		)
+	end
+	deco(ctx, "Flagstaff", Vector3.new(0.12, 3.2, 0.12), Vector3.new(5.4, 4.9, 23.9), WHITE)
+	deco(ctx, "Ensign", Vector3.new(1.4, 0.8, 0.08), Vector3.new(6.1, 5.9, 23.9), ORANGE)
+	-- twin propellers and rudders, unchanged
+	for _, sx in { -1, 1 } do
+		deco(ctx, `Shaft{sx}`, Vector3.new(0.4, 0.4, 5.0), Vector3.new(sx * 2.6, -2.0, 22.0), DARK)
+		deco(
+			ctx,
+			`Propeller{sx}`,
+			Vector3.new(0.25, 2.2, 2.2),
+			Vector3.new(sx * 2.6, -2.0, 24.6),
+			GREY
+		)
+	end
+	return finish(ctx, spec, slots, Vector3.new(0, 0.6, 25.4), Vector3.new(0, 0.6, -25.4))
+end
+
 -- Fallback for a vehicle id without a hand-built greybox: a plain box with seats in a column.
 local function buildGeneric(spec: VehicleSpec): Model
 	local size = spec.hullSize
@@ -615,13 +1346,15 @@ end
 -- Builds a vehicle at the origin with its HullRoot anchored. The caller pivots and parents it.
 -- visuals: the real models for the RIB or the jet ski (see the header); nil or empty builds the greybox.
 function Builder.build(spec: VehicleSpec, visuals: { Model }?): Model
-	local model = if spec.id == "JetSki"
+	local kind = spec.base or spec.id -- premium boats use their base hull's layout
+	local model = if kind == "JetSki"
 			and visuals
 			and #visuals > 0
 		then buildJetSkiAsset(spec, visuals)
-		elseif spec.id == "JetSki" then buildJetSki(spec)
-		elseif spec.id == "RIB" and visuals and #visuals > 0 then buildRIBAsset(spec, visuals)
-		elseif spec.id == "RIB" then buildRIB(spec)
+		elseif kind == "JetSki" then buildJetSki(spec)
+		elseif kind == "RIB" and visuals and #visuals > 0 then buildRIBAsset(spec, visuals)
+		elseif kind == "RIB" then buildRIB(spec)
+		elseif kind == "Lifeboat" then buildLifeboat(spec)
 		else buildGeneric(spec)
 	if model:GetAttribute("Visual") == nil then
 		model:SetAttribute("Visual", "Greybox")

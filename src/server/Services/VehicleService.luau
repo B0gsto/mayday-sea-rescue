@@ -479,7 +479,11 @@ local function bayAllows(bay: BasePart, vehicleId: string): boolean
 	if type(allowed) ~= "string" or allowed == "" then
 		return true
 	end
-	return table.find(string.split(allowed, ","), vehicleId) ~= nil
+	local list = string.split(allowed, ",")
+	local spec = VehicleConfig.get(vehicleId)
+	-- a premium boat docks wherever its base hull does
+	return table.find(list, vehicleId) ~= nil
+		or (spec ~= nil and spec.base ~= nil and table.find(list, spec.base) ~= nil)
 end
 
 -- The free bay nearest the player that takes this boat (the phone's spawn), nil: their own bay.
@@ -658,7 +662,7 @@ end
 -- replacing their old one, and registers it. The caller seats the driver.
 -- Clones of the vehicle's real models (yields on the first load), or nil for the greybox.
 local function visualsFor(spec: VehicleSpec): { Model }?
-	local names = VISUAL_ASSETS[spec.id]
+	local names: { string }? = if spec.model then { spec.model } else VISUAL_ASSETS[spec.id]
 	if not names then
 		return nil
 	end
@@ -970,6 +974,26 @@ local function findBays()
 	end)
 end
 
+-- The phone's Vehicles app previews exactly what the spawner builds: ReplicatedStorage.VehiclePreviews.<id>
+-- (anchored BuildProp copies; LandVehicleService adds the cars).
+local function publishPreviews()
+	local previews = ReplicatedStorage:FindFirstChild("VehiclePreviews")
+	if not previews then
+		previews = Instance.new("Folder")
+		previews.Name = "VehiclePreviews"
+		previews.Parent = ReplicatedStorage
+	end
+	for _, id in VehicleConfig.Order do
+		local ok, model = pcall(VehicleService.BuildProp, id)
+		if ok and model then
+			model.Name = id
+			model.Parent = previews
+		elseif not ok then
+			warn(`[VehicleService] preview {id} failed: {model}`)
+		end
+	end
+end
+
 -- Temporary launch UI: one ProximityPrompt per allowed vehicle on every bay.
 local function addPrompts()
 	local keys = { Enum.KeyCode.E, Enum.KeyCode.F, Enum.KeyCode.G }
@@ -977,7 +1001,7 @@ local function addPrompts()
 		local index = 0
 		for _, id in VehicleConfig.Order do
 			local spec = VehicleConfig.get(id)
-			if spec and bayAllows(bay, id) then
+			if spec and not spec.base and bayAllows(bay, id) then -- premium boats: phone only
 				index += 1
 				local prompt = Instance.new("ProximityPrompt")
 				prompt.Name = `Launch_{id}`
@@ -1261,7 +1285,14 @@ function VehicleService.Start()
 			table.insert(preload, name)
 		end
 	end
+	for _, id in VehicleConfig.Order do
+		local spec = VehicleConfig.get(id)
+		if spec and spec.model and not table.find(preload, spec.model) then
+			table.insert(preload, spec.model)
+		end
+	end
 	AssetLoader.preload(preload)
+	task.spawn(publishPreviews)
 end
 
 -- API (CONTRACT.md, B) ---------------------------------------------------------------------------

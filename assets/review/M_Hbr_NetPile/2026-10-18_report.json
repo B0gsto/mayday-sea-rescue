@@ -2,7 +2,7 @@
  "asset": "M_Hbr_NetPile",
  "name": "M_Hbr_NetPile",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "37bfa7b9+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD0.fbx",
-   "bytes": 281916,
+   "bytes": 289180,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NetPile_LOD0"
@@ -33,16 +33,16 @@
     {
      "name": "M_Hbr_NetPile_LOD0.001",
      "min": [
-      -3.5385,
-      -2.4424,
+      -4.0226,
+      -3.3032,
       0.0
      ],
      "max": [
-      3.5385,
-      2.4424,
-      2.364
+      4.0226,
+      3.3032,
+      2.5317
      ],
-     "polygons": 2248,
+     "polygons": 2992,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD1.fbx",
-   "bytes": 114236,
+   "bytes": 158940,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_NetPile_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_NetPile_LOD1.001",
      "min": [
-      -3.5385,
-      -2.4424,
-      -0.03
+      -4.0226,
+      -3.3032,
+      0.0026
      ],
      "max": [
-      3.5381,
-      2.4116,
-      2.364
+      4.0254,
+      3.3032,
+      2.5317
      ],
-     "polygons": 938,
+     "polygons": 1496,
      "all_triangles": true,
      "uv": true
     }
@@ -134,7 +134,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2248 of 3000"
+   "detail": "2992 of 3000"
   },
   {
    "subject": "M_Hbr_NetPile_LOD0",
@@ -142,7 +142,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.50e-03, 2304 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.84e-06, 252 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_NetPile_LOD0",
@@ -166,7 +166,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.749, v 0.001 to 0.748"
+   "detail": "u 0.001 to 0.749, v 0.001 to 0.749"
   },
   {
    "subject": "M_Hbr_NetPile_LOD0",
@@ -174,7 +174,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 1120 faces have no UV area"
+   "detail": "0 of 1534 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NetPile_LOD0",
@@ -182,7 +182,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "157 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "221 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1",
@@ -206,7 +206,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "938 of 3000"
+   "detail": "1496 of 3000"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1",
@@ -214,7 +214,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.08e-04, 664 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 4.81e-04, 232 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1",
@@ -238,7 +238,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.000 to 0.749, v 0.001 to 0.748"
+   "detail": "u 0.001 to 0.749, v 0.000 to 0.755"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1",
@@ -246,7 +246,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 938 faces have no UV area"
+   "detail": "0 of 1496 faces have no UV area"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1",
@@ -254,7 +254,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.001 (max 0.02), UV area by 51.9% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.007 (max 0.02), UV area by 48.2% (max 15%)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -262,7 +262,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2248 of 3000 (small_prop, asset row)"
+   "detail": "2992 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -270,7 +270,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "938 of 1500"
+   "detail": "1496 of 1500"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -278,7 +278,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 2.359 x 1.628 x 0.788 m, spec 2.359 x 1.628 x 0.788 m (art/reference/M_Hbr_NetPile/dims.md)"
+   "detail": "dims.md 2.682 x 2.202 x 0.844 m, spec 2.682 x 2.202 x 0.844 m (art/reference/M_Hbr_NetPile/dims.md)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -286,7 +286,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "7.077 studs, real 2.359 m = 7.077 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "8.045 studs, real 2.682 m = 8.046 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -294,7 +294,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "4.885 studs, real 1.628 m = 4.884 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "6.606 studs, real 2.202 m = 6.606 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -302,7 +302,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2.364 studs, real 0.788 m = 2.364 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "2.532 studs, real 0.844 m = 2.532 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_NetPile",
@@ -406,7 +406,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NetPile_LOD0; 2248 triangles (scene 2248)"
+   "detail": "M_Hbr_NetPile_LOD0; 2992 triangles (scene 2992)"
   },
   {
    "subject": "M_Hbr_NetPile_LOD0.fbx",
@@ -446,7 +446,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_NetPile_LOD1; 938 triangles (scene 938)"
+   "detail": "M_Hbr_NetPile_LOD1; 1496 triangles (scene 1496)"
   },
   {
    "subject": "M_Hbr_NetPile_LOD1.fbx",
@@ -462,21 +462,21 @@
    "name": "M_Hbr_NetPile_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 2248,
-   "texel_density": 157.5
+   "triangles": 2992,
+   "texel_density": 221.0
   },
   {
    "name": "M_Hbr_NetPile_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 938,
+   "triangles": 1496,
    "texel_density": null
   }
  ],
  "bbox_studs": [
-  7.076984882354736,
-  4.884841442108154,
-  2.36401629447937
+  8.045291900634766,
+  6.606328010559082,
+  2.531684637069702
  ],
- "peak_rss_mb": 297.3
+ "peak_rss_mb": 245.4
 }

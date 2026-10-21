@@ -8,18 +8,19 @@
 --   Cinematic.update(dt): boolean               (CameraController each frame; true while playing)
 --   Cinematic.stop()
 --   LocalPlayer attribute CinematicPlaying (bool) while one plays (the Ops UI hides on it)
---   Cinematic.Lists.arrival() / .launch(model) / .storm(subject)   stub shot lists
+--   Cinematic.Lists.arrival() / .coldOpen(model) / .launch(model) / .storm(subject)   shot lists
 --
 -- Shot = { from: CFrame | Pose, to: (CFrame | Pose)?, duration: number, fov: number?,
 --          toFov: number?, caption: string?, handheld: number? }
 -- Pose = { subject: Instance (Model or BasePart), offset: Vector3, look: Vector3? } (offset and
 --        look are in the subject's yaw frame: X right, Y up, -Z ahead; look defaults to its centre)
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local CameraMath = require(script.Parent.CameraMath)
 local Comfort = require(script.Parent.Comfort)
+local InputGlyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("InputGlyph"))
 
 export type Pose = { subject: Instance, offset: Vector3, look: Vector3? }
 export type Shot = {
@@ -117,7 +118,7 @@ local function ensureGui()
 	skip.TextColor3 = Color3.new(1, 1, 1)
 	skip.Font = Enum.Font.GothamMedium
 	skip.TextSize = 16
-	skip.Text = "Skip  [Space]"
+	skip.Text = "Skip"
 	skip.Visible = false
 	skip.ZIndex = 4
 	local corner = Instance.new("UICorner")
@@ -127,17 +128,35 @@ local function ensureGui()
 	skip.Activated:Connect(function()
 		Cinematic.stop()
 	end)
+	InputGlyph.onDevice(function(d)
+		skip.Text = if d == "Touch"
+			then "Skip"
+			else `Skip  {InputGlyph.text(Enum.KeyCode.Space, Enum.KeyCode.ButtonB)}`
+	end)
 	skipButton = skip
 	g.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 	gui = g
-	UserInputService.InputBegan:Connect(function(input, processed)
-		if processed or not current or not (skipButton and skipButton.Visible) then
-			return
-		end
-		if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.ButtonB then
-			Cinematic.stop()
-		end
-	end)
+end
+
+-- Bound (and sinking the key) only while Skip shows, so Space skips without also jumping off the seat.
+local SKIP_ACTION = "CinematicSkip"
+local function bindSkip(on: boolean)
+	ContextActionService:UnbindAction(SKIP_ACTION)
+	if on then
+		ContextActionService:BindActionAtPriority(
+			SKIP_ACTION,
+			function(_, state)
+				if state == Enum.UserInputState.Begin and current then
+					Cinematic.stop()
+				end
+				return Enum.ContextActionResult.Sink
+			end,
+			false,
+			Enum.ContextActionPriority.High.Value + 100,
+			Enum.KeyCode.Space,
+			Enum.KeyCode.ButtonB
+		)
+	end
 end
 
 local playedIds: { [string]: boolean } = {} -- ids started this session
@@ -158,6 +177,7 @@ local function finish()
 	if skipButton then
 		skipButton.Visible = false
 	end
+	bindSkip(false)
 end
 
 function Cinematic.play(
@@ -207,6 +227,7 @@ function Cinematic.play(
 	if skipButton then
 		skipButton.Visible = skippable
 	end
+	bindSkip(skippable)
 	return {
 		stop = function()
 			if current == entry then
@@ -321,6 +342,39 @@ function Lists.arrival(): { Shot }
 			duration = 5,
 			fov = 45,
 			caption = "Port Haven Coast Guard Station",
+		},
+	}
+end
+
+-- The cold open (about 7 s, skippable): wide over Port Haven and the station, a sweep out to the
+-- casualty (the craft's ColdOpenTarget), then down behind the jet ski as control comes back.
+function Lists.coldOpen(model: Model): { Shot }
+	local target = model:GetAttribute("ColdOpenTarget")
+	local cas: Vector3 = if typeof(target) == "Vector3" then target else model:GetPivot().Position
+	return {
+		{
+			from = CFrame.lookAt(Vector3.new(40, 34, 170), Vector3.new(-100, 14, -30)),
+			to = CFrame.lookAt(Vector3.new(10, 30, 150), Vector3.new(-110, 16, -50)),
+			duration = 2.6,
+			fov = 42,
+			caption = "Port Haven",
+		},
+		{
+			from = CFrame.lookAt(cas + Vector3.new(-60, 40, -70), cas),
+			to = CFrame.lookAt(cas + Vector3.new(-26, 14, -30), cas),
+			duration = 2.6,
+			fov = 48,
+			toFov = 40,
+		},
+		{
+			from = {
+				subject = model,
+				offset = Vector3.new(4, 9, 26),
+				look = Vector3.new(0, 2, -20),
+			},
+			to = { subject = model, offset = Vector3.new(0, 6, 16), look = Vector3.new(0, 2, -20) },
+			duration = 1.6,
+			fov = 60,
 		},
 	}
 end

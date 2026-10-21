@@ -1,0 +1,1 @@
+Validate: PASS (all checks; 1 prior origin failure fixed by shifting base to z=0). LOD0 2876 tris, LOD1 1437 tris, no LOD2 (small_prop). 3 Blender runs. With more time: add PBR texture detail, better drain holes, flotation collars, and reduce tris further for LOD2. Contact sheet: build/bench/beam/review/M_Kit_StretcherBasket/2026-10-18_sheet.png

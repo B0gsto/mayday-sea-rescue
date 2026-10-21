@@ -90,7 +90,14 @@ ProductShelves.Shelves = {
 		object = "Framed service cards",
 		attachment = "ATT_ServiceCards",
 		priced = true,
-		items = { p("DoubleCash"), p("VipCrewCard"), p("QuickLaunch"), p("StarterKit") },
+		items = {
+			p("DoubleCash"),
+			p("VipCrewCard"),
+			p("QuickLaunch"),
+			p("StarterKit"),
+			d("DayDoubleCash"),
+			d("DayQuickLaunch"),
+		},
 	},
 	Logbook = {
 		id = "Logbook",
@@ -271,6 +278,27 @@ function ProductShelves.shelfVisible(
 		return false
 	end
 	return #ProductShelves.shelfItems(config, shelfId, studio) > 0
+end
+
+-- The phone Store's tabs (UI/StoreApp): game passes, day passes (Products with dayPassFor), the other
+-- products; each in config order, listed by the shelf rule.
+ProductShelves.STORE_TABS = { "Passes", "DayPasses", "Items" }
+function ProductShelves.storeItems(config: any, tab: string, studio: boolean): { ItemRef }
+	local out: { ItemRef } = {}
+	local kind: Kind = if tab == "Passes" then "GamePasses" else "Products"
+	for key, item in (config and config[kind]) or {} do
+		local day = type(item) == "table" and item.dayPassFor ~= nil
+		if
+			ProductShelves.listed(item, studio)
+			and (kind == "GamePasses" or day == (tab == "DayPasses"))
+		then
+			table.insert(out, { kind = kind, key = key })
+		end
+	end
+	table.sort(out, function(a: ItemRef, b: ItemRef)
+		return config[kind][a.key].order < config[kind][b.key].order
+	end)
+	return out
 end
 
 -- docs/04 section 4.1: the exact Cash a pack gives at this rate (nil when the rate is unknown).

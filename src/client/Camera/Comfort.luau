@@ -35,6 +35,10 @@ export type Settings = {
 	volRadio: number,
 	volMusic: number,
 	voice: boolean,
+	colourAssist: string,
+	textSize: number,
+	reduceMotion: boolean,
+	holdToTap: boolean,
 	pro: boolean,
 }
 
@@ -62,6 +66,19 @@ end
 
 function Comfort.all(): Settings
 	return table.clone(values) :: any
+end
+
+-- Reduce motion: the camera shake / bob multiplier and the UI's fade checks read these.
+function Comfort.reducedMotion(): boolean
+	return values.reduceMotion == true
+end
+
+function Comfort.motionScale(): number
+	return if values.reduceMotion == true then 0 else 1
+end
+
+function Comfort.textScale(): number
+	return math.clamp((tonumber(values.textSize) or 100) / 100, 1, 1.5)
 end
 
 local function save()

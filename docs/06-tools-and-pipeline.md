@@ -235,9 +235,38 @@ The tier comes from the client's graphics quality level (an official quality-swi
 | Shadows from lights | Searchlights and station floods | Searchlights only | None from local lights |
 | Post (Bloom, DepthOfField, SunRays) | On | Bloom only | Off; ColorCorrection kept so presets still read |
 | Wet-state swaps | All surfaces | Vehicles, kit, the dog | Vehicles and the dog |
-| Fur cards on the dog | Full | Half | Silhouette cards only |
 
 **Frame targets (tune):** 60 fps on desktop High; 30 fps minimum with 1% lows above 25 fps on a mid-range phone at Low, in a storm, with 6 boats and the helicopter on screen. Test on a real low-end phone, not only the emulator. Mobile numbers are engineering judgment, not sourced.
+
+**RP-P1 measured budget (2026-10-20).** Measured in Studio Play on the dev Mac (desktop renderer, window in front), one 10 s `RunService.Heartbeat` sample per row. **Studio is not a phone:** these numbers compare builds and exercise the Low-tier code path; the phone rule still needs the real-phone run. The Low tier was forced with the Studio-only `Workspace.PerfQuality` attribute (`ScatterController` and `OceanQuality` read it only when `RunService:IsStudio()`); `AmbientController` keeps the profile tier (Studio pins `SavedQualityLevel` to Automatic and refuses to change it), so the Low rows still carry the Medium crowd (10 people, not the Low 5). Weather: the jet-ski rows are in Storm; the town and beach rows in Calm. Tools: `tools/studio/perf.luau` (one snapshot) and `tools/studio/perfRun.luau` (the matrix).
+
+| Spot (Studio, desktop) | Tier | Stream radius | Workspace desc | Parts (all / within radius) | Client memory | Ambient NPC | Scatter tris | Heartbeat avg / p95 |
+|---|---|---|---|---|---|---|---|---|
+| Port Haven town | before, default | 2,048 | 17,465 | 5,463 / 4,820 | 4,345 MB | 12 | 352,937 | 20.7 / 38.3 ms |
+| Port Haven town | after, default | 1,024 | 15,272 | 4,495 / 3,429 | 4,387 MB | 10 | 277,192 | 19.8 / 30.9 ms |
+| Port Haven town | after, Low | 1,024 | 14,585 | 4,337 / 3,285 | 4,386 MB | 10 | 188,142 | 19.2 / 22.0 ms |
+| Haven Sands | before, default | 2,048 | 25,051 | 7,314 / 6,855 | 4,369 MB | 12 | 1,004,740 | 22.2 / 44.0 ms |
+| Haven Sands | after, default | 1,024 | 20,163 | 5,687 / 3,656 | 4,399 MB | 10 | 792,514 | 20.1 / 25.7 ms |
+| Haven Sands | after, Low | 1,024 | 16,341 | 4,766 / 2,793 | 4,396 MB | 10 | 492,344 | 17.8 / 20.6 ms |
+| Jet ski offshore, storm | before, default | 2,048 | 15,378 | 5,306 / 4,536 | 4,490 MB | 0 | 284,527 | 32.1 / 45.8 ms |
+| Jet ski offshore, storm | after, default | 1,024 | 13,539 | 4,295 / 3,195 | 4,373 MB | 0 | 222,199 | 18.9 / 27.8 ms |
+| Jet ski offshore, storm | after, Low | 1,024 | 12,979 | 4,156 / 3,079 | 4,353 MB | 0 | 131,902 | 19.0 / 30.6 ms |
+
+**What the numbers say, and what they do not.** The instance budget holds: the after runs keep 2,793 to 3,656 parts inside the 1,024-stud radius and 4.1k to 5.7k workspace parts in all, well under the about 20k ceiling. The memory figure is **not** a phone number: about 4.4 GB total, of which about 1.4 GB `Internal`, 0.74 GB `LuaHeap`, 0.28 GB `Script` and 0.18 GB `GraphicsTexture` are Studio's desktop overhead. The about 1.2 GB on a 3 GB phone target can only be read on a real phone (RP-P1, U-10). Frame time at Low was 17.8 to 19.2 ms average and 20.6 to 30.6 ms p95 in a storm against the 33 ms (30 fps) line; the four Low jet-ski samples spread 18.9 to 29.5 ms average, so this machine's run-to-run noise is about ±20% — confirm on the phone before reading a margin.
+
+**Cuts made (the measured top costs).** The 2,048-stud streaming radius streamed about 40% more parts at Haven Sands than 1,024 (before: 6,855 parts within radius; after: 2,793 at the same spot) and cost frame time in the town. `Workspace.StreamingTargetRadius` is a place property the engine marks **Not Scriptable**: neither the server nor a client can read or set it at run time, so one value serves every tier. It is now 1,024, the docs/10 section 6.7 Low-tier budget (`map/Build.luau` `setupStreaming` only). Scatter was the other cost: Haven Sands drew about 1.0M triangles at medium, so medium now keeps `seen` 0.8 / `filler` 0.3 out to 360 studs (was 1.0 / 0.5 out to 420) and Low 0.45 / 0.12 out to 240. The ocean Low tier drops to a 10 x 10 near patch at 12 Hz (was 12 x 12 at 15 Hz; the docs table's plan was 16 x 16 at 20 Hz). Ambient caps are trimmed about 15% (Low 5 people / 2 cars, Medium 10 / 3, High 18 / 5). The I2a/I2c dressing needs no `ModelStreamingMode` change: their shells and interiors already ship `Atomic`, the loose dressing `Nonatomic`, and the scatter already draws through its three LOD templates; the measured cost was the radius and the scatter triangle count, not those modes.
+
+**RP-P1 round 2 (2026-10-20, the new systems).** Pets and the sanctuary, the stock shelf, the season desk, the album and challenge boards, the Halloween dressing, event FX, friend flares and the NPC town landed after the first pass, so they get a budget too. Measured the same way (`tools/studio/perf2.luau`, one 10 s `Heartbeat` sample per row), with `Workspace.PerfQuality` on Low, Halloween forced through `Workspace.SeasonalEventForce = true` (the event starts 24 October) and a storm from `Storm_DevCommand`. Studio's device emulator is not scriptable from Luau or `smoke.py`, so the viewport stayed desktop: these rows exercise the Low code path, not a phone's GPU, and other agents were loading this Mac (frame times ±20%).
+
+| Spot (Studio, desktop) | Tier | Workspace desc | Parts (all / within 1,024) | Client memory | PointLights (Halloween) | Particles | Scatter tris | Heartbeat avg / p95 |
+|---|---|---|---|---|---|---|---|---|
+| Jet ski offshore, storm + Halloween | Low | 12,186 | 3,921 / 3,423 | 4,481 MB | 82 (6) | 21 | 113,289 | 16.7 / 17.5 ms |
+| Port Haven town + Halloween | High | 19,664 | 5,393 / 4,667 | 4,492 MB | 98 (24) | 18 | 788,053 | 16.7 / 19.1 ms |
+| Port Haven town + Halloween | Low | 14,850 | 4,269 / 3,793 | 4,511 MB | 80 (6) | 18 | 186,782 | 16.7 / 19.6 ms |
+
+**Caps added (Low unless stated).** The Halloween dressing lit 24 PointLights (17 pumpkins, 3 ferry lanterns, 3 stall wares); Low keeps 6 and Medium 14, the rest stay Neon, and a mid-event quality drop trims them (`HalloweenController`; the world itself is `HalloweenWorld`'s). A friend flare skips its PointLight and sparks at 8/s instead of 30 (Medium 18). Confetti pops emit 8 particles per colour instead of 26 (Medium 16). The stock shelf's clock SurfaceGui refreshes at 1 Hz instead of every Heartbeat; the album and challenge boards only redraw on a state push. Scatter and ambient keep the round-1 caps (Low 5 people / 2 cars). All other emitters already follow `Flipbooks` tiers.
+
+**Streaming safety for the new props.** The album and challenge boards are now `Persistent` (they were `Atomic`; the client mounts a local SurfaceGui on the panel once, and a streamed-out board came back as new parts with no print). Everything else that is new is built on the client under `Workspace` (sanctuary, stock shelf, boards' print, pumpkins, flares, NPCs), so it is never streamed; the code that follows server props (ghost sheets over streamed victims, pet ground rays) nil-checks and falls back. The town High row touches 19.7k instances only because Studio pins the quality slider, so `AmbientController` keeps the Medium crowd (10 people plus station crew and pets); a real Low phone caps at 5. The 4.5 GB is Studio's desktop overhead, not phone memory; the 1.2 GB phone target still needs U-10.
 
 **Other budgets:** scene triangles and texture sets per [document 05](05-art-direction.md), section 5.6. Profile with the Studio MicroProfiler before and after each hero asset lands.
 

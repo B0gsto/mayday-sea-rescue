@@ -196,6 +196,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	closeButton.AnchorPoint = Vector2.new(1, 1)
 	closeButton.Position = UDim2.new(1, -178, 1, 0)
 	closeButton.BackgroundColor3 = C.panelLight
+	closeButton.Modal = true -- show, free the mouse in first person
 
 	-- ---------------------------------------------------------------- state
 	local snapshot: { [string]: any }? = nil
@@ -226,7 +227,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			if passKey then
 				for i, slot in Cosmetics.slotsForPass(passKey) do
 					local picker =
-						CosmeticPicker.new(cosmeticBox, slot, { height = 40, layoutOrder = i })
+						CosmeticPicker.new(cosmeticBox, slot, { height = 44, layoutOrder = i })
 					table.insert(cosmeticPickers, picker)
 				end
 			end
@@ -378,7 +379,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			failure = boat and launchFailure[boat],
 		}, boat)
 		place.Text = shelf.title
-		pager.Text = if #boats > 1 then `{page} of {#boats}` else ""
+		pager.Text = if #boats > 1 then `{page}/{#boats}` else ""
 		prev.Visible = #boats > 1
 		nextButton.Visible = #boats > 1
 		name.Text = if spec then `Quick Launch: {spec.displayName}` else "Quick Launch"
@@ -415,7 +416,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 			fetchPrice(ref)
 		end
 		place.Text = shelf.title
-		pager.Text = if #items > 1 then `{page} of {#items}` else ""
+		pager.Text = if #items > 1 then `{page}/{#items}` else ""
 		prev.Visible = #items > 1
 		nextButton.Visible = #items > 1
 		name.Text = item.name

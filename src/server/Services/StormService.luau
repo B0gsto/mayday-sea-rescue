@@ -5,7 +5,7 @@
 -- a one-shot cue per phase change: { state, stormId, isGreatStorm, duration, windDirection }.
 --
 -- API:
---   StormService.ForceStorm(isGreat: boolean?, skipWarning: boolean?)  -- start a storm now
+--   StormService.ForceStorm(isGreat: boolean?, skipWarning: boolean?, warningSeconds?: number)
 --   StormService.ForceCalm()                                           -- end any storm now
 --   StormService.QueueSummon(player, tier) -> (ok, reason)  use one of the player's Storm Tickets
 -- Dev chat commands (Studio only): /storm, /storm now, /greatstorm, /calm.
@@ -89,7 +89,7 @@ local function cue()
 	})
 end
 
-local function enter(nextState: string, now: number?)
+local function enter(nextState: string, now: number?, duration: number?)
 	if nextState == "Warning" then
 		-- A new storm: new id, new wind.
 		stormId += 1
@@ -100,7 +100,7 @@ local function enter(nextState: string, now: number?)
 	local wasSummoned = current ~= nil
 	state = nextState
 	stateStart = now or Workspace:GetServerTimeNow()
-	stateDuration = WeatherMath.durationFor(state, isGreat, GameConfig.Storm)
+	stateDuration = duration or WeatherMath.durationFor(state, isGreat, GameConfig.Storm)
 	if nextState == "Calm" then
 		if wasSummoned then
 			-- back to the natural clock where it was (docs/04 section 5 rule 2)
@@ -124,12 +124,12 @@ end
 -- Starts a storm. From Calm or Clearing it begins a new storm at Warning (or straight at Storm
 -- with skipWarning). During Warning it only upgrades to a Great Storm. During a Storm, a Great
 -- Storm request stretches the current phase to the Great Storm length.
-function StormService.ForceStorm(great: boolean?, skipWarning: boolean?)
+function StormService.ForceStorm(great: boolean?, skipWarning: boolean?, warningSeconds: number?)
 	local wantGreat = great == true
 	if state == "Calm" or state == "Clearing" then
 		isGreat = wantGreat
 		current = nil
-		enter("Warning")
+		enter("Warning", nil, warningSeconds)
 		if skipWarning then
 			enter("Storm")
 		end
@@ -253,9 +253,33 @@ local function startSummon(entry: Summon, pushNatural: boolean)
 	)
 end
 
+-- A new player's cold open holds a new storm back (OperationService.ColdOpenHoldsWeather).
+-- Lazy: OperationService loads after this service.
+local function coldOpenHold(): boolean
+	local module = script.Parent:FindFirstChild("OperationService")
+	local ok, ops = pcall(require, module :: ModuleScript)
+	if not ok or type(ops) ~= "table" or type((ops :: any).ColdOpenHoldsWeather) ~= "function" then
+		return false
+	end
+	local fine, held = pcall((ops :: any).ColdOpenHoldsWeather)
+	return fine and held == true
+end
+
+-- A LiveOps CalmSeas hour holds every new storm (G60); the replicated state is written by
+-- LiveOpsService, which also clears a storm already rolling when the hour starts.
+local function liveOpsCalm(): boolean
+	local live = ReplicatedStorage:FindFirstChild("LiveOpsState")
+	return live ~= nil
+		and live:GetAttribute("Event") == "CalmSeas"
+		and live:GetAttribute("Phase") == "Active"
+end
+
 local function stepSummons(now: number)
-	if #queue == 0 or state ~= "Calm" then
-		return
+	if #queue == 0 or state ~= "Calm" or folder:GetAttribute("ClockEventSoon") == true then
+		return -- a clock event is due or running: the clock wins, the queue waits
+	end
+	if liveOpsCalm() then
+		return -- the relaxed hour: no storm, the paid queue waits (the ticket is not used)
 	end
 	local head = queue[1]
 	local decision = Effects.summonDecision({
@@ -266,7 +290,7 @@ local function stepSummons(now: number)
 		lastSummonEnd = lastSummonEnd,
 		total = Effects.summonSeconds(head.tier, GameConfig.Storm :: any),
 	})
-	if decision == "Wait" then
+	if decision == "Wait" or coldOpenHold() then
 		return
 	end
 	table.remove(queue, 1)
@@ -453,7 +477,13 @@ function StormService.Start()
 	while true do
 		local dt = task.wait(TICK_SECONDS)
 		local now = Workspace:GetServerTimeNow()
-		if now >= stateStart + stateDuration then
+		if
+			now >= stateStart + stateDuration
+			and state == "Calm"
+			and (coldOpenHold() or liveOpsCalm())
+		then
+			stateDuration += dt -- stay calm while a cold open or a LiveOps CalmSeas hour runs
+		elseif now >= stateStart + stateDuration then
 			-- Chain from the scheduled end, so a slow tick never drifts the cycle.
 			enter(WeatherMath.nextState(state), math.min(now, stateStart + stateDuration))
 			if state == "Storm" and current and current.tier == "GreatStorm" then

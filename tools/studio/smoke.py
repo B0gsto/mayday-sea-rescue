@@ -10,11 +10,17 @@ usage: python3 tools/studio/smoke.py <command> [args]
   keys <key> <ms>      hold a key on the client (e.g. keys W 2000)
   console              save the console to build/smoke/console.txt; print error lines and the last 25 lines
   shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px
+  shot <name> --full [out.png]  full-size shot: grows the window to the screen, screencaptures it, keeps the
+                       rendered game (drops Studio chrome and the top 8%: Roblox topbar buttons), centre-crops
+                       16:9 and resizes to 1920x1080 (default out build/smoke/<name>.png); warns if smaller.
+                       Close the Properties panel (Window menu) for a wider viewport on a laptop screen.
   close                close TestBench-<tag> without saving, give focus back to the previous app
   run                  open, play, console check, one shot, stop, close (verdict on the first line)
   ops                  open, play, then play operations end to end with the stub mechanics (PersonInWater,
-                       DisabledVessel, the cold open): the client's OpsAutoStub attribute auto-completes
-                       every stub and auto-accepts offers; checks each operation reaches its debrief
+                       DisabledVessel, CapsizedFerry, CliffCasualty, RipCurrent, SinkingVessel, VesselFire,
+                       WildlifeRescue, the cold open): the client's
+                       OpsAutoStub attribute auto-completes every stub and auto-accepts offers; checks each
+                       operation reaches its debrief
 
 Every command holds the machine-wide `studio` lock only for its own duration (keep holds short).
 Never touches any other TestBench or place window. The tag is $MAYDAY_STUDIO_TAG (default "mayday-smoke").
@@ -166,6 +172,62 @@ def cmd_shot(s, name):
     return path
 
 
+def game_area(im):
+    """The rendered game inside the viewport panel: the longest run of rows, then columns, that are not mostly
+    Studio's panel colour (drops the device-emulation bar, padding and the focus outline)."""
+    import numpy as np
+    a = np.asarray(im).astype(int)
+    panel = np.abs(a - np.array([32, 34, 39])).sum(axis=2) < 3  # exact: a dark storm scene must not match
+
+    def longest(mask):
+        best, start = (0, 0), None
+        for i, v in enumerate(list(mask) + [False]):
+            if v and start is None:
+                start = i
+            elif not v and start is not None:
+                if i - start > best[1] - best[0]:
+                    best = (start, i)
+                start = None
+        return best if best[1] > best[0] else (0, len(mask))
+
+    y0, y1 = longest(panel.mean(axis=1) < 0.9)
+    x0, x1 = longest(panel[y0:y1].mean(axis=0) < 0.9)
+    return im.crop((x0 + 2, y0 + 2, x1 - 2, y1 - 2))
+
+
+def cmd_shot_full(name, out=None):
+    """Full-size shot: Studio's screen_capture MCP tool is capped, so grab the window with screencapture instead."""
+    from PIL import Image
+    front()
+    pid = sw.pid_of(title())
+    if pid:  # as big as the screen allows (macOS clamps the size), so the viewport tops 1920x1080
+        sw.osa(sw.in_process(pid, "tell window %s\nset position to {0, 25}\nset size to {4000, 3000}\nend tell"
+                             % sw.q(title())))
+        time.sleep(1.5)
+    win = sw.find_window(title())
+    if not win:
+        sys.exit("no window " + title())
+    path = os.path.abspath(out or os.path.join(OUT, name + ".png"))
+    if not sw.capture(win["id"], path):
+        sys.exit("screencapture failed (Screen Recording permission? window minimised?)")
+    im = Image.open(path).convert("RGB")
+    rect = sw.viewport_rect(win["name"])
+    if rect:
+        k = im.width / win["w"]  # pixels per point (2 on Retina)
+        x, y, w, h = (round(v * k) for v in rect)
+        im = im.crop((x, y, x + w, y + h))
+    im = game_area(im)
+    im = im.crop((0, im.height * 8 // 100, im.width, im.height))  # the Roblox topbar buttons (play mode)
+    w, h = im.size
+    cw, ch = min(w, h * 16 // 9), min(h, w * 9 // 16)
+    im = im.crop(((w - cw) // 2, (h - ch) // 2, (w - cw) // 2 + cw, (h - ch) // 2 + ch))
+    if cw < 1920:
+        print("warning: viewport only %dx%d, upscaled" % (cw, ch))
+    im.resize((1920, 1080), Image.LANCZOS).save(path)
+    print("saved", path, "(from %dx%d)" % (cw, ch))
+    return path
+
+
 def cmd_close():
     subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), "--close", TAG, "--owner", OWNER],
                    capture_output=True, text=True, timeout=180)
@@ -184,8 +246,8 @@ return "timescale " .. tostring(game:GetService("ServerStorage"):WaitForChild("O
 
 OPS_STATUS = """
 local s = game:GetService("ServerStorage").OpsDev:Invoke("status")
-return string.format("op=%s results=%s current=%s lastGrade=%s completed=%s", tostring(s.op), tostring(s.results),
-  tostring(s.current), tostring(s.lastGrade), tostring(s.completed))
+return string.format("op=%s results=%s current=%s lastGrade=%s lastKind=%s completed=%s", tostring(s.op),
+  tostring(s.results), tostring(s.current), tostring(s.lastGrade), tostring(s.lastKind), tostring(s.completed))
 """
 
 
@@ -194,12 +256,19 @@ def cmd_ops(s):
     fails = []
     _, text = lua(s, "Server", OPS_SETUP)
     print("setup:", text.strip()[:200])
-    for kind in ("PersonInWater", "DisabledVessel", "ColdOpen"):
+    for kind in ("PersonInWater", "DisabledVessel", "CapsizedFerry", "CliffCasualty", "RipCurrent", "SinkingVessel", "VesselFire", "WildlifeRescue", "ExerciseCoxswain", "ColdOpen"):
+        exercise = kind.startswith("Exercise")
         _, before = lua(s, "Server", OPS_STATUS)
         m = re.search(r"completed=(\w+)", before)
         done_before = m.group(1) if m else "nil"
         if kind == "ColdOpen":
             code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("coldopen"))'
+        elif exercise:
+            # the board's gate: cold open done and the Coxswain prerequisites held
+            lua(s, "Server", 'local p = game:GetService("Players"):GetPlayers()[1] '
+                             'p:SetAttribute("ColdOpenDone", true) '
+                             'return tostring(game:GetService("ServerStorage").ProgressionDev:Invoke("certs"))')
+            code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("exercise", "%s"))' % kind
         else:
             code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("start", "%s"))' % kind
         _, started = lua(s, "Server", code)
@@ -211,18 +280,29 @@ def cmd_ops(s):
             time.sleep(3)
             _, status = lua(s, "Server", OPS_STATUS)
             m = re.search(r"completed=(\w+)", status)
-            if m and m.group(1) != done_before and "op=nil" in status:
+            finished = m and m.group(1) != done_before
+            if exercise and "op=nil" in status and ("lastKind=" + kind) in status:
+                finished = True
+            if finished and "op=nil" in status:
                 ok = True
                 break
         print("%s %s: %s" % (kind, "DONE" if ok else "STUCK", status.strip()[:200]))
         if not ok:
             fails.append(kind)
-        _, ui = lua(s, "Client", 'local g = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("OpsGreybox") '
-                                 'local d = g and g:FindFirstChild("Debrief") '
-                                 'local t = {} if d then for _, c in d:GetDescendants() do '
-                                 'if c:IsA("TextLabel") then table.insert(t, c.Text) end end end '
-                                 'return "debrief visible=" .. tostring(d and d.Visible) .. " | " .. table.concat(t, " | ")')
+        ui = ""
+        end = time.time() + 50  # a new player's first debrief waits for the arrival shot and the reward burst (OpsHud caps it at 45 s)
+        while time.time() < end:
+            _, ui = lua(s, "Client", 'local pg = game:GetService("Players").LocalPlayer.PlayerGui '
+                                     'local d = pg:FindFirstChild("DebriefTablet", true) '
+                                     'local t = {} if d then for _, c in d:GetDescendants() do '
+                                     'if c:IsA("TextLabel") and c.Text ~= "" then table.insert(t, c.Text) end end end '
+                                     'return "debrief visible=" .. tostring(d and d.Visible) .. " | " .. table.concat(t, " | ")')
+            if "debrief visible=true" in ui:
+                break
+            time.sleep(0.5)
         print("  client:", ui.strip()[:400].replace("\n", " / "))
+        if "debrief visible=true" not in ui:
+            fails.append(kind + "-debrief")
     return fails
 
 
@@ -253,6 +333,9 @@ def main():
                 print("keys:", ok, " ".join(texts)[:200])
             elif cmd == "console":
                 cmd_console(s)
+            elif cmd == "shot" and "--full" in args:
+                rest = [a for a in args[2:] if a != "--full"]
+                cmd_shot_full(args[1], rest[0] if rest else None)
             elif cmd == "shot":
                 cmd_shot(s, args[1])
             elif cmd == "run":

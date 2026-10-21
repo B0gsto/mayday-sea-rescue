@@ -110,18 +110,18 @@ function ColdOpenFlow.rescued(reason: string): boolean
 	return reason == "Complete"
 end
 
--- The closing radio call: on anything but a rescue the lifeboat picks the casualty up, and the
--- player is always told to come in to the station.
+-- The closing radio call, a few words (docs/14 F-3): on anything but a rescue the lifeboat has
+-- the casualty, and the player is sent home either way.
 function ColdOpenFlow.radioFor(reason: string): { from: string, text: string }
 	if ColdOpenFlow.rescued(reason) then
 		return {
 			from = "Gale Isles Coastguard",
-			text = "Good work, Haven Rescue. Casualty safe. Return to station.",
+			text = "Casualty safe. Good work!",
 		}
 	end
 	return {
 		from = ColdOpenFlow.LIFEBOAT,
-		text = "Haven Rescue, we have your casualty aboard, they're safe. Return to station.",
+		text = "We have them. Head home.",
 	}
 end
 

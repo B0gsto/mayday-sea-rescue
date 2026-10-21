@@ -26,7 +26,7 @@ export type Board = {
 
 local ExerciseBoard = {}
 
-local CARD_HEIGHT = 132
+local CARD_HEIGHT = 110
 local WIDTH, HEIGHT = 680, 470 -- design units (clamped to the usable area)
 
 function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()): Board
@@ -48,21 +48,14 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 
 	local title = HudTheme.label(
 		"Title",
-		"STATION EXERCISES",
+		"EXERCISES",
 		UDim2.new(1, -150, 0, 30),
 		HudTheme.HeaderFont,
 		22,
 		frame
 	)
 	title.TextColor3 = C.accent
-	local sub = HudTheme.label(
-		"Sub",
-		"Chief Aggie runs these with the manikin. Pass one, then prove it on live calls.",
-		UDim2.new(1, -150, 0, 20),
-		HudTheme.BodyFont,
-		15,
-		frame
-	)
+	local sub = HudTheme.label("Sub", "", UDim2.new(1, -150, 0, 20), HudTheme.BodyFont, 15, frame)
 	sub.Position = UDim2.fromOffset(0, 30)
 	sub.TextColor3 = C.textDim
 
@@ -71,6 +64,7 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 	close.AnchorPoint = Vector2.new(1, 0)
 	close.Position = UDim2.fromScale(1, 0)
 	close.BackgroundColor3 = C.panelLight
+	close.Modal = true -- show, free the mouse in first person
 
 	local list = Instance.new("ScrollingFrame")
 	list.Name = "List"
@@ -111,14 +105,12 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 		HudTheme.corner(f)
 		HudTheme.padding(f, 10)
 		f.Parent = list
-		local mins = if row.minutes < 1
-			then "under a minute"
-			else `about {math.ceil(row.minutes)} min`
+		local mins = if row.minutes < 1 then "<1 min" else `~{math.ceil(row.minutes)} min`
 		local head =
 			HudTheme.label("Name", row.title, UDim2.new(1, -170, 0, 24), HudTheme.HeaderFont, 19, f)
 		local meta = HudTheme.label(
 			"Meta",
-			`{mins}  |  {if row.certification then `for {row.certification}` else "optional"}`,
+			`{mins}  |  {row.certification or "optional"}`,
 			UDim2.new(1, -170, 0, 18),
 			HudTheme.BodyFont,
 			14,
@@ -126,27 +118,15 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 		)
 		meta.Position = UDim2.fromOffset(0, 24)
 		meta.TextColor3 = C.textDim
-		local summary = HudTheme.label(
-			"Summary",
-			row.summary,
-			UDim2.new(1, -170, 0, 38),
-			HudTheme.BodyFont,
-			15,
-			f
-		)
-		summary.Position = UDim2.fromOffset(0, 44)
-		summary.TextWrapped = true
-		summary.TextTruncate = Enum.TextTruncate.None
-		summary.TextYAlignment = Enum.TextYAlignment.Top
 		local req = HudTheme.label(
 			"Requirement",
-			row.requirement,
+			if row.certification then row.requirement else "", -- "optional" already in meta
 			UDim2.new(1, -170, 0, 28),
 			HudTheme.BodyFont,
 			14,
 			f
 		)
-		req.Position = UDim2.fromOffset(0, 84)
+		req.Position = UDim2.fromOffset(0, 46)
 		req.TextWrapped = true
 		req.TextTruncate = Enum.TextTruncate.None
 		req.TextYAlignment = Enum.TextYAlignment.Top
@@ -169,7 +149,7 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 		if row.canStart then
 			local b = HudTheme.button(
 				"Start",
-				if row.best then "Run it again" else "Start",
+				if row.best then "Again" else "Start",
 				UDim2.fromOffset(150, HudTheme.MinButtonHeight),
 				f
 			)

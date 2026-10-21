@@ -42,6 +42,9 @@ Harbour.QUAY_SLOTS = 41
 Harbour.PIER = { west = -119, east = -101, z0 = 4, slots = 11 } -- head centred at z 103
 Harbour.DOCK_PONTOON_X = -124
 Harbour.HOSPITAL_PONTOON_X = 130
+Harbour.YARD_QUAY = { x0 = -317, kinds = "SSSSSSS..SSSSSS" } -- 15 slots to x -182; slots 8-9 the yard slipway
+-- map/Build.luau buildBreakwater: arms at x +-320 (16 wide, z -20..368), heads z 352..368 from the 60-stud mouth
+Harbour.BREAKWATER = { x = 320, w = 16, far = 360, mouth = 30, armSlots = 37, headSlots = 30 }
 Harbour.HINGE_BACK = 1.2
 Harbour.TERRAIN_CUT = 0.4 -- occupancy of the Y 0..4 voxel layer under the quay kit (renders about Y 3.6) -- gangway hinge behind the coping edge
 
@@ -117,6 +120,47 @@ function Harbour.kitLayout(): { Placement }
 	end
 	local headZ = P.z0 + Harbour.GRID * P.slots
 	add("Head", at((P.west + P.east) / 2, y, headZ, yawQuay), "Harbour_Pier")
+	-- the boatyard frontage west of the quay run, up to the west breakwater root ("." = the yard slipway)
+	local Y = Harbour.YARD_QUAY
+	for k = 1, #Y.kinds do
+		if string.sub(Y.kinds, k, k) == "S" then
+			add(
+				"Straight",
+				at(Y.x0 + Harbour.GRID * (k - 0.5), y, Harbour.QUAY_FACE_Z, yawQuay),
+				"Harbour_YardQuay"
+			)
+		end
+	end
+	-- the breakwaters' harbour faces: the arm's inner face (x +-312) then the head's inner face (z 352)
+	local B = Harbour.BREAKWATER
+	for _, side in { -1, 1 } do
+		local grp = if side < 0 then "Harbour_BreakwaterWest" else "Harbour_BreakwaterEast"
+		local face = side * (B.x - B.w / 2)
+		for k = 1, B.armSlots do
+			add(
+				"Straight",
+				at(
+					face,
+					y,
+					Harbour.QUAY_FACE_Z + Harbour.GRID * (k - 0.5),
+					Harbour.yawFacing(Vector3.new(-side, 0, 0))
+				),
+				grp
+			)
+		end
+		for k = 1, B.headSlots do
+			add(
+				"Straight",
+				at(
+					face - side * Harbour.GRID * (k + 0.5),
+					y,
+					B.far - B.w / 2,
+					Harbour.yawFacing(Vector3.new(0, 0, -1))
+				),
+				grp
+			)
+		end
+	end
 	return out
 end
 
@@ -292,7 +336,7 @@ function Harbour.armourRun(run: Run, bed: (number, number) -> number?): { Placem
 end
 
 -- seaward faces of the breakwater arms and heads (Build.luau buildBreakwater: arms x +-320 width 16, z -20..368,
--- heads z 352..368 from the 60-stud mouth) and the harbour side of the arms
+-- heads z 352..368 from the 60-stud mouth); the harbour side is a coursed quay wall (BREAKWATER kit runs)
 Harbour.ARMOUR_RUNS = {
 	{
 		from = Vector3.new(-328, 0, -20),
@@ -307,12 +351,6 @@ Harbour.ARMOUR_RUNS = {
 		group = "Harbour_ArmourWest",
 	},
 	{
-		from = Vector3.new(-312, 0, -20),
-		to = Vector3.new(-312, 0, 352),
-		normal = Vector3.new(1, 0, 0),
-		group = "Harbour_ArmourWestIn",
-	},
-	{
 		from = Vector3.new(328, 0, -20),
 		to = Vector3.new(328, 0, 368),
 		normal = Vector3.new(1, 0, 0),
@@ -323,12 +361,6 @@ Harbour.ARMOUR_RUNS = {
 		to = Vector3.new(34, 0, 368),
 		normal = Vector3.new(0, 0, 1),
 		group = "Harbour_ArmourEast",
-	},
-	{
-		from = Vector3.new(312, 0, -20),
-		to = Vector3.new(312, 0, 352),
-		normal = Vector3.new(-1, 0, 0),
-		group = "Harbour_ArmourEastIn",
 	},
 } :: { Run }
 
@@ -373,8 +405,9 @@ function Harbour.propLayout(): { Placement }
 			end
 		end
 	end
-	-- lifebuoy stations: quay every ~120 studs (40 m), facing the walkway
-	for _, x in { -150.5, -40, 74, 165.5 } do
+	-- lifebuoy stations: quay every ~120 studs (40 m), facing the walkway; the west one sits by the ladder bay,
+	-- clear of the lifeboat crewman NpcService stands 4.5 studs east of the station slipway (x -150.5)
+	for _, x in { -145.5, -40, 74, 165.5 } do
 		prop("M_Hbr_LifebuoyStation", x, Harbour.QUAY_FACE_Z - 2.4, math.pi, "Harbour_Quay")
 	end
 	-- pier: a bollard at each launch bay (where the greybox Bay{i}Bollard stood), more on the west face,
@@ -433,6 +466,186 @@ end
 
 -------------------------------------------------------------------------------- run time
 
+-- Station frontage rail (r2 playtest: a player backing away from the station walked off the quay into
+-- the harbour). Waist high, so a deliberate jump still clears it. Open at the slipway, the dock gangway,
+-- the pier root and the steps, with a gap at each ladder top so the ladders still lead in and out.
+Harbour.RAIL =
+	{ first = 4, last = 12, z = Harbour.QUAY_FACE_Z - 0.6, height = 3.2, gap = 3, post = 3 }
+
+function Harbour.railRuns(): { { x0: number, x1: number } }
+	local R = Harbour.RAIL
+	local open = { [7] = true, [8] = true, [9] = true } -- gangway, pier root
+	local out: { { x0: number, x1: number } } = {}
+	local function add(x0: number, x1: number)
+		local last = out[#out]
+		if last and math.abs(last.x1 - x0) < 1e-6 then
+			last.x1 = x1
+		else
+			table.insert(out, { x0 = x0, x1 = x1 })
+		end
+	end
+	for i = R.first, R.last do
+		local c = string.sub(Harbour.QUAY, i, i)
+		if not open[i] and c ~= "T" then
+			local x0 = Harbour.QUAY_X0 + Harbour.GRID * (i - 1)
+			local x1 = x0 + Harbour.GRID
+			if c == "L" then
+				local mid = (x0 + x1) / 2
+				add(x0, mid - R.gap / 2)
+				table.insert(out, { x0 = mid + R.gap / 2, x1 = x1 })
+			else
+				add(x0, x1)
+			end
+		end
+	end
+	return out
+end
+
+-- Code-built (placeholder until a kit rail lands): galvanised posts, a mid rail and a yellow top rail.
+local function buildRail(base: Instance)
+	local R = Harbour.RAIL
+	local y0 = Harbour.QUAY_Y + Harbour.LIFT
+	local model = Instance.new("Model")
+	model.Name = "Harbour_Rail"
+	local function bar(size: Vector3, pos: Vector3, colour: Color3)
+		local p = Instance.new("Part")
+		p.Anchored = true
+		p.Size = size
+		p.Position = pos
+		p.Color = colour
+		p.Material = Enum.Material.Metal
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Parent = model
+	end
+	local steel, yellow = Color3.fromRGB(150, 156, 160), Color3.fromRGB(232, 184, 36)
+	for _, run in Harbour.railRuns() do
+		local len = run.x1 - run.x0
+		local mid = (run.x0 + run.x1) / 2
+		bar(Vector3.new(len, 0.3, 0.3), Vector3.new(mid, y0 + R.height, R.z), yellow)
+		bar(Vector3.new(len, 0.2, 0.2), Vector3.new(mid, y0 + R.height * 0.5, R.z), steel)
+		local posts = math.max(1, math.ceil(len / R.post))
+		for k = 0, posts do
+			local x = run.x0 + 0.15 + (len - 0.3) * k / posts
+			bar(Vector3.new(0.3, R.height, 0.3), Vector3.new(x, y0 + R.height / 2, R.z), steel)
+		end
+	end
+	model.Parent = base
+end
+
+-- Breakwaters (code-built granite until a kit lands): the greybox arm / head boxes become the granite core, their
+-- top dropped under the kit setts (Y 4) and their harbour side tucked behind the kit wall face; a coursed parapet
+-- with a coping runs along the seaward edge; the west pierhead gets a red light (IALA A port hand; the east
+-- pierhead has the Harbour Light).
+local GRANITE = {
+	Color3.fromRGB(150, 146, 138),
+	Color3.fromRGB(138, 134, 127),
+	Color3.fromRGB(162, 157, 147),
+	Color3.fromRGB(128, 125, 120),
+}
+local function buildBreakwater(base: Instance, map: Instance?)
+	local B = Harbour.BREAKWATER
+	local wall = map and map:FindFirstChild("Breakwater")
+	if not wall then
+		return
+	end
+	local model = Instance.new("Model")
+	model.Name = "Harbour_BreakwaterDress"
+	local rng = Random.new(1871)
+	local function block(size: Vector3, cf: CFrame, colour: Color3, mat: Enum.Material?)
+		local p = Instance.new("Part")
+		p.Anchored = true
+		p.CanTouch = false
+		p.Size = size
+		p.CFrame = cf
+		p.Color = colour
+		p.Material = mat or Enum.Material.Granite
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Parent = model
+		return p
+	end
+	local top = Harbour.QUAY_Y - 0.05
+	for _, c in wall:GetChildren() do
+		if c:IsA("BasePart") then
+			local lo = c.Position - c.Size / 2
+			local hi = c.Position + c.Size / 2
+			local arm = string.find(c.Name, "Arm", 1, true) ~= nil
+			local side = if c.Position.X < 0 then -1 else 1
+			if arm then -- harbour side faces +-X toward x 0
+				if side < 0 then
+					hi = Vector3.new(hi.X - 0.5, hi.Y, hi.Z)
+				else
+					lo = Vector3.new(lo.X + 0.5, lo.Y, lo.Z)
+				end
+			else -- heads: harbour side faces -Z
+				lo = Vector3.new(lo.X, lo.Y, lo.Z + 0.5)
+			end
+			hi = Vector3.new(hi.X, top, hi.Z)
+			c.Size = hi - lo
+			c.CFrame = CFrame.new((lo + hi) / 2)
+			c.Material = Enum.Material.Granite
+			c.Color = GRANITE[1]
+			-- the parapet along the seaward edge: two staggered courses of dressed blocks and a coping
+			local a, b
+			if arm then
+				local x = side * (B.x + B.w / 2) - side * 1.5
+				a, b = Vector3.new(x, top, lo.Z), Vector3.new(x, top, B.far + B.w / 2 - 3)
+			else
+				local z = B.far + B.w / 2 - 1.5
+				a, b =
+					Vector3.new(side * B.mouth, top, z), Vector3.new(side * (B.x + B.w / 2), top, z)
+			end
+			local len = (b - a).Magnitude
+			local dir = (b - a).Unit
+			local frame = CFrame.lookAt(a, a + dir) -- local -Z along the run
+			for course = 0, 1 do
+				local d = if course == 1 then -2.25 else 0
+				while d < len do
+					local l = math.min(4.5, len - math.max(d, 0))
+					local s0 = math.max(d, 0)
+					if l > 0.2 then
+						local tint = GRANITE[rng:NextInteger(1, #GRANITE)]
+						block(
+							Vector3.new(2.9, 1.48, l - 0.12),
+							frame * CFrame.new(0, 0.75 + course * 1.5, -(s0 + l / 2)),
+							tint
+						)
+					end
+					d += 4.5
+				end
+			end
+			block(Vector3.new(3.4, 0.5, len), frame * CFrame.new(0, 3.25, -len / 2), GRANITE[3])
+		end
+	end
+	-- the west pierhead light: a white-painted granite pillar with a red lantern
+	local lx, lz = -(B.mouth + 6), B.far
+	block(
+		Vector3.new(5, 7, 5),
+		CFrame.new(lx, top + 3.5, lz),
+		Color3.fromRGB(236, 234, 228),
+		Enum.Material.Concrete
+	)
+	block(Vector3.new(5.6, 0.6, 5.6), CFrame.new(lx, top + 7.3, lz), GRANITE[4])
+	local lantern = block(
+		Vector3.new(2.2, 2.4, 2.2),
+		CFrame.new(lx, top + 8.8, lz),
+		Color3.fromRGB(220, 40, 36),
+		Enum.Material.Neon
+	)
+	lantern.CastShadow = false
+	block(
+		Vector3.new(2.8, 0.4, 2.8),
+		CFrame.new(lx, top + 10.2, lz),
+		Color3.fromRGB(40, 40, 42),
+		Enum.Material.Metal
+	)
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 60, 50)
+	light.Range = 24
+	light.Brightness = 2
+	light.Parent = lantern
+	model.Parent = base
+end
+
 local function groupModel(base: Instance, name: string): Model
 	local m = base:FindFirstChild(name)
 	if m and m:IsA("Model") then
@@ -454,6 +667,7 @@ function Harbour.apply(base: Instance): number
 	local terrain = Workspace.Terrain
 	local map = Workspace:FindFirstChild("Map")
 	local tide = (Workspace:GetAttribute("TideHeight") :: number?) or 0
+	buildRail(base) -- the greybox quay edge is the same line, so the rail goes up either way
 
 	-- 1. the kit: everything loads first; any miss keeps the greybox untouched
 	local kit = Harbour.kitLayout()
@@ -509,7 +723,7 @@ function Harbour.apply(base: Instance): number
 			Vector3.new(P.east - P.west + 4, foot + 30, pierLen),
 			Enum.Material.Rock
 		)
-		local x0, x1 = Harbour.QUAY_X0, Harbour.QUAY_X0 + Harbour.GRID * Harbour.QUAY_SLOTS
+		local x0, x1 = Harbour.YARD_QUAY.x0, Harbour.QUAY_X0 + Harbour.GRID * Harbour.QUAY_SLOTS
 		terrain:FillBlock(
 			CFrame.new((x0 + x1) / 2, (foot - 16) / 2, Harbour.QUAY_FACE_Z + 1.5),
 			Vector3.new(x1 - x0, foot + 16, 5),
@@ -545,6 +759,22 @@ function Harbour.apply(base: Instance): number
 
 	for _, p in kit do
 		place(p, groupModel(base, p.group))
+	end
+	local bOk, bErr = pcall(function()
+		buildBreakwater(base, map)
+	end)
+	if not bOk then
+		warn(`[Harbour] breakwater dressing failed: {bErr}`)
+	end
+	-- the hospital asset brings its own ramp and pontoon on the rear terrace, which Swaps yaws inland (onto the
+	-- grass by Fore Street); the harbour kit's hospital pontoon (x 130) is the real berth, so the built-in one goes
+	local hosp = base:FindFirstChild("Hospital")
+	if hosp then
+		for _, d in hosp:GetDescendants() do
+			if d:IsA("BasePart") and string.find(d.Name, "Pontoon", 1, true) then
+				d:Destroy()
+			end
+		end
 	end
 
 	-- 2. the floating berths (re-posed on TideHeight changes)
@@ -658,6 +888,18 @@ function Harbour.apply(base: Instance): number
 		quay.Size = Vector3.new(quay.Size.X, quay.Size.Y, back - minZ)
 		quay.CFrame = CFrame.new(quay.Position.X, quay.Position.Y, (minZ + back) / 2)
 		quay:SetAttribute("TrimmedBy", "Harbour")
+		-- Harbour Road jogs onto the quay west of x -30 (south edge z -14, tools/world/layout.py): the box
+		-- yields there so the road and its markings are not buried under the greybox
+		local JOG_X, JOG_Z = -30, -14
+		local x0, x1 = quay.Position.X - quay.Size.X / 2, quay.Position.X + quay.Size.X / 2
+		if x0 < JOG_X and JOG_X < x1 and minZ < JOG_Z then
+			local west = quay:Clone()
+			west.Size = Vector3.new(JOG_X - x0, quay.Size.Y, back - JOG_Z)
+			west.CFrame = CFrame.new((x0 + JOG_X) / 2, quay.Position.Y, (JOG_Z + back) / 2)
+			west.Parent = quay.Parent
+			quay.Size = Vector3.new(x1 - JOG_X, quay.Size.Y, quay.Size.Z)
+			quay.CFrame = CFrame.new((JOG_X + x1) / 2, quay.Position.Y, quay.Position.Z)
+		end
 	end
 	local dock = town and town:FindFirstChild("Dock")
 	if dock then

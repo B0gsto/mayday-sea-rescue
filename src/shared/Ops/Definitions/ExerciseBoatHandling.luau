@@ -46,9 +46,8 @@ local def: Types.OperationDef = {
 			mechanicId = "passage",
 			gradeBands = {
 				{ metric = "routeRatio", gold = 1.15, silver = 1.4, bronze = 1.8 },
-				{ metric = "etaError", gold = 0.3, silver = 0.5, bronze = 0.8 },
 			},
-			weight = 1,
+			weight = 0.5,
 			timeoutSec = 120,
 			onFail = "continue",
 			npcAllowed = false,
@@ -123,12 +122,12 @@ local def: Types.OperationDef = {
 			label = "Get the manikin aboard",
 			realTerm = "Man overboard recovery",
 			role = "Crew",
-			mechanicId = "recover_throwbag",
+			mechanicId = "auto_board", -- 2026-10-21: close and steady, they climb aboard
 			gradeBands = {
-				{ metric = "rightMethod", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
-				{ metric = "score", gold = 0.8, silver = 0.5, bronze = 0.2, higherIsBetter = true },
+				{ metric = "elapsed", gold = 45, silver = 90, bronze = 180 },
 			},
-			allowedEvents = { wrongHandling = 1 },
+			serverMetrics = { "elapsed" },
+			allowedEvents = { bump = 2 },
 			weight = 1,
 			timeoutSec = 60,
 			onFail = "retry",
@@ -145,14 +144,6 @@ local def: Types.OperationDef = {
 			noTow = true, -- our own boat alone: lines to the pontoon, no lashed pair to release
 			gradeBands = {
 				{ metric = "contactSpeed", gold = 2, silver = 4, bronze = 8 },
-				{ metric = "lineInWater", gold = 0, silver = 0, bronze = 1 },
-				{
-					metric = "lineOrderRight",
-					gold = 1,
-					silver = 1,
-					bronze = 0,
-					higherIsBetter = true,
-				},
 			},
 			weight = 2,
 			timeoutSec = 90,

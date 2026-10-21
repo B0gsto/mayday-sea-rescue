@@ -1,0 +1,2843 @@
+{
+ "asset": "M_Veh_JetSki_RiptideX",
+ "name": "M_Veh_JetSki_RiptideX",
+ "date": "2026-10-22",
+ "commit": "4fab01db+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Hull",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_Hull_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_HullSeat_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_HullTrim_HP"
+     }
+    ],
+    "coverage": 0.405,
+    "seconds": 136.6,
+    "timings": {
+     "nor": 14.2,
+     "mask": 26.2,
+     "pos": 15.2,
+     "wn": 14.4,
+     "base": 12.6,
+     "mr": 15.6,
+     "compose_write": 31.3
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_ALB.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_NOR.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_RGH.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Hull_MET.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_ALB.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_ALB_Wet.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_NOR.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_RGH.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_RGH_Wet.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_RiptideX/textures"
+   },
+   {
+    "set": "Sled",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_Sled_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_SledFittings_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+      "hp": "M_Veh_JetSki_RiptideX_SledCockpit_HP"
+     }
+    ],
+    "coverage": 0.2248,
+    "seconds": 124.5,
+    "timings": {
+     "nor": 14.6,
+     "mask": 22.7,
+     "pos": 12.0,
+     "wn": 14.2,
+     "base": 17.9,
+     "mr": 16.3,
+     "compose_write": 20.0
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_ALB.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_NOR.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_RGH.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_RiptideX/textures/T_RiptideX_Sled_MET.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_ALB.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_ALB_Wet.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_NOR.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_RGH.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_RGH_Wet.png",
+     "assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_RiptideX/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "bytes": 1131820,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_RiptideX_COL",
+    "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+    "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+    "M_Veh_JetSki_RiptideX_Hull_LOD0",
+    "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+    "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+    "M_Veh_JetSki_RiptideX_Sled_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_RiptideX_COL.001",
+     "min": [
+      -1.8541,
+      -7.3713,
+      0.0
+     ],
+     "max": [
+      1.8541,
+      7.4287,
+      3.3
+     ],
+     "polygons": 116,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD0.001",
+     "min": [
+      -0.76,
+      -2.9913,
+      1.46
+     ],
+     "max": [
+      0.76,
+      2.0487,
+      2.9195
+     ],
+     "polygons": 816,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD0.001",
+     "min": [
+      -1.868,
+      -7.2513,
+      0.2107
+     ],
+     "max": [
+      1.868,
+      2.6787,
+      2.9605
+     ],
+     "polygons": 1220,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Hull_LOD0.001",
+     "min": [
+      -1.94,
+      -7.3713,
+      0.0
+     ],
+     "max": [
+      1.94,
+      2.7287,
+      2.9996
+     ],
+     "polygons": 3470,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0.001",
+     "min": [
+      -1.3071,
+      -6.8513,
+      2.5865
+     ],
+     "max": [
+      1.3071,
+      -2.6713,
+      3.475
+     ],
+     "polygons": 1690,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD0.001",
+     "min": [
+      -1.6775,
+      -7.5187,
+      0.075
+     ],
+     "max": [
+      1.6775,
+      3.3887,
+      3.62
+     ],
+     "polygons": 2152,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Sled_LOD0.001",
+     "min": [
+      -1.71,
+      2.7014,
+      1.0
+     ],
+     "max": [
+      1.71,
+      7.5187,
+      1.6449
+     ],
+     "polygons": 2828,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "bytes": 458620,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+    "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+    "M_Veh_JetSki_RiptideX_Hull_LOD1",
+    "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+    "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+    "M_Veh_JetSki_RiptideX_Sled_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD1.001",
+     "min": [
+      -0.758,
+      -2.9907,
+      1.4599
+     ],
+     "max": [
+      0.758,
+      2.0481,
+      2.9213
+     ],
+     "polygons": 284,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD1.001",
+     "min": [
+      -1.8656,
+      -7.2513,
+      0.2115
+     ],
+     "max": [
+      1.8656,
+      2.6787,
+      2.9581
+     ],
+     "polygons": 426,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Hull_LOD1.001",
+     "min": [
+      -1.9399,
+      -7.3713,
+      -0.0
+     ],
+     "max": [
+      1.9399,
+      2.7287,
+      2.9992
+     ],
+     "polygons": 1214,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1.001",
+     "min": [
+      -1.3084,
+      -6.8513,
+      2.5865
+     ],
+     "max": [
+      1.3084,
+      -2.675,
+      3.475
+     ],
+     "polygons": 591,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD1.001",
+     "min": [
+      -1.6755,
+      -7.516,
+      0.0787
+     ],
+     "max": [
+      1.6749,
+      3.3887,
+      3.62
+     ],
+     "polygons": 753,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Sled_LOD1.001",
+     "min": [
+      -1.7072,
+      2.7019,
+      0.9997
+     ],
+     "max": [
+      1.71,
+      7.5154,
+      1.6448
+     ],
+     "polygons": 988,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "bytes": 162092,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+    "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+    "M_Veh_JetSki_RiptideX_Hull_LOD2",
+    "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+    "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+    "M_Veh_JetSki_RiptideX_Sled_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD2.001",
+     "min": [
+      -0.7361,
+      -2.96,
+      1.4599
+     ],
+     "max": [
+      0.7445,
+      2.0175,
+      2.9351
+     ],
+     "polygons": 80,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD2.001",
+     "min": [
+      -1.8626,
+      -7.2494,
+      0.2316
+     ],
+     "max": [
+      1.8556,
+      2.6787,
+      2.9784
+     ],
+     "polygons": 121,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Hull_LOD2.001",
+     "min": [
+      -1.9499,
+      -7.3859,
+      -0.0
+     ],
+     "max": [
+      1.9494,
+      2.7287,
+      2.9992
+     ],
+     "polygons": 346,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2.001",
+     "min": [
+      -1.335,
+      -4.5873,
+      2.6114
+     ],
+     "max": [
+      1.3051,
+      -2.675,
+      3.475
+     ],
+     "polygons": 169,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD2.001",
+     "min": [
+      -1.6372,
+      -7.5045,
+      0.0787
+     ],
+     "max": [
+      1.6372,
+      3.3617,
+      3.62
+     ],
+     "polygons": 214,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_RiptideX_Sled_LOD2.001",
+     "min": [
+      -1.7102,
+      2.708,
+      1.0124
+     ],
+     "max": [
+      1.7096,
+      7.4856,
+      1.6168
+     ],
+     "polygons": 282,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX.attachments.json",
+   "attachments": [
+    "ATT_DriverSeat",
+    "ATT_EyePoint",
+    "ATT_SurvivorSlot1",
+    "ATT_TowHitch",
+    "ATT_BowPoint",
+    "ATT_DriveAttachment",
+    "ATT_NavPort",
+    "ATT_NavStarboard",
+    "ATT_NavMasthead",
+    "ATT_KillCord",
+    "ATT_Display",
+    "ATT_Prop1",
+    "ATT_Float1",
+    "ATT_Float2",
+    "ATT_Float3",
+    "ATT_Float4",
+    "ATT_Float5",
+    "ATT_Float6"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_RiptideX/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_JetSki_RiptideX_Hull_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_RiptideX_HullSeat_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_RiptideX_HullTrim_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_RiptideX_Sled_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_RiptideX_SledFittings_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_RiptideX_SledCockpit_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_RiptideX_Hull",
+   "T_RiptideX_Sled"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.037,
+     0.216,
+     0.787,
+     0.637
+    ],
+    "mannequin": [
+     -0.113,
+     0.382,
+     0.042,
+     0.731
+    ],
+    "fill": 0.75
+   },
+   "Side": {
+    "asset": [
+     0.228,
+     0.358,
+     0.963,
+     0.544
+    ],
+    "mannequin": [
+     0.05,
+     0.37,
+     0.147,
+     0.628
+    ],
+    "fill": 0.735
+   },
+   "Rear3Q": {
+    "asset": [
+     0.226,
+     0.174,
+     0.93,
+     0.597
+    ],
+    "mannequin": [
+     0.037,
+     0.298,
+     0.183,
+     0.656
+    ],
+    "fill": 0.704
+   },
+   "High": {
+    "asset": [
+     0.201,
+     0.037,
+     0.943,
+     0.745
+    ],
+    "mannequin": [
+     -0.15,
+     0.401,
+     0.068,
+     0.694
+    ],
+    "fill": 0.742
+   }
+  },
+  "closeups": [
+   {
+    "name": "scoop_grille_1m",
+    "target": [
+     0.0,
+     -6.221,
+     2.95
+    ],
+    "dist": 3.0,
+    "az": 25.0,
+    "el": 18.0,
+    "file": "closeup_scoop_grille_1m.png"
+   },
+   {
+    "name": "seat_bolsters",
+    "target": [
+     0.0,
+     -0.921,
+     2.7
+    ],
+    "dist": 5.0,
+    "az": 120.0,
+    "el": 35.0,
+    "file": "closeup_seat_bolsters.png"
+   },
+   {
+    "name": "side_slashes",
+    "target": [
+     1.9,
+     -4.921,
+     1.4
+    ],
+    "dist": 5.5,
+    "az": 70.0,
+    "el": 8.0,
+    "file": "closeup_side_slashes.png"
+   },
+   {
+    "name": "wordmark",
+    "target": [
+     2.0,
+     -1.121,
+     1.35
+    ],
+    "dist": 4.5,
+    "az": 90.0,
+    "el": 5.0,
+    "file": "closeup_wordmark.png"
+   },
+   {
+    "name": "stern_sled",
+    "target": [
+     0.0,
+     4.179,
+     1.4
+    ],
+    "dist": 6.0,
+    "az": 150.0,
+    "el": 30.0,
+    "file": "closeup_stern_sled.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.704,
+  "in_frame": true,
+  "dims_m": [
+   1.293,
+   5.012,
+   1.207
+  ],
+  "validation_ok": true,
+  "seconds": 12.3
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_RiptideX_Hull",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "40.5% of texels at 4096 px from M_Veh_JetSki_RiptideX_Hull_LOD0<-M_Veh_JetSki_RiptideX_Hull_HP, M_Veh_JetSki_RiptideX_HullSeat_LOD0<-M_Veh_JetSki_RiptideX_HullSeat_HP, M_Veh_JetSki_RiptideX_HullTrim_LOD0<-M_Veh_JetSki_RiptideX_HullTrim_HP"
+  },
+  {
+   "subject": "T_RiptideX_Hull",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 137 s"
+  },
+  {
+   "subject": "T_RiptideX_Sled",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "22.5% of texels at 4096 px from M_Veh_JetSki_RiptideX_Sled_LOD0<-M_Veh_JetSki_RiptideX_Sled_HP, M_Veh_JetSki_RiptideX_SledFittings_LOD0<-M_Veh_JetSki_RiptideX_SledFittings_HP, M_Veh_JetSki_RiptideX_SledCockpit_LOD0<-M_Veh_JetSki_RiptideX_SledCockpit_HP"
+  },
+  {
+   "subject": "T_RiptideX_Sled",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 125 s"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "jetski"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3470 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.14e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.923, v 0.004 to 0.997"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1762 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "101 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullSeat_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "816 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.78e-03, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.952, v 0.068 to 0.927"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 432 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "126 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullTrim_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1220 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.54e-05, 218 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.781, v 0.003 to 0.914"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 651 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "140 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Sled_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2828 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.01e-04, 132 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.940, v 0.008 to 0.937"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1604 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "124 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledFittings_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2152 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.53e-05, 106 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.991"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1228 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "121 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledCockpit_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1690 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.46e-06, 104 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 926 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "119 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1214 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.26e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.923, v 0.004 to 0.997"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1214 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullSeat_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "284 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.66e-03, 18 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.951, v 0.068 to 0.927"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 284 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullTrim_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "426 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.34e-04, 132 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.781, v 0.003 to 0.914"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 426 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Sled_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "988 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.50e-03, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.939, v 0.008 to 0.936"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 988 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 4.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledFittings_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "753 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.02e-06, 75 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.987"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 753 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 10.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledCockpit_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "591 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.12e-06, 77 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.987, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 591 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.005 (max 0.02), UV area by 6.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "346 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.56e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.921, v 0.004 to 0.997"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 346 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullSeat_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "80 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.16e-02, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.951, v 0.086 to 0.927"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 80 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.017 (max 0.02), UV area by 8.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullTrim_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "121 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.77e-03, 61 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.781, v 0.003 to 0.914"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 121 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.000 (max 0.02), UV area by 29.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Sled_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "282 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.49e-03, 64 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.898, v 0.009 to 0.898"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 282 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.042 (max 0.02), UV area by 19.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledFittings_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "214 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.07e-06, 45 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.959, v 0.008 to 0.974"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 214 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.031 (max 0.02), UV area by 33.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledCockpit_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "169 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.37e-06, 31 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.975"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 169 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.018 (max 0.02), UV area by 42.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Hull_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Hull_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullSeat_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullSeat_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_HullTrim_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_HullTrim_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_Sled_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_Sled_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledFittings_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledFittings_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_SledCockpit_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_SledCockpit_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_RiptideX_COL"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "116 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "116 of 1000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12176 of 20000 (jetski)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4256 of 8000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1212 of 2000"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_JetSki_RiptideX/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.880 studs, real 1.293 m = 3.879 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15.037 studs, real 5.012 m = 15.036 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.620 studs, real 1.207 m = 3.621 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_RiptideX_COL"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (2 to 2 sets)"
+  },
+  {
+   "subject": "T_RiptideX_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_ALB.png"
+  },
+  {
+   "subject": "T_RiptideX_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RiptideX_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_NOR.png"
+  },
+  {
+   "subject": "T_RiptideX_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_RGH.png"
+  },
+  {
+   "subject": "T_RiptideX_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RiptideX_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Hull_MET.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_ALB.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_ALB_Wet.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_NOR.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_RGH.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_RGH_Wet.png"
+  },
+  {
+   "subject": "T_RiptideX_Sled_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_RiptideX/T_RiptideX_Sled_MET.png"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavPort",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStarboard",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavMasthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_KillCord",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Display",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_RiptideX_COL, M_Veh_JetSki_RiptideX_HullSeat_LOD0, M_Veh_JetSki_RiptideX_HullTrim_LOD0, M_Veh_JetSki_RiptideX_Hull_LOD0, M_Veh_JetSki_RiptideX_SledCockpit_LOD0, M_Veh_JetSki_RiptideX_SledFittings_LOD0, M_Veh_JetSki_RiptideX_Sled_LOD0; 12292 triangles (scene 12292)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_RiptideX_HullSeat_LOD1, M_Veh_JetSki_RiptideX_HullTrim_LOD1, M_Veh_JetSki_RiptideX_Hull_LOD1, M_Veh_JetSki_RiptideX_SledCockpit_LOD1, M_Veh_JetSki_RiptideX_SledFittings_LOD1, M_Veh_JetSki_RiptideX_Sled_LOD1; 4256 triangles (scene 4256)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_RiptideX/M_Veh_JetSki_RiptideX_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_RiptideX_HullSeat_LOD2, M_Veh_JetSki_RiptideX_HullTrim_LOD2, M_Veh_JetSki_RiptideX_Hull_LOD2, M_Veh_JetSki_RiptideX_SledCockpit_LOD2, M_Veh_JetSki_RiptideX_SledFittings_LOD2, M_Veh_JetSki_RiptideX_Sled_LOD2; 1212 triangles (scene 1212)"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_RiptideX",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.70; 14 renders in 12 s, maps M_Veh_JetSki_RiptideX_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_RiptideX_HullSeat_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_RiptideX_HullTrim_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_RiptideX_Sled_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_RiptideX_SledFittings_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_RiptideX_SledCockpit_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_JetSki_RiptideX_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3470,
+   "texel_density": 101.0
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 816,
+   "texel_density": 125.7
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1220,
+   "texel_density": 139.7
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Sled_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2828,
+   "texel_density": 124.1
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2152,
+   "texel_density": 120.9
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1690,
+   "texel_density": 119.3
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Hull_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 6158,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullSeat_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1224,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullTrim_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3996,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Sled_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 13838,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledFittings_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 10916,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledCockpit_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 10732,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 116,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1214,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 346,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 284,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullSeat_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 80,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 426,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_HullTrim_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 121,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Sled_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 988,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_Sled_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 282,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 753,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledFittings_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 214,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 591,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_RiptideX_SledCockpit_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 169,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.880000114440918,
+  15.037456512451172,
+  3.620000123977661
+ ],
+ "peak_rss_mb": 6087.4
+}

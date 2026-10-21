@@ -1,0 +1,140 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Rock_Cliff_02/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Rock_Cliff_02_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_Cliff02_Granite"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.078,
+    0.037,
+    0.908,
+    0.793
+   ],
+   "mannequin": [
+    -0.191,
+    0.214,
+    0.005,
+    0.64
+   ],
+   "fill": 0.83
+  },
+  "Side": {
+   "asset": [
+    0.312,
+    0.105,
+    0.963,
+    0.841
+   ],
+   "mannequin": [
+    0.135,
+    0.206,
+    0.288,
+    0.639
+   ],
+   "fill": 0.736
+  },
+  "Rear3Q": {
+   "asset": [
+    0.078,
+    0.037,
+    0.908,
+    0.793
+   ],
+   "mannequin": [
+    -0.191,
+    0.214,
+    0.005,
+    0.64
+   ],
+   "fill": 0.83
+  },
+  "High": {
+   "asset": [
+    0.289,
+    0.137,
+    0.963,
+    0.847
+   ],
+   "mannequin": [
+    0.088,
+    0.344,
+    0.245,
+    0.596
+   ],
+   "fill": 0.71
+  }
+ },
+ "closeups": [
+  {
+   "name": "top",
+   "target": [
+    0.0,
+    0.0,
+    6.6743105292320255
+   ],
+   "dist": 3.6601146876811983,
+   "az": 30.0,
+   "el": 35.0,
+   "file": "closeup_top.png"
+  },
+  {
+   "name": "flank",
+   "target": [
+    0.0,
+    0.0,
+    3.3371552646160128
+   ],
+   "dist": 4.0667940974235535,
+   "az": 200.0,
+   "el": 10.0,
+   "file": "closeup_flank.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.71,
+ "in_frame": true,
+ "dims_m": [
+  2.711,
+  2.127,
+  2.472
+ ],
+ "validation_ok": true,
+ "seconds": 3.3
+}

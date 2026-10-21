@@ -131,6 +131,28 @@ function World.isDriver(model: Model?): boolean
 	return seat ~= nil and char ~= nil and seat.Occupant ~= nil and seat.Occupant.Parent == char
 end
 
+-- Sitting in any craft in Workspace.Vehicles (the helm or a passenger seat).
+function World.seated(): boolean
+	local char = Players.LocalPlayer.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local seat = hum and hum.SeatPart
+	local folder = Workspace:FindFirstChild("Vehicles")
+	return seat ~= nil and folder ~= nil and seat:IsDescendantOf(folder)
+end
+
+-- The boat's hull only while the player sits in a craft: a boat left behind (the swimmer jumped off)
+-- must not stand in for where they are.
+function World.aboardHull(ctx: { [string]: any }): Hull?
+	return if World.seated() then World.hull(World.vehicle(ctx)) else nil
+end
+
+-- On the water: in a craft, or swimming (docs/14 section 3: a swimmer can reach and drag them).
+function World.afloat(): boolean
+	local char = Players.LocalPlayer.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	return World.seated() or (hum ~= nil and hum:GetState() == Enum.HumanoidStateType.Swimming)
+end
+
 -- Slam strength this frame from the boat simulation (BoatController telemetry), 0 if unknown.
 function World.slam(): number
 	local ok, value = pcall(function()

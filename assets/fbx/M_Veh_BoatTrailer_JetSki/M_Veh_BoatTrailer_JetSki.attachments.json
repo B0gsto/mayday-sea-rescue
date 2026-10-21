@@ -1,0 +1,326 @@
+{
+ "asset": "M_Veh_BoatTrailer_JetSki",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Coupler",
+   "parent": null,
+   "blender": [
+    0.0,
+    -6.53,
+    1.3663
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.3663,
+    -6.53
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.0209,
+    -6.53
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cradle",
+   "parent": null,
+   "blender": [
+    0.0,
+    2.43,
+    2.1663
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.1663,
+    2.43
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.2209,
+    2.43
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Winch",
+   "parent": null,
+   "blender": [
+    0.0,
+    -2.92,
+    4.1963
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    4.1963,
+    -2.92
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.8091,
+    -2.92
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BowEye",
+   "parent": null,
+   "blender": [
+    0.0,
+    -1.42,
+    2.1863
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.1863,
+    -1.42
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.2009,
+    -1.42
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LightBoard",
+   "parent": null,
+   "blender": [
+    0.0,
+    6.37,
+    2.0363
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.0363,
+    6.37
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.3509,
+    6.37
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailLamp_L",
+   "parent": null,
+   "blender": [
+    1.705,
+    6.55,
+    2.1363
+   ],
+   "roblox_from_origin": [
+    -1.705,
+    2.1363,
+    6.55
+   ],
+   "roblox_from_bbox_centre": [
+    -1.705,
+    -0.2509,
+    6.55
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailLamp_R",
+   "parent": null,
+   "blender": [
+    -1.705,
+    6.55,
+    2.1363
+   ],
+   "roblox_from_origin": [
+    1.705,
+    2.1363,
+    6.55
+   ],
+   "roblox_from_bbox_centre": [
+    1.705,
+    -0.2509,
+    6.55
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SideMarker_L",
+   "parent": null,
+   "blender": [
+    2.26,
+    5.32,
+    1.3563
+   ],
+   "roblox_from_origin": [
+    -2.26,
+    1.3563,
+    5.32
+   ],
+   "roblox_from_bbox_centre": [
+    -2.26,
+    -1.0309,
+    5.32
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SideMarker_R",
+   "parent": null,
+   "blender": [
+    -2.26,
+    5.32,
+    1.3563
+   ],
+   "roblox_from_origin": [
+    2.26,
+    1.3563,
+    5.32
+   ],
+   "roblox_from_bbox_centre": [
+    2.26,
+    -1.0309,
+    5.32
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wheel_FL",
+   "parent": null,
+   "blender": [
+    2.32,
+    2.33,
+    0.8863
+   ],
+   "roblox_from_origin": [
+    -2.32,
+    0.8863,
+    2.33
+   ],
+   "roblox_from_bbox_centre": [
+    -2.32,
+    -1.5009,
+    2.33
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wheel_FR",
+   "parent": null,
+   "blender": [
+    -2.32,
+    2.33,
+    0.8863
+   ],
+   "roblox_from_origin": [
+    2.32,
+    0.8863,
+    2.33
+   ],
+   "roblox_from_bbox_centre": [
+    2.32,
+    -1.5009,
+    2.33
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

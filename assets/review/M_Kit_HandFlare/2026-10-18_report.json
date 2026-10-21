@@ -1,0 +1,1014 @@
+{
+ "asset": "M_Kit_HandFlare",
+ "name": "M_Kit_HandFlare",
+ "date": "2026-10-18",
+ "commit": "9d39bf5d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD0.fbx",
+   "bytes": 176444,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_HandFlare_COL",
+    "M_Kit_HandFlare_LOD0",
+    "M_Kit_HandFlare_Lens_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_HandFlare_COL.001",
+     "min": [
+      -0.0627,
+      -0.0754,
+      0.0
+     ],
+     "max": [
+      0.0627,
+      0.0754,
+      0.8056
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_HandFlare_LOD0.001",
+     "min": [
+      -0.0627,
+      -0.0754,
+      0.0
+     ],
+     "max": [
+      0.0627,
+      0.0754,
+      0.7486
+     ],
+     "polygons": 2372,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_HandFlare_Lens_LOD0.001",
+     "min": [
+      -0.054,
+      -0.0401,
+      0.7486
+     ],
+     "max": [
+      0.054,
+      0.0679,
+      0.8056
+     ],
+     "polygons": 140,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD1.fbx",
+   "bytes": 123484,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_HandFlare_LOD1",
+    "M_Kit_HandFlare_Lens_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_HandFlare_LOD1.001",
+     "min": [
+      -0.0625,
+      -0.0754,
+      0.0017
+     ],
+     "max": [
+      0.0625,
+      0.0754,
+      0.7486
+     ],
+     "polygons": 1185,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_HandFlare_Lens_LOD1.001",
+     "min": [
+      -0.054,
+      -0.0402,
+      0.7486
+     ],
+     "max": [
+      0.054,
+      0.0679,
+      0.8056
+     ],
+     "polygons": 70,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD2.fbx",
+   "bytes": 66588,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_HandFlare_LOD2",
+    "M_Kit_HandFlare_Lens_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_HandFlare_LOD2.001",
+     "min": [
+      -0.0625,
+      -0.0734,
+      0.0019
+     ],
+     "max": [
+      0.063,
+      0.0764,
+      0.7486
+     ],
+     "polygons": 593,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_HandFlare_Lens_LOD2.001",
+     "min": [
+      -0.0534,
+      -0.0394,
+      0.7486
+     ],
+     "max": [
+      0.0543,
+      0.0673,
+      0.8053
+     ],
+     "polygons": 35,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare.attachments.json",
+   "attachments": [
+    "ATT_Grip",
+    "ATT_Lens",
+    "ATT_Flame",
+    "ATT_Striker"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_HandFlare/M_Kit_HandFlare.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_LOD0"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2372 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.07e-06, 225 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1246 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "906 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_Lens_LOD0"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "140 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.92e-05, 20 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.377 to 0.498, v 0.127 to 0.164"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 80 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "443 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_LOD1"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1185 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.41e-06, 174 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1185 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.6% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_Lens_LOD1"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "70 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.83e-04, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.377 to 0.498, v 0.127 to 0.164"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 70 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.1% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_LOD2"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "593 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.62e-05, 128 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 593 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 15.2% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_Lens_LOD2"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "35 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.75e-04, 7 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.377 to 0.498, v 0.127 to 0.164"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 35 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_HandFlare_Lens_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 14.8% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_HandFlare_COL"
+  },
+  {
+   "subject": "M_Kit_HandFlare_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_HandFlare_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_HandFlare_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_HandFlare_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2512 of 6000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1255 of 3000"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "628 of 1500"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x - x 0.25 m, spec - x - x 0.25 m (art/reference/M_Kit_HandFlare/dims.md)"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.806 studs, real 0.250 m = 0.750 studs, off 7.4% (5% free, 15% with a note); NOTE: E1b: the bbox includes the accessories (lines, loops, straps, buckles, light, pins); dims.md dims_m is the class size in the authored orientation, '-' where accessories set the bbox"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_HandFlare_COL"
+  },
+  {
+   "subject": "M_Kit_HandFlare",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_MET.png"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Lens",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Flame",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Striker",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_HandFlare_COL, M_Kit_HandFlare_LOD0, M_Kit_HandFlare_Lens_LOD0; 2524 triangles (scene 2524)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_HandFlare_LOD1, M_Kit_HandFlare_Lens_LOD1; 1255 triangles (scene 1255)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_HandFlare/M_Kit_HandFlare_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_HandFlare_LOD2, M_Kit_HandFlare_Lens_LOD2; 628 triangles (scene 628)"
+  },
+  {
+   "subject": "M_Kit_HandFlare_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_HandFlare_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2372,
+   "texel_density": 906.0
+  },
+  {
+   "name": "M_Kit_HandFlare_Lens_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 140,
+   "texel_density": 443.1
+  },
+  {
+   "name": "M_Kit_HandFlare_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1185,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_HandFlare_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 593,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_HandFlare_Lens_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 70,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_HandFlare_Lens_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 35,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_HandFlare_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  0.12540000677108765,
+  0.15080709755420685,
+  0.8055877089500427
+ ],
+ "peak_rss_mb": 268.6
+}

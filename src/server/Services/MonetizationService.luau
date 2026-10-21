@@ -11,6 +11,8 @@
 -- * PolicyService gate: the policy is read on join; paid random items (none at launch) are only offered
 --   where the policy says they are allowed (docs/04 section 8).
 -- * id = 0 or ready = false: not for sale. Nothing is offered, no handler is bound.
+-- * Day passes (Products with dayPassFor): the end hour is saved in flag shop.day<PassKey>
+--   (MonetizationEffects) and mirrored as the player attribute "DayPass_<PassKey>" = unix end second.
 --
 -- API (server; call the registration functions in your Init):
 --   MonetizationService.OnProduct(key, grant(player, data, receipt), afterSaved(player, receipt, fresh)?)
@@ -18,7 +20,7 @@
 --       (DataService rolls the data back). Check before mutating: the fallback ledger cannot roll back.
 --       afterSaved runs in its own thread once the save holding the grant has committed.
 --   MonetizationService.OnPassOwned(key, fn(player, isNewPurchase))   also fires on join for owners
---   MonetizationService.OwnsPass(player, key): boolean
+--   MonetizationService.OwnsPass(player, key): boolean              owned, or a day pass for it is running
 --   MonetizationService.PassesChecked(player): boolean / WaitForPasses(player, timeout?): boolean
 --   MonetizationService.GetPolicy(player): Policy?                     nil until checked (or failed)
 --   MonetizationService.IsOffered(player, kind, key): boolean          kind = "Products" | "GamePasses"
@@ -36,6 +38,7 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Core = require(script.Parent:WaitForChild("Monetization"):WaitForChild("Core"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
@@ -201,9 +204,25 @@ function MonetizationService.OnPassOwned(key: string, callback: (Player, boolean
 	end
 end
 
+local function shopOf(data: PlayerData?): Effects.Shop?
+	local shop = data and data.flags.shop
+	return if type(shop) == "table" then shop else nil
+end
+
 function MonetizationService.OwnsPass(player: Player, key: string): boolean
 	local owned = ownedPasses[player]
 	return owned ~= nil and owned[key] == true
+		or Effects.dayPassEnds(shopOf(DataService.Get(player)), key) > os.time()
+end
+
+local function publishDayPasses(player: Player, data: PlayerData)
+	for _, item in MonetizationConfig.Products do
+		local passKey = item.dayPassFor
+		if passKey then
+			local ends = Effects.dayPassEnds(shopOf(data), passKey)
+			player:SetAttribute("DayPass_" .. passKey, if ends > os.time() then ends else nil)
+		end
+	end
 end
 
 function MonetizationService.PassesChecked(player: Player): boolean
@@ -237,8 +256,9 @@ function MonetizationService.GetCatalogue(player: Player): { CatalogueEntry }
 					id = item.id,
 					name = item.name,
 					order = item.order,
-					owned = if kind == "GamePasses"
-						then MonetizationService.OwnsPass(player, key)
+					owned = if kind
+							== "GamePasses" -- bought for good (a day pass is not "owned")
+						then ownedPasses[player] ~= nil and ownedPasses[player][key] == true
 						else nil,
 				})
 			end
@@ -253,10 +273,11 @@ function MonetizationService.GetCatalogue(player: Player): { CatalogueEntry }
 	return entries
 end
 
-function MonetizationService.SetPassOwnedForTesting(player: Player, key: string)
-	assert(RunService:IsStudio(), "SetPassOwnedForTesting is Studio only")
+-- devBoard: DevService on a live server (it checks DevConfig): in memory only, no purchase event.
+function MonetizationService.SetPassOwnedForTesting(player: Player, key: string, devBoard: boolean?)
+	assert(RunService:IsStudio() or devBoard == true, "SetPassOwnedForTesting is Studio only")
 	assert(MonetizationConfig.GamePasses[key], `Unknown game pass "{key}"`)
-	grantPass(player, key, true)
+	grantPass(player, key, devBoard ~= true)
 end
 
 local function checkPasses(player: Player)
@@ -275,6 +296,11 @@ local function checkPasses(player: Player)
 	end
 	for key, item in MonetizationConfig.GamePasses do
 		if item.id == 0 then
+			continue
+		end
+		if RunService:IsStudio() and key == "StarterKit" then
+			-- The dev's account owns the game's own passes: auto-granting the Starter Kit would
+			-- put its 3,000 Cash on every fresh Studio profile. Test it with SetPassOwnedForTesting.
 			continue
 		end
 		pending += 1
@@ -345,6 +371,24 @@ function MonetizationService.Init()
 	catalogue.OnServerInvoke = function(player: Player)
 		return MonetizationService.GetCatalogue(player)
 	end
+	for key, item in MonetizationConfig.Products do
+		local passKey, hours = item.dayPassFor, item.dayPassHours
+		if passKey and hours and item.ready ~= false then
+			assert(MonetizationConfig.GamePasses[passKey], `{key}: unknown dayPassFor "{passKey}"`)
+			MonetizationService.OnProduct(key, function(_player, data)
+				local shop = shopOf(data) or {}
+				data.flags.shop = shop
+				Effects.addDayPass(shop, passKey, hours, os.time())
+				return true
+			end, function(player)
+				local data = DataService.Get(player)
+				if data then
+					publishDayPasses(player, data)
+				end
+			end)
+		end
+	end
+	DataService.OnLoaded(publishDayPasses)
 end
 
 function MonetizationService.Start()

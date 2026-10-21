@@ -2,7 +2,7 @@
  "asset": "M_Hbr_LifebuoyStation",
  "name": "M_Hbr_LifebuoyStation",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_LifebuoyStation/M_Hbr_LifebuoyStation_LOD0.fbx",
-   "bytes": 164940,
+   "bytes": 251164,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_LifebuoyStation_COL",
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_LifebuoyStation_Ring_LOD0.001",
      "min": [
-      -1.1433,
-      -0.0939,
-      2.676
+      -1.1509,
+      -0.1108,
+      2.6769
      ],
      "max": [
-      1.1393,
-      0.3339,
-      5.1688
+      1.1509,
+      0.3508,
+      5.1784
      ],
-     "polygons": 1168,
+     "polygons": 2560,
      "all_triangles": true,
      "uv": true
     }
@@ -90,7 +90,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_LifebuoyStation/M_Hbr_LifebuoyStation_LOD1.fbx",
-   "bytes": 96524,
+   "bytes": 156140,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_LifebuoyStation_Housing_LOD1",
@@ -116,16 +116,16 @@
     {
      "name": "M_Hbr_LifebuoyStation_Ring_LOD1.001",
      "min": [
-      -1.1433,
-      -0.0939,
-      2.843
+      -1.145,
+      -0.1047,
+      2.6845
      ],
      "max": [
-      1.1393,
-      0.3341,
-      5.1688
+      1.145,
+      0.3448,
+      5.1725
      ],
-     "polygons": 584,
+     "polygons": 1280,
      "all_triangles": true,
      "uv": true
     }
@@ -195,7 +195,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 9.00e-04, 16 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 9.00e-04, 21 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Housing_LOD0",
@@ -259,7 +259,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1168 of 3000"
+   "detail": "2560 of 3000"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD0",
@@ -267,7 +267,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 3.28e-03, 1680 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.52e-03, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD0",
@@ -291,7 +291,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.624, v 0.001 to 0.373"
+   "detail": "u 0.001 to 0.624, v 0.001 to 0.499"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD0",
@@ -299,7 +299,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 584 faces have no UV area"
+   "detail": "0 of 1280 faces have no UV area"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD0",
@@ -307,7 +307,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "432 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "511 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Housing_LOD1",
@@ -339,7 +339,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 8.93e-04, 16 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 8.45e-04, 21 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Housing_LOD1",
@@ -379,7 +379,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.2% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD1",
@@ -403,7 +403,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "584 of 3000"
+   "detail": "1280 of 3000"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD1",
@@ -411,7 +411,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.73e-03, 970 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.15e-04, 0 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD1",
@@ -435,7 +435,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.624, v 0.001 to 0.373"
+   "detail": "u 0.001 to 0.624, v 0.001 to 0.499"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD1",
@@ -443,7 +443,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 584 faces have no UV area"
+   "detail": "0 of 1280 faces have no UV area"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_Ring_LOD1",
@@ -451,7 +451,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 44.5% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 29.3% (max 15%)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_COL",
@@ -499,7 +499,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1360 of 1500 (small_prop, asset row)"
+   "detail": "2752 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation",
@@ -507,7 +507,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "680 of 750"
+   "detail": "1376 of 1500"
   },
   {
    "subject": "M_Hbr_LifebuoyStation",
@@ -707,7 +707,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_LifebuoyStation_COL, M_Hbr_LifebuoyStation_Housing_LOD0, M_Hbr_LifebuoyStation_Ring_LOD0; 1372 triangles (scene 1372)"
+   "detail": "M_Hbr_LifebuoyStation_COL, M_Hbr_LifebuoyStation_Housing_LOD0, M_Hbr_LifebuoyStation_Ring_LOD0; 2764 triangles (scene 2764)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_LOD0.fbx",
@@ -747,7 +747,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_LifebuoyStation_Housing_LOD1, M_Hbr_LifebuoyStation_Ring_LOD1; 680 triangles (scene 680)"
+   "detail": "M_Hbr_LifebuoyStation_Housing_LOD1, M_Hbr_LifebuoyStation_Ring_LOD1; 1376 triangles (scene 1376)"
   },
   {
    "subject": "M_Hbr_LifebuoyStation_LOD1.fbx",
@@ -770,8 +770,8 @@
    "name": "M_Hbr_LifebuoyStation_Ring_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1168,
-   "texel_density": 431.8
+   "triangles": 2560,
+   "texel_density": 511.3
   },
   {
    "name": "M_Hbr_LifebuoyStation_Housing_LOD1",
@@ -784,7 +784,7 @@
    "name": "M_Hbr_LifebuoyStation_Ring_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 584,
+   "triangles": 1280,
    "texel_density": null
   },
   {
@@ -800,5 +800,5 @@
   1.2000000476837158,
   5.670000076293945
  ],
- "peak_rss_mb": 295.5
+ "peak_rss_mb": 252.6
 }

@@ -39,10 +39,14 @@ MAT_RGB = {  # land colours by terrain material (Roblox-ish, slightly desaturate
     "Mud": (118, 102, 78), "Ground": (152, 130, 96), "Asphalt": (88, 90, 96),
     "Cobblestone": (140, 134, 126), "Concrete": (186, 184, 176), "Pavement": (170, 168, 160),
     "Air": (0, 0, 0),
+    # MaterialVariant slots (gen_terrain.py): shingle, straw / olive / worn turf, rippled sand, wrack
+    "CrackedLava": (150, 142, 128), "Snow": (160, 152, 98), "WoodPlanks": (96, 126, 66), "Brick": (132, 124, 86),
+    "Glacier": (226, 208, 160), "Ice": (156, 138, 100),
 }
 SEABED_TINT = {  # how the seabed reads through shallow water
     "Sand": (232, 222, 180), "Limestone": (214, 208, 186), "Rock": (110, 116, 108),
     "Slate": (60, 84, 58), "Basalt": (70, 74, 74), "Mud": (120, 110, 84),
+    "Salt": (232, 222, 180), "CrackedLava": (150, 142, 128), "Glacier": (232, 222, 180),  # seabed sand, shingle, ripples
 }
 DEPTH_STOPS = [  # depth below sea level (studs, 3 studs = 1 m) -> colour
     (0, (120, 214, 214)), (6, (82, 190, 204)), (18, (44, 150, 186)), (40, (26, 104, 156)),
@@ -89,7 +93,7 @@ def parse_world_config():
             roads.append({"id": rid.group(1), "width": float(width.group(1)) if width else 12,
                           "surface": surface.group(1) if surface else "Asphalt", "points": pts})
     parks = []
-    cp_src = src[src.index("CarParks = {"): src.index("Points = {")]
+    cp_src = src[src.index("CarParks = {"): src.index("Farms = {") if "Farms = {" in src else src.index("Points = {")]
     for block in re.split(r"\n\t\t\{", cp_src)[1:]:
         c = re.search(vec, block)
         size = re.search(r"size = \{\s*([\d.]+),\s*([\d.]+)", block)
@@ -99,7 +103,18 @@ def parse_world_config():
             parks.append({"center": (float(c.group(1)), float(c.group(3))),
                           "size": (float(size.group(1)), float(size.group(2))),
                           "yaw": float(yaw.group(1)) if yaw else 0, "surface": surface.group(1) if surface else "Asphalt"})
-    return roads, parks
+    towns = []  # built-up rect per town grid: avenues (x) and streets (z offsets from origin), minus keep rects
+    if "Towns = {" in src:
+        for block in re.split(r"\n\t\t\{", src[src.index("Towns = {"): src.index("CarParks = {")])[1:]:
+            o = re.search(vec, block)
+            av = re.search(r"avenues = \{([^}]*)\}", block)
+            st = re.search(r"streets = \{([^}]*)\}", block)
+            if o and av and st:
+                xs = [float(v) for v in re.findall(r"-?[\d.]+", av.group(1))]
+                zs = [float(o.group(3)) + float(v) for v in re.findall(r"-?[\d.]+", st.group(1))]
+                keep = [tuple(map(float, k)) for k in re.findall(r"\{\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+),?\s*\}", block[block.find("keep = {"):] if "keep = {" in block else "")]
+                towns.append({"rect": (min(xs), min(zs), max(xs), float(o.group(3))), "keep": keep})
+    return roads, parks, towns
 
 
 def lerp_stops(depth):
@@ -229,7 +244,12 @@ def main():
     for side in (-1, 1):
         d.line([to_px(side * 320, -20), to_px(side * 320, 368)], fill=wall, width=max(3, int(w)))
         d.line([to_px(side * 320, 368), to_px(side * 30, 368)], fill=wall, width=max(3, int(w)))
-    roads, parks = parse_world_config()
+    roads, parks, towns = parse_world_config()
+    for t in towns:  # built-up blocks in a pale stone tone; kept rects (squares, greens) stay terrain
+        x0, z0, x1, z1 = t["rect"]
+        d.rectangle([to_px(x0, z0), to_px(x1, z1)], fill=(206, 198, 184, 255))
+        for kx0, kz0, kx1, kz1 in t["keep"]:
+            d.rectangle([to_px(kx0, kz0), to_px(kx1, kz1)], fill=tuple(int(c) for c in rgb[int(to_px((kx0 + kx1) / 2, (kz0 + kz1) / 2)[1]), int(to_px((kx0 + kx1) / 2, (kz0 + kz1) / 2)[0])]) + (255,))
     for p in parks:
         cx, cz = p["center"]
         sx, sz = p["size"]
@@ -241,12 +261,15 @@ def main():
         d.polygon(corners, fill=(96, 98, 104, 255) if p["surface"] == "Asphalt" else (160, 140, 104, 255),
                   outline=(230, 228, 220, 255))
     # roads: casing then fill, minor tracks thinner and sandy
-    for r in roads:
-        pts = [to_px(x, z) for x, z in r["points"]]
-        wpx = max(9.0, r["width"] * k * 1.4)
-        track = r["surface"] in ("Ground", "Sand")
-        d.line(pts, fill=(60, 60, 60, 255) if not track else (110, 90, 60, 255), width=int(wpx + 4), joint="curve")
-        d.line(pts, fill=(250, 245, 230, 255) if not track else (214, 190, 140, 255), width=int(wpx), joint="curve")
+    for casing in (True, False):  # all casings first so a later road never cuts an earlier one at a junction
+        for r in roads:
+            pts = [to_px(x, z) for x, z in r["points"]]
+            wpx = max(9.0, r["width"] * k * 1.4)
+            track = r["surface"] in ("Ground", "Sand")
+            if casing:
+                d.line(pts, fill=(60, 60, 60, 255) if not track else (110, 90, 60, 255), width=int(wpx + 4), joint="curve")
+            else:
+                d.line(pts, fill=(250, 245, 230, 255) if not track else (214, 190, 140, 255), width=int(wpx), joint="curve")
 
     # place labels
     def label(text, x, z, size, colour, italic=False, spacing=0, left=False):
@@ -272,6 +295,7 @@ def main():
         style = {  # kind -> (px at 2048, colour, italic, letter spacing)
             "region": (64, (235, 240, 220, 255), False, 1), "town": (46, (255, 248, 232, 255), False, 0),
             "place": (34, (238, 232, 214, 255), False, 0), "water": (36, (196, 236, 246, 255), True, 0),
+            "street": (30, (238, 232, 214, 255), False, 0),
         }
         for p in parse_places():
             size, colour, italic, spacing = style[p["kind"]]

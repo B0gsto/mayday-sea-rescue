@@ -2,7 +2,9 @@
 -- Operation 3: Capsized Ferry (docs/09-rescue-operations.md section 7). Data only.
 -- The server's big call: one track per joining crew. `shared` steps are done once for the whole
 -- operation (the first track to reach one takes it; the others skip it); the `perCasualty` run
--- (pick-up, triage, movement) loops once per casualty a track claims from the pool.
+-- (pick-up, movement) loops once per casualty a track claims from the pool.
+-- 2026-10-21 (simple rescue): reach the survivors, they climb aboard (auto_board, any free one, as many
+-- as the boat holds), bring them home. Scene command, hull knock, air pocket and triage are gone.
 -- MVP fallback (section 7): boats only; the helicopter ride-along (step 7) arrives at [L].
 local Types = require(script.Parent.Parent.Types)
 
@@ -27,134 +29,36 @@ local def: Types.OperationDef = {
 			mechanicId = "radio_ack",
 			gradeBands = {
 				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
-				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
 			},
 			serverMetrics = { "elapsed" },
-			weight = 1,
+			weight = 0.5,
 			timeoutSec = 45,
 			onFail = "npc",
 			npcSeconds = 8,
 			tip = "Acknowledge the relay at once, then keep the channel quiet.",
 		},
 		{
-			id = "scene_command",
-			label = "Take scene command",
-			realTerm = "On Scene Coordinator (METHANE)",
-			role = "Helm",
-			mechanicId = "scene_command",
-			shared = true,
-			gradeBands = {
-				{
-					metric = "reportCorrect",
-					gold = 1,
-					silver = 0.7,
-					bronze = 0.4,
-					higherIsBetter = true,
-				},
-				{
-					metric = "tasksCovered",
-					gold = 1,
-					silver = 0.75,
-					bronze = 0.5,
-					higherIsBetter = true,
-				},
-				{ metric = "elapsed", gold = 60, silver = 90, bronze = 120 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 90,
-			onFail = "npc",
-			npcSeconds = 30,
-			tip = "As OSC, send METHANE first, then cover every sector downwind of the hull.",
-		},
-		{
-			id = "hull_knock",
-			label = "Knock on the hull",
-			realTerm = "Hull search",
-			role = "Crew",
-			mechanicId = "hull_knock",
-			shared = true,
-			gradeBands = {
-				{
-					metric = "rightCompartment",
-					gold = 1,
-					silver = 1,
-					bronze = 0,
-					higherIsBetter = true,
-				},
-				{ metric = "elapsed", gold = 45, silver = 70, bronze = 100 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 100,
-			onFail = "npc",
-			npcSeconds = 50,
-			tip = "Knock, then listen: the answering taps come from one compartment.",
-		},
-		{
-			id = "air_pocket",
-			label = "Bring them out of the air pocket",
-			realTerm = "Air-pocket check",
-			role = "Crew",
-			mechanicId = "air_pocket",
-			shared = true,
-			gradeBands = {
-				{ metric = "rescued", gold = 2, silver = 2, bronze = 1, higherIsBetter = true },
-				{ metric = "signalMistakes", gold = 0, silver = 1, bronze = 3 },
-			},
-			weight = 2,
-			timeoutSec = 150, -- two trips in and out, about 70 to 100 s (tune)
-			onFail = "npc", -- the mainland dive team takes over (fail-safe), always safe
-			npcSeconds = 70,
-			tip = "Answer every pull signal on the line: one pull, all OK; two, slack; three, take in.",
-		},
-		{
 			id = "pickup",
 			label = "Pick up a casualty",
 			realTerm = "Search and pick-up",
 			role = "Crew",
-			mechanicId = "recover_throwbag",
-			mechanicByState = {
-				Exhausted = "recover_swimmer",
-				VeryCold = "recover_swimmer",
-				Unresponsive = "recover_swimmer",
-			},
+			mechanicId = "auto_board", -- 2026-10-21: close and steady, they climb aboard
 			perCasualty = true,
 			gradeBands = {
-				{ metric = "rightMethod", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
-				{ metric = "score", gold = 0.8, silver = 0.5, bronze = 0.2, higherIsBetter = true },
+				{ metric = "elapsed", gold = 45, silver = 90, bronze = 180 },
 			},
-			allowedEvents = { wash = 2, wrongHandling = 1 },
+			serverMetrics = { "elapsed" },
+			allowedEvents = { bump = 2 },
 			weight = 1,
-			timeoutSec = 60,
+			timeoutSec = 540, -- the call's own timer ends it: a timed-out pick-up would board them by magic
 			onFail = "retry",
 			npcAllowed = false,
 			effect = "board",
-			tip = "Debris and floating ropes foul propellers: come in slow.",
-		},
-		{
-			id = "triage",
-			label = "Tag them",
-			realTerm = "Triage sieve",
-			role = "Medic",
-			mechanicId = "triage",
-			perCasualty = true,
-			gradeBands = {
-				{ metric = "tagRight", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
-				-- the full sieve with a 15 s breath count (run at 3x) takes about 12 s (tune)
-				{ metric = "elapsed", gold = 15, silver = 22, bronze = 35 },
-			},
-			serverMetrics = { "elapsed", "tagRight" },
-			weight = 1,
-			timeoutSec = 40,
-			onFail = "npc",
-			npcSeconds = 12,
-			effect = "triage",
-			tip = "Can they walk? Breathing? Then rate and circulation decide Red, Yellow or Green.",
+			tip = "Come in slow and steady: they climb aboard.",
 		},
 		{
 			id = "movement",
-			label = "Move them by priority",
+			label = "Bring them home",
 			realTerm = "Casualty movement",
 			role = "Helm",
 			mechanicId = "transport",
@@ -167,22 +71,15 @@ local def: Types.OperationDef = {
 					bronze = 20,
 					higherIsBetter = true,
 				},
-				{
-					metric = "priorityOrder",
-					gold = 1,
-					silver = 1,
-					bronze = 0,
-					higherIsBetter = true,
-				},
 			},
-			serverMetrics = { "conditionAtEnd", "priorityOrder" },
+			serverMetrics = { "conditionAtEnd" },
 			allowedEvents = { slam = 6 },
 			weight = 1,
 			timeoutSec = 150,
 			onFail = "continue",
 			npcSeconds = 40,
 			effect = "deliver",
-			tip = "Reds go first by the fastest asset.",
+			tip = "A bigger boat brings more home per trip.",
 		},
 		{
 			id = "account",
@@ -192,11 +89,10 @@ local def: Types.OperationDef = {
 			mechanicId = "radio_closeout",
 			shared = true,
 			gradeBands = {
-				{ metric = "format", gold = 1, silver = 0.6, bronze = 0, higherIsBetter = true },
-				{ metric = "pobRight", gold = 1, silver = 1, bronze = 0, higherIsBetter = true },
+				{ metric = "elapsed", gold = 12, silver = 20, bronze = 30 },
 			},
-			serverMetrics = { "pobRight" },
-			weight = 1,
+			serverMetrics = { "elapsed" },
+			weight = 0.5,
 			timeoutSec = 30,
 			onFail = "npc",
 			npcSeconds = 10,

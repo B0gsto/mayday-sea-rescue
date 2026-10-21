@@ -3,9 +3,9 @@
 -- DogService builds it; the option lists live in src/shared/Config/Cosmetics/DogWear.luau and Dog.luau
 -- (each option carries the key of its look here: `look`).
 --
--- * Harness colours: a multiply tint on the harness SurfaceAppearance (dry and wet). The uploaded harness is
---   Hull Orange webbing, so a tint can only darken channels: the variants are deep, real webbing colours
---   (navy, forest, burgundy, teal). The free default is the duty harness (no tint).
+-- * Harness colours: a multiply tint on the Hull Orange harness parts (Shared.Dog.BosunRig), so a tint can only
+--   darken channels: the variants are deep, real webbing colours (navy, forest, burgundy, teal). The free
+--   default is the duty harness (no tint).
 -- * Bandanas, the dog life jacket and the captain's hat are plain Parts (no new uploads), laid out here in
 --   Bosun's authored frame (studs, origin on the ground between the feet, front -Z, up +Y; the same frame
 --   as BosunMotion.PIVOTS). Each part says which body part it is welded to (`on` = "Fore" | "Head").
@@ -34,7 +34,8 @@ DogWear.RESERVED = {
 }
 DogWear.MIN_RESERVED_DISTANCE = 60 -- RGB distance (0..441) every cosmetic colour keeps from them
 
--- Harness tints (SurfaceAppearance.Color multiplies the uploaded Hull Orange albedo, about sRGB 208/80/48).
+-- Harness tints (multiplied into the harness orange, BosunRig HARNESS).
+DogWear.HARNESS_ORANGE = "FF6600"
 DogWear.HARNESS = {
 	Duty = nil :: { number }?, -- the uploaded colour
 	Navy = { 0.22, 0.75, 1.0 },
@@ -61,11 +62,11 @@ local HAT_BAND = "15161A"
 local HAT_PEAK = "15161A"
 local BRASS = "A8874A"
 
--- The neck: the bandana's top edge at the throat, the ring round the neck to the nape (from the LOD0 body
--- ray casts, art/source/characters/M_Chr_Bosun; the coat adds about 0.2 studs over the skin).
-local THROAT = Vector3.new(0, 1.8, -1.42)
-local NAPE = Vector3.new(0, 2.52, -0.62)
-local NECK_HALF_WIDTH = 0.58
+-- The neck: the bandana's top edge at the throat, the ring round the neck base to the nape (BosunRig's
+-- neck block meeting the chest ball and the torso top).
+local THROAT = Vector3.new(0, 1.95, -1.47)
+local NAPE = Vector3.new(0, 2.3, -0.98)
+local NECK_HALF_WIDTH = 0.33
 
 local function v3(v: { number }): Vector3
 	return Vector3.new(v[1], v[2], v[3])
@@ -172,10 +173,10 @@ end
 function DogWear.bandana(color: string): { PartSpec }
 	local parts = triangle(
 		"Bandana",
-		THROAT + Vector3.new(0, -0.02, -0.02),
-		Vector3.new(0, -0.53, 0.4),
-		0.82,
-		0.52,
+		THROAT + Vector3.new(0, -0.02, -0.1), -- over the harness chest strap
+		Vector3.new(0, -1, 0),
+		0.6,
+		0.42,
 		color
 	)
 	for _, p in neckRing("BandanaRoll", color, 12, 0.045) do
@@ -201,6 +202,7 @@ end
 function DogWear.lifeJacket(): { PartSpec }
 	local parts: { PartSpec } = {}
 	local z, len = 0.12, 1.62
+	local SIDE, BACK = 0.55, 2.2 -- BosunRig torso: half width 0.475, top 2.13
 	local function add(p: PartSpec)
 		table.insert(parts, p)
 	end
@@ -208,8 +210,8 @@ function DogWear.lifeJacket(): { PartSpec }
 		spec(
 			"JacketBack",
 			"Block",
-			Vector3.new(0.96, 0.15, len),
-			CFrame.new(0, 2.5, z),
+			Vector3.new(1.04, 0.15, len),
+			CFrame.new(0, BACK, z),
 			JACKET_SHELL,
 			"Fabric",
 			"Fore"
@@ -218,12 +220,12 @@ function DogWear.lifeJacket(): { PartSpec }
 	for _, s in { 1, -1 } do
 		local tag = if s > 0 then "R" else "L"
 		local roll = math.rad(9) * s
-		local sideCf = CFrame.new(0.71 * s, 1.98, z) * CFrame.Angles(0, 0, roll)
+		local sideCf = CFrame.new(SIDE * s, 1.8, z) * CFrame.Angles(0, 0, roll)
 		add(
 			spec(
 				"JacketSide" .. tag,
 				"Block",
-				Vector3.new(0.17, 0.8, len - 0.06),
+				Vector3.new(0.15, 0.7, len - 0.06),
 				sideCf,
 				JACKET_SHELL,
 				"Fabric",
@@ -235,7 +237,7 @@ function DogWear.lifeJacket(): { PartSpec }
 				"JacketShoulder" .. tag,
 				"Cylinder",
 				Vector3.new(len, 0.3, 0.3),
-				CFrame.new(0.56 * s, 2.39, z) * CFrame.Angles(0, math.rad(90), 0),
+				CFrame.new(0.47 * s, BACK - 0.06, z) * CFrame.Angles(0, math.rad(90), 0),
 				JACKET_SHELL,
 				"Fabric",
 				"Fore"
@@ -246,7 +248,7 @@ function DogWear.lifeJacket(): { PartSpec }
 				"JacketHem" .. tag,
 				"Cylinder",
 				Vector3.new(len - 0.06, 0.17, 0.17),
-				sideCf * CFrame.new(0, -0.4, 0) * CFrame.Angles(0, math.rad(90), 0),
+				sideCf * CFrame.new(0, -0.35, 0) * CFrame.Angles(0, math.rad(90), 0),
 				JACKET_SHELL,
 				"Fabric",
 				"Fore"
@@ -257,7 +259,7 @@ function DogWear.lifeJacket(): { PartSpec }
 				"JacketPiping" .. tag,
 				"Block",
 				Vector3.new(0.02, 0.07, len - 0.2),
-				sideCf * CFrame.new(0.09 * s, 0.14, 0),
+				sideCf * CFrame.new(0.08 * s, 0.12, 0),
 				JACKET_TRIM,
 				"Fabric",
 				"Fore"
@@ -268,8 +270,8 @@ function DogWear.lifeJacket(): { PartSpec }
 				spec(
 					`JacketStrap{tag}{i}`,
 					"Block",
-					Vector3.new(0.035, 0.6, 0.15),
-					CFrame.new(0.6 * s, 1.32, sz) * CFrame.Angles(0, 0, math.rad(-8) * s),
+					Vector3.new(0.035, 0.28, 0.15),
+					CFrame.new(0.5 * s, 1.32, sz) * CFrame.Angles(0, 0, math.rad(-8) * s),
 					WEBBING,
 					"Fabric",
 					"Fore"
@@ -282,8 +284,8 @@ function DogWear.lifeJacket(): { PartSpec }
 			spec(
 				`JacketBelly{i}`,
 				"Block",
-				Vector3.new(1.18, 0.035, 0.15),
-				CFrame.new(0, 1.03, sz),
+				Vector3.new(1.0, 0.035, 0.15),
+				CFrame.new(0, 1.2, sz),
 				WEBBING,
 				"Fabric",
 				"Fore"
@@ -291,14 +293,14 @@ function DogWear.lifeJacket(): { PartSpec }
 		)
 	end
 	-- chest float: a foam pad on the chest below the throat, its lower edge rolled
-	local chestTop = THROAT + Vector3.new(0, -0.1, 0.06)
-	local down = Vector3.new(0, -0.53, 0.4).Unit
-	local chestCf = frame(chestTop + down * 0.3, Vector3.new(1, 0, 0), -down)
+	local chestTop = THROAT + Vector3.new(0, -0.08, -0.11)
+	local down = Vector3.new(0, -1, 0)
+	local chestCf = frame(chestTop + down * 0.22, Vector3.new(1, 0, 0), -down)
 	add(
 		spec(
 			"JacketChest",
 			"Block",
-			Vector3.new(0.86, 0.6, 0.16),
+			Vector3.new(0.7, 0.45, 0.16),
 			chestCf,
 			JACKET_SHELL,
 			"Fabric",
@@ -309,8 +311,8 @@ function DogWear.lifeJacket(): { PartSpec }
 		spec(
 			"JacketChestRoll",
 			"Cylinder",
-			Vector3.new(0.86, 0.16, 0.16),
-			chestCf * CFrame.new(0, -0.3, 0),
+			Vector3.new(0.7, 0.16, 0.16),
+			chestCf * CFrame.new(0, -0.22, 0),
 			JACKET_SHELL,
 			"Fabric",
 			"Fore"
@@ -323,7 +325,7 @@ function DogWear.lifeJacket(): { PartSpec }
 				`JacketHandleFoot{i}`,
 				"Block",
 				Vector3.new(0.13, 0.17, 0.035),
-				CFrame.new(0, 2.65, z + hz - 0.12),
+				CFrame.new(0, BACK + 0.15, z + hz - 0.12),
 				WEBBING,
 				"Fabric",
 				"Fore"
@@ -335,7 +337,7 @@ function DogWear.lifeJacket(): { PartSpec }
 			"JacketHandle",
 			"Block",
 			Vector3.new(0.13, 0.035, 0.6),
-			CFrame.new(0, 2.74, z),
+			CFrame.new(0, BACK + 0.24, z),
 			WEBBING,
 			"Fabric",
 			"Fore"
@@ -346,7 +348,7 @@ function DogWear.lifeJacket(): { PartSpec }
 			"JacketGrip",
 			"Cylinder",
 			Vector3.new(0.34, 0.09, 0.09),
-			CFrame.new(0, 2.75, z) * CFrame.Angles(0, math.rad(90), 0),
+			CFrame.new(0, BACK + 0.25, z) * CFrame.Angles(0, math.rad(90), 0),
 			"2A2B2E",
 			"Rubber",
 			"Fore"
@@ -357,7 +359,7 @@ end
 
 -- A tiny captain's hat between the ears: black band, navy crown, black peak, brass badge and cord.
 function DogWear.captainsHat(): { PartSpec }
-	local base = CFrame.new(0, 2.62, -1.12) * CFrame.Angles(math.rad(-10), 0, 0) -- tipped forward a little
+	local base = CFrame.new(0, 2.98, -1.55) * CFrame.Angles(math.rad(-10), 0, 0) -- tipped forward a little
 	local up = CFrame.Angles(0, 0, math.rad(90)) -- cylinder axis X -> up
 	return {
 		spec(
@@ -427,6 +429,16 @@ function DogWear.harnessTint(look: string?): { number }?
 	return if look then (DogWear.HARNESS :: any)[look] else nil
 end
 
+-- `hex` multiplied by `tint` (r, g, b factors), as hex.
+function DogWear.tinted(hex: string, tint: { number }): string
+	local out = ""
+	for i = 1, 3 do
+		local v = tonumber(string.sub(hex, 2 * i - 1, 2 * i), 16) or 0
+		out ..= string.format("%02X", math.floor(v * tint[i] + 0.5))
+	end
+	return out
+end
+
 -- RGB distance between two hex colours (0..441).
 function DogWear.distance(a: string, b: string): number
 	local function rgb(h: string): (number, number, number)
@@ -455,10 +467,7 @@ function DogWear.allColors(): { string }
 		end
 	end
 	for _, tint in DogWear.HARNESS :: any do
-		local function c(base: number, k: number): string
-			return string.format("%02X", math.floor(base * k + 0.5))
-		end
-		table.insert(out, c(208, tint[1]) .. c(80, tint[2]) .. c(48, tint[3]))
+		table.insert(out, DogWear.tinted(DogWear.HARNESS_ORANGE, tint))
 	end
 	return out
 end

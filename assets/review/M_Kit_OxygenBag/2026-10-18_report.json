@@ -1,0 +1,1639 @@
+{
+ "asset": "M_Kit_OxygenBag",
+ "name": "M_Kit_OxygenBag",
+ "date": "2026-10-18",
+ "commit": "9d39bf5d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD0.fbx",
+   "bytes": 633644,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_OxygenBag_COL",
+    "M_Kit_OxygenBag_Cylinder_LOD0",
+    "M_Kit_OxygenBag_Hardware_LOD0",
+    "M_Kit_OxygenBag_LOD0",
+    "M_Kit_OxygenBag_Mask_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_OxygenBag_COL.001",
+     "min": [
+      -0.9617,
+      -0.7944,
+      0.0
+     ],
+     "max": [
+      0.9617,
+      0.7944,
+      1.3046
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Cylinder_LOD0.001",
+     "min": [
+      -0.8105,
+      -0.7944,
+      0.0026
+     ],
+     "max": [
+      0.8155,
+      -0.4728,
+      0.3881
+     ],
+     "polygons": 814,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Hardware_LOD0.001",
+     "min": [
+      -0.8859,
+      -0.7038,
+      0.1148
+     ],
+     "max": [
+      0.884,
+      0.699,
+      0.9836
+     ],
+     "polygons": 1672,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_LOD0.001",
+     "min": [
+      -0.9617,
+      -0.6698,
+      0.074
+     ],
+     "max": [
+      0.9598,
+      0.7944,
+      1.3046
+     ],
+     "polygons": 4296,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Mask_LOD0.001",
+     "min": [
+      -0.5705,
+      -0.6333,
+      0.0
+     ],
+     "max": [
+      0.9617,
+      0.2476,
+      1.1683
+     ],
+     "polygons": 1208,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD1.fbx",
+   "bytes": 374812,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_OxygenBag_Cylinder_LOD1",
+    "M_Kit_OxygenBag_Hardware_LOD1",
+    "M_Kit_OxygenBag_LOD1",
+    "M_Kit_OxygenBag_Mask_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_OxygenBag_Cylinder_LOD1.001",
+     "min": [
+      -0.8108,
+      -0.7943,
+      0.0026
+     ],
+     "max": [
+      0.8155,
+      -0.4726,
+      0.3877
+     ],
+     "polygons": 407,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Hardware_LOD1.001",
+     "min": [
+      -0.8859,
+      -0.7038,
+      0.1148
+     ],
+     "max": [
+      0.884,
+      0.699,
+      0.9836
+     ],
+     "polygons": 809,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_LOD1.001",
+     "min": [
+      -0.9617,
+      -0.6698,
+      0.074
+     ],
+     "max": [
+      0.9598,
+      0.7944,
+      1.3047
+     ],
+     "polygons": 2147,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Mask_LOD1.001",
+     "min": [
+      -0.5705,
+      -0.6344,
+      -0.0001
+     ],
+     "max": [
+      0.9618,
+      0.2455,
+      1.1687
+     ],
+     "polygons": 603,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD2.fbx",
+   "bytes": 212556,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_OxygenBag_Cylinder_LOD2",
+    "M_Kit_OxygenBag_Hardware_LOD2",
+    "M_Kit_OxygenBag_LOD2",
+    "M_Kit_OxygenBag_Mask_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_OxygenBag_Cylinder_LOD2.001",
+     "min": [
+      -0.8116,
+      -0.7926,
+      0.0046
+     ],
+     "max": [
+      0.8147,
+      -0.4711,
+      0.3871
+     ],
+     "polygons": 203,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Hardware_LOD2.001",
+     "min": [
+      -0.8857,
+      -0.7044,
+      0.1157
+     ],
+     "max": [
+      0.8811,
+      0.6961,
+      0.9836
+     ],
+     "polygons": 414,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_LOD2.001",
+     "min": [
+      -0.9654,
+      -0.6698,
+      0.0736
+     ],
+     "max": [
+      0.9651,
+      0.7948,
+      1.3042
+     ],
+     "polygons": 1074,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_OxygenBag_Mask_LOD2.001",
+     "min": [
+      -0.5687,
+      -0.6295,
+      -0.0001
+     ],
+     "max": [
+      0.9634,
+      0.2461,
+      1.1687
+     ],
+     "polygons": 302,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag.attachments.json",
+   "attachments": [
+    "ATT_Grip",
+    "ATT_Mask",
+    "ATT_Valve",
+    "ATT_Cylinder",
+    "ATT_Open"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_OxygenBag/M_Kit_OxygenBag.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_LOD0"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4296 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.77e-04, 1652 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2161 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1091 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Hardware_LOD0"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1672 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.89e-05, 744 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 878 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1891 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Cylinder_LOD0"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "814 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.17e-05, 142 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.998, v 0.002 to 0.498"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 488 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "312 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Mask_LOD0"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1208 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.86e-04, 332 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.373, v 0.752 to 0.873"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 628 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "801 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_LOD1"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2147 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.36e-04, 823 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 1.000, v 0.000 to 1.000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2147 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.002 (max 0.02), UV area by 18.8% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Hardware_LOD1"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "809 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.28e-06, 461 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 809 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Cylinder_LOD1"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "407 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.35e-05, 87 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.998, v 0.002 to 0.498"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 407 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.6% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Mask_LOD1"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "603 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.77e-05, 111 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.374, v 0.750 to 0.889"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 603 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.016 (max 0.02), UV area by 18.6% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_LOD2"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1074 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.24e-04, 574 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 1.000, v 0.000 to 1.000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1074 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.002 (max 0.02), UV area by 26.3% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Hardware_LOD2"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "414 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.68e-05, 316 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 414 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Hardware_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.5% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Cylinder_LOD2"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "203 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.51e-05, 51 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.998, v 0.002 to 0.498"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 203 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.4% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_Mask_LOD2"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "302 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.55e-04, 82 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.374, v 0.750 to 0.882"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 302 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_Mask_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.009 (max 0.02), UV area by 25.5% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_OxygenBag_COL"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7990 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3966 of 4000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1993 of 2000"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x - x - m, spec - x - x - m (art/reference/M_Kit_OxygenBag/dims.md)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_OxygenBag_COL"
+  },
+  {
+   "subject": "M_Kit_OxygenBag",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_MET.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_MET.png"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Mask",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Valve",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Cylinder",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Open",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_OxygenBag_COL, M_Kit_OxygenBag_Cylinder_LOD0, M_Kit_OxygenBag_Hardware_LOD0, M_Kit_OxygenBag_LOD0, M_Kit_OxygenBag_Mask_LOD0; 8002 triangles (scene 8002)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_OxygenBag_Cylinder_LOD1, M_Kit_OxygenBag_Hardware_LOD1, M_Kit_OxygenBag_LOD1, M_Kit_OxygenBag_Mask_LOD1; 3966 triangles (scene 3966)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_OxygenBag/M_Kit_OxygenBag_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_OxygenBag_Cylinder_LOD2, M_Kit_OxygenBag_Hardware_LOD2, M_Kit_OxygenBag_LOD2, M_Kit_OxygenBag_Mask_LOD2; 1993 triangles (scene 1993)"
+  },
+  {
+   "subject": "M_Kit_OxygenBag_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 4 of 4 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_OxygenBag_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4296,
+   "texel_density": 1091.1
+  },
+  {
+   "name": "M_Kit_OxygenBag_Hardware_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1672,
+   "texel_density": 1890.7
+  },
+  {
+   "name": "M_Kit_OxygenBag_Cylinder_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 814,
+   "texel_density": 311.6
+  },
+  {
+   "name": "M_Kit_OxygenBag_Mask_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1208,
+   "texel_density": 800.7
+  },
+  {
+   "name": "M_Kit_OxygenBag_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2147,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1074,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Hardware_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 809,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Hardware_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 414,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Cylinder_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 407,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Cylinder_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 203,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Mask_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 603,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_Mask_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 302,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_OxygenBag_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.9233509302139282,
+  1.588800072669983,
+  1.3046371936798096
+ ],
+ "peak_rss_mb": 298.0
+}

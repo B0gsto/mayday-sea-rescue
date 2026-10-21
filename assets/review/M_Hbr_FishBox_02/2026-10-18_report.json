@@ -2,7 +2,7 @@
  "asset": "M_Hbr_FishBox_02",
  "name": "M_Hbr_FishBox_02",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -551,5 +551,5 @@
   1.3320000171661377,
   0.6299999952316284
  ],
- "peak_rss_mb": 296.6
+ "peak_rss_mb": 252.6
 }

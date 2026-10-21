@@ -157,6 +157,58 @@ local T: { [string]: Template } = {
 		tokens = { "SHORT_{cs}", "TASKING_READY_TASKING" },
 	},
 	all_accounted = { voice = "CG", priority = P.Tasking, tokens = { "FERRY_ALL_ACCOUNTED" } },
+	-- wildlife close-out (H4): the animal is aboard, not a vessel secured
+	wildlife_safe = {
+		voice = "CG",
+		priority = P.Reply,
+		tokens = { "SHORT_{cs}", "'Animal safe. Good work. Out.'" },
+	},
+	-- cliff casualty (docs/09 section 8.5): the crew's sighting and the recovery acknowledgement
+	cliff_sighted = {
+		voice = "CG",
+		priority = P.Reply,
+		tokens = {
+			"SHORT_{cs}",
+			"'Casualty sighted on the ledge. On the line, over.'",
+		},
+	},
+	cliff_recovered = {
+		voice = "CG",
+		priority = P.Reply,
+		tokens = {
+			"SHORT_{cs}",
+			"'Casualty recovered. Handing over to the ambulance, out.'",
+		},
+	},
+	-- rip-current beach rescue (docs/09 section 8.4): the tasking (voiced from the fragments)
+	-- and the beach handover
+	tasking_rip = {
+		voice = "CG",
+		priority = P.Distress,
+		tokens = {
+			"OPEN_{cs}",
+			"STEM_LAUNCH_TO",
+			"OPTYPE_{optype}_M",
+			",",
+			"DIRECTION_{direction}_M",
+			"PLACE_{place}_E",
+			"STEM_INFORMANT_BEACH",
+			"CAS_DESC_{casDesc}_M",
+			",",
+			"CAS_KIT_{casKit}_M",
+			",",
+			"CAS_STATE_{casState}_E",
+			"STEM_OVER",
+		},
+	},
+	rip_handover = {
+		voice = "CG",
+		priority = P.Reply,
+		tokens = {
+			"SHORT_{cs}",
+			"'Lifeguards have them on the beach. Well done. Out.'",
+		},
+	},
 	gale_warning = {
 		voice = "CG",
 		priority = P.Tasking,

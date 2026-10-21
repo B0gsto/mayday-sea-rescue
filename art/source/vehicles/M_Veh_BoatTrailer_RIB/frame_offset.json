@@ -1,0 +1,18 @@
+{
+ "offset": [
+  -0.0,
+  -14.3975,
+  -0.015
+ ],
+ "bbox_studs": [
+  7.33,
+  28.775,
+  5.1731
+ ],
+ "coupler": [
+  0.0,
+  -14.0575,
+  1.565
+ ],
+ "note": "offset added to the authored nose-at-Y0 frame; Blender studs"
+}

@@ -53,6 +53,7 @@ local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local TOW_TAG = "VehicleTowed"
@@ -78,6 +79,7 @@ local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
 -- cold open helm state per jet ski: auto-throttle still holding, Assist ease acting
 type ColdOpenState = { auto: boolean, easing: boolean }
 local coldOpens: { [Model]: ColdOpenState } = setmetatable({}, { __mode = "k" }) :: any
+local unstick: { [Model]: Unstick.State } = setmetatable({}, { __mode = "k" }) :: any
 
 -- CONTRACT: OceanController.GetVisualHeight(x, z) from stream A, if it exists.
 local ocean: any = nil
@@ -130,6 +132,68 @@ local function snapRemote(model: Model, dt: number, now: number)
 	current += (target - current) * math.min(1, dt * VISUAL_SMOOTHING)
 	visualOffset[model] = current
 	setVisualOffset(model, current)
+end
+
+-- A hull pinned on a quay or breakwater: four short horizontal rays from the root find the
+-- contact and return the normal pointing out of the wall.
+local function dockContact(model: Model): (boolean, Vector3?)
+	local root = model.PrimaryPart
+	if not root then
+		return false, nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { model }
+	local size = root.Size
+	local reach = math.max(size.X, size.Z) * 0.5 + 2
+	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
+	local dirs = {
+		forward,
+		-forward,
+		root.CFrame.RightVector,
+		-root.CFrame.RightVector,
+	}
+	for _, raw in dirs do
+		local dir = Vector3.new(raw.X, 0, raw.Z)
+		if dir.Magnitude > 1e-3 then
+			dir = dir.Unit
+			local hit = Workspace:Raycast(root.Position, dir * reach, params)
+			local part = hit and hit.Instance
+			if part and part:IsA("BasePart") then
+				local node: Instance? = part
+				while node do
+					local name = node.Name
+					if
+						string.find(name, "Breakwater", 1, true)
+						or string.find(name, "Quay", 1, true)
+					then
+						return true, -dir
+					end
+					node = node.Parent
+				end
+			end
+		end
+	end
+	return false, nil
+end
+
+local function unstickBoat(model: Model, throttle: number, speed: number, dt: number)
+	local state = unstick[model]
+	if not state then
+		state = Unstick.new()
+		unstick[model] = state
+	end
+	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
+		local wedged, normal = dockContact(model)
+		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
+			local root = model.PrimaryPart
+			if root then
+				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
+			end
+		end
+	else
+		Unstick.step(state, dt, false, speed, throttle) -- not pinned: reset the timer
+	end
 end
 
 -- Throws the rider off a capsizing sit-on hull (the kill cord then stops the engine).
@@ -218,6 +282,25 @@ local function coldOpenCasualty(model: Model): Vector3?
 	return if typeof(target) == "Vector3" then target else nil
 end
 
+-- True once the cold-open casualty holds on: the approach ease must let go for the tow in.
+local function coldOpenHeld(model: Model): boolean
+	local opId = model:GetAttribute("ColdOpenOpId")
+	local props = Workspace:FindFirstChild("CallProps")
+	if opId ~= nil and props then
+		for _, m in props:GetChildren() do
+			if
+				m:IsA("Model")
+				and m.Name == "Victim"
+				and m:GetAttribute("CallId") == opId
+				and m:GetAttribute("PiwMode") == "held"
+			then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -- The throttle the cold-open jet ski really gets (auto-throttle, then the player's, eased).
 local function coldOpenThrottle(model: Model, input: number, now: number): number
 	local root = model.PrimaryPart
@@ -253,7 +336,7 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 		end
 	end
 	local assist = localPlayer:GetAttribute("OpsPro") ~= true
-	local onApproach = model:GetAttribute("ColdOpenApproach") == true
+	local onApproach = model:GetAttribute("ColdOpenApproach") == true and not coldOpenHeld(model)
 	local wasEasing = st.easing
 	st.easing = onApproach
 		and ColdOpen.updateEase(
@@ -274,6 +357,28 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 		model:SetAttribute("AssistEase", st.easing)
 	end
 	return throttle
+end
+
+-- The server can seat us before the PlayerModule hooks Humanoid.Seated (the cold open seats on
+-- spawn, a re-seat can reorder Seated true/false): then Roblox never fills ThrottleFloat /
+-- SteerFloat and W/S/A/D, the stick and the triggers do nothing. Hand the seat over ourselves.
+local controlModule: any = nil
+local function engageControls(seat: VehicleSeat)
+	if controlModule == nil then
+		local ps = localPlayer:FindFirstChild("PlayerScripts")
+		local pm = ps and ps:FindFirstChild("PlayerModule")
+		local cmod = pm and pm:FindFirstChild("ControlModule")
+		if not cmod then
+			return -- not loaded yet: try again next frame
+		end
+		local ok, cm = pcall(require :: any, cmod)
+		controlModule = if ok and type(cm) == "table" then cm else false
+	end
+	local cm = controlModule
+	local vc = cm and cm.vehicleController
+	if cm and not (vc and vc.enabled and vc.vehicleSeat == seat) then
+		pcall(cm.OnHumanoidSeated, cm, true, seat)
+	end
 end
 
 local function stopSimulating(model: Model)
@@ -311,11 +416,13 @@ local function step(dt: number)
 						child.PrimaryPart.AssemblyLinearVelocity = Vector3.new(look.X, 0, look.Z).Unit
 							* launchSpeed
 					end
+					engageControls(seat)
 					local throttle = coldOpenThrottle(child, seat.ThrottleFloat, now)
 					telemetry = Simulator.step(child, throttle, seat.SteerFloat, now)
 					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
+					unstickBoat(child, seat.ThrottleFloat, telemetry and telemetry.speed or 0, dt)
 				elseif isLocalTow(child) then
 					Simulator.step(child, 0, 0, now)
 					nowSimulated[child] = true
@@ -376,14 +483,53 @@ function BoatController.Init()
 	end
 end
 
+-- 3. Board (E / tap / X): a local prompt on the player's own craft while its helm is free. It
+--    stands them on the seat, whose touch seats them server-side like walking onto it (VehicleService
+--    checks the owner). Scenery boats get none: only Workspace.Vehicles craft owned by us.
+local function addBoardPrompt(model: Instance)
+	if not model:IsA("Model") or model:GetAttribute("Owner") ~= localPlayer.UserId then
+		return
+	end
+	local found = model:WaitForChild("DriverSeat", 10) -- may stream in after the model
+	if not (found and found:IsA("VehicleSeat")) then
+		return
+	end
+	local seat: VehicleSeat = found
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "Board"
+	prompt.ActionText = "Board"
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 14
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = seat
+	local function refresh()
+		prompt.Enabled = seat.Occupant == nil
+	end
+	seat:GetPropertyChangedSignal("Occupant"):Connect(refresh)
+	refresh()
+	prompt.Triggered:Connect(function()
+		local character = localPlayer.Character
+		if character and seat.Occupant == nil then
+			character:PivotTo(seat.CFrame * CFrame.new(0, 2.5, 0))
+		end
+	end)
+end
+
 function BoatController.Start()
 	local folder = Workspace:WaitForChild("Vehicles", 30)
 	if folder and folder:IsA("Folder") then
 		vehicles = folder
+		folder.ChildAdded:Connect(function(child)
+			task.spawn(addBoardPrompt, child)
+		end)
+		for _, child in folder:GetChildren() do
+			task.spawn(addBoardPrompt, child)
+		end
 		folder.ChildRemoved:Connect(function(child)
 			if child:IsA("Model") then
 				visualOffset[child] = nil
 				simulated[child] = nil
+				unstick[child] = nil
 			end
 		end)
 	else

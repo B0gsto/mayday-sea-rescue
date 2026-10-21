@@ -36,25 +36,30 @@ return function(t)
 		return steps
 	end
 
-	-- a live PIW: the listed step ids at the grade by me, the rest by an NPC
-	local function piw(grades, recoveryMechanic)
+	-- a live operation: the listed step ids at the grade by me, the rest by an NPC. Since 2026-10-21
+	-- the Person in the Water plan is tasking, launch, recovery (auto_board), transport, so the care
+	-- steps come from the cliff call and the swimmer recovery from the rip current.
+	local function live(opId, grades, recoveryMechanic)
 		local steps = {}
-		for _, s in Operations.Defs.PersonInWater.steps do
+		for _, s in Operations.Defs[opId].steps do
 			local g = grades[s.id]
 			table.insert(steps, {
 				id = s.id,
 				grade = g or "Silver",
 				userId = if g then ME else nil,
-				mechanicId = if s.id == "recovery"
-					then (recoveryMechanic or "recover_throwbag")
+				mechanicId = if s.id == "recovery" and recoveryMechanic
+					then recoveryMechanic
 					else s.mechanicId,
 			})
 		end
 		return steps
 	end
+	local function piw(grades)
+		return live("PersonInWater", grades)
+	end
 
 	t.test("exercise definitions are real procedures on existing mechanics", function()
-		t.expect(#Exercises.Order).toBe(4)
+		t.expect(#Exercises.Order).toBe(5)
 		for _, id in Exercises.Order do
 			local ex = Exercises.get(id)
 			t.expect(ex.def.id).toBe(id)
@@ -161,17 +166,17 @@ return function(t)
 		t.expect(#drill.earned).toBe(0)
 	end)
 
-	t.test("Helm: exercise plus 2 operations with the approach at Silver", function()
+	t.test("Helm: exercise plus 2 operations with the pick-up at Silver", function()
 		local d = data(0)
-		local r = Rules.recordOperation(d, "PersonInWater", piw({ approach = "Silver" }), ME)
+		local r = Rules.recordOperation(d, "PersonInWater", piw({ recovery = "Silver" }), ME)
 		t.expect(r.counted[1]).toBe("Helm")
 		t.expect(d.certLive.Helm).toBe(1)
-		-- Bronze approach, an NPC approach, the cold open's Assist ease: none count
-		Rules.recordOperation(d, "PersonInWater", piw({ approach = "Bronze" }), ME)
+		-- Bronze pick-up, an NPC pick-up, the cold open's Assist ease: none count
+		Rules.recordOperation(d, "PersonInWater", piw({ recovery = "Bronze" }), ME)
 		Rules.recordOperation(d, "PersonInWater", piw({}), ME)
-		local eased = piw({ approach = "Gold" })
+		local eased = piw({ recovery = "Gold" })
 		for _, s in eased do
-			if s.id == "approach" then
+			if s.id == "recovery" then
 				s.assistEase = true
 			end
 		end
@@ -202,19 +207,35 @@ return function(t)
 		t.expect(certBadge.badge).toBe("CertHelm")
 	end)
 
+	t.test("the cold open's credited approach counts toward Helm", function()
+		local d = data(0)
+		-- OperationService adds this step when the cold open completes (design 2026-10)
+		local steps = piw({ recovery = "Silver" })
+		table.insert(steps, {
+			id = "approach",
+			grade = "Silver",
+			userId = ME,
+			assistEase = false,
+			mechanicId = "approach",
+		})
+		local r = Rules.recordOperation(d, "PersonInWater", steps, ME)
+		t.expect(table.find(r.counted, "Helm")).toBeTruthy()
+		t.expect(d.certLive.Helm).toBe(1)
+	end)
+
 	t.test("Casualty Care needs survey and treatment both at Silver", function()
 		local d = data()
 		Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ survey = "Gold", treatment = "Bronze" }),
+			"CliffCasualty",
+			live("CliffCasualty", { survey = "Gold", treatment = "Bronze" }),
 			ME
 		)
 		t.expect(d.certLive.CasualtyCare).toBeNil()
 		local r = Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ survey = "Gold", treatment = "Silver" }),
+			"CliffCasualty",
+			live("CliffCasualty", { survey = "Gold", treatment = "Silver" }),
 			ME
 		)
 		t.expect(d.certLive.CasualtyCare).toBe(1)
@@ -223,14 +244,14 @@ return function(t)
 		t.expect(string.find(r.badges[1].text, "1 of 2 operations", 1, true) ~= nil).toBe(true)
 		Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ survey = "Silver", treatment = "Gold" }),
+			"CliffCasualty",
+			live("CliffCasualty", { survey = "Silver", treatment = "Gold" }),
 			ME
 		)
 		Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ survey = "Silver", treatment = "Gold" }),
+			"CliffCasualty",
+			live("CliffCasualty", { survey = "Silver", treatment = "Gold" }),
 			ME
 		)
 		t.expect(d.certLive.CasualtyCare).toBe(2) -- capped at the count
@@ -241,15 +262,15 @@ return function(t)
 		-- a throw-bag recovery is not a swimmer recovery
 		Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ recovery = "Gold" }, "recover_throwbag"),
+			"RipCurrent",
+			live("RipCurrent", { recovery = "Gold" }, "recover_throwbag"),
 			ME
 		)
 		t.expect(d.certLive.RescueSwimmer).toBeNil()
 		Rules.recordOperation(
 			d,
-			"PersonInWater",
-			piw({ recovery = "Silver" }, "recover_swimmer"),
+			"RipCurrent",
+			live("RipCurrent", { recovery = "Silver" }, "recover_swimmer"),
 			ME
 		)
 		t.expect(d.certLive.RescueSwimmer).toBe(1)
@@ -313,7 +334,7 @@ return function(t)
 		d.certs.CasualtyCare = true
 		d.certs.RescueSwimmer = true
 		t.expect(Rules.rankIndex(d)).toBe(3)
-		t.expect(Rules.certHint(d)).toBeNil()
+		t.expect(Rules.certHint(d)).toBe("Coxswain: pass the exercise at the station")
 		t.expect((Rules.canBuyVehicle(d, "RIB"))).toBe(false) -- rank met, Cash missing
 		d.cash = 4000
 		t.expect((Rules.canBuyVehicle(d, "RIB"))).toBe(true)
@@ -460,7 +481,6 @@ return function(t)
 	end)
 
 	t.test("the boat-handling exercise berths alone: no tow-line steps", function()
-		local Procedures = t.load("src/client/Mechanics/Tow/Procedures.luau")
 		local alongside
 		for _, s in Exercises.get("ExerciseBoatHandling").def.steps do
 			if s.mechanicId == "berth" then
@@ -471,12 +491,7 @@ return function(t)
 		for _, s in Operations.Defs.DisabledVessel.steps do
 			t.expect(s.noTow).toBeNil() -- the live tow keeps its release
 		end
-		local m = Procedures.noTowBerthMetrics(1.5, { "bow", "stern", "fwdSpring", "aftSpring" })
-		t.expect(m.lineInWater).toBe(0)
-		t.expect(m.lineOrderRight).toBe(1)
-		t.expect(Grading.stepGrade(alongside, m)).toBe("Gold")
-		local wrong = Procedures.noTowBerthMetrics(5, { "stern", "bow", "fwdSpring", "aftSpring" })
-		t.expect(wrong.lineOrderRight).toBe(0)
-		t.expect(Grading.stepGrade(alongside, wrong) ~= "Gold").toBe(true)
+		t.expect(Grading.stepGrade(alongside, { contactSpeed = 1.5 })).toBe("Gold")
+		t.expect(Grading.stepGrade(alongside, { contactSpeed = 5 }) ~= "Gold").toBe(true)
 	end)
 end

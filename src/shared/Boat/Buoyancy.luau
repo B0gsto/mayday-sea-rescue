@@ -78,6 +78,8 @@ Buoyancy.WAKE_TRIM = 4 -- degrees bow down when the stern wave catches up -- tun
 Buoyancy.WAKE_PUSH = 0.25 -- of accel, the following stern wave's push -- tune
 Buoyancy.APPROACH_GAIN = 1.5 -- 1/s speed governor gain in approach mode -- tune
 Buoyancy.APPROACH_ACCEL = 0.35 -- of accel / brakeDecel the governor may use -- tune
+Buoyancy.STATION_KEEP_SPEED = 1.5 -- studs/s: an idling hull below this holds station -- tune
+Buoyancy.STATION_KEEP_GAIN = 3 -- 1/s damping toward rest while holding station -- tune
 Buoyancy.IDLE_GAIN = 0.6 -- 1/s -- tune
 
 local function smoothstep(a: number, b: number, x: number): number
@@ -287,7 +289,8 @@ end
 -- Reverse throttle brakes while moving forward, then reverses slowly. No thrust out of the water.
 -- approach: a speed governor holds throttle * approachSpeed with gentle force (fine throttle);
 -- throttle 0 is neutral and the hull glides. engineRunning false (kill cord pulled): no thrust.
--- With the engine running and the throttle closed, an idling jet creeps at idleCreep.
+-- With the engine running and the throttle closed, an idling jet holds station at rest (a low
+-- speed damper instead of creep) and only pushes at idleCreep when already moving faster.
 function Buoyancy.thrust(
 	throttle: number,
 	forwardSpeed: number,
@@ -328,14 +331,19 @@ function Buoyancy.thrust(
 			force = mass * handling.accel * Buoyancy.REVERSE_ACCEL_FRACTION * throttle
 		end
 	end
-	if not approach and math.abs(throttle) < 0.02 and handling.idleCreep > 0 then
-		force = mass
-			* math.clamp(
-				Buoyancy.forwardDecel(handling.idleCreep, handling, 1)
-					+ (handling.idleCreep - forwardSpeed) * Buoyancy.IDLE_GAIN,
-				0,
-				handling.accel * 0.1
-			)
+	if not approach and math.abs(throttle) < 0.02 then
+		if math.abs(forwardSpeed) < Buoyancy.STATION_KEEP_SPEED then
+			-- station keeping: hold the hull still instead of creeping into the breakwater
+			force = -mass * Buoyancy.STATION_KEEP_GAIN * forwardSpeed
+		elseif handling.idleCreep > 0 then
+			force = mass
+				* math.clamp(
+					Buoyancy.forwardDecel(handling.idleCreep, handling, 1)
+						+ (handling.idleCreep - forwardSpeed) * Buoyancy.IDLE_GAIN,
+					0,
+					handling.accel * 0.1
+				)
+		end
 	end
 	return force * math.clamp(contact, 0, 1)
 end

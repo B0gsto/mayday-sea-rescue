@@ -205,6 +205,15 @@ elseif ARGS.mode == "colors" then
 	-- T4: Grass carries an olive tint again so the Decoration blades read as turf (they take the Grass colour); the
 	-- Turf albedo is stored pre-divided by it (art/source/materials/library.py GRASS_COLOR, process.py)
 	tints.Grass = { 148, 154, 112 }
+	-- Ground pass (country.png): the variant albedos average khaki / brown, and from the air (and on low graphics
+	-- quality) terrain draws close to those averages, so the island read ~45% brown. Multipliers push the swards
+	-- green (pasture, dark lush olive, pale hay), heather / hedge banks a dark purple-brown, granite neutral grey.
+	tints.Grass = { 121, 158, 87 }
+	tints.WoodPlanks = { 186, 235, 167 }
+	tints.Snow = { 195, 232, 178 }
+	tints.Brick = { 210, 241, 205 }
+	tints.LeafyGrass = { 202, 187, 245 }
+	tints.Rock = { 235, 240, 250 }
 	for name, c in tints do
 		Terrain:SetMaterialColor((Enum.Material :: any)[name], Color3.fromRGB(c[1], c[2], c[3]))
 	end

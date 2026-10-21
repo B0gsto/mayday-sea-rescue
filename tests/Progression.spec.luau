@@ -31,7 +31,7 @@ return function(t)
 		local nextRank, progress = Rules.progressToNext(200)
 		t.expect(nextRank.id).toBe("Lifeguard")
 		t.expect(progress).toBeCloseTo(0.5, 1e-9)
-		local top, full = Rules.progressToNext(5000)
+		local top, full = Rules.progressToNext(Config.Ranks[#Config.Ranks].rep)
 		t.expect(top).toBeNil()
 		t.expect(full).toBe(1)
 	end)
@@ -49,6 +49,18 @@ return function(t)
 		t.expect(gRep).toBe(60)
 		local zero = Rules.applyAward(-10, 5, "Calm", false)
 		t.expect(zero).toBe(0)
+	end)
+
+	t.test("flat passive awards ignore every multiplier; op awards still stack", function()
+		-- normal op: x2.2 paid Cash (2x Cash + 10% friend), x2 storm, Great Storm doubles Rep
+		local cash, rep, mult = Rules.applyAward(250, 60, "Storm", true, 2.2, 2)
+		t.expect(cash).toBe(1100)
+		t.expect(rep).toBe(120)
+		t.expect(mult).toBeCloseTo(4.4, 1e-9)
+		local flatCash, flatRep, flatMult = Rules.applyAward(250, 60, "Storm", true, 2.2, 2, true)
+		t.expect(flatCash).toBe(250)
+		t.expect(flatRep).toBe(60)
+		t.expect(flatMult).toBe(1)
 	end)
 
 	t.test("gear bonus math", function()
@@ -92,6 +104,40 @@ return function(t)
 		t.expect(price).toBe(4000)
 		t.expect((Rules.canUseVehicle(data(0, 900, {}, { RIB = true }), "RIB"))).toBe(true)
 		t.expect((Rules.canUseVehicle(data(0, 900), "Helicopter"))).toBe(false)
+	end)
+
+	t.test("vehicle ownership: Cash-owned OR pass-owned; Robux-only needs the pass", function()
+		t.expect(Rules.vehiclePass("RIB")).toBe("RIBPass")
+		t.expect(Rules.vehiclePass("JetSki")).toBeNil() -- free at Recruit
+		-- the RIB: Cash-owned, or pass-owned at any rank
+		t.expect(Rules.ownsVehicle(data(0, 0), "RIB")).toBe(false)
+		t.expect(Rules.ownsVehicle(data(0, 0, {}, { RIB = true }), "RIB")).toBe(true)
+		t.expect(Rules.ownsVehicle(data(0, 0), "RIB", true)).toBe(true)
+		t.expect((Rules.canUseVehicle(data(0, 0), "RIB", true))).toBe(true)
+		-- a Robux-only vehicle: never from Cash or a stale profile entry
+		for _, id in
+			{
+				"StormRunner",
+				"Tidewalker",
+				"RiptideX",
+				"GildedGull",
+				"HarbourGT",
+				"LighthouseCruiser",
+			}
+		do
+			t.expect(Rules.vehiclePass(id) ~= nil).toBe(true)
+			local ok, why = Rules.canUseVehicle(data(1e9, 1e6, {}, { [id] = true }), id)
+			t.expect(ok).toBe(false)
+			t.expect(why).toBe("Robux only")
+			t.expect((Rules.canBuyVehicle(data(1e9, 1e6), id))).toBe(false)
+			t.expect((Rules.canUseVehicle(data(0, 0), id, true))).toBe(true)
+		end
+	end)
+
+	t.test("a fresh profile starts with the docs 03 starting Cash", function()
+		-- docs 03: the cold open pays the first Cash, so a new profile starts at 0
+		t.expect(Config.StartingCash).toBe(0)
+		t.expect(Rules.defaultData().cash).toBe(Config.StartingCash)
 	end)
 
 	t.test("migrate repairs corrupt saves and stamps the version", function()

@@ -1,0 +1,1054 @@
+{
+ "asset": "M_Kit_FirstAidBag",
+ "name": "M_Kit_FirstAidBag",
+ "date": "2026-10-18",
+ "commit": "9d39bf5d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD0.fbx",
+   "bytes": 506060,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_FirstAidBag_COL",
+    "M_Kit_FirstAidBag_Hardware_LOD0",
+    "M_Kit_FirstAidBag_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_FirstAidBag_COL.001",
+     "min": [
+      -0.9279,
+      -0.7776,
+      0.0
+     ],
+     "max": [
+      0.9279,
+      0.7776,
+      1.3097
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_FirstAidBag_Hardware_LOD0.001",
+     "min": [
+      -0.8526,
+      -0.7776,
+      0.0299
+     ],
+     "max": [
+      0.8526,
+      0.6822,
+      0.9887
+     ],
+     "polygons": 1672,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_FirstAidBag_LOD0.001",
+     "min": [
+      -0.9279,
+      -0.7355,
+      0.0
+     ],
+     "max": [
+      0.9279,
+      0.7776,
+      1.3097
+     ],
+     "polygons": 4440,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD1.fbx",
+   "bytes": 296748,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_FirstAidBag_Hardware_LOD1",
+    "M_Kit_FirstAidBag_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_FirstAidBag_Hardware_LOD1.001",
+     "min": [
+      -0.8526,
+      -0.7776,
+      0.0299
+     ],
+     "max": [
+      0.8526,
+      0.6822,
+      0.9887
+     ],
+     "polygons": 818,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_FirstAidBag_LOD1.001",
+     "min": [
+      -0.9279,
+      -0.7376,
+      -0.0004
+     ],
+     "max": [
+      0.9279,
+      0.7776,
+      1.3097
+     ],
+     "polygons": 2214,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD2.fbx",
+   "bytes": 168092,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_FirstAidBag_Hardware_LOD2",
+    "M_Kit_FirstAidBag_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_FirstAidBag_Hardware_LOD2.001",
+     "min": [
+      -0.8506,
+      -0.7776,
+      0.0285
+     ],
+     "max": [
+      0.8516,
+      0.6818,
+      0.9887
+     ],
+     "polygons": 418,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_FirstAidBag_LOD2.001",
+     "min": [
+      -0.9306,
+      -0.7376,
+      -0.0004
+     ],
+     "max": [
+      0.9322,
+      0.7776,
+      1.3076
+     ],
+     "polygons": 1104,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag.attachments.json",
+   "attachments": [
+    "ATT_Grip",
+    "ATT_Open",
+    "ATT_Strap_L",
+    "ATT_Strap_R"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_FirstAidBag/M_Kit_FirstAidBag.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_LOD0"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4440 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.77e-04, 1590 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.998"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2233 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1021 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_Hardware_LOD0"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1672 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.89e-05, 744 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 878 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1944 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_LOD1"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2214 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.36e-04, 724 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.999, v 0.001 to 1.000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2214 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.002 (max 0.02), UV area by 18.5% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_Hardware_LOD1"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "818 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.28e-06, 470 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 818 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.5% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_LOD2"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1104 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.60e-04, 506 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.999, v 0.000 to 1.000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1104 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.002 (max 0.02), UV area by 28.8% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_Hardware_LOD2"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "418 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.12e-05, 320 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 418 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.0% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_FirstAidBag_COL"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6112 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3032 of 4000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1522 of 2000"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x - x - m, spec - x - x - m (art/reference/M_Kit_FirstAidBag/dims.md)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_FirstAidBag_COL"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_MET.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_MET.png"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Open",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Strap_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Strap_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_FirstAidBag_COL, M_Kit_FirstAidBag_Hardware_LOD0, M_Kit_FirstAidBag_LOD0; 6124 triangles (scene 6124)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_FirstAidBag_Hardware_LOD1, M_Kit_FirstAidBag_LOD1; 3032 triangles (scene 3032)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_FirstAidBag_Hardware_LOD2, M_Kit_FirstAidBag_LOD2; 1522 triangles (scene 1522)"
+  },
+  {
+   "subject": "M_Kit_FirstAidBag_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_FirstAidBag_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4440,
+   "texel_density": 1021.3
+  },
+  {
+   "name": "M_Kit_FirstAidBag_Hardware_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1672,
+   "texel_density": 1944.0
+  },
+  {
+   "name": "M_Kit_FirstAidBag_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2214,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_FirstAidBag_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1104,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_FirstAidBag_Hardware_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 818,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_FirstAidBag_Hardware_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 418,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_FirstAidBag_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  1.855873703956604,
+  1.5552997589111328,
+  1.3096952438354492
+ ],
+ "peak_rss_mb": 268.6
+}

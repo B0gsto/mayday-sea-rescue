@@ -15,6 +15,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local CosmeticLoadout =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CosmeticLoadout"))
 local Cosmetics = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Cosmetics"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 
@@ -38,8 +40,22 @@ local EQUIP_TIMEOUT = 8
 
 local CosmeticPicker = {}
 
-local function owns(passKey: string): boolean
-	return player:GetAttribute("Pass_" .. passKey) == true
+local ownedRaw = ""
+local ownedSet: { [string]: boolean } = {}
+
+local function owns(key: string): boolean
+	if player:GetAttribute("Pass_" .. key) == true then
+		return true
+	end
+	local raw = player:GetAttribute("CosOwned")
+	if type(raw) ~= "string" then
+		return false
+	end
+	if raw ~= ownedRaw then
+		ownedRaw = raw
+		ownedSet = CosmeticLoadout.decode(raw)
+	end
+	return ownedSet[key] == true
 end
 
 -- A readable slot name ("LightBar" -> "Light bar", "DogWear" -> "Dog wear").
@@ -181,6 +197,7 @@ function CosmeticPicker.new(parent: Instance, slot: string, opts: Options?): Pic
 			player:GetAttributeChangedSignal("Pass_" .. pass):Connect(refresh)
 		)
 	end
+	table.insert(connections, player:GetAttributeChangedSignal("CosOwned"):Connect(refresh))
 	refresh()
 
 	return {

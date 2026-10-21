@@ -1,0 +1,20 @@
+{
+ "note": "M_Road_CrashBarrier's MaterialVariant row (docs/12 2.4 asks for trim + MaterialVariant). Paste into assets/materials/roads_variants.json 'variants' through B02's writer art/source/materials/wire.py; this asset did not touch that file or wire.py.",
+ "row": {
+  "name": "RoadCrashBarrierGalv",
+  "set": "Galv",
+  "base": "Metal",
+  "studsPerTile": 5.7,
+  "pattern": "Regular",
+  "use": "barrier runs built from Parts, gates and poles beside the roads; matches the M_Road_CrashBarrier model",
+  "maps": {
+   "ColorMap": "AssetIds.Textures.M_Road_CrashBarrier.Galv",
+   "NormalMap": "AssetIds.Textures.M_Road_CrashBarrier.Galv",
+   "RoughnessMap": "AssetIds.Textures.M_Road_CrashBarrier.Galv",
+   "MetalnessMap": "AssetIds.Textures.M_Road_CrashBarrier.Galv"
+  },
+  "wetTwin": "RoadCrashBarrierGalv_Wet",
+  "wetMaps": ["ALB_Wet", "RGH_Wet"],
+  "tileM": [1.9, 1.15]
+ }
+}

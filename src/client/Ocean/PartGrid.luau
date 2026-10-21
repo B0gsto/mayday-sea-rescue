@@ -1,94 +1,154 @@
 --!strict
--- PartGrid: fallback ocean when EditableMesh is unavailable (permissions, memory budget, old
--- client). A low-res grid of thin tiles, each placed on the wave surface at its centre and
--- tilted to the surface normal, moved with one workspace:BulkMoveTo per update. Looks faceted
--- but keeps the game playable and readable. Allocates one CFrame per tile per update (fallback
--- only; at most 12 x 12 = 144 tiles).
+-- PartGrid: fallback ocean when EditableMesh is unavailable (the experience's "Allow Mesh / Image
+-- APIs" security setting off, memory budget, old client). A lattice of shared vertices on the wave
+-- surface, each cell drawn as two triangles of two WedgeParts each, so neighbours share their edges
+-- exactly (no gaps or steps). Wedges wear the OceanWater MaterialVariant (the ocean normal map and
+-- glossy roughness; template WaterVariant.model.json, cloned into MaterialService on first use).
+-- Allocates CFrames per update (fallback only; at most 12 x 12 cells = 576 wedges).
 
+local MaterialService = game:GetService("MaterialService")
 local Workspace = game:GetService("Workspace")
 
 local OceanPalette = require(script.Parent.OceanPalette)
 
-local THICKNESS = 1
-local OVERSIZE = 1.12 -- tiles overlap so tilted neighbours do not leave gaps -- tune
+local THICKNESS = 0.1 -- wedge slab; its top face lies on the surface
+local VARIANT = "OceanWater"
 
 export type PartGrid = {
-	parts: { BasePart },
+	parts: { WedgePart }, -- 4 per cell: triangle 1 (w1, w2), triangle 2 (w1, w2)
 	cframes: { CFrame },
-	lx: { number },
-	lz: { number },
-	bucket: { number },
-	count: number,
+	cells: number,
+	cellSize: number,
 	half: number,
+	ys: { number }, -- world Y per lattice vertex (i * (cells + 1) + j + 1)
+	bucket: { number }, -- palette bucket per triangle
+	tint: Color3, -- water tint the buckets were coloured with
 }
 
 local PartGrid = {}
 
+local function ensureVariant(): boolean
+	if MaterialService:FindFirstChild(VARIANT) then
+		return true
+	end
+	local template = script.Parent:FindFirstChild("WaterVariant")
+	if not (template and template:IsA("MaterialVariant")) then
+		return false
+	end
+	local variant = template:Clone()
+	variant.Name = VARIANT
+	variant.Parent = MaterialService
+	return true
+end
+
 function PartGrid.new(parent: Instance, cells: number, cellSize: number): PartGrid
-	local half = cells * cellSize / 2
-	local count = cells * cells
-	local parts: { BasePart } = table.create(count)
-	local cframes: { CFrame } = table.create(count)
-	local lx: { number } = table.create(count)
-	local lz: { number } = table.create(count)
-	local size = Vector3.new(cellSize * OVERSIZE, THICKNESS, cellSize * OVERSIZE)
-	for i = 0, cells - 1 do
-		for j = 0, cells - 1 do
-			local part = Instance.new("Part")
-			part.Name = "OceanTile"
-			part.Anchored = true
-			part.CanCollide = false
-			part.CanQuery = false
-			part.CanTouch = false
-			part.CastShadow = false
-			part.Material = Enum.Material.SmoothPlastic
-			part.TopSurface = Enum.SurfaceType.Smooth
-			part.BottomSurface = Enum.SurfaceType.Smooth
-			part.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
-			part.Size = size
-			part.Parent = parent
-			table.insert(parts, part)
-			table.insert(cframes, CFrame.identity)
-			table.insert(lx, (i + 0.5) * cellSize - half)
-			table.insert(lz, (j + 0.5) * cellSize - half)
+	local hasVariant = ensureVariant()
+	local count = cells * cells * 4
+	local parts: { WedgePart } = table.create(count)
+	for _ = 1, count do
+		local part = Instance.new("WedgePart")
+		part.Name = "OceanTri"
+		part.Anchored = true
+		part.CanCollide = false
+		part.CanQuery = false
+		part.CanTouch = false
+		part.CastShadow = false
+		part.Material = Enum.Material.SmoothPlastic
+		if hasVariant then
+			part.MaterialVariant = VARIANT
+		else
+			part.Reflectance = 0.08 -- tune
 		end
+		part.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
+		part.Parent = parent
+		table.insert(parts, part)
 	end
 	return {
 		parts = parts,
-		cframes = cframes,
-		lx = lx,
-		lz = lz,
-		bucket = table.create(count, OceanPalette.SEA_BUCKET),
-		count = count,
-		half = half,
+		cframes = table.create(count, CFrame.identity),
+		cells = cells,
+		cellSize = cellSize,
+		half = cells * cellSize / 2,
+		ys = table.create((cells + 1) * (cells + 1), 0),
+		bucket = table.create(cells * cells * 2, 0),
+		tint = Color3.new(),
 	}
 end
 
--- gradientAt(x, z) -> (worldY, dY/dX, dY/dZ)
+-- Places wedges n and n + 1 to fill triangle abc (the classic two-right-angle-wedge split along
+-- the altitude from the longest edge), slab top face on the triangle.
+local function triangle(grid: PartGrid, n: number, a: Vector3, b: Vector3, c: Vector3)
+	local ab, ac, bc = b - a, c - a, c - b
+	local abd, acd, bcd = ab:Dot(ab), ac:Dot(ac), bc:Dot(bc)
+	if abd > acd and abd > bcd then
+		c, a = a, c
+	elseif acd > bcd and acd > abd then
+		a, b = b, a
+	end
+	ab, ac, bc = b - a, c - a, c - b
+	local right = ac:Cross(ab).Unit
+	local up = bc:Cross(right).Unit
+	local back = bc.Unit
+	local height = math.abs(ab:Dot(up))
+	local sink = (if right.Y > 0 then right else -right) * (THICKNESS / 2)
+	local parts, cframes = grid.parts, grid.cframes
+	parts[n].Size = Vector3.new(THICKNESS, height, math.abs(ab:Dot(back)))
+	cframes[n] = CFrame.fromMatrix((a + b) / 2 - sink, right, up, back)
+	parts[n + 1].Size = Vector3.new(THICKNESS, height, math.abs(ac:Dot(back)))
+	cframes[n + 1] = CFrame.fromMatrix((a + c) / 2 - sink, -right, up, -back)
+end
+
+-- heightAt(x, z) -> world Y of the surface. tint: the flat-sea colour (matches the far plane);
+-- troughs and crests blend toward the palette's navy / foam.
 function PartGrid.update(
 	grid: PartGrid,
 	cx: number,
 	cz: number,
 	seaLevel: number,
-	gradientAt: (number, number) -> (number, number, number)
+	heightAt: (number, number) -> number,
+	tint: Color3
 )
-	local cframes, parts, bucket = grid.cframes, grid.parts, grid.bucket
-	local colours = OceanPalette.colours
-	for n = 1, grid.count do
-		local x, z = cx + grid.lx[n], cz + grid.lz[n]
-		local y, gx, gz = gradientAt(x, z)
-		local tangent = Vector3.new(1, gx, 0).Unit
-		local normal = Vector3.new(-gx, 1, -gz).Unit
-		-- Top face on the surface: centre half a tile thickness below it, along the normal.
-		cframes[n] =
-			CFrame.fromMatrix(Vector3.new(x, y, z) - normal * (THICKNESS / 2), tangent, normal)
-		local b = OceanPalette.bucketFor(y - seaLevel)
-		if b ~= bucket[n] then
-			bucket[n] = b
-			parts[n].Color = colours[b]
+	if tint ~= grid.tint then
+		grid.tint = tint
+		table.clear(grid.bucket)
+	end
+	local cells, size, half, ys = grid.cells, grid.cellSize, grid.half, grid.ys
+	local side = cells + 1
+	for i = 0, cells do
+		for j = 0, cells do
+			ys[i * side + j + 1] = heightAt(cx + i * size - half, cz + j * size - half)
 		end
 	end
-	Workspace:BulkMoveTo(parts, cframes, Enum.BulkMoveMode.FireCFrameChanged)
+	local colours, bucket, parts = OceanPalette.colours, grid.bucket, grid.parts
+	local n, t = 1, 1
+	for i = 0, cells - 1 do
+		local x0, x1 = cx + i * size - half, cx + (i + 1) * size - half
+		for j = 0, cells - 1 do
+			local z0, z1 = cz + j * size - half, cz + (j + 1) * size - half
+			local y00, y10 = ys[i * side + j + 1], ys[(i + 1) * side + j + 1]
+			local y01, y11 = ys[i * side + j + 2], ys[(i + 1) * side + j + 2]
+			local p00, p10 = Vector3.new(x0, y00, z0), Vector3.new(x1, y10, z0)
+			local p01, p11 = Vector3.new(x0, y01, z1), Vector3.new(x1, y11, z1)
+			triangle(grid, n, p00, p01, p10)
+			triangle(grid, n + 2, p10, p01, p11)
+			for k = 0, 1 do
+				local mean = (y10 + y01 + (if k == 0 then y00 else y11)) / 3
+				local b = OceanPalette.bucketFor(mean - seaLevel)
+				if b ~= bucket[t] then
+					bucket[t] = b
+					local colour = tint:Lerp(
+						colours[b],
+						math.min(math.abs(b - OceanPalette.SEA_BUCKET) * 2 / OceanPalette.HALF, 1)
+					)
+					parts[n + k * 2].Color = colour
+					parts[n + k * 2 + 1].Color = colour
+				end
+				t += 1
+			end
+			n += 4
+		end
+	end
+	Workspace:BulkMoveTo(parts, grid.cframes, Enum.BulkMoveMode.FireCFrameChanged)
 end
 
 function PartGrid.destroy(grid: PartGrid)

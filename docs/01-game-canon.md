@@ -41,8 +41,8 @@ Every feature serves at least one pillar. A feature that serves none is cut.
 - Not a MilSim. No military ranks to apply for, no group required. Training exercises exist but are short, optional and solo-friendly.
 - Not grim. Realistic does not mean scary: nobody drowns, nobody is hurt on screen, nothing frightens a young child.
 - Not an arcade fetch quest. No "hold E to rescue": every rescue is played step by step.
-- Not a loot-box game at launch. No paid random items.
-- Not pay-to-rank. Rank and Reputation can never be bought.
+- Not pay-to-win. Robux buys speed (capped Reputation and Cash) and looks, never skill: every promotion still needs its certification, and nothing paid changes a grade ([document 04](04-monetization.md), section 1).
+- Not a gambling game. The only random items are cosmetic Sea Chests, with odds shown before purchase and a Cash-bought chest for everyone ([document 04](04-monetization.md), section 4.5).
 
 ## 4. Setting: Port Haven and the Gale Isles
 
@@ -207,7 +207,7 @@ Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progr
 | **OSC** | On Scene Coordinator, the player who commands a big call. |
 | **Debrief** | The screen after an operation: step grades, condition graph, Rep and one tip. |
 | **Cash** | Soft currency. Earned from operations, spent on vehicles, gear and station upgrades. Can be bought in packs. |
-| **Reputation** | Rank XP. Earned only by playing. Never sold. |
+| **Reputation** | Rank XP. Earned by playing; can be sped up with Robux inside fixed caps ([document 04](04-monetization.md), section 4.4). |
 | **Service Star** | An endless prestige level after Admiral. Each one pays a cosmetic. |
 | **Harbor mouth** | The gap in the harbor wall. Sheltered in calm weather, full storm waves in a storm, with beginner storm calls. |
 | **Outpost** | A small dock at Skerry Isle or Gannet Rock. Free handover point for nearby operations. |

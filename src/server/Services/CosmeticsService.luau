@@ -17,7 +17,9 @@
 --
 -- API (server):
 --   CosmeticsService.Equipped(player, slot): string        the effective option id
---   CosmeticsService.Owns(player, passKey): boolean
+--   CosmeticsService.Owns(player, key): boolean            a game pass, or an earned flag key
+--   CosmeticsService.Refresh(player)                       re-sanitise (earned flags changed)
+--   player attribute "CosOwned"                            newline list of earned flag keys
 --   CosmeticsService.Equip(player, slot, id): (boolean, string)   same checks as the remote
 --   CosmeticsService.Changed: signal (player, slot, id)    an effective choice changed
 --   CosmeticsService.OnAction(name, handler(player, ...))  one handler per action name
@@ -33,10 +35,12 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local CosmeticLoadout = require(Shared:WaitForChild("CosmeticLoadout"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local CosmeticsService = {}
 CosmeticsService.Priority = 40 -- after DataService (20) and MonetizationService (30)
@@ -85,14 +89,20 @@ local function allow(player: Player, channel: string, rate: number, burst: numbe
 	return true
 end
 
+local function earnedOf(player: Player): { [string]: boolean }
+	local data = DataService.Get(player) :: any
+	return if data then CosmeticLoadout.owned(data.flags) else {}
+end
+
 local function ownsFor(player: Player): Cosmetics.Owns
-	return function(passKey: string): boolean
-		return MonetizationService.OwnsPass(player, passKey)
+	local earned = earnedOf(player)
+	return function(key: string): boolean
+		return MonetizationService.OwnsPass(player, key) or earned[key] == true
 	end
 end
 
-function CosmeticsService.Owns(player: Player, passKey: string): boolean
-	return MonetizationService.OwnsPass(player, passKey)
+function CosmeticsService.Owns(player: Player, key: string): boolean
+	return MonetizationService.OwnsPass(player, key) or earnedOf(player)[key] == true
 end
 
 function CosmeticsService.Equipped(player: Player, slot: string): string
@@ -119,7 +129,15 @@ local function apply(player: Player)
 	if not player.Parent then
 		return
 	end
-	local effective = Cosmetics.sanitize(savedOf(player) or {}, ownsFor(player))
+	local earned = earnedOf(player)
+	local owns: Cosmetics.Owns = function(key: string): boolean
+		return MonetizationService.OwnsPass(player, key) or earned[key] == true
+	end
+	local encoded = CosmeticLoadout.encode(earned)
+	if player:GetAttribute("CosOwned") ~= encoded then
+		player:SetAttribute("CosOwned", encoded)
+	end
+	local effective = Cosmetics.sanitize(savedOf(player) or {}, owns)
 	for slot, id in effective do
 		local attr = Cosmetics.attribute(slot)
 		if player:GetAttribute(attr) ~= id then
@@ -127,6 +145,11 @@ local function apply(player: Player)
 			changedEvent:Fire(player, slot, id)
 		end
 	end
+end
+
+--- Re-sanitise after earned flags changed (the Earned feature calls this).
+function CosmeticsService.Refresh(player: Player)
+	apply(player)
 end
 
 function CosmeticsService.Equip(player: Player, slot: any, id: any): (boolean, string)
@@ -223,7 +246,7 @@ function CosmeticsService.KindOf(model: Instance?): string?
 		return "Car"
 	end
 	local id = model:GetAttribute("VehicleId")
-	if id == "JetSki" then
+	if VehicleConfig.isJetSki(id) then
 		return "JetSki"
 	elseif type(id) == "string" then
 		return "Boat"

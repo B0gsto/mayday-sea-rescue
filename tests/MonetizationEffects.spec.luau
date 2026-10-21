@@ -138,13 +138,15 @@ return function(t)
 				CrewBoost = true,
 				CallTheStorm = true,
 				CallTheGreatStorm = true,
+				DayDoubleCash = true, -- OwnsPass accepts a running day pass
+				DayQuickLaunch = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}
 		for kind, items in { Products = Config.Products, GamePasses = Config.GamePasses } do
 			for key, item in items do
 				t.expect(`{kind}.{key}={item.ready == true}`)
-					.toBe(`{kind}.{key}={ready[kind][key] == true}`)
+					.toBe(`{kind}.{key}={ready[kind][key] == true or item.vehicle ~= nil}`) -- vehicle passes: ProgressionRules.vehiclePass
 				t.expect(item.id >= 0 and item.id % 1 == 0).toBe(true) -- 0 = off; RP-M4 (deploy.py) writes the real ids
 			end
 		end
@@ -153,5 +155,25 @@ return function(t)
 			string.find(Config.GamePasses.StarterKit.description, "later update", 1, true) ~= nil
 		)
 			.toBe(true)
+	end)
+
+	t.test("day passes run 24 h of real time, stack, and end", function()
+		local shop = {}
+		local now = 1_800_000_000
+		t.expect(Effects.dayPassEnds(nil, "DoubleCash")).toBe(0)
+		local ends = Effects.addDayPass(shop, "DoubleCash", 24, now)
+		t.expect(ends >= now + 24 * 3600 and ends < now + 25 * 3600).toBe(true)
+		t.expect(shop.dayDoubleCash < 1e6).toBe(true) -- the flag limit
+		t.expect(Effects.dayPassEnds(shop, "DoubleCash")).toBe(ends)
+		t.expect(Effects.dayPassEnds(shop, "QuickLaunch")).toBe(0)
+		t.expect(Effects.addDayPass(shop, "DoubleCash", 24, now + 3600)).toBe(ends + 24 * 3600)
+		local later = ends + 24 * 3600 + 10 -- long expired: a new day starts from now
+		t.expect(Effects.addDayPass(shop, "DoubleCash", 24, later) >= later + 24 * 3600).toBe(true)
+		for _, item in Config.Products do
+			if item.dayPassFor then
+				t.expect(Config.GamePasses[item.dayPassFor] ~= nil).toBe(true)
+				t.expect(item.dayPassHours).toBe(24)
+			end
+		end
 	end)
 end

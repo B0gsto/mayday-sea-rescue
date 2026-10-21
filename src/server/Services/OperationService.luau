@@ -26,6 +26,7 @@ local SeasonalEvents = require(Shared:WaitForChild("Config"):WaitForChild("Seaso
 local SeasonalRules = require(Shared:WaitForChild("SeasonalRules"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local OpsFolder = Shared:WaitForChild("Ops")
+local Board = require(OpsFolder:WaitForChild("Board"))
 local Condition = require(OpsFolder:WaitForChild("Condition"))
 local Grading = require(OpsFolder:WaitForChild("Grading"))
 local Operations = require(OpsFolder:WaitForChild("Operations"))
@@ -467,7 +468,7 @@ end
 -- A one-person craft (the jet ski): its rider is Helm, Crew and Medic at once (docs 09 4.1).
 local function soloCraft(player: Player): boolean
 	local v = vehicleOf(player)
-	return v ~= nil and v:GetAttribute("VehicleId") == "JetSki"
+	return v ~= nil and VehicleConfig.isJetSki(v:GetAttribute("VehicleId"))
 end
 
 -- Crew roles come from what each player is doing (G30, src/shared/CrewRoles): the helm seat,
@@ -853,6 +854,30 @@ local function record(op: any, track: Track, inst: StepInst, grade: Grade, by: P
 	end
 end
 
+-- A casualty is home: counted once; on a big call they leave the boat and the rescuer is paid for them.
+local function deliverCasualty(op: any, ci: number, actor: Player?)
+	local c: CasualtyState? = op.casualties[ci]
+	if not c or c.delivered then
+		return
+	end
+	c.delivered = true
+	op.saved += 1
+	if op.isBig then
+		pcall(RescueService.RemoveVictim, op.scene, ci)
+		local pay = Grading.bigCasualtyPay()
+		if actor and actor.Parent then
+			try(
+				"ProgressionService",
+				"Award",
+				actor,
+				pay.cash,
+				pay.rep,
+				"Op:CapsizedFerry:Casualty"
+			)
+		end
+	end
+end
+
 local function applyEffect(
 	op: any,
 	track: Track,
@@ -904,23 +929,8 @@ local function applyEffect(
 		op.saved += 1
 		pcall(RescueService.RemoveVictim, op.scene, ci)
 		try("NpcService", "ShoreHandover", RipFlow.Shore.dry, RipFlow.Shore.water)
-	elseif effect == "deliver" and c and ci and not c.delivered then
-		c.delivered = true
-		op.saved += 1
-		if op.isBig then
-			pcall(RescueService.RemoveVictim, op.scene, ci)
-			local pay = Grading.bigCasualtyPay()
-			if actor.Parent then
-				try(
-					"ProgressionService",
-					"Award",
-					actor,
-					pay.cash,
-					pay.rep,
-					"Op:CapsizedFerry:Casualty"
-				)
-			end
-		end
+	elseif effect == "deliver" and ci then
+		deliverCasualty(op, ci, actor)
 	end
 end
 
@@ -1030,10 +1040,10 @@ local function failStep(op: any, track: Track, inst: StepInst, why: string)
 	complete(op, track, inst, "Fail", nil, {})
 end
 
--- Claims the next unclaimed casualty for a big-call track.
+-- Claims the next casualty for a big-call track: its own still to bring home, else an unclaimed one.
 local function claimCasualty(op: any, track: Track): number?
 	for i, c in op.casualties do
-		if not c.claimedBy and not c.delivered and not c.takenOver then
+		if Board.mayTake(c, track.id) then
 			c.claimedBy = track.id
 			return i
 		end
@@ -1091,6 +1101,9 @@ advance = function(op: any, track: Track)
 					track.index += 1
 				end
 				continue
+			end
+			if def.effect == "board" and op.casualties[ci].aboard then
+				continue -- they already climbed aboard (stepBoarding): straight to the ride home
 			end
 		end
 		beginStep(op, track, def)
@@ -1728,27 +1741,6 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 	local metrics = sanitize(raw.metrics)
 	local rawTag = if type(raw.metrics) == "table" then raw.metrics.tag else nil
 	serverMetrics(op, inst, metrics, raw)
-	if op.kind == "CapsizedFerry" then
-		-- recompute what a ferry client could fake (rightCompartment, rescued, fractions)
-		pcall(FerryValidate.apply, op.id, inst.def.id, metrics)
-		if inst.def.id == "scene_command" and type(raw.board) == "table" then
-			local taskIds = {}
-			for _, t in SceneBoard.Tasks do
-				taskIds[t.id] = true
-			end
-			local board, n = {}, 0
-			for u, tid in raw.board do
-				if type(u) == "string" and #u <= 40 and type(tid) == "string" and taskIds[tid] then
-					board[u] = tid
-					n += 1
-					if n >= 16 then
-						break
-					end
-				end
-			end
-			inst.board = board
-		end
-	end
 	-- condition events the step allows, capped
 	local ci = inst.casualtyIndex
 	if ci and type(raw.events) == "table" and inst.def.allowedEvents then
@@ -1934,6 +1926,15 @@ function OperationService.OnVictimsDelivered(
 	local op = opOfScene(scene)
 	if not op or not driver or op.state ~= "Active" then
 		return
+	end
+	if op.isBig then
+		-- everyone this boat landed counts, not only the current step's casualty
+		for i, v in scene.victims do
+			local c = op.casualties[i]
+			if v.state == "Delivered" and c and not c.delivered then
+				deliverCasualty(op, i, driver)
+			end
+		end
 	end
 	local track = trackOf(op, driver)
 	local inst = track and track.current
@@ -2285,6 +2286,85 @@ local function coldOpenShore(op: any)
 	end
 end
 
+-- Server-side auto_board for every op: AmbientRescueService.StepBoarding, the free-roam rule (close, slow,
+-- level, room aboard). A crew's boat boards a survivor its track may take: on a big call any free one while
+-- picking up or carrying (a RIB or lifeboat fits several, all landed together); on a single call its own.
+-- The client auto_board mechanic stays as the visuals and a second path; whichever comes first wins.
+local function boardingStep(op: any, track: Track): StepInst?
+	local inst = track.current
+	if not inst or inst.npc then
+		return nil
+	end
+	if inst.def.effect == "board" and inst.mechanicId == "auto_board" then
+		return inst
+	end
+	return if op.isBig and inst.def.effect == "deliver" then inst else nil
+end
+
+local function stepBoarding(op: any, dt: number)
+	local ambient = service("AmbientRescueService")
+	if op.coldOpen or not op.scene or not ambient then
+		return
+	end
+	local function may(player: Player, i: number): boolean
+		local track = trackOf(op, player)
+		local inst = track and boardingStep(op, track)
+		if not (track and inst and op.casualties[i]) then
+			return false
+		end
+		return if op.isBig
+			then Board.mayTake(op.casualties[i], track.id)
+			else inst.casualtyIndex == i
+	end
+	ambient.StepBoarding(
+		op.scene,
+		dt,
+		ambient.SeatedBoats(),
+		may,
+		function(i: number, player: Player)
+			local track = trackOf(op, player)
+			local inst = track and boardingStep(op, track)
+			if not (track and inst) or op.state ~= "Active" then
+				return
+			end
+			local c: CasualtyState = op.casualties[i]
+			if op.isBig then
+				local old = inst.casualtyIndex
+				if inst.def.effect == "board" and old ~= i then
+					-- they reached another survivor than the one claimed: that one is free again
+					if old then
+						op.casualties[old].claimedBy = nil
+					end
+					inst.casualtyIndex = i
+					track.casualtyIndex = i
+				end
+				c.claimedBy = track.id
+			end
+			if inst.def.effect == "board" then
+				local metrics: Types.Metrics = { elapsed = now() - inst.startedAt }
+				local grade: Grade =
+					Grading.stepGrade(inst.def, metrics, inst.def.serverMetrics) :: any
+				padDone[track] = { key = inst.key, grade = grade }
+				if inst.assignee then
+					fire(
+						"Ops_StepAck",
+						inst.assignee,
+						{ opId = op.id, stepKey = inst.key, accepted = true, grade = grade }
+					)
+				end
+				complete(op, track, inst, grade, player, metrics) -- the board effect plays the climb
+			else
+				-- one more while carrying: aboard now, landed with the rest
+				c.inWater = false
+				c.aboard = true
+				c.panicking = false
+				pcall(RescueService.BoardVictim, op.scene, i, player)
+				broadcast(op)
+			end
+		end
+	)
+end
+
 local function tickOp(op: any, dt: number, t: number)
 	if op.state ~= "Active" then
 		return
@@ -2357,6 +2437,7 @@ local function tickOp(op: any, dt: number, t: number)
 			startTakeover(op, why or "Critical")
 		end
 	end
+	stepBoarding(op, dt)
 	for _, track in op.tracks do
 		local inst = track.current
 		if inst and op.state == "Active" then

@@ -25,4 +25,12 @@ return function(t)
 		t.expect(AutoBoard.mayAct(AutoBoard.privateList({}), 12)).toBe(false)
 		t.expect(AutoBoard.mayAct(nil, 12)).toBe(true) -- free-roam / big call: public
 	end)
+
+	t.test("big call: a crew takes any survivor that is free or already its own", function()
+		t.expect(AutoBoard.mayTake({}, "T1")).toBe(true)
+		t.expect(AutoBoard.mayTake({ claimedBy = "T1" }, "T1")).toBe(true)
+		t.expect(AutoBoard.mayTake({ claimedBy = "T2" }, "T1")).toBe(false) -- another crew's
+		t.expect(AutoBoard.mayTake({ delivered = true }, "T1")).toBe(false)
+		t.expect(AutoBoard.mayTake({ takenOver = true }, "T1")).toBe(false) -- the helicopter has them
+	end)
 end

@@ -295,6 +295,27 @@ end
 
 -- Driving -----------------------------------------------------------------------------------------
 
+-- Same as BoatController.engageControls: the server can seat us before the PlayerModule hooks
+-- Humanoid.Seated, then Roblox never fills ThrottleFloat / SteerFloat. Hand the seat over ourselves.
+local controlModule: any = nil
+local function engageControls(seat: VehicleSeat)
+	if controlModule == nil then
+		local ps = player:FindFirstChild("PlayerScripts")
+		local pm = ps and ps:FindFirstChild("PlayerModule")
+		local cmod = pm and pm:FindFirstChild("ControlModule")
+		if not cmod then
+			return -- not loaded yet: try again next frame
+		end
+		local ok, cm = pcall(require :: any, cmod)
+		controlModule = if ok and type(cm) == "table" then cm else false
+	end
+	local cm = controlModule
+	local vc = cm and cm.vehicleController
+	if cm and not (vc and vc.enabled and vc.vehicleSeat == seat) then
+		pcall(cm.OnHumanoidSeated, cm, true, seat)
+	end
+end
+
 local function currentDriverSeat(): VehicleSeat?
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -403,6 +424,7 @@ local function drive(dt: number)
 		return -- the server hands over ownership a moment after we sit
 	end
 	refreshExcludes(os.clock())
+	engageControls(seat)
 	local throttle = seat.ThrottleFloat
 	if triggerThrottle > 0.05 or triggerBrake > 0.05 then
 		throttle = triggerThrottle - triggerBrake
@@ -472,13 +494,17 @@ local function drive(dt: number)
 		local idleRpm = if eng then eng.idleRpm else 750
 		local idleVol, loadVol, pitch =
 			AudioMix.carEngine(telemetry.rpm, idleRpm, redline, telemetry.drive)
-		engine.PlaybackSpeed = pitch
+		local classPitch = if sim.derived.spec.class == "ATV"
+			then 1.25
+			elseif sim.derived.spec.class == "Ambulance" then 0.85
+			else 1
+		engine.PlaybackSpeed = pitch * classPitch
 		engine.Volume = AudioConfig.Clips.Eng_Car_Idle.volume * idleVol
 		if not engine.IsPlaying then
 			engine:Play()
 		end
 		if engineLoad then
-			engineLoad.PlaybackSpeed = pitch * 0.9
+			engineLoad.PlaybackSpeed = pitch * 0.9 * classPitch
 			engineLoad.Volume = AudioConfig.Clips.Eng_Car_Load.volume * loadVol
 			if loadVol > 0.01 and not engineLoad.IsPlaying then
 				engineLoad:Play()

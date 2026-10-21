@@ -1,0 +1,1071 @@
+{
+ "asset": "M_Kit_RescueTube",
+ "name": "M_Kit_RescueTube",
+ "date": "2026-10-18",
+ "commit": "9d39bf5d+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD0.fbx",
+   "bytes": 417004,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_RescueTube_COL",
+    "M_Kit_RescueTube_Hardware_LOD0",
+    "M_Kit_RescueTube_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_RescueTube_COL.001",
+     "min": [
+      -1.9028,
+      -0.7137,
+      0.0
+     ],
+     "max": [
+      1.9028,
+      0.7137,
+      0.2671
+     ],
+     "polygons": 12,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Kit_RescueTube_Hardware_LOD0.001",
+     "min": [
+      -1.9028,
+      -0.6204,
+      0.0
+     ],
+     "max": [
+      1.8257,
+      0.4707,
+      0.2015
+     ],
+     "polygons": 640,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_RescueTube_LOD0.001",
+     "min": [
+      -1.6957,
+      -0.7137,
+      0.0083
+     ],
+     "max": [
+      1.9028,
+      0.7137,
+      0.2671
+     ],
+     "polygons": 6536,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD1.fbx",
+   "bytes": 290572,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_RescueTube_Hardware_LOD1",
+    "M_Kit_RescueTube_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_RescueTube_Hardware_LOD1.001",
+     "min": [
+      -1.9036,
+      -0.6204,
+      -0.0009
+     ],
+     "max": [
+      1.8248,
+      0.4703,
+      0.2015
+     ],
+     "polygons": 320,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_RescueTube_LOD1.001",
+     "min": [
+      -1.6957,
+      -0.7137,
+      0.0083
+     ],
+     "max": [
+      1.9028,
+      0.7137,
+      0.2671
+     ],
+     "polygons": 3267,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD2.fbx",
+   "bytes": 169020,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Kit_RescueTube_Hardware_LOD2",
+    "M_Kit_RescueTube_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Kit_RescueTube_Hardware_LOD2.001",
+     "min": [
+      -1.9036,
+      -0.6204,
+      -0.0009
+     ],
+     "max": [
+      1.8222,
+      0.4703,
+      0.1985
+     ],
+     "polygons": 160,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Kit_RescueTube_LOD2.001",
+     "min": [
+      -1.6957,
+      -0.7137,
+      0.0084
+     ],
+     "max": [
+      1.9028,
+      0.7137,
+      0.2671
+     ],
+     "polygons": 1634,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube.attachments.json",
+   "attachments": [
+    "ATT_Grip",
+    "ATT_Clip",
+    "ATT_Ring",
+    "ATT_Leash",
+    "ATT_Throw"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/kit/M_Kit_RescueTube/M_Kit_RescueTube.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "large_prop"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_LOD0"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6536 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.43e-06, 1506 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3268 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1131 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_Hardware_LOD0"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "640 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.72e-05, 10 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 410 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "799 px/stud at 1024 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_LOD1"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3267 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.63e-05, 907 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3267 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 21.9% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_Hardware_LOD1"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "320 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.61e-05, 10 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 320 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.1% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_LOD2"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1634 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.71e-05, 500 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.998, v 0.002 to 0.748"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1634 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 43.8% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_Hardware_LOD2"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "160 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.51e-05, 10 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.252 to 0.623, v 0.002 to 0.123"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 160 faces have no UV area"
+  },
+  {
+   "subject": "M_Kit_RescueTube_Hardware_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation of small atlas-tiled kit shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 26.7% (max 15%)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Kit_RescueTube_COL"
+  },
+  {
+   "subject": "M_Kit_RescueTube_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Kit_RescueTube_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 8000"
+  },
+  {
+   "subject": "M_Kit_RescueTube_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Kit_RescueTube_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "12 of 1000"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7176 of 8000 (large_prop, asset row)"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3587 of 4000"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1794 of 2000"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md - x - x 0.08 m, spec - x - x 0.08 m (art/reference/M_Kit_RescueTube/dims.md)"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0.267 studs, real 0.080 m = 0.240 studs, off 11.3% (5% free, 15% with a note); NOTE: E1b: the bbox includes the accessories (lines, loops, straps, buckles, light, pins); dims.md dims_m is the class size in the authored orientation, '-' where accessories set the bbox"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_RescueTube_COL"
+  },
+  {
+   "subject": "M_Kit_RescueTube",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (1 to 2 sets), atlas M_Kit_Atlas"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Cloth_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Cloth_MET.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png"
+  },
+  {
+   "subject": "T_Kit_Hard_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_NOR.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH.png"
+  },
+  {
+   "subject": "T_Kit_Hard_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Kit_Hard_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Kit_Atlas/T_Kit_Hard_MET.png"
+  },
+  {
+   "subject": "ATT_Grip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Clip",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Ring",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Leash",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Throw",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD0.fbx"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_RescueTube_COL, M_Kit_RescueTube_Hardware_LOD0, M_Kit_RescueTube_LOD0; 7188 triangles (scene 7188)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD1.fbx"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_RescueTube_Hardware_LOD1, M_Kit_RescueTube_LOD1; 3587 triangles (scene 3587)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD2.fbx"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Kit_RescueTube_Hardware_LOD2, M_Kit_RescueTube_LOD2; 1794 triangles (scene 1794)"
+  },
+  {
+   "subject": "M_Kit_RescueTube_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 2 of 2 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Kit_RescueTube_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6536,
+   "texel_density": 1130.8
+  },
+  {
+   "name": "M_Kit_RescueTube_Hardware_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 640,
+   "texel_density": 798.9
+  },
+  {
+   "name": "M_Kit_RescueTube_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3267,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_RescueTube_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1634,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_RescueTube_Hardware_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 320,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_RescueTube_Hardware_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 160,
+   "texel_density": null
+  },
+  {
+   "name": "M_Kit_RescueTube_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 12,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.805510997772217,
+  1.42739999294281,
+  0.2671363055706024
+ ],
+ "peak_rss_mb": 268.6
+}

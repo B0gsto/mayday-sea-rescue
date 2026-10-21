@@ -124,11 +124,89 @@ CallTypes.Kinds = {
 		dropOffs = { "Dock", "Hospital" },
 		isBig = true,
 	},
+	Cliff = {
+		id = "Cliff",
+		displayName = "Cliff Casualty",
+		radioLine = "Walker stuck on the ledge below Haven Head, one casualty.",
+		weight = 1.4, -- docs/02 section 3: cliff is a Skerries-rate rescue
+		timer = 600,
+		victims = 1,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = { "HavenHeadCliff" },
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+	},
+	RipCurrent = {
+		id = "RipCurrent",
+		displayName = "Rip Current",
+		radioLine = "Swimmer caught in a rip current off Haven Sands, one casualty.",
+		weight = 0.9, -- docs/02 section 3
+		timer = 600,
+		victims = 1,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = { "HavenSandsRip" },
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+	},
+	Sinking = {
+		id = "Sinking",
+		displayName = "Sinking Vessel",
+		radioLine = "Fishing boat taking water off the harbour, three aboard.",
+		weight = 1.2, -- docs/02 section 3
+		timer = 480,
+		victims = 3,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = { "SinkingSite" },
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+	},
+	VesselFire = {
+		id = "VesselFire",
+		displayName = "Vessel Fire",
+		radioLine = "MAYDAY from the motor cruiser Firefly: engine fire at anchor, two people on board.",
+		weight = 1.5, -- docs/02 section 3: all but Calm Bay
+		timer = 480,
+		victims = 0,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = { "Outer" },
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+	},
+	WildlifeRescue = {
+		id = "WildlifeRescue",
+		displayName = "Wildlife Rescue",
+		radioLine = "Wildlife in trouble off the harbour, request a rescue swimmer.",
+		weight = 0.8, -- docs/02 section 3: a light call
+		timer = 420,
+		victims = 1,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = { "Near", "CalmBay" },
+		dropOffs = { "Dock" },
+		isBig = false,
+	},
 } :: { [string]: CallKind }
 
 -- Normal (non-big) kinds, in offer-weight order.
-CallTypes.NormalKinds = { "Swimmer", "DriftingCraft", "Tow" }
-CallTypes.KindWeights = { Swimmer = 0.45, DriftingCraft = 0.3, Tow = 0.25 } -- tune
+CallTypes.NormalKinds = {
+	"Swimmer",
+	"DriftingCraft",
+	"Tow",
+	"Cliff",
+	"RipCurrent",
+	"Sinking",
+	"VesselFire",
+	"WildlifeRescue",
+}
+CallTypes.KindWeights = {
+	Swimmer = 0.45,
+	DriftingCraft = 0.3,
+	Tow = 0.25,
+	Cliff = 0.18,
+	RipCurrent = 0.2,
+	Sinking = 0.16,
+	VesselFire = 0.2,
+	WildlifeRescue = 0.16,
+} -- tune
 
 -- Fixed tutorial chain for a player's first calls (docs 02 section 2), each { kind, zone }.
 CallTypes.TutorialChain = {
@@ -192,6 +270,41 @@ CallTypes.SpawnZones = {
 		area = "Outside",
 		timerMultiplier = 1,
 		fallback = Vector3.new(60, 0, 500),
+	},
+	-- Cliff casualty: a fixed ledge at the foot of Haven Head (docs/09 section 8.5).
+	HavenHeadCliff = {
+		id = "HavenHeadCliff",
+		displayName = "Haven Head",
+		center = Vector3.new(1740, 0, 890),
+		minRadius = 0,
+		maxRadius = 0,
+		area = "Outside",
+		timerMultiplier = 1,
+		fallback = Vector3.new(1740, 0, 890),
+	},
+	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Haven Sands.
+	-- The casualty starts about 120 studs down the rip and is carried seaward (shared/RipCurrent):
+	-- origin + direction * 120, in the water off the Haven Sands waterline.
+	HavenSandsRip = {
+		id = "HavenSandsRip",
+		displayName = "Haven Sands",
+		center = Vector3.new(888, 0, 426),
+		minRadius = 0,
+		maxRadius = 0,
+		area = "Outside",
+		timerMultiplier = 1,
+		fallback = Vector3.new(888, 0, 426),
+	},
+	-- Sinking vessel (docs/09 section 8.1): fixed open water in Calm Bay, a short run from the bays.
+	SinkingSite = {
+		id = "SinkingSite",
+		displayName = "Calm Bay",
+		center = Vector3.new(150, 0, 260),
+		minRadius = 0,
+		maxRadius = 0,
+		area = "Inside",
+		timerMultiplier = 1,
+		fallback = Vector3.new(150, 0, 260),
 	},
 } :: { [string]: SpawnZone }
 

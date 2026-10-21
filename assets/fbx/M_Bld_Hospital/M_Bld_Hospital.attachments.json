@@ -1,0 +1,558 @@
+{
+ "asset": "M_Bld_Hospital",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Entrance",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    -28.3875,
+    7.56
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    7.56,
+    -28.3875
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -16.47,
+    -28.3875
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_StretcherDoor",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    18.1125,
+    7.56
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    7.56,
+    18.1125
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -16.47,
+    18.1125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_AmbulanceDoor",
+   "parent": null,
+   "blender": [
+    37.7475,
+    -5.1375,
+    7.56
+   ],
+   "roblox_from_origin": [
+    -37.7475,
+    7.56,
+    -5.1375
+   ],
+   "roblox_from_bbox_centre": [
+    -37.7475,
+    -16.47,
+    -5.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_HospitalSign",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    -35.5875,
+    17.55
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    17.55,
+    -35.5875
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -6.48,
+    -35.5875
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Sign",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    -36.0675,
+    18.9
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    18.9,
+    -36.0675
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -5.13,
+    -36.0675
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Porch_01",
+   "parent": null,
+   "blender": [
+    -12.2625,
+    -28.4775,
+    14.19
+   ],
+   "roblox_from_origin": [
+    12.2625,
+    14.19,
+    -28.4775
+   ],
+   "roblox_from_bbox_centre": [
+    12.2625,
+    -9.84,
+    -28.4775
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Porch_02",
+   "parent": null,
+   "blender": [
+    -3.7425,
+    -28.4775,
+    14.19
+   ],
+   "roblox_from_origin": [
+    3.7425,
+    14.19,
+    -28.4775
+   ],
+   "roblox_from_bbox_centre": [
+    3.7425,
+    -9.84,
+    -28.4775
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_AmbulanceBay",
+   "parent": null,
+   "blender": [
+    43.5975,
+    -5.1375,
+    7.53
+   ],
+   "roblox_from_origin": [
+    -43.5975,
+    7.53,
+    -5.1375
+   ],
+   "roblox_from_bbox_centre": [
+    -43.5975,
+    -16.5,
+    -5.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_AmbulanceSign",
+   "parent": null,
+   "blender": [
+    52.8975,
+    -5.1375,
+    17.7
+   ],
+   "roblox_from_origin": [
+    -52.8975,
+    17.7,
+    -5.1375
+   ],
+   "roblox_from_bbox_centre": [
+    -52.8975,
+    -6.33,
+    -5.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DateStone",
+   "parent": null,
+   "blender": [
+    37.1775,
+    -5.1375,
+    17.01
+   ],
+   "roblox_from_origin": [
+    -37.1775,
+    17.01,
+    -5.1375
+   ],
+   "roblox_from_bbox_centre": [
+    -37.1775,
+    -7.02,
+    -5.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Bay",
+   "parent": null,
+   "blender": [
+    36.6975,
+    -5.1375,
+    16.95
+   ],
+   "roblox_from_origin": [
+    -36.6975,
+    16.95,
+    -5.1375
+   ],
+   "roblox_from_bbox_centre": [
+    -36.6975,
+    -7.08,
+    -5.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Lamp_Pontoon",
+   "parent": null,
+   "blender": [
+    5.0475,
+    38.5125,
+    8.55
+   ],
+   "roblox_from_origin": [
+    -5.0475,
+    8.55,
+    38.5125
+   ],
+   "roblox_from_bbox_centre": [
+    -5.0475,
+    -15.48,
+    38.5125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RoundelSign",
+   "parent": null,
+   "blender": [
+    -16.1625,
+    -39.0375,
+    12.45
+   ],
+   "roblox_from_origin": [
+    16.1625,
+    12.45,
+    -39.0375
+   ],
+   "roblox_from_bbox_centre": [
+    16.1625,
+    -11.58,
+    -39.0375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DropOff",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    35.9625,
+    1.71
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    1.71,
+    35.9625
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -22.32,
+    35.9625
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PontoonBerth_01",
+   "parent": null,
+   "blender": [
+    -15.2025,
+    39.7125,
+    1.8
+   ],
+   "roblox_from_origin": [
+    15.2025,
+    1.8,
+    39.7125
+   ],
+   "roblox_from_bbox_centre": [
+    15.2025,
+    -22.23,
+    39.7125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_PontoonBerth_02",
+   "parent": null,
+   "blender": [
+    -0.8025,
+    39.7125,
+    1.8
+   ],
+   "roblox_from_origin": [
+    0.8025,
+    1.8,
+    39.7125
+   ],
+   "roblox_from_bbox_centre": [
+    0.8025,
+    -22.23,
+    39.7125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RampFoot",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    32.5125,
+    1.8
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    1.8,
+    32.5125
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -22.23,
+    32.5125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_WaterLine",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    36.8625,
+    0.15
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    0.15,
+    36.8625
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -23.88,
+    36.8625
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_QuayTop",
+   "parent": null,
+   "blender": [
+    -8.0025,
+    23.5125,
+    7.5
+   ],
+   "roblox_from_origin": [
+    8.0025,
+    7.5,
+    23.5125
+   ],
+   "roblox_from_bbox_centre": [
+    8.0025,
+    -16.53,
+    23.5125
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

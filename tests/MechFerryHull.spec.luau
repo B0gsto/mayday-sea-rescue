@@ -1,7 +1,6 @@
--- Hull knock (src/shared/Ferry/HullKnock.luau) and the air-pocket dive (src/shared/Ferry/Dive.luau).
+-- Hull knock (src/shared/Ferry/HullKnock.luau).
 return function(t)
 	local HullKnock = t.load("src/shared/Ferry/HullKnock.luau")
-	local Dive = t.load("src/shared/Ferry/Dive.luau")
 
 	t.test("the pocket compartment is stable and never the bow or engine room", function()
 		for _, id in { "O1", "O2", "O17", "O123", "O9999" } do
@@ -34,20 +33,5 @@ return function(t)
 		t.expect(f.towards).toBe("forward")
 		t.expect(HullKnock.reply(2, 3).towards).toBe("aft")
 		t.expect(HullKnock.reply(1, 3).kind).toBe("None")
-	end)
-
-	t.test("dive: rule of thirds, air rates, pulls", function()
-		t.expect(Dive.turnPressure(200, 50)).toBe(150)
-		t.expect(Dive.airRate(false, false, false) > Dive.airRate(true, false, false)).toBeTruthy()
-		t.expect(Dive.progressRate(true, true, false)).toBe(0)
-		t.expect(Dive.progressRate(false, false, false)).toBe(0)
-		t.expect(Dive.readPulls({ 0, 0.3 }, 0.5)).toBeNil()
-		t.expect(Dive.readPulls({ 0, 0.3 }, 1.5)).toBe(2)
-		t.expect(Dive.readPulls({ 0, 0.05, 0.4, 0.8 }, 2)).toBe(3)
-		t.expect(Dive.readPulls({}, 2)).toBeNil()
-		t.expect(Dive.replyTo(1)).toBe(1)
-		t.expect(Dive.grade(2, 0)).toBe("Gold")
-		t.expect(Dive.grade(0, 0)).toBe("Fail")
-		t.expect(Dive.airQualityRate(2, false) > Dive.airQualityRate(2, true)).toBeTruthy()
 	end)
 end

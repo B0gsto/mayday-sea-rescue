@@ -163,6 +163,94 @@
      ]
     }
    ]
+  },
+  {
+   "Name": "M_Veh_LifeguardPickup",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Body",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://70942272745027",
+        "RoughnessMap": "rbxassetid://91901765426675",
+        "MetalnessMap": "rbxassetid://137548887783296"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://70942272745027",
+        "RoughnessMap": "rbxassetid://107272862680389",
+        "MetalnessMap": "rbxassetid://137548887783296"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_Coastguard4x4",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Body",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://78707673204272",
+        "RoughnessMap": "rbxassetid://111909128653312",
+        "MetalnessMap": "rbxassetid://72051924082662"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://78707673204272",
+        "RoughnessMap": "rbxassetid://138994423164215",
+        "MetalnessMap": "rbxassetid://72051924082662"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_ATV",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Body",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://135928554542916",
+        "RoughnessMap": "rbxassetid://137900335825618"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "NormalMap": "rbxassetid://135928554542916",
+        "RoughnessMap": "rbxassetid://95198871915509"
+       }
+      }
+     ]
+    }
+   ]
   }
  ]
 }

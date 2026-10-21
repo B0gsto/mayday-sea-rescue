@@ -6,6 +6,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local OpsStepCard =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("OpsStepCard"))
 local Ui = require(script.Parent.Ui)
 
 local Step = {}
@@ -26,7 +28,8 @@ function Step.new(
 	ctx: { [string]: any },
 	finish: (result: { [string]: any }) -> (),
 	name: string,
-	height: number?
+	height: number?,
+	compact: boolean?
 ): S
 	local bag = Ui.bag()
 	local gui = Ui.screen(bag, name)
@@ -36,7 +39,11 @@ function Step.new(
 		UDim2.new(0, 24, 1, -24),
 		Vector2.new(0, 1)
 	)
-	Ui.header(panel, ctx.step.label, ctx.step.realTerm)
+	if not compact then
+		-- icon + 1-3 words, like the objective chip (docs/14 section 2): no sentence, no jargon
+		local id = ctx.step.id
+		Ui.header(panel, `{OpsStepCard.iconFor(id)}  {OpsStepCard.shortFor(id, ctx.step.label)}`)
+	end
 	local s: S = {
 		ctx = ctx,
 		bag = bag,
@@ -85,6 +92,15 @@ end
 -- Returns true (and finishes with the stub) on smoke runs.
 function Step.autoStub(s: S, metrics: { [string]: any }?): boolean
 	if Players.LocalPlayer:GetAttribute("OpsAutoStub") ~= true then
+		-- the smoke driver may switch the stub on mid-step (e.g. the cold open's first step)
+		Ui.add(
+			s.bag,
+			Players.LocalPlayer:GetAttributeChangedSignal("OpsAutoStub"):Connect(function()
+				if Players.LocalPlayer:GetAttribute("OpsAutoStub") == true then
+					Step.finish(s, { metrics = metrics or {}, stub = true, grade = "Silver" })
+				end
+			end)
+		)
 		return false
 	end
 	Ui.add(

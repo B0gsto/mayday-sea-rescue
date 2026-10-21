@@ -19,6 +19,18 @@ return function(t)
 		t.expect(S.clean("pro", 1)).toBeNil()
 	end)
 
+	t.test(
+		"accessibility settings: colour mode choices, text size clamp, motion and tap toggles",
+		function()
+			t.expect(S.clean("colourAssist", "Deuteranopia")).toBe("Deuteranopia")
+			t.expect(S.clean("colourAssist", "Nope")).toBeNil()
+			t.expect(S.clean("textSize", 125)).toBe(125)
+			t.expect(S.clean("textSize", 400)).toBe(150)
+			t.expect(S.clean("reduceMotion", true)).toBe(true)
+			t.expect(S.clean("holdToTap", true)).toBe(true)
+		end
+	)
+
 	t.test("every default is clean and the preset only uses known keys", function()
 		for k, v in S.Defaults do
 			t.expect(S.clean(k, v)).toBe(v)
@@ -95,7 +107,7 @@ return function(t)
 		for _ in stored do
 			n += 1
 		end
-		t.expect(n <= 24).toBe(true)
+		t.expect(n <= 32).toBe(true)
 		local d = Rules.defaultData()
 		d.flags.cameraSettings = stored
 		local again = Rules.migrate(Rules.migrate(d)).flags.cameraSettings

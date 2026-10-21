@@ -7,17 +7,17 @@
    "name": "ATT_Wheel_FL",
    "parent": null,
    "blender": [
-    2.28,
+    2.18,
     -4.5625,
     0.95
    ],
    "roblox_from_origin": [
-    -2.28,
+    -2.18,
     0.95,
     -4.5625
    ],
    "roblox_from_bbox_centre": [
-    -2.28,
+    -2.18,
     -1.2837,
     -4.5625
    ],
@@ -36,17 +36,17 @@
    "name": "ATT_Wheel_FR",
    "parent": null,
    "blender": [
-    -2.28,
+    -2.18,
     -4.5625,
     0.95
    ],
    "roblox_from_origin": [
-    2.28,
+    2.18,
     0.95,
     -4.5625
    ],
    "roblox_from_bbox_centre": [
-    2.28,
+    2.18,
     -1.2837,
     -4.5625
    ],
@@ -65,17 +65,17 @@
    "name": "ATT_Wheel_RL",
    "parent": null,
    "blender": [
-    2.28,
+    2.18,
     3.5375,
     0.95
    ],
    "roblox_from_origin": [
-    -2.28,
+    -2.18,
     0.95,
     3.5375
    ],
    "roblox_from_bbox_centre": [
-    -2.28,
+    -2.18,
     -1.2837,
     3.5375
    ],
@@ -94,17 +94,17 @@
    "name": "ATT_Wheel_RR",
    "parent": null,
    "blender": [
-    -2.28,
+    -2.18,
     3.5375,
     0.95
    ],
    "roblox_from_origin": [
-    2.28,
+    2.18,
     0.95,
     3.5375
    ],
    "roblox_from_bbox_centre": [
-    2.28,
+    2.18,
     -1.2837,
     3.5375
    ],

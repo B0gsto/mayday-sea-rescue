@@ -1,0 +1,18 @@
+{
+ "offset": [
+  -0.0,
+  -8.27,
+  -0.0078
+ ],
+ "bbox_studs": [
+  5.824,
+  16.56,
+  5.9022
+ ],
+ "chassis": [
+  0.0,
+  -1.5303,
+  2.3922
+ ],
+ "note": "offset added to the authored model frame; chassis = LandVehicleConfig / Builder root, Blender studs, equal to the ATT_DriveAttachment position"
+}

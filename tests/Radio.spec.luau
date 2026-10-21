@@ -98,7 +98,7 @@ return function(t)
 		t.expect(Lines.text("PLF_FRAG_END_OVER")).toBe("Over.")
 	end)
 
-	t.test("the correct acknowledgement is voiced and graded 1", function()
+	t.test("the acknowledgement is voiced", function()
 		local m = {
 			order = "toFrom",
 			to = "CG",
@@ -110,67 +110,43 @@ return function(t)
 		t.expect(line.text)
 			.toBe("Gale Isles Coastguard, Haven Rescue One-One. Copy, launching. Over.")
 		t.expect(line.complete).toBe(true)
-		local score, faults = Format.grade(m, Format.AckExpect("HR11"))
-		t.expect(score).toBe(1)
-		t.expect(#faults).toBe(0)
 	end)
 
-	t.test("procedure faults cost a third each; over and out is never right", function()
-		local e = Format.AckExpect("HR11")
-		local function g(order, body, pw)
-			return (
-				Format.grade(
-					{ order = order, to = "CG", from = "HR11", body = body, proword = pw },
-					e
-				)
+	t.test("a subtitle is capped at six words", function()
+		t.expect(Format.capWords("Copy, launching. Over.", 6)).toBe("Copy, launching. Over.")
+		t.expect(
+			Format.capWords(
+				"Gale Isles Coastguard, Haven Rescue One-One. Copy, launching. Over.",
+				6
 			)
-		end
-		t.expect(g("none", "copy_launching", "Over")).toBe(0.67)
-		t.expect(g("toFrom", "copy_launching", "OverAndOut")).toBe(0.67)
-		t.expect(g("fromOnly", "copy_launching", "Over")).toBe(0.83)
-		t.expect(g("fromTo", "roger", "Out")).toBe(0.17)
-		t.expect(g("toFrom", "wilco", "Over")).toBe(1)
-		t.expect(g("toFrom", "unable", "Over")).toBe(0.67)
+		)
+			.toBe("Gale Isles Coastguard, Haven Rescue One-One…")
+		t.expect(Format.capWords("One  two\nthree", 2)).toBe("One two…")
+		-- call-outs: the speaker tag before a quote is free
+		t.expect(Format.capLine('Crew: "Abort, abort! Go round!"', 6))
+			.toBe('Crew: "Abort, abort! Go round!"')
+		t.expect(Format.capLine('Crew: "One two three four five six seven"', 3))
+			.toBe('Crew: "One two three…')
+		t.expect(Format.capLine("Out of time: a heavy, clumsy lift.", 3)).toBe("Out of time…")
 	end)
 
-	t.test("ack wheel: one correct option, decoys, say again and unable last", function()
-		local opts = Format.ackOptions("HR21", 42)
-		t.expect(#opts).toBe(6)
-		local correct = 0
-		for _, o in opts do
-			if o.correct then
-				correct += 1
-				t.expect(o.label).toBe("Coastguard, Two-One · Copy, launching · Over")
-			end
-		end
-		t.expect(correct).toBe(1)
-		t.expect(opts[5].msg.body).toBe("say_again")
-		t.expect(opts[6].msg.body).toBe("unable")
-	end)
-
-	t.test("closeout wheel offers the true POB and neighbours; POB is spoken", function()
-		local opts = Format.closeoutOptions("HR21", 2, false, 7)
-		t.expect(#opts).toBe(5)
-		local truth, right = 0, 0
-		for _, o in opts do
-			if Format.pobOf(o.msg) == 2 and o.msg.order == "toFrom" and o.msg.proword == "Over" then
-				truth += 1
-			end
-			if o.correct then
-				right += 1
-				t.expect(Format.pobOf(o.msg)).toBe(2)
-				t.expect((Format.grade(o.msg, Format.CloseoutExpect("HR21", false)))).toBe(1)
-				local line = Stitch.build("PL", Format.tokens(o.msg), Format.stitchParams(o.msg))
-				t.expect(line.text).toBe(
-					"Gale Isles Coastguard, Haven Rescue Two-One. Two POB. Vessel secured alongside, all persons safe, over."
-				)
-			end
-		end
-		t.expect(right).toBe(1)
-		t.expect(truth >= 1).toBe(true)
-		local one = Format.pobChoices(1, 3)
-		table.sort(one)
-		t.expect(one).toEqual({ 1, 2, 3 })
+	t.test("a caption is the message in three words", function()
+		t.expect(
+			Format.caption(
+				"Haven Rescue, Coastguard. Tasking available. Details on your radio panel. Over.",
+				3
+			)
+		).toBe("Tasking available")
+		t.expect(
+			Format.caption(
+				"Haven Rescue, Gale Isles Coastguard. Person in the water, request you launch.",
+				3
+			)
+		).toBe("Person in water")
+		-- one sentence that only looks like an address keeps its words
+		t.expect(Format.caption("All Haven Rescue units, launch, launch.", 3))
+			.toBe("All Haven Rescue")
+		t.expect(Format.caption("Over here!", 3)).toBe("Over here")
 	end)
 
 	t.test("join glues punctuation and capitalises sentences", function()

@@ -749,7 +749,7 @@ def crest(g, sx, off_base, layers):
     if not layers:
         disc(0, rad, 0, "X", n=20)
         return
-    disc(0, rad, 0, "PanelNavy")
+    disc(0, rad, 0, "PanelCharcoal")
     disc(rad * 0.86, rad * 0.95, 1, "LetterWhite")
     # compass rose: 8 points
     for i in range(8):
@@ -831,18 +831,18 @@ def decals(g):
         y0, y1, a, b = NAME_PANEL
         if g.hi:
             tube_patch(g, sx, y0, y1, a, b, "PanelOrange", DEC_OFF, nu=40, nv=12)
-            tube_text(g, sx, (y0 + y1) / 2, (a + b) / 2 - 0.01, "GALE ISLES COASTGUARD", 0.52, "LetterNavy", DEC_OFF + 0.004, 0.92)
+            tube_text(g, sx, (y0 + y1) / 2, (a + b) / 2 - 0.01, "GALE ISLES COASTGUARD", 0.52, "LetterCharcoal", DEC_OFF + 0.004, 0.92)
         else:
             tube_patch(g, sx, y0, y1, a, b, "X", DEC_OFF, nu=20, nv=8)
         y0, y1, a, b = NUM_PANEL
         if g.hi:
             tube_patch(g, sx, y0, y1, a, b, "PanelOrange", DEC_OFF, nu=12, nv=12)
-            tube_text(g, sx, (y0 + y1) / 2, (a + b) / 2 - 0.01, "GI-21", 0.6, "LetterNavy", DEC_OFF + 0.004)
+            tube_text(g, sx, (y0 + y1) / 2, (a + b) / 2 - 0.01, "GI-21", 0.6, "LetterCharcoal", DEC_OFF + 0.004)
         else:
             tube_patch(g, sx, y0, y1, a, b, "X", DEC_OFF, nu=4, nv=8)
         y0, y1, a, b = CHEV
         if g.hi:
-            tube_patch(g, sx, y0, y1, a, b, "PanelNavy", DEC_OFF, nu=16, nv=12)
+            tube_patch(g, sx, y0, y1, a, b, "PanelCharcoal", DEC_OFF, nu=16, nv=12)
             chevrons(g, sx)
         else:
             tube_patch(g, sx, y0, y1, a, b, "X", DEC_OFF, nu=8, nv=8)
@@ -850,8 +850,8 @@ def decals(g):
         # RESCUE on the console sides above the crest, a station plate below it
         if g.hi:
             console_patch(g, sx, -1.15, 4.18, 2.1, 0.4, "PanelConsole", 0.012)
-            console_text(g, sx, "RESCUE", 0.3, -1.15, 4.18, "LetterNavy", 0.016)
-            console_patch(g, sx, -1.15, 2.72, 1.3, 0.28, "PanelNavy", 0.012)
+            console_text(g, sx, "RESCUE", 0.3, -1.15, 4.18, "LetterCharcoal", 0.016)
+            console_patch(g, sx, -1.15, 2.72, 1.3, 0.28, "PanelCharcoal", 0.012)
             console_text(g, sx, "STATION 7  PORT GALE", 0.13, -1.15, 2.72, "LetterWhite", 0.016)
         else:
             console_patch(g, sx, -1.15, 4.18, 2.1, 0.4, "X", 0.012)

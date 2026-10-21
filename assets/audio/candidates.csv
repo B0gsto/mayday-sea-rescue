@@ -153,3 +153,32 @@ SFX_Siren_Wail,RL,9119165131,Siren Wail 1 (SFX),27.0,Roblox licensed (PSE),RP-M5
 SFX_Siren_Yelp,RL,9119165420,Siren Yelp 1 (SFX),32.0,Roblox licensed (PSE),RP-M5 Siren Pack: yelp (loop region 1.5-9 s to tune by ear). Verified public
 SFX_Siren_HiLo,RL,9119163723,Siren Start And Away 1 (SFX),31.0,Roblox licensed (PSE),RP-M5 Siren Pack: hi-lo (high and low tones; loop region 1.5-9 s to tune by ear). Verified public
 SFX_Siren_Phaser,RL,9118848118,Scream Siren Very Rapid High Low Buzzy 2 (SFX),13.0,Roblox licensed (PSE),RP-M5 Siren Pack: phaser / rapid high-low (stationary bursts; loop 0.3-5 s to tune by ear). Verified public
+SFX_UI_Prompt,RL,9118138365,Relay Clicks 9 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig UI_Prompt): world prompt tick. Verified public
+SFX_UI_Pickup,RL,9116729826,Metallic Beeps Quick Tones 2 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig UI_Pickup): Cash / Rep award. Verified public
+SFX_UI_Step,RL,9116729822,Metallic Beeps Quick Tones 1 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig UI_Step): step complete. Verified public
+SFX_UI_Success,RL,9113399926,Beeps Simple Multiple Variations 5 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig UI_Success): debrief success sting. Verified public
+SFX_UI_Fail,RL,9113085665,Alarm Buzzer 3 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig UI_Fail): debrief fail sting. Verified public
+SFX_Splash_Entry,RL,9120585252,Water Splash Big Water Splash Dive In 1 (SFX),4.0,Roblox licensed (PSE),G2 chosen (AudioConfig Splash_Entry): entering the water. Verified public
+SFX_Swim_Stroke,RL,9120589166,Water Splashing Swimming Stroke 2 (SFX),9.0,Roblox licensed (PSE),G2 chosen (AudioConfig Swim_Stroke): looped while swimming. Verified public
+SFX_Dog_Bark,RL,9113956178,Coyotes Gruff Barking 14 (SFX),1.0,Roblox licensed (PSE),G2 chosen (AudioConfig Dog_Bark): stand-in for Bosun's point bark. Verified public
+SFX_Amb_Town,RL,9116203080,Korean Walla Single Male Female Voice 2 (SFX),3.0,Roblox licensed (PSE),G2 chosen (AudioConfig Amb_Town): distant town murmur. Verified public
+SFX_Crate_Lid,RL,9120881884,Wood Groan Creak Opening Wood Chest Coffin 8 (SFX),2.0,Roblox licensed (PSE),G43 chosen: streak crate lid creak. Verified public
+SFX_Cash_Coins,RL,9113704200,Candy Machine Coin Drops Insert Vending 5 (SFX),3.0,Roblox licensed (PSE),G43 chosen: crate and strongbox coin cascade. Verified public
+MUS_CrateFanfare,RL,1837762472,Victory Dance (sting a) (Glenn Herweijer),11.0,Roblox licensed (APM),G43 chosen: day-7 crate fanfare. Verified public
+SFX_Chandlery_Bell,RL,9125485591,Desk Bell Counter Service Single Ringing Din (SFX),5.0,Roblox licensed (PSE),G43 chosen: Chandlery restock bell. Verified public
+SFX_Chandlery_Till,RL,9113728648,Cash Register 4 (SFX),4.0,Roblox licensed (PSE),G43 chosen: Chandlery purchase till. Verified public
+SFX_Logbook_Page,RL,9118835414,Scrapbook Open And Turn Pages 2 (SFX),1.0,Roblox licensed (PSE),G43 chosen: Season Logbook page turn. Verified public
+SFX_Logbook_Chime,RL,9116394545,Magic Glows Soft Clusters Of Chiming Hits 1 (SFX),1.0,Roblox licensed (PSE),G43 chosen: Season tier chime. Verified public
+SFX_Album_Sticker,RL,9113263851,Balloon Pops Slap Clap Smack 1 (SFX),1.0,Roblox licensed (PSE),G43 chosen: album sticker slap. Verified public
+SFX_Album_Sparkle,RL,9126073001,Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),1.0,Roblox licensed (PSE),G43 chosen: album sparkle. Verified public
+MUS_Legendary,RL,85130118995016,Arc Of Triumph (Sting) (Joseph A M G Joep Sporck),11.0,Roblox licensed (APM),G43 chosen: Legendary call sting (does not reuse Music_Debrief). Verified public
+SFX_Pet_Seal,RL,9125919816,Seal Bark Human Like Grunt Heaving Rhythmic (SFX),8.0,Roblox licensed (PSE),G43 chosen: seal pup voice. Verified public
+SFX_Pet_Puffin,RL,9117236763,Parakeet Chirps 3 (SFX),4.0,Roblox licensed (PSE),G43 stand-in puffin call. Verified public
+SFX_Pet_Otter,RL,9125994570,Squeeze Toy Squeaky Rubber With Noisemaker H (SFX),1.0,Roblox licensed (PSE),G43 stand-in otter squeak. Verified public
+SFX_Pet_Gull,RL,9118858259,Seagull Squawks 3 (SFX),4.0,Roblox licensed (PSE),G43 gull cry (reuses Gull_Call_1). Verified public
+SFX_Pet_Turtle,RL,9120585252,Water Splash Big Water Splash Dive In 1 (SFX),4.0,Roblox licensed (PSE),G43 turtle splash (reuses Splash_Entry). Verified public
+SFX_Amb_Sanctuary,RL,9119383479,Sonoma Morning Birds California Chirping 1 (SFX),10.0,Roblox licensed (PSE),G43 chosen: looped sanctuary ambience. Verified public
+SFX_Halloween_Sting,RL,9125641284,Magic Synth Stinger Glassine Multi Tone Burs (SFX),5.0,Roblox licensed (PSE),G43 chosen: witching hour sting, playful. Verified public
+SFX_GhostShip_Call,RL,9119464660,Spirit Fly Bys Spooky Windy Airy Pass Bys 7 (SFX),7.0,Roblox licensed (PSE),G43 chosen: Ghost Ship call. Verified public
+SFX_Rank_Cheer,RL,9113137529,Applause Nightclub 1 (SFX),6.0,Roblox licensed (PSE),G43 chosen: rank-up cheer. Verified public
+SFX_UI_FriendPop,RL,9112752910,Bubble Wobble Comic Bloops Slight Rhythm 4 (SFX),1.0,Roblox licensed (PSE),G43 chosen: friend bonus pop. Verified public

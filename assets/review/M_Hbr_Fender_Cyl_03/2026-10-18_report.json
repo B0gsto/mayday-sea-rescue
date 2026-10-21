@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Fender_Cyl_03",
  "name": "M_Hbr_Fender_Cyl_03",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Fender_Cyl_03/M_Hbr_Fender_Cyl_03_LOD0.fbx",
-   "bytes": 102092,
+   "bytes": 169932,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Cyl_03_LOD0"
@@ -40,9 +40,9 @@
      "max": [
       0.45,
       0.45,
-      3.6009
+      3.6162
      ],
-     "polygons": 1116,
+     "polygons": 2572,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Fender_Cyl_03/M_Hbr_Fender_Cyl_03_LOD1.fbx",
-   "bytes": 64572,
+   "bytes": 102332,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Cyl_03_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_Fender_Cyl_03_LOD1.001",
      "min": [
-      -0.4427,
-      -0.4427,
-      0.0091
+      -0.45,
+      -0.45,
+      -0.0041
      ],
      "max": [
-      0.4427,
-      0.4427,
-      3.6009
+      0.45,
+      0.45,
+      3.6162
      ],
-     "polygons": 557,
+     "polygons": 1286,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1116 of 3000"
+   "detail": "2572 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 2.11e-04, 244 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 3.79e-04, 48 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.124, v 0.001 to 0.249"
+   "detail": "u 0.001 to 0.249, v 0.001 to 0.999"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 544 faces have no UV area"
+   "detail": "0 of 1312 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "135 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "152 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "557 of 3000"
+   "detail": "1286 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.40e-04, 239 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.65e-04, 48 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.124, v 0.001 to 0.249"
+   "detail": "u 0.001 to 0.249, v 0.000 to 0.999"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1",
@@ -248,7 +248,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 557 faces have no UV area"
+   "detail": "0 of 1286 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1",
@@ -256,7 +256,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 5.9% (max 15%)"
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 10.9% (max 15%)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1116 of 1200 (small_prop, asset row)"
+   "detail": "2572 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "557 of 600"
+   "detail": "1286 of 1500"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.3 x 0.3 x 1.2 m, spec 0.3 x 0.3 x 1.2 m (art/reference/M_Hbr_Fender_Cyl_03/dims.md)"
+   "detail": "dims.md 0.3 x 0.3 x 1.205 m, spec 0.3 x 0.3 x 1.205 m (art/reference/M_Hbr_Fender_Cyl_03/dims.md)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "3.601 studs, real 1.200 m = 3.600 studs, off 0.0% (5% free, 15% with a note)"
+   "detail": "3.616 studs, real 1.205 m = 3.615 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Cyl_03_LOD0; 1116 triangles (scene 1116)"
+   "detail": "M_Hbr_Fender_Cyl_03_LOD0; 2572 triangles (scene 2572)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Cyl_03_LOD1; 557 triangles (scene 557)"
+   "detail": "M_Hbr_Fender_Cyl_03_LOD1; 1286 triangles (scene 1286)"
   },
   {
    "subject": "M_Hbr_Fender_Cyl_03_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Fender_Cyl_03_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1116,
-   "texel_density": 135.4
+   "triangles": 2572,
+   "texel_density": 152.0
   },
   {
    "name": "M_Hbr_Fender_Cyl_03_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 557,
+   "triangles": 1286,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   0.9000000357627869,
   0.9000000357627869,
-  3.600886821746826
+  3.616168975830078
  ],
- "peak_rss_mb": 292.9
+ "peak_rss_mb": 252.6
 }

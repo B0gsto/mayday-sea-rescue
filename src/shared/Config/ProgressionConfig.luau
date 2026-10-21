@@ -1,6 +1,7 @@
 --!strict
 -- ProgressionConfig: ranks, vehicle unlocks, gear and payout multipliers. Pure data (no services),
--- safe to load in Lune. Numbers come from docs/03-progression.md (MVP scope: 3 ranks, 2 gear items).
+-- safe to load in Lune. Numbers come from docs/03-progression.md (ranks 1 to 8 plus Service Stars;
+-- gear is still the MVP 3 levels).
 -- The rules that read this table live in src/shared/ProgressionRules.luau.
 
 export type Rank = {
@@ -9,6 +10,10 @@ export type Rank = {
 	rep: number, -- total Rep needed (docs 03 section 3)
 	unlocks: { string }, -- short lines for the rank-up toast
 	cert: string?, -- the certification this rank also needs (docs 03 section 3); nil: none
+	-- Every certification the rank needs (docs 03: Admiral needs all six). A gate is enforced once
+	-- Config.Certifications defines it, so ranks 4 and 5 stay reachable while their certification
+	-- content is still to land.
+	certs: { string }?,
 }
 
 -- What counts toward a certification's live half (docs 03 section 3.1, docs 09 section 11): an
@@ -39,6 +44,7 @@ export type VehicleUnlock = {
 	rankIndex: number, -- rank needed to own and drive it
 	price: number, -- Cash to buy once the rank is reached (0 = free)
 	land: boolean?, -- true for the land fleet (LandVehicleService); boat UIs must skip these
+	passOnly: boolean?, -- Robux only: owned through its MonetizationConfig.GamePasses `vehicle` pass, never Cash
 }
 
 export type GearStat = "speed" | "pullTime" | "searchRadius"
@@ -77,7 +83,43 @@ ProgressionConfig.Ranks = {
 		cert = "RescueSwimmer",
 		unlocks = { "RIB (buy)", "Gear level 3" },
 	},
+	{
+		id = "Coxswain",
+		displayName = "Coxswain",
+		rep = 3000, -- tune
+		certs = { "Coxswain" },
+		unlocks = { "Lifeboat", "Open Sea", "Gear 4" },
+	},
+	{
+		id = "RescuePilot",
+		displayName = "Rescue Pilot",
+		rep = 9000, -- tune
+		certs = { "Pilot" }, -- Pilot itself needs Winch Operator (docs 03)
+		unlocks = { "Helicopter", "Helipad", "Winch work" },
+	},
+	{
+		id = "Captain",
+		displayName = "Captain",
+		rep = 22000, -- tune
+		unlocks = { "Storm Front", "Tempest Point", "Captain's cap" },
+	},
+	{
+		id = "Commodore",
+		displayName = "Commodore",
+		rep = 55000, -- tune
+		unlocks = { "Iceberg North", "Commodore livery", "Radio title" },
+	},
+	{
+		id = "Admiral",
+		displayName = "Admiral",
+		rep = 150000, -- tune
+		certs = { "Helm", "CasualtyCare", "RescueSwimmer", "Coxswain", "WinchOperator", "Pilot" },
+		unlocks = { "Gold livery", "Admiral's coat", "Honor board" },
+	},
 } :: { Rank }
+
+-- docs 03 section 3: Service Stars are endless prestige levels, one per 30,000 Rep past Admiral.
+ProgressionConfig.ServiceStarStep = 30000
 
 -- docs 03 section 3.1 and docs 09 section 11 (MVP: the first three). Never sold, never expire,
 -- never lost. Coxswain, Winch Operator, Pilot and Rescue Diver are [L].
@@ -87,7 +129,10 @@ ProgressionConfig.Certifications = {
 		displayName = "Helm",
 		exercise = "ExerciseBoatHandling",
 		live = {
-			stepIds = { "approach", "alongside" },
+			-- 2026-10-21: the Person in the Water pick-up (auto_board: close and steady) is helm work
+			-- too; mechanicIds keeps the cliff's on-foot "recovery" out
+			stepIds = { "approach", "alongside", "recovery" },
+			mechanicIds = { "approach", "alongside", "berth", "fire_approach", "auto_board" },
 			mode = "any",
 			minGrade = "Silver",
 			count = 2, -- tune
@@ -128,10 +173,25 @@ ProgressionConfig.Certifications = {
 		gates = { "Rescue Swimmer rank", "Entering the water from boats", "Air-pocket dive" },
 		badge = "CertRescueSwimmer",
 	},
+	Coxswain = {
+		id = "Coxswain",
+		displayName = "Coxswain",
+		exercise = "ExerciseCoxswain",
+		live = {
+			stepIds = { "approach", "alongside" },
+			mode = "any",
+			minGrade = "Silver",
+			count = 3, -- tune: docs 03 section 3.1 (one tow, one storm)
+			label = "operations",
+		},
+		needs = { "Helm", "CasualtyCare" },
+		gates = { "Coxswain rank", "Lifeboat", "On Scene Coordinator", "Search patterns" },
+		badge = "CertCoxswain",
+	},
 } :: { [string]: Certification }
 
 -- Ladder order (HUD, crew board, debrief).
-ProgressionConfig.CertOrder = { "Helm", "CasualtyCare", "RescueSwimmer" }
+ProgressionConfig.CertOrder = { "Helm", "CasualtyCare", "RescueSwimmer", "Coxswain" }
 
 -- docs 03 section 2: an exercise pays 200 Cash and 50 Rep the first time it is passed, nothing on
 -- repeats. The optional Reopening Day drill pays a token amount (tune).
@@ -145,11 +205,21 @@ ProgressionConfig.ExercisePassGrade = "Bronze" -- tune
 ProgressionConfig.Vehicles = {
 	JetSki = { rankIndex = 1, price = 0 },
 	RIB = { rankIndex = 3, price = 4000 }, -- tune
+	-- docs 03 section 4: data only until the hull and the helicopter exist (no rows in VehicleConfig).
+	Lifeboat = { rankIndex = 4, price = 12000 }, -- tune
+	RescueHelicopter = { rankIndex = 5, price = 75000 }, -- tune
 	-- docs 10 section 3: land vehicles are free station pool vehicles gated by rank. The Ambulance
 	-- is an NPC handover point until [P1], so it is not listed (not player-drivable).
 	LifeguardPickup = { rankIndex = 1, price = 0, land = true },
 	BeachATV = { rankIndex = 2, price = 0, land = true },
 	CoastguardResponse = { rankIndex = 3, price = 0, land = true },
+	-- Premium fleet (2026-10-21, user): Robux only, any rank, through the vehicle's Game Pass.
+	StormRunner = { rankIndex = 1, price = 0, passOnly = true },
+	Tidewalker = { rankIndex = 1, price = 0, passOnly = true },
+	RiptideX = { rankIndex = 1, price = 0, passOnly = true },
+	GildedGull = { rankIndex = 1, price = 0, passOnly = true },
+	HarbourGT = { rankIndex = 1, price = 0, land = true, passOnly = true },
+	LighthouseCruiser = { rankIndex = 1, price = 0, land = true, passOnly = true },
 } :: { [string]: VehicleUnlock }
 
 -- True when the id is a land vehicle (never offered as a boat launch).

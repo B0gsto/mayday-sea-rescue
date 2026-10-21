@@ -133,28 +133,15 @@ return function(t)
 			.toBeCloseTo(1, 1e-6)
 	end)
 
-	t.test("procedures: deterministic scenario, questions, rigging, order", function()
+	t.test("procedures: deterministic scenario, answers, length, contact", function()
 		local a = Procedures.roll(Procedures.seedOf("O12"))
 		local b = Procedures.roll(Procedures.seedOf("O12"))
 		t.expect(a.pob).toBe(b.pob)
 		t.expect(a.pob >= 1 and a.pob <= 4).toBeTruthy()
-		t.expect(Procedures.questionScore({ pob = true, name = true }))
-			.toBeCloseTo(1 / Procedures.keyCount(), 1e-6)
-		local s = { bow = "cleats" }
-		t.expect((Procedures.attachResult(s, "samson"))).toBe(false)
-		t.expect((Procedures.attachResult(s, "bridle"))).toBe(true)
-		t.expect((Procedures.attachResult({ bow = "samson" }, "rail"))).toBe(false)
+		t.expect(Procedures.answer({ pob = 3 }, "pob")).toBe("3 of us aboard.")
+		t.expect(#Procedures.ANSWER_ORDER).toBe(6)
 		t.expect(Procedures.rightLength(0.8)).toBe("long")
-		t.expect(
-			Procedures.orderScore(
-				{ "bow", "stern", "fwdSpring", "aftSpring" },
-				Procedures.ALONGSIDE_ORDER
-			)
-		).toBe(1)
-		t.expect(Procedures.fendersRight("port", "port", 3)).toBe(true)
-		t.expect(Procedures.fendersRight("starboard", "port", 3)).toBe(false)
-		t.expect(Procedures.rightDecision({ flooding = true, anchored = false }, false))
-			.toBe("evacuate")
+		t.expect(Procedures.lengthStuds("long")).toBe(120)
 		t.expect(Procedures.inRing(Vector3.zero, Vector3.new(30, 0, 0))).toBe(true)
 		t.expect(Procedures.contactSpeed(Vector3.new(-3, 0, 0), Vector3.new(1, 0, 0)))
 			.toBeCloseTo(3, 1e-6)

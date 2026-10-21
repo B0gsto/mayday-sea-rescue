@@ -1,25 +1,34 @@
 --!strict
--- OpsDebrief: the debrief on the station's waterproof tablet (docs 09 section 2.4). Overall medal,
--- the step timeline (Gold/Silver/Bronze with the reason, your own steps highlighted), the
--- condition graph, Cash and Rep, Chief Aggie's tip for the weakest step and certification
--- progress (docs 09 section 11). One tap closes it; it never holds up the next tasking > 10 s.
+-- OpsDebrief: the end-of-call result as a notification (docs 09 section 2.4). Show, don't tell
+-- (docs/14 section 2): a toast slides down at the top centre with the grade medal stamping in and
+-- Cash and Rep rolling up (the coins fly to the HUD's Cash counter), then slides away on its own.
+-- It never takes input or covers the play area (playtest 2026-10-21: the full-screen tablet felt
+-- like a menu).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
+local A11yPalette = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("A11yPalette"))
+local CashBurst = require(script.Parent.CashBurst)
 local HudTheme = require(script.Parent.HudTheme)
 local OpsFolder = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops")
 local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
 local Operations = require(OpsFolder:WaitForChild("Operations"))
 
-export type Debrief = { show: (d: { [string]: any }) -> (), hide: () -> (), shownFor: () -> number }
-
-local MEDAL: { [string]: Color3 } = {
-	Gold = Color3.fromHex("FFC872"),
-	Silver = Color3.fromHex("C9D2D9"),
-	Bronze = Color3.fromHex("C7834A"),
-	Fail = Color3.fromHex("6B3A3A"),
+export type Debrief = {
+	show: (d: { [string]: any }, auto: number?) -> (),
+	hide: () -> (),
+	shownFor: () -> number,
 }
-local SCREEN = Color3.fromHex("0F1418")
+
+local GRADE_LABEL: { [string]: string } = {
+	Gold = "Gold",
+	Silver = "Silver",
+	Bronze = "Bronze",
+	Fail = "Fail",
+	Takeover = "", -- wordless (2026-10-21): the icon and +0 say it
+}
+local SHOW_FOR = 5 -- s on screen
 
 -- Certifications earned on live operations (docs 09 section 11): step ids that count, at Silver+.
 local CERTS = {
@@ -34,13 +43,13 @@ local function silverPlus(g: string?): boolean
 	return g == "Gold" or g == "Silver"
 end
 
--- Why a step got its grade, in Chief Aggie's plain words.
+-- Why a step got its grade, in Chief Aggie's plain words (kept for callers and tests).
 function OpsDebrief.reasonFor(kind: string, s: { [string]: any }): string
 	if s.grade == "Fail" then
-		return "Skipped or timed out: no points for this one."
+		return "Missed"
 	end
 	if s.by == "NPC" then
-		return "Done by the NPC crew: Silver at most. Take the seat to earn Gold."
+		return "NPC crew · max Silver"
 	end
 	if s.grade == "Gold" then
 		return "Textbook."
@@ -52,18 +61,14 @@ function OpsDebrief.reasonFor(kind: string, s: { [string]: any }): string
 			return st.tip
 		end
 	end
-	return if s.grade == "Silver"
-		then "Good. One detail off Gold."
-		else "Safe, but rough. Slow it down."
+	return if s.grade == "Silver" then "Nearly Gold" else "Slow down"
 end
 
 local function escape(s: string): string
 	return (string.gsub(string.gsub(string.gsub(s, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"))
 end
 
--- The debrief payload's badges (ProgressionRules.DebriefBadge: certifications earned, live
--- operations counted, an exercise passed, a promotion) as the tablet's certification lines, in
--- RichText: earned certifications and promotions in brass, progress in the Rep teal. Pure.
+-- The debrief payload's badges as RichText lines (kept for callers; the tablet shows icons only).
 function OpsDebrief.badgeLines(badges: { any }): { string }
 	local out = {}
 	for _, b in badges do
@@ -99,10 +104,43 @@ function OpsDebrief.certCredits(steps: { any }, userId: number): { { name: strin
 	return out
 end
 
+local function gradeRank(g: string?): number
+	if g == "Gold" then
+		return 4
+	elseif g == "Silver" then
+		return 3
+	elseif g == "Bronze" then
+		return 2
+	end
+	return 1
+end
+
+-- At most `max` icons, in order: each slot keeps the worst grade of its slice, so a failed step
+-- is never hidden by the cut.
+function OpsDebrief.iconSteps(steps: { any }, max: number): { any }
+	local n = #steps
+	if n <= max then
+		return steps
+	end
+	local out = {}
+	for i = 1, max do
+		local a = math.floor((i - 1) * n / max) + 1
+		local b = math.max(a, math.floor(i * n / max))
+		local pick = steps[a]
+		for j = a + 1, b do
+			if gradeRank(steps[j].grade) < gradeRank(pick.grade) then
+				pick = steps[j]
+			end
+		end
+		table.insert(out, pick)
+	end
+	return out
+end
+
 local function medal(parent: Instance, grade: string, size: number): Frame
 	local m = Instance.new("Frame")
 	m.Size = UDim2.fromOffset(size, size)
-	m.BackgroundColor3 = MEDAL[grade] or MEDAL.Fail
+	m.BackgroundColor3 = A11yPalette.colour("Grade", grade)
 	m.BorderSizePixel = 0
 	m.Parent = parent
 	local c = Instance.new("UICorner")
@@ -118,8 +156,8 @@ local function medal(parent: Instance, grade: string, size: number): Frame
 	l.Size = UDim2.fromScale(1, 1)
 	l.Font = HudTheme.BoldFont
 	l.TextScaled = true
-	l.TextColor3 = Color3.fromHex("1B1F22")
-	l.Text = if grade == "Fail" then "-" else string.sub(grade, 1, 1)
+	l.TextColor3 = if grade == "Fail" then Color3.fromHex("FFC1B8") else Color3.fromHex("1B1F22")
+	l.Text = A11yPalette.symbol("Grade", grade)
 	l.Parent = m
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop = UDim.new(0.18, 0)
@@ -128,280 +166,175 @@ local function medal(parent: Instance, grade: string, size: number): Frame
 	return m
 end
 
-local function lineSeg(parent: Instance, a: Vector2, b: Vector2, color: Color3)
-	local d = b - a
-	local f = Instance.new("Frame")
-	f.AnchorPoint = Vector2.new(0.5, 0.5)
-	f.BorderSizePixel = 0
-	f.BackgroundColor3 = color
-	f.Position = UDim2.fromOffset((a.X + b.X) / 2, (a.Y + b.Y) / 2)
-	f.Size = UDim2.fromOffset(d.Magnitude + 1, 2)
-	f.Rotation = math.deg(math.atan2(d.Y, d.X))
-	f.Parent = parent
+-- A coin icon (same look as CashBurst) or a Rep chevron, then a number that rolls up from 0.
+local function counter(
+	parent: Frame,
+	order: number,
+	glyph: string,
+	color: Color3,
+	value: number,
+	coin: boolean
+): TextLabel
+	local group = Instance.new("Frame")
+	group.Name = if coin then "Cash" else "Rep"
+	group.LayoutOrder = order
+	group.Size = UDim2.fromOffset(150, 40)
+	group.BackgroundTransparency = 1
+	group.Parent = parent
+	if coin then
+		local c = Instance.new("Frame")
+		c.Name = "Coin"
+		c.Position = UDim2.fromOffset(2, 9)
+		c.Size = UDim2.fromOffset(22, 22)
+		c.BackgroundColor3 = Color3.fromRGB(255, 208, 106)
+		c.BorderSizePixel = 0
+		c.Parent = group
+		HudTheme.corner(c, 11)
+		local inner = Instance.new("Frame")
+		inner.Position = UDim2.fromOffset(4, 4)
+		inner.Size = UDim2.fromOffset(14, 14)
+		inner.BackgroundColor3 = Color3.fromRGB(214, 164, 62)
+		inner.BorderSizePixel = 0
+		inner.Parent = c
+		HudTheme.corner(inner, 7)
+	else
+		local icon =
+			HudTheme.label("Icon", glyph, UDim2.fromOffset(28, 32), HudTheme.BoldFont, 24, group)
+		icon.Position = UDim2.fromOffset(0, 4)
+		icon.TextXAlignment = Enum.TextXAlignment.Center
+		icon.TextColor3 = color
+	end
+	local label =
+		HudTheme.label("Value", "+0", UDim2.fromOffset(116, 40), HudTheme.BoldFont, 26, group)
+	label.Position = UDim2.fromOffset(32, 0)
+	label.TextColor3 = color
+	local n = Instance.new("NumberValue")
+	n.Value = 0
+	n.Parent = label
+	n.Changed:Connect(function(v: number)
+		label.Text = `+{HudTheme.formatNumber(v)}`
+	end)
+	task.delay(0.3 + order * 0.08, function()
+		TweenService:Create(
+			n,
+			TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Value = value }
+		):Play()
+	end)
+	return label
 end
 
-function OpsDebrief.new(gui: ScreenGui): Debrief
+function OpsDebrief.new(parent: GuiObject): Debrief
 	local player = Players.LocalPlayer
-	-- the tablet: an orange rubber bumper around a dark screen
-	local tablet = Instance.new("Frame")
-	tablet.Name = "DebriefTablet"
-	tablet.AnchorPoint = Vector2.new(0.5, 0.5)
-	tablet.Position = UDim2.fromScale(0.5, 0.5)
-	tablet.Size = UDim2.fromScale(0.9, 0.86)
-	tablet.BackgroundColor3 = HudTheme.Colors.accent
-	tablet.BorderSizePixel = 0
-	tablet.Visible = false
-	tablet.Parent = gui
-	HudTheme.corner(tablet, 26)
-	local lim = Instance.new("UISizeConstraint")
-	lim.MaxSize = Vector2.new(780, 560)
-	lim.Parent = tablet
-	local screen = Instance.new("Frame")
-	screen.Position = UDim2.fromOffset(14, 14)
-	screen.Size = UDim2.new(1, -28, 1, -28)
-	screen.BackgroundColor3 = SCREEN
-	screen.BorderSizePixel = 0
-	screen.Parent = tablet
-	HudTheme.corner(screen, 14)
+	local toast = HudTheme.panel("DebriefTablet", UDim2.fromOffset(380, 84), parent)
+	toast.AnchorPoint = Vector2.new(0.5, 0)
+	toast.Visible = false
+	HudTheme.corner(toast, 42)
+	local content = Instance.new("Frame")
+	content.Name = "Content"
+	content.Size = UDim2.fromScale(1, 1)
+	content.BackgroundTransparency = 1
+	content.Parent = toast
+	local OPEN = UDim2.new(0.5, 0, 0, 8)
+	local CLOSED = UDim2.new(0.5, 0, 0, -100)
 
 	local shownAt = 0
 	local closeThread: thread? = nil
-
 	local debrief: Debrief
 	debrief = {
 		shownFor = function()
-			return if tablet.Visible then os.clock() - shownAt else math.huge
+			return if toast.Visible then os.clock() - shownAt else math.huge
 		end,
 		hide = function()
-			tablet.Visible = false
-		end,
-		show = function(d: { [string]: any })
-			for _, ch in screen:GetChildren() do
-				if not ch:IsA("UICorner") then
-					ch:Destroy()
-				end
+			if not toast.Visible then
+				return
 			end
-			-- header
-			local m = medal(screen, d.grade or "Bronze", 56)
-			m.Position = UDim2.fromOffset(16, 12)
-			local title = HudTheme.label(
-				"Title",
-				`DEBRIEF · {d.title or ""}`,
-				UDim2.new(1, -230, 0, 28),
-				HudTheme.BoldFont,
-				24,
-				screen
+			shownAt = -math.huge
+			local t = TweenService:Create(
+				toast,
+				TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+				{ Position = CLOSED }
 			)
-			title.Position = UDim2.fromOffset(84, 12)
-			local pro = player:GetAttribute("OpsPro") == true
-			local sub = `{d.grade or ""} overall`
-				.. (if d.takeover then " · Coastguard asset took over" else "")
-				.. (if (d.total or 0) > 1 then ` · {d.saved}/{d.total} safe` else "")
-				.. (if pro then " · PRO" else " · Assist")
-			local subL =
-				HudTheme.label("Sub", sub, UDim2.new(1, -230, 0, 20), HudTheme.BodyFont, 16, screen)
-			subL.Position = UDim2.fromOffset(84, 42)
-			subL.TextColor3 = HudTheme.Colors.textDim
-			local pay = HudTheme.label(
-				"Pay",
-				`+{d.cash or 0} Cash   +{d.rep or 0} Rep`,
-				UDim2.fromOffset(200, 26),
-				HudTheme.BoldFont,
-				20,
-				screen
-			)
-			pay.AnchorPoint = Vector2.new(1, 0)
-			pay.Position = UDim2.new(1, -16, 0, 16)
-			pay.TextXAlignment = Enum.TextXAlignment.Right
-			pay.TextColor3 = HudTheme.Colors.gold
-
-			-- step timeline (left, scrolls)
-			local list = Instance.new("ScrollingFrame")
-			list.Name = "Steps"
-			list.Position = UDim2.fromOffset(12, 80)
-			list.Size = UDim2.new(0.58, -12, 1, -150)
-			list.BackgroundTransparency = 1
-			list.BorderSizePixel = 0
-			list.ScrollBarThickness = 6
-			list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-			list.CanvasSize = UDim2.new()
-			list.Parent = screen
-			local layout = Instance.new("UIListLayout")
-			layout.Padding = UDim.new(0, 6)
-			layout.Parent = list
-			for i, s in d.steps or {} do
-				local mine = s.userId == player.UserId
-				local row = Instance.new("Frame")
-				row.Name = "Step" .. i
-				row.LayoutOrder = i
-				row.Size = UDim2.new(1, -10, 0, 58)
-				row.BackgroundColor3 = if mine
-					then Color3.fromHex("1E3440")
-					else Color3.fromHex("171D22")
-				row.BorderSizePixel = 0
-				row.Parent = list
-				HudTheme.corner(row, 8)
-				if mine then
-					local bar = Instance.new("Frame")
-					bar.Size = UDim2.new(0, 4, 1, -12)
-					bar.Position = UDim2.fromOffset(2, 6)
-					bar.BackgroundColor3 = HudTheme.Colors.accent
-					bar.BorderSizePixel = 0
-					bar.Parent = row
-				end
-				local md = medal(row, s.grade or "Fail", 34)
-				md.Position = UDim2.fromOffset(12, 12)
-				local by = if mine then "You" else tostring(s.by or "")
-				local name = HudTheme.label(
-					"Label",
-					`{s.label}  ·  {s.realTerm or ""}  ·  {by}`,
-					UDim2.new(1, -60, 0, 20),
-					HudTheme.BoldFont,
-					16,
-					row
-				)
-				name.Position = UDim2.fromOffset(54, 6)
-				local why = HudTheme.label(
-					"Reason",
-					OpsDebrief.reasonFor(d.kind, s),
-					UDim2.new(1, -60, 0, 28),
-					HudTheme.BodyFont,
-					14,
-					row
-				)
-				why.Position = UDim2.fromOffset(54, 26)
-				why.TextWrapped = true
-				why.TextYAlignment = Enum.TextYAlignment.Top
-				why.TextColor3 = HudTheme.Colors.textDim
-			end
-
-			-- right column: condition graph, tip, certifications
-			local right = Instance.new("Frame")
-			right.BackgroundTransparency = 1
-			right.Position = UDim2.new(0.58, 6, 0, 80)
-			right.Size = UDim2.new(0.42, -18, 1, -150)
-			right.Parent = screen
-			local graph = Instance.new("Frame")
-			graph.Name = "Condition"
-			graph.Size = UDim2.new(1, 0, 0, 120)
-			graph.BackgroundColor3 = Color3.fromHex("060B0A")
-			graph.BorderSizePixel = 0
-			graph.ClipsDescendants = true
-			graph.Parent = right
-			HudTheme.corner(graph, 8)
-			local gl = HudTheme.label(
-				"GraphTitle",
-				"CONDITION",
-				UDim2.new(1, -12, 0, 14),
-				Enum.Font.Code,
-				12,
-				graph
-			)
-			gl.Position = UDim2.fromOffset(8, 4)
-			gl.TextColor3 = HudTheme.Colors.textDim
-			task.defer(function()
-				local w, h = graph.AbsoluteSize.X, graph.AbsoluteSize.Y
-				local hist = d.condition or {}
-				local n = #hist
-				if n >= 2 and w > 0 then
-					local t0, t1 = hist[1].t, hist[n].t
-					local span = math.max(t1 - t0, 1)
-					local series = #(hist[1].c or {})
-					for k = 1, math.min(series, 4) do
-						local prev: Vector2? = nil
-						for _, sample in hist do
-							local v = (sample.c or {})[k]
-							if type(v) == "number" then
-								local pt = Vector2.new(
-									6 + (sample.t - t0) / span * (w - 12),
-									20 + (1 - v / 100) * (h - 26)
-								)
-								if prev then
-									local col = if v >= 70
-										then Color3.fromHex("3EE07A")
-										elseif v >= 40 then Color3.fromHex("FFB020")
-										else Color3.fromHex("FF4D3A")
-									lineSeg(graph, prev, pt, col)
-								end
-								prev = pt
-							end
-						end
-					end
+			t.Completed:Connect(function(state)
+				if state == Enum.PlaybackState.Completed then
+					toast.Visible = false
 				end
 			end)
-			local y = 128
-			if d.tip then
-				local tip = HudTheme.label(
-					"Tip",
-					`Chief Aggie: "{d.tip}"`,
-					UDim2.new(1, 0, 0, 64),
-					HudTheme.BodyFont,
-					15,
-					right
-				)
-				tip.Position = UDim2.fromOffset(0, y)
-				tip.TextWrapped = true
-				tip.TextYAlignment = Enum.TextYAlignment.Top
-				y += 68
-			end
-			-- the server's own result (RP-C1b): what this debrief earned, counted or passed
-			local badges = if type(d.badges) == "table"
-				then OpsDebrief.badgeLines(d.badges)
-				else nil
-			local credits: { { name: string, need: number } } = if badges
-				then {}
-				else OpsDebrief.certCredits(d.steps or {}, player.UserId)
-			local certLines = {}
-			for _, c in credits do
-				local have = player:GetAttribute("Cert_" .. string.gsub(c.name, " ", ""))
-				local n = if type(have) == "number" then math.min(have, c.need) else nil
-				table.insert(
-					certLines,
-					if n
-						then `{c.name}: {n}/{c.need} operations`
-						else `{c.name}: +1 operation toward sign-off ({c.need} needed)`
-				)
-			end
-			if badges then
-				certLines = badges
-			end
-			local cert = HudTheme.label(
-				"Certs",
-				if #certLines > 0
-					then "CERTIFICATION\n" .. table.concat(certLines, "\n")
-					else "CERTIFICATION\nNo sign-off credit this time.",
-				UDim2.new(1, 0, 0, 80),
-				HudTheme.BodyFont,
-				15,
-				right
-			)
-			cert.Position = UDim2.fromOffset(0, y)
-			cert.TextWrapped = true
-			cert.TextYAlignment = Enum.TextYAlignment.Top
-			cert.TextColor3 = HudTheme.Colors.bar
-			cert.RichText = badges ~= nil
-			cert.TextTruncate = Enum.TextTruncate.None
-			if badges and #badges > 3 then
-				cert.Size = UDim2.new(1, 0, 0, 20 + 19 * #badges)
-			end
+			t:Play()
+		end,
+		-- `auto`: seconds on screen (default SHOW_FOR)
+		show = function(d: { [string]: any }, auto: number?)
+			content:ClearAllChildren()
+			local grade = d.grade or "Bronze"
 
-			local close = HudTheme.button(
-				"Close",
-				"Close",
-				UDim2.fromOffset(200, HudTheme.MinButtonHeight),
-				screen
+			-- the grade medal stamps in from large to its resting size
+			local m = medal(content, grade, 110)
+			m.AnchorPoint = Vector2.new(0.5, 0.5)
+			m.Position = UDim2.fromOffset(42, 42)
+			m.Rotation = -12
+			m.ZIndex = 2
+			TweenService
+				:Create(m, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+					Size = UDim2.fromOffset(60, 60),
+					Rotation = 0,
+				})
+				:Play()
+			local gradeLabel = HudTheme.label(
+				"Grade",
+				GRADE_LABEL[grade] or grade,
+				UDim2.fromOffset(100, 30),
+				HudTheme.BoldFont,
+				24,
+				content
 			)
-			close.AnchorPoint = Vector2.new(0.5, 1)
-			close.Position = UDim2.new(0.5, 0, 1, -10)
-			HudTheme.corner(close, 10)
-			close.Activated:Connect(debrief.hide)
+			gradeLabel.AnchorPoint = Vector2.new(0, 0.5)
+			gradeLabel.Position = UDim2.new(0, 84, 0.5, 0)
+			gradeLabel.TextColor3 = A11yPalette.colour("Grade", grade)
 
-			tablet.Visible = true
+			-- Cash and Rep roll up
+			local pay = Instance.new("Frame")
+			pay.Name = "Pay"
+			pay.AnchorPoint = Vector2.new(1, 0.5)
+			pay.Position = UDim2.new(1, -16, 0.5, 0)
+			pay.Size = UDim2.fromOffset(150, 76)
+			pay.BackgroundTransparency = 1
+			pay.Parent = content
+			local payLayout = Instance.new("UIListLayout")
+			payLayout.FillDirection = Enum.FillDirection.Vertical
+			payLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+			payLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			payLayout.Padding = UDim.new(0, -4)
+			payLayout.Parent = pay
+			local cashLabel =
+				counter(pay, 1, "", HudTheme.Colors.gold, math.max(d.cash or 0, 0), true)
+			counter(pay, 2, "★", HudTheme.Colors.bar, math.max(d.rep or 0, 0), false)
+
+			toast.Position = CLOSED
+			toast.Visible = true
+			TweenService
+				:Create(
+					toast,
+					TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+					{
+						Position = OPEN,
+					}
+				)
+				:Play()
 			shownAt = os.clock()
+			-- the payout flies from the Cash counter into the HUD's Cash counter
+			if (d.cash or 0) > 0 then
+				task.delay(0.9, function()
+					local playerGui = player.PlayerGui
+					if toast.Visible and playerGui then
+						local at = cashLabel.AbsolutePosition + cashLabel.AbsoluteSize * 0.5
+						CashBurst.playAt(playerGui, at, d.cash, false)
+					end
+				end)
+			end
 			if closeThread then
 				task.cancel(closeThread)
 			end
-			closeThread = task.delay(40, debrief.hide)
+			closeThread = task.delay(auto or SHOW_FOR, debrief.hide)
 		end,
 	}
 	return debrief

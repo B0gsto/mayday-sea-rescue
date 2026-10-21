@@ -2,7 +2,7 @@
  "asset": "M_Hbr_Fender_Ball",
  "name": "M_Hbr_Fender_Ball",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD0.fbx",
-   "bytes": 95164,
+   "bytes": 168892,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Ball_LOD0"
@@ -40,9 +40,9 @@
      "max": [
       0.9,
       0.9,
-      2.7014
+      2.7018
      ],
-     "polygons": 1074,
+     "polygons": 2538,
      "all_triangles": true,
      "uv": true
     }
@@ -57,7 +57,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_Fender_Ball/M_Hbr_Fender_Ball_LOD1.fbx",
-   "bytes": 57324,
+   "bytes": 102604,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_Fender_Ball_LOD1"
@@ -66,16 +66,16 @@
     {
      "name": "M_Hbr_Fender_Ball_LOD1.001",
      "min": [
-      -0.9,
-      -0.9,
+      -0.8991,
+      -0.8991,
       0.0
      ],
      "max": [
-      0.9,
-      0.9,
-      2.7014
+      0.8991,
+      0.8991,
+      2.7018
      ],
-     "polygons": 488,
+     "polygons": 1268,
      "all_triangles": true,
      "uv": true
     }
@@ -136,7 +136,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1074 of 3000"
+   "detail": "2538 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD0",
@@ -144,7 +144,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.15e-03, 264 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 6.84e-04, 52 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD0",
@@ -168,7 +168,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.374, v 0.001 to 0.249"
+   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD0",
@@ -176,7 +176,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 531 faces have no UV area"
+   "detail": "0 of 1303 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD0",
@@ -184,7 +184,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "125 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "144 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1",
@@ -208,7 +208,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "488 of 3000"
+   "detail": "1268 of 3000"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1",
@@ -216,7 +216,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.91e-04, 212 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 2.19e-04, 52 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1",
@@ -240,7 +240,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "u 0.001 to 0.374, v 0.001 to 0.249"
+   "detail": "u 0.001 to 0.999, v 0.001 to 0.999"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1",
@@ -248,7 +248,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 488 faces have no UV area"
+   "detail": "0 of 1268 faces have no UV area"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1",
@@ -256,7 +256,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 11.6% (max 15%)"
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.0% (max 15%)"
   },
   {
    "subject": "M_Hbr_Fender_Ball",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1074 of 1200 (small_prop, asset row)"
+   "detail": "2538 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_Fender_Ball",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "488 of 600"
+   "detail": "1268 of 1500"
   },
   {
    "subject": "M_Hbr_Fender_Ball",
@@ -280,7 +280,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "dims.md 0.6 x 0.6 x 0.9 m, spec 0.6 x 0.6 x 0.9 m (art/reference/M_Hbr_Fender_Ball/dims.md)"
+   "detail": "dims.md 0.6 x 0.6 x 0.901 m, spec 0.6 x 0.6 x 0.901 m (art/reference/M_Hbr_Fender_Ball/dims.md)"
   },
   {
    "subject": "M_Hbr_Fender_Ball",
@@ -304,7 +304,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "2.701 studs, real 0.900 m = 2.700 studs, off 0.1% (5% free, 15% with a note)"
+   "detail": "2.702 studs, real 0.901 m = 2.703 studs, off 0.0% (5% free, 15% with a note)"
   },
   {
    "subject": "M_Hbr_Fender_Ball",
@@ -416,7 +416,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Ball_LOD0; 1074 triangles (scene 1074)"
+   "detail": "M_Hbr_Fender_Ball_LOD0; 2538 triangles (scene 2538)"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD0.fbx",
@@ -456,7 +456,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_Fender_Ball_LOD1; 488 triangles (scene 488)"
+   "detail": "M_Hbr_Fender_Ball_LOD1; 1268 triangles (scene 1268)"
   },
   {
    "subject": "M_Hbr_Fender_Ball_LOD1.fbx",
@@ -472,21 +472,21 @@
    "name": "M_Hbr_Fender_Ball_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1074,
-   "texel_density": 125.2
+   "triangles": 2538,
+   "texel_density": 144.0
   },
   {
    "name": "M_Hbr_Fender_Ball_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 488,
+   "triangles": 1268,
    "texel_density": null
   }
  ],
  "bbox_studs": [
   1.8000000715255737,
   1.8000000715255737,
-  2.701434850692749
+  2.701796770095825
  ],
- "peak_rss_mb": 292.9
+ "peak_rss_mb": 252.6
 }

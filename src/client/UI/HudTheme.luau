@@ -3,7 +3,34 @@
 -- section 9 style). Translucent near-black panels with a hairline edge, thin Builder Sans type,
 -- one muted safety-orange accent used sparingly, buttons still at least 48 px tall. Small factory
 -- helpers so every HUD piece looks the same. Placement lives in UI/Layout.
+local Layout = require(script.Parent:WaitForChild("Layout"))
+
 local HudTheme = {}
+
+-- Text size setting: every label made here scales, and re-scales live when the setting changes.
+local scaledLabels: { [TextLabel]: number } = {}
+local scaledButtons: { [TextButton]: number } = {}
+
+function HudTheme.scaled(size: number): number
+	return math.round(size * Layout.textScale())
+end
+
+Layout.onTextScale(function()
+	for label, base in scaledLabels do
+		if label.Parent == nil then
+			scaledLabels[label] = nil
+		elseif not label.TextScaled then
+			label.TextSize = HudTheme.scaled(base)
+		end
+	end
+	for button, base in scaledButtons do
+		if button.Parent == nil then
+			scaledButtons[button] = nil
+		elseif not button.TextScaled then
+			button.TextSize = HudTheme.scaled(base)
+		end
+	end
+end)
 
 HudTheme.Colors = {
 	panel = Color3.fromHex("0C1217"), -- near-black slate
@@ -80,17 +107,19 @@ function HudTheme.label(
 	textSize: number?,
 	parent: Instance?
 ): TextLabel
+	local base = textSize or HudTheme.TextSize.body
 	local l = Instance.new("TextLabel")
 	l.Name = name
 	l.Text = text
 	l.Size = size
 	l.BackgroundTransparency = 1
 	l.Font = font or HudTheme.BodyFont
-	l.TextSize = textSize or 18
+	l.TextSize = HudTheme.scaled(base)
 	l.TextColor3 = HudTheme.Colors.text
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	l.TextTruncate = Enum.TextTruncate.AtEnd
 	l.Parent = parent
+	scaledLabels[l] = base
 	return l
 end
 
@@ -103,11 +132,12 @@ function HudTheme.button(name: string, text: string, size: UDim2, parent: Instan
 	b.BackgroundColor3 = HudTheme.Colors.accent
 	b.BorderSizePixel = 0
 	b.Font = HudTheme.HeaderFont
-	b.TextSize = 18
+	b.TextSize = HudTheme.scaled(HudTheme.TextSize.body)
 	b.TextColor3 = HudTheme.Colors.text
 	b.TextWrapped = true
 	HudTheme.corner(b, 4)
 	b.Parent = parent
+	scaledButtons[b] = HudTheme.TextSize.body
 	return b
 end
 

@@ -1,148 +1,98 @@
 --!strict
--- CasualtyAsset: the rigged swimmer casualty (M_Chr_Casualty_Swimmer_Rig = asset 77856458721407 v2: the LOD0 mesh
--- skinned to 17 R15 bones, art/status/CH1.csv). AssetLoader loads and prepares the upload (Atlas SurfaceAppearance,
--- dry + wet); this finishes it once the way make_rig_rbxm.luau builds assets/models/M_Chr_Casualty_Swimmer_Rig.rbxm:
---   * pivot at the feet (the Root bone), upright: PivotTo(CFrame.new(x, seaY - Waterline, z)) floats it;
---   * ATT_Strobe / ATT_Whistle as Bones under UpperTorso (they follow the torso; the client hangs the strobe on it);
---   * exactly one AnimationController + Animator; always wet (a casualty in the water is soaked);
---   * the skinned MeshPart anchored and non-colliding (victims are scripted, not physics: CONTRACT.md).
--- Poses are client-side (Bone.Transform doesn't replicate): the model is tagged CasualtyRig and its attribute
--- CasualtyPose ("TreadWater" | "Wave" | "Panic" | "Sit") drives src/client/Controllers/CasualtyController.
--- Server only. clone() never yields: nil until the background load is done, or when it failed (greybox fallback).
+-- CasualtyAsset: the Person in the Water casualty as a dressed R15 character (docs/14 section 4, replaces
+-- M_Chr_Casualty_Swimmer): NpcFactory builds the NpcOutfits "Swimmer" variants (clothes, hair, a lifejacket accessory)
+-- in the background; this finishes each once:
+--   * pivot at the feet, upright: PivotTo(CFrame.new(x, seaY - Waterline, z)) floats it (Waterline attribute:
+--     mid-chest, the lifejacket's freeboard);
+--   * ATT_Strobe / ATT_Whistle as Bones on the UpperTorso part (lifejacket shoulders; the client hangs the strobe on it);
+--   * HumanoidRootPart anchored, every part non-colliding (victims are scripted, not physics: CONTRACT.md).
+-- Poses are client-side (Motor6D.Transform written after the Animator, which plays nothing here): the model is tagged
+-- CasualtyRig and its attribute CasualtyPose (Shared.Casualty.CasualtyRig.POSES) drives src/client/Controllers/
+-- CasualtyController. Server only. clone() never yields: nil until a variant is built, or when every build failed
+-- (RescueService then uses its greybox + NpcFactory upgrade).
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
-
-local AssetIds = require(
-	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("AssetIds")
-)
-local AssetLoader = require(script.Parent.AssetLoader)
+local CasualtyRig = require(game:GetService("ReplicatedStorage").Shared.Casualty.CasualtyRig)
+local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
+local NpcOutfits = require(game:GetService("ReplicatedStorage").Shared.Config.NpcOutfits)
 
 local CasualtyAsset = {}
 
-CasualtyAsset.ASSET = "M_Chr_Casualty_Swimmer_Rig"
+CasualtyAsset.ROLE = "Swimmer"
 CasualtyAsset.TAG = "CasualtyRig"
-CasualtyAsset.WATERLINE = 4.55 -- studs above the feet where the sea sits (chin and lifejacket collar clear)
+CasualtyAsset.WATERLINE = 3.4 -- studs above the feet where the sea sits, when the rig's own measure looks wrong
 CasualtyAsset.RETRY_AFTER = 35
 
-local ready: Model? = nil
+local ready: { Model } = {}
 local loading = false
 local failedAt: number? = nil
+local nextPick = 0
 
--- Bone CFrame in its MeshPart's space (bind pose).
-local function partSpace(b: Bone): CFrame
-	local cf = b.CFrame
-	local p = b.Parent
-	while p and p:IsA("Bone") do
-		cf = p.CFrame * cf
-		p = p.Parent
-	end
-	return cf
+local function marker(torso: BasePart, name: string, side: number)
+	local s = torso.Size
+	local b = Instance.new("Bone")
+	b.Name = name
+	b.CFrame = CFrame.new(side * 0.3 * s.X, 0.35 * s.Y, -0.5 * s.Z - 0.15) -- on the lifejacket's front
+	b.Parent = torso
 end
 
-local function finish(source: Model): Model?
-	local model = source:Clone()
-	local mesh: MeshPart? = nil
+local function finish(model: Model, rootHeight: number): Model?
+	local root = model.PrimaryPart
+	local torso = model:FindFirstChild("UpperTorso")
+	if not (root and torso and torso:IsA("BasePart")) then
+		warn("[CasualtyAsset] the R15 build has no HumanoidRootPart / UpperTorso")
+		model:Destroy()
+		return nil
+	end
+	root.PivotOffset = CFrame.new(0, -rootHeight, 0) -- pivot = the feet
+	CasualtyRig.motorize(model) -- Motor6D joints, so CasualtyController can pose it
 	for _, d in model:GetDescendants() do
-		if d:IsA("MeshPart") and d.HasSkinnedMesh then
-			mesh = d
-			break
+		if d:IsA("BasePart") then
+			d.CanQuery = false
 		end
 	end
-	if not mesh then
-		warn("[CasualtyAsset] no skinned MeshPart in the upload")
-		model:Destroy()
-		return nil
-	end
-	local bones: { [string]: Bone } = {}
-	for _, d in mesh:GetDescendants() do
-		if d:IsA("Bone") then
-			bones[d.Name] = d
-		end
-	end
-	local rootBone, torso = bones.Root, bones.UpperTorso
-	if not (rootBone and torso and bones.Head) then
-		warn("[CasualtyAsset] the upload has no Root / UpperTorso / Head bones")
-		model:Destroy()
-		return nil
-	end
-	local feet = partSpace(rootBone).Position
-	mesh.PivotOffset = CFrame.new(feet) -- pivot = the feet, upright (bones are axis-aligned at bind)
-	mesh.Anchored = true
-	mesh.CanCollide = false
-	mesh.CanTouch = false
-	mesh.CanQuery = false
-	mesh.CastShadow = true
-	model.PrimaryPart = mesh
-	-- markers (AssetLoader made any ATT_* into Attachments on the part: re-home them as torso bones)
-	for _, a in mesh:GetChildren() do
-		if a:IsA("Attachment") and not a:IsA("Bone") and string.sub(a.Name, 1, 4) == "ATT_" then
-			a:Destroy()
-		end
-	end
-	local torsoCF = partSpace(torso)
-	local markers: { [string]: Vector3 } = AssetIds.Attachments[CasualtyAsset.ASSET] or {}
-	for name, v in markers do
-		if not bones[name] then
-			local b = Instance.new("Bone")
-			b.Name = name
-			b.CFrame = torsoCF:Inverse() * CFrame.new(feet + v)
-			b.Parent = torso
-		end
-	end
-	local controllers = {}
-	for _, c in model:GetDescendants() do
-		if c:IsA("AnimationController") then
-			table.insert(controllers, c)
-		end
-	end
-	local ac = controllers[1] or Instance.new("AnimationController")
-	for i = 2, #controllers do
-		controllers[i]:Destroy()
-	end
-	ac.Parent = model
-	if not ac:FindFirstChildOfClass("Animator") then
-		Instance.new("Animator").Parent = ac
-	end
-	AssetLoader.setWet(model, true)
+	marker(torso, "ATT_Strobe", -1)
+	marker(torso, "ATT_Whistle", 1)
+	-- the lifejacket floats them high: sea at mid-chest, so shoulders, collar and arms read from
+	-- the helm (shoulders under left only a head and a flat line of arms showing)
+	local feetY = root.Position.Y - rootHeight
+	local w = torso.Position.Y + torso.Size.Y / 2 - feetY - 1.1
 	model.Name = "CasualtyRig"
-	model:SetAttribute("Waterline", CasualtyAsset.WATERLINE)
-	model:SetAttribute("RigType", "R15SkinnedBones")
+	model:SetAttribute("Waterline", if w > 2.5 and w < 6 then w else CasualtyAsset.WATERLINE)
+	model:SetAttribute("RigType", "R15")
 	return model
 end
 
 local function load()
 	loading = true
-	local ok, result = pcall(function()
-		local template = AssetLoader.getTemplate(CasualtyAsset.ASSET, "LOD0")
-		return if template then finish(template) else nil
-	end)
-	loading = false
-	if ok and result then
-		local folder = ServerStorage:FindFirstChild("AssetTemplates") or ServerStorage
-		result.Name = "CasualtyRig_Ready"
-		result.Parent = folder
-		ready = result
-		failedAt = nil
-	else
-		if not ok then
-			warn(`[CasualtyAsset] preparing the rig failed: {result}`)
+	local variants = #NpcOutfits.Roles[CasualtyAsset.ROLE]
+	for i = 1, variants do
+		local ok, result = pcall(function()
+			local m, h = NpcFactory.build(CasualtyAsset.ROLE, { seed = i - 1, storm = false })
+			return if m then finish(m, h) else nil
+		end)
+		if ok and result then
+			result.Name = "CasualtyRig_Ready"
+			table.insert(ready, result)
+		elseif not ok then
+			warn(`[CasualtyAsset] building casualty {i} failed: {result}`)
 		end
-		failedAt = os.clock()
 	end
+	loading = false
+	failedAt = if #ready == 0 then os.clock() else nil
 end
 
--- Starts the background load (server start).
+-- Starts the background build (server start).
 function CasualtyAsset.preload()
-	if not ready and not loading then
+	if #ready == 0 and not loading then
 		task.spawn(load)
 	end
 end
 
--- A fresh rigged casualty (pivot at the feet, anchored, wet), or nil while loading / after a failure.
+-- A fresh dressed casualty (pivot at the feet, root anchored), or nil while building / after a failure.
 function CasualtyAsset.clone(): Model?
-	if ready then
-		local m = ready:Clone()
+	if #ready > 0 then
+		nextPick = nextPick % #ready + 1
+		local m = ready[nextPick]:Clone()
 		m.Name = "CasualtyRig"
 		return m
 	end

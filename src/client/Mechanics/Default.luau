@@ -3,7 +3,9 @@
 -- src/client/Mechanics/<mechanicId>.luau is missing. Shows "Step: <name> [Complete]" and returns
 -- a stub result; the server grades stubs Silver at most (on its own metrics only).
 -- Interface (CONTRACT.md "Operations v2"): start(ctx, finish) -> cleanup?
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
@@ -59,6 +61,7 @@ function Default.start(
 	button.TextColor3 = HudTheme.Colors.text
 	button.TextSize = 20
 	button.Text = "Complete"
+	button.Modal = true -- free the mouse in first person
 	button.Parent = frame
 	local bcorner = Instance.new("UICorner")
 	bcorner.CornerRadius = UDim.new(0, HudTheme.Corner)
@@ -75,6 +78,9 @@ function Default.start(
 	end
 	button.Activated:Connect(complete)
 	gui.Parent = player:WaitForChild("PlayerGui")
+	if UserInputService.GamepadEnabled then
+		GuiService.SelectedObject = button
+	end
 	-- smoke runs (tools/studio/smoke.py ops) set this attribute so the stub completes by itself
 	if player:GetAttribute("OpsAutoStub") == true then
 		task.delay(1, complete)

@@ -79,8 +79,12 @@ return function(t)
 			t.expect(F.rescued(reason)).toBe(false)
 			local msg = F.radioFor(reason)
 			t.expect(msg.from).toBe(F.LIFEBOAT)
-			t.expect(string.find(msg.text, "casualty aboard", 1, true) ~= nil).toBe(true)
-			t.expect(string.find(msg.text, "Return to station", 1, true) ~= nil).toBe(true)
+			t.expect(string.find(msg.text, "home", 1, true) ~= nil).toBe(true)
+		end
+		-- show, don't tell (docs/14 F-3): a few words, never a paragraph
+		for _, reason in { "Complete", "Timer" } do
+			local _, words = string.gsub(F.radioFor(reason).text, "%S+", "")
+			t.expect(words <= 6).toBe(true)
 		end
 		t.expect(F.handover(true, true)).toBe("Ride")
 		t.expect(F.handover(true, false)).toBe("Station")

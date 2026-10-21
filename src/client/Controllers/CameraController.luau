@@ -1,8 +1,11 @@
 --!strict
 -- CameraController: owns the camera. Modes:
---   Foot       locked first person on foot (Roblox's camera + FirstPerson head bob and body)
---   VehicleFP  locked first person at the seat's EyePoint (jet ski; helm view of a chase vehicle)
---   Chase      third-person spring-arm chase camera (RIB, larger boats, cars)
+--   Foot       standard third person on foot (Roblox Classic camera, zoom in to first person;
+--              the character and accessories stay visible, FirstPerson adds a close-in head bob)
+--   Close      close work (casualty care): a first-person view reached with an eased dolly
+--              (Camera/Transition) and released back to the previous third-person view
+--   VehicleFP  locked first person at the seat's EyePoint (helm view of a chase vehicle)
+--   Chase      third-person spring-arm chase camera (jet ski, RIB, larger boats, cars)
 --   Cinematic  a film-style shot list (Camera/Cinematic), letterboxed
 -- Entering a seat picks the vehicle's VehicleConfig cameraMode; leaving it goes back to Foot.
 -- In a chase vehicle, V / R3 / the mobile "Helm" button toggles the helm view.
@@ -12,6 +15,7 @@
 --
 -- API (client):
 --   CameraController.GetMode(): string
+--   CameraController.HoldFirstPerson() -> release()   close work; refcounted, eased in and out
 --   CameraController.Viewmodel   (Camera/Viewmodel: playAction(name, opts?) etc.)
 --   CameraController.Comfort     (Camera/Comfort: get/set settings)
 --   CameraController.PlayCinematic(shots, opts?) -> handle  (Camera/Cinematic.play)
@@ -33,6 +37,7 @@ local Chase = require(CameraFolder:WaitForChild("Chase"))
 local Cinematic = require(CameraFolder:WaitForChild("Cinematic"))
 local Comfort = require(CameraFolder:WaitForChild("Comfort"))
 local FirstPerson = require(CameraFolder:WaitForChild("FirstPerson"))
+local Transition = require(CameraFolder:WaitForChild("Transition"))
 local Viewmodel = require(CameraFolder:WaitForChild("Viewmodel"))
 
 local CameraController = {}
@@ -40,7 +45,18 @@ CameraController.Priority = 60
 CameraController.Viewmodel = Viewmodel
 CameraController.Comfort = Comfort
 
-type Mode = "Foot" | "VehicleFP" | "Chase" | "Cinematic" | "None"
+type Mode = "Foot" | "Close" | "VehicleFP" | "Chase" | "Cinematic" | "None"
+
+-- Close work (casualty care). Holds are refcounted so consecutive care steps do not bounce the
+-- camera. Entering dollies from the current third-person view to the eye; leaving dollies back
+-- to the saved third-person view (relative to the player, so it follows them if they turned).
+local closeHolds = 0
+local closePhase: "Done" | "In" | "Hold" | "Out" = "Done"
+local closeFrom = CFrame.identity
+local closeFromRel = CFrame.identity
+local closePoseSet = false
+local closeZoom = 12.5 -- the third-person zoom distance the close work started from
+local closeFocus: (() -> Vector3?)? = nil -- the care area the dolly ends looking at (G81)
 
 local player = Players.LocalPlayer
 local mode: Mode = "None"
@@ -152,6 +168,133 @@ local function excludeList(model: Model?): { Instance }
 	return list
 end
 
+---------------------------------------------------------------- close work
+
+local function headPart(): BasePart?
+	local char = player.Character
+	local head = char and char:FindFirstChild("Head")
+	return if head and head:IsA("BasePart") then head else nil
+end
+
+-- The eye point in the view's current orientation (the head is the anchor if it is missing).
+local function eyeFrame(rotation: CFrame): CFrame
+	local head = headPart()
+	if not head then
+		return Workspace.CurrentCamera.CFrame
+	end
+	return CFrame.new(head.Position + head.CFrame * Vector3.new(0, 0.1, -0.55)) * rotation
+end
+
+-- beginCloseOut reads the mode: a release before the mode has switched is a no-op.
+local function currentMode(): Mode
+	return mode
+end
+
+-- resume: the exit was reversed by a new hold, so keep the saved third-person frame
+local function beginCloseIn(resume: boolean)
+	local camera = Workspace.CurrentCamera
+	if not resume then
+		closeFrom = camera.CFrame
+		local _, _, root = character()
+		if root then
+			closeFromRel = root.CFrame:ToObjectSpace(closeFrom)
+		end
+		local head = headPart()
+		if head then
+			closeZoom = (closeFrom.Position - head.Position).Magnitude
+		end
+	end
+	local _, hum = character()
+	if hum then
+		hum.CameraOffset = Vector3.zero
+	end
+	closePhase = "In"
+	closePoseSet = false
+	player.CameraMode = Enum.CameraMode.Classic
+	Viewmodel.setEnabled(true)
+	Transition.begin({
+		from = camera.CFrame,
+		to = function()
+			return eyeFrame(closeFrom.Rotation)
+		end,
+		fovFrom = camera.FieldOfView,
+		fovTo = Comfort.get("fov"),
+		bodyAtTarget = 1,
+		waveHeight = waveHeight,
+		focus = closeFocus,
+		exclude = excludeList(current and current.model or nil),
+	})
+end
+
+local function beginCloseOut()
+	if closePhase ~= "In" and closePhase ~= "Hold" then
+		return
+	end
+	if currentMode() ~= "Close" then
+		closePhase = "Done"
+		return
+	end
+	local camera = Workspace.CurrentCamera
+	local char, hum, root = character()
+	if not (char and hum and root) then
+		closePhase = "Done"
+		return
+	end
+	closePhase = "Out"
+	closePoseSet = false
+	FirstPerson.resetBodyVisibility(char) -- the fade owns the body on the way out
+	Transition.begin({
+		from = camera.CFrame,
+		to = function()
+			return root.CFrame * closeFromRel
+		end,
+		fovFrom = camera.FieldOfView,
+		fovTo = Comfort.get("fov"),
+		bodyAtTarget = 0,
+		waveHeight = waveHeight,
+		exclude = excludeList(current and current.model or nil),
+	})
+end
+
+-- Drop every close-work hold and hand the camera back. Called when the character dies, respawns,
+-- is removed or changes seat mid-dolly: the hold's owner (Care) may never run its release, and a
+-- Scriptable camera left behind never returns to Custom (the body stays invisible with it).
+local function cancelClose()
+	if closeHolds == 0 and closePhase == "Done" and mode ~= "Close" then
+		return
+	end
+	closeHolds = 0
+	closeFocus = nil
+	closePhase = "Done"
+	closePoseSet = false
+	Transition.stop()
+	local camera = Workspace.CurrentCamera
+	local char, hum = character()
+	if camera then
+		camera.CameraType = Enum.CameraType.Custom
+		if hum then
+			camera.CameraSubject = hum
+		end
+	end
+	if hum then
+		hum.CameraOffset = Vector3.zero
+		player.CameraMode = Enum.CameraMode.Classic
+	end
+	player.CameraMaxZoomDistance = FirstPerson.MAX_ZOOM
+	-- the first-person lock clamped the zoom to 0.5 and raising the range does not undo it: hold the
+	-- saved third-person distance for a few frames so the camera comes back out (as exitMode does)
+	player.CameraMinZoomDistance = math.clamp(closeZoom, FirstPerson.MIN_ZOOM, FirstPerson.MAX_ZOOM)
+	task.delay(0.1, function()
+		if mode ~= "Close" then
+			player.CameraMinZoomDistance = FirstPerson.MIN_ZOOM
+		end
+	end)
+	if char then
+		FirstPerson.resetBodyVisibility(char)
+	end
+	Viewmodel.setBasePose(nil)
+end
+
 ---------------------------------------------------------------- helm toggle
 
 local function onHelm(_: string, state: Enum.UserInputState): Enum.ContextActionResult
@@ -194,6 +337,10 @@ local function wantedMode(): Mode
 	end
 	local seat = hum.SeatPart :: BasePart?
 	if not seat then
+		-- close work pulls the camera into the eye; it stays Close until the exit settles
+		if closeHolds > 0 or closePhase == "Out" then
+			return "Close"
+		end
 		current = nil
 		return "Foot"
 	end
@@ -236,8 +383,10 @@ local function wantedMode(): Mode
 		end
 		return "Chase"
 	end
-	local cameraMode = if c.spec
-		then c.spec.cameraMode
+	-- the cold-open jet ski rides in third person: the casualty, the craft and the shore all read
+	local cameraMode = if c.model and c.model:GetAttribute("ColdOpen") == true
+		then "Chase"
+		elseif c.spec then c.spec.cameraMode
 		elseif c.seat:IsA("VehicleSeat") then "Chase" -- cars and unknown craft
 		else "FirstPerson"
 	if cameraMode == "Chase" then
@@ -255,6 +404,26 @@ local function exitMode(old: Mode)
 	local char, hum = character()
 	if old == "Foot" then
 		FirstPerson.exitFoot(hum)
+	elseif old == "Close" then
+		Transition.stop()
+		closePhase = "Done"
+		Viewmodel.setBasePose(nil)
+		player.CameraMode = Enum.CameraMode.Classic
+		FirstPerson.exitFoot(hum)
+		-- the lock clamped Roblox's zoom to 0.5 and raising the max later does not undo that: clamp it
+		-- back out to the saved distance once enterFoot has reset the range (deferred, next frame)
+		local z = math.clamp(closeZoom, FirstPerson.MIN_ZOOM, FirstPerson.MAX_ZOOM)
+		task.defer(function()
+			if mode ~= "Foot" then
+				return
+			end
+			player.CameraMinZoomDistance = z
+			task.delay(0.1, function()
+				if math.abs(player.CameraMinZoomDistance - z) < 0.01 then
+					player.CameraMinZoomDistance = FirstPerson.MIN_ZOOM
+				end
+			end)
+		end)
 	elseif old == "VehicleFP" then
 		FirstPerson.setRider(nil)
 		FirstPerson.exitVehicle()
@@ -272,6 +441,11 @@ local function enterMode(new: Mode)
 	local _, hum = character()
 	if new == "Foot" and hum then
 		FirstPerson.enterFoot(hum)
+	elseif new == "Close" then
+		-- a release that landed before the mode switched has already begun the exit
+		if closePhase ~= "Out" then
+			beginCloseIn(false)
+		end
 	elseif new == "VehicleFP" then
 		player.CameraMode = Enum.CameraMode.Classic
 		FirstPerson.enterVehicle()
@@ -286,7 +460,8 @@ local function enterMode(new: Mode)
 		player.CameraMode = Enum.CameraMode.Classic
 		Chase.enter(current.model or (current.seat.Parent :: any), current.root)
 	end
-	Viewmodel.setEnabled(new == "Foot" or new == "VehicleFP")
+	-- the viewmodel is first-person only: close work and a vehicle helm (third-person Foot hides it)
+	Viewmodel.setEnabled(new == "Close" or new == "VehicleFP")
 	setHelmBinding(helmWanted(new))
 end
 
@@ -404,6 +579,66 @@ local function telemetry(): any
 	return nil
 end
 
+local function updateClose(dt: number)
+	local camera = Workspace.CurrentCamera
+	local char, hum, root = character()
+	if not (char and hum and root) then
+		closePhase = "Done"
+		return
+	end
+	if closePhase == "In" then
+		-- no idle hands held up in front: they filled the bottom of the view and hid the casualty;
+		-- the hands come in with each action (grab, wrap, CPR) and drop away after it
+		if not Transition.update(dt) then
+			closePhase = "Hold"
+			FirstPerson.enterFirstPerson(hum)
+			camera.CFrame = eyeFrame(camera.CFrame.Rotation)
+			camera.FieldOfView = Comfort.get("fov")
+		end
+	elseif closePhase == "Hold" then
+		FirstPerson.foot(dt, hum, root)
+		FirstPerson.applyBodyVisibility(char)
+		if closeHolds == 0 then
+			beginCloseOut()
+		end
+	elseif closePhase == "Out" then
+		local running = Transition.update(dt)
+		-- the hands lower as the camera leaves the eye
+		if running and not closePoseSet and Transition.progress() > 0.45 then
+			closePoseSet = true
+			Viewmodel.setBasePose(nil)
+		end
+		if not running then
+			closePhase = "Done"
+			FirstPerson.resetBodyVisibility(char)
+			player.CameraMode = Enum.CameraMode.Classic
+			FirstPerson.exitFoot(hum)
+			Viewmodel.setBasePose(nil)
+		end
+	end
+end
+
+-- The default camera's Popper only stops at visible, colliding parts, but the world's assets collide through
+-- invisible _COL hulls and their visual meshes do not collide: nothing pulled the third-person camera out of a
+-- quay wall or a rock. Cast from the focus against what collides and pull the camera in front of it.
+local occludeParams = RaycastParams.new()
+occludeParams.FilterType = Enum.RaycastFilterType.Exclude
+occludeParams.RespectCanCollide = true
+local function popOccluders(camera: Camera, char: Model)
+	local focus = camera.Focus.Position
+	local offset = camera.CFrame.Position - focus
+	if offset.Magnitude < 1 then
+		return -- first person
+	end
+	occludeParams.FilterDescendantsInstances =
+		{ char, Workspace:FindFirstChild("Vehicles") :: Instance }
+	local hit = Workspace:Spherecast(focus, 0.4, offset, occludeParams)
+	local who = hit and hit.Instance:FindFirstAncestorOfClass("Model")
+	if hit and not (who and who:FindFirstChildOfClass("Humanoid")) then
+		camera.CFrame -= offset.Unit * (offset.Magnitude - hit.Distance)
+	end
+end
+
 local function update(dt: number)
 	local want = wantedMode()
 	if want ~= mode then
@@ -419,7 +654,17 @@ local function update(dt: number)
 		return
 	end
 	Cinematic.update(dt) -- fades the letterbox out
-	if mode == "Foot" and char and hum and root then
+	if mode == "Close" then
+		updateClose(dt)
+	elseif mode == "Foot" and char and hum and root then
+		-- on foot the camera is Custom; a stray Scriptable one (Studio's execute_luau restores it) strands
+		-- the view and hides every ProximityPrompt, so take it back
+		if
+			camera.CameraType ~= Enum.CameraType.Custom
+			and player:GetAttribute("PhotoModeOpen") ~= true
+		then
+			FirstPerson.enterFoot(hum)
+		end
 		local look = handoffLook
 		if look and handoffFrames > 0 then
 			-- the default camera reads its look vector from camera.CFrame, so this sticks
@@ -433,7 +678,7 @@ local function update(dt: number)
 			end
 		end
 		FirstPerson.foot(dt, hum, root)
-		FirstPerson.applyBodyVisibility(char, Viewmodel.isPlaying())
+		popOccluders(camera, char)
 	elseif mode == "VehicleFP" and current then
 		local c = current
 		local look = gatherLook(dt, true, false)
@@ -446,7 +691,7 @@ local function update(dt: number)
 			telemetry = telemetry(),
 		}, look)
 		if char then
-			FirstPerson.applyBodyVisibility(char, true)
+			FirstPerson.applyBodyVisibility(char)
 		end
 		if c.seat:IsA("VehicleSeat") then
 			Viewmodel.setSteer((c.seat :: VehicleSeat).SteerFloat)
@@ -545,6 +790,11 @@ local function connectTriggers()
 				end
 				if reason == "ColdOpen" then
 					coldOpenModel = model -- the arrival shot only plays while riding this craft
+					-- where am I, what is going on: town and station, then the casualty, then control
+					Cinematic.play(
+						Cinematic.Lists.coldOpen(model),
+						{ id = "coldopen", skippable = true }
+					)
 					return
 				end
 				-- the first launch gets the full shot; later launches go straight to the helm
@@ -586,6 +836,32 @@ function CameraController.GetMode(): string
 	return mode
 end
 
+-- Close work (casualty care): hold the first-person view for as long as a mechanic needs it.
+-- The first hold dollies in from the current third-person view; the last release dollies back to
+-- it. Calls are refcounted, so overlapping care steps keep the camera still. `focus` (optional)
+-- names the care area the dolly should end looking at, so the body parts sit near the centre.
+function CameraController.HoldFirstPerson(focus: (() -> Vector3?)?): () -> ()
+	closeHolds += 1
+	if focus then
+		closeFocus = focus
+	end
+	if closePhase == "Out" then
+		beginCloseIn(true) -- reversed mid-exit: dolly back in from where the camera is
+	end
+	local released = false
+	return function()
+		if released then
+			return
+		end
+		released = true
+		closeHolds = math.max(closeHolds - 1, 0)
+		if closeHolds == 0 then
+			closeFocus = nil
+			beginCloseOut()
+		end
+	end
+end
+
 function CameraController.PlayCinematic(shots: { Cinematic.Shot }, opts: any?): Cinematic.Handle
 	return Cinematic.play(shots, opts)
 end
@@ -610,7 +886,7 @@ function CameraController.Start()
 	connectInput()
 	connectTriggers()
 	RunService:BindToRenderStep("MaydayCameraPre", Enum.RenderPriority.Camera.Value - 1, function()
-		if mode == "Foot" then
+		if mode == "Foot" or mode == "Close" then
 			FirstPerson.preFoot()
 		end
 	end)
@@ -620,12 +896,30 @@ function CameraController.Start()
 			warn(`[CameraController] {err}`)
 		end
 	end)
+	player.CharacterRemoving:Connect(cancelClose)
+	local function watchCharacter(char: Model)
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		if not hum then
+			return
+		end
+		hum.Died:Connect(cancelClose)
+		hum:GetPropertyChangedSignal("SeatPart"):Connect(cancelClose)
+	end
+	player.CharacterAdded:Connect(watchCharacter)
+	if player.Character then
+		watchCharacter(player.Character)
+	end
 	player.CharacterAdded:Connect(function()
+		cancelClose()
 		exitMode(mode)
 		mode = "None"
 		current = nil
 		handoffHoldUntil = 0
 		handoffLook = nil
+		closeHolds = 0
+		closeFocus = nil
+		closePhase = "Done"
+		Transition.stop()
 	end)
 end
 

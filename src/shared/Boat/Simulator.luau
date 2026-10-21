@@ -9,12 +9,15 @@
 -- (for example an NPC boat being towed) get a rig from Simulator.ensureRig: 4 float points at the
 -- root's bottom corners, draft from the model's "Draft" attribute or 30% of the root height.
 
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Buoyancy = require(script.Parent.Buoyancy)
 local VehicleConfig = require(script.Parent.Parent.Config.VehicleConfig)
+local VehicleUpgrades = require(script.Parent.Parent.VehicleUpgrades)
 local Waves = require(script.Parent.Parent.Waves)
+local WeatherMath = require(script.Parent.Parent.WeatherMath)
 
 export type Rig = {
 	root: BasePart,
@@ -91,9 +94,38 @@ local function getWeather(): any
 	return weather
 end
 
+-- The client's held sea (WeatherController's LocalStormIntensity: the cold open, then a 5 s
+-- blend back). Absent on the server, so the shared weather is used exactly there.
+local localCache: { [string]: { q: number, wind: number, params: Waves.WaveParams } } = {}
+
+local function localWaveParams(w: any, position: Vector3): Waves.WaveParams?
+	local intensity = Lighting:GetAttribute("LocalStormIntensity")
+	if
+		type(intensity) ~= "number"
+		or type(w.getZoneAt) ~= "function"
+		or type(w.getWindDirection) ~= "function"
+	then
+		return nil
+	end
+	local zone = w.getZoneAt(position)
+	local q = WeatherMath.quantize(math.clamp(intensity, 0, 1))
+	local wind = w.getWindDirection()
+	local entry = localCache[zone.id]
+	if entry and entry.q == q and entry.wind == wind then
+		return entry.params
+	end
+	local params = Waves.paramsFor(q, zone.shelter, wind)
+	localCache[zone.id] = { q = q, wind = wind, params = params }
+	return params
+end
+
 function Simulator.waveParams(position: Vector3, now: number): Waves.WaveParams
 	local w = getWeather()
 	if w then
+		local held = localWaveParams(w, position)
+		if held then
+			return held
+		end
 		return w.getWaveParams(position, now)
 	end
 	if not fallbackParams then
@@ -197,6 +229,8 @@ function Simulator.getRig(model: Model): Rig?
 	end
 	local vehicleId = model:GetAttribute("VehicleId")
 	local spec = if type(vehicleId) == "string" then VehicleConfig.get(vehicleId) else nil
+	-- G66: fitted boatyard upgrades change the handling this hull simulates
+	spec = if spec then VehicleUpgrades.apply(spec, model:GetAttribute("VehicleUpgrades")) else nil
 	local draft = model:GetAttribute("Draft")
 	local size = if spec then spec.hullSize else root.Size
 	local ix, iy, iz = Buoyancy.boxInertia(1, size)

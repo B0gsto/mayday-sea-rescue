@@ -38,15 +38,28 @@ local state = {
 
 local baseDistance = 24
 local focusHeight = 4
+local restPitch = math.rad(13)
 
--- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck.
+-- Sizes the arm from the hull: about 1.6 hull lengths back, focus above the deck. A small craft
+-- (the jet ski and its sled) sits closer, lower and flatter: it fills less of the frame and the
+-- casualty / throw target ahead stays on the horizon. The cold open sits flatter still.
 function Chase.enter(model: Model, root: BasePart)
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
-	baseDistance = math.clamp(length * 1.6 + 8, 16, 70)
-	focusHeight = math.clamp(size.Y * 0.6, 2.5, 12) + 1.5
+	local small = length < 20
+	if small then
+		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
+		focusHeight = math.clamp(size.Y * 0.55, 2.2, 4.2) + 0.9
+	else
+		baseDistance = math.clamp(length * 1.6 + 8, 16, 70)
+		focusHeight = math.clamp(size.Y * 0.6, 2.5, 12) + 1.5
+	end
+	restPitch = if model:GetAttribute("ColdOpen") == true
+		then math.rad(4)
+		elseif small then math.rad(8)
+		else math.rad(13)
 	state.heading = CameraMath.heading(root.CFrame)
-	state.yaw, state.pitch, state.zoom, state.idle = 0, math.rad(13), 1, 10
+	state.yaw, state.pitch, state.zoom, state.idle = 0, restPitch, 1, 10
 	state.arm = baseDistance
 	state.focusY = root.Position.Y
 	state.focus = root.Position
@@ -92,7 +105,7 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	state.pitch = math.clamp(state.pitch - lookDelta.Y, math.rad(-5), math.rad(70))
 	if state.idle > 2.5 and flatSpeed > 5 then
 		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.9, dt)
-		state.pitch = CameraMath.damp(state.pitch, math.rad(13), 1.2, dt)
+		state.pitch = CameraMath.damp(state.pitch, restPitch, 1.2, dt)
 	end
 
 	-- focus: above the deck, leading the boat, its height low-passed against the swell
@@ -128,7 +141,12 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 		Chase.addTrauma(math.min(ctx.telemetry.slam * 0.015, 0.4))
 	end
 	state.trauma = math.max(state.trauma - dt * 1.6, 0)
-	local s = CameraMath.shake(state.trauma, Comfort.get("shake") * 0.6, state.clock, math.noise)
+	local s = CameraMath.shake(
+		state.trauma,
+		Comfort.get("shake") * 0.6 * Comfort.motionScale(),
+		state.clock,
+		math.noise
+	)
 	local cf = CFrame.lookAt(pos, focus) * CFrame.Angles(s.X, s.Y, s.Z)
 	camera.CFrame = cf
 	local fov = Comfort.get("fov") - 5

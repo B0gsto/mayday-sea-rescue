@@ -1,19 +1,20 @@
 --!strict
 -- DogService: Bosun, every player's Newfoundland (docs 01: MVP follower who barks and points).
 --
--- Bosun is the uploaded rigid model M_Chr_Bosun (AssetLoader, by name; LOD0/1/2, nine MeshParts each:
--- BodyHead, BodyFore, BodyHind, Tail, Harness, FurHead, FurFront, FurRear, FurTail; the older six-part
--- upload without Tail / FurHead / FurTail still rigs). An invisible root part "Body" carries the
--- physics: he follows his player on land (AlignPosition / AlignOrientation, no collisions: docs 02
--- section 10.8), floats in his harness on water, and rides the RIB and bigger boats aft (welded to a
--- DogSlot / the aft deck, out of the helm camera) while they sit in them. He never rides a first-person
--- craft (the jet ski): he sits and waits ashore. Each LOD is rigged with Motor6Ds at BosunMotion.PIVOTS
--- (Root, Neck, Hips, Ruff, Tail; Harness, FurHead, FurRear, FurTail welded on) whose Transforms
--- DogController writes locally; LOD1 and LOD2 start hidden and the client picks the LOD by distance. Until the model loads (or if it
--- can't), a greybox placeholder stands in ("Placeholder" model) and the load is retried.
+-- Bosun is the uploaded LP mesh M_Chr_Bosun_LP: one textured MeshPart per Shared.Dog.BosunRig part
+-- (G82), assembled on the rig's Motor6Ds; the greybox BosunRig Parts are the fallback when the upload
+-- fails (and still stand in for the unfinished Water Dog Friends coat options). An invisible root part
+-- "Body" carries the physics: he follows his player on land (AlignPosition / AlignOrientation, no
+-- collisions: docs 02 section 10.8), floats in his harness on water, and rides the RIB and bigger boats
+-- aft (welded to a DogSlot / the aft deck, out of the helm camera) while they sit in them. He never
+-- rides a craft without a seat for him (the jet ski: driver seat only): he sits and waits ashore. The
+-- parts hang on Motor6Ds named after the BosunMotion pose keys (Root, Neck, Jaw, Tail1, Tail2, eight leg
+-- joints) whose Transforms DogController writes locally. Everyone sees this low-poly dog (docs/14 section 4:
+-- no fur-card hero close-up).
 --
 -- Attributes on the dog model for the client: Mode ("Follow" | "Wait" | "Ride" | "Swim"), Wetness
--- (0..1, BosunWetness) and Wet (the wet SurfaceAppearances are on, AssetLoader.setWet); Waiting (bool).
+-- (0..1, BosunWetness) and Wet (coat and wear darkened); Waiting (bool), Treat (a counter, bumped by
+-- DogService.Treat for the daily challenge set: DogController spins him once and pops a "Woof!").
 --
 -- Every few seconds he sniffs for the nearest victim from CallService.GetVictimPositions and, inside his
 -- nose range, faces it and fires DogPoint to his player:
@@ -22,13 +23,12 @@
 -- The client (DogController) turns his head, shows a "Woof!" bubble and a small arrow.
 --
 -- Cosmetics (RP-M5): the player's Cos_Dog attribute picks the companion (Config/Cosmetics/Dog: Bosun, or
--- a Water Dog Friends stand-in on Bosun's rig; same abilities) and Cos_DogHarness / Cos_DogBandana /
--- Cos_DogJacket / Cos_DogHat what he wears (Config/Cosmetics/DogWear, geometry in Shared.Dog.DogWear): a
--- tint on the harness SurfaceAppearances (dry and wet), and plain Parts in a "Wear" model welded to the
--- LOD0 BodyFore / BodyHead (darkened while he is wet). A life jacket sets the model attribute HideHarness
--- (DogController hides the harness locally). Model attributes DogId, DogName, Breed.
+-- a Water Dog Friends dog on Bosun's rig in its own coat colour; same abilities) and Cos_DogHarness /
+-- Cos_DogBandana / Cos_DogJacket / Cos_DogHat what he wears (Config/Cosmetics/DogWear, geometry in
+-- Shared.Dog.DogWear): a tint on the harness parts, and plain Parts in a "Wear" model welded to the Torso
+-- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
--- API (server): DogService.GetDog(player): Model?
+-- API (server): DogService.GetDog(player): Model?, DogService.Treat(player): ()
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -36,9 +36,10 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
-local BosunMotion = require(Shared:WaitForChild("Dog"):WaitForChild("BosunMotion"))
+local BosunRig = require(Shared:WaitForChild("Dog"):WaitForChild("BosunRig"))
 local BosunWetness = require(Shared:WaitForChild("Dog"):WaitForChild("BosunWetness"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
+local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -49,24 +50,19 @@ DogService.Priority = 50
 local NOSE_RANGE = 80 -- docs 02 section 5 (Kennel upgrades are [L]) -- tune
 local POINT_INTERVAL = 4 -- seconds between sniffs -- tune
 local POINT_HOLD = 2.5 -- seconds he keeps facing the victim
-local LEG_HEIGHT = 1.85 -- body centre above the ground
+local LEG_HEIGHT = DogVisual.LEG_HEIGHT -- body centre above the ground
 local FLOAT_HEIGHT = 0.5 -- body centre above the water surface
 local TELEPORT_DISTANCE = 70
-local ASSET = "M_Chr_Bosun"
-local LODS = { "LOD0", "LOD1", "LOD2" }
-local LOAD_RETRY = AssetLoader.RETRY_AFTER + 1
 local WET_TICK = 0.5 -- seconds between wetness updates
 local SWIM_DEPTH = LEG_HEIGHT - 0.4 -- water this deep under him: he swims
 local WADE_DEPTH = 0.4 -- water this deep: his coat gets wet
 
-local COLORS = {
-	fur = Color3.fromRGB(24, 24, 28),
-	nose = Color3.fromRGB(10, 10, 12),
-	chest = Color3.fromHex("F4F1EA"), -- Hull White
-	vest = Color3.fromHex("FF6B1A"), -- Rescue Orange: "us" (docs 05 section 3.2)
-	eye = Color3.fromHex("EAF7F5"),
-	tongue = Color3.fromRGB(230, 110, 130),
-}
+type Anchors = { [string]: { part: BasePart, rest: CFrame } }
+
+local SPECS: { [string]: any } = {}
+for _, spec in BosunRig.PARTS do
+	SPECS[spec.name] = spec
+end
 
 type Dog = {
 	player: Player,
@@ -76,18 +72,17 @@ type Dog = {
 	alignRot: AlignOrientation,
 	rideWeld: WeldConstraint?,
 	rideModel: Model?,
-	waitAt: Vector3?, -- set while the player rides a first-person craft (jet ski): Bosun waits ashore
+	waitAt: Vector3?, -- set while the player rides the jet ski: he has no seat, so Bosun waits ashore
 	waitFace: Vector3?,
 	pointUntil: number,
 	pointDir: Vector3?,
-	real: boolean, -- the uploaded model is on (else the greybox placeholder)
 	mode: string,
 	depth: number, -- water depth under him (studs, 0 on dry land / aboard)
 	wetness: number,
 	wet: boolean,
 	lastSwim: boolean,
 	variant: string, -- Cos_Dog option id this model was built for
-	anchors: { [string]: { part: BasePart, rest: CFrame } }, -- LOD0 Fore / Head, rest pose in the authored frame
+	anchors: Anchors, -- Fore (Torso) / Head, rest pose in the authored frame
 }
 
 local WEAR_SLOTS = { "DogHarness", "DogBandana", "DogJacket", "DogHat" }
@@ -144,136 +139,164 @@ local function victimPositions(player: Player): { Vector3 }
 	return if ok and type(positions) == "table" then positions else {}
 end
 
-local function part(
-	model: Model,
-	name: string,
-	size: Vector3,
-	color: Color3,
-	material: Enum.Material?
-): Part
-	local p = Instance.new("Part")
-	p.Name = name
-	p.Size = size
-	p.Color = color
-	p.Material = material or Enum.Material.SmoothPlastic
-	p.TopSurface = Enum.SurfaceType.Smooth
-	p.BottomSurface = Enum.SurfaceType.Smooth
-	p.CanCollide = false
-	p.CanQuery = false
-	p.CanTouch = false
-	p.Massless = true
-	p.CastShadow = true
-	p.Parent = model
-	return p
+-- The greybox rig: one plain Part per BosunRig entry, in `coat` (hex). The fallback when the uploads
+-- fail, and the stand-in for the Water Dog Friends breeds that have no real model yet.
+local function buildPlaceholder(model: Model, body: BasePart, base: CFrame, coat: string): Anchors
+	local built: { [string]: BasePart } = { Body = body }
+	local anchors: Anchors = {}
+	for _, spec in BosunRig.PARTS do
+		local p = Instance.new("Part")
+		p.Name = spec.name
+		p.Shape = (Enum.PartType :: any)[spec.shape]
+		p.Size = spec.size
+		local hex = if spec.color == BosunRig.COAT then coat else spec.color
+		p.Color = Color3.fromHex(hex)
+		p:SetAttribute("DryColor", hex)
+		p.Material = (Enum.Material :: any)[spec.material]
+		p.TopSurface = Enum.SurfaceType.Smooth
+		p.BottomSurface = Enum.SurfaceType.Smooth
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.Massless = true
+		p.CastShadow = spec.size.Magnitude > 0.5
+		if spec.harness then
+			p:AddTag("BosunHarness")
+			p:SetAttribute("BaseColor", hex)
+		end
+		p.CFrame = base * spec.cframe
+		local parent = built[spec.parent]
+		if spec.joint and spec.pivot then
+			local world = base * CFrame.new(spec.pivot)
+			local m = Instance.new("Motor6D")
+			m.Name = spec.joint
+			m.Part0 = parent
+			m.Part1 = p
+			m.C0 = parent.CFrame:ToObjectSpace(world)
+			m.C1 = p.CFrame:ToObjectSpace(world)
+			m.Parent = p
+		else
+			local w = Instance.new("Weld")
+			w.Name = "BosunWeld"
+			w.Part0 = parent
+			w.Part1 = p
+			w.C0 = parent.CFrame:ToObjectSpace(p.CFrame)
+			w.Parent = p
+		end
+		p.Parent = model
+		built[spec.name] = p
+	end
+	for on, name in BosunRig.ANCHORS do
+		anchors[on] = { part = built[name], rest = base:ToObjectSpace(built[name].CFrame) }
+	end
+	return anchors
 end
 
-local function attach(root: BasePart, p: BasePart, offset: CFrame)
-	p.CFrame = root.CFrame * offset
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = root
-	weld.Part1 = p
-	weld.Parent = p
+-- The LP upload (M_Chr_Bosun_LP): one textured MeshPart per BosunRig part, joined on the same Motor6Ds
+-- (or Welds) the placeholder uses, so Shared.Dog.BosunMotion animates it unchanged. Returns nil when
+-- the upload is missing a part: the greybox rig then takes over.
+local function buildMesh(model: Model, body: BasePart, base: CFrame): Anchors?
+	local clone = AssetLoader.clone(DogVisual.LP_ASSET, "LOD0")
+	if not clone then
+		return nil
+	end
+	local source: { [string]: BasePart } = {}
+	for _, d in clone:GetDescendants() do
+		if d:IsA("BasePart") then
+			source[DogVisual.shortName(d.Name, DogVisual.LP_ASSET)] = d
+		end
+	end
+	clone:PivotTo(base) -- the uploaded parts keep their own mesh-centre rest frames
+
+	local built: { [string]: BasePart } = { Body = body }
+	local anchors: Anchors = {}
+	for _, spec in BosunRig.PARTS do
+		local p = source[spec.name]
+		if not p then
+			for name, part in built do
+				if name ~= "Body" then
+					part:Destroy()
+				end
+			end
+			clone:Destroy()
+			return nil
+		end
+		p.Name = spec.name
+		p.Anchored = false
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.Massless = true
+		p:SetAttribute("Mesh", true)
+		if spec.harness then
+			p:AddTag("BosunHarness")
+			p:SetAttribute("BaseColor", DogWear.HARNESS_ORANGE)
+		end
+		local parent = built[spec.parent]
+		if spec.joint and spec.pivot then
+			local world = base * CFrame.new(spec.pivot)
+			local m = Instance.new("Motor6D")
+			m.Name = spec.joint
+			m.Part0 = parent
+			m.Part1 = p
+			m.C0 = parent.CFrame:ToObjectSpace(world)
+			m.C1 = p.CFrame:ToObjectSpace(world)
+			m.Parent = p
+		else
+			local w = Instance.new("Weld")
+			w.Name = "BosunWeld"
+			w.Part0 = parent
+			w.Part1 = p
+			w.C0 = parent.CFrame:ToObjectSpace(p.CFrame)
+			w.Parent = p
+		end
+		p.Parent = model
+		built[spec.name] = p
+	end
+	clone:Destroy() -- any part the rig has no use for
+
+	for on, name in BosunRig.ANCHORS do
+		local part = built[name]
+		local spec = SPECS[name]
+		if part and spec then
+			anchors[on] = { part = part, rest = spec.cframe }
+		end
+	end
+	return anchors
 end
 
--- Builds Bosun at `cf` (facing cf.LookVector) as the greybox placeholder. Body is the physics root
--- (it stays, invisible, when the real model replaces the "Placeholder" model); Head hangs on a Motor6D
--- "Neck" whose Transform the client turns.
-local function buildDog(player: Player, cf: CFrame): (Model, BasePart)
+-- Builds the dog at `cf` (facing cf.LookVector): the uploaded LP mesh when `useMesh` and it loads,
+-- else the greybox BosunRig in `coat` (hex). Body is the invisible physics root; the visual parts
+-- hang on Motor6Ds (pivots in the authored frame) or Welds.
+local function buildDog(
+	player: Player,
+	cf: CFrame,
+	coat: string,
+	useMesh: boolean
+): (Model, BasePart, Anchors)
 	local model = Instance.new("Model")
 	model.Name = `Bosun_{player.UserId}`
 	model:SetAttribute("Owner", player.UserId)
 
-	local body = part(model, "Body", Vector3.new(2, 1.6, 3.4), COLORS.fur, Enum.Material.Fabric)
+	local body = Instance.new("Part")
+	body.Name = "Body"
+	body.Size = Vector3.new(2, 1.6, 3.4) -- the old greybox body: same mass for the aligners
+	body.Transparency = 1
+	body.CanCollide = false
+	body.CanQuery = false
+	body.CanTouch = false
+	body.CastShadow = false
 	body.CFrame = cf
+	body.Parent = model
 	model.PrimaryPart = body
-	local placeholder = Instance.new("Model")
-	placeholder.Name = "Placeholder"
-	placeholder.Parent = model
 
-	attach(
-		body,
-		part(placeholder, "Vest", Vector3.new(2.2, 1.25, 1.9), COLORS.vest),
-		CFrame.new(0, 0.22, -0.15)
-	)
-	attach(
-		body,
-		part(placeholder, "VestBand", Vector3.new(2.25, 0.22, 0.35), COLORS.chest),
-		CFrame.new(0, 0.3, -0.55)
-	)
-	attach(
-		body,
-		part(placeholder, "VestHandle", Vector3.new(0.3, 0.3, 0.9), COLORS.vest),
-		CFrame.new(0, 0.95, -0.15)
-	)
-	attach(
-		body,
-		part(placeholder, "ChestPatch", Vector3.new(1.0, 0.85, 0.2), COLORS.chest),
-		CFrame.new(0, -0.15, -1.72)
-	)
-	attach(
-		body,
-		part(placeholder, "Rump", Vector3.new(2.05, 1.5, 0.8), COLORS.fur, Enum.Material.Fabric),
-		CFrame.new(0, 0.05, 1.45)
-	)
-	for _, x in { -0.62, 0.62 } do
-		for _, z in { -1.15, 1.15 } do
-			local leg = part(
-				placeholder,
-				"Leg",
-				Vector3.new(0.6, 1.15, 0.6),
-				COLORS.fur,
-				Enum.Material.Fabric
-			)
-			attach(body, leg, CFrame.new(x, -1.3, z))
-			attach(
-				body,
-				part(placeholder, "Paw", Vector3.new(0.7, 0.3, 0.75), COLORS.fur),
-				CFrame.new(x, -1.72, z - 0.08)
-			)
-		end
-	end
-	attach(
-		body,
-		part(placeholder, "Tail", Vector3.new(0.45, 0.45, 1.3), COLORS.fur, Enum.Material.Fabric),
-		CFrame.new(0, 0.55, 2.2) * CFrame.Angles(math.rad(35), 0, 0)
-	)
-
-	local head =
-		part(placeholder, "Head", Vector3.new(1.55, 1.35, 1.4), COLORS.fur, Enum.Material.Fabric)
-	head.CFrame = body.CFrame * CFrame.new(0, 0.95, -2.05)
-	local neck = Instance.new("Motor6D")
-	neck.Name = "Neck"
-	neck.Part0 = body
-	neck.Part1 = head
-	neck.C0 = CFrame.new(0, 0.95, -1.5)
-	neck.C1 = CFrame.new(0, 0, 0.55)
-	neck.Parent = head
-	attach(
-		head,
-		part(placeholder, "Snout", Vector3.new(0.95, 0.65, 0.65), COLORS.fur),
-		CFrame.new(0, -0.28, -0.95)
-	)
-	attach(
-		head,
-		part(placeholder, "Nose", Vector3.new(0.4, 0.28, 0.2), COLORS.nose),
-		CFrame.new(0, -0.05, -1.32)
-	)
-	attach(
-		head,
-		part(placeholder, "Tongue", Vector3.new(0.3, 0.1, 0.35), COLORS.tongue),
-		CFrame.new(0, -0.64, -1.05)
-	)
-	for _, x in { -0.82, 0.82 } do
-		attach(
-			head,
-			part(placeholder, "Ear", Vector3.new(0.3, 0.8, 0.55), COLORS.fur, Enum.Material.Fabric),
-			CFrame.new(x, -0.05, 0.05)
-		)
-		attach(
-			head,
-			part(placeholder, "Eye", Vector3.new(0.2, 0.2, 0.08), COLORS.eye),
-			CFrame.new(x * 0.42, 0.22, -0.71)
-		)
+	local base = cf * CFrame.new(0, -LEG_HEIGHT, 0) -- the authored origin: the ground under him
+	local anchors: Anchors? = if useMesh then buildMesh(model, body, base) else nil
+	if anchors then
+		model:SetAttribute("Art", "Mesh")
+	else
+		anchors = buildPlaceholder(model, body, base, coat)
+		model:SetAttribute("Art", "Greybox")
 	end
 
 	local rootAttachment = Instance.new("Attachment")
@@ -281,164 +304,11 @@ local function buildDog(player: Player, cf: CFrame): (Model, BasePart)
 	rootAttachment.Parent = body
 	local headTop = Instance.new("Attachment")
 	headTop.Name = "BarkAttachment" -- the Woof! bubble (DogController)
-	headTop.Position = Vector3.new(0, 2.35, -2.05)
+	headTop.Position = Vector3.new(0, 1.35, -1.6)
 	headTop.Parent = body
 
 	model.Parent = folder
-	return model, body
-end
-
--- The real model -----------------------------------------------------------------------------------
-
--- Round 5 has 9 parts per LOD; the 6-part model (no Tail, FurHead, FurTail) still rigs.
-local PART_KEYS = {
-	"BodyHead",
-	"BodyFore",
-	"BodyHind",
-	"Tail",
-	"Harness",
-	"FurHead",
-	"FurFront",
-	"FurRear",
-	"FurTail",
-}
-local FUR_KEYS = { FurFront = true, FurRear = true, FurHead = true, FurTail = true }
-local ATTACH_ON = {
-	ATT_Mouth = "BodyHead",
-	ATT_HarnessHandle = "Harness",
-	ATT_TowRing = "Harness",
-	ATT_TailRoot = "Tail",
-}
-
-local function keyOf(name: string): string?
-	for _, key in PART_KEYS do
-		if
-			string.find(name, "_" .. key .. "_", 1, true)
-			or string.sub(name, -#key - 1) == "_" .. key
-		then
-			return key
-		end
-	end
-	return nil
-end
-
--- Fur cards are alpha cutouts seen from both sides. AlphaMode comes from Appearances.model.json
--- (tools/gen_asset_ids.py); DoubleSided can't be set from game scripts, so it is baked into the uploaded
--- Model (art/source/characters/M_Chr_Bosun/set_double_sided.luau). These writes are best effort.
-local function prepareFur(p: BasePart)
-	for _, sa in p:GetDescendants() do
-		if sa:IsA("SurfaceAppearance") then
-			pcall(function()
-				(sa :: any).AlphaMode = Enum.AlphaMode.Transparency
-			end)
-		end
-	end
-	if p:IsA("MeshPart") then
-		pcall(function()
-			(p :: any).DoubleSided = true
-		end)
-	end
-end
-
--- Welds one LOD copy onto `body` with the BosunMotion joints. `visible` false hides it (the client
--- shows the LOD it wants locally). Returns false if a body part is missing.
-local function rigLod(body: BasePart, copy: Model, lod: number, fur: boolean): boolean
-	local base = body.CFrame * CFrame.new(0, -LEG_HEIGHT, 0) -- the authored origin: the ground under him
-	copy:PivotTo(base)
-	local parts: { [string]: BasePart } = {}
-	local extra: { BasePart } = {}
-	for _, d in copy:GetDescendants() do
-		if d:IsA("BasePart") then
-			local key = keyOf(d.Name)
-			if key and FUR_KEYS[key] and not fur then
-				d:Destroy() -- a short-coated stand-in (Config/Cosmetics/Dog `fur = false`)
-			elseif key and not parts[key] then
-				parts[key] = d
-			else
-				table.insert(extra, d)
-			end
-		end
-	end
-	local fore, head, hind = parts.BodyFore, parts.BodyHead, parts.BodyHind
-	if not (fore and head and hind) then
-		warn(
-			`[DogService] {copy.Name}: BodyFore / BodyHead / BodyHind missing; keeping the placeholder`
-		)
-		return false
-	end
-	local function motor(name: string, part0: BasePart, part1: BasePart, pivot: Vector3 | CFrame)
-		local world = if typeof(pivot) == "CFrame" then pivot else base * CFrame.new(pivot)
-		local m = Instance.new("Motor6D")
-		m.Name = name
-		m.Part0 = part0
-		m.Part1 = part1
-		m.C0 = part0.CFrame:ToObjectSpace(world)
-		m.C1 = part1.CFrame:ToObjectSpace(world)
-		m.Parent = part1
-	end
-	local function weld(part0: BasePart, part1: BasePart)
-		local w = Instance.new("Weld")
-		w.Name = "BosunWeld"
-		w.Part0 = part0
-		w.Part1 = part1
-		w.C0 = part0.CFrame:ToObjectSpace(part1.CFrame)
-		w.Parent = part1
-	end
-	local pivots = BosunMotion.PIVOTS
-	motor("Root", body, fore, pivots.Root)
-	motor("Neck", fore, head, pivots.Neck)
-	motor("Hips", fore, hind, pivots.Hips)
-	if parts.FurFront then
-		motor("Ruff", fore, parts.FurFront, pivots.Ruff)
-	end
-	if parts.Harness then
-		weld(fore, parts.Harness)
-	end
-	if parts.FurRear then
-		weld(hind, parts.FurRear)
-	end
-	if parts.FurHead then
-		weld(head, parts.FurHead) -- turns with the head, not at RUFF_FOLLOW
-	end
-	-- the tail joint at ATT_TailRoot (on the PrimaryPart until moved below; every part's origin is the
-	-- authored origin, so the joint frame is the marker's position in the body's orientation)
-	local tail = parts.Tail
-	if tail then
-		local marker = copy:FindFirstChild("ATT_TailRoot", true)
-		local pivot: CFrame = if marker and marker:IsA("Attachment")
-			then CFrame.new(marker.WorldPosition) * base.Rotation
-			else base * CFrame.new(pivots.Tail)
-		motor("Tail", hind, tail, pivot)
-	end
-	if parts.FurTail then
-		weld(tail or hind, parts.FurTail) -- the cards move with the skin about the tail root
-	end
-	for _, p in extra do
-		weld(fore, p)
-	end
-	-- the markers ride on the part they belong to (AssetLoader puts them all on the PrimaryPart)
-	for _, d in copy:GetDescendants() do
-		local on = d:IsA("Attachment") and ATTACH_ON[d.Name]
-		local target = on and parts[on]
-		if target and d.Parent ~= target then
-			local a = d :: Attachment
-			local world = a.WorldCFrame
-			a.Parent = target
-			a.WorldCFrame = world
-		end
-	end
-	for key, p in parts do
-		if FUR_KEYS[key] then
-			prepareFur(p)
-		end
-		p.Transparency = if lod == 0 then 0 else 1
-	end
-	for _, p in extra do
-		p.Transparency = if lod == 0 then 0 else 1
-	end
-	copy.Name = LODS[lod + 1]
-	copy:SetAttribute("BosunLod", lod)
-	return true
+	return model, body, anchors :: Anchors
 end
 
 -- Cosmetics ---------------------------------------------------------------------------------------
@@ -462,32 +332,46 @@ local function wetColor(hex: string, wet: boolean): Color3
 	return if wet then Color3.new(c.R * WET_DARKEN, c.G * WET_DARKEN, c.B * WET_DARKEN) else c
 end
 
--- Re-dresses the dog from the player's Cos_Dog* attributes (needs the uploaded model; the greybox
--- placeholder wears nothing).
+-- Re-dresses the dog from the player's Cos_Dog* attributes.
 function applyWear(dog: Dog)
 	local old = dog.model:FindFirstChild("Wear")
 	if old then
 		old:Destroy()
 	end
-	if not dog.real then
-		return
-	end
 	local player = dog.player
-	-- harness colour: a multiply tint on every harness SurfaceAppearance (dry, wet, every LOD)
+	-- harness: tinted by the harness look, hidden under a life jacket
 	local tint = DogWear.harnessTint(lookOf(player, "DogHarness"))
-	local color = if tint then Color3.new(tint[1], tint[2], tint[3]) else Color3.new(1, 1, 1)
-	for _, d in dog.model:GetDescendants() do
-		if d:IsA("SurfaceAppearance") then
-			local owner = d:FindFirstAncestorWhichIsA("BasePart")
-			if owner and keyOf(owner.Name) == "Harness" then
-				pcall(function()
-					(d :: any).Color = color
-				end)
+	local jacket = lookOf(player, "DogJacket")
+	local hide = jacket ~= nil and jacket ~= "None"
+	dog.model:SetAttribute("HarnessHidden", hide)
+	dog.model:SetAttribute(
+		"HarnessTint",
+		if tint then Color3.new(tint[1], tint[2], tint[3]) else Color3.new(1, 1, 1)
+	)
+	for _, p in dog.model:GetDescendants() do
+		if p:IsA("BasePart") and p:HasTag("BosunHarness") then
+			if p:GetAttribute("Mesh") == true then
+				-- the uploaded harness is textured: multiply the webbing (the tape parts stay silver)
+				local mul = if tint and not string.find(p.Name, "Tape", 1, true)
+					then Color3.new(tint[1], tint[2], tint[3])
+					else Color3.new(1, 1, 1)
+				p:SetAttribute("Tint", mul)
+				local dim = if dog.wet then WET_DARKEN else 1
+				p.Color = Color3.new(mul.R * dim, mul.G * dim, mul.B * dim)
+			else
+				local base = p:GetAttribute("BaseColor")
+				if type(base) == "string" then
+					-- the tape stays retroreflective silver
+					local hex = if tint and not string.find(p.Name, "Tape", 1, true)
+						then DogWear.tinted(base, tint)
+						else base
+					p:SetAttribute("DryColor", hex)
+					p.Color = wetColor(hex, dog.wet)
+				end
 			end
+			p.Transparency = if hide then 1 else 0
 		end
 	end
-	local jacket = lookOf(player, "DogJacket")
-	dog.model:SetAttribute("HideHarness", if jacket and jacket ~= "None" then true else nil)
 	local wear = Instance.new("Model")
 	wear.Name = "Wear"
 	for _, slot in WEAR_SLOTS do
@@ -536,86 +420,39 @@ function applyWear(dog: Dog)
 	wear.Parent = dog.model
 end
 
+-- Wet: the coat, harness and wear darken (every part carries its DryColor).
 local function wetWear(dog: Dog)
-	local wear = dog.model:FindFirstChild("Wear")
-	if not wear then
-		return
-	end
-	for _, p in wear:GetChildren() do
-		local hex = p:GetAttribute("DryColor")
-		if p:IsA("BasePart") and type(hex) == "string" then
-			p.Color = wetColor(hex, dog.wet)
+	local dim = if dog.wet then WET_DARKEN else 1
+	for _, p in dog.model:GetDescendants() do
+		if not p:IsA("BasePart") then
+			continue
 		end
-	end
-end
-
--- Swaps the placeholder for the uploaded model (yields while it loads). False if LOD0 can't load.
-local function attachReal(dog: Dog): boolean
-	local body = dog.body
-	local copies: { [number]: Model } = {}
-	for i, lod in LODS do
-		local copy = AssetLoader.clone(ASSET, lod)
-		if copy then
-			if rigLod(body, copy, i - 1, dogOption(dog).fur ~= false) then
-				copies[i - 1] = copy
+		local hex = p:GetAttribute("DryColor")
+		local tint = p:GetAttribute("Tint")
+		if type(hex) == "string" then
+			p.Color = wetColor(hex, dog.wet)
+		elseif p:GetAttribute("Mesh") == true then
+			-- the LP upload ships no _Wet maps: dim its textures when soaked
+			if typeof(tint) == "Color3" then
+				p.Color = Color3.new(tint.R * dim, tint.G * dim, tint.B * dim)
 			else
-				copy:Destroy()
+				p.Color = Color3.new(dim, dim, dim)
 			end
 		end
-	end
-	if not copies[0] or not dog.model.Parent then
-		for _, copy in copies do
-			copy:Destroy()
-		end
-		return false
-	end
-	for _, copy in copies do
-		AssetLoader.setWet(copy, dog.wet)
-		copy.Parent = dog.model
-	end
-	local placeholder = dog.model:FindFirstChild("Placeholder")
-	if placeholder then
-		placeholder:Destroy()
-	end
-	body.Transparency = 1
-	body.CastShadow = false
-	local bark = body:FindFirstChild("BarkAttachment") :: Attachment?
-	if bark then
-		bark.Position = Vector3.new(0, 1.25, -2.0)
-	end
-	dog.real = true
-	dog.model:SetAttribute("Placeholder", nil)
-	local base = body.CFrame * CFrame.new(0, -LEG_HEIGHT, 0)
-	for _, d in copies[0]:GetDescendants() do
-		local key = d:IsA("BasePart") and keyOf(d.Name)
-		local on = if key == "BodyFore" then "Fore" elseif key == "BodyHead" then "Head" else nil
-		if on then
-			dog.anchors[on] =
-				{ part = d :: BasePart, rest = base:ToObjectSpace((d :: BasePart).CFrame) }
-		end
-	end
-	applyWear(dog)
-	return true
-end
-
--- Keeps trying to load the model while the dog exists; the placeholder stands in meanwhile.
-local function upgrade(dog: Dog)
-	while dog.model.Parent and not dog.real do
-		local ok, result = pcall(attachReal, dog)
-		if ok and result then
-			return
-		elseif not ok then
-			warn(`[DogService] attaching {ASSET} failed: {result}`)
-		end
-		task.wait(LOAD_RETRY)
 	end
 end
 
 local function makeDog(player: Player, character: Model)
 	local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
 	local start = if root then root.CFrame * CFrame.new(3, -1, 2) else CFrame.new(0, 10, 0)
-	local model, body = buildDog(player, CFrame.new(start.Position) * start.Rotation)
-	model:SetAttribute("Placeholder", true)
+	local variant = equipped(player, "Dog")
+	local option = (Cosmetics.option("Dog", variant) or {}) :: any
+	local model, body, anchors = buildDog(
+		player,
+		CFrame.new(start.Position) * start.Rotation,
+		if type(option.coat) == "string" then option.coat else BosunRig.COAT,
+		type(option.coat) ~= "string" -- the uploaded Bosun mesh carries its own black coat
+	)
 	model:SetAttribute("Mode", "Follow")
 	local rootAttachment = body:FindFirstChild("RootAttachment") :: Attachment
 
@@ -652,21 +489,20 @@ local function makeDog(player: Player, character: Model)
 		waitFace = nil,
 		pointUntil = 0,
 		pointDir = nil,
-		real = false,
 		mode = "Follow",
 		depth = 0,
 		wetness = 0,
 		wet = false,
 		lastSwim = false,
-		variant = equipped(player, "Dog"),
-		anchors = {},
+		variant = variant,
+		anchors = anchors,
 	}
-	local option = dogOption(dog)
+	option = dogOption(dog)
 	model:SetAttribute("DogId", dog.variant)
 	model:SetAttribute("DogName", option.name or "Bosun")
 	model:SetAttribute("Breed", option.breed or "Newfoundland")
 	dogs[player] = dog
-	task.spawn(upgrade, dog)
+	applyWear(dog)
 end
 
 local function vehicleOf(seat: BasePart?): Model?
@@ -682,7 +518,7 @@ end
 
 -- Where Bosun rides: a DogSlot attachment if the vehicle has one (CONTRACT: optional, stream B),
 -- else the stern of bigger boats (behind the helm, out of the driver's view). He never rides a
--- first-person craft (canRide).
+-- craft with no seat for him (canRide).
 local function rideOffset(model: Model, root: BasePart): CFrame
 	local slot = model:FindFirstChild("DogSlot", true)
 	if slot and slot:IsA("Attachment") then
@@ -730,6 +566,7 @@ end
 
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
+rayParams.IgnoreWater = true -- terrain water is not ground: over it he swims, never stands on it
 
 -- His body centre's height at `position`, and the water depth there (math.huge: no ground found).
 local function groundY(position: Vector3, character: Model): (number, number)
@@ -751,11 +588,12 @@ local function setMode(dog: Dog, mode: string)
 	end
 end
 
--- A Newfoundland can't ride a jet ski: no dog on first-person craft (cameraMode "FirstPerson"),
--- whose rider's eye is right over the seat and sled. He rides the RIB and bigger boats.
+-- A Newfoundland can't ride a jet ski: she carries only the driver seat (the sled is a survivor
+-- slot, not a seat), so there is nowhere for him to sit even now the camera is third person. He
+-- rides the RIB and the bigger boats; a first-person-only craft has no room either.
 local function canRide(model: Model): boolean
 	local id = model:GetAttribute("VehicleId")
-	if id == "JetSki" then
+	if VehicleConfig.isJetSki(id) then
 		return false
 	end
 	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
@@ -949,7 +787,6 @@ local function updateWetness(dog: Dog, dt: number)
 	if wet ~= dog.wet then
 		dog.wet = wet
 		dog.model:SetAttribute("Wet", wet)
-		AssetLoader.setWet(dog.model, wet)
 		wetWear(dog)
 	end
 end
@@ -957,6 +794,17 @@ end
 function DogService.GetDog(player: Player): Model?
 	local dog = dogs[player]
 	return if dog then dog.model else nil
+end
+
+-- A short happy moment: the client spins Bosun once, tail high, with a "Woof!" (no new remote:
+-- the model attribute replicates the counter).
+function DogService.Treat(player: Player)
+	local dog = dogs[player]
+	if not (dog and dog.model.Parent) then
+		return
+	end
+	local count = tonumber(dog.model:GetAttribute("Treat")) or 0
+	dog.model:SetAttribute("Treat", count + 1)
 end
 
 local function removeDog(player: Player)
@@ -1016,9 +864,6 @@ local function onPlayer(player: Player)
 end
 
 function DogService.Init()
-	for _, lod in LODS do
-		task.spawn(AssetLoader.getTemplate, ASSET, lod)
-	end
 	local existing = Workspace:FindFirstChild("Bosun")
 	if existing and existing:IsA("Folder") then
 		folder = existing
@@ -1031,6 +876,7 @@ function DogService.Init()
 end
 
 function DogService.Start()
+	AssetLoader.preload({ DogVisual.LP_ASSET })
 	Players.PlayerAdded:Connect(onPlayer)
 	for _, player in Players:GetPlayers() do
 		onPlayer(player)

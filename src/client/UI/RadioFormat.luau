@@ -1,11 +1,7 @@
 --!strict
--- RadioFormat (pure): the player's radio messages as structured data, their wheel options, the
--- spoken tokens (player voice fragments for RadioStitch) and the grading of voice procedure.
---
--- Procedure graded (docs 09 section 3): call the station you want first, then say who you are
--- ("Gale Isles Coastguard, Haven Rescue One-One"), then the message, then the right proword:
--- "Over" when you expect a reply, "Out" when the exchange is finished. "Over and out" is never
--- right (it means "reply" and "don't reply" at once).
+-- RadioFormat (pure): the player's radio messages as structured data and their spoken tokens
+-- (player voice fragments for RadioStitch). Push-to-talk voices the correct reply (docs 09 section 3:
+-- the station called first, then who you are, the message, then "Over" or "Out").
 export type Order = "toFrom" | "fromTo" | "fromOnly" | "none"
 export type Proword = "Over" | "Out" | "OverAndOut" | "None"
 export type Message = {
@@ -16,13 +12,6 @@ export type Message = {
 	proword: Proword,
 	params: { [string]: any }?,
 }
-export type Expect = {
-	to: string,
-	from: string,
-	proword: Proword,
-	bodies: { [string]: number }, -- body -> credit 0..1
-}
-export type Option = { label: string, msg: Message, correct: boolean, icon: string? }
 
 local RadioFormat = {}
 
@@ -107,6 +96,10 @@ local B: { [string]: Body } = {
 		overTokens = { "HANDOVER_READY" },
 		label = "Ready for tasking",
 	},
+	wildlife_safe = {
+		tokens = { "'Animal safe, heading in.'" },
+		label = "Animal safe, heading in",
+	},
 	vessel_secured = {
 		tokens = { "NUMBER_{pob}_M", "LAUNCH_POB", "'Vessel secured alongside, all persons safe.'" },
 		overTokens = { "NUMBER_{pob}_M", "LAUNCH_POB", "HANDOVER_VESSEL_SECURED" },
@@ -184,152 +177,6 @@ function RadioFormat.label(msg: Message): string
 	return head .. fill(if body then body.label else msg.body, msg.params) .. tail
 end
 
--- Grades voice procedure. Returns score 0..1 (the "format" metric) and the faults, worst first.
-function RadioFormat.grade(msg: Message, expect: Expect): (number, { string })
-	local faults: { string } = {}
-	local cs = 0
-	if msg.order == "toFrom" and msg.to == expect.to and msg.from == expect.from then
-		cs = 1
-	elseif msg.order == "fromOnly" and msg.from == expect.from then
-		cs = 0.5
-		table.insert(faults, "Call the Coastguard first, then say who you are.")
-	elseif msg.order == "fromTo" then
-		table.insert(
-			faults,
-			"Callsigns reversed: the station you call comes first, then 'this is' you."
-		)
-	else
-		table.insert(faults, "No callsigns: they can't tell who is talking.")
-	end
-	local body = expect.bodies[msg.body] or 0
-	if body <= 0 then
-		table.insert(faults, "Wrong message for this call.")
-	elseif body < 1 then
-		table.insert(faults, "'Roger' only says you heard it. Say what you will do.")
-	end
-	local pw = 0
-	if msg.proword == expect.proword then
-		pw = 1
-	elseif msg.proword == "OverAndOut" then
-		table.insert(faults, "Never 'over and out': over asks for a reply, out ends the call.")
-	elseif msg.proword == "Out" then
-		table.insert(faults, "Use 'over': you expect the Coastguard to answer.")
-	elseif msg.proword == "Over" then
-		table.insert(faults, "Use 'out': nothing more is expected.")
-	else
-		table.insert(faults, "End with a proword: 'over' or 'out'.")
-	end
-	local score = math.floor((cs + body + pw) / 3 * 100 + 0.5) / 100
-	return score, faults
-end
-
--- Small deterministic shuffle so options don't sit in the same slot every time.
--- (a tiny LCG instead of Random, so the module stays pure and testable under Lune)
-local function lcg(seed: number): (number, number) -> number
-	local x = math.floor(math.abs(seed)) % 2147483647 + 1
-	return function(lo: number, hi: number): number
-		x = (x * 48271) % 2147483647
-		return lo + x % (hi - lo + 1)
-	end
-end
-
-local function shuffle<T>(list: { T }, seed: number): { T }
-	local next = lcg(seed)
-	for i = #list, 2, -1 do
-		local j = next(1, i)
-		list[i], list[j] = list[j], list[i]
-	end
-	return list
-end
-
-local function msg(
-	order: Order,
-	from: string,
-	body: string,
-	pw: Proword,
-	params: { [string]: any }?
-): Message
-	return { order = order, to = "CG", from = from, body = body, proword = pw, params = params }
-end
-
-local function option(m: Message, correct: boolean): Option
-	return { label = RadioFormat.label(m), msg = m, correct = correct }
-end
-
-RadioFormat.AckExpect = function(cs: string): Expect
-	return {
-		to = "CG",
-		from = cs,
-		proword = "Over",
-		bodies = { copy_launching = 1, wilco = 1, roger = 0.5 },
-	}
-end
-
--- The tasking acknowledgement wheel: one right answer, procedure decoys, "Say again" and "Unable".
-function RadioFormat.ackOptions(cs: string, seed: number): { Option }
-	local list = {
-		option(msg("toFrom", cs, "copy_launching", "Over"), true),
-		option(msg("none", cs, "copy_launching", "Over"), false),
-		option(msg("toFrom", cs, "copy_launching", "OverAndOut"), false),
-		option(msg("fromTo", cs, "roger", "Out"), false),
-	}
-	shuffle(list, seed)
-	table.insert(list, option(msg("toFrom", cs, "say_again", "Over"), false))
-	table.insert(list, option(msg("toFrom", cs, "unable", "Over"), false))
-	return list
-end
-
-RadioFormat.CloseoutExpect = function(cs: string, ferry: boolean): Expect
-	return {
-		to = "CG",
-		from = cs,
-		proword = "Over",
-		bodies = if ferry then { all_accounted = 1 } else { vessel_secured = 1 },
-	}
-end
-
--- POB numbers offered on the closeout: the truth and its neighbours (never below 1).
-function RadioFormat.pobChoices(truth: number, seed: number): { number }
-	local set = { truth }
-	if truth > 1 then
-		table.insert(set, truth - 1)
-	end
-	table.insert(set, truth + 1)
-	if #set < 3 then
-		table.insert(set, truth + 2)
-	end
-	return shuffle(set, seed)
-end
-
--- The closeout wheel: correct procedure with each POB choice, plus two procedure decoys.
-function RadioFormat.closeoutOptions(
-	cs: string,
-	truth: number,
-	ferry: boolean,
-	seed: number
-): { Option }
-	local body = if ferry then "all_accounted" else "vessel_secured"
-	local key = if ferry then "n" else "pob"
-	local list: { Option } = {}
-	local choices = RadioFormat.pobChoices(truth, seed)
-	for _, n in choices do
-		local p = { [key] = n, [key .. "N"] = n }
-		table.insert(list, option(msg("toFrom", cs, body, "Over", p), n == truth))
-	end
-	local pick = lcg(seed + 7)
-	local n1 = choices[pick(1, #choices)]
-	local n2 = choices[pick(1, #choices)]
-	table.insert(
-		list,
-		option(msg("toFrom", cs, body, "OverAndOut", { [key] = n1, [key .. "N"] = n1 }), false)
-	)
-	table.insert(
-		list,
-		option(msg("fromOnly", cs, body, "Out", { [key] = n2, [key .. "N"] = n2 }), false)
-	)
-	return shuffle(list, seed + 1)
-end
-
 local PLAYER_MINUTES = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15 }
 
 -- Params for RadioStitch: numbers become fragment keys (player voice has N01-N20 and 12 minute
@@ -353,6 +200,58 @@ function RadioFormat.stitchParams(m: Message): { [string]: any }
 		out.minutes = string.format("M%02d", best)
 	end
 	return out
+end
+
+-- A subtitle is one short line: the first `max` words, then an ellipsis.
+function RadioFormat.capWords(text: string, max: number): string
+	local out, n = {}, 0
+	for w in string.gmatch(text, "%S+") do
+		n += 1
+		if n > max then
+			local joined = (string.gsub(table.concat(out, " "), "[%.,;:]+$", ""))
+			return joined .. "…"
+		end
+		out[n] = w
+	end
+	return table.concat(out, " ")
+end
+
+-- A spoken subtitle (crew call-outs, Ferry captions): capWords, with a leading speaker tag before a
+-- quote (`Crew: "..."`) not counted.
+function RadioFormat.capLine(text: string, max: number): string
+	local who, said = string.match(text, '^([^":]+:)%s+(".*)$')
+	if who and said then
+		return who .. " " .. RadioFormat.capWords(said, max)
+	end
+	return RadioFormat.capWords(text, max)
+end
+
+-- The radio subtitle at a glance (docs/14 section 2): drop a leading callsign address ("Haven
+-- Rescue, Coastguard."), keep the first clause, skip articles, at most `max` words. The full line
+-- stays in the radio log.
+local ADDRESS = { "Rescue", "Coastguard", "Station", "this is" }
+local ARTICLE = { the = true, a = true, an = true }
+function RadioFormat.caption(text: string, max: number): string
+	local first, rest = string.match(text, "^([^%.!?]*)[%.!?]%s+(.+)$")
+	if first and rest and string.find(first, ",", 1, true) then
+		for _, w in ADDRESS do
+			if string.find(first, w, 1, true) then
+				text = rest
+				break
+			end
+		end
+	end
+	local clause = string.match(text, "^%s*([^%.,;!?]+)") or text
+	local out = {}
+	for w in string.gmatch(clause, "%S+") do
+		if not ARTICLE[string.lower(w)] then
+			table.insert(out, w)
+			if #out == max then
+				break
+			end
+		end
+	end
+	return table.concat(out, " ")
 end
 
 -- POB number carried by a message (closeout and launch bodies), or nil.

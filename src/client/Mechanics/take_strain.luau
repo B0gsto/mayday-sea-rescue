@@ -29,18 +29,15 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 	local link =
 		Kit.link(ctx, rig.lengthStuds, { bridle = rig.bridle, strongPoint = rig.strongPoint })
 	if not link then
-		Kit.brief(gui, "Can't see the casualty or our boat.")
+		Kit.brief(gui, "No casualty")
 		task.delay(2, complete, { metrics = { peakTension = 1 }, failed = true })
 		return cleanup
 	end
 	local l = link :: Kit.Link
 	l.line.peak = 0
 	local setGauge = if ctx.isAssist then Kit.gauge(gui, "Tow line") else nil
-	Kit.brief(
-		gui,
-		"Dead slow ahead until the line lifts clear of the water. Hold it. Then build speed gently."
-	)
-	Kit.say(gui, "Crew", "Line's fast. Take up the slack, slowly.", 3)
+	Kit.brief(gui, "Dead slow · take the strain")
+	Kit.say(gui, "Crew", "Line's fast. Take up slowly.", 3)
 	local held = 0
 	local lifted = false
 	local lastSnatch = 0
@@ -52,7 +49,7 @@ function M.start(ctx: any, finish: (any) -> ()): (() -> ())?
 		if line.parted then
 			Kit.snapSound(lk.ropeA0)
 			Kit.hands("duck")
-			Kit.say(gui, "Crew", "Line's parted! Heads down! We'll pass it again.", 4)
+			Kit.say(gui, "Crew", "Line's parted! Heads down! Re-passing.", 4)
 			local peak = line.peak
 			lk.onUpdate = nil
 			Kit.release(lk)

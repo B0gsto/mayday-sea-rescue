@@ -79,6 +79,7 @@ export type CasualtyState = {
 	treated: boolean,
 	towed: boolean, -- vessels: the tow is established, the drift clock stops
 	delivered: boolean,
+	aboard: boolean?, -- picked up by a crew's boat (the board effect): safe, no takeover
 	takenOver: boolean,
 	wrongHandled: boolean, -- the one-off wrong-handling cost was applied
 	tag: string?, -- triage: "Red" | "Yellow" | "Green"
@@ -91,7 +92,7 @@ export type Metrics = { [string]: number | boolean }
 -- What a client mechanic submits for a step.
 export type StepResult = {
 	metrics: Metrics,
-	events: { [string]: number }?, -- condition events ("wash", "slam", "wrongHandling")
+	events: { [string]: number }?, -- condition events ("wash", "slam", "wrongHandling", "bump")
 	grade: Grade?, -- the client's own view; the server never takes it as is
 	stub: boolean?, -- the default stub mechanic produced this (Silver cap)
 	failed: boolean?, -- the player failed or gave up (onFail applies)

@@ -1,0 +1,123 @@
+{
+ "asset": "M_Road_DryStoneWall",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Snap_Start",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    7.5,
+    -1.8,
+    0.0
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snap_End",
+   "parent": null,
+   "blender": [
+    15.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -15.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -7.5,
+    -1.8,
+    0.0
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Base",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    7.5,
+    -1.8,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Vault",
+   "parent": null,
+   "blender": [
+    7.5,
+    0.0,
+    3.6
+   ],
+   "roblox_from_origin": [
+    -7.5,
+    3.6,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    0.0,
+    1.8,
+    0.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

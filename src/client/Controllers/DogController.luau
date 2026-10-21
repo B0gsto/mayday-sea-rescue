@@ -1,16 +1,18 @@
 --!strict
 -- DogController: Bosun's body language and his point-and-bark, on the client.
 --
--- Motion: every dog in Workspace.Bosun (DogService) is the rigid M_Chr_Bosun model rigged with Motor6Ds
--- (Root, Neck, Hips, Ruff, Tail) on an invisible root the server moves. Each frame (PreSimulation) this
--- writes their Transforms from Shared.Dog.BosunMotion: breathing, the walk's bob and pitch while he
--- follows, sitting when he stops (and while he waits ashore for a jet ski), his head turning to his
--- owner, a casualty or a passing glance, a tail wag (carried high when excited or swimming, low when he
--- sits or is tired, tucked when wet; a rear wiggle on the old model without a Tail joint), a float and
--- paddle when he swims, a shake when he climbs out, and a lean into the boat's motion aboard. Inputs
--- come from the replicated Mode and Wetness attributes and the root's velocity. Transforms are local; the server owns position.
--- LOD: LOD1 / LOD2 copies start hidden; the client shows one by camera distance (local Transparency).
--- The harness stays hidden while the model attribute HideHarness is set (DogService: a life jacket on).
+-- Motion: every dog in Workspace.Bosun (DogService) is the uploaded LP mesh (or the greybox BosunRig)
+-- on an invisible root the server moves, its parts on Motor6Ds named after the Shared.Dog.BosunMotion
+-- pose keys (Root, Neck, Jaw, Tail1, Tail2, the eight leg joints). Each frame (PreSimulation) this
+-- writes their Transforms: breathing
+-- and panting, the trot while he follows, sitting when he stops (and while he waits ashore for a jet ski),
+-- his head turning to his owner, a casualty or a passing glance, a tail wag (carried high when excited or
+-- swimming, low when he sits or is tired, tucked when wet), a float and paddle when he swims, a shake when
+-- he climbs out, and a lean into the boat's motion aboard. Inputs come from the replicated Mode and
+-- Wetness attributes and the root's velocity. Transforms are local; the server owns position.
+--
+-- Every client draws the same low-poly faceted LP mesh (docs/14 section 4, 2026-10-18: no fur-card
+-- hero close-up).
 --
 -- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
 -- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
@@ -22,28 +24,31 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BosunMotion = require(Shared:WaitForChild("Dog"):WaitForChild("BosunMotion"))
 local Net = require(Shared:WaitForChild("Net"))
 
 local DogController = {}
 
 local SHOW_SECONDS = 2.2
+local BARK_GAP = 20 -- s between barks: DogService sniffs every 4 s, a bark each time nags
+local BUBBLE_NEAR = 16 -- studs from the camera: closer, the bubble would sit mid-screen (bark only)
+local TREAT_SECONDS = 1.6 -- one happy spin after the daily challenge set (DogService.Treat)
 local OWNER_LOOK_RANGE = 28 -- studs: he watches his owner inside this
 local ARROW_COLOR = Color3.fromHex("3EE07A") -- Waypoint Green: where to go (docs 05 section 3.2)
 local BUBBLE_TEXT = Color3.fromHex("0A2A3B")
-local JOINTS = { "Root", "Neck", "Hips", "Ruff", "Tail" }
 
 type DogState = {
 	model: Model,
 	motion: BosunMotion.State,
 	motors: { [string]: { Motor6D } },
-	lods: { [number]: { BasePart } },
-	lod: number?,
 	dirty: boolean,
 	lastVel: Vector3,
 	accel: Vector3,
 	pointAt: Vector3?,
 	pointUntil: number,
+	treatSerial: number,
+	treatUntil: number,
 	glanceDir: Vector3?,
 	glanceUntil: number,
 	nextGlance: number,
@@ -52,13 +57,14 @@ type DogState = {
 
 local active: { [Model]: number } = {}
 local dogs: { [Model]: DogState } = {}
+local lastBark: { [Model]: number } = {}
 local rng = Random.new()
 
 local function makeBubble(body: BasePart): BillboardGui
 	local bubble = Instance.new("BillboardGui")
 	bubble.Name = "WoofBubble"
-	bubble.Size = UDim2.fromOffset(110, 52)
-	bubble.StudsOffsetWorldSpace = Vector3.new(0, 1.4, 0)
+	bubble.Size = UDim2.fromOffset(84, 40)
+	bubble.StudsOffsetWorldSpace = Vector3.new(0, 2.2, 0)
 	bubble.AlwaysOnTop = true
 	bubble.MaxDistance = 250
 	local frame = Instance.new("Frame")
@@ -79,7 +85,7 @@ local function makeBubble(body: BasePart): BillboardGui
 	label.BackgroundTransparency = 1
 	label.Text = "Woof!"
 	label.Font = Enum.Font.FredokaOne
-	label.TextSize = 28
+	label.TextSize = 22
 	label.TextColor3 = BUBBLE_TEXT
 	label.Parent = frame
 	local scale = Instance.new("UIScale")
@@ -134,34 +140,13 @@ end
 local function rebuild(state: DogState)
 	state.dirty = false
 	local motors: { [string]: { Motor6D } } = {}
-	for _, name in JOINTS do
-		motors[name] = {}
-	end
-	local lods: { [number]: { BasePart } } = {}
 	for _, d in state.model:GetDescendants() do
-		if d:IsA("Motor6D") and motors[d.Name] then
+		if d:IsA("Motor6D") then
+			motors[d.Name] = motors[d.Name] or {}
 			table.insert(motors[d.Name], d)
-		elseif d:IsA("Model") then
-			local lod = d:GetAttribute("BosunLod")
-			if type(lod) == "number" then
-				local parts = {}
-				local hideHarness = state.model:GetAttribute("HideHarness") == true -- a life jacket on
-				for _, p in d:GetDescendants() do
-					if p:IsA("BasePart") then
-						if hideHarness and string.find(p.Name, "_Harness", 1, true) then
-							p.Transparency = 1
-						else
-							table.insert(parts, p)
-						end
-					end
-				end
-				lods[lod] = parts
-			end
 		end
 	end
 	state.motors = motors
-	state.lods = lods
-	state.lod = nil -- re-apply visibility
 end
 
 local function track(model: Instance)
@@ -172,13 +157,13 @@ local function track(model: Instance)
 		model = model,
 		motion = BosunMotion.new(),
 		motors = {},
-		lods = {},
-		lod = nil,
 		dirty = true,
 		lastVel = Vector3.zero,
 		accel = Vector3.zero,
 		pointAt = nil,
 		pointUntil = 0,
+		treatSerial = tonumber(model:GetAttribute("Treat")) or 0,
+		treatUntil = 0,
 		glanceDir = nil,
 		glanceUntil = 0,
 		nextGlance = os.clock() + rng:NextNumber(3, 7),
@@ -191,7 +176,27 @@ local function track(model: Instance)
 	table.insert(state.connections, model.DescendantRemoving:Connect(markDirty))
 	table.insert(
 		state.connections,
-		model:GetAttributeChangedSignal("HideHarness"):Connect(markDirty)
+		model:GetAttributeChangedSignal("Treat"):Connect(function()
+			local serial = tonumber(model:GetAttribute("Treat")) or 0
+			if serial <= state.treatSerial then
+				return
+			end
+			state.treatSerial = serial
+			state.treatUntil = os.clock() + TREAT_SECONDS
+			local body = model:FindFirstChild("Body") :: BasePart?
+			if body then
+				local old = body:FindFirstChild("WoofBubble")
+				if old then
+					old:Destroy()
+				end
+				local bubble = makeBubble(body)
+				task.delay(TREAT_SECONDS + 0.6, function()
+					if bubble.Parent then
+						bubble:Destroy()
+					end
+				end)
+			end
+		end)
 	)
 	dogs[model] = state
 end
@@ -204,31 +209,7 @@ local function untrack(model: Instance)
 		end
 		dogs[model :: Model] = nil
 	end
-end
-
--- LOD --------------------------------------------------------------------------------------------
-
-local function applyLod(state: DogState, distance: number)
-	local want = BosunMotion.lodFor(distance, state.lod)
-	if not state.lods[want] then
-		-- an LOD that didn't load: the nearest one that did
-		for _, alt in { want - 1, want + 1, want - 2, want + 2 } do
-			if state.lods[alt] then
-				want = alt
-				break
-			end
-		end
-	end
-	if want == state.lod or not state.lods[want] then
-		return
-	end
-	state.lod = want
-	for lod, parts in state.lods do
-		local t = if lod == want then 0 else 1
-		for _, p in parts do
-			p.Transparency = t -- local only: the server never writes it after rigging
-		end
-	end
+	lastBark[model :: Model] = nil
 end
 
 -- Motion ------------------------------------------------------------------------------------------
@@ -266,7 +247,7 @@ local function lookTarget(state: DogState, body: BasePart, now: number, moving: 
 	return nil
 end
 
-local function stepDog(state: DogState, dt: number, now: number, camera: Camera?)
+local function stepDog(state: DogState, dt: number, now: number)
 	local model = state.model
 	local body = model:FindFirstChild("Body") :: BasePart?
 	if not body then
@@ -274,9 +255,6 @@ local function stepDog(state: DogState, dt: number, now: number, camera: Camera?
 	end
 	if state.dirty then
 		rebuild(state)
-	end
-	if camera then
-		applyLod(state, (camera.CFrame.Position - body.Position).Magnitude)
 	end
 	local cf = body.CFrame
 	local vel = body.AssemblyLinearVelocity
@@ -290,8 +268,9 @@ local function stepDog(state: DogState, dt: number, now: number, camera: Camera?
 	state.lastVel = vel
 	local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 	local pointing = state.pointAt ~= nil and now < state.pointUntil
-	local excited = if pointing then 1 else 0
-	if not pointing and mode ~= "Swim" then
+	local treating = now < state.treatUntil
+	local excited = if pointing or treating then 1 else 0
+	if not pointing and not treating and mode ~= "Swim" then
 		local head = ownerHead(model)
 		if head and (head - body.Position).Magnitude < 10 then
 			excited = 0.45
@@ -308,10 +287,15 @@ local function stepDog(state: DogState, dt: number, now: number, camera: Camera?
 		deckRoll = math.asin(math.clamp(cf.RightVector.Y, -1, 1)),
 		deckPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1)),
 		wetness = if type(wetness) == "number" then wetness else 0,
-		tailJoint = state.motors.Tail ~= nil and #state.motors.Tail > 0,
 	})
+	if treating then
+		-- a hop and one full turn about the root pivot, easing in and out
+		local p = math.clamp(1 - (state.treatUntil - now) / TREAT_SECONDS, 0, 1)
+		local hop = 0.35 * math.sin(math.pi * p)
+		pose.Root = CFrame.new(0, hop, 0) * CFrame.Angles(0, 2 * math.pi * p, 0) * pose.Root
+	end
 	for name, list in state.motors do
-		local transform = (pose :: any)[name] :: CFrame?
+		local transform = pose[name]
 		if transform then
 			for _, m in list do
 				m.Transform = transform
@@ -347,11 +331,21 @@ local function onPoint(payload: any)
 		state.pointUntil = os.clock() + SHOW_SECONDS
 	end
 
-	local old = body:FindFirstChild("WoofBubble")
-	if old then
-		old:Destroy()
+	-- the head turn and arrow every sniff; the bark and bubble at most every BARK_GAP
+	local now = os.clock()
+	local bubble: BillboardGui? = nil
+	if now - (lastBark[dog] or -math.huge) >= BARK_GAP then
+		lastBark[dog] = now
+		AudioController.play("Dog_Bark", body.Position, 1, rng:NextNumber(0.94, 1.06))
+		local cam = Workspace.CurrentCamera
+		if not cam or (cam.CFrame.Position - body.Position).Magnitude > BUBBLE_NEAR then
+			local old = body:FindFirstChild("WoofBubble")
+			if old then
+				old:Destroy()
+			end
+			bubble = makeBubble(body)
+		end
 	end
-	local bubble = makeBubble(body)
 	local arrow: Model? = if ReplicatedStorage:GetAttribute("UseMapWaypoints") == true
 		then nil
 		else makeArrow()
@@ -364,7 +358,9 @@ local function onPoint(payload: any)
 			if arrow then
 				arrow:Destroy()
 			end
-			bubble:Destroy()
+			if bubble then
+				bubble:Destroy()
+			end
 			return
 		end
 		local target = payload.position
@@ -396,10 +392,9 @@ function DogController.Start()
 	end)
 	RunService.PreSimulation:Connect(function(dt)
 		local now = os.clock()
-		local camera = Workspace.CurrentCamera
 		for model, state in dogs do
 			if model.Parent then
-				stepDog(state, dt, now, camera)
+				stepDog(state, dt, now)
 			else
 				untrack(model)
 			end

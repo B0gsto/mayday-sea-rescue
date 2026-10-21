@@ -1,0 +1,20 @@
+{
+ "note": "M_Road_DryStoneWall's MaterialVariant row (docs/12 2.4 asks for trim + MaterialVariant). Paste into assets/materials/roads_variants.json 'variants' through B02's writer art/source/materials/wire.py; this asset did not touch that file or wire.py.",
+ "row": {
+  "name": "RoadDryStoneWall",
+  "set": "Granite",
+  "base": "Granite",
+  "studsPerTile": 7.68,
+  "pattern": "Regular",
+  "use": "wall runs built from Parts (long straight stretches, garden walls, field boundaries) instead of the model; matches M_Road_DryStoneWall's stone faces",
+  "maps": {
+   "ColorMap": "AssetIds.Textures.M_Road_DryStoneWall.Granite",
+   "NormalMap": "AssetIds.Textures.M_Road_DryStoneWall.Granite",
+   "RoughnessMap": "AssetIds.Textures.M_Road_DryStoneWall.Granite",
+   "MetalnessMap": "AssetIds.Textures.M_Road_DryStoneWall.Granite"
+  },
+  "wetTwin": "RoadDryStoneWall_Wet",
+  "wetMaps": ["ALB_Wet", "RGH_Wet"],
+  "tileM": [2.56, 0.95]
+ }
+}

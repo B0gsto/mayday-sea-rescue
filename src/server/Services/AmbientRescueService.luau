@@ -120,9 +120,11 @@ end
 
 local held: { [any]: number } = setmetatable({}, { __mode = "k" }) :: any
 
--- Server-side auto_board: the same rule the mission mechanic uses, measured from the server's view of the boat.
-local function stepBoarding(dt: number)
-	local boats: { { player: Player, vehicle: Model, root: BasePart } } = {}
+export type Boat = { player: Player, vehicle: Model, root: BasePart }
+
+-- Every boat a player sits in this tick.
+function AmbientRescueService.SeatedBoats(): { Boat }
+	local boats: { Boat } = {}
 	for _, player in Players:GetPlayers() do
 		local v = seatedVehicle(player)
 		local root = v and (v.PrimaryPart or v:FindFirstChildWhichIsA("BasePart", true))
@@ -130,38 +132,64 @@ local function stepBoarding(dt: number)
 			table.insert(boats, { player = player, vehicle = v, root = root })
 		end
 	end
-	for _, scene in scenes do
-		for i, victim in scene.victims do
-			if victim.state ~= "Water" or not victim.root.Parent then
-				held[victim] = nil
-				continue
+	return boats
+end
+
+-- Server-side auto_board for one RescueService scene, measured from the server's view of the boat: a
+-- survivor climbs aboard once a boat has held close, slow, level and with room (Board.ready) for
+-- Board.HOLD. Free-roam swimmers and every mission (OperationService) use this one rule.
+-- may(player, index) filters who may take whom; board(index, player) does the boarding (default:
+-- RescueService.BoardVictim).
+function AmbientRescueService.StepBoarding(
+	scene: Scene,
+	dt: number,
+	boats: { Boat },
+	may: ((Player, number) -> boolean)?,
+	board: ((number, Player) -> ())?
+)
+	for i, victim in scene.victims or {} do
+		if victim.state ~= "Water" or not victim.root.Parent then
+			held[victim] = nil
+			continue
+		end
+		local ready: Boat? = nil
+		for _, b in boats do
+			local gap = math.max(
+				0,
+				CallLogic.flatDistance(b.root.Position, victim.root.Position) - b.root.Size.X / 2
+			)
+			local vel = b.root.AssemblyLinearVelocity
+			local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
+			local tilt = math.deg(math.acos(math.clamp(b.root.CFrame.UpVector.Y, -1, 1)))
+			if
+				Board.ready(gap, speed, tilt, Board.hasRoom(b.vehicle))
+				and (may == nil or may(b.player, i))
+			then
+				ready = b
+				break
 			end
-			local ready: { player: Player, vehicle: Model, root: BasePart }? = nil
-			for _, b in boats do
-				local gap = math.max(
-					0,
-					CallLogic.flatDistance(b.root.Position, victim.root.Position)
-						- b.root.Size.X / 2
-				)
-				local vel = b.root.AssemblyLinearVelocity
-				local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
-				local tilt = math.deg(math.acos(math.clamp(b.root.CFrame.UpVector.Y, -1, 1)))
-				if Board.ready(gap, speed, tilt, Board.hasRoom(b.vehicle)) then
-					ready = b
-					break
-				end
-			end
-			if not ready then
-				held[victim] = nil
-				continue
-			end
-			local t = (held[victim] or 0) + dt
-			held[victim] = t
-			if t >= Board.HOLD then
-				held[victim] = nil
+		end
+		if not ready then
+			held[victim] = nil
+			continue
+		end
+		local t = (held[victim] or 0) + dt
+		held[victim] = t
+		if t >= Board.HOLD then
+			held[victim] = nil
+			if board then
+				board(i, ready.player)
+			else
 				RescueService.BoardVictim(scene, i, ready.player)
 			end
 		end
+	end
+end
+
+local function stepBoarding(dt: number)
+	local boats = AmbientRescueService.SeatedBoats()
+	for _, scene in scenes do
+		AmbientRescueService.StepBoarding(scene, dt, boats)
 	end
 end
 

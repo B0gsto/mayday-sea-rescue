@@ -158,7 +158,7 @@ function CallCard.new(container: Instance, data: { [string]: any }, onAccept: ()
 	accept.Font = Enum.Font.FredokaOne
 	accept.TextSize = 22
 	accept.TextColor3 = C.Text
-	accept.Text = if data.isBig then "JOIN THE RESCUE" else "ACCEPT"
+	accept.Text = if data.isBig then "JOIN" else "ACCEPT"
 	corner(accept, 12)
 	accept.Parent = body
 
@@ -177,7 +177,7 @@ function CallCard.new(container: Instance, data: { [string]: any }, onAccept: ()
 
 	accept.Activated:Connect(function()
 		if not self.accepted then
-			accept.Text = "ON OUR WAY..."
+			accept.Text = "EN ROUTE"
 			accept.AutoButtonColor = false
 			onAccept()
 		end
@@ -210,16 +210,12 @@ local function objective(data: { [string]: any }): string
 		return data.radioLine
 	end
 	if data.kind == "Tow" then
-		return if data.towing
-			then "Tow her to the dock."
-			else "Find the boat and attach the tow line."
+		return if data.towing then "Tow to dock" else "Attach tow"
 	end
 	if (data.aboard or 0) > 0 then
-		return "Bring them home: dock or hospital."
+		return "Dock or hospital"
 	end
-	return if data.kind == "DriftingCraft"
-		then "Find the dinghy and pull both aboard."
-		else "Find them and hold to pull aboard."
+	return if data.kind == "DriftingCraft" then "Pull both aboard" else "Pull aboard"
 end
 
 function CallCard.update(

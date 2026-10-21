@@ -1,0 +1,613 @@
+{
+ "asset": "M_Rock_Boulder_01",
+ "name": "M_Rock_Boulder_01",
+ "date": "2026-10-17",
+ "commit": "951c085+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "validate",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Rock_Boulder_01/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Rock_Boulder_01_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Boulder01_Granite"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.037,
+     0.121,
+     0.874,
+     0.716
+    ],
+    "mannequin": [
+     -0.372,
+     0.293,
+     -0.013,
+     1.056
+    ],
+    "fill": 0.837
+   },
+   "Side": {
+    "asset": [
+     0.037,
+     0.23,
+     0.963,
+     0.722
+    ],
+    "mannequin": [
+     -0.307,
+     0.283,
+     0.016,
+     1.084
+    ],
+    "fill": 0.926
+   },
+   "Rear3Q": {
+    "asset": [
+     0.037,
+     0.121,
+     0.874,
+     0.716
+    ],
+    "mannequin": [
+     -0.372,
+     0.293,
+     -0.013,
+     1.056
+    ],
+    "fill": 0.837
+   },
+   "High": {
+    "asset": [
+     0.115,
+     0.037,
+     0.95,
+     0.869
+    ],
+    "mannequin": [
+     -0.49,
+     0.334,
+     0.041,
+     0.974
+    ],
+    "fill": 0.835
+   }
+  },
+  "closeups": [
+   {
+    "name": "top",
+    "target": [
+     0.0,
+     0.0,
+     2.71034152507782
+    ],
+    "dist": 2.4709512591362,
+    "az": 30.0,
+    "el": 35.0,
+    "file": "closeup_top.png"
+   },
+   {
+    "name": "flank",
+    "target": [
+     0.0,
+     0.0,
+     1.35517076253891
+    ],
+    "dist": 2.745501399040222,
+    "az": 200.0,
+    "el": 10.0,
+    "file": "closeup_flank.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.835,
+  "in_frame": true,
+  "dims_m": [
+   1.272,
+   1.83,
+   1.004
+  ],
+  "validation_ok": true,
+  "seconds": 3.0
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/rocks/M_Rock_Boulder_01/M_Rock_Boulder_01.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "boulder"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Boulder_01_LOD0"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4000 of 8000"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.28e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.998, v 0.001 to 0.996"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4000 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "114 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Boulder_01_LOD1"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1600 of 8000"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.33e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.997, v 0.002 to 0.996"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1600 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 6.8% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Boulder_01_LOD2"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "600 of 8000"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.44e-02, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.997, v 0.002 to 0.993"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 600 faces have no UV area"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD2 of a decimated scan keeps the same UVs; area drift from collapsed micro-faces only): UV bounds differ by 0.003 (max 0.02), UV area by 18.7% (max 15%)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Rock_Boulder_01_COL"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "102 of 8000"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Rock_Boulder_01_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "102 of 1000"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4000 of 4000 (boulder, asset row)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1600 of 1600"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "600 of 600"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.272 x 1.83 x 1.004 m, spec 1.272 x 1.83 x 1.004 m (art/reference/M_Rock_Boulder_01/dims.md)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.846 studs, real 1.272 m = 3.816 studs, off 0.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.496 studs, real 1.830 m = 5.490 studs, off 0.1% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2.988 studs, real 1.004 m = 3.012 studs, off 0.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Rock_Boulder_01_COL"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (1 to 1 sets)"
+  },
+  {
+   "subject": "T_Boulder01_Granite_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_ALB.png"
+  },
+  {
+   "subject": "T_Boulder01_Granite_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Boulder01_Granite_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_NOR.png"
+  },
+  {
+   "subject": "T_Boulder01_Granite_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_RGH.png"
+  },
+  {
+   "subject": "T_Boulder01_Granite_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Boulder01_Granite_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_MET.png"
+  },
+  {
+   "subject": "M_Rock_Boulder_01",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.83; 11 renders in 3 s, maps M_Rock_Boulder_01_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Rock_Boulder_01_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4000,
+   "texel_density": 113.7
+  },
+  {
+   "name": "M_Rock_Boulder_01_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 102,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Boulder_01_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1600,
+   "texel_density": null
+  },
+  {
+   "name": "M_Rock_Boulder_01_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 600,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  3.846393346786499,
+  5.496210098266602,
+  2.9876670837402344
+ ],
+ "peak_rss_mb": 638.7
+}

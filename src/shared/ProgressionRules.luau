@@ -3,7 +3,9 @@
 -- purchase checks, certifications and the rank gate, save-data defaults and migration). No
 -- services, safe to load in Lune (tests/Progression.spec.luau, tests/Certs.spec.luau). Server
 -- services and HUD both use it so they agree.
+local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
+local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 
 export type PlayerData = {
 	version: number,
@@ -11,6 +13,8 @@ export type PlayerData = {
 	rep: number,
 	gear: { [string]: number },
 	vehicles: { [string]: boolean },
+	-- Fitted vehicle upgrades (docs 03 section 4.1): boat id -> bitmask of VehicleUpgrades levels.
+	vehicleUpgrades: { [string]: number },
 	totalRescues: number,
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
@@ -25,6 +29,9 @@ export type PlayerData = {
 	-- Equipped cosmetics, slot -> option id (RP-M5, src/shared/Cosmetics; CosmeticsService checks
 	-- ownership, this only keeps short strings).
 	cosmetics: { [string]: string },
+	-- BadgeService: counted badge progress and badges confirmed awarded (flat string keys).
+	badgeCounters: { [string]: number }?,
+	badgesAwarded: { [string]: boolean }?,
 }
 
 -- One step of a finished operation, as the debrief timeline has it (OperationService record()).
@@ -76,6 +83,30 @@ function Rules.rankForRep(rep: number): ProgressionConfig.Rank
 	return ProgressionConfig.Ranks[Rules.rankIndexForRep(rep)]
 end
 
+-- Every certification a rank needs: the single `cert` plus the `certs` list (docs 03 section 3).
+function Rules.rankCerts(rank: ProgressionConfig.Rank): { string }
+	local ids = {}
+	if rank.cert then
+		table.insert(ids, rank.cert)
+	end
+	if rank.certs then
+		for _, id in rank.certs do
+			table.insert(ids, id)
+		end
+	end
+	return ids
+end
+
+-- The first certification gate of `rank` that exists and is not held (nil: the rank may open).
+function Rules.rankBlockingCert(rank: ProgressionConfig.Rank, data: PlayerData): string?
+	for _, id in Rules.rankCerts(rank) do
+		if ProgressionConfig.Certifications[id] ~= nil and data.certs[id] ~= true then
+			return id
+		end
+	end
+	return nil
+end
+
 local GRADE_RANK = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 } :: { [string]: number }
 
 -- True when grade is minGrade or better ("Takeover" and unknown grades never are).
@@ -94,7 +125,7 @@ end
 function Rules.rankIndex(data: PlayerData): number
 	local index = 1
 	for i, rank in ProgressionConfig.Ranks do
-		if data.rep < rank.rep or (rank.cert ~= nil and data.certs[rank.cert] ~= true) then
+		if data.rep < rank.rep or Rules.rankBlockingCert(rank, data) ~= nil then
 			break
 		end
 		index = i
@@ -102,11 +133,14 @@ function Rules.rankIndex(data: PlayerData): number
 	return index
 end
 
--- The rank the Rep has reached but its certification holds back, and that certification.
+-- The rank the Rep has reached but a certification holds back, and that certification.
 function Rules.blockedRank(data: PlayerData): (ProgressionConfig.Rank?, string?)
 	local nextRank = ProgressionConfig.Ranks[Rules.rankIndex(data) + 1]
-	if nextRank and data.rep >= nextRank.rep and nextRank.cert then
-		return nextRank, nextRank.cert
+	if nextRank and data.rep >= nextRank.rep then
+		local cert = Rules.rankBlockingCert(nextRank, data)
+		if cert then
+			return nextRank, cert
+		end
 	end
 	return nil, nil
 end
@@ -411,6 +445,30 @@ function Rules.progressToNext(rep: number): (ProgressionConfig.Rank?, number)
 	return nextRank, math.clamp((rep - current.rep) / span, 0, 1)
 end
 
+-- Service Stars: one per ServiceStarStep Rep past the top rank (docs 03 section 3).
+function Rules.serviceStarsFromRep(rep: number): number
+	local top = ProgressionConfig.Ranks[#ProgressionConfig.Ranks]
+	return math.max(0, math.floor((rep - top.rep) / ProgressionConfig.ServiceStarStep))
+end
+
+-- Stars only count once the top rank itself is reached (Rep plus the rank's certifications).
+function Rules.serviceStars(data: PlayerData): number
+	if Rules.rankIndex(data) < #ProgressionConfig.Ranks then
+		return 0
+	end
+	return Rules.serviceStarsFromRep(data.rep)
+end
+
+-- stars, Rep of the next star, 0..1 progress into the current star.
+function Rules.starProgress(data: PlayerData): (number, number, number)
+	local top = ProgressionConfig.Ranks[#ProgressionConfig.Ranks]
+	local stars = Rules.serviceStars(data)
+	local base = top.rep + stars * ProgressionConfig.ServiceStarStep
+	return stars,
+		base + ProgressionConfig.ServiceStarStep,
+		math.clamp((data.rep - base) / ProgressionConfig.ServiceStarStep, 0, 1)
+end
+
 -- Cash multiplier for the weather state. Rep is never multiplied (docs 03 section 2).
 function Rules.stormCashMultiplier(state: string?, isGreatStorm: boolean?): number
 	if state ~= "Storm" then
@@ -422,16 +480,35 @@ function Rules.stormCashMultiplier(state: string?, isGreatStorm: boolean?): numb
 	return ProgressionConfig.StormCashMultiplier
 end
 
--- Final whole-number award after multipliers. Negative inputs are clamped to 0.
+local function num(value: any, default: number): number
+	if
+		type(value) == "number"
+		and value == value
+		and value ~= math.huge
+		and value ~= -math.huge
+	then
+		return value
+	end
+	return default
+end
+
+-- Final whole-number award after multipliers. Negative inputs are clamped to 0. `paid` is the
+-- Cash multiplier from boosts and friends, `repMult` the Great Storm Rep bonus; `flat` skips all
+-- of them, weather included, for passive rewards.
 function Rules.applyAward(
 	cash: number,
 	rep: number,
 	state: string?,
-	isGreatStorm: boolean?
+	isGreatStorm: boolean?,
+	paid: number?,
+	repMult: number?,
+	flat: boolean?
 ): (number, number, number)
-	local mult = Rules.stormCashMultiplier(state, isGreatStorm)
-	local finalCash = math.floor(math.max(cash, 0) * mult + 0.5)
-	local finalRep = math.floor(math.max(rep, 0) + 0.5)
+	local mult = if flat then 1 else Rules.stormCashMultiplier(state, isGreatStorm) * num(paid, 1)
+	-- NaN or inf would poison data.cash and the next load would reset the profile to defaults
+	local finalCash = math.floor(math.clamp(num(cash, 0), 0, 1e9) * mult + 0.5)
+	local finalRep =
+		math.floor(math.clamp(num(rep, 0), 0, 1e9) * (if flat then 1 else num(repMult, 1)) + 0.5)
 	return finalCash, finalRep, mult
 end
 
@@ -485,19 +562,47 @@ function Rules.canBuyGear(data: PlayerData, gearId: string): (boolean, string, n
 	return true, "ok", price
 end
 
-function Rules.ownsVehicle(data: PlayerData, vehicleId: string): boolean
+-- The GamePasses key that owns this vehicle (MonetizationConfig item with `vehicle` = id), or nil.
+function Rules.vehiclePass(vehicleId: string): string?
+	for key, item in MonetizationConfig.GamePasses do
+		if item.vehicle == vehicleId then
+			return key
+		end
+	end
+	return nil
+end
+
+-- Owned = free, bought with Cash, or its vehicle pass is owned (`passOwned`: the caller checks the
+-- pass; the server reads its own Pass_<Key> attribute). A passOnly vehicle needs the pass.
+function Rules.ownsVehicle(data: PlayerData, vehicleId: string, passOwned: boolean?): boolean
 	local unlock = ProgressionConfig.Vehicles[vehicleId]
 	if not unlock then
+		return false
+	end
+	if passOwned == true then
+		return true
+	end
+	if unlock.passOnly then
 		return false
 	end
 	return unlock.price <= 0 or data.vehicles[vehicleId] == true
 end
 
--- ok, reason: may this player launch this vehicle?
-function Rules.canUseVehicle(data: PlayerData, vehicleId: string): (boolean, string)
+-- ok, reason: may this player launch this vehicle? A pass owner skips the rank gate.
+function Rules.canUseVehicle(
+	data: PlayerData,
+	vehicleId: string,
+	passOwned: boolean?
+): (boolean, string)
 	local unlock = ProgressionConfig.Vehicles[vehicleId]
 	if not unlock then
 		return false, "Unknown vehicle"
+	end
+	if passOwned == true then
+		return true, "ok"
+	end
+	if unlock.passOnly then
+		return false, "Robux only"
 	end
 	if Rules.rankIndex(data) < unlock.rankIndex then
 		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`
@@ -519,8 +624,8 @@ function Rules.vehicleLock(data: PlayerData, vehicleId: string): string?
 	end
 	if Rules.rankIndexForRep(data.rep) >= unlock.rankIndex then
 		for i = Rules.rankIndex(data) + 1, unlock.rankIndex do
-			local cert = ProgressionConfig.Ranks[i].cert
-			if cert and data.certs[cert] ~= true then
+			local cert = Rules.rankBlockingCert(ProgressionConfig.Ranks[i], data)
+			if cert then
 				local def = ProgressionConfig.Certifications[cert]
 				return `Pass {if def then def.displayName else cert}`
 			end
@@ -580,6 +685,9 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	if type(snap.vehicles) == "table" then
 		data.vehicles = table.clone(snap.vehicles)
 	end
+	if type(snap.vehicleUpgrades) == "table" then
+		data.vehicleUpgrades = table.clone(snap.vehicleUpgrades)
+	end
 	if type(snap.gear) == "table" then
 		data.gear = table.clone(snap.gear)
 	end
@@ -601,13 +709,20 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 end
 
 -- ok, reason, price for buying a vehicle.
-function Rules.canBuyVehicle(data: PlayerData, vehicleId: string): (boolean, string, number)
+function Rules.canBuyVehicle(
+	data: PlayerData,
+	vehicleId: string,
+	passOwned: boolean?
+): (boolean, string, number)
 	local unlock = ProgressionConfig.Vehicles[vehicleId]
 	if not unlock then
 		return false, "Unknown vehicle", 0
 	end
-	if Rules.ownsVehicle(data, vehicleId) then
+	if Rules.ownsVehicle(data, vehicleId, passOwned) then
 		return false, "Already owned", unlock.price
+	end
+	if unlock.passOnly then
+		return false, "Robux only", 0
 	end
 	if Rules.rankIndex(data) < unlock.rankIndex then
 		return false, `Needs {ProgressionConfig.Ranks[unlock.rankIndex].displayName}`, unlock.price
@@ -625,6 +740,7 @@ function Rules.defaultData(): PlayerData
 		rep = 0,
 		gear = {},
 		vehicles = {},
+		vehicleUpgrades = {},
 		totalRescues = 0,
 		coldOpenDone = false,
 		flags = {},
@@ -635,20 +751,8 @@ function Rules.defaultData(): PlayerData
 	}
 end
 
-local function num(value: any, default: number): number
-	if
-		type(value) == "number"
-		and value == value
-		and value ~= math.huge
-		and value ~= -math.huge
-	then
-		return value
-	end
-	return default
-end
-
 local MAX_FLAGS = 32
-local MAX_FLAG_FIELDS = 24
+local MAX_FLAG_FIELDS = 64 -- the album alone holds 48 (41 stickers, 7 sets); tests/FlagBudget.spec.luau
 
 local function flagScalar(value: any): any
 	local kind = type(value)
@@ -713,6 +817,16 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	if type(raw.vehicleUpgrades) == "table" then
+		for id, mask in raw.vehicleUpgrades do
+			if type(id) == "string" and VehicleUpgrades.Vehicles[id] then
+				local clean = VehicleUpgrades.mask(mask)
+				if clean > 0 then
+					data.vehicleUpgrades[id] = clean
+				end
+			end
+		end
+	end
 	data.coldOpenDone = raw.coldOpenDone == true
 	if type(raw.flags) == "table" then
 		local n = 0
@@ -745,8 +859,10 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 		for _, rank in ProgressionConfig.Ranks do
-			if data.rep >= rank.rep and rank.cert then
-				grant(rank.cert)
+			if data.rep >= rank.rep then
+				for _, id in Rules.rankCerts(rank) do
+					grant(id)
+				end
 			end
 		end
 	end
@@ -783,6 +899,11 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	for _, key in { "badgeCounters", "badgesAwarded" } do
+		if type(raw[key]) == "table" then
+			(data :: any)[key] = Rules.sanitizeFlag(raw[key])
+		end
+	end
 	-- version 1 is current; future migrations go here, keyed on raw.version
 	data.version = ProgressionConfig.SchemaVersion
 	return data
@@ -809,15 +930,21 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 			}
 		end
 	end
+	local stars, nextStarRep, starProgress = Rules.starProgress(data)
+	local rankName = ProgressionConfig.Ranks[index].displayName
 	return {
 		cash = data.cash,
 		rep = data.rep,
-		rank = ProgressionConfig.Ranks[index].displayName,
+		rank = if stars > 0 then `{rankName} ★{stars}` else rankName,
 		rankIndex = index,
 		nextRankRep = if nextRank then nextRank.rep else nil,
 		rankProgress = progress,
+		stars = stars,
+		nextStarRep = nextStarRep,
+		starProgress = starProgress,
 		gear = table.clone(data.gear),
 		vehicles = table.clone(data.vehicles),
+		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		coldOpenDone = data.coldOpenDone,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 		certs = certs, -- id -> { earned, exercisePassed, live, liveNeeded }

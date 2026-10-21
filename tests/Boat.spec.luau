@@ -369,13 +369,17 @@ return function(t)
 	end)
 
 	t.test(
-		"kill cord: no engine, no thrust; an idling jet ski creeps, the RIB sits in neutral",
+		"kill cord: no engine, no thrust; an idling jet ski holds station, the RIB sits in neutral",
 		function()
 			local ski, rib = VehicleConfig.JetSki, VehicleConfig.RIB
 			t.expect(Buoyancy.thrust(1, 0, 10, ski, 1, 1, false, false)).toBe(0)
-			t.expect(run(ski, 0, 0, 30, 1)).toBeCloseTo(ski.idleCreep, 0.6)
+			-- throttle closed at rest: station keeping, not the old idle creep into the breakwater
+			t.expect(math.abs(run(ski, 0, 0, 30, 1)) < 0.05).toBeTruthy()
+			t.expect(math.abs(run(ski, 0, 1, 3, 1)) < 0.1).toBeTruthy()
 			t.expect(run(ski, 0, 0, 30, 1, false, false)).toBe(0)
 			t.expect(run(rib, 0, 0, 30, 1)).toBe(0)
+			-- already under way above the station-keep speed: the idle jet eases to its creep speed
+			t.expect(run(ski, 0, ski.idleCreep, 10, 1)).toBeCloseTo(ski.idleCreep, 0.2)
 		end
 	)
 

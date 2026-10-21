@@ -1,0 +1,355 @@
+{
+ "asset": "M_Hbr_TravelHoist",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_SlingPoint_FR",
+   "parent": null,
+   "blender": [
+    8.19,
+    -6.75,
+    19.32
+   ],
+   "roblox_from_origin": [
+    -8.19,
+    19.32,
+    -6.75
+   ],
+   "roblox_from_bbox_centre": [
+    -8.19,
+    5.7591,
+    -6.9525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SlingPoint_AR",
+   "parent": null,
+   "blender": [
+    8.19,
+    6.75,
+    19.32
+   ],
+   "roblox_from_origin": [
+    -8.19,
+    19.32,
+    6.75
+   ],
+   "roblox_from_bbox_centre": [
+    -8.19,
+    5.7591,
+    6.5475
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SlingPoint_FL",
+   "parent": null,
+   "blender": [
+    -8.19,
+    -6.75,
+    19.32
+   ],
+   "roblox_from_origin": [
+    8.19,
+    19.32,
+    -6.75
+   ],
+   "roblox_from_bbox_centre": [
+    8.19,
+    5.7591,
+    -6.9525
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SlingPoint_AL",
+   "parent": null,
+   "blender": [
+    -8.19,
+    6.75,
+    19.32
+   ],
+   "roblox_from_origin": [
+    8.19,
+    19.32,
+    6.75
+   ],
+   "roblox_from_bbox_centre": [
+    8.19,
+    5.7591,
+    6.5475
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Cab",
+   "parent": null,
+   "blender": [
+    11.01,
+    13.86,
+    11.85
+   ],
+   "roblox_from_origin": [
+    -11.01,
+    11.85,
+    13.86
+   ],
+   "roblox_from_bbox_centre": [
+    -11.01,
+    -1.7109,
+    13.6575
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_CabSeat",
+   "parent": null,
+   "blender": [
+    11.01,
+    13.86,
+    10.2
+   ],
+   "roblox_from_origin": [
+    -11.01,
+    10.2,
+    13.86
+   ],
+   "roblox_from_bbox_centre": [
+    -11.01,
+    -3.3609,
+    13.6575
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_EyePoint",
+   "parent": null,
+   "blender": [
+    10.8,
+    12.45,
+    12.66
+   ],
+   "roblox_from_origin": [
+    -10.8,
+    12.66,
+    12.45
+   ],
+   "roblox_from_bbox_centre": [
+    -10.8,
+    -0.9009,
+    12.2475
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Control",
+   "parent": null,
+   "blender": [
+    10.65,
+    11.85,
+    12.15
+   ],
+   "roblox_from_origin": [
+    -10.65,
+    12.15,
+    11.85
+   ],
+   "roblox_from_bbox_centre": [
+    -10.65,
+    -1.4109,
+    11.6475
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon",
+   "parent": null,
+   "blender": [
+    11.1,
+    14.94,
+    15.48
+   ],
+   "roblox_from_origin": [
+    -11.1,
+    15.48,
+    14.94
+   ],
+   "roblox_from_bbox_centre": [
+    -11.1,
+    1.9191,
+    14.7375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_FuelCap",
+   "parent": null,
+   "blender": [
+    0.0,
+    14.34,
+    14.64
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    14.64,
+    14.34
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.0791,
+    14.1375
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LadderBase",
+   "parent": null,
+   "blender": [
+    -9.18,
+    15.06,
+    0.6
+   ],
+   "roblox_from_origin": [
+    9.18,
+    0.6,
+    15.06
+   ],
+   "roblox_from_bbox_centre": [
+    9.18,
+    -12.9609,
+    14.8575
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Top",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    26.94
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    26.94,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    13.3791,
+    -0.2025
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

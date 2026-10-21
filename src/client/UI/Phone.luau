@@ -1,21 +1,29 @@
 --!strict
 -- Phone: the player's phone and the home of every menu (docs/14 §6, RP-PH1; playtest 2026-10-21:
--- "the entire UI on the phone, a big phone with an animation"). P, gamepad L1 or the phone button
--- by the rank strip opens it: a landscape handset filling the safe area slides up with a spring,
--- the screen wakes and the icons pop in; closing plays it back (a short fade with reduced motion).
--- The phone-in-hand Viewmodel loop plays and a Modal backdrop frees the cursor.
--- Apps (an icon and a 1-2 word label):
+-- "a portrait iPhone"). P, gamepad L1 or the phone button on the left of the HUD opens it: an
+-- upright handset (thin bezel, Dynamic Island, status bar, home indicator) centred and nearly as
+-- tall as the screen slides up with a spring, the screen wakes and the icons pop in; closing plays
+-- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
+-- backdrop frees the cursor. The home screen is stock iOS: a soft gradient wallpaper, a 4-column
+-- grid of squircle icons (gradient fill, one flat white glyph, small white label) and a frosted
+-- dock of 4. Apps built for a wide screen turn the phone sideways (an animated quarter turn, like
+-- iOS); portrait apps keep it upright.
+-- Apps:
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
 --   Logbook, Season, Settings   the existing panels (ExplorationController's Logbook, SeasonBook,
 --                        SettingsPanel): their frames are borrowed onto the phone screen
 --   Events               EventBoard.buildPhone rows (EventBoardController pushes them)
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
---   Vehicles             UI/VehiclesApp.mount(page) when that module is there
 --   Crew Pay, Pay Rise   StationController.mountPay / mountRise (station pot and workshop)
--- Back: the chevron, the home bar, gamepad B, Backspace or Escape; at home they close the phone.
--- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A gold dot on the
--- phone button: an event is on now.
---   Phone.mount(statusRegion)   HudController calls this once
+--   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
+--                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup), and
+--                        `portrait = true` to keep the phone upright. A missing or broken module
+--                        just leaves its icon out.
+-- Back: the chevron, the home indicator, gamepad B, Backspace or Escape; at home they close it.
+-- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A red dot and a
+-- bounce on the phone button: an event is on now.
+--   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
+--                               "phone" region, HudLayout)
 --   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name) / Phone.openEvents()
 --   Phone.setEventRows(rows)    EventBoardController pushes the EventCalendar rows once a second
 local ContextActionService = game:GetService("ContextActionService")
@@ -30,6 +38,7 @@ local Client = script.Parent.Parent
 local Controllers = Client:WaitForChild("Controllers")
 local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local EventBoard = require(script.Parent:WaitForChild("EventBoard"))
+local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
@@ -37,40 +46,48 @@ local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net")
 local Viewmodel = require(Client:WaitForChild("Camera"):WaitForChild("Viewmodel"))
 
 local C = HudTheme.Colors
+local W = Color3.new(1, 1, 1)
+local V = Vector2.new
 local player = Players.LocalPlayer
--- the user's icon art (assets/ui/phone, uploaded as Images through tools/assets.py)
-local ART: { [string]: string } = {
-	Map = "rbxassetid://78753808243316",
-	Radio = "rbxassetid://137514171104143",
-	Events = "rbxassetid://99314211130736",
-	Vehicles = "rbxassetid://133675801196948",
-	CrewPay = "rbxassetid://99621546437175",
-	PayRise = "rbxassetid://116868851918712",
-	Season = "rbxassetid://134505277608737",
-	Logbook = "rbxassetid://77395907263418",
-	Crew = "rbxassetid://120864312381464",
-	Camera = "rbxassetid://113013786928161",
-	Settings = "rbxassetid://135064908499694",
-	PhoneButton = "rbxassetid://93763825688168",
-	Wallpaper = "rbxassetid://115625655172292", -- 474x1024 portrait, cover-cropped
+
+-- The HUD phone button's art: put an uploaded PNG here ("rbxassetid://..."); "" draws it in code.
+local PHONE_BUTTON_IMAGE = ""
+
+-- Sibling app modules, required only if present: `mount(page, close) -> cleanup?`, optional
+-- `portrait = true`. Register another app by adding a row (grid order = list order).
+local OPTIONAL = {
+	{
+		module = "VehiclesApp",
+		name = "Vehicles",
+		label = "Vehicles",
+		colors = { "52E3C2", "0E9B86" },
+	},
+	{ module = "StoreApp", name = "Store", label = "Store", colors = { "FFA94D", "FF5B3A" } },
 }
-local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's favourites, in order
-local ICON = 104 -- du, the squircle
+local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's 4, in order
+local CANVAS = 300 -- du: the upright screen's width; home and portrait apps lay out on it
+local ICON = 58 -- du, the squircle
+local CELL_W, CELL_H = 68, 86
 local DISPLAY_ORDER = 36 -- above the store panels (35), below CashBurst (41) and Cinematic (50)
 local MARGIN = 12 -- du around the handset
-local BEZEL = 14 -- du
-local STATUS_H = 44 -- du, the screen's status bar
-local HOME_H = 30 -- du, the home bar strip
-local ASPECT = 2.17 -- a modern handset held sideways
+local BEZEL = 9 -- du
+local STATUS_H = 46 -- du, the status bar
+local HOME_H = 26 -- du, the home indicator strip
+local ISLAND = V(96, 28) -- du, the Dynamic Island upright
+local ASPECT = 2.17 -- a modern handset
+local TURN = 0.45 -- s, the quarter turn between upright and sideways
 local OFF = UDim2.fromScale(0.5, 1.65)
 local ON = UDim2.fromScale(0.5, 0.5)
 
+type Mount = (page: Frame, close: () -> ()) -> any
 type App = {
 	name: string,
 	label: string,
-	color: Color3,
+	colors: { Color3 }, -- the squircle's gradient, top to bottom
+	glyph: (Frame, Color3) -> (), -- draws the white glyph on a square frame; arg 2: cut-out colour
 	run: (() -> ())?,
-	mount: ((page: Frame) -> () -> ())?,
+	mount: Mount?,
+	portrait: boolean?, -- true: the phone stays upright for this app
 }
 type Tile = { button: TextButton, scale: UIScale, label: TextLabel? }
 
@@ -82,15 +99,21 @@ local rig: Frame
 local rigScale: UIScale
 local body: Frame
 local bodyScale: UIScale
+local screen: Frame
+local screenScale: UIScale
+local island: Frame
 local wake: Frame
 local home: Frame
+local appBg: Frame
 local appPage: Frame
 local pageScale: UIScale
 local content: Frame
 local backButton: TextButton
 local clockLabel: TextLabel
 local badge: Frame
+local bounce: (() -> ())? = nil
 local tiles: { Tile } = {}
+local keys: { { edge: string, at: number, len: number, frame: Frame } } = {}
 local byName: { [string]: App } = {}
 local open = false
 local serial = 0
@@ -103,6 +126,11 @@ local leader = 0
 local drawCrew: (() -> ())? = nil
 local eventBoard: EventBoard.Board? = nil
 local pendingRows: { any }? = nil
+local sideways = false -- the phone is turned for a wide app
+local portraitSize = V(320, 694) -- du, set by fit
+local landscapeSize = V(1176, 696)
+local turnSerial = 0
+local turnTweens: { Tween } = {}
 
 local function tween(
 	obj: Instance,
@@ -111,8 +139,8 @@ local function tween(
 	style: Enum.EasingStyle?,
 	dir: Enum.EasingDirection?,
 	delay: number?
-)
-	TweenService:Create(
+): Tween
+	local tw = TweenService:Create(
 		obj,
 		TweenInfo.new(
 			t,
@@ -123,7 +151,9 @@ local function tween(
 			delay or 0
 		),
 		props
-	):Play()
+	)
+	tw:Play()
+	return tw
 end
 
 -- a shape centred at (x, y), sized (w, h), all in the parent's scale
@@ -156,6 +186,118 @@ local function gradient(parent: Instance, a: Color3, b: Color3, rotation: number
 	g.Parent = parent
 	return g
 end
+
+local function squircle(parent: Instance)
+	local round = Instance.new("UICorner")
+	round.CornerRadius = UDim.new(0.225, 0)
+	round.Parent = parent
+end
+
+-- one big character (★, $), centred and scaled to the frame
+local function char(parent: Instance, text: string, color: Color3, size: number)
+	local l = Instance.new("TextLabel")
+	l.AnchorPoint = Vector2.new(0.5, 0.5)
+	l.Position = UDim2.fromScale(0.5, 0.5)
+	l.Size = UDim2.fromScale(size, size)
+	l.BackgroundTransparency = 1
+	l.Font = Enum.Font.BuilderSansBold
+	l.Text = text
+	l.TextScaled = true
+	l.TextColor3 = color
+	l.Parent = parent
+end
+
+-- Flat white glyphs, stock-iOS style, from Glyph.bar pills (scale units of a square frame).
+-- `cut` is the squircle's mid colour, for holes.
+local bar = Glyph.bar
+local GLYPHS: { [string]: (Frame, Color3) -> () } = {
+	Map = function(p, cut) -- a location pin
+		bar(p, V(0.34, 0.34), V(0.5, 0.58), 45, W, 0.18)
+		bar(p, V(0.52, 0.52), V(0.5, 0.4), 0, W)
+		bar(p, V(0.2, 0.2), V(0.5, 0.4), 0, cut)
+	end,
+	Radio = function(p, cut) -- a handheld radio
+		bar(p, V(0.06, 0.36), V(0.68, 0.3), 25, W)
+		bar(p, V(0.74, 0.46), V(0.5, 0.62), 0, W, 0.3)
+		bar(p, V(0.24, 0.24), V(0.34, 0.62), 0, cut)
+		bar(p, V(0.18, 0.06), V(0.66, 0.55), 0, cut)
+		bar(p, V(0.18, 0.06), V(0.66, 0.68), 0, cut)
+	end,
+	Events = function(p, cut) -- a calendar
+		bar(p, V(0.72, 0.62), V(0.5, 0.56), 0, W, 0.22)
+		bar(p, V(0.72, 0.1), V(0.5, 0.36), 0, cut, 0)
+		for _, x in { 0.34, 0.66 } do
+			bar(p, V(0.08, 0.2), V(x, 0.26), 0, W)
+		end
+		for r = 0, 1 do
+			for c = 0, 2 do
+				bar(p, V(0.12, 0.1), V(0.32 + c * 0.18, 0.54 + r * 0.17), 0, cut, 0.3)
+			end
+		end
+	end,
+	Vehicles = function(p, _)
+		Glyph.draw("boat", p, W)
+	end,
+	Camera = function(p, cut)
+		bar(p, V(0.28, 0.16), V(0.4, 0.32), 0, W, 0.3)
+		bar(p, V(0.78, 0.5), V(0.5, 0.58), 0, W, 0.25)
+		bar(p, V(0.32, 0.32), V(0.5, 0.58), 0, cut)
+		bar(p, V(0.18, 0.18), V(0.5, 0.58), 0, W)
+	end,
+	CrewPay = function(p, cut) -- a coin
+		local coin = bar(p, V(0.7, 0.7), V(0.5, 0.5), 0, W)
+		char(coin, "$", cut, 0.8)
+	end,
+	PayRise = function(p, _) -- rising bars
+		bar(p, V(0.16, 0.3), V(0.3, 0.66), 0, W, 0.3)
+		bar(p, V(0.16, 0.46), V(0.5, 0.58), 0, W, 0.3)
+		bar(p, V(0.16, 0.62), V(0.7, 0.5), 0, W, 0.3)
+	end,
+	Season = function(p, _)
+		char(p, "★", W, 0.95)
+	end,
+	Logbook = function(p, cut) -- a book with lines
+		bar(p, V(0.58, 0.7), V(0.52, 0.5), 0, W, 0.14)
+		bar(p, V(0.06, 0.7), V(0.33, 0.5), 0, cut, 0)
+		for i, y in { 0.34, 0.46, 0.58 } do
+			bar(
+				p,
+				V(if i == 3 then 0.22 else 0.3, 0.06),
+				V(if i == 3 then 0.53 else 0.57, y),
+				0,
+				cut
+			)
+		end
+	end,
+	Crew = function(p, _) -- two people
+		local rear = {
+			bar(p, V(0.2, 0.2), V(0.66, 0.3), 0, W),
+			bar(p, V(0.36, 0.26), V(0.68, 0.62), 0, W, 0.5),
+		}
+		for _, f in rear do
+			f.BackgroundTransparency = 0.4
+		end
+		bar(p, V(0.24, 0.24), V(0.42, 0.36), 0, W)
+		bar(p, V(0.46, 0.3), V(0.42, 0.72), 0, W, 0.5)
+	end,
+	Settings = function(p, cut) -- a gear
+		for _, r in { 0, 45, 90, 135 } do
+			bar(p, V(0.16, 0.8), V(0.5, 0.5), r, W, 0.3)
+		end
+		bar(p, V(0.6, 0.6), V(0.5, 0.5), 0, W)
+		bar(p, V(0.26, 0.26), V(0.5, 0.5), 0, cut)
+	end,
+	Store = function(p, cut) -- a shopping bag
+		local handle = bar(p, V(0.32, 0.36), V(0.5, 0.36), 0, W)
+		handle.BackgroundTransparency = 1
+		local s = Instance.new("UIStroke")
+		s.Color = W
+		s.Thickness = 3.5
+		s.Parent = handle
+		bar(p, V(0.66, 0.5), V(0.5, 0.64), 0, W, 0.18)
+		bar(p, V(0.24, 0.05), V(0.5, 0.56), 0, cut)
+	end,
+}
 
 local function focus(obj: GuiObject?)
 	if obj and UserInputService.GamepadEnabled then
@@ -205,6 +347,121 @@ local function popIcons(delay: number)
 	end
 end
 
+-- A du can draw at 0.7 px on a short landscape phone: icon labels grow there to stay >= 12.5 px.
+local function sizeLabels()
+	local px = rigScale.Scale * screenScale.Scale
+	local size = HudTheme.scaled(math.max(13, math.ceil(12.5 / px)))
+	for _, t in tiles do
+		local l = t.label
+		if l then
+			l.TextSize = size
+			l.Size = UDim2.new(1, 12, 0, size + 3)
+		end
+	end
+end
+
+-- Lays the handset out upright or sideways (no animation): the slab's size, the screen's canvas,
+-- the island, the side keys and the app page's insets.
+local function orient(upright: boolean)
+	sideways = not upright
+	local size = if upright then portraitSize else landscapeSize
+	rig.Size = UDim2.fromOffset(size.X, size.Y)
+	if upright then
+		-- the screen is a CANVAS-wide canvas scaled to the slab, so the home looks the same anywhere
+		local k = (size.X - 2 * BEZEL) / CANVAS
+		screenScale.Scale = k
+		screen.Size = UDim2.fromOffset(CANVAS, (size.Y - 2 * BEZEL) / k)
+		island.AnchorPoint = Vector2.new(0.5, 0)
+		island.Position = UDim2.new(0.5, 0, 0, 10)
+		island.Size = UDim2.fromOffset(ISLAND.X, ISLAND.Y)
+		content.Position = UDim2.fromOffset(16, 4)
+		content.Size = UDim2.new(1, -32, 1, -8)
+		sizeLabels()
+	else
+		screenScale.Scale = 1
+		screen.Size = UDim2.new(1, -2 * BEZEL, 1, -2 * BEZEL)
+		island.AnchorPoint = Vector2.new(0, 0.5)
+		island.Position = UDim2.new(0, 10, 0.5, 0)
+		island.Size = UDim2.fromOffset(ISLAND.Y, ISLAND.X)
+		content.Position = UDim2.fromOffset(52, 4) -- clear of the island
+		content.Size = UDim2.new(1, -76, 1, -8)
+	end
+	-- turned a quarter left: the left edge's keys go to the bottom, the right edge's to the top
+	for _, key in keys do
+		local f = key.frame
+		local left = key.edge == "left"
+		if upright then
+			f.AnchorPoint = Vector2.new(if left then 1 else 0, 0.5)
+			f.Position = UDim2.new(if left then 0 else 1, if left then 1 else -1, key.at, 0)
+			f.Size = UDim2.fromOffset(4, key.len)
+		else
+			f.AnchorPoint = Vector2.new(0.5, if left then 0 else 1)
+			f.Position = UDim2.new(key.at, 0, if left then 1 else 0, if left then -1 else 1)
+			f.Size = UDim2.fromOffset(key.len, 4)
+		end
+	end
+end
+
+local function stopTurn()
+	turnSerial += 1
+	for _, tw in turnTweens do
+		tw:Cancel()
+	end
+	table.clear(turnTweens)
+end
+
+-- Turns the phone upright or sideways; `done` runs once the new layout is in.
+local function turn(upright: boolean, animate: boolean, done: (() -> ())?)
+	stopTurn()
+	local s = turnSerial
+	if upright == not sideways then
+		if done then
+			done()
+		end
+		return
+	end
+	if not animate or Comfort.reducedMotion() then
+		orient(upright)
+		if animate then
+			body.Rotation = 0
+		end
+		if done then
+			done()
+		end
+		return
+	end
+	local p = portraitSize
+	if upright then
+		-- the wide slab rotates a quarter right into the upright footprint, then the layout swaps
+		turnTweens = {
+			tween(rig, TURN, { Size = UDim2.fromOffset(p.Y, p.X) }),
+			tween(body, TURN, { Rotation = 90 }),
+		}
+		task.delay(TURN, function()
+			if turnSerial == s then
+				table.clear(turnTweens)
+				orient(true)
+				body.Rotation = 0
+				if done then
+					done()
+				end
+			end
+		end)
+	else
+		-- the wide layout starts turned a quarter right (it looks upright) and rotates level
+		orient(false)
+		rig.Size = UDim2.fromOffset(p.Y, p.X)
+		body.Rotation = 90
+		turnTweens = {
+			tween(rig, TURN, { Size = UDim2.fromOffset(landscapeSize.X, landscapeSize.Y) }),
+			tween(body, TURN, { Rotation = 0 }),
+		}
+		if done then
+			done()
+		end
+	end
+end
+
 local function closeApp()
 	local undo = cleanup
 	cleanup = nil
@@ -221,15 +478,21 @@ local function closeApp()
 	content:ClearAllChildren()
 end
 
-local function goHome()
+local function showHome()
 	if current then
 		closeApp()
 	end
 	appPage.Visible = false
+	appBg.Visible = false
 	home.Visible = true
 	backButton.Visible = false
+	clockLabel.Visible = true
 	popIcons(0)
 	focus(tiles[1] and tiles[1].button)
+end
+
+local function goHome()
+	turn(true, open, showHome)
 end
 
 local function back()
@@ -297,7 +560,7 @@ local function panelApp(
 	frameName: string,
 	bgName: string?,
 	controller: (() -> any)?
-): (Frame) -> () -> ()
+): Mount
 	return function(page: Frame): () -> ()
 		local host = player:WaitForChild("PlayerGui"):FindFirstChild(guiName)
 		local root = host and host:FindFirstChild(frameName)
@@ -327,7 +590,7 @@ local function panelApp(
 end
 
 local function pill(parent: Instance, name: string, text: string, color: Color3): TextButton
-	local b = HudTheme.button(name, text, UDim2.fromOffset(200, 63), parent)
+	local b = HudTheme.button(name, text, UDim2.new(1, 0, 0, 63), parent)
 	b.BackgroundColor3 = color
 	b.TextSize = 24
 	HudTheme.corner(b, 18)
@@ -339,26 +602,30 @@ local function crewApp(page: Frame): () -> ()
 	local faces = Instance.new("Frame")
 	faces.Name = "Faces"
 	faces.BackgroundTransparency = 1
-	faces.AnchorPoint = Vector2.new(0.5, 0.5)
-	faces.Position = UDim2.fromScale(0.5, 0.4)
-	faces.Size = UDim2.new(1, 0, 0, 150)
+	faces.AnchorPoint = Vector2.new(0.5, 0)
+	faces.Position = UDim2.new(0.5, 0, 0, 24)
+	faces.Size = UDim2.fromOffset(250, 250)
 	faces.Parent = page
-	local list = Instance.new("UIListLayout")
-	list.FillDirection = Enum.FillDirection.Horizontal
-	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	list.VerticalAlignment = Enum.VerticalAlignment.Center
-	list.Padding = UDim.new(0, 28)
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-	list.Parent = faces
+	local grid = Instance.new("UIGridLayout") -- 2 x 2: crews are up to 4
+	grid.CellSize = UDim2.fromOffset(112, 112)
+	grid.CellPadding = UDim2.fromOffset(26, 26)
+	grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	grid.Parent = faces
 
+	-- Invite over Leave, at the foot of the page under the thumb
 	local buttons = Instance.new("Frame")
 	buttons.Name = "Buttons"
 	buttons.BackgroundTransparency = 1
-	buttons.AnchorPoint = Vector2.new(0.5, 0)
-	buttons.Position = UDim2.fromScale(0.5, 0.72)
-	buttons.Size = UDim2.new(1, 0, 0, 63)
+	buttons.AnchorPoint = Vector2.new(0.5, 1)
+	buttons.Position = UDim2.new(0.5, 0, 1, -16)
+	buttons.Size = UDim2.new(1, 0, 0, 138)
 	buttons.Parent = page
-	local row = list:Clone()
+	local row = Instance.new("UIListLayout")
+	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	row.VerticalAlignment = Enum.VerticalAlignment.Bottom
+	row.Padding = UDim.new(0, 12)
+	row.SortOrder = Enum.SortOrder.LayoutOrder
 	row.Parent = buttons
 
 	-- + friend (docs/15 H9): Roblox's own invite sheet. CanSendGameInviteAsync keeps platforms
@@ -394,7 +661,6 @@ local function crewApp(page: Frame): () -> ()
 			local id = ids[i]
 			local face = Instance.new("ImageLabel")
 			face.LayoutOrder = i
-			face.Size = UDim2.fromOffset(132, 132)
 			face.BackgroundColor3 = C.panelLight
 			face.BackgroundTransparency = if id then 0 else 0.7
 			face.Image = if id then `rbxthumb://type=AvatarHeadShot&id={id}&w=150&h=150` else ""
@@ -426,17 +692,17 @@ local function eventsApp(page: Frame): () -> ()
 	end
 end
 
--- VehiclesApp is another module's (VehiclesApp.mount(page) -> cleanup); the phone works without it
-local function vehiclesMount(): ((Frame) -> () -> ())?
-	local m = script.Parent:FindFirstChild("VehiclesApp")
+-- a sibling app module (OPTIONAL); nil when it is not there or fails to load
+local function optionalApp(moduleName: string): any
+	local m = script.Parent:FindFirstChild(moduleName)
 	if not m or not m:IsA("ModuleScript") then
 		return nil
 	end
 	local ok, mod = pcall(require, m)
 	if ok and type(mod) == "table" and type((mod :: any).mount) == "function" then
-		return (mod :: any).mount
+		return mod
 	end
-	warn("[Phone] VehiclesApp: " .. tostring(mod))
+	warn(`[Phone] {moduleName}: {mod}`)
 	return nil
 end
 
@@ -457,12 +723,17 @@ local function explorationController(): any
 	return require(Controllers:WaitForChild("ExplorationController"))
 end
 
+local function hex(a: string, b: string): { Color3 }
+	return { Color3.fromHex(a), Color3.fromHex(b) }
+end
+
 local function appList(): { App }
 	local list: { App } = {
 		{
 			name = "Map",
 			label = "Map",
-			color = Color3.fromHex("3E8FB0"),
+			colors = hex("6FD3FF", "1A7CF0"),
+			glyph = GLYPHS.Map,
 			run = function()
 				mapController().Open()
 			end,
@@ -470,64 +741,94 @@ local function appList(): { App }
 		{
 			name = "Radio",
 			label = "Radio",
-			color = C.accent,
+			colors = hex("FF7A6B", "E2283A"),
+			glyph = GLYPHS.Radio,
 			run = function()
 				radioController().repeatLast()
 			end,
 		},
-		{ name = "Events", label = "Events", color = Color3.fromHex("6E56C2"), mount = eventsApp },
-		{
-			name = "CrewPay",
-			label = "Crew Pay",
-			color = Color3.fromHex("8A6A2C"),
-			mount = function(page: Frame)
-				return stationController().mountPay(page)
-			end,
-		},
-		{
-			name = "PayRise",
-			label = "Pay Rise",
-			color = Color3.fromHex("4F8A43"),
-			mount = function(page: Frame)
-				return stationController().mountRise(page)
-			end,
-		},
-		{
-			name = "Season",
-			label = "Season",
-			color = Color3.fromHex("8C3B4A"),
-			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
-		},
-		{
-			name = "Logbook",
-			label = "Logbook",
-			color = Color3.fromHex("34488A"),
-			mount = panelApp("LogbookHud", "Holder", "Logbook", explorationController),
-		},
-		{ name = "Crew", label = "Crew", color = Color3.fromHex("2E9C8F"), mount = crewApp },
 		{
 			name = "Camera",
 			label = "Camera",
-			color = Color3.fromHex("4A545C"),
+			colors = hex("8E9399", "3C3F44"),
+			glyph = GLYPHS.Camera,
 			run = function()
 				require(script.Parent:WaitForChild("PhotoMode")).setOpen(true)
 			end,
 		},
 		{
+			name = "Events",
+			label = "Events",
+			colors = hex("B88CFF", "6A3BE0"),
+			glyph = GLYPHS.Events,
+			mount = eventsApp,
+			portrait = true,
+		},
+		{
+			name = "Season",
+			label = "Season",
+			colors = hex("FF8DB8", "E5306A"),
+			glyph = GLYPHS.Season,
+			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
+			portrait = true,
+		},
+		{
+			name = "CrewPay",
+			label = "Crew Pay",
+			colors = hex("FFD95A", "EE9F00"),
+			glyph = GLYPHS.CrewPay,
+			mount = function(page: Frame)
+				return stationController().mountPay(page)
+			end,
+			portrait = true,
+		},
+		{
+			name = "PayRise",
+			label = "Pay Rise",
+			colors = hex("74E68A", "22AE4C"),
+			glyph = GLYPHS.PayRise,
+			mount = function(page: Frame)
+				return stationController().mountRise(page)
+			end,
+			portrait = true,
+		},
+		{
+			name = "Logbook",
+			label = "Logbook",
+			colors = hex("6F97FF", "2D47D2"),
+			glyph = GLYPHS.Logbook,
+			mount = panelApp("LogbookHud", "Holder", "Logbook", explorationController),
+			portrait = true,
+		},
+		{
+			name = "Crew",
+			label = "Crew",
+			colors = hex("62E6DA", "1696C2"),
+			glyph = GLYPHS.Crew,
+			mount = crewApp,
+			portrait = true,
+		},
+		{
 			name = "Settings",
 			label = "Settings",
-			color = Color3.fromHex("5B6670"),
+			colors = hex("B4BAC1", "666D75"),
+			glyph = GLYPHS.Settings,
 			mount = panelApp("Settings", "Panel"),
+			portrait = true,
 		},
 	}
-	local vehicles = vehiclesMount()
-	if vehicles then
-		table.insert(list, 4, {
-			name = "Vehicles",
-			label = "Vehicles",
-			color = Color3.fromHex("2F7D6B"),
-			mount = vehicles,
-		})
+	for i, spec in OPTIONAL do
+		local mod = optionalApp(spec.module)
+		if mod then
+			table.insert(list, 3 + i, {
+				name = spec.name,
+				label = spec.label,
+				colors = hex(spec.colors[1], spec.colors[2]),
+				glyph = GLYPHS[spec.name] or GLYPHS.Store,
+				mount = mod.mount,
+				portrait = mod.portrait == true,
+			})
+		end
 	end
 	return list
 end
@@ -537,6 +838,7 @@ function Phone.openApp(name: string)
 	if not app then
 		return
 	end
+	local wasOpen = open
 	Phone.setOpen(true)
 	if not open then
 		return
@@ -555,11 +857,14 @@ function Phone.openApp(name: string)
 		closeApp()
 	end
 	current = name
+	turn(app.portrait == true, wasOpen)
 	home.Visible = false
+	appBg.Visible = true
 	appPage.Visible = true
 	backButton.Visible = true
-	local mount = app.mount :: (Frame) -> () -> ()
-	local ok, undo = pcall(mount, content)
+	clockLabel.Visible = false
+	local mount = app.mount :: Mount
+	local ok, undo = pcall(mount, content, goHome)
 	if ok and type(undo) == "function" then
 		cleanup = undo
 	elseif not ok then
@@ -599,7 +904,12 @@ function Phone.setEventRows(rows: { any })
 		end
 	end
 	if badge then
+		local was = badge.Visible
 		badge.Visible = live
+		local hop = bounce
+		if live and not was and hop then
+			hop()
+		end
 	end
 end
 
@@ -623,13 +933,17 @@ function Phone.setOpen(value: boolean)
 	serial += 1
 	local s = serial
 	local reduced = Comfort.reducedMotion()
+	stopTurn()
 	if value then
 		if current then
 			closeApp()
 		end
+		orient(true)
 		appPage.Visible = false
+		appBg.Visible = false
 		home.Visible = true
 		backButton.Visible = false
+		clockLabel.Visible = true
 		tickClock()
 		g.Enabled = true
 		hand = Viewmodel.playAction("phone")
@@ -698,7 +1012,7 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	b.Name = app.name
 	b.Text = ""
 	b.LayoutOrder = order
-	b.Size = UDim2.fromOffset(ICON, ICON)
+	b.Size = UDim2.fromOffset(CELL_W, CELL_H)
 	b.BackgroundTransparency = 1
 	b.AutoButtonColor = false
 	b.Parent = parent
@@ -707,7 +1021,7 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.AnchorPoint = Vector2.new(0.5, 0)
-	icon.Position = UDim2.fromScale(0.5, 0)
+	icon.Position = UDim2.new(0.5, 0, 0, if withLabel then 4 else (CELL_H - ICON) / 2)
 	icon.Size = UDim2.fromOffset(ICON, ICON)
 	icon.BackgroundTransparency = 1
 	icon.Parent = b
@@ -715,34 +1029,40 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	scale.Parent = icon
 	local shadow = Instance.new("Frame")
 	shadow.Name = "Shadow"
-	shadow.Position = UDim2.fromOffset(0, 4)
+	shadow.Position = UDim2.fromOffset(0, 3)
 	shadow.Size = UDim2.fromScale(1, 1)
 	shadow.BackgroundColor3 = Color3.new(0, 0, 0)
-	shadow.BackgroundTransparency = 0.72
+	shadow.BackgroundTransparency = 0.82
 	shadow.BorderSizePixel = 0
-	local round = Instance.new("UICorner")
-	round.CornerRadius = UDim.new(0.22, 0)
-	round.Parent = shadow
+	squircle(shadow)
 	shadow.Parent = icon
-	local tile = Instance.new("ImageLabel")
+	local tile = Instance.new("Frame")
 	tile.Name = "Tile"
 	tile.Size = UDim2.fromScale(1, 1)
-	tile.BackgroundColor3 = app.color -- shows while the image streams in
+	tile.BackgroundColor3 = W
 	tile.BorderSizePixel = 0
-	tile.Image = ART[app.name] or ""
-	tile.ScaleType = Enum.ScaleType.Crop
-	round:Clone().Parent = tile
+	squircle(tile)
+	gradient(tile, app.colors[1], app.colors[2], 90)
 	tile.Parent = icon
+	-- the glyph sits on its own frame: the tile's gradient would tint a white child
+	local mark = Instance.new("Frame")
+	mark.Name = "Glyph"
+	mark.AnchorPoint = Vector2.new(0.5, 0.5)
+	mark.Position = UDim2.fromScale(0.5, 0.5)
+	mark.Size = UDim2.fromScale(0.62, 0.62)
+	mark.BackgroundTransparency = 1
+	mark.Parent = icon
+	app.glyph(mark, app.colors[1]:Lerp(app.colors[2], 0.5))
 
 	local label: TextLabel? = nil
 	if withLabel then
 		local l =
-			HudTheme.label("Label", app.label, UDim2.new(1, 24, 0, 22), HudTheme.HeaderFont, 15, b)
+			HudTheme.label("Label", app.label, UDim2.new(1, 8, 0, 16), HudTheme.HeaderFont, 13, b)
 		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.new(0.5, 0, 0, ICON + 6)
+		l.Position = UDim2.new(0.5, 0, 0, ICON + 8)
 		l.TextXAlignment = Enum.TextXAlignment.Center
-		l.TextColor3 = Color3.new(1, 1, 1)
-		l.TextStrokeTransparency = 0.75
+		l.TextColor3 = W
+		l.TextStrokeTransparency = 0.82
 		label = l
 	end
 
@@ -768,28 +1088,29 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	return { button = b, scale = scale, label = label }
 end
 
-local function buildStatusBar(screen: Frame)
-	local bar = Instance.new("Frame")
-	bar.Name = "StatusBar"
-	bar.BackgroundTransparency = 1
-	bar.Size = UDim2.new(1, 0, 0, STATUS_H)
-	bar.ZIndex = 5
-	bar.Parent = screen
+local function buildStatusBar(parent: Frame)
+	local barFrame = Instance.new("Frame")
+	barFrame.Name = "StatusBar"
+	barFrame.BackgroundTransparency = 1
+	barFrame.Size = UDim2.new(1, 0, 0, STATUS_H)
+	barFrame.ZIndex = 5
+	barFrame.Parent = parent
+	local ear = (CANVAS - ISLAND.X) / 2 -- du either side of the island
 
 	backButton = Instance.new("TextButton")
 	backButton.Name = "Back"
 	backButton.Text = ""
-	backButton.Position = UDim2.fromOffset(18, 2)
-	backButton.Size = UDim2.fromOffset(72, 40)
-	backButton.BackgroundColor3 = C.text
-	backButton.BackgroundTransparency = 0.88
+	backButton.Position = UDim2.fromOffset(14, 7)
+	backButton.Size = UDim2.fromOffset(60, 32)
+	backButton.BackgroundColor3 = W
+	backButton.BackgroundTransparency = 0.86
 	backButton.AutoButtonColor = true
 	backButton.Visible = false
-	HudTheme.corner(backButton, 20)
-	backButton.Parent = bar
+	HudTheme.corner(backButton, 16)
+	backButton.Parent = barFrame
 	-- a drawn chevron
-	for _, spec in { { 0.36, 0.5 - 0.11, -45 }, { 0.36, 0.5 + 0.11, 45 } } do
-		local stroke = box(backButton, C.text, spec[1], spec[2], 0.2, 0.09, 99)
+	for _, spec in { { 0.38, 0.5 - 0.11, -45 }, { 0.38, 0.5 + 0.11, 45 } } do
+		local stroke = box(backButton, W, spec[1], spec[2], 0.22, 0.1, 99)
 		stroke.Rotation = spec[3]
 	end
 	local backChip = InputGlyph.chip(backButton, Enum.KeyCode.Backspace, Enum.KeyCode.ButtonB)
@@ -797,75 +1118,192 @@ local function buildStatusBar(screen: Frame)
 	backChip.Position = UDim2.new(1, 6, 0.5, 0)
 	backButton.Activated:Connect(goHome)
 
-	clockLabel =
-		HudTheme.label("Time", "", UDim2.fromOffset(120, STATUS_H), HudTheme.HeaderFont, 19, bar)
-	clockLabel.AnchorPoint = Vector2.new(0.5, 0)
-	clockLabel.Position = UDim2.fromScale(0.5, 0)
+	-- the time in the left ear, signal and battery in the right (iOS)
+	clockLabel = HudTheme.label(
+		"Time",
+		"",
+		UDim2.fromOffset(ear, STATUS_H),
+		Enum.Font.BuilderSansBold,
+		17,
+		barFrame
+	)
 	clockLabel.TextXAlignment = Enum.TextXAlignment.Center
+	clockLabel.TextColor3 = W
 
-	-- signal bars and the battery, right
+	local right = Instance.new("Frame")
+	right.Name = "Signal"
+	right.AnchorPoint = Vector2.new(0.5, 0.5)
+	right.Position = UDim2.new(1, -ear / 2, 0.5, 0)
+	right.Size = UDim2.fromOffset(64, 14)
+	right.BackgroundTransparency = 1
+	right.Parent = barFrame
 	for i = 1, 4 do
 		local s = Instance.new("Frame")
 		s.AnchorPoint = Vector2.new(0, 1)
-		s.Position = UDim2.new(1, -150 + (i - 1) * 8, 0, 29)
-		s.Size = UDim2.fromOffset(5, 4 + i * 3)
-		s.BackgroundColor3 = C.text
+		s.Position = UDim2.new(0, (i - 1) * 6, 1, 0)
+		s.Size = UDim2.fromOffset(4, 4 + i * 2.5)
+		s.BackgroundColor3 = W
 		s.BackgroundTransparency = if i == 4 then 0.6 else 0
 		s.BorderSizePixel = 0
 		HudTheme.corner(s, 1)
-		s.Parent = bar
+		s.Parent = right
 	end
 	local battery = Instance.new("Frame")
 	battery.Name = "Battery"
-	battery.Position = UDim2.new(1, -96, 0, 14)
-	battery.Size = UDim2.fromOffset(34, 16)
+	battery.AnchorPoint = Vector2.new(1, 0.5)
+	battery.Position = UDim2.new(1, -4, 0.5, 0)
+	battery.Size = UDim2.fromOffset(26, 13)
 	battery.BackgroundTransparency = 1
-	HudTheme.corner(battery, 5)
-	local edge = HudTheme.stroke(battery, C.text, 1.5)
-	edge.Transparency = 0.25
-	battery.Parent = bar
+	HudTheme.corner(battery, 4)
+	local edge = HudTheme.stroke(battery, W, 1.2)
+	edge.Transparency = 0.5
+	battery.Parent = right
 	local juice = Instance.new("Frame")
-	juice.Position = UDim2.fromOffset(3, 3)
-	juice.Size = UDim2.new(0.72, -3, 1, -6)
-	juice.BackgroundColor3 = C.ready
+	juice.Position = UDim2.fromOffset(2, 2)
+	juice.Size = UDim2.new(0.8, -2, 1, -4)
+	juice.BackgroundColor3 = W
 	juice.BorderSizePixel = 0
-	HudTheme.corner(juice, 3)
+	HudTheme.corner(juice, 2)
 	juice.Parent = battery
 	local nub = Instance.new("Frame")
-	nub.Position = UDim2.new(1, 2, 0.5, -3)
-	nub.Size = UDim2.fromOffset(3, 6)
-	nub.BackgroundColor3 = C.text
-	nub.BackgroundTransparency = 0.25
+	nub.Position = UDim2.new(1, 2, 0.5, -2)
+	nub.Size = UDim2.fromOffset(2, 5)
+	nub.BackgroundColor3 = W
+	nub.BackgroundTransparency = 0.5
 	nub.BorderSizePixel = 0
 	nub.Parent = battery
 end
 
--- the wallpaper: the user's stormy harbour, cover-cropped, darkened toward the dock for the labels
-local function buildWallpaper(screen: Frame)
-	local paper = Instance.new("ImageLabel")
+-- the wallpaper: a stock-iOS soft gradient with blurred colour blooms (no image asset). A
+-- CanvasGroup so the blooms clip to the screen's rounded corners.
+local function buildWallpaper(parent: Frame)
+	local paper = Instance.new("CanvasGroup")
 	paper.Name = "Wallpaper"
 	paper.Size = UDim2.fromScale(1, 1)
-	paper.BackgroundColor3 = Color3.fromHex("0B1620")
+	paper.BackgroundColor3 = W
 	paper.BorderSizePixel = 0
-	paper.Image = ART.Wallpaper
-	paper.ScaleType = Enum.ScaleType.Crop
-	HudTheme.corner(paper, 32)
-	paper.Parent = screen
-	local shade = Instance.new("Frame")
-	shade.Name = "Shade"
-	shade.Size = UDim2.fromScale(1, 1)
-	shade.BackgroundColor3 = Color3.new(0, 0, 0)
-	shade.BorderSizePixel = 0
-	HudTheme.corner(shade, 32)
-	local fade = Instance.new("UIGradient")
-	fade.Rotation = 90
-	fade.Transparency = NumberSequence.new({
-		NumberSequenceKeypoint.new(0, 0.62),
-		NumberSequenceKeypoint.new(0.5, 0.78),
-		NumberSequenceKeypoint.new(1, 0.45),
+	HudTheme.corner(paper, 40)
+	local base = Instance.new("UIGradient")
+	base.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromHex("2A2F86")),
+		ColorSequenceKeypoint.new(0.4, Color3.fromHex("6E4BDB")),
+		ColorSequenceKeypoint.new(0.72, Color3.fromHex("F07AB6")),
+		ColorSequenceKeypoint.new(1, Color3.fromHex("FFC38A")),
 	})
-	fade.Parent = shade
-	shade.Parent = paper
+	base.Rotation = 75
+	base.Parent = paper
+	paper.Parent = parent
+	-- each bloom: stacked faint discs, a soft radial falloff
+	for _, spec in
+		{
+			{ c = "3FC8FF", x = 0.12, y = 0.18, s = 1.1 },
+			{ c = "FF5FA8", x = 1.0, y = 0.52, s = 1.2 },
+			{ c = "FFD67A", x = 0.2, y = 0.92, s = 1.0 },
+			{ c = "8F7CFF", x = 0.7, y = 0.05, s = 0.8 },
+		}
+	do
+		for i = 1, 4 do
+			local d = Instance.new("Frame")
+			d.AnchorPoint = Vector2.new(0.5, 0.5)
+			d.Position = UDim2.fromScale(spec.x, spec.y)
+			local size = spec.s * (1.15 - i * 0.2)
+			d.Size = UDim2.fromScale(size, size)
+			d.SizeConstraint = Enum.SizeConstraint.RelativeXX
+			d.BackgroundColor3 = Color3.fromHex(spec.c)
+			d.BackgroundTransparency = 0.8
+			d.BorderSizePixel = 0
+			HudTheme.corner(d, 999)
+			d.Parent = paper
+		end
+	end
+end
+
+local function buildButton(region: Frame)
+	local button = Instance.new("TextButton")
+	button.Name = "PhoneButton"
+	button.Text = ""
+	button.AnchorPoint = Vector2.new(0.5, 0.5)
+	button.Position = UDim2.fromScale(0.5, 0.5)
+	button.Size = UDim2.fromScale(1, 1)
+	button.AutoButtonColor = false
+	button.BorderSizePixel = 0
+	button.BackgroundColor3 = W
+	button.Parent = region
+	local pop = Instance.new("UIScale")
+	pop.Parent = button
+	HudTheme.corner(button, 22)
+	if PHONE_BUTTON_IMAGE ~= "" then
+		button.BackgroundTransparency = 1
+		local art = Instance.new("ImageLabel")
+		art.Name = "Art"
+		art.Size = UDim2.fromScale(1, 1)
+		art.BackgroundTransparency = 1
+		art.Image = PHONE_BUTTON_IMAGE
+		art.ScaleType = Enum.ScaleType.Fit
+		art.Parent = button
+	else
+		-- a bright squircle with a little white phone on it, its screen dotted with app colours
+		gradient(button, Color3.fromHex("7CF29A"), Color3.fromHex("14B35A"), 90)
+		local rim = HudTheme.stroke(button, W, 3)
+		rim.Transparency = 0.1
+		local shadow = Instance.new("Frame")
+		shadow.Name = "Shadow"
+		shadow.Position = UDim2.fromOffset(0, 5)
+		shadow.Size = UDim2.fromScale(1, 1)
+		shadow.ZIndex = 0
+		shadow.BackgroundColor3 = Color3.fromHex("0A3D22")
+		shadow.BackgroundTransparency = 0.55
+		shadow.BorderSizePixel = 0
+		HudTheme.corner(shadow, 22)
+		shadow.Parent = region
+		local slab = bar(button, V(0.42, 0.68), V(0.5, 0.5), -8, W, 0.24)
+		local glass = bar(slab, V(0.78, 0.86), V(0.5, 0.5), 0, Color3.fromHex("23304A"), 0.2)
+		bar(glass, V(0.4, 0.07), V(0.5, 0.1), 0, Color3.new(0, 0, 0))
+		for i, hexColour in { "FF9F43", "3FC8FF", "FF5FA8", "FFD95A" } do
+			local x = if i % 2 == 1 then 0.3 else 0.7
+			local y = if i <= 2 then 0.36 else 0.62
+			bar(glass, V(0.3, 0.17), V(x, y), 0, Color3.fromHex(hexColour), 0.3)
+		end
+	end
+	badge = box(button, Color3.fromHex("FF3B30"), 0.92, 0.08, 0, 0, 99)
+	badge.Size = UDim2.fromOffset(22, 22)
+	badge.ZIndex = 3
+	badge.Visible = false
+	HudTheme.stroke(badge, W, 2.5).Transparency = 0
+	local chip = InputGlyph.chip(button, Enum.KeyCode.P, Enum.KeyCode.ButtonL1)
+	chip.AnchorPoint = Vector2.new(0.5, 0.5)
+	chip.Position = UDim2.new(1, -4, 1, -4)
+
+	-- hover / press, and a hop with a wiggle when a notification lands
+	button.MouseEnter:Connect(function()
+		tween(pop, 0.15, { Scale = 1.08 })
+	end)
+	button.MouseLeave:Connect(function()
+		tween(pop, 0.18, { Scale = 1 })
+	end)
+	button.MouseButton1Down:Connect(function()
+		tween(pop, 0.08, { Scale = 0.9 })
+	end)
+	bounce = function()
+		if Comfort.reducedMotion() then
+			return
+		end
+		tween(pop, 0.18, { Scale = 1.25 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		tween(pop, 0.5, { Scale = 1 }, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out, 0.18)
+		for i, r in { -12, 10, -6, 0 } do
+			tween(button, 0.08, { Rotation = r }, Enum.EasingStyle.Sine, nil, 0.1 + (i - 1) * 0.08)
+		end
+	end
+	button.Activated:Connect(function()
+		tween(pop, 0.2, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+		Phone.setOpen(not open)
+	end)
+	Layout.onColdOpen(function(active: boolean)
+		region.Visible = not active
+		if active then
+			Phone.setOpen(false)
+		end
+	end)
 end
 
 local function build(statusRegion: Frame)
@@ -902,7 +1340,7 @@ local function build(statusRegion: Frame)
 		Phone.setOpen(false)
 	end)
 
-	-- rig: the handset's size in du and the device scale; body: the open / close spring
+	-- rig: the handset's size in du and the device scale; body: the open / close spring and turns
 	rig = Instance.new("Frame")
 	rig.Name = "Handset"
 	rig.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -912,25 +1350,25 @@ local function build(statusRegion: Frame)
 	rigScale = Instance.new("UIScale")
 	rigScale.Parent = rig
 
+	-- the slab: near-black glass in a brushed titanium rim
 	body = Instance.new("Frame")
 	body.Name = "Body"
 	body.Active = true -- taps on the phone do not reach the backdrop
 	body.AnchorPoint = Vector2.new(0.5, 0.5)
 	body.Position = UDim2.fromScale(0.5, 0.5)
 	body.Size = UDim2.fromScale(1, 1)
-	body.BackgroundColor3 = Color3.new(1, 1, 1)
+	body.BackgroundColor3 = Color3.fromHex("0A0B0D")
 	body.BorderSizePixel = 0
 	body.SelectionGroup = true
-	HudTheme.corner(body, 46)
-	gradient(body, Color3.fromHex("3A4148"), Color3.fromHex("111418"), 70)
-	local rim = HudTheme.stroke(body, Color3.new(1, 1, 1), 2)
+	HudTheme.corner(body, 50)
+	local rim = HudTheme.stroke(body, W, 3)
 	rim.Transparency = 0
 	local rimShade = Instance.new("UIGradient")
 	rimShade.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromHex("C9D0D6")),
-		ColorSequenceKeypoint.new(0.35, Color3.fromHex("5A636B")),
-		ColorSequenceKeypoint.new(0.7, Color3.fromHex("9AA3AB")),
-		ColorSequenceKeypoint.new(1, Color3.fromHex("3A4148")),
+		ColorSequenceKeypoint.new(0, Color3.fromHex("D7DBDF")),
+		ColorSequenceKeypoint.new(0.35, Color3.fromHex("6B7279")),
+		ColorSequenceKeypoint.new(0.7, Color3.fromHex("A9B0B6")),
+		ColorSequenceKeypoint.new(1, Color3.fromHex("474D53")),
 	})
 	rimShade.Rotation = 35
 	rimShade.Parent = rim
@@ -938,31 +1376,43 @@ local function build(statusRegion: Frame)
 	bodyScale.Parent = body
 	body.Parent = rig
 
-	-- side keys on the top edge and the front camera in the left bezel
-	for _, spec in { { 0.14, 54 }, { 0.2, 54 }, { 0.82, 76 } } do
+	-- side keys: action + volume on the left edge, power on the right (orient places them)
+	for _, spec in
+		{
+			{ edge = "left", at = 0.17, len = 26 },
+			{ edge = "left", at = 0.25, len = 46 },
+			{ edge = "left", at = 0.33, len = 46 },
+			{ edge = "right", at = 0.28, len = 74 },
+		}
+	do
 		local key = Instance.new("Frame")
-		key.AnchorPoint = Vector2.new(0, 1)
-		key.Position = UDim2.new(spec[1], 0, 0, 1)
-		key.Size = UDim2.fromOffset(spec[2], 5)
-		key.BackgroundColor3 = Color3.fromHex("4A525A")
+		key.BackgroundColor3 = Color3.fromHex("7A8188")
 		key.BorderSizePixel = 0
 		HudTheme.corner(key, 2)
 		key.Parent = body
+		table.insert(keys, { edge = spec.edge, at = spec.at, len = spec.len, frame = key })
 	end
-	local cam = box(body, Color3.fromHex("05080B"), 0, 0.5, 0, 0, 99)
-	cam.Position = UDim2.new(0, BEZEL / 2 + 1, 0.5, 0)
-	cam.Size = UDim2.fromOffset(9, 9)
-	box(cam, Color3.fromHex("1F3A5A"), 0.5, 0.5, 0.45, 0.45, 99)
 
-	local screen = Instance.new("Frame")
+	screen = Instance.new("Frame")
 	screen.Name = "Screen"
-	screen.Position = UDim2.fromOffset(BEZEL, BEZEL)
-	screen.Size = UDim2.new(1, -2 * BEZEL, 1, -2 * BEZEL)
+	screen.AnchorPoint = Vector2.new(0.5, 0.5)
+	screen.Position = UDim2.fromScale(0.5, 0.5)
 	screen.BackgroundColor3 = Color3.new(0, 0, 0)
 	screen.BorderSizePixel = 0
-	HudTheme.corner(screen, 32)
+	HudTheme.corner(screen, 40)
 	screen.Parent = body
+	screenScale = Instance.new("UIScale")
+	screenScale.Parent = screen
 	buildWallpaper(screen)
+	-- an open app's own background over the wallpaper
+	appBg = Instance.new("Frame")
+	appBg.Name = "AppBackground"
+	appBg.Size = UDim2.fromScale(1, 1)
+	appBg.BackgroundColor3 = Color3.fromHex("0B1218")
+	appBg.BorderSizePixel = 0
+	appBg.Visible = false
+	HudTheme.corner(appBg, 40)
+	appBg.Parent = screen
 	buildStatusBar(screen)
 
 	-- home: the icon grid from the top, the frosted dock along the bottom
@@ -972,17 +1422,18 @@ local function build(statusRegion: Frame)
 	home.Position = UDim2.fromOffset(0, STATUS_H)
 	home.Size = UDim2.new(1, 0, 1, -STATUS_H - HOME_H)
 	home.Parent = screen
-	local dockH = ICON + 28
+	local dockH = ICON + 26
 	local grid = Instance.new("Frame")
 	grid.Name = "Grid"
 	grid.BackgroundTransparency = 1
 	grid.AnchorPoint = Vector2.new(0.5, 0)
-	grid.Position = UDim2.new(0.5, 0, 0, 18)
-	grid.Size = UDim2.new(1, -56, 1, -dockH - 50)
+	grid.Position = UDim2.new(0.5, 0, 0, 14)
+	grid.Size = UDim2.new(0, CANVAS - 24, 1, -dockH - 36)
 	grid.Parent = home
 	local layout = Instance.new("UIGridLayout")
-	layout.CellSize = UDim2.fromOffset(ICON + 30, ICON + 34)
-	layout.CellPadding = UDim2.fromOffset(12, 8)
+	layout.CellSize = UDim2.fromOffset(CELL_W, CELL_H)
+	layout.CellPadding = UDim2.fromOffset(0, 10)
+	layout.FillDirectionMaxCells = 4
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.VerticalAlignment = Enum.VerticalAlignment.Top
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -991,31 +1442,22 @@ local function build(statusRegion: Frame)
 	local dock = Instance.new("Frame")
 	dock.Name = "Dock"
 	dock.AnchorPoint = Vector2.new(0.5, 1)
-	dock.Position = UDim2.new(0.5, 0, 1, -18) -- clear of the home bar's touch strip
-	dock.Size = UDim2.fromOffset(0, dockH)
-	dock.AutomaticSize = Enum.AutomaticSize.X
-	dock.BackgroundColor3 = Color3.fromHex("DCE6EE")
+	dock.Position = UDim2.new(0.5, 0, 1, -6)
+	dock.Size = UDim2.fromOffset(CANVAS - 20, dockH)
+	dock.BackgroundColor3 = W
 	dock.BackgroundTransparency = 0.72
 	dock.BorderSizePixel = 0
-	HudTheme.corner(dock, 38)
-	HudTheme.stroke(dock, Color3.new(1, 1, 1), 1).Transparency = 0.7
-	local frost = Instance.new("UIGradient")
-	frost.Rotation = 90
-	frost.Transparency = NumberSequence.new(0, 0.35)
-	frost.Parent = dock
-	local pad = Instance.new("UIPadding")
-	pad.PaddingLeft = UDim.new(0, 22)
-	pad.PaddingRight = UDim.new(0, 22)
-	pad.Parent = dock
+	HudTheme.corner(dock, 30)
+	HudTheme.stroke(dock, W, 1).Transparency = 0.75
 	local row = Instance.new("UIListLayout")
 	row.FillDirection = Enum.FillDirection.Horizontal
+	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	row.VerticalAlignment = Enum.VerticalAlignment.Center
-	row.Padding = UDim.new(0, 30)
 	row.SortOrder = Enum.SortOrder.LayoutOrder
 	row.Parent = dock
 	dock.Parent = home
 
-	-- an open app: below the status bar, above the home bar
+	-- an open app: below the status bar, above the home indicator
 	appPage = Instance.new("Frame")
 	appPage.Name = "App"
 	appPage.BackgroundTransparency = 1
@@ -1028,8 +1470,6 @@ local function build(statusRegion: Frame)
 	content = Instance.new("Frame")
 	content.Name = "Content"
 	content.BackgroundTransparency = 1
-	content.Position = UDim2.fromOffset(24, 4)
-	content.Size = UDim2.new(1, -48, 1, -8)
 	content.Parent = appPage
 
 	local docked = {}
@@ -1041,24 +1481,36 @@ local function build(statusRegion: Frame)
 			table.insert(tiles, makeTile(app, i, grid, true))
 		end
 	end
+	table.sort(docked, function(a, b)
+		return DOCK[a.name] < DOCK[b.name]
+	end)
 	for _, app in docked do
 		table.insert(tiles, makeTile(app, DOCK[app.name], dock, false))
 	end
 
-	-- home bar: back from an app, or close from the icons
-	local bar = Instance.new("TextButton")
-	bar.Name = "HomeBar"
-	bar.AnchorPoint = Vector2.new(0.5, 1)
-	bar.Position = UDim2.fromScale(0.5, 1)
-	bar.Size = UDim2.fromOffset(260, HOME_H + 14)
-	bar.BackgroundTransparency = 1
-	bar.Text = ""
-	bar.ZIndex = 5
-	bar.Parent = screen
-	local line = box(bar, C.text, 0.5, 0.62, 0, 0, 99)
-	line.Size = UDim2.fromOffset(170, 6)
-	line.BackgroundTransparency = 0.2
-	bar.Activated:Connect(back)
+	-- the Dynamic Island, over everything on the screen
+	island = Instance.new("Frame")
+	island.Name = "DynamicIsland"
+	island.BackgroundColor3 = Color3.new(0, 0, 0)
+	island.BorderSizePixel = 0
+	island.ZIndex = 6
+	HudTheme.corner(island, 999)
+	island.Parent = screen
+
+	-- home indicator: back from an app, or close from the icons
+	local homeBar = Instance.new("TextButton")
+	homeBar.Name = "HomeBar"
+	homeBar.AnchorPoint = Vector2.new(0.5, 1)
+	homeBar.Position = UDim2.fromScale(0.5, 1)
+	homeBar.Size = UDim2.fromOffset(200, HOME_H + 10)
+	homeBar.BackgroundTransparency = 1
+	homeBar.Text = ""
+	homeBar.ZIndex = 5
+	homeBar.Parent = screen
+	local line = box(homeBar, W, 0.5, 0.7, 0, 0, 99)
+	line.Size = UDim2.fromOffset(124, 5)
+	line.BackgroundTransparency = 0.1
+	homeBar.Activated:Connect(back)
 
 	-- the screen waking: black over everything, fading out
 	wake = Instance.new("Frame")
@@ -1067,15 +1519,25 @@ local function build(statusRegion: Frame)
 	wake.BackgroundColor3 = Color3.new(0, 0, 0)
 	wake.BorderSizePixel = 0
 	wake.ZIndex = 20
-	HudTheme.corner(wake, 32)
+	HudTheme.corner(wake, 40)
 	wake.Parent = screen
 
 	local function fit(mt: Layout.Metrics)
 		local u = mt.usable
-		local w = math.min(u.X - 2 * MARGIN, (u.Y - 2 * MARGIN) * ASPECT)
-		local h = math.min(u.Y - 2 * MARGIN, (u.X - 2 * MARGIN) * ASPECT)
-		rig.Size = UDim2.fromOffset(w, h)
+		-- upright: nearly the screen's height (all of it on a short landscape phone screen), and
+		-- never narrower than the canvas, so app text keeps HudTheme's 0.7 px-per-du floor there;
+		-- sideways: the safe area (the wide apps' old canvas)
+		local m = if u.Y * mt.scale < 560 then 0 else MARGIN
+		local ph = math.min(u.Y - 2 * m, (u.X - 2 * m) * ASPECT)
+		portraitSize = V(math.min(math.max(ph / ASPECT, CANVAS + 2 * BEZEL), u.X - 2 * m), ph)
+		landscapeSize = V(
+			math.min(u.X - 2 * MARGIN, (u.Y - 2 * MARGIN) * ASPECT),
+			math.min(u.Y - 2 * MARGIN, (u.X - 2 * MARGIN) * ASPECT)
+		)
 		rigScale.Scale = mt.scale
+		stopTurn()
+		orient(not sideways)
+		body.Rotation = 0
 		local again = relayout
 		if again then
 			task.defer(again) -- after the borrowed panel's own fit
@@ -1083,36 +1545,13 @@ local function build(statusRegion: Frame)
 	end
 	fit(Layout.current())
 	Layout.onMetrics(fit)
+	Layout.onTextScale(function()
+		task.defer(sizeLabels) -- after HudTheme's own pass resets the labels
+	end)
 
-	-- HUD button left of the rank strip: the user's phone glyph as a rounded icon
-	local button = Instance.new("ImageButton")
-	button.Name = "PhoneButton"
-	button.AnchorPoint = Vector2.new(1, 0)
-	button.Position = UDim2.fromOffset(-6, 0)
-	button.Size = UDim2.fromOffset(52, 52)
-	button.BackgroundColor3 = C.panel
-	button.BorderSizePixel = 0
-	button.Image = ART.PhoneButton
-	button.ScaleType = Enum.ScaleType.Crop
-	HudTheme.corner(button, 12)
-	HudTheme.stroke(button)
-	badge = box(button, C.gold, 0.82, 0.18, 0, 0, 99)
-	badge.Size = UDim2.fromOffset(12, 12)
-	badge.Visible = false
-	HudTheme.stroke(badge, C.panel, 2).Transparency = 0
-	local chip = InputGlyph.chip(button, Enum.KeyCode.P, Enum.KeyCode.ButtonL1)
-	chip.AnchorPoint = Vector2.new(0.5, 0)
-	chip.Position = UDim2.new(0.5, 0, 1, 4)
-	button.Parent = statusRegion
-	button.Activated:Connect(function()
-		Phone.setOpen(not open)
-	end)
-	Layout.onColdOpen(function(active: boolean)
-		button.Visible = not active
-		if active then
-			Phone.setOpen(false)
-		end
-	end)
+	-- the HUD button: the Hud's "phone" region on the left (HudLayout)
+	local hud = statusRegion:FindFirstAncestorOfClass("ScreenGui")
+	buildButton(if hud then Layout.region(hud, "phone") else statusRegion)
 
 	g.Parent = player:WaitForChild("PlayerGui")
 end

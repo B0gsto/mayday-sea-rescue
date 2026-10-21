@@ -1,32 +1,34 @@
 --!strict
 --[[
-CasualtyRig (game copy of art/source/characters/M_Chr_Casualty_Swimmer/CasualtyRig.luau, which ships inside
-M_Chr_Casualty_Swimmer_Rig.rbxm; this one adds the Panic and Sit poses): procedural Bone poses for the skinned swimmer.
-Skeleton (R15 skinned-mesh names): Root (feet, pivot) > HumanoidRootNode > LowerTorso > UpperTorso > Head / arms, legs off
-LowerTorso. Bind pose: relaxed A-pose, every bone axis-aligned with the model (Y up, front -Z, character's left -X).
-Poses write Bone.Transform (local, not replicated: run on the client; an Animator/AnimationController also lives in the
-model for authored KeyframeSequence animations, whose Pose names must match the bone names).
+CasualtyRig: procedural poses for the Person in the Water casualty, a dressed R15 character (docs/14 section 4,
+built by src/server/Assets/CasualtyAsset from NpcFactory + NpcOutfits "Swimmer"). Poses write Motor6D.Transform (local,
+not replicated: run on the client in PreSimulation, after the Animator, which plays no tracks on this rig).
+Joint keys: "Root" = the Root motor (HumanoidRootPart > LowerTorso: lean, bob, the Sit drop), every other key is the
+motor's Part1 name (UpperTorso = Waist, Head = Neck, LeftUpperArm = LeftShoulder, ...). R15 C0s are axis-aligned with the
+model (Y up, front -Z, character's left -X), so the angles below read in model axes. Markers (ATT_Strobe, ATT_Whistle)
+are Bones on the UpperTorso part and come back in the same map (their Transform stays identity).
 API:
-  CasualtyRig.apply(model, poseName, t)   -- one frame: "Bind" | "TreadWater" | "Wave" | "Panic" | "Sit" (t = seconds, drives the cycle)
-  CasualtyRig.play(model, poseName)       -- RenderStepped loop (client); returns a stop() function that restores Bind
-  CasualtyRig.WATERLINE                   -- studs above the pivot where the sea surface sits when treading water
+  CasualtyRig.apply(model, poseName, t)   -- one frame: "Bind" | "TreadWater" | "Wave" | "Panic" | "Sit" | "Hold" | "Climb"
+  CasualtyRig.play(model, poseName)       -- PreSimulation loop (after the Animator) (client); returns a stop() function that restores Bind
+  CasualtyRig.sample(poseName, t)         -- pure: the joint transforms at time t (Lune-tested)
+  CasualtyRig.motorize(model)             -- server: swap the rig's AnimationConstraint joints for Motor6Ds
 ]]
-local RunService = game:GetService("RunService")
-
 local CasualtyRig = {}
-CasualtyRig.WATERLINE = 4.55 -- lifejacket keeps the shoulders just under, chin above the surface
-CasualtyRig.POSES = { "Bind", "TreadWater", "Wave", "Panic", "Sit" }
-CasualtyRig.HIP_HEIGHT = 2.55 -- studs from the feet (Root) to the hips at bind (Sit lowers the body by this)
+CasualtyRig.POSES = { "Bind", "TreadWater", "Wave", "Panic", "Sit", "Hold", "Climb" }
+CasualtyRig.HIP_HEIGHT = 2.55 -- studs the Sit pose drops the body (Root motor) to put the hips on the seat (tune)
 
 local rad, sin, cos = math.rad, math.sin, math.cos
 local function A(x: number, y: number, z: number): CFrame
 	return CFrame.Angles(rad(x), rad(y), rad(z))
 end
 
+-- The rig's joints by pose key (see the header) plus its marker Bones.
 local function bones(model: Instance): { [string]: Bone }
-	local map = {}
+	local map: { [string]: any } = {}
 	for _, d in model:GetDescendants() do
-		if d:IsA("Bone") then
+		if d:IsA("Motor6D") and d.Part1 then
+			map[if d.Name == "Root" then "Root" else d.Part1.Name] = d
+		elseif d:IsA("Bone") then
 			map[d.Name] = d
 		end
 	end
@@ -118,6 +120,42 @@ local function sit(t: number): { [string]: CFrame }
 	}
 end
 
+-- Holding on (a throw line, the lifebuoy, the rescuer or the sled): leaning in, both arms reaching up and forward
+-- with the elbows bent, hands gripping above the surface, kicking. (Arms straight out at the waterline read as a
+-- flat plank from the helm.)
+local function hold(t: number): { [string]: CFrame }
+	local p = treadWater(t)
+	local s = sin(2 * math.pi * 0.9 * t)
+	p.Root = CFrame.new(0, 0.05 * s, 0) * A(-14, 0, 0)
+	p.LeftUpperArm = A(118 + 4 * s, -10, -12)
+	p.LeftLowerArm = A(38, 0, 10)
+	p.LeftHand = A(-20, 0, 0)
+	p.RightUpperArm = A(118 - 4 * s, 10, 12)
+	p.RightLowerArm = A(38, 0, -10)
+	p.RightHand = A(-20, 0, 0)
+	p.Head = A(16, 0, 0)
+	return p
+end
+
+-- Climbing (a ladder or the side): hand over hand overhead, knees stepping up in turn.
+local function climb(t: number): { [string]: CFrame }
+	local w = 2 * math.pi * 0.7
+	local s = sin(w * t)
+	return {
+		Root = A(-8, 0, 0), -- chest to the ladder
+		UpperTorso = A(-4, 3 * s, 0),
+		Head = A(18, 0, 0), -- looking up the ladder
+		LeftUpperArm = A(150 + 20 * s, 0, -10),
+		LeftLowerArm = A(25 - 15 * s, 0, 0),
+		RightUpperArm = A(150 - 20 * s, 0, 10),
+		RightLowerArm = A(25 + 15 * s, 0, 0),
+		LeftUpperLeg = A(45 + 35 * s, 0, -4),
+		LeftLowerLeg = A(-50 - 30 * s, 0, 0),
+		RightUpperLeg = A(45 - 35 * s, 0, 4),
+		RightLowerLeg = A(-50 + 30 * s, 0, 0),
+	}
+end
+
 local GENERATORS: { [string]: (number) -> { [string]: CFrame } } = {
 	Bind = function()
 		return {}
@@ -126,7 +164,35 @@ local GENERATORS: { [string]: (number) -> { [string]: CFrame } } = {
 	Wave = wave,
 	Panic = panic,
 	Sit = sit,
+	Hold = hold,
+	Climb = climb,
 }
+
+-- Roblox's avatar joint upgrade builds R15 rigs with AnimationConstraint + BallSocketConstraint
+-- joints, not Motor6Ds: bones() found nothing to pose and the unanchored limbs hung or flopped flat.
+-- Swaps each AnimationConstraint for a rigid Motor6D (C0 / C1 = its rig attachments). Server side,
+-- once, before the rig is parented.
+function CasualtyRig.motorize(model: Instance)
+	for _, d in model:GetDescendants() do
+		if d:IsA("AnimationConstraint") then
+			local a0, a1 = d.Attachment0, d.Attachment1
+			local p0 = a0 and a0.Parent
+			local p1 = a1 and a1.Parent
+			if a0 and a1 and p0 and p1 and p0:IsA("BasePart") and p1:IsA("BasePart") then
+				local m = Instance.new("Motor6D")
+				m.Name = d.Name
+				m.Part0 = p0
+				m.Part1 = p1
+				m.C0 = a0.CFrame
+				m.C1 = a1.CFrame
+				m.Parent = p1
+				d:Destroy()
+			end
+		elseif d:IsA("BallSocketConstraint") then
+			d:Destroy()
+		end
+	end
+end
 
 -- The pose's bone transforms at time t (bones not listed stay at bind = CFrame.identity).
 function CasualtyRig.sample(poseName: string, t: number): { [string]: CFrame }
@@ -152,7 +218,7 @@ end
 
 function CasualtyRig.play(model: Instance, poseName: string): () -> ()
 	local t0 = os.clock()
-	local conn = RunService.RenderStepped:Connect(function()
+	local conn = game:GetService("RunService").PreSimulation:Connect(function()
 		CasualtyRig.apply(model, poseName, os.clock() - t0)
 	end)
 	return function()

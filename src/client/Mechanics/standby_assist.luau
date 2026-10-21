@@ -30,19 +30,9 @@ function Standby.start(
 	local wind = ctx.scene and ctx.scene.windDirection or 0
 	local anchor = World.hull(vehicle)
 	local centre = if anchor then anchor.position else World.casualtyPos(ctx, victim)
-	local info = Step.line(
-		s,
-		if driving
-			then "Hold her steady, head to wind, for the winch."
-			else "Keep your light on the casualty.",
-		54
-	)
+	local info = Step.line(s, if driving then "Steady · head to wind" else "Light on casualty", 54)
 	local setMeter = Ui.meter(s.panel, "Steady", UDim2.fromOffset(12, 78), 436)
-	Ui.hint(
-		s.panel,
-		if driving then "Small throttle, bow into the wind." else "Keep them centred.",
-		s.assist
-	)
+	Ui.hint(s.panel, if driving then "Small throttle" else "Keep centred", s.assist)
 	if not driving then
 		Ui.hands("torch")
 	end
@@ -64,9 +54,7 @@ function Standby.start(
 		end
 		setMeter(good / math.max(t, 1e-3), 0.8, 1)
 		local left = math.ceil(Standby.LIFT_SECONDS - t)
-		info.Text = if left > 0
-			then `Winchman on the wire... {left}s`
-			else "Casualty in the helicopter."
+		info.Text = if left > 0 then `Winch · {left}s` else "Aboard"
 		if t >= Standby.LIFT_SECONDS then
 			Step.finish(s, { metrics = { steady = math.floor(good / t * 100 + 0.5) / 100 } })
 		end

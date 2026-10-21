@@ -4,7 +4,7 @@ import json, os, sys
 import bpy, bmesh
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from kit import piece, WORK, SET, size  # noqa: E402
+from kit import piece, WORK, SET, size, TEXEL_WAIVED  # noqa: E402
 
 
 def build_piece(asset):
@@ -52,9 +52,13 @@ def build_piece(asset):
             "meshes": [{"object": lod0, "set": SET}, {"object": col}],
             "attachments": [],
             "waivers": {"geometry": "photogrammetry scan surface: the open underside and scan edges sit inside the terrain (CC0 scan, kit rock)",
-                        "LOD UV layout": "LOD2 of a decimated scan keeps the same UVs; area drift from collapsed micro-faces only"}, "tiling": False, "lod_symmetry": None,
+                         "LOD UV layout": "LOD2 of a decimated scan keeps the same UVs; area drift from collapsed micro-faces only"},
+            "tiling": False, "lod_symmetry": None,
             "closeups": [{"name": "top", "target": [0, 0, s[2] * 3 * 0.9], "dist": max(s) * 3 * 0.45, "az": 30, "el": 35},
                          {"name": "flank", "target": [0, 0, s[2] * 3 * 0.45], "dist": max(s) * 3 * 0.5, "az": 200, "el": 10}]}
+    if asset in TEXEL_WAIVED:
+        spec["waivers"]["texel density"] = ("40-92 m headland wall: 2048 is the scan's 2k master; 25 px/stud needs a 4k upscale, "
+                                            "and the face reads at background distance")
     if p["zone"] == "shore":
         wl = min(max(0.4 * s[2], 0.3), 1.5)
         att = bpy.data.objects.new("ATT_Waterline", None); att.location = (0, 0, wl * 3)

@@ -1,0 +1,642 @@
+{
+ "asset": "M_Veg_Gorse_01",
+ "name": "M_Veg_Gorse_01",
+ "date": "2026-10-17",
+ "commit": "7e4b3fa+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD0.fbx",
+   "bytes": 695564,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Gorse_01_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Gorse_01_LOD0.001",
+     "min": [
+      -2.4,
+      -2.1,
+      0.0
+     ],
+     "max": [
+      2.4,
+      2.1,
+      3.6
+     ],
+     "polygons": 5230,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD1.fbx",
+   "bytes": 321612,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Gorse_01_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Gorse_01_LOD1.001",
+     "min": [
+      -2.5522,
+      -2.2027,
+      -0.2749
+     ],
+     "max": [
+      2.6754,
+      2.1968,
+      3.7264
+     ],
+     "polygons": 2178,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD2.fbx",
+   "bytes": 169484,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veg_Gorse_01_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veg_Gorse_01_LOD2.001",
+     "min": [
+      -2.6143,
+      -2.2227,
+      -0.5497
+     ],
+     "max": [
+      2.9489,
+      2.2855,
+      3.7576
+     ],
+     "polygons": 1106,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01.attachments.json",
+   "attachments": []
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/veg/M_Veg_Gorse_01/M_Veg_Gorse_01.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "vegetation"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Gorse_01_LOD0"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5230 of 6000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.22e-02, 8944 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 1.000, v 0.004 to 1.000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2615 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "630 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Gorse_01_LOD1"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2178 of 6000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.81e-02, 4140 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 1.000, v 0.004 to 1.000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1089 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (card LODs drop cards by design (docs/12 2.5: cards reduce at distance); same atlas cells, LOD1 ~50% / LOD2 ~25% of the cards, widened): UV bounds differ by 0.000 (max 0.02), UV area by 47.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veg_Gorse_01_LOD2"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1106 of 6000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.81e-02, 1996 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 1.000, v 0.004 to 1.000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 553 faces have no UV area"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (card LODs drop cards by design (docs/12 2.5: cards reduce at distance); same atlas cells, LOD1 ~50% / LOD2 ~25% of the cards, widened): UV bounds differ by 0.000 (max 0.02), UV area by 74.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5230 of 6000 (vegetation, asset row)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2178 of 3000"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1106 of 1500"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "dims.md 1.6 x 1.4 x 1.2 m, spec 1.6 x 1.4 x 1.2 m (art/reference/M_Veg_Gorse_01/dims.md)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4.800 studs, real 1.600 m = 4.800 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4.200 studs, real 1.400 m = 4.200 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.600 studs, real 1.200 m = 3.600 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "none (not required)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 (shared atlas or trim (at most 1 unique set)), atlas FoliageLand"
+  },
+  {
+   "subject": "T_FoliageLand_Main_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_ALB_Wet.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_NOR.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH_Wet.png"
+  },
+  {
+   "subject": "T_FoliageLand_Main_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_MET.png"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Gorse_01_LOD0; 5230 triangles (scene 5230)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Gorse_01_LOD1; 2178 triangles (scene 2178)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veg_Gorse_01/M_Veg_Gorse_01_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veg_Gorse_01_LOD2; 1106 triangles (scene 1106)"
+  },
+  {
+   "subject": "M_Veg_Gorse_01_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 1 of 1 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veg_Gorse_01_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 5230,
+   "texel_density": 630.5
+  },
+  {
+   "name": "M_Veg_Gorse_01_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2178,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veg_Gorse_01_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 1106,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  4.800000190734863,
+  4.199999809265137,
+  3.6000001430511475
+ ],
+ "peak_rss_mb": 295.7
+}

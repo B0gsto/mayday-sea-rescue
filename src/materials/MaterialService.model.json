@@ -30,7 +30,7 @@
   "MudName": "Mud",
   "GroundName": "Earth",
   "PavementName": "RoadGravelTrack",
-  "AsphaltName": "RoadAsphaltWorn",
+  "AsphaltName": "Asphalt",
   "CobblestoneName": "RoadHarbourCobbles",
   "ConcreteName": "Concrete"
  },
@@ -369,7 +369,7 @@
    "Name": "Granite",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://85466455016244",
+    "ColorMap": "rbxassetid://76401737473020",
     "NormalMap": "rbxassetid://112226271977453",
     "RoughnessMap": "rbxassetid://94895103711753",
     "MetalnessMap": "rbxassetid://88157078302939",
@@ -402,7 +402,7 @@
    "Name": "Granite_Wet",
    "ClassName": "MaterialVariant",
    "Properties": {
-    "ColorMap": "rbxassetid://116196227731497",
+    "ColorMap": "rbxassetid://129503685055204",
     "NormalMap": "rbxassetid://112226271977453",
     "RoughnessMap": "rbxassetid://132726315315453",
     "MetalnessMap": "rbxassetid://88157078302939",

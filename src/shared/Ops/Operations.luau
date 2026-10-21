@@ -12,6 +12,11 @@ Operations.Defs = table.freeze({
 	PersonInWater = require(script.Parent.Definitions.PersonInWater),
 	DisabledVessel = require(script.Parent.Definitions.DisabledVessel),
 	CapsizedFerry = require(script.Parent.Definitions.CapsizedFerry),
+	CliffCasualty = require(script.Parent.Definitions.CliffCasualty),
+	RipCurrent = require(script.Parent.Definitions.RipCurrent),
+	SinkingVessel = require(script.Parent.Definitions.SinkingVessel),
+	VesselFire = require(script.Parent.Definitions.VesselFire),
+	WildlifeRescue = require(script.Parent.Definitions.WildlifeRescue),
 } :: { [string]: OperationDef })
 
 -- The old call kinds (CallLogic.chooseCall, RescueService scenes) -> operation id.
@@ -20,6 +25,11 @@ Operations.FromCallKind = table.freeze({
 	DriftingCraft = "PersonInWater",
 	Tow = "DisabledVessel",
 	CapsizedFerry = "CapsizedFerry",
+	Cliff = "CliffCasualty",
+	RipCurrent = "RipCurrent",
+	Sinking = "SinkingVessel",
+	VesselFire = "VesselFire",
+	WildlifeRescue = "WildlifeRescue",
 } :: { [string]: string })
 
 function Operations.get(id: string): OperationDef?
@@ -92,6 +102,24 @@ function Operations.totalWeight(steps: { StepDef }): number
 		w += s.weight
 	end
 	return w
+end
+
+-- Can this call fail (an NPC takes the casualty, no pay)? Never the cold open or a new player's
+-- first station calls (Onboarding.failsafeCall): there the survivor simply waits (2026-10-21).
+function Operations.canFail(coldOpen: boolean, firstCalls: boolean): boolean
+	return not (coldOpen or firstCalls)
+end
+
+-- The casualties a takeover is about: not yet picked up. Aboard a crew's boat (the board effect sets
+-- `aboard`) they are rescued; the ride home is only graded.
+function Operations.atRisk(casualties: { any }): { any }
+	local out = {}
+	for _, c in casualties do
+		if not c.aboard and not c.delivered then
+			table.insert(out, c)
+		end
+	end
+	return out
 end
 
 return Operations

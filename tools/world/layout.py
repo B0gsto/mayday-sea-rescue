@@ -74,7 +74,7 @@ ISLANDS = [GREAT_GALE, SKERRY_ISLE]
 # x = +-30. Gameplay (CallTypes.Areas, the Weather zone tests) depends on this, so the terrain dredges the basin to
 # fit it rather than moving it (doc 10 section 6.6 re-lays the mouth to about 900 studs later).
 HARBOUR = {"minX": -312, "maxX": 312, "minZ": 4, "maxZ": 368, "innerY": -13, "mouthY": -24, "channelHalf": 40}
-TOWN_PLATFORM = {"minX": -560, "maxX": 560, "minZ": -300, "maxZ": -20, "y": 4, "blend": 140}
+TOWN_PLATFORM = {"minX": -720, "maxX": 720, "minZ": -560, "maxZ": -20, "y": 4, "blend": 140}
 HARBOUR_COVE = {"minX": 186, "maxX": 312, "topZ": -20, "toeZ": 110, "topY": 4, "toeY": -7}  # small sand cove
 
 # Haven Sands: beach dimensions (doc 10 section 2.6) and the Bar sandbar offshore.
@@ -84,24 +84,87 @@ BAR = {"offshore": 250, "width": 46, "topY": -3, "from": (700, 170), "to": (1290
 
 # Roads: polylines with width and terrain material (doc 10 section 2.1). Heights follow the terrain, smoothed.
 ROADS = [
-    {"id": "HarbourRoad", "name": "Harbour Road", "surface": "Asphalt", "width": 18,
-     "points": [(-560, -30), (-300, -30), (-140, -30), (180, -30), (330, -40), (420, -50)]},
+    {"id": "HarbourRoad", "name": "Harbour Road", "surface": "Asphalt", "width": 22,
+     # jogs 5 studs onto the quay past the station so its forecourt row (z -37.6) stands on a pavement
+     "points": [(-560, -30), (-300, -30), (-190, -30), (-165, -25), (-55, -25), (-30, -30), (180, -30), (330, -40),
+                (420, -50)]},
+    {"id": "CoastRoadWest", "name": "Coast Road", "surface": "Asphalt", "width": 18,  # to the West Cliff car park
+     "points": [(-560, -30), (-640, -32), (-740, -24), (-840, -12), (-872, -8)]},
     {"id": "CoastRoadEast", "name": "Coast Road", "surface": "Asphalt", "width": 18,
      "points": [(420, -50), (560, -40), (700, -10), (820, 40), (900, 80)]},
     {"id": "HavenHeadTrack", "name": "Haven Head track", "surface": "Ground", "width": 10,
      "points": [(900, 80), (1060, 150), (1230, 260), (1390, 400), (1500, 520), (1590, 640)]},
-    {"id": "TownLane", "name": "Chapel Hill", "surface": "Asphalt", "width": 12,
-     "points": [(20, -30), (30, -160), (60, -300), (110, -420), (150, -560)]},
+    {"id": "TownLane", "name": "Chapel Hill", "surface": "Asphalt", "width": 22,  # the Port Haven grid's x 20 avenue
+     "points": [(20, -490), (60, -600), (140, -700), (180, -800)]},  # runs on up the hill to the High Road
     {"id": "HighRoad", "name": "High Road", "surface": "Asphalt", "width": 15,
-     "points": [(150, -560), (180, -800), (120, -1100), (60, -1500), (0, -1900), (-40, -2300)]},
+     "points": [(180, -800), (120, -1100), (60, -1500), (0, -1900), (-20, -2060)]},  # the bake coast closes ~2,200 out
     {"id": "SandsSlipway", "name": "Haven Sands slipway", "surface": "Concrete", "width": 12,
      "points": [(900, 150), (940, 205), (985, 262), (1015, 300)]},
 ]
+
+# Towns: one data block per city (doc 10 section 2.4). A town is a street grid on flat ground: `avenues` run
+# north-south at x = origin.x + offset, from the `south` road (its z at that x) to the last street; `streets` run
+# east-west at z = origin.z + offset across all avenues. Each grid line becomes a WorldConfig road (id
+# <town>_Av<n> / <town>_St<n>, `town` set), so RoadNet finds the junctions and lights; WorldConfig.Towns carries the
+# block for src/server/World/TownLayout.luau, which lines every block side that faces a town street with cottages
+# (terraced, front to the street) clear of the `keep` rects {x0, z0, x1, z1} (gameplay buildings and yards).
+# Another city = another entry here (flat ground under it: a TOWN_PLATFORM-style pad in the bake).
+TOWNS = [
+    {"id": "PortHaven", "name": "Port Haven", "origin": (0, -30), "south": ("HarbourRoad", "CoastRoadEast"),
+     "surface": "Asphalt",  # avenues start on the first `south` road that reaches their x
+     "width": 22,  # two 3.5 m lanes
+     "footway": 8,  # pavement + parking strip each side (studs)
+     "avenues": [(-540, "Penhallow Road"), (-380, "Quay Lane"), (-220, "Station Hill"), (20, "Chapel Hill"),
+                 (200, "Hospital Lane"), (380, "Eastgate Hill"), (560, "Tregenna Hill")],
+     "streets": [(-130, "Fore Street"), (-240, "Church Street"), (-350, "Trelawney Road"), (-460, "Bodmin Road")],
+     "keep": [(-392, -160, -231, -20),  # the boatyard (TownExtras) and the station yard spawn
+              (-212, -100, 12, -20),  # station, chandlery, forecourt, notice row, pet yard
+              (88, -152, 176, -20),  # the Cottage Hospital
+              (31, -251, 121, -171)]},  # Chapel Square (Town.luau): the chapel and a paved square on Fore Street
+]
+
+
+def _z_on(road_ids, x):
+    for road_id in road_ids:
+        pts = next(r for r in ROADS if r["id"] == road_id)["points"]
+        for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+            if min(x0, x1) <= x <= max(x0, x1) and x0 != x1:
+                return z0 + (z1 - z0) * (x - x0) / (x1 - x0)
+    raise ValueError(f"{road_ids} do not reach x {x}")
+
+
+def town_roads(t):
+    ox, oz = t["origin"]
+    xs = [ox + a for a, _ in t["avenues"]]
+    top = oz + t["streets"][-1][0]
+    out = []
+    for n, (a, name) in enumerate(t["avenues"], 1):
+        x = ox + a
+        out.append({"id": f"{t['id']}_Av{n}", "name": name, "surface": t["surface"], "width": t["width"],
+                    "town": t["id"], "points": [(x, round(_z_on(t["south"], x), 1)), (x, top)]})
+    for n, (b, name) in enumerate(t["streets"], 1):
+        out.append({"id": f"{t['id']}_St{n}", "name": name, "surface": t["surface"], "width": t["width"],
+                    "town": t["id"], "points": [(xs[0], oz + b), (xs[-1], oz + b)]})
+    return out
+
+
+for _t in TOWNS:
+    ROADS += town_roads(_t)
+
 CAR_PARKS = [
     {"id": "HavenSandsCarPark", "name": "Haven Sands car park", "surface": "Asphalt",
      "center": (880, 115), "size": (130, 80), "yaw": 33},
+    {"id": "WestCliffViewpoint", "name": "West Cliff car park", "surface": "Pavement",  # Coast Road west ends here
+     "center": (-900, -5), "size": (64, 44), "yaw": 0},
     {"id": "HavenHeadViewpoint", "name": "Haven Head viewpoint", "surface": "Ground",
      "center": (1600, 665), "size": (60, 40), "yaw": 45},
+]
+
+# Farmsteads: a gravel yard (paved and flattened like a car park) with a farmhouse and a barn (Town.luau farms()).
+FARMS = [
+    {"id": "Trevose", "name": "Trevose Farm", "surface": "Pavement", "center": (-720, -920), "size": (96, 72), "yaw": 18},
+    {"id": "Penmorvah", "name": "Penmorvah Farm", "surface": "Pavement", "center": (1040, -1180), "size": (96, 72),
+     "yaw": -14},
 ]
 
 # Seabed areas (rock reefs and kelp, gravel, eelgrass) as circles: centre, radius, kind.

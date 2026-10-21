@@ -183,4 +183,55 @@ return function(t)
 		t.expect(ColdOpen.capGrade("Fail", true)).toBe("Fail")
 		t.expect(ColdOpen.capGrade("Gold", false)).toBe("Gold")
 	end)
+
+	t.test("show, don't tell: casualty close ahead, no graded approach, a few words", function()
+		t.expect(ColdOpen.DISTANCE[2] < ColdOpen.HANDOVER_DISTANCE).toBe(true) -- creeps on in
+		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.NUDGE_NEAR).toBe(true) -- one move to make
+		t.expect(table.find(ColdOpen.PLAN, "approach")).toBe(nil)
+		t.expect(table.find(ColdOpen.PLAN, "recovery") ~= nil).toBe(true)
+		local _, words = string.gsub(ColdOpen.RADIO, "%S+", "")
+		t.expect(words <= 6).toBe(true)
+	end)
+
+	t.test("the world helps after 10 s without headway, never while closing in or near", function()
+		local n = ColdOpen.newNudge(0)
+		t.expect(ColdOpen.nudge(n, 0, 80)).toBe(false)
+		t.expect(ColdOpen.nudge(n, 9.9, 79)).toBe(false)
+		t.expect(ColdOpen.nudge(n, 10, 79)).toBe(true) -- sat still: flare
+		t.expect(ColdOpen.nudge(n, 15, 85)).toBe(false) -- clock restarted
+		t.expect(ColdOpen.nudge(n, 20, 85)).toBe(true)
+		-- closing in keeps resetting it
+		local m = ColdOpen.newNudge(0)
+		for i = 0, 30 do
+			t.expect(ColdOpen.nudge(m, i, 200 - i * 7)).toBe(false)
+		end
+		-- near: the casualty comes on their own
+		local k = ColdOpen.newNudge(0)
+		t.expect(ColdOpen.nudge(k, 0, 40)).toBe(false)
+		t.expect(ColdOpen.nudge(k, 30, 40)).toBe(false)
+	end)
+
+	t.test("the first mission ends on land: held and at a shore point, not before", function()
+		local slip = ColdOpen.SHORE[1].water
+		t.expect(ColdOpen.landed("held", slip + Vector3.new(5, 3, 10))).toBe(true)
+		t.expect(ColdOpen.landed("swim", slip)).toBe(false) -- not holding on
+		t.expect(ColdOpen.landed("held", Vector3.new(0, 0, 420))).toBe(false) -- still out at sea
+		t.expect(ColdOpen.landed("held", slip + Vector3.new(0, 0, ColdOpen.SHORE_RADIUS + 1)))
+			.toBe(false)
+		local sands = ColdOpen.nearestShore(Vector3.new(990, 0, 290))
+		t.expect(sands.id).toBe("Sands")
+		t.expect(ColdOpen.landed("held", Vector3.new(990, 0, 290))).toBe(true)
+	end)
+
+	t.test(
+		"the spawn is inside the breakwater, the casualty ahead and the station slipway behind",
+		function()
+			local at, home = ColdOpen.SPAWN, ColdOpen.SHORE[1].water
+			local ahead = ((at - home) * Vector3.new(1, 0, 1)).Unit
+			local far = at + ahead * ColdOpen.DISTANCE[2]
+			t.expect(far.Z < 352).toBe(true) -- breakwater heads: z 352 to 368
+			t.expect(ColdOpen.nearestShore(at).id).toBe("Station")
+			t.expect((far - home).Magnitude < 300).toBe(true) -- a short run home
+		end
+	)
 end

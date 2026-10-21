@@ -1,7 +1,6 @@
 --!strict
 -- Hull search helpers (docs/09 section 7 step 5). Pure, Lune-tested in
--- tests/MechFerryHull.spec.luau. Used by src/client/Mechanics/hull_knock.luau, air_pocket.luau
--- and src/server/Ferry/FerryValidate.luau (so client and server agree on the compartment).
+-- tests/MechFerryHull.spec.luau. Used by RescueService (the ferry's AirPocket mark).
 --
 -- Real practice (verify: USCG / fire service capsized-vessel guidance): rescuers on an upturned
 -- hull knock a clear pattern, then stay still and listen; trapped survivors answer by tapping.

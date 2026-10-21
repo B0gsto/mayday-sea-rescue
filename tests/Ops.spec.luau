@@ -11,7 +11,7 @@ return function(t)
 	t.test("every definition is well formed", function()
 		for id, def in Operations.Defs do
 			t.expect(def.id).toBe(id)
-			t.expect(#def.steps >= 6).toBeTruthy()
+			t.expect(#def.steps >= 4).toBeTruthy() -- PersonInWater is 4 since 2026-10-21
 			local seen = {}
 			for _, s in def.steps do
 				t.expect(seen[s.id]).toBeNil()
@@ -39,26 +39,46 @@ return function(t)
 			-- every operation starts with a tasking on the radio and ends with a close-out
 			t.expect(def.steps[1].mechanicId).toBe("radio_ack")
 			local last = def.steps[#def.steps].mechanicId
-			t.expect(last == "handover" or last == "radio_closeout").toBeTruthy()
+			-- PersonInWater ends at the drop-off (transport, 2026-10-21)
+			t.expect(last == "handover" or last == "radio_closeout" or last == "transport")
+				.toBeTruthy()
 		end
 	end)
 
-	t.test("PIW plan follows the real order and adds the calm step only when panicking", function()
+	t.test("PIW plan: answer, get aboard, pick them up, bring them home (2026-10-21)", function()
 		local def = Operations.get("PersonInWater")
-		local ids = {}
-		for _, s in Operations.plan(def, "Alert") do
-			table.insert(ids, s.id)
+		for _, state in { "Alert", "Panicking", "Unresponsive" } do
+			local ids = {}
+			for _, s in Operations.plan(def, state) do
+				table.insert(ids, s.id)
+			end
+			t.expect(table.concat(ids, ",")).toBe("tasking,launch,recovery,transport")
 		end
-		t.expect(table.concat(ids, ","))
-			.toBe(
-				"tasking,kit_launch,passage,search,approach,recovery,survey,treatment,transport,handover"
-			)
-		local panic = Operations.plan(def, "Panicking")
-		t.expect(#panic).toBe(11)
-		t.expect(panic[6].id).toBe("calm")
-		local rec = panic[7]
-		t.expect(Operations.mechanicFor(rec, "Alert")).toBe("recover_throwbag")
-		t.expect(Operations.mechanicFor(rec, "VeryCold")).toBe("recover_swimmer")
+		local rec = def.steps[3]
+		t.expect(Operations.mechanicFor(rec, "VeryCold")).toBe("auto_board")
+		t.expect(rec.effect).toBe("board")
+		t.expect(rec.onFail).toBe("takeover")
+	end)
+
+	t.test("a failed call pays nothing; the first missions cannot fail", function()
+		-- taken over with nobody brought home: zero, whatever the steps were graded
+		local none = Grading.takeoverPayout(1, 0, 1, 1)
+		t.expect(none.cash).toBe(0)
+		t.expect(none.rep).toBe(0)
+		t.expect(Grading.takeoverPayout(1.3, 0, 3, 4).cash).toBe(0)
+		-- two of four brought home: half of a Bronze payout
+		local half = Grading.takeoverPayout(1, 2, 4, 1)
+		t.expect(half.cash).toBe(math.floor(Grading.payout(1, "Bronze", 1).cash / 2 + 0.5))
+		-- the cold open and the onboarding calls have no fail path; other calls do
+		t.expect(Operations.canFail(true, false)).toBe(false)
+		t.expect(Operations.canFail(false, true)).toBe(false)
+		t.expect(Operations.canFail(false, false)).toBe(true)
+		-- a picked-up casualty is safe: only the ones still out there can trigger a takeover
+		local out = Condition.new("a", "Alert", true, 5)
+		local safe = Condition.new("b", "Alert", true, 5)
+		safe.aboard = true
+		t.expect(#Operations.atRisk({ out, safe })).toBe(1)
+		t.expect((Condition.shouldTakeover(Operations.atRisk({ safe }), 0, 720))).toBe(false)
 	end)
 
 	t.test("condition drifts by state, storm and treatment", function()
@@ -109,7 +129,7 @@ return function(t)
 	end)
 
 	t.test("step grade is the worst band; missing metrics grade Bronze", function()
-		local step = Operations.get("PersonInWater").steps[5] -- approach
+		local step = Operations.get("WildlifeRescue").steps[3] -- approach
 		t.expect(step.id).toBe("approach")
 		t.expect(
 			Grading.stepGrade(step, { overSpeedSec = 0, neutralDistance = 5, fromDownwind = true })
@@ -131,14 +151,11 @@ return function(t)
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 }, { npc = true })).toBe("Silver")
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 }, { stub = true })).toBe("Silver")
 		t.expect(Grading.resolveStep(tasking, { elapsed = 30 }, { stub = true })).toBe("Bronze")
-		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 1 })).toBe("Gold")
-		-- voice procedure: one fault of three is Silver, no format sent is Bronze
-		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 0.67 })).toBe("Silver")
-		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Bronze")
-		-- stub: format is the client's, so a stub is still graded on elapsed alone
-		t.expect(Grading.resolveStep(tasking, { elapsed = 3, format = 0 }, { stub = true }))
-			.toBe("Silver")
-		local survey = Operations.get("PersonInWater").steps[8]
+		-- push-to-talk: graded on elapsed alone, half weight
+		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Gold")
+		t.expect(tasking.weight).toBe(0.5)
+		local survey = Operations.get("CliffCasualty").steps[4]
+		t.expect(survey.id).toBe("survey")
 		-- stub: graded on server metrics only (elapsed), client "correct" ignored
 		t.expect(Grading.resolveStep(survey, { elapsed = 5 }, { stub = true })).toBe("Silver")
 		t.expect(Grading.cap("Gold", Types.Rules.NpcGradeCap)).toBe("Silver")
@@ -188,16 +205,7 @@ return function(t)
 		t.expect(Grading.payout(1, "Bronze", 1, 0).cash).toBe(500) -- tutorial chain
 		t.expect(Grading.payout(1, "Bronze", 1, 2).rep).toBe(160)
 		t.expect(Grading.payout(1, "Bronze", 1, 3).cash).toBe(math.floor(550 * 0.75 + 0.5))
-		-- takeover: half of each completed step's share, no completion share
-		local tk = Grading.takeoverPayout(
-			1,
-			{ { grade = "Silver", weight = 1 }, { grade = "Fail", weight = 1 } },
-			4,
-			1
-		)
-		t.expect(tk.cash).toBe(math.floor(550 * 0.25 * 0.5 + 0.5))
-		local tka = Grading.takeoverPayout(1, {}, 4, 1, true)
-		t.expect(tka.cash).toBe(math.floor(550 * 0.25 + 0.5))
+		-- takeover: see "a failed call pays nothing"
 		t.expect(Grading.shareWithoutStep(1).cash).toBe(55)
 		t.expect(Grading.bigCasualtyPay().cash).toBe(165)
 		t.expect(Grading.bigCompletionBonus(5, 10).cash).toBe(688)

@@ -12,6 +12,7 @@
 --
 --   BadgeService.Award(player, key) -> boolean          award now (true when owned afterwards)
 --   BadgeService.Count(player, key, n?) -> ()           bump a counted badge (awards at its threshold)
+--   BadgeService.Once(player, key, token) -> ()         bump, but each token (species, kind) only once
 --   BadgeService.Has(player, key) -> boolean            awarded this profile (cached, no web call)
 
 local Badges = game:GetService("BadgeService")
@@ -28,6 +29,7 @@ local BadgeService = {}
 BadgeService.Priority = 60
 
 local DataService: any = nil
+local EventService: any = nil
 local busy: { [Player]: { [string]: boolean } } = {}
 local rankIds: { string } = {}
 
@@ -117,6 +119,13 @@ function BadgeService.Count(player: Player, key: string, n: number?)
 	applyCounts(player, { [key] = n or 1 })
 end
 
+function BadgeService.Once(player: Player, key: string, token: string)
+	local s = store(player)
+	if s then
+		applyCounts(player, BadgeRules.once(s.badgeCounters, key, token))
+	end
+end
+
 local function checkRank(player: Player)
 	local idx = player:GetAttribute("RankIndex")
 	if type(idx) ~= "number" then
@@ -135,10 +144,21 @@ local function onOperationCompleted(snap: any, helpers: { Player })
 	for _, p in helpers do
 		helperSet[p] = true
 	end
+	local done = BadgeRules.completed(snap)
+	local greatStorm = done and EventService ~= nil and EventService.IsEventActive("GreatStorm")
 	for _, p in snap.assignedTo or helpers do
 		if typeof(p) == "Instance" and p:IsA("Player") and p.Parent then
 			local ok, err = pcall(function()
 				applyCounts(p, BadgeRules.opProgress(snap, p.UserId, helperSet[p] == true))
+				if done and helperSet[p] == true then
+					local s = store(p)
+					if s then
+						applyCounts(p, BadgeRules.once(s.badgeCounters, "EveryCall", snap.kind))
+					end
+					if greatStorm then
+						applyCounts(p, { GreatStormRescue = 1 })
+					end
+				end
 			end)
 			if not ok then
 				warn(`[BadgeService] op {snap.id}: {err}`)
@@ -159,6 +179,7 @@ function BadgeService.Init()
 		table.insert(rankIds, r.id)
 	end
 	DataService = require(script.Parent:WaitForChild("DataService")) :: any
+	EventService = require(script.Parent:WaitForChild("EventService")) :: any
 	Players.PlayerAdded:Connect(onPlayer)
 	Players.PlayerRemoving:Connect(function(p)
 		busy[p] = nil

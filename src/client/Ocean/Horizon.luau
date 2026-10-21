@@ -11,7 +11,10 @@
 --               cannot produce), 4 copies each rotated by 90 degrees (the square edge repeats)
 --   outer ring: one 22.5 degree sector template, 16 copies (the ring is round)
 -- 3 EditableMeshes / 205 vertices instead of 64 / 1728. Every part stays under the 2048-stud cap.
--- The parts carry no SurfaceAppearance (so per-vertex colours work): colour per vertex is
+-- The inner ring wears the far plane's SurfaceAppearance and tint (part.Color), so the 700 square is
+-- no seam: a matte vertex-coloured sea next to the glossy one read as a straight line out at sea,
+-- and as a dark wall under an Overcast sky (the glossy sea mirrors the grey sky, the matte one did
+-- not). By MID_RADIUS both read as sky. The outer ring has no SurfaceAppearance; colour per vertex is
 --   lerp(tint, haze, smoothstep(0, 1, (r - rInner) / (FADE_END - rInner)))
 -- (the outer ring uses rInner = INNER_HALF so its sectors are identical; the seam difference is
 -- under 1% of the fade) and is rewritten only when the tint or haze colour changes
@@ -23,6 +26,7 @@
 local AssetService = game:GetService("AssetService")
 
 local OceanPalette = require(script.Parent.OceanPalette)
+local OceanSurface = require(script.Parent.OceanSurface)
 
 local Horizon = {}
 
@@ -37,6 +41,13 @@ local FLAT_THICKNESS = 0.2
 local MAX_PART = 2048
 -- Fallback square bands (Chebyshev distance from the centre), inner to outer. -- tune
 local FLAT_BANDS = { 700, 1200, 1800, 2600, OUTER_RADIUS }
+-- Skirt: one Part under everything, its Brick mesh scaled past the 2048 part cap, so a high camera (review
+-- aerials, a future helicopter) sees sea out to the edge of the view instead of bare seabed past OUTER_RADIUS.
+-- At sea level it lies past the haze. Its bounds stay the 2048 box under the camera, so it is culled only when
+-- the camera is over ~590 studs up and looking at the horizon. -- tune
+local SKIRT_SCALE = 12 -- 24,576 studs across
+local SKIRT_DROP = 1.2 -- under the outer ring (OUTER_DROP)
+local SKIRT_FADE = 0.3 -- sea colour, slightly hazed
 
 type Template = {
 	ring: number,
@@ -59,9 +70,11 @@ export type Horizon = {
 	parts: { BasePart }, -- mesh copies, or flat fallback parts
 	offsets: { CFrame }, -- per part, relative to the grid centre at sea level
 	meshes: { EditableMesh }, -- shared templates (empty in the flat fallback)
+	surfaced: { BasePart }, -- inner ring copies: SurfaceAppearance, part.Color = tint
 	colourIds: { { number } }, -- per mesh: colour ids
 	fades: { { number } }, -- per mesh: fade 0..1 per colour id
 	flatFades: { number }, -- per part, flat fallback only: fade 0..1 of the part's band
+	skirt: Part,
 	tint: Color3,
 	haze: Color3,
 	seaLevel: number,
@@ -161,8 +174,11 @@ local function buildTemplate(t: Template): (EditableMesh?, { number }, { number 
 	local okBuild, buildErr = pcall(function()
 		local up = em:AddNormal(Vector3.yAxis)
 		local v: { number } = {}
+		-- Tiled UVs so the inner ring's normal map mips down the way the far plane's does.
+		local uvs: { number } = {}
 		for n, p in pts do
 			v[n] = em:AddVertex(Vector3.new(p.X - centre.X, 0, p.Z - centre.Z))
+			uvs[n] = em:AddUV(Vector2.new(p.X, p.Z) / OceanSurface.TILE_STUDS)
 			colourIds[n] = em:AddColor(Color3.new(1, 1, 1), 1)
 		end
 		local stride = rows + 1
@@ -175,6 +191,7 @@ local function buildTemplate(t: Template): (EditableMesh?, { number }, { number 
 				for _, tri in { { a, b, c }, { b, d, c } } do
 					local f = em:AddTriangle(v[tri[1]], v[tri[2]], v[tri[3]])
 					em:SetFaceNormals(f, { up, up, up })
+					em:SetFaceUVs(f, { uvs[tri[1]], uvs[tri[2]], uvs[tri[3]] })
 					em:SetFaceColors(f, { colourIds[tri[1]], colourIds[tri[2]], colourIds[tri[3]] })
 				end
 			end
@@ -199,7 +216,7 @@ end
 
 -- Mesh horizon: 3 shared EditableMeshes, 32 MeshParts. Returns false (and leaves h empty) on any
 -- failure so the caller can use the flat fallback.
-local function buildMeshes(h: Horizon, parent: Instance): (boolean, string?)
+local function buildMeshes(h: Horizon, parent: Instance, surface: string): (boolean, string?)
 	local made: { BasePart } = {}
 	local function fail(reason: string?): (boolean, string?)
 		for _, part in made do
@@ -211,6 +228,7 @@ local function buildMeshes(h: Horizon, parent: Instance): (boolean, string?)
 		table.clear(h.parts)
 		table.clear(h.offsets)
 		table.clear(h.meshes)
+		table.clear(h.surfaced)
 		table.clear(h.colourIds)
 		table.clear(h.fades)
 		return false, reason
@@ -232,6 +250,10 @@ local function buildMeshes(h: Horizon, parent: Instance): (boolean, string?)
 			table.insert(made, part)
 			configure(part)
 			part.Color = Color3.new(1, 1, 1)
+			if t.ring == 1 then
+				OceanSurface.attach(part, surface)
+				table.insert(h.surfaced, part)
+			end
 			part.Name = `OceanHorizon{n}_{k}`
 			-- Rotate the copy about the grid centre: CFrame.Angles(0, -phi, 0) turns the angle
 			-- a of (cos a, 0, sin a) into a + phi.
@@ -280,23 +302,45 @@ local function buildFlat(h: Horizon, parent: Instance)
 	end
 end
 
-function Horizon.new(parent: Instance, seaLevel: number, tint: Color3, haze: Color3): Horizon
+function Horizon.new(
+	parent: Instance,
+	seaLevel: number,
+	tint: Color3,
+	haze: Color3,
+	surface: string
+): Horizon
 	local h: Horizon = {
 		parts = {},
 		offsets = {},
 		meshes = {},
+		surfaced = {},
 		colourIds = {},
 		fades = {},
 		flatFades = {},
+		skirt = Instance.new("Part"),
 		tint = tint,
 		haze = haze,
 		seaLevel = seaLevel,
 	}
-	local ok, reason = buildMeshes(h, parent)
+	local ok = buildMeshes(h, parent, surface)
 	if not ok then
-		warnOnce(`[Ocean] horizon mesh unavailable ({reason}); flat Part horizon`)
+		-- EditableMesh can be unavailable in Studio: the flat Part horizon is the shipped fallback
+		warnOnce("[Ocean] horizon mesh unavailable; using the flat Part horizon")
 		buildFlat(h, parent)
 	end
+	local skirt = h.skirt
+	skirt.Name = "OceanSkirt"
+	skirt.Size = Vector3.new(MAX_PART, FLAT_THICKNESS, MAX_PART)
+	configure(skirt)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Brick
+	mesh.Scale = Vector3.new(SKIRT_SCALE, 1, SKIRT_SCALE)
+	mesh.Parent = skirt
+	local skirtOffset = CFrame.new(0, -SKIRT_DROP - FLAT_THICKNESS / 2, 0)
+	skirt.CFrame = CFrame.new(0, seaLevel, 0) * skirtOffset
+	skirt.Parent = parent
+	table.insert(h.parts, skirt)
+	table.insert(h.offsets, skirtOffset)
 	Horizon.setColours(h, tint, haze, true)
 	return h
 end
@@ -314,6 +358,29 @@ function Horizon.setColours(h: Horizon, tint: Color3, haze: Color3, force: boole
 	end
 	for n, fade in h.flatFades do
 		h.parts[n].Color = colourAt(tint, haze, fade)
+	end
+	for _, part in h.surfaced do
+		part.Color = tint
+	end
+	h.skirt.Color = colourAt(tint, haze, SKIRT_FADE)
+end
+
+-- High camera: show the skirt (off near sea level, where it would cover the underwater view) and hide the flat
+-- fallback bands (Studio review aerials: seen from 1000+ studs up they drew as a grey sheet over the whole view).
+function Horizon.setHigh(h: Horizon, high: boolean)
+	local skirtLtm = if high then 0 else 1
+	if h.skirt.LocalTransparencyModifier == skirtLtm then
+		return
+	end
+	h.skirt.LocalTransparencyModifier = skirtLtm
+	for n in h.flatFades do
+		h.parts[n].LocalTransparencyModifier = 1 - skirtLtm
+	end
+end
+
+function Horizon.setSurface(h: Horizon, kind: string)
+	for _, part in h.surfaced do
+		OceanSurface.attach(part, kind)
 	end
 end
 
@@ -334,6 +401,7 @@ function Horizon.destroy(h: Horizon)
 	table.clear(h.parts)
 	table.clear(h.offsets)
 	table.clear(h.meshes)
+	table.clear(h.surfaced)
 	table.clear(h.colourIds)
 	table.clear(h.fades)
 	table.clear(h.flatFades)

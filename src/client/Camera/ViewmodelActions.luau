@@ -25,7 +25,7 @@ local R0, L0 = Actions.REST_R, Actions.REST_L
 local V = Vector3.new
 
 -- props the rig can show in a hand (Viewmodel.luau builds and places them)
-Actions.Props = { "throwbag", "radio", "torch", "tube", "marker" }
+Actions.Props = { "throwbag", "radio", "torch", "tube", "marker", "phone", "lifebuoy", "blanket" }
 
 Actions.Defs = {
 	-- throw bag, underarm: bag drawn back low, swung forward and up, released at 0.55 s while the
@@ -741,7 +741,69 @@ end
 Defs.haul_left = mirrored(Defs.haul_right)
 Defs.payout_left = mirrored(Defs.payout_right)
 
+---------------------------------------------------------------- everyday and docs/14 §4 clips
+
+-- a friendly wave: right hand up by the face, open palm, a quick side to side, then down
+Defs.wave = {
+	duration = 1.6,
+	keys = {
+		{ t = 0, r = R0, l = L0, grip = 0 },
+		{ t = 0.3, r = V(0.55, 0.05, -1.1), l = L0, grip = 0 },
+		{ t = 0.5, r = V(0.35, 0.12, -1.15), l = L0, grip = 0 },
+		{ t = 0.7, r = V(0.7, 0.08, -1.1), l = L0, grip = 0 },
+		{ t = 0.9, r = V(0.35, 0.12, -1.15), l = L0, grip = 0 },
+		{ t = 1.1, r = V(0.7, 0.08, -1.1), l = L0, grip = 0 },
+		{ t = 1.6, r = R0, l = L0, grip = 0 },
+	},
+}
+-- the phone held low in the left hand, the right forefinger tapping it; loops while it is open
+Defs.phone = {
+	duration = 1.2,
+	loop = true,
+	keys = {
+		{ t = 0, r = V(0.15, -1.0, -1.15), l = V(-0.2, -1.15, -1.05), grip = 0.7, prop = "phone" },
+		{ t = 0.3, r = V(0.05, -1.08, -1.08), l = V(-0.2, -1.15, -1.05), grip = 0.7 },
+		{ t = 0.45, r = V(0.15, -1.0, -1.15), l = V(-0.2, -1.15, -1.05), grip = 0.7 },
+		{ t = 0.8, r = V(0.0, -1.1, -1.1), l = V(-0.2, -1.15, -1.05), grip = 0.7 },
+		{ t = 1.2, r = V(0.15, -1.0, -1.15), l = V(-0.2, -1.15, -1.05), grip = 0.7 },
+	},
+}
+-- lifebuoy, two hands: swung back to the right hip, flung forward and up, released at 0.6 s
+Defs.throw_lifebuoy = {
+	duration = 1.4,
+	keys = {
+		{ t = 0, r = R0, l = L0, grip = 1, prop = "lifebuoy" },
+		{ t = 0.25, r = V(0.65, -1.2, -0.9), l = V(-0.1, -1.1, -1.1), grip = 1 },
+		{ t = 0.45, r = V(0.9, -1.4, -0.4), l = V(0.2, -1.3, -0.7), grip = 1 },
+		{ t = 0.6, r = V(0.4, -0.5, -1.9), l = V(-0.3, -0.6, -1.8), grip = 0, prop = "" },
+		{ t = 0.9, r = V(0.35, -0.3, -2.0), l = V(-0.35, -0.4, -1.9), grip = 0 },
+		{ t = 1.4, r = R0, l = L0, grip = 0.3 },
+	},
+}
+-- dragging a casualty backwards by the lifejacket: both hands low ahead, heave and reset; loops
+Defs.drag = {
+	duration = 1.4,
+	loop = true,
+	keys = {
+		{ t = 0, r = V(0.3, -1.9, -1.5), l = V(-0.3, -1.9, -1.5), grip = 1 },
+		{ t = 0.7, r = V(0.32, -1.6, -0.95), l = V(-0.32, -1.6, -0.95), grip = 1 },
+		{ t = 1.4, r = V(0.3, -1.9, -1.5), l = V(-0.3, -1.9, -1.5), grip = 1 },
+	},
+}
+-- foil blanket: held open by two corners, laid over the casualty and tucked round them
+Defs.wrap_blanket = {
+	duration = 2.4,
+	keys = {
+		{ t = 0, r = R0, l = L0, grip = 1, prop = "blanket" },
+		{ t = 0.4, r = V(0.7, -0.9, -1.3), l = V(-0.7, -0.9, -1.3), grip = 1 },
+		{ t = 0.9, r = V(0.75, -1.6, -1.7), l = V(-0.75, -1.6, -1.7), grip = 1 },
+		{ t = 1.4, r = V(0.3, -1.85, -1.6), l = V(-0.3, -1.85, -1.6), grip = 1 },
+		{ t = 1.8, r = V(0.25, -1.9, -1.45), l = V(-0.25, -1.9, -1.45), grip = 0, prop = "" },
+		{ t = 2.4, r = R0, l = L0, grip = 0.3 },
+	},
+}
 -- names the mechanics use for an existing clip
+Defs.hold_bars = Defs.steer -- the jet ski handlebars (also the VehicleFP base pose)
 Defs.throw_underarm = Defs.throw -- the throw bag throw is underarm
 Defs.throw_line = Defs.throw_heaving_line -- a mooring line goes overarm in coils, the same way
 Defs.radio_handset = Defs.radio -- the boat's handset to the mouth, as the handheld
@@ -813,10 +875,30 @@ Actions.Names = {
 	"treat_hotpack",
 	"treat_sitUp",
 	"treat_thrusts",
+	-- everyday and docs/14 §4 clips
+	"wave",
+	"phone",
+	"hold_bars",
+	"throw_lifebuoy",
+	"drag",
+	"wrap_blanket",
 }
 
 local function ease(x: number): number
 	return x * x * (3 - 2 * x)
+end
+
+-- Lifts a wrist target that would sit below the frame back into the lower band of the view, so a
+-- low action (CPR, the bars, a drag, the phone) still shows the hands. tanHalf is tan(FOV / 2).
+function Actions.inView(p: Vector3, tanHalf: number): Vector3
+	if p.Z > -0.8 then
+		return p -- a near-face gesture; its height was deliberate
+	end
+	local floorY = -0.65 * -p.Z * tanHalf
+	if p.Y < floorY then
+		return Vector3.new(p.X, floorY, p.Z)
+	end
+	return p
 end
 
 -- Samples an action at time t (seconds; loops wrap). Returns right wrist, left wrist, grip and

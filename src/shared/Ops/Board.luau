@@ -31,6 +31,12 @@ function Board.hasRoom(model: Model?): boolean
 	return type(cap) ~= "number" or (tonumber(count) or 0) < cap
 end
 
+-- Big calls: may this track take (claim, board) the casualty? Not yet home, not lifted, and unclaimed or
+-- already its own, so a crew boards whichever survivor it reaches and never one another crew is fetching.
+function Board.mayTake(c: { [string]: any }, trackId: string): boolean
+	return not c.delivered and not c.takenOver and (c.claimedBy == nil or c.claimedBy == trackId)
+end
+
 -- PrivateTo: the mission crew's UserIds as " 1 2 " (RescueService sets it; cleared once aboard).
 function Board.privateList(userIds: { number }): string
 	return ` {table.concat(userIds, " ")} `

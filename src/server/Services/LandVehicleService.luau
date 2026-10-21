@@ -29,6 +29,9 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CarFolder = Shared:WaitForChild("Car")
+local Art = require(CarFolder:WaitForChild("Art"))
+local ArtLayout = require(CarFolder:WaitForChild("ArtLayout"))
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
@@ -387,6 +390,25 @@ local function despawn(record: Record)
 	record.model:Destroy()
 end
 
+-- Puts the uploaded body on a freshly built greybox model (Car/Art). No asset or a failed load
+-- keeps the greybox exactly as built.
+local function withArt(model: Model, spec: Spec, asset: string?): Model
+	if not asset then
+		return model
+	end
+	local visual = AssetLoader.clone(asset)
+	if not visual then
+		warn(`[LandVehicleService] {spec.id}: {asset} did not load; keeping the greybox`)
+		return model
+	end
+	local ok, applied = pcall(Art.apply, model, spec, visual)
+	if not ok or not applied then
+		warn(`[LandVehicleService] {spec.id}: art {asset} failed: {applied}`)
+		visual:Destroy()
+	end
+	return model
+end
+
 local function sitDriver(player: Player, seat: VehicleSeat)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -438,7 +460,11 @@ local function buildTrailer(record: Record, player: Player, cf: CFrame): boolean
 	local boatSpec = boatId and VehicleConfig.get(boatId)
 	-- VehicleConfig.massHint includes the crew; a boat on its trailer is about 85 % of it
 	local boatKg = if boatSpec then boatSpec.massHint * 37 * 0.85 else 0
-	local trailer = Builder.build(LandVehicleConfig.BoatTrailer, boatKg)
+	local trailer = withArt(
+		Builder.build(LandVehicleConfig.BoatTrailer, boatKg),
+		LandVehicleConfig.BoatTrailer,
+		ArtLayout.assetFor("BoatTrailer", boatId)
+	)
 	trailer.Name = `{player.Name}_BoatTrailer`
 	trailer:SetAttribute("Owner", player.UserId)
 	trailer:SetAttribute("ExtraMassKg", boatKg)
@@ -507,7 +533,7 @@ local function spawnVehicle(
 		despawn(old)
 	end
 
-	local model = Builder.build(spec)
+	local model = withArt(Builder.build(spec), spec, ArtLayout.assetFor(vehicleId))
 	model.Name = `{player.Name}_{spec.id}`
 	model:SetAttribute("Owner", player.UserId)
 	local ignore: { Instance } = characters()
@@ -945,10 +971,33 @@ local function watchPlayer(player: Player)
 end
 
 -- The parked ambulance handover points (docs 10 section 3.1, MVP).
+-- The phone's Vehicles app previews exactly what the spawner builds: ReplicatedStorage.VehiclePreviews.<id>
+-- (VehicleService adds the boats).
+local function publishPreviews()
+	local previews = ReplicatedStorage:FindFirstChild("VehiclePreviews")
+	if not previews then
+		previews = Instance.new("Folder")
+		previews.Name = "VehiclePreviews"
+		previews.Parent = ReplicatedStorage
+	end
+	for _, id in LandVehicleConfig.Order do
+		local spec = (LandVehicleConfig :: any)[id]
+		local ok, model = pcall(function()
+			return withArt(Builder.build(spec), spec, ArtLayout.assetFor(id))
+		end)
+		if ok then
+			model.Name = id
+			model.Parent = previews
+		else
+			warn(`[LandVehicleService] preview {id} failed: {model}`)
+		end
+	end
+end
+
 local function placeAmbulances()
 	for _, point in LandVehicleConfig.AmbulancePoints do
 		local spec = LandVehicleConfig.Ambulance
-		local model = Builder.build(spec)
+		local model = withArt(Builder.build(spec), spec, ArtLayout.assetFor(spec.id))
 		model.Name = `Ambulance_{point.id}`
 		local at = alignedCFrame(point.id, point.cframe)
 		local y = groundY(at.Position, { folder })
@@ -961,10 +1010,13 @@ local function placeAmbulances()
 		model:SetAttribute("HandoverPoint", point.id)
 		model:SetAttribute("Ambulance", true)
 		model:SetAttribute("LightBar", false)
-		local handover = Instance.new("Attachment")
-		handover.Name = "HandoverPoint" -- behind the rear doors, at standing height
-		handover.Position = Vector3.new(0, 0, spec.length * 1.5 + 4.5)
-		handover.Parent = root
+		local handover = root:FindFirstChild("HandoverPoint")
+		if not (handover and handover:IsA("Attachment")) then
+			local a = Instance.new("Attachment")
+			a.Name = "HandoverPoint" -- behind the rear doors, at standing height
+			a.Position = Vector3.new(0, 0, spec.length * 1.5 + 4.5)
+			a.Parent = root
+		end
 		CollectionService:AddTag(model, "AmbulanceHandover")
 		model.Parent = folder
 	end
@@ -1068,8 +1120,23 @@ function LandVehicleService.Init()
 end
 
 function LandVehicleService.Start()
+	local preload = {}
+	for _, asset in ArtLayout.ASSETS do
+		table.insert(preload, asset)
+	end
+	for _, id in LandVehicleConfig.Order do
+		local asset = ArtLayout.assetFor(id)
+		if asset and not table.find(preload, asset) then
+			table.insert(preload, asset)
+		end
+	end
+	for _, asset in ArtLayout.TRAILER_ASSETS do
+		table.insert(preload, asset)
+	end
+	AssetLoader.preload(preload)
 	placeAmbulances()
 	placeSigns()
+	task.spawn(publishPreviews)
 	Players.PlayerAdded:Connect(watchPlayer)
 	for _, player in Players:GetPlayers() do
 		watchPlayer(player)

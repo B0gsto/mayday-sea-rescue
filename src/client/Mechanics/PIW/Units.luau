@@ -47,31 +47,10 @@ function Units.hash01(s: string, salt: number?): number
 	return (h % 100000) / 100000
 end
 
--- Passage (docs 09 step 3): time against the best safe route, and the ETA read-out error.
+-- Passage (docs 09 step 3): time against the best safe route.
 function Units.routeRatio(elapsed: number, distance: number, cruiseSpeed: number): number
 	local best = math.max(1, distance / math.max(1, cruiseSpeed))
 	return math.max(1, elapsed / best)
-end
-
-function Units.etaError(actualSeconds: number, chosenSeconds: number): number
-	return math.abs(actualSeconds - chosenSeconds) / math.max(1, actualSeconds)
-end
-
--- Three ETA cards (minutes) around the honest estimate, the right one at a seeded slot.
-function Units.etaOptions(distance: number, cruiseSpeed: number, seed: number): ({ number }, number)
-	local mins = math.max(1, math.floor(distance / math.max(1, cruiseSpeed) / 60 * 1.15 + 0.5))
-	local options = { mins }
-	local lower = if mins > 2 then math.max(1, math.floor(mins * 0.5)) else mins + 4
-	local upper = mins * 2 + 1
-	table.insert(options, lower)
-	table.insert(options, upper)
-	table.sort(options)
-	local right = table.find(options, mins) or 1
-	if seed > 0.66 and right ~= 1 then
-		options[1], options[right] = options[right], options[1]
-		right = 1
-	end
-	return options, right
 end
 
 return Units

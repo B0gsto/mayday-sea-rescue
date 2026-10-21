@@ -1,0 +1,181 @@
+{
+ "asset": "M_Veh_MooredBoat_01",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Waterline",
+   "parent": null,
+   "blender": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.9054,
+    -0.6692
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_Bow",
+   "parent": null,
+   "blender": [
+    0.0,
+    -5.775,
+    1.245
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.245,
+    -5.775
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.3396,
+    -6.4442
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Moor_Stern",
+   "parent": null,
+   "blender": [
+    0.0,
+    5.64,
+    1.5
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.5,
+    5.64
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    0.5946,
+    4.9708
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Outboard",
+   "parent": null,
+   "blender": [
+    0.9,
+    5.64,
+    1.8
+   ],
+   "roblox_from_origin": [
+    -0.9,
+    1.8,
+    5.64
+   ],
+   "roblox_from_bbox_centre": [
+    -0.9,
+    0.8946,
+    4.9708
+   ],
+   "look": [
+    -0.0,
+    -0.0,
+    1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Port",
+   "parent": null,
+   "blender": [
+    2.16,
+    0.3,
+    0.9
+   ],
+   "roblox_from_origin": [
+    -2.16,
+    0.9,
+    0.3
+   ],
+   "roblox_from_bbox_centre": [
+    -2.16,
+    -0.0054,
+    -0.3692
+   ],
+   "look": [
+    -1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Boarding_Stbd",
+   "parent": null,
+   "blender": [
+    -2.16,
+    0.3,
+    0.9
+   ],
+   "roblox_from_origin": [
+    2.16,
+    0.9,
+    0.3
+   ],
+   "roblox_from_bbox_centre": [
+    2.16,
+    -0.0054,
+    -0.3692
+   ],
+   "look": [
+    1.0,
+    -0.0,
+    -0.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

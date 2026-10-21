@@ -1,7 +1,7 @@
 --!strict
 -- FerryRig: how the Capsized Ferry scene places the C2 art (M_Veh_GaleQueen, M_Sea_Liferaft; art/status/C2b.csv)
 -- on RescueService's floaters. Pure data and maths, Lune-tested in tests/MechFerryRig.spec.luau. Used by
--- src/server/Services/RescueService.luau (build) and src/client/Mechanics/hull_knock.luau (hull frame).
+-- src/server/Services/RescueService.luau (build).
 --
 -- Frames (studs). Asset pivot space: the authored pivot, keel bottom centre, upright, bow -Z (AssetIds.Attachments
 -- are in it). Ferry floater frame: RescueService rolls it 72 deg about its Z (f.tilt, +X goes up), its origin

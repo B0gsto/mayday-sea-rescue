@@ -2,15 +2,18 @@
 -- Viewmodel: the first-person arms (greybox, realistically proportioned: 1 m = 3 studs) in a
 -- yellow drysuit with SOLAS tape at the cuffs, latex wrist seals and black neoprene gloves.
 -- Both arms are solved by two-bone IK from the shoulders to the wrist targets of the current
--- action (ViewmodelActions). Only drawn in first person (CameraController calls setEnabled).
+-- action (ViewmodelActions). Only drawn in first person (CameraController calls setEnabled), and
+-- only while an action or a base pose plays: the body is hidden in first person (docs/14 F-5).
 --
 -- API (for mechanics: require(script.Parent.Parent.Camera.Viewmodel) from src/client/Mechanics):
 --   Viewmodel.playAction(name, opts?) -> Handle
 --       name: any key of ViewmodelActions.Defs (listed in Viewmodel.Actions), e.g. "throw",
---       "haul", "grab", "radio", "cpr", "point", "steer", "wave_off", "reach_casualty"
+--       "haul", "grab", "radio", "cpr", "point", "steer", "wave_off", "reach_casualty", and the
+--       docs/14 §4 set: "wave", "phone" (loops), "hold_bars", "throw_lifebuoy", "drag" (loops),
+--       "wrap_blanket"
 --       opts: { speed: number?, loop: boolean?, onDone: (() -> ())? }
 --       Handle: { name, duration, stop: () -> (), isDone: () -> boolean, wait: () -> () }
---       Looping actions (haul, cpr, steer) run until stop() or another playAction.
+--       Looping actions (haul, cpr, steer, phone, drag) run until stop() or another playAction.
 --   Viewmodel.stopAction()                  back to the base pose
 --   Viewmodel.setBasePose(name?)            "steer" on the jet ski; nil = arms down out of view
 --   Viewmodel.setSteer(x)                   -1..1 turns the handlebars in the steer pose
@@ -38,7 +41,7 @@ local UPPER, FORE = 0.93, 0.81
 local SHOULDER_R = Vector3.new(0.6, -0.75, 0.15)
 local SHOULDER_L = Vector3.new(-0.6, -0.75, 0.15)
 local SLEEVE_W, FORE_W = 0.36, 0.3
-local HAND_L, HAND_W, HAND_T = 0.57, 0.27, 0.12
+local HAND_L, HAND_W, HAND_T = 0.5, 0.24, 0.12
 
 local DRYSUIT = Color3.fromRGB(236, 190, 28)
 local TAPE = Color3.fromRGB(200, 204, 208)
@@ -67,6 +70,14 @@ local PROP_HOLD: { [string]: { arm: number, offset: CFrame } } = {
 	torch = { arm = 1, offset = CFrame.new(0, 0.02, -0.12) },
 	tube = { arm = 1, offset = CFrame.new(0, -0.05, -0.1) * CFrame.Angles(0, math.rad(80), 0) },
 	marker = { arm = 1, offset = CFrame.new(0, -0.2, -0.12) },
+	phone = { arm = 2, offset = CFrame.new(0, 0.06, -0.05) },
+	-- held at the rim in the right hand, the ring hanging across both hands
+	lifebuoy = {
+		arm = 1,
+		offset = CFrame.new(-0.4, -0.75, -0.1) * CFrame.Angles(0, math.rad(90), 0),
+	},
+	-- held by the right corner, the sheet spans across to the left hand
+	blanket = { arm = 1, offset = CFrame.new(-0.7, -0.3, -0.1) },
 }
 
 local rig: Model? = nil
@@ -124,13 +135,13 @@ local function build()
 				"UpperSleeve",
 				Vector3.new(SLEEVE_W, SLEEVE_W, UPPER),
 				DRYSUIT,
-				Enum.Material.Fabric
+				Enum.Material.SmoothPlastic -- Fabric read as fur this close to the eye
 			),
 			fore = part(
 				"ForeSleeve",
 				Vector3.new(FORE_W, FORE_W, FORE),
 				DRYSUIT,
-				Enum.Material.Fabric
+				Enum.Material.SmoothPlastic
 			),
 			tape = part(
 				"SolasTape",
@@ -162,6 +173,9 @@ local function build()
 		}
 		rounded(arm.upper)
 		rounded(arm.fore)
+		-- rounded gloves: boxes this close to the eye read as huge blocks
+		rounded(arm.palm)
+		rounded(arm.fingers)
 		table.insert(arms, arm)
 	end
 	props.throwbag = part(
@@ -207,6 +221,28 @@ local function build()
 		Color3.fromRGB(250, 120, 20),
 		Enum.Material.SmoothPlastic
 	)
+	props.phone = part(
+		"Phone",
+		Vector3.new(0.24, 0.03, 0.45),
+		Color3.fromRGB(22, 24, 28),
+		Enum.Material.Glass
+	)
+	-- shortcut: a disc, not a ring (no torus primitive); swap for a mesh if it reads badly
+	local buoy = part(
+		"Lifebuoy",
+		Vector3.new(0.3, 2.1, 2.1),
+		Color3.fromRGB(240, 90, 30),
+		Enum.Material.SmoothPlastic
+	)
+	local ring = buoy :: Part
+	ring.Shape = Enum.PartType.Cylinder
+	props.lifebuoy = buoy
+	props.blanket = part(
+		"FoilBlanket",
+		Vector3.new(1.6, 0.02, 1.1),
+		Color3.fromRGB(214, 176, 72),
+		Enum.Material.Foil
+	)
 	model.Parent = nil
 end
 
@@ -229,7 +265,9 @@ local function poseArm(arm: Arm, cam: CFrame, wristLocal: Vector3, grip: number)
 	arm.tape.CFrame = CFrame.lookAt(wrist - fdir * 0.18, wrist, up)
 	arm.seal.CFrame = CFrame.lookAt(wrist - fdir * 0.02, wrist + fdir, up)
 	-- the hand continues the forearm, palm down, with the fingers curling by grip
-	local hand = CFrame.lookAt(wrist, wrist + fdir, up)
+	-- a raised forearm is parallel to the camera up; a different up keeps the glove from rolling
+	local handUp = if math.abs(fdir:Dot(up)) > 0.98 then -cam.LookVector else up
+	local hand = CFrame.lookAt(wrist, wrist + fdir, handUp)
 	local palmLen = arm.palm.Size.Z
 	arm.palm.CFrame = hand * CFrame.new(0, 0, -palmLen * 0.5)
 	local curl = math.rad(10 + 80 * grip)
@@ -364,6 +402,17 @@ function Viewmodel.update(dt: number, cam: CFrame)
 		end
 	end
 	local wantVisible = enabled and (a ~= nil or basePose ~= nil)
+	if wantVisible then
+		-- keep a low action in frame (the arms are camera-relative, so looking down would not)
+		local camera = Workspace.CurrentCamera
+		local tanHalf = math.tan(math.rad(if camera then camera.FieldOfView else 75) * 0.5)
+		if r ~= Actions.REST_R then
+			r = Actions.inView(r, tanHalf)
+		end
+		if l ~= Actions.REST_L then
+			l = Actions.inView(l, tanHalf)
+		end
+	end
 	blend = CameraMath.damp(blend, if wantVisible then 1 else 0, 0.08, dt)
 	if not enabled or not rig then
 		return

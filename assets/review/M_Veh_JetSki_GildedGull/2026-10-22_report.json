@@ -1,0 +1,2843 @@
+{
+ "asset": "M_Veh_JetSki_GildedGull",
+ "name": "M_Veh_JetSki_GildedGull",
+ "date": "2026-10-22",
+ "commit": "4fab01db+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Hull",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_Hull_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_HullSeat_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_HullTrim_HP"
+     }
+    ],
+    "coverage": 0.4306,
+    "seconds": 159.5,
+    "timings": {
+     "nor": 17.3,
+     "mask": 36.7,
+     "pos": 16.9,
+     "wn": 18.9,
+     "base": 19.0,
+     "mr": 15.6,
+     "compose_write": 26.0
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_ALB.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_NOR.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_RGH.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Hull_MET.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_ALB.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_ALB_Wet.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_NOR.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH_Wet.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_GildedGull/textures"
+   },
+   {
+    "set": "Sled",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_Sled_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_SledFittings_HP"
+     },
+     {
+      "lod0": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+      "hp": "M_Veh_JetSki_GildedGull_SledCockpit_HP"
+     }
+    ],
+    "coverage": 0.2156,
+    "seconds": 155.7,
+    "timings": {
+     "nor": 19.6,
+     "mask": 30.2,
+     "pos": 17.3,
+     "wn": 17.6,
+     "base": 17.8,
+     "mr": 19.1,
+     "compose_write": 23.9
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_ALB.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_NOR.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_RGH.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_JetSki_GildedGull/textures/T_GildedGull_Sled_MET.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_ALB.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_ALB_Wet.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_NOR.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_RGH.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_RGH_Wet.png",
+     "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_GildedGull/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "bytes": 1054316,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_GildedGull_COL",
+    "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+    "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+    "M_Veh_JetSki_GildedGull_Hull_LOD0",
+    "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+    "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+    "M_Veh_JetSki_GildedGull_Sled_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_GildedGull_COL.001",
+     "min": [
+      -1.8541,
+      -7.3713,
+      0.0
+     ],
+     "max": [
+      1.8541,
+      7.4287,
+      3.3
+     ],
+     "polygons": 112,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD0.001",
+     "min": [
+      -0.76,
+      -2.9913,
+      1.46
+     ],
+     "max": [
+      0.76,
+      2.0487,
+      2.915
+     ],
+     "polygons": 816,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD0.001",
+     "min": [
+      -1.8737,
+      -7.2513,
+      1.208
+     ],
+     "max": [
+      1.8737,
+      2.4304,
+      2.6016
+     ],
+     "polygons": 352,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Hull_LOD0.001",
+     "min": [
+      -1.94,
+      -7.3713,
+      0.0
+     ],
+     "max": [
+      1.94,
+      2.7287,
+      2.9996
+     ],
+     "polygons": 3470,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0.001",
+     "min": [
+      -1.3071,
+      -4.5413,
+      2.6116
+     ],
+     "max": [
+      1.3071,
+      -2.6713,
+      3.475
+     ],
+     "polygons": 1690,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD0.001",
+     "min": [
+      -2.5836,
+      -7.5187,
+      0.075
+     ],
+     "max": [
+      2.5836,
+      3.3887,
+      3.62
+     ],
+     "polygons": 2512,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Sled_LOD0.001",
+     "min": [
+      -1.71,
+      2.7014,
+      1.0
+     ],
+     "max": [
+      1.71,
+      7.5187,
+      1.6449
+     ],
+     "polygons": 2828,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "bytes": 435500,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+    "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+    "M_Veh_JetSki_GildedGull_Hull_LOD1",
+    "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+    "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+    "M_Veh_JetSki_GildedGull_Sled_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD1.001",
+     "min": [
+      -0.7579,
+      -2.9913,
+      1.46
+     ],
+     "max": [
+      0.7579,
+      2.0487,
+      2.9142
+     ],
+     "polygons": 285,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD1.001",
+     "min": [
+      -1.8655,
+      -7.2524,
+      1.2078
+     ],
+     "max": [
+      1.8673,
+      2.4309,
+      2.604
+     ],
+     "polygons": 123,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Hull_LOD1.001",
+     "min": [
+      -1.9399,
+      -7.3714,
+      0.0
+     ],
+     "max": [
+      1.9399,
+      2.7287,
+      2.9996
+     ],
+     "polygons": 1214,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1.001",
+     "min": [
+      -1.3084,
+      -4.5353,
+      2.6116
+     ],
+     "max": [
+      1.3084,
+      -2.675,
+      3.475
+     ],
+     "polygons": 591,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD1.001",
+     "min": [
+      -2.5834,
+      -7.518,
+      0.0787
+     ],
+     "max": [
+      2.5834,
+      3.3887,
+      3.62
+     ],
+     "polygons": 879,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Sled_LOD1.001",
+     "min": [
+      -1.7072,
+      2.7019,
+      0.9997
+     ],
+     "max": [
+      1.71,
+      7.5154,
+      1.6448
+     ],
+     "polygons": 988,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "bytes": 155308,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+    "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+    "M_Veh_JetSki_GildedGull_Hull_LOD2",
+    "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+    "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+    "M_Veh_JetSki_GildedGull_Sled_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD2.001",
+     "min": [
+      -0.7478,
+      -2.9828,
+      1.4598
+     ],
+     "max": [
+      0.7464,
+      2.0361,
+      2.9142
+     ],
+     "polygons": 80,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD2.001",
+     "min": [
+      -1.8897,
+      -6.887,
+      1.2113
+     ],
+     "max": [
+      1.8554,
+      2.4321,
+      2.604
+     ],
+     "polygons": 34,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Hull_LOD2.001",
+     "min": [
+      -1.9499,
+      -7.3799,
+      0.0
+     ],
+     "max": [
+      1.9494,
+      2.7287,
+      2.9987
+     ],
+     "polygons": 346,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2.001",
+     "min": [
+      -1.335,
+      -4.5873,
+      2.6114
+     ],
+     "max": [
+      1.3051,
+      -2.675,
+      3.475
+     ],
+     "polygons": 168,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD2.001",
+     "min": [
+      -2.5807,
+      -7.5045,
+      0.0787
+     ],
+     "max": [
+      2.5807,
+      3.3617,
+      3.62
+     ],
+     "polygons": 251,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_JetSki_GildedGull_Sled_LOD2.001",
+     "min": [
+      -1.7102,
+      2.708,
+      1.0124
+     ],
+     "max": [
+      1.7096,
+      7.4856,
+      1.6168
+     ],
+     "polygons": 282,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull.attachments.json",
+   "attachments": [
+    "ATT_DriverSeat",
+    "ATT_EyePoint",
+    "ATT_SurvivorSlot1",
+    "ATT_TowHitch",
+    "ATT_BowPoint",
+    "ATT_DriveAttachment",
+    "ATT_NavPort",
+    "ATT_NavStarboard",
+    "ATT_NavMasthead",
+    "ATT_KillCord",
+    "ATT_Display",
+    "ATT_Prop1",
+    "ATT_Float1",
+    "ATT_Float2",
+    "ATT_Float3",
+    "ATT_Float4",
+    "ATT_Float5",
+    "ATT_Float6"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_JetSki_GildedGull/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_JetSki_GildedGull_Hull_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_GildedGull_HullSeat_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_GildedGull_HullTrim_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_GildedGull_Sled_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_GildedGull_SledFittings_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_JetSki_GildedGull_SledCockpit_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_GildedGull_Hull",
+   "T_GildedGull_Sled"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.037,
+     0.234,
+     0.77,
+     0.632
+    ],
+    "mannequin": [
+     -0.11,
+     0.391,
+     0.035,
+     0.715
+    ],
+    "fill": 0.733
+   },
+   "Side": {
+    "asset": [
+     0.219,
+     0.355,
+     0.963,
+     0.547
+    ],
+    "mannequin": [
+     0.05,
+     0.37,
+     0.147,
+     0.628
+    ],
+    "fill": 0.744
+   },
+   "Rear3Q": {
+    "asset": [
+     0.223,
+     0.197,
+     0.94,
+     0.598
+    ],
+    "mannequin": [
+     0.037,
+     0.309,
+     0.177,
+     0.651
+    ],
+    "fill": 0.717
+   },
+   "High": {
+    "asset": [
+     0.215,
+     0.037,
+     0.958,
+     0.734
+    ],
+    "mannequin": [
+     -0.116,
+     0.406,
+     0.085,
+     0.682
+    ],
+    "fill": 0.743
+   }
+  },
+  "closeups": [
+   {
+    "name": "seat_quilt_1m",
+    "target": [
+     0.0,
+     -1.321,
+     2.72
+    ],
+    "dist": 3.0,
+    "az": 115.0,
+    "el": 40.0,
+    "file": "closeup_seat_quilt_1m.png"
+   },
+   {
+    "name": "gull_wing",
+    "target": [
+     2.0,
+     1.279,
+     2.2
+    ],
+    "dist": 4.5,
+    "az": 125.0,
+    "el": 22.0,
+    "file": "closeup_gull_wing.png"
+   },
+   {
+    "name": "emblem_pinstripe",
+    "target": [
+     1.9,
+     -4.921,
+     1.4
+    ],
+    "dist": 4.5,
+    "az": 75.0,
+    "el": 8.0,
+    "file": "closeup_emblem_pinstripe.png"
+   },
+   {
+    "name": "wordmark",
+    "target": [
+     2.0,
+     -1.221,
+     1.35
+    ],
+    "dist": 4.5,
+    "az": 90.0,
+    "el": 5.0,
+    "file": "closeup_wordmark.png"
+   },
+   {
+    "name": "teak_footwell",
+    "target": [
+     0.9,
+     -2.121,
+     1.6
+    ],
+    "dist": 4.5,
+    "az": 55.0,
+    "el": 50.0,
+    "file": "closeup_teak_footwell.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.717,
+  "in_frame": true,
+  "dims_m": [
+   1.722,
+   5.012,
+   1.207
+  ],
+  "validation_ok": true,
+  "seconds": 11.4
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_GildedGull_Hull",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "43.1% of texels at 4096 px from M_Veh_JetSki_GildedGull_Hull_LOD0<-M_Veh_JetSki_GildedGull_Hull_HP, M_Veh_JetSki_GildedGull_HullSeat_LOD0<-M_Veh_JetSki_GildedGull_HullSeat_HP, M_Veh_JetSki_GildedGull_HullTrim_LOD0<-M_Veh_JetSki_GildedGull_HullTrim_HP"
+  },
+  {
+   "subject": "T_GildedGull_Hull",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 159 s"
+  },
+  {
+   "subject": "T_GildedGull_Sled",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "21.6% of texels at 4096 px from M_Veh_JetSki_GildedGull_Sled_LOD0<-M_Veh_JetSki_GildedGull_Sled_HP, M_Veh_JetSki_GildedGull_SledFittings_LOD0<-M_Veh_JetSki_GildedGull_SledFittings_HP, M_Veh_JetSki_GildedGull_SledCockpit_LOD0<-M_Veh_JetSki_GildedGull_SledCockpit_HP"
+  },
+  {
+   "subject": "T_GildedGull_Sled",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 156 s"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "jetski"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3470 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.95e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.998, v 0.002 to 0.832"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1762 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "107 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullSeat_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "816 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.50e-03, 48 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.119 to 0.928, v 0.029 to 0.936"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 432 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "169 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullTrim_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "352 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.08e-04, 300 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.535, v 0.002 to 0.683"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 176 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "147 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Sled_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2828 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.01e-04, 132 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.939, v 0.008 to 0.940"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1604 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "115 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledFittings_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2512 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.53e-05, 68 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.987, v 0.008 to 0.982"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1428 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "111 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledCockpit_LOD0"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1690 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.46e-06, 78 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 926 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "111 px/stud at 2048 px, hero tier 100 to 128 px/stud (pass at 90)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1214 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.37e-04, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.998, v 0.002 to 0.832"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1214 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullSeat_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "285 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.16e-03, 21 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.120 to 0.928, v 0.029 to 0.936"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 285 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullTrim_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "123 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.79e-04, 139 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.535, v 0.002 to 0.683"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 123 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Sled_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "988 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.50e-03, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.939, v 0.008 to 0.940"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 988 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledFittings_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "879 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.43e-06, 43 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.978, v 0.008 to 0.982"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 879 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.009 (max 0.02), UV area by 6.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledCockpit_LOD1"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "591 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.12e-06, 51 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.985, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 591 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.005 (max 0.02), UV area by 5.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "346 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.89e-03, 0 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.996, v 0.003 to 0.832"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 346 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 3.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullSeat_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "80 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.27e-02, 8 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.120 to 0.928, v 0.029 to 0.936"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 80 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullTrim_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "34 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.25e-03, 62 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.535, v 0.003 to 0.683"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 34 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.001 (max 0.02), UV area by 46.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Sled_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "282 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.82e-03, 64 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.895, v 0.008 to 0.894"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 282 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.046 (max 0.02), UV area by 19.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledFittings_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "251 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.07e-06, 23 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.958, v 0.016 to 0.969"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 251 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.030 (max 0.02), UV area by 22.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledCockpit_LOD2"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "168 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.37e-06, 28 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.976, v 0.008 to 0.985"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 168 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are mip-mapped far below the island size (as M_Veh_JetSki).): UV bounds differ by 0.014 (max 0.02), UV area by 41.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Hull_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Hull_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullSeat_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullSeat_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_HullTrim_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_HullTrim_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_Sled_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_Sled_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledFittings_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledFittings_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_SledCockpit_HP"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_SledCockpit_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_JetSki_GildedGull_COL"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 10000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "112 of 1000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "11668 of 20000 (jetski)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4080 of 8000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1161 of 2000"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_JetSki_GildedGull/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.167 studs, real 1.722 m = 5.166 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15.037 studs, real 5.012 m = 15.036 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.620 studs, real 1.207 m = 3.621 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_GildedGull_COL"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2 (2 to 2 sets)"
+  },
+  {
+   "subject": "T_GildedGull_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_ALB.png"
+  },
+  {
+   "subject": "T_GildedGull_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GildedGull_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_NOR.png"
+  },
+  {
+   "subject": "T_GildedGull_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH.png"
+  },
+  {
+   "subject": "T_GildedGull_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GildedGull_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_MET.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_ALB.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_ALB_Wet.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_NOR.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_RGH.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_RGH_Wet.png"
+  },
+  {
+   "subject": "T_GildedGull_Sled_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Sled_MET.png"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavPort",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStarboard",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavMasthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_KillCord",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Display",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_GildedGull_COL, M_Veh_JetSki_GildedGull_HullSeat_LOD0, M_Veh_JetSki_GildedGull_HullTrim_LOD0, M_Veh_JetSki_GildedGull_Hull_LOD0, M_Veh_JetSki_GildedGull_SledCockpit_LOD0, M_Veh_JetSki_GildedGull_SledFittings_LOD0, M_Veh_JetSki_GildedGull_Sled_LOD0; 11780 triangles (scene 11780)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_GildedGull_HullSeat_LOD1, M_Veh_JetSki_GildedGull_HullTrim_LOD1, M_Veh_JetSki_GildedGull_Hull_LOD1, M_Veh_JetSki_GildedGull_SledCockpit_LOD1, M_Veh_JetSki_GildedGull_SledFittings_LOD1, M_Veh_JetSki_GildedGull_Sled_LOD1; 4080 triangles (scene 4080)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_JetSki_GildedGull/M_Veh_JetSki_GildedGull_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_JetSki_GildedGull_HullSeat_LOD2, M_Veh_JetSki_GildedGull_HullTrim_LOD2, M_Veh_JetSki_GildedGull_Hull_LOD2, M_Veh_JetSki_GildedGull_SledCockpit_LOD2, M_Veh_JetSki_GildedGull_SledFittings_LOD2, M_Veh_JetSki_GildedGull_Sled_LOD2; 1161 triangles (scene 1161)"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 6 of 6 visual meshes"
+  },
+  {
+   "subject": "M_Veh_JetSki_GildedGull",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.72; 14 renders in 11 s, maps M_Veh_JetSki_GildedGull_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_GildedGull_HullSeat_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_GildedGull_HullTrim_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_GildedGull_Sled_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_GildedGull_SledFittings_LOD0: ALB/MET/NOR/RGH, M_Veh_JetSki_GildedGull_SledCockpit_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_JetSki_GildedGull_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3470,
+   "texel_density": 106.8
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 816,
+   "texel_density": 168.7
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 352,
+   "texel_density": 146.8
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Sled_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2828,
+   "texel_density": 115.0
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2512,
+   "texel_density": 110.6
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1690,
+   "texel_density": 110.7
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Hull_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 7594,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullSeat_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1224,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullTrim_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1926,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Sled_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 13838,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledFittings_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 12556,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledCockpit_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 10732,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 112,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1214,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 346,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 285,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullSeat_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 80,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 123,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_HullTrim_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 34,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Sled_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 988,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_Sled_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 282,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 879,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledFittings_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 251,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 591,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_JetSki_GildedGull_SledCockpit_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 168,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  5.167206764221191,
+  15.037456512451172,
+  3.620000123977661
+ ],
+ "peak_rss_mb": 5449.2
+}

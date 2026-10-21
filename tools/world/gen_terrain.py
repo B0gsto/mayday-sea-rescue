@@ -34,6 +34,9 @@ OLIVE = "WoodPlanks"
 # TurfWorn (trampled turf over earth: the mid-tone between turf and mud / earth) on Brick, SandRipple (wind-rippled dune
 # sand) on Glacier, Wrack (damp sand under the dried weed of the strand line) on Ice.
 WORN = "Brick"
+# farmland field classes by field hash (gen_terrain.materials, scatter_props): green < FIELD_GREEN <= olive < FIELD_OLIVE
+# <= straw < FIELD_STRAW <= heath < FIELD_HEATH <= bracken
+FIELD_GREEN, FIELD_OLIVE, FIELD_STRAW, FIELD_HEATH = 0.5, 0.78, 0.88, 0.94
 RIPPLE = "Glacier"
 WRACK = "Ice"
 
@@ -150,7 +153,7 @@ def flat_keep(X, Z):
             if 0 <= i < m.shape[0] and 0 <= j < m.shape[1]:
                 m[i, j] = 1
     near = box_blur(m, 4) > 0
-    for cp in L.CAR_PARKS:
+    for cp in L.CAR_PARKS + L.FARMS:
         cx, cz = cp["center"]
         a = math.radians(cp["yaw"])
         lx = (X - cx) * math.cos(a) + (Z - cz) * math.sin(a)
@@ -259,6 +262,14 @@ def bake():
     xs = np.arange(-L.HALF_EXTENT, L.HALF_EXTENT + 1, L.CELL, dtype=np.float64)
     X, Z = np.meshgrid(xs, xs)  # rows are z
     d, H, W = coast_field(X, Z)
+    # the bake window cuts Great Gale (it runs on to x -5,600 and z -4,500): close the island inside the window with a
+    # rounded, wandering cliff / rocky shore, so it meets the sea all round (no square land edge from the air)
+    r6 = (np.abs(X) ** 6 + np.abs(Z) ** 6) ** (1 / 6)
+    d_win = L.HALF_EXTENT - 360 + 110 * fbm(X, Z, 520, s + 90) - r6
+    tw_ = smoothstep(-80, 80, d - d_win)[None]  # 1 where the window shore is the nearer coast
+    d = np.minimum(d, d_win)
+    H = H * (1 - tw_[0]) + (55 + 35 * fbm(X, Z, 300, s + 91)) * tw_[0]
+    W = W * (1 - tw_) + np.array([0.55, 0.45, 0, 0, 0])[:, None, None] * tw_
     wc, wr, wb, wh, wm = W  # cliff, rocky, beach, harbour, mud
 
     # irregular coastline: rocky and cliff coasts get headlands and coves, beaches stay smooth
@@ -287,7 +298,9 @@ def bake():
     harb_l = 4 + rise_d(np.maximum(dl - 200, 0))
     mud_l = dl / 90 + 0.5 * rise_d(dl)
     h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + beacon * smoothstep(0, 400, dl)
-    h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s, fk)
+    # farmland (the T8 farm mask, before the platform blend) is rolling pasture: no granite knuckles or hummock fields
+    farm0 = smoothstep(60, 180, dl) * smoothstep(230, 170, h_land)
+    h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s, fk * (1 - 0.85 * farm0))
 
     # ---- sea
     shelf = np.where(ds < 600, ds / 30, np.where(ds < 1600, 20 + (ds - 600) / 20, 70 + (ds - 1600) / 9))
@@ -373,16 +386,30 @@ def bake():
     tw = smoothstep(tp["blend"], 0, np.hypot(ex, ez)) * (h > 0) * ~basin
     h = h + (tp["y"] - h) * tw
     # T6: harbour hillside: field banks, hummocks, outcrops (after the platform blend, so the town edge stays flat)
-    hm = harbour_hill(X, Z) * fk * smoothstep(2, 5, h) * smoothstep(6, 20, dl)
+    # T8: the same Cornish field pattern on all gentle inland ground below the high moor (was a blotchy heath)
+    farm = smoothstep(60, 180, dl) * smoothstep(230, 170, h) * smoothstep(14, 40, np.hypot(ex, ez))  # off the town
+    hm = np.maximum(harbour_hill(X, Z), farm) * fk * smoothstep(2, 5, h) * smoothstep(6, 20, dl)
     hdh, hedge, hcid, hrock = hill_relief(X, Z, s)
     h = h + hdh * hm
     hill = (hm, hedge * hm, hcid, hrock * hm)
+
+    # T8: the bake window cuts the island; ramp land under the sea over the last 200 studs so the edge is no wall
+    edge = smoothstep(0, 200, L.HALF_EXTENT - np.maximum(np.abs(X), np.abs(Z)))
+    h = np.where(h > -12, -12 + (h + 12) * edge, h)
 
     # ---- paving first (heights only change here), then materials on the final surface
     h, road_mat, road_edge, road_surf = pave(X, Z, h)
     mat = materials(X, Z, h, d, W, feat, road_edge, road_surf, np.where(land, gully, 0), np.where(land, outc, 0), hill)
     mat = np.where(road_mat != 255, road_mat, mat).astype(np.uint8)
     mat[(X > -180) & (X < 180) & (Z > -62) & (Z < -20)] = MI["Cobblestone"]  # quayside setts
+    # the town platform is paved (roads here, footways in Town.paint) or tidy grass, never moor / straw / earth;
+    # the blend ring up to the hills is grass with lush patches (rock stays on its steep banks)
+    dp = np.hypot(ex, ez)
+    soft = np.isin(mat, [MI[k] for k in ("Grass", "LeafyGrass", STRAW, OLIVE, "Ground", WORN, "Mud")])
+    town = (Z < tp["maxZ"] + 8) & (h > 2)
+    mat = np.where(town & (dp < 40) & (soft | (mat == MI["Rock"]) | (mat == MI["Basalt"])), MI["Grass"], mat)
+    lush = fbm(X, Z, 70, s + 95, 2) > 0.25
+    mat = np.where(town & (dp >= 40) & (dp < tp["blend"] + 20) & soft, np.where(lush, MI[OLIVE], MI["Grass"]), mat)
     return xs, h, mat, d
 
 
@@ -476,25 +503,28 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc, hill=None)
     wet_soft = box_blur(wet_hollow, 3)  # a 28-stud halo round every wet hollow: the trampled mid-tone fringe
     bank = smoothstep(0.22, 0.58, slope_n) * (1 - crag)
     # T3 macro colour: straw on exposed, dry, convex ground; olive in hollows, lee slopes and near water courses
-    straw = smoothstep(-0.3, 0.45, fbm(Xw, Zw, 150, s + 600, 3) + 0.45 * exposure + 0.35 * cliff_top
+    straw = smoothstep(0.05, 0.6, fbm(Xw, Zw, 150, s + 600, 3) + 0.45 * exposure + 0.35 * cliff_top
                        - 0.6 * smoothstep(0, 1.0, hollow) + 0.2 * smoothstep(0.12, 0.6, slope_n))
     olive = smoothstep(-0.15, 0.5, fbm(Xw, Zw, 120, s + 601, 3) + 0.8 * smoothstep(0, 1.2, hollow) - 0.3 * exposure)
     # T6: the harbour hillside is a patchwork of fields, each its own sward: green pasture, straw / rough grazing,
     # lush olive, heather and gorse heath, bracken; patch noise inside every field
     if hill is not None:
         hm, hedge, hcid, hrock = hill
-        fn = 0.25 * fbm(Xw, Zw, 30, s + 740, 2)
-        f_green, f_straw = (hcid < 0.4).astype(float), ((hcid >= 0.4) & (hcid < 0.58)).astype(float)
-        f_olive, f_heath = ((hcid >= 0.58) & (hcid < 0.7)).astype(float), ((hcid >= 0.7) & (hcid < 0.86)).astype(float)
-        f_brack = (hcid >= 0.86).astype(float)
-        hstraw = np.clip(0.1 * f_green + 0.85 * f_straw + 0.25 * f_heath + 0.45 * f_brack + fn, 0, 1)
+        hedge = smoothstep(0.3, 0.75, hedge)  # material line narrower than the bank: 1-2 voxels from the air
+        fn = 0.08 * fbm(Xw, Zw, 30, s + 740, 2)  # low: each field reads as one even sward
+        # mostly green pasture and lush (olive) grass; hay / stubble, heath and bracken fields are the exception
+        f_green, f_olive = (hcid < FIELD_GREEN).astype(float), ((hcid >= FIELD_GREEN) & (hcid < FIELD_OLIVE)).astype(float)
+        f_straw = ((hcid >= FIELD_OLIVE) & (hcid < FIELD_STRAW)).astype(float)
+        f_heath = ((hcid >= FIELD_STRAW) & (hcid < FIELD_HEATH)).astype(float)
+        f_brack = (hcid >= FIELD_HEATH).astype(float)
+        hstraw = np.clip(0.85 * f_straw + 0.25 * f_heath + 0.45 * f_brack + fn, 0, 1)
         holive = np.clip(0.25 * f_green + 0.9 * f_olive + 0.15 * f_heath + fn, 0, 1)
         straw = straw * (1 - 0.85 * hm) + hstraw * 0.85 * hm
         olive = olive * (1 - 0.85 * hm) + holive * 0.85 * hm
         steep, crag = steep * (1 - 0.85 * hedge), crag * (1 - 0.85 * hedge)  # bank sides are turfed, not cliff
     lw = {
         **turf(1.0 * (1 - steep) * (1 - 0.45 * cliff_top) * (1 - 0.5 * upland) * (1 - 0.2 * exposure), straw, olive),
-        "LeafyGrass": (0.12 + 0.5 * cliff_top + 1.1 * upland + 0.2 * exposure + 0.22 * bank) * (1 - steep),
+        "LeafyGrass": (0.03 + 0.6 * cliff_top + 1.2 * upland + 0.05 * exposure + 0.1 * bank) * (1 - steep),
         "Ground": (0.01 + 0.12 * bank + 1.1 * gully * smoothstep(0.2, 0.4, slope)) * (1 - 0.7 * wet_hollow) * (1 - crag),
         WORN: (0.04 + 2.4 * wet_soft * (1 - 0.5 * wet_hollow) + 0.3 * bank * smoothstep(0.3, 0.55, slope_n)
                + 0.9 * box_blur(gully, 2)) * (1 - crag),
@@ -506,13 +536,16 @@ def materials(X, Z, h, d, W, feat, road_edge, road_surf, gully, outc, hill=None)
         heath_p = smoothstep(-0.3, 0.3, fbm(Xw, Zw, 22, s + 741, 3))
         # T7: heath fields and hedge banks were solid Moor (a dark mossy blotch in the HarbourHillside foreground):
         # heath is now patchy over the field's straw / olive sward, banks mostly turf with only a Moor share
-        lw["LeafyGrass"] = lw["LeafyGrass"] + hm * (1 - steep) * (0.6 * f_heath * heath_p * heath_p
-                                                                + 0.35 * f_brack + 0.2 * heath_p * f_straw) + 0.35 * hedge
-        lw[WORN] = lw[WORN] + hm * (0.8 * f_brack * (1 - heath_p) + 0.15 * f_green * smoothstep(0.3, 0.7, heath_p)) \
-            + 0.25 * hedge
-        lw["Mud"] = lw["Mud"] * (1 - 0.75 * hm)  # field floors between the banks are not wet hollows
-        lw["Ground"] = lw["Ground"] + 0.35 * hedge * smoothstep(0.2, 0.5, slope_n)
-        lw["Rock"] = lw["Rock"] + 9.0 * hrock + 0.35 * hedge * smoothstep(0.2, 0.6, fbm(Xw, Zw, 7, s + 742, 2))  # hedge stone
+        # field floors read as one even sward from the air (the brown / tan blotches were worn turf, earth, moor and
+        # outcrops dithered through every field); the hedges are granite-faced banks with gorse
+        calm = 1 - 0.92 * hm * (1 - hedge)
+        for k in ("LeafyGrass", "Ground", WORN, "Mud", "Basalt"):
+            lw[k] = lw[k] * calm
+        lw["Rock"] = lw["Rock"] * (1 - 0.8 * hm * (1 - hedge))
+        lw["LeafyGrass"] = lw["LeafyGrass"] + hm * (1 - steep) * (0.6 * f_heath * heath_p * heath_p + 0.3 * f_brack) \
+            + 0.4 * hedge
+        lw[WORN] = lw[WORN] + 0.5 * hm * f_brack * (1 - heath_p)
+        lw["Rock"] = lw["Rock"] + 9.0 * hrock + 0.35 * hedge * smoothstep(-0.2, 0.4, fbm(Xw, Zw, 7, s + 742, 2))  # hedge stone
     mat = choose(lw, Xw, Zw, ix, iz, s + 200, {"Grass": (150, 1.6), STRAW: (110, 1.5), OLIVE: (90, 1.4),
                                                 "LeafyGrass": (85, 1.6), "Ground": (26, 1.2), WORN: (22, 1.2),
                                                 "Mud": (30, 0.8), "Rock": (40, 0.9), "Basalt": (30, 0.8)})
@@ -701,7 +734,7 @@ def pave(X, Z, h):
     mat = np.full(h.shape, 255, dtype=np.uint8)
     edge = np.full(h.shape, 1e9)
     kind = np.zeros(h.shape, dtype=np.int8)
-    for cp in L.CAR_PARKS:
+    for cp in L.CAR_PARKS + L.FARMS:
         cx, cz = cp["center"]
         sx, sz = cp["size"]
         a = math.radians(cp["yaw"])
@@ -777,16 +810,25 @@ def write_worldconfig(h):
     for r in L.ROADS:
         pts = r["_pts"][::6].tolist() + [r["_pts"][-1].tolist()]
         ys = list(r["_y"][::6]) + [r["_y"][-1]]
-        roads.append({"id": r["id"], "name": r["name"], "surface": r["surface"], "width": r["width"],
-                      "points": [Vec(p[0], y, p[1]) for p, y in zip(pts, ys)]})
+        road = {"id": r["id"], "name": r["name"], "surface": r["surface"], "width": r["width"],
+                "points": [Vec(p[0], y, p[1]) for p, y in zip(pts, ys)]}
+        if "town" in r:
+            road["town"] = r["town"]
+        roads.append(road)
     cfg = {
         "MapRadius": L.MVP_RADIUS,
         "SeaLevel": 0,
         "Terrain": {"cell": L.CELL, "halfExtent": L.HALF_EXTENT, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED},
         "Roads": roads,
+        "Towns": [{"id": t["id"], "name": t["name"], "origin": pos((t["origin"][0], None, t["origin"][1])),
+                   "width": t["width"], "footway": t["footway"], "avenues": [a for a, _ in t["avenues"]],
+                   "streets": [b for b, _ in t["streets"]], "keep": [list(k) for k in t["keep"]]}
+                  for t in L.TOWNS],
         "CarParks": [{"id": c["id"], "name": c["name"], "surface": c["surface"],
                       "center": pos((c["center"][0], None, c["center"][1])), "size": list(c["size"]), "yaw": c["yaw"]}
                      for c in L.CAR_PARKS],
+        "Farms": [{"id": c["id"], "name": c["name"], "center": pos((c["center"][0], None, c["center"][1])),
+                   "size": list(c["size"]), "yaw": c["yaw"]} for c in L.FARMS],
         "Points": [{"id": p["id"], "kind": p["kind"], "position": pos(p["pos"])} for p in L.POINTS],
         "POIs": [{"id": p["id"], "kind": p["kind"], "name": p["name"], "era": p["era"], "blurb": p["blurb"],
                   "position": pos(p["pos"]), "yaw": p["yaw"], "length": p["length"], "beam": p["beam"]}

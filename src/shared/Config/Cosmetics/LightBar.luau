@@ -70,6 +70,20 @@ local options: { Option } = {
 		steady = { "Work" },
 		pattern = "Alternate",
 	},
+	{
+		id = "StockAmber",
+		name = "Amber bar",
+		earn = "stock:lightbar_amber",
+		half = { "Amber" },
+		pattern = "Alternate",
+	},
+	{
+		id = "StockBlue",
+		name = "Blue bar",
+		earn = "stock:lightbar_blue",
+		half = { "Blue" },
+		pattern = "Alternate",
+	},
 }
 
 -- Mount points in HullRoot space (studs). RIB: the asset's modelled light bar on the forward edge of

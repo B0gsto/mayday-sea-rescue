@@ -1,0 +1,1196 @@
+{
+ "asset": "M_Veh_Coastguard4x4",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_Wheel_FL",
+   "parent": null,
+   "blender": [
+    2.229,
+    -4.91,
+    1.17
+   ],
+   "roblox_from_origin": [
+    -2.229,
+    1.17,
+    -4.91
+   ],
+   "roblox_from_bbox_centre": [
+    -2.229,
+    -2.3697,
+    -4.91
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wheel_FR",
+   "parent": null,
+   "blender": [
+    -2.229,
+    -4.91,
+    1.17
+   ],
+   "roblox_from_origin": [
+    2.229,
+    1.17,
+    -4.91
+   ],
+   "roblox_from_bbox_centre": [
+    2.229,
+    -2.3697,
+    -4.91
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wheel_RL",
+   "parent": null,
+   "blender": [
+    2.229,
+    3.472,
+    1.17
+   ],
+   "roblox_from_origin": [
+    -2.229,
+    1.17,
+    3.472
+   ],
+   "roblox_from_bbox_centre": [
+    -2.229,
+    -2.3697,
+    3.472
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Wheel_RR",
+   "parent": null,
+   "blender": [
+    -2.229,
+    3.472,
+    1.17
+   ],
+   "roblox_from_origin": [
+    2.229,
+    1.17,
+    3.472
+   ],
+   "roblox_from_bbox_centre": [
+    2.229,
+    -2.3697,
+    3.472
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DriverSeat",
+   "parent": null,
+   "blender": [
+    -1.3,
+    -1.11,
+    2.5
+   ],
+   "roblox_from_origin": [
+    1.3,
+    2.5,
+    -1.11
+   ],
+   "roblox_from_bbox_centre": [
+    1.3,
+    -1.0397,
+    -1.11
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat2",
+   "parent": null,
+   "blender": [
+    1.3,
+    -1.11,
+    2.5
+   ],
+   "roblox_from_origin": [
+    -1.3,
+    2.5,
+    -1.11
+   ],
+   "roblox_from_bbox_centre": [
+    -1.3,
+    -1.0397,
+    -1.11
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat3",
+   "parent": null,
+   "blender": [
+    1.55,
+    1.36,
+    2.56
+   ],
+   "roblox_from_origin": [
+    -1.55,
+    2.56,
+    1.36
+   ],
+   "roblox_from_bbox_centre": [
+    -1.55,
+    -0.9797,
+    1.36
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat4",
+   "parent": null,
+   "blender": [
+    0.0,
+    1.36,
+    2.56
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.56,
+    1.36
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.9797,
+    1.36
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Seat5",
+   "parent": null,
+   "blender": [
+    -1.55,
+    1.36,
+    2.56
+   ],
+   "roblox_from_origin": [
+    1.55,
+    2.56,
+    1.36
+   ],
+   "roblox_from_bbox_centre": [
+    1.55,
+    -0.9797,
+    1.36
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_EyePoint",
+   "parent": null,
+   "blender": [
+    -1.3,
+    -1.31,
+    4.72
+   ],
+   "roblox_from_origin": [
+    1.3,
+    4.72,
+    -1.31
+   ],
+   "roblox_from_bbox_centre": [
+    1.3,
+    1.1803,
+    -1.31
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door_L",
+   "parent": null,
+   "blender": [
+    2.715,
+    -2.16,
+    2.55
+   ],
+   "roblox_from_origin": [
+    -2.715,
+    2.55,
+    -2.16
+   ],
+   "roblox_from_bbox_centre": [
+    -2.715,
+    -0.9897,
+    -2.16
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door_R",
+   "parent": null,
+   "blender": [
+    -2.715,
+    -2.16,
+    2.55
+   ],
+   "roblox_from_origin": [
+    2.715,
+    2.55,
+    -2.16
+   ],
+   "roblox_from_bbox_centre": [
+    2.715,
+    -0.9897,
+    -2.16
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door_RL",
+   "parent": null,
+   "blender": [
+    2.715,
+    0.29,
+    2.55
+   ],
+   "roblox_from_origin": [
+    -2.715,
+    2.55,
+    0.29
+   ],
+   "roblox_from_bbox_centre": [
+    -2.715,
+    -0.9897,
+    0.29
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Door_RR",
+   "parent": null,
+   "blender": [
+    -2.715,
+    0.29,
+    2.55
+   ],
+   "roblox_from_origin": [
+    2.715,
+    2.55,
+    0.29
+   ],
+   "roblox_from_bbox_centre": [
+    2.715,
+    -0.9897,
+    0.29
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RearDoor",
+   "parent": null,
+   "blender": [
+    0.0,
+    6.96,
+    2.55
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.55,
+    6.96
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.9897,
+    6.96
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Snorkel",
+   "parent": null,
+   "blender": [
+    -2.83,
+    -4.06,
+    4.6
+   ],
+   "roblox_from_origin": [
+    2.83,
+    4.6,
+    -4.06
+   ],
+   "roblox_from_bbox_centre": [
+    2.83,
+    1.0603,
+    -4.06
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Winch",
+   "parent": null,
+   "blender": [
+    0.0,
+    -7.3,
+    1.96
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.96,
+    -7.3
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -1.5797,
+    -7.3
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TowHitch",
+   "parent": null,
+   "blender": [
+    0.0,
+    7.46,
+    1.12
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    1.12,
+    7.46
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -2.4197,
+    7.46
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_SpareWheel",
+   "parent": null,
+   "blender": [
+    0.0,
+    7.54,
+    2.95
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.95,
+    7.54
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.5897,
+    7.54
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RoofRack",
+   "parent": null,
+   "blender": [
+    0.0,
+    1.74,
+    6.38
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    6.38,
+    1.74
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    2.8403,
+    1.74
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Mast",
+   "parent": null,
+   "blender": [
+    -1.52,
+    6.12,
+    6.66
+   ],
+   "roblox_from_origin": [
+    1.52,
+    6.66,
+    6.12
+   ],
+   "roblox_from_bbox_centre": [
+    1.52,
+    3.1203,
+    6.12
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Floodlight",
+   "parent": null,
+   "blender": [
+    -1.52,
+    1.76,
+    6.6
+   ],
+   "roblox_from_origin": [
+    1.52,
+    6.6,
+    1.76
+   ],
+   "roblox_from_bbox_centre": [
+    1.52,
+    3.0603,
+    1.76
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_RopeKit",
+   "parent": null,
+   "blender": [
+    0.82,
+    2.34,
+    6.9
+   ],
+   "roblox_from_origin": [
+    -0.82,
+    6.9,
+    2.34
+   ],
+   "roblox_from_bbox_centre": [
+    -0.82,
+    3.3603,
+    2.34
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Tripod",
+   "parent": null,
+   "blender": [
+    -0.42,
+    4.74,
+    6.6
+   ],
+   "roblox_from_origin": [
+    0.42,
+    6.6,
+    4.74
+   ],
+   "roblox_from_bbox_centre": [
+    0.42,
+    3.0603,
+    4.74
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Stretcher",
+   "parent": null,
+   "blender": [
+    1.42,
+    4.36,
+    6.64
+   ],
+   "roblox_from_origin": [
+    -1.42,
+    6.64,
+    4.36
+   ],
+   "roblox_from_bbox_centre": [
+    -1.42,
+    3.1003,
+    4.36
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_LightBar",
+   "parent": null,
+   "blender": [
+    0.0,
+    -3.0,
+    6.68
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    6.68,
+    -3.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    3.1403,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_01",
+   "parent": null,
+   "blender": [
+    -1.44,
+    -3.0,
+    7.08
+   ],
+   "roblox_from_origin": [
+    1.44,
+    7.08,
+    -3.0
+   ],
+   "roblox_from_bbox_centre": [
+    1.44,
+    3.5403,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_02",
+   "parent": null,
+   "blender": [
+    -0.48,
+    -3.0,
+    7.08
+   ],
+   "roblox_from_origin": [
+    0.48,
+    7.08,
+    -3.0
+   ],
+   "roblox_from_bbox_centre": [
+    0.48,
+    3.5403,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_03",
+   "parent": null,
+   "blender": [
+    0.48,
+    -3.0,
+    7.08
+   ],
+   "roblox_from_origin": [
+    -0.48,
+    7.08,
+    -3.0
+   ],
+   "roblox_from_bbox_centre": [
+    -0.48,
+    3.5403,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_04",
+   "parent": null,
+   "blender": [
+    1.44,
+    -3.0,
+    7.08
+   ],
+   "roblox_from_origin": [
+    -1.44,
+    7.08,
+    -3.0
+   ],
+   "roblox_from_bbox_centre": [
+    -1.44,
+    3.5403,
+    -3.0
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_05",
+   "parent": null,
+   "blender": [
+    -2.3,
+    6.3,
+    6.82
+   ],
+   "roblox_from_origin": [
+    2.3,
+    6.82,
+    6.3
+   ],
+   "roblox_from_bbox_centre": [
+    2.3,
+    3.2803,
+    6.3
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Beacon_06",
+   "parent": null,
+   "blender": [
+    2.3,
+    6.3,
+    6.82
+   ],
+   "roblox_from_origin": [
+    -2.3,
+    6.82,
+    6.3
+   ],
+   "roblox_from_bbox_centre": [
+    -2.3,
+    3.2803,
+    6.3
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Headlamp_L",
+   "parent": null,
+   "blender": [
+    1.9,
+    -7.06,
+    2.54
+   ],
+   "roblox_from_origin": [
+    -1.9,
+    2.54,
+    -7.06
+   ],
+   "roblox_from_bbox_centre": [
+    -1.9,
+    -0.9997,
+    -7.06
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_Headlamp_R",
+   "parent": null,
+   "blender": [
+    -1.9,
+    -7.06,
+    2.54
+   ],
+   "roblox_from_origin": [
+    1.9,
+    2.54,
+    -7.06
+   ],
+   "roblox_from_bbox_centre": [
+    1.9,
+    -0.9997,
+    -7.06
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailLamp_L",
+   "parent": null,
+   "blender": [
+    2.38,
+    7.08,
+    3.34
+   ],
+   "roblox_from_origin": [
+    -2.38,
+    3.34,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    -2.38,
+    -0.1997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_TailLamp_R",
+   "parent": null,
+   "blender": [
+    -2.38,
+    7.08,
+    3.34
+   ],
+   "roblox_from_origin": [
+    2.38,
+    3.34,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    2.38,
+    -0.1997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BrakeLamp_L",
+   "parent": null,
+   "blender": [
+    2.38,
+    7.08,
+    3.34
+   ],
+   "roblox_from_origin": [
+    -2.38,
+    3.34,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    -2.38,
+    -0.1997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_BrakeLamp_R",
+   "parent": null,
+   "blender": [
+    -2.38,
+    7.08,
+    3.34
+   ],
+   "roblox_from_origin": [
+    2.38,
+    3.34,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    2.38,
+    -0.1997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ReverseLamp_L",
+   "parent": null,
+   "blender": [
+    2.38,
+    7.08,
+    2.64
+   ],
+   "roblox_from_origin": [
+    -2.38,
+    2.64,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    -2.38,
+    -0.8997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_ReverseLamp_R",
+   "parent": null,
+   "blender": [
+    -2.38,
+    7.08,
+    2.64
+   ],
+   "roblox_from_origin": [
+    2.38,
+    2.64,
+    7.08
+   ],
+   "roblox_from_bbox_centre": [
+    2.38,
+    -0.8997,
+    7.08
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "name": "ATT_DriveAttachment",
+   "parent": null,
+   "blender": [
+    0.0,
+    -0.719,
+    2.64
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    2.64,
+    -0.719
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    -0.8997,
+    -0.719
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}

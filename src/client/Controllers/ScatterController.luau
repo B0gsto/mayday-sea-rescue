@@ -14,6 +14,7 @@
 -- Workspace.ScatterLocal attributes: ScatterTier, ScatterRows (drawn), ScatterTris (estimated, drawn now), ScatterWet.
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
@@ -30,24 +31,26 @@ local TICK = 0.3
 
 -- tier -> plant share kept where seen / elsewhere, plant draw distance, rock LOD1 / LOD2 / draw distances
 -- (rocks are 2.5k-9.8k triangle scans: they drop to LOD1 sooner than the plants)
+-- RP-P1: Haven Sands at the old medium caps drew about 1.0M scatter triangles; these numbers bring
+-- that under about 0.6M without thinning the roads and viewpoints (`seen` rows stay first).
 local TIERS = {
 	low = {
-		seen = 0.5,
-		filler = 0.15,
-		draw = 260,
-		rock1 = 50,
-		rock2 = 150,
-		rockDraw = 800,
-		cliffDraw = 1500,
+		seen = 0.45,
+		filler = 0.12,
+		draw = 240,
+		rock1 = 45,
+		rock2 = 140,
+		rockDraw = 700,
+		cliffDraw = 1300,
 	},
 	medium = {
-		seen = 1.0,
-		filler = 0.5,
-		draw = 420,
+		seen = 0.8,
+		filler = 0.3,
+		draw = 360,
 		rock1 = 60,
-		rock2 = 170,
-		rockDraw = 1000,
-		cliffDraw = 2000,
+		rock2 = 160,
+		rockDraw = 900,
+		cliffDraw = 1800,
 	},
 	high = {
 		seen = 1.0,
@@ -162,6 +165,13 @@ local function hash01(i: number): number
 end
 
 local function pickTier(): string
+	-- Studio perf runs (RP-P1) force a tier through Workspace.PerfQuality; never read outside Studio.
+	if RunService:IsStudio() then
+		local forced = Workspace:GetAttribute("PerfQuality")
+		if forced == "High" or forced == "Medium" or forced == "Low" then
+			return string.lower(forced)
+		end
+	end
 	local override = Comfort.get("scatterQuality")
 	if override == "High" or override == "Medium" or override == "Low" then
 		return string.lower(override)
@@ -407,6 +417,9 @@ function ScatterController.Start()
 		local gs = UserSettings():GetService("UserGameSettings")
 		gs:GetPropertyChangedSignal("SavedQualityLevel"):Connect(retier)
 	end)
+	if RunService:IsStudio() then
+		Workspace:GetAttributeChangedSignal("PerfQuality"):Connect(retier)
+	end
 	Comfort.changed:Connect(function(key: string)
 		if key == "scatterQuality" then
 			retier()

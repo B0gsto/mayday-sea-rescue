@@ -2,7 +2,7 @@
  "asset": "M_Hbr_LobsterPot_02",
  "name": "M_Hbr_LobsterPot_02",
  "date": "2026-10-18",
- "commit": "69f1206+dirty",
+ "commit": "013da692+dirty",
  "blender": "5.2.2 LTS",
  "steps": [
   "build",
@@ -24,7 +24,7 @@
  "exports": [
   {
    "file": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD0.fbx",
-   "bytes": 115180,
+   "bytes": 134092,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_LobsterPot_02_COL",
@@ -58,7 +58,7 @@
       0.7793,
       1.5771
      ],
-     "polygons": 1158,
+     "polygons": 1630,
      "all_triangles": true,
      "uv": true
     }
@@ -73,7 +73,7 @@
   },
   {
    "file": "assets/fbx/M_Hbr_LobsterPot_02/M_Hbr_LobsterPot_02_LOD1.fbx",
-   "bytes": 73420,
+   "bytes": 82220,
    "fbx_version": 7400,
    "meshes": [
     "M_Hbr_LobsterPot_02_LOD1"
@@ -82,16 +82,16 @@
     {
      "name": "M_Hbr_LobsterPot_02_LOD1.001",
      "min": [
-      -1.3616,
+      -1.3627,
       -0.7804,
       0.0
      ],
      "max": [
-      1.369,
-      0.7742,
-      1.5771
+      1.3681,
+      0.7793,
+      1.5758
      ],
-     "polygons": 579,
+     "polygons": 815,
      "all_triangles": true,
      "uv": true
     }
@@ -152,7 +152,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1158 of 3000"
+   "detail": "1630 of 3000"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD0",
@@ -160,7 +160,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 5.35e-04, 686 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 5.35e-04, 312 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD0",
@@ -192,7 +192,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 584 faces have no UV area"
+   "detail": "0 of 838 faces have no UV area"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD0",
@@ -200,7 +200,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "198 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+   "detail": "210 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD1",
@@ -224,7 +224,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "579 of 3000"
+   "detail": "815 of 3000"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD1",
@@ -232,7 +232,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 loose verts, smallest face 1.48e-04, 641 open edges (open edges allowed on cards and decals)"
+   "detail": "0 loose verts, smallest face 1.48e-04, 237 open edges (open edges allowed on cards and decals)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD1",
@@ -264,7 +264,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "0 of 579 faces have no UV area"
+   "detail": "0 of 815 faces have no UV area"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD1",
@@ -272,7 +272,7 @@
    "ok": true,
    "waived": true,
    "info": false,
-   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 36.2% (max 15%)"
+   "detail": "WAIVED (collapse decimation of small atlas-tiled props shifts UV area (same regions sampled)): UV bounds differ by 0.000 (max 0.02), UV area by 38.8% (max 15%)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_COL",
@@ -320,7 +320,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "1158 of 3000 (small_prop, asset row)"
+   "detail": "1630 of 3000 (small_prop, asset row)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02",
@@ -328,7 +328,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "579 of 1500"
+   "detail": "815 of 1500"
   },
   {
    "subject": "M_Hbr_LobsterPot_02",
@@ -472,7 +472,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_LobsterPot_02_COL, M_Hbr_LobsterPot_02_LOD0; 1170 triangles (scene 1170)"
+   "detail": "M_Hbr_LobsterPot_02_COL, M_Hbr_LobsterPot_02_LOD0; 1642 triangles (scene 1642)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD0.fbx",
@@ -512,7 +512,7 @@
    "ok": true,
    "waived": false,
    "info": false,
-   "detail": "M_Hbr_LobsterPot_02_LOD1; 579 triangles (scene 579)"
+   "detail": "M_Hbr_LobsterPot_02_LOD1; 815 triangles (scene 815)"
   },
   {
    "subject": "M_Hbr_LobsterPot_02_LOD1.fbx",
@@ -528,14 +528,14 @@
    "name": "M_Hbr_LobsterPot_02_LOD0",
    "role": "visual",
    "lod": "LOD0",
-   "triangles": 1158,
-   "texel_density": 197.8
+   "triangles": 1630,
+   "texel_density": 210.5
   },
   {
    "name": "M_Hbr_LobsterPot_02_LOD1",
    "role": "visual",
    "lod": "LOD1",
-   "triangles": 579,
+   "triangles": 815,
    "texel_density": null
   },
   {
@@ -551,5 +551,5 @@
   1.5586121082305908,
   1.5771369934082031
  ],
- "peak_rss_mb": 296.4
+ "peak_rss_mb": 252.6
 }

@@ -27,6 +27,14 @@ function Throw.charge(held: number): number
 	return math.clamp(1 - (x - 1) * 0.8, 0.25, 1)
 end
 
+-- Aim where you look (docs/14 section 3): the power whose still-air, level throw carries
+-- `distance` studs (range = v^2 sin(2a) / g), clamped to the arm's range.
+function Throw.powerFor(distance: number, gravity: number): number
+	local speed =
+		math.sqrt(math.max(distance, 0) * math.max(gravity, 1) / math.sin(2 * Throw.ANGLE))
+	return math.clamp((speed - Throw.MIN_SPEED) / (Throw.MAX_SPEED - Throw.MIN_SPEED), 0, 1)
+end
+
 function Throw.velocity(aim: Vector3, power: number): Vector3
 	local dir = Units.unitOr(aim, Vector3.new(0, 0, -1))
 	local speed = Throw.MIN_SPEED + (Throw.MAX_SPEED - Throw.MIN_SPEED) * math.clamp(power, 0, 1)

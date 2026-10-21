@@ -1,6 +1,9 @@
 --!strict
--- Layout: the one HUD layout. Every HUD element sits inside a named screen region, so nothing
--- overlaps at 1366x768, 1920x1080 or a landscape phone (~844x390).
+-- Layout: the one HUD layout. Every HUD element sits inside a named screen region. The geometry
+-- is pure and lives in Shared/HudLayout (tests/HudLayout.spec.luau); this module turns it into
+-- live ScreenGui containers.
+--
+-- Desktop / gamepad (unchanged, 1366x768 and up):
 --
 --   +------------------------------------------------------------------+
 --   | objective          notice (toasts, call-outs)            status  |
@@ -11,6 +14,11 @@
 --   |  [obj pill]                                              monitor)|
 --   |  minimap           subtitle (VHF / dispatcher)           gauges  |
 --   +------------------------------------------------------------------+
+--
+-- Touch: the minimap is 110 px at the top left (under the top bar / Cash and rank strip, tap it
+-- for the full map), the challenge tracker is a 44 px icon under it, the objective strip is top
+-- centre and the notice band under it, so the bottom-left thumbstick zone stays empty. The pager
+-- column stops above the bottom-right jump / action buttons.
 --
 -- Regions are transparent container Frames in "design units" (du): the usable area (the
 -- ScreenGui with CoreUISafeInsets: below the Roblox top bar and inside notches / home bar)
@@ -24,105 +32,67 @@
 -- to the casualty (its objective pill and route line). The objective line shows only while no
 -- prompt panel is up, since a mechanic panel's header repeats the same step (show it once).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
+-- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it
+-- (Layout.onNewPlayer(fn) calls fn(active) now and on every change).
 -- Layout.promptBusy() is true while any "prompt" region holds a visible panel;
 -- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
 --
--- Phone check (844x390 landscape, ~750x330 usable): scale clamps to MIN_SCALE 0.7 (so 18 px body
--- text draws at ~12.6 px, the smallest that stays readable), usable 1071x471 du; the objective
--- region ends at 144 du, the prompt region spans 152-333 du, the minimap 303-459 du: no overlap.
+-- Phone check (844x390 landscape, notched insets, scale 0.7): the minimap and the challenge icon
+-- end above the thumbstick zone at 55% of the safe height, the objective strip is centred between
+-- the minimap and the status strip, and the pager column ends above the jump zone at 65%.
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local HudLayout = require(Shared:WaitForChild("HudLayout"))
+local Onboarding = require(Shared:WaitForChild("Onboarding"))
 
 local Layout = {}
 
-Layout.MARGIN = 12 -- du from the safe-area edge
-Layout.GAP = 8 -- du between stacked regions
-Layout.SUBTITLE_HEIGHT = 118 -- the VHF set
-Layout.STATUS_HEIGHT = 100 -- status strip (52) + crew row (40)
-Layout.OBJECTIVE_HEIGHT = 132 -- step card (92) + takeover banner
-Layout.PROMPT_HEIGHT = 230
-Layout.NOTICE_HEIGHT = 120
+Layout.MARGIN = HudLayout.MARGIN
+Layout.GAP = HudLayout.GAP
+Layout.SUBTITLE_HEIGHT = HudLayout.SUBTITLE_HEIGHT
+Layout.STATUS_HEIGHT = HudLayout.STATUS_HEIGHT
+Layout.OBJECTIVE_HEIGHT = HudLayout.OBJECTIVE_HEIGHT
+Layout.PROMPT_HEIGHT = HudLayout.PROMPT_HEIGHT
+Layout.NOTICE_HEIGHT = HudLayout.NOTICE_HEIGHT
 
-local REF_HEIGHT = 720 -- usable px at which the HUD draws 1:1
-local REF_WIDTH = 1200
-local MIN_SCALE = 0.7
+export type RegionName = HudLayout.RegionName
+export type Metrics = HudLayout.Metrics
 
-export type RegionName =
-	"objective"
-	| "status"
-	| "right"
-	| "notice"
-	| "prompt"
-	| "subtitle"
-	| "minimap"
-	| "gauges"
+-- Text size (100 / 125 / 150 %): HudTheme labels scale by this and redraw on a change.
+local textScaleEvent = Instance.new("BindableEvent")
 
-export type Metrics = {
-	scale: number,
-	usable: Vector2, -- design units
-	side: number, -- minimap / gauges square
-	objectiveWidth: number,
-	rightWidth: number,
-	centreWidth: number, -- prompt
-	subtitleWidth: number,
-	noticeWidth: number,
-}
+function Layout.textScale(): number
+	return Comfort.textScale()
+end
 
--- Pure: the region sizes for a usable area in pixels (tested numbers in the header).
-function Layout.metrics(px: Vector2): Metrics
-	local s = math.clamp(math.min(px.Y / REF_HEIGHT, px.X / REF_WIDTH), MIN_SCALE, 1)
-	local u = px / s
-	local m = Layout.MARGIN
-	local side = math.clamp(math.floor(u.Y * 0.3), 156, 230)
-	local objectiveWidth = math.clamp(math.floor(u.X * 0.3), 320, 460)
-	local rightWidth = math.clamp(math.floor(u.X * 0.24), 280, 360)
-	local outer = math.max(side, rightWidth)
-	return {
-		scale = s,
-		usable = u,
-		side = side,
-		objectiveWidth = objectiveWidth,
-		rightWidth = rightWidth,
-		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
-		subtitleWidth = math.min(u.X - 2 * (side + 2 * m), 620),
-		noticeWidth = math.min(u.X - 2 * (math.max(objectiveWidth, rightWidth) + 2 * m), 420),
-	}
+function Layout.onTextScale(fn: (number) -> ()): RBXScriptConnection
+	local c = textScaleEvent.Event:Connect(fn)
+	task.spawn(fn, Layout.textScale())
+	return c
+end
+
+Comfort.changed:Connect(function(key: string)
+	if key == "textSize" then
+		textScaleEvent:Fire(Layout.textScale())
+	end
+end)
+
+-- Pure: the region metrics for a usable area in pixels (false = desktop / gamepad).
+function Layout.metrics(px: Vector2, touch: boolean?): Metrics
+	return HudLayout.metrics(px, touch == true)
 end
 
 -- Pure: anchor, position and size (all offsets, du) of a region.
 function Layout.rect(name: RegionName, mt: Metrics): (Vector2, Vector2, Vector2)
-	local m, g, u = Layout.MARGIN, Layout.GAP, mt.usable
-	local bottom = u.Y - m
-	if name == "objective" then
-		return Vector2.new(0, 0),
-			Vector2.new(m, m),
-			Vector2.new(mt.objectiveWidth, Layout.OBJECTIVE_HEIGHT)
-	elseif name == "status" then
-		return Vector2.new(1, 0),
-			Vector2.new(u.X - m, m),
-			Vector2.new(mt.rightWidth, Layout.STATUS_HEIGHT)
-	elseif name == "right" then
-		local top = m + Layout.STATUS_HEIGHT + g
-		local h = math.max(bottom - mt.side - g - top, 120)
-		return Vector2.new(1, 0), Vector2.new(u.X - m, top), Vector2.new(mt.rightWidth, h)
-	elseif name == "notice" then
-		return Vector2.new(0.5, 0),
-			Vector2.new(u.X / 2, m),
-			Vector2.new(mt.noticeWidth, Layout.NOTICE_HEIGHT)
-	elseif name == "prompt" then
-		local b = bottom - Layout.SUBTITLE_HEIGHT - g
-		local h = math.min(Layout.PROMPT_HEIGHT, b - (m + Layout.OBJECTIVE_HEIGHT + g))
-		return Vector2.new(0.5, 1), Vector2.new(u.X / 2, b), Vector2.new(mt.centreWidth, h)
-	elseif name == "subtitle" then
-		return Vector2.new(0.5, 1),
-			Vector2.new(u.X / 2, bottom),
-			Vector2.new(mt.subtitleWidth, Layout.SUBTITLE_HEIGHT)
-	elseif name == "minimap" then
-		return Vector2.new(0, 1), Vector2.new(m, bottom), Vector2.new(mt.side, mt.side)
-	else -- gauges
-		return Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(mt.side, mt.side)
-	end
+	local r = mt.rects[name]
+	return r.anchor, r.pos, r.size
 end
 
 -- ---------------------------------------------------------------- live containers
@@ -132,13 +102,32 @@ local entries: { Entry } = {}
 local current: Metrics? = nil
 local metricsChanged = Instance.new("BindableEvent")
 
-local function usablePixels(gui: ScreenGui?): Vector2
-	local px = if gui then gui.AbsoluteSize else Vector2.zero
-	if px.X < 1 or px.Y < 1 then
-		local cam = Workspace.CurrentCamera
-		px = if cam then cam.ViewportSize - Vector2.new(0, 58) else Vector2.new(1366, 710)
+local ZERO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
+
+-- Touch hardware, not the last input: a paired gamepad must not flip the HUD mid-rescue.
+local function device(): string
+	if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+		return "Touch"
+	elseif UserInputService.GamepadEnabled and not UserInputService.MouseEnabled then
+		return "Gamepad"
 	end
-	return px
+	return "Keyboard"
+end
+
+local function metricsNow(gui: ScreenGui?): Metrics
+	local px = if gui then gui.AbsoluteSize else Vector2.zero
+	if px.X >= 1 and px.Y >= 1 then
+		return HudLayout.compute(px, ZERO_INSETS, device())
+	end
+	-- no screen yet: the camera viewport minus the GuiService top-bar inset
+	local cam = Workspace.CurrentCamera
+	local screen = if cam then cam.ViewportSize else Vector2.new(1366, 768)
+	local inset = GuiService:GetGuiInset()
+	return HudLayout.compute(
+		screen,
+		{ top = inset.Y, bottom = 0, left = inset.X, right = 0 },
+		device()
+	)
 end
 
 local function place(e: Entry, mt: Metrics)
@@ -151,7 +140,7 @@ local function place(e: Entry, mt: Metrics)
 end
 
 local function refresh(gui: ScreenGui?)
-	local mt = Layout.metrics(usablePixels(gui))
+	local mt = metricsNow(gui)
 	local prev = current
 	current = mt
 	for i = #entries, 1, -1 do
@@ -162,7 +151,7 @@ local function refresh(gui: ScreenGui?)
 			place(e, mt)
 		end
 	end
-	if not prev or prev.scale ~= mt.scale or prev.usable ~= mt.usable then
+	if not prev or prev.scale ~= mt.scale or prev.usable ~= mt.usable or prev.touch ~= mt.touch then
 		metricsChanged:Fire(mt)
 	end
 end
@@ -293,6 +282,41 @@ function Layout.onColdOpen(fn: (boolean) -> ()): RBXScriptConnection
 	return c
 end
 
+-- ---------------------------------------------------------------- new player
+
+-- New-player HUD (docs/15 section 3): the cold open and the first three calls keep the screen
+-- bare. `OpsCompletedTotal` is saved, so a returning player is never treated as new.
+local newPlayerEvent = Instance.new("BindableEvent")
+local newPlayerActive = false
+local newPlayerKnown = false
+
+local function evaluateNewPlayer()
+	local player = Players.LocalPlayer
+	if not player then
+		return
+	end
+	local total = player:GetAttribute("OpsCompletedTotal")
+	local active = Onboarding.newPlayerHud(
+		player:GetAttribute("ColdOpenDone") == true,
+		if type(total) == "number" then total else nil
+	)
+	if not newPlayerKnown or active ~= newPlayerActive then
+		newPlayerKnown = true
+		newPlayerActive = active
+		newPlayerEvent:Fire(active)
+	end
+end
+
+function Layout.newPlayer(): boolean
+	return newPlayerActive
+end
+
+function Layout.onNewPlayer(fn: (boolean) -> ()): RBXScriptConnection
+	local c = newPlayerEvent.Event:Connect(fn)
+	task.spawn(fn, newPlayerActive)
+	return c
+end
+
 if RunService:IsClient() and Players.LocalPlayer then
 	local acc = 0
 	RunService.Heartbeat:Connect(function(dt: number)
@@ -301,9 +325,12 @@ if RunService:IsClient() and Players.LocalPlayer then
 			acc = 0
 			evaluate()
 			evaluatePrompt()
+			evaluateNewPlayer()
 		end
 	end)
 	Players.LocalPlayer:GetAttributeChangedSignal("ColdOpenDone"):Connect(evaluate)
+	Players.LocalPlayer:GetAttributeChangedSignal("OpsCompletedTotal"):Connect(evaluateNewPlayer)
+	evaluateNewPlayer()
 	local function watchCamera()
 		local cam = Workspace.CurrentCamera
 		if cam then

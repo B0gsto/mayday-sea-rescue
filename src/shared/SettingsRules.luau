@@ -12,7 +12,7 @@
 --   resolvePro(want, current, inOp, coldOpenDone)  the OpsPro attribute the server sets
 --
 -- Everything is saved in the profile's flags.cameraSettings table (ProgressionRules keeps up to
--- 24 fields there, together with the cinematic "seen_<id>" flags; this model uses 20).
+-- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 24).
 
 local SettingsRules = {}
 
@@ -42,6 +42,11 @@ local DEFAULTS = {
 	muteHorns = false,
 	muteSirens = false,
 	muteRadios = false,
+	-- accessibility
+	colourAssist = "Off", -- "Off" | "Deuteranopia" | "Protanopia" | "Tritanopia"
+	textSize = 100, -- % applied through Layout's text scale
+	reduceMotion = false, -- no shake/bob; bursts and flashes become fades/glows
+	holdToTap = false, -- hold actions also toggle on a second press; prompts tap
 	-- gameplay
 	pro = false, -- Assist (false, default) or Pro (docs 09 section 9.3)
 }
@@ -58,11 +63,13 @@ SettingsRules.Ranges = table.freeze({
 	volSfx = { 0, 1 },
 	volRadio = { 0, 1 },
 	volMusic = { 0, 1 },
+	textSize = { 100, 150 },
 } :: { [string]: { number } })
 
 SettingsRules.Choices = table.freeze({
 	oceanQuality = { "Auto", "High", "Medium", "Low" },
 	scatterQuality = { "Auto", "High", "Medium", "Low" },
+	colourAssist = { "Off", "Deuteranopia", "Protanopia", "Tritanopia" },
 } :: { [string]: { string } })
 
 -- Seasick-safe: a level horizon, no bob, little shake, no FOV kick, a calm head and a wider view

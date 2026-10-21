@@ -145,4 +145,27 @@ return function(t)
 			end
 		end
 	)
+
+	t.test(
+		"station rail: open at the gangway, pier root and steps, a gap at each ladder",
+		function()
+			local runs = Harbour.railRuns()
+			t.expect(#runs > 0).toBe(true)
+			local function covered(x: number): boolean
+				for _, r in runs do
+					t.expect(r.x1 > r.x0).toBe(true)
+					if x > r.x0 and x < r.x1 then
+						return true
+					end
+				end
+				return false
+			end
+			t.expect(covered(Harbour.quaySlotX(4))).toBe(true)
+			t.expect(covered(Harbour.quaySlotX(7))).toBe(false) -- dock gangway
+			t.expect(covered((Harbour.PIER.west + Harbour.PIER.east) / 2)).toBe(false)
+			t.expect(covered(Harbour.quaySlotX(5))).toBe(false) -- ladder top
+			t.expect(covered(Harbour.quaySlotX(11))).toBe(false)
+			t.expect(covered(Harbour.quaySlotX(13) + 4)).toBe(false) -- steps
+		end
+	)
 end

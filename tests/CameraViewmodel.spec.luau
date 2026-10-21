@@ -56,6 +56,13 @@ return function(t)
 		"throw_underarm",
 		"torch",
 		"windup_throw",
+		-- docs/14 §4 clip list
+		"wave",
+		"phone",
+		"hold_bars",
+		"throw_lifebuoy",
+		"drag",
+		"wrap_blanket",
 	}
 	for _, id in
 		{
@@ -140,6 +147,20 @@ return function(t)
 		t.expect(ml.Z).toBeCloseTo(r.Z, 1e-9)
 	end)
 
+	t.test("low hands are lifted into the frame; high and near ones are left alone", function()
+		local tanHalf = math.tan(math.rad(75) / 2)
+		local low = Vector3.new(0.1, -1.6, -1.25)
+		local fit = A.inView(low, tanHalf)
+		t.expect(fit.Y > low.Y).toBe(true)
+		t.expect(fit.X).toBe(low.X)
+		t.expect(fit.Z).toBe(low.Z)
+		t.expect(fit.Y).toBeCloseTo(-0.65 * 1.25 * tanHalf, 1e-6)
+		local high = Vector3.new(0.3, 0.2, -1.2)
+		t.expect(A.inView(high, tanHalf)).toBe(high)
+		local near = Vector3.new(0.1, -1.6, -0.5)
+		t.expect(A.inView(near, tanHalf)).toBe(near)
+	end)
+
 	t.test("keys are ordered and span the duration", function()
 		for name, def in A.Defs do
 			local last = -1
@@ -193,5 +214,11 @@ return function(t)
 		t.expect(p1).toBe("")
 		local _, _, _, pr = A.sample(A.Defs.radio, 0.8)
 		t.expect(pr).toBe("radio")
+		for i = 0, 10 do
+			local _, _, _, p = A.sample(A.Defs.phone, A.Defs.phone.duration * i / 10 + 3)
+			t.expect(p).toBe("phone")
+		end
+		local _, _, _, pb = A.sample(A.Defs.throw_lifebuoy, 0.9)
+		t.expect(pb).toBe("")
 	end)
 end

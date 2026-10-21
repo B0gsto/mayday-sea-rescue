@@ -460,6 +460,15 @@
   "source": "assets/textures/Materials/T_Mat_Tarmac_RGH.png",
   "type": "Image"
  },
+ "Image:06d04406c5224e6d716d784f5916442a3325ceb83b3bf03b1935ebdd26f4c25b": {
+  "assetId": "79066073288071",
+  "imageId": "79066073288071",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Wheels_NOR",
+  "sha": "06d04406c5224e6d716d784f5916442a3325ceb83b3bf03b1935ebdd26f4c25b",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Wheels_NOR.png",
+  "type": "Image"
+ },
  "Image:071cefa2dadba1b055fe5a0626329f9c9c3d7e1d3c12ba81f53f0ae70050e20e": {
   "assetId": "109862585432703",
   "imageId": "109862585432703",
@@ -701,6 +710,15 @@
   "name": "T_HbrProps_Metal_RGH_Wet",
   "sha": "0ae296e1685dccd259a9dbf8060d884cfcba9781b4114824ae98c2a27e5c47ad",
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0aeb75d5bfcc58a0f60d92ba65c74611682d14f973484f77972aae1c5c4a2b45": {
+  "assetId": "95802770116222",
+  "imageId": "95802770116222",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Wheels_RGH",
+  "sha": "0aeb75d5bfcc58a0f60d92ba65c74611682d14f973484f77972aae1c5c4a2b45",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Wheels_RGH.png",
   "type": "Image"
  },
  "Image:0aec8c358b48c89f91d9e6718f0cf9b872b70dea951727c731d3f5971159ba9a": {
@@ -964,6 +982,15 @@
   "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:0dbab218eacbda8d8dbdfe5341cfb1555be7c7767a2bbf8d40d92ef90ed2e716": {
+  "assetId": "117560807678802",
+  "imageId": "117560807678802",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Wheels_MET",
+  "sha": "0dbab218eacbda8d8dbdfe5341cfb1555be7c7767a2bbf8d40d92ef90ed2e716",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Wheels_MET.png",
+  "type": "Image"
+ },
  "Image:0dcd2f28e92adc7d09eba73c3c0e6a96e6854886945ee9b0d56000e12ad800a6": {
   "assetId": "89456034463407",
   "imageId": "89456034463407",
@@ -1007,6 +1034,15 @@
   "name": "T_Paddleboard_Craft_RGH_Wet",
   "sha": "0e0c20655742e0e174f5b2d03304d6b6afd6811f234494723a9bc82a70ff003c",
   "source": "assets/textures/M_Veh_Paddleboard/T_Paddleboard_Craft_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0e31500454267be8f564d80f470d62ed7e558a6f1279ed9801eb4de6b91a04d1": {
+  "assetId": "119786323419856",
+  "imageId": "119786323419856",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Body_RGH",
+  "sha": "0e31500454267be8f564d80f470d62ed7e558a6f1279ed9801eb4de6b91a04d1",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Body_RGH.png",
   "type": "Image"
  },
  "Image:0ee38b55dad67aaae27caf1aee6dfcfade15c8a1483db2daf21ef99b6da050be": {
@@ -1912,6 +1948,15 @@
   "source": "assets/textures/M_Veh_ATV/T_ATV_Gear_NOR.png",
   "type": "Image"
  },
+ "Image:1c180fb793280a2c1c1348182a8986843852880ebe6cee567960cc3194114314": {
+  "assetId": "131277518141411",
+  "imageId": "131277518141411",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Wheels_ALB",
+  "sha": "1c180fb793280a2c1c1348182a8986843852880ebe6cee567960cc3194114314",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Wheels_ALB.png",
+  "type": "Image"
+ },
  "Image:1c3720e84c5a8c4a90ae16c312026902ea3b9f43dc8c88afe3ab83819ac65d8d": {
   "assetId": "89869746461866",
   "imageId": "89869746461866",
@@ -2369,6 +2414,15 @@
   "name": "Mayday_T_Mat_Cobbles_RGH",
   "sha": "22b9faff71355c2b443f3ea39874eeed9139ace5f79d156bb58d5a945fcd5c55",
   "source": "assets/textures/Materials/T_Mat_Cobbles_RGH.png",
+  "type": "Image"
+ },
+ "Image:22cc70be12153275aa010c890057da3ed980e8723e8a3f67069186a91e2f7595": {
+  "assetId": "95692654668660",
+  "imageId": "95692654668660",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Wheels_ALB",
+  "sha": "22cc70be12153275aa010c890057da3ed980e8723e8a3f67069186a91e2f7595",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Wheels_ALB.png",
   "type": "Image"
  },
  "Image:22df6b395ecdca35ee7a5b9e87e7f9e1ead1896e99233199fa3a7e3e5d2fc2b0": {
@@ -3304,6 +3358,15 @@
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Tower_RGH.png",
   "type": "Image"
  },
+ "Image:306b4560acb89bd4bfa51a3aa81c3a8ef6de0f13b763096d5b4d215b31aa7641": {
+  "assetId": "128126575757318",
+  "imageId": "128126575757318",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Wheels_MET",
+  "sha": "306b4560acb89bd4bfa51a3aa81c3a8ef6de0f13b763096d5b4d215b31aa7641",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Wheels_MET.png",
+  "type": "Image"
+ },
  "Image:3083323751ac89bd4d01c567335f4c29cd4b41a8a28b3d32718944c1e4b5131a": {
   "assetId": "128612913664050",
   "imageId": "128612913664050",
@@ -3491,6 +3554,15 @@
   "name": "T_Cliff04_Granite_RGH",
   "sha": "3278c2ba7d8ff44b5fa145fd195458cb9acd1b4df74a7d7f2fe6b6685dfb813a",
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:32a603d4a377fb4a9c3b8b1b32b38b1113a56ed31da530ef58befbfbab497c13": {
+  "assetId": "115895815979946",
+  "imageId": "115895815979946",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Body_NOR",
+  "sha": "32a603d4a377fb4a9c3b8b1b32b38b1113a56ed31da530ef58befbfbab497c13",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Body_NOR.png",
   "type": "Image"
  },
  "Image:32a98a129a4e62b040d29d50fbab8dfd49aa52db989ba17ede20563148724eaf": {
@@ -4139,6 +4211,15 @@
   "name": "T_ParkedCar02_Body_NOR",
   "sha": "3b56eacadf3c364d249a08d4b0fd88ddae1036a2a09b412681cf887d531275f0",
   "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_NOR.png",
+  "type": "Image"
+ },
+ "Image:3b63d2e0d44731841d51a7619178213a5c952cff5a71ddee0aa00d1d695b3191": {
+  "assetId": "106669320926485",
+  "imageId": "106669320926485",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Body_MET",
+  "sha": "3b63d2e0d44731841d51a7619178213a5c952cff5a71ddee0aa00d1d695b3191",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Body_MET.png",
   "type": "Image"
  },
  "Image:3b9446fac6c6c4b6fc23e840782827ed8fc4770ae0e185ce1635d66041a43e22": {
@@ -5489,6 +5570,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:50062f2ed4960b746e656ae4d8af2bc8e5023649bcc8c1b2d23a327340b49c58": {
+  "assetId": "77071624407599",
+  "imageId": "77071624407599",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Wheels_ALB",
+  "sha": "50062f2ed4960b746e656ae4d8af2bc8e5023649bcc8c1b2d23a327340b49c58",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Wheels_ALB.png",
+  "type": "Image"
+ },
  "Image:50148f3c9ee8a3a03691166364136f1ff0ec812cf38964e95a6bc73b22a1e658": {
   "assetId": "127190487438843",
   "imageId": "127190487438843",
@@ -5514,6 +5604,15 @@
   "name": "T_Pontoon_Kit_ALB",
   "sha": "5043b66075064d807c242dce7501c75bff6f582f4711e277b314288609071593",
   "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_ALB.png",
+  "type": "Image"
+ },
+ "Image:50914cf9e263c14933f0572f4e8c29d479f7acb578633ada3b2f33707d0a3240": {
+  "assetId": "103107402206417",
+  "imageId": "103107402206417",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Wheels_MET",
+  "sha": "50914cf9e263c14933f0572f4e8c29d479f7acb578633ada3b2f33707d0a3240",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Wheels_MET.png",
   "type": "Image"
  },
  "Image:509b3e6026529866128d35b5a9f86d44311b381222c12b15adbd0db7ba74364c": {
@@ -5721,6 +5820,15 @@
   "name": "T_ChartTablet_Kit_RGH",
   "sha": "530faff70c8172aeb8211e7782a120577a81f54540fe390f295b09429b5878d4",
   "source": "assets/textures/M_Kit_ChartTablet/T_ChartTablet_Kit_RGH.png",
+  "type": "Image"
+ },
+ "Image:5381b582922cfce4076632f293a1203262627497a3f55e53275138eb2b8dde09": {
+  "assetId": "102429028536004",
+  "imageId": "102429028536004",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Body_RGH",
+  "sha": "5381b582922cfce4076632f293a1203262627497a3f55e53275138eb2b8dde09",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_RGH.png",
   "type": "Image"
  },
  "Image:53b405ac7b8f8f967a84d454c51b98916eb6353ef8616f3e98f9e57888e9cf9a": {
@@ -6683,6 +6791,15 @@
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Lantern_RGH.png",
   "type": "Image"
  },
+ "Image:62e42f842e6994fdc171df1df2d3147f63e751300aad4a3d2632d98e08632bef": {
+  "assetId": "133003906787675",
+  "imageId": "133003906787675",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Wheels_RGH",
+  "sha": "62e42f842e6994fdc171df1df2d3147f63e751300aad4a3d2632d98e08632bef",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Wheels_RGH.png",
+  "type": "Image"
+ },
  "Image:631c6988b21367a02e9819123e1a9a037c9b5d14f5b90cbae13f7da83c566bf6": {
   "assetId": "101660250710738",
   "imageId": "101660250710738",
@@ -7047,6 +7164,15 @@
   "name": "Mayday_T_FoliageLand_Main_RGH",
   "sha": "6931cc2c613ebb70483c092f3aabafc25ce6db9838c45272e22b95b91571a6a3",
   "source": "assets/textures/M_Veg_FoliageLand/T_FoliageLand_Main_RGH.png",
+  "type": "Image"
+ },
+ "Image:6960c7ec25590582849538bd05241369ba0e24cd6a72acb23bd305fced1caf04": {
+  "assetId": "101843130801445",
+  "imageId": "101843130801445",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Body_ALB",
+  "sha": "6960c7ec25590582849538bd05241369ba0e24cd6a72acb23bd305fced1caf04",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Body_ALB.png",
   "type": "Image"
  },
  "Image:69694db2d6e3efdc70178a57ccfa8a97d56799a883feacc95000f193e7d371d1": {
@@ -8621,6 +8747,15 @@
   "source": "assets/textures/Materials/T_Mat_Gravel_ALB.png",
   "type": "Image"
  },
+ "Image:7fdf6896040e725d3776bcd4e7873080ace20183b4c53b1dfb576152d9fee378": {
+  "assetId": "107028419685329",
+  "imageId": "107028419685329",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Body_NOR",
+  "sha": "7fdf6896040e725d3776bcd4e7873080ace20183b4c53b1dfb576152d9fee378",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Body_NOR.png",
+  "type": "Image"
+ },
  "Image:7ff1e522540bd3a3275d137f1ca830b5e0fd4672127ac71f48aa6613cf57490d": {
   "assetId": "78122544529173",
   "imageId": "78122544529173",
@@ -10166,6 +10301,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:949e1e59c3ce3bb0d70ee66fe229473b1fd0110ce4544d3e9e817d45415de8d4": {
+  "assetId": "82579056265192",
+  "imageId": "82579056265192",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Body_MET",
+  "sha": "949e1e59c3ce3bb0d70ee66fe229473b1fd0110ce4544d3e9e817d45415de8d4",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Body_MET.png",
+  "type": "Image"
+ },
  "Image:94f1945940b078488da7e0d0ba547f6a05d133bb79f59e53599c86ed84075dad": {
   "assetId": "89941967978392",
   "imageId": "89941967978392",
@@ -10310,6 +10454,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:96edcb5e4a69e2b2494d5c0d72e2dd66c5bc5a46b09ade55ef60a2fd1925f1d1": {
+  "assetId": "123270192113460",
+  "imageId": "123270192113460",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Body_MET",
+  "sha": "96edcb5e4a69e2b2494d5c0d72e2dd66c5bc5a46b09ade55ef60a2fd1925f1d1",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_MET.png",
+  "type": "Image"
+ },
  "Image:9728eaf99bb64b6786f3137fb5f928866f1034ed6d2dd0340dd6b8341ebba818": {
   "assetId": "122386287443021",
   "imageId": "122386287443021",
@@ -10344,6 +10497,15 @@
   "name": "T_SandRipples_Seabed_ALB",
   "sha": "97b7f4e8a21197b638bf2175247fcae778da6f214bedfea383c4e9dc6f27f508",
   "source": "assets/textures/M_Sea_SandRipples/T_SandRipples_Seabed_ALB.png",
+  "type": "Image"
+ },
+ "Image:97b883546043499cdb24aa1ee40daf9cae3f9253212ed2c871566fecfe89ff67": {
+  "assetId": "108983793999832",
+  "imageId": "108983793999832",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Wheels_RGH",
+  "sha": "97b883546043499cdb24aa1ee40daf9cae3f9253212ed2c871566fecfe89ff67",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Wheels_RGH.png",
   "type": "Image"
  },
  "Image:97d731569467e0eb89787230b2c5e7b0683677632f89b50f8d280494beafb86d": {
@@ -12158,6 +12320,15 @@
   "source": "assets/textures/Materials/T_Mat_SandRipple_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b4bfaa50cd12975f3964399d685f30c006d7dbd73de35572d2b0fba4b3f6828b": {
+  "assetId": "135907770642014",
+  "imageId": "135907770642014",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar01_Body_RGH",
+  "sha": "b4bfaa50cd12975f3964399d685f30c006d7dbd73de35572d2b0fba4b3f6828b",
+  "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Body_RGH.png",
+  "type": "Image"
+ },
  "Image:b4cdfab88587ea0e0c201578e0de91f5f76d2b92c72c9e51dd2166698064ddcd": {
   "assetId": "105121323112591",
   "imageId": "105121323112591",
@@ -13145,6 +13316,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Slate_ALB.png",
   "type": "Image"
  },
+ "Image:c812ecf02f7ad0125919010c3850078a9ec23dc99548ee22c5648ceaff50be4d": {
+  "assetId": "91915443283375",
+  "imageId": "91915443283375",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Body_ALB",
+  "sha": "c812ecf02f7ad0125919010c3850078a9ec23dc99548ee22c5648ceaff50be4d",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_ALB.png",
+  "type": "Image"
+ },
  "Image:c81ccf77c5f9eb323e1c30f0ad4ddf8cf2471e44d2ad123493b69fb6036887a9": {
   "assetId": "113013786928161",
   "imageId": "113013786928161",
@@ -13713,6 +13893,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_RGH.png",
   "type": "Image"
  },
+ "Image:cf3d1de7171bf050255be15a8ce0713c0bba9b05df27f899f01145cb9071f3ba": {
+  "assetId": "79683105161092",
+  "imageId": "79683105161092",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Wheels_NOR",
+  "sha": "cf3d1de7171bf050255be15a8ce0713c0bba9b05df27f899f01145cb9071f3ba",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Wheels_NOR.png",
+  "type": "Image"
+ },
  "Image:cf44f1517c95109b1cd69e284fd91bc4406ef9ba227606c23ff3801ea4d41c79": {
   "assetId": "121632803970284",
   "imageId": "121632803970284",
@@ -13765,6 +13954,15 @@
   "name": "T_NavMarkSafeWater_Buoy_ALB_Wet",
   "sha": "cf84e9a3f71d5ab6a7fa7fb9e4951c903e90d29a67ae893d2b0feffed70cb8a8",
   "source": "assets/textures/M_Hbr_NavMark_SafeWater/T_NavMarkSafeWater_Buoy_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:cf9c72cb52e1c46594cc868672aebcedbb49d4792898787e6f7cc12a65291a1d": {
+  "assetId": "106004214986263",
+  "imageId": "106004214986263",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Wheels_NOR",
+  "sha": "cf9c72cb52e1c46594cc868672aebcedbb49d4792898787e6f7cc12a65291a1d",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Wheels_NOR.png",
   "type": "Image"
  },
  "Image:cfac51fb4f68d76b7560eaf436669934814ca8bb1db1c9d20cfaa28814810b38": {
@@ -14250,6 +14448,15 @@
   "source": "assets/textures/M_Road_DryStoneWall/T_DryStoneWall_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:d75f4865f3788b7c8b01dd9428311d69376af781c40e20be702e8771ce64b6c3": {
+  "assetId": "83426340229972",
+  "imageId": "83426340229972",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar03_Body_ALB",
+  "sha": "d75f4865f3788b7c8b01dd9428311d69376af781c40e20be702e8771ce64b6c3",
+  "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Body_ALB.png",
+  "type": "Image"
+ },
  "Image:d76417bd8f48f2c38dca62e18057dabf4e3b79087ed9a8bae204c43b750e403b": {
   "assetId": "134686683403065",
   "imageId": "134686683403065",
@@ -14482,6 +14689,15 @@
   "name": "T_Boulder04_Granite_ALB_Wet",
   "sha": "d9e5c321144e0be2e93aa0db9e6c5e987dc1587e7abefe520abfae00e7e8c925",
   "source": "assets/textures/M_Rock_Boulder_04/T_Boulder04_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:d9ec1ff2730015019a38eece52db5a104c618b06e29ba45e7ded48d567f5d6b4": {
+  "assetId": "139479129872874",
+  "imageId": "139479129872874",
+  "moderation": "Reviewing",
+  "name": "T_ParkedCar02_Body_NOR",
+  "sha": "d9ec1ff2730015019a38eece52db5a104c618b06e29ba45e7ded48d567f5d6b4",
+  "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_NOR.png",
   "type": "Image"
  },
  "Image:da47b3678d24aaf13b48a785ced98e6b45e75279bb01dda869b3766f091a9f39": {
@@ -17655,6 +17871,16 @@
   "source": "assets/fbx/M_Veh_RIB_Helm/M_Veh_RIB_Helm_LOD0.fbx",
   "type": "Model"
  },
+ "Model:1b9df1b8ef453293d559b98c921d1ee122fd134329ee649966dec2799cc44e2f": {
+  "assetId": "116424892351872",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_03",
+  "rbxm": "assets/models/M_Road_ParkedCar_03.rbxm",
+  "route": "delivery",
+  "sha": "1b9df1b8ef453293d559b98c921d1ee122fd134329ee649966dec2799cc44e2f",
+  "source": "assets/fbx/M_Road_ParkedCar_03/M_Road_ParkedCar_03_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:1c038f30ef90d2c1adf257de143780c38177bd1f7fe4e31362bade4297109f4b": {
   "assetId": "129010410542632",
   "moderation": "Approved",
@@ -17723,6 +17949,16 @@
   "route": "delivery",
   "sha": "1eaee7ea9fe92a1f220294ec8c62e258e3c5e871e76ebaaf652673fdfbdf3a60",
   "source": "assets/fbx/M_Kit_ThermalBlanketDraped/M_Kit_ThermalBlanketDraped_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:1eecf9e253e6cda5cc01e8be53eccfeefc3cf04e5cc7c7fdbdc3b434a0a76320": {
+  "assetId": "95599875646630",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_03_LOD2",
+  "rbxm": "assets/models/M_Road_ParkedCar_03_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "1eecf9e253e6cda5cc01e8be53eccfeefc3cf04e5cc7c7fdbdc3b434a0a76320",
+  "source": "assets/fbx/M_Road_ParkedCar_03/M_Road_ParkedCar_03_LOD2.fbx",
   "type": "Model"
  },
  "Model:1f2a73c19cc28eec7cd5a16416ff729b3df9f2d867a27b64467820b615470651": {
@@ -18263,6 +18499,16 @@
   "route": "delivery",
   "sha": "2baa6615bdbad52a120a2fd4cc3cd51ad2cf3c339557058d7a9db901740027e4",
   "source": "assets/fbx/M_Bld_Cottage_02/M_Bld_Cottage_02_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:2beac2e5f962d9458cbbab89644f9c6738938b7c3167844e3e5f1a6455b325d0": {
+  "assetId": "97725170845081",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_02",
+  "rbxm": "assets/models/M_Road_ParkedCar_02.rbxm",
+  "route": "delivery",
+  "sha": "2beac2e5f962d9458cbbab89644f9c6738938b7c3167844e3e5f1a6455b325d0",
+  "source": "assets/fbx/M_Road_ParkedCar_02/M_Road_ParkedCar_02_LOD0.fbx",
   "type": "Model"
  },
  "Model:2c033762b06a5873a5ef5222d235e529c95fd80dace58951740ddbf85ec4ce21": {
@@ -20625,6 +20871,16 @@
   "source": "assets/fbx/M_Bld_Cottage_06/M_Bld_Cottage_06_LOD1.fbx",
   "type": "Model"
  },
+ "Model:76440649fa00f651c344d259309f025ec1d30f644c1ca732ddf6f2db49b17434": {
+  "assetId": "96014025039424",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_01",
+  "rbxm": "assets/models/M_Road_ParkedCar_01.rbxm",
+  "route": "delivery",
+  "sha": "76440649fa00f651c344d259309f025ec1d30f644c1ca732ddf6f2db49b17434",
+  "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:7765f99561a51373ce8deba6d11a6d5e5a20edaac139f33942575be25a91a16c": {
   "assetId": "123511490345251",
   "moderation": "Approved",
@@ -21115,6 +21371,16 @@
   "source": "assets/fbx/M_Hbr_NetPile/M_Hbr_NetPile_LOD1.fbx",
   "type": "Model"
  },
+ "Model:8790ed32cd481ebed5f98a7bb10f271425a027d1baac9606466a74676c0c8593": {
+  "assetId": "79908585003227",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_01_LOD2",
+  "rbxm": "assets/models/M_Road_ParkedCar_01_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "8790ed32cd481ebed5f98a7bb10f271425a027d1baac9606466a74676c0c8593",
+  "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:87ad4bb05f8822a258768bfc1de46a0144c0ffaa488b38e9d05773d5e7be3133": {
   "assetId": "132833722087958",
   "moderation": "Approved",
@@ -21475,6 +21741,16 @@
   "source": "assets/fbx/M_Sea_Morwenna/M_Sea_Morwenna_LOD2.fbx",
   "type": "Model"
  },
+ "Model:92699b1164ec4073656a3997e732aad4315a2a7c6c0a759f6f80ea7a67f436a4": {
+  "assetId": "133717098004581",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_01_LOD1",
+  "rbxm": "assets/models/M_Road_ParkedCar_01_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "92699b1164ec4073656a3997e732aad4315a2a7c6c0a759f6f80ea7a67f436a4",
+  "source": "assets/fbx/M_Road_ParkedCar_01/M_Road_ParkedCar_01_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:93017f7a3bd051ba9dff84e8a5d11666648a97e0621d087d8c822e0644ba82cd": {
   "assetId": "81910232707540",
   "moderation": "Approved",
@@ -21725,6 +22001,16 @@
   "source": "assets/fbx/M_Veg_Grass_Marram_02/M_Veg_Grass_Marram_02_LOD2.fbx",
   "type": "Model"
  },
+ "Model:9964ebed277ae5e630f5aa9826bff2a97878469a9f2b3a29c23a0f7c7b7130b5": {
+  "assetId": "109827685348604",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_02_LOD2",
+  "rbxm": "assets/models/M_Road_ParkedCar_02_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "9964ebed277ae5e630f5aa9826bff2a97878469a9f2b3a29c23a0f7c7b7130b5",
+  "source": "assets/fbx/M_Road_ParkedCar_02/M_Road_ParkedCar_02_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:996d3732cb7349d516cf0d1acc08d3c2fba12d68aa869ce69b19755754366066": {
   "assetId": "88898314270472",
   "moderation": "Approved",
@@ -21783,6 +22069,16 @@
   "route": "delivery",
   "sha": "9b6fcf5b398f265658ddc87d64c91b5502604eb64c4b6b3d49cabad5b745612d",
   "source": "assets/fbx/M_Bld_Cottage_01/M_Bld_Cottage_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:9bbb6367355ce0b78cd6db9796ce3ecca02a99d1d9a350fd3e6b5597c801134f": {
+  "assetId": "140682927333593",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_03_LOD1",
+  "rbxm": "assets/models/M_Road_ParkedCar_03_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9bbb6367355ce0b78cd6db9796ce3ecca02a99d1d9a350fd3e6b5597c801134f",
+  "source": "assets/fbx/M_Road_ParkedCar_03/M_Road_ParkedCar_03_LOD1.fbx",
   "type": "Model"
  },
  "Model:9bddd5484bbc768dccfb4ea43b77515575098237f4c8e5556f1456f630a65458": {
@@ -21913,6 +22209,16 @@
   "route": "delivery",
   "sha": "a11c0197f5e20abf7333d1a3416aeaecfb0365126284743de41253cea1fe42ec",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:a12870784e72eb585935d08c94004ea44e404f1f73309df2ecf2a507aa5b0044": {
+  "assetId": "78516731218698",
+  "moderation": "Approved",
+  "name": "M_Road_ParkedCar_02_LOD1",
+  "rbxm": "assets/models/M_Road_ParkedCar_02_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "a12870784e72eb585935d08c94004ea44e404f1f73309df2ecf2a507aa5b0044",
+  "source": "assets/fbx/M_Road_ParkedCar_02/M_Road_ParkedCar_02_LOD1.fbx",
   "type": "Model"
  },
  "Model:a1d51f33154f0772d870cf8350a66c9b3f7f894ee3849b4d3d75ae9060dc09fc": {

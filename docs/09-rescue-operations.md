@@ -240,6 +240,8 @@ Controls use the convention in section 2.7; only the step-specific part is liste
 
 ### 5.3 Recovery options
 
+> **2026-10-18:** the first missions use three wordless ways instead: drag, throw (right-click aim arc), or the casualty swims to the player within 10 s ([document 14](14-playtest-feedback-and-direction.md), section 3). The table below stays as later and Pro content.
+
 | Method | When it is right | Mechanic | Gold band |
 |---|---|---|---|
 | **Throw bag** | Alert, can grip | Aim with the wind in mind: the bag must land beyond and upwind of the casualty so the line drifts onto them, never at their head (verify: COMDTINST M16114). Hold to charge power, release. Then haul hand over hand with the two-hand rhythm: too fast pulls their face under (their head icon dips), too slow lets them drift | Line over them on the first throw; steady haul |
@@ -417,6 +419,8 @@ A crew member on *Northern Dawn* or a cruise ship is ill. Steps: PAN-PAN medical
 ## 9. Onboarding: training exercises, Assist and Pro
 
 ### 9.1 The cold open: the first rescue in about 90 seconds
+
+> **2026-10-18:** playtest found the cold open ambiguous; it is to be reworked per [document 14](14-playtest-feedback-and-direction.md) (F-3, section 3, package RP-UX2).
 
 A new player skips any drill, menu or cinematic. Their first frame is a rescue already under way: first person, gloved hands on the bars of a moving jet ski, just outside the Harbour Mouth off **Sandy Point** (the sandy spit at the outer foot of the east harbour wall, [document 10](10-world-and-map.md), section 1.2), with a Person in the Water tasking coming over the radio. The camera rules are in [document 02](02-core-loop-and-mechanics.md), section 11; the dispatcher's lines are owned by [document 11](11-dispatcher-and-voice.md).
 

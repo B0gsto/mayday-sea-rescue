@@ -1,9 +1,11 @@
 --!strict
 -- StreetController (I1b-3): client-side life for the Street pieces (src/server/World/Street.luau):
---   * the Harbour Light's Fl(2) W 10s beam (Shared.HarbourLightBeam): at night or in a storm a rotating rig at
---     ATT_Light carries two bullseye pairs (panels 0/30 and 180/210 degrees) as Beam cones plus one SpotLight per pair,
---     turning at 18 deg/s on the server clock (every client sees the same flash), a warm PointLight in the lantern,
---     and the _Lens Neon brightening as a panel sweeps the camera; by day the rig is off and the lens is glass;
+--   * each lighthouse's Fl(2) W 10s beam (Shared.HarbourLightBeam, tags HarbourLight / Lighthouse):
+--     at night or in a storm a rotating rig at ATT_Light carries two bullseye pairs (panels 0/30 and
+--     180/210 degrees) as Beam cones plus one SpotLight per pair, turning at 18 deg/s on the server
+--     clock, a warm PointLight in the lantern, and the _Lens Neon brightening as a panel sweeps the
+--     camera. A light only shows for a player who has relit it (Shared.Lighthouses; profile flag
+--     `lighthouses`); unlit ones show a small red lamp at night and no beam;
 --   * the lifeguard tower's red-over-yellow flag (tag BeachFlag): its strips stream downwind and ripple, only while
 --     the camera is within FLAG_RANGE studs.
 -- Both models stream (Atomic in Workspace.Dressing): found by tag, rigs live inside them and go when they stream out.
@@ -15,11 +17,15 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local LightBeam = require(Shared:WaitForChild("HarbourLightBeam"))
+local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
+local Net = require(Shared:WaitForChild("Net"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local StreetController = {}
 
-local LIGHT_TAG, LENS_TAG, FLAG_TAG = "HarbourLight", "HarbourLightLens", "BeachFlag"
+local LIGHT_TAGS = { "HarbourLight", "Lighthouse" }
+local LENS_TAGS = { "HarbourLightLens", "LighthouseLens" }
+local FLAG_TAG = "BeachFlag"
 local BEAM_LENGTH = 320 -- studs: the visible cone (the real light reaches 9 nmi)
 local WARM = Color3.fromRGB(255, 236, 205) -- ~4000 K
 local LENS_REST = Color3.fromRGB(150, 132, 100)
@@ -28,6 +34,7 @@ local FLAG_RANGE = 400
 
 type Rig = {
 	model: Model,
+	id: string?,
 	part: BasePart,
 	centre: Vector3,
 	beams: { Beam },
@@ -38,6 +45,7 @@ type Rig = {
 
 local rigs: { [Model]: Rig } = {}
 local flags: { [Model]: { parts: { BasePart }, hoist: Vector3 } } = {}
+local profileFlags: { [string]: any } = {}
 
 local function beamFor(parent: BasePart, bearing: number): Beam
 	local dir = CFrame.Angles(0, math.rad(bearing), 0) * Vector3.xAxis
@@ -112,12 +120,22 @@ local function build(model: Model): Rig?
 	point.Parent = part
 	local lenses: { BasePart } = {}
 	for _, d in model:GetDescendants() do
-		if d:IsA("BasePart") and d:HasTag(LENS_TAG) then
-			table.insert(lenses, d)
+		if d:IsA("BasePart") then
+			for _, tag in LENS_TAGS do
+				if d:HasTag(tag) then
+					table.insert(lenses, d)
+					break
+				end
+			end
 		end
+	end
+	local id = model:GetAttribute("LightId")
+	if type(id) ~= "string" and model.Name == "HarbourLight" then
+		id = "HarbourLight" -- the H6 asset predates the LightId attribute
 	end
 	return {
 		model = model,
+		id = if type(id) == "string" then id else nil,
 		part = part,
 		centre = att.WorldPosition,
 		beams = beams,
@@ -127,7 +145,7 @@ local function build(model: Model): Rig?
 	}
 end
 
-local function lit(): boolean
+local function night(): boolean
 	return LightBeam.lit(
 		Weather.getState(),
 		Lighting:GetAttribute("WeatherBase"),
@@ -173,7 +191,25 @@ end
 function StreetController.Init() end
 
 function StreetController.Start()
-	watch(LIGHT_TAG, function(m)
+	-- each player sees only the lights they have relit (docs/03 section 7)
+	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
+		if type(data) == "table" and type(data.flags) == "table" then
+			profileFlags = data.flags
+		end
+	end)
+	task.spawn(function()
+		local getData = Net.init():WaitForChild("Progression_GetData", 30)
+		if not getData or not getData:IsA("RemoteFunction") then
+			return
+		end
+		local ok, data = pcall(function()
+			return getData:InvokeServer()
+		end)
+		if ok and type(data) == "table" and type(data.flags) == "table" then
+			profileFlags = data.flags
+		end
+	end)
+	local function addLight(m: Model)
 		task.defer(function() -- the Atomic model arrives whole; wait a frame for the lens tags
 			if rigs[m] == nil and m.Parent then
 				local r = build(m)
@@ -183,9 +219,12 @@ function StreetController.Start()
 				end
 			end
 		end)
-	end, function(m)
-		rigs[m] = nil
-	end)
+	end
+	for _, tag in LIGHT_TAGS do
+		watch(tag, addLight, function(m)
+			rigs[m] = nil
+		end)
+	end
 	watch(FLAG_TAG, function(m)
 		local parts: { BasePart } = {}
 		for _, d in m:GetChildren() do
@@ -205,16 +244,20 @@ function StreetController.Start()
 		local now = Workspace:GetServerTimeNow()
 		local cam = Workspace.CurrentCamera
 		local camPos = if cam then cam.CFrame.Position else Vector3.zero
-		local want = lit()
+		local isNight = night()
 		for m, r in rigs do
 			if not m.Parent then
 				rigs[m] = nil
 				continue
 			end
+			local own = r.id == nil or Lighthouses.isLit(profileFlags, r.id)
+			local want = isNight and own
 			if want ~= r.lit then
 				setLit(r, want)
 			end
 			if want then
+				r.point.Color = WARM
+				r.point.Range = 14
 				r.part.CFrame = CFrame.new(r.centre)
 					* CFrame.Angles(0, math.rad(LightBeam.angle(now)), 0)
 				local d = camPos - r.centre
@@ -223,6 +266,14 @@ function StreetController.Start()
 					l.Color = LENS_REST:Lerp(Color3.new(1, 1, 1), k)
 				end
 				r.point.Brightness = 1.2 + 2.5 * k
+			elseif isNight then
+				-- dark lights stand out: a small red lamp, no beam, until the player relights it
+				r.point.Enabled = true
+				r.point.Color = Lighthouses.DarkColour
+				r.point.Range = 22
+				r.point.Brightness = 0.45
+			else
+				r.point.Enabled = false
 			end
 		end
 		-- the beach flag: strips chained from the hoist, each yawed a little more than the last (a travelling ripple)
