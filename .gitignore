@@ -18,3 +18,11 @@ __pycache__/
 # ElevenLabs renders and casting auditions (large, free-tier audio has no commercial licence)
 assets/voice/out/
 assets/voice/auditions/
+
+# Binaries stay local, never pushed (user 2026-10-21)
+*.png
+*.PNG
+*.fbx
+*.FBX
+*.wav
+*.WAV
