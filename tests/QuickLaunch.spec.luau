@@ -44,14 +44,14 @@ return function(t)
 	end)
 
 	t.test("a server refusal shows as a note and the player may retry", function()
-		local st = Card.state(ctx({ failure = "NotAtStation" }), "JetSki")
+		local st = Card.state(ctx({ failure = "NoBay" }), "JetSki")
 		t.expect(st.canLaunch).toBe(true)
-		t.expect(st.note).toBe(Card.reasonText("NotAtStation"))
+		t.expect(st.note).toBe(Card.reasonText("NoBay"))
 		-- every quickLaunchAllowed refusal has its own copy
-		for _, why in { "NotOwned", "ColdOpen", "NotAtStation" } do
+		for _, why in { "NotOwned", "ColdOpen" } do
 			t.expect(Card.reasonText(why) ~= Card.reasonText(nil)).toBe(true)
 		end
-		local ok, why = Effects.quickLaunchAllowed(true, 400, 150, true)
+		local ok, why = Effects.quickLaunchAllowed(true, false)
 		t.expect(ok).toBe(false)
 		t.expect(Card.reasonText(why) ~= Card.reasonText(nil)).toBe(true)
 		t.expect(Card.reasonText("Weird")).toBe("Can't launch right now.")

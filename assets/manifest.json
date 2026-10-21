@@ -667,6 +667,15 @@
   "source": "assets/textures/M_Veh_Coastguard4x4/T_Coastguard4x4_Body_NOR.png",
   "type": "Image"
  },
+ "Image:0a017e8866c008d9e1be0abf1cf8718c0aa291fc3a8d7b16d547bdb69f7a145c": {
+  "assetId": "99621546437175",
+  "imageId": "99621546437175",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_crewpay",
+  "sha": "0a017e8866c008d9e1be0abf1cf8718c0aa291fc3a8d7b16d547bdb69f7a145c",
+  "source": "assets/ui/phone/crewpay.png",
+  "type": "Image"
+ },
  "Image:0a53d619f152f2f4b33bf739fb4da3e2f7c22250487a7c2c034be36e533fb4e8": {
   "assetId": "132940714883591",
   "imageId": "132940714883591",
@@ -674,6 +683,15 @@
   "name": "Mayday_T_Bosun_Fur_ALB",
   "sha": "0a53d619f152f2f4b33bf739fb4da3e2f7c22250487a7c2c034be36e533fb4e8",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Fur_ALB.png",
+  "type": "Image"
+ },
+ "Image:0a6985d8b523e4eda5249fe40cabf18a55301e73afdad0f430e3429802191e44": {
+  "assetId": "115625655172292",
+  "imageId": "115625655172292",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_wallpaper",
+  "sha": "0a6985d8b523e4eda5249fe40cabf18a55301e73afdad0f430e3429802191e44",
+  "source": "assets/ui/phone/wallpaper.png",
   "type": "Image"
  },
  "Image:0ae296e1685dccd259a9dbf8060d884cfcba9781b4114824ae98c2a27e5c47ad": {
@@ -2683,6 +2701,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_NOR.png",
   "type": "Image"
  },
+ "Image:27fe84b4e2f77a04c08a6c5931cbcd92b12f492d70dc2474518b19c4152d86ca": {
+  "assetId": "137514171104143",
+  "imageId": "137514171104143",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_radio",
+  "sha": "27fe84b4e2f77a04c08a6c5931cbcd92b12f492d70dc2474518b19c4152d86ca",
+  "source": "assets/ui/phone/radio.png",
+  "type": "Image"
+ },
  "Image:2827e9c408562cc9c234649f210a72e02951ef74279859364ea172b7d9d1e771": {
   "assetId": "109934808122953",
   "imageId": "109934808122953",
@@ -3746,6 +3773,15 @@
   "name": "T_Boatyard_Ground_RGH_Wet",
   "sha": "36b6bbf198ddd7fb3435b5337d10808fd78627b5e26a83730f71c20d9caca71b",
   "source": "assets/textures/M_Bld_BoatyardShed/T_Boatyard_Ground_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:375ad89dc7c27ea832d32e3bd9e88e80e88875a0af0e606f3821787dc3a558d5": {
+  "assetId": "72212928369973",
+  "imageId": "72212928369973",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "375ad89dc7c27ea832d32e3bd9e88e80e88875a0af0e606f3821787dc3a558d5",
+  "source": "art/map/gale_isles_map_r1c1.png",
   "type": "Image"
  },
  "Image:3761e740cc7dd159c91f229252fbee41efe4e9fc3f9fe736a79e526e536637bf": {
@@ -5604,6 +5640,15 @@
   "name": "T_JetSkiCloseUp_CloseUp_RGH",
   "sha": "5211bf520f8d34949fa933d2aba08f459d7d6a8c8b6c7064116675761f198ebd",
   "source": "assets/textures/M_Veh_JetSki_CloseUp/T_JetSkiCloseUp_CloseUp_RGH.png",
+  "type": "Image"
+ },
+ "Image:5220fdc4cef5bb8ed252f3b04cbc3d50251721ed7d61ae2135fc763f6fb5c33b": {
+  "assetId": "105967857791678",
+  "imageId": "105967857791678",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c0",
+  "sha": "5220fdc4cef5bb8ed252f3b04cbc3d50251721ed7d61ae2135fc763f6fb5c33b",
+  "source": "art/map/gale_isles_map_r0c0.png",
   "type": "Image"
  },
  "Image:524c36c1bc8245b93ab3ac6c3419749f59a6673b69465c607f1e4a82b9a65c94": {
@@ -7574,6 +7619,15 @@
   "source": "assets/ocean/sky/Overcast_Bk.png",
   "type": "Image"
  },
+ "Image:7134969e56b45c6f835529d54fee2c5fad00b24bd8885f56c1b4bfe036d20126": {
+  "assetId": "99314211130736",
+  "imageId": "99314211130736",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_events",
+  "sha": "7134969e56b45c6f835529d54fee2c5fad00b24bd8885f56c1b4bfe036d20126",
+  "source": "assets/ui/phone/events.png",
+  "type": "Image"
+ },
  "Image:714f23de6892a9f2d6be3cd37e04ce642fc097e6704d09f6f4ff0eaca4a99093": {
   "assetId": "77581198617072",
   "imageId": "77581198617072",
@@ -8718,6 +8772,15 @@
   "name": "T_Kit_Foil_RGH",
   "sha": "8210cef468ab0fb7e1a9e5ac9f01cc3612c40db037e30fe9eda83475ac806880",
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Foil_RGH.png",
+  "type": "Image"
+ },
+ "Image:821eecdbbd64042523d3d448f228370a0d4a7513ec3e5aa8c727b7da7f37217f": {
+  "assetId": "78753808243316",
+  "imageId": "78753808243316",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_map",
+  "sha": "821eecdbbd64042523d3d448f228370a0d4a7513ec3e5aa8c727b7da7f37217f",
+  "source": "assets/ui/phone/map.png",
   "type": "Image"
  },
  "Image:826771d4f6e0790f8c3654b33e7f211d6adda5ead294ca84ab904459928be7c2": {
@@ -9996,6 +10059,15 @@
   "name": "T_ChandleryInt_Joinery_NOR",
   "sha": "93d1890454426fc7ad0b027eb47f95bd0cfb79c985feee581df02b5179012bd3",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_NOR.png",
+  "type": "Image"
+ },
+ "Image:93ea7ec69fef4225c87268ae71aadf7f96d3517e78bce4e050d1316e01d84323": {
+  "assetId": "103597917432878",
+  "imageId": "103597917432878",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map",
+  "sha": "93ea7ec69fef4225c87268ae71aadf7f96d3517e78bce4e050d1316e01d84323",
+  "source": "art/map/gale_isles_map.png",
   "type": "Image"
  },
  "Image:93fef13cd6902769620a50729be5ea3265e21e2c4aa9223f942eb47f9bfd0781": {
@@ -11570,6 +11642,15 @@
   "source": "assets/textures/M_Veh_MooredBoat_01/T_FishingBoat_Atlas_ALB.png",
   "type": "Image"
  },
+ "Image:aca23218797a732c9cd6b377eaa2329ff42f112cf325296c393d591c54e4c45b": {
+  "assetId": "135064908499694",
+  "imageId": "135064908499694",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_settings",
+  "sha": "aca23218797a732c9cd6b377eaa2329ff42f112cf325296c393d591c54e4c45b",
+  "source": "assets/ui/phone/settings.png",
+  "type": "Image"
+ },
  "Image:acc49a8111a56f898ad2e03928a13658a5660ad7fe8c319f6c00906e52f8741d": {
   "assetId": "137974456692048",
   "imageId": "137974456692048",
@@ -11903,6 +11984,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b1b789f0f96aa4f639a604e5ff436a71436a28af4c43bc33e78bae876ed32749": {
+  "assetId": "134505277608737",
+  "imageId": "134505277608737",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_season",
+  "sha": "b1b789f0f96aa4f639a604e5ff436a71436a28af4c43bc33e78bae876ed32749",
+  "source": "assets/ui/phone/season.png",
+  "type": "Image"
+ },
  "Image:b1dd3f3e6414fd60c7280673aac270f8f6261b8f0dbfde5b6360af0a79ffec34": {
   "assetId": "72184829108882",
   "imageId": "72184829108882",
@@ -11937,6 +12027,15 @@
   "name": "T_RIBHelm_Seats_RGH_Wet",
   "sha": "b253bebe8d3b743f8afecdb540515db2f94f91bae8a2669a05bf457e7bea74f5",
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Seats_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:b262eebc0de736a6c25b34c87e925c2a2ae0d70c9505b82827c1cc27300d471a": {
+  "assetId": "133675801196948",
+  "imageId": "133675801196948",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_vehicles",
+  "sha": "b262eebc0de736a6c25b34c87e925c2a2ae0d70c9505b82827c1cc27300d471a",
+  "source": "assets/ui/phone/vehicles.png",
   "type": "Image"
  },
  "Image:b2936b1d7f6780b10f447775d99c6aaeb538e7109b77203dd8fb97dde4ab9a6d": {
@@ -12228,6 +12327,15 @@
   "name": "T_GaleQueen_Deck_ALB",
   "sha": "b77ab4b28a2a0f03c875c3f993555b4e6c1a1af85767884478e77693d93b9800",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Deck_ALB.png",
+  "type": "Image"
+ },
+ "Image:b7a502950390b109208978705bf17725e700b1efbd1d8886652670f0a17a50f9": {
+  "assetId": "93763825688168",
+  "imageId": "93763825688168",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_phone_button",
+  "sha": "b7a502950390b109208978705bf17725e700b1efbd1d8886652670f0a17a50f9",
+  "source": "assets/ui/phone/phone_button.png",
   "type": "Image"
  },
  "Image:b7a742e7bf77703007c30f6bac1985771731a78b660f1083de097fed94047f6c": {
@@ -13037,6 +13145,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Slate_ALB.png",
   "type": "Image"
  },
+ "Image:c81ccf77c5f9eb323e1c30f0ad4ddf8cf2471e44d2ad123493b69fb6036887a9": {
+  "assetId": "113013786928161",
+  "imageId": "113013786928161",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_camera",
+  "sha": "c81ccf77c5f9eb323e1c30f0ad4ddf8cf2471e44d2ad123493b69fb6036887a9",
+  "source": "assets/ui/phone/camera.png",
+  "type": "Image"
+ },
  "Image:c8324f6fc3d2599f0e957233ae0eaf5e896c93126320bd3935bdd8f1b926a18f": {
   "assetId": "103860084646107",
   "imageId": "103860084646107",
@@ -13803,6 +13920,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:d1e0f58e53bca2cff3c5ff71342469a581fa3d8164699e6e02a9cba01025066f": {
+  "assetId": "112323718765563",
+  "imageId": "112323718765563",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c0",
+  "sha": "d1e0f58e53bca2cff3c5ff71342469a581fa3d8164699e6e02a9cba01025066f",
+  "source": "art/map/gale_isles_map_r1c0.png",
+  "type": "Image"
+ },
  "Image:d2087dcc49c279107501616ab4953df8c0dd0cb4bc472aac0749133b8a23f9a6": {
   "assetId": "126415046560692",
   "imageId": "126415046560692",
@@ -14511,6 +14637,15 @@
   "source": "assets/textures/M_Rock_Cliff_03/T_Cliff03_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:dc87b57a7105b0960f8cf595fec42b52219a3623465d3dbfde629264cb3323a0": {
+  "assetId": "85692061525287",
+  "imageId": "85692061525287",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c1",
+  "sha": "dc87b57a7105b0960f8cf595fec42b52219a3623465d3dbfde629264cb3323a0",
+  "source": "art/map/gale_isles_map_r0c1.png",
+  "type": "Image"
+ },
  "Image:dc88a2a24323b86578d4e369dc1c6550236fcd0edab2a3d86401e7d7adbcc129": {
   "assetId": "89794394155137",
   "imageId": "89794394155137",
@@ -14586,6 +14721,15 @@
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Wheels_MET.png",
   "type": "Image"
  },
+ "Image:dd1758cd60092c23f8f46b0861d671dea45867a3122f0354d9ec3a560339b6bf": {
+  "assetId": "77395907263418",
+  "imageId": "77395907263418",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_logbook",
+  "sha": "dd1758cd60092c23f8f46b0861d671dea45867a3122f0354d9ec3a560339b6bf",
+  "source": "assets/ui/phone/logbook.png",
+  "type": "Image"
+ },
  "Image:dd1d3bfb440d9b7475d3c971641f51a95307e3fb0e4a886ce6969f18804b9d49": {
   "assetId": "93450963074819",
   "imageId": "93450963074819",
@@ -14620,6 +14764,15 @@
   "name": "Mayday_T_Mat_Earth_NOR",
   "sha": "dd6ea1c913f9fba34473f4b975423e70c6e67273054deff3f00357000eeb67a7",
   "source": "assets/textures/Materials/T_Mat_Earth_NOR.png",
+  "type": "Image"
+ },
+ "Image:dd722ce990c4f792192fc90600d98455374d37551145344f8b2018fe45d07bee": {
+  "assetId": "120864312381464",
+  "imageId": "120864312381464",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_crew",
+  "sha": "dd722ce990c4f792192fc90600d98455374d37551145344f8b2018fe45d07bee",
+  "source": "assets/ui/phone/crew.png",
   "type": "Image"
  },
  "Image:dd8a68eaee3fcfa396e710dc7c0adb6a39c41767139d60973ba672d694e81d5c": {
@@ -15429,6 +15582,15 @@
   "name": "T_Boulder02_Granite_RGH",
   "sha": "ea55248eb1611ec2867f302452c011850ff86473ba5e45588043d80c67b9a630",
   "source": "assets/textures/M_Rock_Boulder_02/T_Boulder02_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:ea5b3ada305b3b1b4a8af88c2526583704109c773a95b01e6c5da3df8b9de7ef": {
+  "assetId": "116868851918712",
+  "imageId": "116868851918712",
+  "moderation": "Reviewing",
+  "name": "UI_Phone_payrise",
+  "sha": "ea5b3ada305b3b1b4a8af88c2526583704109c773a95b01e6c5da3df8b9de7ef",
+  "source": "assets/ui/phone/payrise.png",
   "type": "Image"
  },
  "Image:ea6e8b81ad965bd50c12f87829e491bddfba5250b911a5b32f77bf6025e97b25": {
@@ -18493,6 +18655,16 @@
   "source": "assets/fbx/M_Veg_Strand_Wrack_01/M_Veg_Strand_Wrack_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3846f15bb95254c236fb0f063ea3ca542b9817b983cfe7fbaa48da94faf6ca69": {
+  "assetId": "79294601777514",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_01_LOD2",
+  "rbxm": "assets/models/M_Veh_MooredBoat_01_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "3846f15bb95254c236fb0f063ea3ca542b9817b983cfe7fbaa48da94faf6ca69",
+  "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:3867d56fa073b4d043270d7136dfe6d70ce46d0b6d9d910c93765ace30a25895": {
   "assetId": "124893141429733",
   "moderation": "Approved",
@@ -19653,6 +19825,16 @@
   "source": "assets/fbx/M_Kit_ThrowLine/M_Kit_ThrowLine_LOD0.fbx",
   "type": "Model"
  },
+ "Model:5d807fccd2e486c87ad6550abdd84d61ccaae9eb5a7080d51b1a61705841302d": {
+  "assetId": "136263772891355",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_02_LOD2",
+  "rbxm": "assets/models/M_Veh_MooredBoat_02_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5d807fccd2e486c87ad6550abdd84d61ccaae9eb5a7080d51b1a61705841302d",
+  "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:5dc87fc57c1c2d1af6fe814a0ce8f55adb104a9238b681a6bd45e67779b964c1": {
   "assetId": "139769087173124",
   "moderation": "Approved",
@@ -19873,6 +20055,16 @@
   "source": "assets/fbx/M_Hbr_LifebuoyStation/M_Hbr_LifebuoyStation_LOD0.fbx",
   "type": "Model"
  },
+ "Model:657a67387fd0a10c7e601daea17255c2f23b4fc28a9f629e48c6baaa533f7a78": {
+  "assetId": "74052665254991",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_02",
+  "rbxm": "assets/models/M_Veh_MooredBoat_02.rbxm",
+  "route": "delivery",
+  "sha": "657a67387fd0a10c7e601daea17255c2f23b4fc28a9f629e48c6baaa533f7a78",
+  "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:657f7adbb577d9c93bd72b640ae8c018020ac7de2a6fe3b05c1f6756f7dfe3b3": {
   "assetId": "128454493437854",
   "moderation": "Approved",
@@ -19991,6 +20183,16 @@
   "route": "delivery",
   "sha": "67f14ca50ebddff07be4f2bca92d82b87df469b87da93b6d29e7e5036f27e00b",
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:6a51de877f1e566c9354507f2e6bd2513cd97e996858847df91aeb09430fb3bb": {
+  "assetId": "103882713069878",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_01_LOD1",
+  "rbxm": "assets/models/M_Veh_MooredBoat_01_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "6a51de877f1e566c9354507f2e6bd2513cd97e996858847df91aeb09430fb3bb",
+  "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD1.fbx",
   "type": "Model"
  },
  "Model:6a92e6407e61669560d6fc363da966c6621b1979080eb344654644596797de70": {
@@ -20481,6 +20683,16 @@
   "route": "delivery",
   "sha": "7a38a0fb1dcc10a3969bb1f8e3646bcdcded1cb13ae91528f1a384945d70fcd9",
   "source": "assets/fbx/M_Sea_MooringBlock/M_Sea_MooringBlock_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:7a9cb0b52ff77f958f5f1f84d70851ffe229c8785afa4567f05aeb41463d5699": {
+  "assetId": "135937094364919",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_03",
+  "rbxm": "assets/models/M_Veh_MooredBoat_03.rbxm",
+  "route": "delivery",
+  "sha": "7a9cb0b52ff77f958f5f1f84d70851ffe229c8785afa4567f05aeb41463d5699",
+  "source": "assets/fbx/M_Veh_MooredBoat_03/M_Veh_MooredBoat_03_LOD0.fbx",
   "type": "Model"
  },
  "Model:7b0de891a5f737d76aaade581e87d536cbf2bd3c6df925f51185197cef8bc86d": {
@@ -23203,6 +23415,16 @@
   "source": "assets/fbx/M_Hbr_Rope_Coil/M_Hbr_Rope_Coil_LOD0.fbx",
   "type": "Model"
  },
+ "Model:d6ff2c12b46ca2c8f17522d548a355fe0032591371ed20dd54ee3f387848dd98": {
+  "assetId": "72925216529877",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_01",
+  "rbxm": "assets/models/M_Veh_MooredBoat_01.rbxm",
+  "route": "delivery",
+  "sha": "d6ff2c12b46ca2c8f17522d548a355fe0032591371ed20dd54ee3f387848dd98",
+  "source": "assets/fbx/M_Veh_MooredBoat_01/M_Veh_MooredBoat_01_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:d76d16aadca11816593041a1b72834df31e5919500c83010c5b34693258f1c14": {
   "assetId": "95439636376736",
   "moderation": "Approved",
@@ -23323,6 +23545,16 @@
   "source": "assets/fbx/M_Bld_Harbourmaster/M_Bld_Harbourmaster_LOD2.fbx",
   "type": "Model"
  },
+ "Model:dc65f94e5607098f485f0a977c42dc9209648baa266ce829cefdf1f1e1fe57c5": {
+  "assetId": "73008894247901",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_03_LOD1",
+  "rbxm": "assets/models/M_Veh_MooredBoat_03_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "dc65f94e5607098f485f0a977c42dc9209648baa266ce829cefdf1f1e1fe57c5",
+  "source": "assets/fbx/M_Veh_MooredBoat_03/M_Veh_MooredBoat_03_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:dc8ede36235914631ad78777ea4ee1fad7883f5d096cfffa3ccd89c20fe0473e": {
   "assetId": "131498698131836",
   "moderation": "Approved",
@@ -23411,6 +23643,16 @@
   "route": "delivery",
   "sha": "dfb4df094318cd07b3bfa66481be09d5cb2be226dc8773b2e60b51f32cd99ffa",
   "source": "assets/fbx/M_Veg_Strand_Pebbles_01/M_Veg_Strand_Pebbles_01_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:e02a9b1877d170ddd7bd98fc6414099900d85c21654879612295a5fda3045de2": {
+  "assetId": "72642911789773",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_02_LOD1",
+  "rbxm": "assets/models/M_Veh_MooredBoat_02_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "e02a9b1877d170ddd7bd98fc6414099900d85c21654879612295a5fda3045de2",
+  "source": "assets/fbx/M_Veh_MooredBoat_02/M_Veh_MooredBoat_02_LOD1.fbx",
   "type": "Model"
  },
  "Model:e03b84d9ceec6cb0861c61bb5c89b70abc01c3e82f3d4fc9ad9aa0d83ce55302": {
@@ -23901,6 +24143,16 @@
   "route": "delivery",
   "sha": "ee94c6da761dec2ffa438a294fcc29d27b20bcb33e97b791fd565492f4a72b1f",
   "source": "assets/fbx/M_Bld_HarbourLight/M_Bld_HarbourLight_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:ef0d8f1aadd730f5dca298356a109c804992327de2efbb5ced0931eb8a309c34": {
+  "assetId": "133903517923257",
+  "moderation": "Approved",
+  "name": "M_Veh_MooredBoat_03_LOD2",
+  "rbxm": "assets/models/M_Veh_MooredBoat_03_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "ef0d8f1aadd730f5dca298356a109c804992327de2efbb5ced0931eb8a309c34",
+  "source": "assets/fbx/M_Veh_MooredBoat_03/M_Veh_MooredBoat_03_LOD2.fbx",
   "type": "Model"
  },
  "Model:ef33508da4c2ce21fcec8f2e9582d6ef14270048e927db9de734fe4c7fcfa01e": {

@@ -37,10 +37,13 @@ type Rig = {
 	model: Model,
 	part: BasePart,
 	trail: Trail,
+	ribbon: Trail,
 	bow: ParticleEmitter,
 	folder: Folder,
 	a0: Attachment,
 	a1: Attachment,
+	a2: Attachment,
+	a3: Attachment,
 	centre: Vector3, -- stern waterline centre (part space)
 	baseWidth: number,
 	styleId: string?,
@@ -72,10 +75,18 @@ local function build(model: Model, seat: BasePart): Rig?
 	a1.Name = "OceanWakeR"
 	a1.Position = Vector3.new(back.X + w * 0.5, waterLocal, back.Z)
 	a0.Parent, a1.Parent = part, part
+	local a2 = Instance.new("Attachment")
+	a2.Name = "OceanWakeRibbonL"
+	a2.Position = Vector3.new(back.X - w * 0.3, waterLocal - 0.02, back.Z)
+	local a3 = Instance.new("Attachment")
+	a3.Name = "OceanWakeRibbonR"
+	a3.Position = Vector3.new(back.X + w * 0.3, waterLocal - 0.02, back.Z)
+	a2.Parent, a3.Parent = part, part
 	local trail = Instance.new("Trail")
 	trail.Attachment0, trail.Attachment1 = a0, a1
 	trail.Texture = FOAM_ID
-	trail.TextureMode = Enum.TextureMode.Static
+	-- Stretch: the FX1 ribbon map fades out at both U ends, so repeating it (Static / Wrap) drew zebra bars
+	trail.TextureMode = Enum.TextureMode.Stretch
 	trail.LightInfluence = 1
 	trail.FaceCamera = false
 	trail.Lifetime = 3.5
@@ -90,6 +101,28 @@ local function build(model: Model, seat: BasePart): Rig?
 	trail.Color = ColorSequence.new(Color3.fromHex("#E8EEEC"))
 	trail.Enabled = false
 	trail.Parent = folder
+	-- G38: a second, narrower ribbon under the foam carries the cosmetic colour (a gold wake is
+	-- obviously gold). Same two stern points, no extra particles.
+	local ribbon = Instance.new("Trail")
+	ribbon.Attachment0, ribbon.Attachment1 = a2, a3
+	ribbon.Texture = FOAM_ID
+	ribbon.TextureMode = Enum.TextureMode.Stretch
+	ribbon.LightInfluence = 1
+	ribbon.FaceCamera = false
+	ribbon.Lifetime = 4.2
+	ribbon.MinLength = 0.5
+	ribbon.WidthScale = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.5),
+		NumberSequenceKeypoint.new(1, 1.5),
+	})
+	ribbon.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.6),
+		NumberSequenceKeypoint.new(0.4, 0.8),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	ribbon.Color = ColorSequence.new(Color3.fromHex("#E8EEEC"))
+	ribbon.Enabled = false
+	ribbon.Parent = folder
 	local front = part.CFrame:PointToObjectSpace(cf.Position + part.CFrame.LookVector * (len * 0.5))
 	local ab = Instance.new("Attachment")
 	ab.Name = "OceanBow"
@@ -120,10 +153,13 @@ local function build(model: Model, seat: BasePart): Rig?
 		model = model,
 		part = part,
 		trail = trail,
+		ribbon = ribbon,
 		bow = bow,
 		folder = folder,
 		a0 = a0,
 		a1 = a1,
+		a2 = a2,
+		a3 = a3,
 		centre = Vector3.new(back.X, waterLocal, back.Z),
 		baseWidth = w,
 		styleId = nil,
@@ -155,6 +191,9 @@ local function applyStyle(rig: Rig, night: number)
 	local half = rig.baseWidth * v.width * 0.5
 	rig.a0.Position = rig.centre - Vector3.new(half, 0, 0)
 	rig.a1.Position = rig.centre + Vector3.new(half, 0, 0)
+	local ribbonHalf = rig.baseWidth * v.width * 0.3
+	rig.a2.Position = rig.centre - Vector3.new(ribbonHalf, 0.02, 0)
+	rig.a3.Position = rig.centre + Vector3.new(ribbonHalf, 0.02, 0)
 	local trail = rig.trail
 	trail.Lifetime = v.lifetime
 	trail.WidthScale = NumberSequence.new({
@@ -169,6 +208,17 @@ local function applyStyle(rig: Rig, night: number)
 	trail.Color = ColorSequence.new(v.color)
 	trail.LightEmission = v.lightEmission
 	trail.LightInfluence = v.lightInfluence
+	local ribbon = rig.ribbon
+	ribbon.Enabled = v.ribbon > 0
+	ribbon.Lifetime = v.lifetime * 1.15
+	ribbon.Color = ColorSequence.new(v.ribbonColor)
+	ribbon.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 1 - 0.6 * v.ribbon),
+		NumberSequenceKeypoint.new(v.hold, 1 - 0.35 * v.ribbon),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	ribbon.LightEmission = math.min(1, v.lightEmission + 0.25 * v.ribbon)
+	ribbon.LightInfluence = v.lightInfluence
 	local bow = rig.bow
 	bow.Color = ColorSequence.new(v.bowColor)
 	bow.LightEmission = v.lightEmission * 0.6

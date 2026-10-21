@@ -121,12 +121,10 @@ return function(t)
 		end
 	)
 
-	t.test("Quick Launch needs the pass, the station and a finished cold open", function()
-		t.expect(Effects.quickLaunchAllowed(true, 40, 150, true)).toBe(true)
-		t.expect(select(2, Effects.quickLaunchAllowed(false, 40, 150, true))).toBe("NotOwned")
-		t.expect(select(2, Effects.quickLaunchAllowed(true, 400, 150, true))).toBe("NotAtStation")
-		t.expect(select(2, Effects.quickLaunchAllowed(true, nil, 150, true))).toBe("NotAtStation")
-		t.expect(select(2, Effects.quickLaunchAllowed(true, 40, 150, false))).toBe("ColdOpen")
+	t.test("Quick Launch needs the pass and a finished cold open, from anywhere", function()
+		t.expect(Effects.quickLaunchAllowed(true, true)).toBe(true)
+		t.expect(select(2, Effects.quickLaunchAllowed(false, true))).toBe("NotOwned")
+		t.expect(select(2, Effects.quickLaunchAllowed(true, false))).toBe("ColdOpen")
 	end)
 
 	t.test("only items with a built effect are ready; cosmetics wait for their art", function()

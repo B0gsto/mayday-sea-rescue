@@ -5,8 +5,8 @@
 -- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, Assist /
 -- Pro, and "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
--- Opens from a gear button beside the HUD status strip (hidden in the cold open, like the rest of
--- the status HUD) and from the gamepad Start button; closes on the X, gamepad B or Start again.
+-- Lives on the phone: its Settings app (gamepad Start opens it) borrows the panel frame onto the
+-- phone screen. setOpen still shows it standalone (X or gamepad B closes).
 -- Values live in Camera/Comfort (saved on the profile; keys and rules in shared/SettingsRules).
 --
 -- Audio: sets the AudioConfig SoundGroup tree (SoundService.Master > Music, SFX, Ambience, Radio >
@@ -15,7 +15,7 @@
 -- Assist / Pro: sent to the server (Settings_SetPro, SettingsService), which owns the OpsPro
 -- attribute; switching to Pro waits until the current operation ends.
 --
---   SettingsPanel.mount(statusRegion)   HudController calls this once (the gear sits beside it)
+--   SettingsPanel.mount()   HudController calls this once
 --   SettingsPanel.setOpen(open) / SettingsPanel.isOpen()
 --   SettingsPanel.soundGroup(channel): SoundGroup
 local ContextActionService = game:GetService("ContextActionService")
@@ -24,7 +24,9 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
+local A11yPalette = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("A11yPalette"))
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local CosmeticPicker = require(script.Parent:WaitForChild("CosmeticPicker"))
 local Cosmetics = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Cosmetics"))
@@ -42,7 +44,6 @@ local DISPLAY_ORDER = 40 -- above the store panels (35), below Cinematic (50)
 local ROW = 56 -- du per row
 local PANEL_W = 600
 local PANEL_H = 620
-local GEAR_ICON = "rbxasset://textures/ui/Settings/MenuBarIcons/GameSettingsTab.png"
 
 local gui: ScreenGui? = nil
 local panel: Frame? = nil
@@ -116,6 +117,24 @@ local function sendPro()
 	end)
 end
 
+---------------------------------------------------------------- Hold to tap
+
+-- One local pass over ProximityPrompts: hold-to-tap makes every hold prompt a tap (0 s). A prompt's
+-- designed hold is remembered on the prompt so turning the setting off restores it.
+local function applyHoldToTap()
+	local on = Comfort.get("holdToTap") == true
+	for _, d in Workspace:GetDescendants() do
+		if d:IsA("ProximityPrompt") then
+			local base = d:GetAttribute("A11yHold")
+			if type(base) ~= "number" then
+				base = d.HoldDuration
+				d:SetAttribute("A11yHold", base)
+			end
+			d.HoldDuration = if on then 0 else base
+		end
+	end
+end
+
 ---------------------------------------------------------------- widgets
 
 local function refresh(key: string)
@@ -149,7 +168,7 @@ end
 local function smallButton(name: string, text: string, w: number, parent: Instance): TextButton
 	local b = HudTheme.button(name, text, UDim2.fromOffset(w, 44), parent)
 	b.BackgroundColor3 = C.panelLight
-	b.TextSize = HudTheme.TextSize.body
+	b.TextSize = HudTheme.scaled(HudTheme.TextSize.body)
 	b.Font = HudTheme.BodyFont
 	return b
 end
@@ -371,7 +390,7 @@ local function segmented(
 		local b = smallButton(`Opt_{tostring(opt[2])}`, opt[1] :: string, 0, control)
 		b.Size = UDim2.new(1 / n, -6 * (n - 1) / n, 1, 0)
 		b.LayoutOrder = i
-		b.TextSize = HudTheme.TextSize.small
+		b.TextSize = HudTheme.scaled(HudTheme.TextSize.small)
 		noteFirst(b)
 		buttons[i] = b
 		b.Activated:Connect(function()
@@ -403,7 +422,7 @@ end
 
 ---------------------------------------------------------------- build
 
-local function build(statusRegion: Frame)
+local function build()
 	local g = Instance.new("ScreenGui")
 	g.Name = "Settings"
 	g.ResetOnSpawn = false
@@ -519,13 +538,27 @@ local function build(statusRegion: Frame)
 	end)
 	toggle(s, "speedFov", "Speed FOV kick")
 	toggle(s, "motionBlur", "Motion blur")
-	toggle(s, "lensSpray", "Spray on the lens")
+	toggle(s, "lensSpray", "Lens spray")
+
+	section(s, "Accessibility")
+	segmented(s, "colourAssist", "Colour assist", {
+		{ "Off", "Off" },
+		{ "Deut", "Deuteranopia" },
+		{ "Prot", "Protanopia" },
+		{ "Trit", "Tritanopia" },
+	})
+	segmented(s, "textSize", "Text size", {
+		{ "100%", 100 },
+		{ "125%", 125 },
+		{ "150%", 150 },
+	})
+	toggle(s, "reduceMotion", "Reduce motion")
+	toggle(s, "holdToTap", "Hold to tap")
 
 	section(s, "Graphics")
 	local q = { { "Auto", "Auto" }, { "High", "High" }, { "Med", "Medium" }, { "Low", "Low" } }
 	segmented(s, "oceanQuality", "Ocean detail", q)
 	segmented(s, "scatterQuality", "Rocks and plants", q)
-	note(s, "Auto follows the Roblox graphics quality slider.")
 
 	section(s, "Audio")
 	slider(s, "volMaster", "Master", 0.05, pct)
@@ -533,9 +566,9 @@ local function build(statusRegion: Frame)
 	slider(s, "volRadio", "Radio", 0.05, pct)
 	slider(s, "volMusic", "Music", 0.05, pct)
 	toggle(s, "voice", "Radio voices")
-	toggle(s, "muteHorns", "Mute other players' horns")
-	toggle(s, "muteSirens", "Mute other players' sirens")
-	toggle(s, "muteRadios", "Mute other players' radios")
+	toggle(s, "muteHorns", "Mute horns")
+	toggle(s, "muteSirens", "Mute sirens")
+	toggle(s, "muteRadios", "Mute radios")
 
 	section(s, "Operations")
 	segmented(s, "pro", "Mode", { { "Assist", false }, { "Pro", true } })
@@ -543,11 +576,9 @@ local function build(statusRegion: Frame)
 	local function updateProNote()
 		local want = Comfort.get("pro") == true
 		local active = player:GetAttribute("OpsPro") == true
-		local base = if want
-			then "Pro: no overlays or hints. Wind, drift and line tension come from the water. +20% Rep."
-			else "Assist: approach cone, wind and drift arrows, timing rings and choice hints."
+		local base = if want then "No hints · +20% Rep" else "Hints on"
 		if want and not active then
-			base ..= "\nPro starts after the current operation."
+			base ..= "\nNext op"
 		end
 		proNote.Text = base
 	end
@@ -584,9 +615,7 @@ local function build(statusRegion: Frame)
 				table.insert(pickers, CosmeticPicker.new(owned, slot, { layoutOrder = i }))
 			end
 		end
-		ownedNote.Text = if #pickers == 0
-			then "Liveries, horns, uniforms and dog kit you buy at the Chandlery appear here."
-			else "Also at the station locker and the Chandlery mirror."
+		ownedNote.Text = if #pickers == 0 then "None · Chandlery" else ""
 	end
 	rebuildOwned()
 	player.AttributeChanged:Connect(function(attr: string)
@@ -607,35 +636,6 @@ local function build(statusRegion: Frame)
 	fit(Layout.current())
 	Layout.onMetrics(fit)
 	g.Parent = player:WaitForChild("PlayerGui")
-
-	-- the gear, just left of the status strip
-	local gear = Instance.new("ImageButton")
-	gear.Name = "SettingsGear"
-	gear.AnchorPoint = Vector2.new(1, 0)
-	gear.Position = UDim2.fromOffset(-6, 0)
-	gear.Size = UDim2.fromOffset(52, 52)
-	gear.BackgroundColor3 = C.panel
-	gear.BackgroundTransparency = HudTheme.PanelTransparency
-	gear.BorderSizePixel = 0
-	gear.AutoButtonColor = true
-	HudTheme.corner(gear)
-	HudTheme.stroke(gear)
-	local icon = Instance.new("ImageLabel")
-	icon.Name = "Icon"
-	icon.AnchorPoint = Vector2.new(0.5, 0.5)
-	icon.Position = UDim2.fromScale(0.5, 0.5)
-	icon.Size = UDim2.fromOffset(28, 28)
-	icon.BackgroundTransparency = 1
-	icon.Image = GEAR_ICON
-	icon.ImageColor3 = C.text
-	icon.Parent = gear
-	gear.Parent = statusRegion
-	gear.Activated:Connect(function()
-		SettingsPanel.setOpen(not open)
-	end)
-	Layout.onColdOpen(function(active: boolean)
-		gear.Visible = not active
-	end)
 end
 
 ---------------------------------------------------------------- open / close
@@ -682,29 +682,37 @@ function SettingsPanel.setOpen(value: boolean)
 	end
 end
 
-function SettingsPanel.mount(statusRegion: Frame)
+function SettingsPanel.mount()
 	if gui then
 		return
 	end
-	build(statusRegion)
+	build()
 	applyAudio()
+	A11yPalette.setMode(Comfort.get("colourAssist") :: string)
+	applyHoldToTap()
+	Workspace.DescendantAdded:Connect(function(d: Instance)
+		if d:IsA("ProximityPrompt") and Comfort.get("holdToTap") == true then
+			local base = d:GetAttribute("A11yHold")
+			if type(base) ~= "number" then
+				base = d.HoldDuration
+				d:SetAttribute("A11yHold", base)
+			end
+			d.HoldDuration = 0
+		end
+	end)
 	Comfort.changed:Connect(function(key: string)
 		refresh(key)
 		if string.sub(key, 1, 3) == "vol" or key == "voice" then
 			applyAudio()
 		elseif key == "pro" then
 			sendPro()
+		elseif key == "colourAssist" then
+			A11yPalette.setMode(Comfort.get("colourAssist") :: string)
+		elseif key == "holdToTap" then
+			applyHoldToTap()
 		end
 	end)
 	Comfort.whenReady(sendPro)
-	-- gamepad Start toggles the panel (Roblox may also open its own menu on some platforms)
-	local lastStart = 0
-	UserInputService.InputBegan:Connect(function(input: InputObject)
-		if input.KeyCode == Enum.KeyCode.ButtonStart and os.clock() - lastStart > 0.3 then
-			lastStart = os.clock()
-			SettingsPanel.setOpen(not open)
-		end
-	end)
 end
 
 return SettingsPanel

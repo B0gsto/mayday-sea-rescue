@@ -42,10 +42,11 @@ local function toLocal(x: number, y: number, z: number): Vector3
 	return Vector3.new(-x * 3, z * 3, (y + STATION_DY) * 3)
 end
 
--- the hall face of the partition wall (x -1.0 m), seaward of the rescue board (y 3.75..6.05 m),
--- clear of the boat on ATT_BoatHall (x -5.25, y 0): centre 1.55 m up, facing into the hall
-local WALL_X, BOARD_Y, BOARD_Z = -1.0, 0.6, 1.55
-local W, H, T = 5.1, 3.6, 0.1 -- studs: 1.7 x 1.2 m, board thickness
+-- the hall face of the partition wall (x -1.0 m), seaward of the rescue board (y 2.6..7.2 m),
+-- clear of the boat on ATT_BoatHall (x -5.25, y 0): centre 2.5 m up, facing into the hall
+local WALL_X, BOARD_Y, BOARD_Z = -1.0, 0.6, 2.5
+local W, H, T = 5.1, 3.6, 0.1 -- studs: 1.7 x 1.2 m as laid out, board thickness
+local SCALE = 2 -- hung at twice the layout (3.4 x 2.4 m): readable from the third-person camera
 local FRAME, FRAME_D = 0.24, 0.18
 -- the resus manikin's mat on the hall floor, between the boat and the board
 local MAT_X, MAT_Y = -2.4, -1.4 -- metres
@@ -67,7 +68,9 @@ local manikins: { [string]: Model } = {}
 local function stationPivot(): CFrame?
 	local dressing = Workspace:FindFirstChild("Dressing")
 	local shell = dressing and dressing:FindFirstChild("Station")
-	local asset = shell and shell:FindFirstChild("M_Bld_Station")
+	-- the swap names the loaded model by its LOD (M_Bld_Station_LOD0)
+	local asset = shell
+		and (shell:FindFirstChild("M_Bld_Station") or shell:FindFirstChild("M_Bld_Station_LOD0"))
 	if asset and asset:IsA("Model") then
 		return asset:GetPivot()
 	end
@@ -289,6 +292,12 @@ local function buildBoard(stationCf: CFrame): Model
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonX
 	prompt:SetAttribute("Panel", "ExerciseBoard")
 	prompt.Parent = back
+	m:ScaleTo(SCALE)
+	for _, g in m:GetDescendants() do
+		if g:IsA("SurfaceGui") then
+			g.PixelsPerStud /= SCALE -- same text layout on the bigger sheets
+		end
+	end
 	return m
 end
 

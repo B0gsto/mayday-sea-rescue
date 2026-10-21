@@ -191,22 +191,15 @@ function Effects.summonDecision(ctx: SummonContext): string
 	return "Wait"
 end
 
--- Quick Launch (docs/04 section 3): launch an owned vehicle from the station without the walk and the
--- launch cooldown. Never during the cold open; never while seated with someone (planSpawn refuses).
-function Effects.quickLaunchAllowed(
-	ownsPass: boolean,
-	distanceToStation: number?,
-	radius: number,
-	coldOpenDone: boolean
-): (boolean, string)
+-- Quick Launch (docs/04 section 3): launch an owned vehicle straight into the seat from anywhere, without
+-- the walk and the launch cooldown. Never during the cold open; never while seated with someone (planSpawn
+-- refuses); rank still gates every vehicle (spawnVehicle).
+function Effects.quickLaunchAllowed(ownsPass: boolean, coldOpenDone: boolean): (boolean, string)
 	if not ownsPass then
 		return false, "NotOwned"
 	end
 	if not coldOpenDone then
 		return false, "ColdOpen"
-	end
-	if distanceToStation == nil or distanceToStation > radius then
-		return false, "NotAtStation"
 	end
 	return true, "ok"
 end

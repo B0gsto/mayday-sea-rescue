@@ -3,7 +3,8 @@
 -- the swan-neck door lamp (ATT_Lamp_Door, a warm PointLight), the two gable floodlights (ATT_Lamp_Flood_01 / _02,
 -- SpotLights aimed down onto the quay, towards the sea), the H3 eaves wash lights (ATT_Lamp_Wash_01..04, SpotLights
 -- down the side walls), the H3 sign light (ATT_Lamp_Sign, aimed at ATT_Sign) and the GlassLit mesh (watch-room panes, door lamp and
--- flood lenses) as warm Neon. Everything is on only at night or in a storm (ChandleryRig.preset(): "Night" when
+-- flood lenses) as warm Neon, plus the hall's lifeboat on its trailer (a static display at ATT_BoatHall).
+-- The lights are on only at night or in a storm (ChandleryRig.preset(): "Night" when
 -- the sun is below the horizon or WeatherBase is Night, "Storm" while Shared.Weather says so), off by day.
 -- Re-evaluated on Weather.changed, Lighting WeatherBase and Lighting.ClockTime changes; no per-frame loop.
 --
@@ -18,6 +19,7 @@ local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
@@ -33,6 +35,8 @@ local DOOR_LAMP = { brightness = 1.2, range = 16, drop = 0.4 }
 local FLOOD = { brightness = 2.2, range = 48, angle = 75, tilt = 55 } -- tilt: degrees below the horizontal
 local WASH = { brightness = 0.9, range = 30, angle = 80, out = 0.3 } -- out: outward lean of the beam off the wall
 local SIGN = { brightness = 1.4, range = 14, angle = 60 }
+-- hall lifeboat on M_Veh_BoatTrailer_RIB (studs, trailer frame): keel on ATT_Cradle's bed height, bow at ATT_BowEye
+local HALL_BOAT = { cradleY = 2.905, bowZ = 6.2, shift = 2.5 }
 
 local active: { [Model]: () -> () } = {}
 
@@ -162,6 +166,36 @@ function StationRig.apply(shell: Model): () -> ()
 	if not host then
 		warn("[StationRig] no PrimaryPart on", shell:GetFullName(), "- lights skipped")
 	end
+	local done = false
+	-- the station's lifeboat on its launch trailer in the boat hall, bow to the roller bay door: the hall reads
+	-- as the boathouse (static display, collides; launches still go from the BoatDesk and the slipway)
+	local hall = marker(shell, "ATT_BoatHall")
+	if hall then
+		task.spawn(function()
+			local trailer = AssetLoader.cloneStatic("M_Veh_BoatTrailer_RIB", "LOD0")
+			local boat = AssetLoader.cloneStatic("M_Veh_RIB", "LOD0")
+			if done or not (trailer and boat) or not shell.Parent then
+				if trailer then
+					trailer:Destroy()
+				end
+				if boat then
+					boat:Destroy()
+				end
+				return
+			end
+			-- coupler (-Z) to the door; the 26-stud hull overhangs the stern, so the pair moves 2.5 studs forward to centre
+			local at = CFrame.lookAt(hall.WorldPosition, hall.WorldPosition + seaward)
+				* CFrame.new(0, 0, -HALL_BOAT.shift)
+			trailer:PivotTo(at)
+			boat:PivotTo(at * CFrame.new(0, HALL_BOAT.cradleY, HALL_BOAT.bowZ))
+			for _, m in { trailer, boat } do
+				m.Name = "Hall" .. m.Name
+				m:SetAttribute(RIG_ATTR, true)
+				m.Parent = shell.Parent
+				table.insert(created, m)
+			end
+		end)
+	end
 
 	local state: boolean? = nil
 	local function refresh()
@@ -188,7 +222,6 @@ function StationRig.apply(shell: Model): () -> ()
 		Lighting:GetPropertyChangedSignal("GeographicLatitude"):Connect(refresh)
 	)
 
-	local done = false
 	local function cleanup()
 		if done then
 			return

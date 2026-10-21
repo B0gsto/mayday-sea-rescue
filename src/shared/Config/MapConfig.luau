@@ -11,6 +11,8 @@
 -- client). Any system that draws 3D guidance arrows / markers should skip them while it is true; the
 -- map shows the objective instead (CONTRACT.md "Map and blips").
 
+local A11yPalette = require(script.Parent.Parent:WaitForChild("A11yPalette"))
+
 export type Blip = {
 	id: string,
 	label: string,
@@ -22,10 +24,10 @@ export type Blip = {
 }
 
 local MapConfig = {
-	Image = "rbxassetid://134142057109373", -- art/map/gale_isles_map.png (2048 px)
+	Image = "rbxassetid://103597917432878", -- art/map/gale_isles_map.png (2048 px)
 	Tiles = {
-		{ "rbxassetid://133613922451255", "rbxassetid://80765033638484" }, -- r0c0, r0c1 (north)
-		{ "rbxassetid://104467284510962", "rbxassetid://128096116168673" }, -- r1c0, r1c1 (south)
+		{ "rbxassetid://105967857791678", "rbxassetid://85692061525287" }, -- r0c0, r0c1 (north)
+		{ "rbxassetid://112323718765563", "rbxassetid://72212928369973" }, -- r1c0, r1c1 (south)
 	},
 	ImagePixels = 2048,
 	Origin = Vector2.new(-2560, -2560), -- world (x, z) of the image's top-left corner
@@ -43,24 +45,44 @@ local MapConfig = {
 	-- Place names on the full map, drawn live by MapController at a fixed screen size (not baked
 	-- into the image): a name is skipped when it would touch the legend, the title, the buttons, the
 	-- Roblox top bar (GuiService:GetGuiInset) or a name earlier in this list (list order = priority).
-	-- kind: region | town | place | water (italic). left = text starts at the point (else centred).
+	-- kind: region | town | place | water (italic) | street (lowest priority, zoomed in only).
+	-- left = text starts at the point (else centred).
 	-- tools/world/make_map_image.py --labels reads these rows (keep each on one line).
 	Places = {
-		{ text = "PORT HAVEN", x = 0, z = -250, kind = "town" },
+		{ text = "PORT HAVEN", x = -100, z = -325, kind = "town" },
 		{ text = "HAVEN SANDS", x = 1080, z = 210, kind = "town" },
 		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "town" },
 		{ text = "GREAT GALE", x = -1300, z = -1500, kind = "region" },
 		{ text = "Calm Bay", x = 0, z = 170, kind = "water" },
 		{ text = "Harbour Mouth", x = 0, z = 450, kind = "water" },
 		{ text = "Harbour Light", x = 64, z = 322, kind = "place", left = true },
+		{ text = "Harbour Hotel", x = 326, z = -133, kind = "place" },
+		{ text = "Customs House", x = 58, z = -70, kind = "place" },
+		{ text = "Chapel Square", x = 76, z = -200, kind = "place" },
+		{ text = "Market Hall", x = 53, z = -239, kind = "place" },
+		{ text = "West Cliff", x = -900, z = -40, kind = "place" },
 		{ text = "Sandy Point", x = 560, z = 530, kind = "place" },
 		{ text = "Haven Head", x = 1560, z = 560, kind = "place" },
+		{ text = "Trevose Farm", x = -720, z = -870, kind = "place" },
+		{ text = "Penmorvah Farm", x = 1040, z = -1130, kind = "place" },
 		{ text = "Skerry Light outpost", x = 1800, z = 1850, kind = "place" },
 		{ text = "The Skerries", x = 2060, z = 1380, kind = "water" },
 		{ text = "West Ledges", x = -1200, z = 470, kind = "water" },
 		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
 		{ text = "Gannet Rock outpost >", x = 2150, z = 2440, kind = "water" },
 		{ text = "< Tempest Point Light", x = -2150, z = 600, kind = "place" },
+		{ text = "Harbour Road", x = -460, z = -30, kind = "street" },
+		{ text = "Fore Street", x = -300, z = -160, kind = "street" },
+		{ text = "Church Street", x = -300, z = -270, kind = "street" },
+		{ text = "Trelawney Road", x = -300, z = -380, kind = "street" },
+		{ text = "Bodmin Road", x = -300, z = -490, kind = "street" },
+		{ text = "Penhallow Road", x = -540, z = -520, kind = "street" },
+		{ text = "Quay Lane", x = -380, z = -520, kind = "street" },
+		{ text = "Station Hill", x = -220, z = -520, kind = "street" },
+		{ text = "Chapel Hill", x = 20, z = -560, kind = "street" },
+		{ text = "Hospital Lane", x = 200, z = -520, kind = "street" },
+		{ text = "Eastgate Hill", x = 380, z = -520, kind = "street" },
+		{ text = "Tregenna Hill", x = 560, z = -520, kind = "street" },
 	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
 	-- Fixed places (positions from map/Build.luau and WorldConfig).
@@ -79,14 +101,6 @@ local MapConfig = {
 			glyph = "$",
 			color = Color3.fromHex("FFC872"),
 			position = Vector3.new(-44, 4, -60),
-			legend = true,
-		},
-		{
-			id = "BoatDesk",
-			label = "Quay boat desk",
-			glyph = "B",
-			color = Color3.fromHex("3FC1C0"),
-			position = Vector3.new(-95, 4, -10),
 			legend = true,
 		},
 		{
@@ -119,27 +133,71 @@ local MapConfig = {
 
 	-- Dynamic blip styles (positions come from the operation, vehicles and players).
 	Styles = {
-		Casualty = { label = "Casualty (Mayday)", glyph = "!", color = Color3.fromHex("FF3B30") },
-		Vessel = { label = "Vessel in distress", glyph = "!", color = Color3.fromHex("FF8A00") },
-		DropOff = { label = "Drop-off", glyph = "D", color = Color3.fromHex("3EE07A") },
-		Waypoint = { label = "Your waypoint", glyph = "W", color = Color3.fromHex("FFD60A") },
-		Vehicle = { label = "Your vehicle", glyph = "V", color = Color3.fromHex("F4F1EA") },
-		Crew = { label = "Crew", glyph = "C", color = Color3.fromHex("5AC8FA") },
-		Storm = { label = "Storm area", glyph = "", color = Color3.fromHex("8E5BD8") },
+		Casualty = {
+			label = "Casualty (Mayday)",
+			glyph = A11yPalette.symbol("Marker", "Casualty"),
+			color = Color3.fromHex("FF3B30"),
+		},
+		Vessel = {
+			label = "Vessel in distress",
+			glyph = A11yPalette.symbol("Marker", "Vessel"),
+			color = Color3.fromHex("FF8A00"),
+		},
+		DropOff = {
+			label = "Drop-off",
+			glyph = A11yPalette.symbol("Marker", "DropOff"),
+			color = Color3.fromHex("3EE07A"),
+		},
+		Waypoint = {
+			label = "Your waypoint",
+			glyph = A11yPalette.symbol("Marker", "Waypoint"),
+			color = Color3.fromHex("FFD60A"),
+		},
+		Vehicle = {
+			label = "Your vehicle",
+			glyph = A11yPalette.symbol("Marker", "Vehicle"),
+			color = Color3.fromHex("F4F1EA"),
+		},
+		Crew = {
+			label = "Crew",
+			glyph = A11yPalette.symbol("Marker", "Crew"),
+			color = Color3.fromHex("5AC8FA"),
+		},
+		Storm = {
+			label = "Storm area",
+			glyph = A11yPalette.symbol("Marker", "Storm"),
+			color = Color3.fromHex("8E5BD8"),
+		},
 		-- logbook discoveries (ExplorationController -> MapController.SetBlips("Logbook", ...))
-		Discovery = { label = "Logbook discovery", glyph = "*", color = Color3.fromHex("C9B98A") },
+		Discovery = {
+			label = "Logbook discovery",
+			glyph = A11yPalette.symbol("Marker", "Discovery"),
+			color = Color3.fromHex("C9B98A"),
+		},
 		-- seamarks (SeamarkController -> SetBlips("Seamarks", ...), small dots in the IALA colours)
-		SeamarkPort = { label = "Port-hand mark", glyph = "", color = Color3.fromHex("E0352B") },
+		SeamarkPort = {
+			label = "Port-hand mark",
+			glyph = A11yPalette.symbol("Marker", "SeamarkPort"),
+			color = Color3.fromHex("E0352B"),
+		},
 		SeamarkStarboard = {
 			label = "Starboard-hand mark",
-			glyph = "",
+			glyph = A11yPalette.symbol("Marker", "SeamarkStarboard"),
 			color = Color3.fromHex("2FB45A"),
 		},
-		SeamarkCardinal = { label = "Cardinal mark", glyph = "", color = Color3.fromHex("F2C230") },
-		SeamarkSafe = { label = "Safe water mark", glyph = "", color = Color3.fromHex("F4F1EA") },
+		SeamarkCardinal = {
+			label = "Cardinal mark",
+			glyph = A11yPalette.symbol("Marker", "SeamarkCardinal"),
+			color = Color3.fromHex("F2C230"),
+		},
+		SeamarkSafe = {
+			label = "Safe water mark",
+			glyph = A11yPalette.symbol("Marker", "SeamarkSafe"),
+			color = Color3.fromHex("F4F1EA"),
+		},
 		SeamarkDanger = {
 			label = "Isolated danger mark",
-			glyph = "",
+			glyph = A11yPalette.symbol("Marker", "SeamarkDanger"),
 			color = Color3.fromHex("1C1C1C"),
 		},
 	},

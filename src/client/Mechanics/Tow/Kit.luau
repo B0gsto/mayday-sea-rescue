@@ -2,12 +2,11 @@
 -- Kit: the client-side plumbing the tow mechanics share (not pure; the pure maths is in
 -- Ballistics, Procedures and Shared/Tow/TowLine). Scene lookup (the casualty boat, our hitch), wind
 -- and waves, the visible hands (the camera stream's Viewmodel.playAction, in a pcall), the crew's
--- spoken lines, small diegetic choice cards and the tow link: the TowLine simulation that drives
+-- spoken lines and the tow link: the TowLine simulation that drives
 -- the rope's sag and creak, pulls on our boat and moves the casualty hull on this client.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -16,7 +15,14 @@ local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local TowLine = require(Shared:WaitForChild("Tow"):WaitForChild("TowLine"))
 local Waves = require(Shared:WaitForChild("Waves"))
 
+local InputGlyph =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("InputGlyph"))
 local Procedures = require(script.Parent:WaitForChild("Procedures"))
+local Client = script.Parent.Parent.Parent
+local RadioFormat =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioFormat"))
+local VoiceCast = require(Client:WaitForChild("UI"):WaitForChild("VoiceCast"))
+local VoiceTTS = require(Client:WaitForChild("Controllers"):WaitForChild("VoiceTTS"))
 
 local Kit = {}
 
@@ -274,6 +280,7 @@ function Kit.gui(name: string): ScreenGui
 	gui.ResetOnSpawn = false
 	gui.DisplayOrder = 21
 	gui.IgnoreGuiInset = true
+	gui.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets -- keep touch buttons out of notches
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 	return gui
 end
@@ -299,7 +306,8 @@ function Kit.say(gui: ScreenGui, who: string, text: string, seconds: number?)
 		label = l
 	end
 	local lbl = label :: TextLabel
-	lbl.Text = `{who}: {text}`
+	lbl.Text = `{who}: {RadioFormat.capWords(text, 6)}` -- six words, like the radio
+	VoiceTTS.speak(text, VoiceCast.castFor(who, "CREW_FINN")) -- the whole line is spoken
 	lbl.Visible = true
 	local stamp = os.clock()
 	lbl:SetAttribute("Stamp", stamp)
@@ -331,102 +339,17 @@ function Kit.brief(gui: ScreenGui, text: string)
 	(label :: TextLabel).Text = text
 end
 
-export type Choice = { id: string, text: string }
+-- A key label for the device in use: kb on keyboard and mouse, pad on gamepad, "" on touch (the
+-- on-screen button is the prompt). Strings, so mouse buttons and digits read right ("Click", "1").
+-- "  [Q/E]" for a brief line, "" on touch.
+function Kit.chip(kb: string, pad: string): string
+	local k = Kit.keyLabel(kb, pad)
+	return if k == "" then "" else `  [{k}]`
+end
 
--- 2 to 4 cards (number keys 1-4, tap, or click). `right` glows after 5 s of hesitation in Assist.
--- Returns a cancel function. onPick is called once.
-function Kit.choose(
-	gui: ScreenGui,
-	title: string,
-	choices: { Choice },
-	onPick: (id: string) -> (),
-	assist: boolean,
-	right: string?
-): () -> ()
-	local frame = Instance.new("Frame")
-	frame.Name = "Cards"
-	frame.AnchorPoint = Vector2.new(0.5, 1)
-	frame.Position = UDim2.new(0.5, 0, 1, -210)
-	frame.Size = UDim2.fromOffset(math.min(#choices, 4) * 170 + 20, 112)
-	frame.BackgroundColor3 = HudTheme.Colors.panel
-	frame.BackgroundTransparency = 0.25
-	frame.Parent = gui
-	HudTheme.corner(frame)
-	local head = Instance.new("TextLabel")
-	head.BackgroundTransparency = 1
-	head.Position = UDim2.fromOffset(12, 4)
-	head.Size = UDim2.new(1, -24, 0, 26)
-	head.Font = HudTheme.BoldFont
-	head.TextSize = 18
-	head.TextColor3 = HudTheme.Colors.text
-	head.TextXAlignment = Enum.TextXAlignment.Left
-	head.Text = title
-	head.Parent = frame
-	local done = false
-	local conns: { RBXScriptConnection } = {}
-	local function close()
-		done = true
-		for _, c in conns do
-			c:Disconnect()
-		end
-		frame:Destroy()
-	end
-	local function pick(id: string)
-		if done then
-			return
-		end
-		close()
-		onPick(id)
-	end
-	for i, ch in choices do
-		if i > 4 then
-			break
-		end
-		local b = Instance.new("TextButton")
-		b.Name = ch.id
-		b.Position = UDim2.fromOffset(10 + (i - 1) * 170, 36)
-		b.Size = UDim2.fromOffset(160, HudTheme.MinButtonHeight + 12)
-		b.BackgroundColor3 = HudTheme.Colors.panelLight
-		b.Font = HudTheme.BodyFont
-		b.TextSize = 17
-		b.TextWrapped = true
-		b.TextColor3 = HudTheme.Colors.text
-		b.Text = `{i}  {ch.text}`
-		b.Parent = frame
-		HudTheme.corner(b, 10)
-		table.insert(
-			conns,
-			b.Activated:Connect(function()
-				pick(ch.id)
-			end)
-		)
-	end
-	local keys = { Enum.KeyCode.One, Enum.KeyCode.Two, Enum.KeyCode.Three, Enum.KeyCode.Four }
-	table.insert(
-		conns,
-		UserInputService.InputBegan:Connect(function(input, processed)
-			if processed then
-				return
-			end
-			local idx = table.find(keys, input.KeyCode)
-			if idx and choices[idx] then
-				pick(choices[idx].id)
-			end
-		end)
-	)
-	if assist and right then
-		task.delay(5, function()
-			local b = if not done then frame:FindFirstChild(right) else nil
-			if b and b:IsA("TextButton") then
-				HudTheme.stroke(b, HudTheme.Colors.ready, 3)
-			end
-		end)
-	end
-	return function()
-		if not done then
-			close()
-		end
-	end
+function Kit.keyLabel(kb: string, pad: string): string
+	local d = InputGlyph.device()
+	return if d == "Gamepad" then pad elseif d == "Keyboard" then kb else ""
 end
 
 -- A small, subtle gauge (Assist only): a thin bar with green/amber/red ticks.

@@ -2,7 +2,7 @@
 -- ExplorationController: the client side of the logbook (server: ExplorationService). Builds the
 -- Logbook UI, keeps the found set and the duty state, shows a notice on each discovery and puts the
 -- discovered entries on the map (MapController.SetBlips("Logbook", ...), style Discovery).
--- Input: J or gamepad L3 toggles the logbook, gamepad B closes it, LOG on touch.
+-- Input: the phone's Logbook app opens it (J / gamepad L3 there), gamepad B closes it.
 -- API: Open(), Close(), IsOpen(), SetOffDuty(bool), IsOffDuty(), GetFound().
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -79,14 +79,12 @@ function ExplorationController.Init()
 			dutyRemote:FireServer(v)
 		end
 	end)
-	UserInputService.InputBegan:Connect(function(input, processed)
+	UserInputService.InputBegan:Connect(function(input)
 		if not book then
 			return
 		end
-		local key = input.KeyCode
-		if (key == Enum.KeyCode.J and not processed) or key == Enum.KeyCode.ButtonL3 then
-			book.setOpen(not book.isOpen())
-		elseif key == Enum.KeyCode.ButtonB and book.isOpen() then
+		-- J / L3 open the phone's Logbook app (UI/Phone)
+		if input.KeyCode == Enum.KeyCode.ButtonB and book.isOpen() then
 			book.setOpen(false)
 		end
 	end)

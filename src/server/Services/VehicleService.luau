@@ -1,12 +1,13 @@
 --!strict
 -- VehicleService (stream B): launches boats from the dock bays, one vehicle per player.
 --
---   RequestVehicle (RemoteFunction, Net)  client asks for a vehicleId -> (ok, reasonOrVehicle)
+--   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); near = the
+--                                        free bay nearest the player (phone Vehicles app) instead of theirs
 --   Bay ProximityPrompts                 temporary launch UI until the HUD exists ("Launch Jet Ski")
 --   Vehicle_ArrivalHandoff (RemoteEvent) after the arrival cinematic: unseat, dock, stand on the slipway
 --   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
---     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere at the station (QUICK_LAUNCH_RADIUS
---     of the player's bay), no launch cooldown, seated at the helm. Same rank and occupancy checks.
+--     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere (the phone's Vehicles app Spawn), no
+--     launch cooldown, seated at the helm at once. Same rank and occupancy checks.
 --
 -- Vehicle states:
 --   Dock    nobody driving and the hull is at a bay: HullRoot anchored (clients bob it visually)
@@ -32,12 +33,14 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
+local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 type VehicleSpec = VehicleConfig.VehicleSpec
@@ -64,7 +67,6 @@ type Record = {
 
 local TOW_TAG = "VehicleTowed"
 local SPAWN_COOLDOWN = 2 -- seconds between launches per player
-local QUICK_LAUNCH_RADIUS = 150 -- studs from the player's bay that count as "at the station" -- tune
 local DOCK_RADIUS = 14 -- an emptied hull this close to a bay centre docks (anchors) -- tune
 local CHECK_INTERVAL = 0.5 -- seconds between sanity checks
 local SWEEP_INTERVAL = 5 -- seconds between idle / wreck sweeps (RespawnPolicy)
@@ -157,6 +159,162 @@ local function speedBonus(player: Player): number
 	return if ok and type(result) == "number" then math.clamp(result, 1, 3) else 1
 end
 
+-- Fitted boatyard upgrades (docs 03 section 4.1), read from the profile push.
+local function upgradeMask(player: Player, vehicleId: string): number
+	local p = getProgression()
+	if not p or type(p.GetData) ~= "function" then
+		return 0
+	end
+	local ok, data = pcall(p.GetData, player)
+	if not ok or type(data) ~= "table" or type(data.vehicleUpgrades) ~= "table" then
+		return 0
+	end
+	return VehicleUpgrades.mask(data.vehicleUpgrades[vehicleId])
+end
+
+-- Local parts that show an upgrade on the hull (welded to the root, no physics).
+local function upgradePart(
+	model: Model,
+	root: BasePart,
+	name: string,
+	size: Vector3,
+	offset: Vector3,
+	color: Color3,
+	material: Enum.Material
+): Part
+	local part = Instance.new("Part")
+	part.Name = name
+	part.Size = size
+	part.CFrame = root.CFrame * CFrame.new(offset)
+	part.Color = color
+	part.Material = material
+	part.Anchored = false
+	part.Massless = true
+	part.CanCollide = false
+	part.CanQuery = false
+	part.CanTouch = false
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	part.Parent = model
+	local weld = Instance.new("WeldConstraint")
+	weld.Name = "UpgradeWeld"
+	weld.Part0 = root
+	weld.Part1 = part
+	weld.Parent = part
+	return part
+end
+
+local function dressUpgrades(model: Model, spec: VehicleSpec, mask: number)
+	local root = model.PrimaryPart
+	if not root or mask == 0 then
+		return
+	end
+	local grey = Color3.fromRGB(72, 80, 88)
+	local orange = Color3.fromRGB(240, 122, 46)
+	if VehicleUpgrades.has(mask, "Engine") then
+		-- a bigger outboard cowl on the transom
+		if spec.id == "Lifeboat" then
+			upgradePart(
+				model,
+				root,
+				"UpgradeCowl",
+				Vector3.new(5, 2.4, 3.4),
+				Vector3.new(0, 2.2, 22),
+				grey,
+				Enum.Material.Metal
+			)
+		elseif spec.id == "RIB" then
+			upgradePart(
+				model,
+				root,
+				"UpgradeCowl",
+				Vector3.new(2.6, 1.5, 2.2),
+				Vector3.new(0, 1.1, 10.6),
+				grey,
+				Enum.Material.Metal
+			)
+		else
+			upgradePart(
+				model,
+				root,
+				"UpgradeCowl",
+				Vector3.new(1.6, 0.9, 1.6),
+				Vector3.new(0, 0.1, 4.4),
+				grey,
+				Enum.Material.Metal
+			)
+		end
+	end
+	if VehicleUpgrades.has(mask, "Hull") then
+		local x = spec.hullSize.X * 0.36
+		local z = spec.hullSize.Z * 0.1
+		for _, side in { -1, 1 } do
+			local fin = upgradePart(
+				model,
+				root,
+				`UpgradeFin{if side < 0 then "L" else "R"}`,
+				Vector3.new(0.4, 1.2, spec.hullSize.Z * 0.22),
+				Vector3.new(x * side, -0.9, z),
+				orange,
+				Enum.Material.SmoothPlastic
+			)
+			fin.CFrame *= CFrame.Angles(0, 0, math.rad(12 * side))
+		end
+	end
+	if VehicleUpgrades.has(mask, "Fit") then
+		if spec.id == "Lifeboat" then
+			local lamp = upgradePart(
+				model,
+				root,
+				"UpgradeSearchlight",
+				Vector3.new(1.3, 1.3, 1.6),
+				Vector3.new(0, spec.hullSize.Y * 0.5 + 2, spec.hullSize.Z * 0.3),
+				Color3.fromRGB(232, 232, 220),
+				Enum.Material.Metal
+			)
+			local lens = upgradePart(
+				model,
+				root,
+				"UpgradeLens",
+				Vector3.new(1, 1, 0.2),
+				Vector3.zero,
+				Color3.fromRGB(255, 244, 200),
+				Enum.Material.Neon
+			)
+			lens.CFrame = lamp.CFrame * CFrame.new(0, 0, -0.85)
+			local light = Instance.new("SpotLight")
+			light.Name = "UpgradeSpot"
+			light.Face = Enum.NormalId.Front
+			light.Angle = 50
+			light.Range = 120
+			light.Brightness = 3
+			light.Color = Color3.fromRGB(255, 244, 210)
+			light.Parent = lens
+		elseif spec.id == "RIB" then
+			local post = upgradePart(
+				model,
+				root,
+				"UpgradeTowPost",
+				Vector3.new(0.6, 3.2, 0.6),
+				Vector3.new(0, 1.6, spec.hullSize.Z * 0.28),
+				grey,
+				Enum.Material.Metal
+			)
+			post.CFrame *= CFrame.Angles(math.rad(-12), 0, 0)
+		else
+			upgradePart(
+				model,
+				root,
+				"UpgradeSeat",
+				Vector3.new(1.8, 0.4, 2.2),
+				Vector3.new(0, 0.9, 3.1),
+				Color3.fromRGB(232, 224, 202),
+				Enum.Material.Fabric
+			)
+		end
+	end
+end
+
 local function setOwner(part: BasePart, player: Player?)
 	if part.Anchored or not part:IsDescendantOf(Workspace) then
 		return
@@ -229,11 +387,29 @@ local function drift(record: Record)
 	setOwner(record.root, nil)
 end
 
+-- G30: a crewmate may take the helm, but only with the boat at rest (a seat swap), never under
+-- way. The owner always may. CrewService is optional at boot (it is required on first use).
+local REST_SWAP_SPEED = 4 -- studs/s
+
+local function crewMayHelm(record: Record, player: Player): boolean
+	local module = script.Parent:FindFirstChild("CrewService")
+	if not module or not module:IsA("ModuleScript") then
+		return false
+	end
+	local ok, CrewService = pcall(require, module)
+	if not ok or type(CrewService) ~= "table" or not CrewService.IsCrewmate then
+		return false
+	end
+	if not CrewService.IsCrewmate(record.owner, player) then
+		return false
+	end
+	return record.mode == "Dock" or record.root.AssemblyLinearVelocity.Magnitude <= REST_SWAP_SPEED
+end
+
 local function onDriverChanged(record: Record)
 	local humanoid = record.seat.Occupant
 	local player = if humanoid then Players:GetPlayerFromCharacter(humanoid.Parent) else nil
-	if humanoid and player ~= record.owner then
-		-- Owner-only driving for now. CONTRACT: CrewService.GetCrew could let crew take the helm.
+	if humanoid and player ~= record.owner and not crewMayHelm(record, player) then
 		local weld = record.seat:FindFirstChild("SeatWeld")
 		if weld then
 			weld:Destroy()
@@ -242,7 +418,9 @@ local function onDriverChanged(record: Record)
 	end
 	if player then
 		record.driver = player
-		byPlayer[player] = record -- riding an older craft of theirs makes it current again
+		if player == record.owner then
+			byPlayer[player] = record -- riding an older craft of theirs makes it current again
+		end
 		record.model:SetAttribute("EngineRunning", true)
 		record.mode = "Driven"
 		record.root.Anchored = false
@@ -302,6 +480,23 @@ local function bayAllows(bay: BasePart, vehicleId: string): boolean
 		return true
 	end
 	return table.find(string.split(allowed, ","), vehicleId) ~= nil
+end
+
+-- The free bay nearest the player that takes this boat (the phone's spawn), nil: their own bay.
+local function nearestFreeBay(player: Player, vehicleId: string): BasePart?
+	local character = player.Character
+	if not character then
+		return nil
+	end
+	local at = character:GetPivot().Position
+	local best, bestDist = nil, math.huge
+	for _, bay in bays do
+		local d = flatDistance(at, bay.Position)
+		if d < bestDist and bayAllows(bay, vehicleId) and not bayBusy(bay, player) then
+			best, bestDist = bay, d
+		end
+	end
+	return best
 end
 
 local function sitDriver(player: Player, seat: VehicleSeat)
@@ -572,7 +767,11 @@ local function createVehicle(
 		despawnModel(old.model)
 	end
 
-	local model = Builder.build(spec, visuals)
+	local mask = upgradeMask(player, spec.id)
+	local fitted = VehicleUpgrades.apply(spec, mask)
+	local model = Builder.build(fitted, visuals)
+	model:SetAttribute("VehicleUpgrades", mask)
+	dressUpgrades(model, fitted, mask)
 	if visuals then
 		model:GetAttributeChangedSignal("Wet"):Connect(function()
 			AssetLoader.setWet(model, model:GetAttribute("Wet") == true)
@@ -588,7 +787,7 @@ local function createVehicle(
 	local root = model.PrimaryPart :: BasePart
 	local seat = model:FindFirstChild("DriverSeat") :: VehicleSeat
 	local slots = {}
-	for i = 1, spec.survivorCapacity do
+	for i = 1, fitted.survivorCapacity do
 		local slot = root:FindFirstChild(`SurvivorSlot{i}`)
 		if slot and slot:IsA("Attachment") then
 			table.insert(slots, slot)
@@ -597,7 +796,7 @@ local function createVehicle(
 	local record: Record = {
 		model = model,
 		owner = player,
-		spec = spec,
+		spec = fitted,
 		root = root,
 		seat = seat,
 		slots = slots,
@@ -629,7 +828,8 @@ local function spawnVehicle(
 	player: Player,
 	vehicleId: string,
 	bay: BasePart?,
-	quick: boolean?
+	quick: boolean?,
+	docked: boolean?
 ): (boolean, string | Model)
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
@@ -659,7 +859,9 @@ local function spawnVehicle(
 	lastSpawn[player] = now
 
 	local model, seat = createVehicle(player, spec, at.CFrame, "Request")
-	sitDriver(player, seat)
+	if not docked then
+		sitDriver(player, seat)
+	end
 
 	spawnedEvent:Fire(player, model)
 	Net.event("VehicleSpawned"):FireAllClients(model, at.Name)
@@ -920,6 +1122,13 @@ local function stowVehicle(player: Player): string
 	return "Despawned"
 end
 
+-- The cold open ended off the craft (OperationService): bring the jet ski home to the bay so the
+-- next launch step points at the quay, not at a hull drifting out at sea.
+function VehicleService.Stow(player: Player): string
+	coldOpenRiders[player] = nil
+	return stowVehicle(player)
+end
+
 local function arrivalHandoff(player: Player)
 	if not coldOpenRiders[player] or player:GetAttribute("ColdOpenDone") ~= true then
 		return
@@ -958,6 +1167,12 @@ local function arrivalHandoff(player: Player)
 	if handoffRemote then
 		handoffRemote:FireClient(player, { stand = cf, look = face, vehicle = vehicle })
 	end
+	-- the story goes on: Chief Aggie walks up and welcomes them (docs/14 section 3)
+	local npcs = script.Parent:FindFirstChild("NpcService")
+	local ok, Npc = pcall(require :: any, npcs)
+	if ok and type(Npc) == "table" and Npc.MeetAggie then
+		Npc.MeetAggie(player, pos, ColdOpen.WELCOME)
+	end
 end
 
 function VehicleService.Init()
@@ -973,11 +1188,18 @@ function VehicleService.Init()
 	handoffRemote = remote
 	remote.OnServerEvent:Connect(arrivalHandoff)
 
-	Net.func("RequestVehicle").OnServerInvoke = function(player: Player, vehicleId: unknown)
+	-- docked = true (the kit_launch step): leave it at the bay for the player to walk to and board
+	Net.func("RequestVehicle").OnServerInvoke = function(
+		player: Player,
+		vehicleId: unknown,
+		docked: unknown,
+		near: unknown
+	)
 		if type(vehicleId) ~= "string" then
 			return false, "BadRequest"
 		end
-		return spawnVehicle(player, vehicleId, nil)
+		local bay = if near == true then nearestFreeBay(player, vehicleId) else nil
+		return spawnVehicle(player, vehicleId, bay, nil, docked == true)
 	end
 
 	local quickRemote = Instance.new("RemoteFunction")
@@ -1100,12 +1322,15 @@ function VehicleService.SpawnSeated(
 	return model
 end
 
--- Cold open (CONTRACT: Operations v2): a jet ski at `cframe`, the player seated, already running
--- at about 20 knots, the speed BoatController's cold-open auto-throttle then holds until it hands
--- over (shared/Boat/ColdOpen.AUTO_SPEED). A thin wrapper over SpawnSeated; OperationService calls
--- it through pcall and then marks the jet ski (ColdOpen* attributes).
+-- Cold open (CONTRACT: Operations v2): a jet ski at `cframe`, the player seated, gliding in at
+-- about 5 knots toward the casualty a short way dead ahead (shared/Boat/ColdOpen.DISTANCE; docs/14
+-- F-3): slow enough that they never get run down, and it settles to the idle creep so a player
+-- who does nothing still drifts close enough for the casualty to swim to them. A thin wrapper
+-- over SpawnSeated; OperationService calls it through pcall and then marks the jet ski.
 VehicleService.ColdOpenVehicle = "JetSki"
-VehicleService.ColdOpenSpeed = 20 * VehicleConfig.KNOT -- 30.9 studs/s
+-- 0: at rest, so the casualty is still ColdOpen.DISTANCE ahead when the player looks (under way at
+-- 7.7 studs/s it had closed to ~30 studs by the time they had control); the idle jet still creeps
+VehicleService.ColdOpenSpeed = 0
 
 function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 	local model = VehicleService.SpawnSeated(
@@ -1134,23 +1359,42 @@ function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean
 			owns = (monetization :: any).OwnsPass(player, "QuickLaunch") == true
 		end
 	end
-	local bay = bayFor(player)
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
-	local distance = if bay and root then flatDistance(root.Position, bay.Position) else nil
-	local allowed, why = MonetizationEffects.quickLaunchAllowed(
-		owns,
-		distance,
-		QUICK_LAUNCH_RADIUS,
-		player:GetAttribute("ColdOpenDone") == true
-	)
+	local allowed, why =
+		MonetizationEffects.quickLaunchAllowed(owns, player:GetAttribute("ColdOpenDone") == true)
 	if not allowed then
 		return false, why
 	end
-	return spawnVehicle(player, vehicleId, bay, true)
+	return spawnVehicle(player, vehicleId, bayFor(player), true)
+end
+
+-- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
+-- class so it rebuilds with the new parts and handling (a crewed hull is left until it is empty).
+function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
+	local classes = owned[player]
+	local record = classes and classes[vehicleId]
+	if record and not record.driver and next(record.survivors) == nil then
+		-- docked at a bay: rebuild it in place with the new kit, so the player never loses their boat
+		local spec = if record.mode == "Dock" then VehicleConfig.get(vehicleId) else nil
+		if spec then
+			createVehicle(player, spec, record.root.CFrame, "Request")
+		else
+			despawnModel(record.model)
+		end
+	end
 end
 
 function VehicleService.GetVehicle(player: Player): Model?
+	-- Seated anywhere (a crewmate at the helm or in a passenger seat) beats the owner record:
+	-- the operation and the HUD want the craft the player is actually on.
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	if seat then
+		local model = seat:FindFirstAncestorOfClass("Model")
+		if model and records[model] then
+			return model
+		end
+	end
 	local record = byPlayer[player]
 	return if record then record.model else nil
 end
@@ -1179,6 +1423,59 @@ function VehicleService.GetOccupants(model: Model): { Player }
 		end
 	end
 	return out
+end
+
+-- The boarding climb (2026-10-21): an anchored survivor swims to the hull side by their slot, then
+-- up and over onto it, following the moving boat each frame (target() is the slot pose).
+VehicleService.CLIMB_SECONDS = 1.3
+function VehicleService.Climb(survivorModel: Model, hull: BasePart, target: () -> CFrame)
+	local start = survivorModel:GetPivot()
+	local side = if hull.CFrame:PointToObjectSpace(start.Position).X >= 0 then 1 else -1
+	local t0 = os.clock()
+	while survivorModel.Parent and hull.Parent do
+		local t = math.min((os.clock() - t0) / VehicleService.CLIMB_SECONDS, 1)
+		local seat = target()
+		local edge = seat
+			+ hull.CFrame.RightVector * side * (hull.Size.X / 2 + 0.8)
+			- Vector3.new(0, 1.6, 0)
+		local cf = if t < 0.45
+			then start:Lerp(edge, t / 0.45)
+			else edge:Lerp(seat, (t - 0.45) / 0.55) + Vector3.new(
+				0,
+				math.sin((t - 0.45) / 0.55 * math.pi) * 1.2,
+				0
+			)
+		survivorModel:PivotTo(cf)
+		if t >= 1 then
+			return
+		end
+		RunService.Heartbeat:Wait()
+	end
+end
+
+-- An NPC boat for the takeover pickup (Ops/NpcPickup): the same build as a player's craft, every
+-- part anchored, seats disabled, owned by nobody (not in Workspace.Vehicles, never simulated).
+function VehicleService.BuildProp(vehicleId: string): Model?
+	local spec = VehicleConfig.get(vehicleId)
+	if not spec then
+		return nil
+	end
+	local model = Builder.build(spec, visualsFor(spec))
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+		end
+		if d:IsA("Seat") or d:IsA("VehicleSeat") then
+			(d :: any).Disabled = true
+		end
+	end
+	model.Name = `NpcRescue_{vehicleId}`
+	return model
+end
+
+-- Rests a boat on the water at (x, z) facing `look` (the dock rest pose).
+function VehicleService.RestCFrame(model: Model, x: number, z: number, look: Vector3): CFrame
+	return Simulator.restCFrame(model, x, z, look)
 end
 
 -- Welds the survivor to the next free SurvivorSlot. False when the boat is full.
@@ -1220,12 +1517,17 @@ function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	local function toSlot()
 		survivorModel:PivotTo(slot.WorldCFrame * CFrame.new(0, size.Y / 2, 0) * pivotOffset)
 	end
-	toSlot()
 	local weld = Instance.new("WeldConstraint")
 	weld.Name = "VehicleSurvivorWeld"
 	weld.Part0 = record.root
 	weld.Parent = part
-	task.delay(SURVIVOR_WELD_DELAY, function()
+	task.spawn(function()
+		-- they swim to the side and climb on (2026-10-21), then sit anchored for the weld delay
+		VehicleService.Climb(survivorModel, record.root, function()
+			return slot.WorldCFrame * CFrame.new(0, size.Y / 2, 0) * pivotOffset
+		end)
+		toSlot()
+		task.wait(SURVIVOR_WELD_DELAY)
 		local entry = record.survivors[slotIndex]
 		if not (entry and entry.weld == weld and weld.Parent and survivorModel.Parent) then
 			return -- taken off (RemoveSurvivors) or gone before the weld went on

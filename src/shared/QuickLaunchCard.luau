@@ -44,7 +44,6 @@ end
 local REASONS: { [string]: string } = {
 	NotOwned = "Quick Launch is not on this account yet.",
 	ColdOpen = "Finish your first rescue before Quick Launch.",
-	NotAtStation = "Quick Launch works at the station. Head back to your bay.",
 	Locked = "Your rank or certifications do not cover this boat yet.",
 	NoBay = "No launch bay free at the moment. Try again shortly.",
 	BayNotAllowed = "That bay cannot launch this boat.",

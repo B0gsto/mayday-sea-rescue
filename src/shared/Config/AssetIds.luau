@@ -783,19 +783,19 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://114718379095230",
 	},
 	M_Veh_MooredBoat_01 = {
-		LOD0 = "rbxassetid://76263036349599",
-		LOD1 = "rbxassetid://72153368048940",
-		LOD2 = "rbxassetid://122693218893952",
+		LOD0 = "rbxassetid://72925216529877",
+		LOD1 = "rbxassetid://103882713069878",
+		LOD2 = "rbxassetid://79294601777514",
 	},
 	M_Veh_MooredBoat_02 = {
-		LOD0 = "rbxassetid://109320164967623",
-		LOD1 = "rbxassetid://98500076763819",
-		LOD2 = "rbxassetid://104651327138873",
+		LOD0 = "rbxassetid://74052665254991",
+		LOD1 = "rbxassetid://72642911789773",
+		LOD2 = "rbxassetid://136263772891355",
 	},
 	M_Veh_MooredBoat_03 = {
-		LOD0 = "rbxassetid://113914104520675",
-		LOD1 = "rbxassetid://128929400972655",
-		LOD2 = "rbxassetid://105221245355120",
+		LOD0 = "rbxassetid://135937094364919",
+		LOD1 = "rbxassetid://73008894247901",
+		LOD2 = "rbxassetid://133903517923257",
 	},
 	M_Veh_Optimist = {
 		LOD0 = "rbxassetid://129557597175985",

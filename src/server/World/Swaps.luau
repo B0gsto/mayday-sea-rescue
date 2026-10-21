@@ -177,7 +177,8 @@ local Swaps: { [string]: Swap } = {
 		},
 		rig = "StationRig", -- door lamp, floods and the GlassLit panes: on at night / in a storm
 		-- walkable collision from build.py (metres, X across, -Y sea front, Z up; the upload is recentred by
-		-- +0.175 m in Y, added by station()): hall walls with the 6 x 4.6 m bay door gap (x -8.25..-2.25), the
+		-- +0.175 m in Y, added by station()): hall walls with the 6 x 4.6 m bay door gap (x -8.25..-2.25) and the
+		-- 1 x 2.8 m back door gap (out to the yard and the VIP deck ladder), the
 		-- granite hall floor, the crew wing (no interior: solid from the partition), the watch-room bay, an
 		-- eaves cap. The upload's hull is one mesh, so it stays off.
 		collide = false,
@@ -185,7 +186,9 @@ local Swaps: { [string]: Swap } = {
 			{ -9.25, -7.6, -0.4, -1.0, 7.6, 0.08 }, -- hall floor (granite flags)
 			{ -8.25, -8.1, -0.4, -2.25, -7.6, 0.08 }, -- bay door threshold
 			{ -9.75, -8.1, 0, -9.25, 8.1, 7 }, -- hall west wall
-			{ -9.75, 7.6, 0, -1.0, 8.1, 7 }, -- hall back wall
+			{ -9.75, 7.6, 0, -8.0, 8.1, 7 }, -- hall back wall, west of the back door
+			{ -7.0, 7.6, 0, -1.0, 8.1, 7 }, -- hall back wall, east of the back door
+			{ -8.0, 7.6, 2.8, -7.0, 8.1, 7 }, -- over the back door (x -8.0..-7.0: out to the yard and the VIP ladder)
 			{ -9.75, -8.1, 0, -8.25, -7.6, 7 }, -- front wall west of the bay door
 			{ -8.25, -8.1, 4.6, -2.25, -7.6, 7 }, -- over the bay door (roll hood)
 			{ -2.25, -8.1, 0, -1.0, -7.6, 7 }, -- front wall east of the bay door
@@ -217,13 +220,42 @@ local Swaps: { [string]: Swap } = {
 			{ 3.333, 3.663, 0.0, 0.2, -30.0, 0.2 - 30.0 * SLIP_K },
 		},
 	},
+	-- H5 hospital (art/source/buildings/M_Bld_Hospital/build.py: 30 x 15 m block on its rear terrace, quay wall
+	-- and pontoon; origin at the base under the pontoon, front (entrance porch) local -Z). The greybox
+	-- Map.PortHaven.Hospital is 60 x 40 studs at x 100..160, z -140..-100; the asset is 90 x 45 studs, so its
+	-- pivot sits at the greybox base centre, yawed 180 degrees: the entrance faces the harbour and the built rear
+	-- pontoon runs north behind the building. DropOff_Hospital is the Harbour kit pontoon pad at x 130 (unchanged).
+	Hospital = {
+		greybox = { "PortHaven", "Hospital" },
+		pivot = CFrame.new(130, LAND, -120) * CFrame.Angles(0, math.pi, 0),
+		shell = { "M_Bld_Hospital" },
+		-- the town terrain meshes about 2 studs above LandTopY here: sit the plinth on it
+		ground = 24,
+		rig = "SharedSetsRig", -- the shared texture sets AssetLoader cannot see from the hospital's folder
+	},
+	-- H4 harbourmaster's office (10 x 8 m) replacing the greybox desk stand-in: pivot at the desk's quay base,
+	-- yawed 180 degrees so the door and the storm queue board face the water. The greybox DeskShelf marker
+	-- (ProductShelf = "StormDesk", the RP-M3 Call the Storm prompt) moves onto the asset's storm queue board.
+	Harbourmaster = {
+		greybox = { "PortHaven", "HarbourmasterDesk" },
+		pivot = CFrame.new(-9, LAND, -8) * CFrame.Angles(0, math.pi, 0),
+		shell = { "M_Bld_Harbourmaster" },
+		rig = "SharedSetsRig", -- shared Station Granite / Chandlery Slate / BldTrim sets
+		prompts = {
+			StormDesk = {
+				marker = "DeskShelf",
+				asset = "M_Bld_Harbourmaster",
+				attachment = "ATT_StormQueueBoard",
+			},
+		},
+	},
 	-- H3 cottages (greybox spots and sizes from map/Build.luau buildHouse: 18 + (n % 3) * 4 wide, 12 + (n % 2) * 6 eaves)
-	House1 = cottage(1, Vector3.new(-40, LAND, -150), 22 / 3, 6, { 0.0 }),
-	House2 = cottage(2, Vector3.new(10, LAND, -170), 26 / 3, 4, { -3.0, 1.4 }),
-	House3 = cottage(3, Vector3.new(60, LAND, -150), 6, 6, { -1.6 }),
-	House4 = cottage(4, Vector3.new(-200, LAND, -140), 22 / 3, 4, { 0.0 }, true),
-	House5 = cottage(5, Vector3.new(220, LAND, -160), 26 / 3, 6, { -0.72, 0.72 }),
-	House6 = cottage(6, Vector3.new(-30, LAND, -250), 6, 4, { -1.5 }),
+	House1 = cottage(1, Vector3.new(-150, LAND, -188), 22 / 3, 6, { 0.0 }),
+	House2 = cottage(2, Vector3.new(-60, LAND, -188), 26 / 3, 4, { -3.0, 1.4 }),
+	House3 = cottage(3, Vector3.new(90, LAND, -188), 6, 6, { -1.6 }),
+	House4 = cottage(4, Vector3.new(130, LAND, -188), 22 / 3, 4, { 0.0 }, true),
+	House5 = cottage(5, Vector3.new(260, LAND, -188), 26 / 3, 6, { -0.72, 0.72 }),
+	House6 = cottage(6, Vector3.new(310, LAND, -188), 6, 4, { -1.5 }),
 }
 
 return Swaps

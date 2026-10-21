@@ -181,8 +181,9 @@ end
 
 -- the hall face of the partition wall (build.py: stone box x -1.0..-0.5), towards the back of the hall,
 -- clear of the boat on ATT_BoatHall (x -5.25, y 0); the board faces into the hall (-X metres = +X studs)
-local WALL_X, BOARD_Y, BOARD_Z = -1.0, 4.9, 1.7 -- metres: wall face, along the wall, centre height
-local W, H, T = 6.9, 4.2, 0.12 -- studs: 2.3 x 1.4 m, board thickness
+local WALL_X, BOARD_Y, BOARD_Z = -1.0, 4.9, 2.5 -- metres: wall face, along the wall, centre height
+local W, H, T = 13.8, 8.4, 0.12 -- studs: 4.6 x 2.8 m (readable from the third-person camera), board thickness
+local PPS = 50 -- SurfaceGui pixels per stud: the text layout below fills the panel at this density
 local FRAME, FRAME_D = 0.33, 0.24 -- moulding width and depth
 
 local NAVY = Color3.fromRGB(26, 36, 52) -- signwriter's dark blue, painted on timber
@@ -243,7 +244,7 @@ local function buildGui(panel: Part)
 	gui.Name = "ServiceBoard"
 	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 100
+	gui.PixelsPerStud = PPS
 	gui.LightInfluence = 1 -- paint, not a screen: it is only as bright as the hall light on it
 	gui.MaxDistance = 70
 	gui.ClipsDescendants = true
@@ -415,7 +416,7 @@ local function buildBoard(modelPivot: CFrame): Model
 	light.Face = Enum.NormalId.Front
 	light.Color = Color3.fromRGB(255, 205, 150) -- 2900 K tungsten
 	light.Brightness = 1.1
-	light.Range = 9
+	light.Range = 14
 	light.Angle = 95
 	light.Shadows = false
 	light.Parent = att
@@ -465,7 +466,9 @@ end
 local function stationPivot(): CFrame?
 	local dressing = Workspace:FindFirstChild("Dressing")
 	local shell = dressing and dressing:FindFirstChild("Station")
-	local asset = shell and shell:FindFirstChild("M_Bld_Station")
+	-- the swap names the loaded model by its LOD (M_Bld_Station_LOD0)
+	local asset = shell
+		and (shell:FindFirstChild("M_Bld_Station") or shell:FindFirstChild("M_Bld_Station_LOD0"))
 	if asset and asset:IsA("Model") then
 		return asset:GetPivot()
 	end

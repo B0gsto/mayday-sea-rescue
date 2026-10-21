@@ -3,9 +3,15 @@
 -- Assets/CasualtyAsset + RescueService) on this client, because Bone.Transform doesn't replicate:
 --   * the pose named by the model's CasualtyPose attribute (TreadWater | Wave | Panic | Sit, from
 --     Shared.Casualty.CasualtyRig), cross-faded over BLEND seconds when it changes; far ones are skipped;
+--   * tiring (2026-10-21): the model's Stamina attribute (0..1, the server's condition meter) slows the
+--     motion and lets them sit lower in the water;
 --   * the lifejacket strobe: a small Neon lens + PointLight on the ATT_Strobe bone, flashing at about
 --     1 Hz (SOLAS lights: 50-70 flashes a minute) when it's dark, stormy or the light is low
---     (Workspace attribute CasualtyStrobeHold = true holds it lit, for stills).
+--     (Workspace attribute CasualtyStrobeHold = true holds it lit, for stills);
+--   * hi-vis aboard: a casualty riding a craft (Victim model attribute OnVehicle) gets an orange
+--     tint and outline so they read apart from the seat at range (playtest 2);
+--   * shouting (VoiceTTS, 3D from the model): the nearest casualty in earshot who is waving,
+--     panicking or tiring calls out every few seconds, and says thanks once aboard.
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,6 +20,8 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
+local RadioLines = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioLines"))
+local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local CasualtyController = {}
 
@@ -33,11 +41,65 @@ type Rig = {
 	from: string?,
 	changedAt: number,
 	phase: number,
+	clock: number,
 	lens: Part?,
 	light: PointLight?,
 }
 
 local rigs: { [Model]: Rig } = {}
+local SHOUT_RANGE = 200 -- studs from the camera
+-- lines.csv suffixes (CSM_/CSF_ CASUALTY_*) by what the casualty is doing
+local SHOUTS: { [string]: { string } } = {
+	Wave = { "HELP", "HELP_2", "PAX_HERE" },
+	Panic = { "PANIC", "GRAB", "HELP_2" },
+	Tired = { "TIRED", "COLD" },
+	Aboard = { "THANKS", "COUGH_OK", "FLAGS" },
+}
+local nextShout = 0
+
+-- a casualty keeps one voice: the random phase picks it
+local function shoutLine(r: Rig, kind: string): (string, string)
+	local pool = SHOUTS[kind]
+	local pre = if r.phase < 10 then "CSF" else "CSM"
+	local text = RadioLines.text(`{pre}_CASUALTY_{pool[math.random(#pool)]}`) or "Help!"
+	return text, if pre == "CSF" then "CASUALTY_F" else "CASUALTY_M"
+end
+
+-- the rig sits inside the server's Victim model, which carries OnVehicle and Stamina
+local function victimAttr(model: Model, name: string): any
+	local v = model:GetAttribute(name)
+	local parent = model.Parent
+	if v == nil and parent and parent:IsA("Model") then
+		v = parent:GetAttribute(name)
+	end
+	return v
+end
+
+local function shout(camPos: Vector3)
+	local now = os.clock()
+	if now < nextShout then
+		return
+	end
+	local best: Rig?, bestD, kind = nil, SHOUT_RANGE, ""
+	for model, r in rigs do
+		if model.Parent and victimAttr(model, "OnVehicle") == nil and r.pose ~= "Sit" then
+			local d = (model:GetPivot().Position - camPos).Magnitude
+			local tired = (tonumber(victimAttr(model, "Stamina")) or 1) < 0.4
+			local k = if r.pose == "Wave" or r.pose == "Panic"
+				then r.pose
+				elseif tired then "Tired"
+				else nil
+			if k and d < bestD then
+				best, bestD, kind = r, d, k
+			end
+		end
+	end
+	if best then
+		nextShout = now + 5 + math.random() * 4
+		local text, cast = shoutLine(best, kind)
+		VoiceTTS.speak(text, cast, { at = best.model, channel = "casualty" })
+	end
+end
 local strobeFolder: Folder? = nil
 local weather: any = nil
 
@@ -107,6 +169,7 @@ local function add(model: Instance)
 		from = nil,
 		changedAt = 0,
 		phase = math.random() * 20,
+		clock = 0,
 		lens = nil,
 		light = nil,
 	}
@@ -124,7 +187,7 @@ local function remove(model: Instance)
 	end
 end
 
-local function step()
+local function step(dt: number)
 	local now = os.clock()
 	local cam = Workspace.CurrentCamera
 	local camPos = if cam then cam.CFrame.Position else Vector3.zero
@@ -145,7 +208,10 @@ local function step()
 			r.from, r.pose, r.changedAt = r.pose, want, now
 		end
 		local pivot = model:GetPivot().Position
-		local t = now + r.phase
+		local stamina = math.clamp(tonumber(model:GetAttribute("Stamina")) or 1, 0, 1)
+		r.clock += dt * (0.4 + 0.6 * stamina) -- tired: slower strokes and waves
+		local t = r.clock + r.phase
+		local sink = if r.pose == "Sit" then 0 else (1 - stamina) * 0.7
 		if (pivot - camPos).Magnitude < CasualtyController.POSE_RANGE then
 			local target = CasualtyRig.sample(r.pose, t)
 			local a = if r.from
@@ -160,7 +226,9 @@ local function step()
 				if prev then
 					cf = (prev[name] or CFrame.identity):Lerp(cf, a)
 				end
-				b.Transform = cf
+				b.Transform = if name == "Root" and sink > 0
+					then CFrame.new(0, -sink, 0) * cf
+					else cf
 			end
 		end
 		local lens, light = r.lens, r.light
@@ -172,7 +240,7 @@ local function step()
 				and model:GetAttribute("Strobe") ~= false
 				and (
 					Workspace:GetAttribute("CasualtyStrobeHold") == true
-					or (t * CasualtyController.FLASH_HZ) % 1
+					or ((now + r.phase) * CasualtyController.FLASH_HZ) % 1
 						< CasualtyController.FLASH_ON * CasualtyController.FLASH_HZ
 				)
 			if light.Enabled ~= lit then
@@ -198,7 +266,44 @@ function CasualtyController.Start()
 	for _, m in CollectionService:GetTagged(CasualtyController.TAG) do
 		add(m)
 	end
-	RunService.RenderStepped:Connect(step)
+	-- PreSimulation, not RenderStepped: the Animator (PreAnimation) runs after RenderStepped and
+	-- resets every Transform to the bind pose, so the casualty floated stiff as a plank.
+	RunService.PreSimulation:Connect(step)
+	task.spawn(function()
+		while true do
+			local folder = Workspace:FindFirstChild("CallProps")
+			for _, m in if folder then folder:GetChildren() else {} do
+				if m.Name == "Victim" then
+					local hi = m:FindFirstChild("HiVis")
+					if m:GetAttribute("OnVehicle") == nil then
+						if hi then
+							hi:Destroy()
+						end
+					elseif not hi then
+						local rig = m:FindFirstChild("CasualtyRig")
+						local r = rigs[m :: Model] or (rig and rigs[rig :: Model])
+						if r then
+							local text, cast = shoutLine(r, "Aboard")
+							VoiceTTS.speak(text, cast, { at = m, channel = "casualty" })
+						end
+						local h = Instance.new("Highlight")
+						h.Name = "HiVis"
+						h.FillColor = Color3.fromRGB(255, 110, 10)
+						h.FillTransparency = 0.45
+						h.OutlineColor = Color3.fromRGB(255, 225, 120)
+						h.OutlineTransparency = 0.1
+						h.DepthMode = Enum.HighlightDepthMode.Occluded
+						h.Parent = m
+					end
+				end
+			end
+			local cam = Workspace.CurrentCamera
+			if cam then
+				shout(cam.CFrame.Position)
+			end
+			task.wait(0.5)
+		end
+	end)
 end
 
 return CasualtyController

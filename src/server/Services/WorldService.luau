@@ -5,7 +5,7 @@
 --   * hides the authored marker volumes (Workspace.Zones, Map.WorldPoints, PromptAnchor parts): fully
 --     transparent, no collide / query / touch / shadow, and strips any adornment or Highlight;
 --   * adds the diegetic store prompts on the map's PromptAnchor parts (docs 04 section 1.1, no shop
---     button): "ShopCounter" (Chandlery gear counter) and "BoatDesk" (boatyard collection desk). The
+--     button): "ShopCounter" (Chandlery gear counter). Boats and upgrades are on the phone (VehiclesApp). The
 --     prompts carry attribute Panel = anchor id; HudController opens the matching panel on the
 --     client's own ProximityPromptService.PromptTriggered (no remote needed).
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -17,7 +17,6 @@ local GameConfig = require(
 
 local PROMPTS: { [string]: { action: string, object: string } } = {
 	ShopCounter = { action = "Browse gear", object = "Chandlery counter" },
-	BoatDesk = { action = "Collect a boat", object = "Boatyard desk" },
 }
 
 local WorldService = {}

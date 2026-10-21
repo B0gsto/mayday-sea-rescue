@@ -3,27 +3,40 @@
 -- a cleanup bin, small UI builders in the HudTheme palette, subtitles, positional sound with a
 -- visual ripple (docs 09 section 2.7: every sound cue has a ripple for players with sound off),
 -- key bindings, and the Viewmodel hands hook (pcall: the camera stream's API may not exist yet).
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+local AudioConfig = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("AudioConfig")
+)
 local HudTheme = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
+local InputGlyph =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("InputGlyph"))
+local RadioFormat =
+	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioFormat"))
+local VoiceCast = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("VoiceCast"))
+local VoiceTTS =
+	require(script.Parent.Parent.Parent:WaitForChild("Controllers"):WaitForChild("VoiceTTS"))
 
 local FerryUi = {}
 FerryUi.Theme = HudTheme
 
--- Placeholder sound ids (swap for the real uploads; a 0 id plays nothing but the ripple shows).
+-- Ferry sound cues. Ids are public Pro Sound Effects library clips (verified with
+-- tools/audio-search.py verify); the rest come from AudioConfig. No placeholders are left.
 FerryUi.Sounds = {
-	knock = "rbxassetid://0", -- a gloved fist on steel plate, dull and short
-	replyTap = "rbxassetid://0", -- muffled metal taps from inside the hull
-	hullCreak = "rbxassetid://0",
-	radioClick = "rbxassetid://0", -- squelch and PTT click
-	breathIn = "rbxassetid://0", -- regulator inhale, slow and calm
-	bubbles = "rbxassetid://0", -- exhale bubbles
-	lineTug = "rbxassetid://0", -- a rope snapping taut, soft
-	underwaterBed = "rbxassetid://0", -- calm, warm underwater ambience (never scary)
-	tagSnap = "rbxassetid://0", -- the triage band clicking shut
-	tabletTap = "rbxassetid://0",
+	knock = "rbxassetid://9116658943", -- Metal Hit Steel Plate Hit Slapped 15: a gloved fist on plate
+	replyTap = "rbxassetid://9125691302", -- Metal Taps Very Light Clinking Hits On Sheet: taps in the hull
+	hullCreak = "rbxassetid://9126147889", -- Underwater Sheet Metal Bending Whining Creak
+	radioClick = AudioConfig.id("Radio_Key"), -- squelch and PTT click
+	breathIn = "rbxassetid://9113585946", -- Breath Exhale 15, a calm breath (regulator stand-in)
+	bubbles = "rbxassetid://9125409816", -- Bubbles Small Underwater Above Water Quality
+	lineTug = "rbxassetid://9118714215", -- Rope Grab 1: a rope snapping taut, soft
+	underwaterBed = AudioConfig.id("Under_Ambience"), -- calm, warm underwater ambience
+	tagSnap = AudioConfig.id("UI_Click"), -- the triage band clicking shut
+	tabletTap = AudioConfig.id("UI_Prompt"),
 }
 
 ---------------------------------------------------------------- cleanup bin
@@ -65,6 +78,7 @@ function FerryUi.screen(name: string, order: number?): ScreenGui
 	gui.Name = name
 	gui.ResetOnSpawn = false
 	gui.IgnoreGuiInset = true
+	gui.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets -- keep panels and touch buttons out of notches
 	gui.DisplayOrder = order or 22
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -151,7 +165,12 @@ function FerryUi.button(
 end
 
 -- Bottom-centre caption, the subtitle for every voice and sound cue.
-function FerryUi.subtitle(gui: Instance, text: string, seconds: number?)
+-- "Quoted" speech is voiced: by `cast`, else the name before it ('Mara: "..."'), else a passenger.
+function FerryUi.subtitle(gui: Instance, text: string, seconds: number?, cast: string?)
+	if string.find(text, '"') then
+		local who = string.match(text, '^([^"%[]*)"') or ""
+		VoiceTTS.speak(text, cast or VoiceCast.castFor(who, "CASUALTY_F"), { channel = "ferry" })
+	end
 	local old = gui:FindFirstChild("FerrySubtitle")
 	if old then
 		old:Destroy()
@@ -167,7 +186,7 @@ function FerryUi.subtitle(gui: Instance, text: string, seconds: number?)
 	l.Font = HudTheme.BodyFont
 	l.TextSize = 20
 	l.TextWrapped = true
-	l.Text = text
+	l.Text = RadioFormat.capLine(text, 6) -- six words, like the radio
 	l.ZIndex = 50
 	l.Parent = gui
 	FerryUi.corner(l, 8)
@@ -265,16 +284,16 @@ local viewmodel: any = nil
 local searched = false
 
 -- Ferry action names mapped onto the Viewmodel's clips (src/client/Camera/ViewmodelActions.luau:
--- throw, haul, grab, radio, cpr, knock, point, steer). `false` = no hands clip (camera moment).
+-- throw, haul, grab, radio, cpr, knock, point, steer, phone). `false` = no hands clip (camera moment).
 -- When the camera stream adds dedicated clips, point these at them.
 FerryUi.ActionAlias = {
 	hull_knock = "knock",
 	hull_mark_chalk = "point",
 	line_pull = "haul",
 	radio_ptt = "radio",
-	tablet_raise = "point",
-	tablet_tap = "point",
-	tablet_drag = "point",
+	tablet_raise = "phone",
+	tablet_tap = "phone",
+	tablet_drag = "phone",
 	triage_walk_ask = "point",
 	triage_airway = "grab",
 	triage_shoulder_tap = "grab",
@@ -315,6 +334,28 @@ end
 
 ---------------------------------------------------------------- input
 
+-- A key label for the device in use: kb on keyboard and mouse, pad on gamepad, "" on touch (the
+-- on-screen button is the prompt). Strings, so mouse buttons and digits read right ("Click", "1").
+function FerryUi.keyLabel(kb: string, pad: string): string
+	local d = InputGlyph.device()
+	return if d == "Gamepad" then pad elseif d == "Keyboard" then kb else ""
+end
+
+-- Gamepad players drive a panel with Roblox UI navigation (D-pad / stick moves, A presses),
+-- starting on `first`. Mouse players keep their pointer free while `first` (a Modal button) shows.
+function FerryUi.focus(first: GuiButton)
+	first.Modal = true
+	if InputGlyph.device() == "Gamepad" then
+		GuiService.SelectedObject = first
+	end
+end
+
+-- True when on-screen buttons are the way in (touch is the preferred input).
+function FerryUi.isTouch(): boolean
+	return InputGlyph.device() == "Touch"
+		or (UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled)
+end
+
 -- Binds keys (and gamepad buttons) to handlers; returns the connection. Ignores typing in chat.
 function FerryUi.keys(map: { [Enum.KeyCode]: () -> () }): RBXScriptConnection
 	return UserInputService.InputBegan:Connect(function(input, processed)
@@ -328,15 +369,67 @@ function FerryUi.keys(map: { [Enum.KeyCode]: () -> () }): RBXScriptConnection
 	end)
 end
 
-FerryUi.NumberKeys = {
-	Enum.KeyCode.One,
-	Enum.KeyCode.Two,
-	Enum.KeyCode.Three,
-	Enum.KeyCode.Four,
-	Enum.KeyCode.Five,
-	Enum.KeyCode.Six,
-	Enum.KeyCode.Seven,
+export type Hold = {
+	button: TextButton, -- the touch / mouse target and the glyph
+	held: () -> boolean,
+	setFill: (progress: number, colour: Color3?) -> (),
+	idle: (seconds: number) -> (), -- after ~10 s without a hold the glyph pulses (the world helps)
 }
+
+-- A hold action: E on keyboard, X on gamepad, or press and hold the button (touch / mouse).
+-- The button fills with `setFill` as the held work progresses.
+function FerryUi.hold(bin: Bin, parent: Instance, pos: UDim2): Hold
+	local down: { [any]: boolean } = {}
+	local b = FerryUi.button(parent, "", UDim2.fromOffset(150, 64), pos, nil, function() end)
+	b.ClipsDescendants = true
+	local fill = FerryUi.frame(b, UDim2.fromScale(0, 1), UDim2.new(), HudTheme.Colors.ready, 0.35)
+	local label = FerryUi.text(
+		b,
+		`{FerryUi.keyLabel("E", "X")}  Hold`,
+		UDim2.fromScale(1, 1),
+		UDim2.new(),
+		20,
+		nil,
+		HudTheme.BoldFont
+	)
+	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.TextYAlignment = Enum.TextYAlignment.Center
+	label.ZIndex = 2
+	local function isPointer(i: InputObject): boolean
+		return i.UserInputType == Enum.UserInputType.Touch
+			or i.UserInputType == Enum.UserInputType.MouseButton1
+	end
+	bin.add(b.InputBegan:Connect(function(i: InputObject)
+		if isPointer(i) then
+			down[i.UserInputType] = true
+		end
+	end))
+	bin.add(UserInputService.InputBegan:Connect(function(i: InputObject, processed: boolean)
+		if not processed and (i.KeyCode == Enum.KeyCode.E or i.KeyCode == Enum.KeyCode.ButtonX) then
+			down[i.KeyCode] = true
+		end
+	end))
+	bin.add(UserInputService.InputEnded:Connect(function(i: InputObject)
+		down[i.KeyCode] = nil
+		if isPointer(i) then
+			down[i.UserInputType] = nil
+		end
+	end))
+	return {
+		button = b,
+		held = function()
+			return next(down) ~= nil
+		end,
+		setFill = function(progress: number, colour: Color3?)
+			fill.Size = UDim2.fromScale(math.clamp(progress, 0, 1), 1)
+			fill.BackgroundColor3 = colour or HudTheme.Colors.ready
+		end,
+		idle = function(seconds: number)
+			local on = seconds > 10 and seconds % 1 < 0.5
+			b.BackgroundColor3 = if on then HudTheme.Colors.accent else HudTheme.Colors.panelLight
+		end,
+	}
+end
 
 ---------------------------------------------------------------- world
 

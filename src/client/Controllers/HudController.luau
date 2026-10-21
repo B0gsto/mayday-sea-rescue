@@ -1,18 +1,18 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
 --   Placement: UI/Layout regions. Top right ("status"): rank, Cash and a thin Rep bar to the next
---   rank, with the crew row under it. Top centre ("notice"): "+Cash +Rep" award pops, the rank-up
---   toast with the new unlocks and short notices for failed buys / launches.
---   Cold open (Layout.coldOpen): wallet, rank, crew and pops stay hidden until it ends.
+--   rank, and the phone button beside it (UI/Phone: every menu, the crew's faces and Leave).
+--   Top centre ("notice"): "+Cash +Rep" award pops, the rank-up toast with the
+--   new unlocks and short notices for failed buys / launches.
+--   Cold open (Layout.coldOpen): wallet, rank and pops stay hidden until it ends.
 --   No shop or launch buttons (docs 04 section 1.1). Diegetic panels open from map prompts that
 --   WorldService adds (attribute Panel on the prompt, read on this client's PromptTriggered):
 --     ShopCounter  the Chandlery gear counter (HudShop: BuyGear)
---     BoatDesk     the boatyard collection desk (HudLaunch: RequestVehicle, rank locks, or BuyGear)
+--   Boats, cars and their upgrades are on the phone (VehiclesApp), not a world desk.
 --   A panel closes from its X button, or when the player walks away from the prompt.
 --   The engine only shows (and so only triggers) a prompt that is on screen; a player standing at
 --   the counter but looking past it (or teleported there) pressed E and nothing happened. Fallback:
 --   an unprocessed E / ButtonX within a store prompt's range opens the nearest store panel.
---   Left: crew chip with a Leave button while in a crew (CrewJoin / CrewLeave echoes).
 --   Stock CoreGui that clashes with the HUD is off: the leaderboard (PlayerList, it sat over the
 --   status strip; rank and Cash live there), Backpack (no Tools in the game), Health (casualty
 --   and crew condition are the game's own readouts) and the Emotes menu. Chat stays on (crew
@@ -30,7 +30,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
-local HudLaunch = require(UI:WaitForChild("HudLaunch"))
 local HudShop = require(UI:WaitForChild("HudShop"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
@@ -51,21 +50,19 @@ local awardLabel: TextLabel
 local toast: Frame
 local toastTitle: TextLabel
 local toastBody: TextLabel
-local crewChip: Frame
 local statusRegion: Frame
 local noticeRegion: Frame
-local inCrew = false
-local crewLabel: TextLabel
 local shop: HudShop.Shop
-local launch: HudLaunch.Launch
 local snapshot: { [string]: any }? = nil
--- the open diegetic panel ("ShopCounter" / "BoatDesk") and where its prompt is
+-- the open diegetic panel ("ShopCounter") and where its prompt is
 local openPanel: string? = nil
 local panelAnchor: Vector3? = nil
 local panelRange = 0
 local WALK_AWAY_MARGIN = 6 -- studs past the prompt's activation distance
 local toastSerial = 0
 local awardSerial = 0
+local cashShown: number? = nil
+local cashSerial = 0
 
 local function showToast(title: string, body: string, color: Color3, seconds: number)
 	toastSerial += 1
@@ -108,9 +105,32 @@ local function showAward(award: { [string]: any })
 	end)
 end
 
+-- The Cash counter rolls to its new value (docs/15: a payout is a moment, not a jump).
+local function rollCash(to: number)
+	local from = cashShown or to
+	cashShown = to
+	cashSerial += 1
+	local serial = cashSerial
+	if from == to then
+		cashLabel.Text = HudTheme.formatNumber(to)
+		return
+	end
+	task.spawn(function()
+		local t = 0
+		while serial == cashSerial and t < 1 do
+			t = math.min(t + task.wait() / 0.45, 1)
+			local q = 1 - (1 - t) ^ 3
+			cashLabel.Text = HudTheme.formatNumber(from + (to - from) * q + 0.5)
+		end
+		if serial == cashSerial then
+			cashLabel.Text = HudTheme.formatNumber(to)
+		end
+	end)
+end
+
 local function render(data: { [string]: any })
 	snapshot = data
-	cashLabel.Text = HudTheme.formatNumber(data.cash or 0)
+	rollCash(tonumber(data.cash) or 0)
 	rankLabel.Text = data.rank or "Recruit"
 	local progress = math.clamp(data.rankProgress or 0, 0, 1)
 	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
@@ -121,7 +141,6 @@ local function render(data: { [string]: any })
 		repLabel.Text = `{HudTheme.formatNumber(data.rep or 0)} Rep  (top rank)`
 	end
 	shop.update(data)
-	launch.update(data)
 end
 
 local function onDataChanged(data: any)
@@ -154,41 +173,15 @@ local function buy(itemId: string)
 	end)
 end
 
-local function requestLaunch(vehicleId: string)
-	launch.setBusy(vehicleId)
-	task.spawn(function()
-		local finished = false
-		task.delay(10, function()
-			if not finished then
-				launch.setBusy(nil)
-			end
-		end)
-		local ok, launched, reason = pcall(function()
-			return Net.func("RequestVehicle"):InvokeServer(vehicleId)
-		end)
-		finished = true
-		launch.setBusy(nil)
-		if ok and launched then
-			launch.setOpen(false)
-		end
-		if not ok then
-			notice("Launch bay offline")
-		elseif not launched then
-			notice(if type(reason) == "string" then reason else "Can't launch now")
-		end
-	end)
-end
-
 local function closePanels()
 	shop.setOpen(false)
-	launch.setOpen(false)
 	openPanel = nil
 	panelAnchor = nil
 end
 
 local function onPromptTriggered(prompt: ProximityPrompt)
 	local panel = prompt:GetAttribute("Panel")
-	if panel ~= "ShopCounter" and panel ~= "BoatDesk" then
+	if panel ~= "ShopCounter" then
 		return
 	end
 	local anchor = prompt.Parent
@@ -199,11 +192,7 @@ local function onPromptTriggered(prompt: ProximityPrompt)
 	openPanel = panel
 	panelAnchor = anchor.Position
 	panelRange = prompt.MaxActivationDistance + WALK_AWAY_MARGIN
-	if panel == "ShopCounter" then
-		shop.setOpen(true)
-	else
-		launch.setOpen(true)
-	end
+	shop.setOpen(true)
 end
 
 -- E / ButtonX that no shown prompt consumed: open the nearest store panel in range (see header).
@@ -212,7 +201,7 @@ local storePrompts: { ProximityPrompt } = {}
 local function trackStorePrompt(inst: Instance)
 	if inst:IsA("ProximityPrompt") then
 		local panel = inst:GetAttribute("Panel")
-		if panel == "ShopCounter" or panel == "BoatDesk" then
+		if panel == "ShopCounter" then
 			table.insert(storePrompts, inst)
 		end
 	end
@@ -251,10 +240,7 @@ local function onStoreKey(input: InputObject, processed: boolean)
 			end
 		end
 	end
-	if
-		best
-		and not (openPanel == best:GetAttribute("Panel") and (shop.isOpen() or launch.isOpen()))
-	then
+	if best and not (openPanel == best:GetAttribute("Panel") and shop.isOpen()) then
 		onPromptTriggered(best)
 	end
 end
@@ -264,7 +250,7 @@ local function watchPanel()
 	if not openPanel then
 		return
 	end
-	local isOpen = if openPanel == "ShopCounter" then shop.isOpen() else launch.isOpen()
+	local isOpen = shop.isOpen()
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	if
@@ -339,35 +325,9 @@ local function buildToast(parent: Instance)
 	toastBody.TextColor3 = C.textDim
 end
 
-local function buildCrewChip(parent: Instance)
-	-- the crew row under the status strip (inside the status region)
-	crewChip = HudTheme.panel("Crew", UDim2.new(1, 0, 0, 40), parent)
-	crewChip.Position = UDim2.fromOffset(0, 60)
-	crewChip.Visible = false
-	HudTheme.padding(crewChip, 4)
-	crewLabel = HudTheme.label(
-		"Count",
-		"Crew 1/4",
-		UDim2.new(1, -96, 1, 0),
-		HudTheme.BodyFont,
-		17,
-		crewChip
-	)
-	crewLabel.Position = UDim2.fromOffset(6, 0)
-	local leave = HudTheme.button("Leave", "Leave", UDim2.new(0, 84, 1, 0), crewChip)
-	leave.AnchorPoint = Vector2.new(1, 0.5)
-	leave.Position = UDim2.fromScale(1, 0.5)
-	leave.BackgroundColor3 = C.locked
-	leave.TextSize = 16
-	leave.Activated:Connect(function()
-		Net.event("CrewLeave"):FireServer()
-	end)
-end
-
 local function applyColdOpen(active: boolean)
 	statusRegion.Visible = not active
 	noticeRegion.Visible = not active
-	crewChip.Visible = inCrew and not active
 end
 
 local function hideCoreGui()
@@ -397,18 +357,15 @@ function HudController.Init()
 	noticeRegion = Layout.region(gui, "notice")
 	buildStatus(statusRegion)
 	buildToast(noticeRegion)
-	buildCrewChip(statusRegion)
-	require(UI:WaitForChild("SettingsPanel")).mount(statusRegion) -- gear, panel, Start button
+	require(UI:WaitForChild("SettingsPanel")).mount() -- the panel (the phone's Settings app shows it)
+	require(UI:WaitForChild("Phone")).mount(statusRegion) -- phone button, P / gamepad L1
 	shop = HudShop.build(gui, buy)
-	launch = HudLaunch.build(gui, requestLaunch, buy)
 	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder
 	-- 15-22) so a Buy/Collect click never lands on "Accept - Launch" behind it; below Cinematic (50)
-	for _, panel in { shop, launch } do
-		local setOpen = panel.setOpen
-		panel.setOpen = function(value: boolean)
-			setOpen(value)
-			gui.DisplayOrder = if shop.isOpen() or launch.isOpen() then PANEL_DISPLAY_ORDER else 0
-		end
+	local setOpen = shop.setOpen
+	shop.setOpen = function(value: boolean)
+		setOpen(value)
+		gui.DisplayOrder = if value then PANEL_DISPLAY_ORDER else 0
 	end
 
 	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
@@ -420,17 +377,6 @@ function HudController.Init()
 	RunService.Heartbeat:Connect(watchPanel)
 
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
-	Net.event("CrewJoin").OnClientEvent:Connect(function(payload: any)
-		if type(payload) == "table" and type(payload.members) == "table" then
-			crewLabel.Text = `Crew {#payload.members}/4`
-			inCrew = true
-			crewChip.Visible = not Layout.coldOpen()
-		end
-	end)
-	Net.event("CrewLeave").OnClientEvent:Connect(function()
-		inCrew = false
-		crewChip.Visible = false
-	end)
 	Layout.onColdOpen(applyColdOpen)
 
 	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own.

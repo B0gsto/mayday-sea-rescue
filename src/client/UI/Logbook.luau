@@ -4,9 +4,8 @@
 --
 --   panel    centred, 600 x 420 du (fits the 1071 x 471 du phone area): header with the count and
 --            Cash earned, the duty switch, page tabs on the left and the page's entries on the
---            right (found: name, era, story line; unfound: where to look). Opens with J, gamepad
---            L3 or the LOG button on touch (top-left of the minimap square); closes with X, J,
---            gamepad B. Gamepad selection starts on the first page tab.
+--            right (found: name, era, story line; unfound: where to look). Shown in the phone's
+--            Logbook app (J, gamepad L3 or the icon); closes with X or gamepad B. Gamepad selection starts on the first page tab.
 --   notice   a short "Logged" card in the Layout "notice" region for 6 s after each discovery.
 --
 -- CONTRACT (radio panel owner): docs 10 puts the logbook on a radio panel tab and the duty switch on
@@ -38,9 +37,9 @@ export type Logbook = {
 local Logbook = {}
 
 local HINTS: { [string]: string } = {
-	water = "On the seabed. Snorkel or duck dive over it to log it.",
-	foot = "On shore. Walk there to log it.",
-	any = "Visit it on foot or by boat to log it.",
+	water = "Seabed · dive",
+	foot = "On shore",
+	any = "Foot or boat",
 }
 
 local function text(
@@ -113,6 +112,7 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	close.AnchorPoint = Vector2.new(1, 0)
 	close.Position = UDim2.fromScale(1, 0)
 	close.BackgroundColor3 = C.panelLight
+	close.Modal = true -- show, free the mouse in first person
 
 	-- the duty switch
 	local duty = Instance.new("Frame")
@@ -237,7 +237,7 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 				cash += e.reward
 			end
 		end
-		summary.Text = `{have} of {total} logged  ·  {HudTheme.formatNumber(cash)} Cash earned`
+		summary.Text = `{have}/{total}  ·  {HudTheme.formatNumber(cash)} Cash`
 		for _, p in Discovery.Pages do
 			local got, configured, target = Discovery.pageProgress(foundSet, p.id)
 			local b = tabButtons[p.id]
@@ -266,20 +266,17 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 		foot.TextTruncate = Enum.TextTruncate.None
 		foot.Size = UDim2.new(1, -8, 0, 44)
 		if configured == 0 then
-			foot.Text = "Nothing to log here yet. More of the Gale Isles open soon."
+			foot.Text = "Soon"
 		elseif got >= target then
-			foot.Text = "Page complete."
+			foot.Text = "Complete ✓"
 		elseif p then
-			local prize = if p.cosmetic then ` and a {p.cosmetic}` else ""
-			foot.Text = `Complete all {target} for {HudTheme.formatNumber(p.reward)} Cash{prize}.`
-				.. if target > configured then ` {target - configured} are not charted yet.` else ""
+			local prize = if p.cosmetic then ` + {p.cosmetic}` else ""
+			foot.Text = `{target}/{target}: {HudTheme.formatNumber(p.reward)} Cash{prize}`
 		end
 		-- the duty switch
 		onBtn.BackgroundColor3 = if isOff then C.panelLight else C.accent
 		offBtn.BackgroundColor3 = if isOff then C.accent else C.panelLight
-		dutyNote.Text = if isOff
-			then "No standard taskings. The storm and big calls still invite you."
-			else "The Coastguard offers you taskings by radio."
+		dutyNote.Text = if isOff then "Big calls only" else "Radio taskings"
 	end
 
 	onBtn.Activated:Connect(function()
@@ -315,21 +312,6 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	close.Activated:Connect(function()
 		setOpen(false)
 	end)
-
-	-- ------------------------------------------------------------ touch button
-	if UserInputService.TouchEnabled then
-		local region = Layout.region(gui, "minimap")
-		local b = HudTheme.button("LogButton", "LOG", UDim2.fromOffset(52, 40), region)
-		b.BackgroundColor3 = C.panel
-		b.BackgroundTransparency = 0.25
-		b.TextSize = 16
-		b.Activated:Connect(function()
-			setOpen(not open)
-		end)
-		Layout.onColdOpen(function(active)
-			b.Visible = not active
-		end)
-	end
 
 	-- ------------------------------------------------------------ discovery notice
 	local noticeRegion = Layout.region(gui, "notice")
@@ -374,7 +356,7 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 					else "")
 			end
 		end
-		cardPay.Text = pay .. "  ·  J: open the logbook"
+		cardPay.Text = pay .. "  ·  J Logbook"
 		if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
 			cardPay.Text = pay
 		end

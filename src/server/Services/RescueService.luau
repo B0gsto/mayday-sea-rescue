@@ -12,14 +12,20 @@
 -- VehicleService.AttachTow is still called (rope visual and hitch) inside pcall; if it errors or is
 -- missing, a Beam stands in for the rope.
 local CollectionService = game:GetService("CollectionService")
+local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
+local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
+local RescueDressing = require(script.Parent.Parent.Ops.RescueDressing)
+local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
 local TowMotion = require(script.Parent.Parent.Tow.TowMotion)
 local CasualtyAsset: any = (function()
 	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
@@ -91,6 +97,7 @@ local floaters: { Floater } = {}
 local victimsByModel: { [Model]: any } = {}
 local liveCalls: { [any]: boolean } = {}
 local mapFolder: Folder
+local CASUALTY_GROUP = "Casualty" -- never collides with Default (boats, quays)
 
 -- Lazy access to other streams' services (they may not exist yet).
 local serviceCache: { [string]: any } = {}
@@ -252,13 +259,18 @@ local function upgradePerson(
 	base: CFrame,
 	parts: { BasePart },
 	role: string,
-	pose: string
+	pose: string,
+	onRig: ((Model) -> ())?
 )
 	if not NpcFactory then
 		return
 	end
+	-- in the water: no stock animation (Roblox's swim idle lies the body flat, a plank with a head);
+	-- CasualtyController poses it like the CasualtyAsset swimmer instead
+	local swimmer = pose == "Tread"
 	task.spawn(function()
-		local rig: Model?, rootHeight: number = NpcFactory.build(role, { pose = pose })
+		local rig: Model?, rootHeight: number =
+			NpcFactory.build(role, { pose = if swimmer then nil else pose })
 		local root = rig and rig.PrimaryPart
 		if not (rig and root) then
 			return
@@ -291,9 +303,17 @@ local function upgradePerson(
 		table.insert(parts2, root)
 		table.insert(offsets2, offset)
 		f.parts, f.offsets, f.arms = parts2, offsets2, arms2
+		if swimmer then
+			CasualtyRig.motorize(rig)
+			rig:SetAttribute("CasualtyPose", "TreadWater")
+			CollectionService:AddTag(rig, "CasualtyRig")
+		end
 		rig.Parent = model
 		if model:IsA("Model") then
 			model:SetAttribute("R15", true)
+		end
+		if onRig then
+			onRig(rig)
 		end
 	end)
 end
@@ -364,31 +384,77 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 	root.Transparency = 1
 	addPart(f, root, CFrame.identity)
 	model.PrimaryPart = root
+	local creature = RescueDressing.isCreature(call.variant)
 	local rig: Model? = nil
-	if parent then
-		rig = addRiggedPerson(f, model, CFrame.identity)
-	else
-		-- f.cf on the sea surface; the root (prompt, welds, the PIW mechanics' target) at chest height
-		f.depth = 0
-		f.sway = 0.09
-		f.offsets[1] = CFrame.new(0, RescueService.RIG_TORSO - 4.55, 0)
-		rig = addRiggedPerson(f, model)
+	if not creature then
+		if parent then
+			rig = addRiggedPerson(f, model, CFrame.identity)
+		else
+			-- f.cf on the sea surface; the root (prompt, welds, the PIW mechanics' target) at chest height
+			f.depth = 0
+			f.sway = 0.09
+			f.offsets[1] = CFrame.new(0, RescueService.RIG_TORSO - 4.55, 0)
+			rig = addRiggedPerson(f, model)
+			if not rig then
+				f.depth = -0.3
+				f.sway = 0.06
+				f.offsets[1] = CFrame.identity
+			end
+		end
 		if not rig then
-			f.depth = -0.3
-			f.sway = 0.06
-			f.offsets[1] = CFrame.identity
+			local greybox = addPerson(f, model, CFrame.identity, true)
+			local role = if call.kind == "CapsizedFerry"
+				then "Passenger"
+				elseif parent then "Boater"
+				else "Swimmer"
+			upgradePerson(
+				f,
+				model,
+				CFrame.identity,
+				greybox,
+				role,
+				if parent then "Sit" else "Tread",
+				function(r: Model)
+					-- stepPoses then waves, panics and turns this one too
+					local v = victimsByModel[model]
+					if v and not parent then
+						v.rig = r
+					end
+				end
+			)
 		end
 	end
-	if not rig then
-		local greybox = addPerson(f, model, CFrame.identity, true)
-		local role = if call.kind == "CapsizedFerry"
-			then "Passenger"
-			elseif parent then "Boater"
-			else "Swimmer"
-		upgradePerson(f, model, CFrame.identity, greybox, role, if parent then "Sit" else "Tread")
-	end
 	model:SetAttribute("Rigged", rig ~= nil)
+	if type(call.privateTo) == "table" then
+		-- a mission casualty: only its crew sees it until aboard (PrivateCasualtyController hides it)
+		local ids = {}
+		for _, p in call.privateTo do
+			table.insert(ids, p.UserId)
+		end
+		model:SetAttribute("PrivateTo", Board.privateList(ids))
+	end
 	model.Parent = mapFolder
+	-- the rare-call look (docs/15 H2): outfit colours, a kayak, a dog made of Parts, the golden gull
+	RescueDressing.apply(model, call.variant, {
+		floater = f,
+		mount = function(mountPart: BasePart, offset: CFrame)
+			addPart(f, mountPart, offset)
+		end,
+	})
+	-- a casualty in the water never blocks the boat that comes for them (the R15 torso collides
+	-- by default and the floater is anchored: a held swimmer at the hull pinned the jet ski).
+	-- The Humanoid turns torso CanCollide back on and the R15 rig loads later, so the collision
+	-- group (set on every part, now and when added) does the real work.
+	local function noCollide(part: Instance)
+		if part:IsA("BasePart") then
+			part.CanCollide = false
+			part.CollisionGroup = CASUALTY_GROUP
+		end
+	end
+	for _, part in model:GetDescendants() do
+		noCollide(part)
+	end
+	model.DescendantAdded:Connect(noCollide)
 	local victim = {
 		call = call,
 		model = model,
@@ -485,12 +551,18 @@ local function buildDisabledBoat(call: any, pos: Vector3)
 		CFrame.new(0, 1.6, 6)
 	)
 	-- scene.pob (OperationService, from the tasking) people aboard; assess_vessel counts the torsos
-	local pob = math.clamp(if type(call.pob) == "number" then call.pob else 1, 1, #DECK_SEATS)
+	local pob = math.clamp(if type(call.pob) == "number" then call.pob else 1, 0, #DECK_SEATS)
 	for i = 1, pob do
 		local greybox = addPerson(f, model, DECK_SEATS[i], true)
 		-- the skipper waves from the bow; the rest stand by
 		upgradePerson(f, model, DECK_SEATS[i], greybox, "Boater", if i == 1 then "Wave" else "Idle")
 	end
+	RescueDressing.apply(model, call.variant, {
+		floater = f,
+		mount = function(mountPart: BasePart, offset: CFrame)
+			addPart(f, mountPart, offset)
+		end,
+	})
 	local bow = Instance.new("Attachment")
 	bow.Name = "BowPoint"
 	bow.Position = Vector3.new(0, 0.6, -7)
@@ -820,7 +892,7 @@ function RescueService.SpawnCall(call: any, victimPositions: { Vector3 }?)
 	liveCalls[call] = true
 	call.victims = {}
 	local pos: Vector3 = call.position
-	if call.kind == "Swimmer" then
+	if call.kind == "Swimmer" or call.kind == "RipCurrent" then
 		table.insert(call.victims, spawnVictim(call, pos))
 	elseif call.kind == "DriftingCraft" then
 		local dinghy = buildDinghy(call, pos)
@@ -996,6 +1068,7 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	end
 	victim.state = "Aboard"
 	victim.carrier = vehicle
+	victim.model:SetAttribute("PrivateTo", nil) -- aboard: everyone sees them
 	if victim.prompt then
 		victim.prompt:Destroy()
 		victim.prompt = nil
@@ -1271,9 +1344,15 @@ local function stepPoses()
 				end
 			end
 			local pose = "TreadWater"
+			local piw = v.model:GetAttribute("PiwMode") -- docs/14 section 3 ways (PiwRescue)
 			if c and c.panicking then
 				pose = "Panic"
-			elseif best and bestD < RescueService.WAVE_RANGE and bestD > RescueService.WAVE_MIN then
+			elseif piw == "held" or piw == "line" then
+				pose = "Hold"
+			elseif
+				piw ~= nil -- armed, not yet holding on: waving the rescuer in
+				or (best and bestD < RescueService.WAVE_RANGE and bestD > RescueService.WAVE_MIN)
+			then
 				pose = "Wave"
 			end
 			if best and bestD < RescueService.WAVE_RANGE then
@@ -1332,6 +1411,12 @@ local function stepDrift(dt: number)
 			if v.state ~= "Water" or not f or f.parent or not f.active then
 				continue
 			end
+			local answer = PiwRescue.velocity(v, dt) -- swimming to / held by a rescuer (docs/14 3)
+			if answer then
+				f.x += answer.X * dt
+				f.z += answer.Z * dt
+				continue
+			end
 			local origin: Vector3 = v.driftOrigin or Vector3.new(f.x, 0, f.z)
 			v.driftOrigin = origin
 			local gone = (Vector3.new(f.x, 0, f.z) - origin).Magnitude
@@ -1341,6 +1426,9 @@ local function stepDrift(dt: number)
 				push = push.Unit * RescueService.WAKE_PUSH_MAX
 			end
 			local vel = base * fade + push
+			-- the rip off Haven Sands carries anything drifting in its channel out to sea (docs 09
+			-- section 8.4). Engaged casualties (swimming to / held by a rescuer) are the rescuer's.
+			vel += RipCurrent.velocityAt(RipCurrent.HavenSands, Vector3.new(f.x, 0, f.z))
 			f.x += vel.X * dt
 			f.z += vel.Z * dt
 		end
@@ -1389,6 +1477,64 @@ local function padAt(pos: Vector3, allowed: { string }, margin: number): string?
 end
 
 -- Removes the given victims from a vehicle, putting back any survivors that aren't in the list.
+-- The drop-off: a delivered survivor climbs off onto the nearest dry footing beside the boat (quay,
+-- pontoon, slipway), stands and waves, then goes up the quay (removed). No footing: handed straight in.
+local CLIMB_OFF_SECONDS = 1.0
+local footParams = RaycastParams.new()
+footParams.FilterType = Enum.RaycastFilterType.Exclude
+footParams.IgnoreWater = true
+local function climbOff(v: any, from: Vector3)
+	local model: Model = v.model
+	local vehicles = Workspace:FindFirstChild("Vehicles")
+	footParams.FilterDescendantsInstances = if vehicles then { model, vehicles } else { model }
+	local foot: Vector3? = nil
+	for r = 5, 13, 4 do
+		for k = 0, 7 do
+			local a = k * math.pi / 4
+			local p = from + Vector3.new(math.cos(a) * r, 0, math.sin(a) * r)
+			local hit = Workspace:Raycast(
+				Vector3.new(p.X, from.Y + 20, p.Z),
+				Vector3.new(0, -40, 0),
+				footParams
+			)
+			if hit and hit.Position.Y > 1 then
+				foot = hit.Position
+				break
+			end
+		end
+		if foot then
+			break
+		end
+	end
+	if not foot then
+		model:Destroy()
+		return
+	end
+	local start = model:GetPivot()
+	local _, size = model:GetBoundingBox()
+	local flat = Vector3.new(foot.X - start.X, 0, foot.Z - start.Z)
+	local finish = CFrame.lookAt(
+		foot + Vector3.new(0, size.Y / 2, 0),
+		foot
+			+ Vector3.new(0, size.Y / 2, 0)
+			+ (if flat.Magnitude > 0.1 then flat.Unit else start.LookVector)
+	)
+	if v.rig then
+		v.rig:SetAttribute("CasualtyPose", "Wave")
+	end
+	local t0 = os.clock()
+	while model.Parent do
+		local u = math.min((os.clock() - t0) / CLIMB_OFF_SECONDS, 1)
+		model:PivotTo(start:Lerp(finish, u) + Vector3.new(0, math.sin(u * math.pi) * 1.5, 0))
+		if u >= 1 then
+			break
+		end
+		RunService.Heartbeat:Wait()
+	end
+	task.wait(2.5) -- a wave from the quay, then up to the ambulance
+	model:Destroy()
+end
+
 local function unloadVictims(vehicle: Model, victims: { any })
 	local svc = service("VehicleService")
 	if svc and type(svc.RemoveSurvivors) == "function" then
@@ -1402,10 +1548,11 @@ local function unloadVictims(vehicle: Model, victims: { any })
 			end
 		end
 	end
+	local from = vehicle:GetPivot().Position
 	for _, v in victims do
 		v.state = "Delivered"
 		victimsByModel[v.model] = nil
-		v.model:Destroy()
+		task.spawn(climbOff, v, from)
 	end
 end
 
@@ -1465,7 +1612,11 @@ local function checkDeliveries()
 				if driver then
 					callService().RecordAction(call, driver)
 				end
-				callService().OnVictimsDelivered(call, count, driver, padOf[call])
+				if call.onDelivered then
+					call.onDelivered(count, driver, padOf[call]) -- free-roam (AmbientRescueService)
+				else
+					callService().OnVictimsDelivered(call, count, driver, padOf[call])
+				end
 			end
 		end
 	end
@@ -1496,6 +1647,50 @@ function RescueService.BoardVictim(call: any, index: number, player: Player): bo
 	victimsByModel[victim.model] = nil
 	victim.model:Destroy()
 	return false
+end
+
+-- A takeover (OperationService): the casualty still in the water leaves the call and is handed to
+-- the caller (an NPC boat, Ops/NpcPickup) with its model, which the caller removes. nil when they
+-- are not in the water.
+function RescueService.ReleaseVictim(call: any, index: number): (Model?, Instance?)
+	local victim = call.victims and call.victims[index]
+	if not victim or victim.state ~= "Water" then
+		return nil, nil
+	end
+	victim.state = "Released" -- the NPC boat owns the model now (Cleanup leaves it)
+	victim.model:SetAttribute("PrivateTo", nil)
+	if victim.prompt then
+		victim.prompt:Destroy()
+		victim.prompt = nil
+	end
+	prepareCarry(victim)
+	for _, d in victim.model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+		end
+	end
+	victimsByModel[victim.model] = nil
+	return victim.model, victim.rig
+end
+
+-- Stamina (0..1, the condition meter) on the casualty model, for CasualtyController's tiring visual.
+function RescueService.SetStamina(call: any, index: number, stamina: number)
+	local victim = call.victims and call.victims[index]
+	if victim and victim.state == "Water" and victim.model.Parent then
+		local v = math.floor(math.clamp(stamina, 0, 1) * 20 + 0.5) / 20
+		if victim.model:GetAttribute("Stamina") ~= v then
+			victim.model:SetAttribute("Stamina", v)
+		end
+	end
+end
+
+-- Where a casualty is now (the floater), or nil when they are not in the water.
+function RescueService.VictimPosition(call: any, index: number): Vector3?
+	local victim = call.victims and call.victims[index]
+	if not victim or victim.state ~= "Water" then
+		return nil
+	end
+	return victim.root.Position
 end
 
 -- Take-the-strain step succeeded: the tow goes on (needs the player's tow-capable boat).
@@ -1592,7 +1787,7 @@ function RescueService.Cleanup(call: any)
 			local list = aboard[v.carrier] or {}
 			aboard[v.carrier] = list
 			table.insert(list, v)
-		elseif v.state ~= "Delivered" then
+		elseif v.state ~= "Delivered" and v.state ~= "Released" then
 			unregister(v.floater)
 			victimsByModel[v.model] = nil
 			v.model:Destroy()
@@ -1752,6 +1947,10 @@ local function ferryDev(cmd: string): any
 end
 
 function RescueService.Init()
+	pcall(function()
+		PhysicsService:RegisterCollisionGroup(CASUALTY_GROUP)
+	end)
+	PhysicsService:CollisionGroupSetCollidable(CASUALTY_GROUP, "Default", false)
 	local existing = Workspace:FindFirstChild("CallProps")
 	if existing and existing:IsA("Folder") then
 		mapFolder = existing
@@ -1775,6 +1974,9 @@ function RescueService.Start()
 		dev.OnInvoke = ferryDev
 		dev.Parent = game:GetService("ServerStorage")
 	end
+	PiwRescue.start(liveCalls, function(call, player)
+		return callService().CanAct(call, player)
+	end)
 	local accum, poseAccum = 0, 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = Workspace:GetServerTimeNow()

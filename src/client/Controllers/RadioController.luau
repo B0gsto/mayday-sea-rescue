@@ -1,23 +1,25 @@
 --!strict
 -- RadioController: the VHF radio. An audio + subtitle queue with priorities and ducking, a radio
--- FX chain on Roblox's audio API, the template stitcher, the quick-reply wheel and the Ops UI.
+-- FX chain on Roblox's audio API, the template stitcher, push-to-talk and the Ops UI.
 --
 -- FX chain (per transmission): AudioPlayer (A/B, preloading the next fragment) -> AudioEqualizer
 -- (band-pass ~300-3000 Hz) -> AudioDistortion (light) -> AudioFader (voice volume) ->
 -- AudioDeviceOutput. Static (VoiceManifest.Sfx.Static) runs into the same EQ only while the
 -- squelch is open, scaled by Weather.getIntensity(); squelch open/close clicks around each line.
--- Clips come only from src/shared/Config/VoiceManifest.luau; a line with any clip missing plays
--- as subtitles only (with squelch and static). Subtitles are always on.
+-- Clips come only from src/shared/Config/VoiceManifest.luau; a line with any clip missing is spoken
+-- by Roblox text-to-speech (VoiceTTS, into the same EQ), and as subtitles only if that fails or is
+-- throttled (with squelch and static). Subtitles are always on.
 --
 -- API (other controllers and mechanics):
 --   Radio.say(templateId, params?, opts?) -> Handle     Coastguard template (UI/RadioTemplates)
 --   Radio.play(lineId, opts?) -> Handle                  one fixed lines.csv id ("AGG_DEBRIEF_GOLD")
 --   Radio.sayText(from, text, opts?) -> Handle           free text (subtitles; voiced if it matches a line)
 --   Radio.transmit(msg: RadioFormat.Message, opts?) -> Handle   the player's reply (player voice)
---   Radio.openWheel(options, onPick, opts?) / Radio.closeWheel() / Radio.isWheelOpen()
+--   Radio.ptt(onTalk) -> disarm                     arm push-to-talk: hold R / DPadUp / the touch
+--                                                   Radio button, release to send (onTalk fires)
 --   Radio.callsign(): "HR11"|"HR21"|"HR31"            the player's unit
 --   Radio.repeatLast()                                   "I say again" + the last Coastguard line
---   Radio.OnReply: { Connect(self, fn(msg)) }            every player transmission (wheel or mechanic)
+--   Radio.OnReply: { Connect(self, fn(msg)) }            every player transmission
 --   opts = { priority: number?, from: string?, mode: "radio"|"intercom"?, interrupt: boolean? }
 --   Handle = { done: boolean, wait: (self) -> (), cancel: (self) -> () }
 -- Ops_Radio payloads may carry { template, params } or { lineId } instead of plain text.
@@ -28,12 +30,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
-local UserInputService = game:GetService("UserInputService")
 
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
-local Condition = require(Shared:WaitForChild("Ops"):WaitForChild("Condition"))
 local OpsController = require(script.Parent.OpsController)
 local OpsHud = require(UI:WaitForChild("OpsHud"))
 local RadioFormat = require(UI:WaitForChild("RadioFormat"))
@@ -41,8 +41,9 @@ local RadioLines = require(UI:WaitForChild("RadioLines"))
 local RadioPanel = require(UI:WaitForChild("RadioPanel"))
 local RadioStitch = require(UI:WaitForChild("RadioStitch"))
 local RadioTemplates = require(UI:WaitForChild("RadioTemplates"))
-local RadioWheel = require(UI:WaitForChild("RadioWheel"))
+local VoiceCast = require(UI:WaitForChild("VoiceCast"))
 local VoiceManifest = require(Shared:WaitForChild("Config"):WaitForChild("VoiceManifest"))
+local VoiceTTS = require(script.Parent.VoiceTTS)
 
 -- Radio sfx: our own designed clips (VoiceManifest.Sfx) first, else the licensed stand-ins.
 local RADIO_SFX_FALLBACK: { [string]: string } = {
@@ -79,11 +80,9 @@ local player = Players.LocalPlayer
 local queue: { Entry } = {}
 local current: Entry? = nil
 local panel: RadioPanel.Panel
-local wheel: RadioWheel.Wheel
 local lastCoastguard: Line? = nil
 local lastTransmitAt = os.clock()
 local lastSitrepAsk = 0
-local mechanicWheel: { options: { any }, onPick: (any, number) -> (), opts: any }? = nil
 
 local replyListeners: { (any) -> () } = {}
 Radio.OnReply = {
@@ -104,6 +103,7 @@ Radio.OnReply = {
 
 local fx: {
 	folder: Folder,
+	eq: AudioEqualizer,
 	players: { AudioPlayer },
 	static: AudioPlayer,
 	staticFader: AudioFader,
@@ -175,6 +175,7 @@ local function buildAudio()
 	folder.Parent = SoundService
 	fx = {
 		folder = folder,
+		eq = eq,
 		players = players,
 		static = static,
 		staticFader = staticFader,
@@ -229,7 +230,14 @@ local function duck(on: boolean)
 end
 
 local function voiceOn(): boolean
-	return player:GetAttribute("VoiceLines") ~= false
+	return VoiceTTS.enabled()
+end
+
+-- the cast member who speaks a line (lines.csv voice, else from the shown speaker name)
+local function castOf(line: Line, speaker: string, mode: string): string
+	return if VoiceCast.Cast[line.voice]
+		then line.voice
+		else VoiceCast.castFor(speaker, if mode == "intercom" then "CREW_FINN" else "CG_DAY")
 end
 
 ---------------------------------------------------------------- speakers and lines
@@ -314,6 +322,9 @@ local function enqueue(line: Line, speaker: string, opts: { [string]: any }?): H
 	if string.sub(line.voice, 1, 3) == "CG_" and e.mode ~= "tx" then
 		lastCoastguard = line
 	end
+	if voiceOn() and not RadioStitch.playable(line, VoiceManifest.Clips) then
+		VoiceTTS.prefetch(line.text, castOf(line, e.speaker, e.mode))
+	end
 	-- a much more urgent line cuts in (a MAYDAY over chatter); the interrupted one is re-queued
 	local c = current
 	if c and (e.priority >= c.priority + 2 or o.interrupt) then
@@ -382,6 +393,19 @@ local function playClips(e: Entry, assets: { string }): boolean
 	return true
 end
 
+-- No clips: text-to-speech through the same radio chain. False leaves it to the subtitle timer.
+local function speakTts(e: Entry): boolean
+	local f = fx
+	return f ~= nil
+		and VoiceTTS.say(e.line.text, castOf(e.line, e.speaker, e.mode), {
+			into = f.eq,
+			channel = "radio",
+			cancelled = function()
+				return e.cancelled
+			end,
+		})
+end
+
 local function playEntry(e: Entry)
 	local line = e.line
 	local voiced = voiceOn() and RadioStitch.playable(line, VoiceManifest.Clips)
@@ -403,7 +427,7 @@ local function playEntry(e: Entry)
 			table.insert(assets, VoiceManifest.Clips[id])
 		end
 		playClips(e, assets)
-	else
+	elseif not (voiceOn() and speakTts(e)) then
 		local t0 = os.clock()
 		while os.clock() - t0 < seconds and not e.cancelled do
 			task.wait(0.05)
@@ -485,7 +509,7 @@ function Radio.sayText(from: string, text: string, opts: { [string]: any }?): Ha
 		line =
 			{ voice = "TEXT", parts = { { text = text } }, text = text, ids = {}, complete = false }
 		if string.find(from, "Coastguard") then
-			line.voice = "CG_DAY"
+			line.voice = if night() then "CG_NIGHT" else "CG_DAY"
 		end
 	end
 	if not o.priority then
@@ -526,234 +550,44 @@ function Radio.repeatLast(): Handle?
 	if not last then
 		return nil
 	end
-	Radio.say("say_again")
+	-- the repeat alone: a separate "I say again." card showed with nothing before it (playtest)
 	return enqueue(last, "Gale Isles Coastguard", { priority = P.Reply })
 end
 
-function Radio.openWheel(options: { any }, onPick: (any, number) -> (), opts: { [string]: any }?)
-	mechanicWheel = { options = options, onPick = onPick, opts = opts }
-	panel.setLog(true)
-	wheel.open(options, function(opt, i)
-		mechanicWheel = nil
-		onPick(opt, i)
-	end, opts :: any)
-end
+---------------------------------------------------------------- push-to-talk
 
-function Radio.closeWheel()
-	mechanicWheel = nil
-	wheel.close()
-end
+-- The radio's own binding (R, gamepad DPadUp, a touch "Radio" button) exists only while a
+-- mechanic has something to say; the crew voices the right reply on release.
+local PTT = "RadioPTT"
+local armed: (() -> ())? = nil
 
-function Radio.isWheelOpen(): boolean
-	return wheel.isOpen()
-end
-
----------------------------------------------------------------- the free reply wheel
-
-local COND = {
-	Stable = "COND_ALERT",
-	Concern = "COND_COLD",
-	Serious = "COND_DROWSY",
-	Critical = "COND_UNRESP",
-}
-
-local function myStep(): string?
-	local s = OpsController.GetState()
-	if not s then
-		return nil
-	end
-	for _, c in s.current do
-		if c.trackId == s.myTrack then
-			return c.id
-		end
-	end
-	return nil
-end
-
-local function etaMinutes(): number
-	local s = OpsController.GetState()
-	local char = player.Character
-	local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
-	if not s or not root or typeof(s.position) ~= "Vector3" then
-		return 5
-	end
-	local dist = (s.position - root.Position).Magnitude
-	local speed = math.max(root.AssemblyLinearVelocity.Magnitude, 25)
-	return math.clamp(math.ceil(dist / speed / 60), 1, 15)
-end
-
-local function pobAboard(): number
-	local char = player.Character
-	local hum = char and char:FindFirstChildOfClass("Humanoid")
-	local seat = hum and hum.SeatPart
-	local model = seat and seat:FindFirstAncestorOfClass("Model")
-	if not model then
-		return 1
-	end
-	local n = 0
-	for _, d in model:GetDescendants() do
-		if d:IsA("Seat") or d:IsA("VehicleSeat") then
-			if d.Occupant then
-				n += 1
-			end
-		end
-	end
-	return math.max(n, 1)
-end
-
--- Replies that fit the current step (docs 09 section 3.3), each correctly formatted.
-local function freeOptions(): { RadioFormat.Option }
-	local cs = Radio.callsign()
-	local function o(body: string, params: { [string]: any }?, reply: string?): RadioFormat.Option
-		local m: RadioFormat.Message = {
-			order = "toFrom",
-			to = "CG",
-			from = cs,
-			body = body,
-			proword = "Over",
-			params = params,
-		}
-		return { label = RadioFormat.label(m), msg = m, correct = true, icon = reply }
-	end
-	local step = myStep()
-	local s = OpsController.GetState()
-	local cas = s and s.casualties and s.casualties[1]
-	local cond = COND[cas and Condition.band(cas.condition) or "Stable"] or "COND_ALERT"
-	local saved = if s then math.max(s.saved or 0, 1) else 1
-	local eta = etaMinutes()
-	if not step then
-		return { o("ready", nil, "ready_tasking"), o("returning_station", nil, "return_station") }
-	end
-	if step == "kit_launch" or step == "passage" or step == "radio_ack" then
-		local pob = pobAboard()
-		return {
-			o("launched", { pob = pob, pobN = pob }, "roger_out"),
-			o("eta", { minutes = eta, min = eta }, "copy_eta"),
-			o("req_second", nil, "second_unit"),
-		}
-	elseif step == "search" or step == "approach" then
-		return {
-			o("on_scene", nil, "on_scene"),
-			o("sighted", nil, "sighted"),
-			o("searching", nil, "roger_out"),
-			o("eta", { minutes = eta, min = eta }, "copy_eta"),
-		}
-	elseif step == "transport" then
-		return {
-			o("returning", { minutes = eta, min = eta }, "copy_eta"),
-			o("condition", { cond = cond }, "roger_out"),
-			o("req_ambulance", nil, "ambulance"),
-			o("req_helo", nil, "helo_unavailable"),
-		}
-	elseif
-		step == "handover"
-		or step == "radio_closeout"
-		or step == "berth"
-		or step == "standby_assist"
-	then
-		return {
-			o("handed_over", nil, "handed_over"),
-			o("returning_station", nil, "return_station"),
-			o("ready", nil, "ready_tasking"),
-		}
-	end
-	return {
-		o("recovered", { n = saved, nN = saved }, "copy_recovered"),
-		o("condition", { cond = cond }, "roger_out"),
-		o("req_ambulance", nil, "ambulance"),
-		o("req_helo", nil, "helo_unavailable"),
-		o("req_second", nil, "second_unit"),
-	}
-end
-
-local function openFreeWheel()
-	local m = mechanicWheel
-	panel.setLog(true)
-	if m then
-		wheel.open(m.options, function(opt, i)
-			mechanicWheel = nil
-			m.onPick(opt, i)
-		end, m.opts)
-		return
-	end
-	wheel.open(freeOptions() :: any, function(opt: any)
-		local h = Radio.transmit(opt.msg)
-		local reply: string? = opt.icon
-		if reply then
-			task.spawn(function()
-				h:wait()
-				task.wait(0.8)
-				local p: { [string]: any } = table.clone(opt.msg.params or {})
-				if p.minutes then
-					p.minutes = RadioStitch.key.minutes(p.minutes)
-				end
-				if p.n then
-					p.n = RadioStitch.key.number(p.n)
-				end
-				Radio.say(reply, p)
-			end)
-		end
-	end, { title = "Radio · Gale Isles Coastguard · channel 16" })
-end
-
-local function bindInput()
+function Radio.ptt(onTalk: () -> ()): () -> ()
+	armed = onTalk
 	local held = false
-	ContextActionService:BindAction("RadioWheel", function(_name, inputState, input)
+	ContextActionService:BindAction(PTT, function(_name, inputState)
 		if inputState == Enum.UserInputState.Begin then
-			if wheel.isOpen() then
-				wheel.close()
-				return Enum.ContextActionResult.Sink
-			end
 			held = true
-			openFreeWheel()
-		elseif inputState == Enum.UserInputState.End and held then
+			sfx("Key")
+		elseif inputState == Enum.UserInputState.End and held and armed == onTalk then
 			held = false
-			-- release on a highlighted reply sends it; otherwise the wheel stays open for a tap
-			if input.UserInputType ~= Enum.UserInputType.Touch then
-				wheel.confirm()
-			end
+			armed = nil
+			ContextActionService:UnbindAction(PTT)
+			onTalk()
 		end
 		return Enum.ContextActionResult.Sink
 	end, true, Enum.KeyCode.R, Enum.KeyCode.DPadUp)
-	ContextActionService:SetTitle("RadioWheel", "Radio")
-	ContextActionService:SetPosition("RadioWheel", UDim2.new(1, -170, 1, -230))
-	local button = ContextActionService:GetButton("RadioWheel")
+	ContextActionService:SetTitle(PTT, "Radio")
+	ContextActionService:SetPosition(PTT, UDim2.new(1, -170, 1, -230))
+	local button = ContextActionService:GetButton(PTT)
 	if button then
 		button.Size = UDim2.fromOffset(72, 72)
 	end
-
-	UserInputService.InputBegan:Connect(function(input: InputObject, processed: boolean)
-		if not wheel.isOpen() then
-			return
+	return function()
+		if armed == onTalk then
+			armed = nil
+			ContextActionService:UnbindAction(PTT)
 		end
-		local n = input.KeyCode.Value - Enum.KeyCode.One.Value + 1
-		if n >= 1 and n <= 6 and not processed then
-			wheel.pick(n)
-		elseif input.KeyCode == Enum.KeyCode.ButtonA then
-			wheel.confirm()
-		elseif input.KeyCode == Enum.KeyCode.Escape or input.KeyCode == Enum.KeyCode.ButtonB then
-			wheel.close()
-		end
-	end)
-	UserInputService.InputChanged:Connect(function(input: InputObject)
-		if not wheel.isOpen() then
-			return
-		end
-		if input.UserInputType == Enum.UserInputType.MouseMovement then
-			local cam = workspace.CurrentCamera
-			if cam then
-				local c = cam.ViewportSize / 2
-				local pos = UserInputService:GetMouseLocation()
-				local d = (pos - c) / 120
-				wheel.point(d)
-			end
-		elseif input.KeyCode == Enum.KeyCode.Thumbstick2 then
-			wheel.point(Vector2.new(input.Position.X, -input.Position.Y))
-		end
-	end)
-	wheel.OnClosed.Event:Connect(function()
-		panel.setLog(false)
-	end)
+	end
 end
 
 ---------------------------------------------------------------- lifecycle
@@ -762,9 +596,7 @@ function Radio.Init()
 	OpsController.UseBuiltInUi = false
 	local pg = player:WaitForChild("PlayerGui")
 	panel = RadioPanel.new(pg)
-	wheel = RadioWheel.new(pg)
 	buildAudio()
-	bindInput()
 	OpsController.OnRadio:Connect(function(r: { [string]: any })
 		if type(r.template) == "string" then
 			Radio.say(r.template, r.params)

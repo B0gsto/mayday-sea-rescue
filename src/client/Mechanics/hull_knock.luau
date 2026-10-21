@@ -86,7 +86,7 @@ function hull_knock.start(
 	FerryUi.corner(panel)
 	FerryUi.text(
 		panel,
-		"HULL SEARCH · knock three, then listen",
+		"Hull search",
 		UDim2.new(1, -24, 0, 24),
 		UDim2.fromOffset(12, 8),
 		20,
@@ -123,13 +123,16 @@ function hull_knock.start(
 		FerryUi.text(panel, "", UDim2.new(1, -24, 0, 20), UDim2.fromOffset(12, 90), 16, C.text)
 	local keysHint = FerryUi.text(
 		panel,
-		"Click / A: knock    F / X: mark here    A/D: move (off the hull)",
+		`{FerryUi.keyLabel("Click", "A")} Knock    {FerryUi.keyLabel("F", "X")} Mark    {FerryUi.keyLabel(
+			"A/D",
+			"D-pad"
+		)} Move`,
 		UDim2.new(1, -24, 0, 18),
 		UDim2.fromOffset(12, 118),
 		14,
 		C.textDim
 	)
-	keysHint.Visible = true
+	keysHint.Visible = not FerryUi.isTouch()
 
 	---------------------------------------------------------------- knock and listen
 
@@ -147,7 +150,7 @@ function hull_knock.start(
 	local function listen(at: number)
 		listens += 1
 		listeningUntil = os.clock() + HullKnock.ListenSeconds
-		status.Text = "Listening... keep still."
+		status.Text = "Listening..."
 		local _, root = FerryUi.character()
 		local startPos = if root then root.Position else nil
 		task.delay(1.1, function()
@@ -156,7 +159,7 @@ function hull_knock.start(
 			end
 			local _, r2 = FerryUi.character()
 			if startPos and r2 and (r2.Position - startPos).Magnitude > 3 then
-				status.Text = "You moved: your boots drowned out any answer. Knock again."
+				status.Text = "Too noisy. Knock again"
 				return
 			end
 			local reply = HullKnock.reply(at, pocket)
@@ -180,9 +183,7 @@ function hull_knock.start(
 					elseif reply.kind == "Faint" then C.gold
 					else C.locked
 			end
-			status.Text = if reply.kind == "Loud"
-				then "They're answering here. Mark it (F) and radio it."
-				else "Move along and try again."
+			status.Text = if reply.kind == "Loud" then "Answer! Mark it" else "Move on"
 		end)
 	end
 
@@ -223,11 +224,7 @@ function hull_knock.start(
 		FerryUi.playAction("hull_mark_chalk")
 		local name = HullKnock.Compartments[at].name
 		FerryUi.sound(FerryUi.Sounds.radioClick, nil, 0.5)
-		FerryUi.subtitle(
-			gui,
-			`"Coastguard, hull team. Survivors answering under the {name}, compartment {at}. Marked. Over."`,
-			3
-		)
+		FerryUi.subtitle(gui, `"Survivors: {name}, compartment {at}. Over."`, 3, "PLAYER_M")
 		task.delay(1.2, function()
 			bin.clean()
 			finish({
@@ -241,6 +238,7 @@ function hull_knock.start(
 		end)
 	end
 
+	local touchDir = 0
 	bin.add(UserInputService.InputBegan:Connect(function(input, processed)
 		if processed then
 			return
@@ -265,18 +263,47 @@ function hull_knock.start(
 		)
 		FerryUi.button(
 			panel,
-			"Mark here",
+			"Mark",
 			UDim2.fromOffset(110, 52),
 			UDim2.new(1, -120, 0, -60),
 			C.panelLight,
 			markHere
 		)
+		-- move along the hull when off it (keyboard A/D, gamepad D-pad)
+		for i, arrow in { "<", ">" } do
+			local b = FerryUi.button(
+				panel,
+				arrow,
+				UDim2.fromOffset(52, 52),
+				UDim2.fromOffset((i - 1) * 60, -60),
+				C.panelLight,
+				function() end
+			)
+			local dir = if i == 1 then -1 else 1
+			b.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					touchDir = dir
+				end
+			end)
+			b.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					touchDir = 0
+				end
+			end)
+		end
 	end
 
 	bin.add(RunService.RenderStepped:Connect(function(dt)
 		local a, onHull = along()
 		if not onHull then
-			local dir = 0
+			local dir = touchDir
+			local pad = Enum.UserInputType.Gamepad1
+			if UserInputService:IsGamepadButtonDown(pad, Enum.KeyCode.DPadLeft) then
+				dir -= 1
+			end
+			if UserInputService:IsGamepadButtonDown(pad, Enum.KeyCode.DPadRight) then
+				dir += 1
+			end
 			if UserInputService:IsKeyDown(Enum.KeyCode.A) then
 				dir -= 1
 			end
@@ -287,8 +314,7 @@ function hull_knock.start(
 			a = cursor
 		end
 		local at = HullKnock.compartmentAt(a, length)
-		where.Text = `Over: {HullKnock.Compartments[at].name}`
-			.. (if onHull then "" else "  (cursor)")
+		where.Text = HullKnock.Compartments[at].name
 		for i, cell in cells do
 			cell.BackgroundTransparency = if i == at then 0 else 0.4
 		end

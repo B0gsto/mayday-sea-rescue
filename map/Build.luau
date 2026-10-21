@@ -11,7 +11,7 @@
 -- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
 --   OceanFloor   (fallback only) sand base, top at Y = -40
 --   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback),
---                the Chandlery (walk-in gear store, PromptAnchor ShopCounter) and the BoatDesk (PromptAnchor BoatDesk)
+--                the Chandlery (walk-in gear store, PromptAnchor ShopCounter)
 --   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
 --   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
 --   Slipways     the station slipway (concrete ramp into the harbour)
@@ -290,7 +290,7 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 			CanTouch = false,
 			CanQuery = false,
 			Parent = dock,
-			Attributes = { LaunchBay = true, BayIndex = i, AllowedVehicles = "JetSki,RIB" },
+			Attributes = { LaunchBay = true, BayIndex = i, AllowedVehicles = "JetSki,RIB,Lifeboat" },
 		})
 		box(
 			dock,
@@ -337,12 +337,12 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 
 	local houses = folder(town, "Houses")
 	local spots = {
-		Vector3.new(-40, landTop, -150),
-		Vector3.new(10, landTop, -170),
-		Vector3.new(60, landTop, -150),
-		Vector3.new(-200, landTop, -140),
-		Vector3.new(220, landTop, -160),
-		Vector3.new(-30, landTop, -250),
+		Vector3.new(-150, landTop, -188),
+		Vector3.new(-60, landTop, -188),
+		Vector3.new(90, landTop, -188),
+		Vector3.new(130, landTop, -188),
+		Vector3.new(260, landTop, -188),
+		Vector3.new(310, landTop, -188),
 	}
 	for i, spot in spots do
 		buildHouse(
@@ -1001,21 +1001,7 @@ local function buildShore(map: Instance, points: Instance, world: any)
 				base + Vector3.new(10.4, 21.5, 0.2),
 				COLORS.bay
 			)
-		elseif pt.kind == "Handover" then
-			box(
-				sands,
-				"Ambulance",
-				pt.position + Vector3.new(-3.5, 0, -8),
-				pt.position + Vector3.new(3.5, 8, 8),
-				COLORS.white
-			)
-			box(
-				sands,
-				"AmbulanceStripe",
-				pt.position + Vector3.new(-3.6, 3, -8),
-				pt.position + Vector3.new(3.6, 4, 8),
-				rgb(40, 200, 60)
-			)
+			-- Handover: no greybox; LandVehicleService parks the real ambulance there (it landed on this box's roof)
 		end
 	end
 	for _, cp in world.CarParks do
@@ -1043,6 +1029,11 @@ local function sign(board: Part, text: string, face: any, color: Color3)
 	label.BackgroundTransparency = 1
 	label.Text = text
 	label.TextScaled = true
+	-- P2: TextScaled came back false in play from the Lune-built place (8 px text), so size it explicitly too
+	local w = if face == Enum.NormalId.Left or face == Enum.NormalId.Right
+		then board.Size.Z
+		else board.Size.X
+	label.TextSize = math.floor(math.min(board.Size.Y * 30 * 0.75, w * 30 / (#text * 0.62)))
 	label.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json")
 	label.TextColor3 = color
 	label.Parent = gui
@@ -1553,74 +1544,6 @@ local function buildChandlery(parent: Instance, g: number)
 	return shop
 end
 
--- Boatyard collection desk on the quay at the head of the dock (docs 04 section 1.1, "Boatyard"):
--- a kiosk facing the water, where boats are collected for the bays. PromptAnchor = "BoatDesk".
-local function buildBoatDesk(parent: Instance, g: number)
-	local desk = folder(parent, "BoatDesk", "Model")
-	local navy = rgb(28, 50, 86)
-	box(
-		desk,
-		"BackWall",
-		Vector3.new(-100, g, -18),
-		Vector3.new(-90, g + 10, -17),
-		COLORS.white,
-		M.Concrete
-	)
-	box(
-		desk,
-		"SideWest",
-		Vector3.new(-100, g, -17),
-		Vector3.new(-99, g + 10, -12),
-		COLORS.white,
-		M.Concrete
-	)
-	box(
-		desk,
-		"SideEast",
-		Vector3.new(-91, g, -17),
-		Vector3.new(-90, g + 10, -12),
-		COLORS.white,
-		M.Concrete
-	)
-	box(desk, "Desk", Vector3.new(-99, g, -13.5), Vector3.new(-91, g + 3.5, -12), navy, M.Wood)
-	box(
-		desk,
-		"DeskTop",
-		Vector3.new(-99.2, g + 3.5, -13.7),
-		Vector3.new(-90.8, g + 3.8, -11.6),
-		COLORS.wood,
-		M.WoodPlanks
-	)
-	box(
-		desk,
-		"Canopy",
-		Vector3.new(-101, g + 10, -19),
-		Vector3.new(-89, g + 10.6, -9),
-		COLORS.red,
-		M.SmoothPlastic
-	)
-	local board = box(
-		desk,
-		"SignBoard",
-		Vector3.new(-99, g + 10.6, -9.6),
-		Vector3.new(-91, g + 12.6, -9.2),
-		navy,
-		M.Wood
-	)
-	sign(board, "BOAT COLLECTION", Enum.NormalId.Back, COLORS.white)
-	local prices = box(
-		desk,
-		"PriceBoard",
-		Vector3.new(-98, g + 5, -16.9),
-		Vector3.new(-92, g + 9, -16.6),
-		rgb(30, 30, 34),
-		M.Slate
-	)
-	sign(prices, "JET SKI  free\nRIB  4,000", Enum.NormalId.Back, rgb(240, 240, 230))
-	marker(desk, "DeskPrompt", Vector3.new(-95, g + 4.5, -10.5), { PromptAnchor = "BoatDesk" })
-	return desk
-end
-
 -- Harbourmaster's desk (docs/04 sections 1.1 and 5, RP-M3): a greybox stand-in on the quay just east
 -- of the Chandlery until the H4 office building exists. A desk with a brass storm barometer behind it
 -- and a chalkboard by the side panel showing the server's storm queue (StormBoard: the client writes
@@ -1745,7 +1668,10 @@ end
 local function setupStreaming(ws: any, map: Instance, zones: Instance)
 	ws.StreamingEnabled = true
 	ws.StreamingMinRadius = 384
-	ws.StreamingTargetRadius = 2048 -- the cliffs and the town stay visible from the sea
+	-- RP-P1: 1024 is the docs/10 section 6.7 Low-tier budget. The radius is a place setting, not
+	-- scriptable at run time (the engine marks StreamingTargetRadius Not Scriptable), so one value
+	-- serves every tier; 2048 streamed about 40% more parts at Haven Sands for no phone budget.
+	ws.StreamingTargetRadius = 1024
 	ws.StreamOutBehavior = Enum.StreamOutBehavior.LowMemory
 	map.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 	zones.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
@@ -1779,7 +1705,6 @@ return function(place: any, ctx: any)
 	end
 	local town = buildPortHaven(map, landTop, floorY, hasTerrain)
 	buildChandlery(town, landTop)
-	buildBoatDesk(town, landTop)
 	buildHarbourmasterDesk(town, landTop)
 	buildDropOffs(map)
 	local wallTop, wallFar = buildBreakwater(map, floorY, 30)

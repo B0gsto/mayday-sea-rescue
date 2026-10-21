@@ -67,7 +67,10 @@ local function paintStamps()
 				ns.Name = `ExerciseStamp_{id}`
 				ns.Face = Enum.NormalId.Front
 				ns.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-				ns.PixelsPerStud = 150
+				local printGui = sheet:FindFirstChild("Print")
+				ns.PixelsPerStud = if printGui and printGui:IsA("SurfaceGui")
+					then printGui.PixelsPerStud
+					else 150
 				ns.LightInfluence = 1
 				ns.MaxDistance = 40
 				ns.ZOffset = 1
