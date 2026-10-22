@@ -984,9 +984,13 @@ local function buildButton(region: Frame)
 	badge.ZIndex = 3
 	badge.Visible = false
 	HudTheme.stroke(badge, W, 2.5).Transparency = 0
+	-- a small key glyph tucked on the corner, not a separate keycap
 	local chip = InputGlyph.chip(button, Enum.KeyCode.P, Enum.KeyCode.ButtonL1)
-	chip.AnchorPoint = Vector2.new(0.5, 0.5)
-	chip.Position = UDim2.new(1, -4, 1, -4)
+	chip.AnchorPoint = Vector2.new(1, 1)
+	chip.Position = UDim2.fromScale(1, 1)
+	local small = Instance.new("UIScale")
+	small.Scale = 0.75
+	small.Parent = chip
 
 	-- hover / press, and a hop with a wiggle when a notification lands
 	button.MouseEnter:Connect(function()

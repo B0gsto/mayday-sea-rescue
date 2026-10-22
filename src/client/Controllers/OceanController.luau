@@ -452,7 +452,8 @@ local function updateMesh(t: number, ou: number, ov: number, fu: number, fv: num
 		-- the steepness of the downwind (front) face, so it sits on the crest lip and spills down
 		-- the face; it then persists and decays, slowly in a storm, broken into wind-aligned
 		-- streaks. Crest vertices feed the spindrift (crests only).
-		foamGrid.part.Transparency = 0
+		-- not 0: an opaque MeshPart ignores its TextureID alpha and the foam draws as a solid sheet
+		foamGrid.part.Transparency = 0.02
 		crestCount = 0
 		local dt = if foamT then math.clamp(t - foamT, 0, 0.5) else 0
 		foamT = t
@@ -619,6 +620,11 @@ local function moveParts()
 	end
 	if ring then
 		ring.part.CFrame = cf
+	end
+	if foam then
+		-- the foam heights are sampled around (centreX, centreZ); left at the origin it drew a
+		-- misplaced opaque sheet over the harbour quay (black sea patches, 2026-10-22)
+		foam.part.CFrame = cf
 	end
 	if far then
 		FarPlane.moveTo(far, centreX, centreZ)

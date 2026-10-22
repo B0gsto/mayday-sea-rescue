@@ -31,6 +31,7 @@ local CarFolder = Shared:WaitForChild("Car")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local AudioMix = require(Shared:WaitForChild("Audio"):WaitForChild("AudioMix"))
+local BoatController = require(script.Parent:WaitForChild("BoatController"))
 local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local LightBar = require(CarFolder:WaitForChild("LightBar"))
@@ -77,6 +78,8 @@ local lowRange = false
 local triggerThrottle, triggerBrake = 0, 0
 type Gauges = {
 	gui: ScreenGui,
+	dock: Frame,
+	carOnly: { GuiObject }, -- hidden for boats: speed only
 	speed: TextLabel,
 	gear: TextLabel,
 	rpm: TextLabel,
@@ -318,7 +321,7 @@ local function makeHud()
 		return l
 	end
 	local speed = text("Speed", HudTheme.NumberFont, 42, 14, 4, 96, 50)
-	text("Unit", HudTheme.LabelFont, 12, 14, 54, 96, 16).Text = "KM/H"
+	text("Unit", HudTheme.LabelFont, 16, 14, 54, 96, 18).Text = "KM/H"
 	local chip = Instance.new("Frame")
 	chip.Name = "GearChip"
 	chip.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -333,7 +336,8 @@ local function makeHud()
 	)
 	gear.TextXAlignment = Enum.TextXAlignment.Center
 	local rpm = text("Rpm", HudTheme.NumberFont, 24, 190, 6, 96, 32)
-	text("RpmUnit", HudTheme.LabelFont, 12, 190, 38, 96, 14).Text = "RPM"
+	local rpmUnit = text("RpmUnit", HudTheme.LabelFont, 16, 190, 38, 96, 18)
+	rpmUnit.Text = "RPM"
 	local track = HudTheme.image(
 		"RpmBar",
 		Hud.BarTrack,
@@ -347,7 +351,7 @@ local function makeHud()
 		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.16)
 	-- LOW / P / STALLED / launch key, over the panel
 	local extras =
-		HudTheme.label("Extras", "", UDim2.new(1, 0, 0, 18), HudTheme.LabelFont, 14, dock)
+		HudTheme.label("Extras", "", UDim2.new(1, 0, 0, 20), HudTheme.LabelFont, 16, dock)
 	extras.AnchorPoint = Vector2.new(0.5, 1)
 	extras.Position = UDim2.new(0.5, 0, 0, -4)
 	extras.TextXAlignment = Enum.TextXAlignment.Center
@@ -366,7 +370,16 @@ local function makeHud()
 	line.Parent = dock
 	HudTheme.corner(line, 8)
 	gui.Parent = player:WaitForChild("PlayerGui")
-	hud = { gui = gui, speed = speed, gear = gear, rpm = rpm, rpmFill = rpmFill, extras = extras }
+	hud = {
+		gui = gui,
+		dock = dock,
+		carOnly = { chip, rpm, rpmUnit, track },
+		speed = speed,
+		gear = gear,
+		rpm = rpm,
+		rpmFill = rpmFill,
+		extras = extras,
+	}
 	notice = line
 end
 
@@ -434,6 +447,32 @@ local function stopDriving()
 	player:SetAttribute("CarCockpit", nil)
 end
 
+-- The dock as a car's (speed, gear, RPM) or a boat's (speed only).
+local function showGauges(g: Gauges, car: boolean)
+	g.dock.Size = UDim2.fromOffset(if car then 300 else 124, 84)
+	for _, o in g.carOnly do
+		o.Visible = car
+	end
+end
+
+-- Boats and jet skis: the same dock, speed only (BoatController's Simulator telemetry).
+local function boatSpeed()
+	if driving or not hud then
+		return
+	end
+	local telemetry = BoatController.GetDrivenVehicle() and BoatController.GetTelemetry()
+	local show = telemetry ~= nil and not Layout.coldOpen()
+	if show ~= hud.gui.Enabled then
+		showGauges(hud, false)
+		hud.extras.Text = ""
+		hud.gui.Enabled = show
+	end
+	if telemetry and show then
+		hud.speed.Text =
+			tostring(math.floor(math.abs(telemetry.speed) / LandVehicleConfig.KMH + 0.5))
+	end
+end
+
 local function startDriving(model: Model)
 	local spec = specOf(model)
 	if not spec then
@@ -455,6 +494,7 @@ local function startDriving(model: Model)
 	end
 	bindInputs(true)
 	if hud then
+		showGauges(hud, true)
 		hud.gui.Enabled = true
 	end
 end
@@ -690,6 +730,7 @@ end
 function CarController.Start()
 	RunService.PreSimulation:Connect(drive)
 	RunService.RenderStepped:Connect(animate)
+	RunService.Heartbeat:Connect(boatSpeed)
 end
 
 -- API ---------------------------------------------------------------------------------------------

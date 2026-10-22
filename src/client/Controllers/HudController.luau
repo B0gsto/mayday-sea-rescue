@@ -1,6 +1,6 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
---   Placement: UI/Layout regions. Bottom left ("wallet", above the minimap): Cash with a round
+--   Placement: UI/Layout regions. Top left ("wallet", under the phone button): Cash with a round
 --   "+" that opens the phone's Store app, and the rank with its Rep bar to the next rank. The
 --   phone button has its own region (UI/Phone: every menu, the crew's faces and Leave).
 --   Top centre ("notice"): "+Cash +Rep" award pops, the rank-up toast with the
@@ -48,7 +48,6 @@ local gui: ScreenGui
 local PANEL_DISPLAY_ORDER = 35 -- above Ops (15-22) and the radio wheel (30), below Cinematic (50)
 local cashLabel: TextLabel
 local rankLabel: TextLabel
-local repLabel: TextLabel
 local repFill: ImageLabel
 local coinPop: UIScale
 local awardLabel: TextLabel
@@ -68,7 +67,6 @@ local WALK_AWAY_MARGIN = 6 -- studs past the prompt's activation distance
 local toastSerial = 0
 local awardSerial = 0
 local cashShown: number? = nil
-local repShown: number? = nil
 local rolls: { [TextLabel]: number } = {}
 
 local function showToast(title: string, body: string, color: Color3, seconds: number)
@@ -153,17 +151,6 @@ local function render(data: { [string]: any })
 	-- certification due: the full bar glows pale gold
 	repFill.ImageColor3 = if certDue then Color3.fromHex("FFF4C2") else Color3.new(1, 1, 1)
 	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
-	if certDue then
-		rolls[repLabel] = (rolls[repLabel] or 0) + 1
-		repLabel.Text = "Exercise due"
-	else
-		roll(repLabel, repShown or rep, rep, function(n: number): string
-			return if goal
-				then `{HudTheme.formatNumber(n)} / {HudTheme.formatNumber(goal)}`
-				else HudTheme.formatNumber(n)
-		end)
-	end
-	repShown = rep
 	shop.update(data)
 end
 
@@ -287,7 +274,7 @@ local function watchPanel()
 	end
 end
 
--- Bottom left (assets/ui/hud/mockup.png): [coin] amount (+) on top, [star] rank over the Rep bar.
+-- Top left (assets/ui/hud/mockup.png): [coin] amount (+) on top, [star] rank over the Rep bar.
 local function buildWallet(region: Frame)
 	local W, H = Layout.WALLET_WIDTH, Layout.WALLET_HEIGHT
 	local wallet = HudTheme.image(
@@ -371,46 +358,34 @@ local function buildWallet(region: Frame)
 		Phone.openApp("Store")
 	end)
 
+	-- the rank over its Rep bar, no numbers (a full pale-gold bar: the exercise is due)
 	local star = HudTheme.image("Star", Hud.XpStar, UDim2.fromOffset(36, 36), wallet)
 	star.Position = UDim2.fromOffset(10, 52)
-	rankLabel = HudTheme.label(
-		"Rank",
-		"Recruit",
-		UDim2.new(0.6, -52, 0, 18),
-		HudTheme.LabelFont,
-		15,
-		wallet
-	)
-	rankLabel.Position = UDim2.fromOffset(52, 51)
+	rankLabel =
+		HudTheme.label("Rank", "Recruit", UDim2.new(1, -64, 0, 22), HudTheme.LabelFont, 20, wallet)
+	rankLabel.Position = UDim2.fromOffset(52, 48)
 	HudTheme.outline(rankLabel)
-	repLabel =
-		HudTheme.label("Rep", "", UDim2.new(0.4, -12, 0, 18), HudTheme.NumberFont, 13, wallet)
-	repLabel.AnchorPoint = Vector2.new(1, 0)
-	repLabel.Position = UDim2.new(1, -12, 0, 51)
-	repLabel.TextXAlignment = Enum.TextXAlignment.Right
-	repLabel.TextColor3 = C.textDim
 
 	local track = HudTheme.image(
 		"RepBar",
 		Hud.BarTrack,
-		UDim2.new(1, -64, 0, 14),
+		UDim2.new(1, -64, 0, 18),
 		wallet,
 		HudTheme.Slice.Bar,
-		0.22
+		0.28
 	)
 	track.Position = UDim2.fromOffset(52, 72)
 	repFill =
-		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.22)
+		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.28)
 end
 
 local function buildAward()
 	awardLabel =
-		HudTheme.label("Award", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 17, noticeRegion)
+		HudTheme.label("Award", "", UDim2.new(1, 0, 0, 26), HudTheme.NumberFont, 20, noticeRegion)
 	awardLabel.AnchorPoint = Vector2.new(0.5, 0)
 	awardLabel.Position = UDim2.fromScale(0.5, 0)
 	awardLabel.TextXAlignment = Enum.TextXAlignment.Center
-	awardLabel.TextColor3 = C.gold
-	awardLabel.TextStrokeTransparency = 0.7
+	HudTheme.outline(awardLabel)
 	awardLabel.Visible = false
 end
 
@@ -421,6 +396,7 @@ local function buildToast(parent: Instance)
 	toast.Visible = false
 	toast.ZIndex = 5
 	HudTheme.padding(toast, 10)
+	HudTheme.skin(toast)
 	toastTitle = HudTheme.label("Title", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 20, toast)
 	toastTitle.TextXAlignment = Enum.TextXAlignment.Center
 	toastBody = HudTheme.label("Body", "", UDim2.new(1, 0, 0, 20), HudTheme.BodyFont, 16, toast)

@@ -3,49 +3,50 @@
 -- design units (du): the safe area divided by `scale`. UI/Layout turns the rects into ScreenGui
 -- frames; the touch arrangement is decided here, from the screen size, the insets and the device.
 --
--- Desktop / gamepad: objective top left with the phone button under it, status and the pager
--- column top right, notice top centre, minimap bottom left, gauges bottom right, radio bottom centre.
--- Touch: the phone button sits right of the minimap.
+-- Desktop / gamepad (assets/ui/hud/mockup.png): a left column pinned to the top-left corner
+-- (phone button, wallet under it, then the objective strip), the mission card pinned top right,
+-- notice top centre, minimap bottom left, gauges bottom right, radio bottom centre. Persistent
+-- pieces sit first in a column, so a hidden region never leaves a hole above them.
 --
 -- Touch (thumbstick bottom left, jump / action buttons bottom right):
 --
 --   +------------------------------------------------------------------+
---   | minimap   objective          notice (under the objective)  status |
---   | (110 px)                                                  --------|
---   | wallet                                                    pager   |
---   |                                                           column  |
---   |                                                                   |
+--   | minimap  phone  objective                              mission   |
+--   | (130 px)                                               card      |
+--   |          wallet   notice                               column    |
+--   |                                                        goal      |
 --   |            radio / prompt (unchanged)                             |
 --   | [thumbstick]                                  [jump / actions]    |
 --   +------------------------------------------------------------------+
 --
--- The minimap moves to the top left at 110 final px (tap it for the full map, MapController)
--- (its objective pill drawn inside the square's bottom edge, MapController)
--- and the wallet (Cash + rank bar) sits under it, so the bottom-left 40% x 45%
--- stays empty for the thumbstick. The objective strip moves to the top centre (between the
--- minimap and the status strip) and the notice band sits under it; the pager column stops above
--- the bottom-right 30% x 35% jump zone. `tests/HudLayout.spec.luau` asserts this on a 16:9
--- phone, a 19.5:9 phone with notch insets and a 4:3 tablet.
+-- The minimap sits top left at 130 final px (tap it for the full map, MapController; its
+-- objective pill drawn inside the square's bottom edge), the phone button right of it, the
+-- objective strip after that and the wallet under the phone, scaled down to end above the
+-- bottom-left 40% x 45% thumbstick zone. The notice band sits right of the wallet; the mission
+-- card column and the goal chip stop above the bottom-right 30% x 35% jump zone.
+-- `tests/HudLayout.spec.luau` asserts this on a 16:9 phone, a 19.5:9 phone with notch insets and
+-- a 4:3 tablet.
 local HudLayout = {}
 
-HudLayout.MARGIN = 12 -- du from the safe-area edge
-HudLayout.GAP = 8 -- du between stacked regions
+HudLayout.MARGIN = 24 -- du from the safe-area edge
+HudLayout.GAP = 14 -- du between stacked regions
 HudLayout.SUBTITLE_HEIGHT = 118 -- the VHF set
-HudLayout.STATUS_HEIGHT = 100 -- status strip (52) + crew row (40)
 HudLayout.OBJECTIVE_HEIGHT = 132 -- step card (92) + takeover banner
 HudLayout.PROMPT_HEIGHT = 230
 HudLayout.NOTICE_HEIGHT = 120
-HudLayout.GOAL_WIDTH = 260 -- the next-goal chip, under the status strip
+HudLayout.GOAL_WIDTH = 260 -- the next-goal chip
 HudLayout.GOAL_HEIGHT = 44
 HudLayout.WALLET_WIDTH = 236 -- the Cash + rank card (HudController), bottom left
 HudLayout.WALLET_HEIGHT = 96
 HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
-HudLayout.TOUCH_SIDE = 110 -- final px: the touch minimap square
-HudLayout.PHONE_SIZE = 72 -- the phone button (UI/Phone), left side
+HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
+HudLayout.PHONE_SIZE = 72 -- the phone button (UI/Phone), top left
+HudLayout.PHONE_MIN_PX = 64 -- final px: the phone button never draws smaller
 
 local REF_HEIGHT = 720 -- usable px at which the HUD draws 1:1
 local REF_WIDTH = 1200
 local MIN_SCALE = 0.7
+local MAX_SCALE = 1.5
 
 export type RegionName =
 	"objective"
@@ -87,25 +88,19 @@ end
 
 -- Pure: the region sizes and rects for a usable area in pixels.
 function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
-	local s = math.clamp(math.min(px.Y / REF_HEIGHT, px.X / REF_WIDTH), MIN_SCALE, 1)
+	local s = math.clamp(math.min(px.Y / REF_HEIGHT, px.X / REF_WIDTH), MIN_SCALE, MAX_SCALE)
 	local u = px / s
 	local m, g = HudLayout.MARGIN, HudLayout.GAP
 	local side = if touch
 		then math.floor(HudLayout.TOUCH_SIDE / s + 0.5)
 		else math.clamp(math.floor(u.Y * 0.3), 156, 230)
+	local phone = math.max(HudLayout.PHONE_SIZE, math.ceil(HudLayout.PHONE_MIN_PX / s))
 	local objectiveWidth = math.clamp(math.floor(u.X * 0.3), 320, 460)
 	local rightWidth = math.clamp(math.floor(u.X * 0.24), 280, 360)
-	if touch then
-		-- keep the objective strip clear of the top-right status strip
-		objectiveWidth = math.min(objectiveWidth, math.floor(u.X - 2 * m - 2 * rightWidth - 2 * g))
-	end
+	local rightLeft = u.X - m - rightWidth
 	local outer = math.max(side, rightWidth)
-	local noticeWidth = math.min(
-		if touch
-			then u.X - 2 * (math.max(objectiveWidth, rightWidth) + 2 * m)
-			else u.X - 2 * (outer + 2 * m),
-		420
-	)
+	local bottom = u.Y - m
+	local objectiveHeight = HudLayout.OBJECTIVE_HEIGHT
 	local mt: Metrics = {
 		scale = s,
 		usable = u,
@@ -115,100 +110,85 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		rightWidth = rightWidth,
 		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
 		subtitleWidth = math.min(u.X - 2 * (side + 2 * m), 620),
-		noticeWidth = noticeWidth,
+		noticeWidth = math.min(u.X - 2 * (outer + 2 * m), 420),
 		rects = {},
 	}
-	local bottom = u.Y - m
-	local objectiveHeight = HudLayout.OBJECTIVE_HEIGHT
+	-- status is empty now (the friend chip lives in the wallet): a zero-height line, so it never
+	-- pushes the mission card down
+	mt.rects["status"] =
+		rect(Vector2.new(1, 0), Vector2.new(u.X - m, m), Vector2.new(rightWidth, 0))
 	if touch then
 		local stickTop = u.Y * 0.55
-		local walletY = m + side + g
-		local noticeY = m + objectiveHeight + g
-		local noticeH = math.clamp(stickTop - 4 - noticeY, 48, HudLayout.NOTICE_HEIGHT)
-		local rightTop = m + HudLayout.STATUS_HEIGHT + g
+		local jumpTop = u.Y * 0.65
+		local phoneX = m + side + g
+		local objectiveX = phoneX + phone + g
+		objectiveWidth = math.min(objectiveWidth, rightLeft - g - objectiveX)
+		mt.objectiveWidth = objectiveWidth
+		-- the wallet card scales down (by height, HudController) to end above the thumbstick zone
+		local walletY = m + math.max(phone, objectiveHeight) + g
+		local walletH = math.clamp(stickTop - 4 - walletY, 40, HudLayout.WALLET_HEIGHT)
+		local walletW = HudLayout.WALLET_WIDTH * walletH / HudLayout.WALLET_HEIGHT
+		local noticeX = phoneX + walletW + g
+		local noticeBottom = bottom - HudLayout.SUBTITLE_HEIGHT - g
+		if noticeX < u.X * 0.4 then
+			noticeBottom = math.min(noticeBottom, stickTop - 4)
+		end
+		mt.noticeWidth = math.min(rightLeft - g - noticeX, 420)
+		local goalY = jumpTop - 1 - HudLayout.GOAL_HEIGHT
+		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(side, side))
+		mt.rects["phone"] =
+			rect(Vector2.new(0, 0), Vector2.new(phoneX, m), Vector2.new(phone, phone))
 		mt.rects["objective"] = rect(
-			Vector2.new(0.5, 0),
-			Vector2.new(u.X / 2, m),
+			Vector2.new(0, 0),
+			Vector2.new(objectiveX, m),
 			Vector2.new(objectiveWidth, objectiveHeight)
 		)
-		mt.rects["status"] = rect(
-			Vector2.new(1, 0),
-			Vector2.new(u.X - m, m),
-			Vector2.new(rightWidth, HudLayout.STATUS_HEIGHT)
-		)
-		mt.rects["right"] = rect(
-			Vector2.new(1, 0),
-			Vector2.new(u.X - m, rightTop),
-			Vector2.new(rightWidth, math.max(u.Y * 0.65 - g - rightTop, 120))
-		)
+		mt.rects["wallet"] =
+			rect(Vector2.new(0, 0), Vector2.new(phoneX, walletY), Vector2.new(walletW, walletH))
 		mt.rects["notice"] = rect(
-			Vector2.new(0.5, 0),
-			Vector2.new(u.X / 2, noticeY),
-			Vector2.new(noticeWidth, noticeH)
-		)
-		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(side, side))
-		-- under the minimap, ending above the thumbstick zone (the card scales down to fit)
-		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m, walletY),
+			Vector2.new(noticeX, walletY),
 			Vector2.new(
-				HudLayout.WALLET_WIDTH,
-				math.clamp(stickTop - 4 - walletY, 40, HudLayout.WALLET_HEIGHT)
+				mt.noticeWidth,
+				math.clamp(noticeBottom - walletY, 48, HudLayout.NOTICE_HEIGHT)
 			)
 		)
-		-- the phone button: top left, right of the minimap
-		mt.rects["phone"] = rect(
-			Vector2.new(0, 0),
-			Vector2.new(m + side + g, m),
-			Vector2.new(HudLayout.PHONE_SIZE, HudLayout.PHONE_SIZE)
-		)
-		-- clear of the thumbstick (left 40%), the jump buttons (right 30%) and the VHF set
-		local goalX =
-			math.min(u.X - m - rightWidth - g, math.floor(u.X * 0.7) - g - HudLayout.GOAL_WIDTH)
-		local goalY = math.min(
-			m + objectiveHeight + g + HudLayout.NOTICE_HEIGHT + g,
-			bottom - HudLayout.SUBTITLE_HEIGHT - g - HudLayout.GOAL_HEIGHT
-		)
+		mt.rects["right"] =
+			rect(Vector2.new(1, 0), Vector2.new(u.X - m, m), Vector2.new(rightWidth, goalY - g - m))
+		-- bottom of the card column, just above the jump buttons
 		mt.rects["goal"] = rect(
 			Vector2.new(1, 0),
-			Vector2.new(goalX + HudLayout.GOAL_WIDTH, goalY),
+			Vector2.new(u.X - m, goalY),
 			Vector2.new(HudLayout.GOAL_WIDTH, HudLayout.GOAL_HEIGHT)
 		)
 	else
-		mt.rects["objective"] =
-			rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(objectiveWidth, objectiveHeight))
-		mt.rects["status"] = rect(
-			Vector2.new(1, 0),
-			Vector2.new(u.X - m, m),
-			Vector2.new(rightWidth, HudLayout.STATUS_HEIGHT)
+		local walletY = m + phone + g
+		mt.rects["phone"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(phone, phone))
+		mt.rects["wallet"] = rect(
+			Vector2.new(0, 0),
+			Vector2.new(m, walletY),
+			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
 		)
-		local rightTop = m + HudLayout.STATUS_HEIGHT + g
+		mt.rects["objective"] = rect(
+			Vector2.new(0, 0),
+			Vector2.new(m, walletY + HudLayout.WALLET_HEIGHT + g),
+			Vector2.new(objectiveWidth, objectiveHeight)
+		)
 		mt.rects["right"] = rect(
 			Vector2.new(1, 0),
-			Vector2.new(u.X - m, rightTop),
-			Vector2.new(rightWidth, math.max(bottom - side - g - rightTop, 120))
+			Vector2.new(u.X - m, m),
+			Vector2.new(rightWidth, math.max(bottom - side - g - m, 120))
 		)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
 			Vector2.new(u.X / 2, m),
-			Vector2.new(noticeWidth, HudLayout.NOTICE_HEIGHT)
+			Vector2.new(mt.noticeWidth, HudLayout.NOTICE_HEIGHT)
 		)
 		mt.rects["minimap"] =
 			rect(Vector2.new(0, 1), Vector2.new(m, bottom), Vector2.new(side, side))
-		mt.rects["wallet"] = rect(
-			Vector2.new(0, 0),
-			Vector2.new(m, bottom - side - HudLayout.PILL_HEIGHT - g - HudLayout.WALLET_HEIGHT),
-			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
-		)
-		-- the phone button: left edge, under the objective
-		mt.rects["phone"] = rect(
-			Vector2.new(0, 0),
-			Vector2.new(m, m + objectiveHeight + g),
-			Vector2.new(HudLayout.PHONE_SIZE, HudLayout.PHONE_SIZE)
-		)
 		mt.rects["goal"] = rect(
 			Vector2.new(1, 0),
-			Vector2.new(u.X - m - rightWidth - g, m + HudLayout.NOTICE_HEIGHT + g),
+			Vector2.new(rightLeft - g, m + HudLayout.NOTICE_HEIGHT + g),
 			Vector2.new(HudLayout.GOAL_WIDTH, HudLayout.GOAL_HEIGHT)
 		)
 	end

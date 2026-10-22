@@ -93,15 +93,28 @@ function OnboardingBeacon.start(): Beacon
 	local arrow = Instance.new("TextLabel")
 	arrow.Name = "Arrow"
 	arrow.AnchorPoint = Vector2.new(0.5, 0.5)
-	arrow.Size = UDim2.fromOffset(48, 48)
+	arrow.Size = UDim2.fromOffset(96, 96)
 	arrow.BackgroundTransparency = 1
 	arrow.Text = "▲"
-	arrow.TextSize = 44
+	arrow.TextSize = 96 -- the glyph draws ~30 px (44 drew ~14 px)
 	arrow.Font = Enum.Font.GothamBlack
 	arrow.TextColor3 = COLORS.Place
 	arrow.TextStrokeTransparency = 0.2
 	arrow.Visible = false
 	arrow.Parent = edgeGui
+	-- the distance, upright, just inside the arrow
+	local range = Instance.new("TextLabel")
+	range.Name = "Range"
+	range.AnchorPoint = Vector2.new(0.5, 0.5)
+	range.Size = UDim2.fromOffset(90, 24)
+	range.BackgroundTransparency = 1
+	range.Font = Enum.Font.FredokaOne
+	range.TextSize = 20
+	range.TextColor3 = Color3.new(1, 1, 1)
+	range.TextStrokeColor3 = Color3.fromHex("06101C")
+	range.TextStrokeTransparency = 0.4
+	range.Visible = false
+	range.Parent = edgeGui
 
 	local at: Vector3? = nil
 	local baseY = 0
@@ -131,6 +144,7 @@ function OnboardingBeacon.start(): Beacon
 		ring.Transparency = 1
 		diamond.Visible, stem.Visible = false, false
 		arrow.Visible = false
+		range.Visible = false
 	end
 
 	function self.target(): Vector3?
@@ -145,6 +159,7 @@ function OnboardingBeacon.start(): Beacon
 			and Workspace.CurrentCamera.CameraType == Enum.CameraType.Scriptable
 		billboard.Enabled = not cutscene
 		arrow.Visible = false
+		range.Visible = false
 		if cutscene then
 			ring.Transparency = 1
 			return
@@ -152,7 +167,7 @@ function OnboardingBeacon.start(): Beacon
 		local cam = Workspace.CurrentCamera :: Camera
 		local vp = cam.ViewportSize
 		local p, onScreen = cam:WorldToViewportPoint(at + Vector3.new(0, 6, 0))
-		local margin = 40
+		local margin = 48
 		local x, y = p.X, p.Y
 		if p.Z <= 0 then -- behind the camera: the projection flips
 			x, y, onScreen = vp.X - x, vp.Y - y, false
@@ -169,6 +184,21 @@ function OnboardingBeacon.start(): Beacon
 			arrow.Position = UDim2.fromOffset(vp.X / 2 + dx * k, vp.Y / 2 + dy * k)
 			arrow.Rotation = math.deg(math.atan2(dx, -dy))
 			arrow.Visible = true
+			local char = Players.LocalPlayer.Character
+			local root = char and char:FindFirstChild("HumanoidRootPart")
+			if root and root:IsA("BasePart") then
+				local d = at - root.Position
+				local metres = Vector3.new(d.X, 0, d.Z).Magnitude / 3 -- 3 studs per metre
+				local inward = 40 / math.max(math.sqrt(dx * dx + dy * dy) * k, 1)
+				range.Position = UDim2.fromOffset(
+					vp.X / 2 + dx * k * (1 - inward),
+					vp.Y / 2 + dy * k * (1 - inward)
+				)
+				range.Text = if metres >= 1000
+					then string.format("%.1f km", metres / 1000)
+					else `{math.floor(metres / 10 + 0.5) * 10} m`
+				range.Visible = true
+			end
 		end
 		local t = os.clock()
 		local k = (t % 1.6) / 1.6

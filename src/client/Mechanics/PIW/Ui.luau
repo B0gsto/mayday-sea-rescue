@@ -130,8 +130,7 @@ function Ui.panel(parent: Instance, size: UDim2, pos: UDim2, anchor: Vector2?): 
 	f.BackgroundTransparency = HudTheme.PromptTransparency
 	f.BorderSizePixel = 0
 	f.Parent = parent
-	HudTheme.corner(f)
-	HudTheme.stroke(f)
+	HudTheme.skin(f)
 	return f
 end
 

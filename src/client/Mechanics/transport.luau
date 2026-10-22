@@ -1,7 +1,7 @@
 --!strict
 -- transport (docs 09 step 9, section 5.7): the pad you drive to is the choice. The right one is lit
--- (blue ambulance beacon, or a white heli beacon at the station for a heli case); a ride comfort
--- needle jumps on every hard landing. Hard slams hurt a cold casualty (the server turns `slam`
+-- (blue ambulance beacon, or a white heli beacon at the station for a heli case); no panel in
+-- play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the server turns `slam`
 -- events into condition, cap 6). The server measures conditionAtEnd and destinationRight when the
 -- boat reaches a pad; this client reports when it is home: the boat slow and close to a pad or a
 -- shore point (station slipway, Haven Sands), or the player ashore on foot at one (they landed the
@@ -96,6 +96,8 @@ function Transport.start(
 	finish: (result: { [string]: any }) -> ()
 ): (() -> ())?
 	local s = Step.new(ctx, finish, "Transport", 72)
+	-- no bar in play: the minimap pill counts the drop-off distance down, the medic calls the slams
+	s.panel.Visible = false
 	if Step.autoStub(s) then
 		return Step.cleanup(s)
 	end
@@ -108,22 +110,15 @@ function Transport.start(
 	local pad = rightPad(needsHeli)
 	local lamp = if pad then Ui.add(s.bag, beacon(pad, needsHeli)) else nil
 	local slams = 0
-	local comfort = 0
 
 	local function drive()
-		-- ride comfort, wordless: waves icon + a bar whose green end is a smooth ride
-		local waves =
-			Ui.text(s.panel, "🌊", UDim2.fromOffset(24, 24), UDim2.fromOffset(12, 38), 18)
-		waves.TextXAlignment = Enum.TextXAlignment.Center
-		local setMeter = Ui.meter(s.panel, "", UDim2.fromOffset(44, 41), 404)
-		Step.heartbeat(s, function(dt)
+		Step.heartbeat(s, function()
 			if lamp and not needsHeli then
 				lamp.Transparency = if os.clock() % 0.8 < 0.4 then 0 else 0.9
 			end
 			local slam = World.slam()
 			if slam > Transport.HARD_SLAM then
 				slams += 1
-				comfort = math.min(1, comfort + 0.35)
 				if cold then
 					s.say(
 						if slams == 1
@@ -132,11 +127,7 @@ function Transport.start(
 					)
 				end
 				Ui.hands("brace")
-			elseif slam > Transport.HARD_SLAM * 0.5 then
-				comfort = math.min(1, comfort + 0.08)
 			end
-			comfort = math.max(0, comfort - 0.12 * dt)
-			setMeter(1 - comfort, 0.6, 1)
 			local h = World.hull(World.vehicle(ctx))
 			local char = Players.LocalPlayer.Character
 			local hum = char and char:FindFirstChildOfClass("Humanoid")

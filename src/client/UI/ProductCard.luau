@@ -90,6 +90,7 @@ function ProductCard.mount(onOpen: (() -> ())?): Card
 	frame.BackgroundTransparency = HudTheme.PromptTransparency
 	frame.Visible = false
 	HudTheme.padding(frame, 14)
+	HudTheme.skin(frame)
 
 	local place = HudTheme.label(
 		"Place",

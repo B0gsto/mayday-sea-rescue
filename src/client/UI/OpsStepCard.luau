@@ -127,8 +127,7 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 	body.BorderSizePixel = 0
 	body.Visible = false
 	body.Parent = gui
-	HudTheme.corner(body)
-	HudTheme.stroke(body)
+	HudTheme.skin(body)
 
 	local icon =
 		HudTheme.label("Icon", "•", UDim2.fromOffset(32, 32), HudTheme.BoldFont, 24, body)

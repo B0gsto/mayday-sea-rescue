@@ -80,7 +80,7 @@ function InputGlyph.chip(parent: Instance, kb: Enum.KeyCode?, pad: Enum.KeyCode?
 	f.ZIndex = 5
 	HudTheme.corner(f, 4)
 	HudTheme.stroke(f)
-	local t = HudTheme.label("Key", "", UDim2.fromScale(1, 1), HudTheme.HeaderFont, 14, f)
+	local t = HudTheme.label("Key", "", UDim2.fromScale(1, 1), HudTheme.HeaderFont, 16, f)
 	t.TextXAlignment = Enum.TextXAlignment.Center
 	t.ZIndex = 5
 	local img = Instance.new("ImageLabel")

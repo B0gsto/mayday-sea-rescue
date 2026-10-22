@@ -4,6 +4,12 @@
 -- one muted safety-orange accent used sparingly, buttons still at least 48 px tall. Small factory
 -- helpers so every HUD piece looks the same. Placement lives in UI/Layout.
 local Layout = require(script.Parent:WaitForChild("Layout"))
+local Hud = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Config")
+		:WaitForChild("UiImages")
+).Hud
 
 local HudTheme = {}
 
@@ -15,12 +21,30 @@ function HudTheme.scaled(size: number): number
 	return math.round(size * Layout.textScale())
 end
 
-Layout.onTextScale(function()
+HudTheme.MinTextPx = 14 -- rendered px floor for HUD-region text (phones draw at UIScale 0.7)
+
+-- A label inside a Layout region never renders under MinTextPx: the UIScales above it multiply.
+local function labelSize(label: TextLabel, base: number): number
+	local k, p = 1, label.Parent
+	while p do
+		local sc = p:FindFirstChildOfClass("UIScale")
+		if sc then
+			k *= sc.Scale
+		end
+		if p:GetAttribute("HudRegion") then
+			return math.round(math.max(base * Layout.textScale(), HudTheme.MinTextPx / k))
+		end
+		p = p.Parent
+	end
+	return HudTheme.scaled(base)
+end
+
+local function rescale()
 	for label, base in scaledLabels do
 		if label.Parent == nil then
 			scaledLabels[label] = nil
 		elseif not label.TextScaled then
-			label.TextSize = HudTheme.scaled(base)
+			label.TextSize = labelSize(label, base)
 		end
 	end
 	for button, base in scaledButtons do
@@ -30,7 +54,9 @@ Layout.onTextScale(function()
 			button.TextSize = HudTheme.scaled(base)
 		end
 	end
-end)
+end
+Layout.onTextScale(rescale)
+Layout.onMetrics(rescale)
 
 HudTheme.Colors = {
 	panel = Color3.fromHex("0C1217"), -- near-black slate
@@ -114,11 +140,11 @@ function HudTheme.label(
 	l.Size = size
 	l.BackgroundTransparency = 1
 	l.Font = font or HudTheme.BodyFont
-	l.TextSize = HudTheme.scaled(base)
 	l.TextColor3 = HudTheme.Colors.text
 	l.TextXAlignment = Enum.TextXAlignment.Left
 	l.TextTruncate = Enum.TextTruncate.AtEnd
 	l.Parent = parent
+	l.TextSize = labelSize(l, base)
 	scaledLabels[l] = base
 	return l
 end
@@ -174,6 +200,36 @@ function HudTheme.image(
 	end
 	i.Parent = parent
 	return i
+end
+
+-- The sprite HUD's navy 9-slice (UiImages Hud.Panel, ~14 du corners) with an orange accent, in
+-- place of a slate panel's fill, corner and edge (toasts, prompts, the step card).
+function HudTheme.skin(f: GuiObject)
+	f.BackgroundTransparency = 1
+	for _, c in f:GetChildren() do
+		if c:IsA("UICorner") or c:IsA("UIStroke") then
+			c:Destroy()
+		end
+	end
+	local bg =
+		HudTheme.image("Skin", Hud.Panel, UDim2.fromScale(1, 1), f, HudTheme.Slice.Panel, 0.45)
+	bg.ZIndex = 0
+	local pad = f:FindFirstChildOfClass("UIPadding")
+	if pad then -- cover the padding too
+		local l, r = pad.PaddingLeft.Offset, pad.PaddingRight.Offset
+		local t, b = pad.PaddingTop.Offset, pad.PaddingBottom.Offset
+		bg.Position = UDim2.fromOffset(-l, -t)
+		bg.Size = UDim2.new(1, l + r, 1, t + b)
+	end
+	local accent = Instance.new("Frame")
+	accent.Name = "Accent"
+	accent.AnchorPoint = Vector2.new(0.5, 0)
+	accent.Position = UDim2.new(0.5, 0, 0, bg.Position.Y.Offset)
+	accent.Size = UDim2.new(0.4, 0, 0, 4)
+	accent.BackgroundColor3 = HudTheme.Colors.accent
+	accent.BorderSizePixel = 0
+	accent.Parent = f
+	HudTheme.corner(accent, 2)
 end
 
 -- White HUD text with a subtle dark edge (reads on sky, sea and sand).

@@ -3,7 +3,8 @@
 --
 -- SurfaceAppearance templates are authored as Rojo model files next to this module (texture
 -- properties are not script-writable at runtime, so the client clones them):
---   SurfaceCalm   tiling FFT chop normal map, roughness ~0.07, Overlay colour map ~transparent
+--   SurfaceCalm   tiling FFT chop normal map, roughness ~0.07, the storm Overlay colour map (the
+--                 calm one was ~transparent: the sea went flat textureless teal whenever it calmed)
 --   SurfaceStorm  same normal map, roughness ~0.24, Overlay colour map with faint foam streaks
 -- The crest foam overlay ("Foam") is a plain MeshPart.TextureID with alpha, not a SurfaceAppearance:
 -- the place is published from the Rojo build (tools/publish.py), so its SurfaceAppearances carry no

@@ -108,7 +108,7 @@ def main():
                 x2, y2 = to_vp(a[3], a[4])
                 drag(s, x1, y1, x2, y2, "right" if len(a) > 5 and a[5] == "right" else "left")
             elif cmd == "turn":
-                sx, _ = json.load(open(STATE)) if os.path.exists(STATE) else (1.0, 1.0)
+                sx = json.load(open(STATE))[0] if os.path.exists(STATE) else 1.0
                 _, text = smoke.lua(s, "Client", "local v = workspace.CurrentCamera.ViewportSize return v.X .. ',' .. v.Y")
                 m = re.search(r"([\d.]+),([\d.]+)", text)
                 cx, cy = (int(float(m.group(1)) / 2), int(float(m.group(2)) / 2)) if m else (400, 300)

@@ -229,7 +229,7 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 	local toast = HudTheme.panel("DebriefTablet", UDim2.fromOffset(380, 84), parent)
 	toast.AnchorPoint = Vector2.new(0.5, 0)
 	toast.Visible = false
-	HudTheme.corner(toast, 42)
+	HudTheme.skin(toast)
 	local content = Instance.new("Frame")
 	content.Name = "Content"
 	content.Size = UDim2.fromScale(1, 1)

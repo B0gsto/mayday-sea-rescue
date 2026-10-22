@@ -29,9 +29,7 @@ function Default.start(
 	frame.BackgroundColor3 = HudTheme.Colors.panel
 	frame.BackgroundTransparency = HudTheme.PanelTransparency
 	frame.Parent = Layout.region(gui, "prompt") -- centre low, above the radio subtitles
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, HudTheme.Corner)
-	corner.Parent = frame
+	HudTheme.skin(frame)
 	local title = Instance.new("TextLabel")
 	title.BackgroundTransparency = 1
 	title.Position = UDim2.fromOffset(16, 8)

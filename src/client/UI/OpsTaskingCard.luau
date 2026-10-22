@@ -16,6 +16,7 @@ local Hud = require(
 ).Hud
 local HudTheme = require(script.Parent.HudTheme)
 local InputGlyph = require(script.Parent.InputGlyph)
+local Layout = require(script.Parent.Layout)
 
 export type Card = {
 	show: (data: { [string]: any }, onAccept: (opId: string) -> ()) -> (),
@@ -63,13 +64,21 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	local body = HudTheme.image(
 		"TaskingPager",
 		Hud.Panel,
-		UDim2.fromOffset(180, 216),
+		UDim2.fromOffset(180, 236),
 		gui,
 		HudTheme.Slice.Panel,
 		0.45
 	)
 	body.LayoutOrder = 1 -- top of the Layout "right" column
 	body.Visible = false
+	-- 0.8x on touch (clear of the jump button); made before the labels so their text floor sees it
+	local touchScale = Instance.new("UIScale")
+	touchScale.Parent = body
+	local function fitTouch(mt: Layout.Metrics)
+		touchScale.Scale = if mt.touch then 0.8 else 1
+	end
+	fitTouch(Layout.current())
+	Layout.onMetrics(fitTouch)
 	local strip = Instance.new("Frame")
 	strip.Name = "Alert"
 	strip.AnchorPoint = Vector2.new(0.5, 0)
@@ -81,7 +90,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	HudTheme.corner(strip, 4)
 
 	-- the call icon: the PIW sprite, or a Glyph disc for kinds without one
-	local ICON = 68
+	local ICON = 64
 	local sprite = HudTheme.image("Sprite", Hud.MissionPiw, UDim2.fromOffset(ICON, ICON), body)
 	sprite.AnchorPoint = Vector2.new(0.5, 0)
 	sprite.Position = UDim2.new(0.5, 0, 0, 14)
@@ -103,29 +112,25 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	icon.BackgroundTransparency = 1
 	icon.Parent = badge
 
-	local name = HudTheme.label("Name", "", UDim2.new(1, -20, 0, 36), HudTheme.LabelFont, 15, body)
+	-- three words on two lines
+	local name = HudTheme.label("Name", "", UDim2.new(1, -16, 0, 50), HudTheme.LabelFont, 20, body)
 	name.AnchorPoint = Vector2.new(0.5, 0)
-	name.Position = UDim2.new(0.5, 0, 0, 86)
+	name.Position = UDim2.new(0.5, 0, 0, 80)
 	name.TextXAlignment = Enum.TextXAlignment.Center
 	name.TextWrapped = true
-	name.TextScaled = true -- three words fit two lines
 	HudTheme.outline(name)
-	local fit = Instance.new("UITextSizeConstraint")
-	fit.MaxTextSize = 16
-	fit.MinTextSize = 11
-	fit.Parent = name
 	local range =
-		HudTheme.label("Range", "", UDim2.new(1, -20, 0, 24), HudTheme.NumberFont, 22, body)
+		HudTheme.label("Range", "", UDim2.new(1, -16, 0, 34), HudTheme.NumberFont, 30, body)
 	range.AnchorPoint = Vector2.new(0.5, 0)
-	range.Position = UDim2.new(0.5, 0, 0, 122)
+	range.Position = UDim2.new(0.5, 0, 0, 130)
 	range.TextXAlignment = Enum.TextXAlignment.Center
 	HudTheme.outline(range)
 
-	-- accept: the check sprite (>= 48 px touch target), the device key chip beside it
+	-- accept: the check sprite (>= 48 px touch target), the device key chip on its corner
 	local key = Instance.new("ImageButton")
 	key.Name = "Launch"
 	key.AnchorPoint = Vector2.new(0.5, 1)
-	key.Position = UDim2.new(0.5, 0, 1, -8)
+	key.Position = UDim2.new(0.5, 0, 1, -10)
 	key.Size = UDim2.fromOffset(60, 60)
 	key.BackgroundTransparency = 1
 	key.Image = Hud.AcceptButton
@@ -134,8 +139,8 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	local pulse = Instance.new("UIScale")
 	pulse.Parent = key
 	local chip = InputGlyph.chip(key, ACCEPT_KEY, ACCEPT_PAD)
-	chip.AnchorPoint = Vector2.new(0, 0.5)
-	chip.Position = UDim2.new(1, 2, 0.5, 0)
+	chip.AnchorPoint = Vector2.new(0.5, 0.5)
+	chip.Position = UDim2.new(1, -6, 1, -8)
 
 	local currentId: string? = nil
 	local acceptFn: ((string) -> ())? = nil

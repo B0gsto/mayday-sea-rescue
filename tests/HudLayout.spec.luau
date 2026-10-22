@@ -52,45 +52,60 @@ return function(t)
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
-			-- the minimap is the requested ~110 px square
-			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(110, 1)
+			-- the minimap is the requested ~130 px square, the phone button at least 64 px
+			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(130, 1)
+			t.expect(mt.rects.phone.size.X * mt.scale >= 64).toBe(true)
 		end)
 	end
 
-	t.test("the touch wallet sits under the minimap", function()
+	t.test("the touch phone button and wallet sit right of the minimap", function()
 		for _, s in SCREENS do
 			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
-			local mini, icon = mt.rects.minimap, mt.rects.wallet
-			t.expect(icon.pos.Y >= mini.pos.Y + mini.size.Y).toBe(true)
-			t.expect(icon.pos.X).toBe(mini.pos.X)
+			local mini, phone, wallet = mt.rects.minimap, mt.rects.phone, mt.rects.wallet
+			t.expect(phone.pos.X).toBe(mini.pos.X + mini.size.X + HudLayout.GAP)
+			t.expect(phone.pos.Y).toBe(mini.pos.Y)
+			t.expect(wallet.pos.X).toBe(phone.pos.X)
 		end
 	end)
 
-	t.test("desktop keeps today's layout", function()
-		local mt = HudLayout.compute(
-			Vector2.new(1366, 768),
-			{ top = 0, bottom = 0, left = 0, right = 0 },
-			"Keyboard"
-		)
-		t.expect(mt.touch).toBe(false)
-		local mini = mt.rects.minimap
-		local m, g = HudLayout.MARGIN, HudLayout.GAP
-		t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
-		t.expect(mini.pos).toEqual(Vector2.new(m, mt.usable.Y - m))
-		t.expect(mt.rects.status.anchor).toEqual(Vector2.new(1, 0))
-		t.expect(mt.rects.wallet.pos.Y)
-			.toBe(mt.usable.Y - m - mini.size.Y - HudLayout.PILL_HEIGHT - g - mt.rects.wallet.size.Y)
+	local DESKTOP = { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) }
+	local NO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
+
+	t.test("desktop scale grows past 1 on big screens, capped at 1.5", function()
+		t.expect(HudLayout.compute(Vector2.new(1920, 1080), NO_INSETS, "Keyboard").scale).toBe(1.5)
+		t.expect(HudLayout.compute(Vector2.new(3840, 2160), NO_INSETS, "Keyboard").scale).toBe(1.5)
+		t.expect(HudLayout.compute(Vector2.new(800, 450), NO_INSETS, "Keyboard").scale).toBe(0.7)
+	end)
+
+	t.test("desktop pins the phone top left, the wallet under it, the card top right", function()
+		for _, screen in DESKTOP do
+			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
+			t.expect(mt.touch).toBe(false)
+			local m, g = HudLayout.MARGIN, HudLayout.GAP
+			local phone, wallet, right = mt.rects.phone, mt.rects.wallet, mt.rects.right
+			t.expect(phone.pos).toEqual(Vector2.new(m, m))
+			t.expect(wallet.pos).toEqual(Vector2.new(m, m + phone.size.Y + g))
+			t.expect(right.anchor).toEqual(Vector2.new(1, 0))
+			t.expect(right.pos).toEqual(Vector2.new(mt.usable.X - m, m))
+			local mini = mt.rects.minimap
+			t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
+			t.expect(mini.pos).toEqual(Vector2.new(m, mt.usable.Y - m))
+		end
 	end)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
-	t.test("desktop wallet card clears the minimap pill and the objective", function()
-		for _, screen in { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) } do
-			local mt =
-				HudLayout.compute(screen, { top = 0, bottom = 0, left = 0, right = 0 }, "Keyboard")
-			local _, _, _, cy2 = box(mt.rects.wallet)
+	t.test("desktop left column clears the minimap pill, no overlaps", function()
+		local LEFT = { "phone", "wallet", "objective", "minimap", "right", "notice", "goal" }
+		for _, screen in DESKTOP do
+			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
+			local _, _, _, oy2 = box(mt.rects.objective)
 			local _, my = box(mt.rects.minimap)
-			t.expect(cy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
-			t.expect(overlaps(mt.rects.wallet, mt.rects.objective)).toBe(false)
+			t.expect(oy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
+			for i = 1, #LEFT do
+				for j = i + 1, #LEFT do
+					t.expect(overlaps(mt.rects[LEFT[i]], mt.rects[LEFT[j]])).toBe(false)
+				end
+			end
 		end
 	end)
 end
