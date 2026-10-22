@@ -90,10 +90,12 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local vel = root.AssemblyLinearVelocity
 	local flatSpeed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 
-	-- heading: the hull's, low-passed so wave yaw doesn't swing the whole frame
+	-- heading: the hull's, low-passed so wave yaw doesn't swing the whole frame; cars have no
+	-- waves, so the camera stays tight behind them through a turn
+	local land = ctx.model:GetAttribute("LandVehicle") == true
 	local hullHeading = CameraMath.heading(root.CFrame)
-	state.heading =
-		CameraMath.dampAngle(state.heading, hullHeading, if state.fresh then 0 else 0.35, dt)
+	local headingLag = if state.fresh then 0 elseif land then 0.15 else 0.35
+	state.heading = CameraMath.dampAngle(state.heading, hullHeading, headingLag, dt)
 
 	-- orbit input, then the swing back behind the boat
 	if lookDelta.Magnitude > 1e-5 then

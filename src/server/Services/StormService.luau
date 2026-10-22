@@ -39,6 +39,9 @@ local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 
 local TICK_SECONDS = 0.25
 local INTENSITY_PUBLISH_SECONDS = 1 -- the Intensity attribute is informational (debug, tools)
+-- Always sunny (user, 2026-10-22): Calm never rolls into a storm and summoned storms wait (their
+-- tickets stay saved). ForceStorm (dev /storm) still runs a full cycle back to Calm.
+local ALWAYS_SUNNY = true
 
 local StormService = {}
 StormService.Priority = 20 -- before services that read the weather in their Init
@@ -275,7 +278,12 @@ local function liveOpsCalm(): boolean
 end
 
 local function stepSummons(now: number)
-	if #queue == 0 or state ~= "Calm" or folder:GetAttribute("ClockEventSoon") == true then
+	if
+		ALWAYS_SUNNY
+		or #queue == 0
+		or state ~= "Calm"
+		or folder:GetAttribute("ClockEventSoon") == true
+	then
 		return -- a clock event is due or running: the clock wins, the queue waits
 	end
 	if liveOpsCalm() then
@@ -480,7 +488,7 @@ function StormService.Start()
 		if
 			now >= stateStart + stateDuration
 			and state == "Calm"
-			and (coldOpenHold() or liveOpsCalm())
+			and (ALWAYS_SUNNY or coldOpenHold() or liveOpsCalm())
 		then
 			stateDuration += dt -- stay calm while a cold open or a LiveOps CalmSeas hour runs
 		elseif now >= stateStart + stateDuration then

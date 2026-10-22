@@ -37,7 +37,7 @@ return function(t)
 	)
 
 	t.test(
-		"pavements run beside every road off the carriageway; lanes stay on it, left of centre",
+		"pavements run beside every road off the carriageway; lanes stay on it, right of centre",
 		function()
 			local roads = {}
 			for _, r in WorldConfig.Roads do
@@ -62,10 +62,10 @@ return function(t)
 					lanes += 1
 					t.expect(road.surface).toBe("Asphalt")
 					t.expect(d).toBeCloseTo(road.width / 4, 0.5)
-					-- left-hand traffic: the lane is left of the travel direction
+					-- right-hand traffic: the lane is right of the travel direction
 					local p, dir = Plan.sample(r, r.length / 2)
-					local left = Vector3.new(dir.Z, 0, -dir.X)
-					local nearest = Plan.distToPolyline(p - left * (road.width / 4), road.points)
+					local right = Vector3.new(-dir.Z, 0, dir.X)
+					local nearest = Plan.distToPolyline(p - right * (road.width / 4), road.points)
 					t.expect(nearest < 0.5).toBe(true)
 				end
 			end
@@ -131,7 +131,7 @@ return function(t)
 		t.expect(entered >= 13).toBe(true)
 	end)
 
-	t.test("a T: left turn is the tight one, right turn swings wide", function()
+	t.test("a T: right turn is the tight one, left turn swings wide", function()
 		local RoadNet = t.require("RoadNet")
 		local saved = WorldConfig.Roads
 		WorldConfig.Roads = {
@@ -156,7 +156,7 @@ return function(t)
 		end
 		local stops = Plan.junctionStops(lanes, RoadNet.junctions(WorldConfig.Roads))
 		WorldConfig.Roads = saved
-		-- eastbound on Main (lane 1): straight on, or left (north, -Z, keeping left = the tight one)
+		-- eastbound on Main (lane 1): straight on, or left (north, -Z, across the oncoming lane)
 		local st = stops[1][1]
 		t.expect(#st.exits).toBe(2)
 		local lens = {}
@@ -177,7 +177,7 @@ return function(t)
 				right = len
 			end
 		end
-		t.expect(left < right).toBe(true)
+		t.expect(right < left).toBe(true) -- southbound, right is west: keeping right it hugs the kerb
 	end)
 
 	t.test("no spot blocks a road, a slipway, the quay ladders or steps", function()

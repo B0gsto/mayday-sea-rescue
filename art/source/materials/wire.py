@@ -1,7 +1,7 @@
 """B02: after upload.sh, write the Rojo MaterialService, the material manifest, the licence list and the batch status.
 
 python3 art/source/materials/wire.py
-  src/materials/MaterialService.model.json   MaterialVariants (dry + <Name>_Wet) and the Terrain overrides per base material
+  src/materials/MaterialService.model.json   MaterialVariants (dry + <Name>_Wet); no Terrain slot overrides (see below)
   assets/materials/manifest.csv               one row per map: variant, map, file, asset id, source, licence
   assets/materials/LICENCES.md                every CC0 source with author and URL
   art/status/B02.csv                          batch status rows (docs/12 1.3)
@@ -62,7 +62,7 @@ def main():
     cpath = os.path.join(GAME, "build/materials/info.json")
     cache = json.load(open(cpath)) if os.path.exists(cpath) else {}
     tex = "assets/textures/Materials/T_Mat_%s_%s.png"
-    rows, children, overrides, missing = [], [], {}, []
+    rows, children, missing = [], [], []
 
     def aid(path):
         if path not in idmap:
@@ -87,8 +87,8 @@ def main():
                 if wet and k in ("NormalMap", "MetalnessMap"):
                     continue
                 rows.append([name + sfx, base, terrain or "", k, v, aid(v), url, LICENCE, studs_per_tile(name, dims), pattern, note])
-        if terrain:
-            overrides["%sName" % terrain] = name
+        # no terrain slot override (<Base>Name): the live client fails to load terrain variants and draws flat
+        # MaterialColors (2026-10-22, white town ground), so terrain keeps the built-in materials
 
     trim = "assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_%s.png"
     for kind in ("ALB", "NOR", "RGH", "MET", "ALB_Wet", "RGH_Wet"):
@@ -97,7 +97,7 @@ def main():
                      "building trim sheet (SurfaceAppearance; strips in layout.json)"])
 
     model = {"ClassName": "MaterialService",
-             "Properties": dict({"Use2022Materials": True, "Attributes": {"Attributes": {"WetSuffix": {"String": "_Wet"}, "Batch": {"String": "B02"}}}}, **overrides),
+             "Properties": dict({"Use2022Materials": True, "Attributes": {"Attributes": {"WetSuffix": {"String": "_Wet"}, "Batch": {"String": "B02"}}}}),
              "Children": children}
     os.makedirs(os.path.join(GAME, "src/materials"), exist_ok=True)
     json.dump(model, open(os.path.join(GAME, "src/materials/MaterialService.model.json"), "w"), indent=1)
@@ -140,7 +140,7 @@ def main():
                         "%s; base %s; terrain %s; %s studs/tile; wet twin %s_Wet" % (note, base, terrain or "-", studs_per_tile(name, dims), name)])
         w.writerow(["T_BldTrim_Sheet", "P0", "round1", aid(trim % "ALB"), "polyhaven:" + "+".join(sorted({t[1] for t in TRIM})), "CC0", "no", "",
                     "10 strips, layout.json"])
-    print("variants", len(children), "overrides", len(overrides), "rows", len(rows), "missing ids", len(missing))
+    print("variants", len(children), "rows", len(rows), "missing ids", len(missing))
     for m in missing[:10]:
         print("  missing", m)
     return 1 if missing else 0

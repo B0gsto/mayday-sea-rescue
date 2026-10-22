@@ -109,7 +109,7 @@ function CrewSignController.Start()
 		return
 	end
 	local at = groundAt(SocialConfig.NoticeboardPosition)
-	local built = CrewSign.build(at * CFrame.new(-11.5, 0, 0)) -- west of the board: the pet yard is east
+	local built = CrewSign.build(at * CFrame.new(-11.5, 0, 0)) -- west of the board
 	sign = built
 	built.setMember(player:GetAttribute("GroupCrew") == true)
 	built.prompt.Triggered:Connect(joinGroup)

@@ -18,6 +18,11 @@ type Spec = LandVehicleConfig.Spec
 
 local Chassis = {}
 
+-- Arcade feel (playtest 2026-10-22: "controlling the car is not too good"): more push than the real
+-- engines give, and a shift that barely dips the pull. Real numbers stay in LandVehicleConfig.
+Chassis.DRIVE_BOOST = 1.4
+Chassis.SHIFT_PULL = 0.75 -- fraction of the drive kept during a gear change
+
 export type WheelDef = {
 	name: string,
 	front: boolean,
@@ -315,7 +320,7 @@ function Chassis.step(
 		local inertia = 1.04 + 0.0025 * ratio * ratio
 		if crank > 0 then
 			if state.shiftTimer > 0 then
-				crank *= 0.45
+				crank *= Chassis.SHIFT_PULL
 			end
 			local dir = if state.gear == -1 then -1 else 1
 			driveForce = dir
@@ -324,6 +329,7 @@ function Chassis.step(
 				* ratio
 				* gearbox.efficiency
 				* mult
+				* Chassis.DRIVE_BOOST
 				/ d.radius
 				/ inertia
 		elseif crank < 0 then

@@ -121,6 +121,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Markings_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:00d54ee02d12af388be31136d6239702ff3d4311c9a288a5ccf8798e51420d18": {
+  "assetId": "123697054940337",
+  "imageId": "123697054940337",
+  "moderation": "Reviewing",
+  "name": "Phone_crew",
+  "sha": "00d54ee02d12af388be31136d6239702ff3d4311c9a288a5ccf8798e51420d18",
+  "source": "assets/ui/phone_v2/crew.png",
+  "type": "Image"
+ },
  "Image:00d65786219280e66aa33e75e2c458ada62c21b1848a78d5f99c1ec814428d99": {
   "assetId": "136447875634247",
   "imageId": "136447875634247",
@@ -287,6 +296,15 @@
   "name": "T_Boulder06_Granite_ALB",
   "sha": "036c2c1c4618e1dae5d8380ca87d2fba3acadeb12da1a178cee532bc89f95188",
   "source": "assets/textures/M_Rock_Boulder_06/T_Boulder06_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:03c603221cd3cd60385698c626bc7d8779f9a7004fd35289f37794f3634965c7": {
+  "assetId": "101134848001000",
+  "imageId": "101134848001000",
+  "moderation": "Reviewing",
+  "name": "Hud_BarFill",
+  "sha": "03c603221cd3cd60385698c626bc7d8779f9a7004fd35289f37794f3634965c7",
+  "source": "assets/ui/hud/bar_fill.png",
   "type": "Image"
  },
  "Image:0449a0586140aedf673188f0559a6e39ec26d97f9c1a0074ce924e78f63e5e8a": {
@@ -746,6 +764,15 @@
   "name": "T_HarbourGT_Trim_ALB",
   "sha": "0aa3675e600c3e2f092ad2ee1495319bb83c37f3e5cd4412bc8c4f6fad362c41",
   "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_ALB.png",
+  "type": "Image"
+ },
+ "Image:0ab265237f5aae94a2f239a2da9e3cd17a3c8138cd6be2c9138b3eea98fd7909": {
+  "assetId": "130518444307744",
+  "imageId": "130518444307744",
+  "moderation": "Reviewing",
+  "name": "Hud_MinimapRingThin",
+  "sha": "0ab265237f5aae94a2f239a2da9e3cd17a3c8138cd6be2c9138b3eea98fd7909",
+  "source": "assets/ui/hud/minimap_ring_thin.png",
   "type": "Image"
  },
  "Image:0ae296e1685dccd259a9dbf8060d884cfcba9781b4114824ae98c2a27e5c47ad": {
@@ -1261,6 +1288,15 @@
   "source": "assets/textures/Materials/T_Mat_Turf_ALB.png",
   "type": "Image"
  },
+ "Image:10435f2663de7db15abcd71278a6880be0ff1cfc60c456bc20b7b3903eefa1cc": {
+  "assetId": "87726120620000",
+  "imageId": "87726120620000",
+  "moderation": "Reviewing",
+  "name": "Hud_PlusButton",
+  "sha": "10435f2663de7db15abcd71278a6880be0ff1cfc60c456bc20b7b3903eefa1cc",
+  "source": "assets/ui/hud/plus_button.png",
+  "type": "Image"
+ },
  "Image:104d8bf18aaebc5bcc189e5b5a5651121d5c0a366deb9a63d4663db89230ce72": {
   "assetId": "122011820834263",
   "imageId": "122011820834263",
@@ -1756,6 +1792,15 @@
   "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:173b25505ea10cd5a9229c1a9ff233cb99438f990e0ecd93be2f9bf90890ccd0": {
+  "assetId": "103647314836433",
+  "imageId": "103647314836433",
+  "moderation": "Reviewing",
+  "name": "Phone_logbook",
+  "sha": "173b25505ea10cd5a9229c1a9ff233cb99438f990e0ecd93be2f9bf90890ccd0",
+  "source": "assets/ui/phone_v2/logbook.png",
+  "type": "Image"
+ },
  "Image:17547d0e51fe890b214228a6c036c037473950ab722eaaf2086c947b494e36e3": {
   "assetId": "75250135099093",
   "imageId": "75250135099093",
@@ -1901,6 +1946,15 @@
   "name": "T_Station_Details_NOR",
   "sha": "19267295472d00c758225b863e2e479b341f2ea94a297eeec53e5a6bbb0ea4d8",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_NOR.png",
+  "type": "Image"
+ },
+ "Image:19479764935eebcb1da79b4b579c04d76413224b7ce3505d87ac7d8266abb1d8": {
+  "assetId": "84213752900110",
+  "imageId": "84213752900110",
+  "moderation": "Reviewing",
+  "name": "Phone_payrise",
+  "sha": "19479764935eebcb1da79b4b579c04d76413224b7ce3505d87ac7d8266abb1d8",
+  "source": "assets/ui/phone_v2/payrise.png",
   "type": "Image"
  },
  "Image:19befc6061e0ea4de5a07d8999d09df35f15d27c9454d31d976d66074bcd222c": {
@@ -2099,6 +2153,15 @@
   "name": "T_ParkedCar02_Wheels_ALB",
   "sha": "1c180fb793280a2c1c1348182a8986843852880ebe6cee567960cc3194114314",
   "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Wheels_ALB.png",
+  "type": "Image"
+ },
+ "Image:1c2ad9718119a8c88c4965ded80d0038183d0a066d6ec9a996c8fc882cb38026": {
+  "assetId": "91006902656634",
+  "imageId": "91006902656634",
+  "moderation": "Reviewing",
+  "name": "Hud_SpeedPanel",
+  "sha": "1c2ad9718119a8c88c4965ded80d0038183d0a066d6ec9a996c8fc882cb38026",
+  "source": "assets/ui/hud/speed_panel.png",
   "type": "Image"
  },
  "Image:1c3720e84c5a8c4a90ae16c312026902ea3b9f43dc8c88afe3ab83819ac65d8d": {
@@ -3311,6 +3374,15 @@
   "name": "T_Cottage_Grime_ALB",
   "sha": "2ce968913016e78eb1cde05610ac6ce190ae6d8cec1dccce3521a1f2f4638bf2",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Grime_ALB.png",
+  "type": "Image"
+ },
+ "Image:2d03391e66610fb0cc5af230729f8bf4e581486269fcf7f34bd89ba25ef5120d": {
+  "assetId": "90764462212641",
+  "imageId": "90764462212641",
+  "moderation": "Reviewing",
+  "name": "Phone_crewpay",
+  "sha": "2d03391e66610fb0cc5af230729f8bf4e581486269fcf7f34bd89ba25ef5120d",
+  "source": "assets/ui/phone_v2/crewpay.png",
   "type": "Image"
  },
  "Image:2d07cd77af43e43afe385cf2898d09fbe3ac0cf5ab39637464a8e439052e5b71": {
@@ -5188,6 +5260,15 @@
   "source": "assets/textures/Materials/T_Mat_Earth_RGH.png",
   "type": "Image"
  },
+ "Image:44ab9ba7c4b90bf332e7a0069f135a8a63398c9074f7c01d59b3d9cf9319d2b1": {
+  "assetId": "97328188378860",
+  "imageId": "97328188378860",
+  "moderation": "Reviewing",
+  "name": "Phone_phone_button",
+  "sha": "44ab9ba7c4b90bf332e7a0069f135a8a63398c9074f7c01d59b3d9cf9319d2b1",
+  "source": "assets/ui/phone_v2/phone_button.png",
+  "type": "Image"
+ },
  "Image:44b8b6bc3ddd1a4ae5d4b410d1d3f51d13edfa11fede7f439dd281eb43d38fef": {
   "assetId": "73604257076380",
   "imageId": "73604257076380",
@@ -5754,6 +5835,15 @@
   "name": "T_Chandlery_Details_RGH",
   "sha": "4d0aae5670152d9447c36cdf5591db9427eebd3eef4fbab75a4cec5d7bdd6ea4",
   "source": "assets/textures/M_Bld_Chandlery_Ext/T_Chandlery_Details_RGH.png",
+  "type": "Image"
+ },
+ "Image:4d14cf20bfb1bcf2c5f05384fe8bf9e746594a245a379cf61227bd814633701e": {
+  "assetId": "102410072009100",
+  "imageId": "102410072009100",
+  "moderation": "Reviewing",
+  "name": "Phone_camera",
+  "sha": "4d14cf20bfb1bcf2c5f05384fe8bf9e746594a245a379cf61227bd814633701e",
+  "source": "assets/ui/phone_v2/camera.png",
   "type": "Image"
  },
  "Image:4d541fae177d4a297824a7843ce14b6ff784571565c4d6e4704d80fd24e2cadb": {
@@ -6653,6 +6743,15 @@
   "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_ALB.png",
   "type": "Image"
  },
+ "Image:598ad6b38dd2fd889f1316bb2c1ee2415c7fe368a8a146deebcd9a2bb5a4c647": {
+  "assetId": "90931029466891",
+  "imageId": "90931029466891",
+  "moderation": "Reviewing",
+  "name": "Phone_map",
+  "sha": "598ad6b38dd2fd889f1316bb2c1ee2415c7fe368a8a146deebcd9a2bb5a4c647",
+  "source": "assets/ui/phone_v2/map.png",
+  "type": "Image"
+ },
  "Image:59afc244dd57bff6695cc426538074aac149e42d9d20923a69ec7c9eda88594d": {
   "assetId": "116036839325465",
   "imageId": "116036839325465",
@@ -6786,6 +6885,15 @@
   "name": "T_ChandleryInt_Pine_NOR",
   "sha": "5c04c2b19ea5dd309ed1f25a66500aa98853f545e8479dbcb5566a8d1d3feac7",
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Pine_NOR.png",
+  "type": "Image"
+ },
+ "Image:5c496d589b5d0e5d9434594cd3ff0c7588555613f3e8f89f9f80c469730b1a1b": {
+  "assetId": "105225933033810",
+  "imageId": "105225933033810",
+  "moderation": "Reviewing",
+  "name": "Hud_AcceptButton",
+  "sha": "5c496d589b5d0e5d9434594cd3ff0c7588555613f3e8f89f9f80c469730b1a1b",
+  "source": "assets/ui/hud/accept_button.png",
   "type": "Image"
  },
  "Image:5c60b91a7ddc2721970caab9c4eab2e33c2c45770b666dc4a17977cbdca9f93a": {
@@ -6984,6 +7092,15 @@
   "name": "T_Road_GravelTile_NOR",
   "sha": "5ecf382fd502c75d33f2cb28391643232f16d50721ef99b7a43132e58e4a5c9d",
   "source": "assets/textures/M_Road_Ribbon/T_Road_GravelTile_NOR.png",
+  "type": "Image"
+ },
+ "Image:5ee9701e1be0c5cb223e7cc57277f7ba578764c840149e1c74f6d467e8716f54": {
+  "assetId": "92242905723793",
+  "imageId": "92242905723793",
+  "moderation": "Reviewing",
+  "name": "Hud_MinimapRing",
+  "sha": "5ee9701e1be0c5cb223e7cc57277f7ba578764c840149e1c74f6d467e8716f54",
+  "source": "assets/ui/hud/minimap_ring.png",
   "type": "Image"
  },
  "Image:5ef0869e6124b65f640050d1ee8203969ca1f35e561fe1171c52000c28baefa1": {
@@ -8114,6 +8231,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:6fe958502388f035bea1a70117a9765c2aae370f966fe7bb5b7603812b04679c": {
+  "assetId": "93413645418060",
+  "imageId": "93413645418060",
+  "moderation": "Reviewing",
+  "name": "Hud_MissionPiw",
+  "sha": "6fe958502388f035bea1a70117a9765c2aae370f966fe7bb5b7603812b04679c",
+  "source": "assets/ui/hud/mission_piw.png",
+  "type": "Image"
+ },
  "Image:6ffc9d6debfa987c5dcf1f899817bc2f3ded63f2793c4f34c207df5b2cd3a4a2": {
   "assetId": "85855670324349",
   "imageId": "85855670324349",
@@ -8754,6 +8880,15 @@
   "name": "T_Slipway_Tide_RGH",
   "sha": "788898295592ac03c101b89f128d90f535bebf82115056a03161a27242ec1550",
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH.png",
+  "type": "Image"
+ },
+ "Image:788f6eeb1d656bc4510ceb8f480c0652d5f8a39ada7ff76033830c2c4d4cc001": {
+  "assetId": "140273799789221",
+  "imageId": "140273799789221",
+  "moderation": "Reviewing",
+  "name": "Phone_vehicles",
+  "sha": "788f6eeb1d656bc4510ceb8f480c0652d5f8a39ada7ff76033830c2c4d4cc001",
+  "source": "assets/ui/phone_v2/vehicles.png",
   "type": "Image"
  },
  "Image:789eb241046574d5d8ad160102763ef0617a2efe4529d40add4f6b7fcd156f08": {
@@ -10277,6 +10412,15 @@
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Hard_ALB.png",
   "type": "Image"
  },
+ "Image:8cf1c7b7ba715fef981ba6b6e38bfa09a9cfaba94a58e3143dcde36dd69568ca": {
+  "assetId": "138403733104125",
+  "imageId": "138403733104125",
+  "moderation": "Reviewing",
+  "name": "Phone_store",
+  "sha": "8cf1c7b7ba715fef981ba6b6e38bfa09a9cfaba94a58e3143dcde36dd69568ca",
+  "source": "assets/ui/phone_v2/store.png",
+  "type": "Image"
+ },
  "Image:8cf7127a7cbcc42e8e924b4d3e3a3a5d6672d88d438fca0aa72b26b7ead63859": {
   "assetId": "119020745615725",
   "imageId": "119020745615725",
@@ -10374,6 +10518,15 @@
   "name": "T_Station_Render_RGH",
   "sha": "8e76bfdac6e25ae2bbd797d71d760a50936bad82f42295e4939aaab7cb44f27d",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
+  "type": "Image"
+ },
+ "Image:8eb747b0fa587d9362afd098c6864f49d009def93f9e2bdf01c4aca59fd7921f": {
+  "assetId": "129655332194316",
+  "imageId": "129655332194316",
+  "moderation": "Reviewing",
+  "name": "Hud_ExitButton",
+  "sha": "8eb747b0fa587d9362afd098c6864f49d009def93f9e2bdf01c4aca59fd7921f",
+  "source": "assets/ui/hud/exit_button.png",
   "type": "Image"
  },
  "Image:8ed514dc97a78880dda7dfdc6e48613212ea717d9c58a62eaa26005499ec6211": {
@@ -11430,6 +11583,15 @@
   "name": "T_Station_Details_ALB",
   "sha": "9befa3772c681e4f25877c4b1d5c94fe67de87519e34fb4abd52877e6c35c912",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_ALB.png",
+  "type": "Image"
+ },
+ "Image:9bf98a92bd3787ee779141ca5f6a14dd9090934fbaade224f7b75539dab8a507": {
+  "assetId": "85411600136649",
+  "imageId": "85411600136649",
+  "moderation": "Reviewing",
+  "name": "Phone_settings",
+  "sha": "9bf98a92bd3787ee779141ca5f6a14dd9090934fbaade224f7b75539dab8a507",
+  "source": "assets/ui/phone_v2/settings.png",
   "type": "Image"
  },
  "Image:9c3f98314feaeb033ee469fca2e5dc88db5ff8295c1b5a9b15120ab6dc625292": {
@@ -13757,6 +13919,15 @@
   "source": "assets/textures/M_Rock_IslandProxy_Kit/T_IslandProxy_Terrain_ALB.png",
   "type": "Image"
  },
+ "Image:bfa0601f0efeebad9577f6cc8575403cb355e3c9d6fc733b0bb1929b0d8e12c8": {
+  "assetId": "72738707163546",
+  "imageId": "72738707163546",
+  "moderation": "Reviewing",
+  "name": "Phone_events",
+  "sha": "bfa0601f0efeebad9577f6cc8575403cb355e3c9d6fc733b0bb1929b0d8e12c8",
+  "source": "assets/ui/phone_v2/events.png",
+  "type": "Image"
+ },
  "Image:bfc690a6f6a1b6855edf80f5f4870048d95cca171dcc28d2204242a7f22a8c9e": {
   "assetId": "134142057109373",
   "imageId": "134142057109373",
@@ -14135,6 +14306,15 @@
   "source": "assets/textures/M_Sea_SandRipples/T_SandRipples_Seabed_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:c765e54e8c5eced7aa4039a44b6d126b8d01b66e93787bd8445df33b639e0173": {
+  "assetId": "73244576620050",
+  "imageId": "73244576620050",
+  "moderation": "Reviewing",
+  "name": "Hud_Coin",
+  "sha": "c765e54e8c5eced7aa4039a44b6d126b8d01b66e93787bd8445df33b639e0173",
+  "source": "assets/ui/hud/coin.png",
+  "type": "Image"
+ },
  "Image:c772db04450a51468fb3c28830f0001f9aad34e8cb03f865e319fe934b34397b": {
   "assetId": "130488849788103",
   "imageId": "130488849788103",
@@ -14457,6 +14637,15 @@
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:cb53da4184d8563e617dc1051a6ccfae1f71c5ab4ef6dda0816e445f883023d9": {
+  "assetId": "89769136629803",
+  "imageId": "89769136629803",
+  "moderation": "Reviewing",
+  "name": "Hud_Panel",
+  "sha": "cb53da4184d8563e617dc1051a6ccfae1f71c5ab4ef6dda0816e445f883023d9",
+  "source": "assets/ui/hud/panel.png",
+  "type": "Image"
+ },
  "Image:cb7448cf166107a4023ea56678dd1d53e7953f3e431a66739701e59b66c584ac": {
   "assetId": "122234158293603",
   "imageId": "122234158293603",
@@ -14710,6 +14899,15 @@
   "name": "T_Station_GraniteBase_NOR",
   "sha": "ce667e716c07ad89b99ea891b37262aa7bad5d85c2c711999eefab1ab6504859",
   "source": "assets/textures/M_Bld_Station/T_Station_GraniteBase_NOR.png",
+  "type": "Image"
+ },
+ "Image:ce6db848979d792a4727d1db282d7677317ce3a0a5948acbd358467b5f105ab0": {
+  "assetId": "82053370414902",
+  "imageId": "82053370414902",
+  "moderation": "Reviewing",
+  "name": "Hud_BarTrack",
+  "sha": "ce6db848979d792a4727d1db282d7677317ce3a0a5948acbd358467b5f105ab0",
+  "source": "assets/ui/hud/bar_track.png",
   "type": "Image"
  },
  "Image:ce7d3b3e84fbb0fe5eddefe863d2c243edc8a56975965732f0bb39d16bef778a": {
@@ -15528,6 +15726,15 @@
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Lantern_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:d8b375089954c4a21458ddf30b1c945266613809a6382641fd906b63cc9af7b3": {
+  "assetId": "95688680030871",
+  "imageId": "95688680030871",
+  "moderation": "Reviewing",
+  "name": "Hud_XpStar",
+  "sha": "d8b375089954c4a21458ddf30b1c945266613809a6382641fd906b63cc9af7b3",
+  "source": "assets/ui/hud/xp_star.png",
+  "type": "Image"
+ },
  "Image:d8c136b0d1084440b5f4f1417545ece7c901561d4097c2bf986bc1330252f21f": {
   "assetId": "100683213964328",
   "imageId": "100683213964328",
@@ -15715,6 +15922,15 @@
   "name": "FX_Under_Bubbles",
   "sha": "daf76efabbb34a7b0922fffa16f4bfff925a78455ac8736f9691bacad71a3504",
   "source": "assets/textures/FX/FX_Under_Bubbles.png",
+  "type": "Image"
+ },
+ "Image:dafecbfee1be95bac97619fb24b4d26f1b5faf1ef060fd968e95ff91a0e88f20": {
+  "assetId": "80586118394028",
+  "imageId": "80586118394028",
+  "moderation": "Reviewing",
+  "name": "Phone_season",
+  "sha": "dafecbfee1be95bac97619fb24b4d26f1b5faf1ef060fd968e95ff91a0e88f20",
+  "source": "assets/ui/phone_v2/season.png",
   "type": "Image"
  },
  "Image:db51c145497f71b51ef221e2fb824c584291bb83304e03f2a54cb5ef40418722": {
@@ -18182,6 +18398,15 @@
   "name": "T_Cottage_Slate_ALB_Wet",
   "sha": "feaa1800d94d51deba21f47f79faec76663459da8641867cbaf418a1a36565a0",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:febfeafcc01b7a85f09a0aa97b207a131bed1856c958871d1216dc56d2cb46ea": {
+  "assetId": "133273002736919",
+  "imageId": "133273002736919",
+  "moderation": "Reviewing",
+  "name": "Phone_radio",
+  "sha": "febfeafcc01b7a85f09a0aa97b207a131bed1856c958871d1216dc56d2cb46ea",
+  "source": "assets/ui/phone_v2/radio.png",
   "type": "Image"
  },
  "Image:feeb5c0ac1fd0f3316963c99a698818e868e125b94e2bde73d77dd882774cce5": {

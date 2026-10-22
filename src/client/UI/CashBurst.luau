@@ -67,11 +67,11 @@ function CashBurst.playAt(playerGui: Instance, start: Vector2, cash: number, sho
 	gui.Parent = playerGui
 
 	local hud = playerGui:FindFirstChild("Hud")
-	local status = hud and hud:FindFirstChild("Status", true)
-	local cashLabel = status and status:FindFirstChild("Cash")
-	local target = if cashLabel and cashLabel:IsA("TextLabel")
-		then cashLabel.AbsolutePosition + cashLabel.AbsoluteSize / 2
-		else Vector2.new(viewport.X - 110, 50)
+	local wallet = hud and hud:FindFirstChild("Wallet", true)
+	local slot = wallet and wallet:FindFirstChild("Coin", true)
+	local target = if slot and slot:IsA("GuiObject")
+		then slot.AbsolutePosition + slot.AbsoluteSize / 2
+		else Vector2.new(110, viewport.Y - 300)
 	local reduced = Comfort.reducedMotion()
 	local rng = Random.new()
 	for i = 1, (if reduced then 0 else COINS) do

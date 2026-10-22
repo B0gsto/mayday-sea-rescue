@@ -15,8 +15,8 @@
 --   |  minimap           subtitle (VHF / dispatcher)           gauges  |
 --   +------------------------------------------------------------------+
 --
--- Touch: the minimap is 110 px at the top left (under the top bar / Cash and rank strip, tap it
--- for the full map), the challenge tracker is a 44 px icon under it, the objective strip is top
+-- Touch: the minimap is 110 px at the top left (tap it for the full map), the wallet (Cash and
+-- rank) under it, the objective strip is top
 -- centre and the notice band under it, so the bottom-left thumbstick zone stays empty. The pager
 -- column stops above the bottom-right jump / action buttons.
 --
@@ -37,7 +37,7 @@
 -- Layout.promptBusy() is true while any "prompt" region holds a visible panel;
 -- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
 --
--- Phone check (844x390 landscape, notched insets, scale 0.7): the minimap and the challenge icon
+-- Phone check (844x390 landscape, notched insets, scale 0.7): the minimap and the wallet
 -- end above the thumbstick zone at 55% of the safe height, the objective strip is centred between
 -- the minimap and the status strip, and the pager column ends above the jump zone at 65%.
 local GuiService = game:GetService("GuiService")
@@ -61,6 +61,8 @@ Layout.STATUS_HEIGHT = HudLayout.STATUS_HEIGHT
 Layout.OBJECTIVE_HEIGHT = HudLayout.OBJECTIVE_HEIGHT
 Layout.PROMPT_HEIGHT = HudLayout.PROMPT_HEIGHT
 Layout.NOTICE_HEIGHT = HudLayout.NOTICE_HEIGHT
+Layout.WALLET_WIDTH = HudLayout.WALLET_WIDTH
+Layout.WALLET_HEIGHT = HudLayout.WALLET_HEIGHT
 
 export type RegionName = HudLayout.RegionName
 export type Metrics = HudLayout.Metrics

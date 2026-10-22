@@ -40,7 +40,6 @@ local button: TextButton
 local fill: Frame
 local chip: Frame
 local chipLabel: TextLabel
-local cashLabel: TextLabel? = nil
 local markerGui: ScreenGui
 local marker: Frame
 local markerDiamond: Frame
@@ -292,11 +291,12 @@ end
 local function attachChip()
 	local playerGui = player:WaitForChild("PlayerGui", 10)
 	local hud = playerGui and (playerGui:FindFirstChild("Hud") or playerGui:WaitForChild("Hud", 10))
-	local panel = hud and hud:FindFirstChild("Status", true)
-	local cash = panel and panel:FindFirstChild("Cash")
-	if panel and cash and cash:IsA("TextLabel") then
-		cashLabel = cash
-		chip.Parent = panel
+	-- the wallet's cash row lays the chip out after the amount (UIListLayout)
+	local row = hud and hud:FindFirstChild("CashRow", true)
+	if row then
+		chip.LayoutOrder = 3
+		chip.AnchorPoint = Vector2.zero
+		chip.Parent = row
 	end
 end
 
@@ -370,9 +370,6 @@ function FriendController.Start()
 			progress = math.max(0, progress - dt * 3)
 		end
 		fill.Size = UDim2.fromScale(progress, 1)
-		if cashLabel then
-			chip.Position = UDim2.new(1, -(cashLabel.TextBounds.X + 7), 0, 1)
-		end
 	end)
 end
 

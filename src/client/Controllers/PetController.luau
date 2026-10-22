@@ -1,9 +1,9 @@
 --!strict
 -- PetController: the client side of the animal sanctuary (docs/15 section 2, hook H4).
--- Pulls the player's pets (Pet_State / Pet_Get), builds the sanctuary yard (World/PetSanctuary)
--- and, when one is adopted, makes it follow on land (offset behind the player + a ground raycast,
--- a small hop/waddle) or ride on the boat's bow. One active pet at a time; the rest are in pens.
--- Adopting is an in-world ProximityPrompt at the pen, never a list.
+-- Pulls the player's pets (Pet_State / Pet_Get) and, when one is adopted, makes it follow on land
+-- (offset behind the player + a ground raycast, a small hop/waddle) or ride on the boat's bow. One
+-- active pet at a time. There is no yard (removed 2026-10-22): with no pet out, the first recovered
+-- one is adopted automatically (Pet_Equip), never from a list.
 --
 -- G48: the following pet is a friend, not a prop. Hold its one world glyph to pet it (hearts, a
 -- wiggle, its call); with a fish treat in the pocket the same glyph feeds it (bigger spin + hop,
@@ -28,8 +28,26 @@ local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 
-local World = script.Parent.Parent:WaitForChild("World")
-local PetSanctuary = require(World:WaitForChild("PetSanctuary"))
+type PetRow = {
+	id: number,
+	species: string,
+	rare: boolean,
+	label: string,
+	ready: boolean,
+	progress: number,
+	remaining: number,
+	active: boolean,
+	bond: number,
+	bondMax: number,
+	adopted: boolean,
+	accessory: string?,
+}
+type View = { now: number, treats: number, pets: { PetRow } }
+
+local PET_HEARTS = 5
+local HEART_ON = Color3.fromRGB(232, 86, 94)
+local HEART_OFF = Color3.fromRGB(72, 62, 62)
+local HEART_READY = Color3.fromRGB(255, 120, 128)
 
 local PetController = {}
 PetController.Priority = 72
@@ -41,9 +59,7 @@ local getRemote: RemoteFunction? = nil
 local equipRemote: RemoteFunction? = nil
 local treatRemote: RemoteFunction? = nil
 
-local yard: PetSanctuary.Yard? = nil
-local view: PetSanctuary.View? = nil
-local active: PetSanctuary.PetRow? = nil
+local active: PetRow? = nil
 local activeModel: Model? = nil
 local activeHearts: { TextLabel } = {}
 local treats = 0
@@ -325,20 +341,93 @@ local function buildPrompt()
 	petPrompt = prompt
 end
 
-local function applyView(next: PetSanctuary.View)
+local function equip(id: number)
+	local remote = equipRemote
+	if not remote then
+		return
+	end
+	adoptingId = id
+	pcall(function()
+		remote:InvokeServer(id)
+	end)
+	task.delay(3, function()
+		if adoptingId == id then
+			adoptingId = nil
+		end
+	end)
+end
+
+-- the five-heart bond meter over the active pet
+local function hearts(model: Model): { TextLabel }
+	local root = model.PrimaryPart
+	local out = {}
+	if not root then
+		return out
+	end
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "PetHearts"
+	billboard.Size = UDim2.fromOffset(112, 24)
+	billboard.StudsOffset = Vector3.new(0, WildlifeRig.height(model) + 0.7, 0)
+	billboard.AlwaysOnTop = true
+	billboard.MaxDistance = 90
+	billboard.Parent = root
+	local row = Instance.new("Frame")
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.fromScale(1, 1)
+	row.Parent = billboard
+	local layout = Instance.new("UIListLayout")
+	layout.FillDirection = Enum.FillDirection.Horizontal
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	layout.VerticalAlignment = Enum.VerticalAlignment.Center
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Padding = UDim.new(0, 2)
+	layout.Parent = row
+	for i = 1, PET_HEARTS do
+		local heart = Instance.new("TextLabel")
+		heart.Name = `Heart{i}`
+		heart.LayoutOrder = i
+		heart.Size = UDim2.fromOffset(20, 20)
+		heart.BackgroundTransparency = 1
+		heart.Font = Enum.Font.GothamBold
+		heart.TextSize = 18
+		heart.TextColor3 = HEART_OFF
+		heart.Text = "♥"
+		heart.Parent = row
+		table.insert(out, heart)
+	end
+	return out
+end
+
+local function setHearts(list: { TextLabel }, filled: number, full: boolean)
+	local count = math.clamp(math.floor(filled + 0.5), 0, PET_HEARTS)
+	for i, heart in list do
+		heart.TextColor3 = if full then HEART_READY elseif i <= count then HEART_ON else HEART_OFF
+	end
+end
+
+local function pipCount(ready: boolean, progress: number, bond: number): number
+	if ready then
+		return math.clamp(bond, 0, PET_HEARTS)
+	end
+	return math.ceil(math.clamp(progress, 0, 1) * PET_HEARTS)
+end
+
+local function applyView(next: View)
 	if type(next) ~= "table" or type(next.pets) ~= "table" then
 		return
 	end
-	view = next
 	treats = tonumber(next.treats) or 0
-	if yard then
-		yard.setView(next)
-	end
-	local during: PetSanctuary.PetRow? = nil
+	local during: PetRow? = nil
+	local recovered: PetRow? = nil
 	for _, row in next.pets do
 		if row.active then
 			during = row
+		elseif row.ready and not recovered then
+			recovered = row
 		end
+	end
+	if not during and recovered and adoptingId == nil then
+		task.spawn(equip, recovered.id)
 	end
 	local previous = active
 	local changed = previous == nil
@@ -365,7 +454,7 @@ local function applyView(next: PetSanctuary.View)
 					PetAccessory.wear(model)
 				end
 				model.Parent = Workspace
-				activeHearts = PetSanctuary.hearts(model)
+				activeHearts = hearts(model)
 				if adoptingId == during.id then
 					adoptingId = nil
 					playVoice(during.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
@@ -386,29 +475,13 @@ local function applyView(next: PetSanctuary.View)
 		if during.accessory and activeModel:GetAttribute("PetAccessory") == nil then
 			PetAccessory.wear(activeModel)
 		end
-		PetSanctuary.setHearts(
+		setHearts(
 			activeHearts,
-			PetSanctuary.pipCount(during.ready, during.progress, during.bond),
+			pipCount(during.ready, during.progress, during.bond),
 			during.accessory ~= nil
 		)
 	end
 	refreshPrompt()
-end
-
-local function equip(id: number)
-	local remote = equipRemote
-	if not remote then
-		return
-	end
-	adoptingId = id
-	pcall(function()
-		remote:InvokeServer(id)
-	end)
-	task.delay(3, function()
-		if adoptingId == id then
-			adoptingId = nil
-		end
-	end)
 end
 
 local function vehicleSeat(humanoid: Humanoid): Model?
@@ -438,9 +511,6 @@ local function groundY(x: number, z: number): number
 	end
 	if activeModel then
 		table.insert(filter, activeModel)
-	end
-	if yard then
-		table.insert(filter, yard.model)
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
@@ -634,24 +704,7 @@ function PetController.Init()
 end
 
 function PetController.Start()
-	local built = PetSanctuary.build(equip)
-	yard = built
 	buildPrompt()
-	local emitter = Instance.new("Attachment")
-	emitter.Name = "SanctuaryAmbience"
-	emitter.Position = Wildlife.Sanctuary.position + Vector3.new(0, 3, 0)
-	emitter.Parent = Workspace.Terrain
-	local clip = AudioConfig.Clips.Amb_Sanctuary
-	local ambience = AudioController.newSound("Amb_Sanctuary", emitter, true)
-	if clip then
-		ambience.Volume = clip.volume
-	end
-	ambience.RollOffMinDistance = 30
-	ambience.RollOffMaxDistance = 180
-	ambience:Play()
-	if view then
-		built.setView(view)
-	end
 	if getRemote then
 		task.spawn(function()
 			local ok, result = pcall(function()
@@ -678,9 +731,6 @@ function PetController.Start()
 	RunService.Heartbeat:Connect(function(dt)
 		clock += dt
 		stepIdle(dt)
-		if yard then
-			yard.step(dt)
-		end
 		if not active or not activeModel then
 			return
 		end

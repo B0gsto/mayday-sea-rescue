@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.join(GAME, "art/source/materials"))
 from wire import Ids, MATERIAL_ENUM, PATTERN_ENUM  # noqa: E402
 
 # Asphalt: the plain B02 asphalt_02 variant; RoadAsphaltWorn tiles its baked repair patches into a visible grid
-SLOTS = {"Asphalt": "Asphalt", "Cobblestone": "RoadHarbourCobbles", "Pavement": "RoadGravelTrack"}
 TEX = "assets/textures/M_Road_Ribbon/T_Road_%s_%s.png"
 
 
@@ -44,10 +43,8 @@ def main(model_path=None):
             names.add(v["name"] + sfx)
             added.append({"Name": v["name"] + sfx, "ClassName": "MaterialVariant", "Properties": props})
     model["Children"] = [c for c in model["Children"] if c["Name"] not in names] + added
-    for slot, name in SLOTS.items():
-        model["Properties"]["%sName" % slot] = name
     json.dump(model, open(path, "w"), indent=1)
-    print("road variants", len(added), "slots", SLOTS, "missing ids", len(missing))
+    print("road variants", len(added), "missing ids", len(missing))
     for m in missing[:10]:
         print("  missing", m)
     return 1 if missing else 0

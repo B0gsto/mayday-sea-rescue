@@ -3,14 +3,14 @@
 --
 -- The profile flag `pets` holds up to Wildlife.MaxPets animals, each with the species, whether it
 -- is the rare colour variant and the Unix time it was landed (PetRules owns the encoding). They
--- recover for 10 real minutes even while the player is away; after that the player can adopt one
--- at the sanctuary pens. One active pet at a time; the rest stay in the pens.
+-- recover for 10 real minutes even while the player is away; after that the client adopts one
+-- (PetController: the first recovered one when no pet is out). One active pet at a time.
 --
 -- SanctuaryService calls AddRescue when a WildlifeRescue operation finishes. Remotes (under
 -- ReplicatedStorage.Net; created here so shared/Net.luau needs no edit):
 --   Pet_State  S->C  PetRules.view (pets, bond, treats, progress, remaining, active)
 --   Pet_Get    C->S  function -> the same view (first pull)
---   Pet_Equip  C->S  function (id) -> (ok, reason); only at the pens and only when recovered
+--   Pet_Equip  C->S  function (id) -> (ok, reason); only when recovered
 --   Pet_Treat  C->S  function (id) -> (ok, reason); feeds one fish treat to the pet with you
 -- G48: one fish treat fills one bond pip; a full bond unlocks the code-built life vest. Treats
 -- come from the Chandlery shelf (PetService.BuyTreat) or one from each daily crate (the
@@ -190,18 +190,6 @@ function PetService.GiveTreat(player: Player, id: any): (boolean, string?)
 	return true
 end
 
-local function atSanctuary(player: Player): boolean
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not root or not root:IsA("BasePart") then
-		return false
-	end
-	local centre = Wildlife.Sanctuary.position
-	local dx = root.Position.X - centre.X
-	local dz = root.Position.Z - centre.Z
-	return dx * dx + dz * dz <= Wildlife.Sanctuary.range * Wildlife.Sanctuary.range
-end
-
 function PetService.Equip(player: Player, id: any): (boolean, string?)
 	local data = DataService.Get(player)
 	if not data then
@@ -220,9 +208,6 @@ function PetService.Equip(player: Player, id: any): (boolean, string?)
 	local ok, reason = PetRules.canEquip(state, petId, os.time())
 	if not ok then
 		return false, reason
-	end
-	if not atSanctuary(player) then
-		return false, "Go to the sanctuary"
 	end
 	local nextState, equipped = PetRules.equip(state, petId)
 	if not equipped then

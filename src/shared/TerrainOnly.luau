@@ -6,6 +6,8 @@
 -- Grass; tools/world/write_terrain.luau). So every Part with an overridden material, or naming a terrain variant, is
 -- moved to an unmapped lookalike. Server and client both call guard(): the server for the map and replicated
 -- builds, the client for its own local parts.
+-- Since 2026-10-22 MaterialService sets no terrain slots (Town.paint tints the built-in ones); the guard stays so
+-- Part looks do not shift and a slot override can come back safely.
 --
 --   TerrainOnly.remap(materialName, variantName) -> newMaterialName?   pure: nil = the part is fine
 --   TerrainOnly.guard(root)   fixes root's parts now and each one added later (checked a frame after parenting)

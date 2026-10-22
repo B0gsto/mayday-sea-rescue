@@ -127,7 +127,7 @@ return function(t)
 			maxY = math.max(maxY, y)
 		end
 		t.expect(y).toBeCloseTo(w.sag, 0.01)
-		t.expect(maxY < w.sag * 2.1).toBe(true) -- under-damped (0.38) but not bouncy
+		t.expect(maxY < w.sag * 2.1).toBe(true) -- under-damped (0.55) and not bouncy
 	end)
 
 	t.test("suspension: anti-roll bar and weight transfer formulas", function()
@@ -203,10 +203,10 @@ return function(t)
 		end
 	end)
 
-	t.test("pickup: governed at 90 km/h, 0-60 km/h in a believable time, six gears", function()
+	t.test("pickup: governed at 90 km/h, 0-60 km/h in an arcade-quick time, six gears", function()
 		local r = run(Config.LifeguardPickup, { seconds = 40, control = full })
 		t.expect(r.v > 73 and r.v < 76.5).toBe(true)
-		t.expect(r.timeTo[50] > 3.5 and r.timeTo[50] < 9).toBe(true)
+		t.expect(r.timeTo[50] > 2.5 and r.timeTo[50] < 4).toBe(true)
 		t.expect(r.maxGear >= 5).toBe(true)
 		t.expect(r.shifts <= 8).toBe(true)
 	end)
@@ -234,8 +234,9 @@ return function(t)
 	)
 
 	t.test("pickup: soft sand drags it down; low range climbs out", function()
-		local road = run(Config.LifeguardPickup, { seconds = 8, control = full })
-		local sand = run(Config.LifeguardPickup, { seconds = 8, control = full, surface = "Sand" })
+		-- 4 s: before the road run reaches the governor
+		local road = run(Config.LifeguardPickup, { seconds = 4, control = full })
+		local sand = run(Config.LifeguardPickup, { seconds = 4, control = full, surface = "Sand" })
 		t.expect(sand.v < road.v * 0.9).toBe(true)
 		local low = run(Config.LifeguardPickup, { seconds = 30, control = full, lowRange = true })
 		t.expect(low.v < 65).toBe(true) -- low range runs out of revs

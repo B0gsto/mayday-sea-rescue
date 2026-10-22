@@ -20,8 +20,7 @@ return function(t)
 			insets = { top = 58, bottom = 20, left = 0, right = 0 },
 		},
 	}
-	local HUD =
-		{ "status", "objective", "notice", "right", "minimap", "challenge", "goal", "phone" }
+	local HUD = { "status", "objective", "notice", "right", "minimap", "wallet", "goal", "phone" }
 
 	local function box(rect)
 		local x = rect.pos.X - rect.anchor.X * rect.size.X
@@ -53,16 +52,15 @@ return function(t)
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
-			-- the minimap is the requested ~110 px square, the challenge icon a 44 px target
+			-- the minimap is the requested ~110 px square
 			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(110, 1)
-			t.expect(mt.rects.challenge.size.X * mt.scale).toBeCloseTo(44, 1)
 		end)
 	end
 
-	t.test("the touch challenge icon sits under the minimap", function()
+	t.test("the touch wallet sits under the minimap", function()
 		for _, s in SCREENS do
 			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
-			local mini, icon = mt.rects.minimap, mt.rects.challenge
+			local mini, icon = mt.rects.minimap, mt.rects.wallet
 			t.expect(icon.pos.Y >= mini.pos.Y + mini.size.Y).toBe(true)
 			t.expect(icon.pos.X).toBe(mini.pos.X)
 		end
@@ -80,19 +78,19 @@ return function(t)
 		t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
 		t.expect(mini.pos).toEqual(Vector2.new(m, mt.usable.Y - m))
 		t.expect(mt.rects.status.anchor).toEqual(Vector2.new(1, 0))
-		t.expect(mt.rects.challenge.pos.Y)
-			.toBe(mt.usable.Y - m - mini.size.Y - HudLayout.PILL_HEIGHT - g - mt.rects.challenge.size.Y)
+		t.expect(mt.rects.wallet.pos.Y)
+			.toBe(mt.usable.Y - m - mini.size.Y - HudLayout.PILL_HEIGHT - g - mt.rects.wallet.size.Y)
 	end)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
-	t.test("desktop challenge card clears the minimap pill and the objective", function()
+	t.test("desktop wallet card clears the minimap pill and the objective", function()
 		for _, screen in { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) } do
 			local mt =
 				HudLayout.compute(screen, { top = 0, bottom = 0, left = 0, right = 0 }, "Keyboard")
-			local _, _, _, cy2 = box(mt.rects.challenge)
+			local _, _, _, cy2 = box(mt.rects.wallet)
 			local _, my = box(mt.rects.minimap)
 			t.expect(cy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
-			t.expect(overlaps(mt.rects.challenge, mt.rects.objective)).toBe(false)
+			t.expect(overlaps(mt.rects.wallet, mt.rects.objective)).toBe(false)
 		end
 	end)
 end

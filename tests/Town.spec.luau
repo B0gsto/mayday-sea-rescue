@@ -41,7 +41,7 @@ return function(t)
 
 	t.test("every lot faces its street (front = asset -Z toward the nearest grid line)", function()
 		for _, lot in TownLayout.lots(town) do
-			local front = lot.cf.Position + lot.cf.LookVector * 20
+			local front = lot.cf.Position + lot.cf.LookVector * (town.width / 2 + town.footway + 1) -- the setback less D / 2
 			local xs, zs = TownLayout.lines(town)
 			local best = math.huge
 			for _, x in xs do
@@ -95,7 +95,10 @@ return function(t)
 		for _, l in TownLayout.lots(town) do
 			if l.shop then
 				n += 1
-				t.expect(math.abs(l.cf.Z - zs[2]) < 30).toBe(true)
+				t.expect(
+					math.abs(l.cf.Z - zs[2]) < town.width / 2 + town.footway + TownLayout.DEPTH
+				)
+					.toBe(true)
 			end
 		end
 		t.expect(n >= 12).toBe(true)

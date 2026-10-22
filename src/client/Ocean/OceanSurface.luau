@@ -5,7 +5,10 @@
 -- properties are not script-writable at runtime, so the client clones them):
 --   SurfaceCalm   tiling FFT chop normal map, roughness ~0.07, Overlay colour map ~transparent
 --   SurfaceStorm  same normal map, roughness ~0.24, Overlay colour map with faint foam streaks
---   SurfaceFoam   white foam with alpha (AlphaMode Transparency) for the crest foam overlay mesh
+-- The crest foam overlay ("Foam") is a plain MeshPart.TextureID with alpha, not a SurfaceAppearance:
+-- the place is published from the Rojo build (tools/publish.py), so its SurfaceAppearances carry no
+-- TexturePack and the live client fails to load them ("PBR textures may not be visible"). A foam
+-- overlay without its alpha drew as an opaque black sheet z-fighting with the waves (harbour, 2026-10-22).
 -- In Overlay mode the MeshPart's Color shows wherever the colour map is transparent, so the water
 -- tint is just part.Color (script-writable, set per preset by OceanController).
 -- Textures are baked by art/ocean/bake_ocean_textures.py (Blender headless, exactly periodic),
@@ -21,8 +24,14 @@ local OceanSurface = {}
 OceanSurface.TILE_STUDS = 64
 
 local SA_NAME = "OceanSurface"
+local FOAM_TEXTURE = "rbxassetid://107434961132990" -- ocean_foam.png, white with alpha
 
 function OceanSurface.attach(part: BasePart, kind: string)
+	if kind == "Foam" then
+		(part :: MeshPart).TextureID = FOAM_TEXTURE
+		part.Material = Enum.Material.SmoothPlastic
+		return
+	end
 	local old = part:FindFirstChild(SA_NAME)
 	if old and old:GetAttribute("Kind") == kind then
 		return

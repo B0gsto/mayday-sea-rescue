@@ -12,7 +12,7 @@
 --   +------------------------------------------------------------------+
 --   | minimap   objective          notice (under the objective)  status |
 --   | (110 px)                                                  --------|
---   | icon                                                      pager   |
+--   | wallet                                                    pager   |
 --   |                                                           column  |
 --   |                                                                   |
 --   |            radio / prompt (unchanged)                             |
@@ -21,7 +21,7 @@
 --
 -- The minimap moves to the top left at 110 final px (tap it for the full map, MapController)
 -- (its objective pill drawn inside the square's bottom edge, MapController)
--- and the challenge tracker collapses to a 44 px icon under it, so the bottom-left 40% x 45%
+-- and the wallet (Cash + rank bar) sits under it, so the bottom-left 40% x 45%
 -- stays empty for the thumbstick. The objective strip moves to the top centre (between the
 -- minimap and the status strip) and the notice band sits under it; the pager column stops above
 -- the bottom-right 30% x 35% jump zone. `tests/HudLayout.spec.luau` asserts this on a 16:9
@@ -37,11 +37,10 @@ HudLayout.PROMPT_HEIGHT = 230
 HudLayout.NOTICE_HEIGHT = 120
 HudLayout.GOAL_WIDTH = 260 -- the next-goal chip, under the status strip
 HudLayout.GOAL_HEIGHT = 44
-HudLayout.CHALLENGE_WIDTH = 214 -- the desktop tracker card
-HudLayout.CHALLENGE_HEIGHT = 128
-HudLayout.PILL_HEIGHT = 36 -- desktop: the minimap's objective pill (30 + 6) above the square
+HudLayout.WALLET_WIDTH = 236 -- the Cash + rank card (HudController), bottom left
+HudLayout.WALLET_HEIGHT = 96
+HudLayout.PILL_HEIGHT = 36 -- desktop: clear space above the square (the minimap bezel overhangs it)
 HudLayout.TOUCH_SIDE = 110 -- final px: the touch minimap square
-HudLayout.TOUCH_ICON = 44 -- final px: the touch challenge icon (a minimum touch target)
 HudLayout.PHONE_SIZE = 72 -- the phone button (UI/Phone), left side
 
 local REF_HEIGHT = 720 -- usable px at which the HUD draws 1:1
@@ -57,7 +56,7 @@ export type RegionName =
 	| "subtitle"
 	| "minimap"
 	| "gauges"
-	| "challenge"
+	| "wallet"
 	| "goal"
 	| "phone"
 
@@ -123,8 +122,7 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local objectiveHeight = HudLayout.OBJECTIVE_HEIGHT
 	if touch then
 		local stickTop = u.Y * 0.55
-		local icon = math.floor(HudLayout.TOUCH_ICON / s + 0.5)
-		local under = m + side + g + icon <= stickTop - 4
+		local walletY = m + side + g
 		local noticeY = m + objectiveHeight + g
 		local noticeH = math.clamp(stickTop - 4 - noticeY, 48, HudLayout.NOTICE_HEIGHT)
 		local rightTop = m + HudLayout.STATUS_HEIGHT + g
@@ -149,15 +147,19 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(noticeWidth, noticeH)
 		)
 		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(side, side))
-		mt.rects["challenge"] = rect(
+		-- under the minimap, ending above the thumbstick zone (the card scales down to fit)
+		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			if under then Vector2.new(m, m + side + g) else Vector2.new(m + side + g, m),
-			Vector2.new(icon, icon)
+			Vector2.new(m, walletY),
+			Vector2.new(
+				HudLayout.WALLET_WIDTH,
+				math.clamp(stickTop - 4 - walletY, 40, HudLayout.WALLET_HEIGHT)
+			)
 		)
-		-- the phone button: top left, right of the minimap (and of the icon when it sits there)
+		-- the phone button: top left, right of the minimap
 		mt.rects["phone"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m + side + g + (if under then 0 else icon + g), m),
+			Vector2.new(m + side + g, m),
 			Vector2.new(HudLayout.PHONE_SIZE, HudLayout.PHONE_SIZE)
 		)
 		-- clear of the thumbstick (left 40%), the jump buttons (right 30%) and the VHF set
@@ -193,10 +195,10 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		)
 		mt.rects["minimap"] =
 			rect(Vector2.new(0, 1), Vector2.new(m, bottom), Vector2.new(side, side))
-		mt.rects["challenge"] = rect(
+		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m, bottom - side - HudLayout.PILL_HEIGHT - g - HudLayout.CHALLENGE_HEIGHT),
-			Vector2.new(HudLayout.CHALLENGE_WIDTH, HudLayout.CHALLENGE_HEIGHT)
+			Vector2.new(m, bottom - side - HudLayout.PILL_HEIGHT - g - HudLayout.WALLET_HEIGHT),
+			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
 		)
 		-- the phone button: left edge, under the objective
 		mt.rects["phone"] = rect(

@@ -272,7 +272,7 @@ local WorldConfig = {
 			id = "PortHaven_Av1",
 			name = "Penhallow Road",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-540, 4, -30),
 				Vector3.new(-540, 4, -43.8),
@@ -302,7 +302,7 @@ local WorldConfig = {
 			id = "PortHaven_Av2",
 			name = "Quay Lane",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-380, 4, -30),
 				Vector3.new(-380, 4, -43.8),
@@ -332,7 +332,7 @@ local WorldConfig = {
 			id = "PortHaven_Av3",
 			name = "Station Hill",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-220, 4, -30),
 				Vector3.new(-220, 4, -43.8),
@@ -362,7 +362,7 @@ local WorldConfig = {
 			id = "PortHaven_Av4",
 			name = "Chapel Hill",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(20, 4, -30),
 				Vector3.new(20, 4, -43.8),
@@ -392,7 +392,7 @@ local WorldConfig = {
 			id = "PortHaven_Av5",
 			name = "Hospital Lane",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(200, 4, -31.3),
 				Vector3.new(200, 4, -45.2),
@@ -422,7 +422,7 @@ local WorldConfig = {
 			id = "PortHaven_Av6",
 			name = "Eastgate Hill",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(380, 4, -45.6),
 				Vector3.new(380, 4, -59.5),
@@ -451,7 +451,7 @@ local WorldConfig = {
 			id = "PortHaven_Av7",
 			name = "Tregenna Hill",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(560, 4, -40),
 				Vector3.new(560, 4, -53.9),
@@ -480,7 +480,7 @@ local WorldConfig = {
 			id = "PortHaven_St1",
 			name = "Fore Street",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-540, 4, -160),
 				Vector3.new(-527.2, 4, -160),
@@ -536,7 +536,7 @@ local WorldConfig = {
 			id = "PortHaven_St2",
 			name = "Church Street",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-540, 4, -270),
 				Vector3.new(-527.2, 4, -270),
@@ -592,7 +592,7 @@ local WorldConfig = {
 			id = "PortHaven_St3",
 			name = "Trelawney Road",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-540, 4, -380),
 				Vector3.new(-527.2, 4, -380),
@@ -648,7 +648,7 @@ local WorldConfig = {
 			id = "PortHaven_St4",
 			name = "Bodmin Road",
 			surface = "Asphalt",
-			width = 22,
+			width = 30,
 			points = {
 				Vector3.new(-540, 4, -490),
 				Vector3.new(-527.2, 4, -490),
@@ -706,7 +706,7 @@ local WorldConfig = {
 			id = "PortHaven",
 			name = "Port Haven",
 			origin = Vector3.new(0, 4, -30),
-			width = 22,
+			width = 30,
 			footway = 8,
 			avenues = {
 				-540,
@@ -743,10 +743,10 @@ local WorldConfig = {
 					-20,
 				},
 				{
-					31,
+					35,
 					-251,
 					121,
-					-171,
+					-175,
 				},
 			},
 		},

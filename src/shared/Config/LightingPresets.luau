@@ -1,10 +1,9 @@
 --!strict
 -- LightingPresets: the Clear, Calm (golden hour), Overcast, Storm and Night looks from
 -- docs/05-art-direction.md section 6, as data. WeatherController picks a day base (Clear, Calm
--- or Overcast; Overcast is the default weather), blends it toward Night by the sun elevation and
+-- or Overcast; Clear is the always-sunny default), blends it toward Night by the sun elevation and
 -- toward Storm by Weather.getIntensity(), and swaps the matching Sky (src/client/Ocean/SkyAssets).
--- WaterColor is published to the ocean (North Atlantic grey-green, darker in storm). Keep it
--- desaturated (S <= ~0.25): sunlight and specular push it toward saturated cyan on screen (round 3).
+-- WaterColor is published to the ocean (Clear: blue-teal; others grey-green, darker in storm).
 -- Values are starting points (-- tune). Colours use palette hex codes from docs 05 section 3.
 --
 -- ClockTime is listed for reference and for setting the scene once; the controller never moves
@@ -142,32 +141,33 @@ local Night: Preset = table.freeze({
 	WaterColor = hex("#1E2A30"),
 })
 
--- Clear noon and bright overcast (docs 05 section 6.2). -- tune
+-- Clear: the always-sunny default (user, 2026-10-22): blue sky, white clouds, warm sun, clear
+-- distance, colours that pop. Brightness/exposure stay moderate so pale ground doesn't blow out. -- tune
 local Clear: Preset = table.freeze({
-	ClockTime = 12.5,
-	Brightness = 3.0,
+	ClockTime = 14,
+	Brightness = 2.6,
 	ExposureCompensation = 0,
-	Ambient = hex("#2E3238"),
-	OutdoorAmbient = hex("#7C8590"),
-	ColorShift_Top = hex("#FFF8EE"), -- round 4: less yellow, the warm top light turned the water olive
+	Ambient = hex("#2E3540"),
+	OutdoorAmbient = hex("#6E7C8C"),
+	ColorShift_Top = hex("#FFF2DC"), -- warm sun
 	EnvironmentDiffuseScale = 1,
 	EnvironmentSpecularScale = 1,
-	AtmosphereDensity = 0.24, -- T5: Cornish coastal clarity (was 0.28 / haze 0.8: grey, washed out)
-	AtmosphereHaze = 0.45,
-	AtmosphereColor = hex("#C9D3D8"),
-	AtmosphereDecay = hex("#6E8AA5"),
-	AtmosphereGlare = 0.3,
-	CloudsCover = 0.35,
-	CloudsDensity = 0.25,
+	AtmosphereDensity = 0.2,
+	AtmosphereHaze = 0.2,
+	AtmosphereColor = hex("#BFD6E6"),
+	AtmosphereDecay = hex("#5C8DB8"),
+	AtmosphereGlare = 0.25,
+	CloudsCover = 0.45,
+	CloudsDensity = 0.3,
 	CloudsColor = hex("#FFFFFF"),
-	Saturation = 0.06, -- T5: slight lift; water stays desaturated (WaterColor S <= 0.25)
-	Contrast = 0.12,
+	Saturation = 0.2,
+	Contrast = 0.1,
 	TintColor = hex("#FFFFFF"),
-	BloomIntensity = 0.3,
+	BloomIntensity = 0.25,
 	BloomSize = 24,
-	BloomThreshold = 1.2, -- glitter blooms (round 3)
-	SunRaysIntensity = 0.08,
-	WaterColor = hex("#35484A"), -- round 4: less olive, low saturation (was #364846; #2F474E read cyan)
+	BloomThreshold = 1.4, -- sun glitter only, not the pale ground
+	SunRaysIntensity = 0.06,
+	WaterColor = hex("#2B5F70"), -- clear blue-teal
 })
 
 local Overcast: Preset = table.freeze({

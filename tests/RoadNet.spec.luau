@@ -1,4 +1,4 @@
--- RoadNet: junction detection, stop lines and traffic light phases (left-hand traffic).
+-- RoadNet: junction detection, stop lines and traffic light phases (right-hand traffic).
 return function(t)
 	local RoadNet = t.load("src/shared/RoadNet.luau")
 
@@ -50,14 +50,14 @@ return function(t)
 		t.expect(RoadNet.light(j, 2, t0 + slot + 1)).toBe("green")
 	end)
 
-	t.test("the stop line spans the left-hand incoming lane", function()
+	t.test("the stop line spans the right-hand incoming lane", function()
 		local j = RoadNet.junctions({ main, side })[1]
 		for _, a in j.arms do
 			if a.road == "Main" and a.dir.X < 0 then
-				-- eastbound traffic arrives from the west and keeps left: the north (-Z) half
+				-- eastbound traffic arrives from the west and keeps right: the south (+Z) half
 				local c, across = RoadNet.incoming(a)
 				t.expect((c - Vector3.new(11, 0, 0)).Magnitude < 1e-6).toBe(true)
-				t.expect((across - Vector3.new(0, 0, -1)).Magnitude < 1e-6).toBe(true)
+				t.expect((across - Vector3.new(0, 0, 1)).Magnitude < 1e-6).toBe(true)
 			end
 		end
 	end)

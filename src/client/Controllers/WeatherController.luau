@@ -1,6 +1,6 @@
 --!strict
 -- WeatherController: the client side of the storm (docs 06 section 3.4, docs 05 section 6).
---   * At 10 Hz blends a day base preset (Clear, Calm golden hour or Overcast, the default)
+--   * At 10 Hz blends a day base preset (Clear, the default, Calm golden hour or Overcast)
 --     toward Night by the sun's elevation (so a day cycle moving ClockTime just works) and toward
 --     Storm by Weather.getIntensity() (Lighting, Atmosphere, Clouds, ColorCorrection, Bloom,
 --     SunRays; creates missing effects). ClockTime is set once from the base preset and never
@@ -80,8 +80,8 @@ local DAY_PRESETS: { [string]: Preset } = {
 	Calm = LightingPresets.Calm,
 	Overcast = LightingPresets.Overcast,
 }
-local basePresetName = "Overcast" -- docs 05 section 6.2: Overcast is the default weather
-local basePreset: Preset = LightingPresets.Overcast
+local basePresetName = "Clear" -- always sunny (user, 2026-10-22); was Overcast
+local basePreset: Preset = LightingPresets.Clear
 local sky: Sky
 local skyKey = ""
 local SkyAssets: { [string]: { [string]: string } }? = nil
@@ -100,7 +100,7 @@ local clouds: Clouds
 local colorCorrection: ColorCorrectionEffect
 local bloom: BloomEffect
 local sunRays: SunRaysEffect
-local current: Preset = LightingPresets.Overcast
+local current: Preset = LightingPresets.Clear
 
 local rainPart: Part
 local rainEmitter: ParticleEmitter
@@ -214,8 +214,10 @@ end
 
 function WeatherController.SetBasePreset(name: string)
 	if name == "Night" then
-		Lighting.ClockTime = LightingPresets.Night.ClockTime
-		return
+		return -- no night for now (2026-10-22: night look is buggy); events keep the sunny day
+	end
+	if name == "Overcast" then
+		name = "Clear" -- callers restore the old default with "Overcast"; the default is now sunny
 	end
 	local preset = DAY_PRESETS[name]
 	if preset then
@@ -279,9 +281,6 @@ local function computeBlend(intensity: number): Preset
 	local name = basePresetName
 	if type(override) == "string" and DAY_PRESETS[override] then
 		name = override
-	end
-	if calmLevel > 0.5 then
-		name = "Calm"
 	end
 	Lighting:SetAttribute("LocalStormIntensity", intensity) -- the client sea, boats and audio
 	local day = DAY_PRESETS[name]

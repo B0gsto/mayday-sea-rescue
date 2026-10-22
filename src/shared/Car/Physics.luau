@@ -34,6 +34,7 @@ export type Sim = {
 }
 
 local SEA_LEVEL = 0
+local YAW_ASSIST_TIME = 0.2 -- s: how fast the stability assist pulls the yaw rate to the steering's
 local wetCache, wetAt = 0, -math.huge
 
 local function wetness(): number
@@ -173,6 +174,28 @@ function Physics.step(sim: Sim, controls: Chassis.Controls, dt: number): Chassis
 			force += wf
 			torque += (f.point - com):Cross(wf)
 		end
+	end
+	-- Arcade stability (assists on, no handbrake): pull the body's yaw rate toward what the steered
+	-- wheels ask for, capped by the grip, so it turns when steered and never spins out at speed.
+	local derived = sim.derived
+	if
+		controls.assists
+		and not controls.handbrake
+		and derived.spec.class ~= "Trailer"
+		and telemetry.grounded >= 2
+		and math.abs(speed) > 2
+	then
+		local up = root.CFrame.UpVector
+		local yaw = root.AssemblyAngularVelocity:Dot(up) -- + is a left turn (-Z forward)
+		local limit = derived.spec.tyreMu * derived.g / math.abs(speed)
+		local wanted = math.clamp(
+			-speed * math.tan(math.rad(sim.state.steerAngle)) / derived.wheelbase,
+			-limit,
+			limit
+		)
+		local size = root.Size -- the Chassis box carries all the mass
+		local inertia = root.AssemblyMass * (size.X * size.X + size.Z * size.Z) / 12
+		torque += up * (wanted - yaw) * inertia / YAW_ASSIST_TIME
 	end
 	local v = vel.Magnitude
 	if v > 0.1 then

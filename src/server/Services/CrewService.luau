@@ -12,10 +12,11 @@
 --   Helm       sits in a boat's DriverSeat (a crewmate may take it while the boat is at rest)
 --   Navigator  stands at the boat's chart table (CrewChart), or holds the search tablet
 --   Crew       is in the water, or wears the drysuit from the kit locker (icon: Swimmer)
---   Medic      carries the med bag from the boat's kit box
+--   Medic      carries the med bag (no boat hands one out since 2026-10-22: no medical props;
+--              survivors are dragged aboard. The MedBag tool code stays for the role rules.)
 -- Taking a seat or tool takes the role; another crewmate taking the tool hands it over. Each
--- operating crew boat carries a code-built CrewChart (tablet), CrewKitBox (med bag) and
--- CrewLocker (drysuit) with proximity prompts. Player attribute CrewRole = the icon role ("" none).
+-- operating crew boat carries a code-built CrewChart (tablet) and CrewLocker (drysuit) with
+-- proximity prompts. Player attribute CrewRole = the icon role ("" none).
 --
 -- API (server):
 --   CrewService.GetCrew(player) -> { Player }   everyone in the player's crew, the player included
@@ -496,7 +497,6 @@ local function addCrewProps(owner: Player, model: Model)
 	local deck = seatY - (SEAT_TO_DECK[vehicleId :: string] or DEFAULT_SEAT_TO_DECK)
 	local chart =
 		addProp(model, "CrewChart", Vector3.new(1.1, 0.9, 1.7), spot.chart, DECK_COLOUR, deck)
-	local kit = addProp(model, "CrewKitBox", Vector3.new(1.3, 0.9, 1.0), spot.kit, KIT_COLOUR, deck)
 	local locker =
 		addProp(model, "CrewLocker", Vector3.new(1.2, 2.1, 0.95), spot.locker, LOCKER_COLOUR, deck)
 	if chart then
@@ -512,9 +512,6 @@ local function addCrewProps(owner: Player, model: Model)
 			board.CFrame = chart.CFrame * CFrame.new(0, 0.5, 0) * CFrame.Angles(math.rad(-18), 0, 0)
 		end
 		addToolPrompt(chart, "Tablet", "Tablet", owner)
-	end
-	if kit then
-		addToolPrompt(kit, "Med bag", "MedBag", owner)
 	end
 	if locker then
 		local stripe = addProp(

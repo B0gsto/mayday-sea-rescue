@@ -250,12 +250,12 @@ local Swaps: { [string]: Swap } = {
 		},
 	},
 	-- H3 cottages (greybox spots and sizes from map/Build.luau buildHouse: 18 + (n % 3) * 4 wide, 12 + (n % 2) * 6 eaves)
-	House1 = cottage(1, Vector3.new(-150, LAND, -188), 22 / 3, 6, { 0.0 }),
-	House2 = cottage(2, Vector3.new(-60, LAND, -188), 26 / 3, 4, { -3.0, 1.4 }),
-	House3 = cottage(3, Vector3.new(90, LAND, -188), 6, 6, { -1.6 }),
-	House4 = cottage(4, Vector3.new(130, LAND, -188), 22 / 3, 4, { 0.0 }, true),
-	House5 = cottage(5, Vector3.new(260, LAND, -188), 26 / 3, 6, { -0.72, 0.72 }),
-	House6 = cottage(6, Vector3.new(310, LAND, -188), 6, 4, { -1.5 }),
+	House1 = cottage(1, Vector3.new(-150, LAND, -192), 22 / 3, 6, { 0.0 }),
+	House2 = cottage(2, Vector3.new(-60, LAND, -192), 26 / 3, 4, { -3.0, 1.4 }),
+	House3 = cottage(3, Vector3.new(90, LAND, -192), 6, 6, { -1.6 }),
+	House4 = cottage(4, Vector3.new(130, LAND, -192), 22 / 3, 4, { 0.0 }, true),
+	House5 = cottage(5, Vector3.new(260, LAND, -192), 26 / 3, 6, { -0.72, 0.72 }),
+	House6 = cottage(6, Vector3.new(310, LAND, -192), 6, 4, { -1.5 }),
 }
 
 return Swaps

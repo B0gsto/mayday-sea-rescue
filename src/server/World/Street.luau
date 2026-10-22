@@ -2,19 +2,18 @@
 -- Street (I1b-3): Port Haven's streets and the Harbour Light, placed at run time after the building swaps
 -- (WorldDressingService hooks Street.swaps into its swap list and spawns Street.start()).
 --
---   * Road surfaces (R1a + POL1-B, art/source/roads/INTEGRATION.md): the roads are terrain, so the surfaces come
---     through the terrain slots in MaterialService (art/source/roads/wire_roads.py): Asphalt -> Asphalt (asphalt_02),
---     Cobblestone (the quayside setts the bake paints on Harbour Road, x -180..180) -> RoadHarbourCobbles, Pavement ->
---     RoadGravelTrack. The bake paints the Haven Head farm track Ground; start() repaints it Pavement (gravel).
---   * UK markings (white paint strips 5 mm proud, following the ray-cast terrain): two lanes on every Asphalt road,
+--   * Road surfaces: the roads are terrain in the built-in Asphalt / Cobblestone (the quayside setts on Harbour Road,
+--     x -180..180) / Pavement (gravel), tinted by Town.paint (no MaterialService slot overrides: the live client did
+--     not load them). The bake paints the Haven Head farm track Ground; start() repaints it Pavement (gravel).
+--   * Markings (white paint strips 5 mm proud, following the ray-cast terrain): two lanes on every Asphalt road,
 --     centre dashes and edge lines, broken at junctions; at each RoadNet junction stop lines and, where all roads are
---     asphalt, three-aspect traffic lights cycled on the server clock (Shared/RoadNet, traffic keeps left).
+--     asphalt, three-aspect traffic lights cycled on the server clock (Shared/RoadNet, traffic keeps right).
 --   * Granite kerbs (Granite + MaterialVariant RoadKerbGranite, 125 mm upstand) along the town edge of Harbour Road
 --     and both sides of Chapel Hill, dropped at the station apron / slipway, junctions, doors and prompts.
 --   * R1a street furniture (AssetLoader.cloneStatic): M_Road_StreetLamp every ~28 m on Harbour Road (the quay side in
 --     town, alternate sides beyond) and Chapel Hill, warm SpotLights at ATT_Light (shadows on Harbour Road) with the
 --     Lens Neon at night / in a storm; benches on the quay facing the harbour with bins beside them and by the
---     Chandlery; bollards along the quay edge of Harbour Road. Every spot skips the carriageways, doors, prompt
+--     Chandlery (no bollards: the quay apron is driven on). Every spot skips the carriageways, doors, prompt
 --     markers, the slipway and the station apron, and anything solid already there.
 --   * The Harbour Light (H6 M_Bld_HarbourLight) replaces Map.HarbourLight and the lifeguard tower (H6
 --     M_Bld_LifeguardTower) the Haven Sands greybox through Street.swaps; Street.apply is their rig: _Glass Glass,
@@ -23,7 +22,7 @@
 --   * Parked cars (G73): M_Road_ParkedCar_01..03 at the Harbour Road / Chapel Hill kerbs and in the Haven Sands car
 --     park, parallel to the kerb, facing either way.
 -- Placement rules in StreetLayout (pure). Workspace.Dressing.Street attributes when done: StreetReady, StreetLamps,
--- StreetBenches, StreetBins, StreetBollards, StreetParkedCars, StreetKerbs, StreetMarkings, StreetTrackCells.
+-- StreetBenches, StreetBins, StreetParkedCars, StreetKerbs, StreetMarkings, StreetTrackCells.
 
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
@@ -381,7 +380,7 @@ local function paint(
 	return n
 end
 
--- Two lanes on every asphalt road (drive on the left): centre dashes and edge lines, stopping at junction boxes
+-- Two lanes on every asphalt road (drive on the right): centre dashes and edge lines, stopping at junction boxes
 -- (RoadNet) and the station apron.
 local JUNCTIONS = RoadNet.junctions(WorldConfig.Roads)
 
@@ -497,7 +496,7 @@ local function setHead(h: Head, state: string)
 	h.state = state
 end
 
--- a UK three-aspect signal on the near (left) side of the incoming lane, facing the traffic that stops at its line
+-- a three-aspect signal on the near (right) side of the incoming lane, facing the traffic that stops at its line
 local function signal(parent: Instance, j: RoadNet.Junction, arm: RoadNet.Arm, foot: Vector3): Head
 	local m = Instance.new("Model")
 	m.Name = "TrafficLight"
@@ -751,7 +750,7 @@ local function quayFurniture(
 	block: { StreetLayout.Blocker },
 	params: RaycastParams
 )
-	local benches, bins, bollards = 0, 0, 0
+	local benches, bins = 0, 0
 	-- benches on the quay apron facing the harbour (the bench front is asset -Z: yaw 180 turns it to +Z, the sea)
 	for _, x in { -34, 8, 48, 88, 128, 166 } do
 		local at = Vector3.new(x, 4, QUAY.edge - 6)
@@ -782,29 +781,29 @@ local function quayFurniture(
 			table.insert(block, { pos = bin.pos, r = 2 })
 		end
 	end
-	-- bollards along the quay edge of Harbour Road, 4 m centres, from x -20 (west of it the road jogs onto the quay)
-	for x = -20, QUAY.x1 - 2, 12 do
-		local at = Vector3.new(x, 4, QUAY.z + 0.8)
-		if place(parent, "M_Road_Bollard", at, 0, Vector3.new(1, 2.4, 1), block, params) then
-			bollards += 1
-		end
-	end
-	return benches, bins, bollards
+	-- no bollards: the quay apron in front of Harbour Road is driven on and parked on (playtest: a pole in the road)
+	return benches, bins
 end
 
 -- Parked cars (G73): static M_Road_ParkedCar_0N at the kerb and in the Haven Sands car park. Each sits just outside
--- the carriageway (road half width + 3.3, clear of the kerb line) and parallel to it, facing either way; place()
+-- the carriageway (road half width + 3.3, clear of the kerb line) and parallel to it, facing the flow of the lane
+-- beside it (right-hand traffic: forward along the road on its right side, backward on its left); place()
 -- drops the ones by a door, prompt or lamp and keeps them off the station apron and drivable lanes.
 local TOWN_CAR = 70 -- studs between parked cars on a town street
 local CAR_IDS = { "M_Road_ParkedCar_01", "M_Road_ParkedCar_02", "M_Road_ParkedCar_03" }
 local CAR_KERB = {
-	{ road = "HarbourRoad", s = 60, side = -1, back = false },
-	{ road = "HarbourRoad", s = 130, side = -1, back = true },
-	{ road = "HarbourRoad", s = 210, side = -1, back = false },
-	{ road = "HarbourRoad", s = 300, side = -1, back = false },
-	{ road = "HarbourRoad", s = 700, side = -1, back = true },
-	{ road = "HarbourRoad", s = 790, side = -1, back = false },
-} :: { { road: string, s: number, side: number, back: boolean } }
+	{ road = "HarbourRoad", s = 60, side = -1 },
+	{ road = "HarbourRoad", s = 130, side = -1 },
+	{ road = "HarbourRoad", s = 210, side = -1 },
+	{ road = "HarbourRoad", s = 300, side = -1 },
+	{ road = "HarbourRoad", s = 700, side = -1 },
+	{ road = "HarbourRoad", s = 790, side = -1 },
+} :: { { road: string, s: number, side: number } }
+
+-- yaw of a car parked on `side` (+1 right of the road's point order) facing the traffic flow there
+local function kerbYaw(dir: Vector3, side: number): number
+	return StreetLayout.faceYaw(dir) + (if side < 0 then math.pi else 0)
+end
 local CAR_SIZE = Vector3.new(6, 6, 14)
 
 local function parkedCars(
@@ -831,7 +830,7 @@ local function parkedCars(
 		local sample = road and StreetLayout.walk(road.points, 1, spec.s, spec.s)[1]
 		if sample then
 			local at = StreetLayout.offset(sample, spec.side, road.width / 2 + 3.3)
-			park(at, StreetLayout.faceYaw(sample.dir) + (if spec.back then math.pi else 0))
+			park(at, kerbYaw(sample.dir, spec.side))
 		end
 	end
 	-- city grid streets: one car at the kerb every TOWN_CAR studs, sides alternating, facing the traffic lane
@@ -841,8 +840,8 @@ local function parkedCars(
 				local side = if i % 2 == 0 then 1 else -1
 				park(
 					StreetLayout.offset(sample, side, r.width / 2 + 3.3),
-					StreetLayout.faceYaw(sample.dir) + (if side > 0 then math.pi else 0)
-				) -- keep left
+					kerbYaw(sample.dir, side)
+				)
 			end
 		end
 	end
@@ -952,7 +951,6 @@ function Street.start()
 			"M_Road_StreetLamp",
 			"M_Road_Bench",
 			"M_Road_Bin",
-			"M_Road_Bollard",
 			"M_Road_ParkedCar_01",
 			"M_Road_ParkedCar_02",
 			"M_Road_ParkedCar_03",
@@ -978,7 +976,7 @@ function Street.start()
 		lampList = lamps(furniture, block, params)
 		rigLamps(lampList)
 	end)
-	local benches, bins, bollards = step("quay", function()
+	local benches, bins = step("quay", function()
 		return quayFurniture(furniture, block, params)
 	end)
 	local nCars = step("parked cars", function()
@@ -987,7 +985,6 @@ function Street.start()
 	m:SetAttribute("StreetLamps", #lampList)
 	m:SetAttribute("StreetBenches", benches)
 	m:SetAttribute("StreetBins", bins)
-	m:SetAttribute("StreetBollards", bollards)
 	m:SetAttribute("StreetParkedCars", nCars)
 	m:SetAttribute("StreetKerbs", nKerbs)
 	m:SetAttribute("StreetMarkings", marks)
@@ -996,7 +993,7 @@ function Street.start()
 	m:SetAttribute("StreetTrackCells", cells)
 	m:SetAttribute("StreetReady", true)
 	print(
-		`[Street] {#lampList} lamps, {benches} benches, {bins} bins, {bollards} bollards, {nCars} parked cars, {nKerbs} kerbs, {marks} markings, track {cells} cells in {math.floor(
+		`[Street] {#lampList} lamps, {benches} benches, {bins} bins, {nCars} parked cars, {nKerbs} kerbs, {marks} markings, track {cells} cells in {math.floor(
 			(os.clock() - t0) * 10
 		) / 10} s`
 	)

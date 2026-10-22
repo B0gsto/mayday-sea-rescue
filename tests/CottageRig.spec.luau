@@ -42,12 +42,12 @@ return function(t)
 
 	t.test("House1..6 swap in place of the greybox, facing +Z, with box colliders", function()
 		local spots = {
-			Vector3.new(-150, 4, -188),
-			Vector3.new(-60, 4, -188),
-			Vector3.new(90, 4, -188),
-			Vector3.new(130, 4, -188),
-			Vector3.new(260, 4, -188),
-			Vector3.new(310, 4, -188),
+			Vector3.new(-150, 4, -192),
+			Vector3.new(-60, 4, -192),
+			Vector3.new(90, 4, -192),
+			Vector3.new(130, 4, -192),
+			Vector3.new(260, 4, -192),
+			Vector3.new(310, 4, -192),
 		}
 		for n = 1, 6 do
 			local s = Swaps[`House{n}`]

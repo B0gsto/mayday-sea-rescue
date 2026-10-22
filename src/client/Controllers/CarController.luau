@@ -6,7 +6,8 @@
 -- fills from WASD / arrows, the gamepad thumbstick and the touch thumbstick; gamepad triggers
 -- (R2 throttle, L2 brake / reverse) override the throttle when pressed. The automatic brakes on
 -- the opposite pedal and changes into reverse at a standstill.
---   Space / X button     handbrake            L / D-pad down    low range
+--   LeftShift / X button handbrake           L / D-pad down    low range
+--   (Space / A button gets out: VehicleExitController)
 --   H / L3               horn (hold)          J / D-pad up      headlights
 --   K / D-pad right      blue lights + siren  B / Y button      launch the boat off the trailer
 --   V / R3               cockpit view (player attribute CarCockpit, read by the camera stream)
@@ -36,6 +37,10 @@ local LightBar = require(CarFolder:WaitForChild("LightBar"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
 local Wading = require(CarFolder:WaitForChild("Wading"))
 local Weather = require(Shared:WaitForChild("Weather"))
+local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
+local UI = script.Parent.Parent:WaitForChild("UI")
+local HudTheme = require(UI:WaitForChild("HudTheme"))
+local Layout = require(UI:WaitForChild("Layout"))
 
 local player = Players.LocalPlayer
 
@@ -70,7 +75,15 @@ local controlRemote: RemoteEvent? = nil
 local handbrake = false
 local lowRange = false
 local triggerThrottle, triggerBrake = 0, 0
-local hud: TextLabel? = nil
+type Gauges = {
+	gui: ScreenGui,
+	speed: TextLabel,
+	gear: TextLabel,
+	rpm: TextLabel,
+	rpmFill: ImageLabel,
+	extras: TextLabel,
+}
+local hud: Gauges? = nil
 local notice: TextLabel? = nil
 local excludeAt = 0
 
@@ -186,7 +199,7 @@ end
 -- Input -------------------------------------------------------------------------------------------
 
 local ACTIONS = {
-	CarHandbrake = { Enum.KeyCode.Space, Enum.KeyCode.ButtonX },
+	CarHandbrake = { Enum.KeyCode.LeftShift, Enum.KeyCode.ButtonX },
 	CarHorn = { Enum.KeyCode.H, Enum.KeyCode.ButtonL3 },
 	CarLights = { Enum.KeyCode.J, Enum.KeyCode.DPadUp },
 	CarBlues = { Enum.KeyCode.K, Enum.KeyCode.DPadRight },
@@ -261,25 +274,88 @@ local function bindInputs(bind: boolean)
 	end
 end
 
+-- Bottom centre speed panel (assets/ui/hud/mockup.png): speed + KM/H, gear chip, rpm + bar.
 local function makeHud()
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "CarHud"
 	gui.ResetOnSpawn = false
 	gui.Enabled = false
-	local label = Instance.new("TextLabel")
-	label.AnchorPoint = Vector2.new(0.5, 1)
-	label.Position = UDim2.new(0.5, 0, 1, -12)
-	label.Size = UDim2.fromOffset(360, 30)
-	label.BackgroundTransparency = 0.4
-	label.BackgroundColor3 = Color3.fromRGB(15, 20, 25)
-	label.TextColor3 = Color3.new(1, 1, 1)
-	label.Font = Enum.Font.GothamMedium
-	label.TextSize = 18
-	label.Parent = gui
+	Layout.prepare(gui)
+	local dock = Instance.new("Frame")
+	dock.Name = "Dock"
+	dock.AnchorPoint = Vector2.new(0.5, 1)
+	dock.Position = UDim2.new(0.5, 0, 1, -8)
+	dock.Size = UDim2.fromOffset(300, 84)
+	dock.BackgroundTransparency = 1
+	dock.Parent = gui
+	local fit = Instance.new("UIScale")
+	fit.Scale = Layout.current().scale
+	fit.Parent = dock
+	Layout.onMetrics(function(mt)
+		fit.Scale = mt.scale
+	end)
+	HudTheme.image(
+		"Panel",
+		Hud.SpeedPanel,
+		UDim2.fromScale(1, 1),
+		dock,
+		HudTheme.Slice.SpeedPanel,
+		0.5
+	)
+	local function text(
+		name: string,
+		font: Enum.Font,
+		size: number,
+		x: number,
+		y: number,
+		w: number,
+		h: number
+	): TextLabel
+		local l =
+			HudTheme.outline(HudTheme.label(name, "", UDim2.fromOffset(w, h), font, size, dock))
+		l.Position = UDim2.fromOffset(x, y)
+		l.TextXAlignment = Enum.TextXAlignment.Center
+		return l
+	end
+	local speed = text("Speed", HudTheme.NumberFont, 42, 14, 4, 96, 50)
+	text("Unit", HudTheme.LabelFont, 12, 14, 54, 96, 16).Text = "KM/H"
+	local chip = Instance.new("Frame")
+	chip.Name = "GearChip"
+	chip.AnchorPoint = Vector2.new(0.5, 0.5)
+	chip.Position = UDim2.fromScale(0.5, 0.5)
+	chip.Size = UDim2.fromOffset(52, 40)
+	chip.BackgroundColor3 = Color3.fromHex("0A1830")
+	chip.Parent = dock
+	HudTheme.corner(chip, 8)
+	HudTheme.stroke(chip).Transparency = 0.6
+	local gear = HudTheme.outline(
+		HudTheme.label("Gear", "", UDim2.fromScale(1, 1), HudTheme.NumberFont, 22, chip)
+	)
+	gear.TextXAlignment = Enum.TextXAlignment.Center
+	local rpm = text("Rpm", HudTheme.NumberFont, 24, 190, 6, 96, 32)
+	text("RpmUnit", HudTheme.LabelFont, 12, 190, 38, 96, 14).Text = "RPM"
+	local track = HudTheme.image(
+		"RpmBar",
+		Hud.BarTrack,
+		UDim2.fromOffset(84, 10),
+		dock,
+		HudTheme.Slice.Bar,
+		0.16
+	)
+	track.Position = UDim2.fromOffset(196, 60)
+	local rpmFill =
+		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.16)
+	-- LOW / P / STALLED / launch key, over the panel
+	local extras =
+		HudTheme.label("Extras", "", UDim2.new(1, 0, 0, 18), HudTheme.LabelFont, 14, dock)
+	extras.AnchorPoint = Vector2.new(0.5, 1)
+	extras.Position = UDim2.new(0.5, 0, 0, -4)
+	extras.TextXAlignment = Enum.TextXAlignment.Center
+	HudTheme.outline(extras).TextColor3 = Color3.fromHex("FFB347")
 	local line = Instance.new("TextLabel")
 	line.Name = "Notice"
 	line.AnchorPoint = Vector2.new(0.5, 1)
-	line.Position = UDim2.new(0.5, 0, 1, -48)
+	line.Position = UDim2.new(0.5, 0, 0, -26)
 	line.Size = UDim2.fromOffset(360, 28)
 	line.BackgroundTransparency = 0.25
 	line.BackgroundColor3 = Color3.fromRGB(190, 120, 0)
@@ -287,9 +363,10 @@ local function makeHud()
 	line.Font = Enum.Font.GothamBold
 	line.TextSize = 18
 	line.Visible = false
-	line.Parent = gui
+	line.Parent = dock
+	HudTheme.corner(line, 8)
 	gui.Parent = player:WaitForChild("PlayerGui")
-	hud = label
+	hud = { gui = gui, speed = speed, gear = gear, rpm = rpm, rpmFill = rpmFill, extras = extras }
 	notice = line
 end
 
@@ -348,8 +425,8 @@ local function stopDriving()
 	driving, driveSim, trailerSim, trailerModel = nil, nil, nil, nil
 	handbrake = false
 	bindInputs(false)
-	if hud and hud.Parent then
-		(hud.Parent :: ScreenGui).Enabled = false
+	if hud then
+		hud.gui.Enabled = false
 	end
 	if notice then
 		notice.Visible = false
@@ -377,8 +454,8 @@ local function startDriving(model: Model)
 		end)
 	end
 	bindInputs(true)
-	if hud and hud.Parent then
-		(hud.Parent :: ScreenGui).Enabled = true
+	if hud then
+		hud.gui.Enabled = true
 	end
 end
 
@@ -543,11 +620,15 @@ local function drive(dt: number)
 		if driving:GetAttribute("CanLaunch") == true then
 			table.insert(extras, "LAUNCH: B")
 		end
-		hud.Text =
-			`{math.floor(kmh + 0.5)} km/h   {gear}   {math.floor(telemetry.rpm / 100) * 100} rpm   {table.concat(
-				extras,
-				"  "
-			)}`
+		local eng = sim.derived.spec.engine
+		hud.speed.Text = tostring(math.floor(kmh + 0.5))
+		hud.gear.Text = gear
+		hud.rpm.Text = tostring(math.floor(telemetry.rpm / 100) * 100)
+		hud.rpmFill.Size = UDim2.fromScale(
+			math.clamp(telemetry.rpm / (if eng then eng.redlineRpm else 4000), 0, 1),
+			1
+		)
+		hud.extras.Text = table.concat(extras, "  ")
 	end
 end
 

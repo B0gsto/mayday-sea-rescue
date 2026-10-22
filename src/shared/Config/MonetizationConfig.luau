@@ -116,7 +116,7 @@ local MonetizationConfig = {
 			description = "Brings a server-wide storm to the Gale Isles for everyone in the server. Joins the server's storm queue.",
 			price = 49,
 			order = 8,
-			ready = true,
+			ready = false, -- weather is always sunny (StormService.ALWAYS_SUNNY)
 			stormTier = "Storm",
 		},
 		CallTheGreatStorm = {
@@ -125,7 +125,7 @@ local MonetizationConfig = {
 			description = "Brings a bigger server-wide storm with a guaranteed big call for everyone in the server. Joins the server's storm queue.",
 			price = 149,
 			order = 9,
-			ready = true,
+			ready = false, -- weather is always sunny (StormService.ALWAYS_SUNNY)
 			stormTier = "GreatStorm",
 		},
 		-- 3.1 Season Logbook: a developer product bought once per season (post-launch, needs the season track)

@@ -182,10 +182,12 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 	): Part
 		return part(m, name, size, at * CFrame.new(x, y, z), c, mat)
 	end
-	-- recessed core: white, so it reads as the sash frames inside every window opening
+	-- recessed core: white, so it reads as the sash frames inside every window opening. Everything inside the walls is
+	-- INSET studs narrower than w: flush with the end piers, its side faces z-fought through the gable walls.
+	local INSET = 0.2
 	local core = box(
 		"Core",
-		Vector3.new(w, eave - gTop + 0.2, d - 0.7),
+		Vector3.new(w - INSET, eave - gTop + 0.2, d - 0.7),
 		0,
 		(eave + gTop) / 2,
 		0,
@@ -285,10 +287,18 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 		local lit = 0
 		for f = 1, s.floors - 1 do
 			local y0, y1 = G + (f - 1) * U + 2.2, G + (f - 1) * U + 7
-			box("Head", Vector3.new(w, 0.4, d - 0.45), 0, y1 - 0.2, 0, SASH, M.SmoothPlastic)
+			box(
+				"Head",
+				Vector3.new(w - INSET, 0.4, d - 0.45),
+				0,
+				y1 - 0.2,
+				0,
+				SASH,
+				M.SmoothPlastic
+			)
 			box(
 				"Rail",
-				Vector3.new(w, 0.2, d - 0.45),
+				Vector3.new(w - INSET, 0.2, d - 0.45),
 				0,
 				y0 + (y1 - y0) * 0.55,
 				0,
@@ -296,10 +306,26 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 				M.SmoothPlastic
 			)
 			if f > 1 then -- storey 1 sits on the string course
-				box("Sill", Vector3.new(w, 0.4, d + 0.7), 0, y0 + 0.05, 0, s.sill, M.Granite)
+				box(
+					"Sill",
+					Vector3.new(w - INSET / 2, 0.4, d + 0.7),
+					0,
+					y0 + 0.05,
+					0,
+					s.sill,
+					M.Granite
+				)
 			end
 			if s.lintels then
-				box("Lintel", Vector3.new(w, 0.8, d + 0.2), 0, y1 + 0.3, 0, GRANITE, M.Granite)
+				box(
+					"Lintel",
+					Vector3.new(w - INSET / 2, 0.8, d + 0.2),
+					0,
+					y1 + 0.3,
+					0,
+					GRANITE,
+					M.Granite
+				)
 			end
 			-- a lit storey: one strip behind every opening of the floor (the piers hide the rest; perf: one part)
 			if rng:NextNumber() < 0.35 then
@@ -324,7 +350,7 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 						local x = -w / 2 + (k - 0.5) * bw
 						box(
 							"Blind",
-							Vector3.new(gw - 0.7, h, d - 0.55),
+							Vector3.new(gw - 0.76, h, d - 0.55), -- narrower than the glass: no shared side faces
 							x,
 							y1 - 0.4 - h / 2,
 							0,
@@ -339,7 +365,7 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 			for _, z in { -d / 4, d / 4 } do
 				box(
 					"SideGlass",
-					Vector3.new(w + 0.1, head - sill, math.min(3, d / 5)),
+					Vector3.new(w + 0.24, head - sill, math.min(3, d / 5)), -- between the quoins (+0.09) and corner bands (+0.15)
 					0,
 					(sill + head) / 2,
 					z,
@@ -606,7 +632,7 @@ local function groundWindow(
 		box(`{LIT}Ground`, Vector3.new(gw, 4.8), 4.6, 0.425, GLASS, M.SmoothPlastic).Transparency =
 			1
 	end
-	box("GroundRail", Vector3.new(gw, 0.2), 4.8, 0.5, SASH, M.SmoothPlastic)
+	box("GroundRail", Vector3.new(gw - 0.06, 0.2), 4.8, 0.5, SASH, M.SmoothPlastic)
 	box("GroundSill", Vector3.new(gw + 1.2, 0.4), 1.9, 0.8, sill, M.Granite)
 end
 
@@ -654,6 +680,7 @@ function TownBuildings.terrace(
 		wall = if granite then GRANITE elseif hung then HUNG else wall,
 		wallMat = if granite then M.Granite elseif hung then M.RoofShingles else M.Plaster,
 		base = if hung then wall else nil,
+		baseMat = if granite then M.Granite else nil, -- granite fronts: no flat Plaster ground storey
 		slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1],
 		bay = 6 + n % 3,
 		corner = lot.corner,
@@ -864,6 +891,7 @@ function TownBuildings.landmark(
 			drop = drop,
 			wall = GRANITE,
 			wallMat = M.Granite,
+			baseMat = M.Granite, -- a Plaster ground storey read as a flat grey block under the granite
 			trim = Color3.fromRGB(226, 222, 212),
 			slate = TownBuildings.SLATES[4],
 			bay = 8,

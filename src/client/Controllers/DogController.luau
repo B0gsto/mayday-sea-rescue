@@ -43,6 +43,7 @@ type DogState = {
 	motion: BosunMotion.State,
 	motors: { [string]: { Motor6D } },
 	dirty: boolean,
+	hidden: boolean, -- model attribute Hidden: his player is in a vehicle
 	lastVel: Vector3,
 	accel: Vector3,
 	pointAt: Vector3?,
@@ -140,10 +141,13 @@ end
 local function rebuild(state: DogState)
 	state.dirty = false
 	local motors: { [string]: { Motor6D } } = {}
+	local fade = if state.hidden then 1 else 0
 	for _, d in state.model:GetDescendants() do
 		if d:IsA("Motor6D") then
 			motors[d.Name] = motors[d.Name] or {}
 			table.insert(motors[d.Name], d)
+		elseif d:IsA("BasePart") then
+			d.LocalTransparencyModifier = fade
 		end
 	end
 	state.motors = motors
@@ -158,6 +162,7 @@ local function track(model: Instance)
 		motion = BosunMotion.new(),
 		motors = {},
 		dirty = true,
+		hidden = false,
 		lastVel = Vector3.zero,
 		accel = Vector3.zero,
 		pointAt = nil,
@@ -253,14 +258,19 @@ local function stepDog(state: DogState, dt: number, now: number)
 	if not body then
 		return
 	end
-	if state.dirty then
+	local hidden = model:GetAttribute("Hidden") == true
+	if state.dirty or hidden ~= state.hidden then
+		state.hidden = hidden
 		rebuild(state)
+	end
+	if hidden then
+		return
 	end
 	local cf = body.CFrame
 	local vel = body.AssemblyLinearVelocity
 	local attr = model:GetAttribute("Mode")
 	local mode: string = if type(attr) == "string" then attr else "Follow"
-	-- the deck's acceleration (Ride: he is welded to the boat), smoothed against physics jitter
+	-- his body's acceleration, smoothed against physics jitter
 	if dt > 0 then
 		local raw = cf:VectorToObjectSpace(vel - state.lastVel) / dt
 		state.accel = state.accel:Lerp(raw, math.min(1, dt * 6))

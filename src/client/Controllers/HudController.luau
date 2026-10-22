@@ -1,7 +1,8 @@
 --!strict
 -- HudController: the progression HUD (docs 05 section 9 style, mobile first).
---   Placement: UI/Layout regions. Top right ("status"): rank, Cash and a thin Rep bar to the next
---   rank, and the phone button beside it (UI/Phone: every menu, the crew's faces and Leave).
+--   Placement: UI/Layout regions. Bottom left ("wallet", above the minimap): Cash with a round
+--   "+" that opens the phone's Store app, and the rank with its Rep bar to the next rank. The
+--   phone button has its own region (UI/Phone: every menu, the crew's faces and Leave).
 --   Top centre ("notice"): "+Cash +Rep" award pops, the rank-up toast with the
 --   new unlocks and short notices for failed buys / launches.
 --   Cold open (Layout.coldOpen): wallet, rank and pops stay hidden until it ends.
@@ -30,9 +31,12 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
+local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudShop = require(UI:WaitForChild("HudShop"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
+local Phone = require(UI:WaitForChild("Phone"))
+local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
 
 local C = HudTheme.Colors
 local player = Players.LocalPlayer
@@ -45,12 +49,14 @@ local PANEL_DISPLAY_ORDER = 35 -- above Ops (15-22) and the radio wheel (30), be
 local cashLabel: TextLabel
 local rankLabel: TextLabel
 local repLabel: TextLabel
-local repFill: Frame
+local repFill: ImageLabel
+local coinPop: UIScale
 local awardLabel: TextLabel
 local toast: Frame
 local toastTitle: TextLabel
 local toastBody: TextLabel
 local statusRegion: Frame
+local walletRegion: Frame
 local noticeRegion: Frame
 local shop: HudShop.Shop
 local snapshot: { [string]: any }? = nil
@@ -62,7 +68,8 @@ local WALK_AWAY_MARGIN = 6 -- studs past the prompt's activation distance
 local toastSerial = 0
 local awardSerial = 0
 local cashShown: number? = nil
-local cashSerial = 0
+local repShown: number? = nil
+local rolls: { [TextLabel]: number } = {}
 
 local function showToast(title: string, body: string, color: Color3, seconds: number)
 	toastSerial += 1
@@ -105,41 +112,58 @@ local function showAward(award: { [string]: any })
 	end)
 end
 
--- The Cash counter rolls to its new value (docs/15: a payout is a moment, not a jump).
-local function rollCash(to: number)
-	local from = cashShown or to
-	cashShown = to
-	cashSerial += 1
-	local serial = cashSerial
-	if from == to then
-		cashLabel.Text = HudTheme.formatNumber(to)
+-- A counter rolls to its new value (docs/15: a payout is a moment, not a jump).
+local function roll(label: TextLabel, from: number, to: number, fmt: (number) -> string)
+	local serial = (rolls[label] or 0) + 1
+	rolls[label] = serial
+	if from == to or Comfort.reducedMotion() then
+		label.Text = fmt(to)
 		return
 	end
 	task.spawn(function()
 		local t = 0
-		while serial == cashSerial and t < 1 do
+		while rolls[label] == serial and t < 1 do
 			t = math.min(t + task.wait() / 0.45, 1)
-			local q = 1 - (1 - t) ^ 3
-			cashLabel.Text = HudTheme.formatNumber(from + (to - from) * q + 0.5)
-		end
-		if serial == cashSerial then
-			cashLabel.Text = HudTheme.formatNumber(to)
+			label.Text = fmt(from + (to - from) * (1 - (1 - t) ^ 3) + 0.5)
 		end
 	end)
 end
 
 local function render(data: { [string]: any })
 	snapshot = data
-	rollCash(tonumber(data.cash) or 0)
-	rankLabel.Text = data.rank or "Recruit"
-	local progress = math.clamp(data.rankProgress or 0, 0, 1)
-	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
-	if data.nextRankRep then
-		repLabel.Text =
-			`{HudTheme.formatNumber(data.rep or 0)} / {HudTheme.formatNumber(data.nextRankRep)} Rep`
-	else
-		repLabel.Text = `{HudTheme.formatNumber(data.rep or 0)} Rep  (top rank)`
+	local cash = tonumber(data.cash) or 0
+	if cashShown and cash > cashShown and not Comfort.reducedMotion() then
+		coinPop.Scale = 1.3
+		TweenService:Create(coinPop, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 1 })
+			:Play()
 	end
+	roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
+	cashShown = cash
+	rankLabel.Text = data.rank or "Recruit"
+	local rep = tonumber(data.rep) or 0
+	local goal = tonumber(data.nextRankRep) or tonumber(data.nextStarRep)
+	local progress = math.clamp(
+		tonumber(if data.nextRankRep then data.rankProgress else data.starProgress) or 0,
+		0,
+		1
+	)
+	-- Rep past the next rank's line but its certification not passed: a full bar and the exercise
+	-- still to do, not "1,209 / 400"
+	local certDue = goal ~= nil and data.nextRankRep ~= nil and rep >= goal
+	-- certification due: the full bar glows pale gold
+	repFill.ImageColor3 = if certDue then Color3.fromHex("FFF4C2") else Color3.new(1, 1, 1)
+	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
+	if certDue then
+		rolls[repLabel] = (rolls[repLabel] or 0) + 1
+		repLabel.Text = "Exercise due"
+	else
+		roll(repLabel, repShown or rep, rep, function(n: number): string
+			return if goal
+				then `{HudTheme.formatNumber(n)} / {HudTheme.formatNumber(goal)}`
+				else HudTheme.formatNumber(n)
+		end)
+	end
+	repShown = rep
 	shop.update(data)
 end
 
@@ -263,43 +287,123 @@ local function watchPanel()
 	end
 end
 
-local function buildStatus(parent: Instance)
-	-- one slim strip: rank left, Cash right, a hairline Rep bar along the bottom
-	local status = HudTheme.panel("Status", UDim2.new(1, 0, 0, 52), parent)
-	HudTheme.padding(status, 8)
+-- Bottom left (assets/ui/hud/mockup.png): [coin] amount (+) on top, [star] rank over the Rep bar.
+local function buildWallet(region: Frame)
+	local W, H = Layout.WALLET_WIDTH, Layout.WALLET_HEIGHT
+	local wallet = HudTheme.image(
+		"Wallet",
+		Hud.Panel,
+		UDim2.fromOffset(W, H),
+		region,
+		HudTheme.Slice.Panel,
+		0.45
+	)
+	-- touch: the region can be shorter than the card (it ends above the thumbstick zone)
+	local fit = Instance.new("UIScale")
+	fit.Parent = wallet
+	local function refit()
+		fit.Scale = math.min(1, region.Size.Y.Offset / H)
+	end
+	region:GetPropertyChangedSignal("Size"):Connect(refit)
+	refit()
 
-	rankLabel =
-		HudTheme.label("Rank", "Recruit", UDim2.new(0.6, 0, 0, 22), HudTheme.HeaderFont, 18, status)
-	rankLabel.TextColor3 = C.text
+	local row = Instance.new("Frame")
+	row.Name = "CashRow" -- FriendController adds its bonus chip here, after the amount
+	row.BackgroundTransparency = 1
+	row.Position = UDim2.fromOffset(10, 5)
+	row.Size = UDim2.new(1, -62, 0, 42)
+	row.Parent = wallet
+	local list = Instance.new("UIListLayout")
+	list.FillDirection = Enum.FillDirection.Horizontal
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Padding = UDim.new(0, 6)
+	list.Parent = row
 
-	cashLabel =
-		HudTheme.label("Cash", "0", UDim2.new(0.4, 0, 0, 22), HudTheme.HeaderFont, 18, status)
-	cashLabel.AnchorPoint = Vector2.new(1, 0)
-	cashLabel.Position = UDim2.fromScale(1, 0)
-	cashLabel.TextXAlignment = Enum.TextXAlignment.Right
-	cashLabel.TextColor3 = C.gold
+	local coin = HudTheme.image("Coin", Hud.Coin, UDim2.fromOffset(36, 36), row)
+	coin.LayoutOrder = 1
+	coinPop = Instance.new("UIScale")
+	coinPop.Parent = coin
 
-	local bar = Instance.new("Frame")
-	bar.Name = "RepBar"
-	bar.AnchorPoint = Vector2.new(0, 1)
-	bar.Position = UDim2.fromScale(0, 1)
-	bar.Size = UDim2.new(0.6, -8, 0, 3)
-	bar.BackgroundColor3 = C.locked
-	bar.BorderSizePixel = 0
-	bar.Parent = status
-	repFill = Instance.new("Frame")
-	repFill.Name = "Fill"
-	repFill.Size = UDim2.fromScale(0, 1)
-	repFill.BackgroundColor3 = C.bar
-	repFill.BorderSizePixel = 0
-	repFill.Parent = bar
+	cashLabel = HudTheme.label("Cash", "0", UDim2.fromOffset(0, 42), HudTheme.NumberFont, 28, row)
+	cashLabel.LayoutOrder = 2
+	cashLabel.AutomaticSize = Enum.AutomaticSize.X
+	cashLabel.TextTruncate = Enum.TextTruncate.None
+	HudTheme.outline(cashLabel)
+
+	-- (+): the Store app on the phone; a 48 du hit area around the 42 du button sprite
+	local plus = Instance.new("TextButton")
+	plus.Name = "StoreButton"
+	plus.Text = ""
+	plus.AutoButtonColor = false
+	plus.Selectable = true
+	plus.BackgroundTransparency = 1
+	plus.AnchorPoint = Vector2.new(1, 0)
+	plus.Position = UDim2.new(1, -4, 0, 2)
+	plus.Size = UDim2.fromOffset(48, 48)
+	plus.Parent = wallet
+	local disc = HudTheme.image("Disc", Hud.PlusButton, UDim2.fromOffset(42, 42), plus)
+	disc.AnchorPoint = Vector2.new(0.5, 0.5)
+	disc.Position = UDim2.fromScale(0.5, 0.5)
+	local pop = Instance.new("UIScale")
+	pop.Parent = disc
+	local function to(scale: number)
+		TweenService:Create(pop, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Scale = scale })
+			:Play()
+	end
+	plus.MouseEnter:Connect(function()
+		to(1.12)
+	end)
+	plus.MouseLeave:Connect(function()
+		to(1)
+	end)
+	plus.SelectionGained:Connect(function()
+		to(1.12)
+	end)
+	plus.SelectionLost:Connect(function()
+		to(1)
+	end)
+	plus.MouseButton1Down:Connect(function()
+		to(0.88)
+	end)
+	plus.Activated:Connect(function()
+		to(1)
+		Phone.openApp("Store")
+	end)
+
+	local star = HudTheme.image("Star", Hud.XpStar, UDim2.fromOffset(36, 36), wallet)
+	star.Position = UDim2.fromOffset(10, 52)
+	rankLabel = HudTheme.label(
+		"Rank",
+		"Recruit",
+		UDim2.new(0.6, -52, 0, 18),
+		HudTheme.LabelFont,
+		15,
+		wallet
+	)
+	rankLabel.Position = UDim2.fromOffset(52, 51)
+	HudTheme.outline(rankLabel)
 	repLabel =
-		HudTheme.label("RepText", "0 Rep", UDim2.new(0.4, 0, 0, 14), HudTheme.BodyFont, 13, status)
-	repLabel.AnchorPoint = Vector2.new(1, 1)
-	repLabel.Position = UDim2.new(1, 0, 1, 4)
+		HudTheme.label("Rep", "", UDim2.new(0.4, -12, 0, 18), HudTheme.NumberFont, 13, wallet)
+	repLabel.AnchorPoint = Vector2.new(1, 0)
+	repLabel.Position = UDim2.new(1, -12, 0, 51)
 	repLabel.TextXAlignment = Enum.TextXAlignment.Right
 	repLabel.TextColor3 = C.textDim
 
+	local track = HudTheme.image(
+		"RepBar",
+		Hud.BarTrack,
+		UDim2.new(1, -64, 0, 14),
+		wallet,
+		HudTheme.Slice.Bar,
+		0.22
+	)
+	track.Position = UDim2.fromOffset(52, 72)
+	repFill =
+		HudTheme.image("Fill", Hud.BarFill, UDim2.fromScale(0, 1), track, HudTheme.Slice.Bar, 0.22)
+end
+
+local function buildAward()
 	awardLabel =
 		HudTheme.label("Award", "", UDim2.new(1, 0, 0, 24), HudTheme.HeaderFont, 17, noticeRegion)
 	awardLabel.AnchorPoint = Vector2.new(0.5, 0)
@@ -327,6 +431,7 @@ end
 
 local function applyColdOpen(active: boolean)
 	statusRegion.Visible = not active
+	walletRegion.Visible = not active
 	noticeRegion.Visible = not active
 end
 
@@ -355,10 +460,12 @@ function HudController.Init()
 
 	statusRegion = Layout.region(gui, "status")
 	noticeRegion = Layout.region(gui, "notice")
-	buildStatus(statusRegion)
+	walletRegion = Layout.region(gui, "wallet")
+	buildWallet(walletRegion)
+	buildAward()
 	buildToast(noticeRegion)
 	require(UI:WaitForChild("SettingsPanel")).mount() -- the panel (the phone's Settings app shows it)
-	require(UI:WaitForChild("Phone")).mount(statusRegion) -- phone button, P / gamepad L1
+	Phone.mount(statusRegion) -- phone button, P / gamepad L1
 	shop = HudShop.build(gui, buy)
 	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder
 	-- 15-22) so a Buy/Collect click never lands on "Accept - Launch" behind it; below Cinematic (50)

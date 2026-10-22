@@ -136,8 +136,6 @@ return function(t)
 				HarborFund = true,
 				CashBoost = true,
 				CrewBoost = true,
-				CallTheStorm = true,
-				CallTheGreatStorm = true,
 				DayDoubleCash = true, -- OwnsPass accepts a running day pass
 				DayQuickLaunch = true,
 			},

@@ -5,7 +5,7 @@
 -- tall as the screen slides up with a spring, the screen wakes and the icons pop in; closing plays
 -- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
 -- backdrop frees the cursor. The home screen is stock iOS: a soft gradient wallpaper, a 4-column
--- grid of squircle icons (gradient fill, one flat white glyph, small white label) and a frosted
+-- grid of squircle icons (UiImages.Phone art, small white label) and a frosted
 -- dock of 4. Every app lays out on the upright phone.
 -- Apps:
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
@@ -36,7 +36,6 @@ local Client = script.Parent.Parent
 local Controllers = Client:WaitForChild("Controllers")
 local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local EventBoard = require(script.Parent:WaitForChild("EventBoard"))
-local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
@@ -48,18 +47,15 @@ local W = Color3.new(1, 1, 1)
 local V = Vector2.new
 local player = Players.LocalPlayer
 
--- The HUD phone button's art: put an uploaded PNG here ("rbxassetid://..."); "" draws it in code.
-local PHONE_BUTTON_IMAGE = ""
+-- the HUD button and app icons: assets/ui/phone_v2, full squircle tiles keyed by app name
+local PHONE_IMAGES = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+).Phone
 
 -- Sibling app modules, required only if present: `mount(page, close) -> cleanup?`. Register another app by adding a row (grid order = list order).
 local OPTIONAL = {
-	{
-		module = "VehiclesApp",
-		name = "Vehicles",
-		label = "Vehicles",
-		colors = { "52E3C2", "0E9B86" },
-	},
-	{ module = "StoreApp", name = "Store", label = "Store", colors = { "FFA94D", "FF5B3A" } },
+	{ module = "VehiclesApp", name = "Vehicles", label = "Vehicles" },
+	{ module = "StoreApp", name = "Store", label = "Store" },
 }
 local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's 4, in order
 local CANVAS = 300 -- du: the upright screen's width; home and apps lay out on it
@@ -79,8 +75,6 @@ type Mount = (page: Frame, close: () -> ()) -> any
 type App = {
 	name: string,
 	label: string,
-	colors: { Color3 }, -- the squircle's gradient, top to bottom
-	glyph: (Frame, Color3) -> (), -- draws the white glyph on a square frame; arg 2: cut-out colour
 	run: (() -> ())?,
 	mount: Mount?,
 }
@@ -177,118 +171,6 @@ local function gradient(parent: Instance, a: Color3, b: Color3, rotation: number
 	g.Parent = parent
 	return g
 end
-
-local function squircle(parent: Instance)
-	local round = Instance.new("UICorner")
-	round.CornerRadius = UDim.new(0.225, 0)
-	round.Parent = parent
-end
-
--- one big character (★, $), centred and scaled to the frame
-local function char(parent: Instance, text: string, color: Color3, size: number)
-	local l = Instance.new("TextLabel")
-	l.AnchorPoint = Vector2.new(0.5, 0.5)
-	l.Position = UDim2.fromScale(0.5, 0.5)
-	l.Size = UDim2.fromScale(size, size)
-	l.BackgroundTransparency = 1
-	l.Font = Enum.Font.BuilderSansBold
-	l.Text = text
-	l.TextScaled = true
-	l.TextColor3 = color
-	l.Parent = parent
-end
-
--- Flat white glyphs, stock-iOS style, from Glyph.bar pills (scale units of a square frame).
--- `cut` is the squircle's mid colour, for holes.
-local bar = Glyph.bar
-local GLYPHS: { [string]: (Frame, Color3) -> () } = {
-	Map = function(p, cut) -- a location pin
-		bar(p, V(0.34, 0.34), V(0.5, 0.58), 45, W, 0.18)
-		bar(p, V(0.52, 0.52), V(0.5, 0.4), 0, W)
-		bar(p, V(0.2, 0.2), V(0.5, 0.4), 0, cut)
-	end,
-	Radio = function(p, cut) -- a handheld radio
-		bar(p, V(0.06, 0.36), V(0.68, 0.3), 25, W)
-		bar(p, V(0.74, 0.46), V(0.5, 0.62), 0, W, 0.3)
-		bar(p, V(0.24, 0.24), V(0.34, 0.62), 0, cut)
-		bar(p, V(0.18, 0.06), V(0.66, 0.55), 0, cut)
-		bar(p, V(0.18, 0.06), V(0.66, 0.68), 0, cut)
-	end,
-	Events = function(p, cut) -- a calendar
-		bar(p, V(0.72, 0.62), V(0.5, 0.56), 0, W, 0.22)
-		bar(p, V(0.72, 0.1), V(0.5, 0.36), 0, cut, 0)
-		for _, x in { 0.34, 0.66 } do
-			bar(p, V(0.08, 0.2), V(x, 0.26), 0, W)
-		end
-		for r = 0, 1 do
-			for c = 0, 2 do
-				bar(p, V(0.12, 0.1), V(0.32 + c * 0.18, 0.54 + r * 0.17), 0, cut, 0.3)
-			end
-		end
-	end,
-	Vehicles = function(p, _)
-		Glyph.draw("boat", p, W)
-	end,
-	Camera = function(p, cut)
-		bar(p, V(0.28, 0.16), V(0.4, 0.32), 0, W, 0.3)
-		bar(p, V(0.78, 0.5), V(0.5, 0.58), 0, W, 0.25)
-		bar(p, V(0.32, 0.32), V(0.5, 0.58), 0, cut)
-		bar(p, V(0.18, 0.18), V(0.5, 0.58), 0, W)
-	end,
-	CrewPay = function(p, cut) -- a coin
-		local coin = bar(p, V(0.7, 0.7), V(0.5, 0.5), 0, W)
-		char(coin, "$", cut, 0.8)
-	end,
-	PayRise = function(p, _) -- rising bars
-		bar(p, V(0.16, 0.3), V(0.3, 0.66), 0, W, 0.3)
-		bar(p, V(0.16, 0.46), V(0.5, 0.58), 0, W, 0.3)
-		bar(p, V(0.16, 0.62), V(0.7, 0.5), 0, W, 0.3)
-	end,
-	Season = function(p, _)
-		char(p, "★", W, 0.95)
-	end,
-	Logbook = function(p, cut) -- a book with lines
-		bar(p, V(0.58, 0.7), V(0.52, 0.5), 0, W, 0.14)
-		bar(p, V(0.06, 0.7), V(0.33, 0.5), 0, cut, 0)
-		for i, y in { 0.34, 0.46, 0.58 } do
-			bar(
-				p,
-				V(if i == 3 then 0.22 else 0.3, 0.06),
-				V(if i == 3 then 0.53 else 0.57, y),
-				0,
-				cut
-			)
-		end
-	end,
-	Crew = function(p, _) -- two people
-		local rear = {
-			bar(p, V(0.2, 0.2), V(0.66, 0.3), 0, W),
-			bar(p, V(0.36, 0.26), V(0.68, 0.62), 0, W, 0.5),
-		}
-		for _, f in rear do
-			f.BackgroundTransparency = 0.4
-		end
-		bar(p, V(0.24, 0.24), V(0.42, 0.36), 0, W)
-		bar(p, V(0.46, 0.3), V(0.42, 0.72), 0, W, 0.5)
-	end,
-	Settings = function(p, cut) -- a gear
-		for _, r in { 0, 45, 90, 135 } do
-			bar(p, V(0.16, 0.8), V(0.5, 0.5), r, W, 0.3)
-		end
-		bar(p, V(0.6, 0.6), V(0.5, 0.5), 0, W)
-		bar(p, V(0.26, 0.26), V(0.5, 0.5), 0, cut)
-	end,
-	Store = function(p, cut) -- a shopping bag
-		local handle = bar(p, V(0.32, 0.36), V(0.5, 0.36), 0, W)
-		handle.BackgroundTransparency = 1
-		local s = Instance.new("UIStroke")
-		s.Color = W
-		s.Thickness = 3.5
-		s.Parent = handle
-		bar(p, V(0.66, 0.5), V(0.5, 0.64), 0, W, 0.18)
-		bar(p, V(0.24, 0.05), V(0.5, 0.56), 0, cut)
-	end,
-}
 
 local function focus(obj: GuiObject?)
 	-- a keyboard user who has started navigating (an arrow or Return, see shortcut) keeps a selection
@@ -640,17 +522,11 @@ local function explorationController(): any
 	return require(Controllers:WaitForChild("ExplorationController"))
 end
 
-local function hex(a: string, b: string): { Color3 }
-	return { Color3.fromHex(a), Color3.fromHex(b) }
-end
-
 local function appList(): { App }
 	local list: { App } = {
 		{
 			name = "Map",
 			label = "Map",
-			colors = hex("6FD3FF", "1A7CF0"),
-			glyph = GLYPHS.Map,
 			run = function()
 				mapController().Open()
 			end,
@@ -658,8 +534,6 @@ local function appList(): { App }
 		{
 			name = "Radio",
 			label = "Radio",
-			colors = hex("FF7A6B", "E2283A"),
-			glyph = GLYPHS.Radio,
 			run = function()
 				radioController().repeatLast()
 			end,
@@ -667,8 +541,6 @@ local function appList(): { App }
 		{
 			name = "Camera",
 			label = "Camera",
-			colors = hex("8E9399", "3C3F44"),
-			glyph = GLYPHS.Camera,
 			run = function()
 				require(script.Parent:WaitForChild("PhotoMode")).setOpen(true)
 			end,
@@ -676,22 +548,16 @@ local function appList(): { App }
 		{
 			name = "Events",
 			label = "Events",
-			colors = hex("B88CFF", "6A3BE0"),
-			glyph = GLYPHS.Events,
 			mount = eventsApp,
 		},
 		{
 			name = "Season",
 			label = "Season",
-			colors = hex("FF8DB8", "E5306A"),
-			glyph = GLYPHS.Season,
 			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
 		},
 		{
 			name = "CrewPay",
 			label = "Crew Pay",
-			colors = hex("FFD95A", "EE9F00"),
-			glyph = GLYPHS.CrewPay,
 			mount = function(page: Frame)
 				return stationController().mountPay(page)
 			end,
@@ -699,8 +565,6 @@ local function appList(): { App }
 		{
 			name = "PayRise",
 			label = "Pay Rise",
-			colors = hex("74E68A", "22AE4C"),
-			glyph = GLYPHS.PayRise,
 			mount = function(page: Frame)
 				return stationController().mountRise(page)
 			end,
@@ -708,22 +572,16 @@ local function appList(): { App }
 		{
 			name = "Logbook",
 			label = "Logbook",
-			colors = hex("6F97FF", "2D47D2"),
-			glyph = GLYPHS.Logbook,
 			mount = panelApp("LogbookHud", "Holder", "Logbook", explorationController),
 		},
 		{
 			name = "Crew",
 			label = "Crew",
-			colors = hex("62E6DA", "1696C2"),
-			glyph = GLYPHS.Crew,
 			mount = crewApp,
 		},
 		{
 			name = "Settings",
 			label = "Settings",
-			colors = hex("B4BAC1", "666D75"),
-			glyph = GLYPHS.Settings,
 			mount = panelApp("Settings", "Panel"),
 		},
 	}
@@ -733,8 +591,6 @@ local function appList(): { App }
 			table.insert(list, 3 + i, {
 				name = spec.name,
 				label = spec.label,
-				colors = hex(spec.colors[1], spec.colors[2]),
-				glyph = GLYPHS[spec.name] or GLYPHS.Store,
 				mount = mod.mount,
 			})
 		end
@@ -923,42 +779,17 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	b.AutoButtonColor = false
 	b.Parent = parent
 
-	-- the squircle and its soft shadow scale together
-	local icon = Instance.new("Frame")
+	-- the squircle art scales on hover / press
+	local icon = Instance.new("ImageLabel")
 	icon.Name = "Icon"
 	icon.AnchorPoint = Vector2.new(0.5, 0)
 	icon.Position = UDim2.new(0.5, 0, 0, if withLabel then 4 else (CELL_H - ICON) / 2)
 	icon.Size = UDim2.fromOffset(ICON, ICON)
 	icon.BackgroundTransparency = 1
+	icon.Image = PHONE_IMAGES[app.name] or ""
 	icon.Parent = b
 	local scale = Instance.new("UIScale")
 	scale.Parent = icon
-	local shadow = Instance.new("Frame")
-	shadow.Name = "Shadow"
-	shadow.Position = UDim2.fromOffset(0, 3)
-	shadow.Size = UDim2.fromScale(1, 1)
-	shadow.BackgroundColor3 = Color3.new(0, 0, 0)
-	shadow.BackgroundTransparency = 0.82
-	shadow.BorderSizePixel = 0
-	squircle(shadow)
-	shadow.Parent = icon
-	local tile = Instance.new("Frame")
-	tile.Name = "Tile"
-	tile.Size = UDim2.fromScale(1, 1)
-	tile.BackgroundColor3 = W
-	tile.BorderSizePixel = 0
-	squircle(tile)
-	gradient(tile, app.colors[1], app.colors[2], 90)
-	tile.Parent = icon
-	-- the glyph sits on its own frame: the tile's gradient would tint a white child
-	local mark = Instance.new("Frame")
-	mark.Name = "Glyph"
-	mark.AnchorPoint = Vector2.new(0.5, 0.5)
-	mark.Position = UDim2.fromScale(0.5, 0.5)
-	mark.Size = UDim2.fromScale(0.62, 0.62)
-	mark.BackgroundTransparency = 1
-	mark.Parent = icon
-	app.glyph(mark, app.colors[1]:Lerp(app.colors[2], 0.5))
 
 	local label: TextLabel? = nil
 	if withLabel then
@@ -1081,6 +912,7 @@ local function buildStatusBar(parent: Frame)
 	nub.Parent = battery
 end
 
+-- wallpaper: assets/ui/phone_v2/wallpaper.png pending
 -- the wallpaper: a stock-iOS soft gradient with blurred colour blooms (no image asset). A
 -- CanvasGroup so the blooms clip to the screen's rounded corners.
 local function buildWallpaper(parent: Frame)
@@ -1139,39 +971,14 @@ local function buildButton(region: Frame)
 	local pop = Instance.new("UIScale")
 	pop.Parent = button
 	HudTheme.corner(button, 22)
-	if PHONE_BUTTON_IMAGE ~= "" then
-		button.BackgroundTransparency = 1
-		local art = Instance.new("ImageLabel")
-		art.Name = "Art"
-		art.Size = UDim2.fromScale(1, 1)
-		art.BackgroundTransparency = 1
-		art.Image = PHONE_BUTTON_IMAGE
-		art.ScaleType = Enum.ScaleType.Fit
-		art.Parent = button
-	else
-		-- a bright squircle with a little white phone on it, its screen dotted with app colours
-		gradient(button, Color3.fromHex("7CF29A"), Color3.fromHex("14B35A"), 90)
-		local rim = HudTheme.stroke(button, W, 3)
-		rim.Transparency = 0.1
-		local shadow = Instance.new("Frame")
-		shadow.Name = "Shadow"
-		shadow.Position = UDim2.fromOffset(0, 5)
-		shadow.Size = UDim2.fromScale(1, 1)
-		shadow.ZIndex = 0
-		shadow.BackgroundColor3 = Color3.fromHex("0A3D22")
-		shadow.BackgroundTransparency = 0.55
-		shadow.BorderSizePixel = 0
-		HudTheme.corner(shadow, 22)
-		shadow.Parent = region
-		local slab = bar(button, V(0.42, 0.68), V(0.5, 0.5), -8, W, 0.24)
-		local glass = bar(slab, V(0.78, 0.86), V(0.5, 0.5), 0, Color3.fromHex("23304A"), 0.2)
-		bar(glass, V(0.4, 0.07), V(0.5, 0.1), 0, Color3.new(0, 0, 0))
-		for i, hexColour in { "FF9F43", "3FC8FF", "FF5FA8", "FFD95A" } do
-			local x = if i % 2 == 1 then 0.3 else 0.7
-			local y = if i <= 2 then 0.36 else 0.62
-			bar(glass, V(0.3, 0.17), V(x, y), 0, Color3.fromHex(hexColour), 0.3)
-		end
-	end
+	button.BackgroundTransparency = 1
+	local art = Instance.new("ImageLabel")
+	art.Name = "Art"
+	art.Size = UDim2.fromScale(1, 1)
+	art.BackgroundTransparency = 1
+	art.Image = PHONE_IMAGES.Button
+	art.ScaleType = Enum.ScaleType.Fit
+	art.Parent = button
 	badge = box(button, Color3.fromHex("FF3B30"), 0.92, 0.08, 0, 0, 99)
 	badge.Size = UDim2.fromOffset(22, 22)
 	badge.ZIndex = 3

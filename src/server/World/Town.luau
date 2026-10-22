@@ -1,6 +1,7 @@
 --!strict
 -- Town: the cities of WorldConfig.Towns (tools/world/layout.py TOWNS), built at server start by WorldDressingService:
---   Town.paint()      synchronous, before Street.start: terrain under each town's grid roads -> Asphalt, a
+--   Town.paint()      synchronous, before Street.start: terrain tints (TINT, naturalGround island-wide in the
+--                     background), terrain under each town's grid roads -> Asphalt, a
 --                     `footway` band each side -> Concrete (pavement + parking strip), block interiors -> plain Grass
 --                     (the bake's straw / heath / olive turf dither read as snow patches in town)
 --   Town.place(base)  Workspace.Dressing.Town.<id>: one Atomic M_Bld_Cottage_0n per TownLayout lot (render colour
@@ -59,7 +60,75 @@ local function townRoads(id: string): { any }
 	return out
 end
 
+-- Terrain draws the built-in materials (MaterialService has no terrain slot overrides: the live client failed to load
+-- those variants and drew flat MaterialColors, white town ground). These tints make them read: dark asphalt, light grey
+-- pavement, real grass. The bake's off-label slots (Snow = straw turf, WoodPlanks = olive turf, Brick = worn turf,
+-- Glacier / Ice = dune / wrack sand, Sandstone = wet sand) would show planks, bricks and ice, so naturalGround()
+-- repaints them island-wide.
+local TINT: { [string]: { number } } = {
+	Asphalt = { 62, 64, 68 },
+	Concrete = { 176, 174, 168 },
+	Pavement = { 150, 146, 136 },
+	Cobblestone = { 128, 122, 112 },
+	Grass = { 98, 128, 62 },
+	LeafyGrass = { 122, 128, 74 },
+	Ground = { 110, 96, 70 },
+	Mud = { 74, 60, 46 },
+	Sand = { 196, 178, 138 },
+	Sandstone = { 170, 150, 112 },
+	Salt = { 176, 160, 124 },
+	Limestone = { 165, 158, 140 },
+	Rock = { 112, 114, 116 },
+	Slate = { 88, 92, 92 },
+	Basalt = { 68, 68, 72 },
+	CrackedLava = { 100, 96, 90 },
+	-- until naturalGround() reaches them: their replacement's tint
+	Snow = { 122, 128, 74 },
+	WoodPlanks = { 98, 128, 62 },
+	Brick = { 110, 96, 70 },
+	Glacier = { 196, 178, 138 },
+	Ice = { 196, 178, 138 },
+}
+local NATURAL: { [Enum.Material]: Enum.Material } = {
+	[Enum.Material.Snow] = Enum.Material.LeafyGrass,
+	[Enum.Material.WoodPlanks] = Enum.Material.Grass,
+	[Enum.Material.Brick] = Enum.Material.Ground,
+	[Enum.Material.Glacier] = Enum.Material.Sand,
+	[Enum.Material.Ice] = Enum.Material.Sand,
+	[Enum.Material.Sandstone] = Enum.Material.Sand,
+}
+
+local function naturalGround()
+	local half, tile = WorldConfig.Terrain.halfExtent, 256
+	local tiles = {}
+	for x = -half, half - 1, tile do
+		for z = -half, half - 1, tile do
+			table.insert(tiles, Vector2.new(x, z))
+		end
+	end
+	-- nearest the town first
+	table.sort(tiles, function(a, b)
+		return a.Magnitude < b.Magnitude
+	end)
+	for _, t in tiles do
+		-- beaches and land only (Y -40..232); about 280k voxels a call
+		local region =
+			Region3.new(Vector3.new(t.X, -40, t.Y), Vector3.new(t.X + tile, 232, t.Y + tile))
+		for from, to in NATURAL do
+			Workspace.Terrain:ReplaceMaterial(region, 4, from, to)
+		end
+		task.wait()
+	end
+end
+
 function Town.paint()
+	for name, c in TINT do
+		Workspace.Terrain:SetMaterialColor(
+			(Enum.Material :: any)[name],
+			Color3.fromRGB(c[1], c[2], c[3])
+		)
+	end
+	task.spawn(naturalGround)
 	-- the bake's verge gravel smears onto the station forecourt (x -212..12): pave it
 	Workspace.Terrain:ReplaceMaterial(
 		Region3.new(Vector3.new(-212, -4, -100), Vector3.new(12, 8, -20)):ExpandToGrid(4),

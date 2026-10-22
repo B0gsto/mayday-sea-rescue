@@ -1,7 +1,7 @@
 --!strict
 -- CrewRoleController (G30): the small role icon over each crew member's head, beside the name tag.
--- Icons only (no text, no menu): Navigator = heading arrow, Medic = cross. Helm and Crew (riding,
--- swimming) show no icon (playtest: noise over every rider). The server writes Player attribute
+-- Icons only (no text, no menu): Navigator = heading arrow. Helm, Crew and Medic show no icon
+-- (playtest: noise over every rider; the green cross badge read as a stray HUD box). The server writes Player attribute
 -- CrewRole from what the crew member is doing (CrewService); this draws it for the local player's
 -- crew, including the local player (visible in the chase camera).
 --
@@ -23,7 +23,6 @@ local ICON = "CrewRoleIcon"
 local DISTANCE = 140
 local COLOURS: { [string]: Color3 } = {
 	Navigator = HudTheme.Colors.bar,
-	Medic = HudTheme.Colors.ready,
 }
 
 local player = Players.LocalPlayer
@@ -38,14 +37,9 @@ local function heading(parent: GuiObject, colour: Color3)
 	bar(parent, Vector2.new(0.09, 0.22), Vector2.new(0.5, 0.73), 0, colour)
 end
 
-local function medic(parent: GuiObject, colour: Color3)
-	Glyph.draw("cross", parent, colour)
-end
-
--- Helm (riding) and Crew (swimming) draw nothing: the boat and the water already say it.
+-- Helm (riding), Crew (swimming) and Medic draw nothing: the boat and the water already say it.
 local GLYPHS: { [string]: (GuiObject, Color3) -> () } = {
 	Navigator = heading,
-	Medic = medic,
 }
 
 local function build(head: BasePart, role: string): BillboardGui

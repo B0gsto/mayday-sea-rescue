@@ -4,7 +4,7 @@
 -- Dimensions, masses, engines and gearing are real-world (metres, kg, N m, rpm) for generic
 -- vehicles of each class (no brands); Car/Chassis converts them to game units (1 m = 3 studs,
 -- 37 kg per RMU, gravity 29.43 studs/s^2). Speeds are studs/s. Handling numbers -- tune.
--- Traffic drives on the left, so road vehicles are right-hand drive (driver on the right, +X).
+-- Player road vehicles are left-hand drive (driver on the left, -X; user request 2026-10-22).
 local Drivetrain = require(script.Parent.Parent.Car.Drivetrain)
 
 local KMH = 3 / 3.6 -- studs/s per km/h
@@ -118,7 +118,7 @@ LandVehicleConfig.LifeguardPickup = {
 	travel = 0.24,
 	frequencyFront = 1.35,
 	frequencyRear = 1.7, -- leaf springs, stiffer for payload
-	dampingRatio = 0.38,
+	dampingRatio = 0.55, -- firmer than real (0.38): no float or bounce in the game
 	antiRollFront = 0.35,
 	antiRollRear = 0.08,
 	tyreMu = 1.0, -- all-terrain tyres
@@ -202,7 +202,7 @@ LandVehicleConfig.CoastguardResponse = {
 	travel = 0.28, -- long-travel coils
 	frequencyFront = 1.3,
 	frequencyRear = 1.45,
-	dampingRatio = 0.4,
+	dampingRatio = 0.55,
 	antiRollFront = 0.3,
 	antiRollRear = 0.15,
 	tyreMu = 0.98,
@@ -284,7 +284,7 @@ LandVehicleConfig.BeachATV = {
 	travel = 0.19,
 	frequencyFront = 1.8,
 	frequencyRear = 2.0,
-	dampingRatio = 0.42,
+	dampingRatio = 0.5,
 	antiRollFront = 0.15,
 	antiRollRear = 0.0,
 	tyreMu = 0.95, -- knobbly tyres: a little less on tarmac, digs in on sand
@@ -492,7 +492,7 @@ LandVehicleConfig.HarbourGT = variant("CoastguardResponse", {
 	travel = 0.12,
 	frequencyFront = 2.0,
 	frequencyRear = 2.2,
-	dampingRatio = 0.45,
+	dampingRatio = 0.55,
 	antiRollFront = 0.5,
 	antiRollRear = 0.3,
 	tyreMu = 1.2, -- sticky sports tyres
@@ -561,7 +561,7 @@ LandVehicleConfig.LighthouseCruiser = variant("CoastguardResponse", {
 	mass = 2500,
 	frequencyFront = 1.2,
 	frequencyRear = 1.3,
-	dampingRatio = 0.35, -- floats over bumps
+	dampingRatio = 0.5, -- the softest ride, still settles at once
 	antiRollFront = 0.4,
 	antiRollRear = 0.25,
 	tyreMu = 1.05,

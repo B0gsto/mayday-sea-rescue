@@ -1,13 +1,19 @@
 --!strict
--- OpsTaskingCard: the tasking offer as a DSC pager (top right), one compact row: the call-type
--- icon (Glyph, no emoji), a one to three word label over the distance, and a pulsing accept key
--- (check + device key chip; the check alone on touch). No readout lines (docs/14 section 2:
+-- OpsTaskingCard: the tasking offer as a DSC pager (top right), a vertical card: the call-type
+-- icon (the PIW sprite, else a Glyph disc), a one to three word label over the distance, and a
+-- pulsing accept button (check sprite + device key chip; the check alone on touch). No readout lines (docs/14 section 2:
 -- show, don't tell). Readable and tappable on a phone (>= 52 px key).
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local Glyph = require(script.Parent.Glyph)
+local Hud = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Config")
+		:WaitForChild("UiImages")
+).Hud
 local HudTheme = require(script.Parent.HudTheme)
 local InputGlyph = require(script.Parent.InputGlyph)
 
@@ -53,77 +59,83 @@ end
 local OpsTaskingCard = {}
 
 function OpsTaskingCard.new(gui: GuiBase2d): Card
-	-- one 64 px row: [kind icon] [label / range] [accept]; the column's UIScale fits the screen
-	local body = Instance.new("Frame")
-	body.Name = "TaskingPager"
+	-- a vertical card (assets/ui/hud/mockup.png): alert strip, call icon, label, range, accept
+	local body = HudTheme.image(
+		"TaskingPager",
+		Hud.Panel,
+		UDim2.fromOffset(180, 216),
+		gui,
+		HudTheme.Slice.Panel,
+		0.45
+	)
 	body.LayoutOrder = 1 -- top of the Layout "right" column
-	body.Size = UDim2.new(1, 0, 0, 64)
-	body.BackgroundColor3 = HudTheme.Colors.panel
-	body.BackgroundTransparency = 0.12
-	body.BorderSizePixel = 0
 	body.Visible = false
-	body.Parent = gui
-	HudTheme.corner(body, 12)
-	local stroke = HudTheme.stroke(body, RED, 1.5)
+	local strip = Instance.new("Frame")
+	strip.Name = "Alert"
+	strip.AnchorPoint = Vector2.new(0.5, 0)
+	strip.Position = UDim2.fromScale(0.5, 0)
+	strip.Size = UDim2.new(0.62, 0, 0, 7)
+	strip.BackgroundColor3 = RED
+	strip.BorderSizePixel = 0
+	strip.Parent = body
+	HudTheme.corner(strip, 4)
 
+	-- the call icon: the PIW sprite, or a Glyph disc for kinds without one
+	local ICON = 68
+	local sprite = HudTheme.image("Sprite", Hud.MissionPiw, UDim2.fromOffset(ICON, ICON), body)
+	sprite.AnchorPoint = Vector2.new(0.5, 0)
+	sprite.Position = UDim2.new(0.5, 0, 0, 14)
 	local badge = Instance.new("Frame")
 	badge.Name = "Kind"
-	badge.AnchorPoint = Vector2.new(0, 0.5)
-	badge.Position = UDim2.new(0, 8, 0.5, 0)
-	badge.Size = UDim2.fromOffset(48, 48)
+	badge.AnchorPoint = Vector2.new(0.5, 0)
+	badge.Position = UDim2.new(0.5, 0, 0, 16)
+	badge.Size = UDim2.fromOffset(ICON - 4, ICON - 4)
 	badge.BackgroundColor3 = RED
 	badge.BorderSizePixel = 0
 	badge.Parent = body
-	HudTheme.corner(badge, 10)
+	HudTheme.corner(badge, 32)
+	HudTheme.stroke(badge, Color3.new(1, 1, 1), 3)
 	local icon = Instance.new("Frame")
 	icon.Name = "Icon"
 	icon.AnchorPoint = Vector2.new(0.5, 0.5)
 	icon.Position = UDim2.fromScale(0.5, 0.5)
-	icon.Size = UDim2.fromScale(0.78, 0.78)
+	icon.Size = UDim2.fromScale(0.66, 0.66)
 	icon.BackgroundTransparency = 1
 	icon.Parent = badge
 
-	local KEY_W = 92 -- accept key width (>= 48 px touch target, room for "Enter")
-	local textW = UDim2.new(1, -(64 + KEY_W + 16), 0, 22)
-	local name = HudTheme.label("Name", "", textW, Enum.Font.BuilderSansBold, 16, body)
-	name.Position = UDim2.fromOffset(64, 10)
-	name.TextScaled = true -- three words fit the narrowest column
+	local name = HudTheme.label("Name", "", UDim2.new(1, -20, 0, 36), HudTheme.LabelFont, 15, body)
+	name.AnchorPoint = Vector2.new(0.5, 0)
+	name.Position = UDim2.new(0.5, 0, 0, 86)
+	name.TextXAlignment = Enum.TextXAlignment.Center
+	name.TextWrapped = true
+	name.TextScaled = true -- three words fit two lines
+	HudTheme.outline(name)
 	local fit = Instance.new("UITextSizeConstraint")
 	fit.MaxTextSize = 16
 	fit.MinTextSize = 11
 	fit.Parent = name
-	local range = HudTheme.label("Range", "", textW, Enum.Font.BuilderSansBold, 20, body)
-	range.Position = UDim2.fromOffset(64, 32)
-	range.TextColor3 = HudTheme.Colors.textDim
+	local range =
+		HudTheme.label("Range", "", UDim2.new(1, -20, 0, 24), HudTheme.NumberFont, 22, body)
+	range.AnchorPoint = Vector2.new(0.5, 0)
+	range.Position = UDim2.new(0.5, 0, 0, 122)
+	range.TextXAlignment = Enum.TextXAlignment.Center
+	HudTheme.outline(range)
 
-	local key = Instance.new("TextButton")
+	-- accept: the check sprite (>= 48 px touch target), the device key chip beside it
+	local key = Instance.new("ImageButton")
 	key.Name = "Launch"
-	key.AnchorPoint = Vector2.new(1, 0.5)
-	key.Position = UDim2.new(1, -8, 0.5, 0)
-	key.Size = UDim2.fromOffset(KEY_W, 48)
-	key.BackgroundColor3 = HudTheme.Colors.accent
-	key.BorderSizePixel = 0
-	key.Text = ""
-	key.AutoButtonColor = true
+	key.AnchorPoint = Vector2.new(0.5, 1)
+	key.Position = UDim2.new(0.5, 0, 1, -8)
+	key.Size = UDim2.fromOffset(60, 60)
+	key.BackgroundTransparency = 1
+	key.Image = Hud.AcceptButton
+	key.ScaleType = Enum.ScaleType.Fit
 	key.Parent = body
-	HudTheme.corner(key, 10)
 	local pulse = Instance.new("UIScale")
 	pulse.Parent = key
-	local row = Instance.new("UIListLayout")
-	row.FillDirection = Enum.FillDirection.Horizontal
-	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	row.VerticalAlignment = Enum.VerticalAlignment.Center
-	row.Padding = UDim.new(0, 6)
-	row.SortOrder = Enum.SortOrder.LayoutOrder
-	row.Parent = key
-	local tick = Instance.new("Frame")
-	tick.Name = "Check"
-	tick.Size = UDim2.fromOffset(26, 26)
-	tick.BackgroundTransparency = 1
-	tick.Parent = key
-	Glyph.draw("check", tick, HudTheme.Colors.text)
 	local chip = InputGlyph.chip(key, ACCEPT_KEY, ACCEPT_PAD)
-	chip.LayoutOrder = 1
+	chip.AnchorPoint = Vector2.new(0, 0.5)
+	chip.Position = UDim2.new(1, 2, 0.5, 0)
 
 	local currentId: string? = nil
 	local acceptFn: ((string) -> ())? = nil
@@ -149,9 +161,14 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 					color = AMBER,
 				}
 			end
-			Glyph.draw(kind.icon, icon, Color3.new(1, 1, 1))
+			local piw = data.kind == "PersonInWater"
+			sprite.Visible = piw
+			badge.Visible = not piw
+			if not piw then
+				Glyph.draw(kind.icon, icon, Color3.new(1, 1, 1))
+			end
 			badge.BackgroundColor3 = kind.color
-			stroke.Color = kind.color
+			strip.BackgroundColor3 = kind.color
 			name.Text = string.upper(kind.label)
 			body.Visible = true
 			ContextActionService:BindActionAtPriority(ACCEPT_ACTION, function(_, state)
@@ -166,8 +183,8 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			local t = 0
 			conn = RunService.Heartbeat:Connect(function(dt)
 				t += dt
-				-- the alert badge flashes and the accept glyph pulses like a DSC alarm
-				badge.BackgroundTransparency = if math.floor(t * 2.5) % 2 == 0 then 0 else 0.3
+				-- the alert strip flashes and the accept button pulses like a DSC alarm
+				strip.BackgroundTransparency = if math.floor(t * 2.5) % 2 == 0 then 0 else 0.5
 				pulse.Scale = 1 + 0.04 * math.sin(t * 5)
 				local char = Players.LocalPlayer.Character
 				local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?

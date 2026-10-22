@@ -1,7 +1,7 @@
 --!strict
 -- RoadNet: the pure road network rules (junctions, stop lines, traffic light phases) over WorldConfig.Roads-style
 -- polylines. Shared so the server (Street: markings, stop lines, signal heads) and the client (AmbientController:
--- traffic stops at red) agree. Studs, +X east, -Z north; traffic drives on the LEFT (docs/10, section Roads).
+-- traffic stops at red) agree. Studs, +X east, -Z north; traffic drives on the RIGHT (playtest 2026-10-22; was left, docs/10).
 -- Unit-tested in tests/RoadNet.spec.luau. Safe in Lune (no requires).
 --
 --   RoadNet.junctions(roads)              -> { Junction }   every node where 3+ road arms meet: a road's end on another
@@ -11,7 +11,7 @@
 --   RoadNet.stopFor(junctions, road, pos, dir, t, look?) -> number?      distance to a stop line ahead that a car on
 --                                                           `road` heading `dir` must stop at (red, or amber with room)
 --   RoadNet.incoming(arm)                 -> (Vector3, Vector3)   the stop line's centre-line end and its unit
---                                                           direction across the incoming (left-hand) lane
+--                                                           direction across the incoming (right-hand) lane
 
 local RoadNet = {}
 
@@ -222,10 +222,10 @@ function RoadNet.light(j: Junction, group: number, t: number): string
 	return if w < c.green then "green" elseif w < c.green + c.amber then "amber" else "red"
 end
 
--- left of travel toward the junction (travel = -arm.dir): the incoming lane under left-hand traffic
+-- right of travel toward the junction (travel = -arm.dir): the incoming lane under right-hand traffic
 function RoadNet.incoming(arm: Arm): (Vector3, Vector3)
 	local t = -arm.dir
-	return arm.pos + arm.dir * arm.stop, Vector3.new(t.Z, 0, -t.X)
+	return arm.pos + arm.dir * arm.stop, Vector3.new(-t.Z, 0, t.X)
 end
 
 function RoadNet.stopFor(

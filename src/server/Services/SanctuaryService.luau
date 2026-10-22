@@ -14,7 +14,7 @@
 --   "force" <speciesId> [rare]  the next wildlife call is that animal (screenshots / checks)
 --   "add" <speciesId> [rare]    put that animal in the first player's sanctuary
 --   "ready"                     make every animal in the sanctuary ready to adopt now
---   "equip" <id>                adopt one (stand at the pens first)
+--   "equip" <id>                adopt one
 --   "view"                      the sanctuary view
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

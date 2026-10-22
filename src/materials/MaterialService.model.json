@@ -11,28 +11,7 @@
      "String": "B02"
     }
    }
-  },
-  "SandName": "SandDry",
-  "SandstoneName": "SandWet",
-  "SaltName": "SeabedSand",
-  "LimestoneName": "ShellGravel",
-  "CrackedLavaName": "Shingle",
-  "RockName": "Granite",
-  "SlateName": "KelpRock",
-  "BasaltName": "SplashRock",
-  "GrassName": "Turf",
-  "LeafyGrassName": "Moor",
-  "SnowName": "TurfStraw",
-  "WoodPlanksName": "TurfOlive",
-  "BrickName": "TurfWorn",
-  "GlacierName": "SandRipple",
-  "IceName": "Wrack",
-  "MudName": "Mud",
-  "GroundName": "Earth",
-  "PavementName": "RoadGravelTrack",
-  "AsphaltName": "Asphalt",
-  "CobblestoneName": "RoadHarbourCobbles",
-  "ConcreteName": "Concrete"
+  }
  },
  "Children": [
   {

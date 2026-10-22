@@ -44,23 +44,23 @@
    "Sandstone": 19184,
    "Salt": 676563,
    "Limestone": 170983,
-   "Rock": 148841,
+   "Rock": 148836,
    "Slate": 83546,
    "Basalt": 15237,
-   "Grass": 270911,
-   "LeafyGrass": 52574,
+   "Grass": 267701,
+   "LeafyGrass": 52578,
    "Mud": 9877,
-   "Ground": 2702,
-   "Asphalt": 13555,
+   "Ground": 2705,
+   "Asphalt": 16808,
    "Cobblestone": 890,
    "Concrete": 146,
-   "Pavement": 5003,
-   "CrackedLava": 1401,
-   "Snow": 38430,
-   "WoodPlanks": 113284,
+   "Pavement": 4961,
+   "CrackedLava": 1399,
+   "Snow": 38435,
+   "WoodPlanks": 113279,
    "Brick": 5967,
    "Glacier": 4595,
-   "Ice": 956
+   "Ice": 955
   }
  }
 }

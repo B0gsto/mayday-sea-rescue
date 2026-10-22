@@ -356,23 +356,9 @@ W.RecoverySeconds = 10 * 60 -- tune (docs/15: 10 real minutes)
 W.MaxPets = 6
 W.RareEvery = 8 -- one rescue in eight brings the rare colour variant -- tune
 
--- The sanctuary yard beside the station (client-built; the server only checks the distance).
+-- The station spot a pet naps at when the player idles there (PetController; the yard itself was removed).
 W.Sanctuary = {
-	-- the flat apron off the station's west gable (terrain reads 5.8 from z -56 to -38), clear of the doors and
-	-- of Harbour Road (z -39..-21), which runs past the station front
 	position = Vector3.new(-158, 5.8, -48),
-	halfX = 12,
-	halfZ = 9,
-	range = 34, -- studs from the centre where the pens can be used
-	-- pen spots in the yard's local space (X across, Z out to sea)
-	pens = {
-		Vector3.new(-8, 0, 6),
-		Vector3.new(0, 0, 6.5),
-		Vector3.new(8, 0, 6),
-		Vector3.new(-8, 0, -6),
-		Vector3.new(0, 0, -6.5),
-		Vector3.new(8, 0, -6),
-	},
 }
 
 -- The pet follows at this offset behind the player; the animal's pivot sits on the ground.

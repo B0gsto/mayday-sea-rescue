@@ -8,7 +8,7 @@
 --   AmbientPlan.carCap(tier, laneStuds, share) number  cars for the lane length inside the ring
 --   AmbientPlan.routine(state, night)          { street, beach, quay, indoor, cars }  share 0..1 of each zone kept
 --   AmbientPlan.routes()                        { Route }   pavements (both sides of every road but the slipway) and
---                                                           lanes (left-hand traffic, both ways, asphalt roads)
+--                                                           lanes (right-hand traffic, both ways, asphalt roads)
 --   AmbientPlan.sample(route, s)               (pos, dir)  position and travel direction at arc length s (XZ)
 --   AmbientPlan.nextLane(lanes, i)             number      the lane a car takes at the end of lane i
 --   AmbientPlan.junctionStops(lanes, junctions) { {Stop} }  per lane, the RoadNet junctions it enters: where the car
@@ -137,12 +137,9 @@ function AmbientPlan.routes(): { Route }
 			table.insert(out, route("pavement", road.id, offset(road.points, -d)))
 		end
 		if road.surface == AmbientPlan.CAR_SURFACE and not AmbientPlan.NO_WALK[road.id] then
-			-- drive on the left: a quarter width left of the centre line, each way
-			table.insert(out, route("lane", road.id, offset(road.points, -road.width / 4)))
-			table.insert(
-				out,
-				route("lane", road.id, offset(reversed(road.points), -road.width / 4))
-			)
+			-- drive on the right: a quarter width right of the centre line, each way
+			table.insert(out, route("lane", road.id, offset(road.points, road.width / 4)))
+			table.insert(out, route("lane", road.id, offset(reversed(road.points), road.width / 4)))
 		end
 	end
 	return out
@@ -239,8 +236,8 @@ function AmbientPlan.junctionStops(lanes: { Route }, junctions: { any }): { { St
 	return out
 end
 
--- cubic Bezier: turning, both handles reach toward the corner where the two lane lines meet (a left turn hugs the
--- kerb, a right turn swings wide across the junction); parallel lanes (straight on, or a turn-round loop onto the
+-- cubic Bezier: turning, both handles reach toward the corner where the two lane lines meet (a right turn hugs the
+-- kerb, a left turn swings wide across the junction); parallel lanes (straight on, or a turn-round loop onto the
 -- reverse lane) get handles along the travel direction
 function AmbientPlan.turn(a: Route, s0: number, b: Route, s1: number): Route
 	local p0, d0 = AmbientPlan.sample(a, s0)
@@ -288,12 +285,12 @@ end
 -- Data the static spots come from (sources named; nothing here is a free-floating hand placement):
 -- map/Build.luau House1..6 spots = Swaps cottage pivots (yawed 180: ATT_Door local -Z faces +Z, the harbour)
 AmbientPlan.HOUSES = {
-	Vector3.new(-150, 4, -188),
-	Vector3.new(-60, 4, -188),
-	Vector3.new(90, 4, -188),
-	Vector3.new(130, 4, -188),
-	Vector3.new(260, 4, -188),
-	Vector3.new(310, 4, -188),
+	Vector3.new(-150, 4, -192),
+	Vector3.new(-60, 4, -192),
+	Vector3.new(90, 4, -192),
+	Vector3.new(130, 4, -192),
+	Vector3.new(260, 4, -192),
+	Vector3.new(310, 4, -192),
 }
 -- Harbour.QUAY straight slots with straight neighbours, clear of the slipway (1-3), the dock gangway (7), the pier
 -- root (8-9), the steps (13-14), every ladder bay and the hospital gangway (35); checked in tests/Ambient.spec.luau

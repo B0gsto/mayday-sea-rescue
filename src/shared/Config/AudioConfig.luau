@@ -176,12 +176,6 @@ AudioConfig.Clips = {
 		"Water Splash Big Water Splash Dive In 1 (SFX)",
 		"reused from Splash_Entry"
 	),
-	Amb_Sanctuary = rl(
-		9119383479,
-		0.25,
-		"Sonoma Morning Birds California Chirping 1 (SFX)",
-		"looped near the pens"
-	),
 	Halloween_Sting = rl(
 		9125641284,
 		0.4,

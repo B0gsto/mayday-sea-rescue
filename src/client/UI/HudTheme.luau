@@ -141,6 +141,49 @@ function HudTheme.button(name: string, text: string, size: UDim2, parent: Instan
 	return b
 end
 
+-- Sprite HUD (assets/ui/hud/mockup.png): rounded bold type, white with a soft dark edge.
+HudTheme.NumberFont = Enum.Font.FredokaOne
+HudTheme.LabelFont = Enum.Font.GothamBold
+HudTheme.Slice = {
+	Panel = Rect.new(32, 32, 480, 224), -- UiImages.Hud.Panel (512x256)
+	SpeedPanel = Rect.new(24, 24, 488, 104), -- UiImages.Hud.SpeedPanel (512x128)
+	Bar = Rect.new(32, 16, 480, 48), -- UiImages.Hud.BarTrack / BarFill (512x64)
+}
+
+-- A sprite: ScaleType Fit, or Slice when `slice` (9-slice rect, source px) is given.
+function HudTheme.image(
+	name: string,
+	image: string,
+	size: UDim2,
+	parent: Instance?,
+	slice: Rect?,
+	sliceScale: number?
+): ImageLabel
+	local i = Instance.new("ImageLabel")
+	i.Name = name
+	i.Image = image
+	i.Size = size
+	i.BackgroundTransparency = 1
+	i.BorderSizePixel = 0
+	if slice then
+		i.ScaleType = Enum.ScaleType.Slice
+		i.SliceCenter = slice
+		i.SliceScale = sliceScale or 1
+	else
+		i.ScaleType = Enum.ScaleType.Fit
+	end
+	i.Parent = parent
+	return i
+end
+
+-- White HUD text with a subtle dark edge (reads on sky, sea and sand).
+function HudTheme.outline(label: TextLabel): TextLabel
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeColor3 = Color3.fromHex("06101C")
+	label.TextStrokeTransparency = 0.55
+	return label
+end
+
 -- 12345 -> "12,345"
 function HudTheme.formatNumber(n: number): string
 	local s = tostring(math.floor(n))

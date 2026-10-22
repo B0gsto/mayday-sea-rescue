@@ -337,12 +337,12 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 
 	local houses = folder(town, "Houses")
 	local spots = {
-		Vector3.new(-150, landTop, -188),
-		Vector3.new(-60, landTop, -188),
-		Vector3.new(90, landTop, -188),
-		Vector3.new(130, landTop, -188),
-		Vector3.new(260, landTop, -188),
-		Vector3.new(310, landTop, -188),
+		Vector3.new(-150, landTop, -192),
+		Vector3.new(-60, landTop, -192),
+		Vector3.new(90, landTop, -192),
+		Vector3.new(130, landTop, -192),
+		Vector3.new(260, landTop, -192),
+		Vector3.new(310, landTop, -192),
 	}
 	for i, spot in spots do
 		buildHouse(

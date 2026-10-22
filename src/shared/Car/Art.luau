@@ -97,12 +97,26 @@ end
 
 -- Moves the functional seats onto the art's seat points and makes them invisible.
 local function moveSeats(model: Model, positions: Markers)
+	-- Player cars are left-hand drive; the art was authored right-hand drive, so swap the front pair
+	-- when the driver marker sits right (+X) of the passenger's.
+	local driverAt: Vector3?, passengerAt: Vector3? = positions.ATT_DriverSeat, positions.ATT_Seat2
+	local root = model.PrimaryPart
+	local swap = driverAt ~= nil
+		and passengerAt ~= nil
+		and root ~= nil
+		and root.CFrame:PointToObjectSpace(driverAt).X
+			> root.CFrame:PointToObjectSpace(passengerAt).X
 	for _, d in model:GetChildren() do
 		if not (d:IsA("Seat") or d:IsA("VehicleSeat")) then
 			continue
 		end
 		local seat = d :: BasePart
-		local at = positions[`ATT_{d.Name}`]
+		local at: Vector3? = positions[`ATT_{d.Name}`]
+		if swap and d.Name == "DriverSeat" then
+			at = passengerAt
+		elseif swap and d.Name == "Seat2" then
+			at = driverAt
+		end
 		if at then
 			seat.CFrame = CFrame.new(at)
 		end
@@ -112,7 +126,8 @@ local function moveSeats(model: Model, positions: Markers)
 		local eye = seat:FindFirstChild("EyePoint")
 		local eyeAt = positions.ATT_EyePoint
 		if eye and eye:IsA("Attachment") and eyeAt then
-			eye.Position = eyeAt - seat.CFrame.Position
+			local offset = eyeAt - (driverAt or seat.CFrame.Position)
+			eye.Position = if swap then offset * Vector3.new(-1, 1, 1) else offset
 		end
 	end
 end

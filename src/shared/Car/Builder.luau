@@ -5,7 +5,7 @@
 -- welded to it and collides (scrapes, never breaks). Wheels are massless, non-colliding parts on
 -- Welds whose C0 Car/Physics sets each frame (Wheel_FL ... with WheelWeld).
 --
--- Exposed for other streams: DriverSeat (VehicleSeat, right-hand drive) with EyePoint
+-- Exposed for other streams: DriverSeat (VehicleSeat, left-hand drive) with EyePoint
 -- (Attachment at the driver's eyes); Seat2..n; on Chassis: TowHitch, CarForce, CarTorque;
 -- Headlamp parts (SpotLight), TailLamp / BrakeLamp / ReverseLamp parts, Beacon parts (LampIndex,
 -- LampCount, LampColor attributes, a PointLight) for the light bar.
@@ -889,7 +889,7 @@ function Builder.build(spec: Spec, extraMassKg: number?): (Model, Chassis.Derive
 	end
 	wheels(ctx, d)
 
-	-- seats: right-hand drive, so the driver sits on the right (+X)
+	-- seats: left-hand drive, so the driver sits on the left (-X)
 	local function seatAt(name: string, x: number, z: number, driver: boolean)
 		local cushion = if spec.class == "ATV" then 0.95 else spec.groundClearance + 0.5
 		seat(ctx, name, x, cushion, z, driver)
@@ -898,15 +898,15 @@ function Builder.build(spec: Spec, extraMassKg: number?): (Model, Chassis.Derive
 	if spec.class == "ATV" then
 		seatAt("DriverSeat", 0, 1.35, true)
 	elseif spec.class == "Coupe" then
-		seatAt("DriverSeat", W * 0.22, spec.length * 0.5, true)
-		seatAt("Seat2", -W * 0.22, spec.length * 0.5, false)
+		seatAt("DriverSeat", -W * 0.22, spec.length * 0.5, true)
+		seatAt("Seat2", W * 0.22, spec.length * 0.5, false)
 	elseif spec.class == "Pickup" or spec.class == "Response" or spec.class == "Ambulance" then
 		local frontZ = if spec.class == "Pickup"
 			then 2.35
 			elseif spec.class == "Response" then 2.0
 			else 1.6
-		seatAt("DriverSeat", W * 0.24, frontZ, true)
-		seatAt("Seat2", -W * 0.24, frontZ, false)
+		seatAt("DriverSeat", -W * 0.24, frontZ, true)
+		seatAt("Seat2", W * 0.24, frontZ, false)
 		if spec.seats >= 5 then
 			for i, x in { -W * 0.3, 0, W * 0.3 } do
 				seatAt(`Seat{2 + i}`, x, frontZ + 0.95, false)

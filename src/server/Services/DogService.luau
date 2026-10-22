@@ -5,15 +5,15 @@
 -- (G82), assembled on the rig's Motor6Ds; the greybox BosunRig Parts are the fallback when the upload
 -- fails (and still stand in for the unfinished Water Dog Friends coat options). An invisible root part
 -- "Body" carries the physics: he follows his player on land (AlignPosition / AlignOrientation, no
--- collisions: docs 02 section 10.8), floats in his harness on water, and rides the RIB and bigger boats
--- aft (welded to a DogSlot / the aft deck, out of the helm camera) while they sit in them. He never
--- rides a craft without a seat for him (the jet ski: driver seat only): he sits and waits ashore. The
+-- collisions: docs 02 section 10.8) and floats in his harness on water. While his player sits in any
+-- vehicle (car, boat, jet ski) he is hidden (model attribute Hidden, DogController) and reappears
+-- beside them when they get out. The
 -- parts hang on Motor6Ds named after the BosunMotion pose keys (Root, Neck, Jaw, Tail1, Tail2, eight leg
 -- joints) whose Transforms DogController writes locally. Everyone sees this low-poly dog (docs/14 section 4:
 -- no fur-card hero close-up).
 --
--- Attributes on the dog model for the client: Mode ("Follow" | "Wait" | "Ride" | "Swim"), Wetness
--- (0..1, BosunWetness) and Wet (coat and wear darkened); Waiting (bool), Treat (a counter, bumped by
+-- Attributes on the dog model for the client: Mode ("Follow" | "Wait" | "Swim"), Wetness
+-- (0..1, BosunWetness) and Wet (coat and wear darkened); Hidden (bool), Treat (a counter, bumped by
 -- DogService.Treat for the daily challenge set: DogController spins him once and pops a "Woof!").
 --
 -- Every few seconds he sniffs for the nearest victim from CallService.GetVictimPositions and, inside his
@@ -42,7 +42,6 @@ local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
-local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local DogService = {}
 DogService.Priority = 50
@@ -70,10 +69,7 @@ type Dog = {
 	body: BasePart,
 	alignPos: AlignPosition,
 	alignRot: AlignOrientation,
-	rideWeld: WeldConstraint?,
-	rideModel: Model?,
-	waitAt: Vector3?, -- set while the player rides the jet ski: he has no seat, so Bosun waits ashore
-	waitFace: Vector3?,
+	hidden: boolean, -- the player is in a vehicle: Bosun is hidden (model attribute Hidden)
 	pointUntil: number,
 	pointDir: Vector3?,
 	mode: string,
@@ -483,10 +479,7 @@ local function makeDog(player: Player, character: Model)
 		body = body,
 		alignPos = alignPos,
 		alignRot = alignRot,
-		rideWeld = nil,
-		rideModel = nil,
-		waitAt = nil,
-		waitFace = nil,
+		hidden = false,
 		pointUntil = 0,
 		pointDir = nil,
 		mode = "Follow",
@@ -516,54 +509,6 @@ local function vehicleOf(seat: BasePart?): Model?
 	return nil
 end
 
--- Where Bosun rides: a DogSlot attachment if the vehicle has one (CONTRACT: optional, stream B),
--- else the stern of bigger boats (behind the helm, out of the driver's view). He never rides a
--- craft with no seat for him (canRide).
-local function rideOffset(model: Model, root: BasePart): CFrame
-	local slot = model:FindFirstChild("DogSlot", true)
-	if slot and slot:IsA("Attachment") then
-		return root.CFrame:ToObjectSpace(slot.WorldCFrame) * CFrame.new(0, LEG_HEIGHT, 0)
-	end
-	local id = model:GetAttribute("VehicleId")
-	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
-	local hull = if spec then spec.hullSize else root.Size
-	local top = hull.Y / 2 + LEG_HEIGHT - 0.2
-	return CFrame.new(0, top, hull.Z / 2 - 4) -- aft deck, behind the helm
-end
-
-local function stopRiding(dog: Dog)
-	if dog.rideWeld then
-		dog.rideWeld:Destroy()
-		dog.rideWeld = nil
-	end
-	dog.rideModel = nil
-	dog.alignPos.Enabled = true
-	dog.alignRot.Enabled = true
-	dog.alignPos.Position = dog.body.Position
-	pcall(function()
-		dog.body:SetNetworkOwner(nil)
-	end)
-end
-
-local function startRiding(dog: Dog, model: Model)
-	stopRiding(dog)
-	local root = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart", true)
-	if not root then
-		return
-	end
-	dog.alignPos.Enabled = false
-	dog.alignRot.Enabled = false
-	dog.body.AssemblyLinearVelocity = Vector3.zero
-	dog.body.CFrame = root.CFrame * rideOffset(model, root)
-	local weld = Instance.new("WeldConstraint")
-	weld.Name = "BosunRide"
-	weld.Part0 = root
-	weld.Part1 = dog.body
-	weld.Parent = dog.body
-	dog.rideWeld = weld
-	dog.rideModel = model
-end
-
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Exclude
 rayParams.IgnoreWater = true -- terrain water is not ground: over it he swims, never stands on it
@@ -588,63 +533,6 @@ local function setMode(dog: Dog, mode: string)
 	end
 end
 
--- A Newfoundland can't ride a jet ski: she carries only the driver seat (the sled is a survivor
--- slot, not a seat), so there is nowhere for him to sit even now the camera is third person. He
--- rides the RIB and the bigger boats; a first-person-only craft has no room either.
-local function canRide(model: Model): boolean
-	local id = model:GetAttribute("VehicleId")
-	if VehicleConfig.isJetSki(id) then
-		return false
-	end
-	local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
-	return not (spec and spec.cameraMode == "FirstPerson")
-end
-
-local WAIT_SIDE = 4 -- studs beside the slipway's top, clear of the launching lane
-
--- The top of the station slipway (Map.Slipways.StationSlipway, its local -Z end at the quay).
-local function slipwayTop(): (Vector3?, Vector3?)
-	local map = Workspace:FindFirstChild("Map")
-	local slips = map and map:FindFirstChild("Slipways")
-	local ramp = slips and slips:FindFirstChild("StationSlipway")
-	if ramp and ramp:IsA("BasePart") then
-		local half = ramp.Size / 2
-		local top = ramp.CFrame * CFrame.new(half.X + WAIT_SIDE, half.Y, -half.Z + 3)
-		return top.Position, ramp.CFrame.LookVector * -1
-	end
-	return nil, nil
-end
-
--- Where Bosun sits while the player is out on a jet ski: where he stands if that is dry land,
--- else beside the station slipway's top.
-local function waitSpot(dog: Dog, character: Model): (Vector3, Vector3)
-	local pos = dog.body.Position
-	rayParams.FilterDescendantsInstances =
-		{ folder, character, Workspace:FindFirstChild("Vehicles") }
-	local hit = Workspace:Raycast(pos + Vector3.new(0, 4, 0), Vector3.new(0, -30, 0), rayParams)
-	local face = dog.body.CFrame.LookVector
-	if hit and hit.Position.Y > seaHeight(hit.Position) + 0.5 then
-		return Vector3.new(pos.X, hit.Position.Y + LEG_HEIGHT, pos.Z), face
-	end
-	local top, look = slipwayTop()
-	if top then
-		return Vector3.new(top.X, (groundY(top, character)), top.Z), look :: Vector3
-	end
-	return Vector3.new(pos.X, (groundY(pos, character)), pos.Z), face
-end
-
-local function hold(dog: Dog, at: Vector3, face: Vector3)
-	if (dog.body.Position - at).Magnitude > TELEPORT_DISTANCE then
-		dog.body.CFrame = CFrame.lookAt(at, at + face)
-		dog.body.AssemblyLinearVelocity = Vector3.zero
-	end
-	dog.alignPos.Position = at
-	local flat = Vector3.new(face.X, 0, face.Z)
-	if flat.Magnitude > 1e-3 then
-		dog.alignRot.CFrame = CFrame.lookAt(Vector3.zero, flat.Unit)
-	end
-end
-
 local function step(dog: Dog, now: number)
 	local character = dog.player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -652,34 +540,21 @@ local function step(dog: Dog, now: number)
 	if not character or not humanoid or not root then
 		return
 	end
-	local vehicle = vehicleOf(humanoid.SeatPart)
-	if vehicle and not canRide(vehicle) then
-		if dog.rideModel then
-			stopRiding(dog)
+	-- In any vehicle he is hidden (DogController) and stays where he was; he reappears beside the
+	-- player when they get out (user, 2026-10-22: a dog standing on the car looked broken).
+	if vehicleOf(humanoid.SeatPart) then
+		if not dog.hidden then
+			dog.hidden = true
+			dog.model:SetAttribute("Hidden", true)
 		end
-		if not dog.waitAt then
-			dog.waitAt, dog.waitFace = waitSpot(dog, character)
-			dog.model:SetAttribute("Waiting", true)
-		end
-		hold(dog, dog.waitAt :: Vector3, dog.waitFace :: Vector3)
 		dog.depth = 0
 		setMode(dog, "Wait")
 		return
-	elseif dog.waitAt then
-		-- back on foot (or aboard a boat he can ride): rejoin
-		dog.waitAt, dog.waitFace = nil, nil
-		dog.model:SetAttribute("Waiting", nil)
 	end
-	if vehicle then
-		if dog.rideModel ~= vehicle or not (dog.rideWeld and dog.rideWeld.Parent) then
-			startRiding(dog, vehicle)
-		end
-		dog.depth = 0
-		setMode(dog, "Ride")
-		return
-	elseif dog.rideModel then
-		stopRiding(dog)
-		dog.body.CFrame = root.CFrame * CFrame.new(3, 0, 2)
+	local justOut = dog.hidden
+	if justOut then
+		dog.hidden = false
+		dog.model:SetAttribute("Hidden", nil)
 	end
 
 	local look = root.CFrame.LookVector
@@ -696,7 +571,7 @@ local function step(dog: Dog, now: number)
 	setMode(dog, if depth > SWIM_DEPTH then "Swim" else "Follow")
 
 	local pos = dog.body.Position
-	if (desired - pos).Magnitude > TELEPORT_DISTANCE then
+	if justOut or (desired - pos).Magnitude > TELEPORT_DISTANCE then
 		dog.body.CFrame = CFrame.lookAt(desired, desired + flatLook)
 		dog.body.AssemblyLinearVelocity = Vector3.zero
 	end
@@ -715,6 +590,9 @@ local function step(dog: Dog, now: number)
 end
 
 local function sniff(dog: Dog, now: number)
+	if dog.hidden then
+		return
+	end
 	local origin = dog.body.Position
 	local best: Vector3? = nil
 	local bestDist = NOSE_RANGE
@@ -800,7 +678,7 @@ end
 -- the model attribute replicates the counter).
 function DogService.Treat(player: Player)
 	local dog = dogs[player]
-	if not (dog and dog.model.Parent) then
+	if not (dog and dog.model.Parent) or dog.hidden then
 		return
 	end
 	local count = tonumber(dog.model:GetAttribute("Treat")) or 0
@@ -818,7 +696,6 @@ end
 local function onCharacter(player: Player, character: Model)
 	local dog = dogs[player]
 	if dog and dog.model.Parent then
-		stopRiding(dog)
 		local root = character:WaitForChild("HumanoidRootPart", 5) :: BasePart?
 		if root then
 			dog.body.CFrame = root.CFrame * CFrame.new(3, -1, 2)

@@ -112,15 +112,15 @@ ROADS = [
 TOWNS = [
     {"id": "PortHaven", "name": "Port Haven", "origin": (0, -30), "south": ("HarbourRoad", "CoastRoadEast"),
      "surface": "Asphalt",  # avenues start on the first `south` road that reaches their x
-     "width": 22,  # two 3.5 m lanes
+     "width": 30,  # two 5 m lanes (playtest: 22 read too narrow to drive)
      "footway": 8,  # pavement + parking strip each side (studs)
      "avenues": [(-540, "Penhallow Road"), (-380, "Quay Lane"), (-220, "Station Hill"), (20, "Chapel Hill"),
                  (200, "Hospital Lane"), (380, "Eastgate Hill"), (560, "Tregenna Hill")],
      "streets": [(-130, "Fore Street"), (-240, "Church Street"), (-350, "Trelawney Road"), (-460, "Bodmin Road")],
      "keep": [(-392, -160, -231, -20),  # the boatyard (TownExtras) and the station yard spawn
-              (-212, -100, 12, -20),  # station, chandlery, forecourt, notice row, pet yard
+              (-212, -100, 12, -20),  # station, chandlery, forecourt, notice row
               (88, -152, 176, -20),  # the Cottage Hospital
-              (31, -251, 121, -171)]},  # Chapel Square (Town.luau): the chapel and a paved square on Fore Street
+              (35, -251, 121, -175)]},  # Chapel Square (Town.luau): the chapel and a paved square on Fore Street
 ]
 
 

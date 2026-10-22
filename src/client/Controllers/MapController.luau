@@ -34,6 +34,7 @@ local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
+local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local MapController = {}
@@ -70,6 +71,8 @@ local objective: Vector3?, objectiveLabel: string? = nil, nil
 local PRE_LAUNCH = { tasking = true, relay = true, kit_launch = true, launch = true }
 -- extra static blips other systems hand in (SetBlips), keyed by group: the logbook's discoveries
 local extraBlips: { [string]: { BlipDraw } } = {}
+local RING = 1.08 -- bezel size / minimap square
+local MAP_HALF = 0.395 -- map canvas radius / square side (just past the bezel hole, RING * 0.72 / 2)
 
 -- ---------------------------------------------------------------- small UI helpers
 
@@ -464,20 +467,29 @@ local function buildMinimap()
 	local root = Instance.new("ImageButton")
 	root.Name = "Minimap"
 	root.Size = UDim2.fromScale(1, 1)
-	root.BackgroundColor3 = C.panel
-	root.BackgroundTransparency = 0.2
+	root.BackgroundTransparency = 1
 	root.AutoButtonColor = false
 	root.Image = ""
 	root.Parent = Layout.region(miniGui, "minimap")
 	corner(root)
-	stroke(root, Color3.fromRGB(255, 255, 255), 1, 0.7)
 	mini.root = root
+	-- the brass bezel (assets/ui/hud/minimap_ring_thin.png, hole 72%): 4% past the square so its
+	-- hole (RING * 0.72) just covers the canvas edge
+	local ring = Instance.new("ImageLabel")
+	ring.Name = "Bezel"
+	ring.AnchorPoint = Vector2.new(0.5, 0.5)
+	ring.Position = UDim2.fromScale(0.5, 0.5)
+	ring.Size = UDim2.fromScale(RING, RING)
+	ring.BackgroundTransparency = 1
+	ring.Image = UiImages.Hud.MinimapRing
+	ring.ZIndex = 7
+	ring.Parent = root
 
 	local canvas = Instance.new("CanvasGroup")
 	canvas.Name = "Canvas"
 	canvas.AnchorPoint = Vector2.new(0.5, 0.5)
 	canvas.Position = UDim2.fromScale(0.5, 0.5)
-	canvas.Size = UDim2.new(1, -8, 1, -8)
+	canvas.Size = UDim2.fromScale(2 * MAP_HALF, 2 * MAP_HALF)
 	canvas.BackgroundColor3 = DEEP
 	canvas.BorderSizePixel = 0
 	canvas.Parent = root
@@ -523,26 +535,36 @@ local function buildMinimap()
 	text("N", north, "N", 15).Size = UDim2.fromScale(1, 1)
 	mini.north = north
 
+	-- the orange objective pill ("Mayday 140 m", assets/ui/hud/mockup.png)
 	local pill = frame("Objective", root, {
-		AnchorPoint = Vector2.new(0.5, 1),
-		Position = UDim2.new(0.5, 0, 0, -6),
-		Size = UDim2.fromOffset(170, 30),
-		BackgroundTransparency = HudTheme.PanelTransparency,
-		BackgroundColor3 = C.panel,
+		AutomaticSize = Enum.AutomaticSize.X,
+		BackgroundTransparency = 0,
+		BackgroundColor3 = Color3.fromHex("F2671F"),
 		Visible = false,
 		ZIndex = 9,
 	})
-	corner(pill, 10)
-	stroke(pill, Color3.fromRGB(255, 255, 255), 1, 0.8)
-	local pt = text("Text", pill, "", 17)
-	pt.Size = UDim2.fromScale(1, 1)
+	corner(pill)
+	stroke(pill, Color3.fromRGB(255, 255, 255), 1.5, 0.55)
+	local shade = Instance.new("UIGradient")
+	shade.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHex("D9D9D9"))
+	shade.Rotation = 90
+	shade.Parent = pill
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 14)
+	pad.PaddingRight = UDim.new(0, 14)
+	pad.Parent = pill
+	local pt = HudTheme.outline(text("Text", pill, "", 18))
+	pt.Font = HudTheme.NumberFont
+	pt.AutomaticSize = Enum.AutomaticSize.X
+	pt.Size = UDim2.fromScale(0, 1)
 	pt.ZIndex = 10
 	mini.pill, mini.pillText = pill, pt
-	-- desktop: above the square (HudLayout leaves PILL_HEIGHT for it); touch: the minimap sits at
-	-- the top edge, so the pill goes inside the square's bottom edge instead
+	-- desktop: on the bezel's upper right edge, like the mockup; touch: the minimap sits at the top
+	-- edge with the phone button right of it, so the pill sits on the bezel's bottom edge instead
 	local function placePill(mt: Layout.Metrics)
-		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -4) else UDim2.new(0.5, 0, 0, -6)
-		pill.Size = if mt.touch then UDim2.new(1, -8, 0, 30) else UDim2.fromOffset(170, 30)
+		pill.AnchorPoint = if mt.touch then Vector2.new(0.5, 0.5) else Vector2.new(0, 0.5)
+		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -10) else UDim2.fromScale(0.7, 0.14)
+		pill.Size = UDim2.fromOffset(0, if mt.touch then 26 else 32)
 	end
 	placePill(Layout.current())
 	Layout.onMetrics(placePill)
@@ -553,6 +575,7 @@ local function buildMinimap()
 		b.AnchorPoint = Vector2.new(1, 0)
 		b.Position = UDim2.fromScale(1, 0)
 		b.TextSize = 16
+		b.ZIndex = 10
 		b.Activated:Connect(function()
 			MapController.Open()
 		end)
@@ -584,7 +607,7 @@ local function updateMinimap(dt: number, now: number)
 		fx, fz = flatYaw(root.CFrame.LookVector)
 	end
 	fx, fz = fx or 0, fz or -1
-	local half = (size - 8) / 2
+	local half = size * MAP_HALF
 	local scale = half / viewRadius
 	local me = root.Position
 	local u, v = MapConfig.worldToUV(me.X, me.Z)
