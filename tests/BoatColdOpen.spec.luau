@@ -234,4 +234,31 @@ return function(t)
 			t.expect((far - home).Magnitude < 300).toBe(true) -- a short run home
 		end
 	)
+
+	t.test(
+		"the way home goes round what blocks the straight line, through the via turns",
+		function()
+			local V = function(x, z)
+				return Vector3.new(x, 0, z)
+			end
+			local me, goal, via = V(0, 0), V(100, 0), { V(50, 50), V(50, -80) }
+			local open = function()
+				return true
+			end
+			t.expect(ColdOpen.nextHop(me, goal, via, open)).toBe(goal)
+			-- a wall across x = 50 between z -40 and 40: the nearer turn round it
+			local wall = function(a: Vector3, b: Vector3)
+				if (a.X - 50) * (b.X - 50) >= 0 then
+					return true
+				end
+				local z = a.Z + (b.Z - a.Z) * (50 - a.X) / (b.X - a.X)
+				return math.abs(z) > 40
+			end
+			t.expect(ColdOpen.nextHop(me, goal, via, wall)).toBe(via[1])
+			-- nothing clear at all: straight at the goal
+			t.expect(ColdOpen.nextHop(me, goal, via, function()
+				return false
+			end)).toBe(goal)
+		end
+	)
 end

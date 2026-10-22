@@ -136,24 +136,25 @@ end
 
 function CrewPay.pot(page: Instance): Pot
 	local f = card(page, "CrewPay")
-	local top = row(f, "Coin", 24, 100, 0)
+	text(row(f, "Title", 14, 34, 0), "Title", "Crew Pay", 26, C.text)
+	local top = row(f, "Coin", 60, 100, 0)
 	coin(top, 96).LayoutOrder = 1
-	local amount = row(f, "Cash", 130, 64, 0)
+	local amount = row(f, "Cash", 166, 64, 0)
 	local cash = text(amount, "Amount", "0", 56, C.gold)
 	cash.LayoutOrder = 1
 
-	local meter = frame(f, "Meter", IRON, UDim2.new(0.5, 0, 0, 208), UDim2.new(1, -40, 0, 26))
+	local meter = frame(f, "Meter", IRON, UDim2.new(0.5, 0, 0, 244), UDim2.new(1, -40, 0, 26))
 	meter.AnchorPoint = Vector2.new(0.5, 0)
 	meter.ClipsDescendants = true
 	HudTheme.corner(meter, 13)
 	local fill = frame(meter, "Fill", COIN, UDim2.new(), UDim2.fromScale(0, 1))
 	HudTheme.corner(fill, 13)
 
-	local info = row(f, "Info", 252, 48, 14)
+	local info = row(f, "Info", 288, 48, 14)
 	clock(info, 36).LayoutOrder = 1
 	local time = text(info, "Time", "0:00", 32, C.text)
 	time.LayoutOrder = 2
-	local rateRow = row(f, "Rate", 306, 44, 12)
+	local rateRow = row(f, "Rate", 342, 44, 12)
 	coin(rateRow, 30).LayoutOrder = 1
 	local rate = text(rateRow, "Rate", "0/h", 28, C.textDim)
 	rate.LayoutOrder = 2
@@ -185,10 +186,11 @@ end
 
 function CrewPay.rise(page: Instance): Rise
 	local f = card(page, "PayRise")
-	local arrowRow = row(f, "Arrow", 20, 72, 0)
+	text(row(f, "Title", 14, 34, 0), "Title", "Pay Rise", 26, C.text)
+	local arrowRow = row(f, "Arrow", 52, 72, 0)
 	local arrow = text(arrowRow, "Arrow", "▲", 60, C.gold)
 	arrow.LayoutOrder = 1
-	local pipsRow = row(f, "Level", 102, 64, 18)
+	local pipsRow = row(f, "Level", 134, 64, 18)
 	local pips = {}
 	for i = 1, 3 do
 		local pip = frame(pipsRow, `Pip{i}`, IRON, UDim2.new(), UDim2.fromOffset(60, 60))
@@ -198,12 +200,12 @@ function CrewPay.rise(page: Instance): Rise
 		pips[i] = pip
 	end
 
-	local info = row(f, "Rate", 186, 48, 14)
+	local info = row(f, "Rate", 218, 48, 14)
 	coin(info, 30).LayoutOrder = 1
 	local rate = text(info, "Rate", "0/h", 30, C.textDim)
 	rate.LayoutOrder = 2
 
-	local price = row(f, "Cost", 248, 60, 14)
+	local price = row(f, "Cost", 280, 60, 14)
 	local priceCoin = coin(price, 44)
 	priceCoin.LayoutOrder = 1
 	local cost = text(price, "Amount", "0", 48, C.text)

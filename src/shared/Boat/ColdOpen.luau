@@ -154,11 +154,19 @@ end
 -- 5. The first mission ends on land (docs/14 section 3). The recovery only completes once the
 --    casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the station
 --    slipway (Map.Slipways.StationSlipway, waterline about z 30) or the Haven Sands slipway
---    (WorldConfig.Slipways.SandsSlipway). `dry` is where the shore party takes them over.
+--    (WorldConfig.Slipways.SandsSlipway). `dry` is where the shore party takes them over. `via`:
+--    open-water turns the minimap route may go through (ColdOpen.nextHop) where the moored boats or
+--    the Dock jetty block the straight line (west of the jetty, its tip, east of it; Studio raycast checked).
+export type Shore = { id: string, water: Vector3, dry: Vector3, via: { Vector3 }? }
 ColdOpen.SHORE = {
-	{ id = "Station", water = Vector3.new(-165, 0, 38), dry = Vector3.new(-171, 0, 18) },
+	{
+		id = "Station",
+		water = Vector3.new(-165, 0, 38),
+		dry = Vector3.new(-171, 0, 18),
+		via = { Vector3.new(-165, 0, 120), Vector3.new(-112, 0, 130), Vector3.new(-80, 0, 120) },
+	},
 	{ id = "Sands", water = Vector3.new(1000, 0, 282), dry = Vector3.new(970, 0, 250) },
-}
+} :: { Shore }
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
 ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in
 ColdOpen.WELCOME = { from = "Chief Aggie", text = "Welcome to the crew." }
@@ -174,6 +182,51 @@ function ColdOpen.nearestShore(pos: Vector3): (any, number)
 		end
 	end
 	return best, bestD
+end
+
+-- The first point to steer for on the way from `from` to `goal`: the shortest chain of clear
+-- sightlines (clear(a, b): nothing solid between, e.g. a raycast) through the `via` turns. `goal`
+-- itself when the straight line is clear or no chain is.
+function ColdOpen.nextHop(
+	from: Vector3,
+	goal: Vector3,
+	via: { Vector3 },
+	clear: (Vector3, Vector3) -> boolean
+): Vector3
+	local nodes = { from }
+	table.move(via, 1, #via, 2, nodes)
+	table.insert(nodes, goal)
+	local n = #nodes
+	local dist, prev, done = { 0 }, {}, {}
+	for i = 2, n do
+		dist[i] = math.huge
+	end
+	while true do -- Dijkstra over a handful of nodes; an edge is tested only when it could help
+		local u, best = nil, math.huge
+		for i = 1, n do
+			if not done[i] and dist[i] < best then
+				u, best = i, dist[i]
+			end
+		end
+		if not u or u == n then
+			break
+		end
+		done[u] = true
+		for v = 2, n do
+			local w = dist[u] + (nodes[v] - nodes[u]).Magnitude
+			if not done[v] and w < dist[v] and clear(nodes[u], nodes[v]) then
+				dist[v], prev[v] = w, u
+			end
+		end
+	end
+	if dist[n] == math.huge then
+		return goal
+	end
+	local v = n
+	while prev[v] ~= 1 do
+		v = prev[v]
+	end
+	return nodes[v]
 end
 
 -- True when the cold open's recovery may complete: held, and at a shore point.

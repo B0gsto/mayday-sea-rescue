@@ -140,7 +140,7 @@ local MonetizationConfig = {
 		-- Day passes (proposed prices, not in docs/04 yet): a game pass's effect for 24 hours of real
 		-- time. MonetizationService.OwnsPass accepts a running one. No Day VIP until VipCrewCard is ready.
 		DayDoubleCash = {
-			id = 0,
+			id = 3721024854,
 			name = "Day 2x Cash",
 			description = "The 2x Cash pass for 24 hours of real time. The clock keeps running while you are away. Buy again to add a day.",
 			price = 15,
@@ -150,7 +150,7 @@ local MonetizationConfig = {
 			dayPassHours = 24,
 		},
 		DayQuickLaunch = {
-			id = 0,
+			id = 3721024872,
 			name = "Day Quick Launch",
 			description = "The Quick Launch pass for 24 hours of real time. The clock keeps running while you are away. Buy again to add a day.",
 			price = 10,
@@ -272,7 +272,7 @@ local MonetizationConfig = {
 		-- Vehicle passes (2026-10-21, user): own the vehicle at any rank (ProgressionRules.vehiclePass);
 		-- the premium six are Robux only (ProgressionConfig.Vehicles passOnly). Prices proposed -- tune.
 		RIBPass = {
-			id = 0,
+			id = 2044851404,
 			name = "RIB Inflatable",
 			description = "The RIB Inflatable: 3 crew, 3 casualties, fast and tough. Yours at any rank.",
 			price = 49,
@@ -281,7 +281,7 @@ local MonetizationConfig = {
 			vehicle = "RIB",
 		},
 		LifeboatPass = {
-			id = 0,
+			id = 2046219317,
 			name = "All-Weather Lifeboat",
 			description = "The All-Weather Lifeboat: 8 casualties, self-righting, a strong tow. Yours at any rank.",
 			price = 129,
@@ -290,7 +290,7 @@ local MonetizationConfig = {
 			vehicle = "Lifeboat",
 		},
 		BeachATVPass = {
-			id = 0,
+			id = 2044899375,
 			name = "Beach ATV",
 			description = "The Beach ATV quad bike for the sand. Yours at any rank.",
 			price = 25,
@@ -299,7 +299,7 @@ local MonetizationConfig = {
 			vehicle = "BeachATV",
 		},
 		CoastguardResponsePass = {
-			id = 0,
+			id = 2044617374,
 			name = "Coastguard Response 4x4",
 			description = "The Coastguard Response 4x4 with blue lights and a boat trailer. Yours at any rank.",
 			price = 49,
@@ -308,7 +308,7 @@ local MonetizationConfig = {
 			vehicle = "CoastguardResponse",
 		},
 		StormRunnerPass = {
-			id = 0,
+			id = 2047928682,
 			name = "Storm Runner",
 			description = "Storm Runner offshore powerboat: the fastest boat on the water. Robux only.",
 			price = 199,
@@ -317,7 +317,7 @@ local MonetizationConfig = {
 			vehicle = "StormRunner",
 		},
 		TidewalkerPass = {
-			id = 0,
+			id = 2044581381,
 			name = "Tidewalker",
 			description = "Tidewalker luxury catamaran: smooth in any sea, room for 6 casualties. Robux only.",
 			price = 249,
@@ -326,7 +326,7 @@ local MonetizationConfig = {
 			vehicle = "Tidewalker",
 		},
 		RiptideXPass = {
-			id = 0,
+			id = 2047802677,
 			name = "Riptide X",
 			description = "Riptide X sport jet ski: the quickest jet ski there is. Robux only.",
 			price = 129,
@@ -335,7 +335,7 @@ local MonetizationConfig = {
 			vehicle = "RiptideX",
 		},
 		GildedGullPass = {
-			id = 0,
+			id = 2044329361,
 			name = "Gilded Gull",
 			description = "Gilded Gull gold luxe jet ski: fast, steady and shining. Robux only.",
 			price = 199,
@@ -344,7 +344,7 @@ local MonetizationConfig = {
 			vehicle = "GildedGull",
 		},
 		HarbourGTPass = {
-			id = 0,
+			id = 2045541334,
 			name = "Harbour GT",
 			description = "Harbour GT sports coupe: the fastest car on the island. Robux only.",
 			price = 179,
@@ -353,7 +353,7 @@ local MonetizationConfig = {
 			vehicle = "HarbourGT",
 		},
 		LighthouseCruiserPass = {
-			id = 0,
+			id = 2046003338,
 			name = "Lighthouse Cruiser",
 			description = "Lighthouse Cruiser luxury SUV: 7 seats, quick and comfortable. Robux only.",
 			price = 149,

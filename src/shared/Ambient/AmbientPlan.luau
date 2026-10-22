@@ -44,9 +44,10 @@ export type Spot = {
 -- An R15 rig is about 100 instances: high = ~2k instances, well inside the docs/10 section 6.7 20k budget.
 -- RP-P1 trimmed the caps by about 15%: the crowd was not the frame-time cost, but it is free margin.
 AmbientPlan.CAPS = {
-	low = { people = 5, cars = 6, radius = 220 },
-	medium = { people = 10, cars = 12, radius = 300 },
-	high = { people = 18, cars = 20, radius = 380 },
+	-- cars: town has ~4500 studs of lane inside the medium ring, so 18 is one per ~250 (12 left roads empty for 30 s)
+	low = { people = 5, cars = 10, radius = 220 },
+	medium = { people = 10, cars = 18, radius = 300 },
+	high = { people = 18, cars = 28, radius = 380 },
 }
 
 -- Traffic scales with the road network: one car per LANE_PER_CAR studs of lane inside the ring, up to the tier cap.

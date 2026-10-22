@@ -56,6 +56,7 @@ local KEY: { [Enum.KeyCode]: string } = {
 	[Enum.KeyCode.LeftControl] = "Ctrl",
 	[Enum.KeyCode.Escape] = "Esc",
 	[Enum.KeyCode.Backquote] = "`",
+	[Enum.KeyCode.Backspace] = "Bksp",
 }
 
 function InputGlyph.text(kb: Enum.KeyCode?, pad: Enum.KeyCode?): string

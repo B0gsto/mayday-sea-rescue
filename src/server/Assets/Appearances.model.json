@@ -4724,6 +4724,122 @@
    ]
   },
   {
+   "Name": "M_Veh_JetSki_GildedGull",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://112323923633015",
+        "NormalMap": "rbxassetid://110345231974296",
+        "RoughnessMap": "rbxassetid://111916515268498",
+        "MetalnessMap": "rbxassetid://89869834264728"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://102324946078970",
+        "NormalMap": "rbxassetid://110345231974296",
+        "RoughnessMap": "rbxassetid://120257093938207",
+        "MetalnessMap": "rbxassetid://89869834264728"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Sled",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://136301193843292",
+        "NormalMap": "rbxassetid://116314324693782",
+        "RoughnessMap": "rbxassetid://95324476083223",
+        "MetalnessMap": "rbxassetid://128630289192055"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://108239369736264",
+        "NormalMap": "rbxassetid://116314324693782",
+        "RoughnessMap": "rbxassetid://124092759521652",
+        "MetalnessMap": "rbxassetid://128630289192055"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Veh_JetSki_RiptideX",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Hull",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://101574638348812",
+        "NormalMap": "rbxassetid://92920781474021",
+        "RoughnessMap": "rbxassetid://120167090208955",
+        "MetalnessMap": "rbxassetid://86756156058435"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://104926642189306",
+        "NormalMap": "rbxassetid://92920781474021",
+        "RoughnessMap": "rbxassetid://132034814091871",
+        "MetalnessMap": "rbxassetid://86756156058435"
+       }
+      }
+     ]
+    },
+    {
+     "Name": "Sled",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://115478972933315",
+        "NormalMap": "rbxassetid://137001216216533",
+        "RoughnessMap": "rbxassetid://125138890801021",
+        "MetalnessMap": "rbxassetid://134035974110775"
+       }
+      },
+      {
+       "Name": "Wet",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://93181575501234",
+        "NormalMap": "rbxassetid://137001216216533",
+        "RoughnessMap": "rbxassetid://123176720383796",
+        "MetalnessMap": "rbxassetid://134035974110775"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Veh_Kayak",
    "ClassName": "Folder",
    "Children": [

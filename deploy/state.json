@@ -10,12 +10,24 @@
       "CashBoost": 3719524939,
       "CrewBoost": 3719524950,
       "CallTheStorm": 3719524960,
-      "CallTheGreatStorm": 3719525027
+      "CallTheGreatStorm": 3719525027,
+      "DayDoubleCash": 3721024854,
+      "DayQuickLaunch": 3721024872
     },
     "GamePasses": {
       "DoubleCash": 2040015521,
       "QuickLaunch": 2036073727,
-      "StarterKit": 2036091711
+      "StarterKit": 2036091711,
+      "RIBPass": 2044851404,
+      "LifeboatPass": 2046219317,
+      "BeachATVPass": 2044899375,
+      "CoastguardResponsePass": 2044617374,
+      "StormRunnerPass": 2047928682,
+      "TidewalkerPass": 2044581381,
+      "RiptideXPass": 2047802677,
+      "GildedGullPass": 2044329361,
+      "HarbourGTPass": 2045541334,
+      "LighthouseCruiserPass": 2046003338
     }
   },
   "placeVersion": 25

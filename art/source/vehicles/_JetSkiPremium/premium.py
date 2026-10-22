@@ -153,7 +153,7 @@ def pattern(name, kind):
         rgh = _math(nt, "MULTIPLY_ADD", thread, -0.1, rgh)
         puff = _maprange(nt, _math(nt, "MINIMUM", du, dv), 0.0, 0.16)
         h = _math(nt, "ADD", _math(nt, "POWER", puff, 0.5), _math(nt, "MULTIPLY", thread, 0.35))
-        nrm = _bump(nt, h, 0.55, nrm)
+        nrm = _bump(nt, h, 0.95, nrm)
     elif kind == "forged":
         # forged carbon: black resin with pressed chopped-tow flakes (scale-free, holds at any texel density)
         a = _maprange(nt, _noise(nt, co, 20.0, 1.0), 0.49, 0.52)
@@ -261,17 +261,134 @@ def rescue_text(mat):
     return fn
 
 
-SEAT_SECS = [(1.46, 0.76, 2.52), (2.02, 0.74, 2.5), (2.12, 0.76, 2.52), (2.16, 0.74, 2.5), (2.42, 0.72, 2.46),
-             (2.45, 0.715, 2.455), (2.6, 0.62, 2.36), (2.69, 0.44, 2.2), (2.72, 0.18, 2.0)]
+# =========================================================================== sport hull (AD rounds 1-2: "reads as a tub")
+# Deep-V bottom to a hard chine flat and step, short topsides leaning in (tumblehome) to a rub rail that sweeps up to
+# the bow, a sloped deck shoulder (gunwale step), deep footwells (floor FOOT_Z) ending at a raised stern platform (the
+# base's ZF, where the grab handle and mast stand), a raked stem (sheared aft below the bow eye), rounded stern
+# quarters. Nose tip, bow eye, deck heights forward and every marker stay the base's.
+HULL = dict(t_aft=0.42, t_bow=0.45, keel_nose=1.0, zg_aft=1.66, zg_rise=0.55, rail_drop=0.46, step=0.2,
+            crown=3.1, rake=0.6)
+FOOT_Z = 1.25
+H = dict(HULL)
+_half_beam = P.half_beam
 
 
-def make_seat(mats, top, p, sculpt=None, secs=SEAT_SECS):
+def floor_z(y):
+    """Footwell floor: deep along the seat, up to the stern platform (ZF) aft."""
+    return FOOT_Z + (P.ZF - FOOT_Z) * smooth(3.85, 4.2, y)
+
+
+def rake(co):
+    """Raked stem: sheared aft below the bow eye (z 1.62), most at the forefoot, fading out 2 studs aft."""
+    w = max(0.0, 1 - (co.y - P.NOSE) / 2.0)
+    k = min(max((1.6 - co.z) / 0.6, 0.0), 1.0) ** 1.3
+    return Vector((co.x, co.y + H["rake"] * k * w, co.z))
+
+
+def raked(fn):
+    def f(g):
+        start = len(g.bm.verts)
+        out = fn(g)
+        R.deform(g, start, rake)
+        return out
+    return f
+
+
+def use_sport_hull(**kw):
+    H.update(kw)
+
+    def half_beam(y):
+        return _half_beam(y) - 0.32 * smooth(P.TRANSOM - 0.9, P.TRANSOM, y) ** 2   # rounded stern quarters
+
+    def keel_z(y):
+        return H["keel_nose"] * max(0.0, (0.4 - P._u(y)) / 0.4) ** 1.9
+
+    def deadrise(y):
+        return H["t_aft"] + H["t_bow"] * max(0.0, (0.5 - P._u(y)) / 0.5) ** 1.5
+
+    def gunwale_z(y):
+        return H["zg_aft"] + H["zg_rise"] * max(0.0, (0.5 - P._u(y)) / 0.5) ** 1.1
+
+    def top_z(x, y):
+        b, zg = P.half_beam(y), P.gunwale_z(y)
+        crown = (H["crown"] - zg - 0.06) * (0.25 + 0.75 * smooth(P.NOSE, -1.5, y) ** 0.8)   # tall cowl
+        hood = zg + 0.06 + crown * max(0.0, 1 - (abs(x) / b) ** 1.6) ** 0.6                   # peaked ridge
+        return hood + (floor_z(y) - hood) * P.footwell(y)
+
+    def profile(y):
+        b, zk, t, zg = P.half_beam(y), P.keel_z(y), P.deadrise(y), P.gunwale_z(y)
+        z2 = zk + 0.84 * b * t
+        zr = max(zg - H["rail_drop"], z2 + 0.2)
+        s = min(H["step"], 0.12 * b)
+        x10, x11 = b - s - min(0.08, 0.05 * b), b - s - min(0.16, 0.1 * b)
+        f = P.footwell(y)
+        pts = [(0.0, zk), (0.45 * b, zk + 0.45 * b * t), (0.84 * b, z2), (b + 0.02, z2 + 0.01), (b + 0.03, z2 + 0.07),
+               (b - 0.03, zr), (b + 0.06, zr + 0.04), (b + 0.06, zr + 0.13), (b - 0.02, zr + 0.17), (b - s, zg),
+               (x10, zg + 0.03)]
+        hood11 = P.top_z(x11, y)
+        pts.append((x11, hood11 + (floor_z(y) - hood11) * f))
+        for x in (0.35 * b, 0.17 * b, 0.0):
+            pts.append((x, P.top_z(x, y)))
+        return pts
+
+    P.half_beam, P.keel_z, P.deadrise, P.gunwale_z, P.top_z, P.profile = \
+        half_beam, keel_z, deadrise, gunwale_z, top_z, profile
+    P.footwell = lambda y: smooth(-1.2, -0.45, y)     # console flank runs back to the (shorter) seat
+    # nav housings exactly where the base put them (Builder lights them at M_Veh_JetSki's ATT_Nav markers)
+    P.nav_light_pos = lambda sx: Vector(B.ATTACHMENTS["ATT_NavPort" if sx > 0 else "ATT_NavStarboard"]) - \
+        Vector((sx * 0.1, -0.03, 0.0))
+    # gunwale cleats onto the (stepped-in) gunwale top
+    _cleat = P.cleat
+    P.cleat = lambda g, c: _cleat(g, c - Vector((math.copysign(0.12, c.x), 0, 0.0)) if abs(c.x) > 0.3 else c)
+
+
+def nav_pedestals(g):
+    """Moulded pods carrying the nav housings down to the (now lower) gunwale."""
+    for sx in (1, -1):
+        p = P.nav_light_pos(sx)
+        z0 = P.profile(p.y)[8][1] - 0.04          # from the rail top, over the sloped shoulder
+        top = p.z - 0.07
+        if top - z0 > 0.02:
+            R.box(g, (p.x, p.y, (z0 + top) / 2), (0.18, 0.36, top - z0), M(g, "PWCOrangeDark"), bev=0.02 if g.hi else None)
+
+
+def fittings(g):
+    P.fittings(g)
+    nav_pedestals(g)
+
+
+def sponsons(g, mat):
+    """Sponsons: wedge ledges off the chine on the aft quarters (the base's little boxes end up buried in the hull)."""
+    n = 16 if g.hi else 8
+    y0, y1 = 2.0, P.TRANSOM - 0.02
+    for sx in (1, -1):
+        rings = []
+        for i in range(n + 1):
+            y = y0 + (y1 - y0) * i / n
+            e = smooth(y0, y0 + 1.0, y)
+            pr = P.profile(y)
+            (x3, z3), (x4, z4), (x5, z5) = pr[3], pr[4], pr[5]
+            a = Vector((sx * (x3 - 0.04), y, z3 - 0.01))
+            tip = Vector((sx * (x4 + 0.02 + 0.1 * e), y, z3 - 0.02 + 0.02 * e))
+            c = Vector((sx * (x4 + 0.45 * (x5 - x4)), y, z4 + 0.45 * (z5 - z4)))
+            rings.append([a, tip, c])
+        g.rings(rings, M(g, mat), closed=True, cap0=True, cap1=True)
+
+
+SEAT_C = 2.05                # shorter than the base's (starts 0.45 further aft), rider still on ATT_DriverSeat
+SEAT_SECS = [(1.2, 0.64, 2.3), (2.02, 0.62, 2.28), (2.12, 0.64, 2.3), (2.16, 0.62, 2.28), (2.42, 0.6, 2.24),
+             (2.45, 0.595, 2.235), (2.6, 0.5, 2.16), (2.68, 0.34, 2.02), (2.72, 0.12, 1.84)]
+
+
+def make_seat(mats, top, p, sculpt=None, secs=SEAT_SECS, step=lambda y: 0.16 * smooth(1.8, 2.8, y), taper=0.8):
+    """Narrow raised saddle: tapers to `taper` of its width at the nose (rider's knees), stepped by step(y)."""
     def seat(g):
         seg = 72 if g.hi else 48
         start = len(g.bm.verts)
-        R.loft(g, [(0, P.SEAT_C, z, hx, hy) for z, hx, hy in secs], seg, M(g, top), cap0=False, cap1=True, p=p,
+        R.loft(g, [(0, SEAT_C, z, hx, hy) for z, hx, hy in secs], seg, M(g, top), cap0=False, cap1=True, p=p,
                matfn=(lambda i, j: mats[i]) if g.hi else None)
-        R.deform(g, start, lambda c: Vector((c.x, c.y, c.z + (0.16 * smooth(1.8, 2.8, c.y) if c.z > 2.2 else 0.0))))
+        R.deform(g, start, lambda c: Vector((c.x * (taper + (1 - taper) * smooth(-0.2, 1.3, c.y)), c.y,
+                                             c.z + (step(c.y) if c.z > 2.2 else 0.0))))
         if sculpt:
             R.deform(g, start, sculpt)
     return seat
@@ -280,15 +397,16 @@ def make_seat(mats, top, p, sculpt=None, secs=SEAT_SECS):
 def build_style(style):
     """Builds LOD0 + _HP + _COL + markers for a style and returns the run.py spec."""
     NAME, TEX = style["name"], style["tex"]
-    hull_set = R.build_set("Hull", [(NAME + "_Hull_LOD0", P.hull), (NAME + "_HullSeat_LOD0", style["seat"]),
-                                    (NAME + "_HullTrim_LOD0", style["trim"])],
+    hull, trim = raked(P.hull), raked(style["trim"])
+    hull_set = R.build_set("Hull", [(NAME + "_Hull_LOD0", hull), (NAME + "_HullSeat_LOD0", style["seat"]),
+                                    (NAME + "_HullTrim_LOD0", trim)],
                            B.boosted_uv(style.get("uv_boost", {1: 1.25, 2: 1.4})), "MI_%s_Hull" % TEX)
     sled_set = R.build_set("Sled", [(NAME + "_Sled_LOD0", style["sled"]), (NAME + "_SledFittings_LOD0", style["fittings"]),
                                     (NAME + "_SledCockpit_LOD0", P.base_bars)], rbxkit.smart_uv, "MI_%s_Sled" % TEX)
     hps = [
-        R.build_hp(NAME + "_Hull_HP", [P.hull] + style.get("hull_hp", [])),
+        R.build_hp(NAME + "_Hull_HP", [hull] + [raked(f) for f in style.get("hull_hp", [])]),
         R.build_hp(NAME + "_HullSeat_HP", [style["seat"]]),
-        R.build_hp(NAME + "_HullTrim_HP", [style["trim"]]),
+        R.build_hp(NAME + "_HullTrim_HP", [trim]),
         R.build_hp(NAME + "_Sled_HP", [style["sled"], style["sled_text"]], bevel=dict(width=0.012, segments=2, angle=40)),
         R.build_hp(NAME + "_SledFittings_HP", [style["fittings"]], bevel=dict(width=0.01, segments=2, angle=40)),
         R.build_hp(NAME + "_SledCockpit_HP", [P.base_bars, P.display_screen], bevel=dict(width=0.006, segments=2, angle=40)),
@@ -322,8 +440,8 @@ def build_style(style):
     meshes += [{"object": h} for h in hps] + [{"object": col}]
     wet = {"wet": True, "wet_darken": 0.45, "wet_gloss": 0.2, "wet_streaks": 0.45, "cage_extrusion": 0.05,
            "max_ray_distance": 0.12}
-    sets = [dict(wet, name=TEX, set="Hull", size=2048, wear=style["wear_hull"]),
-            dict(wet, name=TEX, set="Sled", size=2048, wear=style["wear_sled"])]
+    sets = [dict(wet, name=TEX, set="Hull", size=1024, wear=style["wear_hull"]),
+            dict(wet, name=TEX, set="Sled", size=1024, wear=style["wear_sled"])]
 
     def at(p):
         return [round(c, 3) for c in Vector(p) + off]
@@ -339,6 +457,8 @@ def build_style(style):
         "bake_samples": 16,
         "closeups": [dict(c, target=at(c["target"])) for c in style["closeups"]],
         "waivers": {
+            "texel density": "ship maps are 1024 (Roblox downsamples to 1024 at run time); 2 sets (Hull, Sled) per the "
+                             "jet ski frame, as the other premium vehicles.",
             "LOD UV layout": "LOD1 / LOD2 collapse decimation shifts the borders of small fitting, handle, bar and "
                              "trim UV islands; LOD1 is seen beyond 150 studs and LOD2 beyond 500, where the maps are "
                              "mip-mapped far below the island size (as M_Veh_JetSki).",

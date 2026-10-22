@@ -224,6 +224,11 @@ local function makeRow(parent: Instance, order: number, onClaim: (tier: number) 
 
 	local label = HudTheme.label("Reward", "", UDim2.new(1, -184, 1, 0), HudTheme.HeaderFont, 20, b)
 	label.Position = UDim2.fromOffset(100, 0)
+	-- a long name ("Lantern") shrinks beside the Claim pill instead of cutting off; never above its size
+	label.TextScaled = true
+	local fit = Instance.new("UITextSizeConstraint")
+	fit.MaxTextSize = label.TextSize
+	fit.Parent = label
 
 	-- right edge: a tick (claimed), a Claim pill (reached) or a lock (not yet)
 	local tick = shape(b, C.ready, 1, 0.5, 0, 0, 99)
@@ -420,6 +425,8 @@ function SeasonBook.build(gui: ScreenGui, onClaim: (tier: number) -> ()): Book
 				drawIcon(row.icon, kind)
 				row.tick.Visible = def.claimed
 				row.claim.Visible = claimable
+				-- the lock and the tick are narrower than the Claim pill: the name gets that room
+				row.label.Size = UDim2.new(1, if claimable then -184 else -152, 1, 0)
 				row.dim.Visible = not def.reached
 				row.lock.Visible = not def.reached
 				row.stroke.Enabled = claimable

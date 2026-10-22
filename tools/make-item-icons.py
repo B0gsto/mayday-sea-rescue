@@ -303,6 +303,98 @@ def finish(key, src, dst):
     im.resize((512, 512), Image.LANCZOS).save(dst, optimize=True)
 
 
+# ------------------------------------------------------------------ vehicle / day pass cards
+# Blender renders these as transparent cut-outs; finish_card lays them on a bright rounded-square gradient.
+SEA, JET, LAND = ((96, 232, 220), (0, 96, 128)), ((255, 204, 80), (236, 84, 18)), ((255, 206, 92), (206, 36, 64))
+CARDS = {  # key -> (top/bottom colours, premium)
+    "RIBPass": (SEA, False), "LifeboatPass": (SEA, False), "StormRunnerPass": (SEA, True), "TidewalkerPass": (SEA, True),
+    "RiptideXPass": (JET, True), "GildedGullPass": (JET, True),
+    "BeachATVPass": (LAND, False), "CoastguardResponsePass": (LAND, False), "HarbourGTPass": (LAND, True),
+    "LighthouseCruiserPass": (LAND, True),
+    "DayDoubleCash": (((150, 120, 255), (58, 28, 150)), False), "DayQuickLaunch": (((110, 214, 255), (18, 84, 196)), False),
+}
+GOLD = (255, 208, 96)
+
+
+def sparkle(d, c, r, fill):
+    x, y = c
+    w = r * 0.22
+    d.polygon([(x, y - r), (x + w, y - w), (x + r, y), (x + w, y + w), (x, y + r), (x - w, y + w), (x - r, y), (x - w, y - w)], fill=fill)
+
+
+def day_badge(im):
+    """Sun-rayed 24h clock, top right: the same badge on every day pass."""
+    S = im.width
+    cx, cy, r = S * 0.80, S * 0.20, S * 0.135
+    L = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(L)
+    for i in range(12):
+        a = i / 12 * math.tau
+        p = [(cx + math.cos(a + s) * r * k, cy + math.sin(a + s) * r * k) for s, k in ((-0.13, 1.05), (0, 1.42), (0.13, 1.05))]
+        d.polygon(p, fill=(255, 196, 40))
+    d.ellipse([cx - r * 1.08, cy - r * 1.08, cx + r * 1.08, cy + r * 1.08], fill=(255, 196, 40))
+    d.ellipse([cx - r * 0.9, cy - r * 0.9, cx + r * 0.9, cy + r * 0.9], fill=(255, 255, 255))
+    for i in range(12):
+        a = i / 12 * math.tau
+        d.line([(cx + math.cos(a) * r * 0.72, cy + math.sin(a) * r * 0.72), (cx + math.cos(a) * r * 0.84, cy + math.sin(a) * r * 0.84)],
+               fill=(40, 40, 70), width=int(S * 0.008))
+    d.text((cx, cy + r * 0.04), "24h", font=font(COND, int(r * 0.78), 8), fill=(40, 40, 70), anchor="mm")
+    sh = L.getchannel("A").filter(ImageFilter.GaussianBlur(S * 0.012)).point(lambda v: int(v * 0.45))
+    im.paste((0, 0, 40), (int(S * 0.006), int(S * 0.012)), sh)
+    im.alpha_composite(L)
+
+
+def finish_card(key, src, dst):
+    (top, bot), premium = CARDS[key]
+    art = Image.open(src).convert("RGBA")
+    S = art.width
+    grad = Image.new("RGB", (1, S))
+    for y in range(S):
+        t = y / (S - 1)
+        grad.putpixel((0, y), tuple(int(a + (b - a) * t) for a, b in zip(top, bot)))
+    im = grad.resize((S, S)).convert("RGBA")
+    glow = Image.new("L", (S, S), 0)
+    ImageDraw.Draw(glow).ellipse([S * 0.1, S * 0.12, S * 0.9, S * 0.82], fill=110)
+    im.paste((255, 255, 240), (0, 0), glow.filter(ImageFilter.GaussianBlur(S * 0.12)))
+    d = ImageDraw.Draw(im)
+    if key == "DayQuickLaunch":  # speed lines trailing the stern (bow points right)
+        art = art.resize((int(S * 0.92), int(S * 0.92)), Image.LANCZOS)
+        for i, (y, x0, x1) in enumerate(((0.46, 0.03, 0.28), (0.56, 0.08, 0.34), (0.66, 0.02, 0.26), (0.76, 0.09, 0.30))):
+            d.line([(S * x0, S * y), (S * x1, S * y)], fill=(255, 255, 255, 230), width=int(S * 0.028))
+            for x in (x0, x1):
+                d.ellipse([S * x - S * 0.014, S * y - S * 0.014, S * x + S * 0.014, S * y + S * 0.014], fill=(255, 255, 255, 230))
+        im.alpha_composite(art, (int(S * 0.08), int(S * 0.13)))
+    elif key == "DayDoubleCash":
+        art = art.resize((int(S * 0.84), int(S * 0.84)), Image.LANCZOS)
+        im.alpha_composite(art, (int(S * 0.08), int(S * 0.15)))
+    else:
+        im.alpha_composite(art)
+    if key.startswith("Day"):
+        day_badge(im)
+    if key == "DayDoubleCash":
+        f = font(COND, int(S * 0.36), 8)
+        x, y = S * 0.06, S * 0.02
+        sh = Image.new("L", (S, S), 0)
+        ImageDraw.Draw(sh).text((x + S * 0.008, y + S * 0.014), "2x", font=f, fill=200)
+        im.paste((20, 0, 60), (0, 0), sh.filter(ImageFilter.GaussianBlur(S * 0.01)))
+        ImageDraw.Draw(im).text((x, y), "2x", font=f, fill=(255, 255, 255), stroke_width=int(S * 0.014), stroke_fill=(60, 20, 120))
+    rad, w = int(S * 0.2), int(S * 0.016)
+    if premium:
+        d = ImageDraw.Draw(im)
+        d.rounded_rectangle([w // 2, w // 2, S - 1 - w // 2, S - 1 - w // 2], radius=rad, outline=GOLD, width=w)
+        d.rounded_rectangle([w * 1.6, w * 1.6, S - 1 - w * 1.6, S - 1 - w * 1.6], radius=rad - w, outline=(255, 240, 190, 150), width=max(2, w // 4))
+        sp = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        sd = ImageDraw.Draw(sp)
+        for (x, y, r) in ((0.86, 0.13, 0.055), (0.76, 0.07, 0.026), (0.12, 0.86, 0.04)):
+            sparkle(sd, (S * x, S * y), S * r, (255, 246, 200, 255))
+        im.alpha_composite(Image.merge("RGBA", (*sp.split()[:3], sp.getchannel("A").filter(ImageFilter.GaussianBlur(S * 0.01)))))
+        im.alpha_composite(sp)
+    mask = Image.new("L", (S, S), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, S - 1, S - 1], radius=rad, fill=255)
+    im.putalpha(mask)
+    im.resize((512, 512), Image.LANCZOS).save(dst, optimize=True)
+
+
 def contact_sheet(rows):
     cell, cap, cols = 300, 34, 6
     n = len(rows)
@@ -350,7 +442,7 @@ def main():
         if not os.path.exists(src):
             missing.append(k)
             continue
-        finish(k, src, os.path.join(OUT, k + ".png"))
+        (finish_card if k in CARDS else finish)(k, src, os.path.join(OUT, k + ".png"))
     contact_sheet(rows)
     print(f"icons: {len(todo) - len(missing)} written to {OUT}; sheet {SHEET}" + (f"; MISSING {missing}" if missing else ""))
     sys.exit(1 if missing else 0)

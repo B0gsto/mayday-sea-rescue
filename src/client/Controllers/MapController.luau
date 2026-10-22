@@ -30,6 +30,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
@@ -284,6 +285,33 @@ local function nearestDropOff(from: Vector3): Vector3
 	return best
 end
 
+-- The cold open's way home: the next open-water turn toward the nearest shore point (ColdOpen.nextHop),
+-- hull-height raycasts against the world (moored boats, jetties), worked out twice a second.
+local seaParams = RaycastParams.new()
+seaParams.IgnoreWater = true
+seaParams.RespectCanCollide = true
+local hopAt, hop = 0, Vector3.zero
+local function seaClear(a: Vector3, b: Vector3): boolean
+	local d = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
+	return not (
+		Workspace:Raycast(Vector3.new(a.X, 1.5, a.Z), d, seaParams)
+		or Workspace:Raycast(Vector3.new(a.X, 3.5, a.Z), d, seaParams)
+	)
+end
+local function coldOpenHop(me: Vector3): Vector3
+	if os.clock() - hopAt >= 0.5 then
+		hopAt = os.clock()
+		local ignore: { Instance } = { player.Character :: Instance }
+		for _, name in { "Vehicles", "CallProps", "AmbientLocal" } do
+			table.insert(ignore, Workspace:FindFirstChild(name) :: Instance)
+		end
+		seaParams.FilterDescendantsInstances = ignore
+		local shore = ColdOpen.nearestShore(me)
+		hop = ColdOpen.nextHop(me, shore.water, shore.via or {}, seaClear)
+	end
+	return hop
+end
+
 -- Every blip this frame, plus the objective (where the route line goes).
 local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	local S = MapConfig.Styles
@@ -349,7 +377,20 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			})
 			target = target or s.position
 		end
-		if onBoard then
+		if onBoard and player:GetAttribute("ColdOpenActive") == true then
+			-- the first mission heads for its shore cue (the station slipway) through open water: the line to
+			-- the Dock pad ran into the moored crabber and pinned the jet ski against the jetty
+			for _, sp in ColdOpen.SHORE do
+				table.insert(list, {
+					id = `Drop{sp.id}`,
+					pos = sp.water,
+					style = S.DropOff,
+					clamp = true,
+					size = 24,
+				})
+			end
+			objective, objectiveLabel = coldOpenHop(me), "Drop-off"
+		elseif onBoard then
 			for name, p in MapConfig.DropOffs do
 				table.insert(
 					list,

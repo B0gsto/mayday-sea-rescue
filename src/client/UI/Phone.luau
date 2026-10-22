@@ -291,7 +291,8 @@ local GLYPHS: { [string]: (Frame, Color3) -> () } = {
 }
 
 local function focus(obj: GuiObject?)
-	if obj and UserInputService.GamepadEnabled then
+	-- a keyboard user who has started navigating (an arrow or Return, see shortcut) keeps a selection
+	if obj and (UserInputService.GamepadEnabled or GuiService.SelectedObject ~= nil) then
 		GuiService.SelectedObject = obj
 	end
 end
@@ -392,6 +393,8 @@ local function closeApp()
 end
 
 local function showHome()
+	-- hiding the app clears a keyboard selection: read it first so focus() keeps navigating
+	local navigating = GuiService.SelectedObject ~= nil
 	if current then
 		closeApp()
 	end
@@ -401,7 +404,12 @@ local function showHome()
 	backButton.Visible = false
 	clockLabel.Visible = true
 	popIcons(0)
-	focus(tiles[1] and tiles[1].button)
+	local first = tiles[1] and tiles[1].button
+	if navigating then
+		GuiService.SelectedObject = first
+	else
+		focus(first)
+	end
 end
 
 local function back()
@@ -998,8 +1006,9 @@ local function buildStatusBar(parent: Frame)
 	backButton = Instance.new("TextButton")
 	backButton.Name = "Back"
 	backButton.Text = ""
-	backButton.Position = UDim2.fromOffset(14, 7)
-	backButton.Size = UDim2.fromOffset(60, 32)
+	-- narrow: the key chip beside it must clear the island (ear = 102 du)
+	backButton.Position = UDim2.fromOffset(10, 7)
+	backButton.Size = UDim2.fromOffset(40, 32)
 	backButton.BackgroundColor3 = W
 	backButton.BackgroundTransparency = 0.86
 	backButton.AutoButtonColor = true
@@ -1007,13 +1016,13 @@ local function buildStatusBar(parent: Frame)
 	HudTheme.corner(backButton, 16)
 	backButton.Parent = barFrame
 	-- a drawn chevron
-	for _, spec in { { 0.38, 0.5 - 0.11, -45 }, { 0.38, 0.5 + 0.11, 45 } } do
-		local stroke = box(backButton, W, spec[1], spec[2], 0.22, 0.1, 99)
+	for _, spec in { { 0.42, 0.5 - 0.11, -45 }, { 0.42, 0.5 + 0.11, 45 } } do
+		local stroke = box(backButton, W, spec[1], spec[2], 0.33, 0.1, 99)
 		stroke.Rotation = spec[3]
 	end
 	local backChip = InputGlyph.chip(backButton, Enum.KeyCode.Backspace, Enum.KeyCode.ButtonB)
 	backChip.AnchorPoint = Vector2.new(0, 0.5)
-	backChip.Position = UDim2.new(1, 6, 0.5, 0)
+	backChip.Position = UDim2.new(1, 4, 0.5, 0)
 	backButton.Activated:Connect(showHome)
 
 	-- the time in the left ear, signal and battery in the right (iOS)
@@ -1449,8 +1458,26 @@ local function build(statusRegion: Frame)
 end
 
 -- J (on foot: J is also the car's lights) / L3 -> Logbook; Start -> Settings; again closes
+local NAV_KEYS = {
+	[Enum.KeyCode.Up] = true,
+	[Enum.KeyCode.Down] = true,
+	[Enum.KeyCode.Left] = true,
+	[Enum.KeyCode.Right] = true,
+	[Enum.KeyCode.Return] = true,
+}
+
 local function shortcut(input: InputObject, processed: boolean)
 	local key = input.KeyCode
+	-- keyboard: the first arrow or Return selects, then Roblox's selection navigation moves and presses
+	if open and NAV_KEYS[key] then
+		local sel = GuiService.SelectedObject
+		if not (sel and gui and sel:IsDescendantOf(gui)) then
+			GuiService.SelectedObject = if current
+				then firstButton(content) or backButton
+				else tiles[1] and tiles[1].button
+		end
+		return
+	end
 	local app: string? = nil
 	if key == Enum.KeyCode.ButtonStart then
 		app = "Settings"
@@ -1485,6 +1512,20 @@ function Phone.mount(statusRegion: Frame)
 		return Enum.ContextActionResult.Sink
 	end, false, Enum.KeyCode.P, Enum.KeyCode.ButtonL1)
 	UserInputService.InputBegan:Connect(shortcut)
+	-- the mouse takes over from keyboard / pad navigation: drop the selection outline
+	local function mouseUsed(input: InputObject)
+		local t = input.UserInputType
+		local sel = GuiService.SelectedObject
+		if
+			(t == Enum.UserInputType.MouseMovement or t == Enum.UserInputType.MouseButton1)
+			and sel
+			and sel:IsDescendantOf(gui)
+		then
+			GuiService.SelectedObject = nil
+		end
+	end
+	UserInputService.InputChanged:Connect(mouseUsed)
+	UserInputService.InputBegan:Connect(mouseUsed)
 	task.spawn(function()
 		while true do
 			if open then

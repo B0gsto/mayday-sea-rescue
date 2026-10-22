@@ -671,7 +671,7 @@ function AmbientController.Start()
 			-- wait for the player (on foot or driving) in the lane ahead: the body is solid, it must not shove them
 			local target = CAR_SPEED
 			if hrp and hrp:IsA("BasePart") then
-				local rel = hrp.Position - p
+				local rel = (hrp.Position - p) * Vector3.new(1, 0, 1) -- flat: the lane line sits below the deck and the HRP
 				local ahead = rel:Dot(d)
 				if ahead > 0 and ahead < 22 and (rel - d * ahead).Magnitude < reach then
 					target = 0

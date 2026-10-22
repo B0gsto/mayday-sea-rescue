@@ -1624,6 +1624,135 @@ def s_dog_friends():
         json.dump(grid, open(os.path.join(OUT, "WaterDogFriends_probe.json"), "w"))
 
 
+# ------------------------------------------------------------------ vehicle passes + day passes (transparent cut-outs)
+# make-item-icons.py lays these on a coloured rounded-square card (finish_card); the shadow catcher keeps the floor
+# shadow in the alpha.
+def cutout_studio(objs, cam_az, premium=False):
+    sc = bpy.context.scene
+    sc.render.film_transparent = True
+    try:
+        sc.view_settings.look = "AgX - Punchy"
+    except TypeError:
+        pass
+    world_hdri("studio_small_08_2k.hdr", strength=0.9)
+    sun(62, cam_az - 35, 3.4, color=(1.0, 0.97, 0.92), soft=9)
+    rim = sun(28, cam_az + 150, 3.0 if premium else 1.6, color=(1.0, 0.72, 0.3) if premium else (0.85, 0.92, 1.0))
+    rim.data.use_shadow = False
+    lo, hi = bbox(objs)
+    s = (hi - lo).length * 6
+    floor = obj_from("plane", "ShadowCatcher", loc=((lo.x + hi.x) / 2, (lo.y + hi.y) / 2, lo.z), scale=(s, s, 1))
+    floor.is_shadow_catcher = True
+
+
+def s_pass(kind, premium=False, az=35, el=17, fill=0.8, objs=None):
+    if objs is None:
+        reset()
+        _, objs = vehicle(kind)
+    cutout_studio(objs, az, premium)
+    frame_tight(objs, az, el, lens=50, fill=fill)
+
+
+def lifeboat():
+    """Severn-class all-weather lifeboat (17.3 m x 5.9 m), bow to -Y, after the in-game code-built Builder hull:
+    navy hull, orange topsides and wheelhouse, white roof, mast with a blue beacon. No Blender asset exists yet."""
+    import bmesh
+    navy, orange = mat("Navy", (0.01, 0.03, 0.12), rough=0.35, coat=0.5), mat("Orange", (0.95, 0.22, 0.02), rough=0.35, coat=0.4)
+    white, grey = mat("White", (0.85, 0.86, 0.88), rough=0.4), mat("Deck", (0.35, 0.37, 0.4), rough=0.7)
+    glass = mat("Glass", (0.01, 0.015, 0.02), rough=0.08, coat=1.0)
+    blue = mat("Beacon", (0.1, 0.3, 1.0), emit=(0.1, 0.35, 1.0), emit_strength=12)
+    me = bpy.data.meshes.new("Hull")
+    bm = bmesh.new()
+    secs = []
+    for i in range(17):
+        t = i / 16  # 0 stern .. 1 bow
+        y = 8.6 - t * 17.2
+        hb = 2.95 * (1.0 if t < 0.45 else math.sqrt(max(0.0, 1 - ((t - 0.45) / 0.55) ** 2.2)))
+        hb = max(hb, 0.05)
+        keel = 0.0 if t < 0.8 else (t - 0.8) * 4.0
+        deck = 2.3 + 0.9 * t ** 3
+        ring = [(0, keel), (hb * 0.7, keel + 0.45), (hb, 1.25), (hb, 1.75), (hb, deck), (-hb, deck), (-hb, 1.75), (-hb, 1.25),
+                (-hb * 0.7, keel + 0.45)]
+        secs.append([bm.verts.new((x, y, z)) for x, z in ring])
+    n = len(secs[0])
+    for a, b in zip(secs, secs[1:]):
+        for j in range(n):
+            f = bm.faces.new((a[j], a[(j + 1) % n], b[(j + 1) % n], b[j]))
+            zc = f.calc_center_median().z
+            f.material_index = 2 if j == 4 else (1 if zc > 1.8 else 0)
+    bm.faces.new(secs[0][::-1]).material_index = 1
+    bm.faces.new(secs[-1]).material_index = 1
+    bm.normal_update()
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    hull = bpy.data.objects.new("Lifeboat_Hull", me)
+    bpy.context.collection.objects.link(hull)
+    for m in (navy, orange, grey):
+        me.materials.append(m)
+    objs = [hull]
+    D = 2.35
+    objs.append(obj_from("cube", "Wheelhouse", orange, loc=(0, -0.4, D + 1.05), scale=(2.1, 3.0, 1.05), bevel=0.12))
+    objs.append(obj_from("cube", "Roof", white, loc=(0, -0.3, D + 2.2), scale=(2.35, 3.4, 0.12), bevel=0.06))
+    objs.append(obj_from("cube", "WinFront", glass, loc=(0, -3.38, D + 1.35), scale=(1.8, 0.05, 0.42), bevel=0.04))
+    for sx in (-1, 1):
+        for k in range(3):
+            objs.append(obj_from("cube", "WinSide", glass, loc=(sx * 2.08, -2.2 + k * 1.5, D + 1.35), scale=(0.05, 0.55, 0.38), bevel=0.03))
+        objs.append(obj_from("cylinder", "Rail", white, loc=(sx * 2.75, 3.2, D + 0.55), rot=(math.pi / 2, 0, 0), scale=(0.05, 0.05, 4.8), vertices=12))
+        for k in range(5):
+            objs.append(obj_from("cylinder", "Stanchion", white, loc=(sx * 2.75, 0.9 + k * 1.15, D + 0.3), scale=(0.04, 0.04, 0.3), vertices=8))
+        objs.append(obj_from("cylinder", "Fender", orange, loc=(sx * 2.98, 0.5, 1.75), rot=(math.pi / 2, 0, 0), scale=(0.2, 0.2, 5.5), vertices=16, smooth=True))
+    objs.append(obj_from("cylinder", "Mast", white, loc=(0, 0.2, D + 3.3), scale=(0.1, 0.1, 1.0), vertices=12))
+    objs.append(obj_from("cube", "Yard", white, loc=(0, 0.2, D + 3.7), scale=(1.4, 0.07, 0.07)))
+    objs.append(obj_from("uv_sphere", "Beacon", blue, loc=(0, 0.2, D + 4.45), scale=(0.22, 0.22, 0.2), smooth=True))
+    objs.append(obj_from("uv_sphere", "Radome", white, loc=(0.9, -1.6, D + 2.45), scale=(0.45, 0.45, 0.22), smooth=True))
+    objs.append(obj_from("cube", "Tow", white, loc=(0, 6.2, D + 0.7), scale=(0.25, 0.25, 0.7)))
+    return objs
+
+
+def s_lifeboat_pass():
+    reset()
+    s_pass(None, objs=lifeboat())
+
+
+def coin(m, loc, rot=(0, 0, 0), r=1.0):
+    """Gold coin with a raised rim ring and centre boss on both faces, joined into one mesh."""
+    parts = [obj_from("cylinder", "Coin", m, scale=(r, r, 0.1 * r), vertices=64, bevel=0.03 * r, smooth=True)]
+    for sz in (1, -1):
+        parts.append(obj_from("torus", "Rim", m, loc=(0, 0, sz * 0.09 * r), major_radius=0.84 * r, minor_radius=0.04 * r,
+                              major_segments=64, minor_segments=12, smooth=True))
+        parts.append(obj_from("cylinder", "Boss", m, loc=(0, 0, sz * 0.1 * r), scale=(0.55 * r, 0.55 * r, 0.025 * r),
+                              vertices=48, smooth=True))
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in parts:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = parts[0]
+    bpy.ops.object.join()
+    c = parts[0]
+    c.location, c.rotation_euler = loc, rot
+    return [c]
+
+
+def s_day_cash():
+    reset()
+    gold = mat("Gold", (1.0, 0.68, 0.1), rough=0.3, metal=1.0, coat=0.2)
+    objs = []
+    for (x, y, n) in ((-1.15, 1.0, 7), (1.15, 1.15, 5), (0.0, -0.85, 3)):
+        for i in range(n):
+            objs += coin(gold, (x + 0.04 * math.sin(i * 1.7), y + 0.04 * math.cos(i * 2.3), 0.13 + i * 0.25),
+                         rot=(0, 0, i * 0.4))
+    objs += coin(gold, (-1.75, -1.0, 0.95), rot=(math.radians(72), 0, math.radians(-30)))
+    objs += coin(gold, (1.7, -0.75, 0.7), rot=(math.radians(65), 0, math.radians(30)), r=0.75)
+    bpy.context.view_layer.update()
+    cutout_studio(objs, 20)
+    frame_tight(objs, 20, 32, lens=60, fill=0.86)
+
+
+def s_day_launch():
+    reset()
+    _, objs = vehicle("M_Veh_JetSki")
+    cutout_studio(objs, -48)
+    frame_tight(objs, -48, 20, lens=50, fill=0.9)
+
+
 SCENES = {
     "SmallBonus": s_small,
     "CrewPayroll": s_payroll,
@@ -1649,6 +1778,18 @@ SCENES = {
     "SirenPack": lambda: s_beacon(((0.05, 0.25, 1.0),)),
     "LightBars": lambda: s_beacon(((1.0, 0.04, 0.02), (0.05, 0.25, 1.0)), bar=True),
     "WakeTrails": lambda: s_sea_vehicle("M_Veh_JetSki", 165, 30, wake=True, fill=0.70),
+    "RIBPass": lambda: s_pass("M_Veh_RIB"),
+    "LifeboatPass": s_lifeboat_pass,
+    "BeachATVPass": lambda: s_pass("M_Veh_ATV"),
+    "CoastguardResponsePass": lambda: s_pass("M_Veh_Coastguard4x4"),
+    "StormRunnerPass": lambda: s_pass("M_Veh_StormRunner", premium=True),
+    "TidewalkerPass": lambda: s_pass("M_Veh_Tidewalker", premium=True),
+    "RiptideXPass": lambda: s_pass("M_Veh_JetSki_RiptideX", premium=True),
+    "GildedGullPass": lambda: s_pass("M_Veh_JetSki_GildedGull", premium=True),
+    "HarbourGTPass": lambda: s_pass("M_Veh_HarbourGT", premium=True),
+    "LighthouseCruiserPass": lambda: s_pass("M_Veh_LighthouseCruiser", premium=True),
+    "DayDoubleCash": s_day_cash,
+    "DayQuickLaunch": s_day_launch,
 }
 
 os.makedirs(OUT, exist_ok=True)

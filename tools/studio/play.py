@@ -35,8 +35,9 @@ def img_size(path):
 
 
 def to_vp(x, y):
-    sx, sy = json.load(open(STATE)) if os.path.exists(STATE) else (1.0, 1.0)
-    return round(float(x) * sx), round(float(y) * sy)
+    # Studio's injected mouse is in GUI space (below the top-bar inset), the look image is the whole viewport
+    sx, sy, inset = (json.load(open(STATE)) + [0.0])[:3] if os.path.exists(STATE) else (1.0, 1.0, 0.0)
+    return round(float(x) * sx), round(float(y) * sy - inset)
 
 
 def send(s, tool, actions):
@@ -61,10 +62,11 @@ def look(s, name):
     subprocess.run(["sips", "-s", "format", "png", src, "--out", path], capture_output=True, check=True)
     os.remove(src)
     w, h = img_size(path)
-    _, text = smoke.lua(s, "Client", "local v = workspace.CurrentCamera.ViewportSize return v.X .. ',' .. v.Y")
-    m = re.search(r"([\d.]+),([\d.]+)", text)
+    _, text = smoke.lua(s, "Client", "local v = workspace.CurrentCamera.ViewportSize "
+                        "local b = game:GetService('GuiService'):GetGuiInset() return v.X .. ',' .. v.Y .. ',' .. b.Y")
+    m = re.search(r"([\d.]+),([\d.]+),([\d.]+)", text)
     if m:
-        json.dump([float(m.group(1)) / w, float(m.group(2)) / h], open(STATE, "w"))
+        json.dump([float(m.group(1)) / w, float(m.group(2)) / h, float(m.group(3))], open(STATE, "w"))
     print("%s (%dx%d)" % (path, w, h))
 
 
