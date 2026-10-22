@@ -1321,6 +1321,84 @@ local function buildLifeboat(spec: VehicleSpec): Model
 	return finish(ctx, spec, slots, Vector3.new(0, 0.6, 25.4), Vector3.new(0, 0.6, -25.4))
 end
 
+-- The Tidewalker catamaran (M_Veh_Tidewalker, lifeboat frame) authored pivot in HullRoot space
+-- (frame_offset.json hullroot_origin): ATT_Float1 (-5.5, -0.2, -19.99) is floatPoints[1] (-5.5, -3, -20).
+Builder.TIDEWALKER_ORIGIN = Vector3.new(0, -2.8, -0.01)
+
+local function buildTidewalkerAsset(spec: VehicleSpec, visuals: { Model }): Model
+	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, NAVY)
+	local origin = Builder.TIDEWALKER_ORIGIN
+	local atts = AssetIds.Attachments[visuals[1].Name] or {}
+	local function at(name: string, fallback: Vector3): Vector3
+		local p = atts[name]
+		return if p then p + origin else fallback
+	end
+	weldVisuals(ctx, visuals, origin)
+	local function hidden(part: BasePart)
+		part.Transparency = 1
+		part.CastShadow = false
+	end
+	-- functional seats on the flybridge, invisible inside the modelled helm seats
+	local seatSize = Vector3.new(1.5, 0.6, 2.0)
+	hidden(seat(ctx, true, "DriverSeat", seatSize, at("ATT_DriverSeat", Vector3.new(0, 10.88, -3))))
+	for i = 1, spec.seats - 1 do
+		local fallback = Vector3.new((i - 2) * 2.3, 10.88, -3)
+		hidden(seat(ctx, false, `PassengerSeat{i}`, seatSize, at(`ATT_PassengerSeat{i}`, fallback)))
+	end
+	type Lamp = { name: string, pos: Vector3, color: Color3, yaw: number, sector: number }
+	local lamps: { Lamp } = {
+		{
+			name = "NavMasthead",
+			pos = Vector3.new(0.75, 19, 3.9),
+			color = WHITE_LIGHT,
+			yaw = 0,
+			sector = 225,
+		},
+		{
+			name = "NavStern",
+			pos = Vector3.new(0, 16, 9.7),
+			color = WHITE_LIGHT,
+			yaw = math.pi,
+			sector = 135,
+		},
+		{
+			name = "NavPort",
+			pos = Vector3.new(-6.55, 16, -3.2),
+			color = RED_LIGHT,
+			yaw = SIDELIGHT_YAW,
+			sector = 112.5,
+		},
+		{
+			name = "NavStarboard",
+			pos = Vector3.new(6.55, 16, -3.2),
+			color = GREEN_LIGHT,
+			yaw = -SIDELIGHT_YAW,
+			sector = 112.5,
+		},
+	}
+	for _, l in lamps do
+		local lamp = navLight(ctx, l.name, at(`ATT_{l.name}`, l.pos), l.color, l.yaw, l.sector)
+		lamp.Size = Vector3.new(0.2, 0.2, 0.2)
+		lamp.CastShadow = false
+	end
+	-- survivor places on the aft deck
+	local slots = {}
+	for i = 1, spec.survivorCapacity do
+		local side = if i % 2 == 1 then -1 else 1
+		local fallback = Vector3.new(side * 3.4, 3.0, 7.5 + math.floor((i - 1) / 2) * 3.4)
+		table.insert(slots, at(`ATT_SurvivorSlot{i}`, fallback))
+	end
+	local model = finish(
+		ctx,
+		spec,
+		slots,
+		at("ATT_TowHitch", Vector3.new(0, 0.6, 25.4)),
+		at("ATT_BowPoint", Vector3.new(0, 0.6, -25.4))
+	)
+	model:SetAttribute("Visual", visuals[1].Name)
+	return model
+end
+
 -- Fallback for a vehicle id without a hand-built greybox: a plain box with seats in a column.
 local function buildGeneric(spec: VehicleSpec): Model
 	local size = spec.hullSize
@@ -1344,7 +1422,7 @@ local function buildGeneric(spec: VehicleSpec): Model
 end
 
 -- Builds a vehicle at the origin with its HullRoot anchored. The caller pivots and parents it.
--- visuals: the real models for the RIB or the jet ski (see the header); nil or empty builds the greybox.
+-- visuals: the real models (RIB, jet ski, Tidewalker; see the header); nil or empty builds the greybox.
 function Builder.build(spec: VehicleSpec, visuals: { Model }?): Model
 	local kind = spec.base or spec.id -- premium boats use their base hull's layout
 	local model = if kind == "JetSki"
@@ -1354,6 +1432,10 @@ function Builder.build(spec: VehicleSpec, visuals: { Model }?): Model
 		elseif kind == "JetSki" then buildJetSki(spec)
 		elseif kind == "RIB" and visuals and #visuals > 0 then buildRIBAsset(spec, visuals)
 		elseif kind == "RIB" then buildRIB(spec)
+		elseif kind == "Lifeboat" and visuals and #visuals > 0 then buildTidewalkerAsset(
+			spec,
+			visuals
+		)
 		elseif kind == "Lifeboat" then buildLifeboat(spec)
 		else buildGeneric(spec)
 	if model:GetAttribute("Visual") == nil then

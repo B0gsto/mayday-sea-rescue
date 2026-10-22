@@ -226,7 +226,7 @@ end
 VehicleConfig.StormRunner = variant("RIB", {
 	id = "StormRunner",
 	displayName = "Storm Runner",
-	model = "M_Veh_RIB", -- placeholder: M_Veh_StormRunner
+	model = "M_Veh_StormRunner", -- on the RIB frame and ATT_ markers (its own helm: no M_Veh_RIB_Helm)
 	topSpeed = 58 * KNOT, -- 89.5 studs/s -- tune
 	accel = 13, -- twice the RIB's punch -- tune
 	brakeDecel = 16,
@@ -245,7 +245,9 @@ VehicleConfig.StormRunner = variant("RIB", {
 VehicleConfig.Tidewalker = variant("Lifeboat", {
 	id = "Tidewalker",
 	displayName = "Tidewalker",
-	-- no model: the lifeboat greybox until M_Veh_Tidewalker lands
+	-- on the lifeboat frame, its own ATT_ markers (Boat/Builder buildTidewalkerAsset; pivot at HullRoot
+	-- (0, -2.8, -0.01), art/source/vehicles/M_Veh_Tidewalker/frame_offset.json)
+	model = "M_Veh_Tidewalker",
 	topSpeed = 36 * KNOT, -- 55.5 studs/s, faster than the lifeboat -- tune
 	accel = 9,
 	brakeDecel = 9,

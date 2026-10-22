@@ -59,9 +59,6 @@ function BadgeRules.opProgress(
 	if gold > 0 then
 		out.Downwind = gold
 	end
-	if stepsBy(snap, userId, "air_pocket", nil) > 0 then
-		out.AirPocket = 1
-	end
 	if not BadgeRules.completed(snap) then
 		return out
 	end

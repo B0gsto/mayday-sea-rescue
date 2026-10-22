@@ -1,0 +1,3437 @@
+{
+ "asset": "M_Veh_StormRunner",
+ "name": "M_Veh_StormRunner",
+ "date": "2026-10-22",
+ "commit": "a45ed11e+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Hull",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_StormRunner_Hull_LOD0",
+      "hp": "M_Veh_StormRunner_Hull_HP"
+     },
+     {
+      "lod0": "M_Veh_StormRunner_Deck_LOD0",
+      "hp": "M_Veh_StormRunner_Deck_HP"
+     }
+    ],
+    "coverage": 0.4423,
+    "seconds": 56.2,
+    "timings": {
+     "nor": 4.5,
+     "mask": 13.5,
+     "pos": 4.2,
+     "wn": 4.8,
+     "base": 5.3,
+     "mr": 5.5,
+     "compose_write": 15.3
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_ALB.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_NOR.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_RGH.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Hull_MET.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_NOR.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_StormRunner/textures"
+   },
+   {
+    "set": "Interior",
+    "ok": true,
+    "size": 4096,
+    "export": 4096,
+    "pairs": [
+     {
+      "lod0": "M_Veh_StormRunner_Interior_LOD0",
+      "hp": "M_Veh_StormRunner_Interior_HP"
+     },
+     {
+      "lod0": "M_Veh_StormRunner_Screen_LOD0",
+      "hp": "M_Veh_StormRunner_Screen_HP"
+     }
+    ],
+    "coverage": 0.2209,
+    "seconds": 51.4,
+    "timings": {
+     "nor": 4.8,
+     "mask": 11.1,
+     "pos": 4.0,
+     "wn": 4.8,
+     "base": 4.6,
+     "mr": 4.4,
+     "compose_write": 14.8
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_ALB.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_NOR.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_RGH.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Interior_MET.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_NOR.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_StormRunner/textures"
+   },
+   {
+    "set": "Engines",
+    "ok": true,
+    "size": 4096,
+    "export": 1024,
+    "pairs": [
+     {
+      "lod0": "M_Veh_StormRunner_Engines_LOD0",
+      "hp": "M_Veh_StormRunner_Engines_HP"
+     }
+    ],
+    "coverage": 0.2726,
+    "seconds": 42.0,
+    "timings": {
+     "nor": 3.0,
+     "mask": 12.4,
+     "pos": 3.0,
+     "wn": 2.5,
+     "base": 2.6,
+     "mr": 3.2,
+     "compose_write": 13.5
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_ALB.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_NOR.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_RGH.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Engines_MET.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_NOR.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_StormRunner/textures"
+   },
+   {
+    "set": "Rig",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_StormRunner_RollBar_LOD0",
+      "hp": "M_Veh_StormRunner_RollBar_HP"
+     },
+     {
+      "lod0": "M_Veh_StormRunner_Rails_LOD0",
+      "hp": "M_Veh_StormRunner_Rails_HP"
+     }
+    ],
+    "coverage": 0.0815,
+    "seconds": 41.2,
+    "timings": {
+     "nor": 4.7,
+     "mask": 6.8,
+     "pos": 4.0,
+     "wn": 4.0,
+     "base": 4.0,
+     "mr": 4.0,
+     "compose_write": 11.5
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_ALB.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_NOR.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_RGH.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_StormRunner/textures/T_StormRunner_Rig_MET.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_NOR.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH_Wet.png",
+     "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_StormRunner/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD0.fbx",
+   "bytes": 1917756,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_StormRunner_COL",
+    "M_Veh_StormRunner_Deck_LOD0",
+    "M_Veh_StormRunner_Engines_LOD0",
+    "M_Veh_StormRunner_Hull_LOD0",
+    "M_Veh_StormRunner_Interior_LOD0",
+    "M_Veh_StormRunner_Rails_LOD0",
+    "M_Veh_StormRunner_RollBar_LOD0",
+    "M_Veh_StormRunner_Screen_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_StormRunner_COL.001",
+     "min": [
+      -4.2,
+      -13.2539,
+      0.0
+     ],
+     "max": [
+      4.2,
+      13.2761,
+      6.0
+     ],
+     "polygons": 814,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Deck_LOD0.001",
+     "min": [
+      -4.0999,
+      -13.2239,
+      2.1
+     ],
+     "max": [
+      4.0999,
+      10.9761,
+      5.2461
+     ],
+     "polygons": 1240,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Engines_LOD0.001",
+     "min": [
+      -2.013,
+      10.9484,
+      0.0
+     ],
+     "max": [
+      2.013,
+      13.3151,
+      5.451
+     ],
+     "polygons": 4888,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Hull_LOD0.001",
+     "min": [
+      -4.2,
+      -13.2721,
+      0.418
+     ],
+     "max": [
+      4.2,
+      10.9761,
+      4.8484
+     ],
+     "polygons": 2454,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Interior_LOD0.001",
+     "min": [
+      -4.0,
+      -6.8181,
+      1.925
+     ],
+     "max": [
+      4.0,
+      12.0761,
+      6.2
+     ],
+     "polygons": 5304,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Rails_LOD0.001",
+     "min": [
+      -4.3572,
+      -13.3939,
+      2.35
+     ],
+     "max": [
+      4.3572,
+      11.9761,
+      5.8301
+     ],
+     "polygons": 4214,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_RollBar_LOD0.001",
+     "min": [
+      -3.83,
+      6.1011,
+      3.8839
+     ],
+     "max": [
+      3.83,
+      12.1709,
+      9.2983
+     ],
+     "polygons": 2616,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Screen_LOD0.001",
+     "min": [
+      -3.9,
+      -1.9339,
+      1.925
+     ],
+     "max": [
+      3.045,
+      11.7761,
+      6.1433
+     ],
+     "polygons": 528,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD1.fbx",
+   "bytes": 782268,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_StormRunner_Deck_LOD1",
+    "M_Veh_StormRunner_Engines_LOD1",
+    "M_Veh_StormRunner_Hull_LOD1",
+    "M_Veh_StormRunner_Interior_LOD1",
+    "M_Veh_StormRunner_Rails_LOD1",
+    "M_Veh_StormRunner_RollBar_LOD1",
+    "M_Veh_StormRunner_Screen_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_StormRunner_Deck_LOD1.001",
+     "min": [
+      -4.0999,
+      -13.224,
+      2.1
+     ],
+     "max": [
+      4.0999,
+      10.9761,
+      5.2461
+     ],
+     "polygons": 425,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Engines_LOD1.001",
+     "min": [
+      -2.0103,
+      10.9503,
+      0.0
+     ],
+     "max": [
+      2.0103,
+      13.3151,
+      5.4531
+     ],
+     "polygons": 1674,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Hull_LOD1.001",
+     "min": [
+      -4.1992,
+      -13.2661,
+      0.4182
+     ],
+     "max": [
+      4.1992,
+      10.9761,
+      4.8505
+     ],
+     "polygons": 839,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Interior_LOD1.001",
+     "min": [
+      -3.9833,
+      -6.8228,
+      1.925
+     ],
+     "max": [
+      3.9833,
+      12.0594,
+      6.2015
+     ],
+     "polygons": 1817,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Rails_LOD1.001",
+     "min": [
+      -4.3588,
+      -13.3808,
+      2.3521
+     ],
+     "max": [
+      4.3588,
+      11.9761,
+      5.833
+     ],
+     "polygons": 1444,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_RollBar_LOD1.001",
+     "min": [
+      -3.8294,
+      6.1017,
+      3.8839
+     ],
+     "max": [
+      3.8294,
+      12.1716,
+      9.2998
+     ],
+     "polygons": 895,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Screen_LOD1.001",
+     "min": [
+      -3.9,
+      -1.9483,
+      1.925
+     ],
+     "max": [
+      3.0505,
+      11.7761,
+      6.1471
+     ],
+     "polygons": 181,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD2.fbx",
+   "bytes": 233388,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_StormRunner_Deck_LOD2",
+    "M_Veh_StormRunner_Engines_LOD2",
+    "M_Veh_StormRunner_Hull_LOD2",
+    "M_Veh_StormRunner_Interior_LOD2",
+    "M_Veh_StormRunner_Rails_LOD2",
+    "M_Veh_StormRunner_RollBar_LOD2",
+    "M_Veh_StormRunner_Screen_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_StormRunner_Deck_LOD2.001",
+     "min": [
+      -4.1028,
+      -13.2251,
+      2.1
+     ],
+     "max": [
+      4.1028,
+      10.9761,
+      5.1592
+     ],
+     "polygons": 106,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Engines_LOD2.001",
+     "min": [
+      -1.9686,
+      11.0035,
+      -0.0043
+     ],
+     "max": [
+      1.9683,
+      13.2615,
+      5.4543
+     ],
+     "polygons": 418,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Hull_LOD2.001",
+     "min": [
+      -4.2117,
+      -13.2535,
+      0.4187
+     ],
+     "max": [
+      4.2117,
+      10.9766,
+      4.8511
+     ],
+     "polygons": 209,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Interior_LOD2.001",
+     "min": [
+      -4.0031,
+      -6.8228,
+      1.9362
+     ],
+     "max": [
+      4.0031,
+      12.0792,
+      6.1876
+     ],
+     "polygons": 453,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Rails_LOD2.001",
+     "min": [
+      -4.3528,
+      -13.4023,
+      2.3473
+     ],
+     "max": [
+      4.3565,
+      11.9761,
+      5.8224
+     ],
+     "polygons": 360,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_RollBar_LOD2.001",
+     "min": [
+      -3.8269,
+      6.1042,
+      3.9133
+     ],
+     "max": [
+      3.8269,
+      12.1716,
+      9.2998
+     ],
+     "polygons": 223,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_StormRunner_Screen_LOD2.001",
+     "min": [
+      -3.86,
+      -1.9483,
+      1.925
+     ],
+     "max": [
+      3.0153,
+      11.7361,
+      6.2526
+     ],
+     "polygons": 45,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner.attachments.json",
+   "attachments": [
+    "ATT_DriverSeat",
+    "ATT_EyePoint",
+    "ATT_PassengerSeat1",
+    "ATT_PassengerSeat2",
+    "ATT_SurvivorSlot1",
+    "ATT_SurvivorSlot2",
+    "ATT_TowHitch",
+    "ATT_BowPoint",
+    "ATT_DriveAttachment",
+    "ATT_NavPort",
+    "ATT_NavStarboard",
+    "ATT_NavMasthead",
+    "ATT_NavStern",
+    "ATT_Beacon",
+    "ATT_Searchlight",
+    "ATT_Prop1",
+    "ATT_Prop2",
+    "ATT_Float1",
+    "ATT_Float2",
+    "ATT_Float3",
+    "ATT_Float4",
+    "ATT_Float5",
+    "ATT_Float6",
+    "ATT_Float7",
+    "ATT_Float8"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_StormRunner/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_StormRunner_Hull_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_Deck_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_Interior_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_Screen_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_Engines_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_RollBar_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_StormRunner_Rails_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_StormRunner_Hull",
+   "T_StormRunner_Interior",
+   "T_StormRunner_Engines",
+   "T_StormRunner_Rig"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.152,
+     0.106,
+     0.936,
+     0.684
+    ],
+    "mannequin": [
+     0.037,
+     0.313,
+     0.12,
+     0.513
+    ],
+    "fill": 0.784
+   },
+   "Side": {
+    "asset": [
+     0.185,
+     0.364,
+     0.963,
+     0.628
+    ],
+    "mannequin": [
+     0.05,
+     0.371,
+     0.108,
+     0.524
+    ],
+    "fill": 0.778
+   },
+   "Rear3Q": {
+    "asset": [
+     0.171,
+     0.094,
+     0.957,
+     0.645
+    ],
+    "mannequin": [
+     0.037,
+     0.307,
+     0.124,
+     0.515
+    ],
+    "fill": 0.786
+   },
+   "High": {
+    "asset": [
+     0.192,
+     0.037,
+     0.925,
+     0.839
+    ],
+    "mannequin": [
+     -0.008,
+     0.389,
+     0.091,
+     0.527
+    ],
+    "fill": 0.802
+   }
+  },
+  "closeups": [
+   {
+    "name": "helm_1m",
+    "target": [
+     0.0,
+     -1.0,
+     4.55
+    ],
+    "dist": 3.0,
+    "az": 192.0,
+    "el": 22.0,
+    "file": "closeup_helm_1m.png"
+   },
+   {
+    "name": "stripes_wordmark",
+    "target": [
+     4.0,
+     3.0,
+     3.3
+    ],
+    "dist": 6.0,
+    "az": 90.0,
+    "el": 5.0,
+    "file": "closeup_stripes_wordmark.png"
+   },
+   {
+    "name": "rollbar_pod",
+    "target": [
+     0.0,
+     9.95,
+     8.25
+    ],
+    "dist": 5.0,
+    "az": 20.0,
+    "el": 15.0,
+    "file": "closeup_rollbar_pod.png"
+   },
+   {
+    "name": "bow_rail",
+    "target": [
+     1.5,
+     -10.5,
+     5.0
+    ],
+    "dist": 6.0,
+    "az": 35.0,
+    "el": 25.0,
+    "file": "closeup_bow_rail.png"
+   },
+   {
+    "name": "outboards",
+    "target": [
+     0.0,
+     12.5,
+     3.0
+    ],
+    "dist": 6.0,
+    "az": 155.0,
+    "el": 14.0,
+    "file": "closeup_outboards.png"
+   },
+   {
+    "name": "seats",
+    "target": [
+     0.0,
+     3.0,
+     4.6
+    ],
+    "dist": 6.0,
+    "az": 140.0,
+    "el": 35.0,
+    "file": "closeup_seats.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.778,
+  "in_frame": true,
+  "dims_m": [
+   2.85,
+   8.9,
+   2.95
+  ],
+  "validation_ok": true,
+  "seconds": 7.3
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_StormRunner/M_Veh_StormRunner.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_StormRunner_Hull",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "44.2% of texels at 4096 px from M_Veh_StormRunner_Hull_LOD0<-M_Veh_StormRunner_Hull_HP, M_Veh_StormRunner_Deck_LOD0<-M_Veh_StormRunner_Deck_HP"
+  },
+  {
+   "subject": "T_StormRunner_Hull",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 56 s"
+  },
+  {
+   "subject": "T_StormRunner_Interior",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "22.1% of texels at 4096 px from M_Veh_StormRunner_Interior_LOD0<-M_Veh_StormRunner_Interior_HP, M_Veh_StormRunner_Screen_LOD0<-M_Veh_StormRunner_Screen_HP"
+  },
+  {
+   "subject": "T_StormRunner_Interior",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 4096, 51 s"
+  },
+  {
+   "subject": "T_StormRunner_Engines",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "27.3% of texels at 4096 px from M_Veh_StormRunner_Engines_LOD0<-M_Veh_StormRunner_Engines_HP"
+  },
+  {
+   "subject": "T_StormRunner_Engines",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 1024, 42 s"
+  },
+  {
+   "subject": "T_StormRunner_Rig",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.2% of texels at 4096 px from M_Veh_StormRunner_RollBar_LOD0<-M_Veh_StormRunner_RollBar_HP, M_Veh_StormRunner_Rails_LOD0<-M_Veh_StormRunner_Rails_HP"
+  },
+  {
+   "subject": "T_StormRunner_Rig",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 41 s"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "rib"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Hull_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2454 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.35e-07, 105 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.006 to 0.985"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1254 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "59 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Deck_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1240 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.36e-05, 104 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.233 to 0.960, v 0.006 to 0.982"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 628 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "61 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Interior_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5304 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.66e-05, 548 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.991, v 0.009 to 0.972"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3016 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "103 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Screen_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "528 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.08e-03, 36 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.972, v 0.102 to 0.971"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 292 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "96 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Engines_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4888 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.28e-05, 480 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2830 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_RollBar_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2616 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 230 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.991, v 0.008 to 0.991"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1384 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Rails_LOD0"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4214 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.66e-05, 140 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.989, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2324 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Hull_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "839 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.52e-06, 65 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.005 to 0.985"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 839 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Deck_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "425 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.28e-04, 61 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.233 to 0.960, v 0.006 to 0.982"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 425 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Interior_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1817 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.38e-06, 361 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.972, v 0.009 to 0.972"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1817 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.019 (max 0.02), UV area by 4.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Screen_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "181 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.48e-04, 31 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.972, v 0.102 to 0.928"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 181 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.044 (max 0.02), UV area by 15.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Engines_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1674 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.31e-06, 172 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1674 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_RollBar_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "895 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.29e-07, 83 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.989, v 0.008 to 0.988"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 895 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.003 (max 0.02), UV area by 9.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Rails_LOD1"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1444 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.44e-06, 60 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.989, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1444 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 5.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Hull_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "209 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.52e-06, 33 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.006 to 0.994, v 0.006 to 0.985"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 209 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Deck_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "106 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.23e-02, 24 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.233 to 0.960, v 0.006 to 0.982"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 106 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 4.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Interior_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "453 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.35e-06, 116 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.951, v 0.009 to 0.972"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 453 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.040 (max 0.02), UV area by 17.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Screen_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "45 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.04e-04, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.045 to 0.972, v 0.106 to 0.928"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 45 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.044 (max 0.02), UV area by 59.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Engines_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "418 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.55e-06, 100 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.964, v 0.009 to 0.971"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 418 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.026 (max 0.02), UV area by 35.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_RollBar_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "223 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.84e-07, 67 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.989, v 0.009 to 0.988"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 223 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.003 (max 0.02), UV area by 53.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Rails_LOD2"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "360 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.12e-06, 60 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.965, v 0.002 to 0.968"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 360 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / screen-edge UV island borders (the RIB's waiver); LODs are only seen beyond 250 studs where the maps are mip-mapped far below the island size.): UV bounds differ by 0.025 (max 0.02), UV area by 34.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Hull_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Hull_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Deck_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Deck_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Interior_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Interior_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Screen_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Screen_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Engines_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Engines_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_RollBar_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_RollBar_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_Rails_HP"
+  },
+  {
+   "subject": "M_Veh_StormRunner_Rails_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_StormRunner_COL"
+  },
+  {
+   "subject": "M_Veh_StormRunner_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_StormRunner_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "814 of 10000"
+  },
+  {
+   "subject": "M_Veh_StormRunner_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_StormRunner_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "814 of 1000"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "21244 of 35000 (rib)"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7275 of 12000"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1814 of 3000"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_StormRunner/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8.714 studs, real 2.850 m = 8.550 studs, off 1.9% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "26.709 studs, real 8.900 m = 26.700 studs, off 0.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9.298 studs, real 2.950 m = 8.850 studs, off 5.1% (5% free, 15% with a note); NOTE: Premium variant on the RIB frame: same beam, a longer bow and 15% larger outboards (8.9 m overall); Z includes the two VHF whips raked aft on the roll-bar pod."
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, -0.039); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_StormRunner_COL"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (3 to 4 sets)"
+  },
+  {
+   "subject": "T_StormRunner_Hull_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB.png"
+  },
+  {
+   "subject": "T_StormRunner_Hull_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Hull_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_NOR.png"
+  },
+  {
+   "subject": "T_StormRunner_Hull_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH.png"
+  },
+  {
+   "subject": "T_StormRunner_Hull_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Hull_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_MET.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_NOR.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Interior_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_MET.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_NOR.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Engines_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_MET.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_NOR.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH_Wet.png"
+  },
+  {
+   "subject": "T_StormRunner_Rig_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_MET.png"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavPort",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStarboard",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavMasthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Beacon",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Searchlight",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float7",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float8",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_StormRunner_COL, M_Veh_StormRunner_Deck_LOD0, M_Veh_StormRunner_Engines_LOD0, M_Veh_StormRunner_Hull_LOD0, M_Veh_StormRunner_Interior_LOD0, M_Veh_StormRunner_Rails_LOD0, M_Veh_StormRunner_RollBar_LOD0, M_Veh_StormRunner_Screen_LOD0; 22058 triangles (scene 22058)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_StormRunner_Deck_LOD1, M_Veh_StormRunner_Engines_LOD1, M_Veh_StormRunner_Hull_LOD1, M_Veh_StormRunner_Interior_LOD1, M_Veh_StormRunner_Rails_LOD1, M_Veh_StormRunner_RollBar_LOD1, M_Veh_StormRunner_Screen_LOD1; 7275 triangles (scene 7275)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_StormRunner_Deck_LOD2, M_Veh_StormRunner_Engines_LOD2, M_Veh_StormRunner_Hull_LOD2, M_Veh_StormRunner_Interior_LOD2, M_Veh_StormRunner_Rails_LOD2, M_Veh_StormRunner_RollBar_LOD2, M_Veh_StormRunner_Screen_LOD2; 1814 triangles (scene 1814)"
+  },
+  {
+   "subject": "M_Veh_StormRunner_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 7 of 7 visual meshes"
+  },
+  {
+   "subject": "M_Veh_StormRunner",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.78; 15 renders in 7 s, maps M_Veh_StormRunner_Hull_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_Deck_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_Interior_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_Screen_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_Engines_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_RollBar_LOD0: ALB/MET/NOR/RGH, M_Veh_StormRunner_Rails_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_StormRunner_Hull_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2454,
+   "texel_density": 58.8
+  },
+  {
+   "name": "M_Veh_StormRunner_Deck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1240,
+   "texel_density": 61.1
+  },
+  {
+   "name": "M_Veh_StormRunner_Interior_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 5304,
+   "texel_density": 103.3
+  },
+  {
+   "name": "M_Veh_StormRunner_Screen_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 528,
+   "texel_density": 96.0
+  },
+  {
+   "name": "M_Veh_StormRunner_Engines_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4888,
+   "texel_density": 64.1
+  },
+  {
+   "name": "M_Veh_StormRunner_RollBar_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2616,
+   "texel_density": 64.3
+  },
+  {
+   "name": "M_Veh_StormRunner_Rails_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4214,
+   "texel_density": 63.9
+  },
+  {
+   "name": "M_Veh_StormRunner_Hull_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 9372,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Deck_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 2168,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Interior_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 31064,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Screen_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1160,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Engines_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 22936,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_RollBar_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 5576,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Rails_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 7286,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 814,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Hull_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 839,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Hull_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 209,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Deck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 425,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Deck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 106,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Interior_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1817,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Interior_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 453,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Screen_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 181,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Screen_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 45,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Engines_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1674,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Engines_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 418,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_RollBar_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 895,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_RollBar_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 223,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Rails_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1444,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_StormRunner_Rails_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 360,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  8.71437931060791,
+  26.708999633789062,
+  9.298301696777344
+ ],
+ "peak_rss_mb": 7610.0
+}

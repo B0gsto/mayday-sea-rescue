@@ -54,7 +54,6 @@ type Card = {
 }
 
 local StoreApp = {}
-StoreApp.portrait = true -- laid out for the upright phone (268 du wide)
 
 local function text(parent: Instance, name: string, size: number, color: Color3): TextLabel
 	local l = Instance.new("TextLabel")

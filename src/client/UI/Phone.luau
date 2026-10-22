@@ -6,8 +6,7 @@
 -- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
 -- backdrop frees the cursor. The home screen is stock iOS: a soft gradient wallpaper, a 4-column
 -- grid of squircle icons (gradient fill, one flat white glyph, small white label) and a frosted
--- dock of 4. Apps built for a wide screen turn the phone sideways (an animated quarter turn, like
--- iOS); portrait apps keep it upright.
+-- dock of 4. Every app lays out on the upright phone.
 -- Apps:
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
 --   Logbook, Season, Settings   the existing panels (ExplorationController's Logbook, SeasonBook,
@@ -16,9 +15,8 @@
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Crew Pay, Pay Rise   StationController.mountPay / mountRise (station pot and workshop)
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
---                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup), and
---                        `portrait = true` to keep the phone upright. A missing or broken module
---                        just leaves its icon out.
+--                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
+--                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape; at home they close it.
 -- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A red dot and a
 -- bounce on the phone button: an event is on now.
@@ -53,8 +51,7 @@ local player = Players.LocalPlayer
 -- The HUD phone button's art: put an uploaded PNG here ("rbxassetid://..."); "" draws it in code.
 local PHONE_BUTTON_IMAGE = ""
 
--- Sibling app modules, required only if present: `mount(page, close) -> cleanup?`, optional
--- `portrait = true`. Register another app by adding a row (grid order = list order).
+-- Sibling app modules, required only if present: `mount(page, close) -> cleanup?`. Register another app by adding a row (grid order = list order).
 local OPTIONAL = {
 	{
 		module = "VehiclesApp",
@@ -65,7 +62,7 @@ local OPTIONAL = {
 	{ module = "StoreApp", name = "Store", label = "Store", colors = { "FFA94D", "FF5B3A" } },
 }
 local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's 4, in order
-local CANVAS = 300 -- du: the upright screen's width; home and portrait apps lay out on it
+local CANVAS = 300 -- du: the upright screen's width; home and apps lay out on it
 local ICON = 58 -- du, the squircle
 local CELL_W, CELL_H = 68, 86
 local DISPLAY_ORDER = 36 -- above the store panels (35), below CashBurst (41) and Cinematic (50)
@@ -75,7 +72,6 @@ local STATUS_H = 46 -- du, the status bar
 local HOME_H = 26 -- du, the home indicator strip
 local ISLAND = V(96, 28) -- du, the Dynamic Island upright
 local ASPECT = 2.17 -- a modern handset
-local TURN = 0.45 -- s, the quarter turn between upright and sideways
 local OFF = UDim2.fromScale(0.5, 1.65)
 local ON = UDim2.fromScale(0.5, 0.5)
 
@@ -87,7 +83,6 @@ type App = {
 	glyph: (Frame, Color3) -> (), -- draws the white glyph on a square frame; arg 2: cut-out colour
 	run: (() -> ())?,
 	mount: Mount?,
-	portrait: boolean?, -- true: the phone stays upright for this app
 }
 type Tile = { button: TextButton, scale: UIScale, label: TextLabel? }
 
@@ -126,11 +121,7 @@ local leader = 0
 local drawCrew: (() -> ())? = nil
 local eventBoard: EventBoard.Board? = nil
 local pendingRows: { any }? = nil
-local sideways = false -- the phone is turned for a wide app
 local portraitSize = V(320, 694) -- du, set by fit
-local landscapeSize = V(1176, 696)
-local turnSerial = 0
-local turnTweens: { Tween } = {}
 
 local function tween(
 	obj: Instance,
@@ -360,105 +351,27 @@ local function sizeLabels()
 	end
 end
 
--- Lays the handset out upright or sideways (no animation): the slab's size, the screen's canvas,
--- the island, the side keys and the app page's insets.
-local function orient(upright: boolean)
-	sideways = not upright
-	local size = if upright then portraitSize else landscapeSize
+-- Lays the upright handset out: the slab's size, the screen's canvas, the island, the side keys
+-- and the app page's insets.
+local function orient()
+	local size = portraitSize
 	rig.Size = UDim2.fromOffset(size.X, size.Y)
-	if upright then
-		-- the screen is a CANVAS-wide canvas scaled to the slab, so the home looks the same anywhere
-		local k = (size.X - 2 * BEZEL) / CANVAS
-		screenScale.Scale = k
-		screen.Size = UDim2.fromOffset(CANVAS, (size.Y - 2 * BEZEL) / k)
-		island.AnchorPoint = Vector2.new(0.5, 0)
-		island.Position = UDim2.new(0.5, 0, 0, 10)
-		island.Size = UDim2.fromOffset(ISLAND.X, ISLAND.Y)
-		content.Position = UDim2.fromOffset(16, 4)
-		content.Size = UDim2.new(1, -32, 1, -8)
-		sizeLabels()
-	else
-		screenScale.Scale = 1
-		screen.Size = UDim2.new(1, -2 * BEZEL, 1, -2 * BEZEL)
-		island.AnchorPoint = Vector2.new(0, 0.5)
-		island.Position = UDim2.new(0, 10, 0.5, 0)
-		island.Size = UDim2.fromOffset(ISLAND.Y, ISLAND.X)
-		content.Position = UDim2.fromOffset(52, 4) -- clear of the island
-		content.Size = UDim2.new(1, -76, 1, -8)
-	end
-	-- turned a quarter left: the left edge's keys go to the bottom, the right edge's to the top
+	-- the screen is a CANVAS-wide canvas scaled to the slab, so the home looks the same anywhere
+	local k = (size.X - 2 * BEZEL) / CANVAS
+	screenScale.Scale = k
+	screen.Size = UDim2.fromOffset(CANVAS, (size.Y - 2 * BEZEL) / k)
+	island.AnchorPoint = Vector2.new(0.5, 0)
+	island.Position = UDim2.new(0.5, 0, 0, 10)
+	island.Size = UDim2.fromOffset(ISLAND.X, ISLAND.Y)
+	content.Position = UDim2.fromOffset(16, 4)
+	content.Size = UDim2.new(1, -32, 1, -8)
+	sizeLabels()
 	for _, key in keys do
 		local f = key.frame
 		local left = key.edge == "left"
-		if upright then
-			f.AnchorPoint = Vector2.new(if left then 1 else 0, 0.5)
-			f.Position = UDim2.new(if left then 0 else 1, if left then 1 else -1, key.at, 0)
-			f.Size = UDim2.fromOffset(4, key.len)
-		else
-			f.AnchorPoint = Vector2.new(0.5, if left then 0 else 1)
-			f.Position = UDim2.new(key.at, 0, if left then 1 else 0, if left then -1 else 1)
-			f.Size = UDim2.fromOffset(key.len, 4)
-		end
-	end
-end
-
-local function stopTurn()
-	turnSerial += 1
-	for _, tw in turnTweens do
-		tw:Cancel()
-	end
-	table.clear(turnTweens)
-end
-
--- Turns the phone upright or sideways; `done` runs once the new layout is in.
-local function turn(upright: boolean, animate: boolean, done: (() -> ())?)
-	stopTurn()
-	local s = turnSerial
-	if upright == not sideways then
-		if done then
-			done()
-		end
-		return
-	end
-	if not animate or Comfort.reducedMotion() then
-		orient(upright)
-		if animate then
-			body.Rotation = 0
-		end
-		if done then
-			done()
-		end
-		return
-	end
-	local p = portraitSize
-	if upright then
-		-- the wide slab rotates a quarter right into the upright footprint, then the layout swaps
-		turnTweens = {
-			tween(rig, TURN, { Size = UDim2.fromOffset(p.Y, p.X) }),
-			tween(body, TURN, { Rotation = 90 }),
-		}
-		task.delay(TURN, function()
-			if turnSerial == s then
-				table.clear(turnTweens)
-				orient(true)
-				body.Rotation = 0
-				if done then
-					done()
-				end
-			end
-		end)
-	else
-		-- the wide layout starts turned a quarter right (it looks upright) and rotates level
-		orient(false)
-		rig.Size = UDim2.fromOffset(p.Y, p.X)
-		body.Rotation = 90
-		turnTweens = {
-			tween(rig, TURN, { Size = UDim2.fromOffset(landscapeSize.X, landscapeSize.Y) }),
-			tween(body, TURN, { Rotation = 0 }),
-		}
-		if done then
-			done()
-		end
+		f.AnchorPoint = Vector2.new(if left then 1 else 0, 0.5)
+		f.Position = UDim2.new(if left then 0 else 1, if left then 1 else -1, key.at, 0)
+		f.Size = UDim2.fromOffset(4, key.len)
 	end
 end
 
@@ -491,13 +404,9 @@ local function showHome()
 	focus(tiles[1] and tiles[1].button)
 end
 
-local function goHome()
-	turn(true, open, showHome)
-end
-
 local function back()
 	if current then
-		goHome()
+		showHome()
 	else
 		Phone.setOpen(false)
 	end
@@ -576,7 +485,7 @@ local function panelApp(
 		-- the panel closed itself (its own Escape / B): back to the icons
 		local watch = root:GetPropertyChangedSignal("Visible"):Connect(function()
 			if not root.Visible and current then
-				task.defer(goHome)
+				task.defer(showHome)
 			end
 		end)
 		return function()
@@ -762,7 +671,6 @@ local function appList(): { App }
 			colors = hex("B88CFF", "6A3BE0"),
 			glyph = GLYPHS.Events,
 			mount = eventsApp,
-			portrait = true,
 		},
 		{
 			name = "Season",
@@ -770,7 +678,6 @@ local function appList(): { App }
 			colors = hex("FF8DB8", "E5306A"),
 			glyph = GLYPHS.Season,
 			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
-			portrait = true,
 		},
 		{
 			name = "CrewPay",
@@ -780,7 +687,6 @@ local function appList(): { App }
 			mount = function(page: Frame)
 				return stationController().mountPay(page)
 			end,
-			portrait = true,
 		},
 		{
 			name = "PayRise",
@@ -790,7 +696,6 @@ local function appList(): { App }
 			mount = function(page: Frame)
 				return stationController().mountRise(page)
 			end,
-			portrait = true,
 		},
 		{
 			name = "Logbook",
@@ -798,7 +703,6 @@ local function appList(): { App }
 			colors = hex("6F97FF", "2D47D2"),
 			glyph = GLYPHS.Logbook,
 			mount = panelApp("LogbookHud", "Holder", "Logbook", explorationController),
-			portrait = true,
 		},
 		{
 			name = "Crew",
@@ -806,7 +710,6 @@ local function appList(): { App }
 			colors = hex("62E6DA", "1696C2"),
 			glyph = GLYPHS.Crew,
 			mount = crewApp,
-			portrait = true,
 		},
 		{
 			name = "Settings",
@@ -814,7 +717,6 @@ local function appList(): { App }
 			colors = hex("B4BAC1", "666D75"),
 			glyph = GLYPHS.Settings,
 			mount = panelApp("Settings", "Panel"),
-			portrait = true,
 		},
 	}
 	for i, spec in OPTIONAL do
@@ -826,7 +728,6 @@ local function appList(): { App }
 				colors = hex(spec.colors[1], spec.colors[2]),
 				glyph = GLYPHS[spec.name] or GLYPHS.Store,
 				mount = mod.mount,
-				portrait = mod.portrait == true,
 			})
 		end
 	end
@@ -838,7 +739,6 @@ function Phone.openApp(name: string)
 	if not app then
 		return
 	end
-	local wasOpen = open
 	Phone.setOpen(true)
 	if not open then
 		return
@@ -857,14 +757,13 @@ function Phone.openApp(name: string)
 		closeApp()
 	end
 	current = name
-	turn(app.portrait == true, wasOpen)
 	home.Visible = false
 	appBg.Visible = true
 	appPage.Visible = true
 	backButton.Visible = true
 	clockLabel.Visible = false
 	local mount = app.mount :: Mount
-	local ok, undo = pcall(mount, content, goHome)
+	local ok, undo = pcall(mount, content, showHome)
 	if ok and type(undo) == "function" then
 		cleanup = undo
 	elseif not ok then
@@ -933,12 +832,11 @@ function Phone.setOpen(value: boolean)
 	serial += 1
 	local s = serial
 	local reduced = Comfort.reducedMotion()
-	stopTurn()
 	if value then
 		if current then
 			closeApp()
 		end
-		orient(true)
+		orient()
 		appPage.Visible = false
 		appBg.Visible = false
 		home.Visible = true
@@ -1116,7 +1014,7 @@ local function buildStatusBar(parent: Frame)
 	local backChip = InputGlyph.chip(backButton, Enum.KeyCode.Backspace, Enum.KeyCode.ButtonB)
 	backChip.AnchorPoint = Vector2.new(0, 0.5)
 	backChip.Position = UDim2.new(1, 6, 0.5, 0)
-	backButton.Activated:Connect(goHome)
+	backButton.Activated:Connect(showHome)
 
 	-- the time in the left ear, signal and battery in the right (iOS)
 	clockLabel = HudTheme.label(
@@ -1525,18 +1423,12 @@ local function build(statusRegion: Frame)
 	local function fit(mt: Layout.Metrics)
 		local u = mt.usable
 		-- upright: nearly the screen's height (all of it on a short landscape phone screen), and
-		-- never narrower than the canvas, so app text keeps HudTheme's 0.7 px-per-du floor there;
-		-- sideways: the safe area (the wide apps' old canvas)
+		-- never narrower than the canvas, so app text keeps HudTheme's 0.7 px-per-du floor there
 		local m = if u.Y * mt.scale < 560 then 0 else MARGIN
 		local ph = math.min(u.Y - 2 * m, (u.X - 2 * m) * ASPECT)
 		portraitSize = V(math.min(math.max(ph / ASPECT, CANVAS + 2 * BEZEL), u.X - 2 * m), ph)
-		landscapeSize = V(
-			math.min(u.X - 2 * MARGIN, (u.Y - 2 * MARGIN) * ASPECT),
-			math.min(u.Y - 2 * MARGIN, (u.X - 2 * MARGIN) * ASPECT)
-		)
 		rigScale.Scale = mt.scale
-		stopTurn()
-		orient(not sideways)
+		orient()
 		body.Rotation = 0
 		local again = relayout
 		if again then

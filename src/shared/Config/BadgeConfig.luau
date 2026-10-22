@@ -50,7 +50,6 @@ BadgeConfig.Order = table.freeze({
 	"RankLifeguard",
 	"RankRescueSwimmer",
 	"FerryHero",
-	"AirPocket",
 	"FirstWreck",
 	"FirstWildlife",
 	"AllWildlife",
@@ -137,12 +136,6 @@ BadgeConfig.Badges = table.freeze({
 		id = 0,
 		name = "Ferry Hero",
 		description = "Bring a casualty home from a Capsized Ferry.",
-		count = 1,
-	},
-	AirPocket = {
-		id = 0,
-		name = "Air Pocket",
-		description = "Lead a trapped passenger out of the air pocket.",
 		count = 1,
 	},
 	FirstWreck = {

@@ -98,11 +98,9 @@ return function(t)
 		local ferry = snap({
 			kind = "CapsizedFerry",
 			isBig = true,
-			steps = { { id = "air_pocket", grade = "Bronze", userId = ME } },
 		})
 		local p = BadgeRules.opProgress(ferry, ME, true)
 		t.expect(p.FerryHero).toBe(1)
-		t.expect(p.AirPocket).toBe(1)
 		t.expect(
 			BadgeRules.opProgress(
 				snap({ kind = "CapsizedFerry", isBig = true, saved = 0 }),
@@ -110,9 +108,6 @@ return function(t)
 				true
 			).FerryHero
 		).toBeNil()
-		local failedPocket =
-			snap({ steps = { { id = "air_pocket", grade = "Fail", userId = ME } } })
-		t.expect(BadgeRules.opProgress(failedPocket, ME, true).AirPocket).toBeNil()
 	end)
 
 	t.test("apply counts up and reports badges at or past their threshold", function()

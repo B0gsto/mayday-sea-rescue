@@ -1,0 +1,227 @@
+{
+ "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_StormRunner/turntable",
+ "images": {
+  "Front3Q_neutral": "Front3Q_neutral.png",
+  "Side_neutral": "Side_neutral.png",
+  "Rear3Q_neutral": "Rear3Q_neutral.png",
+  "High_neutral": "High_neutral.png",
+  "Front3Q_overcast": "Front3Q_overcast.png",
+  "Side_overcast": "Side_overcast.png",
+  "Rear3Q_overcast": "Rear3Q_overcast.png",
+  "High_overcast": "High_overcast.png",
+  "silhouette": "silhouette.png"
+ },
+ "views": [
+  "Front3Q",
+  "Side",
+  "Rear3Q",
+  "High"
+ ],
+ "worlds": {
+  "neutral": "WLD_Neutral",
+  "overcast": "WLD_OvercastSea"
+ },
+ "hdri": {
+  "neutral": "studio_small_08_2k.hdr",
+  "overcast": "gray_pier_2k.hdr"
+ },
+ "size_px": 768,
+ "samples": 32,
+ "mannequin_studs": 5.5,
+ "maps_applied": {
+  "M_Veh_StormRunner_Hull_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_Deck_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_Interior_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_Screen_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_Engines_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_RollBar_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ],
+  "M_Veh_StormRunner_Rails_LOD0": [
+   "ALB",
+   "MET",
+   "NOR",
+   "RGH"
+  ]
+ },
+ "sets": [
+  "T_StormRunner_Hull",
+  "T_StormRunner_Interior",
+  "T_StormRunner_Engines",
+  "T_StormRunner_Rig"
+ ],
+ "frames": {
+  "Front3Q": {
+   "asset": [
+    0.152,
+    0.106,
+    0.936,
+    0.684
+   ],
+   "mannequin": [
+    0.037,
+    0.313,
+    0.12,
+    0.513
+   ],
+   "fill": 0.784
+  },
+  "Side": {
+   "asset": [
+    0.185,
+    0.364,
+    0.963,
+    0.628
+   ],
+   "mannequin": [
+    0.05,
+    0.371,
+    0.108,
+    0.524
+   ],
+   "fill": 0.778
+  },
+  "Rear3Q": {
+   "asset": [
+    0.171,
+    0.094,
+    0.957,
+    0.645
+   ],
+   "mannequin": [
+    0.037,
+    0.307,
+    0.124,
+    0.515
+   ],
+   "fill": 0.786
+  },
+  "High": {
+   "asset": [
+    0.192,
+    0.037,
+    0.925,
+    0.839
+   ],
+   "mannequin": [
+    -0.008,
+    0.389,
+    0.091,
+    0.527
+   ],
+   "fill": 0.802
+  }
+ },
+ "closeups": [
+  {
+   "name": "helm_1m",
+   "target": [
+    0.0,
+    -1.0,
+    4.55
+   ],
+   "dist": 3.0,
+   "az": 192.0,
+   "el": 22.0,
+   "file": "closeup_helm_1m.png"
+  },
+  {
+   "name": "stripes_wordmark",
+   "target": [
+    4.0,
+    3.0,
+    3.3
+   ],
+   "dist": 6.0,
+   "az": 90.0,
+   "el": 5.0,
+   "file": "closeup_stripes_wordmark.png"
+  },
+  {
+   "name": "rollbar_pod",
+   "target": [
+    0.0,
+    9.95,
+    8.25
+   ],
+   "dist": 5.0,
+   "az": 20.0,
+   "el": 15.0,
+   "file": "closeup_rollbar_pod.png"
+  },
+  {
+   "name": "bow_rail",
+   "target": [
+    1.5,
+    -10.5,
+    5.0
+   ],
+   "dist": 6.0,
+   "az": 35.0,
+   "el": 25.0,
+   "file": "closeup_bow_rail.png"
+  },
+  {
+   "name": "outboards",
+   "target": [
+    0.0,
+    12.5,
+    3.0
+   ],
+   "dist": 6.0,
+   "az": 155.0,
+   "el": 14.0,
+   "file": "closeup_outboards.png"
+  },
+  {
+   "name": "seats",
+   "target": [
+    0.0,
+    3.0,
+    4.6
+   ],
+   "dist": 6.0,
+   "az": 140.0,
+   "el": 35.0,
+   "file": "closeup_seats.png"
+  }
+ ],
+ "closeup_px": 1024,
+ "min_fill": 0.778,
+ "in_frame": true,
+ "dims_m": [
+  2.85,
+  8.9,
+  2.95
+ ],
+ "validation_ok": true,
+ "seconds": 7.3
+}

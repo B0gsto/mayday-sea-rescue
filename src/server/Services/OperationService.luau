@@ -89,6 +89,7 @@ type StepInst = {
 	attempt: number,
 	tag: string?, -- triage: the tag the client chose
 	board: { [string]: string }?, -- scene_command: unit -> task id (optional result.board)
+	failed: boolean?, -- timed out or failed (failStep): a ride home then never takes them off the boat
 }
 
 type Track = {
@@ -929,7 +930,9 @@ local function applyEffect(
 		op.saved += 1
 		pcall(RescueService.RemoveVictim, op.scene, ci)
 		try("NpcService", "ShoreHandover", RipFlow.Shore.dry, RipFlow.Shore.water)
-	elseif effect == "deliver" and ci then
+	elseif effect == "deliver" and ci and not (inst.failed and op.isBig) then
+		-- a big call's delivery takes them off the boat: a failed ride home leaves them aboard, and
+		-- the pad lands them whenever the boat gets in (OnVictimsDelivered)
 		deliverCasualty(op, ci, actor)
 	end
 end
@@ -1005,6 +1008,7 @@ end
 local function failStep(op: any, track: Track, inst: StepInst, why: string)
 	local def = inst.def
 	local action = def.onFail
+	inst.failed = true
 	if action == "retry" then
 		if inst.attempt < Types.Rules.MaxAttempts then
 			if inst.assignee then

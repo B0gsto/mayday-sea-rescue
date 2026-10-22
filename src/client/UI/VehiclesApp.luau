@@ -1206,6 +1206,4 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	end
 end
 
-VehiclesApp.portrait = true -- the phone stays upright (Phone.luau OPTIONAL)
-
 return VehiclesApp

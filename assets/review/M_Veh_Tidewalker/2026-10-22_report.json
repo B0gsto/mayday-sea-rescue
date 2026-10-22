@@ -1,0 +1,4536 @@
+{
+ "asset": "M_Veh_Tidewalker",
+ "name": "M_Veh_Tidewalker",
+ "date": "2026-10-22",
+ "commit": "a45ed11e+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export",
+  "turntable"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 4096,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Hulls",
+    "ok": true,
+    "size": 4096,
+    "export": 4096,
+    "pairs": [
+     {
+      "lod0": "M_Veh_Tidewalker_HullP_LOD0",
+      "hp": "M_Veh_Tidewalker_HullP_HP"
+     },
+     {
+      "lod0": "M_Veh_Tidewalker_HullS_LOD0",
+      "hp": "M_Veh_Tidewalker_HullS_HP"
+     },
+     {
+      "lod0": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+      "hp": "M_Veh_Tidewalker_Bridgedeck_HP"
+     }
+    ],
+    "coverage": 0.4807,
+    "seconds": 90.2,
+    "timings": {
+     "nor": 8.3,
+     "mask": 25.6,
+     "pos": 7.6,
+     "wn": 8.9,
+     "base": 8.8,
+     "mr": 8.0,
+     "compose_write": 18.0
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_ALB.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_NOR.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_RGH.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Hulls_MET.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_NOR.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/textures"
+   },
+   {
+    "set": "Deck",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_Tidewalker_Cockpit_LOD0",
+      "hp": "M_Veh_Tidewalker_Cockpit_HP"
+     }
+    ],
+    "coverage": 0.5674,
+    "seconds": 72.7,
+    "timings": {
+     "nor": 3.6,
+     "mask": 31.4,
+     "pos": 3.6,
+     "wn": 3.5,
+     "base": 4.7,
+     "mr": 4.7,
+     "compose_write": 18.1
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_ALB.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_NOR.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_RGH.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Deck_MET.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_NOR.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/textures"
+   },
+   {
+    "set": "Cabin",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_Tidewalker_Saloon_LOD0",
+      "hp": "M_Veh_Tidewalker_Saloon_HP"
+     },
+     {
+      "lod0": "M_Veh_Tidewalker_Roof_LOD0",
+      "hp": "M_Veh_Tidewalker_Roof_HP"
+     }
+    ],
+    "coverage": 0.8124,
+    "seconds": 76.5,
+    "timings": {
+     "nor": 6.4,
+     "mask": 25.0,
+     "pos": 5.5,
+     "wn": 5.2,
+     "base": 6.2,
+     "mr": 7.3,
+     "compose_write": 16.1
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_ALB.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_NOR.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_RGH.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Cabin_MET.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_NOR.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/textures"
+   },
+   {
+    "set": "Fly",
+    "ok": true,
+    "size": 4096,
+    "export": 4096,
+    "pairs": [
+     {
+      "lod0": "M_Veh_Tidewalker_Flybridge_LOD0",
+      "hp": "M_Veh_Tidewalker_Flybridge_HP"
+     },
+     {
+      "lod0": "M_Veh_Tidewalker_Hardtop_LOD0",
+      "hp": "M_Veh_Tidewalker_Hardtop_HP"
+     }
+    ],
+    "coverage": 0.6794,
+    "seconds": 75.8,
+    "timings": {
+     "nor": 5.8,
+     "mask": 24.4,
+     "pos": 5.4,
+     "wn": 5.5,
+     "base": 5.5,
+     "mr": 5.3,
+     "compose_write": 20.1
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_ALB.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_NOR.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_RGH.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fly_MET.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_NOR.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/textures"
+   },
+   {
+    "set": "Fittings",
+    "ok": true,
+    "size": 4096,
+    "export": 2048,
+    "pairs": [
+     {
+      "lod0": "M_Veh_Tidewalker_Rails_LOD0",
+      "hp": "M_Veh_Tidewalker_Rails_HP"
+     },
+     {
+      "lod0": "M_Veh_Tidewalker_Running_LOD0",
+      "hp": "M_Veh_Tidewalker_Running_HP"
+     }
+    ],
+    "coverage": 0.2301,
+    "seconds": 53.6,
+    "timings": {
+     "nor": 5.6,
+     "mask": 11.8,
+     "pos": 4.8,
+     "wn": 5.2,
+     "base": 5.4,
+     "mr": 5.2,
+     "compose_write": 12.3
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_ALB.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_NOR.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_RGH.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_Tidewalker/textures/T_Tidewalker_Fittings_MET.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_NOR.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH_Wet.png",
+     "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD0.fbx",
+   "bytes": 2149004,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Tidewalker_Bridgedeck_LOD0",
+    "M_Veh_Tidewalker_COL",
+    "M_Veh_Tidewalker_Cockpit_LOD0",
+    "M_Veh_Tidewalker_Flybridge_LOD0",
+    "M_Veh_Tidewalker_Hardtop_LOD0",
+    "M_Veh_Tidewalker_HullP_LOD0",
+    "M_Veh_Tidewalker_HullS_LOD0",
+    "M_Veh_Tidewalker_Rails_LOD0",
+    "M_Veh_Tidewalker_Roof_LOD0",
+    "M_Veh_Tidewalker_Running_LOD0",
+    "M_Veh_Tidewalker_Saloon_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Tidewalker_Bridgedeck_LOD0.001",
+     "min": [
+      -6.4,
+      -21.29,
+      0.0
+     ],
+     "max": [
+      4.45,
+      24.41,
+      7.0
+     ],
+     "polygons": 798,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_COL.001",
+     "min": [
+      -8.6,
+      -25.87,
+      0.3
+     ],
+     "max": [
+      8.6,
+      24.41,
+      12.4
+     ],
+     "polygons": 324,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Cockpit_LOD0.001",
+     "min": [
+      -8.37,
+      5.06,
+      2.6
+     ],
+     "max": [
+      8.37,
+      26.05,
+      8.64
+     ],
+     "polygons": 4900,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Flybridge_LOD0.001",
+     "min": [
+      -6.3,
+      -7.49,
+      5.7419
+     ],
+     "max": [
+      6.54,
+      12.9733,
+      18.75
+     ],
+     "polygons": 4662,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Hardtop_LOD0.001",
+     "min": [
+      -6.545,
+      -6.03,
+      11.6211
+     ],
+     "max": [
+      6.545,
+      12.1567,
+      22.2927
+     ],
+     "polygons": 2108,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullP_LOD0.001",
+     "min": [
+      -6.3603,
+      -26.05,
+      0.0
+     ],
+     "max": [
+      8.6,
+      24.41,
+      7.6976
+     ],
+     "polygons": 1770,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullS_LOD0.001",
+     "min": [
+      -8.6,
+      -26.05,
+      0.0
+     ],
+     "max": [
+      6.4,
+      24.41,
+      7.6976
+     ],
+     "polygons": 1756,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Rails_LOD0.001",
+     "min": [
+      -8.4712,
+      -21.63,
+      5.98
+     ],
+     "max": [
+      8.4712,
+      23.75,
+      15.1066
+     ],
+     "polygons": 8256,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Roof_LOD0.001",
+     "min": [
+      -7.25,
+      -10.79,
+      5.75
+     ],
+     "max": [
+      7.25,
+      12.21,
+      12.4
+     ],
+     "polygons": 408,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Running_LOD0.001",
+     "min": [
+      -8.15,
+      -22.315,
+      0.4018
+     ],
+     "max": [
+      8.15,
+      23.068,
+      7.25
+     ],
+     "polygons": 1888,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Saloon_LOD0.001",
+     "min": [
+      -7.0531,
+      -14.49,
+      5.65
+     ],
+     "max": [
+      7.0531,
+      5.01,
+      12.1
+     ],
+     "polygons": 644,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD1.fbx",
+   "bytes": 946076,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Tidewalker_Bridgedeck_LOD1",
+    "M_Veh_Tidewalker_Cockpit_LOD1",
+    "M_Veh_Tidewalker_Flybridge_LOD1",
+    "M_Veh_Tidewalker_Hardtop_LOD1",
+    "M_Veh_Tidewalker_HullP_LOD1",
+    "M_Veh_Tidewalker_HullS_LOD1",
+    "M_Veh_Tidewalker_Rails_LOD1",
+    "M_Veh_Tidewalker_Roof_LOD1",
+    "M_Veh_Tidewalker_Running_LOD1",
+    "M_Veh_Tidewalker_Saloon_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Tidewalker_Bridgedeck_LOD1.001",
+     "min": [
+      -6.4,
+      -21.29,
+      0.0
+     ],
+     "max": [
+      4.45,
+      24.41,
+      7.0
+     ],
+     "polygons": 279,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Cockpit_LOD1.001",
+     "min": [
+      -8.3533,
+      5.0601,
+      2.6
+     ],
+     "max": [
+      8.3533,
+      26.0469,
+      8.625
+     ],
+     "polygons": 1714,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Flybridge_LOD1.001",
+     "min": [
+      -6.3,
+      -7.49,
+      5.7449
+     ],
+     "max": [
+      6.5415,
+      12.9733,
+      18.7509
+     ],
+     "polygons": 1630,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Hardtop_LOD1.001",
+     "min": [
+      -6.5428,
+      -6.03,
+      11.6211
+     ],
+     "max": [
+      6.5428,
+      12.1567,
+      22.2944
+     ],
+     "polygons": 736,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullP_LOD1.001",
+     "min": [
+      -6.3596,
+      -26.0509,
+      0.0
+     ],
+     "max": [
+      8.5999,
+      24.41,
+      7.6999
+     ],
+     "polygons": 617,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullS_LOD1.001",
+     "min": [
+      -8.5999,
+      -26.05,
+      0.0
+     ],
+     "max": [
+      6.4,
+      24.41,
+      7.6983
+     ],
+     "polygons": 612,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Rails_LOD1.001",
+     "min": [
+      -8.4784,
+      -21.637,
+      5.98
+     ],
+     "max": [
+      8.4784,
+      23.7584,
+      15.1066
+     ],
+     "polygons": 2888,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Roof_LOD1.001",
+     "min": [
+      -7.2449,
+      -10.762,
+      5.75
+     ],
+     "max": [
+      7.2451,
+      12.2051,
+      12.3917
+     ],
+     "polygons": 142,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Running_LOD1.001",
+     "min": [
+      -8.1479,
+      -22.2983,
+      0.4018
+     ],
+     "max": [
+      8.1479,
+      23.0678,
+      7.25
+     ],
+     "polygons": 660,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Saloon_LOD1.001",
+     "min": [
+      -7.0531,
+      -14.49,
+      5.65
+     ],
+     "max": [
+      7.0531,
+      5.01,
+      12.1
+     ],
+     "polygons": 225,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD2.fbx",
+   "bytes": 327292,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_Tidewalker_Bridgedeck_LOD2",
+    "M_Veh_Tidewalker_Cockpit_LOD2",
+    "M_Veh_Tidewalker_Flybridge_LOD2",
+    "M_Veh_Tidewalker_Hardtop_LOD2",
+    "M_Veh_Tidewalker_HullP_LOD2",
+    "M_Veh_Tidewalker_HullS_LOD2",
+    "M_Veh_Tidewalker_Rails_LOD2",
+    "M_Veh_Tidewalker_Roof_LOD2",
+    "M_Veh_Tidewalker_Running_LOD2",
+    "M_Veh_Tidewalker_Saloon_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_Tidewalker_Bridgedeck_LOD2.001",
+     "min": [
+      -6.4,
+      -21.29,
+      0.0
+     ],
+     "max": [
+      4.4503,
+      24.41,
+      7.0
+     ],
+     "polygons": 79,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Cockpit_LOD2.001",
+     "min": [
+      -8.52,
+      5.0601,
+      2.6
+     ],
+     "max": [
+      8.52,
+      26.0469,
+      8.7125
+     ],
+     "polygons": 490,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Flybridge_LOD2.001",
+     "min": [
+      -6.3,
+      -7.49,
+      5.75
+     ],
+     "max": [
+      6.5415,
+      12.91,
+      18.7509
+     ],
+     "polygons": 466,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Hardtop_LOD2.001",
+     "min": [
+      -6.5438,
+      -5.943,
+      11.6211
+     ],
+     "max": [
+      6.5428,
+      12.1367,
+      22.2944
+     ],
+     "polygons": 209,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullP_LOD2.001",
+     "min": [
+      -6.3497,
+      -26.0524,
+      0.0
+     ],
+     "max": [
+      8.5977,
+      24.4101,
+      7.6976
+     ],
+     "polygons": 175,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_HullS_LOD2.001",
+     "min": [
+      -8.5977,
+      -26.05,
+      0.0
+     ],
+     "max": [
+      6.4,
+      24.4101,
+      7.6976
+     ],
+     "polygons": 173,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Rails_LOD2.001",
+     "min": [
+      -8.5005,
+      -21.6142,
+      5.98
+     ],
+     "max": [
+      8.5007,
+      23.7366,
+      15.1239
+     ],
+     "polygons": 824,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Roof_LOD2.001",
+     "min": [
+      -7.1759,
+      -10.6563,
+      5.75
+     ],
+     "max": [
+      7.1883,
+      12.113,
+      12.389
+     ],
+     "polygons": 40,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Running_LOD2.001",
+     "min": [
+      -8.125,
+      -22.2983,
+      0.4147
+     ],
+     "max": [
+      8.1438,
+      23.0201,
+      7.2334
+     ],
+     "polygons": 188,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_Tidewalker_Saloon_LOD2.001",
+     "min": [
+      -7.0474,
+      -14.478,
+      5.6492
+     ],
+     "max": [
+      7.0403,
+      5.0074,
+      12.1005
+     ],
+     "polygons": 64,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker.attachments.json",
+   "attachments": [
+    "ATT_DriverSeat",
+    "ATT_EyePoint",
+    "ATT_PassengerSeat1",
+    "ATT_PassengerSeat2",
+    "ATT_PassengerSeat3",
+    "ATT_TowHitch",
+    "ATT_BowPoint",
+    "ATT_DriveAttachment",
+    "ATT_NavPort",
+    "ATT_NavStarboard",
+    "ATT_NavMasthead",
+    "ATT_NavStern",
+    "ATT_Beacon",
+    "ATT_Searchlight",
+    "ATT_Prop1",
+    "ATT_Prop2",
+    "ATT_SurvivorSlot1",
+    "ATT_SurvivorSlot2",
+    "ATT_SurvivorSlot3",
+    "ATT_SurvivorSlot4",
+    "ATT_SurvivorSlot5",
+    "ATT_SurvivorSlot6",
+    "ATT_Float1",
+    "ATT_Float2",
+    "ATT_Float3",
+    "ATT_Float4",
+    "ATT_Float5",
+    "ATT_Float6",
+    "ATT_Float7",
+    "ATT_Float8"
+   ]
+  }
+ ],
+ "turntable": {
+  "dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets/review/M_Veh_Tidewalker/turntable",
+  "images": {
+   "Front3Q_neutral": "Front3Q_neutral.png",
+   "Side_neutral": "Side_neutral.png",
+   "Rear3Q_neutral": "Rear3Q_neutral.png",
+   "High_neutral": "High_neutral.png",
+   "Front3Q_overcast": "Front3Q_overcast.png",
+   "Side_overcast": "Side_overcast.png",
+   "Rear3Q_overcast": "Rear3Q_overcast.png",
+   "High_overcast": "High_overcast.png",
+   "silhouette": "silhouette.png"
+  },
+  "views": [
+   "Front3Q",
+   "Side",
+   "Rear3Q",
+   "High"
+  ],
+  "worlds": {
+   "neutral": "WLD_Neutral",
+   "overcast": "WLD_OvercastSea"
+  },
+  "hdri": {
+   "neutral": "studio_small_08_2k.hdr",
+   "overcast": "gray_pier_2k.hdr"
+  },
+  "size_px": 768,
+  "samples": 32,
+  "mannequin_studs": 5.5,
+  "maps_applied": {
+   "M_Veh_Tidewalker_HullP_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_HullS_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Bridgedeck_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Cockpit_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Saloon_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Roof_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Flybridge_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Hardtop_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Rails_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ],
+   "M_Veh_Tidewalker_Running_LOD0": [
+    "ALB",
+    "MET",
+    "NOR",
+    "RGH"
+   ]
+  },
+  "sets": [
+   "T_Tidewalker_Hulls",
+   "T_Tidewalker_Deck",
+   "T_Tidewalker_Cabin",
+   "T_Tidewalker_Fly",
+   "T_Tidewalker_Fittings"
+  ],
+  "frames": {
+   "Front3Q": {
+    "asset": [
+     0.148,
+     0.037,
+     0.93,
+     0.705
+    ],
+    "mannequin": [
+     0.069,
+     0.284,
+     0.11,
+     0.384
+    ],
+    "fill": 0.782
+   },
+   "Side": {
+    "asset": [
+     0.179,
+     0.323,
+     0.963,
+     0.657
+    ],
+    "mannequin": [
+     0.074,
+     0.346,
+     0.103,
+     0.423
+    ],
+    "fill": 0.784
+   },
+   "Rear3Q": {
+    "asset": [
+     0.135,
+     0.037,
+     0.942,
+     0.705
+    ],
+    "mannequin": [
+     0.058,
+     0.278,
+     0.101,
+     0.381
+    ],
+    "fill": 0.807
+   },
+   "High": {
+    "asset": [
+     0.207,
+     0.037,
+     0.877,
+     0.766
+    ],
+    "mannequin": [
+     0.053,
+     0.382,
+     0.097,
+     0.445
+    ],
+    "fill": 0.729
+   }
+  },
+  "closeups": [
+   {
+    "name": "helm_1m",
+    "target": [
+     0.0,
+     -4.4,
+     14.600000000000001
+    ],
+    "dist": 3.0,
+    "az": 200.0,
+    "el": 25.0,
+    "file": "closeup_helm_1m.png"
+   },
+   {
+    "name": "hull_windows",
+    "target": [
+     8.7,
+     -4.0,
+     5.0
+    ],
+    "dist": 9.0,
+    "az": 90.0,
+    "el": 5.0,
+    "file": "closeup_hull_windows.png"
+   },
+   {
+    "name": "wordmark",
+    "target": [
+     8.6,
+     15.5,
+     5.1
+    ],
+    "dist": 7.0,
+    "az": 90.0,
+    "el": 4.0,
+    "file": "closeup_wordmark.png"
+   },
+   {
+    "name": "cockpit_teak",
+    "target": [
+     0.0,
+     13.0,
+     6.5
+    ],
+    "dist": 9.0,
+    "az": 160.0,
+    "el": 35.0,
+    "file": "closeup_cockpit_teak.png"
+   },
+   {
+    "name": "saloon_glass",
+    "target": [
+     4.0,
+     -11.0,
+     9.5
+    ],
+    "dist": 8.0,
+    "az": 35.0,
+    "el": 12.0,
+    "file": "closeup_saloon_glass.png"
+   },
+   {
+    "name": "stern_steps",
+    "target": [
+     0.0,
+     25.0,
+     4.6
+    ],
+    "dist": 8.0,
+    "az": 160.0,
+    "el": 18.0,
+    "file": "closeup_stern_steps.png"
+   }
+  ],
+  "closeup_px": 1024,
+  "min_fill": 0.729,
+  "in_frame": true,
+  "dims_m": [
+   5.9,
+   17.3,
+   null
+  ],
+  "validation_ok": true,
+  "seconds": 7.3
+ },
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_Tidewalker/M_Veh_Tidewalker.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_Tidewalker_Hulls",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "48.1% of texels at 4096 px from M_Veh_Tidewalker_HullP_LOD0<-M_Veh_Tidewalker_HullP_HP, M_Veh_Tidewalker_HullS_LOD0<-M_Veh_Tidewalker_HullS_HP, M_Veh_Tidewalker_Bridgedeck_LOD0<-M_Veh_Tidewalker_Bridgedeck_HP"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 4096, 90 s"
+  },
+  {
+   "subject": "T_Tidewalker_Deck",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56.7% of texels at 4096 px from M_Veh_Tidewalker_Cockpit_LOD0<-M_Veh_Tidewalker_Cockpit_HP"
+  },
+  {
+   "subject": "T_Tidewalker_Deck",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 73 s"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "81.2% of texels at 4096 px from M_Veh_Tidewalker_Saloon_LOD0<-M_Veh_Tidewalker_Saloon_HP, M_Veh_Tidewalker_Roof_LOD0<-M_Veh_Tidewalker_Roof_HP"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 76 s"
+  },
+  {
+   "subject": "T_Tidewalker_Fly",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "67.9% of texels at 4096 px from M_Veh_Tidewalker_Flybridge_LOD0<-M_Veh_Tidewalker_Flybridge_HP, M_Veh_Tidewalker_Hardtop_LOD0<-M_Veh_Tidewalker_Hardtop_HP"
+  },
+  {
+   "subject": "T_Tidewalker_Fly",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 4096, 76 s"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "23.0% of texels at 4096 px from M_Veh_Tidewalker_Rails_LOD0<-M_Veh_Tidewalker_Rails_HP, M_Veh_Tidewalker_Running_LOD0<-M_Veh_Tidewalker_Running_HP"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 4096, export 2048, 54 s"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "allweather_lifeboat"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullP_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1770 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.07e-04, 50 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.994, v 0.001 to 0.980"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 901 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullS_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1756 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.07e-04, 110 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.101 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 900 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Bridgedeck_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "798 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.71e-02, 60 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.563 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 419 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "57 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Cockpit_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4900 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.46e-04, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.991, v 0.003 to 0.997"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2774 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "70 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Saloon_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "644 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.07e-02, 92 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.999, v 0.001 to 0.981"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 322 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "55 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Roof_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "408 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.52e-03, 40 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.816, v 0.001 to 0.909"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 245 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "57 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Flybridge_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4662 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.66e-05, 346 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.997, v 0.003 to 0.997"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2636 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "97 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Hardtop_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2108 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.12e-05, 222 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.997, v 0.003 to 0.994"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1177 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "97 px/stud at 4096 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Rails_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8256 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.77e-04, 612 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.989, v 0.004 to 0.991"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4530 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "67 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Running_LOD0"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1888 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.46e-04, 184 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.004 to 0.995"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1100 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "68 px/stud at 2048 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullP_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "617 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.56e-04, 47 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.994, v 0.001 to 0.980"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 617 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullS_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "612 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.56e-04, 80 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.101 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 612 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Bridgedeck_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "279 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.69e-02, 47 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.563 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 279 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Cockpit_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1714 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.81e-06, 66 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.990, v 0.003 to 0.996"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1714 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 4.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Saloon_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "225 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.12e-02, 49 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.999, v 0.001 to 0.981"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 225 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Roof_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "142 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.18e-05, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.816, v 0.002 to 0.909"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 142 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 1.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Flybridge_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1630 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.06e-06, 128 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.997, v 0.003 to 0.997"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1630 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 3.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Hardtop_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "736 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.05e-06, 110 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.997, v 0.003 to 0.994"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 736 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 0.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Rails_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2888 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.89e-06, 306 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.989, v 0.004 to 0.991"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2888 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 2.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Running_LOD1"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "660 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.15e-06, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.005 to 0.996, v 0.004 to 0.995"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 660 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 6.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullP_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "175 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.00e-04, 36 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.001 to 0.994, v 0.001 to 0.979"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 175 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullS_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "173 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.00e-04, 68 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.101 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 173 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Bridgedeck_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "79 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.73e-02, 39 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.563 to 0.999, v 0.001 to 0.988"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 79 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Cockpit_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "490 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.88e-05, 66 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.985, v 0.003 to 0.986"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 490 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / rail UV island borders (the RIB's waiver); LODs are only seen far off where the maps are mip-mapped below the island size.): UV bounds differ by 0.010 (max 0.02), UV area by 56.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Saloon_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "64 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 3.38e-01, 22 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.999, v 0.001 to 0.979"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 64 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.002 (max 0.02), UV area by 0.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Roof_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "40 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.61e-05, 12 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.002 to 0.803, v 0.005 to 0.908"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 40 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.014 (max 0.02), UV area by 8.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Flybridge_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "466 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.65e-06, 99 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.003 to 0.997, v 0.003 to 0.996"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 466 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Hardtop_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "209 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.73e-06, 69 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.007 to 0.997, v 0.006 to 0.992"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 209 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.004 (max 0.02), UV area by 10.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Rails_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "824 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.43e-06, 306 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.953, v 0.004 to 0.989"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 824 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / rail UV island borders (the RIB's waiver); LODs are only seen far off where the maps are mip-mapped below the island size.): UV bounds differ by 0.037 (max 0.02), UV area by 55.3% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Running_LOD2"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "188 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.18e-05, 82 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.005 to 0.996, v 0.004 to 0.995"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 188 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (LOD1 / LOD2 collapse decimation moves small tube / rail UV island borders (the RIB's waiver); LODs are only seen far off where the maps are mip-mapped below the island size.): UV bounds differ by 0.001 (max 0.02), UV area by 38.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullP_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullP_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_HullS_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_HullS_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Bridgedeck_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Bridgedeck_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Cockpit_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Cockpit_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Saloon_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Saloon_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Roof_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Roof_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Flybridge_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Flybridge_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Hardtop_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Hardtop_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Rails_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Rails_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_Running_HP"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_Running_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_Tidewalker_COL"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "324 of 10000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "324 of 1000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "27190 of 60000 (allweather_lifeboat)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9503 of 25000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2708 of 6000"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_Tidewalker/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "17.200 studs, real 5.900 m = 17.700 studs, off 2.8% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "52.100 studs, real 17.300 m = 51.900 studs, off 0.4% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Tidewalker_COL"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5 (5 to 6 sets)"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB.png"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_NOR.png"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH.png"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Hulls_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_MET.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_NOR.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Deck_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_MET.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_NOR.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Cabin_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_MET.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_NOR.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fly_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4096 x 4096, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_MET.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_NOR.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH_Wet.png"
+  },
+  {
+   "subject": "T_Tidewalker_Fittings_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2048 x 2048, cap 4096, assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_MET.png"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_PassengerSeat3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BowPoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavPort",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStarboard",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavMasthead",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_NavStern",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Beacon",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Searchlight",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Prop2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_SurvivorSlot6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float1",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float6",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float7",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Float8",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Tidewalker_Bridgedeck_LOD0, M_Veh_Tidewalker_COL, M_Veh_Tidewalker_Cockpit_LOD0, M_Veh_Tidewalker_Flybridge_LOD0, M_Veh_Tidewalker_Hardtop_LOD0, M_Veh_Tidewalker_HullP_LOD0, M_Veh_Tidewalker_HullS_LOD0, M_Veh_Tidewalker_Rails_LOD0, M_Veh_Tidewalker_Roof_LOD0, M_Veh_Tidewalker_Running_LOD0, M_Veh_Tidewalker_Saloon_LOD0; 27514 triangles (scene 27514)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 10 of 10 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Tidewalker_Bridgedeck_LOD1, M_Veh_Tidewalker_Cockpit_LOD1, M_Veh_Tidewalker_Flybridge_LOD1, M_Veh_Tidewalker_Hardtop_LOD1, M_Veh_Tidewalker_HullP_LOD1, M_Veh_Tidewalker_HullS_LOD1, M_Veh_Tidewalker_Rails_LOD1, M_Veh_Tidewalker_Roof_LOD1, M_Veh_Tidewalker_Running_LOD1, M_Veh_Tidewalker_Saloon_LOD1; 9503 triangles (scene 9503)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 10 of 10 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_Tidewalker_Bridgedeck_LOD2, M_Veh_Tidewalker_Cockpit_LOD2, M_Veh_Tidewalker_Flybridge_LOD2, M_Veh_Tidewalker_Hardtop_LOD2, M_Veh_Tidewalker_HullP_LOD2, M_Veh_Tidewalker_HullS_LOD2, M_Veh_Tidewalker_Rails_LOD2, M_Veh_Tidewalker_Roof_LOD2, M_Veh_Tidewalker_Running_LOD2, M_Veh_Tidewalker_Saloon_LOD2; 2708 triangles (scene 2708)"
+  },
+  {
+   "subject": "M_Veh_Tidewalker_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 10 of 10 visual meshes"
+  },
+  {
+   "subject": "M_Veh_Tidewalker",
+   "check": "turntable",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "asset in frame, fill >= 0.73; 15 renders in 7 s, maps M_Veh_Tidewalker_HullP_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_HullS_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Bridgedeck_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Cockpit_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Saloon_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Roof_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Flybridge_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Hardtop_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Rails_LOD0: ALB/MET/NOR/RGH, M_Veh_Tidewalker_Running_LOD0: ALB/MET/NOR/RGH"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_Tidewalker_HullP_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1770,
+   "texel_density": 56.2
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullS_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1756,
+   "texel_density": 56.3
+  },
+  {
+   "name": "M_Veh_Tidewalker_Bridgedeck_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 798,
+   "texel_density": 57.0
+  },
+  {
+   "name": "M_Veh_Tidewalker_Cockpit_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4900,
+   "texel_density": 69.9
+  },
+  {
+   "name": "M_Veh_Tidewalker_Saloon_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 644,
+   "texel_density": 55.1
+  },
+  {
+   "name": "M_Veh_Tidewalker_Roof_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 408,
+   "texel_density": 56.5
+  },
+  {
+   "name": "M_Veh_Tidewalker_Flybridge_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 4662,
+   "texel_density": 96.9
+  },
+  {
+   "name": "M_Veh_Tidewalker_Hardtop_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 2108,
+   "texel_density": 97.2
+  },
+  {
+   "name": "M_Veh_Tidewalker_Rails_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 8256,
+   "texel_density": 66.9
+  },
+  {
+   "name": "M_Veh_Tidewalker_Running_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1888,
+   "texel_density": 67.6
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullP_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 4460,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullS_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 4460,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Bridgedeck_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 2200,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Cockpit_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 29816,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Saloon_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 896,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Roof_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 734,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Flybridge_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 12168,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Hardtop_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 5050,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Rails_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 13760,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Running_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 4176,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 324,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullP_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 617,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullP_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 175,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullS_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 612,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_HullS_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 173,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Bridgedeck_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 279,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Bridgedeck_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 79,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Cockpit_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1714,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Cockpit_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 490,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Saloon_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 225,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Saloon_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 64,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Roof_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 142,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Roof_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 40,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Flybridge_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1630,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Flybridge_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 466,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Hardtop_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 736,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Hardtop_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 209,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Rails_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2888,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Rails_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 824,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Running_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 660,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_Tidewalker_Running_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 188,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  17.200000762939453,
+  52.099998474121094,
+  22.29266357421875
+ ],
+ "peak_rss_mb": 8604.0
+}

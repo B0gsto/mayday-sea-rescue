@@ -196,6 +196,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_KerbTile_RGH.png",
   "type": "Image"
  },
+ "Image:024107d3984a54963905b43b280ab639275f41fc078f0fd88aceba06c0682fe8": {
+  "assetId": "71897683619145",
+  "imageId": "71897683619145",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_MET",
+  "sha": "024107d3984a54963905b43b280ab639275f41fc078f0fd88aceba06c0682fe8",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_MET.png",
+  "type": "Image"
+ },
  "Image:025f3807a146af3e5b80131e9f6b022d1c0bf73dbaa9209b2a838c6a03402800": {
   "assetId": "99844273681695",
   "imageId": "99844273681695",
@@ -469,6 +478,15 @@
   "source": "assets/textures/M_Road_ParkedCar_01/T_ParkedCar01_Wheels_NOR.png",
   "type": "Image"
  },
+ "Image:06f00b8a8f012fc461aaab81892e261c358f3239baf8db404116f12cb62c925e": {
+  "assetId": "134646520012878",
+  "imageId": "134646520012878",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_RGH",
+  "sha": "06f00b8a8f012fc461aaab81892e261c358f3239baf8db404116f12cb62c925e",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH.png",
+  "type": "Image"
+ },
  "Image:071cefa2dadba1b055fe5a0626329f9c9c3d7e1d3c12ba81f53f0ae70050e20e": {
   "assetId": "109862585432703",
   "imageId": "109862585432703",
@@ -485,6 +503,15 @@
   "name": "T_ChandleryProps_Rope_NOR",
   "sha": "073120c892bcddaf13378bd1b401e738c16ef5b9227c25505e3efda8c79d0e29",
   "source": "assets/textures/M_Prop_Chandlery/T_ChandleryProps_Rope_NOR.png",
+  "type": "Image"
+ },
+ "Image:075b35637c11f295af4c987e5b5b03b270c515f6d334e8b1fe11bbf3f50eee94": {
+  "assetId": "135689489021570",
+  "imageId": "135689489021570",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_ALB",
+  "sha": "075b35637c11f295af4c987e5b5b03b270c515f6d334e8b1fe11bbf3f50eee94",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB.png",
   "type": "Image"
  },
  "Image:078644f527a510528ac005a4aadb3435b3944e4d2530191a0e21cd48a706c04e": {
@@ -703,6 +730,15 @@
   "source": "assets/ui/phone/wallpaper.png",
   "type": "Image"
  },
+ "Image:0aa3675e600c3e2f092ad2ee1495319bb83c37f3e5cd4412bc8c4f6fad362c41": {
+  "assetId": "74727637248227",
+  "imageId": "74727637248227",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_ALB",
+  "sha": "0aa3675e600c3e2f092ad2ee1495319bb83c37f3e5cd4412bc8c4f6fad362c41",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_ALB.png",
+  "type": "Image"
+ },
  "Image:0ae296e1685dccd259a9dbf8060d884cfcba9781b4114824ae98c2a27e5c47ad": {
   "assetId": "116484206295091",
   "imageId": "116484206295091",
@@ -737,6 +773,15 @@
   "name": "T_ChartTablet_Kit_RGH_Wet",
   "sha": "0b077787adbfdd30649e4c7cf100e48b03dcd1a1383a9aea508ef839ef6eaed4",
   "source": "assets/textures/M_Kit_ChartTablet/T_ChartTablet_Kit_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:0b2b6d90fa1ee403a65ec27979d629736229a06e7cd52326ea6ee91d63d2e6fd": {
+  "assetId": "102963148905404",
+  "imageId": "102963148905404",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_RGH_Wet",
+  "sha": "0b2b6d90fa1ee403a65ec27979d629736229a06e7cd52326ea6ee91d63d2e6fd",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH_Wet.png",
   "type": "Image"
  },
  "Image:0b8ef498744492948a198d7b14bbb0ee58660c8949a79a78791d6e14b5b5965d": {
@@ -1162,6 +1207,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_MET.png",
   "type": "Image"
  },
+ "Image:0fec151c8074e52deb962df4b0c52d41b44f4864052c91a30820c15f5b72048f": {
+  "assetId": "85111820633234",
+  "imageId": "85111820633234",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_NOR",
+  "sha": "0fec151c8074e52deb962df4b0c52d41b44f4864052c91a30820c15f5b72048f",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_NOR.png",
+  "type": "Image"
+ },
  "Image:100b6ebb0a247c1ec440b4389510c48c35788e6325fa57f9b976114c7d3d5c57": {
   "assetId": "73415204924617",
   "imageId": "73415204924617",
@@ -1576,6 +1630,24 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:166ef14d83102a57a15cfe9dc5c20082c9a54da84cd99bd48ac96674c1b9880a": {
+  "assetId": "91437144025147",
+  "imageId": "91437144025147",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_NOR",
+  "sha": "166ef14d83102a57a15cfe9dc5c20082c9a54da84cd99bd48ac96674c1b9880a",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_NOR.png",
+  "type": "Image"
+ },
+ "Image:167373acf9825ab94ab23ff92b61463f1affbfe7bbc5f81963c55ff7102b7299": {
+  "assetId": "98559526031888",
+  "imageId": "98559526031888",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_RGH",
+  "sha": "167373acf9825ab94ab23ff92b61463f1affbfe7bbc5f81963c55ff7102b7299",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH.png",
+  "type": "Image"
+ },
  "Image:16859e4f3ce0f63c74983b2192960c8b31fd946194c365622778994b697905dd": {
   "assetId": "94659326142284",
   "imageId": "94659326142284",
@@ -1601,6 +1673,15 @@
   "name": "Mayday_T_Bosun_Body_NOR",
   "sha": "16e386bf17b180cb688a7451c3e30b20da6699ca8a7a107406c2916ce88c552d",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_NOR.png",
+  "type": "Image"
+ },
+ "Image:16f37219b189616b1d6a4254a38551859e1b8412e66979ca9e50fc43255a5e00": {
+  "assetId": "115131646293002",
+  "imageId": "115131646293002",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_RGH_Wet",
+  "sha": "16f37219b189616b1d6a4254a38551859e1b8412e66979ca9e50fc43255a5e00",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH_Wet.png",
   "type": "Image"
  },
  "Image:170c80adc723c0f7c4b5f184ea6fb8563d5d51c9f5e1f67f4ebb198db80ad4d0": {
@@ -1691,6 +1772,15 @@
   "name": "T_Bridle_Rope_NOR",
   "sha": "1807c2dd6806d4c6b694a2eebdc7a4814a2778223e3c0896e70d847865d6ff4f",
   "source": "assets/textures/M_Kit_Bridle/T_Bridle_Rope_NOR.png",
+  "type": "Image"
+ },
+ "Image:1814a833d4a94f570fae0b744fdcbc27ded8364788f31457fc00abd153325cdb": {
+  "assetId": "70398971130830",
+  "imageId": "70398971130830",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_RGH",
+  "sha": "1814a833d4a94f570fae0b744fdcbc27ded8364788f31457fc00abd153325cdb",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH.png",
   "type": "Image"
  },
  "Image:184015c9b98bfb0d08a14849721499cac2a4a2ee83c94b058e1685a0b4911b90": {
@@ -2211,6 +2301,15 @@
   "source": "assets/textures/Spike1/T_Spike1_4096_RGH.png",
   "type": "Image"
  },
+ "Image:1f5e3a336d689985b1ade77d1b5ee18340223ecc70671171246ba956c67da467": {
+  "assetId": "113968499923482",
+  "imageId": "113968499923482",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_MET",
+  "sha": "1f5e3a336d689985b1ade77d1b5ee18340223ecc70671171246ba956c67da467",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_MET.png",
+  "type": "Image"
+ },
  "Image:1f68a6698c07c1367e2b854a7a68e801bcb721aa9f6470f1072210c9b310e00b": {
   "assetId": "75283174944095",
   "imageId": "75283174944095",
@@ -2608,6 +2707,15 @@
   "source": "assets/textures/M_Veh_Optimist/T_Optimist_Deck_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:2539edacf39bfaae45e80f00e4040d58a03bce0460a21f469cd6ad098991f0c1": {
+  "assetId": "133239926270119",
+  "imageId": "133239926270119",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_NOR",
+  "sha": "2539edacf39bfaae45e80f00e4040d58a03bce0460a21f469cd6ad098991f0c1",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_NOR.png",
+  "type": "Image"
+ },
  "Image:258f410a826698fed01d778a3585ae49c28d62facdb8e57a6311f955bce7a683": {
   "assetId": "110481472018358",
   "imageId": "110481472018358",
@@ -2671,6 +2779,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:265828aaf20027d1a1b4ff87894d0c1674cf33a3c62f7843385c8d7e370868a3": {
+  "assetId": "139642918189340",
+  "imageId": "139642918189340",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_NOR",
+  "sha": "265828aaf20027d1a1b4ff87894d0c1674cf33a3c62f7843385c8d7e370868a3",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_NOR.png",
+  "type": "Image"
+ },
  "Image:26e1fa4252afde1ee4152dcf1e2a52d8e2bf660c15d2a1b500d6e37b7b4892ab": {
   "assetId": "129286052106565",
   "imageId": "129286052106565",
@@ -2716,6 +2833,15 @@
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_NOR.png",
   "type": "Image"
  },
+ "Image:278391ac0c50cadbed3739e1b67fe645c7d269f0db575cf5912ef0c5d1390400": {
+  "assetId": "105051468751194",
+  "imageId": "105051468751194",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_NOR",
+  "sha": "278391ac0c50cadbed3739e1b67fe645c7d269f0db575cf5912ef0c5d1390400",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_NOR.png",
+  "type": "Image"
+ },
  "Image:2798371f3f32ef23472000cf47b1d74ed0435a1b31fdfc1ce9156820768a73dd": {
   "assetId": "90967432646063",
   "imageId": "90967432646063",
@@ -2732,6 +2858,15 @@
   "name": "T_NavMarkStarboard_Buoy_RGH",
   "sha": "27b11f153105d19deab9c181d77b980447170c2e3fbbfe92125ffaaf0680a509",
   "source": "assets/textures/M_Hbr_NavMark_Starboard/T_NavMarkStarboard_Buoy_RGH.png",
+  "type": "Image"
+ },
+ "Image:27be669fe3541f6254334b12e8c14c3a0c0c075943bf23ff2515b95619d76805": {
+  "assetId": "136298483314177",
+  "imageId": "136298483314177",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_RGH_Wet",
+  "sha": "27be669fe3541f6254334b12e8c14c3a0c0c075943bf23ff2515b95619d76805",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_RGH_Wet.png",
   "type": "Image"
  },
  "Image:27e011f6cc6d7d54b29b8b018233f6c0f7ca10919807b832d369bac6d8feb399": {
@@ -3043,6 +3178,15 @@
   "source": "assets/textures/M_Road_CrashBarrier/T_CrashBarrier_Galv_RGH.png",
   "type": "Image"
  },
+ "Image:2c2584c00069eb8251e0fb5087a70f6b7c1adc6daff99d1e9e7fc08ec29777e0": {
+  "assetId": "96507427762201",
+  "imageId": "96507427762201",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_RGH_Wet",
+  "sha": "2c2584c00069eb8251e0fb5087a70f6b7c1adc6daff99d1e9e7fc08ec29777e0",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:2c36dd9c537d347c0e21ec6cceb427d83313290648651a600949a53e76a7b0e3": {
   "assetId": "73565894940710",
   "imageId": "73565894940710",
@@ -3230,6 +3374,15 @@
   "name": "T_Road_Gravel_NOR",
   "sha": "2e7e7e6cb3d4ec244d7fc545199d7838221a94a1c6cb475cf9f0548a69041e13",
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_NOR.png",
+  "type": "Image"
+ },
+ "Image:2e817f6f923ef9648af18bdaf3fcd171f926b9c08c07cba2aaf8ce133401f732": {
+  "assetId": "73328937047439",
+  "imageId": "73328937047439",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_NOR",
+  "sha": "2e817f6f923ef9648af18bdaf3fcd171f926b9c08c07cba2aaf8ce133401f732",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_NOR.png",
   "type": "Image"
  },
  "Image:2eb583ef13dd75b1bbe791f108a6e7afefb6036d3274742db9a7530cf1e30100": {
@@ -3421,6 +3574,15 @@
   "source": "assets/textures/Spike1/T_Spike1_2048_MET.png",
   "type": "Image"
  },
+ "Image:3113da135bcc40ad63528c0497ca938c86303f338ff7aa231af1281166de3e1f": {
+  "assetId": "71591929336188",
+  "imageId": "71591929336188",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Body_RGH",
+  "sha": "3113da135bcc40ad63528c0497ca938c86303f338ff7aa231af1281166de3e1f",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_RGH.png",
+  "type": "Image"
+ },
  "Image:311847e8009047bbf69ddbedb16094ef013460b8b948697b2e559917c5daf418": {
   "assetId": "104290301857498",
   "imageId": "104290301857498",
@@ -3446,6 +3608,15 @@
   "name": "T_QuayKit_Armour_ALB_Wet",
   "sha": "316cf955b26a5f597c6038aacf8cae0376cf6fe142fb382cb460cbc721e35ed1",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:319d49881c4193e27cd060f6809b447cfa7379dd21e4519102cb33325249080b": {
+  "assetId": "93337902515107",
+  "imageId": "93337902515107",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_ALB_Wet",
+  "sha": "319d49881c4193e27cd060f6809b447cfa7379dd21e4519102cb33325249080b",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB_Wet.png",
   "type": "Image"
  },
  "Image:319f9103997a0ab769f3efd44228535410886df0dc238c42e43172913e70a43e": {
@@ -3599,6 +3770,15 @@
   "name": "Mayday_T_Mat_Shingle_RGH",
   "sha": "32fc209a82ede6882ad2a59f1712a2f223e591f478955cff582d37e51f1c1cd9",
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH.png",
+  "type": "Image"
+ },
+ "Image:332b3ba318b3c72d38edeee6a98c2d0304e59dc0be672840947779bef4075620": {
+  "assetId": "96262056963855",
+  "imageId": "96262056963855",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_ALB_Wet",
+  "sha": "332b3ba318b3c72d38edeee6a98c2d0304e59dc0be672840947779bef4075620",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB_Wet.png",
   "type": "Image"
  },
  "Image:3338052401501f1c837eae9b8f722de742ff31b0570a64ecfe13f7b76329ae7f": {
@@ -3757,6 +3937,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH.png",
   "type": "Image"
  },
+ "Image:355336cd18f7b0734c48d8fa09e76221f52c1feb0e4ae1d68c6d542a0c8e3358": {
+  "assetId": "100325637515961",
+  "imageId": "100325637515961",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_ALB_Wet",
+  "sha": "355336cd18f7b0734c48d8fa09e76221f52c1feb0e4ae1d68c6d542a0c8e3358",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:3567d10ee8b00cd553e6abe05f3c3fbdd64a769f0be82776f01edacfea0e2528": {
   "assetId": "84264028157867",
   "imageId": "84264028157867",
@@ -3838,6 +4027,15 @@
   "source": "assets/textures/M_Veh_MooredBoat_01/T_FishingBoat_Atlas_MET.png",
   "type": "Image"
  },
+ "Image:3670d03788a07892223c9a3b529e54cd83a001389acdf22e909071e68cdef253": {
+  "assetId": "76459840600360",
+  "imageId": "76459840600360",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_MET",
+  "sha": "3670d03788a07892223c9a3b529e54cd83a001389acdf22e909071e68cdef253",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_MET.png",
+  "type": "Image"
+ },
  "Image:36b6bbf198ddd7fb3435b5337d10808fd78627b5e26a83730f71c20d9caca71b": {
   "assetId": "134787626739183",
   "imageId": "134787626739183",
@@ -3863,6 +4061,15 @@
   "name": "FX_Flare_Smoke",
   "sha": "3761e740cc7dd159c91f229252fbee41efe4e9fc3f9fe736a79e526e536637bf",
   "source": "assets/textures/FX/FX_Flare_Smoke.png",
+  "type": "Image"
+ },
+ "Image:377193ef60f18686f849d39ea99b5b87b7062fd7ff860e168ea1943f1377878d": {
+  "assetId": "94437571469274",
+  "imageId": "94437571469274",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_RGH_Wet",
+  "sha": "377193ef60f18686f849d39ea99b5b87b7062fd7ff860e168ea1943f1377878d",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH_Wet.png",
   "type": "Image"
  },
  "Image:37a37bd7e3859a32b0c44f781bbfd052c560ae814594ce2ca4b01a3e7268239e": {
@@ -3935,6 +4142,15 @@
   "name": "T_Cliff03_Granite_ALB",
   "sha": "386b62ccfd19c84ef261b42359127d363d6eed49b5bc74ea22595152e75af510",
   "source": "assets/textures/M_Rock_Cliff_03/T_Cliff03_Granite_ALB.png",
+  "type": "Image"
+ },
+ "Image:38853bf729db37000069c04d41dddd41f41e473c76ad977041fe929559b02db9": {
+  "assetId": "121168266531025",
+  "imageId": "121168266531025",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_RGH_Wet",
+  "sha": "38853bf729db37000069c04d41dddd41f41e473c76ad977041fe929559b02db9",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH_Wet.png",
   "type": "Image"
  },
  "Image:38880b863d9edf5aa378f813ba1ccf495c87c16c8b34910eafadac11d565c3ba": {
@@ -4495,6 +4711,15 @@
   "source": "assets/ocean/sky/Storm_Bk.png",
   "type": "Image"
  },
+ "Image:3f68ae101d03883007a80753c6226c488991515d4c247bf3896ce14d8f0f8e16": {
+  "assetId": "70702207643177",
+  "imageId": "70702207643177",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_ALB",
+  "sha": "3f68ae101d03883007a80753c6226c488991515d4c247bf3896ce14d8f0f8e16",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB.png",
+  "type": "Image"
+ },
  "Image:3faa3e210054ae539b5766a23f04a36029f347e1aa1ce38fa032072171db572d": {
   "assetId": "122985718913326",
   "imageId": "122985718913326",
@@ -4936,6 +5161,15 @@
   "source": "assets/textures/M_Rock_NeedlesEye/T_Arch_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:4539968176101621be2724ba12c44c354ddc6c1e4999b1febbe7220500234cf8": {
+  "assetId": "115613423123258",
+  "imageId": "115613423123258",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_NOR",
+  "sha": "4539968176101621be2724ba12c44c354ddc6c1e4999b1febbe7220500234cf8",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_NOR.png",
+  "type": "Image"
+ },
  "Image:45560ca665996828387e5936a737c17f7c819f33bf573b23622b0cf1a02a8c73": {
   "assetId": "76214454506343",
   "imageId": "76214454506343",
@@ -4963,6 +5197,15 @@
   "source": "assets/textures/M_Veh_MooredBoat_02/T_FishingBoat_Atlas_RGH.png",
   "type": "Image"
  },
+ "Image:45c3bd7b5a939b8d5e6f2fe35fc857cd20f3f63a6e9a97d985847c39e95690d7": {
+  "assetId": "71195439654698",
+  "imageId": "71195439654698",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_RGH",
+  "sha": "45c3bd7b5a939b8d5e6f2fe35fc857cd20f3f63a6e9a97d985847c39e95690d7",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_RGH.png",
+  "type": "Image"
+ },
  "Image:4611052f88a76ea930ff37951753b9009b2611ddf1017a2d515c048d1751001e": {
   "assetId": "97115793876479",
   "imageId": "97115793876479",
@@ -4970,6 +5213,15 @@
   "name": "T_Ladder_Steel_NOR",
   "sha": "4611052f88a76ea930ff37951753b9009b2611ddf1017a2d515c048d1751001e",
   "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_NOR.png",
+  "type": "Image"
+ },
+ "Image:464f52dcb5eb502f2913e50d4a153a4bc9262f59813d61d5126fb0874915a6c7": {
+  "assetId": "125818457495493",
+  "imageId": "125818457495493",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_MET",
+  "sha": "464f52dcb5eb502f2913e50d4a153a4bc9262f59813d61d5126fb0874915a6c7",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_MET.png",
   "type": "Image"
  },
  "Image:465d21d5c7e94c54992f34d9ee78b40c897831bbf3fb3a731c58d3d274c4f768": {
@@ -5073,6 +5325,15 @@
   "name": "Mayday_T_Mat_SandWet_ALB",
   "sha": "47aa089949b0fd6c600dbb365b95ac853b6b15d0e8fd3dc5d6b92085b5392786",
   "source": "assets/textures/Materials/T_Mat_SandWet_ALB.png",
+  "type": "Image"
+ },
+ "Image:47bd5e0f71124d4a116a1f5bb89547150031567345f193ca564907f3b7934a8b": {
+  "assetId": "115483151185933",
+  "imageId": "115483151185933",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_RGH",
+  "sha": "47bd5e0f71124d4a116a1f5bb89547150031567345f193ca564907f3b7934a8b",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_RGH.png",
   "type": "Image"
  },
  "Image:47bec2e419540203fff07a7a50a5087b1f1122a6d5b4ccb9b62ae9e76d9ad15f": {
@@ -5705,6 +5966,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Granite_NOR.png",
   "type": "Image"
  },
+ "Image:51deebe3d54a0ae1f4f728e51b96e77bef2fd5d14a41e88b4bba1aa4b97d06c8": {
+  "assetId": "110427392178807",
+  "imageId": "110427392178807",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_ALB_Wet",
+  "sha": "51deebe3d54a0ae1f4f728e51b96e77bef2fd5d14a41e88b4bba1aa4b97d06c8",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:51ec8ec72c7866f271f17f75c1579fa02175c32b26715a9ed0b64bd6f7e72356": {
   "assetId": "126824418813348",
   "imageId": "126824418813348",
@@ -5748,6 +6018,15 @@
   "name": "gale_isles_map_r0c0",
   "sha": "5220fdc4cef5bb8ed252f3b04cbc3d50251721ed7d61ae2135fc763f6fb5c33b",
   "source": "art/map/gale_isles_map_r0c0.png",
+  "type": "Image"
+ },
+ "Image:522b2277ce8179c47cc67bf72d799b6dd2f18cdc4103bda0cb703e9ced531a84": {
+  "assetId": "121703252139470",
+  "imageId": "121703252139470",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_RGH",
+  "sha": "522b2277ce8179c47cc67bf72d799b6dd2f18cdc4103bda0cb703e9ced531a84",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_RGH.png",
   "type": "Image"
  },
  "Image:524c36c1bc8245b93ab3ac6c3419749f59a6673b69465c607f1e4a82b9a65c94": {
@@ -6536,6 +6815,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_GravelTile_NOR.png",
   "type": "Image"
  },
+ "Image:5e320abf5a27cd88432a33d04b54cb0dc8cceba37224e927b14ac0e33519a7a8": {
+  "assetId": "90079206761117",
+  "imageId": "90079206761117",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_MET",
+  "sha": "5e320abf5a27cd88432a33d04b54cb0dc8cceba37224e927b14ac0e33519a7a8",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_MET.png",
+  "type": "Image"
+ },
  "Image:5e361324671a7e4ec55efbcd0784c7bf67afb2881f6b25a1af21bfffb9b33083": {
   "assetId": "92062472041856",
   "imageId": "92062472041856",
@@ -6615,6 +6903,15 @@
   "name": "Mayday_T_Mat_Earth_ALB",
   "sha": "5f4e565c25bea689bd2d4629547002398c8d115c8e433afe4592133f087d5202",
   "source": "assets/textures/Materials/T_Mat_Earth_ALB.png",
+  "type": "Image"
+ },
+ "Image:601a4c2fdece31ecae90370df3705bd245bc5959c1c866921ecdb1ce5f20d226": {
+  "assetId": "83633113429810",
+  "imageId": "83633113429810",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_RGH_Wet",
+  "sha": "601a4c2fdece31ecae90370df3705bd245bc5959c1c866921ecdb1ce5f20d226",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_RGH_Wet.png",
   "type": "Image"
  },
  "Image:601b0f78c04376ef35666f8780d75d4e4218783a8422dfef6cd5f2296d0de608": {
@@ -6827,6 +7124,15 @@
   "source": "assets/textures/M_Rock_Cliff_04/T_Cliff04_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:638526f60af89b63b7ea17570d1a84c538ee584fd8716dfebe7a224e28263a1e": {
+  "assetId": "106365905416836",
+  "imageId": "106365905416836",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_ALB_Wet",
+  "sha": "638526f60af89b63b7ea17570d1a84c538ee584fd8716dfebe7a224e28263a1e",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:6388db2c5bacae748e596d30148c12300ca2c9c0d5b45c19ae1c858cc9691cc7": {
   "assetId": "84653176571687",
   "imageId": "84653176571687",
@@ -6900,6 +7206,15 @@
   "name": "T_RIB_Hull_ALB_Wet",
   "sha": "64f958064a9920ffbf2a67cc53e686a5c31f2f86fca7df33c314662cb3fded94",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:64fa5d98edef70ea5e333517f7743d00e0d0b004c9702708ffc625703338c867": {
+  "assetId": "110737481523798",
+  "imageId": "110737481523798",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_MET",
+  "sha": "64fa5d98edef70ea5e333517f7743d00e0d0b004c9702708ffc625703338c867",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_MET.png",
   "type": "Image"
  },
  "Image:64fb3f7063907b5eeeac30a111e8a1b8d33b1e93b1c0ea681e58d8aecf5dacac": {
@@ -6984,6 +7299,15 @@
   "name": "T_Seal_Face_NOR",
   "sha": "65d0b8fd630b50a368759718c9b96b9c74e2917579fcd57a091deb85f217509e",
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_NOR.png",
+  "type": "Image"
+ },
+ "Image:661915c07e5e99da8267ea8cac07b8423cecc03b683ddf853f8e68c8bfa596ad": {
+  "assetId": "76205701326403",
+  "imageId": "76205701326403",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_ALB",
+  "sha": "661915c07e5e99da8267ea8cac07b8423cecc03b683ddf853f8e68c8bfa596ad",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_ALB.png",
   "type": "Image"
  },
  "Image:66316de94226a4006a42d9bf8d3b28d080efa7b4549650ba3be4286cb1652179": {
@@ -7200,6 +7524,15 @@
   "name": "T_Liferaft_Canopy_ALB",
   "sha": "69e057a3f916a46fb9675564ea059716c6504eeed3d381a88dd4af1ca4066dc0",
   "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_ALB.png",
+  "type": "Image"
+ },
+ "Image:69ed74b8d6b0b00b8ca186278eb54bea51069377bcc3fae036fa8eb2b1d7524d": {
+  "assetId": "105748497898772",
+  "imageId": "105748497898772",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Body_NOR",
+  "sha": "69ed74b8d6b0b00b8ca186278eb54bea51069377bcc3fae036fa8eb2b1d7524d",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_NOR.png",
   "type": "Image"
  },
  "Image:6a0152aadebffad30ae00e614c6100ed817477d7b3977d0c195debeda7d7023e": {
@@ -7811,6 +8144,15 @@
   "source": "assets/textures/M_Veh_Coastguard4x4/T_Coastguard4x4_Rack_MET.png",
   "type": "Image"
  },
+ "Image:71db991bc73c35480ae8bf9cd8baf2cad2cf07759677a0f9c1eb4eee5f624278": {
+  "assetId": "77357262728003",
+  "imageId": "77357262728003",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_ALB_Wet",
+  "sha": "71db991bc73c35480ae8bf9cd8baf2cad2cf07759677a0f9c1eb4eee5f624278",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:71de54bafcb1d875bb6a7b8586c17d4d4903d694234053422dfbde279981749c": {
   "assetId": "107449942154829",
   "imageId": "107449942154829",
@@ -7964,6 +8306,15 @@
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Wood_NOR.png",
   "type": "Image"
  },
+ "Image:7401e706c7f0c5c0f5b111bf5a28884d67355a6eae0e5640c8f654567fc59d81": {
+  "assetId": "84401506724587",
+  "imageId": "84401506724587",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_ALB_Wet",
+  "sha": "7401e706c7f0c5c0f5b111bf5a28884d67355a6eae0e5640c8f654567fc59d81",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:7404df51f0c6690e28e455ed25a5af158b3cef2692ff5beb196f5176591d6c98": {
   "assetId": "103497146547901",
   "imageId": "103497146547901",
@@ -7980,6 +8331,15 @@
   "name": "T_Liferaft_Tubes_RGH_Wet",
   "sha": "7412d2bc5510f58077771fbf46332bff7e7b75ff16711d82dada90a1306a0b15",
   "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Tubes_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:742b65ed4e2a055fc842da514a3a350adf1c34670e623ff59ae42772ee9ced2a": {
+  "assetId": "104657058308379",
+  "imageId": "104657058308379",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_NOR",
+  "sha": "742b65ed4e2a055fc842da514a3a350adf1c34670e623ff59ae42772ee9ced2a",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_NOR.png",
   "type": "Image"
  },
  "Image:7434b011b03376283f5909caf77315a7fcb9108542c254b7c2060ef5bbf180e0": {
@@ -8162,6 +8522,15 @@
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Box_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:76cbaf7355ab67db6d001ce8bf715509de0694e4373f274e95e2389c6c5f865e": {
+  "assetId": "111227143797685",
+  "imageId": "111227143797685",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_ALB",
+  "sha": "76cbaf7355ab67db6d001ce8bf715509de0694e4373f274e95e2389c6c5f865e",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB.png",
+  "type": "Image"
+ },
  "Image:76ff94816adcceb76382ea9005f8b36bcd0ce21361157a2bb53f94b54a969e08": {
   "assetId": "117496571459700",
   "imageId": "117496571459700",
@@ -8169,6 +8538,15 @@
   "name": "T_NavMarkWest_Buoy_NOR",
   "sha": "76ff94816adcceb76382ea9005f8b36bcd0ce21361157a2bb53f94b54a969e08",
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_NOR.png",
+  "type": "Image"
+ },
+ "Image:777b3e3cf863e836e42706bad142d361a583c5adba85f41603e2f605bfe95101": {
+  "assetId": "102992697959470",
+  "imageId": "102992697959470",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_MET",
+  "sha": "777b3e3cf863e836e42706bad142d361a583c5adba85f41603e2f605bfe95101",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_MET.png",
   "type": "Image"
  },
  "Image:778b838868ebe2945a7d3027ed99a7bac962bf249e998244bb333254fccc8f0f": {
@@ -8342,6 +8720,15 @@
   "source": "assets/textures/M_Sea_MailSeaplane/T_MailSeaplane_Floats_RGH.png",
   "type": "Image"
  },
+ "Image:793779b80c40e9b3787ffd7949202a680d67f4ea88ae6338d48f4739ff3964d3": {
+  "assetId": "105665664597326",
+  "imageId": "105665664597326",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_ALB",
+  "sha": "793779b80c40e9b3787ffd7949202a680d67f4ea88ae6338d48f4739ff3964d3",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB.png",
+  "type": "Image"
+ },
  "Image:798bb13934842fd637e03fb0e0a896bf5a977e7f68fead9813630bebe1f23f2b": {
   "assetId": "126024246814221",
   "imageId": "126024246814221",
@@ -8439,6 +8826,15 @@
   "name": "T_Slipway_Tide_RGH_Wet",
   "sha": "7a3dbb9b306732116156c23dad526799967cb917fc18a9553c2dacc25cd6520d",
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Tide_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:7a70dc0b94ec65e69fd61587c4e3009b2919a348537e6d2eeffc1cd025091eae": {
+  "assetId": "89474533547299",
+  "imageId": "89474533547299",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_NOR",
+  "sha": "7a70dc0b94ec65e69fd61587c4e3009b2919a348537e6d2eeffc1cd025091eae",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_NOR.png",
   "type": "Image"
  },
  "Image:7a79864f15fe2d6fc10e4fa149a97e52c110cb02ce42062e26628f5366a1937f": {
@@ -8540,6 +8936,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_NOR_Wet.png",
   "type": "Image"
  },
+ "Image:7bc6d13b0fab3454307df1ddc922a9391bfd052d4a89d6ee9a5f434e12328c40": {
+  "assetId": "94829810868535",
+  "imageId": "94829810868535",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Body_RGH",
+  "sha": "7bc6d13b0fab3454307df1ddc922a9391bfd052d4a89d6ee9a5f434e12328c40",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_RGH.png",
+  "type": "Image"
+ },
  "Image:7c0480cd81baf1f4a5e147f4cc343cc217f3595c9e9882de1f936fbf8974c59d": {
   "assetId": "92559843548302",
   "imageId": "92559843548302",
@@ -8594,6 +8999,15 @@
   "source": "assets/textures/Materials/T_Mat_Mud_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:7c6a26ba31f4e7d3f08848590396a900e200fbfba37e8e40b3b912029086bec4": {
+  "assetId": "106175916265050",
+  "imageId": "106175916265050",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_RGH_Wet",
+  "sha": "7c6a26ba31f4e7d3f08848590396a900e200fbfba37e8e40b3b912029086bec4",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f": {
   "assetId": "117483510246874",
   "imageId": "117483510246874",
@@ -8610,6 +9024,15 @@
   "name": "T_LifeguardPickup_Cab_ALB",
   "sha": "7ce9aa5f4f2792e5c71b825ef0de934c25e8f82e5d89193c87814dd5da384a41",
   "source": "assets/textures/M_Veh_LifeguardPickup/T_LifeguardPickup_Cab_ALB.png",
+  "type": "Image"
+ },
+ "Image:7cec378948ab0f3aedb0b40ad7147d05fdcb81870364d1ab2d4299d216a64799": {
+  "assetId": "135448043264713",
+  "imageId": "135448043264713",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_ALB",
+  "sha": "7cec378948ab0f3aedb0b40ad7147d05fdcb81870364d1ab2d4299d216a64799",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB.png",
   "type": "Image"
  },
  "Image:7d5f6c71b193ef593642736fe20d39c674b9744146e5c6d30fb0cd1eff855fb6": {
@@ -8664,6 +9087,15 @@
   "name": "Mayday_ocean_overlay_calm",
   "sha": "7dcbf891ca387f1a9c1af14c574858f18cc1934c0c7ada490ae576b01c717bfc",
   "source": "assets/ocean/ocean_overlay_calm.png",
+  "type": "Image"
+ },
+ "Image:7debeb24900d07c2e39b6de87e33efc681611404492462a00681a89a2918fb8d": {
+  "assetId": "120237559277843",
+  "imageId": "120237559277843",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_RGH_Wet",
+  "sha": "7debeb24900d07c2e39b6de87e33efc681611404492462a00681a89a2918fb8d",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH_Wet.png",
   "type": "Image"
  },
  "Image:7df4d461903ac555a48089da02f3399e5542e757d27f50c0cb0c46cfd6715682": {
@@ -8961,6 +9393,15 @@
   "name": "T_NavMarkSouth_Buoy_ALB",
   "sha": "82da512a8d9a5be42eed9343f2f1415928c358132c542196ac9c9bc0d72aef19",
   "source": "assets/textures/M_Hbr_NavMark_South/T_NavMarkSouth_Buoy_ALB.png",
+  "type": "Image"
+ },
+ "Image:8311efc302e806f370418419704edef08a33e898d3a5975c0efd6e67c647f161": {
+  "assetId": "133200381001340",
+  "imageId": "133200381001340",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_RGH_Wet",
+  "sha": "8311efc302e806f370418419704edef08a33e898d3a5975c0efd6e67c647f161",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH_Wet.png",
   "type": "Image"
  },
  "Image:832f2d5fc005677c58c477ac16033ca0ed14f8c509dfdd7e595e2801844bbf81": {
@@ -9395,6 +9836,15 @@
   "source": "assets/textures/M_Sea_MailSeaplane/T_MailSeaplane_Floats_NOR.png",
   "type": "Image"
  },
+ "Image:88d418cc8320941dbbe779909cace429e05884377837df32d0bc70e99ea65abf": {
+  "assetId": "124905257580435",
+  "imageId": "124905257580435",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_NOR",
+  "sha": "88d418cc8320941dbbe779909cace429e05884377837df32d0bc70e99ea65abf",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_NOR.png",
+  "type": "Image"
+ },
  "Image:89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca": {
   "assetId": "120584434821371",
   "imageId": "120584434821371",
@@ -9656,6 +10106,15 @@
   "source": "assets/textures/Materials/T_Mat_Mud_ALB.png",
   "type": "Image"
  },
+ "Image:8c9fa494870b90225da9922cb00488feda25a416d4c942e60b86fd296d584a2e": {
+  "assetId": "107210582620011",
+  "imageId": "107210582620011",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_RGH",
+  "sha": "8c9fa494870b90225da9922cb00488feda25a416d4c942e60b86fd296d584a2e",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_RGH.png",
+  "type": "Image"
+ },
  "Image:8cb9547b06c034cb4e64f6554e8e8063807186bde0032a53d939c4cbe07d531a": {
   "assetId": "126157846185851",
   "imageId": "126157846185851",
@@ -9726,6 +10185,15 @@
   "name": "T_Ambulance_Cab_RGH",
   "sha": "8e26eaed9dfed1f735e8f6958de2d06c05fa89b27c3eb4fd19a8a2e0f7b76b5d",
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Cab_RGH.png",
+  "type": "Image"
+ },
+ "Image:8e589d30ddb9abe8e0494bdbb74fdca3e19df38f06f1023dfa1f41dc7ad962e6": {
+  "assetId": "100759174652781",
+  "imageId": "100759174652781",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_ALB",
+  "sha": "8e589d30ddb9abe8e0494bdbb74fdca3e19df38f06f1023dfa1f41dc7ad962e6",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB.png",
   "type": "Image"
  },
  "Image:8e61853e4b0019c8e79d0908eac3102621e42411be63b2068f778eba27f2ad98": {
@@ -9906,6 +10374,15 @@
   "name": "T_Liferaft_Canopy_NOR_Wet",
   "sha": "9003dc376f8afd7e4ef1d5f5bf50bf58fa8c7b2aa09d3e92dd4ea0ef98695e97",
   "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_NOR_Wet.png",
+  "type": "Image"
+ },
+ "Image:9005ef99ffd7f7bb259987a2a1ecf42609c4055629b6972609e58049ff68d228": {
+  "assetId": "128321975991110",
+  "imageId": "128321975991110",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_MET",
+  "sha": "9005ef99ffd7f7bb259987a2a1ecf42609c4055629b6972609e58049ff68d228",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_MET.png",
   "type": "Image"
  },
  "Image:9015341f0829f486041b8ac02caad245a7d228e37acc1966f67db76f62ced508": {
@@ -10124,6 +10601,15 @@
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_ALB.png",
   "type": "Image"
  },
+ "Image:92ce6eed16d1f1ddc631d3caa90fcb2a2a1b3255bdb951b0447f1a249b04f985": {
+  "assetId": "133080607858423",
+  "imageId": "133080607858423",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_ALB_Wet",
+  "sha": "92ce6eed16d1f1ddc631d3caa90fcb2a2a1b3255bdb951b0447f1a249b04f985",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:9302d769a5134b0a9c0464992a541b4afd7b90b1a74857fe4a0908f50b75a857": {
   "assetId": "109571928646986",
   "imageId": "109571928646986",
@@ -10140,6 +10626,15 @@
   "name": "T_Cliff08_Granite_RGH",
   "sha": "930a44dad20a92460cd785f78bde1c4d6de78a8f4e55a7e0e78f4349e95cc8bc",
   "source": "assets/textures/M_Rock_Cliff_08/T_Cliff08_Granite_RGH.png",
+  "type": "Image"
+ },
+ "Image:930db2ab755579dcd9563f3c6743c98c026847f07b26d57e413f17d107f4a828": {
+  "assetId": "91469057246324",
+  "imageId": "91469057246324",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_ALB",
+  "sha": "930db2ab755579dcd9563f3c6743c98c026847f07b26d57e413f17d107f4a828",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB.png",
   "type": "Image"
  },
  "Image:934bdd4de77c797ae60ba54a1715da197acc0bf4005eca1d2251dea054cf1653": {
@@ -10167,6 +10662,15 @@
   "name": "T_GaleQueen_Fittings_ALB_Wet",
   "sha": "9370a85d1d94ca274c543ecfbe975c32dcf5c4349ed6dbd6ef9edae8c1da7235",
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:9375a56de8fb8df95f00ffe399c799a4f4038b1b1ac52fbd44d1f321628f6991": {
+  "assetId": "70813290123503",
+  "imageId": "70813290123503",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Body_RGH_Wet",
+  "sha": "9375a56de8fb8df95f00ffe399c799a4f4038b1b1ac52fbd44d1f321628f6991",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_RGH_Wet.png",
   "type": "Image"
  },
  "Image:93838dd625e03ab4820da2b8da51e3794e78c6e5c64fe2eaf8f63331fa6a8da8": {
@@ -10463,6 +10967,15 @@
   "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_MET.png",
   "type": "Image"
  },
+ "Image:97026ac2c16f0a36fa6cc353ef8d223558125ea1f9bd3f582ccd3d8977c74aa6": {
+  "assetId": "97083574169654",
+  "imageId": "97083574169654",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_RGH_Wet",
+  "sha": "97026ac2c16f0a36fa6cc353ef8d223558125ea1f9bd3f582ccd3d8977c74aa6",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:9728eaf99bb64b6786f3137fb5f928866f1034ed6d2dd0340dd6b8341ebba818": {
   "assetId": "122386287443021",
   "imageId": "122386287443021",
@@ -10682,6 +11195,15 @@
   "source": "assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_NOR.png",
   "type": "Image"
  },
+ "Image:9b32e11fd1af664a0e20c9b5b9c9296f210861624024fa66929f0e981a65d44b": {
+  "assetId": "94483832579146",
+  "imageId": "94483832579146",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_MET",
+  "sha": "9b32e11fd1af664a0e20c9b5b9c9296f210861624024fa66929f0e981a65d44b",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_MET.png",
+  "type": "Image"
+ },
  "Image:9b3c19419bca5ee0f16e6b62d1ec8222e21b0f56c11d130f7248bed7e485a6e6": {
   "assetId": "87230236875041",
   "imageId": "87230236875041",
@@ -10838,6 +11360,15 @@
   "source": "assets/textures/M_Veh_Ambulance/T_Ambulance_Body_RGH.png",
   "type": "Image"
  },
+ "Image:9d32435b1f50a6c17697530478aba3d255f7098457a9e1fb58f0042831b612ac": {
+  "assetId": "83295110473539",
+  "imageId": "83295110473539",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_MET",
+  "sha": "9d32435b1f50a6c17697530478aba3d255f7098457a9e1fb58f0042831b612ac",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_MET.png",
+  "type": "Image"
+ },
  "Image:9d605eea2eeedc603d589f0adce977c13672e58a283928ee1ab34b2b94c1ef9a": {
   "assetId": "136964922100171",
   "imageId": "136964922100171",
@@ -10910,6 +11441,15 @@
   "source": "assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:9e5309a2a1aac31ebf01133d6ab6c5e51b9e5808fdd769e2e3e2ba1dd09a51a7": {
+  "assetId": "125218529637177",
+  "imageId": "125218529637177",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_RGH",
+  "sha": "9e5309a2a1aac31ebf01133d6ab6c5e51b9e5808fdd769e2e3e2ba1dd09a51a7",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH.png",
+  "type": "Image"
+ },
  "Image:9e5479220b35f04981043edec7db1301768ae267600fe47e6919ee349fbb974f": {
   "assetId": "125406628080157",
   "imageId": "125406628080157",
@@ -10947,6 +11487,15 @@
   "name": "T_Liferaft_Canopy_NOR",
   "sha": "9e6864b43dcf89c25cbd97929076a69871919a74b7e880cf08880b40b45c29ff",
   "source": "assets/textures/M_Sea_Liferaft/T_Liferaft_Canopy_NOR.png",
+  "type": "Image"
+ },
+ "Image:9e7cc05b7d35670a3819852df72aab0a80cf8da8c734081d39eae0db1b4ce3e7": {
+  "assetId": "103123009742845",
+  "imageId": "103123009742845",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_ALB",
+  "sha": "9e7cc05b7d35670a3819852df72aab0a80cf8da8c734081d39eae0db1b4ce3e7",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_ALB.png",
   "type": "Image"
  },
  "Image:9e7f637d391428cb8c9deb15d480f9636273bb7f35127add8641240a63faf215": {
@@ -11073,6 +11622,15 @@
   "name": "T_TriageTags_Kit_NOR",
   "sha": "a07b3a10e65943dd8f20d9ad4bd6fd154a1211ab0b2e3f2e682d2e5eaa22e65b",
   "source": "assets/textures/M_Kit_TriageTags/T_TriageTags_Kit_NOR.png",
+  "type": "Image"
+ },
+ "Image:a0a6d8b462a77a511659283e6a66795604be78f403d9d05669aec4cbb59e009f": {
+  "assetId": "73103384782670",
+  "imageId": "73103384782670",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_MET",
+  "sha": "a0a6d8b462a77a511659283e6a66795604be78f403d9d05669aec4cbb59e009f",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_MET.png",
   "type": "Image"
  },
  "Image:a0c967c65c0e5ea19fc7ce91e71ae6c11dc5110fd168926efdc1c1667c5a2310": {
@@ -11222,6 +11780,15 @@
   "source": "assets/textures/M_Sea_BottleField/T_BottleField_Seabed_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:a41a19dd5462bd491bbd26ed757a15b1970b4143e6a6a34e8af2fdbe199f250b": {
+  "assetId": "107431036380469",
+  "imageId": "107431036380469",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Wheels_RGH",
+  "sha": "a41a19dd5462bd491bbd26ed757a15b1970b4143e6a6a34e8af2fdbe199f250b",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_RGH.png",
+  "type": "Image"
+ },
  "Image:a41c58d79695bc4c018adc284b79f9740fe30a5646797e6f2cb3c148079bf7c7": {
   "assetId": "87150254408085",
   "imageId": "87150254408085",
@@ -11264,6 +11831,15 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Armour_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:a4bd79b74ed04abef67499e03491a3b7efdc88e6de1eca4851c666948f87a1bd": {
+  "assetId": "107746447255628",
+  "imageId": "107746447255628",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_ALB",
+  "sha": "a4bd79b74ed04abef67499e03491a3b7efdc88e6de1eca4851c666948f87a1bd",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_ALB.png",
+  "type": "Image"
+ },
  "Image:a4e223fda2002f63ec0817648fb9f4ba9c56909ee406121c4e8695ff52afbed0": {
   "assetId": "112205342491796",
   "imageId": "112205342491796",
@@ -11280,6 +11856,15 @@
   "name": "T_Ladder_Steel_ALB",
   "sha": "a51480ed07f2e63a872bad6c4843055caf900cb7c2956554e3df4a718be72a04",
   "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB.png",
+  "type": "Image"
+ },
+ "Image:a53b0e3234719faec6b5c3f64cae479bf4998808dd4677682270b51d3eb10c2d": {
+  "assetId": "97095486614107",
+  "imageId": "97095486614107",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_MET",
+  "sha": "a53b0e3234719faec6b5c3f64cae479bf4998808dd4677682270b51d3eb10c2d",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_MET.png",
   "type": "Image"
  },
  "Image:a54677fc8507ee4f798a3b9151ae7e0084f6560579c22e3f24f9e0849454afa9": {
@@ -11307,6 +11892,15 @@
   "name": "Mayday_T_Mat_NonSlipDeck_NOR",
   "sha": "a563b437b77cc3d20c5dd3bf8b2fc3c7258f735dd27a81d51b607b204799e9c2",
   "source": "assets/textures/Materials/T_Mat_NonSlipDeck_NOR.png",
+  "type": "Image"
+ },
+ "Image:a57618eb1cef6bc6d9d3f7bed1f23c73d8a2d1f25a50e604099ada6351bc8466": {
+  "assetId": "120530313220212",
+  "imageId": "120530313220212",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_ALB",
+  "sha": "a57618eb1cef6bc6d9d3f7bed1f23c73d8a2d1f25a50e604099ada6351bc8466",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_ALB.png",
   "type": "Image"
  },
  "Image:a579006b0dfda7eea7693001e9b7f2ab269bcc446da014ef97a91f4402b79efa": {
@@ -11459,6 +12053,15 @@
   "source": "assets/textures/M_Rock_Cliff_05/T_Cliff05_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:a796520c62be52446291d70369578a4b7b02bde130b0432b0c83fb67d836dcc4": {
+  "assetId": "92579939691740",
+  "imageId": "92579939691740",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_RGH",
+  "sha": "a796520c62be52446291d70369578a4b7b02bde130b0432b0c83fb67d836dcc4",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_RGH.png",
+  "type": "Image"
+ },
  "Image:a79b41f8d69a76aa4f2f662bfb6f61e0ad5b64124c87d9fd97c87e66f1e057be": {
   "assetId": "84213070157077",
   "imageId": "84213070157077",
@@ -11556,6 +12159,15 @@
   "name": "Mayday_ocean_foam",
   "sha": "a8cbda8ddac9f4a967d7f120e321dd7d51c0ea40fe657ed74ed2189592a9d855",
   "source": "assets/ocean/ocean_foam.png",
+  "type": "Image"
+ },
+ "Image:a901190bbce0875530b68b79cf3cfa689529cb615398c6c61ed7946fe98bd68e": {
+  "assetId": "72209297566069",
+  "imageId": "72209297566069",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Trim_MET",
+  "sha": "a901190bbce0875530b68b79cf3cfa689529cb615398c6c61ed7946fe98bd68e",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_MET.png",
   "type": "Image"
  },
  "Image:a913362ad171a19230c750035b7692d04bc43a98ff1967de54d8f9f8496d2129": {
@@ -12029,6 +12641,15 @@
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Hard_MET.png",
   "type": "Image"
  },
+ "Image:afc59d31a415d510cb719345c69319eb6c7ef756e982887d3eb84d47016933cf": {
+  "assetId": "133509577747120",
+  "imageId": "133509577747120",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_RGH_Wet",
+  "sha": "afc59d31a415d510cb719345c69319eb6c7ef756e982887d3eb84d47016933cf",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_RGH_Wet.png",
+  "type": "Image"
+ },
  "Image:b0037f87fb3bc66c39fab45f2b968c230bddf47517254c3407a6fea825f35837": {
   "assetId": "138869603370468",
   "imageId": "138869603370468",
@@ -12219,6 +12840,15 @@
   "name": "T_Boatyard_Ground_ALB",
   "sha": "b299d1002038142bc5b84befcb66a861507a361a8dd417c929269a026baf3d65",
   "source": "assets/textures/M_Bld_BoatyardShed/T_Boatyard_Ground_ALB.png",
+  "type": "Image"
+ },
+ "Image:b2f4db9295975e9b59d5a0dd3d9f360de047fb031079eb41213dd8a969ac4fb4": {
+  "assetId": "87042668518640",
+  "imageId": "87042668518640",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Hull_ALB",
+  "sha": "b2f4db9295975e9b59d5a0dd3d9f360de047fb031079eb41213dd8a969ac4fb4",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Hull_ALB.png",
   "type": "Image"
  },
  "Image:b323a8bcafaeaaab9f32d7b5501db3bce166fc36eea73f217e753b1e49803a4c": {
@@ -12527,6 +13157,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:b8760513cbc9d23dba4912888f9e02bc321ecb3265bbe47d817aed22f3651047": {
+  "assetId": "92206659249295",
+  "imageId": "92206659249295",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_ALB_Wet",
+  "sha": "b8760513cbc9d23dba4912888f9e02bc321ecb3265bbe47d817aed22f3651047",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:b88d88741916407932bda95911aef65bee897fb46f89bf55bf865a8eecd14669": {
   "assetId": "106475233628858",
   "imageId": "106475233628858",
@@ -12662,6 +13301,15 @@
   "source": "assets/textures/M_Rock_Boulder_01/T_Boulder01_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:bb80241be8e986bf670cb0ba45f55b46c9613178a608c2aa8acdb91c926e8e5b": {
+  "assetId": "132031290924978",
+  "imageId": "132031290924978",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_MET",
+  "sha": "bb80241be8e986bf670cb0ba45f55b46c9613178a608c2aa8acdb91c926e8e5b",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_MET.png",
+  "type": "Image"
+ },
  "Image:bbc922f4fa974dea3314f54d3e83b2b18ec9cb10959732101a900063d5d53135": {
   "assetId": "74342936520677",
   "imageId": "74342936520677",
@@ -12746,6 +13394,15 @@
   "source": "assets/textures/M_Kit_LineKnife/T_M_Kit_LineKnife_Hard_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:bcc7f8f7ddb55a39955ae67538d4805a98157eb5df9ab0d11820560b6a97e7fa": {
+  "assetId": "114241274993549",
+  "imageId": "114241274993549",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_RGH",
+  "sha": "bcc7f8f7ddb55a39955ae67538d4805a98157eb5df9ab0d11820560b6a97e7fa",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_RGH.png",
+  "type": "Image"
+ },
  "Image:bcdbdaa78f1f11f0c1ebe479a65eca1552412cd53c5f4c422d51a0cc69197a61": {
   "assetId": "83032108073726",
   "imageId": "83032108073726",
@@ -12792,6 +13449,15 @@
   "name": "T_Kit_Hard_NOR",
   "sha": "bd2522be9df8c189ff979e34b546d987efed85e57aca1141e0e50ccc8850ec35",
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Hard_NOR.png",
+  "type": "Image"
+ },
+ "Image:bd555b8ed731c0af5a647de77fd7f17cf78139a707a40151a6307a27a7e22b48": {
+  "assetId": "79893555379155",
+  "imageId": "79893555379155",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_RGH",
+  "sha": "bd555b8ed731c0af5a647de77fd7f17cf78139a707a40151a6307a27a7e22b48",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_RGH.png",
   "type": "Image"
  },
  "Image:bd7fd9883ccee635340de729e0109fe0d2b943875639628f4811ad00d9e59085": {
@@ -13035,6 +13701,15 @@
   "name": "T_Ladder_Steel_RGH_Wet",
   "sha": "c2209d0b8c33f6304d5eb06ddbaba77a7f53bbc90005e4e2a74bea06498e8f8d",
   "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:c2226e538b78e41f279998c6df3ffdfd0282f18b195c9a07af3be3ce6febf2ef": {
+  "assetId": "94910560197832",
+  "imageId": "94910560197832",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_ALB",
+  "sha": "c2226e538b78e41f279998c6df3ffdfd0282f18b195c9a07af3be3ce6febf2ef",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB.png",
   "type": "Image"
  },
  "Image:c2950fe777b84c8315c434968018c4204a2e32d1847411e2bb2ef85f6a48acc4": {
@@ -13379,6 +14054,15 @@
   "source": "assets/textures/Materials/T_Mat_SandDry_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:c86e57c62f9d5f58f274238a27aa30200ef33caaebc70aaab9415f423187e823": {
+  "assetId": "131608929733634",
+  "imageId": "131608929733634",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_ALB_Wet",
+  "sha": "c86e57c62f9d5f58f274238a27aa30200ef33caaebc70aaab9415f423187e823",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:c8749a6eb23146ada92c0cc1b5df13d97b1e637e6ab90278a10b37daddae1db7": {
   "assetId": "89263423144419",
   "imageId": "89263423144419",
@@ -13386,6 +14070,15 @@
   "name": "T_Street_Main_RGH_Wet",
   "sha": "c8749a6eb23146ada92c0cc1b5df13d97b1e637e6ab90278a10b37daddae1db7",
   "source": "assets/textures/M_Road_StreetLamp/T_Street_Main_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:c89d0b2ef0a353c0f847bc732fc002c4a7ec641a8d12914b8f7c85ea04435fe9": {
+  "assetId": "137791031025974",
+  "imageId": "137791031025974",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_RGH",
+  "sha": "c89d0b2ef0a353c0f847bc732fc002c4a7ec641a8d12914b8f7c85ea04435fe9",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH.png",
   "type": "Image"
  },
  "Image:c8b44d39a8a66d933fb9298f5cdf4126eb432fb17e58cfd60e7a84a6f4889f8d": {
@@ -13438,6 +14131,15 @@
   "name": "T_Hospital_Details_RGH",
   "sha": "c8e6f0aa970a3d5db10f3acd018a861753ca5dee5dc231297533582465f322c3",
   "source": "assets/textures/M_Bld_Hospital/T_Hospital_Details_RGH.png",
+  "type": "Image"
+ },
+ "Image:c8f1d9d78415303f436f9468d3494deaea5f32362e94aee4bd9aa6c19a8e02e9": {
+  "assetId": "86373248436998",
+  "imageId": "86373248436998",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Body_ALB_Wet",
+  "sha": "c8f1d9d78415303f436f9468d3494deaea5f32362e94aee4bd9aa6c19a8e02e9",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_ALB_Wet.png",
   "type": "Image"
  },
  "Image:c8fbaa6a8875c216116dea13de0b38eb95ce9af587897ce76851a5526251ca78": {
@@ -13636,6 +14338,15 @@
   "name": "FX_Spray_Mist",
   "sha": "cc9334a0b2abe3a23571f4978387b4935bb8fd38dff55eca464a3e653139407c",
   "source": "assets/textures/FX/FX_Spray_Mist.png",
+  "type": "Image"
+ },
+ "Image:cc9662fdc59c5d930a518f3648f20709d394ad45ef7289dbb64569758b365447": {
+  "assetId": "137183383752160",
+  "imageId": "137183383752160",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_RGH_Wet",
+  "sha": "cc9662fdc59c5d930a518f3648f20709d394ad45ef7289dbb64569758b365447",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_RGH_Wet.png",
   "type": "Image"
  },
  "Image:ccb4e404807968512a32c97f0efb588cedc26a535e0094f11d03412ac513a7e4": {
@@ -14073,6 +14784,15 @@
   "source": "assets/textures/Materials/T_Mat_KelpRock_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:d0e0714627a3c0387d4d103a598f9ec76906ca20c61ab611cf683533119a617b": {
+  "assetId": "79606119552006",
+  "imageId": "79606119552006",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Trim_NOR",
+  "sha": "d0e0714627a3c0387d4d103a598f9ec76906ca20c61ab611cf683533119a617b",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_NOR.png",
+  "type": "Image"
+ },
  "Image:d0f950cfa42827fedd2420f7618b78a5b123be494d6d20b56e4516552e693ff5": {
   "assetId": "100486337954074",
   "imageId": "100486337954074",
@@ -14224,6 +14944,15 @@
   "name": "T_TowLine_Rope_ALB_Wet",
   "sha": "d3f220bac650a7ffb29c97da6eb2dc2ffe1efe5571105c0e219e134e1010b16c",
   "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:d3fd7aee9cebfff3bdea8cbb78e39787f08b3c4cc0e030a0e2076a30c9f718fd": {
+  "assetId": "106282100105892",
+  "imageId": "106282100105892",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_ALB_Wet",
+  "sha": "d3fd7aee9cebfff3bdea8cbb78e39787f08b3c4cc0e030a0e2076a30c9f718fd",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB_Wet.png",
   "type": "Image"
  },
  "Image:d414d1aec9fb8126794d6686186c9b8b6b2cdf6a498a06f189141d194d5071e7": {
@@ -14380,6 +15109,24 @@
   "name": "Mayday_T_Mat_Mud_RGH_Wet",
   "sha": "d640fb0635e0a50663e1d44a0c4b240117fd6a20f67f4470a5ba308da308664b",
   "source": "assets/textures/Materials/T_Mat_Mud_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:d64bf8936d5361c897cc1245d831f17912026c548a7c0514fd2da467ae467869": {
+  "assetId": "81899816015725",
+  "imageId": "81899816015725",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_RGH",
+  "sha": "d64bf8936d5361c897cc1245d831f17912026c548a7c0514fd2da467ae467869",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_RGH.png",
+  "type": "Image"
+ },
+ "Image:d67134c0931701ddc044743defe1802d7000a6ed741a7fe2a3a3540093d3f30d": {
+  "assetId": "127798027684396",
+  "imageId": "127798027684396",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Cabin_RGH_Wet",
+  "sha": "d67134c0931701ddc044743defe1802d7000a6ed741a7fe2a3a3540093d3f30d",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Cabin_RGH_Wet.png",
   "type": "Image"
  },
  "Image:d67cd4032aed26305b085f6f293fd106daa23c151bc691b71a4d5de243b1a9d1": {
@@ -14707,6 +15454,15 @@
   "name": "T_MailSeaplane_Floats_ALB",
   "sha": "da47b3678d24aaf13b48a785ced98e6b45e75279bb01dda869b3766f091a9f39",
   "source": "assets/textures/M_Sea_MailSeaplane/T_MailSeaplane_Floats_ALB.png",
+  "type": "Image"
+ },
+ "Image:da511e03203a00c61d112b34876229bacfca137404ef3e823ec93d5f405162f9": {
+  "assetId": "92966939060691",
+  "imageId": "92966939060691",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Body_RGH_Wet",
+  "sha": "da511e03203a00c61d112b34876229bacfca137404ef3e823ec93d5f405162f9",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_RGH_Wet.png",
   "type": "Image"
  },
  "Image:da6215094ebf4d4fc10c3dfe230b4d0457288e8594b2be13346311fcb6e0df32": {
@@ -15288,6 +16044,24 @@
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Lantern_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:e1cbd26ec0f9cb254b206a63a8a5b6198687749b99481eb52eff8e538aa93ebe": {
+  "assetId": "128394228559896",
+  "imageId": "128394228559896",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_ALB_Wet",
+  "sha": "e1cbd26ec0f9cb254b206a63a8a5b6198687749b99481eb52eff8e538aa93ebe",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:e2037dbb0290eb8b06a6852d724fc76058253f1517f685ae4a5b65024acbfb5c": {
+  "assetId": "80535213671266",
+  "imageId": "80535213671266",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fly_RGH",
+  "sha": "e2037dbb0290eb8b06a6852d724fc76058253f1517f685ae4a5b65024acbfb5c",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fly_RGH.png",
+  "type": "Image"
+ },
  "Image:e23e80bd362696b05f719449747441a44b45bbaed4f1a384a8b42dd974af8cfd": {
   "assetId": "116789292563866",
   "imageId": "116789292563866",
@@ -15295,6 +16069,15 @@
   "name": "T_ATV_Gear_ALB",
   "sha": "e23e80bd362696b05f719449747441a44b45bbaed4f1a384a8b42dd974af8cfd",
   "source": "assets/textures/M_Veh_ATV/T_ATV_Gear_ALB.png",
+  "type": "Image"
+ },
+ "Image:e24ce60bf236cd1214817860bfdc3cb81883208eebe1e9cf25d7adf402f2f4da": {
+  "assetId": "80309358070903",
+  "imageId": "80309358070903",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Body_NOR",
+  "sha": "e24ce60bf236cd1214817860bfdc3cb81883208eebe1e9cf25d7adf402f2f4da",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_NOR.png",
   "type": "Image"
  },
  "Image:e256f0f880afade4699b9f59682d817c6bfd5d577d849b85b13831e060139a2c": {
@@ -15376,6 +16159,15 @@
   "name": "Mayday_T_Mat_Shingle_ALB",
   "sha": "e36d0bf216762e8104d7a0dbf6a33b8aadc0c07ba4711ba3df7623b9920a1e73",
   "source": "assets/textures/Materials/T_Mat_Shingle_ALB.png",
+  "type": "Image"
+ },
+ "Image:e373b2825a4fcaa8334738b7195fc09e56a0013067de9e057d22f77c0b9c60dc": {
+  "assetId": "112678579575900",
+  "imageId": "112678579575900",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Body_ALB_Wet",
+  "sha": "e373b2825a4fcaa8334738b7195fc09e56a0013067de9e057d22f77c0b9c60dc",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_ALB_Wet.png",
   "type": "Image"
  },
  "Image:e40765bbbb79163f4b933aaa31fea866c623408e33e634e3057f1f962044318a": {
@@ -15660,6 +16452,15 @@
   "source": "assets/textures/M_Road_StreetLamp/T_Street_Main_ALB.png",
   "type": "Image"
  },
+ "Image:e7a7d27a9d76698f53c55129295896233de62a4572bb6e8e02103657ecd2bd7b": {
+  "assetId": "72953695694841",
+  "imageId": "72953695694841",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_ALB",
+  "sha": "e7a7d27a9d76698f53c55129295896233de62a4572bb6e8e02103657ecd2bd7b",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_ALB.png",
+  "type": "Image"
+ },
  "Image:e7ac965c201042b0bd4967d6190bc783e45677466c773927f9d2062cafefa7d8": {
   "assetId": "135540737096451",
   "imageId": "135540737096451",
@@ -15791,6 +16592,15 @@
   "source": "assets/textures/M_Rock_Cliff_01/T_Cliff01_Granite_RGH.png",
   "type": "Image"
  },
+ "Image:ea438fc9fe375553d88be6b467dd50536cb9e8a3ea9da07d887d21eeb8abbe3a": {
+  "assetId": "96851540977647",
+  "imageId": "96851540977647",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Interior_ALB_Wet",
+  "sha": "ea438fc9fe375553d88be6b467dd50536cb9e8a3ea9da07d887d21eeb8abbe3a",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Interior_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:ea55248eb1611ec2867f302452c011850ff86473ba5e45588043d80c67b9a630": {
   "assetId": "93922833196411",
   "imageId": "93922833196411",
@@ -15825,6 +16635,15 @@
   "name": "Mayday_T_Bosun_Body_RGH_Wet",
   "sha": "ea8646bbd5c45678d05ab65083a70ecd6e4285d51347adae0063cf5a0fb4c3d1",
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Body_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:eaa45d8dcb595c666fa4abeb131042be942275cc48b74bafab98c97d6640eb82": {
+  "assetId": "122886584457307",
+  "imageId": "122886584457307",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Engines_ALB_Wet",
+  "sha": "eaa45d8dcb595c666fa4abeb131042be942275cc48b74bafab98c97d6640eb82",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Engines_ALB_Wet.png",
   "type": "Image"
  },
  "Image:eaca47efc860edf87ef228f88cc2fa1a36354e00119e695bd861389e33ca3e26": {
@@ -15879,6 +16698,15 @@
   "name": "T_Morwenna_Metal_NOR",
   "sha": "ec6cc01ac48f56fd3998c54bc8b00ec8c382ff54fb2faf37237d02280acce1c0",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Metal_NOR.png",
+  "type": "Image"
+ },
+ "Image:ec88720e4addd95b09de188b9a8943866cc7d1b39a72289847a707c020415653": {
+  "assetId": "110869494568121",
+  "imageId": "110869494568121",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Body_ALB",
+  "sha": "ec88720e4addd95b09de188b9a8943866cc7d1b39a72289847a707c020415653",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_ALB.png",
   "type": "Image"
  },
  "Image:ec8ba42c2930eca35a2f8b68f4296d7333d1eb6d9bf2982323fd49210a8d6d53": {
@@ -15950,6 +16778,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Deck_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:ed5f413c9bc20922e52f11253af7e99b970708bc58f3989b982b997851b4ade7": {
+  "assetId": "100007816151198",
+  "imageId": "100007816151198",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Wheels_NOR",
+  "sha": "ed5f413c9bc20922e52f11253af7e99b970708bc58f3989b982b997851b4ade7",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_NOR.png",
+  "type": "Image"
+ },
  "Image:ed7ff04cb21247577fcae7daee3280168b66bb0fd03bb0d77546a1b93567bafd": {
   "assetId": "105457741487761",
   "imageId": "105457741487761",
@@ -15975,6 +16812,15 @@
   "name": "T_Slipway_Steel_RGH_Wet",
   "sha": "edb6319f4ace4fa3742ce1a74ef83c3f96e6b92336eea44cbf3dd848dfddbc0a",
   "source": "assets/textures/M_Bld_Slipway/T_Slipway_Steel_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:edc63a024b075cc1c84c16bf6443600e47178779eb55e861635c3f070d7fba89": {
+  "assetId": "89978684181097",
+  "imageId": "89978684181097",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_RGH_Wet",
+  "sha": "edc63a024b075cc1c84c16bf6443600e47178779eb55e861635c3f070d7fba89",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH_Wet.png",
   "type": "Image"
  },
  "Image:ee1c5d043f8810861d23c7d6b55eb4e11498573a2b48d1c38a37c40340949ef2": {
@@ -16538,6 +17384,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Gravel_ALB.png",
   "type": "Image"
  },
+ "Image:f59c47ef4a9a40bd733c1faa261b5afd1d67ffba0d130840f436f312abd3ffc7": {
+  "assetId": "98967312291140",
+  "imageId": "98967312291140",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Fittings_NOR",
+  "sha": "f59c47ef4a9a40bd733c1faa261b5afd1d67ffba0d130840f436f312abd3ffc7",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_NOR.png",
+  "type": "Image"
+ },
  "Image:f5b80db54898f36ac1643051451704b1e061e127b80b7a8e33bf114f8f906c34": {
   "assetId": "101906028704012",
   "imageId": "101906028704012",
@@ -16800,7 +17655,10 @@
    "T_M_Kit_LineKnife_Hard_MET",
    "T_Ledge04_Granite_MET",
    "T_BottleField_Seabed_MET",
-   "T_LostPot_Shell_MET"
+   "T_LostPot_Shell_MET",
+   "T_HarbourGT_Body_MET",
+   "T_HarbourGT_Cab_MET",
+   "T_LighthouseCruiser_Body_MET"
   ],
   "assetId": "140266217416485",
   "imageId": "140266217416485",
@@ -16826,6 +17684,15 @@
   "name": "T_StretcherBasket_Kit_ALB",
   "sha": "fa4c7dce6ba5bf20a97669bd1f1dfd3b373e281ffcbb3b5b0e7c9dfc8ef62a43",
   "source": "assets/textures/M_Kit_StretcherBasket/T_StretcherBasket_Kit_ALB.png",
+  "type": "Image"
+ },
+ "Image:fa50ab5a1497dd20c62c05156a60065564ed6cc5a4cf6e964e97a2695ffb705e": {
+  "assetId": "98076737081921",
+  "imageId": "98076737081921",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Deck_NOR",
+  "sha": "fa50ab5a1497dd20c62c05156a60065564ed6cc5a4cf6e964e97a2695ffb705e",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_NOR.png",
   "type": "Image"
  },
  "Image:fa87f2048a6cfad4efa01ace9eb1bcd7a9d478910e9a3ebde84a4588789cbdbc": {
@@ -16945,6 +17812,15 @@
   "source": "assets/textures/M_Rock_Cliff_08/T_Cliff08_Granite_NOR.png",
   "type": "Image"
  },
+ "Image:fc2175ece2e1ead3b42477a18987d3a1a0bab725f14803d05fa1311d8b52299c": {
+  "assetId": "113579632701394",
+  "imageId": "113579632701394",
+  "moderation": "Reviewing",
+  "name": "T_StormRunner_Rig_ALB_Wet",
+  "sha": "fc2175ece2e1ead3b42477a18987d3a1a0bab725f14803d05fa1311d8b52299c",
+  "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:fc4937ef6a7c8763499c1d8b223f49d22e0e96c48ed7076e33d005495ae8ab05": {
   "aliases": [
    "Mayday_T_FoliageLand_Main_NOR_Wet"
@@ -17056,6 +17932,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_MET.png",
   "type": "Image"
  },
+ "Image:fe31b688378c76d686137346336186b4fa9a72e881d85a06c3ee79f2c53c2bce": {
+  "assetId": "88869995261250",
+  "imageId": "88869995261250",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Body_ALB",
+  "sha": "fe31b688378c76d686137346336186b4fa9a72e881d85a06c3ee79f2c53c2bce",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_ALB.png",
+  "type": "Image"
+ },
  "Image:fe658577b416fdcb9ae61749a82bfa61a98d9baf747dc19eefb6340a575ab6ef": {
   "assetId": "74893173784728",
   "imageId": "74893173784728",
@@ -17153,6 +18038,15 @@
   "name": "T_Pontoon_Kit_MET",
   "sha": "ff6def282e43166f07431dc590320c95441be061afcdc635af09af9fda9d49f8",
   "source": "assets/textures/M_Hbr_Pontoon/T_Pontoon_Kit_MET.png",
+  "type": "Image"
+ },
+ "Image:ffca03acd084064614e338a1c06e3b682dd235d2ece2bdf6be3cbefad41bb114": {
+  "assetId": "70518369805591",
+  "imageId": "70518369805591",
+  "moderation": "Reviewing",
+  "name": "T_Tidewalker_Hulls_NOR",
+  "sha": "ffca03acd084064614e338a1c06e3b682dd235d2ece2bdf6be3cbefad41bb114",
+  "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Hulls_NOR.png",
   "type": "Image"
  },
  "Image:ffca44be056e9a95f3715ff77af5d35daac9048609d685da22ab4e8a6649b8da": {
@@ -17349,6 +18243,16 @@
   "route": "delivery",
   "sha": "07e7d6ee4ead6a163d4259484641134cef658dcf09e7a8415c01066a3e8c2abf",
   "source": "assets/fbx/M_Hbr_QuayKit_Corner/M_Hbr_QuayKit_Corner_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:08af153ff2322def486ce43138834b916edcd40f7ea7173ddb4b25683e56ae33": {
+  "assetId": "92503779788373",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser_LOD1",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "08af153ff2322def486ce43138834b916edcd40f7ea7173ddb4b25683e56ae33",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD1.fbx",
   "type": "Model"
  },
  "Model:090b863fdfb59ddf90e496718f5307e78cb45f013b3ada27d2d72a3de66a6879": {
@@ -18371,6 +19275,16 @@
   "source": "assets/fbx/M_Road_StreetLamp/M_Road_StreetLamp_LOD1.fbx",
   "type": "Model"
  },
+ "Model:28e0d4434ef008b98d5cf6105532aed4491622781ab510aa4606d0aff882b78d": {
+  "assetId": "83386940246211",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser.rbxm",
+  "route": "delivery",
+  "sha": "28e0d4434ef008b98d5cf6105532aed4491622781ab510aa4606d0aff882b78d",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:28e95e489bdbd983d45a0ec7cc68f1c8a393f7e8bc6dc5562b3ec0c38f1d5f19": {
   "assetId": "100643440199394",
   "moderation": "Approved",
@@ -19061,6 +19975,16 @@
   "source": "assets/fbx/M_Veh_JetSki/M_Veh_JetSki_LOD1.fbx",
   "type": "Model"
  },
+ "Model:3dfde3f1be0ac5bb4ef77ab8367959c4c910abb6d50d159bc3d7841a2e9f2524": {
+  "assetId": "126837171762635",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT_LOD1",
+  "rbxm": "assets/models/M_Veh_HarbourGT_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "3dfde3f1be0ac5bb4ef77ab8367959c4c910abb6d50d159bc3d7841a2e9f2524",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:3e173b5fe0e77d8b00047c5825cc1bce3daf9902b96f6a4c6eb11d5cdc08e217": {
   "assetId": "94825745625752",
   "moderation": "Approved",
@@ -19451,6 +20375,16 @@
   "source": "assets/fbx/M_Veg_Bracken_01/M_Veg_Bracken_01_LOD1.fbx",
   "type": "Model"
  },
+ "Model:482eaec224195e03a14d3cd42c825b390c8db0d2d35de6c5fde9dcc279fc75e1": {
+  "assetId": "110343145279421",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT",
+  "rbxm": "assets/models/M_Veh_HarbourGT.rbxm",
+  "route": "delivery",
+  "sha": "482eaec224195e03a14d3cd42c825b390c8db0d2d35de6c5fde9dcc279fc75e1",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:487525716130aefd77b81362cb2bb06ddab238f52fb9ca054037a120dde148a7": {
   "assetId": "134233387969452",
   "moderation": "Approved",
@@ -19779,6 +20713,16 @@
   "route": "delivery",
   "sha": "500d88b9d3ef4853a40f281236ede73b853bd9c2951e26d4256f66aaedd20b1e",
   "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:5057b5aeccfcef896c9224dd49380a98eacdf7bd9c3baa5d6c7096acd35d90b6": {
+  "assetId": "101756973437405",
+  "moderation": "Approved",
+  "name": "M_Veh_StormRunner_LOD2",
+  "rbxm": "assets/models/M_Veh_StormRunner_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "5057b5aeccfcef896c9224dd49380a98eacdf7bd9c3baa5d6c7096acd35d90b6",
+  "source": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD2.fbx",
   "type": "Model"
  },
  "Model:50a5f12850c8b258f011cbd62fe706c4cc690e17e5b70c99f2ce3ba26d116086": {
@@ -20761,6 +21705,16 @@
   "source": "assets/fbx/M_Hbr_Bollard_03/M_Hbr_Bollard_03_LOD0.fbx",
   "type": "Model"
  },
+ "Model:739da45f7ff152f451a3446c7ff5fd34e189665d560aaca4db262177c0e62f4f": {
+  "assetId": "102020145939883",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT_LOD2",
+  "rbxm": "assets/models/M_Veh_HarbourGT_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "739da45f7ff152f451a3446c7ff5fd34e189665d560aaca4db262177c0e62f4f",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:740bdc84d59ddaf57e888fbb624b9555e43958cfa5c826303dff75eefaf70021": {
   "assetId": "96376647807602",
   "moderation": "Approved",
@@ -21099,6 +22053,16 @@
   "route": "delivery",
   "sha": "80af6a39c0eba9a28301876d7796ef1e530f617b8bc840e882fb875dbd00382c",
   "source": "assets/fbx/M_Veg_Grass_Turf_02/M_Veg_Grass_Turf_02_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:80c54388b17fef94d4876ac3ffbeb84b587390198bc61a83992ce3b360ec910d": {
+  "assetId": "92287777361052",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker",
+  "rbxm": "assets/models/M_Veh_Tidewalker.rbxm",
+  "route": "delivery",
+  "sha": "80c54388b17fef94d4876ac3ffbeb84b587390198bc61a83992ce3b360ec910d",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD0.fbx",
   "type": "Model"
  },
  "Model:80dff971780e3e168eca0d082681050bfb1d21cdced061e941c61fd9f27bfb9b": {
@@ -22561,6 +23525,16 @@
   "source": "assets/fbx/M_Veg_Bracken_01/M_Veg_Bracken_01_LOD2.fbx",
   "type": "Model"
  },
+ "Model:adffa741991783385042a0ac77409d120ac37781db7d06f76300e913dcc3029e": {
+  "assetId": "119941865184557",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker_LOD2",
+  "rbxm": "assets/models/M_Veh_Tidewalker_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "adffa741991783385042a0ac77409d120ac37781db7d06f76300e913dcc3029e",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:ae0a36103cb5db6213428cf32406e81a8672df0651da5a934ad3ae8158d9f16d": {
   "assetId": "118289483972753",
   "moderation": "Approved",
@@ -23301,6 +24275,16 @@
   "source": "assets/fbx/M_Ani_HerringGull/M_Ani_HerringGull_LOD0.fbx",
   "type": "Model"
  },
+ "Model:c7d28c25f28c6a47e2c5322236de532478e790c9c5f1b47fcd3786894ae4fc8e": {
+  "assetId": "71253168042520",
+  "moderation": "Approved",
+  "name": "M_Veh_StormRunner",
+  "rbxm": "assets/models/M_Veh_StormRunner.rbxm",
+  "route": "delivery",
+  "sha": "c7d28c25f28c6a47e2c5322236de532478e790c9c5f1b47fcd3786894ae4fc8e",
+  "source": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:c7e32f739c5df923250ed30098ea06e7973bdd02d6b5e305abdcae24f865baf1": {
   "assetId": "98721125234902",
   "moderation": "Approved",
@@ -23781,6 +24765,16 @@
   "source": "assets/fbx/M_Bld_Harbourmaster/M_Bld_Harbourmaster_LOD1.fbx",
   "type": "Model"
  },
+ "Model:d956a9d654d60193ffd8d14ec4d0fc209516f2f744012a8e4f4dc38704db7bd0": {
+  "assetId": "73421756816479",
+  "moderation": "Approved",
+  "name": "M_Veh_Tidewalker_LOD1",
+  "rbxm": "assets/models/M_Veh_Tidewalker_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "d956a9d654d60193ffd8d14ec4d0fc209516f2f744012a8e4f4dc38704db7bd0",
+  "source": "assets/fbx/M_Veh_Tidewalker/M_Veh_Tidewalker_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:d979b8e913b6386d5f0456c67c30e12a3865cdb6f2b5ec87eadf2336dd5d5010": {
   "assetId": "114419861563693",
   "moderation": "Approved",
@@ -23869,6 +24863,16 @@
   "route": "delivery",
   "sha": "dc8ede36235914631ad78777ea4ee1fad7883f5d096cfffa3ccd89c20fe0473e",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:dcfeed1b1657213ca93ebbbbf87c5e6bf3e7bd10af75e096622147f1abe4eb5d": {
+  "assetId": "116642637177378",
+  "moderation": "Approved",
+  "name": "M_Veh_StormRunner_LOD1",
+  "rbxm": "assets/models/M_Veh_StormRunner_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "dcfeed1b1657213ca93ebbbbf87c5e6bf3e7bd10af75e096622147f1abe4eb5d",
+  "source": "assets/fbx/M_Veh_StormRunner/M_Veh_StormRunner_LOD1.fbx",
   "type": "Model"
  },
  "Model:dd3093661faa680e4aa6d80b76f3094f678027791bd6279a013d722ec1f9d99a": {
@@ -24929,6 +25933,16 @@
   "route": "delivery",
   "sha": "fe67e31808e48539202ca6a36ad400bc493f43bb9f784a46e5d6592d5b14a708",
   "source": "assets/fbx/M_Kit_RescueTube/M_Kit_RescueTube_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:fec762dd1f5af73b1da9cba1839e49cf9f8c1c364400ec465d41511df41e9210": {
+  "assetId": "114275671701276",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser_LOD2",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "fec762dd1f5af73b1da9cba1839e49cf9f8c1c364400ec465d41511df41e9210",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD2.fbx",
   "type": "Model"
  },
  "Model:fef3a59b7667080d17a7fa8341b2b55be78250028d5bdb8371c0fd2bc0254ea7": {

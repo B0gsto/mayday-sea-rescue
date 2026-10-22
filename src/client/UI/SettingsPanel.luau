@@ -34,6 +34,7 @@ local A11yPalette = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChil
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
 local CosmeticPicker = require(script.Parent:WaitForChild("CosmeticPicker"))
 local Cosmetics = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Cosmetics"))
+local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local SettingsRules =
@@ -162,6 +163,156 @@ local Tint = {
 local LINE = 52 -- du: one-line row (icon, label, control on the right)
 local TALL = 104 -- du: label line + a full-width slider or segmented control under it
 local INSET = 54 -- du: label x (12 margin + 30 tile + 12 gap); separators start here
+-- Row icons drawn from Frames (symbol characters may not exist in Roblox fonts). Unknown keys
+-- draw as text, so plain letters ("G", "A") stay letters.
+local V2 = Vector2.new
+local WHITE = Color3.new(1, 1, 1)
+local function bar(p: Instance, w: number, h: number, x: number, y: number, r: number?): Frame
+	return Glyph.bar(p, V2(w, h), V2(x, y), r or 0, WHITE)
+end
+local function zig(p: Instance, y: number)
+	for i, x in { 0.27, 0.5, 0.73 } do
+		bar(p, 0.28, 0.1, x, y, if i == 2 then 30 else -30)
+	end
+end
+local function circle(p: Instance, d: number, x: number, y: number)
+	local c = bar(p, d, d, x, y)
+	c.BackgroundTransparency = 1
+	local st = Instance.new("UIStroke")
+	st.Color = WHITE
+	st.Thickness = 2
+	st.Parent = c
+	return c
+end
+local function arrows(p: Instance, rot: number)
+	local f = Instance.new("Frame")
+	f.Size = UDim2.fromScale(1, 1)
+	f.BackgroundTransparency = 1
+	f.Rotation = rot
+	f.Parent = p
+	bar(f, 0.7, 0.1, 0.5, 0.5)
+	for _, sx in { -1, 1 } do
+		bar(f, 0.26, 0.1, 0.5 + sx * 0.27, 0.42, sx * 40)
+		bar(f, 0.26, 0.1, 0.5 + sx * 0.27, 0.58, -sx * 40)
+	end
+end
+local function note(p: Instance, x: number)
+	bar(p, 0.24, 0.2, x - 0.08, 0.72)
+	bar(p, 0.09, 0.52, x, 0.44)
+end
+local SHAPES: { [string]: (Frame) -> () } = {
+	waves = function(p)
+		zig(p, 0.4)
+		zig(p, 0.62)
+	end,
+	wave = function(p)
+		zig(p, 0.5)
+	end,
+	shake = function(p)
+		zig(p, 0.3)
+		zig(p, 0.5)
+		zig(p, 0.7)
+	end,
+	reset = function(p)
+		circle(p, 0.58, 0.5, 0.52)
+		bar(p, 0.26, 0.1, 0.2, 0.3, 60) -- the arrowhead on the rim
+		bar(p, 0.26, 0.1, 0.32, 0.18, -20)
+	end,
+	horizon = function(p)
+		arrows(p, 0)
+	end,
+	bob = function(p)
+		arrows(p, 90)
+	end,
+	fov = function(p)
+		bar(p, 0.62, 0.1, 0.36, 0.5, -28)
+		bar(p, 0.62, 0.1, 0.36, 0.5, 28)
+		bar(p, 0.12, 0.12, 0.1, 0.5)
+	end,
+	plus = function(p)
+		circle(p, 0.66, 0.5, 0.5)
+		bar(p, 0.4, 0.1, 0.5, 0.5)
+		bar(p, 0.1, 0.4, 0.5, 0.5)
+	end,
+	speed = function(p)
+		Glyph.draw("speed", p, WHITE)
+	end,
+	blur = function(p)
+		bar(p, 0.7, 0.1, 0.5, 0.3)
+		bar(p, 0.5, 0.1, 0.6, 0.5)
+		bar(p, 0.3, 0.1, 0.7, 0.7)
+	end,
+	drops = function(p)
+		bar(p, 0.18, 0.18, 0.5, 0.3)
+		bar(p, 0.18, 0.18, 0.3, 0.66)
+		bar(p, 0.18, 0.18, 0.7, 0.66)
+	end,
+	half = function(p)
+		circle(p, 0.66, 0.5, 0.5)
+		local fill = bar(p, 0.66, 0.66, 0.5, 0.5)
+		local g = Instance.new("UIGradient")
+		g.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.5, 1),
+			NumberSequenceKeypoint.new(0.501, 0),
+			NumberSequenceKeypoint.new(1, 0),
+		})
+		g.Parent = fill
+	end,
+	pause = function(p)
+		bar(p, 0.14, 0.56, 0.36, 0.5, nil)
+		bar(p, 0.14, 0.56, 0.64, 0.5, nil)
+	end,
+	tap = function(p)
+		circle(p, 0.66, 0.5, 0.5)
+		bar(p, 0.26, 0.26, 0.5, 0.5)
+	end,
+	peak = function(p)
+		bar(p, 0.5, 0.11, 0.34, 0.46, -58)
+		bar(p, 0.5, 0.11, 0.66, 0.46, 58)
+		bar(p, 0.74, 0.11, 0.5, 0.7)
+	end,
+	note = function(p)
+		note(p, 0.56)
+		bar(p, 0.24, 0.09, 0.66, 0.24, 35)
+	end,
+	notes = function(p)
+		note(p, 0.38)
+		note(p, 0.74)
+		bar(p, 0.42, 0.1, 0.56, 0.2, -10)
+	end,
+	sparkle = function(p)
+		bar(p, 0.12, 0.7, 0.5, 0.5)
+		bar(p, 0.7, 0.12, 0.5, 0.5)
+		bar(p, 0.3, 0.3, 0.5, 0.5, 45)
+	end,
+	burst = function(p)
+		for _, r in { 0, 45, 90, 135 } do
+			bar(p, 0.72, 0.09, 0.5, 0.5, r)
+		end
+		bar(p, 0.34, 0.34, 0.5, 0.5)
+	end,
+	star = function(p)
+		for _, r in { 0, 60, 120 } do
+			bar(p, 0.12, 0.7, 0.5, 0.5, r)
+		end
+	end,
+	bubble = function(p)
+		Glyph.bar(p, V2(0.7, 0.48), V2(0.5, 0.44), 0, WHITE, 0.4)
+		bar(p, 0.12, 0.26, 0.36, 0.7, 30)
+	end,
+	horn = function(p)
+		Glyph.bar(p, V2(0.2, 0.3), V2(0.28, 0.5), 0, WHITE, 0.2)
+		bar(p, 0.32, 0.1, 0.5, 0.36, -35)
+		bar(p, 0.32, 0.1, 0.5, 0.64, 35)
+		bar(p, 0.1, 0.62, 0.66, 0.5)
+	end,
+	no = function(p)
+		circle(p, 0.66, 0.5, 0.5)
+		bar(p, 0.62, 0.1, 0.5, 0.5, -45)
+	end,
+}
+
 local SWITCH = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
 local function refresh(key: string)
@@ -236,14 +387,22 @@ local function row(
 	tile.BorderSizePixel = 0
 	tile.Parent = f
 	HudTheme.corner(tile, 7)
-	local g = Instance.new("TextLabel")
+	local shape = SHAPES[glyph]
+	local g = Instance.new(if shape then "Frame" else "TextLabel") :: any
 	g.Name = "Glyph"
-	g.Size = UDim2.fromScale(1, 1)
 	g.BackgroundTransparency = 1
-	g.Text = glyph
-	g.Font = HudTheme.HeaderFont
-	g.TextSize = 18
-	g.TextColor3 = Color3.new(1, 1, 1)
+	if shape then
+		g.AnchorPoint = Vector2.new(0.5, 0.5)
+		g.Position = UDim2.fromScale(0.5, 0.5)
+		g.Size = UDim2.fromScale(0.72, 0.72)
+		shape(g)
+	else
+		g.Size = UDim2.fromScale(1, 1)
+		g.Text = glyph
+		g.Font = HudTheme.HeaderFont
+		g.TextSize = 18
+		g.TextColor3 = WHITE
+	end
 	g.Parent = tile
 	local l = HudTheme.label(
 		"Label",
@@ -339,7 +498,7 @@ local function slider(
 	local value = valueLabel(f, 64)
 	local control = strip(f)
 
-	local minus = stepButton("Minus", "−", control)
+	local minus = stepButton("Minus", "-", control)
 	noteFirst(minus)
 	local plus = stepButton("Plus", "+", control)
 	plus.AnchorPoint = Vector2.new(1, 0)
@@ -640,10 +799,10 @@ local function build()
 	title.LayoutOrder = order
 
 	local comfort = section(s, "Comfort")
-	local seasick = action(comfort, "Seasick", "≈", Tint.teal, "Seasick-safe", function()
+	local seasick = action(comfort, "Seasick", "waves", Tint.teal, "Seasick-safe", function()
 		Comfort.setMany(SettingsRules.SEASICK)
 	end)
-	action(comfort, "Reset", "↺", Tint.grey, "Reset", function()
+	action(comfort, "Reset", "reset", Tint.grey, "Reset", function()
 		local d: { [string]: any } = {}
 		for _, k in SettingsRules.COMFORT_KEYS do
 			d[k] = (SettingsRules.Defaults :: any)[k]
@@ -654,22 +813,22 @@ local function build()
 		local on = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
 		seasick.Text = if on then "✓" else ""
 	end)
-	slider(comfort, "horizonStab", "↔", Tint.blue, "Horizon lock", 0.05, pct)
-	slider(comfort, "fov", "◎", Tint.indigo, "Field of view", 5, function(v)
+	slider(comfort, "horizonStab", "horizon", Tint.blue, "Horizon lock", 0.05, pct)
+	slider(comfort, "fov", "fov", Tint.indigo, "Field of view", 5, function(v)
 		return `{math.round(v)}°`
 	end)
-	slider(comfort, "headBob", "↕", Tint.orange, "Head bob", 0.05, pct)
-	slider(comfort, "shake", "≋", Tint.red, "Shake", 0.05, pct)
+	slider(comfort, "headBob", "bob", Tint.orange, "Head bob", 0.05, pct)
+	slider(comfort, "shake", "shake", Tint.red, "Shake", 0.05, pct)
 	slider(comfort, "gLean", "G", Tint.purple, "G-lean", 0.05, pct)
-	slider(comfort, "sensitivity", "⊕", Tint.teal, "Sensitivity", 0.1, function(v)
+	slider(comfort, "sensitivity", "plus", Tint.teal, "Sensitivity", 0.1, function(v)
 		return string.format("%.1fx", v)
 	end)
-	toggle(comfort, "speedFov", "»", Tint.orange, "Speed FOV")
-	toggle(comfort, "motionBlur", "≡", Tint.indigo, "Motion blur")
-	toggle(comfort, "lensSpray", "∴", Tint.blue, "Lens spray")
+	toggle(comfort, "speedFov", "speed", Tint.orange, "Speed FOV")
+	toggle(comfort, "motionBlur", "blur", Tint.indigo, "Motion blur")
+	toggle(comfort, "lensSpray", "drops", Tint.blue, "Lens spray")
 
 	local access = section(s, "Accessibility")
-	segmented(access, "colourAssist", "◑", Tint.pink, "Colour assist", {
+	segmented(access, "colourAssist", "half", Tint.pink, "Colour assist", {
 		{ "Off", "Off" },
 		{ "Deut", "Deuteranopia" },
 		{ "Prot", "Protanopia" },
@@ -680,27 +839,27 @@ local function build()
 		{ "125%", 125 },
 		{ "150%", 150 },
 	})
-	toggle(access, "reduceMotion", "∥", Tint.green, "Reduce motion")
-	toggle(access, "holdToTap", "⊙", Tint.orange, "Hold to tap")
+	toggle(access, "reduceMotion", "pause", Tint.green, "Reduce motion")
+	toggle(access, "holdToTap", "tap", Tint.orange, "Hold to tap")
 
 	local gfx = section(s, "Graphics")
 	local q = { { "Auto", "Auto" }, { "High", "High" }, { "Med", "Medium" }, { "Low", "Low" } }
-	segmented(gfx, "oceanQuality", "≈", Tint.blue, "Ocean", q)
-	segmented(gfx, "scatterQuality", "▲", Tint.green, "Rocks & plants", q)
+	segmented(gfx, "oceanQuality", "waves", Tint.blue, "Ocean", q)
+	segmented(gfx, "scatterQuality", "peak", Tint.green, "Rocks & plants", q)
 
 	local audio = section(s, "Audio")
-	slider(audio, "volMaster", "♪", Tint.red, "Master", 0.05, pct)
-	slider(audio, "volSfx", "✦", Tint.orange, "Effects", 0.05, pct)
-	slider(audio, "volRadio", "∿", Tint.teal, "Radio", 0.05, pct)
-	slider(audio, "volMusic", "♫", Tint.pink, "Music", 0.05, pct)
-	toggle(audio, "voice", "“", Tint.purple, "Voices")
-	toggle(audio, "muteHorns", "◁", Tint.grey, "Mute horns")
-	toggle(audio, "muteSirens", "✹", Tint.red, "Mute sirens")
-	toggle(audio, "muteRadios", "⊘", Tint.grey, "Mute radios")
+	slider(audio, "volMaster", "note", Tint.red, "Master", 0.05, pct)
+	slider(audio, "volSfx", "sparkle", Tint.orange, "Effects", 0.05, pct)
+	slider(audio, "volRadio", "wave", Tint.teal, "Radio", 0.05, pct)
+	slider(audio, "volMusic", "notes", Tint.pink, "Music", 0.05, pct)
+	toggle(audio, "voice", "bubble", Tint.purple, "Voices")
+	toggle(audio, "muteHorns", "horn", Tint.grey, "Mute horns")
+	toggle(audio, "muteSirens", "burst", Tint.red, "Mute sirens")
+	toggle(audio, "muteRadios", "no", Tint.grey, "Mute radios")
 
 	local ops = section(s, "Operations")
 	local mode =
-		segmented(ops, "pro", "★", Tint.yellow, "Mode", { { "Assist", false }, { "Pro", true } })
+		segmented(ops, "pro", "star", Tint.yellow, "Mode", { { "Assist", false }, { "Pro", true } })
 	local proNote = valueLabel(mode, 96)
 	local function updateProNote()
 		local want = Comfort.get("pro") == true

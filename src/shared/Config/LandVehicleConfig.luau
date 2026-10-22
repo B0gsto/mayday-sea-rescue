@@ -463,12 +463,13 @@ local function variant(baseId: string, over: { [string]: any }, clear: { string 
 	return spec :: Spec
 end
 
--- Sports coupe (generic grand tourer): 4.55 m x 1.95 m x 1.25 m, 2.65 m wheelbase, 3.0 L twin-turbo
--- petrol 470 N m, seven-speed, rear-wheel drive, 1,600 kg. Code-built coupe greybox until
--- M_Veh_HarbourGT lands (set `model`, match the wheel geometry).
+-- Sports coupe (generic grand tourer): 4.55 m x 1.95 m x 1.29 m, 2.65 m wheelbase, 3.0 L twin-turbo
+-- petrol 470 N m, seven-speed, rear-wheel drive, 1,600 kg. Art: M_Veh_HarbourGT (wheel geometry
+-- below matches its ATT_Wheel_* hubs); the code-built coupe greybox is only the load-failure fallback.
 LandVehicleConfig.HarbourGT = variant("CoastguardResponse", {
 	id = "HarbourGT",
 	displayName = "Harbour GT",
+	model = "M_Veh_HarbourGT",
 	class = "Coupe",
 	eyePoint = Vector3.new(0, 1.9, 0),
 	unlockRank = 1,
@@ -479,7 +480,7 @@ LandVehicleConfig.HarbourGT = variant("CoastguardResponse", {
 	mass = 1600,
 	length = 4.55,
 	width = 1.95,
-	height = 1.25,
+	height = 1.29,
 	wheelbase = 2.65,
 	track = 1.62,
 	wheelRadius = 0.35,
@@ -531,19 +532,29 @@ LandVehicleConfig.HarbourGT = variant("CoastguardResponse", {
 	steerRate = 160,
 	cdA = 0.62,
 	canTow = false,
-	bodyColor = Color3.fromRGB(176, 18, 32), -- racing red
+	bodyColor = Color3.fromRGB(106, 12, 20), -- deep crimson (M_Veh_HarbourGT paint)
 	stripeColor = Color3.fromRGB(24, 24, 26),
 	stripeColor2 = Color3.fromRGB(235, 235, 235),
 }, { "lightBar", "lightBarColors", "topSpeedTowing" })
 
--- Luxury SUV (generic full-size): the Coastguard 4x4's chassis with a 3.0 L 600 N m engine, an
--- eight-speed box and soft air suspension. Placeholder art: the Coastguard 4x4 mesh (same wheel
--- geometry) until M_Veh_LighthouseCruiser lands.
+-- Luxury SUV (generic full-size): 4.95 m x 2.0 m x 1.95 m over the roof-bar lamps, 2.92 m
+-- wheelbase, 1.66 m track, 285/45 R22 (0.41 m radius); the Coastguard 4x4's chassis with a 3.0 L
+-- 600 N m engine, an eight-speed box and soft air suspension. Art: M_Veh_LighthouseCruiser (the
+-- wheel geometry matches its ATT_Wheel_* hubs).
 LandVehicleConfig.LighthouseCruiser = variant("CoastguardResponse", {
 	id = "LighthouseCruiser",
 	displayName = "Lighthouse Cruiser",
-	model = "M_Veh_Coastguard4x4", -- placeholder: M_Veh_LighthouseCruiser
+	model = "M_Veh_LighthouseCruiser",
 	unlockRank = 1,
+	length = 4.95,
+	width = 2.0,
+	height = 1.95,
+	wheelbase = 2.92,
+	track = 1.66,
+	wheelRadius = 0.41,
+	wheelWidth = 0.285,
+	groundClearance = 0.26,
+	frontOverhang = 0.95,
 	roles = { "Explore", "TowJetSkiTrailer" },
 	topSpeed = 95, -- 114 km/h -- tune
 	topSpeedTowing = 60,
@@ -582,8 +593,8 @@ LandVehicleConfig.LighthouseCruiser = variant("CoastguardResponse", {
 	brakeG = 1.0,
 	steerRate = 120,
 	cdA = 1.1,
-	bodyColor = Color3.fromRGB(22, 30, 48), -- midnight navy
-	stripeColor = Color3.fromRGB(212, 175, 55), -- gold
+	bodyColor = Color3.fromRGB(168, 38, 44), -- lighthouse red (M_Veh_LighthouseCruiser paint)
+	stripeColor = Color3.fromRGB(226, 215, 190), -- cream roof
 	stripeColor2 = Color3.fromRGB(200, 200, 205),
 }, { "lightBar", "lightBarColors" })
 
