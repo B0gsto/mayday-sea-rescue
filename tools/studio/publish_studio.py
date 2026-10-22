@@ -15,7 +15,7 @@ usage: python3 tools/studio/publish_studio.py [--skip-check] [--batch 15] [--gap
 
 Holds the machine-wide Studio lock throughout. Exits non-zero (nothing published) when the paced pass still logs
 texture-pack failures."""
-import json, os, re, subprocess, sys, time
+import glob, json, os, re, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -26,6 +26,7 @@ from studio import StudioSession, studio_lock  # noqa: E402
 TARGET = json.load(open(os.path.join(REPO, "deploy", "target.json")))
 UNIVERSE, PLACE = TARGET["universeId"], TARGET["placeId"]
 LAUNCH = os.path.join(REPO, "deploy", "state-launch.json")
+AUTOSAVES = os.path.expanduser("~/Library/Application Support/Roblox/RobloxStudio/AutoSaves")
 PACK = re.compile(r"TexturePack|AssetResolutionWorkflow|Could not find asset with hash")
 PACK_FAIL = re.compile(r"Failed to upload TexturePack|TexturePack asset creation has failed")
 NUDGE = '''
@@ -102,6 +103,10 @@ def main():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
     batch, gap = int(arg("--batch", 15)), arg("--gap", 15)
     with studio_lock(owner="mayday publish", timeout=3600, cap=3600):
+        # a killed earlier run leaves an auto-recovery file, whose startup modal disables File > Publish to Roblox
+        for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):
+            os.makedirs(os.path.join(AUTOSAVES, "Archived"), exist_ok=True)
+            os.replace(f, os.path.join(AUTOSAVES, "Archived", "%d_%s" % (time.time(), os.path.basename(f))))
         subprocess.run(["open", "-g", "roblox-studio:1+launchmode:edit+task:EditPlace+placeId:%d+universeId:%d"
                         % (PLACE, UNIVERSE)], check=True)
         pid, sid = None, None
@@ -138,7 +143,16 @@ def main():
                     sys.exit("texture packs still failing (rate limit?): nothing published; re-run later or with "
                              "a larger --gap")
                 start = len(log_lines(log))
-                run(["swift", os.path.join(HERE, "studio-menu.swift"), str(pid), "File", "Publish to Roblox"], 120)
+                menu = ["swift", os.path.join(HERE, "studio-menu.swift"), str(pid), "File"]
+                end = time.time() + 300  # Studio can still be busy after the pack pass: wait for the item to enable
+                while True:
+                    r = subprocess.run(menu + ["Publish to Roblox"], capture_output=True, text=True, timeout=120)
+                    if r.returncode == 0:
+                        break
+                    if r.returncode != 3 or time.time() > end:
+                        files = subprocess.run(menu, capture_output=True, text=True, timeout=60).stdout
+                        sys.exit("File > Publish to Roblox failed: %s\nFile menu:\n%s" % (r.stdout.strip(), files))
+                    time.sleep(10)
                 end, version = time.time() + 600, None
                 while time.time() < end and version is None:
                     time.sleep(3)
