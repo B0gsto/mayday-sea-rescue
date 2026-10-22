@@ -52,6 +52,12 @@ return function(t)
 		t.expect(EventClock.isActive("GreatStorm", at(9, 1))).toBe(true)
 	end)
 
+	t.test("stormOff (always sunny) leaves the Great Storm out", function()
+		t.expect(row(Calendar.rows(at(9, 1), { stormOff = true }), "GreatStorm")).toBeNil()
+		t.expect(row(Calendar.rows(at(9, 1), { stormOff = true }), "GhostLight").id)
+			.toBe("GhostLight")
+	end)
+
 	t.test("the Ghost Light counts to the next 3-hourly :30", function()
 		local nextLight = row(Calendar.rows(at(9, 17, 50)), "GhostLight")
 		t.expect(nextLight.seconds).toBe(12 * 60 + 10) -- 9:30

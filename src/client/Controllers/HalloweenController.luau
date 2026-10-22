@@ -2,14 +2,12 @@
 -- HalloweenController: the client side of the Ghost Ship seasonal event (docs/15 H7). Reads
 -- ReplicatedStorage.HalloweenState (HalloweenService) plus the per-player Halloween_State view,
 -- builds World/HalloweenWorld (pumpkins, the spectral ferry, the stall with its clock and days left,
--- white sheets over the Ghost Ship casualties) and turns the world to a purple-green foggy night
--- only during the nightly window (a Ghost Ship call, or the 15-minute witching hour at :45; config
--- in Config/SeasonalEvents). Onboarding players (cold open + first three calls) keep the day.
+-- white sheets over the Ghost Ship casualties). The nightly window (a Ghost Ship call, or the
+-- 15-minute witching hour at :45; config in Config/SeasonalEvents) only brightens the lanterns and
+-- plays the stings: no night, fog or purple sky (playtest 2026-10-22: always sunny, no gloom).
 -- The stall's world prompts call Halloween_Buy; the server checks the distance and the candy.
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
@@ -17,7 +15,6 @@ local HalloweenWorld =
 	require(script.Parent.Parent:WaitForChild("World"):WaitForChild("HalloweenWorld"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
-local WeatherController = require(script.Parent:WaitForChild("WeatherController"))
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
@@ -32,19 +29,14 @@ local player = Players.LocalPlayer
 local LIGHT_CAP = { High = 99, Medium = 14, Low = 6 }
 
 local TICK = 0.25
-local FOG_DENSITY = 0.5
-local FOG_HAZE = 2.6
-local FOG_COLOR = Color3.fromRGB(78, 58, 108) -- purple
-local FOG_DECAY = Color3.fromRGB(46, 96, 70) -- green
 
 local HalloweenController = {}
-HalloweenController.Priority = 112 -- after EventController: the night and fog override run last
+HalloweenController.Priority = 112 -- after EventController
 
 local folder: Folder
 local state: { [string]: any } = { candy = 0, owned = {} }
 local world: HalloweenWorld.World? = nil
 local worldRoot: Instance? = nil
-local atmosphere: Atmosphere? = nil
 local night = false
 local prevWitching: boolean? = nil
 local prevGhost: boolean? = nil
@@ -72,20 +64,11 @@ local function dimWorld(on: boolean)
 	end
 end
 
-local function ghostLightOn(): boolean
-	local events = ReplicatedStorage:FindFirstChild("EventState")
-	return events ~= nil
-		and events:GetAttribute("Event") == "GhostLight"
-		and events:GetAttribute("Phase") == "Active"
-end
-
 local function setNight(on: boolean)
 	if night == on then
 		return
 	end
 	night = on
-	-- another live event (Ghost Light) may be keeping the night; its own controller owns that
-	WeatherController.SetBasePreset(if on or ghostLightOn() then "Night" else "Clear")
 	dimWorld(on)
 end
 
@@ -131,8 +114,6 @@ local function close()
 		world = nil
 		worldRoot = nil
 	end
-	-- a Ghost Light running at the same time keeps its night; otherwise give the day back
-	WeatherController.SetBasePreset(if ghostLightOn() then "Night" else "Clear")
 	night = false
 end
 
@@ -167,19 +148,6 @@ function HalloweenController.Init()
 end
 
 function HalloweenController.Start()
-	atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
-
-	RunService.RenderStepped:Connect(function()
-		if not night or not atmosphere then
-			return
-		end
-		atmosphere.Density = math.max(atmosphere.Density, FOG_DENSITY)
-		atmosphere.Haze = math.max(atmosphere.Haze, FOG_HAZE)
-		atmosphere.Glare = math.min(atmosphere.Glare, 0.05)
-		atmosphere.Color = atmosphere.Color:Lerp(FOG_COLOR, 0.35)
-		atmosphere.Decay = atmosphere.Decay:Lerp(FOG_DECAY, 0.35)
-	end)
-
 	while true do
 		if attr("Active", false) == true then
 			build()

@@ -1,7 +1,7 @@
 --!strict
 -- StoreApp: the phone's Store (user 2026-10-21: "an actual store for passes, day passes + developer
 -- products"). Three tabs, Passes / Day Passes / Items (ProductShelves.storeItems), over a two-column grid
--- of bright cards: icon, name, the live Roblox price (GetProductInfo, never the config number), a tick once
+-- of navy HUD cards (Hud.Panel skin): big icon, white name, an orange price chip with the live Roblox price (GetProductInfo, never the config number), a tick once
 -- a pass is owned, a clock chip while a day pass runs, the exact Cash on a Cash pack. Tapping a card opens
 -- the Roblox purchase prompt, gated like the world cards by ProductShelves.cardState / mayPrompt (offered
 -- in Monetization_GetCatalogue, a real id, the price loaded). Rule 6: no prices before three operations.
@@ -37,7 +37,7 @@ local WHITE = Color3.new(1, 1, 1)
 local GREEN = Color3.fromHex("38B864")
 local TABS = {
 	{ id = "Passes", label = "Passes", color = Color3.fromHex("F29A2E") },
-	{ id = "DayPasses", label = "1 Day", color = Color3.fromHex("2FA4E7") },
+	{ id = "DayPasses", label = "Day Pass", color = Color3.fromHex("2FA4E7") },
 	{ id = "Items", label = "Items", color = Color3.fromHex("8A5CF0") },
 }
 
@@ -301,19 +301,17 @@ function StoreApp.mount(page: Frame): () -> ()
 		b.Name = ref.key
 		b.LayoutOrder = order
 		b.Text = ""
-		b.AutoButtonColor = true
-		b.BackgroundColor3 = color
-		HudTheme.corner(b, 18)
-		HudTheme.stroke(b, WHITE, 2).Transparency = 0.55
+		b.AutoButtonColor = false
+		HudTheme.skin(b) -- the HUD's navy 9-slice, one style with the rest of the HUD
 		b.Parent = grid
 
 		local art = Instance.new("Frame")
 		art.Name = "Art"
 		art.AnchorPoint = Vector2.new(0.5, 0)
-		art.Position = UDim2.fromScale(0.5, 0.05)
-		art.Size = UDim2.fromScale(0.5, 0.36)
-		art.BackgroundColor3 = WHITE
-		art.BackgroundTransparency = 0.75
+		art.Position = UDim2.fromScale(0.5, 0.07)
+		art.Size = UDim2.fromScale(0.72, 0.46)
+		art.BackgroundColor3 = color
+		art.BackgroundTransparency = 0.55
 		HudTheme.corner(art, 16)
 		art.Parent = b
 		local glyph = Instance.new("Frame")
@@ -336,11 +334,10 @@ function StoreApp.mount(page: Frame): () -> ()
 
 		local name = text(b, "Name", 20, WHITE)
 		name.Text = item.name
-		name.Position = UDim2.fromScale(0.05, 0.42)
-		name.Size = UDim2.new(0.9, 0, 0.58, -46) -- down to the price pill
+		name.Position = UDim2.fromScale(0.05, 0.55)
+		name.Size = UDim2.new(0.9, 0, 0.45, -48) -- down to the price pill
+		name.Font = Enum.Font.BuilderSansBold
 		name.TextScaled = true
-		name.TextStrokeColor3 = INK
-		name.TextStrokeTransparency = 0.6
 		local cap = Instance.new("UITextSizeConstraint")
 		cap.MinTextSize = 18
 		cap.MaxTextSize = 22
@@ -350,11 +347,12 @@ function StoreApp.mount(page: Frame): () -> ()
 		pill.Name = "Price"
 		pill.AnchorPoint = Vector2.new(0.5, 1)
 		pill.Position = UDim2.new(0.5, 0, 1, -8)
-		pill.Size = UDim2.new(0.88, 0, 0, 34)
-		pill.BackgroundColor3 = WHITE
+		pill.Size = UDim2.new(0.84, 0, 0, 34)
+		pill.BackgroundColor3 = HudTheme.Colors.accent
 		HudTheme.corner(pill, 99)
 		pill.Parent = b
-		local pillText = text(pill, "Text", 20, INK)
+		local pillText = text(pill, "Text", 20, WHITE)
+		pillText.Font = Enum.Font.BuilderSansBold
 		pillText.Size = UDim2.fromScale(1, 1)
 		pillText.TextScaled = true
 		local pillCap = Instance.new("UITextSizeConstraint")
@@ -416,15 +414,16 @@ function StoreApp.mount(page: Frame): () -> ()
 			local ctx = contextFor(card.ref)
 			local state = ProductShelves.cardState(config, card.ref, ctx)
 			local owned = state.status == "owned" or passOwnedFor(item)
-			card.button.Visible = state.status ~= "hidden"
+			-- not for sale yet (no id / not offered): left out, not shown as "Coming soon"
+			card.button.Visible = state.status ~= "hidden" and state.status ~= "comingSoon"
 			card.icon.Image = icons[id] or ""
 			card.icon.Visible = icons[id] ~= nil
 			card.glyph.Visible = icons[id] == nil
 			card.tick.Visible = owned
 			card.pill.BackgroundColor3 = if owned
 				then GREEN
-				elseif state.canBuy then WHITE
-				else Color3.fromHex("D5DAE0")
+				elseif state.canBuy then HudTheme.Colors.accent
+				else HudTheme.Colors.panelLight
 			card.pillText.Visible = not owned
 			card.pillText.Text = if state.canBuy and ctx.price
 				then `{ProductShelves.ROBUX} {ProductShelves.formatNumber(ctx.price)}`
@@ -472,7 +471,7 @@ function StoreApp.mount(page: Frame): () -> ()
 		b.LayoutOrder = i
 		b.Size = UDim2.new(1 / #TABS, -4, 1, 0)
 		b.Font = HudTheme.HeaderFont
-		b.TextSize = 20 -- fixed: 3 tabs of ~80 du fit "Passes" / "1 Day" / "Items" at 20
+		b.TextSize = 20 -- fixed: 3 tabs of ~80 du fit "Passes" / "Day Pass" / "Items" at 20
 		b.Text = tab.label
 		b.AutoButtonColor = true
 		HudTheme.corner(b, 99)

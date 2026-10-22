@@ -5,7 +5,7 @@
 -- tall as the screen slides up with a spring, the screen wakes and the icons pop in; closing plays
 -- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
 -- backdrop frees the cursor. The home screen is stock iOS: a soft gradient wallpaper, a 4-column
--- grid of squircle icons (UiImages.Phone art, small white label) and a frosted
+-- clock widget over a grid of big squircle icons (UiImages.Phone art, shadowed white label) and a frosted
 -- dock of 4. Every app lays out on the upright phone.
 -- Apps:
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
@@ -60,8 +60,8 @@ local OPTIONAL = {
 }
 local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's 4, in order
 local CANVAS = 300 -- du: the upright screen's width; home and apps lay out on it
-local ICON = 58 -- du, the squircle
-local CELL_W, CELL_H = 68, 86
+local ICON = 66 -- du, the squircle: 22% of the screen, as on a real home screen
+local CELL_W, CELL_H = 72, 98
 local DISPLAY_ORDER = 36 -- above the store panels (35), below CashBurst (41) and Cinematic (50)
 local MARGIN = 12 -- du around the handset
 local BEZEL = 9 -- du
@@ -79,7 +79,7 @@ type App = {
 	run: (() -> ())?,
 	mount: Mount?,
 }
-type Tile = { button: TextButton, scale: UIScale, label: TextLabel? }
+type Tile = { button: TextButton, scale: UIScale, label: TextLabel?, shadow: TextLabel? }
 
 local Phone = {}
 
@@ -100,6 +100,8 @@ local pageScale: UIScale
 local content: Frame
 local backButton: TextButton
 local clockLabel: TextLabel
+local widgetTime: TextLabel
+local widgetDate: TextLabel
 local badge: Frame
 local bounce: (() -> ())? = nil
 local tiles: { Tile } = {}
@@ -204,33 +206,37 @@ end
 local function popIcons(delay: number)
 	local reduced = Comfort.reducedMotion()
 	for i, t in tiles do
-		local label = t.label
+		local label, shadow = t.label, t.shadow
 		if reduced then
 			t.scale.Scale = 1
-			if label then
+			if label and shadow then
 				label.TextTransparency = 0
+				shadow.TextTransparency = 0.6
 			end
 		else
 			t.scale.Scale = 0.2
 			local at = delay + (i - 1) * 0.028
 			tween(t.scale, 0.42, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out, at)
-			if label then
+			if label and shadow then
 				label.TextTransparency = 1
+				shadow.TextTransparency = 1
 				tween(label, 0.3, { TextTransparency = 0 }, nil, nil, at + 0.08)
+				tween(shadow, 0.3, { TextTransparency = 0.6 }, nil, nil, at + 0.08)
 			end
 		end
 	end
 end
 
--- A du can draw at 0.7 px on a short landscape phone: icon labels grow there to stay >= 12.5 px.
+-- A du can draw at 0.7 px on a short landscape phone: icon labels grow there to stay ~15 px.
 local function sizeLabels()
 	local px = rigScale.Scale * screenScale.Scale
-	local size = HudTheme.scaled(math.max(13, math.ceil(12.5 / px)))
+	local size = HudTheme.scaled(math.max(14, math.ceil(15 / px)))
 	for _, t in tiles do
-		local l = t.label
-		if l then
-			l.TextSize = size
-			l.Size = UDim2.new(1, 12, 0, size + 3)
+		for _, l in { t.label, t.shadow } do
+			if l then
+				l.TextSize = size
+				l.Size = UDim2.new(1, 12, 0, size + 3)
+			end
 		end
 	end
 end
@@ -683,6 +689,8 @@ end
 
 local function tickClock()
 	clockLabel.Text = os.date("%H:%M")
+	widgetTime.Text = clockLabel.Text
+	widgetDate.Text = string.upper(os.date("%A %d %B"))
 end
 
 function Phone.setOpen(value: boolean)
@@ -791,16 +799,25 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	local scale = Instance.new("UIScale")
 	scale.Parent = icon
 
-	local label: TextLabel? = nil
+	local label: TextLabel?, shadow: TextLabel? = nil, nil
 	if withLabel then
 		local l =
-			HudTheme.label("Label", app.label, UDim2.new(1, 8, 0, 16), HudTheme.HeaderFont, 13, b)
+			HudTheme.label("Label", app.label, UDim2.new(1, 12, 0, 18), HudTheme.HeaderFont, 14, b)
 		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.new(0.5, 0, 0, ICON + 8)
+		l.Position = UDim2.new(0.5, 0, 0, ICON + 7)
 		l.TextXAlignment = Enum.TextXAlignment.Center
 		l.TextColor3 = W
-		l.TextStrokeTransparency = 0.82
-		label = l
+		l.TextStrokeTransparency = 1
+		l.ZIndex = 2
+		-- a soft drop shadow (a sibling: a child would draw over the text)
+		local sh = l:Clone()
+		sh.Name = "LabelShadow"
+		sh.Position = UDim2.new(0.5, 1, 0, ICON + 8.5)
+		sh.TextColor3 = Color3.new(0, 0, 0)
+		sh.TextTransparency = 0.6
+		sh.ZIndex = 1
+		sh.Parent = b
+		label, shadow = l, sh
 	end
 
 	-- hover / press: the tile lifts and dips
@@ -822,7 +839,7 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	b.Activated:Connect(function()
 		Phone.openApp(app.name)
 	end)
-	return { button = b, scale = scale, label = label }
+	return { button = b, scale = scale, label = label, shadow = shadow }
 end
 
 local function buildStatusBar(parent: Frame)
@@ -837,7 +854,6 @@ local function buildStatusBar(parent: Frame)
 	backButton = Instance.new("TextButton")
 	backButton.Name = "Back"
 	backButton.Text = ""
-	-- narrow: the key chip beside it must clear the island (ear = 102 du)
 	backButton.Position = UDim2.fromOffset(10, 7)
 	backButton.Size = UDim2.fromOffset(40, 32)
 	backButton.BackgroundColor3 = W
@@ -851,9 +867,6 @@ local function buildStatusBar(parent: Frame)
 		local stroke = box(backButton, W, spec[1], spec[2], 0.33, 0.1, 99)
 		stroke.Rotation = spec[3]
 	end
-	local backChip = InputGlyph.chip(backButton, Enum.KeyCode.Backspace, Enum.KeyCode.ButtonB)
-	backChip.AnchorPoint = Vector2.new(0, 0.5)
-	backChip.Position = UDim2.new(1, 4, 0.5, 0)
 	backButton.Activated:Connect(showHome)
 
 	-- the time in the left ear, signal and battery in the right (iOS)
@@ -1140,17 +1153,40 @@ local function build(statusRegion: Frame)
 	home.Position = UDim2.fromOffset(0, STATUS_H)
 	home.Size = UDim2.new(1, 0, 1, -STATUS_H - HOME_H)
 	home.Parent = screen
-	local dockH = ICON + 26
+	local dockH = ICON + 24
+	local gridW = 4 * CELL_W
+	-- a wide clock widget on top (iOS), the icon grid under it
+	local widgetH = 128
+	local widget = Instance.new("Frame")
+	widget.Name = "ClockWidget"
+	widget.AnchorPoint = Vector2.new(0.5, 0)
+	widget.Position = UDim2.new(0.5, 0, 0, 8)
+	widget.Size = UDim2.fromOffset(gridW - 12, widgetH)
+	widget.BackgroundColor3 = W
+	widget.BackgroundTransparency = 0.78
+	widget.BorderSizePixel = 0
+	HudTheme.corner(widget, 26)
+	HudTheme.stroke(widget, W, 1).Transparency = 0.75
+	widget.Parent = home
+	widgetDate =
+		HudTheme.label("Date", "", UDim2.new(1, -36, 0, 20), Enum.Font.BuilderSansBold, 15, widget)
+	widgetDate.Position = UDim2.fromOffset(18, 16)
+	widgetDate.TextColor3 = W
+	widgetDate.TextTransparency = 0.15
+	widgetTime =
+		HudTheme.label("Time", "", UDim2.new(1, -36, 0, 72), Enum.Font.BuilderSansBold, 72, widget)
+	widgetTime.Position = UDim2.fromOffset(16, 40)
+	widgetTime.TextColor3 = W
 	local grid = Instance.new("Frame")
 	grid.Name = "Grid"
 	grid.BackgroundTransparency = 1
 	grid.AnchorPoint = Vector2.new(0.5, 0)
-	grid.Position = UDim2.new(0.5, 0, 0, 14)
-	grid.Size = UDim2.new(0, CANVAS - 24, 1, -dockH - 36)
+	grid.Position = UDim2.new(0.5, 0, 0, widgetH + 24)
+	grid.Size = UDim2.new(0, gridW, 1, -dockH - widgetH - 40)
 	grid.Parent = home
 	local layout = Instance.new("UIGridLayout")
 	layout.CellSize = UDim2.fromOffset(CELL_W, CELL_H)
-	layout.CellPadding = UDim2.fromOffset(0, 10)
+	layout.CellPadding = UDim2.fromOffset(0, 8)
 	layout.FillDirectionMaxCells = 4
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.VerticalAlignment = Enum.VerticalAlignment.Top
@@ -1161,7 +1197,7 @@ local function build(statusRegion: Frame)
 	dock.Name = "Dock"
 	dock.AnchorPoint = Vector2.new(0.5, 1)
 	dock.Position = UDim2.new(0.5, 0, 1, -6)
-	dock.Size = UDim2.fromOffset(CANVAS - 20, dockH)
+	dock.Size = UDim2.fromOffset(gridW, dockH)
 	dock.BackgroundColor3 = W
 	dock.BackgroundTransparency = 0.72
 	dock.BorderSizePixel = 0

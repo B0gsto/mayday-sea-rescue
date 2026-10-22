@@ -67,6 +67,7 @@ export type Options = {
 	station: StationView?,
 	halloweenForced: boolean?,
 	liveOps: LiveOpsView?,
+	stormOff: boolean?, -- no Great Storm row (StormService.ALWAYS_SUNNY)
 }
 
 local EventCalendar = {}
@@ -209,7 +210,9 @@ function EventCalendar.rows(now: number, opts: Options?): { Row }
 	local o: Options = opts or {}
 	local list: { Row } = {}
 
-	add(list, stormRow(now))
+	if not o.stormOff then
+		add(list, stormRow(now))
+	end
 	local scheduled = liveOpsRow(now, o.liveOps)
 	if scheduled then
 		add(list, scheduled)

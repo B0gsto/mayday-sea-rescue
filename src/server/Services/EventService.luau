@@ -9,7 +9,8 @@
 -- The clock event wins over the paid storm queue: Weather.ClockEventSoon makes StormService's
 -- queue wait; a summon already running is upgraded into the Great Storm.
 -- Replicated state: ReplicatedStorage.EventState attributes Event, Phase ("Before" | "Active" |
--- ""), StartAt, EndsAt, Now (UTC epoch seconds), Offset (dev fast-forward, seconds).
+-- ""), StartAt, EndsAt, Now (UTC epoch seconds), Offset (dev fast-forward, seconds), StormOff (always
+-- sunny: the phone's Events app leaves the Great Storm out).
 -- Studio fast-forward: Workspace:SetAttribute("EventClockOffset", seconds).
 -- API: EventService.IsEventActive("GreatStorm") -> boolean (rare calls / the Rescue Album hook).
 
@@ -175,6 +176,7 @@ local function publish(id: string, phase: string, current: EventClock.Current?, 
 	folder:SetAttribute("EndsAt", if current then current.endsAt else 0)
 	folder:SetAttribute("Now", t)
 	folder:SetAttribute("Offset", offset())
+	folder:SetAttribute("StormOff", StormService.ALWAYS_SUNNY)
 	weatherFolder:SetAttribute("ClockEventSoon", id == "GreatStorm" and phase ~= "")
 	local great = id == "GreatStorm" and phase == "Active"
 	for _, player in Players:GetPlayers() do

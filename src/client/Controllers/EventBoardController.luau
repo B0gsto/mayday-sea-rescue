@@ -110,6 +110,7 @@ local function draw()
 		station = stationView(),
 		halloweenForced = Workspace:GetAttribute("SeasonalEventForce") == true,
 		liveOps = liveOpsView(),
+		stormOff = eventFolder ~= nil and eventFolder:GetAttribute("StormOff") == true,
 	})
 	Phone.setEventRows(rows)
 end
