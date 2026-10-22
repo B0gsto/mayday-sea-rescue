@@ -45,6 +45,7 @@ local ALWAYS_SUNNY = true
 
 local StormService = {}
 StormService.Priority = 20 -- before services that read the weather in their Init
+StormService.ALWAYS_SUNNY = ALWAYS_SUNNY -- EventService skips the Great Storm clock
 
 local folder: Folder
 local state: string = "Calm"

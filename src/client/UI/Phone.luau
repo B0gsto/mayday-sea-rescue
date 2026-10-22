@@ -17,7 +17,8 @@
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
 --                        missing or broken module just leaves its icon out.
--- Back: the chevron, the home indicator, gamepad B, Backspace or Escape; at home they close it.
+-- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
+-- at home they close it.
 -- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A red dot and a
 -- bounce on the phone button: an event is on now.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
@@ -716,8 +717,7 @@ function Phone.setOpen(value: boolean)
 			false,
 			Enum.ContextActionPriority.High.Value + 10,
 			Enum.KeyCode.ButtonB,
-			Enum.KeyCode.Backspace,
-			Enum.KeyCode.Escape
+			Enum.KeyCode.Backspace
 		)
 		if reduced then
 			rig.Position, body.Rotation, bodyScale.Scale = ON, 0, 1
@@ -1323,6 +1323,13 @@ function Phone.mount(statusRegion: Frame)
 		return Enum.ContextActionResult.Sink
 	end, false, Enum.KeyCode.P, Enum.KeyCode.ButtonL1)
 	UserInputService.InputBegan:Connect(shortcut)
+	-- Esc opens the Roblox menu (a game cannot bind it, and the open menu swallows P and Backspace):
+	-- each Esc is one step back
+	GuiService.MenuOpened:Connect(function()
+		if open then
+			back()
+		end
+	end)
 	-- the mouse takes over from keyboard / pad navigation: drop the selection outline
 	local function mouseUsed(input: InputObject)
 		local t = input.UserInputType

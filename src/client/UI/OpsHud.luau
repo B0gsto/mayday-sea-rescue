@@ -5,14 +5,10 @@
 -- OpsController.UseBuiltInUi = false so the greybox UI stays hidden.
 -- Placement (UI/Layout): the step card in the "objective" region (top left), the pager and the
 -- casualty monitor stacked in the "right" column; the debrief is a toast in the "notice" band. In the cold
--- open only the step line shows (the right column is hidden), and only while no mechanic panel
--- (Layout.promptBusy) repeats it. A new player (Layout.newPlayer) gets no relay / big-call alert
+-- open both are hidden: the minimap's objective pill is the one objective line. A new player (Layout.newPlayer) gets no relay / big-call alert
 -- and no casualty monitor until a treat step is up (docs/15 section 3).
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local BoatColdOpen =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local ColdOpenCue = require(script.Parent.ColdOpenCue)
 local Layout = require(script.Parent.Layout)
 local OpsConditionMonitor = require(script.Parent.OpsConditionMonitor)
@@ -63,28 +59,21 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
 	local monitor = OpsConditionMonitor.new(right)
-	-- cold open: one objective on screen. The compact step line is that objective, except while a
-	-- mechanic panel is up (its header already says the same step), so it steps aside then.
+	-- cold open: one objective on screen, the minimap's pill ("Drop-off 100 m"), so no step strip
 	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
 	local function applyColdOpen(_: boolean?)
 		local active = Layout.coldOpen()
 		right.Visible = not active
-		step.setCompact(active)
-		objective.Visible = not (active and Layout.promptBusy())
+		objective.Visible = not active
 		if active and not stopCue then
-			stopCue = ColdOpenCue.start(function(held: boolean)
-				local words = BoatColdOpen.STEP_SHORT
-				step.setLabel(if held then words.home else words.reach)
-			end)
+			stopCue = ColdOpenCue.start()
 		elseif not active and stopCue then
 			stopCue()
 			stopCue = nil
-			step.setLabel(nil)
 		end
 	end
 	Layout.onColdOpen(applyColdOpen)
-	Layout.onPromptBusy(applyColdOpen)
 	local debrief = OpsDebrief.new(Layout.region(gui, "notice"))
 	local activeOp: string? = nil
 	local findOp: string? = nil

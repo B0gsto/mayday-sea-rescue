@@ -71,10 +71,15 @@ return function(t)
 	local DESKTOP = { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) }
 	local NO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
 
-	t.test("desktop scale grows past 1 on big screens, capped at 1.5", function()
-		t.expect(HudLayout.compute(Vector2.new(1920, 1080), NO_INSETS, "Keyboard").scale).toBe(1.5)
-		t.expect(HudLayout.compute(Vector2.new(3840, 2160), NO_INSETS, "Keyboard").scale).toBe(1.5)
-		t.expect(HudLayout.compute(Vector2.new(800, 450), NO_INSETS, "Keyboard").scale).toBe(0.7)
+	t.test("desktop scale grows past 1 on big screens, capped at 1.6", function()
+		local hd = HudLayout.compute(Vector2.new(1920, 1080), NO_INSETS, "Keyboard")
+		t.expect(hd.scale).toBe(1.6)
+		-- 1080p: wallet ~360x150 px, minimap ~340 px (art review round 2)
+		t.expect(math.abs(hd.rects.wallet.size.X * hd.scale - 370) <= 20).toBe(true)
+		t.expect(math.abs(hd.rects.wallet.size.Y * hd.scale - 150) <= 10).toBe(true)
+		t.expect(math.abs(hd.side * hd.scale - 340) <= 15).toBe(true)
+		t.expect(HudLayout.compute(Vector2.new(3840, 2160), NO_INSETS, "Keyboard").scale).toBe(1.6)
+		t.expect(HudLayout.compute(Vector2.new(640, 360), NO_INSETS, "Keyboard").scale).toBe(0.7)
 	end)
 
 	t.test("desktop pins the phone top left, the wallet under it, the card top right", function()

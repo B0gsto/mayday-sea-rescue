@@ -167,7 +167,7 @@ local Clear: Preset = table.freeze({
 	BloomSize = 24,
 	BloomThreshold = 1.4, -- sun glitter only, not the pale ground
 	SunRaysIntensity = 0.06,
-	WaterColor = hex("#2B5F70"), -- clear blue-teal
+	WaterColor = hex("#1C5A5C"), -- clear teal (r2 art review: #2B5F70 rendered oversaturated cyan; mockup teal-blue)
 })
 
 local Overcast: Preset = table.freeze({

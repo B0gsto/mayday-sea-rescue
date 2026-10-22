@@ -544,7 +544,7 @@ local function buildMinimap()
 		ZIndex = 9,
 	})
 	corner(pill)
-	stroke(pill, Color3.fromRGB(255, 255, 255), 1.5, 0.55)
+	stroke(pill, Color3.fromRGB(255, 255, 255), 2, 0.25)
 	local shade = Instance.new("UIGradient")
 	shade.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHex("D9D9D9"))
 	shade.Rotation = 90
@@ -559,12 +559,14 @@ local function buildMinimap()
 	pt.Size = UDim2.fromScale(0, 1)
 	pt.ZIndex = 10
 	mini.pill, mini.pillText = pill, pt
-	-- desktop: on the bezel's upper right edge, like the mockup; touch: the minimap sits at the top
-	-- edge with the phone button right of it, so the pill sits on the bezel's bottom edge instead
+	-- desktop: just right of the bezel's upper right rim, like the mockup (x 0.97 clears the ring
+	-- over the pill's height); touch: the minimap sits at the top edge with the phone button right
+	-- of it, so the pill sits on the bezel's bottom edge instead
 	local function placePill(mt: Layout.Metrics)
 		pill.AnchorPoint = if mt.touch then Vector2.new(0.5, 0.5) else Vector2.new(0, 0.5)
-		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -10) else UDim2.fromScale(0.7, 0.14)
-		pill.Size = UDim2.fromOffset(0, if mt.touch then 26 else 32)
+		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -10) else UDim2.fromScale(0.97, 0.2)
+		pill.Size = UDim2.fromOffset(0, if mt.touch then 28 else 40)
+		pt.TextSize = if mt.touch then 18 else 24
 	end
 	placePill(Layout.current())
 	Layout.onMetrics(placePill)

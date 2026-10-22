@@ -8,7 +8,7 @@
 --   * Markings (white paint strips 5 mm proud, following the ray-cast terrain): two lanes on every Asphalt road,
 --     centre dashes and edge lines, broken at junctions; at each RoadNet junction stop lines and, where all roads are
 --     asphalt, three-aspect traffic lights cycled on the server clock (Shared/RoadNet, traffic keeps right).
---   * Granite kerbs (Granite + MaterialVariant RoadKerbGranite, 125 mm upstand) along the town edge of Harbour Road
+--   * Granite kerbs (plain Granite, light warm grey; the RoadKerbGranite variant failed live, 125 mm upstand) along the town edge of Harbour Road
 --     and both sides of Chapel Hill, dropped at the station apron / slipway, junctions, doors and prompts.
 --   * R1a street furniture (AssetLoader.cloneStatic): M_Road_StreetLamp every ~28 m on Harbour Road (the quay side in
 --     town, alternate sides beyond) and Chapel Hill, warm SpotLights at ATT_Light (shadows on Harbour Road) with the
@@ -32,6 +32,7 @@ local Workspace = game:GetService("Workspace")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local CottageLights = require(script.Parent:WaitForChild("CottageLights"))
+local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
 local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local Swaps = require(script.Parent:WaitForChild("Swaps"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -74,7 +75,7 @@ local LAMP = { spacing = 84, out = 1.6, angle = 110, range = 40, brightness = 2.
 local LAMP_3000K = Color3.fromRGB(255, 180, 107)
 local LENS_ON = Color3.fromRGB(255, 214, 170)
 local PAINT = Color3.fromRGB(232, 232, 226)
-local KERB_TINT = Color3.fromRGB(236, 236, 232)
+local KERB_TINT = Color3.fromRGB(168, 162, 152) -- light warm granite (236 read as pure white)
 local MARK, GAP = 12, 15 -- centre dash 4 m mark, 5 m gap (TSM diagram 1004, <= 40 mph: verify)
 local LINE_W = 0.3 -- 100 mm
 local CATS_EYE = 54 -- studs (18 m, rural UK spacing)
@@ -88,6 +89,15 @@ local QUAY = { x0 = -180, x1 = 180, z = -20, edge = 4 } -- the quay apron in fro
 local KEEP_OUT: { StreetLayout.Rect } = {
 	{ -185, -46, -72, 8 }, -- the station apron, the boat's road crossing and the slipway head
 }
+-- r2 art review: the station stretch of Harbour Road was bare asphalt. The lanes now run through it, broken only at
+-- the boat's road crossing (a yellow hatched KEEP CLEAR box) and at a zebra crossing either side of the station.
+local BOAT_BOX = { x0 = -170, x1 = -106 } -- station doors (x -120..-100) to the slipway head (x -175..-155)
+local ZEBRA_X = { -190, -62 } -- west of the slipway; between the station and the Chandlery, by the spawn
+local YELLOW = Color3.fromRGB(236, 190, 40)
+local MARK_OUT: { StreetLayout.Rect } = { { BOAT_BOX.x0, -46, BOAT_BOX.x1, 8 } }
+for _, x in ZEBRA_X do
+	table.insert(MARK_OUT, { x - 6, -46, x + 6, 8 })
+end
 
 local function roadById(id: string): any
 	for _, r in WorldConfig.Roads do
@@ -364,7 +374,8 @@ local function paint(
 	segs: { StreetLayout.Seg },
 	name: string,
 	params: RaycastParams,
-	width: number?
+	width: number?,
+	colour: Color3?
 ): number
 	local n = 0
 	for _, seg in segs do
@@ -373,7 +384,7 @@ local function paint(
 		if a and b and math.abs(a.Y - b.Y) < 4 then
 			local p = strip(parent, name, a, b, width or LINE_W, 0.03) -- top 5 mm (0.016) + clearance over the chord
 			p.Material = Enum.Material.SmoothPlastic
-			p.Color = PAINT
+			p.Color = colour or PAINT
 			n += 1
 		end
 	end
@@ -390,13 +401,73 @@ local function laneSegs(segs: { StreetLayout.Seg }): { StreetLayout.Seg }
 		if
 			RoadNet.clear(JUNCTIONS, seg.a)
 			and RoadNet.clear(JUNCTIONS, seg.b)
-			and StreetLayout.clear(seg.a, {}, KEEP_OUT)
-			and StreetLayout.clear(seg.b, {}, KEEP_OUT)
+			and StreetLayout.clear(seg.a, {}, MARK_OUT)
+			and StreetLayout.clear(seg.b, {}, MARK_OUT)
 		then
 			table.insert(out, seg)
 		end
 	end
 	return out
+end
+
+-- Harbour Road's centreline sample nearest x (the station stretch runs west-east)
+local function roadAt(road: any, x: number): StreetLayout.Sample?
+	local best: StreetLayout.Sample? = nil
+	for _, c in StreetLayout.walk(road.points, 1) do
+		if not best or math.abs(c.pos.X - x) < math.abs(best.pos.X - x) then
+			best = c
+		end
+	end
+	return best
+end
+
+-- the boat crossing's KEEP CLEAR box (border and 45-degree hatching) and the zebra crossings
+local function stationPaint(parent: Instance, params: RaycastParams): number
+	local road = roadById("HarbourRoad")
+	if not road then
+		return 0
+	end
+	local n = 0
+	local L = BOAT_BOX.x1 - BOAT_BOX.x0
+	local H = road.width - 3 -- inside the edge lines
+	local c = roadAt(road, (BOAT_BOX.x0 + BOAT_BOX.x1) / 2)
+	if c then
+		local across = c.dir:Cross(Vector3.yAxis)
+		local function pt(u: number, v: number): Vector3
+			return c.pos + c.dir * (u - L / 2) + across * (v - H / 2)
+		end
+		local segs = {
+			{ a = pt(0, 0), b = pt(L, 0) },
+			{ a = pt(0, H), b = pt(L, H) },
+			{ a = pt(0, 0), b = pt(0, H) },
+			{ a = pt(L, 0), b = pt(L, H) },
+		}
+		for k = -H, L, 6 do -- lines u - v = k and u + v = k + H, clipped to the box
+			local u0, u1 = math.max(0, k), math.min(L, H + k)
+			if u1 > u0 then
+				table.insert(segs, { a = pt(u0, u0 - k), b = pt(u1, u1 - k) })
+			end
+			local k2 = k + H
+			u0, u1 = math.max(0, k2 - H), math.min(L, k2)
+			if u1 > u0 then
+				table.insert(segs, { a = pt(u0, k2 - u0), b = pt(u1, k2 - u1) })
+			end
+		end
+		n += paint(parent, segs, "KeepClear", params, 0.5, YELLOW)
+	end
+	for _, x in ZEBRA_X do
+		local z = roadAt(road, x)
+		if z and RoadNet.clear(JUNCTIONS, z.pos) then
+			local across = z.dir:Cross(Vector3.yAxis)
+			local bars = {}
+			for v = -(road.width / 2 - 1.5), road.width / 2 - 1.5, 3 do
+				local mid = z.pos + across * v
+				table.insert(bars, { a = mid - z.dir * 3.5, b = mid + z.dir * 3.5 })
+			end
+			n += paint(parent, bars, "Zebra", params, 1.5)
+		end
+	end
+	return n
 end
 
 local function markings(parent: Instance): number
@@ -436,7 +507,7 @@ local function markings(parent: Instance): number
 			task.wait()
 		end
 	end
-	return n
+	return n + stationPaint(parent, params)
 end
 
 -- ---------------------------------------------------------------- junctions and traffic lights
@@ -641,7 +712,6 @@ local function kerbs(parent: Instance, block: { StreetLayout.Blocker }): number
 					local p = strip(parent, "Kerb", a, b, KERB.w, KERB.up - KERB.h / 2)
 					p.Size = Vector3.new(KERB.w, KERB.h, p.Size.Z)
 					p.Material = Enum.Material.Granite
-					p.MaterialVariant = "RoadKerbGranite"
 					p.Color = KERB_TINT
 					p.CastShadow = true
 					n += 1
@@ -681,7 +751,7 @@ local function place(
 	if occupied(cf + Vector3.new(0, 0.5 + footprint.Y / 2, 0), footprint) then
 		return nil
 	end
-	local m = AssetLoader.cloneStatic(asset, "LOD0", true)
+	local m = StreetFurniture.build(asset) or AssetLoader.cloneStatic(asset, "LOD0", true)
 	if not m then
 		return nil
 	end
@@ -949,8 +1019,6 @@ function Street.start()
 	for _, a in
 		{
 			"M_Road_StreetLamp",
-			"M_Road_Bench",
-			"M_Road_Bin",
 			"M_Road_ParkedCar_01",
 			"M_Road_ParkedCar_02",
 			"M_Road_ParkedCar_03",

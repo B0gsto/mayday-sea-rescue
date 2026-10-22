@@ -18,6 +18,7 @@ local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local CottageRig = require(script.Parent:WaitForChild("CottageRig"))
+local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
 local Swaps = require(script.Parent:WaitForChild("Swaps"))
 local TownBuildings = require(script.Parent:WaitForChild("TownBuildings"))
 local TownLayout = require(script.Parent:WaitForChild("TownLayout"))
@@ -539,7 +540,7 @@ local function chapelSquare(parent: Instance, r: TownLayout.Rect, y0: number): M
 		{ "M_Road_StreetLamp", Vector3.new(r[1] + 6, 0, (r[2] + r[4]) / 2), 0 },
 	}
 	for _, pr in props do
-		local m = AssetLoader.cloneStatic(pr[1], "LOD0", true)
+		local m = StreetFurniture.build(pr[1]) or AssetLoader.cloneStatic(pr[1], "LOD0", true)
 		if m then
 			m:PivotTo(CFrame.new(pr[2].X, y, pr[2].Z) * CFrame.Angles(0, math.rad(pr[3]), 0))
 			m.Parent = sq

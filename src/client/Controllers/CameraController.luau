@@ -56,6 +56,7 @@ local closeFrom = CFrame.identity
 local closeFromRel = CFrame.identity
 local closePoseSet = false
 local closeZoom = 12.5 -- the third-person zoom distance the close work started from
+local freshSpawn = true -- the first Foot entry after a spawn pulls the zoom out to FirstPerson.START_ZOOM
 local closeFocus: (() -> Vector3?)? = nil -- the care area the dolly ends looking at (G81)
 
 local player = Players.LocalPlayer
@@ -441,6 +442,17 @@ local function enterMode(new: Mode)
 	local _, hum = character()
 	if new == "Foot" and hum then
 		FirstPerson.enterFoot(hum)
+		if freshSpawn then
+			freshSpawn = false
+			-- the min-zoom hold is how this file moves Roblox's zoom (see exitMode)
+			local z = FirstPerson.START_ZOOM
+			player.CameraMinZoomDistance = z
+			task.delay(0.1, function()
+				if math.abs(player.CameraMinZoomDistance - z) < 0.01 then
+					player.CameraMinZoomDistance = FirstPerson.MIN_ZOOM
+				end
+			end)
+		end
 	elseif new == "Close" then
 		-- a release that landed before the mode switched has already begun the exit
 		if closePhase ~= "Out" then
@@ -910,6 +922,7 @@ function CameraController.Start()
 		watchCharacter(player.Character)
 	end
 	player.CharacterAdded:Connect(function()
+		freshSpawn = true
 		cancelClose()
 		exitMode(mode)
 		mode = "None"

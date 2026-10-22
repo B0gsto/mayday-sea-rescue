@@ -10,6 +10,9 @@ local TweenService = game:GetService("TweenService")
 
 local A11yPalette = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("A11yPalette"))
 local CashBurst = require(script.Parent.CashBurst)
+local Hud = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+).Hud
 local HudTheme = require(script.Parent.HudTheme)
 local OpsFolder = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops")
 local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
@@ -137,76 +140,35 @@ function OpsDebrief.iconSteps(steps: { any }, max: number): { any }
 	return out
 end
 
-local function medal(parent: Instance, grade: string, size: number): Frame
-	local m = Instance.new("Frame")
-	m.Size = UDim2.fromOffset(size, size)
-	m.BackgroundColor3 = A11yPalette.colour("Grade", grade)
-	m.BorderSizePixel = 0
-	m.Parent = parent
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(1, 0)
-	c.Parent = m
-	local s = Instance.new("UIStroke")
-	s.Color = Color3.fromHex("FFFFFF")
-	s.Transparency = 0.6
-	s.Thickness = 2
-	s.Parent = m
-	local l = Instance.new("TextLabel")
-	l.BackgroundTransparency = 1
-	l.Size = UDim2.fromScale(1, 1)
-	l.Font = HudTheme.BoldFont
-	l.TextScaled = true
-	l.TextColor3 = if grade == "Fail" then Color3.fromHex("FFC1B8") else Color3.fromHex("1B1F22")
-	l.Text = A11yPalette.symbol("Grade", grade)
-	l.Parent = m
-	local pad = Instance.new("UIPadding")
-	pad.PaddingTop = UDim.new(0.18, 0)
-	pad.PaddingBottom = UDim.new(0.18, 0)
-	pad.Parent = l
+-- The grade medal: the XP star sprite tinted by grade (Gold keeps the sprite's own gold). The
+-- grade's text glyph drew as an empty grey disc (◈ is missing from Roblox fonts).
+local function medal(parent: Instance, grade: string, size: number): ImageLabel
+	local m = HudTheme.image("Medal", Hud.XpStar, UDim2.fromOffset(size, size), parent)
+	m.ImageColor3 = if grade == "Gold"
+		then Color3.new(1, 1, 1)
+		else A11yPalette.colour("Grade", grade)
 	return m
 end
 
--- A coin icon (same look as CashBurst) or a Rep chevron, then a number that rolls up from 0.
+-- A coin or XP star sprite, then a number that rolls up from 0, one row each.
 local function counter(
 	parent: Frame,
 	order: number,
-	glyph: string,
+	sprite: string,
 	color: Color3,
-	value: number,
-	coin: boolean
+	value: number
 ): TextLabel
 	local group = Instance.new("Frame")
-	group.Name = if coin then "Cash" else "Rep"
+	group.Name = if sprite == Hud.Coin then "Cash" else "Rep"
 	group.LayoutOrder = order
-	group.Size = UDim2.fromOffset(150, 40)
+	group.Size = UDim2.fromOffset(150, 34)
 	group.BackgroundTransparency = 1
 	group.Parent = parent
-	if coin then
-		local c = Instance.new("Frame")
-		c.Name = "Coin"
-		c.Position = UDim2.fromOffset(2, 9)
-		c.Size = UDim2.fromOffset(22, 22)
-		c.BackgroundColor3 = Color3.fromRGB(255, 208, 106)
-		c.BorderSizePixel = 0
-		c.Parent = group
-		HudTheme.corner(c, 11)
-		local inner = Instance.new("Frame")
-		inner.Position = UDim2.fromOffset(4, 4)
-		inner.Size = UDim2.fromOffset(14, 14)
-		inner.BackgroundColor3 = Color3.fromRGB(214, 164, 62)
-		inner.BorderSizePixel = 0
-		inner.Parent = c
-		HudTheme.corner(inner, 7)
-	else
-		local icon =
-			HudTheme.label("Icon", glyph, UDim2.fromOffset(28, 32), HudTheme.BoldFont, 24, group)
-		icon.Position = UDim2.fromOffset(0, 4)
-		icon.TextXAlignment = Enum.TextXAlignment.Center
-		icon.TextColor3 = color
-	end
+	local icon = HudTheme.image("Icon", sprite, UDim2.fromOffset(30, 30), group)
+	icon.Position = UDim2.fromOffset(0, 2)
 	local label =
-		HudTheme.label("Value", "+0", UDim2.fromOffset(116, 40), HudTheme.BoldFont, 26, group)
-	label.Position = UDim2.fromOffset(32, 0)
+		HudTheme.label("Value", "+0", UDim2.fromOffset(112, 34), HudTheme.NumberFont, 26, group)
+	label.Position = UDim2.fromOffset(38, 0)
 	label.TextColor3 = color
 	local n = Instance.new("NumberValue")
 	n.Value = 0
@@ -226,7 +188,7 @@ end
 
 function OpsDebrief.new(parent: GuiObject): Debrief
 	local player = Players.LocalPlayer
-	local toast = HudTheme.panel("DebriefTablet", UDim2.fromOffset(380, 84), parent)
+	local toast = HudTheme.panel("DebriefTablet", UDim2.fromOffset(380, 96), parent)
 	toast.AnchorPoint = Vector2.new(0.5, 0)
 	toast.Visible = false
 	HudTheme.skin(toast)
@@ -270,12 +232,12 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 			-- the grade medal stamps in from large to its resting size
 			local m = medal(content, grade, 110)
 			m.AnchorPoint = Vector2.new(0.5, 0.5)
-			m.Position = UDim2.fromOffset(42, 42)
+			m.Position = UDim2.fromOffset(46, 48)
 			m.Rotation = -12
 			m.ZIndex = 2
 			TweenService
 				:Create(m, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-					Size = UDim2.fromOffset(60, 60),
+					Size = UDim2.fromOffset(64, 64),
 					Rotation = 0,
 				})
 				:Play()
@@ -288,7 +250,7 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 				content
 			)
 			gradeLabel.AnchorPoint = Vector2.new(0, 0.5)
-			gradeLabel.Position = UDim2.new(0, 84, 0.5, 0)
+			gradeLabel.Position = UDim2.new(0, 88, 0.5, 0)
 			gradeLabel.TextColor3 = A11yPalette.colour("Grade", grade)
 
 			-- Cash and Rep roll up
@@ -296,18 +258,18 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 			pay.Name = "Pay"
 			pay.AnchorPoint = Vector2.new(1, 0.5)
 			pay.Position = UDim2.new(1, -16, 0.5, 0)
-			pay.Size = UDim2.fromOffset(150, 76)
+			pay.Size = UDim2.fromOffset(150, 80)
 			pay.BackgroundTransparency = 1
 			pay.Parent = content
 			local payLayout = Instance.new("UIListLayout")
 			payLayout.FillDirection = Enum.FillDirection.Vertical
 			payLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 			payLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-			payLayout.Padding = UDim.new(0, -4)
+			payLayout.Padding = UDim.new(0, 6)
 			payLayout.Parent = pay
 			local cashLabel =
-				counter(pay, 1, "", HudTheme.Colors.gold, math.max(d.cash or 0, 0), true)
-			counter(pay, 2, "★", HudTheme.Colors.bar, math.max(d.rep or 0, 0), false)
+				counter(pay, 1, Hud.Coin, HudTheme.Colors.gold, math.max(d.cash or 0, 0))
+			counter(pay, 2, Hud.XpStar, HudTheme.Colors.bar, math.max(d.rep or 0, 0))
 
 			toast.Position = CLOSED
 			toast.Visible = true
@@ -326,7 +288,10 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 				task.delay(0.9, function()
 					local playerGui = player.PlayerGui
 					if toast.Visible and playerGui then
-						local at = cashLabel.AbsolutePosition + cashLabel.AbsoluteSize * 0.5
+						-- from the coin icon, left of the number, so the pile never covers it
+						local icon = cashLabel.Parent and cashLabel.Parent:FindFirstChild("Icon")
+						local from = if icon and icon:IsA("GuiObject") then icon else cashLabel
+						local at = from.AbsolutePosition + from.AbsoluteSize * 0.5
 						CashBurst.playAt(playerGui, at, d.cash, false)
 					end
 				end)

@@ -21,15 +21,14 @@
 --
 -- Regions are transparent container Frames in "design units" (du): the usable area (the
 -- ScreenGui with CoreUISafeInsets: below the Roblox top bar and inside notches / home bar)
--- divided by a UIScale of `scale` (0.7 on phones up to 1.5 on big screens). Children use
+-- divided by a UIScale of `scale` (0.7 on phones up to 1.6 on big screens). Children use
 -- plain scale + offset inside their region. Containers track the viewport live.
 --
 -- Cold open (docs 09 9.1, a new player's first rescue on the jet ski): Layout.coldOpen() is true
 -- from the moment the player rides a ColdOpen craft until the player attribute ColdOpenDone; the
--- HUD shows only the objective line, the radio subtitle, the interaction prompt and the minimap
--- then. The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance
--- to the casualty (its objective pill and route line). The objective line shows only while no
--- prompt panel is up, since a mechanic panel's header repeats the same step (show it once).
+-- HUD shows only the radio subtitle, the interaction prompt, the speed dock and the minimap then.
+-- The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance to
+-- the casualty, and its objective pill ("Drop-off 100 m") is the one objective line (no step strip).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
 -- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it
 -- (Layout.onNewPlayer(fn) calls fn(active) now and on every change).

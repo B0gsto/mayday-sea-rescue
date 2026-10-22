@@ -138,7 +138,7 @@ function Harbour.kitLayout(): { Placement }
 		local face = side * (B.x - B.w / 2)
 		for k = 1, B.armSlots do
 			add(
-				"Straight",
+				if k % 6 == 3 then "LadderBay" else "Straight",
 				at(
 					face,
 					y,
@@ -461,6 +461,15 @@ function Harbour.propLayout(): { Placement }
 	prop("M_Hbr_Rope_Coil", 44, -1.8, 0.8, g, { collide = false })
 	prop("M_Hbr_LobsterPot_02", 88, -6.5, 0.2, g)
 	prop("M_Hbr_LobsterPot_01", 90.6, -6.3, 1.0, g)
+	-- breakwater arms: a bollard behind every sixth slot of the harbour face, between the ladders
+	local B = Harbour.BREAKWATER
+	for _, side in { -1, 1 } do
+		local grp = if side < 0 then "Harbour_BreakwaterWest" else "Harbour_BreakwaterEast"
+		for k = 6, B.armSlots, 6 do
+			local z = Harbour.QUAY_FACE_Z + Harbour.GRID * (k - 0.5)
+			prop("M_Hbr_Bollard_01", side * (B.x - B.w / 2 + 1.6), z, k * 0.7, grp)
+		end
+	end
 	return out
 end
 
@@ -646,6 +655,102 @@ local function buildBreakwater(base: Instance, map: Instance?)
 	model.Parent = base
 end
 
+-- r2 art review: the kit wall read as a flat grey slab from the water. Code-built over every straight / ladder-bay
+-- piece: a dark weed-stained band at the waterline, granite coping stones proud of the face (not over the ladders),
+-- and a tyre fender on a rope every third straight piece. Placeholder art (CLAUDE.md); kit front = local -Z.
+local COPING =
+	{ Color3.fromRGB(176, 170, 160), Color3.fromRGB(164, 158, 149), Color3.fromRGB(184, 178, 168) }
+local function dressWalls(base: Instance, kit: { Placement })
+	local model = Instance.new("Model")
+	model.Name = "Harbour_WallDress"
+	local function block(
+		name: string,
+		size: Vector3,
+		cf: CFrame,
+		colour: Color3,
+		mat: Enum.Material,
+		collide: boolean
+	)
+		local p = Instance.new("Part")
+		p.Name = name
+		p.Anchored = true
+		p.CanCollide = collide
+		p.CanTouch = false
+		p.CanQuery = collide
+		p.Size = size
+		p.CFrame = cf
+		p.Color = colour
+		p.Material = mat
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Parent = model
+		return p
+	end
+	local n = 0
+	for _, p in kit do
+		local ladder = p.asset == "M_Hbr_QuayKit_LadderBay"
+		if p.asset == "M_Hbr_QuayKit_Straight" or ladder then
+			n += 1
+			local cf = p.cf
+			local top = cf.Position.Y
+			-- waterline band: Y -1.4..1.4 (tide and swell wet it), just proud of the face
+			local band = block(
+				"WetBand",
+				Vector3.new(Harbour.GRID + 0.02, 2.8, 0.2),
+				cf * CFrame.new(0, Harbour.SEA_Y - top, -0.18),
+				Color3.fromRGB(46, 54, 44),
+				Enum.Material.Granite,
+				false
+			)
+			band.CastShadow = false
+			if not ladder then
+				for i, x in { -2.25, 2.25 } do
+					block(
+						"Coping",
+						Vector3.new(4.42, 0.45, 1.3),
+						cf * CFrame.new(x, 0.22, 0.35),
+						COPING[(n + i) % #COPING + 1],
+						Enum.Material.Granite,
+						true
+					)
+				end
+				if n % 3 == 0 then
+					local tyre = block(
+						"Fender",
+						Vector3.new(0.7, 2.4, 2.4),
+						cf
+							* CFrame.new(0, 2 - top + Harbour.SEA_Y, -0.65)
+							* CFrame.Angles(0, math.pi / 2, 0),
+						Color3.fromRGB(26, 26, 28),
+						Enum.Material.Rubber,
+						false
+					)
+					tyre.Shape = Enum.PartType.Cylinder
+					local hole = block(
+						"FenderHole",
+						Vector3.new(0.72, 1.1, 1.1),
+						tyre.CFrame,
+						Color3.fromRGB(8, 8, 9),
+						Enum.Material.SmoothPlastic,
+						false
+					)
+					hole.Shape = Enum.PartType.Cylinder
+					local ropeLen = top - (Harbour.SEA_Y + 3.2)
+					block(
+						"FenderRope",
+						Vector3.new(0.14, ropeLen, 0.14),
+						cf * CFrame.new(0, -ropeLen / 2, -0.4),
+						Color3.fromRGB(196, 170, 120),
+						Enum.Material.Fabric,
+						false
+					).CastShadow =
+						false
+				end
+			end
+		end
+	end
+	model.Parent = base
+end
+
 local function groupModel(base: Instance, name: string): Model
 	local m = base:FindFirstChild(name)
 	if m and m:IsA("Model") then
@@ -759,6 +864,12 @@ function Harbour.apply(base: Instance): number
 
 	for _, p in kit do
 		place(p, groupModel(base, p.group))
+	end
+	local wOk, wErr = pcall(function()
+		dressWalls(base, kit)
+	end)
+	if not wOk then
+		warn(`[Harbour] wall dressing failed: {wErr}`)
 	end
 	local bOk, bErr = pcall(function()
 		buildBreakwater(base, map)

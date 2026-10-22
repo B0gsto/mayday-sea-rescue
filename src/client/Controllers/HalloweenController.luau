@@ -85,7 +85,7 @@ local function setNight(on: boolean)
 	end
 	night = on
 	-- another live event (Ghost Light) may be keeping the night; its own controller owns that
-	WeatherController.SetBasePreset(if on or ghostLightOn() then "Night" else "Overcast")
+	WeatherController.SetBasePreset(if on or ghostLightOn() then "Night" else "Clear")
 	dimWorld(on)
 end
 
@@ -132,7 +132,7 @@ local function close()
 		worldRoot = nil
 	end
 	-- a Ghost Light running at the same time keeps its night; otherwise give the day back
-	WeatherController.SetBasePreset(if ghostLightOn() then "Night" else "Overcast")
+	WeatherController.SetBasePreset(if ghostLightOn() then "Night" else "Clear")
 	night = false
 end
 

@@ -13,8 +13,6 @@ local InputGlyph = require(script.Parent.InputGlyph)
 export type StepCard = {
 	update: (s: { [string]: any }, onTake: (key: string) -> ()) -> (),
 	hide: () -> (),
-	setCompact: (on: boolean) -> (),
-	setLabel: (text: string?) -> (),
 }
 
 local ICON: { [string]: string } = {
@@ -197,31 +195,8 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 	banner.Visible = false
 	HudTheme.corner(banner, 8)
 
-	local compact = false
-	local function applyCompact()
-		icon.Position = UDim2.fromOffset(12, if compact then 8 else 22)
-		icon.Size = UDim2.fromOffset(if compact then 24 else 32, if compact then 24 else 32)
-		icon.TextSize = if compact then 18 else 24
-		step.Position = UDim2.fromOffset(if compact then 44 else 52, if compact then 9 else 22)
-		step.Size = UDim2.new(1, if compact then -56 else -170, 0, if compact then 26 else 32)
-		pips.Visible = not compact
-		body.Size = UDim2.new(1, 0, 0, if compact then 46 else 76)
-	end
-
-	local label: string? = nil -- the cold open's step line follows the world (setLabel)
-
 	local card: StepCard
 	card = {
-		setLabel = function(text: string?)
-			label = text
-			if text then
-				step.Text = text
-			end
-		end,
-		setCompact = function(on: boolean)
-			compact = on
-			applyCompact()
-		end,
 		update = function(s: { [string]: any }, onTake: (string) -> ())
 			takeFn = onTake
 			local mine: { [string]: any }? = nil
@@ -232,14 +207,14 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 			end
 			if mine then
 				icon.Text = ICON[mine.id] or "•"
-				step.Text = label or SHORT[mine.id] or short(tostring(mine.label or ""))
+				step.Text = SHORT[mine.id] or short(tostring(mine.label or ""))
 				takeKey = if mine.npc then mine.key else nil
 			else
 				icon.Text = "•"
 				step.Text = "Stand by"
 				takeKey = nil
 			end
-			take.Visible = takeKey ~= nil and not compact
+			take.Visible = takeKey ~= nil
 			ptt.Visible = mine ~= nil
 				and not mine.npc
 				and (mine.mechanicId == "radio_ack" or mine.mechanicId == "radio_closeout")

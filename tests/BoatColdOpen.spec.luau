@@ -224,14 +224,14 @@ return function(t)
 	end)
 
 	t.test(
-		"the spawn is inside the breakwater, the casualty ahead and the station slipway behind",
+		"the spawn is inside the breakwater, facing the station slipway with the casualty on the way",
 		function()
 			local at, home = ColdOpen.SPAWN, ColdOpen.SHORE[1].water
-			local ahead = ((at - home) * Vector3.new(1, 0, 1)).Unit
+			local ahead = ((home - at) * Vector3.new(1, 0, 1)).Unit
 			local far = at + ahead * ColdOpen.DISTANCE[2]
-			t.expect(far.Z < 352).toBe(true) -- breakwater heads: z 352 to 368
+			t.expect(at.Z < 352).toBe(true) -- breakwater heads: z 352 to 368
 			t.expect(ColdOpen.nearestShore(at).id).toBe("Station")
-			t.expect((far - home).Magnitude < 300).toBe(true) -- a short run home
+			t.expect((far - home).Magnitude < (at - home).Magnitude).toBe(true) -- ahead closes the drop-off
 		end
 	)
 

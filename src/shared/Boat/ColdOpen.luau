@@ -119,14 +119,12 @@ end
 -- 2026-10-21: recovery is auto_board (close and steady, they climb on the sled), then the ride home
 -- (transport): at the slipway they climb off and wave
 ColdOpen.PLAN = { "tasking", "recovery", "transport" }
--- Spawn inside the breakwater, facing away from the station slipway (SHORE[1]): the casualty is
--- dead ahead and the way home is a straight, clear run back (Studio raycast checked; outside the
--- Harbour Mouth the breakwater sat across the line home).
+-- Spawn inside the breakwater, facing the station slipway (SHORE[1]): the casualty is dead ahead on
+-- the straight, clear run home (Studio raycast checked; outside the Harbour Mouth the breakwater sat
+-- across the line home), so the drop-off distance only falls going straight on.
 ColdOpen.SPAWN = Vector3.new(-140, 0, 200)
 ColdOpen.DISTANCE = { 70, 85 } -- studs dead ahead of the spawn: on screen, about 23 m -- tune
 ColdOpen.RADIO = "Person in the water. Dead ahead!"
--- compact step line, by PiwMode: before they hold on, then on the way in (UI/ColdOpenCue)
-ColdOpen.STEP_SHORT = { reach = "Go to them", home = "Bring them home" }
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)

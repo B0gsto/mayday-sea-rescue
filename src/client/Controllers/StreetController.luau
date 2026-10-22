@@ -146,8 +146,10 @@ local function build(model: Model): Rig?
 end
 
 local function night(): boolean
+	-- the storm this player sees (WeatherController): a cold open keeps a global storm off screen
+	local storm = (tonumber(Lighting:GetAttribute("LocalStormIntensity")) or 0) >= 0.5
 	return LightBeam.lit(
-		Weather.getState(),
+		if storm then "Storm" else "Calm",
 		Lighting:GetAttribute("WeatherBase"),
 		Lighting:GetSunDirection().Y
 	)

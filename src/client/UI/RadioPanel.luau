@@ -1,11 +1,16 @@
 --!strict
--- RadioPanel: the boat's VHF set as the subtitle display (diegetic, Layout "subtitle" region,
--- bottom centre between the minimap and the gauges). Always on:
--- every transmission shows the speaker's callsign and the text, with an RX/TX lamp, the channel
--- and a signal bar that drops in storms. The log (last lines) unfolds while the radio wheel is open.
+-- RadioPanel: the radio subtitle (Layout "subtitle" region, bottom centre, lifted over the speed
+-- dock while it shows): a navy 9-slice card, the speaker as an orange name chip over the line, with
+-- an RX/TX lamp and a signal bar that drops in storms. The log (last lines) unfolds while the radio wheel is open.
 local AvatarCosmetics = require(
 	game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("AvatarCosmetics")
 )
+local Hud = require(
+	game:GetService("ReplicatedStorage")
+		:WaitForChild("Shared")
+		:WaitForChild("Config")
+		:WaitForChild("UiImages")
+).Hud
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
 local RadioFormat = require(script.Parent.RadioFormat)
@@ -18,13 +23,11 @@ export type Panel = {
 	setSignal: (fraction: number) -> (),
 }
 
-local LCD_BG = Color3.fromHex("0B1D14")
-local LCD_TEXT = Color3.fromHex("C8F7D2")
-local LCD_DIM = Color3.fromHex("5E8A6B")
-local BODY = Color3.fromHex("1B1F22")
+local NAVY = Color3.fromHex("0A1830")
 local LAMP_RX = Color3.fromHex("3EE07A")
 local LAMP_TX = Color3.fromHex("FF4D3A")
 local LOG_MAX = 8
+local LIFT = 96 -- du: clear of the speed dock (CarController "CarHud", 84 du at the bottom)
 
 local RadioPanel = {}
 
@@ -32,27 +35,6 @@ local function corner(p: Instance, r: number)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, r)
 	c.Parent = p
-end
-
-local function text(
-	parent: Instance,
-	name: string,
-	font: Enum.Font,
-	size: number,
-	color: Color3
-): TextLabel
-	local l = Instance.new("TextLabel")
-	l.Name = name
-	l.BackgroundTransparency = 1
-	l.Font = font
-	l.TextSize = size
-	l.TextColor3 = color
-	l.TextXAlignment = Enum.TextXAlignment.Left
-	l.TextYAlignment = Enum.TextYAlignment.Top
-	l.TextWrapped = true
-	l.Text = ""
-	l.Parent = parent
-	return l
 end
 
 function RadioPanel.new(playerGui: Instance): Panel
@@ -64,92 +46,86 @@ function RadioPanel.new(playerGui: Instance): Panel
 	gui.Parent = playerGui
 	local region = Layout.region(gui, "subtitle")
 
-	-- the set: a rugged body with a recessed LCD
-	local body = Instance.new("Frame")
-	body.Name = "VHF"
+	-- the navy 9-slice panel (UiImages Hud.Panel), half the region wide: speaker chip over the line
+	local body = HudTheme.image(
+		"VHF",
+		Hud.Panel,
+		UDim2.new(0.5, 0, 0, 92),
+		region,
+		HudTheme.Slice.Panel,
+		0.45
+	)
 	body.AnchorPoint = Vector2.new(0.5, 1)
 	body.Position = UDim2.fromScale(0.5, 1)
-	body.Size = UDim2.fromScale(1, 1)
-	body.BackgroundColor3 = BODY
-	body.BackgroundTransparency = 0.15
-	body.BorderSizePixel = 0
 	body.Visible = false
-	body.Parent = region
-	corner(body, 8)
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromHex("3A4248")
-	stroke.Thickness = 2
-	stroke.Parent = body
-	local grad = Instance.new("UIGradient")
-	grad.Color = ColorSequence.new(Color3.fromHex("2A3034"), Color3.fromHex("15181A"))
-	grad.Rotation = 90
-	grad.Parent = body
+	-- sit above the speed dock while it shows (boats, jet skis, cars)
+	local function watchDock(child: Instance)
+		if child.Name == "CarHud" and child:IsA("ScreenGui") then
+			local function lift()
+				body.Position = UDim2.new(0.5, 0, 1, if child.Enabled then -LIFT else 0)
+			end
+			child:GetPropertyChangedSignal("Enabled"):Connect(lift)
+			lift()
+		end
+	end
+	local dock = playerGui:FindFirstChild("CarHud")
+	if dock then
+		watchDock(dock)
+	else
+		playerGui.ChildAdded:Connect(watchDock)
+	end
 
-	local lcd = Instance.new("Frame")
-	lcd.Name = "LCD"
-	lcd.Position = UDim2.fromOffset(10, 10)
-	lcd.Size = UDim2.new(1, -20, 1, -20)
-	lcd.BackgroundColor3 = LCD_BG
-	lcd.BorderSizePixel = 0
-	lcd.Parent = body
-	corner(lcd, 6)
-	local lcdStroke = Instance.new("UIStroke")
-	lcdStroke.Color = Color3.fromHex("05100A")
-	lcdStroke.Thickness = 3
-	lcdStroke.Parent = lcd
+	local chip = Instance.new("Frame")
+	chip.Name = "SpeakerChip"
+	chip.Position = UDim2.fromOffset(14, 12)
+	chip.Size = UDim2.fromOffset(0, 28)
+	chip.AutomaticSize = Enum.AutomaticSize.X
+	chip.BackgroundColor3 = HudTheme.Colors.accent
+	chip.Parent = body
+	corner(chip, 14)
+	local chipPad = Instance.new("UIPadding")
+	chipPad.PaddingLeft = UDim.new(0, 10)
+	chipPad.PaddingRight = UDim.new(0, 10)
+	chipPad.Parent = chip
+	local speaker = HudTheme.outline(
+		HudTheme.label("Speaker", "", UDim2.fromScale(0, 1), HudTheme.LabelFont, 16, chip)
+	)
+	speaker.AutomaticSize = Enum.AutomaticSize.X
+	speaker.TextTruncate = Enum.TextTruncate.None
+	speaker.RichText = true
 
-	local header = text(lcd, "Header", Enum.Font.Code, 14, LCD_DIM)
-	header.Position = UDim2.fromOffset(10, 6)
-	header.Size = UDim2.new(1, -90, 0, 16)
-	header.Text = "📻"
 	local lamp = Instance.new("Frame")
 	lamp.Name = "Lamp"
 	lamp.AnchorPoint = Vector2.new(1, 0)
-	lamp.Position = UDim2.new(1, -10, 0, 8)
+	lamp.Position = UDim2.new(1, -16, 0, 20)
 	lamp.Size = UDim2.fromOffset(12, 12)
 	lamp.BackgroundColor3 = LAMP_RX
 	lamp.BorderSizePixel = 0
-	lamp.Parent = lcd
+	lamp.Parent = body
 	corner(lamp, 6)
-	local mode = text(lcd, "Mode", Enum.Font.Code, 14, LCD_TEXT)
+	local mode =
+		HudTheme.label("Mode", "RX", UDim2.fromOffset(40, 16), HudTheme.LabelFont, 14, body)
 	mode.AnchorPoint = Vector2.new(1, 0)
-	mode.Position = UDim2.new(1, -28, 0, 6)
-	mode.Size = UDim2.fromOffset(30, 16)
+	mode.Position = UDim2.new(1, -34, 0, 18)
 	mode.TextXAlignment = Enum.TextXAlignment.Right
-	mode.Text = "RX"
+	mode.TextColor3 = HudTheme.Colors.textDim
 	-- signal bars
 	local bars: { Frame } = {}
 	for i = 1, 4 do
 		local b = Instance.new("Frame")
 		b.AnchorPoint = Vector2.new(1, 1)
-		b.Position = UDim2.new(1, -66 - (4 - i) * 6, 0, 22)
+		b.Position = UDim2.new(1, -80 - (4 - i) * 6, 0, 34)
 		b.Size = UDim2.fromOffset(4, 4 + i * 3)
-		b.BackgroundColor3 = LCD_TEXT
+		b.BackgroundColor3 = Color3.new(1, 1, 1)
 		b.BorderSizePixel = 0
-		b.Parent = lcd
+		b.Parent = body
 		bars[i] = b
 	end
 
-	local speaker = text(lcd, "Speaker", HudTheme.BoldFont, 18, HudTheme.Colors.accent)
-	speaker.Position = UDim2.fromOffset(10, 24)
-	speaker.Size = UDim2.new(1, -20, 0, 20)
-	speaker.TextTruncate = Enum.TextTruncate.AtEnd
-	speaker.TextWrapped = false
-	speaker.RichText = true
-	local line = text(lcd, "Line", HudTheme.BodyFont, 18, LCD_TEXT)
-	line.Position = UDim2.fromOffset(10, 46)
-	line.Size = UDim2.new(1, -20, 1, -50)
-	line.TextScaled = true
-	line.TextWrapped = false
-	line.TextTruncate = Enum.TextTruncate.AtEnd
-	local limit = Instance.new("UITextSizeConstraint")
-	limit.Parent = line
-	local function applyTextScale()
-		limit.MaxTextSize = HudTheme.scaled(19)
-		limit.MinTextSize = HudTheme.scaled(13)
-	end
-	Layout.onTextScale(applyTextScale)
-	applyTextScale()
+	local line = HudTheme.outline(
+		HudTheme.label("Line", "", UDim2.new(1, -28, 0, 30), HudTheme.BoldFont, 20, body)
+	)
+	line.Position = UDim2.fromOffset(14, 50)
 
 	-- the radio log, unfolded above the set while the wheel is open
 	local log = Instance.new("Frame")
@@ -157,15 +133,18 @@ function RadioPanel.new(playerGui: Instance): Panel
 	log.AnchorPoint = Vector2.new(0, 1)
 	log.Position = UDim2.fromOffset(0, -8)
 	log.Size = UDim2.new(1, 0, 0, 190)
-	log.BackgroundColor3 = LCD_BG
-	log.BackgroundTransparency = 0.08
+	log.BackgroundColor3 = NAVY
+	log.BackgroundTransparency = 0.12
 	log.BorderSizePixel = 0
 	log.Visible = false
 	log.Parent = body
-	corner(log, 8)
-	local logText = text(log, "Lines", HudTheme.BodyFont, 15, LCD_TEXT)
+	corner(log, 12)
+	local logText =
+		HudTheme.label("Lines", "", UDim2.new(1, -20, 1, -16), HudTheme.BodyFont, 15, log)
 	logText.Position = UDim2.fromOffset(10, 8)
-	logText.Size = UDim2.new(1, -20, 1, -16)
+	logText.TextColor3 = HudTheme.Colors.text
+	logText.TextWrapped = true
+	logText.TextTruncate = Enum.TextTruncate.None
 	logText.RichText = true
 	logText.TextYAlignment = Enum.TextYAlignment.Bottom
 

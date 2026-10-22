@@ -126,11 +126,11 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	range.TextXAlignment = Enum.TextXAlignment.Center
 	HudTheme.outline(range)
 
-	-- accept: the check sprite (>= 48 px touch target), the device key chip on its corner
+	-- accept: the check sprite (>= 48 px touch target), the device key chip inside the card's
+	-- bottom-right corner; the check slides left to make room while the chip shows
 	local key = Instance.new("ImageButton")
 	key.Name = "Launch"
 	key.AnchorPoint = Vector2.new(0.5, 1)
-	key.Position = UDim2.new(0.5, 0, 1, -10)
 	key.Size = UDim2.fromOffset(60, 60)
 	key.BackgroundTransparency = 1
 	key.Image = Hud.AcceptButton
@@ -138,9 +138,14 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	key.Parent = body
 	local pulse = Instance.new("UIScale")
 	pulse.Parent = key
-	local chip = InputGlyph.chip(key, ACCEPT_KEY, ACCEPT_PAD)
-	chip.AnchorPoint = Vector2.new(0.5, 0.5)
-	chip.Position = UDim2.new(1, -6, 1, -8)
+	local chip = InputGlyph.chip(body, ACCEPT_KEY, ACCEPT_PAD)
+	chip.AnchorPoint = Vector2.new(1, 0.5)
+	chip.Position = UDim2.new(1, -12, 1, -40)
+	local function placeKey()
+		key.Position = UDim2.new(0.5, if chip.Visible then -18 else 0, 1, -10)
+	end
+	chip:GetPropertyChangedSignal("Visible"):Connect(placeKey)
+	placeKey()
 
 	local currentId: string? = nil
 	local acceptFn: ((string) -> ())? = nil
@@ -175,19 +180,30 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			badge.BackgroundColor3 = kind.color
 			strip.BackgroundColor3 = kind.color
 			name.Text = string.upper(kind.label)
-			body.Visible = true
-			ContextActionService:BindActionAtPriority(ACCEPT_ACTION, function(_, state)
-				if state == Enum.UserInputState.Begin then
-					accept()
-				end
-				return Enum.ContextActionResult.Sink
-			end, false, Enum.ContextActionPriority.High.Value, ACCEPT_KEY, ACCEPT_PAD)
+			body.Visible = false -- the Heartbeat shows it (and binds Enter) while the phone is shut
 			if conn then
 				conn:Disconnect()
 			end
 			local t = 0
 			conn = RunService.Heartbeat:Connect(function(dt)
 				t += dt
+				-- the phone covers the HUD: hide the pager and free Enter for the phone's own keys
+				local pg = Players.LocalPlayer:FindFirstChild("PlayerGui")
+				local phone = pg and pg:FindFirstChild("Phone") -- UI/Phone's ScreenGui, Enabled while up
+				local shown = not (phone and phone:IsA("ScreenGui") and phone.Enabled)
+				if shown ~= body.Visible then
+					body.Visible = shown
+					if shown then
+						ContextActionService:BindActionAtPriority(ACCEPT_ACTION, function(_, state)
+							if state == Enum.UserInputState.Begin then
+								accept()
+							end
+							return Enum.ContextActionResult.Sink
+						end, false, Enum.ContextActionPriority.High.Value, ACCEPT_KEY, ACCEPT_PAD)
+					else
+						ContextActionService:UnbindAction(ACCEPT_ACTION)
+					end
+				end
 				-- the alert strip flashes and the accept button pulses like a DSC alarm
 				strip.BackgroundTransparency = if math.floor(t * 2.5) % 2 == 0 then 0 else 0.5
 				pulse.Scale = 1 + 0.04 * math.sin(t * 5)

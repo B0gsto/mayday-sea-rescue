@@ -224,8 +224,8 @@ local function buildPortHaven(map: Instance, landTop: number, floorY: number, ha
 	spawn.BottomSurface = SMOOTH
 	spawn.Size = Vector3.new(12, 1, 12)
 	spawn.CFrame = CFrame.new(-60, landTop + 0.5, -8)
-	spawn.Color = COLORS.white
-	spawn.Material = M.SmoothPlastic
+	spawn.Color = rgb(176, 170, 160) -- quay stone, not a white slab (r2 art review)
+	spawn.Material = M.Granite
 	spawn.Parent = town
 
 	-- coast guard station by the dock

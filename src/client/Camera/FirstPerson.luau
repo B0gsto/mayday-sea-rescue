@@ -96,7 +96,9 @@ local lastOffset = CFrame.identity
 
 -- On foot: the standard Roblox third-person camera, zoomable all the way in to first person.
 FirstPerson.MIN_ZOOM = 0.5
-FirstPerson.MAX_ZOOM = 24
+FirstPerson.MAX_ZOOM = 30
+FirstPerson.START_ZOOM = 19 -- Roblox starts at 12.5: the avatar filled a third of the frame (r2 art review)
+FirstPerson.LIFT = 1.5 -- studs the third-person view frames above the head; fades out zooming in to first person
 
 function FirstPerson.enterFoot(humanoid: Humanoid)
 	local player = Players.LocalPlayer
@@ -165,6 +167,12 @@ function FirstPerson.foot(dt: number, humanoid: Humanoid, root: BasePart)
 		-- settle to the nearest rest point of the cycle instead of freezing mid-step
 		bobPhase =
 			CameraMath.damp(bobPhase, math.floor(bobPhase / math.pi + 0.5) * math.pi, 0.1, dt)
+	end
+	-- frame a little higher in third person (more world, less back); none in first person
+	local zoom = (camera.CFrame.Position - camera.Focus.Position).Magnitude
+	local lift = Vector3.new(0, math.clamp((zoom - 3) / 10, 0, 1) * FirstPerson.LIFT, 0)
+	if (humanoid.CameraOffset - lift).Magnitude > 0.01 then
+		humanoid.CameraOffset = lift
 	end
 	local offset, roll = CameraMath.headBob(bobPhase, bobAmount)
 	local o = CFrame.new(offset) * CFrame.Angles(0, 0, roll)

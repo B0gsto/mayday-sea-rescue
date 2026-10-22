@@ -43,10 +43,11 @@ HudLayout.TOUCH_SIDE = 130 -- final px: the touch minimap square
 HudLayout.PHONE_SIZE = 72 -- the phone button (UI/Phone), top left
 HudLayout.PHONE_MIN_PX = 64 -- final px: the phone button never draws smaller
 
-local REF_HEIGHT = 720 -- usable px at which the HUD draws 1:1
-local REF_WIDTH = 1200
+-- usable px at which the HUD draws 1:1 (1080p draws 1.6x: wallet ~380x150 px, minimap ~335 px)
+local REF_HEIGHT = 620
+local REF_WIDTH = 1100
 local MIN_SCALE = 0.7
-local MAX_SCALE = 1.5
+local MAX_SCALE = 1.6
 
 export type RegionName =
 	"objective"
@@ -93,7 +94,7 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 	local m, g = HudLayout.MARGIN, HudLayout.GAP
 	local side = if touch
 		then math.floor(HudLayout.TOUCH_SIDE / s + 0.5)
-		else math.clamp(math.floor(u.Y * 0.3), 156, 230)
+		else math.clamp(math.floor(u.Y * 0.31), 156, 230)
 	local phone = math.max(HudLayout.PHONE_SIZE, math.ceil(HudLayout.PHONE_MIN_PX / s))
 	local objectiveWidth = math.clamp(math.floor(u.X * 0.3), 320, 460)
 	local rightWidth = math.clamp(math.floor(u.X * 0.24), 280, 360)

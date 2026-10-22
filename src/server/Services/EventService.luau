@@ -61,6 +61,9 @@ function EventService.IsEventActive(id: string): boolean
 	if id == "GreatStorm" and liveOpsActive("LegendaryRush") then
 		return true
 	end
+	if id == "GreatStorm" and StormService.ALWAYS_SUNNY then
+		return false
+	end
 	return EventClock.isActive(id, now())
 end
 
@@ -182,6 +185,9 @@ end
 local function tick()
 	local t = now()
 	local current = EventClock.current(t)
+	if StormService.ALWAYS_SUNNY and current and current.id == "GreatStorm" then
+		current = nil -- always sunny: no Great Storm (and no siren, x2 rep or countdown)
+	end
 	local id = if current then current.id else ""
 	local phase = if current then current.phase else ""
 	publish(id, phase, current, t)

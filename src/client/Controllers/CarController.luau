@@ -455,13 +455,14 @@ local function showGauges(g: Gauges, car: boolean)
 	end
 end
 
--- Boats and jet skis: the same dock, speed only (BoatController's Simulator telemetry).
+-- Boats and jet skis, the cold open too: the same dock, speed only (BoatController's Simulator
+-- telemetry has no gear or rpm).
 local function boatSpeed()
 	if driving or not hud then
 		return
 	end
 	local telemetry = BoatController.GetDrivenVehicle() and BoatController.GetTelemetry()
-	local show = telemetry ~= nil and not Layout.coldOpen()
+	local show = telemetry ~= nil
 	if show ~= hud.gui.Enabled then
 		showGauges(hud, false)
 		hud.extras.Text = ""

@@ -21,10 +21,12 @@ export type Beacon = {
 	destroy: () -> (),
 }
 
+-- the HUD palette (assets/ui/hud/mockup.png): rescue orange marks on navy edges
+local NAVY = Color3.fromHex("0A1830")
 local COLORS: { [string]: Color3 } = {
-	Place = Color3.fromRGB(255, 206, 100),
+	Place = Color3.fromHex("F2671F"),
 	Call = Color3.fromRGB(255, 120, 30),
-	Gear = Color3.fromRGB(255, 210, 90),
+	Gear = Color3.fromHex("F2671F"),
 	Cert = Color3.fromRGB(120, 230, 160),
 }
 
@@ -72,6 +74,10 @@ function OnboardingBeacon.start(): Beacon
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 3)
 	corner.Parent = diamond
+	local edge = Instance.new("UIStroke")
+	edge.Color = NAVY
+	edge.Thickness = 3
+	edge.Parent = diamond
 
 	local stem = Instance.new("Frame")
 	stem.Name = "Stem"
@@ -99,15 +105,20 @@ function OnboardingBeacon.start(): Beacon
 	arrow.TextSize = 96 -- the glyph draws ~30 px (44 drew ~14 px)
 	arrow.Font = Enum.Font.GothamBlack
 	arrow.TextColor3 = COLORS.Place
-	arrow.TextStrokeTransparency = 0.2
+	arrow.TextStrokeColor3 = NAVY
+	arrow.TextStrokeTransparency = 0
 	arrow.Visible = false
 	arrow.Parent = edgeGui
-	-- the distance, upright, just inside the arrow
+	-- the distance, upright, just inside the arrow, on a navy chip
 	local range = Instance.new("TextLabel")
 	range.Name = "Range"
 	range.AnchorPoint = Vector2.new(0.5, 0.5)
-	range.Size = UDim2.fromOffset(90, 24)
-	range.BackgroundTransparency = 1
+	range.Size = UDim2.fromOffset(72, 28)
+	range.BackgroundColor3 = NAVY
+	range.BackgroundTransparency = 0.1
+	local chipCorner = Instance.new("UICorner")
+	chipCorner.CornerRadius = UDim.new(0.5, 0)
+	chipCorner.Parent = range
 	range.Font = Enum.Font.FredokaOne
 	range.TextSize = 20
 	range.TextColor3 = Color3.new(1, 1, 1)

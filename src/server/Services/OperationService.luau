@@ -2648,7 +2648,8 @@ function OperationService.StartColdOpen(
 		withdrawOffer(ops[st.offerOpId])
 	end
 	local at, home = BoatColdOpen.SPAWN, BoatColdOpen.SHORE[1].water
-	local cf = spawnCFrame or CFrame.lookAt(at, at + (at - home) * Vector3.new(1, 0, 1))
+	-- facing the slipway: the casualty is on the way home, so straight ahead always closes the drop-off
+	local cf = spawnCFrame or CFrame.lookAt(at, Vector3.new(home.X, at.Y, home.Z))
 	-- CONTRACT: VehicleService.SpawnColdOpen(player, cframe): Model? spawns a jet ski at `cframe`,
 	-- seats the player and gives it some forward speed (stream B). Called through pcall.
 	local okSpawn, spawnErr = try("VehicleService", "SpawnColdOpen", player, cf)

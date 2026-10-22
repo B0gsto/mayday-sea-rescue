@@ -5,7 +5,7 @@
 
 local OceanPalette = {}
 
-OceanPalette.DEEP_TEAL = Color3.fromHex("#2B5F70") -- clear blue-teal, matches the Clear preset
+OceanPalette.DEEP_TEAL = Color3.fromHex("#1C5A5C") -- clear teal, matches the Clear preset
 OceanPalette.ABYSS_NAVY = Color3.fromHex("#163445")
 OceanPalette.FOAM = Color3.fromHex("#EAF7F5")
 
