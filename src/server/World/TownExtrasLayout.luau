@@ -15,7 +15,8 @@ export type Moored = { id: string, cf: CFrame }
 -- swinging at anchor in the harbour pool, clear of the visitors' moorings (Shared.SeamarkRules), the pontoons
 -- (x -124 dock, x 130 hospital), the pier and slip, the dredged channel (|x| < 40) and the harbour mouth (z 352+)
 local HARBOUR = {
-	{ id = "Crabber1", asset = "M_Veh_MooredBoat_02", x = -140, z = 140, yaw = 35 },
+	-- west of the slip, off the cold open's run from the casualty to the drop-off (ColdOpen.SHORE; was -140, 140)
+	{ id = "Crabber1", asset = "M_Veh_MooredBoat_02", x = -230, z = 75, yaw = 35 },
 	{ id = "Crabber2", asset = "M_Veh_MooredBoat_02", x = 60, z = 12.5, yaw = 90 },
 	{ id = "Crabber3", asset = "M_Veh_MooredBoat_02", x = -270, z = 190, yaw = 120 },
 	{ id = "Trawler1", asset = "M_Veh_MooredBoat_03", x = 250, z = 90, yaw = 200 },

@@ -108,7 +108,7 @@ local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
 -- Recovery (VehicleRecovery): capsized (Driven or adrift), beached, sunk or pinned with the throttle
 -- open glides back upright: capsized in open water rights in place, the rest go to the nearest open
 -- water (BOAT_BACKOFF or more off), facing away from what they hit.
-local BEACHED_HEIGHT = 1.5 -- studs over the floating height while on terrain = beached -- tune
+local BEACHED_HEIGHT = 0.75 -- studs over the floating height while on land = beached (a jet ski perches 1.3 up on the slip rails) -- tune
 local SUNK_HEIGHT = 5 -- studs under the floating height = sunk -- tune
 local AIR_HEIGHT = 3 -- studs over the floating height with no terrain near = mid-jump -- tune
 local BOAT_BACKOFF = 10 -- studs -- tune

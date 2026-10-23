@@ -2,8 +2,8 @@
 -- transport (docs 09 step 9, section 5.7): bring them home. The ambulance pad is lit (a blinking blue
 -- beacon); no panel in play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the
 -- server turns `slam` events into condition, cap 6). The server measures conditionAtEnd when the boat
--- reaches a pad; this client reports when it is home: the boat slow and close to a pad or a
--- shore point (station slipway, Haven Sands), or the player ashore on foot at one (they landed the
+-- reaches a pad; this client reports when it is home: the boat slow and close to a pad, inside a
+-- shore point's ring at any speed (station slipway, Haven Sands), or the player ashore on foot at one (they landed the
 -- casualty and walked up; the step used to hang until its timeout then). Controls: drive.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -163,7 +163,14 @@ function Transport.start(
 			local hum = char and char:FindFirstChildOfClass("Humanoid")
 			local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
 			local onFoot = hum ~= nil and hum.SeatPart == nil and root ~= nil
-			local boatHome = h ~= nil and h.velocity.Magnitude < 8 and Transport.isHome(h.position)
+			-- a shore point lands them at any speed (at full throttle the jet ski crossed the ring and
+			-- piled onto the slip outside it); a pad still wants the boat slow alongside
+			local _, shore = BoatColdOpen.nearestShore(if h then h.position else Vector3.zero)
+			local boatHome = h ~= nil
+				and (
+					shore <= BoatColdOpen.SHORE_RADIUS
+					or h.velocity.Magnitude < 8 and Transport.isHome(h.position)
+				)
 			local walkedHome = onFoot and root ~= nil and Transport.isHome(root.Position)
 			if boatHome or walkedHome then
 				Step.finish(s, {

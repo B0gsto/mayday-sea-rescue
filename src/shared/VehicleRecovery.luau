@@ -11,7 +11,7 @@ local VehicleRecovery = {}
 
 VehicleRecovery.UP_MIN = math.cos(math.rad(65)) -- UpVector.Y under this counts as flipped -- tune
 VehicleRecovery.FLIP_TIME = 2 -- tune
-VehicleRecovery.STUCK_TIME = 3.5 -- tune
+VehicleRecovery.STUCK_TIME = 2 -- under the 3 s a player holds W in bursts (3.5 never fired: pinned for good) -- tune
 VehicleRecovery.STUCK_SPEED = 1.5 -- studs/s -- tune
 VehicleRecovery.THROTTLE_MIN = 0.5 -- tune
 VehicleRecovery.OFF_TIME = 2.5 -- tune

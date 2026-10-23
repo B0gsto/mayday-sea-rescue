@@ -27,7 +27,7 @@ return function(t)
 	t.test("throttle held while barely moving for STUCK_TIME: Stuck", function()
 		local s = R.new()
 		local wedged = { up = 1, speed = 0.5, throttle = -1, grounded = true }
-		t.expect(R.step(s, 3, 1, wedged)).toBe(nil)
+		t.expect(R.step(s, 1.5, 1, wedged)).toBe(nil)
 		t.expect(R.step(s, 0.5, 2, wedged)).toBe("Stuck")
 		local parked = R.new()
 		t.expect(R.step(parked, 10, 1, { up = 1, speed = 0, throttle = 0, grounded = true }))
