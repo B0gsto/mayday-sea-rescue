@@ -12,7 +12,6 @@ return function(t)
 	local Operations = t.load("src/shared/Ops/Operations.luau")
 	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
 	local Grading = t.load("src/shared/Ops/Grading.luau")
-	local ChallengeRules = t.load("src/shared/ChallengeRules.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
 
 	-- Round 4 clock (minutes from spawn): cold open Complete 0:19, call 2 accepted at the board
@@ -24,7 +23,7 @@ return function(t)
 	local WALK_MIN = 1
 	local UID = 1
 	local HELM = ProgressionConfig.Certifications.Helm
-	local function run(approachGrades: { string }, dailyOnCall2: boolean)
+	local function run(approachGrades: { string })
 		local data = Rules.defaultData()
 		local now = 0
 		local completed = 0 -- OperationService st.completed (the cold open is one)
@@ -126,12 +125,6 @@ return function(t)
 				end, false)
 				now += CALL_MIN
 				operation(choice.kind)
-				if completed == 2 and dailyOnCall2 then
-					-- Round 4: a 2-target daily (two PIW ops) completed with call 2
-					local cash, rep =
-						ChallengeRules.rewardFor(ChallengeRules.def("d_piw"), Rules.rankIndex(data))
-					award(cash, rep)
-				end
 			end
 		end
 		local cash10 = 0
@@ -153,9 +146,8 @@ return function(t)
 	end
 
 	local scenarios = {
-		{ name = "Silver, daily on call 2 (Round 4)", r = run({ "Silver" }, true) },
-		{ name = "Silver, no early daily", r = run({ "Silver" }, false) },
-		{ name = "Bronze call 2, Silver after", r = run({ "Silver", "Bronze", "Silver" }, false) },
+		{ name = "Silver", r = run({ "Silver" }) },
+		{ name = "Bronze call 2, Silver after", r = run({ "Silver", "Bronze", "Silver" }) },
 	}
 	print("\nNewPlayerPace (minutes from spawn)")
 	for _, s in scenarios do
@@ -174,20 +166,20 @@ return function(t)
 		)
 	end
 
-	local main, noDaily, bronze = scenarios[1].r, scenarios[2].r, scenarios[3].r
+	local main, bronze = scenarios[1].r, scenarios[2].r
 
 	t.test("first reward under 3 minutes", function()
 		t.expect(main.at["first reward"] < 3).toBe(true)
 	end)
 
 	t.test("first gear bought at about 5 minutes", function()
-		for _, r in { main, noDaily, bronze } do
+		for _, r in { main, bronze } do
 			t.expect(r.at["gear bought"] >= 4 and r.at["gear bought"] <= 8).toBe(true)
 		end
 	end)
 
 	t.test("first rank-up at about 10 minutes (8 to 13)", function()
-		for _, r in { main, noDaily } do
+		for _, r in { main } do
 			local at = r.at["first rank-up"]
 			t.expect(at ~= nil and at >= 8 and at <= 13).toBe(true)
 		end
@@ -200,13 +192,12 @@ return function(t)
 	end)
 
 	t.test("no new player waits long at the station for an unlock", function()
-		for _, r in { main, noDaily, bronze } do
+		for _, r in { main, bronze } do
 			t.expect(r.idle <= 1).toBe(true)
 		end
 	end)
 
 	t.test("the RIB is in sight at 10 minutes", function()
-		t.expect(main.rib >= 0.4).toBe(true)
-		t.expect(noDaily.rib >= 0.2).toBe(true)
+		t.expect(main.rib >= 0.2).toBe(true)
 	end)
 end

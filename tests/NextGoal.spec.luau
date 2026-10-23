@@ -2,9 +2,8 @@
 return function(t)
 	local N = t.load("src/shared/NextGoal.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
-	local SeasonRules = t.load("src/shared/SeasonRules.luau")
 
-	local NOW = 1792800000 + 10 * 86400 -- mid Season 1
+	local NOW = 1792800000 + 10 * 86400
 
 	local function snap(data)
 		return Rules.snapshot(data)
@@ -32,11 +31,11 @@ return function(t)
 		end
 	end)
 
-	t.test("with the gate passed, ties go rank > cert > gear > season", function()
+	t.test("with the gate passed, ties go rank > cert > gear", function()
 		local d = Rules.defaultData()
 		d.certs.Helm = true
 		local goals = N.goals(snap(d), NOW)
-		t.expect(kinds(goals)).toEqual({ "Rank", "Cert", "Gear", "Gear", "Season" })
+		t.expect(kinds(goals)).toEqual({ "Rank", "Cert", "Gear", "Gear" })
 		t.expect(goals[1].key).toBe("Rank:Lifeguard")
 		t.expect(goals[1].value).toBe(0)
 		t.expect(goals[1].target).toBe(400)
@@ -124,26 +123,5 @@ return function(t)
 		t.expect(upgrade.target).toBe(1000)
 		t.expect(upgrade.value).toBe(1000) -- affordable: full bar
 		t.expect(upgrade.unit).toBe("Cash")
-	end)
-
-	t.test("a reached but unclaimed season tier is a full goal", function()
-		local d = Rules.defaultData()
-		d.rep = 150000
-		d.cash = 1e9
-		d.gear = { EngineTune = 3, StrongGrip = 3 }
-		d.vehicles = { JetSki = true, RIB = true, Lifeboat = true, RescueHelicopter = true }
-		d.vehicleUpgrades = { JetSki = 7, RIB = 7, Lifeboat = 7 }
-		for _, id in { "Helm", "CasualtyCare", "RescueSwimmer", "Coxswain" } do
-			d.certs[id] = true
-		end
-		local season = SeasonRules.newState()
-		season.xp = 100
-		d.flags.season = SeasonRules.flagTable(season)
-		local best = N.best(snap(d), NOW)
-		t.expect(best.kind).toBe("Season")
-		t.expect(best.key).toBe("Season:1")
-		t.expect(best.value).toBe(100)
-		t.expect(best.target).toBe(100)
-		t.expect(best.fraction).toBe(1)
 	end)
 end

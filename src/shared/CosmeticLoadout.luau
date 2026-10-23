@@ -1,24 +1,55 @@
 --!strict
 -- CosmeticLoadout (pure, shared): what a player has actually earned, read from the profile flags
--- that used to be data only (docs/15 H3 stock trims, H8 season rewards, the monthly livery). Earned cosmetic options carry an
+-- that used to be data only (docs/15 H3 stock trims, H8 season rewards, the monthly livery) and the
+-- rank. Earned cosmetic options carry an
 -- `earn` key in their slot config
 -- (src/shared/Config/Cosmetics/*); this module turns data.flags into the set of those keys and
 -- picks the latest earned option per slot so the player notices it once (Earned service feature).
 --
---   CosmeticLoadout.owned(flags): { [earnKey]: true }
---   CosmeticLoadout.show(flags): { owned, newest = { [slot]: { id, earn } }, decor = { earnKey } }
+--   CosmeticLoadout.owned(flags, rep?): { [earnKey]: true }
+--   CosmeticLoadout.show(flags, rep?): { owned, newest = { [slot]: { id, earn } }, decor = { earnKey } }
 --   CosmeticLoadout.encode(set) / decode(raw)   the "CosOwned" player attribute (newline list)
 --
 -- `show` needs the real cosmetics registry (options name their `earn` key), so this is not a
 -- no-Roblox pure module; it stays service-free and Lune-tested in tests/CosmeticLoadout.spec.luau.
 
 local Cosmetics = require(script.Parent.Cosmetics)
-local Season = require(script.Parent.Config.Season)
-local StockConfig = require(script.Parent.Config.StockConfig)
+local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 
 local CosmeticLoadout = {}
 
--- Stock keys (StockConfig.Order) then season tiers, then monthly liveries, then the group reward.
+-- The Chandlery stock and the Season Logbook are cut (docs/16 C6, C11); saves that bought or
+-- claimed these keep them. Season tiers index the claimed-tier bitfield.
+local STOCK = {
+	"paint_red",
+	"paint_teal",
+	"paint_gold",
+	"lightbar_amber",
+	"lightbar_blue",
+	"wake_turquoise",
+	"wake_gold",
+	"decor_lantern",
+	"decor_bell",
+	"decor_wreath",
+	"decor_flag",
+	"decor_shelf",
+	"decor_signals",
+}
+local SEASON = {
+	{ tier = 3, cosmetic = "Decal_Season1" },
+	{ tier = 8, cosmetic = "Wake_Season1" },
+	{ tier = 12, cosmetic = "Title_Season1" },
+	{ tier = 30, cosmetic = "Livery_Season1" },
+}
+-- The monthly liveries came from weekly challenges (cut, docs/16 C12): Commodore unlocks them now.
+local MONTHLY_REP = math.huge
+for _, rank in ProgressionConfig.Ranks do
+	if rank.id == "Commodore" then
+		MONTHLY_REP = rank.rep
+	end
+end
+
+-- Stock keys then season tiers, then monthly liveries, then the group reward.
 -- Flags carry no earn time, so this fixed order is the "latest" order.
 local ORDER: { string } = {}
 local RANK: { [string]: number } = {}
@@ -29,16 +60,11 @@ local function remember(key: string)
 	table.insert(ORDER, key)
 	RANK[key] = #ORDER
 end
-for _, key in StockConfig.Order do
-	local item = StockConfig.Items[key]
-	if item and item.cosmetic then
-		remember("stock:" .. item.cosmetic)
-	end
+for _, key in STOCK do
+	remember("stock:" .. key)
 end
-for _, tier in Season.tiers do
-	if tier.cosmetic then
-		remember("season:" .. tier.cosmetic)
-	end
+for _, tier in SEASON do
+	remember("season:" .. tier.cosmetic)
 end
 for month = 1, 12 do
 	remember("monthly:" .. string.format("2026-%02d", month))
@@ -69,8 +95,13 @@ local function flagMap(value: any): { [string]: boolean }
 	return out
 end
 
-function CosmeticLoadout.owned(flags: any): { [string]: boolean }
+function CosmeticLoadout.owned(flags: any, rep: number?): { [string]: boolean }
 	local set: { [string]: boolean } = {}
+	if (tonumber(rep) or 0) >= MONTHLY_REP then
+		for month = 1, 12 do
+			set["monthly:" .. string.format("2026-%02d", month)] = true
+		end
+	end
 	if type(flags) ~= "table" then
 		return set
 	end
@@ -80,8 +111,8 @@ function CosmeticLoadout.owned(flags: any): { [string]: boolean }
 	local season = flags.season
 	if type(season) == "table" then
 		local claimed = math.floor(tonumber(season.c) or 0)
-		for _, tier in Season.tiers do
-			if tier.cosmetic and bit32.band(claimed, bit32.lshift(1, tier.tier - 1)) ~= 0 then
+		for _, tier in SEASON do
+			if bit32.band(claimed, bit32.lshift(1, tier.tier - 1)) ~= 0 then
 				set["season:" .. tier.cosmetic] = true
 			end
 		end
@@ -104,8 +135,8 @@ export type Loadout = {
 	decor: { string },
 }
 
-function CosmeticLoadout.show(flags: any): Loadout
-	local owned = CosmeticLoadout.owned(flags)
+function CosmeticLoadout.show(flags: any, rep: number?): Loadout
+	local owned = CosmeticLoadout.owned(flags, rep)
 	local newest: Newest = {}
 	for _, slot in Cosmetics.slots() do
 		local entry = Cosmetics.slot(slot)

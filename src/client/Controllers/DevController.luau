@@ -335,15 +335,6 @@ local function fill(b: DevBoard.Board)
 			call("event", { id, false })
 		end)
 	end
-	g = DevBoard.section(page, "Lighthouses (target)")
-	for _, id in lists.Lights do
-		DevBoard.button(g, `💡 Relight {id}`, function()
-			call("light", { tgt(), id, true })
-		end)
-		DevBoard.button(g, `🌑 Reset {id}`, function()
-			call("light", { tgt(), id, false })
-		end)
-	end
 
 	-- Progress
 	page = b.tab("⭐ Progress")

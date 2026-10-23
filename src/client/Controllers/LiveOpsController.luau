@@ -1,8 +1,7 @@
 --!strict
 -- LiveOpsController: the client side of owner-triggered events (G60). Reads
 -- ReplicatedStorage.LiveOpsState (LiveOpsService) and shows a subtle sky tint while it runs (a
--- separate ColorCorrectionEffect, so weather still owns the atmosphere). The countdown and name
--- are the LiveOps row of the phone's Events app (EventCalendar), not a HUD chip.
+-- separate ColorCorrectionEffect, so weather still owns the atmosphere). No HUD chip.
 -- Nothing to press and no menu: the event is a world change (docs/15 section 1, CLAUDE.md).
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

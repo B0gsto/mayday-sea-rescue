@@ -19,7 +19,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
-local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
 local RescueVariants = require(Shared:WaitForChild("Config"):WaitForChild("RescueVariants"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -1992,22 +1991,12 @@ local function inWater(player: Player): boolean
 		and (humanoid:GetState() == Enum.HumanoidStateType.Swimming or root.Position.Y < -0.5)
 end
 
-local function albumAnnounce(op: any)
-	try("AlbumService", "AnnounceCall", op)
-end
+local SkyFlare = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("SkyFlare"))
 
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
 	local missionDef: OperationDef? = if opts then opts.def else nil
-	-- the Outer (Skerries) calls wait for the Harbor Light (docs/03 section 7); a missing profile
-	-- (or a Studio offer before data loads) keeps the old behaviour
-	local openOuter = true
-	local okSnap, snap = try("ProgressionService", "GetData", player)
-	if okSnap and type(snap) == "table" then
-		openOuter = Lighthouses.zoneOpen(snap.flags, "Outer")
-	end
-	local choice =
-		CallLogic.chooseCall(st.completed, weatherState(), canTow(player), nil, openOuter)
+	local choice = CallLogic.chooseCall(st.completed, weatherState(), canTow(player))
 	local sceneKind = choice.kind
 	local zone = choice.zone
 	local wildlife = forcedKind == "WildlifeRescue"
@@ -2069,7 +2058,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 			op.scene.variant = forced.id
 		end
 	end
-	albumAnnounce(op)
+	pcall(SkyFlare.announce, op) -- a Legendary / Epic call's sky flare; never blocks the call
 	if kind == "RipCurrent" then
 		RipFlow.Task(op) -- the variant (swimmer / body-boarder): the radio line
 	elseif kind == "VesselFire" then
@@ -2515,11 +2504,6 @@ local function tick()
 				decision == "Offer"
 				and not onboardingHoldsOffers(player, st.completed)
 				and not inWater(player)
-				-- Off duty (ExplorationService, docs 10 section 5.1): no standard taskings after the tutorials
-				and not (
-					player:GetAttribute("OffDuty") == true
-					and st.completed >= #Grading.Payout.Tutorial
-				)
 			then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)

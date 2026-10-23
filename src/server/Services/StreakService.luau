@@ -2,7 +2,7 @@
 -- StreakService: the daily streak crate and the welcome-back crate (docs/15 section 1, hook H5).
 -- One crate per UTC day per player on the station porch. StreakRules owns the day maths and the
 -- forgiveness; StreakConfig owns the payouts. Cash goes through ProgressionService.Award and the
--- streak lives on the profile (data.flags.streak), exactly like ChallengeService's flags.
+-- streak lives on the profile (data.flags.streak).
 --
 -- The crate and the porch sign are built locally by each client (World/StreakCrate,
 -- World/StreakSign) so only that player sees their own crate open. Remotes (under

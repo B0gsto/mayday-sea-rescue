@@ -99,7 +99,7 @@ return function(t)
 		end
 		t.expect(Shelves.shelfVisible(unready, "Till", false, true)).toBe(false)
 		t.expect(Shelves.shelfVisible(unready, "Till", true, true)).toBe(true)
-		t.expect(#Shelves.shelfItems(unready, "Till", true)).toBe(7)
+		t.expect(#Shelves.shelfItems(unready, "Till", true)).toBe(6)
 		local c = clone(Config)
 		c.GamePasses.QuickLaunch.ready = true -- RP-M2 done, RP-M4 not yet: id 0
 		c.GamePasses.QuickLaunch.id = 0

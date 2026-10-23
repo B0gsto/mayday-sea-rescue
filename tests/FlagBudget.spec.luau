@@ -2,26 +2,13 @@
 -- (ProgressionRules.migrate runs on every save and load), and all of them fit together.
 return function(t)
 	local Rules = t.load("src/shared/ProgressionRules.luau")
-	local ChallengeRules = t.load("src/shared/ChallengeRules.luau")
-	local RescueAlbum = t.load("src/shared/RescueAlbum.luau")
-	local Variants = t.load("src/shared/Config/RescueVariants.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
-	local SeasonRules = t.load("src/shared/SeasonRules.luau")
 	local PetRules = t.load("src/shared/PetRules.luau")
-	local StockConfig = t.load("src/shared/Config/StockConfig.luau")
 	local PlatformPrompts = t.load("src/shared/PlatformPrompts.luau")
 
 	local NOW = 1790000000
 
 	local function full(): { [string]: any }
-		local album = RescueAlbum.newState()
-		for kind, list in Variants.Kinds do
-			album.paid[kind] = true
-			for _, v in list do
-				album.owned[v.id] = true
-			end
-		end
-		local challenges = ChallengeRules.newState(1, NOW)
 		local pets = PetRules.newState()
 		for i = 1, PetRules.MAX do
 			table.insert(pets.entries, {
@@ -36,25 +23,12 @@ return function(t)
 		pets.nextId = PetRules.MAX + 1
 		pets.active = 1
 		pets.treats = PetRules.TREAT_MAX
-		local stock = {}
-		for _, item in StockConfig.Items do
-			if item.cosmetic then
-				stock[item.cosmetic] = true
-			end
-		end
 		return {
-			album = RescueAlbum.flagTable(album),
-			challenges = ChallengeRules.flagTable(challenges),
 			streak = StreakRules.flagTable({ lastDay = 20717, streak = 7, cosmeticDay = 20717 }),
-			season = SeasonRules.flagTable({
-				id = "S1",
-				xp = 99999,
-				claimed = 2 ^ 30 - 1,
-				seen = 3,
-			}),
 			pets = PetRules.encode(pets),
+			-- leftovers of cut systems (docs/16 C6, C15) still load
 			lighthouses = { HarbourLight = true, SkerryLight = true },
-			stock = stock,
+			stock = { paint_red = true, decor_signals = true },
 			platformPrompts = PlatformPrompts.encode(
 				PlatformPrompts.record(
 					PlatformPrompts.record(PlatformPrompts.decode(nil), "notify", NOW),

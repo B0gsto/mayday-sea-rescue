@@ -9,15 +9,14 @@
 -- dock of 4. Every app lays out on the upright phone.
 -- Apps:
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
---   Logbook, Season, Settings   the existing panels (ExplorationController's Logbook, SeasonBook,
---                        SettingsPanel): their frames are borrowed onto the phone screen
+--   Settings             the existing SettingsPanel: its frame is borrowed onto the phone screen
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
 --                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
 -- at home they close it.
--- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A red dot and a
+-- Gamepad Start opens the Settings app. A red dot and a
 -- bounce on the phone button (badge, bounce) stay for an "affordable" cue.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
 --                               "phone" region, HudLayout)
@@ -370,7 +369,7 @@ local function panelApp(
 		local bg = if bgName then root:FindFirstChild(bgName) else nil
 		local ctl: any = if controller then controller() else nil
 		if ctl then
-			task.spawn(ctl.Open) -- Season's Open pulls the view (yields)
+			task.spawn(ctl.Open) -- Open may yield
 		end
 		local undo = borrow(root, page, if bg and bg:IsA("GuiObject") then bg else root)
 		-- the panel closed itself (its own Escape / B): back to the icons
@@ -502,13 +501,6 @@ end
 local function radioController(): any
 	return require(Controllers:WaitForChild("RadioController"))
 end
-local function seasonController(): any
-	return require(Controllers:WaitForChild("SeasonController"))
-end
-local function explorationController(): any
-	return require(Controllers:WaitForChild("ExplorationController"))
-end
-
 local function appList(): { App }
 	local list: { App } = {
 		{
@@ -531,16 +523,6 @@ local function appList(): { App }
 			run = function()
 				require(script.Parent:WaitForChild("PhotoMode")).setOpen(true)
 			end,
-		},
-		{
-			name = "Season",
-			label = "Season",
-			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
-		},
-		{
-			name = "Logbook",
-			label = "Logbook",
-			mount = panelApp("LogbookHud", "Holder", "Logbook", explorationController),
 		},
 		{
 			name = "Crew",
@@ -1230,7 +1212,7 @@ local function build(statusRegion: Frame)
 	g.Parent = player:WaitForChild("PlayerGui")
 end
 
--- J (on foot: J is also the car's lights) / L3 -> Logbook; Start -> Settings; again closes
+-- Start -> Settings; again closes
 local NAV_KEYS = {
 	[Enum.KeyCode.Up] = true,
 	[Enum.KeyCode.Down] = true,
@@ -1239,7 +1221,7 @@ local NAV_KEYS = {
 	[Enum.KeyCode.Return] = true,
 }
 
-local function shortcut(input: InputObject, processed: boolean)
+local function shortcut(input: InputObject, _processed: boolean)
 	local key = input.KeyCode
 	-- keyboard: the first arrow or Return selects, then Roblox's selection navigation moves and presses
 	if open and NAV_KEYS[key] then
@@ -1254,13 +1236,6 @@ local function shortcut(input: InputObject, processed: boolean)
 	local app: string? = nil
 	if key == Enum.KeyCode.ButtonStart then
 		app = "Settings"
-	elseif key == Enum.KeyCode.ButtonL3 then
-		app = "Logbook"
-	elseif key == Enum.KeyCode.J and not processed then
-		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-		if not (hum and hum.SeatPart) then
-			app = "Logbook"
-		end
 	end
 	if not app then
 		return

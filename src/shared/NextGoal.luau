@@ -2,18 +2,16 @@
 -- NextGoal: the one unlock the HUD nags about (docs/03 section 10 pacing, docs/15 section 3).
 -- Pure and Lune-tested (tests/NextGoal.spec.luau). Reads the client's PlayerDataChanged snapshot
 -- and returns every live unlock as the numbers close to it, nearest first:
---   rank (or Service Star past Admiral) > vehicle > certification > gear > upgrade > season
+--   rank (or Service Star past Admiral) > vehicle > certification > gear > upgrade
 -- The fraction is value / target; the preference order only breaks ties, so the chip shows the
 -- goal the player is actually closest to. A goal the rank gate already passed is not listed:
 -- a certification the player still lacks is the real next unlock then.
-local Lighthouses = require(script.Parent.Lighthouses)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local ProgressionRules = require(script.Parent.ProgressionRules)
-local SeasonRules = require(script.Parent.SeasonRules)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
 
-export type Kind = "Rank" | "Vehicle" | "Cert" | "Gear" | "Upgrade" | "Season" | "Light"
-export type Unit = "Rep" | "Cash" | "Steps" | "XP"
+export type Kind = "Rank" | "Vehicle" | "Cert" | "Gear" | "Upgrade"
+export type Unit = "Rep" | "Cash" | "Steps"
 
 export type Goal = {
 	kind: Kind,
@@ -35,8 +33,6 @@ local PREFERENCE: { [Kind]: number } = {
 	Cert = 3,
 	Gear = 4,
 	Upgrade = 5,
-	Season = 6,
-	Light = 7,
 }
 
 local VEHICLE_LABEL = {
@@ -220,48 +216,8 @@ local function upgradeGoals(goals: { Goal }, snapshot: { [string]: any }, rankIn
 	end
 end
 
--- A ready, unlit lighthouse is the next thing to do in the world (docs/03 section 7).
-local function lightGoals(goals: { Goal }, snapshot: { [string]: any }, rankIndex: number)
-	local light = Lighthouses.next(snapshot.flags)
-	if not light then
-		return
-	end
-	if rankIndex < light.rankIndex or (tonumber(snapshot.rep) or 0) < light.rep then
-		return
-	end
-	if not earned(snapshot, light.cert) then
-		return
-	end
-	add(goals, "Light", `Light:{light.id}`, light.displayName, 0, 1, "Steps")
-end
-
-local function seasonGoals(goals: { Goal }, snapshot: { [string]: any }, now: number)
-	if not SeasonRules.live(now) then
-		return
-	end
-	local flags = snapshot.flags
-	local state = SeasonRules.fromFlag(if type(flags) == "table" then flags.season else nil)
-	local view = SeasonRules.view(state, now)
-	for _, tier in view.tiers do
-		if not tier.claimed then
-			local from = if tier.tier > 1 then view.tiers[tier.tier - 1].xp else 0
-			local span = math.max(0, tier.xp - from)
-			add(
-				goals,
-				"Season",
-				`Season:{tier.tier}`,
-				`Tier {tier.tier}`,
-				view.xp - from,
-				span,
-				"XP"
-			)
-			return
-		end
-	end
-end
-
 -- Every live goal, nearest first (fraction; ties by the preference order above).
-function NextGoal.goals(snapshot: { [string]: any }, now: number?): { Goal }
+function NextGoal.goals(snapshot: { [string]: any }, _now: number?): { Goal }
 	local goals: { Goal } = {}
 	if type(snapshot) ~= "table" then
 		return goals
@@ -272,14 +228,11 @@ function NextGoal.goals(snapshot: { [string]: any }, now: number?): { Goal }
 		1,
 		#ProgressionConfig.Ranks
 	)
-	local at = now or os.time()
 	rankGoal(goals, snapshot, rankIndex)
 	vehicleGoals(goals, snapshot, rankIndex)
 	certGoals(goals, snapshot)
 	gearGoals(goals, snapshot, rankIndex)
 	upgradeGoals(goals, snapshot, rankIndex)
-	lightGoals(goals, snapshot, rankIndex)
-	seasonGoals(goals, snapshot, at)
 	local order: { [string]: number } = {}
 	for i, goal in goals do
 		order[goal.key] = i

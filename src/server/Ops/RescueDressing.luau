@@ -92,7 +92,7 @@ local GOLD = Color3.fromRGB(255, 205, 80)
 
 -- A spectacular variant (docs/15 H2): the Golden Gull reads at a distance. Legendary creatures
 -- are drawn at twice size and carry a gold glow and sparkles; Epics get a smaller glow and no beam
--- (the beam itself and the sky flare are AlbumService.AnnounceCall).
+-- (the beam itself and the sky flare are World/SkyFlare).
 local function scaleOffset(offset: CFrame, scale: number): CFrame
 	return CFrame.new(offset.Position * scale) * (offset - offset.Position)
 end

@@ -11,7 +11,6 @@
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason; Cash-owned OR pass-owned)
 --   ProgressionService.OwnsVehiclePass(player, vehicleId) -> boolean
 --   ProgressionService.GetGearBonus(player, stat) -> multiplier (1 by default)
---   ProgressionService.BuyStock(player, price, key, isGear) -> ok, reason (H3 Chandlery stock)
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
@@ -367,47 +366,6 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	if itemId == "Lifeboat" then
 		BadgeService.Count(player, "LifeboatBought")
 	end
-	return true, "ok"
-end
-
--- Chandlery stock (docs/15 H3): StockService validated the rotating slot; pay and grant here.
--- Gear stock grants one level of the existing gear (its real effect); trims and decor are data-only
--- cosmetic flags in data.flags.stock until they have art.
-function ProgressionService.BuyStock(
-	player: Player,
-	price: number,
-	key: string,
-	isGear: boolean
-): (boolean, string)
-	local data = DataService.Get(player)
-	if not data then
-		return false, "Data not loaded"
-	end
-	if type(price) ~= "number" or price < 0 or price ~= price or data.cash < price then
-		return false, "Need Cash"
-	end
-	if isGear then
-		if not ProgressionConfig.Gear[key] or (data.gear[key] or 0) >= Rules.maxGearLevel() then
-			return false, "Max level"
-		end
-		data.gear[key] = (data.gear[key] or 0) + 1
-	else
-		local owned = if type(data.flags.stock) == "table" then data.flags.stock else {}
-		if owned[key] == true then
-			return false, "Owned" -- a trim is one-time: never take Cash for it twice
-		end
-		owned[key] = true
-		if not ProgressionService.SetFlag(player, "stock", owned) then
-			return false, "Full"
-		end
-	end
-	data.cash -= price
-	Telemetry.CashSpent(player, price, data.cash, if isGear then "Gear" else "Stock", key)
-	Telemetry.Custom(player, "StockBuy", 1, if isGear then "Gear" else "Cosmetic", key)
-	Telemetry.Funnel(player, "FirstUnlock") -- docs/15 section 3 step 9: the first unlock
-	DataService.MarkDirty(player)
-	push(player, data, { bought = key })
-	task.spawn(DataService.Save, player, false)
 	return true, "ok"
 end
 

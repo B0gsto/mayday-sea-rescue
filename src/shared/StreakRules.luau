@@ -1,7 +1,6 @@
 --!strict
 -- StreakRules: pure daily streak maths (docs/15 section 1 and hook H5), tested in
--- tests/Streak.spec.luau. A crate is available once per UTC day; days index from the Unix epoch
--- like ChallengeRules.
+-- tests/Streak.spec.luau. A crate is available once per UTC day; days index from the Unix epoch.
 --
 -- The state lives in data.flags.streak as a flat table (ProgressionRules sanitizes flags that way):
 -- d = last claimed UTC day index (0 = never), s = day in the 7-day cycle (0..7), c = the day
