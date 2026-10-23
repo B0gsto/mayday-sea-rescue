@@ -3,9 +3,14 @@
   "name": "Mayday: Sea Rescue",
   "universeId": 10772117922,
   "placeId": 74810284434342,
-  "creator": { "type": "Group", "id": "548313786", "name": "Brightwake Games" },
+  "creator": {
+    "type": "Group",
+    "id": "548313786",
+    "name": "Brightwake Games"
+  },
   "apiKey": "~/RobloxProjects/.roblox-api-key-brightwake",
   "visibility": "PRIVATE",
   "teamCreate": false,
-  "createdAt": "2026-10-20T17:52:32Z"
+  "createdAt": "2026-10-20T17:52:32Z",
+  "window": "Mayday: Sea Rescue (placeId: 74810284434342)"
 }

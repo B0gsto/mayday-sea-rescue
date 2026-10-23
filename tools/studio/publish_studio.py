@@ -35,6 +35,8 @@ IS_LAUNCH = "--launch" in sys.argv
 TARGET = json.load(open(os.path.join(REPO, "deploy", "launch-target.json" if IS_LAUNCH else "target.json")))
 UNIVERSE, PLACE = TARGET["universeId"], TARGET["placeId"]
 STATE = LAUNCH if IS_LAUNCH else os.path.join(REPO, "deploy", "state.json")
+if IS_LAUNCH:  # studio-load.py only loads into the game's owned place; name the launch one
+    os.environ["STUDIO_LOAD_TARGET"] = os.path.join(REPO, "deploy", "launch-target.json")
 MONETIZATION = os.path.join("src", "shared", "Config", "MonetizationConfig.luau")
 AUTOSAVES = os.path.expanduser("~/Library/Application Support/Roblox/RobloxStudio/AutoSaves")
 PACK = re.compile(r"TexturePack|AssetResolutionWorkflow|Could not find asset with hash")
