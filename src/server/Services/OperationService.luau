@@ -651,7 +651,7 @@ end
 
 local advance: (op: any, track: Track) -> ()
 local finish: (op: any, reason: string) -> ()
-local startTakeover: (op: any, reason: string) -> ()
+local startTakeover: (op: any, reason: string, raced: number?) -> ()
 
 local function scaled(seconds: number): number
 	return seconds * (if RunService:IsStudio() then OperationService.DevTimeScale else 1)
@@ -891,7 +891,8 @@ end
 
 ---------------------------------------------------------------- takeover
 
-startTakeover = function(op: any, reason: string)
+-- `raced`: the casualty the K15 racer already has alongside; it picks them up itself (op.raceDone).
+startTakeover = function(op: any, reason: string, raced: number?)
 	if op.takeover or op.state ~= "Active" then
 		return
 	end
@@ -909,10 +910,21 @@ startTakeover = function(op: any, reason: string)
 	-- 2026-10-21: casualties still in the water are picked up by an NPC boat in front of the player
 	-- (the same climb aboard); the op ends, unpaid, once they are all aboard it
 	local waiting = 0
+	local function one()
+		waiting -= 1
+		if waiting == 0 then
+			finish(op, "Takeover")
+		end
+	end
+	if raced then
+		waiting += 1
+		op.raceDone = one
+	end
 	local vehicles = service("VehicleService")
 	for i, c in op.casualties do
 		if
 			vehicles
+			and i ~= raced
 			and not c.delivered
 			and not c.aboard
 			and RescueService.VictimPosition(op.scene, i)
@@ -922,12 +934,7 @@ startTakeover = function(op: any, reason: string)
 				return RescueService.VictimPosition(op.scene, i)
 			end, function()
 				return (RescueService.ReleaseVictim(op.scene, i))
-			end, function()
-				waiting -= 1
-				if waiting == 0 then
-					finish(op, "Takeover")
-				end
-			end)
+			end, one)
 		end
 	end
 	if waiting == 0 then
@@ -1507,6 +1514,36 @@ local function activate(op: any, player: Player)
 	newTrack(op, player, members)
 	radio(op, "Gale Isles Coastguard", op.radioLine or op.def.radioLine)
 	advance(op, op.tracks[1])
+	-- K15 (docs/16): from the player's 4th call an NPC RIB races them to the first casualty; there
+	-- first, it takes them and the call ends unpaid (a takeover). Never on the first three calls.
+	local vehicles = service("VehicleService")
+	local total = player:GetAttribute("OpsCompletedTotal") -- nil until a call counts: no race
+	if
+		vehicles
+		and not op.isBig
+		and type(total) == "number"
+		and not Onboarding.failsafeCall(total)
+	then
+		task.spawn(NpcPickup.run, vehicles, function()
+			return RescueService.VictimPosition(op.scene, 1)
+		end, function()
+			return (RescueService.ReleaseVictim(op.scene, 1))
+		end, function()
+			if op.raceDone then
+				op.raceDone()
+			end
+		end, {
+			delay = NpcPickup.RACE_DELAY,
+			claim = function(): boolean
+				local c = op.casualties[1]
+				if op.state ~= "Active" or op.takeover or not c or c.aboard or c.delivered then
+					return false
+				end
+				startTakeover(op, "Race", 1)
+				return true
+			end,
+		})
+	end
 end
 
 local function joinBig(op: any, player: Player)

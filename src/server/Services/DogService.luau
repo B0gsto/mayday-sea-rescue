@@ -21,6 +21,9 @@
 --   DogPoint:FireClient(player, { dog = Model, direction = Vector3 (unit, flat),
 --                                 position = Vector3, distance = number })
 -- The client (DogController) turns his head, shows a "Woof!" bubble and a small arrow.
+-- K14 (docs/16): he is the guide. On a craft (hidden) with his player idle for BosunGuide.IDLE s, the
+-- same DogPoint goes out for the nearest survivor (their call's victims or a free-roam swimmer), with
+-- `from` = the craft: the bark, bubble and arrow come from it.
 --
 -- Cosmetics (RP-M5): the player's Cos_Dog attribute picks the companion (Config/Cosmetics/Dog: Bosun, or
 -- a Water Dog Friends dog on Bosun's rig in its own coat colour; same abilities) and Cos_DogHarness /
@@ -36,12 +39,14 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local BosunGuide = require(Shared:WaitForChild("Dog"):WaitForChild("BosunGuide"))
 local BosunRig = require(Shared:WaitForChild("Dog"):WaitForChild("BosunRig"))
 local BosunWetness = require(Shared:WaitForChild("Dog"):WaitForChild("BosunWetness"))
 local Cosmetics = require(Shared:WaitForChild("Cosmetics"))
 local DogVisual = require(Shared:WaitForChild("Dog"):WaitForChild("DogVisual"))
 local DogWear = require(Shared:WaitForChild("Dog"):WaitForChild("DogWear"))
 local Net = require(Shared:WaitForChild("Net"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 local DogService = {}
 DogService.Priority = 50
@@ -49,6 +54,7 @@ DogService.Priority = 50
 local NOSE_RANGE = 80 -- docs 02 section 5 (Kennel upgrades are [L]) -- tune
 local POINT_INTERVAL = 4 -- seconds between sniffs -- tune
 local POINT_HOLD = 2.5 -- seconds he keeps facing the victim
+local GUIDE_TICK = 1 -- seconds between guide checks (BosunGuide)
 local LEG_HEIGHT = DogVisual.LEG_HEIGHT -- body centre above the ground
 local FLOAT_HEIGHT = 0.5 -- body centre above the water surface
 local TELEPORT_DISTANCE = 70
@@ -86,6 +92,7 @@ local WEAR_KIND = { DogBandana = "Bandana", DogJacket = "Jacket", DogHat = "Hat"
 local WET_DARKEN = 0.72 -- wet fabric drops about a quarter of its value (docs/05 3.3)
 
 local dogs: { [Player]: Dog } = {}
+local guides: { [Player]: BosunGuide.State } = {}
 local applyWear: (dog: Dog) -> ()
 local dogOption: (dog: Dog) -> { [string]: any }
 local folder: Folder
@@ -621,6 +628,56 @@ local function sniff(dog: Dog, now: number)
 	})
 end
 
+local ambient: any = nil
+local function swimmerPositions(): { Vector3 }
+	if ambient == nil then
+		local module = script.Parent:FindFirstChild("AmbientRescueService")
+		local ok, result = false, nil
+		if module and module:IsA("ModuleScript") then
+			ok, result = pcall(require, module)
+		end
+		ambient = if ok and type(result) == "table" then result else false
+	end
+	if not ambient or type(ambient.SwimmerPositions) ~= "function" then
+		return {}
+	end
+	local ok, list = pcall(ambient.SwimmerPositions)
+	return if ok and type(list) == "table" then list else {}
+end
+
+-- K14: on a boat, idle long enough, he points the way to the nearest survivor.
+local function guide(dog: Dog, dt: number)
+	local character = dog.player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local craft = humanoid and vehicleOf(humanoid.SeatPart)
+	local id = craft and craft:GetAttribute("VehicleId")
+	local root = craft and craft.PrimaryPart
+	local vel = if root then root.AssemblyLinearVelocity else Vector3.zero
+	local state = guides[dog.player] or BosunGuide.new()
+	guides[dog.player] = state
+	local onCraft = root ~= nil and type(id) == "string" and VehicleConfig.get(id) ~= nil
+	if not BosunGuide.step(state, dt, onCraft, Vector3.new(vel.X, 0, vel.Z).Magnitude) then
+		return
+	end
+	local at = (root :: BasePart).Position
+	local targets = table.clone(victimPositions(dog.player))
+	for _, p in swimmerPositions() do
+		table.insert(targets, p)
+	end
+	local best = BosunGuide.nearest(at, targets)
+	local flat = if best then Vector3.new(best.X - at.X, 0, best.Z - at.Z) else Vector3.zero
+	if flat.Magnitude < 1 then
+		return
+	end
+	Net.event("DogPoint"):FireClient(dog.player, {
+		dog = dog.model,
+		direction = flat.Unit,
+		position = best,
+		distance = flat.Magnitude,
+		from = craft,
+	})
+end
+
 -- Rain on him now (0..1): the storm's intensity, unless something is over his head.
 local function rainOn(dog: Dog): number
 	local w = getWeather()
@@ -691,6 +748,7 @@ local function removeDog(player: Player)
 		dog.model:Destroy()
 		dogs[player] = nil
 	end
+	guides[player] = nil
 end
 
 local function onCharacter(player: Player, character: Model)
@@ -762,6 +820,14 @@ function DogService.Start()
 		local now = os.clock()
 		for _, dog in dogs do
 			step(dog, now)
+		end
+	end)
+	task.spawn(function()
+		while true do
+			local dt = task.wait(GUIDE_TICK)
+			for _, dog in dogs do
+				guide(dog, dt)
+			end
 		end
 	end)
 	task.spawn(function()

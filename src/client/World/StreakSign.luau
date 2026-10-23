@@ -1,14 +1,18 @@
 --!strict
--- StreakSign: the small porch sign beside the daily crate (docs/15 section 1): a clock icon and
--- the time to the next crate in `12:04` style. Built locally by StreakController.
+-- StreakSign: the small sign beside the daily crate at the player's bay (docs/16 K12): seven day pips,
+-- no text. Claimed days glow gold, today's crate (when it waits) glows white. Built locally by
+-- StreakController; the board reads from the `at` frame's +Z side.
 
 local WOOD = Color3.fromRGB(96, 66, 42)
 local FACE = Color3.fromRGB(34, 42, 50)
-local INK = Color3.fromRGB(242, 236, 218)
+local PIP_OFF = Color3.fromRGB(64, 48, 32)
+local PIP_ON = Color3.fromRGB(255, 214, 110)
+local PIP_TODAY = Color3.fromRGB(242, 236, 218)
+local DAYS = 7
 
 export type Sign = {
 	model: Model,
-	setTime: (seconds: number) -> (),
+	setDays: (claimed: number, today: boolean) -> (),
 }
 
 local StreakSign = {}
@@ -19,10 +23,12 @@ local function part(
 	size: Vector3,
 	cf: CFrame,
 	color: Color3,
-	material: Enum.Material
+	material: Enum.Material,
+	shape: Enum.PartType?
 ): Part
 	local p = Instance.new("Part")
 	p.Name = name
+	p.Shape = shape or Enum.PartType.Block
 	p.Size = size
 	p.CFrame = cf
 	p.Color = color
@@ -35,17 +41,6 @@ local function part(
 	p.BottomSurface = Enum.SurfaceType.Smooth
 	p.Parent = parent
 	return p
-end
-
-local function frame(parent: Instance, name: string, pos: UDim2, size: UDim2): Frame
-	local f = Instance.new("Frame")
-	f.Name = name
-	f.Position = pos
-	f.Size = size
-	f.BackgroundColor3 = INK
-	f.BorderSizePixel = 0
-	f.Parent = parent
-	return f
 end
 
 function StreakSign.build(at: CFrame): Sign
@@ -62,85 +57,55 @@ function StreakSign.build(at: CFrame): Sign
 		Enum.Material.Wood
 	)
 	model.PrimaryPart = post
-	local board = part(
+	part(
 		model,
 		"Board",
-		Vector3.new(3.6, 1.5, 0.18),
+		Vector3.new(3.6, 1.1, 0.18),
 		at * CFrame.new(0, 4.5, 0),
 		WOOD,
 		Enum.Material.Wood
 	)
 	part(
 		model,
+		"Face",
+		Vector3.new(3.36, 0.86, 0.04),
+		at * CFrame.new(0, 4.5, 0.1),
+		FACE,
+		Enum.Material.SmoothPlastic
+	)
+	part(
+		model,
 		"Cap",
 		Vector3.new(3.9, 0.16, 0.5),
-		at * CFrame.new(0, 5.3, 0),
+		at * CFrame.new(0, 5.13, 0),
 		WOOD,
 		Enum.Material.Wood
 	)
 
-	local gui = Instance.new("SurfaceGui")
-	gui.Name = "Time"
-	gui.Face = Enum.NormalId.Back
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 64
-	gui.LightInfluence = 0.4
-	gui.Parent = board
-
-	local panel = Instance.new("Frame")
-	panel.Name = "Panel"
-	panel.Size = UDim2.fromScale(1, 1)
-	panel.BackgroundColor3 = FACE
-	panel.BorderSizePixel = 0
-	panel.Parent = gui
-
-	-- clock icon: a face with two hands, no numerals
-	local clock = Instance.new("Frame")
-	clock.Name = "Clock"
-	clock.AnchorPoint = Vector2.new(0, 0.5)
-	clock.Position = UDim2.fromOffset(16, 48)
-	clock.Size = UDim2.fromOffset(48, 48)
-	clock.BackgroundColor3 = FACE
-	clock.BorderSizePixel = 0
-	clock.Parent = panel
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(1, 0)
-	corner.Parent = clock
-	local ring = Instance.new("UIStroke")
-	ring.Color = INK
-	ring.Thickness = 2
-	ring.Parent = clock
-
-	for i, spec in { { 13, 20 }, { 9, 110 } } do
-		local hand =
-			frame(clock, `Hand{i}`, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(2, spec[1]))
-		hand.AnchorPoint = Vector2.new(0.5, 1)
-		hand.Rotation = spec[2]
+	local pips: { Part } = {}
+	for i = 1, DAYS do
+		pips[i] = part(
+			model,
+			`Pip{i}`,
+			Vector3.new(0.36, 0.36, 0.36),
+			at * CFrame.new((i - (DAYS + 1) / 2) * 0.46, 4.5, 0.14),
+			PIP_OFF,
+			Enum.Material.SmoothPlastic,
+			Enum.PartType.Ball
+		)
 	end
-	local pin = frame(clock, "Pin", UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(5, 5))
-	pin.AnchorPoint = Vector2.new(0.5, 0.5)
-	pin.BackgroundColor3 = INK
-
-	local label = Instance.new("TextLabel")
-	label.Name = "Time"
-	label.Position = UDim2.fromOffset(74, 0)
-	label.Size = UDim2.new(1, -80, 1, 0)
-	label.BackgroundTransparency = 1
-	label.Font = Enum.Font.BuilderSansMedium
-	label.TextSize = 34
-	label.TextColor3 = INK
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Text = "24:00"
-	label.Parent = panel
 
 	model.Parent = workspace
 
 	return {
 		model = model,
-		setTime = function(seconds: number)
-			local total = math.max(0, math.floor(seconds))
-			label.Text =
-				string.format("%d:%02d", math.floor(total / 3600), math.floor(total % 3600 / 60))
+		setDays = function(claimed: number, today: boolean)
+			for i, pip in pips do
+				local on = i <= claimed
+				local now = today and i == claimed + 1
+				pip.Color = if on then PIP_ON elseif now then PIP_TODAY else PIP_OFF
+				pip.Material = if on or now then Enum.Material.Neon else Enum.Material.SmoothPlastic
+			end
 		end,
 	}
 end

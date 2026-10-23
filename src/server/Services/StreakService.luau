@@ -1,10 +1,11 @@
 --!strict
 -- StreakService: the daily streak crate and the welcome-back crate (docs/15 section 1, hook H5).
--- One crate per UTC day per player on the station porch. StreakRules owns the day maths and the
+-- One crate per UTC day per player, at their launch bay on the spawn path (docs/16 K12,
+-- BayLaunch.CRATE; the station porch when no bay). StreakRules owns the day maths and the
 -- forgiveness; StreakConfig owns the payouts. Cash goes through ProgressionService.Award and the
 -- streak lives on the profile (data.flags.streak).
 --
--- The crate and the porch sign are built locally by each client (World/StreakCrate,
+-- The crate and its day-pip sign are built locally by each client (World/StreakCrate,
 -- World/StreakSign) so only that player sees their own crate open. Remotes (under
 -- ReplicatedStorage.Net):
 --   Streak_State  S->C  { day, streak, available, secondsToDay, preview? }
@@ -17,6 +18,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local GroupReward = require(Shared:WaitForChild("GroupReward"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("StreakRules"))
@@ -28,6 +30,7 @@ local DataService = require(script.Parent.DataService)
 local GroupRewardService = require(script.Parent.GroupRewardService)
 local ProgressionService = require(script.Parent.ProgressionService)
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
+local VehicleService = require(script.Parent:WaitForChild("VehicleService"))
 
 local StreakService = {}
 StreakService.Priority = 90
@@ -100,7 +103,7 @@ local function ensureRemoteFunction(folder: Instance, name: string): RemoteFunct
 end
 
 -- Claim today's crate. The client has already seen its own local crate; the server only checks
--- that the player is at the porch and that today is still unclaimed.
+-- that the player is at their crate and that today is still unclaimed.
 local function open(player: Player): any
 	local data = DataService.Get(player)
 	local character = player.Character
@@ -108,8 +111,10 @@ local function open(player: Player): any
 	if not data or not root or not root:IsA("BasePart") then
 		return nil
 	end
-	local dx = root.Position.X - StreakConfig.PorchPosition.X
-	local dz = root.Position.Z - StreakConfig.PorchPosition.Z
+	local bay = VehicleService.GetBay(player)
+	local at = if bay then (bay.CFrame * BayLaunch.CRATE).Position else StreakConfig.PorchPosition
+	local dx = root.Position.X - at.X
+	local dz = root.Position.Z - at.Z
 	if dx * dx + dz * dz > StreakConfig.OpenRange * StreakConfig.OpenRange then
 		return nil
 	end
