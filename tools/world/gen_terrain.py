@@ -36,7 +36,8 @@ OLIVE = "WoodPlanks"
 WORN = "Brick"
 # farmland field classes by field hash (gen_terrain.materials, scatter_props): green < FIELD_GREEN <= olive < FIELD_OLIVE
 # <= straw < FIELD_STRAW <= heath < FIELD_HEATH <= bracken
-FIELD_GREEN, FIELD_OLIVE, FIELD_STRAW, FIELD_HEATH = 0.5, 0.78, 0.88, 0.94
+# WP-3: more hay / stubble fields (16 %) so the patchwork reads from the air
+FIELD_GREEN, FIELD_OLIVE, FIELD_STRAW, FIELD_HEATH = 0.42, 0.7, 0.86, 0.93
 RIPPLE = "Glacier"
 WRACK = "Ice"
 
@@ -254,6 +255,67 @@ def hill_relief(X, Z, s):
     return hedge_h + hum * (1 - hedge) + rock_h, hedge, cid, smoothstep(0.12, 0.4, rk)
 
 
+def ridge_z(X, s):
+    return L.MOOR_RIDGE["z"] + 110 * fbm(X, 0 * X, 600, s + 93)
+
+
+def moor_ridge(X, Z, dl, s):
+    """WP-3: the moor ridge behind Port Haven (the town's skyline), lower at the High Road's col."""
+    R = L.MOOR_RIDGE
+    col = 1 - 0.7 * np.exp(-((X - R["colX"]) / 260) ** 2)
+    amp = (R["height"] + 35 * fbm(X, 0 * X, 450, s + 94)) * smoothstep(1950, 1450, np.abs(X)) * col \
+        * smoothstep(60, 260, dl)
+    return amp * np.exp(-((Z - ridge_z(X, s)) / R["width"]) ** 2) * (0.85 + 0.15 * ridged(X, Z, 140, s + 95))
+
+
+def terraces(X, Z, h):
+    """WP-3: the hillside north of the town platform cut into TOWN_HILL shelves that follow the (~100-stud smoothed)
+    contours, with near-vertical granite retaining walls between them. Returns (h, wall mask)."""
+    th, tp = L.TOWN_HILL, L.TOWN_PLATFORM
+    step, n, wf = th["step"], th["shelves"], th["wall"]
+    hs = box_blur(h, 12)
+    t = np.maximum(hs - tp["y"], 0) / step
+    k = np.floor(t)
+    f = t - k
+    rise = smoothstep(1 - wf, 1, f)
+    q = tp["y"] + step * (k + rise) + 1.2 * f * (1 - rise)  # shelves tilt 1.2 studs toward the wall below
+    top = tp["y"] + step * n
+    m = smoothstep(tp["minX"] - th["fadeX"], tp["minX"], X) * smoothstep(tp["maxX"] + th["fadeX"], tp["maxX"], X) \
+        * smoothstep(tp["minZ"], tp["minZ"] - 14, Z) * smoothstep(tp["minZ"] - th["depth"], tp["minZ"] - th["depth"] + 60, Z) \
+        * smoothstep(top + 0.6 * step, top + 0.1 * step, hs)
+    detail = np.clip(h - box_blur(h, 3), -1.5, 2.5) * (1 - rise)  # keep the hedges and hummocks on the shelves
+    return h + (q + detail - h) * m, (m > 0.5) & (f > 1 - wf - 0.03) & (k < n)
+
+
+def tors(X, Z, h, s):
+    """WP-3: granite tors along the moor ridge crest: 2-4 stacks of rounded slabs (5-stud layers shrinking upward,
+    sat down into the slope). Returns (h, tor mask)."""
+    R = L.MOOR_RIDGE
+    rnd = lambda n, k: float(_hash(np.array([n]), np.array([k]), s + 800)[0])  # noqa: E731
+    out = h.copy()
+    x0 = X[0, 0]
+    for n in range(R["tors"]):
+        xc = -1600 + 3200 * (n + 0.2 + 0.6 * rnd(n, 0)) / R["tors"]
+        if abs(xc - R["colX"]) < 220:  # keep the High Road clear
+            continue
+        zc = float(ridge_z(np.array([xc]), s)[0]) + 80 * (rnd(n, 1) - 0.5)
+        for m in range(2 + int(3 * rnd(n, 2))):
+            sx = xc + 26 * (rnd(n, 10 + m) - 0.5) * 2
+            sz = zc + 26 * (rnd(n, 20 + m) - 0.5) * 2
+            a, b = 7 + 8 * rnd(n, 30 + m), 6 + 6 * rnd(n, 40 + m)
+            yaw = math.pi * rnd(n, 50 + m)
+            i0, j0 = int((sx - x0) / L.CELL), int((sz - x0) / L.CELL)
+            sl = (slice(j0 - 10, j0 + 11), slice(i0 - 10, i0 + 11))
+            u = (X[sl] - sx) * math.cos(yaw) + (Z[sl] - sz) * math.sin(yaw)
+            v = -(X[sl] - sx) * math.sin(yaw) + (Z[sl] - sz) * math.cos(yaw)
+            base = h[j0 - 5:j0 + 6, i0 - 5:i0 + 6].min() - 1
+            for k in range(3 + int(4 * rnd(n, 60 + m))):
+                sc = 1 - 0.13 * k
+                inside = (np.abs(u) / (a * sc)) ** 3 + (np.abs(v) / (b * sc)) ** 3 < 1
+                out[sl] = np.where(inside, np.maximum(out[sl], base + 5 * (k + 1)), out[sl])
+    return out, out > h + 0.5
+
+
 # ---------------------------------------------------------------- bake
 
 
@@ -265,11 +327,26 @@ def bake():
     # the bake window cuts Great Gale (it runs on to x -5,600 and z -4,500): close the island inside the window with a
     # rounded, wandering cliff / rocky shore, so it meets the sea all round (no square land edge from the air)
     r6 = (np.abs(X) ** 6 + np.abs(Z) ** 6) ** (1 / 6)
-    d_win = L.HALF_EXTENT - 360 + 110 * fbm(X, Z, 520, s + 90) - r6
+    # WP-3: on the west, north and east sides (not the gameplay south coast or Skerry) the shore swings out into
+    # 2-3 headlands and in to round coves per side; headlands are 30-60 stud cliffs, beaches only in the coves
+    ws = smoothstep(250, -150, Z)
+    lob = np.sin(9 * np.arctan2(Z, X) + np.pi + 1.3 * fbm(X, Z, 900, s + 92))  # pi: a headland at the HighRoad's end
+    cove = smoothstep(-0.35, -0.75, lob) * ws
+    lobe = (200 * np.maximum(lob, 0) ** 1.6 - 190 * np.maximum(-lob, 0) ** 0.7) * (0.75 + 0.5 * fbm(X, Z, 800, s + 96)) - 60
+    d_win = L.HALF_EXTENT - 360 + 110 * fbm(X, Z, 520, s + 90) + lobe * ws - r6
+    d_win = np.minimum(d_win, L.HALF_EXTENT - 160 - r6)  # headland tips stay inside the window's 120-stud ramp
     tw_ = smoothstep(-80, 80, d - d_win)[None]  # 1 where the window shore is the nearer coast
     d = np.minimum(d, d_win)
-    H = H * (1 - tw_[0]) + (55 + 35 * fbm(X, Z, 300, s + 91)) * tw_[0]
-    W = W * (1 - tw_) + np.array([0.55, 0.45, 0, 0, 0])[:, None, None] * tw_
+    H_win = (55 + 35 * fbm(X, Z, 300, s + 91)) * (1 - ws) + (45 + 15 * fbm(X, Z, 300, s + 91)) * (1 - cove) * ws
+    W_win = np.array([0.55, 0.45, 0, 0, 0])[:, None, None] * (1 - ws) \
+        + np.stack([1 - cove, 0 * cove, cove, 0 * cove, 0 * cove]) * ws
+    # inland the window coast's kind and height fade back to the island's, so no scarp runs along the medial axis
+    # where the nearer coast switches (the long grey rock streaks seen from the air)
+    near = (np.exp(-np.maximum(d_win, 0) / 250) * ws + (1 - ws))
+    H_win = H + (H_win - H) * near
+    W_win = W + (W_win - W) * near[None]
+    H = H * (1 - tw_[0]) + H_win * tw_[0]
+    W = W * (1 - tw_) + W_win * tw_
     wc, wr, wb, wh, wm = W  # cliff, rocky, beach, harbour, mud
 
     # irregular coastline: rocky and cliff coasts get headlands and coves, beaches stay smooth
@@ -297,7 +374,8 @@ def bake():
     beach_l = np.minimum(dl, bw) / 28 + dunes + cut * fk + 0.9 * rise_d(np.maximum(dl - bw - dw, 0)) + 1.0 * dune_t
     harb_l = 4 + rise_d(np.maximum(dl - 200, 0))
     mud_l = dl / 90 + 0.5 * rise_d(dl)
-    h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + beacon * smoothstep(0, 400, dl)
+    h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + beacon * smoothstep(0, 400, dl) \
+        + moor_ridge(X, Z, dl, s)
     # farmland (the T8 farm mask, before the platform blend) is rolling pasture: no granite knuckles or hummock fields
     farm0 = smoothstep(60, 180, dl) * smoothstep(230, 170, h_land)
     h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s, fk * (1 - 0.85 * farm0))
@@ -392,9 +470,12 @@ def bake():
     hdh, hedge, hcid, hrock = hill_relief(X, Z, s)
     h = h + hdh * hm
     hill = (hm, hedge * hm, hcid, hrock * hm)
+    h, granite = terraces(X, Z, h)
+    h, tor = tors(X, Z, h, s)
+    granite = granite | tor
 
-    # T8: the bake window cuts the island; ramp land under the sea over the last 200 studs so the edge is no wall
-    edge = smoothstep(0, 200, L.HALF_EXTENT - np.maximum(np.abs(X), np.abs(Z)))
+    # T8: the bake window cuts the island; ramp land under the sea over the last 120 studs so the edge is no wall
+    edge = smoothstep(0, 120, L.HALF_EXTENT - np.maximum(np.abs(X), np.abs(Z)))
     h = np.where(h > -12, -12 + (h + 12) * edge, h)
 
     # ---- paving first (heights only change here), then materials on the final surface
@@ -410,6 +491,7 @@ def bake():
     mat = np.where(town & (dp < 40) & (soft | (mat == MI["Rock"]) | (mat == MI["Basalt"])), MI["Grass"], mat)
     lush = fbm(X, Z, 70, s + 95, 2) > 0.25
     mat = np.where(town & (dp >= 40) & (dp < tp["blend"] + 20) & soft, np.where(lush, MI[OLIVE], MI["Grass"]), mat)
+    mat = np.where(granite & (road_mat == 255), MI["Rock"], mat).astype(np.uint8)  # retaining walls and tors
     return xs, h, mat, d
 
 

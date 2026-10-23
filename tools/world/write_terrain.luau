@@ -210,7 +210,7 @@ elseif ARGS.mode == "colors" then
 	-- green (pasture, dark lush olive, pale hay), heather / hedge banks a dark purple-brown, granite neutral grey.
 	tints.Grass = { 121, 158, 87 }
 	tints.WoodPlanks = { 186, 235, 167 }
-	tints.Snow = { 195, 232, 178 }
+	tints.Snow = { 232, 226, 160 } -- WP-3: hay / stubble fields read warm against the pasture from the air
 	tints.Brick = { 210, 241, 205 }
 	tints.LeafyGrass = { 202, 187, 245 }
 	tints.Rock = { 235, 240, 250 }
