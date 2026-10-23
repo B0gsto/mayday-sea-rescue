@@ -41,13 +41,11 @@ local FLAT_THICKNESS = 0.2
 local MAX_PART = 2048
 -- Fallback square bands (Chebyshev distance from the centre), inner to outer. -- tune
 local FLAT_BANDS = { 700, 1200, 1800, 2600, OUTER_RADIUS }
--- Skirt: one Part under everything, its Brick mesh scaled past the 2048 part cap, so a high camera (review
--- aerials, a future helicopter) sees sea out to the edge of the view instead of bare seabed past OUTER_RADIUS.
--- At sea level it lies past the haze. Its bounds stay the 2048 box under the camera, so it is culled only when
--- the camera is over ~590 studs up and looking at the horizon. -- tune
-local SKIRT_SCALE = 12 -- 24,576 studs across
+-- Skirt: a grid of 2048-stud tiles under everything, shown only for a high camera (review aerials, a future
+-- helicopter), so the sea reaches the horizon instead of the bare seabed slab past OUTER_RADIUS. Real Parts,
+-- not one scaled mesh: a scaled Brick mesh kept its 2048 bounds and was culled from ~590 studs up (map pass 2).
+local SKIRT_TILES = 12 -- per side: 24,576 studs across (+/-12288), past the haze -- tune
 local SKIRT_DROP = 1.2 -- under the outer ring (OUTER_DROP)
-local SKIRT_FADE = 0.3 -- sea colour, slightly hazed
 
 type Template = {
 	ring: number,
@@ -74,7 +72,8 @@ export type Horizon = {
 	colourIds: { { number } }, -- per mesh: colour ids
 	fades: { { number } }, -- per mesh: fade 0..1 per colour id
 	flatFades: { number }, -- per part, flat fallback only: fade 0..1 of the part's band
-	skirt: Part,
+	skirt: { BasePart }, -- high-camera tiles
+	hazed: { BasePart }, -- haze-faded parts (outer ring, flat bands): hidden for a high camera
 	tint: Color3,
 	haze: Color3,
 	seaLevel: number,
@@ -231,6 +230,7 @@ local function buildMeshes(h: Horizon, parent: Instance, surface: string): (bool
 		table.clear(h.surfaced)
 		table.clear(h.colourIds)
 		table.clear(h.fades)
+		table.clear(h.hazed)
 		return false, reason
 	end
 	for n, t in TEMPLATES do
@@ -253,6 +253,8 @@ local function buildMeshes(h: Horizon, parent: Instance, surface: string): (bool
 			if t.ring == 1 then
 				OceanSurface.attach(part, surface)
 				table.insert(h.surfaced, part)
+			else
+				table.insert(h.hazed, part)
 			end
 			part.Name = `OceanHorizon{n}_{k}`
 			-- Rotate the copy about the grid centre: CFrame.Angles(0, -phi, 0) turns the angle
@@ -297,6 +299,7 @@ local function buildFlat(h: Horizon, parent: Instance)
 				table.insert(h.parts, p)
 				table.insert(h.offsets, offset)
 				table.insert(h.flatFades, fade)
+				table.insert(h.hazed, p)
 			end
 		end
 	end
@@ -317,7 +320,8 @@ function Horizon.new(
 		colourIds = {},
 		fades = {},
 		flatFades = {},
-		skirt = Instance.new("Part"),
+		skirt = {},
+		hazed = {},
 		tint = tint,
 		haze = haze,
 		seaLevel = seaLevel,
@@ -328,19 +332,25 @@ function Horizon.new(
 		warnOnce("[Ocean] horizon mesh unavailable; using the flat Part horizon")
 		buildFlat(h, parent)
 	end
-	local skirt = h.skirt
-	skirt.Name = "OceanSkirt"
-	skirt.Size = Vector3.new(MAX_PART, FLAT_THICKNESS, MAX_PART)
-	configure(skirt)
-	local mesh = Instance.new("SpecialMesh")
-	mesh.MeshType = Enum.MeshType.Brick
-	mesh.Scale = Vector3.new(SKIRT_SCALE, 1, SKIRT_SCALE)
-	mesh.Parent = skirt
-	local skirtOffset = CFrame.new(0, -SKIRT_DROP - FLAT_THICKNESS / 2, 0)
-	skirt.CFrame = CFrame.new(0, seaLevel, 0) * skirtOffset
-	skirt.Parent = parent
-	table.insert(h.parts, skirt)
-	table.insert(h.offsets, skirtOffset)
+	for i = 0, SKIRT_TILES - 1 do
+		for j = 0, SKIRT_TILES - 1 do
+			local tile = Instance.new("Part")
+			tile.Size = Vector3.new(MAX_PART, FLAT_THICKNESS, MAX_PART)
+			tile.TopSurface = Enum.SurfaceType.Smooth
+			tile.BottomSurface = Enum.SurfaceType.Smooth
+			tile.Name = `OceanSkirt{i}_{j}`
+			configure(tile)
+			tile.LocalTransparencyModifier = 1 -- shown by setHigh
+			local c = (SKIRT_TILES - 1) / 2
+			local offset =
+				CFrame.new((i - c) * MAX_PART, -SKIRT_DROP - FLAT_THICKNESS / 2, (j - c) * MAX_PART)
+			tile.CFrame = CFrame.new(0, seaLevel, 0) * offset
+			tile.Parent = parent
+			table.insert(h.skirt, tile)
+			table.insert(h.parts, tile)
+			table.insert(h.offsets, offset)
+		end
+	end
 	Horizon.setColours(h, tint, haze, true)
 	return h
 end
@@ -362,19 +372,23 @@ function Horizon.setColours(h: Horizon, tint: Color3, haze: Color3, force: boole
 	for _, part in h.surfaced do
 		part.Color = tint
 	end
-	h.skirt.Color = colourAt(tint, haze, SKIRT_FADE)
+	for _, tile in h.skirt do
+		tile.Color = tint:Lerp(Color3.new(), 0.15) -- matte reads lighter than the glossy far plane; Atmosphere hazes it
+	end
 end
 
--- High camera: show the skirt (off near sea level, where it would cover the underwater view) and hide the flat
--- fallback bands (Studio review aerials: seen from 1000+ studs up they drew as a grey sheet over the whole view).
+-- High camera: show the skirt tiles (off near sea level, where they would cover the underwater view) and hide
+-- the haze-faded parts (seen from 1000+ studs up they drew as a grey sheet / pale ring over the sea).
 function Horizon.setHigh(h: Horizon, high: boolean)
 	local skirtLtm = if high then 0 else 1
-	if h.skirt.LocalTransparencyModifier == skirtLtm then
+	if h.skirt[1].LocalTransparencyModifier == skirtLtm then
 		return
 	end
-	h.skirt.LocalTransparencyModifier = skirtLtm
-	for n in h.flatFades do
-		h.parts[n].LocalTransparencyModifier = 1 - skirtLtm
+	for _, tile in h.skirt do
+		tile.LocalTransparencyModifier = skirtLtm
+	end
+	for _, part in h.hazed do
+		part.LocalTransparencyModifier = 1 - skirtLtm
 	end
 end
 
@@ -405,6 +419,8 @@ function Horizon.destroy(h: Horizon)
 	table.clear(h.colourIds)
 	table.clear(h.fades)
 	table.clear(h.flatFades)
+	table.clear(h.skirt)
+	table.clear(h.hazed)
 end
 
 return Horizon

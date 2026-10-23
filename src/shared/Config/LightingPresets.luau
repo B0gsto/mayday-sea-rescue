@@ -3,7 +3,7 @@
 -- docs/05-art-direction.md section 6, as data. WeatherController picks a day base (Clear, Calm
 -- or Overcast; Clear is the always-sunny default), blends it toward Night by the sun elevation and
 -- toward Storm by Weather.getIntensity(), and swaps the matching Sky (src/client/Ocean/SkyAssets).
--- WaterColor is published to the ocean (Clear: blue-teal; others grey-green, darker in storm).
+-- WaterColor is published to the ocean (Clear: green-grey teal; others grey-green, darker in storm).
 -- Values are starting points (-- tune). Colours use palette hex codes from docs 05 section 3.
 --
 -- ClockTime is listed for reference and for setting the scene once; the controller never moves
@@ -149,25 +149,25 @@ local Clear: Preset = table.freeze({
 	ExposureCompensation = 0,
 	Ambient = hex("#2E3540"),
 	OutdoorAmbient = hex("#6E7C8C"),
-	ColorShift_Top = hex("#FFF2DC"), -- warm sun
+	ColorShift_Top = hex("#FFE6C4"), -- warm sun (map pass 2: warmer)
 	EnvironmentDiffuseScale = 1,
-	EnvironmentSpecularScale = 1,
-	AtmosphereDensity = 0.2,
-	AtmosphereHaze = 0.2,
-	AtmosphereColor = hex("#BFD6E6"),
+	EnvironmentSpecularScale = 0.75, -- less sky glitter on the sea
+	AtmosphereDensity = 0.26, -- map pass 2: distant land recedes
+	AtmosphereHaze = 0.6,
+	AtmosphereColor = hex("#C9D8DF"),
 	AtmosphereDecay = hex("#5C8DB8"),
 	AtmosphereGlare = 0.25,
 	CloudsCover = 0.45,
 	CloudsDensity = 0.3,
 	CloudsColor = hex("#FFFFFF"),
-	Saturation = 0.2,
-	Contrast = 0.1,
+	Saturation = 0.12,
+	Contrast = 0.13,
 	TintColor = hex("#FFFFFF"),
 	BloomIntensity = 0.25,
 	BloomSize = 24,
 	BloomThreshold = 1.4, -- sun glitter only, not the pale ground
 	SunRaysIntensity = 0.06,
-	WaterColor = hex("#1C5A5C"), -- clear teal (r2 art review: #2B5F70 rendered oversaturated cyan; mockup teal-blue)
+	WaterColor = hex("#2E5A55"), -- Cornish green-grey teal (map pass 2: #1C5A5C rendered Caribbean cyan)
 })
 
 local Overcast: Preset = table.freeze({
