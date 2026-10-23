@@ -6,7 +6,9 @@
 --     sash frame), string course, cornice, slate roof with ridge, granite stack with pots, dormers on some tall
 --     houses; doorcase with fanlight, hood and step; Fore Street lots get a glazed shopfront; `corner` lots get
 --     side windows. Styles per lot: rendered (9 colours, neighbours always differ), granite front, slate-hung
---     upper storeys, granite quoins; blinds and lit rooms seeded per lot.
+--     upper storeys, granite quoins; blinds and lit rooms seeded per lot. Roofs: dark Delabole slate, seeded pitch,
+--     hipped on corners and now and then, stacks 1 or 2 at seeded heights. lot.kind: "endon" (gable-end-on
+--     cottage), "chapel" (granite, tall round-headed windows), "garage" (single storey, roller door), "pub".
 --   TownBuildings.landmark(parent, lm, y) -> Model   TownLayout.LANDMARKS: Hotel, CustomsHouse, MarketHall.
 -- Night: "_GlassLit_" parts (lit rooms, shop windows) + ATT_Lamp_Window / ATT_Smoke markers go through CottageRig
 -- (Neon at night; RigLights / RigSmoke on a subset as for the cottages).
@@ -29,16 +31,16 @@ local POT = Color3.fromRGB(172, 94, 62)
 local HUNG = Color3.fromRGB(70, 76, 86) -- slate-hanging
 local LIT = "Terrace_GlassLit_" -- CottageLights.kind -> "glow": CottageRig turns these Neon at night
 local RENDERS =
-	{ -- whites and creams lead, soft pastels between (9: n * 5 steps never repeat a neighbour)
+	{ -- seaside pastels between whites and creams (9: n * 5 steps never repeat a neighbour)
 		Color3.fromRGB(240, 238, 230), -- white
-		Color3.fromRGB(234, 226, 204), -- cream
-		Color3.fromRGB(196, 212, 222), -- pale blue
+		Color3.fromRGB(236, 222, 190), -- cream
+		Color3.fromRGB(176, 200, 218), -- pale blue
 		Color3.fromRGB(244, 240, 226), -- warm white
-		Color3.fromRGB(230, 204, 196), -- pink
-		Color3.fromRGB(216, 200, 166), -- buff
-		Color3.fromRGB(204, 214, 194), -- sage
-		Color3.fromRGB(236, 214, 160), -- primrose
-		Color3.fromRGB(214, 214, 208), -- pale grey
+		Color3.fromRGB(230, 190, 184), -- pink
+		Color3.fromRGB(212, 192, 150), -- buff
+		Color3.fromRGB(188, 206, 180), -- sage
+		Color3.fromRGB(238, 210, 140), -- primrose
+		Color3.fromRGB(200, 210, 212), -- pale grey-blue
 	}
 local BLINDS = {
 	Color3.fromRGB(236, 228, 206),
@@ -47,13 +49,14 @@ local BLINDS = {
 }
 local RIDGES =
 	{ Color3.fromRGB(150, 82, 60), Color3.fromRGB(56, 60, 66), Color3.fromRGB(128, 72, 54) }
-TownBuildings.SLATES = { -- Delabole greys and blue-greys
-	Color3.fromRGB(72, 78, 86),
-	Color3.fromRGB(62, 68, 78),
-	Color3.fromRGB(84, 88, 94),
-	Color3.fromRGB(58, 64, 72),
-	Color3.fromRGB(78, 82, 92),
-}
+TownBuildings.SLATES =
+	{ -- dark Delabole greys and blue-greys around #3A3F45 (RoofShingles reads lighter)
+		Color3.fromRGB(58, 63, 69),
+		Color3.fromRGB(48, 53, 61),
+		Color3.fromRGB(66, 69, 74),
+		Color3.fromRGB(52, 57, 64),
+		Color3.fromRGB(62, 64, 70),
+	}
 local DOORS = {
 	Color3.fromRGB(30, 52, 86),
 	Color3.fromRGB(110, 30, 34),
@@ -106,7 +109,8 @@ local function wedge(
 	name: string,
 	size: Vector3,
 	cf: CFrame,
-	color: Color3
+	color: Color3,
+	mat: Enum.Material?
 ): WedgePart
 	local p = Instance.new("WedgePart")
 	p.Name = name
@@ -114,7 +118,7 @@ local function wedge(
 	p.Size = size
 	p.CFrame = cf
 	p.Color = color
-	p.Material = M.RoofShingles
+	p.Material = mat or M.RoofShingles
 	p.CanCollide = false
 	p.CanTouch = false
 	p.CanQuery = false
@@ -163,6 +167,10 @@ export type Spec = {
 	dormers: number, -- flat-topped dormers on the front slope
 	ridge: Color3,
 	seed: number, -- blinds and lit rooms
+	roof: string, -- "gable" (ridge along the front), "hip", "endon" (gable to the street)
+	pitch: number, -- rise / run
+	stackUp: number, -- chimney top above the ridge
+	stacks: number, -- 2: a stack on both party walls
 }
 
 -- the shell: local -Z = front, origin = front-to-back centre at floor level. Returns the eaves height.
@@ -407,66 +415,144 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 		end
 	end
 	box("Cornice", Vector3.new(w + 0.6, 1, d + 1.2), 0, eave - 0.3, 0, s.trim, M.Plaster)
-	-- dual-pitch slate roof, ridge along the frontage (a wedge's slope faces its -Z)
+	-- slate roof (a wedge's slope faces its -Z)
 	local run = d / 2 + 0.6
-	local rise = run * 0.62
-	wedge(
-		m,
-		"RoofF",
-		Vector3.new(w + 0.4, rise, run),
-		at * CFrame.new(0, eave + rise / 2, -run / 2),
-		s.slate
-	)
-	wedge(
-		m,
-		"RoofB",
-		Vector3.new(w + 0.4, rise, run),
-		at * CFrame.new(0, eave + rise / 2, run / 2) * CFrame.Angles(0, math.pi, 0),
-		s.slate
-	)
-	part(
-		m,
-		"Ridge",
-		Vector3.new(w + 0.4, 0.75, 0.75),
-		at * CFrame.new(0, eave + rise, 0) * CFrame.Angles(math.rad(45), 0, 0),
-		s.ridge,
-		M.Plaster
-	)
-	for i = 1, s.dormers do -- flat-topped dormers on the front slope, one per chosen bay
-		local x = if s.dormers == 1 then 0 else -w / 2 + (i - 0.5) * w / s.dormers
-		local zf = -d / 2 + 1.6
-		box("Dormer", Vector3.new(4.2, 4, 3.6), x, eave + 2.4, zf + 1.8, SASH, M.Plaster)
-		box("DormerGlass", Vector3.new(2.4, 2.4, 0.2), x, eave + 2.5, zf - 0.05, GLASS, M.Glass).Reflectance =
-			0.18
-		box(
-			"DormerCap",
-			Vector3.new(4.8, 0.4, 4.2),
-			x,
-			eave + 4.6,
-			zf + 1.7,
-			Color3.fromRGB(64, 68, 74),
-			M.Metal
+	local rise = run * s.pitch
+	local ridgeY = eave + rise
+	if s.roof == "endon" then -- ridge front to back: rendered gable triangles under two slate slabs
+		local hw = w / 2
+		local rr = hw * s.pitch
+		ridgeY = eave + rr
+		local a = math.atan2(rr, hw)
+		for _, sx in { -1, 1 } do
+			wedge(
+				m,
+				"Gable",
+				Vector3.new(d, rr, hw),
+				at
+					* CFrame.new(sx * hw / 2, eave + rr / 2, 0)
+					* CFrame.Angles(0, -sx * math.pi / 2, 0),
+				s.wall,
+				s.wallMat
+			)
+			part(
+				m,
+				"Slope",
+				Vector3.new(math.sqrt(hw * hw + rr * rr) + 0.8, 0.4, d + 0.8),
+				at
+					* CFrame.new(sx * hw / 2, eave + rr / 2, 0)
+					* CFrame.Angles(0, 0, -sx * a)
+					* CFrame.new(sx * 0.4, 0.2, 0),
+				s.slate,
+				M.RoofShingles
+			).CastShadow =
+				true
+		end
+		part(
+			m,
+			"Ridge",
+			Vector3.new(0.75, 0.75, d + 0.8),
+			at * CFrame.new(0, ridgeY + 0.1, 0) * CFrame.Angles(0, 0, math.rad(45)),
+			s.ridge,
+			M.Plaster
 		)
+	else
+		local hip = s.roof == "hip"
+		local L = if hip then math.max(w + 0.4 - 2 * run, 0.4) else w + 0.4
+		wedge(
+			m,
+			"RoofF",
+			Vector3.new(L, rise, run),
+			at * CFrame.new(0, eave + rise / 2, -run / 2),
+			s.slate
+		)
+		wedge(
+			m,
+			"RoofB",
+			Vector3.new(L, rise, run),
+			at * CFrame.new(0, eave + rise / 2, run / 2) * CFrame.Angles(0, math.pi, 0),
+			s.slate
+		)
+		if hip then -- half a pyramid each end: corner wedges whose apexes meet the ridge ends
+			for _, e in { { -1, 0 }, { -1, 3 }, { 1, 1 }, { 1, 2 } } do
+				local p = Instance.new("CornerWedgePart")
+				p.Name = "Hip"
+				p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery = true, false, false, false
+				p.Size = Vector3.new(run, rise, run)
+				p.CFrame = at
+					* CFrame.new(e[1] * L / 2, eave, 0)
+					* CFrame.Angles(0, e[2] * math.pi / 2, 0)
+					* CFrame.new(-run / 2, rise / 2, run / 2)
+				p.Color, p.Material = s.slate, M.RoofShingles
+				p.Parent = m
+			end
+		end
+		part(
+			m,
+			"Ridge",
+			Vector3.new(L, 0.75, 0.75),
+			at * CFrame.new(0, ridgeY, 0) * CFrame.Angles(math.rad(45), 0, 0),
+			s.ridge,
+			M.Plaster
+		)
+		for i = 1, s.dormers do -- flat-topped dormers on the front slope, one per chosen bay
+			local x = if s.dormers == 1 then 0 else -w / 2 + (i - 0.5) * w / s.dormers
+			local zf = -d / 2 + 1.6
+			box("Dormer", Vector3.new(4.2, 4, 3.6), x, eave + 2.4, zf + 1.8, SASH, M.Plaster)
+			box("DormerGlass", Vector3.new(2.4, 2.4, 0.2), x, eave + 2.5, zf - 0.05, GLASS, M.Glass).Reflectance =
+				0.18
+			box(
+				"DormerCap",
+				Vector3.new(4.8, 0.4, 4.2),
+				x,
+				eave + 4.6,
+				zf + 1.7,
+				Color3.fromRGB(64, 68, 74),
+				M.Metal
+			)
+		end
 	end
 	if s.chimney ~= 0 then
-		local x = s.chimney * (w / 2 - 1.1)
-		local top = eave + rise + 3.2
-		box("Stack", Vector3.new(2.2, top - eave, 3.4), x, (top + eave) / 2, 0, GRANITE, M.Granite)
-		box(
-			"StackCap",
-			Vector3.new(2.6, 0.3, 3.8),
-			x,
-			top + 0.15,
-			0,
-			GRANITE:Lerp(Color3.new(), 0.2),
-			M.Granite
-		)
-		for _, z in { -0.8, 0.8 } do
-			local p = box("Pot", Vector3.new(1.4, 0.75, 0.75), x, top + 1, z, POT, M.Plaster)
-			p.Shape = Enum.PartType.Cylinder -- a cylinder's axis is X: the roll stands it up
-			p.CFrame = p.CFrame * CFrame.Angles(0, 0, math.rad(90))
+		local top = ridgeY + s.stackUp
+		-- endon: one stack on the back gable; else on the party wall(s)
+		local spots: { Vector3 } = if s.roof == "endon"
+			then { Vector3.new(0, 0, d / 2 - 1.7) }
+			elseif s.stacks == 2 then {
+				Vector3.new(-(w / 2 - 1.1), 0, 0),
+				Vector3.new(w / 2 - 1.1, 0, 0),
+			}
+			else { Vector3.new(s.chimney * (w / 2 - 1.1), 0, 0) }
+		for k, sp in spots do
+			local x, z = sp.X, sp.Z
+			local up = top - (k - 1) * 1.3 -- a second stack sits a little lower
+			box(
+				"Stack",
+				Vector3.new(2.2, up - eave, 3.4),
+				x,
+				(up + eave) / 2,
+				z,
+				GRANITE,
+				M.Granite
+			)
+			box(
+				"StackCap",
+				Vector3.new(2.6, 0.3, 3.8),
+				x,
+				up + 0.15,
+				z,
+				GRANITE:Lerp(Color3.new(), 0.2),
+				M.Granite
+			)
+			for _, dz in { -0.8, 0.8 } do
+				local p =
+					box("Pot", Vector3.new(1.4, 0.75, 0.75), x, up + 1, z + dz, POT, M.Plaster)
+				p.Shape = Enum.PartType.Cylinder -- a cylinder's axis is X: the roll stands it up
+				p.CFrame = p.CFrame * CFrame.Angles(0, 0, math.rad(90))
+			end
+			if k == 1 then
+				marker("ATT_Smoke_01", x, up + 1.7, z - 0.8)
+			end
 		end
-		marker("ATT_Smoke_01", x, top + 1.7, -0.8)
 	end
 	return eave
 end
@@ -490,6 +576,10 @@ local function spec(over: { [string]: any }): Spec
 		dormers = 0,
 		ridge = RIDGES[2],
 		seed = 1,
+		roof = "gable",
+		pitch = 0.62,
+		stackUp = 3.2,
+		stacks = 1,
 	}
 	for k, v in over do
 		s[k] = v
@@ -502,8 +592,14 @@ end
 
 -- glazed shopfront on the ground storey: stallriser, plate glass with a mullion, recessed door, pilasters, fascia
 -- with the shop's name, cornice; every other shop a slim canvas awning
-local function shopfront(m: Model, at: CFrame, w: number, n: number)
-	local shop = SHOPS[n % #SHOPS + 1]
+local PUBS: { { any } } = {
+	{ Color3.fromRGB(26, 38, 30), "THE ANCHOR" },
+	{ Color3.fromRGB(70, 24, 26), "SHIP INN" },
+	{ Color3.fromRGB(24, 30, 52), "PILCHARD" },
+}
+
+local function shopfront(m: Model, at: CFrame, w: number, n: number, pub: boolean?)
+	local shop = if pub then PUBS[n % #PUBS + 1] else SHOPS[n % #SHOPS + 1]
 	local colour: Color3, word: string = shop[1], shop[2]
 	local function box(
 		name: string,
@@ -558,7 +654,21 @@ local function shopfront(m: Model, at: CFrame, w: number, n: number)
 	local fascia = box("Fascia", Vector3.new(w - 0.6, 1.6, 0.6), 0, 8.3, z - 0.1, colour, M.Wood)
 	sign(fascia, word, Color3.fromRGB(240, 214, 150), Enum.Font.Garamond)
 	box("FasciaCornice", Vector3.new(w - 0.2, 0.35, 1), 0, 9.25, z - 0.1, WHITE, M.Plaster)
-	if n % 2 == 0 then
+	if pub then -- hanging sign on an iron bracket over the pavement
+		box(
+			"SignBracket",
+			Vector3.new(0.25, 0.25, 3.6),
+			-w / 2 + 2,
+			11.2,
+			-1.8,
+			Color3.fromRGB(28, 28, 30),
+			M.Metal
+		)
+		local board =
+			box("PubSign", Vector3.new(0.3, 3.2, 2.6), -w / 2 + 2, 9.3, -2.8, colour, M.Wood)
+		board.CFrame = board.CFrame * CFrame.Angles(0, math.pi / 2, 0)
+		sign(board, "INN", Color3.fromRGB(236, 206, 130), Enum.Font.Garamond)
+	elseif n % 2 == 0 then
 		box(
 			"Awning",
 			Vector3.new(w - 2.6, 0.12, 3.4),
@@ -648,6 +758,60 @@ local function doorway(m: Model, at: CFrame, x: number, z: number, n: number)
 	part(m, "DoorHood", Vector3.new(4.2, 0.5, 1), at * CFrame.new(x, 7.6, z), WHITE, M.Plaster)
 end
 
+-- a chapel front (lot.kind "chapel"): two tall round-headed windows in granite surrounds, a doorcase with a
+-- fanlight, a round window and a name stone in the gable; through-parts, so the back gable matches
+local function chapelFront(m: Model, at: CFrame, w: number, d: number, eave: number)
+	local function box(
+		name: string,
+		size: Vector3,
+		x: number,
+		y: number,
+		proud: number,
+		c: Color3,
+		mat: Enum.Material
+	): Part
+		return part(
+			m,
+			name,
+			Vector3.new(size.X, size.Y, d + 2 * proud),
+			at * CFrame.new(x, y, 0),
+			c,
+			mat
+		)
+	end
+	for _, sx in { -1, 1 } do
+		local x = sx * w / 4
+		box("Surround", Vector3.new(3.8, 10.6), x, 7.6, 0.25, WHITE, M.Plaster)
+		box("ChapelGlass", Vector3.new(2.6, 9.4), x, 7.6, 0.35, GLASS, M.Glass).Reflectance = 0.18
+		local arch = box("Arch", Vector3.new(3.8, 3.8), x, 12.9, 0.25, WHITE, M.Plaster)
+		arch.Shape = Enum.PartType.Cylinder
+		arch.Size = Vector3.new(d + 0.5, 3.8, 3.8)
+		arch.CFrame = at * CFrame.new(x, 12.9, 0) * CFrame.Angles(0, math.pi / 2, 0)
+		box("ChapelSill", Vector3.new(4.4, 0.5), x, 2.7, 0.6, GRANITE, M.Granite)
+	end
+	box("Doorcase", Vector3.new(4.8, 10.4), 0, 5.2, 0.3, WHITE, M.Plaster)
+	box("Door", Vector3.new(3.2, 7.6), 0, 3.8, 0.39, Color3.fromRGB(40, 56, 80), M.Wood)
+	box("Fanlight", Vector3.new(3.2, 1.6), 0, 8.6, 0.39, GLASS, M.Glass)
+	local rose = part(
+		m,
+		"RoseWindow",
+		Vector3.new(d + 0.7, 3.4, 3.4),
+		at * CFrame.new(0, eave + 3.2, 0) * CFrame.Angles(0, math.pi / 2, 0),
+		GLASS,
+		M.Glass
+	)
+	rose.Shape = Enum.PartType.Cylinder
+	local stone = part(
+		m,
+		"NameStone",
+		Vector3.new(6, 1.6, 0.4),
+		at * CFrame.new(0, eave + 2, -d / 2 - 0.2),
+		WHITE,
+		M.Plaster
+	)
+	sign(stone, "BETHEL 1859", Color3.fromRGB(40, 44, 52), Enum.Font.Garamond)
+end
+
 -- the ground Y range a footprint stands on: the caller samples; lo = lowest, hi = highest
 function TownBuildings.terrace(
 	parent: Instance,
@@ -659,7 +823,11 @@ function TownBuildings.terrace(
 	local m = Instance.new("Model")
 	m.Name = `Terrace{n}`
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-	local floors = lot.floors or 3
+	local kind = lot.kind
+	local floors = if kind == "chapel" or kind == "garage"
+		then 1
+		elseif kind == "endon" then 2
+		else lot.floors or 3
 	if lot.corner then
 		floors = math.min(floors + 1, 4)
 	end
@@ -667,14 +835,22 @@ function TownBuildings.terrace(
 	local rng = Random.new(seed)
 	-- styles cycle with n so neighbours differ: granite front, slate-hung upper storeys, quoins, plain render
 	local style = n % 6
-	local granite = style == 0 and not lot.shop
-	local hung = style == 3
+	local granite = (style == 0 and not lot.shop) or kind == "chapel"
+	local hung = style == 3 and floors > 1
 	local wall = RENDERS[(n * 5) % #RENDERS + 1]
+	local roof = if kind == "endon" or kind == "chapel"
+		then "endon"
+		elseif lot.corner or rng:NextNumber() < 0.15 then "hip"
+		else "gable"
 	local s = spec({
 		w = lot.w,
 		d = TownLayout.DEPTH,
 		floors = floors,
-		ground = if lot.shop then 10 else 9,
+		ground = if kind == "chapel"
+			then 15
+			elseif kind == "garage" then 10
+			elseif lot.shop then 10
+			else 9,
 		upper = 8.1 + rng:NextNumber() * 0.9, -- a ragged eaves line down the street
 		drop = hi - lo + 1,
 		wall = if granite then GRANITE elseif hung then HUNG else wall,
@@ -684,21 +860,50 @@ function TownBuildings.terrace(
 		slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1],
 		bay = 6 + n % 3,
 		corner = lot.corner,
-		chimney = if n % 2 == 0 then 1 else -1,
+		chimney = if kind == "garage" or kind == "chapel" then 0 elseif n % 2 == 0 then 1 else -1,
 		sill = if granite or rng:NextNumber() < 0.4 then GRANITE else WHITE,
 		lintels = granite or style == 4,
-		quoins = style == 4 and not lot.shop,
-		dormers = if floors >= 4 and rng:NextNumber() < 0.6
-			then rng:NextInteger(1, 2)
+		quoins = (style == 4 and not lot.shop) or kind == "chapel",
+		dormers = if roof == "endon"
+			then 0
+			elseif floors >= 4 and rng:NextNumber() < 0.6 then rng:NextInteger(1, 2)
 			elseif floors == 3 and rng:NextNumber() < 0.15 then 1
 			else 0,
 		ridge = RIDGES[rng:NextInteger(1, #RIDGES)],
 		seed = seed,
+		roof = roof,
+		pitch = if kind == "garage"
+			then 0.35
+			elseif roof == "endon" then 0.95 + rng:NextNumber() * 0.25
+			else ({ 0.5, 0.62, 0.75, 0.9 })[rng:NextInteger(1, 4)],
+		stackUp = 1.8 + rng:NextNumber() * 3.6,
+		stacks = if n % 3 == 0 then 2 else 1,
 	})
 	local at = CFrame.new(lot.cf.X, hi, lot.cf.Z) * lot.cf.Rotation
-	shell(m, at, s)
-	if lot.shop then
-		shopfront(m, at * CFrame.new(0, 0, -s.d / 2), lot.w, n)
+	local eave = shell(m, at, s)
+	if kind == "chapel" then
+		chapelFront(m, at, lot.w, s.d, eave)
+	elseif kind == "garage" then
+		local front = at * CFrame.new(0, 0, -s.d / 2)
+		part(
+			m,
+			"RollerDoor",
+			Vector3.new(lot.w - 5, 7.6, 0.3),
+			front * CFrame.new(0, 3.8, -0.1),
+			Color3.fromRGB(150, 156, 160),
+			M.Metal
+		)
+		local fascia = part(
+			m,
+			"Fascia",
+			Vector3.new(lot.w - 2, 1.4, 0.4),
+			front * CFrame.new(0, 8.6, -0.2),
+			Color3.fromRGB(176, 30, 34),
+			M.SmoothPlastic
+		)
+		sign(fascia, "GARAGE", WHITE, Enum.Font.GothamBold)
+	elseif lot.shop then
+		shopfront(m, at * CFrame.new(0, 0, -s.d / 2), lot.w, n, kind == "pub")
 		local rear = s.d / 2 + 0.1
 		doorway(m, at, lot.w / 4, rear, n + 1)
 		part(
@@ -956,8 +1161,32 @@ function TownBuildings.landmark(
 			corner = true,
 			chimney = 0,
 			arcade = true,
+			sill = GRANITE,
+			lintels = true,
+			quoins = true,
 		})
 		local eave = shell(m, at, s)
+		-- the shop wall at the back of the arcade: rendered, two panelled doors and two shop windows
+		local gTop = s.ground + 2.2
+		part(
+			m,
+			"ArcadeWall",
+			Vector3.new(w - 3, gTop, 0.6),
+			at * CFrame.new(0, gTop / 2, 0),
+			s.wall,
+			M.Plaster
+		)
+		for k, x in { -w / 3, -w / 8, w / 8, w / 3 } do
+			local door = k == 2 or k == 3
+			part(
+				m,
+				if door then "ArcadeDoor" else "ArcadeGlass",
+				if door then Vector3.new(3.4, 7.4, 0.3) else Vector3.new(5, 4.6, 0.3),
+				at * CFrame.new(x, if door then 3.7 else 4.6, -0.35),
+				if door then DOORS[k] else GLASS,
+				if door then M.Wood else M.Glass
+			)
+		end
 		local ridge = eave + (d / 2 + 0.6) * 0.62
 		local tc = at * CFrame.new(0, ridge - 2, 0)
 		part(m, "Turret", Vector3.new(6, 8, 6), tc * CFrame.new(0, 4, 0), WHITE, M.Plaster)
