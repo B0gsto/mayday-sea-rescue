@@ -1,11 +1,15 @@
 --!strict
--- VehiclesApp: the phone's vehicle page (portrait). Three tabs on top (Boats, Jet Skis, Cars), each a
--- swipeable carousel of big cards: a slowly turning 3D preview of the real model (the server's
--- ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a live one of that
--- kind; else the shared builder's greybox), the name (gold for the Robux-only premium fleet), three stat
--- bars (speed, people aboard, toughness), the boat's three upgrades (icon, word, coin price, tick once
--- fitted) and the action row: Spawn when owned, else a Cash button (coin + price, or the rank it needs)
--- and a Robux button (the vehicle's Game Pass, Roblox's live price).
+-- VehiclesApp: the phone's vehicle page (portrait). A segmented control on top (Boats, Jet Skis, Cars),
+-- each a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
+-- model (the server's ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a
+-- live one of that kind; else the shared builder's greybox), the name (gold for the Robux-only premium
+-- fleet), three stat bars (speed, people aboard, toughness; fitted upgrades lengthen them), the boat's
+-- upgrades (icon, word, coin price, tick once fitted) and the action row: Spawn when owned (spawning
+-- another craft swaps yours: this is how you switch, docs/16 K3), else a Cash button (coin + price, or
+-- the rank it needs) and a Robux button (the vehicle's Game Pass, Roblox's live price).
+-- Opens on the cheapest thing Cash covers (shared/Affordable), else the craft you have out, else the
+-- biggest one you own. That upgrade tile or Cash button pulses gold; a buy throws coins and sparks
+-- and the stat bar grows (docs/16 B5).
 -- Mouse / touch: round arrows and swipe; keyboard: Left / Right or Q / E vehicles, Up / Down tabs; gamepad: L2 / R2
 -- vehicles, Y tabs, A on the selected button.
 --   Buy with Cash   BuyGear(vehicleId)                   (ProgressionService: rank + Cash)
@@ -29,6 +33,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
+local Affordable = require(Shared:WaitForChild("Affordable"))
 local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local CarBuilder = require(Shared:WaitForChild("Car"):WaitForChild("Builder"))
 local LandVehicleConfig = require(Config:WaitForChild("LandVehicleConfig"))
@@ -37,9 +42,13 @@ local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local UiImages = require(Config:WaitForChild("UiImages"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
+local Client = script.Parent.Parent
+local AudioController = require(Client:WaitForChild("Controllers"):WaitForChild("AudioController"))
+local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local FootTrail = require(script.Parent:WaitForChild("FootTrail"))
 local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
@@ -50,12 +59,15 @@ local player = Players.LocalPlayer
 local FOLDERS = { "Vehicles", "LandVehicles" } -- VehicleService / LandVehicleService
 local PREVIEWS = "VehiclePreviews" -- ReplicatedStorage folder the two services fill
 local UPGRADE_ICON = { Engine = "speed", Hull = "shield", Fit = "seat" }
+local STAT_ART = { "Speed", "People", "Tough" } -- UiImages.VehicleArt keys of the three stat rows
+local ENGINE, HULL = 1.08, 0.1 -- how far a fitted Engine / Hull lengthens the speed / toughness bar
 local UPGRADE_WORD = { Engine = "Engine", Hull = "Hull", Fit = "Seat" }
 local TABS = {
 	{ name = "Boats", glyph = "boat" },
 	{ name = "Jet Skis", glyph = "jetski" },
 	{ name = "Cars", glyph = "car" },
 }
+local TAB_H = 40
 -- server reason codes -> 1 to 2 words on the button
 local SHORT: { [string]: string } = {
 	Cooldown = "Wait",
@@ -84,7 +96,14 @@ type Entry = {
 	people: number,
 	mass: number, -- kg
 }
-type Tile = { id: string, button: TextButton, price: TextLabel, coin: Frame, check: Frame }
+type Tile = {
+	id: string,
+	button: TextButton,
+	price: TextLabel,
+	coin: ImageLabel,
+	check: Frame,
+	glow: UIStroke,
+}
 type Card = {
 	entry: Entry,
 	frame: Frame,
@@ -101,12 +120,16 @@ type Card = {
 	mainBolt: Frame,
 	cash: TextButton,
 	cashLabel: TextLabel,
-	cashCoin: Frame,
+	cashCoin: ImageLabel,
+	cashGlow: UIStroke,
 	robux: TextButton,
 	robuxLabel: TextLabel,
 	quick: TextButton?,
 	tiles: { Tile },
 	flash: string?,
+	bars: { Frame }, -- speed, people, toughness fills
+	fillNow: { number }, -- what they show (-1: not painted yet)
+	hot: GuiObject?, -- the pulsing buy on this card
 }
 type Tab = {
 	button: TextButton,
@@ -150,6 +173,34 @@ local function drawIcon(kind: string, parent: Instance, c: Color3)
 	else
 		Glyph.draw(kind, parent, c)
 	end
+end
+
+-- an uploaded icon (UiImages.VehicleArt, docs/18) when there is one, else the drawn glyph
+local function art(key: string, glyph: string, parent: Instance, c: Color3)
+	local image = (UiImages.VehicleArt :: { [string]: string })[key]
+	if image and image ~= "" then
+		local i = Instance.new("ImageLabel")
+		i.Name = "Art"
+		i.Size = UDim2.fromScale(1, 1)
+		i.BackgroundTransparency = 1
+		i.Image = image
+		i.ScaleType = Enum.ScaleType.Fit
+		i.Parent = parent
+	else
+		drawIcon(glyph, parent, c)
+	end
+end
+
+-- the HUD's coin sprite
+local function coinIcon(parent: Instance, px: number): ImageLabel
+	local i = Instance.new("ImageLabel")
+	i.Name = "Coin"
+	i.Size = UDim2.fromOffset(px, px)
+	i.BackgroundTransparency = 1
+	i.Image = UiImages.Hud.Coin
+	i.ScaleType = Enum.ScaleType.Fit
+	i.Parent = parent
+	return i
 end
 
 -- a small gold lightning bolt (two slanted bars)
@@ -213,7 +264,7 @@ local function entries(): { Entry }
 	return out
 end
 
--- 0..1 bar fills, scaled across the sea fleet or the land fleet
+-- 0..1 bar fills, scaled across the sea fleet or the land fleet, with room left for the upgrades
 local function statFills(list: { Entry }): { [string]: { number } }
 	local range = {}
 	for _, land in { false, true } do
@@ -233,9 +284,9 @@ local function statFills(list: { Entry }): { [string]: { number } }
 		local r = range[e.land]
 		local tough = if r.hi > r.lo then (math.log(e.mass) - r.lo) / (r.hi - r.lo) else 1
 		out[e.id] = {
-			math.max(0.12, e.speed / r.speed),
-			math.max(0.12, e.people / r.people),
-			0.15 + 0.85 * tough,
+			math.max(0.12, e.speed / (r.speed * ENGINE)),
+			math.max(0.12, e.people / (r.people + 1)),
+			0.15 + (0.85 - HULL) * tough,
 		}
 	end
 	return out
@@ -365,6 +416,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	local prices: { [number]: number | false } = {} -- pass id -> Robux (false: lookup failed)
 	local busy = false
 	local alive = true
+	local mountedAt = os.clock()
+	local hot: GuiObject? = nil -- the one pulsing buy (an upgrade tile or a Cash button)
+	local hotGlow: UIStroke? = nil
 
 	local root = Instance.new("Frame")
 	root.Name = "Vehicles"
@@ -372,18 +426,28 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	root.BackgroundTransparency = 1
 	root.Parent = page
 
-	local tabBar = Instance.new("Frame")
-	tabBar.Name = "Tabs"
-	tabBar.Size = UDim2.new(1, 0, 0, 46)
-	tabBar.BackgroundColor3 = C.panel
-	tabBar.BackgroundTransparency = 0.3
-	HudTheme.corner(tabBar, 14)
-	tabBar.Parent = root
-	list(tabBar, true, 6)
-	HudTheme.padding(tabBar, 4)
+	local setTab: (index: number) -> ()
+	local tabNames = {}
+	for i, def in TABS do
+		tabNames[i] = def.name
+	end
+	local _, tabButtons, setSegment = HudTheme.segmented(root, tabNames, TAB_H, function(i: number)
+		setTab(i)
+	end)
 
 	local function data(): Rules.PlayerData?
 		return if snapshot then Rules.fromSnapshot(snapshot) else nil
+	end
+
+	-- the cheapest buy Cash covers now (the phone's red dot reads the same)
+	local function pick(): Affordable.Pick?
+		local snap = snapshot
+		return if snap
+			then Affordable.cheapest(snap, function(vehicleId: string): boolean
+				local pass = Rules.vehiclePass(vehicleId)
+				return pass ~= nil and player:GetAttribute("Pass_" .. pass) == true
+			end)
+			else nil
 	end
 
 	local function pricedOpen(): boolean
@@ -409,7 +473,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		end)
 	end
 
-	local function paintCard(card: Card, d: Rules.PlayerData?)
+	local function paintCard(card: Card, d: Rules.PlayerData?, best: Affordable.Pick?)
 		local entry = card.entry
 		local id = entry.id
 		local pass = ownsPass(entry)
@@ -439,6 +503,12 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		card.robux.Size = if showCash then half else UDim2.fromScale(1, 1)
 		card.mainBolt.Visible = false
 		card.mainLabel.TextColor3 = C.text
+		card.hot = nil
+		local buyHere = best ~= nil and best.vehicleId == id
+		card.cashGlow.Enabled = buyHere and best ~= nil and best.upgradeId == nil and showCash
+		if card.cashGlow.Enabled then
+			card.hot = card.cash
+		end
 		if card.flash then
 			card.mainLabel.Text = card.flash
 			card.main.BackgroundColor3 = C.locked
@@ -496,15 +566,71 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			tile.price.TextColor3 = if ok then C.gold else C.textDim
 			tile.button.BackgroundColor3 = if fitted then Color3.fromHex("2E5A42") else C.panelLight
 			tile.button.BackgroundTransparency = if fitted or ok then 0.05 else 0.5
+			tile.glow.Enabled = buyHere and best ~= nil and best.upgradeId == tile.id
+			if tile.glow.Enabled then
+				card.hot = tile.button
+			end
+		end
+
+		-- the stat bars, lengthened by fitted upgrades; a change grows with a flash
+		local base = fills[id]
+		local want = {
+			base[1] * (if VehicleUpgrades.has(mask, "Engine") then ENGINE else 1),
+			base[2] * (if VehicleUpgrades.has(mask, "Fit")
+				then (entry.people + 1) / entry.people
+				else 1),
+			base[3] + (if VehicleUpgrades.has(mask, "Hull") then HULL else 0),
+		}
+		for i, bar in card.bars do
+			local fill = math.min(1, want[i])
+			local was = card.fillNow[i]
+			if math.abs(was - fill) > 1e-3 then
+				card.fillNow[i] = fill
+				if was < 0 or Comfort.reducedMotion() then
+					bar.Size = UDim2.fromScale(fill, 1)
+				else
+					local colour = if entry.premium then C.gold else C.bar
+					bar.BackgroundColor3 = Color3.new(1, 1, 1)
+					TweenService:Create(
+						bar,
+						TweenInfo.new(
+							0.7,
+							Enum.EasingStyle.Back,
+							Enum.EasingDirection.Out,
+							0,
+							false,
+							0.15
+						),
+						{ Size = UDim2.fromScale(fill, 1) }
+					):Play()
+					TweenService:Create(
+						bar,
+						TweenInfo.new(0.9, Enum.EasingStyle.Quad),
+						{ BackgroundColor3 = colour }
+					):Play()
+				end
+			end
 		end
 	end
 
 	paint = function()
 		local d = data()
+		local best = pick()
+		local nextHot: GuiObject? = nil
 		for _, tab in tabs do
 			for _, card in tab.cards do
-				paintCard(card, d)
+				paintCard(card, d, best)
+				nextHot = nextHot or card.hot
 			end
+		end
+		if nextHot ~= hot then
+			local old = hot
+			local scale = old and old:FindFirstChildOfClass("UIScale")
+			if scale then
+				scale.Scale = 1 -- the pulse ends on the old one
+			end
+			hot = nextHot
+			hotGlow = if nextHot then nextHot:FindFirstChild("Glow") :: UIStroke? else nil
 		end
 	end
 
@@ -568,6 +694,63 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		end)
 	end
 
+	-- a buy: coins and sparks burst out of the button over its card, with the till sound
+	local function celebrate(card: Card, from: GuiObject)
+		AudioController.play("Cash_Coins")
+		if Comfort.reducedMotion() then
+			return
+		end
+		local host = card.frame
+		local size = host.AbsoluteSize
+		if size.X <= 0 or size.Y <= 0 then
+			return
+		end
+		local at = (from.AbsolutePosition + from.AbsoluteSize / 2 - host.AbsolutePosition) / size
+		local function fly(obj: GuiObject, angle: number, reach: number, t: number)
+			obj.AnchorPoint = Vector2.new(0.5, 0.5)
+			obj.Position = UDim2.fromScale(at.X, at.Y)
+			obj.ZIndex = 10
+			obj.Parent = host
+			local to = UDim2.new(at.X, math.cos(angle) * reach, at.Y, math.sin(angle) * reach - 20)
+			TweenService:Create(obj, TweenInfo.new(t, Enum.EasingStyle.Quart), { Position = to })
+				:Play()
+			TweenService:Create(
+				obj,
+				TweenInfo.new(
+					0.25,
+					Enum.EasingStyle.Quad,
+					Enum.EasingDirection.In,
+					0,
+					false,
+					t - 0.2
+				),
+				{
+					[if obj:IsA("ImageLabel")
+						then "ImageTransparency"
+						else "BackgroundTransparency"] = 1,
+				}
+			):Play()
+			task.delay(t + 0.1, function()
+				obj:Destroy()
+			end)
+		end
+		for i = 1, 8 do -- coins: the HUD sprite, spinning out
+			local coin = coinIcon(host, 20)
+			coin.Rotation = math.random(-30, 30)
+			fly(coin, -math.pi / 2 + (i - 4.5) * 0.36, math.random(60, 95), 0.6)
+		end
+		for i = 1, 12 do -- sparks: short gold streaks pointing outwards
+			local angle = (i / 12) * math.pi * 2 + math.random() * 0.3
+			local spark = Instance.new("Frame")
+			spark.Size = UDim2.fromOffset(14, 3)
+			spark.Rotation = math.deg(angle)
+			spark.BackgroundColor3 = if i % 3 == 0 then Color3.new(1, 1, 1) else C.gold
+			spark.BorderSizePixel = 0
+			HudTheme.corner(spark, 2)
+			fly(spark, angle, math.random(40, 70), 0.4)
+		end
+	end
+
 	local function spawned(result: any, seated: boolean?)
 		-- untyped require: Phone mounts this app (a typed one would be a cyclic module dependency)
 		(require :: any)(script.Parent:WaitForChild("Phone")).setOpen(false)
@@ -612,6 +795,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		end
 		call(card, card.cash, function()
 			return Net.func("BuyGear"):InvokeServer(card.entry.id)
+		end, function()
+			celebrate(card, card.cash)
 		end)
 	end
 
@@ -656,13 +841,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		end
 	end
 
-	local function statRow(
-		parent: Instance,
-		order: number,
-		icon: string,
-		fill: number,
-		gold: boolean
-	)
+	local function statRow(parent: Instance, order: number, icon: string, gold: boolean): Frame
 		local r = Instance.new("Frame")
 		r.Name = `Stat{order}`
 		r.LayoutOrder = order
@@ -670,22 +849,23 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		r.BackgroundTransparency = 1
 		r.Parent = parent
 		local i = square(r, "Icon", 20)
-		drawIcon(icon, i, C.textDim)
+		art(STAT_ART[order], icon, i, C.textDim)
 		local track = Instance.new("Frame")
 		track.Name = "Track"
-		track.Position = UDim2.new(0, 30, 0.5, -5)
-		track.Size = UDim2.new(1, -30, 0, 10)
+		track.Position = UDim2.new(0, 30, 0.5, -4)
+		track.Size = UDim2.new(1, -30, 0, 8)
 		track.BackgroundColor3 = C.locked
 		track.BorderSizePixel = 0
-		HudTheme.corner(track, 5)
+		HudTheme.corner(track, 4)
 		track.Parent = r
 		local bar = Instance.new("Frame")
 		bar.Name = "Fill"
-		bar.Size = UDim2.fromScale(fill, 1)
+		bar.Size = UDim2.fromScale(0, 1)
 		bar.BackgroundColor3 = if gold then C.gold else C.bar
 		bar.BorderSizePixel = 0
-		HudTheme.corner(bar, 5)
+		HudTheme.corner(bar, 4)
 		bar.Parent = track
+		return bar
 	end
 
 	local function buildCard(tab: Tab, entry: Entry, order: number, count: number): Card
@@ -694,21 +874,18 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		frame.Name = entry.id
 		frame.LayoutOrder = order
 		frame.Size = UDim2.fromScale(1, 1)
-		frame.BackgroundColor3 = C.panel
-		frame.BackgroundTransparency = 0.15
-		frame.BorderSizePixel = 0
-		HudTheme.corner(frame, 18)
-		if entry.premium then
-			HudTheme.stroke(frame, C.gold, 2)
-		else
-			HudTheme.stroke(frame)
-		end
 		frame.Parent = tab.strip
-		list(frame, false, 8).VerticalAlignment = Enum.VerticalAlignment.Top
-		HudTheme.padding(frame, 8)
+		HudTheme.skin(frame) -- the HUD's navy card, as in the Store
+		local body = Instance.new("Frame")
+		body.Name = "Body"
+		body.Size = UDim2.fromScale(1, 1)
+		body.BackgroundTransparency = 1
+		body.Parent = frame
+		list(body, false, 8).VerticalAlignment = Enum.VerticalAlignment.Top
+		HudTheme.padding(body, 10)
 
-		-- name 30, stats 76, upgrades 70, action 56, padding 16, gaps 8 each
-		local fixed = 30 + 76 + 56 + 16 + 8 * 4 + (if hasUpgrades then 70 + 8 else 0)
+		-- name 30, stats 76, upgrades 70, action 56, padding 20, gaps 8 each
+		local fixed = 30 + 76 + 56 + 20 + 8 * 4 + (if hasUpgrades then 70 + 8 else 0)
 		local stage = Instance.new("Frame")
 		stage.Name = "Stage"
 		stage.LayoutOrder = 1
@@ -723,7 +900,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			else ColorSequence.new(Color3.fromHex("3A6F80"), Color3.fromHex("10202A"))
 		grad.Rotation = 90
 		grad.Parent = stage
-		stage.Parent = frame
+		stage.Parent = body
 		-- a soft floor shadow, kept under the vehicle by the turntable; two faded ellipses for a soft edge
 		local floor = Instance.new("Frame")
 		floor.Name = "Floor"
@@ -763,7 +940,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		actions.LayoutOrder = 5
 		actions.Size = UDim2.new(1, 0, 0, 56)
 		actions.BackgroundTransparency = 1
-		actions.Parent = frame
+		actions.Parent = body
 		list(actions, true, 8)
 
 		local card: Card = {
@@ -782,12 +959,16 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			mainBolt = bolt(actions, 24),
 			cash = button(actions, "BuyCash", C.panelLight),
 			cashLabel = label(actions, "Label", 22, C.gold),
-			cashCoin = square(actions, "Coin", 24),
+			cashCoin = coinIcon(actions, 24),
+			cashGlow = HudTheme.stroke(actions, C.gold, 2.5),
 			robux = button(actions, "BuyRobux", ROBUX_GREEN),
 			robuxLabel = label(actions, "Label", 22, C.text),
 			quick = nil,
 			tiles = {},
 			flash = nil,
+			bars = {},
+			fillNow = { -1, -1, -1 },
+			hot = nil,
 		}
 		card.main.Size = UDim2.fromScale(1, 1)
 		for i, b in { card.main, card.cash, card.robux } do
@@ -797,8 +978,11 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		card.mainLabel.Parent, card.mainBolt.Parent = card.main, card.main
 		card.cashCoin.Parent, card.cashLabel.Parent = card.cash, card.cash
 		card.robuxLabel.Parent = card.robux
-		Glyph.draw("coin", card.cashCoin, C.gold)
+		card.cashGlow.Name = "Glow"
+		card.cashGlow.Enabled = false
+		card.cashGlow.Parent = card.cash
 		for _, l in { card.mainLabel, card.cashLabel, card.robuxLabel } do
+			l.Font = Enum.Font.BuilderSansBold
 			l.LayoutOrder = 1
 			l.AutomaticSize = Enum.AutomaticSize.X
 			l.Size = UDim2.fromOffset(0, 56)
@@ -817,7 +1001,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		card.out.AnchorPoint = Vector2.new(1, 0)
 		card.out.Position = UDim2.new(1, -8, 0, 8)
 		card.out.ZIndex = 3
-		Glyph.draw("check", card.out, C.ready)
+		art("Check", "check", card.out, C.ready)
 
 		-- big round arrows over the stage edges (touch also swipes); dimmed at the ends of the list
 		for _, side in { -1, 1 } do
@@ -919,7 +1103,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			end)
 		end
 
-		local name = label(frame, "Name", 26, if entry.premium then C.gold else C.text)
+		local name = label(body, "Name", 24, if entry.premium then C.gold else C.text)
+		name.Font = Enum.Font.BuilderSansBold
 		name.LayoutOrder = 2
 		name.Size = UDim2.new(1, 0, 0, 30)
 		name.TextTruncate = Enum.TextTruncate.AtEnd
@@ -931,12 +1116,11 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		stats.LayoutOrder = 3
 		stats.Size = UDim2.new(1, -24, 0, 76)
 		stats.BackgroundTransparency = 1
-		stats.Parent = frame
+		stats.Parent = body
 		list(stats, false, 8)
-		local f = fills[entry.id]
-		statRow(stats, 1, "speed", f[1], entry.premium)
-		statRow(stats, 2, "seat", f[2], entry.premium)
-		statRow(stats, 3, "shield", f[3], entry.premium)
+		for i, icon in { "speed", "seat", "shield" } do
+			card.bars[i] = statRow(stats, i, icon, entry.premium)
+		end
 
 		-- the boat's upgrades: picture + word + coin price, a tick once fitted
 		if hasUpgrades then
@@ -945,7 +1129,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			tiles.LayoutOrder = 4
 			tiles.Size = UDim2.new(1, 0, 0, 70)
 			tiles.BackgroundTransparency = 1
-			tiles.Parent = frame
+			tiles.Parent = body
 			list(tiles, true, 8)
 			local upgrades = VehicleUpgrades.Vehicles[entry.id] -- the jet ski has no Extra seat
 			for i, upgrade in upgrades do
@@ -956,7 +1140,10 @@ function VehiclesApp.mount(page: Frame): () -> ()
 				local icon = square(b, "Icon", 26)
 				icon.AnchorPoint = Vector2.new(0.5, 0)
 				icon.Position = UDim2.new(0.5, 0, 0, 5)
-				drawIcon(UPGRADE_ICON[upgradeId] or "ring", icon, C.text)
+				art(upgradeId, UPGRADE_ICON[upgradeId] or "ring", icon, C.text)
+				local glow = HudTheme.stroke(b, C.gold, 2.5)
+				glow.Name = "Glow"
+				glow.Enabled = false
 				local word = label(b, "Word", 13, C.textDim)
 				word.Position = UDim2.fromOffset(0, 32)
 				word.Size = UDim2.new(1, 0, 0, 14)
@@ -969,19 +1156,23 @@ function VehiclesApp.mount(page: Frame): () -> ()
 				priceRow.BackgroundTransparency = 1
 				priceRow.Parent = b
 				list(priceRow, true, 2)
-				local coin = square(priceRow, "Coin", 14)
-				Glyph.draw("coin", coin, C.gold)
+				local coin = coinIcon(priceRow, 16)
 				local price = label(priceRow, "Amount", 15, C.gold)
+				price.Font = Enum.Font.BuilderSansBold
 				price.LayoutOrder = 1
 				price.AutomaticSize = Enum.AutomaticSize.X
 				price.Size = UDim2.fromOffset(0, 20)
 				local check = square(priceRow, "Fitted", 18)
 				check.LayoutOrder = 2
-				Glyph.draw("check", check, C.ready)
-				table.insert(
-					card.tiles,
-					{ id = upgradeId, button = b, price = price, coin = coin, check = check }
-				)
+				art("Check", "check", check, C.ready)
+				table.insert(card.tiles, {
+					id = upgradeId,
+					button = b,
+					price = price,
+					coin = coin,
+					check = check,
+					glow = glow,
+				})
 				b.Activated:Connect(function()
 					call(card, b, function()
 						local remote = Net.init():WaitForChild("Upgrade_Buy", 10)
@@ -989,6 +1180,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 							return false, "NotReady"
 						end
 						return remote:InvokeServer(entry.id, upgradeId)
+					end, function()
+						celebrate(card, b)
 					end)
 				end)
 			end
@@ -1002,8 +1195,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 
 	local function selectFor(card: Card?)
 		if card and UserInputService.GamepadEnabled and page.Visible then
-			GuiService.SelectedObject = if card.main.Visible
-				then card.main
+			GuiService.SelectedObject = if card.hot
+				then card.hot
+				elseif card.main.Visible then card.main
 				elseif card.robux.Visible then card.robux
 				else card.cash
 		end
@@ -1019,13 +1213,11 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		return nil
 	end
 
-	local function setTab(index: number)
+	setTab = function(index: number)
 		activeTab = index
+		setSegment(index)
 		for i, tab in tabs do
-			local on = i == index
-			tab.strip.Visible = on
-			tab.button.BackgroundColor3 = if on then C.accent else C.panelLight
-			tab.button.BackgroundTransparency = if on then 0 else 0.4
+			tab.strip.Visible = i == index
 		end
 		local card = current()
 		if card then
@@ -1035,22 +1227,10 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	end
 
 	for i, def in TABS do
-		local b = button(tabBar, def.name, C.panelLight)
-		b.LayoutOrder = i
-		b.Size = UDim2.new(1 / 3, -4, 1, 0)
-		list(b, true, 6)
-		local icon = square(b, "Icon", 22)
-		drawIcon(def.glyph, icon, C.text)
-		local text = label(b, "Label", 17, C.text)
-		text.LayoutOrder = 1
-		text.AutomaticSize = Enum.AutomaticSize.X
-		text.Size = UDim2.fromOffset(0, 38)
-		text.Text = def.name
-
 		local strip = Instance.new("Frame")
 		strip.Name = `Cards_{def.name}`
-		strip.Position = UDim2.fromOffset(0, 54)
-		strip.Size = UDim2.new(1, 0, 1, -54 - 20)
+		strip.Position = UDim2.fromOffset(0, TAB_H + 10)
+		strip.Size = UDim2.new(1, 0, 1, -TAB_H - 10 - 20)
 		strip.BackgroundTransparency = 1
 		strip.ClipsDescendants = true
 		strip.Visible = false
@@ -1067,11 +1247,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		pages.ScrollWheelInputEnabled = true
 		pages.GamepadInputEnabled = true
 		pages.Parent = strip
-		local tab: Tab = { button = b, strip = strip, pages = pages, dots = {}, cards = {} }
+		local tab: Tab =
+			{ button = tabButtons[i], strip = strip, pages = pages, dots = {}, cards = {} }
 		tabs[i] = tab
-		b.Activated:Connect(function()
-			setTab(i)
-		end)
 
 		local mine: { Entry } = {}
 		for _, e in all do
@@ -1146,6 +1324,17 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	table.insert(
 		conns,
 		RunService.RenderStepped:Connect(function(dt: number)
+			-- the cheapest affordable buy breathes: a gold ring and a slight swell
+			local h, glow = hot, hotGlow
+			if h and glow then
+				local w = (math.sin(os.clock() * 5) + 1) / 2
+				glow.Transparency = 0.6 * (1 - w)
+				if not Comfort.reducedMotion() then
+					local scale = h:FindFirstChildOfClass("UIScale") or Instance.new("UIScale")
+					scale.Scale = 1 + 0.04 * w
+					scale.Parent = h
+				end
+			end
 			local card = current()
 			if card and card.camera and page.Visible then
 				angle += dt * 0.35
@@ -1209,10 +1398,47 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		Enum.KeyCode.ButtonY
 	)
 
+	-- open on the cheapest buy Cash covers, else the craft you have out, else the biggest you own
+	local function land()
+		local d = data()
+		local best = pick()
+		local target: string? = if best then best.vehicleId else nil
+		for _, tab in tabs do
+			for _, card in tab.cards do
+				if not target and card.out.Visible then
+					target = card.entry.id
+				end
+			end
+		end
+		if not target and d then
+			for _, e in all do
+				if not e.land and Rules.canUseVehicle(d, e.id, ownsPass(e)) then
+					target = e.id
+				end
+			end
+		end
+		for i, tab in tabs do
+			for _, card in tab.cards do
+				if card.entry.id == target then
+					tab.pages:JumpTo(card.frame)
+					setTab(i)
+					return
+				end
+			end
+		end
+		setTab(activeTab)
+	end
+
+	local landed = false
 	local function onData(d: any)
 		if type(d) == "table" and alive then
 			snapshot = d
 			paint()
+			-- the first data lands the page, unless the player has been browsing a while already
+			if not landed and os.clock() - mountedAt < 1.5 then
+				land()
+			end
+			landed = true
 		end
 	end
 	table.insert(conns, Net.event("PlayerDataChanged").OnClientEvent:Connect(onData))
@@ -1233,20 +1459,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		end)
 	)
 	paint()
-	-- open on the vehicle you have out
-	local opened = false
-	for i, tab in tabs do
-		for _, card in tab.cards do
-			if not opened and card.out.Visible then
-				tab.pages:JumpTo(card.frame)
-				setTab(i)
-				opened = true
-			end
-		end
-	end
-	if not opened then
-		setTab(1)
-	end
+	land()
 	task.spawn(function()
 		local getData = Net.init():WaitForChild("Progression_GetData", 30)
 		if getData and getData:IsA("RemoteFunction") then

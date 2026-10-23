@@ -39,6 +39,9 @@ local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local SettingsRules =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("SettingsRules"))
+local SettingsArt = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+).SettingsArt
 
 local player = Players.LocalPlayer
 
@@ -388,10 +391,18 @@ local function row(
 	tile.Parent = f
 	HudTheme.corner(tile, 7)
 	local shape = SHAPES[glyph]
-	local g = Instance.new(if shape then "Frame" else "TextLabel") :: any
+	local art = SettingsArt[glyph] -- an uploaded white glyph (docs/18) over the drawn one
+	local image = if art and art ~= "" then art else nil
+	local g =
+		Instance.new(if image then "ImageLabel" elseif shape then "Frame" else "TextLabel") :: any
 	g.Name = "Glyph"
 	g.BackgroundTransparency = 1
-	if shape then
+	if image then
+		g.AnchorPoint = Vector2.new(0.5, 0.5)
+		g.Position = UDim2.fromScale(0.5, 0.5)
+		g.Size = UDim2.fromScale(0.72, 0.72)
+		g.Image = image
+	elseif shape then
 		g.AnchorPoint = Vector2.new(0.5, 0.5)
 		g.Position = UDim2.fromScale(0.5, 0.5)
 		g.Size = UDim2.fromScale(0.72, 0.72)
@@ -877,9 +888,6 @@ local function build()
 	ownedPad.PaddingLeft = UDim.new(0, 12)
 	ownedPad.PaddingRight = UDim.new(0, 12)
 	ownedPad.Parent = owned
-	local ownedNote =
-		HudTheme.label("Note", "", UDim2.new(1, 0, 0, LINE), HudTheme.BodyFont, 18, owned)
-	ownedNote.TextColor3 = DIM
 	local pickers: { CosmeticPicker.Picker } = {}
 	local function ownsPass(key: string): boolean
 		return player:GetAttribute("Pass_" .. key) == true
@@ -898,8 +906,12 @@ local function build()
 				table.insert(pickers, picker)
 			end
 		end
-		ownedNote.Text = "None · Chandlery"
-		ownedNote.Visible = #pickers == 0
+		-- nothing owned: no empty section
+		owned.Visible = #pickers > 0
+		local header = s:FindFirstChild("Section_Owned items")
+		if header and header:IsA("GuiObject") then
+			header.Visible = owned.Visible
+		end
 	end
 	rebuildOwned()
 	player.AttributeChanged:Connect(function(attr: string)
