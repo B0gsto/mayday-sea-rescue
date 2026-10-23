@@ -2,20 +2,14 @@
 -- GroupRewardService: the Roblox group ("Crew") reward (docs/15 H1/H9, G68). GroupId = 0 in
 -- Shared/Config/SocialConfig turns it all off. Members get the Crew bay pennant (flags.group.c,
 -- read by CosmeticLoadout -> BayDecor) and a flat +10% on the daily streak crate (StreakService
--- asks IsMember). The membership check is cached on join and re-run when the player walks up to
--- the harbour noticeboard; everything is pcall-guarded so a failed group read never breaks a
--- session.
---
--- Remotes (under ReplicatedStorage.Net):
---   Group_Check  C->S function -> { enabled, member, crew } (rechecks only near the board, 15 s)
--- Player attribute GroupCrew (bool) mirrors current membership for the noticeboard sign.
+-- asks IsMember). The membership check runs on join, pcall-guarded so a failed group read never
+-- breaks a session. Player attribute GroupCrew (bool) mirrors current membership.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GroupReward = require(Shared:WaitForChild("GroupReward"))
-local Net = require(Shared:WaitForChild("Net"))
 local SocialConfig = require(Shared:WaitForChild("Config"):WaitForChild("SocialConfig"))
 
 local DataService = require(script.Parent.DataService)
@@ -97,45 +91,7 @@ function GroupRewardService.State(player: Player): GroupReward.State?
 	return stateOf(player)
 end
 
-local function view(state: GroupReward.State?): { [string]: any }
-	return {
-		enabled = GroupReward.enabled(SocialConfig.GroupId),
-		member = state ~= nil and GroupReward.isMember(state, SocialConfig.GroupId),
-		crew = state ~= nil and GroupReward.earned(state),
-	}
-end
-
-local function nearBoard(player: Player): boolean
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if not root or not root:IsA("BasePart") then
-		return false
-	end
-	local here = SocialConfig.NoticeboardPosition
-	local dx = root.Position.X - here.X
-	local dz = root.Position.Z - here.Z
-	return dx * dx + dz * dz <= SocialConfig.CheckRange * SocialConfig.CheckRange
-end
-
 function GroupRewardService.Init()
-	local folder = Net.init()
-	local name = "Group_Check"
-	local found = folder:FindFirstChild(name)
-	local remote: RemoteFunction
-	if found and found:IsA("RemoteFunction") then
-		remote = found
-	else
-		remote = Instance.new("RemoteFunction")
-		remote.Name = name
-		remote.Parent = folder
-	end
-	remote.OnServerInvoke = function(player: Player)
-		if nearBoard(player) then
-			return view(check(player, false))
-		end
-		return view(stateOf(player))
-	end
-
 	DataService.OnLoaded(function(player: Player)
 		task.spawn(function()
 			local state = check(player, true)

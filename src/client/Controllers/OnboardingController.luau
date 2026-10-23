@@ -134,7 +134,7 @@ local function showReward()
 		fromCash = math.max(0, cash - awardCash),
 		anchor = rootPosition(),
 	})
-	Telemetry.once("RewardSeen") -- onboarding funnel step 10 (G64)
+	Telemetry.once("RewardSeen") -- onboarding funnel step 6 (G64)
 	task.delay(REWARD_HOLD, function()
 		player:SetAttribute("OnboardingRewardBusy", nil)
 	end)

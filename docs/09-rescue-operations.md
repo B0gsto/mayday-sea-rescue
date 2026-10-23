@@ -1,5 +1,7 @@
 # 09 · Rescue operations
 
+> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+
 This is the heart of the game. A rescue in Mayday is an **operation**: a chain of real search-and-rescue procedure steps, and each step is a skill. Canon (names, tone, scope tags) comes from [`01-game-canon.md`](01-game-canon.md). The session loop, vehicles and map scale are in [`02-core-loop-and-mechanics.md`](02-core-loop-and-mechanics.md). Payouts, ranks and the certification thresholds are in [`03-progression.md`](03-progression.md). This file owns the operations, their steps, the radio, crew roles on scene, grading, certifications (their content; [document 03](03-progression.md) owns where they sit on the ladder) and the rescue kit.
 
 Numbers marked **(tune)** are first guesses for playtests. Procedure details come from [`research/rescue-procedures.md`](research/rescue-procedures.md) plus general RNLI, HM Coastguard, USCG and IAMSAR practice. The primary sources were blocked during research, so anything marked **(verify: source)** must be checked against that source before it ships as "how the real crews do it" (in a loading tip, a badge text or the debrief). The game can keep a simplified mechanic; it must never teach a wrong procedure.

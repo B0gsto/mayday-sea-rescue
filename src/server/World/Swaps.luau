@@ -169,7 +169,7 @@ local Swaps: { [string]: Swap } = {
 		rig = "StationRig", -- door lamp, floods and the GlassLit panes: on at night / in a storm
 		-- walkable collision from build.py (metres, X across, -Y sea front, Z up; the upload is recentred by
 		-- +0.175 m in Y, added by station()): hall walls with the 6 x 4.6 m bay door gap (x -8.25..-2.25) and the
-		-- 1 x 2.8 m back door gap (out to the yard and the VIP deck ladder), the
+		-- 1 x 2.8 m back door gap (out to the yard), the
 		-- granite hall floor, the crew wing (no interior: solid from the partition), the watch-room bay, an
 		-- eaves cap. The upload's hull is one mesh, so it stays off.
 		collide = false,

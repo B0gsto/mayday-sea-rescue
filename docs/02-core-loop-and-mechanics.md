@@ -1,5 +1,7 @@
 # 02 · Core loop and mechanics
 
+> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+
 How Mayday plays, from the first second to the daily habit. Names and rules come from [`01-game-canon.md`](01-game-canon.md). Progression numbers (payouts, prices, thresholds, calls per hour) live in [`03-progression.md`](03-progression.md); this file only uses relative values such as "x1.5", plus the map scale and vehicle speeds in section 4.1, which it owns. Tech lives in [`06-tools-and-pipeline.md`](06-tools-and-pipeline.md). The rescue operations themselves (steps, radio, crew roles on scene, grading, certifications, kit) live in [`09-rescue-operations.md`](09-rescue-operations.md); this file links into it. The world layout (the island, roads, beaches, seabed, discoverables, free exploration) lives in [`10-world-and-map.md`](10-world-and-map.md), which works its travel times from the speeds here. MVP scope is in [`01-game-canon.md`](01-game-canon.md), section 9.1. Numbers marked **(tune)** are first guesses.
 
 ## 1. Core loop

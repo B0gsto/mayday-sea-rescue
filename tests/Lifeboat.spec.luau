@@ -81,10 +81,6 @@ return function(t)
 	end)
 
 	t.test("the lifeboat is rank-gated", function()
-		local cert = Progression.Certifications.Coxswain
-		t.expect(cert).toBeTruthy()
-		t.expect(cert.exercise).toBe("ExerciseCoxswain")
-		t.expect(table.find(Progression.CertOrder, "Coxswain")).toBeTruthy()
 		-- the lifeboat is rank-gated data: Coxswain, 12,000 Cash
 		local unlock = Progression.Vehicles.Lifeboat
 		t.expect(unlock.rankIndex).toBe(4)

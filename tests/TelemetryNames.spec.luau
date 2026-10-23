@@ -40,7 +40,6 @@ return function(t)
 				reason = "Timer",
 				helped = true,
 				coldOpen = false,
-				exercise = false,
 				storm = false,
 				big = false,
 				rarity = "Common",

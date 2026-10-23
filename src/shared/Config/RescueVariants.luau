@@ -14,9 +14,9 @@ export type Variant = {
 	id: string,
 	kind: string,
 	rarity: Rarity,
-	label: string, -- 1-2 words, the album sticker
+	label: string, -- 1-2 words
 	weight: number,
-	accent: Color3, -- the sticker's fill once rescued
+	accent: Color3,
 	style: "Person" | "Creature" | "Boat",
 	paint: { [string]: Color3 }?, -- part name -> colour (RescueDressing)
 }
@@ -38,38 +38,6 @@ RescueVariants.Rarity = {
 -- Outside a Great Storm a Rare keeps this share of its weight: a tiny base rate, never Epic or
 -- Legendary (docs/15 section 1: rare calls are the storm's draw, but a collector can still meet one).
 RescueVariants.RareBaseRate = 0.06
-
--- Completing a call kind's set pays this Cash once (ProgressionService.Award).
-RescueVariants.SetCash = {
-	PersonInWater = 2200,
-	DisabledVessel = 1500,
-	CliffCasualty = 1100,
-	RipCurrent = 1000,
-	SinkingVessel = 1050,
-	VesselFire = 1000,
-	WildlifeRescue = 700,
-} :: { [string]: number }
-
--- The album's row order and one-word row names.
-RescueVariants.KindOrder = {
-	"PersonInWater",
-	"DisabledVessel",
-	"CliffCasualty",
-	"RipCurrent",
-	"SinkingVessel",
-	"VesselFire",
-	"WildlifeRescue",
-} :: { string }
-
-RescueVariants.KindLabel = {
-	PersonInWater = "Swimmer",
-	DisabledVessel = "Tow",
-	CliffCasualty = "Cliff",
-	RipCurrent = "Rip",
-	SinkingVessel = "Sinking",
-	VesselFire = "Fire",
-	WildlifeRescue = "Wildlife",
-} :: { [string]: string }
 
 RescueVariants.Kinds = {
 	PersonInWater = {
@@ -169,104 +137,6 @@ RescueVariants.Kinds = {
 			accent = Color3.fromRGB(112, 150, 84),
 			style = "Person",
 			paint = { Torso = Color3.fromRGB(138, 158, 96) },
-		},
-	},
-	DisabledVessel = {
-		{
-			id = "FishingBoat",
-			kind = "DisabledVessel",
-			rarity = "Common",
-			label = "Fishing",
-			weight = 55,
-			accent = Color3.fromRGB(78, 136, 176),
-			style = "Boat",
-		},
-		{
-			id = "RowingBoat",
-			kind = "DisabledVessel",
-			rarity = "Uncommon",
-			label = "Rowboat",
-			weight = 30,
-			accent = Color3.fromRGB(176, 126, 70),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(146, 98, 56),
-				Stripe = Color3.fromRGB(96, 62, 34),
-				Cabin = Color3.fromRGB(146, 98, 56),
-				Windshield = Color3.fromRGB(96, 62, 34),
-			},
-		},
-		{
-			id = "CelebrityYacht",
-			kind = "DisabledVessel",
-			rarity = "Epic",
-			label = "Yacht",
-			weight = 4,
-			accent = Color3.fromRGB(232, 210, 150),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(248, 248, 244),
-				Stripe = Color3.fromRGB(214, 176, 74),
-				Cabin = Color3.fromRGB(252, 252, 250),
-			},
-		},
-		{
-			id = "SwanPedalo",
-			kind = "DisabledVessel",
-			rarity = "Rare",
-			label = "Swan",
-			weight = 7,
-			accent = Color3.fromRGB(240, 240, 234),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(248, 248, 244),
-				Stripe = Color3.fromRGB(176, 212, 222),
-				Cabin = Color3.fromRGB(248, 248, 244),
-				Windshield = Color3.fromRGB(176, 212, 222),
-			},
-		},
-		{
-			id = "PirateShip",
-			kind = "DisabledVessel",
-			rarity = "Epic",
-			label = "Pirate Ship",
-			weight = 4,
-			accent = Color3.fromRGB(74, 54, 44),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(104, 72, 48),
-				Stripe = Color3.fromRGB(34, 32, 34),
-				Cabin = Color3.fromRGB(120, 84, 54),
-				Windshield = Color3.fromRGB(42, 38, 36),
-			},
-		},
-		{
-			id = "Trawler",
-			kind = "DisabledVessel",
-			rarity = "Common",
-			label = "Trawler",
-			weight = 26,
-			accent = Color3.fromRGB(96, 146, 176),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(212, 224, 228),
-				Stripe = Color3.fromRGB(150, 58, 52),
-				Cabin = Color3.fromRGB(242, 240, 232),
-			},
-		},
-		{
-			id = "Houseboat",
-			kind = "DisabledVessel",
-			rarity = "Uncommon",
-			label = "Houseboat",
-			weight = 16,
-			accent = Color3.fromRGB(96, 138, 100),
-			style = "Boat",
-			paint = {
-				Hull = Color3.fromRGB(84, 124, 88),
-				Stripe = Color3.fromRGB(238, 230, 206),
-				Cabin = Color3.fromRGB(240, 232, 208),
-			},
 		},
 	},
 	CliffCasualty = {
@@ -372,7 +242,7 @@ RescueVariants.Kinds = {
 			},
 		},
 	},
-	-- Wildlife (H4): the five sanctuary species, and the rare palette the album collects. The id
+	-- Wildlife (H4): the five sanctuary species, and the rare palette. The id
 	-- matches the animal SanctuaryService actually dresses (`Wildlife_<species>` / `..._Rare`).
 	WildlifeRescue = {
 		{

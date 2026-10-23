@@ -13,7 +13,7 @@
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
---   ProgressionService.RecordTraining(player, kind, grade, steps, isExercise) -> nil
+--   ProgressionService.RecordTraining(player, grade) -> nil
 --     counts a finished, graded operation (flags.opsCompleted, the OpsCompletedTotal attribute)
 -- Remotes: BuyGear (Net, function: itemId = vehicle id -> ok, reason; the name is historical),
 --   PlayerDataChanged (Net, S->C full snapshot plus optional rankUp / award fields),
@@ -117,10 +117,6 @@ local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 	end
 	player:SetAttribute("RankIndex", rankIndex)
 	player:SetAttribute("ServiceStars", Rules.serviceStars(data))
-	-- saved (retired) certifications: OperationService (WP1) still reads CertHelm / CertCoxswain
-	for _, id in ProgressionConfig.CertOrder do
-		player:SetAttribute(`Cert{id}`, if data.certs[id] then true else nil)
-	end
 end
 
 local function push(player: Player, data: Rules.PlayerData, extra: { [string]: any }?)
@@ -184,20 +180,10 @@ end
 
 -- A finished operation (OperationService calls it once per player at the debrief): a graded one
 -- counts toward the saved total (flags.opsCompleted, read as the OpsCompletedTotal attribute by the
--- new-player HUD and the phone Store). Certifications and exercises are retired (docs/16 C3).
-function ProgressionService.RecordTraining(
-	player: Player,
-	_kind: string,
-	grade: string,
-	_steps: any,
-	isExercise: boolean
-): nil
+-- new-player HUD and the phone Store).
+function ProgressionService.RecordTraining(player: Player, grade: string): nil
 	local data = DataService.Get(player)
-	if
-		not data
-		or isExercise
-		or not (grade == "Gold" or grade == "Silver" or grade == "Bronze")
-	then
+	if not data or not (grade == "Gold" or grade == "Silver" or grade == "Bronze") then
 		return nil
 	end
 	local done = (if type(data.flags.opsCompleted) == "number" then data.flags.opsCompleted else 0)
@@ -293,7 +279,7 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	else
 		return false, "Unknown item"
 	end
-	Telemetry.Funnel(player, "FirstUnlock") -- RP-A1 onboarding: the first gear or vehicle
+	Telemetry.Funnel(player, "FirstUnlock") -- RP-A1 onboarding: the first vehicle
 	DataService.MarkDirty(player)
 	push(player, data, { bought = itemId })
 	task.spawn(DataService.Save, player, false) -- purchases are saved right away

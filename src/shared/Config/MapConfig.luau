@@ -168,12 +168,6 @@ local MapConfig = {
 			glyph = A11yPalette.symbol("Marker", "Storm"),
 			color = Color3.fromHex("8E5BD8"),
 		},
-		-- static points of interest (MapController.SetBlips)
-		Discovery = {
-			label = "Logbook discovery",
-			glyph = A11yPalette.symbol("Marker", "Discovery"),
-			color = Color3.fromHex("C9B98A"),
-		},
 		-- seamarks (SeamarkController -> SetBlips("Seamarks", ...), small dots in the IALA colours)
 		SeamarkPort = {
 			label = "Port-hand mark",

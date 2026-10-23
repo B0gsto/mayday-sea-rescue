@@ -114,7 +114,7 @@ local function try(serviceName: string, fnName: string, ...: any): (boolean, any
 	return ok, result
 end
 
-local function callService(): any
+local function operations(): any
 	return require(script.Parent:WaitForChild("OperationService") :: ModuleScript) :: any
 end
 
@@ -800,7 +800,7 @@ function RescueService.SetFerryState(call: any, state: string)
 	end
 end
 
--- Builds everything a call needs at call.position. Called by CallService on accept / big-call start.
+-- Builds everything a call needs at call.position. Called by OperationService on accept / big-call start.
 function RescueService.SpawnCall(call: any, victimPositions: { Vector3 }?)
 	liveCalls[call] = true
 	call.victims = {}
@@ -879,7 +879,7 @@ local function vehicleRoot(vehicle: Model): BasePart?
 end
 
 local function notify(call: any, player: Player, message: string)
-	callService().Notify(call, player, message)
+	operations().Notify(call, player, message)
 end
 
 -- Unanchors and welds a victim into one assembly so it can ride a boat.
@@ -945,8 +945,8 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	if victim.state ~= "Water" or not liveCalls[call] then
 		return
 	end
-	local CallService = callService()
-	if not forced and not CallService.CanAct(call, player) then
+	local Ops = operations()
+	if not forced and not Ops.CanAct(call, player) then
 		notify(call, player, "That's another crew's call.")
 		return
 	end
@@ -993,12 +993,12 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 		victim.prompt:Destroy()
 		victim.prompt = nil
 	end
-	CallService.RecordAction(call, player)
+	Ops.RecordAction(call, player)
 	local driver = driverOf(vehicle)
 	if driver then
-		CallService.RecordAction(call, driver)
+		Ops.RecordAction(call, driver)
 	end
-	CallService.OnVictimBoarded(call, player)
+	Ops.OnVictimBoarded(call, player)
 end
 
 ---------------------------------------------------------------- per-frame motion
@@ -1059,7 +1059,7 @@ end
 ---------------------------------------------------------------- casualty poses (rigged swimmer)
 
 -- Chooses each swimmer's client pose (CasualtyController): Panic while the casualty is panicking
--- (op casualties[i].panicking, until panic_calm), Wave with a boat in sight, else TreadWater; a
+-- (op casualties[i].panicking), Wave with a boat in sight, else TreadWater; a
 -- swimmer who sees a boat turns slowly to face it. 4 Hz, server side (attributes replicate).
 RescueService.WAVE_RANGE = 160 -- studs: a boat this close gets waved at
 RescueService.WAVE_MIN = 9 -- studs: alongside, they stop waving and reach for the boat
@@ -1305,7 +1305,7 @@ local function checkDeliveries()
 					v.model:Destroy()
 					local fresh = spawnVictim(call, v.lastPos)
 					call.victims[i] = fresh
-					callService().OnVictimLost(call)
+					operations().OnVictimLost(call)
 				else
 					v.lastPos =
 						Vector3.new(carrier:GetPivot().Position.X, 0, carrier:GetPivot().Position.Z)
@@ -1336,12 +1336,12 @@ local function checkDeliveries()
 			end
 			for call, count in perCall do
 				if driver then
-					callService().RecordAction(call, driver)
+					operations().RecordAction(call, driver)
 				end
 				if call.onDelivered then
 					call.onDelivered(count, driver, padOf[call]) -- free-roam (AmbientRescueService)
 				else
-					callService().OnVictimsDelivered(call, count, driver, padOf[call])
+					operations().OnVictimsDelivered(call, count, driver, padOf[call])
 				end
 			end
 		end
@@ -1508,7 +1508,7 @@ end
 
 local function ferryDev(cmd: string): any
 	if cmd == "start" then
-		callService().ForceBigCall()
+		operations().ForceBigCall()
 		return liveFerry() ~= nil
 	end
 	local call = liveFerry()
@@ -1647,7 +1647,7 @@ function RescueService.Start()
 		dev.Parent = game:GetService("ServerStorage")
 	end
 	PiwRescue.start(liveCalls, function(call, player)
-		return callService().CanAct(call, player)
+		return operations().CanAct(call, player)
 	end)
 	local accum, poseAccum = 0, 0
 	RunService.Heartbeat:Connect(function(dt)
@@ -1667,7 +1667,7 @@ function RescueService.Start()
 	end)
 end
 
--- Exposed for CallService fallbacks and tests.
+-- Exposed for tests.
 RescueService.SpawnZones = CallTypes.SpawnZones
 
 return RescueService

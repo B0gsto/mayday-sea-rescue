@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""G25b systems sweep: one Studio session that exercises every operation kind, the clock events,
-the seasonal Ghost Ship, a Legendary variant, the streak/stock/season/album/pet/cosmetic
-systems, the friend bonus and the rank ceremony, then does a profile round-trip (save, stop, new
-play session, check the flags came back).
+"""G25b systems sweep: one Studio session that runs every operation kind, a Legendary variant, the
+streak/pet/cosmetic systems, the friend bonus and the rank ceremony, then does a profile round-trip
+(save, stop, new play session, check the flags came back).
 
 usage: python3 tools/studio/soak.py [minutes]     (default 12; report: build/smoke/sweep.txt)
 
@@ -49,11 +48,6 @@ local c = p and p.Character
 local h = c and c:FindFirstChildOfClass("Humanoid")
 if h then h.Sit = false end
 return "unseated"
-"""
-EXERCISE_SETUP = """
-local p = game:GetService("Players"):GetPlayers()[1]
-p:SetAttribute("ColdOpenDone", true)
-return tostring(game:GetService("ServerStorage").ProgressionDev:Invoke("certs"))
 """
 PROBE = """
 local ok, err = pcall(function()
@@ -172,9 +166,6 @@ def op_once(s, kind):
     done_before, _ = status(s)
     if kind == "ColdOpen":
         code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("coldopen"))'
-    elif kind.startswith("Exercise"):
-        server(s, EXERCISE_SETUP)
-        code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("exercise", "%s"))' % kind
     else:
         code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("start", "%s"))' % kind
     started = server(s, code)
@@ -184,11 +175,7 @@ def op_once(s, kind):
     while time.monotonic() < end:
         time.sleep(2)
         done, text = status(s)
-        if kind.startswith("Exercise"):
-            if "op=nil" in text and ("lastKind=" + kind) in text:
-                ok = True
-                break
-        elif done != done_before and "op=nil" in text:
+        if done != done_before and "op=nil" in text:
             ok = True
             break
     return ok, started, text

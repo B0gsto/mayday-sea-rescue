@@ -61,7 +61,6 @@ return function(t)
 				"Vehicle",
 				"Crew",
 				"Storm",
-				"Discovery",
 				"SeamarkPort",
 				"SeamarkStarboard",
 				"SeamarkCardinal",

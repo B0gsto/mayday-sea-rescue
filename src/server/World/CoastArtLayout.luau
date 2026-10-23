@@ -3,7 +3,7 @@
 -- tests/CoastArt.spec.luau. Studs, +X east, -Z north, Y up; yaw is radians for CFrame.Angles(0, yaw, 0).
 --
 -- The cliffs continue the Haven Head face (docs/10 section 1.2, docs/12 row M_Rock_Cliff_01 to _08) and leave the
--- cliff-casualty shelf at CliffRules.SITE.foot (1740, 890) clear. The ledges sit at the waterline either side of it.
+-- cliff-casualty shelf at (1740, 890) clear. The ledges sit at the waterline either side of it.
 -- Kelp beds come from WorldConfig.KelpBeds. The I2d clutter follows docs/10 section 4.2: a bottle field off the old
 -- quay, lost pots and mooring blocks in the harbour and its approaches, sand ripples in Calm Bay.
 

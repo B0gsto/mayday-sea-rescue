@@ -6,9 +6,9 @@
 --   Onboarding funnel (LogOnboardingFunnelStepEvent): fixed step numbers, each logged once per player
 --     (Roblox keeps the first; the session tracker below stops repeats in one server)
 --   Economy (LogEconomyEvent): every Cash source (Award, Cash packs, Starter Kit) and sink (gear,
---     vehicles, stock, station upgrades, pet treats)
+--     vehicles, pet treats)
 --   Custom (LogCustomEvent): the fixed TelemetryNames.Custom list (op start/complete/grade, daily
---     crate, challenge, album, pets, live events, prompts, ...)
+--     crate, pets, live events, prompts, ...)
 -- Custom field values are short, low-cardinality strings (kinds, grades, reasons), never names or ids.
 
 export type FunnelStep = { step: number, name: string }
@@ -20,10 +20,9 @@ export type OpFacts = {
 	reason: string, -- "Complete" | "Timer" | "Takeover" | cold-open endings
 	helped: boolean, -- this player did a step
 	coldOpen: boolean,
-	exercise: boolean,
 	storm: boolean,
 	big: boolean,
-	rarity: string?, -- the call variant's rarity (Common..Legendary), nil for an exercise
+	rarity: string?, -- the call variant's rarity (Common..Legendary)
 }
 export type Tracker = { [string]: boolean }
 
@@ -35,7 +34,7 @@ Events.MAX_FIELD = 50 -- characters per custom field value
 -- The onboarding funnel in the order a new player meets it (docs/13 RP-A1, docs/15 section 3).
 -- Roblox treats a skipped step as completed, so the numbers MUST follow the real order: a step
 -- logged before its number would mark every earlier step done. The funnel is not live yet (launch
--- pending, docs/13 U-1), so G64 renumbered the old InProgress steps once, here; do not renumber
+-- pending, docs/13 U-1), so G64 and WP10 (docs/16 cuts) renumbered the steps; do not renumber
 -- again after launch, only append.
 Events.Funnel = {
 	{ step = 1, name = "Joined" },
@@ -44,15 +43,13 @@ Events.Funnel = {
 	{ step = 4, name = "ColdOpenRecovery" }, -- the casualty holds on
 	{ step = 5, name = "ColdOpenEnded" },
 	{ step = 6, name = "RewardSeen" }, -- the first reward burst played (client reports it)
-	{ step = 7, name = "ReachedStation" },
-	{ step = 8, name = "Call2Accepted" },
-	{ step = 9, name = "FirstOpComplete" }, -- call 2 complete
-	{ step = 10, name = "Call3Complete" },
-	{ step = 11, name = "FirstChandleryVisit" },
-	{ step = 12, name = "FirstUnlock" }, -- the first gear purchase (docs/15 section 3, about 5 min)
-	{ step = 13, name = "FirstRank" },
-	{ step = 14, name = "FirstDailyCrate" },
-	{ step = 15, name = "Day2Return" }, -- first session on a later UTC day
+	{ step = 7, name = "Call2Accepted" },
+	{ step = 8, name = "FirstOpComplete" }, -- call 2 complete
+	{ step = 9, name = "Call3Complete" },
+	{ step = 10, name = "FirstUnlock" }, -- the first vehicle bought
+	{ step = 11, name = "FirstRank" },
+	{ step = 12, name = "FirstDailyCrate" },
+	{ step = 13, name = "Day2Return" }, -- first session on a later UTC day
 } :: { FunnelStep }
 
 -- cold open step id (OperationService.ColdOpenPlan) -> funnel step name
@@ -126,21 +123,15 @@ end
 -- Award / grant reason -> (Enum.AnalyticsEconomyTransactionType name, item SKU)
 --   "Purchase:<key>"   Cash packs and the Starter Kit (CashEffects)   IAP
 --   "Op:<kind>[:...]"  operation payouts (OperationService)          Gameplay
---   "Exercise:<kind>"  first exercise pass (RecordTraining)           Onboarding
---   "Logbook: <name>"  exploration finds (ExplorationService)         Gameplay, SKU "Logbook"
 function Events.cashSource(reason: string?): (string, string)
 	local r = if type(reason) == "string" and reason ~= "" then reason else "Unknown"
 	if r:sub(1, 9) == "Purchase:" then
 		return "IAP", clip(r:sub(10))
-	elseif r:sub(1, 9) == "Exercise:" then
-		return "Onboarding", clip(r)
-	elseif r:sub(1, 8) == "Logbook:" then
-		return "Gameplay", "Logbook"
 	end
 	return "Gameplay", clip(r)
 end
 
--- BuyGear / BuyStock / station upgrade / pet treat: what the Cash bought -> (transaction, SKU)
+-- vehicle / upgrade / pet treat: what the Cash bought -> (transaction, SKU)
 function Events.cashSink(kind: string, itemId: string): (string, string)
 	return "Shop", clip(`{kind}:{itemId}`)
 end
@@ -157,8 +148,6 @@ end
 local function context(f: OpFacts): string
 	if f.coldOpen then
 		return "ColdOpen"
-	elseif f.exercise then
-		return "Exercise"
 	elseif f.big then
 		return "Big"
 	elseif f.storm then
@@ -213,9 +202,9 @@ function Events.opStarted(kind: string, rarity: string?, ctx: string): Custom
 end
 
 -- Whether this finish is the player's first proper operation (the funnel's FirstOpComplete): a
--- station call they helped on, ended as a rescue. The cold open and exercises do not count.
+-- station call they helped on, ended as a rescue. The cold open does not count.
 function Events.countsAsFirstOp(f: OpFacts): boolean
-	return f.helped and f.reason == "Complete" and not f.coldOpen and not f.exercise
+	return f.helped and f.reason == "Complete" and not f.coldOpen
 end
 
 -- StormJoined: one per player per storm (the storm's StormId), on the turn to Storm or on joining a

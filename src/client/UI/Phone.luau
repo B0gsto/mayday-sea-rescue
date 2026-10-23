@@ -389,25 +389,15 @@ local function borrow(root: GuiObject, page: Frame, fill: GuiObject): () -> ()
 	end
 end
 
--- an app that shows an existing panel: PlayerGui[guiName][frameName] (bgName: its backing panel)
-local function panelApp(
-	guiName: string,
-	frameName: string,
-	bgName: string?,
-	controller: (() -> any)?
-): Mount
+-- an app that shows an existing panel: PlayerGui[guiName][frameName]
+local function panelApp(guiName: string, frameName: string): Mount
 	return function(page: Frame): () -> ()
 		local host = player:WaitForChild("PlayerGui"):FindFirstChild(guiName)
 		local root = host and host:FindFirstChild(frameName)
 		if not root or not root:IsA("GuiObject") then
 			return function() end
 		end
-		local bg = if bgName then root:FindFirstChild(bgName) else nil
-		local ctl: any = if controller then controller() else nil
-		if ctl then
-			task.spawn(ctl.Open) -- Open may yield
-		end
-		local undo = borrow(root, page, if bg and bg:IsA("GuiObject") then bg else root)
+		local undo = borrow(root, page, root)
 		-- the panel closed itself (its own Escape / B): back to the icons
 		local watch = root:GetPropertyChangedSignal("Visible"):Connect(function()
 			if not root.Visible and current then
@@ -416,9 +406,6 @@ local function panelApp(
 		end)
 		return function()
 			watch:Disconnect()
-			if ctl then
-				ctl.Close()
-			end
 			undo()
 		end
 	end

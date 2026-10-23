@@ -26,13 +26,9 @@ TelemetryNames.Custom = table.freeze({
 	"ColdOpenEnded", -- why the cold open ended (Complete, Timer, Died, LeftCraft, ...)
 	"StormJoined", -- Great Storm / ordinary storm, Start / MidStorm
 	"DailyCrate", -- streak day, Daily / Welcome
-	"ChallengeDone", -- daily / weekly, challenge id
-	"AlbumSticker", -- a new Rescue Album sticker: rarity, variant id
 	"PetAdopted", -- species, Rare / Common (the pet that follows you)
 	"PetPetted", -- the hold-to-pet action was used (client reports it, once per session)
 	"PetTreated", -- species, bond pips after the treat
-	"StockBuy", -- Chandlery shelf purchase: Gear / Cosmetic, item key
-	"SeasonClaim", -- Season Logbook tier claimed (value = tier)
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown
@@ -49,11 +45,9 @@ TelemetryNames.Funnel = table.freeze({
 	"ColdOpenRecovery",
 	"ColdOpenEnded",
 	"RewardSeen",
-	"ReachedStation",
 	"Call2Accepted",
 	"FirstOpComplete",
 	"Call3Complete",
-	"FirstChandleryVisit",
 	"FirstUnlock",
 	"FirstRank",
 	"FirstDailyCrate",

@@ -5,7 +5,7 @@
 -- rig with WildlifeRig.setCFrame, which bulk-moves the parts around one pivot.
 --
 -- The rescue entanglement ("cut the net" / "wipe the oil" / "free the line") is one Part named
--- Entanglement in the rig; the free_wildlife client mechanic fades it as the hold fills.
+-- Entanglement in the rig; SanctuaryService drops it once the animal is aboard.
 
 local Workspace = game:GetService("Workspace")
 

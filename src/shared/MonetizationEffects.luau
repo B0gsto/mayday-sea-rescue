@@ -4,7 +4,7 @@
 -- runs it under Lune and the client cards can read the same numbers.
 --
 -- Fairness (docs/04 sections 1 and 7): every effect here is Cash or a server-wide storm. Nothing
--- touches Reputation, rank, certifications, grades, timing windows or a casualty's condition.
+-- touches Reputation, rank, grades, timing windows or a casualty's condition.
 --
 -- Saved state: one flat profile flag `shop` (ProgressionRules flag rules: scalars only, |n| <= 1e6):
 --   cashBoost, crewBoost   seconds of boost playtime left (tick only while the player is in a server)

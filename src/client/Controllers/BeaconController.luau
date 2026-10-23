@@ -3,8 +3,7 @@
 -- glass, PointLight off); this controller flashes it on the server clock only while the local
 -- player is on a call and the boat is theirs (owner or seated). Off otherwise. It reads the op
 -- state, so there is no server or remote involved: player attribute OpsActiveOp (normal calls),
--- OpsExercise (Coxswain exercises), the boat's ColdOpenOpId (the cold open's call) or the last
--- Ops_State from OpsController.
+-- the boat's ColdOpenOpId (the cold open's call) or the last Ops_State from OpsController.
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -30,9 +29,6 @@ end
 
 local function beaconOn(model: Model): boolean
 	if localPlayer:GetAttribute("OpsActiveOp") ~= nil then
-		return true
-	end
-	if localPlayer:GetAttribute("OpsExercise") ~= nil then
 		return true
 	end
 	if model:GetAttribute("ColdOpenOpId") ~= nil then

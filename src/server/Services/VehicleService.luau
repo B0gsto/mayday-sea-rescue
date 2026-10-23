@@ -8,7 +8,6 @@
 --   Returning players (K11)              profile has coldOpenDone: every spawn stands them on the pier at
 --                                        their bay (BayLaunch.STAND) with that craft docked beside them.
 --                                        Player attribute BayCFrame = their bay's CFrame (the daily crate).
---   Vehicle_ArrivalHandoff (RemoteEvent) after the arrival cinematic: unseat, dock, stand on the slipway
 --   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
 --     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere (the phone's Vehicles app Spawn), no
 --     launch cooldown, seated at the helm at once. Same rank and occupancy checks.
@@ -38,7 +37,6 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
-local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -1126,69 +1124,6 @@ local function addPrompts()
 	end
 end
 
--- Arrival handoff (after the cold open's arrival cinematic) -----------------------------------
--- Vehicle_ArrivalHandoff (RemoteEvent, ReplicatedStorage.Net):
---   C->S ()                            the arrival cinematic ended (or was skipped)
---   S->C { stand: CFrame, look: Vector3, vehicle: string }   where the player now stands
--- Once per cold open (SpawnColdOpen arms it, ColdOpenDone must be true): the server unseats the
--- player, docks the jet ski at their bay (despawns it when the bay is busy or missing), and
--- pivots the character onto the station slipway facing Chief Aggie's spot. Player attribute
--- ArrivalHandoff = "Docked:<bay>" / "Despawned" / "NoVehicle" for Studio tests.
-local HANDOFF_REMOTE = "Vehicle_ArrivalHandoff"
-local SLIPWAY_STAND = 10 -- studs down the ramp from its top edge (dry, above the waterline) -- tune
-local AGGIE_POINT_NAMES = { "ChiefAggie", "AggieSpot", "Aggie" }
-local coldOpenRiders: { [Player]: Model } = {} -- the cold-open vehicle, until the handoff
-local handoffRemote: RemoteEvent? = nil
-
-local function worldPoint(names: { string }, kind: string?): BasePart?
-	local map = Workspace:FindFirstChild("Map")
-	local points = map and map:FindFirstChild("WorldPoints")
-	if not points then
-		return nil
-	end
-	for _, name in names do
-		local p = points:FindFirstChild(name)
-		if p and p:IsA("BasePart") then
-			return p
-		end
-	end
-	if kind then
-		for _, p in points:GetChildren() do
-			if p:IsA("BasePart") and p:GetAttribute("PointKind") == kind then
-				return p
-			end
-		end
-	end
-	return nil
-end
-
--- (stand position on the ramp, Aggie's spot) from the slipway geometry in map/Build.luau, the
--- WorldPoints "StationSlipway" marker (WorldConfig.Points) as a fallback.
-local function slipwaySpots(): (Vector3?, Vector3?)
-	local map = Workspace:FindFirstChild("Map")
-	local slips = map and map:FindFirstChild("Slipways")
-	local ramp = slips and slips:FindFirstChild("StationSlipway")
-	local stand: Vector3?, top: Vector3? = nil, nil
-	if ramp and ramp:IsA("BasePart") then
-		local half = ramp.Size / 2
-		-- the ramp's local -Z end is the top, at the quay
-		top = (ramp.CFrame * CFrame.new(0, half.Y, -half.Z)).Position
-		stand = (ramp.CFrame * CFrame.new(0, half.Y, -half.Z + SLIPWAY_STAND)).Position
-	else
-		local marker = worldPoint({ "StationSlipway" }, nil)
-		if marker then
-			stand = marker.Position
-			top = marker.Position + Vector3.new(0, 0, -SLIPWAY_STAND * 2)
-		end
-	end
-	local aggie = worldPoint(AGGIE_POINT_NAMES, "Aggie")
-	local look: Vector3? = if aggie then aggie.Position else nil
-	if not look and top and stand then
-		look = top + (top - stand) * Vector3.new(0.6, 0, 0.6) -- just onto the quay
-	end
-	return stand, look
-end
-
 local function standOnGround(character: Model, at: Vector3): Vector3
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
@@ -1206,21 +1141,6 @@ local function standOnGround(character: Model, at: Vector3): Vector3
 		+ (if root then root.Size.Y / 2 else 1)
 		+ 0.2
 	return (if hit then hit.Position else at) + Vector3.new(0, lift, 0)
-end
-
-local function unseat(character: Model)
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if not humanoid then
-		return
-	end
-	local seat = humanoid.SeatPart
-	if seat then
-		local weld = seat:FindFirstChild("SeatWeld")
-		if weld then
-			weld:Destroy()
-		end
-	end
-	humanoid.Sit = false
 end
 
 -- Docks the player's vehicle at their bay; despawns it when that is not possible.
@@ -1251,54 +1171,7 @@ end
 -- The cold open ended off the craft (OperationService): bring the jet ski home to the bay so the
 -- next launch step points at the quay, not at a hull drifting out at sea.
 function VehicleService.Stow(player: Player): string
-	coldOpenRiders[player] = nil
 	return stowVehicle(player)
-end
-
-local function arrivalHandoff(player: Player)
-	if not coldOpenRiders[player] or player:GetAttribute("ColdOpenDone") ~= true then
-		return
-	end
-	local character = player.Character
-	if not character or not character.PrimaryPart then
-		return
-	end
-	local coldOpenModel = coldOpenRiders[player]
-	coldOpenRiders[player] = nil
-	-- only while still in (or just off) the cold-open craft: a player already in another boat
-	-- (collected at the desk) or a car is never yanked out by a late handoff (integration-D)
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	local seat = humanoid and humanoid.SeatPart
-	if seat and not seat:IsDescendantOf(coldOpenModel) then
-		player:SetAttribute("ArrivalHandoff", "Skipped")
-		return
-	end
-	unseat(character)
-	local vehicle = stowVehicle(player)
-	local stand, look = slipwaySpots()
-	if not stand then
-		warn("[VehicleService] arrival handoff: no StationSlipway found, player left in place")
-		player:SetAttribute("ArrivalHandoff", vehicle)
-		return
-	end
-	local pos = standOnGround(character, stand)
-	local face = look or (pos + Vector3.new(0, 0, -1))
-	local cf = CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z))
-	local root = character.PrimaryPart :: BasePart
-	root.AssemblyLinearVelocity = Vector3.zero
-	root.AssemblyAngularVelocity = Vector3.zero
-	character:PivotTo(cf)
-	player:SetAttribute("ArrivalHandoff", vehicle)
-	print(`[VehicleService] arrival handoff: {player.Name} on foot at slipway, vehicle {vehicle}`)
-	if handoffRemote then
-		handoffRemote:FireClient(player, { stand = cf, look = face, vehicle = vehicle })
-	end
-	-- the story goes on: Chief Aggie walks up and welcomes them (docs/14 section 3)
-	local npcs = script.Parent:FindFirstChild("NpcService")
-	local ok, Npc = pcall(require :: any, npcs)
-	if ok and type(Npc) == "table" and Npc.MeetAggie then
-		Npc.MeetAggie(player, pos, ColdOpen.WELCOME)
-	end
 end
 
 -- K11: a returning player spawns on the pier at their bay, their craft docked beside them and the
@@ -1344,13 +1217,8 @@ function VehicleService.Init()
 	folder = f
 
 	local net = ReplicatedStorage:WaitForChild("Net")
-	local remote = Instance.new("RemoteEvent")
-	remote.Name = HANDOFF_REMOTE
-	remote.Parent = net
-	handoffRemote = remote
-	remote.OnServerEvent:Connect(arrivalHandoff)
 
-	-- docked = true (the kit_launch step): leave it at the bay for the player to walk to and board
+	-- docked = true (the launch step): leave it at the bay for the player to walk to and board
 	Net.func("RequestVehicle").OnServerInvoke = function(
 		player: Player,
 		vehicleId: unknown,
@@ -1388,7 +1256,6 @@ function VehicleService.Init()
 		byPlayer[player] = nil
 		playerBay[player] = nil
 		lastSpawn[player] = nil
-		coldOpenRiders[player] = nil
 	end)
 end
 
@@ -1514,9 +1381,7 @@ function VehicleService.SpawnColdOpen(player: Player, cframe: CFrame): Model?
 		"Scripted" -- a re-run cold open never rebuilds the jet ski the player is riding
 	)
 	if model then
-		coldOpenRiders[player] = model -- arms the arrival handoff (Vehicle_ArrivalHandoff)
 		model:SetAttribute("ColdOpen", true) -- the client's arrival shot keys on this craft
-		player:SetAttribute("ArrivalHandoff", nil)
 	end
 	return model
 end

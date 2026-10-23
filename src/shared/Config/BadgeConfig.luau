@@ -28,7 +28,6 @@ local BadgeConfig = {}
 -- Every operation kind, once each, for the EveryCall badge.
 BadgeConfig.OpKinds = table.freeze({
 	"PersonInWater",
-	"DisabledVessel",
 	"CapsizedFerry",
 	"CliffCasualty",
 	"RipCurrent",
@@ -230,9 +229,9 @@ BadgeConfig.Badges = table.freeze({
 	EveryCall = {
 		id = 0,
 		name = "Every Call",
-		description = "Complete every operation type once: swimmer, tow, ferry, cliff, rip current, sinking, fire and wildlife.",
-		icon = "Eight small icons in a ring",
-		count = 8,
+		description = "Complete every operation type once: swimmer, ferry, cliff, rip current, sinking, fire and wildlife.",
+		icon = "Seven small icons in a ring",
+		count = 7,
 	},
 	LifeboatBought = {
 		id = 0,

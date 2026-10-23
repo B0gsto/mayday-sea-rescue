@@ -508,7 +508,7 @@ local function loadTerrain(ws: Instance, ctx: any): boolean
 	return true
 end
 
--- An invisible, non-colliding marker part carrying attributes (for code and the logbook).
+-- An invisible, non-colliding marker part carrying attributes (for code).
 local function marker(
 	parent: Instance,
 	name: string,

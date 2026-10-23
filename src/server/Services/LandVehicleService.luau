@@ -8,7 +8,6 @@
 --                 -> (ok, reason | Model)
 --   Land_Control  (RemoteEvent C->S) (action, value): "Horn" bool, "Siren" bool, "LightBar" bool,
 --                 "Headlights" bool, "Launch"
---   Land_Spawned  (RemoteEvent S->C) (model)
 --   Spawn point ProximityPrompts are the temporary UI ("Take Lifeguard 4x4").
 --
 -- States: Parked (anchored, nobody driving), Driven (owner in DriverSeat: unanchored, network
@@ -100,7 +99,6 @@ local lastSpawn: { [Player]: number } = {}
 local lastControl: { [Player]: number } = {}
 local folder: Folder
 local spawnPoints: { SpawnPoint } = LandVehicleConfig.SpawnPoints
-local spawnedRemote: RemoteEvent
 
 -- Optional sibling services ---------------------------------------------------------------------
 
@@ -606,7 +604,6 @@ local function spawnVehicle(
 	end)
 	sitDriver(player, seat)
 	spawnedEvent:Fire(player, model)
-	spawnedRemote:FireAllClients(model)
 	return true, model
 end
 
@@ -1218,9 +1215,6 @@ function LandVehicleService.Init()
 	local control = Instance.new("RemoteEvent")
 	control.Name = "Land_Control"
 	control.Parent = net
-	spawnedRemote = Instance.new("RemoteEvent")
-	spawnedRemote.Name = "Land_Spawned"
-	spawnedRemote.Parent = net
 
 	request.OnServerInvoke = function(
 		player: Player,

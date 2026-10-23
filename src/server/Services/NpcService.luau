@@ -1,27 +1,21 @@
 --!strict
 -- NpcService: the people standing about the world. For now Chief Aggie (Agnes Brightwater, the
--- retired coxswain) at the top of the station slipway, where the cold-open handoff turns the
--- player to face her (VehicleService.slipwaySpots), and two lifeboat crew either side of the ramp.
+-- retired coxswain) at the top of the station slipway, and two lifeboat crew either side of the ramp.
 -- Each is a Roblox R15 character from NpcFactory (docs/12 section 2.9), the block greybox when the
 -- build fails. Scenery only: anchored, non-colliding, under Workspace.Npcs.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
-local TweenService = game:GetService("TweenService")
-
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
-local Remotes =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Remotes"))
 
 local NpcService = {}
 NpcService.Priority = 120
 
 local SLIPWAY_WAIT = 30 -- seconds to wait for Workspace.Map.Slipways.StationSlipway
-local AGGIE_ONTO_QUAY = 6 -- studs past the ramp's top edge (VehicleService looks 0.6 x 10 studs past it)
+local AGGIE_ONTO_QUAY = 6 -- studs past the ramp's top edge
 local CREW_ASIDE = 4.5 -- studs beyond the ramp's side edges (clear of the slipway retaining-wall copings)
 
 local folder: Folder? = nil
-local aggie: Model? = nil
 
 local function ground(at: Vector3): Vector3
 	local params = RaycastParams.new()
@@ -56,7 +50,7 @@ local function spawnStation()
 	local flat = Vector3.new(up.X, 0, up.Z).Unit
 	local side = ramp.CFrame.RightVector
 	local downRamp = top - flat * 10 -- everyone faces down the slipway, toward the water
-	aggie = NpcFactory.spawn("Aggie", {
+	NpcFactory.spawn("Aggie", {
 		name = "ChiefAggie",
 		pose = "Idle",
 		seed = 1,
@@ -96,60 +90,7 @@ end
 
 -- The end of the cold open (docs/14 section 3) --------------------------------------------------
 
-local WALK_ANIM = "rbxassetid://507777826" -- stock R15 walk
-local AGGIE_WALK_SPEED = 5 -- studs/s
-local AGGIE_STOP = 5 -- studs short of the player
 local SHORE_PARTY_LIFE = 120 -- s the blanket scene stays
-
-local function playAnim(model: Model, id: string): AnimationTrack?
-	local hum = model:FindFirstChildOfClass("Humanoid")
-	local animator = hum and hum:FindFirstChildOfClass("Animator")
-	if not animator then
-		return nil
-	end
-	local anim = Instance.new("Animation")
-	anim.AnimationId = id
-	local ok, track = pcall(function()
-		return (animator :: Animator):LoadAnimation(anim)
-	end)
-	if not ok then
-		return nil
-	end
-	track.Looped = true
-	track:Play(0.2)
-	return track
-end
-
--- Walks an anchored NPC to `to` (feet level kept), walk animation on the way.
-local function walkTo(model: Model, to: Vector3): number
-	local from = model:GetPivot()
-	local goal = Vector3.new(to.X, from.Position.Y, to.Z)
-	local dist = (goal - from.Position).Magnitude
-	if dist < 0.5 then
-		return 0
-	end
-	local secs = dist / AGGIE_WALK_SPEED
-	local track = playAnim(model, WALK_ANIM)
-	if track then
-		track:AdjustSpeed(AGGIE_WALK_SPEED / 6.4) -- the clip covers 6.4 studs/s at 1x: no foot sliding
-	end
-	local v = Instance.new("CFrameValue")
-	v.Value = from
-	v.Changed:Connect(function(cf)
-		model:PivotTo(cf)
-	end)
-	local tw = TweenService:Create(v, TweenInfo.new(secs, Enum.EasingStyle.Linear), {
-		Value = CFrame.lookAt(goal, goal + (goal - from.Position) * Vector3.new(1, 0, 1)),
-	})
-	tw.Completed:Connect(function()
-		v:Destroy()
-		if track then
-			track:Stop(0.3)
-		end
-	end)
-	tw:Play()
-	return secs
-end
 
 -- On land a lifeboat crew member wraps the casualty in a blanket (a seated R15 swimmer) at `dry`,
 -- facing the water. Scenery for SHORE_PARTY_LIFE s. Never yields.
@@ -190,38 +131,6 @@ function NpcService.ShoreHandover(dry: Vector3, water: Vector3)
 		task.delay(SHORE_PARTY_LIFE, function()
 			cas:Destroy()
 			medic:Destroy()
-		end)
-	end)
-end
-
--- After the arrival handoff stands `player` on the slipway: Chief Aggie walks up, says her line
--- (an Ops_Radio subtitle) and walks back to her spot a little later. Never yields.
-function NpcService.MeetAggie(player: Player, at: Vector3, line: { from: string, text: string })
-	local a = aggie
-	if not (a and a.Parent) then
-		Remotes.event("Ops_Radio")
-			:FireClient(player, { opId = "", from = line.from, text = line.text })
-		return
-	end
-	local home = a:GetPivot().Position
-	local flat = (home - at) * Vector3.new(1, 0, 1)
-	local to = if flat.Magnitude > AGGIE_STOP then at + flat.Unit * AGGIE_STOP else home
-	local secs = walkTo(a, to)
-	task.delay(secs + 0.3, function()
-		if player.Parent then
-			Remotes.event("Ops_Radio")
-				:FireClient(player, { opId = "", from = line.from, text = line.text })
-		end
-		local wave = playAnim(a, "rbxassetid://507770239")
-		task.delay(3, function()
-			if wave then
-				wave:Stop(0.3)
-			end
-		end)
-		task.delay(20, function()
-			if a.Parent then
-				walkTo(a, home)
-			end
 		end)
 	end)
 end

@@ -14,10 +14,9 @@ return function(t)
 			reason = "Complete",
 			storm = false,
 			saved = 1,
-			towParted = false,
 			steps = {
 				{ id = "approach", grade = "Gold", userId = ME },
-				{ id = "recover_swimmer", grade = "Silver", userId = ME },
+				{ id = "recovery", grade = "Silver", userId = ME },
 			},
 		}
 		for k, v in over or {} do
@@ -88,13 +87,8 @@ return function(t)
 		end
 	)
 
-	t.test("storm, tow and ferry badges", function()
+	t.test("storm and ferry badges", function()
 		t.expect(BadgeRules.opProgress(snap({ storm = true }), ME, true).StormChaser).toBe(1)
-		t.expect(BadgeRules.opProgress(snap({ kind = "DisabledVessel" }), ME, true).TowTruck)
-			.toBe(1)
-		t.expect(
-			BadgeRules.opProgress(snap({ kind = "DisabledVessel", towParted = true }), ME, true).TowTruck
-		).toBeNil()
 		local ferry = snap({
 			kind = "CapsizedFerry",
 			isBig = true,

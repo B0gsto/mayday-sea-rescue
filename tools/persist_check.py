@@ -35,22 +35,15 @@ REPORT_FIELDS = [
     ("cash", "Cash"),
     ("rep", "Rep"),
     ("rank", "Rank (derived)"),
-    ("certs", "Certifications"),
-    ("certLive", "Certification live counts"),
-    ("flags.album", "Album stickers"),
     ("badgeCounters", "Badge counters"),
     ("flags.streak", "Streak"),
     ("flags.pets", "Pets"),
     ("cosmetics", "Cosmetics"),
     ("vehicleUpgrades", "Upgrades"),
-    ("flags.lighthouses", "Lighthouses"),
-    ("flags.logbook1", "Logbook"),
     ("flags.monthlyLivery", "Other flags"),
-    ("gear", "Gear"),
     ("vehicles", "Vehicles"),
     ("totalRescues", "Total rescues"),
     ("coldOpenDone", "Cold open done"),
-    ("exercises", "Exercises"),
     ("badgesAwarded", "Badges awarded"),
     ("version", "Data version"),
 ]
@@ -307,20 +300,13 @@ write.cash = 987654
 write.rep = 54321
 write.totalRescues = 321
 write.coldOpenDone = true
-write.gear = { EngineTune = 2, StrongGrip = 1 }
 write.vehicles = { JetSki = true, RIB = true }
 write.vehicleUpgrades = { JetSki = 1, RIB = 5 }
-write.certs = { Helm = true }
-write.certLive = { Coxswain = 2 }
-write.exercises = { ExerciseBoatHandling = "Silver", ExerciseSwimTest = "Bronze" }
 write.badgeCounters = { Downwind = 7, FirstRescue = 1 }
 write.badgesAwarded = { FirstRescue = true }
 write.flags = {
-    album = { Swimmer = 1, Kayaker = 1, ["set:PersonInWater"] = 1 },
     streak = { d = 20321, s = 5, c = 20314 },
     pets = { n = 3, a = 1, t = 12, p1 = "SealPup|0|1700000000|2|1" },
-    lighthouses = { HarbourLight = true, SkerryLight = false },
-    logbook1 = { Morwenna = true, MailSeaplane = true },
     monthlyLivery = "2026-10",
 }
 local cosmeticsModule = Shared:FindFirstChild("Cosmetics")
@@ -415,12 +401,8 @@ for _, name in
         "rep",
         "totalRescues",
         "coldOpenDone",
-        "gear",
         "vehicles",
         "vehicleUpgrades",
-        "certs",
-        "certLive",
-        "exercises",
         "cosmetics",
         "badgeCounters",
         "badgesAwarded",

@@ -1,9 +1,9 @@
 --!strict
 -- BadgeService: Roblox badge awards (docs/03 section 8, MVP set; ids in Shared.Config.BadgeConfig, 0 = off).
 --
--- Triggers: OperationService.OperationCompleted (the debrief snapshot: step grades per userId, storm, tow
--- parted, saved) through Shared.BadgeRules; the RankIndex player attribute (rank badges, also re-checked on
--- join); and BadgeService.Award / BadgeService.Count for other systems (certifications, the logbook).
+-- Triggers: OperationService.OperationCompleted (the debrief snapshot: step grades per userId, storm,
+-- saved) through Shared.BadgeRules; the RankIndex player attribute (rank badges, also re-checked on
+-- join); and BadgeService.Award / BadgeService.Count for other systems.
 --
 -- Profile fields (DataService, extra keys on the player's data): badgeCounters { [key]: number } and
 -- badgesAwarded { [key]: true }. Counters run even while a badge's id is 0, so switching a badge on later

@@ -1,5 +1,7 @@
 # 15 · Retention, live events and the new player
 
+> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+
 Goal (user, 2026-10-19): mass appeal for children and adults, heavy focus on retention and the first session, with
 time-limited content that brings players back, executed well enough to compete with the top Roblox CCU games.
 This chapter adds to docs/03 (progression) and docs/04 (monetization); where they disagree, this one wins.

@@ -19,8 +19,8 @@ export type Entry = {
 }
 -- what the ops tick does for an idle player (no active op, no pending offer)
 export type Decision = "Start" | "Offer" | "Wait" | "Abandon"
--- where the player goes once it ends: ride the jet ski home (the client's arrival shot and
--- Vehicle_ArrivalHandoff take over), be put on the station slipway now, or on their next spawn
+-- where the player goes once it ends: ride the jet ski home (the client's arrival shot takes over),
+-- be put on the station slipway now, or on their next spawn
 export type Handover = "Ride" | "Station" | "Respawn"
 
 ColdOpenFlow.LEAVE_GRACE = 15 -- s off the cold-open jet ski before the run counts as abandoned -- tune
