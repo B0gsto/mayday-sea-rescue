@@ -317,60 +317,6 @@ local function personProp(model: Model, ctx: Ctx, id: string, torso: CFrame, hea
 			Color3.fromRGB(218, 180, 72),
 			Enum.PartType.Ball
 		)
-	elseif id == "SkeletonSwimmer" then
-		add(
-			model,
-			ctx,
-			"SkullMask",
-			Vector3.new(1.05, 0.95, 0.95),
-			head * CFrame.new(0, 0.05, 0),
-			Color3.fromRGB(232, 230, 218),
-			Enum.PartType.Ball
-		)
-		for i = -1, 1 do
-			add(
-				model,
-				ctx,
-				"Rib",
-				Vector3.new(1.9, 0.16, 0.5),
-				torso * CFrame.new(0, 0.35 + i * 0.36, -0.48),
-				Color3.fromRGB(232, 230, 218)
-			)
-		end
-	elseif id == "SantaSwimmer" then
-		add(
-			model,
-			ctx,
-			"SantaHat",
-			Vector3.new(1.15, 0.72, 1.15),
-			head * CFrame.new(0, 0.62, 0),
-			Color3.fromRGB(196, 38, 44)
-		)
-		add(
-			model,
-			ctx,
-			"HatBrim",
-			Vector3.new(1.45, 0.18, 1.45),
-			head * CFrame.new(0, 0.32, 0),
-			Color3.fromRGB(244, 244, 240)
-		)
-		add(
-			model,
-			ctx,
-			"Beard",
-			Vector3.new(1.1, 0.72, 0.4),
-			head * CFrame.new(0, -0.3, -0.52),
-			Color3.fromRGB(246, 246, 242)
-		)
-		add(
-			model,
-			ctx,
-			"Sack",
-			Vector3.new(1.2, 1.2, 1.2),
-			torso * CFrame.new(0, 0.25, 1.05),
-			Color3.fromRGB(136, 100, 62),
-			Enum.PartType.Ball
-		)
 	end
 end
 

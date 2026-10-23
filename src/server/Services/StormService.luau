@@ -45,7 +45,6 @@ local ALWAYS_SUNNY = true
 
 local StormService = {}
 StormService.Priority = 20 -- before services that read the weather in their Init
-StormService.ALWAYS_SUNNY = ALWAYS_SUNNY -- EventService skips the Great Storm clock
 
 -- Dev board preview: storms roll on this server (ALWAYS_SUNNY off) until a dev sets Calm again.
 local devStorms = false
@@ -288,13 +287,8 @@ local function liveOpsCalm(): boolean
 end
 
 local function stepSummons(now: number)
-	if
-		sunny()
-		or #queue == 0
-		or state ~= "Calm"
-		or folder:GetAttribute("ClockEventSoon") == true
-	then
-		return -- a clock event is due or running: the clock wins, the queue waits
+	if sunny() or #queue == 0 or state ~= "Calm" then
+		return
 	end
 	if liveOpsCalm() then
 		return -- the relaxed hour: no storm, the paid queue waits (the ticket is not used)

@@ -1,7 +1,7 @@
 --!strict
 -- BayDecor (server cosmetic feature, G28): every owned bay decoration is placed at a fixed slot
 -- beside the player's launch bay (the station dock). Decor keys come from CosmeticLoadout.decor
--- (stock decor_* and the Halloween pumpkin); parts are code-built, anchored and non-colliding.
+-- (stock decor_*); parts are code-built, anchored and non-colliding.
 -- Rebuilt when the earned flags change ("CosOwned"), removed on leave.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -25,10 +25,6 @@ local FALLBACK = CFrame.new(-104, 3, 30)
 local WOOD = Color3.fromRGB(112, 84, 58)
 local IRON = Color3.fromRGB(54, 58, 62)
 local GREEN = Color3.fromRGB(54, 106, 62)
-local ORANGE = Color3.fromRGB(214, 110, 34)
-local SNOW = Color3.fromRGB(238, 244, 248)
-local COAL = Color3.fromRGB(38, 36, 38)
-local CARROT = Color3.fromRGB(224, 120, 44)
 local CREW_BLUE = Color3.fromRGB(38, 68, 112)
 local BRASS = Color3.fromRGB(226, 186, 96)
 
@@ -366,127 +362,6 @@ local function signals(model: Model, at: CFrame)
 	)
 end
 
-local function pumpkin(model: Model, at: CFrame)
-	local body = part(
-		model,
-		"Pumpkin",
-		Vector3.new(1.4, 0.95, 1.4),
-		at * CFrame.new(0, 0.48, 0),
-		ORANGE,
-		Enum.Material.SmoothPlastic,
-		Enum.PartType.Ball
-	)
-	part(
-		model,
-		"Stem",
-		Vector3.new(0.2, 0.42, 0.2),
-		at * CFrame.new(0, 1.02, 0),
-		Color3.fromRGB(86, 112, 62),
-		Enum.Material.Grass
-	)
-	for _, x in { -0.25, 0.25 } do
-		part(
-			model,
-			"Eye",
-			Vector3.new(0.18, 0.16, 0.08),
-			at * CFrame.new(x, 0.58, -0.63),
-			Color3.fromRGB(58, 42, 24),
-			Enum.Material.SmoothPlastic
-		)
-	end
-	part(
-		model,
-		"Mouth",
-		Vector3.new(0.42, 0.1, 0.08),
-		at * CFrame.new(0, 0.38, -0.64),
-		Color3.fromRGB(58, 42, 24),
-		Enum.Material.SmoothPlastic
-	)
-	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(255, 150, 60)
-	light.Brightness = 0.8
-	light.Range = 9
-	light.Shadows = false
-	light.Parent = body
-end
-
-local function snowman(model: Model, at: CFrame)
-	local low = part(
-		model,
-		"SnowBase",
-		Vector3.new(1.5, 1.5, 1.5),
-		at * CFrame.new(0, 0.75, 0),
-		SNOW,
-		Enum.Material.Snow,
-		Enum.PartType.Ball
-	)
-	part(
-		model,
-		"SnowMiddle",
-		Vector3.new(1.05, 1.05, 1.05),
-		at * CFrame.new(0, 1.85, 0),
-		SNOW,
-		Enum.Material.Snow,
-		Enum.PartType.Ball
-	)
-	part(
-		model,
-		"SnowHead",
-		Vector3.new(0.8, 0.8, 0.8),
-		at * CFrame.new(0, 2.7, 0),
-		SNOW,
-		Enum.Material.Snow,
-		Enum.PartType.Ball
-	)
-	part(
-		model,
-		"Hat",
-		Vector3.new(0.62, 0.5, 0.62),
-		at * CFrame.new(0, 3.18, 0),
-		COAL,
-		Enum.Material.SmoothPlastic
-	)
-	for _, x in { -0.16, 0.16 } do
-		part(
-			model,
-			"Eye",
-			Vector3.new(0.09, 0.09, 0.09),
-			at * CFrame.new(x, 2.78, -0.37),
-			COAL,
-			Enum.Material.SmoothPlastic,
-			Enum.PartType.Ball
-		)
-		part(
-			model,
-			"Button",
-			Vector3.new(0.1, 0.1, 0.1),
-			at * CFrame.new(0, 1.9 + (x > 0 and 0.22 or -0.16), -0.5),
-			COAL,
-			Enum.Material.SmoothPlastic,
-			Enum.PartType.Ball
-		)
-	end
-	part(
-		model,
-		"Nose",
-		Vector3.new(0.34, 0.12, 0.12),
-		at * CFrame.new(0, 2.66, -0.46),
-		CARROT,
-		Enum.Material.SmoothPlastic
-	)
-	for _, x in { -0.62, 0.62 } do
-		part(
-			model,
-			"Arm",
-			Vector3.new(0.7, 0.08, 0.08),
-			at * CFrame.new(x, 1.85, 0) * CFrame.Angles(0, 0, x > 0 and 0.5 or -0.5),
-			WOOD,
-			Enum.Material.Wood
-		)
-	end
-	low:SetAttribute("BayDecorSnowman", true)
-end
-
 local BUILD: { [string]: (Model, CFrame) -> () } = {
 	["stock:decor_lantern"] = lantern,
 	["stock:decor_bell"] = bell,
@@ -494,8 +369,6 @@ local BUILD: { [string]: (Model, CFrame) -> () } = {
 	["stock:decor_flag"] = flag,
 	["stock:decor_shelf"] = shelf,
 	["stock:decor_signals"] = signals,
-	["halloween:decor"] = pumpkin,
-	["winter:decor"] = snowman,
 	["group:crew"] = crew,
 }
 

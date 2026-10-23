@@ -1,9 +1,7 @@
--- EventCalendar: the one "what's coming" list (docs/15 section 2): the Great Storm and Ghost Light
--- clocks, the Ghost Ship window, Season 1, the Chandlery restock, the daily crate and the strongbox,
+-- EventCalendar: the one "what's coming" list (docs/15 section 2): Season 1, the Chandlery restock, the daily crate and the strongbox,
 -- soonest first, icons + numbers only (no prices).
 return function(t)
 	local Calendar = t.load("src/shared/EventCalendar.luau")
-	local EventClock = t.load("src/shared/EventClock.luau")
 	local SeasonRules = t.load("src/shared/SeasonRules.luau")
 	local StockRotation = t.load("src/shared/StockRotation.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
@@ -34,58 +32,6 @@ return function(t)
 		end
 		return out
 	end
-
-	t.test("the Great Storm counts to the next :00 in 0:42:10 style", function()
-		local rows = Calendar.rows(at(9, 17, 50))
-		local storm = row(rows, "GreatStorm")
-		t.expect(storm.kind).toBe("clock")
-		t.expect(storm.seconds).toBe(2530)
-		t.expect((Calendar.text(storm))).toBe("0:42:10")
-		t.expect((Calendar.text(Calendar.rows(at(8, 59))[1]))).toBe("0:01:00")
-	end)
-
-	t.test("the Great Storm pulses NOW while it runs", function()
-		local storm = row(Calendar.rows(at(9, 1)), "GreatStorm")
-		t.expect(storm.kind).toBe("now")
-		t.expect(storm.seconds).toBeNil()
-		t.expect((Calendar.text(storm))).toBe("NOW")
-		t.expect(EventClock.isActive("GreatStorm", at(9, 1))).toBe(true)
-	end)
-
-	t.test("stormOff (always sunny) leaves the Great Storm out", function()
-		t.expect(row(Calendar.rows(at(9, 1), { stormOff = true }), "GreatStorm")).toBeNil()
-		t.expect(row(Calendar.rows(at(9, 1), { stormOff = true }), "GhostLight").id)
-			.toBe("GhostLight")
-	end)
-
-	t.test("the Ghost Light counts to the next 3-hourly :30", function()
-		local nextLight = row(Calendar.rows(at(9, 17, 50)), "GhostLight")
-		t.expect(nextLight.seconds).toBe(12 * 60 + 10) -- 9:30
-		t.expect((Calendar.text(nextLight))).toBe("12:10")
-		local active = row(Calendar.rows(at(9, 31)), "GhostLight")
-		t.expect(active.seconds).toBe(2 * HOUR + 59 * 60) -- 12:30, still counting during the event
-		t.expect((Calendar.text(active))).toBe("2:59:00")
-	end)
-
-	t.test("the Ghost Ship appears a week out, then shows days and the witching clock", function()
-		local START = 1792800000 -- 2026-10-24 00:00 UTC
-		local before = row(Calendar.rows(START - 8 * 86400), "Halloween")
-		t.expect(before).toBeNil()
-		local near = row(Calendar.rows(START - 2 * 86400), "Halloween")
-		t.expect(near.days).toBe(2)
-		t.expect(near.seconds).toBeNil()
-		t.expect((Calendar.text(near))).toBe("2d")
-
-		local live = row(Calendar.rows(START + 86400 + 12 * HOUR + 20 * 60), "Halloween")
-		t.expect(live.days).toBe(9)
-		t.expect(live.seconds).toBe(25 * 60) -- the :45 witching hour
-		local main, sub = Calendar.text(live)
-		t.expect(main).toBe("9d")
-		t.expect(sub).toBe("25:00")
-
-		local witching = row(Calendar.rows(START + 86400 + 12 * HOUR + 50 * 60), "Halloween")
-		t.expect(witching.seconds).toBe(0)
-	end)
 
 	t.test("Season 1 shows its days left from SeasonRules", function()
 		local now = at(9, 17, 50)

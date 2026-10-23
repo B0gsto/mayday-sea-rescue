@@ -155,7 +155,6 @@ function ProgressionService.Award(
 		state, isGreat = weatherState()
 		paid = CashEffects.multiplier(player) -- Cash only (docs/04 sections 3 and 4.2)
 		paid *= FriendBonus.multiplier(FriendService.Count(player)) -- +10% per friend in server, cap +30% (docs/15 H9)
-		repMult = if player:GetAttribute("EventGreatStorm") == true then 2 else 1
 		local liveCash, liveRep = liveOpsMultipliers() -- GoldenHour (G60), capped at x2
 		paid *= liveCash
 		repMult *= liveRep

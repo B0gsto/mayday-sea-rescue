@@ -61,7 +61,6 @@ BadgeConfig.Order = table.freeze({
 	"Streak7",
 	"Streak30",
 	"GreatStormRescue",
-	"GhostShip",
 	"SeasonTier10",
 	"SeasonTier30",
 	"EveryCall",
@@ -212,13 +211,6 @@ BadgeConfig.Badges = table.freeze({
 		name = "Great Storm Rescue",
 		description = "Finish a rescue during a Great Storm.",
 		icon = "A boat on a huge wave under a dark sky",
-		count = 1,
-	},
-	GhostShip = {
-		id = 0,
-		name = "Ghost Ship",
-		description = "Finish a Ghost Ship rescue during Halloween 2026.",
-		icon = "A green-glowing ghost ferry in fog",
 		count = 1,
 	},
 	SeasonTier10 = {

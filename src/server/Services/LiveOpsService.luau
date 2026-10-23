@@ -5,9 +5,7 @@
 --
 -- This service owns only the schedule. The effects read the replicated state:
 --   GoldenHour      ProgressionService.Award multiplies Cash and Rep (flat awards stay flat)
---   LegendaryRush   EventService.IsEventActive("GreatStorm") treats the rare-call roll as stormy
 --   CalmSeas        StormService holds new storms (LiveOpsService also clears a running one)
---   DoubleCandy     HalloweenService doubles Candy Lanterns while the seasonal event is live
 --
 -- Message: { event, startsAt (UTC epoch s), duration (s), nonce }; "Cancel" clears it. Ignore
 -- duplicates/old nonces, unknown events, > 7 days ahead, > 3 h, and finished events.
@@ -31,7 +29,7 @@ local SUBSCRIBE_BACKOFF = 30
 local SEEN_MAX = 64
 
 local LiveOpsService = {}
-LiveOpsService.Priority = 26 -- after EventService (25): the folder exists before any Start loop
+LiveOpsService.Priority = 26 -- the folder exists before any Start loop
 
 local folder: Folder
 local state: LiveOps.State = LiveOps.empty()
@@ -49,11 +47,6 @@ end
 
 function LiveOpsService.Multipliers(): LiveOps.Multipliers
 	return LiveOps.multipliers(state, os.time())
-end
-
--- Rare calls roll as if a Great Storm were on (EventService asks this; RescueVariants owns the weights).
-function LiveOpsService.VariantBoost(): boolean
-	return LiveOpsService.IsActive("LegendaryRush")
 end
 
 local function remember(nonce: string)

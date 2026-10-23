@@ -176,13 +176,6 @@ AudioConfig.Clips = {
 		"Water Splash Big Water Splash Dive In 1 (SFX)",
 		"reused from Splash_Entry"
 	),
-	Halloween_Sting = rl(
-		9125641284,
-		0.4,
-		"Magic Synth Stinger Glassine Multi Tone Burs (SFX)",
-		"playful, not scary"
-	),
-	GhostShip_Call = rl(9119464660, 0.5, "Spirit Fly Bys Spooky Windy Airy Pass Bys 7 (SFX)"),
 	Rank_Cheer = rl(9113137529, 0.45, "Applause Nightclub 1 (SFX)"),
 	UI_FriendPop = rl(9112752910, 0.22, "Bubble Wobble Comic Bloops Slight Rhythm 4 (SFX)"),
 

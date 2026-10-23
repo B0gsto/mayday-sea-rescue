@@ -33,23 +33,4 @@ return function(t)
 		t.expect(P.nudgesIdle(P.IdleAfter, false, 10)).toBe(false) -- seated or aboard
 		t.expect(P.nudgesIdle(P.IdleAfter, true, P.NudgeRadius + 1)).toBe(false)
 	end)
-
-	t.test("the seasonal call starts only when free, due and someone is on", function()
-		local cooldown = 20 * 60
-		t.expect(P.eventCallDue(0, false, cooldown, cooldown)).toBe(false)
-		t.expect(P.eventCallDue(1, true, cooldown, cooldown)).toBe(false) -- a storm ferry is up
-		t.expect(P.eventCallDue(1, false, cooldown - 1, cooldown)).toBe(false)
-		t.expect(P.eventCallDue(1, false, cooldown, cooldown)).toBe(true)
-		-- a blocked start retries on EventRetry, not the whole cooldown
-		t.expect(P.EventRetry > 0 and P.EventRetry < cooldown).toBeTruthy()
-		t.expect(P.eventCallDue(1, false, P.EventRetry, cooldown)).toBe(false)
-	end)
-
-	t.test("the running event call re-offers on its own interval", function()
-		t.expect(P.EventOffer > 0).toBeTruthy()
-		t.expect(P.eventOfferDue(P.EventOffer - 1, true)).toBe(false)
-		t.expect(P.eventOfferDue(P.EventOffer, true)).toBe(true)
-		t.expect(P.eventOfferDue(P.EventOffer, false)).toBe(false) -- busy on an op
-		t.expect(P.eventOfferDue(0, true)).toBe(false) -- first tick: one interval later
-	end)
 end

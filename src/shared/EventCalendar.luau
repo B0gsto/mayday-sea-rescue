@@ -3,10 +3,7 @@
 -- section 2). Pure and Lune-tested (tests/EventCalendar.spec.luau): it only composes the existing
 -- clocks, so every screen shows the same times as the systems that run them.
 --
---   Great Storm    EventClock (hourly :00, 120 s warning, 240 s active; during it the row is "NOW")
---   Ghost Light    EventClock (every 3 h at :30)
---   Ghost Ship     SeasonalRules / SeasonalEvents (days left and the witching hour countdown,
---                  shown only from a week before the window opens)
+--   LiveOps        LiveOpsService (the owner-scheduled event)
 --   Season 1       SeasonRules (days left)
 --   Chandlery      StockRotation (seconds to the next 10-minute window)
 --   Daily crate    StreakRules (seconds to the next UTC day, or ready now)
@@ -15,24 +12,13 @@
 -- Rows are icons, a 1-3 word label and numbers only (show, don't tell). No price, no Robux: the
 -- board is a planning aid for free, earnable content (docs/15 section 1). Rows sort by soonest.
 
-local EventClock = require(script.Parent.EventClock)
 local IdleIncome = require(script.Parent.IdleIncome)
 local LiveOps = require(script.Parent.LiveOps)
 local SeasonRules = require(script.Parent.SeasonRules)
-local SeasonalEvents = require(script.Parent.Config.SeasonalEvents)
-local SeasonalRules = require(script.Parent.SeasonalRules)
 local StockRotation = require(script.Parent.StockRotation)
 local StreakRules = require(script.Parent.StreakRules)
 
-export type Icon =
-	"storm"
-	| "lantern"
-	| "pumpkin"
-	| "book"
-	| "bell"
-	| "crate"
-	| "strongbox"
-	| "spark"
+export type Icon = "book" | "bell" | "crate" | "strongbox" | "spark"
 export type Kind = "now" | "clock" | "days" | "percent"
 
 export type Row = {
@@ -41,7 +27,7 @@ export type Row = {
 	label: string, -- 1-3 words
 	kind: Kind, -- now (pulsing), clock, days, percent
 	seconds: number?, -- clock kind; the sub-clock on a days row; the fill clock on a percent row
-	hours: boolean?, -- clock text as h:mm:ss even under an hour (the Great Storm)
+	hours: boolean?, -- clock text as h:mm:ss even under an hour (LiveOps)
 	days: number?, -- days kind
 	fraction: number?, -- percent kind, 0..1
 	ready: boolean?, -- now kind: ready (a crate) instead of a live event
@@ -65,16 +51,11 @@ export type LiveOpsView = {
 export type Options = {
 	streak: StreakView?,
 	station: StationView?,
-	halloweenForced: boolean?,
 	liveOps: LiveOpsView?,
-	stormOff: boolean?, -- no Great Storm row (StormService.ALWAYS_SUNNY)
 }
 
 local EventCalendar = {}
 
-EventCalendar.HalloweenLead = 7 * 86400 -- the board shows the Ghost Ship from a week out
-EventCalendar.StormLabel = "Great storm"
-EventCalendar.GhostLightLabel = "Ghost light"
 EventCalendar.SeasonLabel = "Season 1"
 EventCalendar.RestockLabel = "Chandlery"
 EventCalendar.CrateLabel = "Daily crate"
@@ -89,66 +70,6 @@ function EventCalendar.formatClock(seconds: number, hours: boolean?): string
 		return string.format("%d:%02d:%02d", h, m, whole % 60)
 	end
 	return string.format("%d:%02d", whole // 60, whole % 60)
-end
-
--- Seconds until the next witching hour starts (:45 for 15 minutes by default); 0 while it is on.
-function EventCalendar.witchingIn(event: SeasonalEvents.Event, now: number): number
-	local window = event.night
-	if not window then
-		return 0
-	end
-	local into = now % 3600
-	local start = window.witchingMinute * 60
-	local span = window.witchingMinutes * 60
-	if into >= start and into < start + span then
-		return 0
-	end
-	if into < start then
-		return start - into
-	end
-	return 3600 - into + start
-end
-
-local function stormRow(now: number): Row
-	if EventClock.phase("GreatStorm", now) == "Active" then
-		return {
-			id = "GreatStorm",
-			icon = "storm",
-			label = EventCalendar.StormLabel,
-			kind = "now",
-		}
-	end
-	return {
-		id = "GreatStorm",
-		icon = "storm",
-		label = EventCalendar.StormLabel,
-		kind = "clock",
-		seconds = math.max(0, EventClock.nextStart("GreatStorm", now) - now),
-		hours = true,
-	}
-end
-
-local function halloweenRow(now: number, forced: boolean): Row?
-	local event = SeasonalEvents.Halloween
-	local live = SeasonalRules.live(event, now, forced)
-	local near = now >= event.startUtc - EventCalendar.HalloweenLead and now <= event.endUtc
-	if not (live or near) then
-		return nil
-	end
-	local days: number
-	if live then
-		days = math.max(1, SeasonalRules.daysLeft(event, now))
-	else
-		days = math.max(1, math.ceil((event.startUtc - now) / 86400))
-	end
-	return {
-		id = "Halloween",
-		icon = "pumpkin",
-		label = event.name, -- "Ghost Ship"
-		kind = "days",
-		days = days,
-		seconds = if live then EventCalendar.witchingIn(event, now) else nil,
-	}
 end
 
 -- LiveOps (G60): the owner-scheduled event from LiveOpsService. Pending shows a countdown (days
@@ -184,7 +105,7 @@ local function liveOpsRow(now: number, view: LiveOpsView?): Row?
 	}
 end
 
--- The soonest first; ties keep the fixed order (great storm, ghost light, ...).
+-- The soonest first; ties keep the fixed order (LiveOps, season, ...).
 local function soonest(row: Row): number
 	if row.kind == "now" then
 		return 0
@@ -210,24 +131,9 @@ function EventCalendar.rows(now: number, opts: Options?): { Row }
 	local o: Options = opts or {}
 	local list: { Row } = {}
 
-	if not o.stormOff then
-		add(list, stormRow(now))
-	end
 	local scheduled = liveOpsRow(now, o.liveOps)
 	if scheduled then
 		add(list, scheduled)
-	end
-	add(list, {
-		id = "GhostLight",
-		icon = "lantern",
-		label = EventCalendar.GhostLightLabel,
-		kind = "clock",
-		seconds = math.max(0, EventClock.nextStart("GhostLight", now) - now),
-	})
-
-	local halloween = halloweenRow(now, o.halloweenForced == true)
-	if halloween then
-		add(list, halloween)
 	end
 
 	local seasonDays = SeasonRules.daysLeft(now)
@@ -280,8 +186,7 @@ function EventCalendar.rows(now: number, opts: Options?): { Row }
 	return list
 end
 
--- The two numbers a row draws: the main readout and an optional second one (the witching clock,
--- the time to full). Words stay to the row label, never here.
+-- The two numbers a row draws: the main readout and an optional second one (the time to full). Words stay to the row label, never here.
 function EventCalendar.text(row: Row): (string, string?)
 	if row.kind == "now" then
 		return if row.ready == true then "✓" else "NOW", nil

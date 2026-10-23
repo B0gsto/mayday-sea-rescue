@@ -25,10 +25,7 @@ export type Board = {
 }
 
 local ROWS: { { id: string, icon: EventCalendar.Icon } } = {
-	{ id = "GreatStorm", icon = "storm" },
 	{ id = "LiveOps", icon = "spark" },
-	{ id = "GhostLight", icon = "lantern" },
-	{ id = "Halloween", icon = "pumpkin" },
 	{ id = "Season", icon = "book" },
 	{ id = "Restock", icon = "bell" },
 	{ id = "Crate", icon = "crate" },
@@ -68,29 +65,7 @@ local function icon(kind: EventCalendar.Icon, parent: Instance, size: number): F
 	f.BackgroundTransparency = 1
 	f.Parent = parent
 
-	if kind == "storm" then
-		box(f, Color3.fromRGB(150, 168, 178), 0.48, 0.42, 0.7, 0.3, 8)
-		box(f, Color3.fromRGB(150, 168, 178), 0.28, 0.36, 0.34, 0.32, 99)
-		box(f, Color3.fromRGB(150, 168, 178), 0.48, 0.3, 0.4, 0.38, 99)
-		box(f, Color3.fromRGB(174, 190, 198), 0.7, 0.38, 0.3, 0.3, 99)
-		local bolt = box(f, GOLD, 0.52, 0.76, 0.12, 0.34, 2)
-		bolt.Rotation = -24
-	elseif kind == "lantern" then
-		box(f, Color3.fromRGB(96, 78, 54), 0.5, 0.2, 0.5, 0.06, 2)
-		box(f, Color3.fromRGB(96, 78, 54), 0.5, 0.32, 0.08, 0.24, 2)
-		box(f, Color3.fromRGB(96, 78, 54), 0.5, 0.44, 0.5, 0.09, 3)
-		box(f, GOLD, 0.5, 0.64, 0.44, 0.38, 6)
-		box(f, Color3.fromRGB(255, 196, 108), 0.5, 0.64, 0.28, 0.24, 4)
-		box(f, Color3.fromRGB(96, 78, 54), 0.5, 0.84, 0.5, 0.07, 2)
-	elseif kind == "pumpkin" then
-		box(f, Color3.fromRGB(226, 126, 48), 0.5, 0.62, 0.58, 0.48, 99)
-		box(f, Color3.fromRGB(198, 100, 36), 0.34, 0.62, 0.28, 0.42, 99)
-		box(f, Color3.fromRGB(198, 100, 36), 0.66, 0.62, 0.28, 0.42, 99)
-		box(f, Color3.fromRGB(108, 146, 74), 0.56, 0.3, 0.1, 0.18, 2)
-		box(f, Color3.fromRGB(48, 34, 22), 0.4, 0.58, 0.12, 0.08, 2)
-		box(f, Color3.fromRGB(48, 34, 22), 0.6, 0.58, 0.12, 0.08, 2)
-		box(f, Color3.fromRGB(255, 196, 108), 0.5, 0.74, 0.26, 0.06, 2)
-	elseif kind == "book" then
+	if kind == "book" then
 		box(f, Color3.fromRGB(146, 104, 58), 0.54, 0.5, 0.52, 0.62, 4)
 		box(f, GOLD, 0.32, 0.5, 0.1, 0.62, 3)
 		box(f, INK, 0.58, 0.38, 0.28, 0.04, 2)
@@ -124,10 +99,7 @@ end
 local CARD_H = 92
 local CHIP = 60
 local TINT: { [string]: Color3 } = {
-	storm = Color3.fromRGB(52, 74, 96),
 	spark = Color3.fromRGB(96, 64, 128),
-	lantern = Color3.fromRGB(38, 84, 88),
-	pumpkin = Color3.fromRGB(74, 44, 92),
 	book = Color3.fromRGB(92, 66, 40),
 	bell = Color3.fromRGB(44, 62, 104),
 	crate = Color3.fromRGB(52, 86, 58),

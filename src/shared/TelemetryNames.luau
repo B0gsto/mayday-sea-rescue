@@ -34,7 +34,6 @@ TelemetryNames.Custom = table.freeze({
 	"StockBuy", -- Chandlery shelf purchase: Gear / Cosmetic, item key
 	"IdleCollect", -- station idle income collected (value = Cash)
 	"SeasonClaim", -- Season Logbook tier claimed (value = tier)
-	"EventJoined", -- GhostLight / GhostShip / FrostFleet, once per event window
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"CrewFlare", -- a crew-up flare was fired

@@ -1,7 +1,6 @@
 --!strict
 -- CosmeticLoadout (pure, shared): what a player has actually earned, read from the profile flags
--- that used to be data only (docs/15 H3 stock trims, H8 season rewards, the monthly livery and the
--- Halloween bay pumpkin, the Frost Fleet scarf and snowman). Earned cosmetic options carry an
+-- that used to be data only (docs/15 H3 stock trims, H8 season rewards, the monthly livery). Earned cosmetic options carry an
 -- `earn` key in their slot config
 -- (src/shared/Config/Cosmetics/*); this module turns data.flags into the set of those keys and
 -- picks the latest earned option per slot so the player notices it once (Earned service feature).
@@ -19,7 +18,7 @@ local StockConfig = require(script.Parent.Config.StockConfig)
 
 local CosmeticLoadout = {}
 
--- Stock keys (StockConfig.Order) then season tiers, then monthly liveries, then event decor.
+-- Stock keys (StockConfig.Order) then season tiers, then monthly liveries, then the group reward.
 -- Flags carry no earn time, so this fixed order is the "latest" order.
 local ORDER: { string } = {}
 local RANK: { [string]: number } = {}
@@ -44,10 +43,6 @@ end
 for month = 1, 12 do
 	remember("monthly:" .. string.format("2026-%02d", month))
 end
-remember("halloween:livery")
-remember("halloween:decor")
-remember("winter:livery")
-remember("winter:decor")
 remember("group:crew")
 
 -- Earned keys that place something in the player's bay (fixed slots, server-built parts).
@@ -58,8 +53,6 @@ CosmeticLoadout.DECOR = {
 	["stock:decor_flag"] = true,
 	["stock:decor_shelf"] = true,
 	["stock:decor_signals"] = true,
-	["halloween:decor"] = true,
-	["winter:decor"] = true,
 	["group:crew"] = true,
 }
 
@@ -96,24 +89,6 @@ function CosmeticLoadout.owned(flags: any): { [string]: boolean }
 	local monthly = flags.monthlyLivery
 	if type(monthly) == "string" then
 		set["monthly:" .. monthly] = true
-	end
-	local halloween = flags.halloween
-	if type(halloween) == "table" then
-		if halloween.livery == true then
-			set["halloween:livery"] = true
-		end
-		if halloween.decor == true then
-			set["halloween:decor"] = true
-		end
-	end
-	local winter = flags.winter
-	if type(winter) == "table" then
-		if winter.livery == true then
-			set["winter:livery"] = true
-		end
-		if winter.decor == true then
-			set["winter:decor"] = true
-		end
 	end
 	local group = flags.group
 	if type(group) == "table" and group.c == true then

@@ -45,9 +45,7 @@ MAX_NONCE = 64
 # Mirrors src/shared/LiveOps.luau: label and default length. The game owns the rules.
 EVENTS = {
     "GoldenHour": ("Golden hour", 60),
-    "LegendaryRush": ("Legendary rush", 30),
     "CalmSeas": ("Calm seas", 60),
-    "DoubleCandy": ("Double candy", 60),
 }
 
 

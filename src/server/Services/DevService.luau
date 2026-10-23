@@ -19,13 +19,10 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local DevConfig = require(Config:WaitForChild("DevConfig"))
-local EventClock = require(Shared:WaitForChild("EventClock"))
 local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
-local SeasonalEvents = require(Config:WaitForChild("SeasonalEvents"))
-local SeasonalRules = require(Shared:WaitForChild("SeasonalRules"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
@@ -117,16 +114,6 @@ local function edit(target: Player, fn: (data: Rules.PlayerData) -> ()): (boolea
 	return true, "Done"
 end
 
-local function setClock(target: number)
-	Workspace:SetAttribute("DevBoard", true) -- lets the clock offset apply on a live server
-	Workspace:SetAttribute("EventClockOffset", math.floor(target - os.time()))
-end
-
-local function clockNow(): number
-	local offset = Workspace:GetAttribute("EventClockOffset")
-	return os.time() + (if type(offset) == "number" then offset else 0)
-end
-
 local function setGod(player: Player, on: boolean)
 	if on then
 		god[player] = true
@@ -169,34 +156,6 @@ local function setInvisible(player: Player, on: boolean)
 end
 
 local function event(id: string, on: boolean): (boolean, string)
-	local t = clockNow()
-	if id == "GhostLight" then
-		local start, boundary = EventClock.window(id, t)
-		local active = start ~= nil and t >= start
-		if on and not active then
-			setClock(EventClock.nextStart(id, t) + 1)
-		elseif not on and active and boundary then
-			setClock(boundary + 1)
-		end
-		return true, if on then "Ghost Light" else "Ended"
-	elseif id == "Halloween" or id == "Winter" then
-		local season = SeasonalEvents.get(id)
-		if not season then
-			return false, "Unknown"
-		end
-		if on and not SeasonalRules.live(season, t, false) then
-			setClock(season.startUtc + 60)
-		elseif not on then
-			setClock(os.time()) -- back to the real date
-		end
-		return true, if on then id else "Real date"
-	elseif id == "GhostShip" or id == "FrostFleet" then
-		if not on then
-			return true, "Runs out"
-		end
-		OperationService.ForceBigCall(if id == "GhostShip" then true else id)
-		return true, "Big call"
-	end
 	-- LiveOps: this server only (no MessagingService publish)
 	local nonce = `dev{os.time()}{math.random(1000, 9999)}`
 	local changed = LiveOpsService.Adopt(

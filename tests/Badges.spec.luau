@@ -166,7 +166,6 @@ return function(t)
 				"Streak7",
 				"Streak30",
 				"GreatStormRescue",
-				"GhostShip",
 				"SeasonTier10",
 				"SeasonTier30",
 				"EveryCall",

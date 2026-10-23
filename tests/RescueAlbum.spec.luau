@@ -24,7 +24,7 @@ return function(t)
 				t.expect(V.ById(variant.id)).toBeTruthy()
 			end
 		end
-		t.expect(#V.Kinds.PersonInWater).toBe(12)
+		t.expect(#V.Kinds.PersonInWater).toBe(10)
 		t.expect(V.ById("GoldenGull").rarity).toBe("Legendary")
 		local legendaries = 0
 		for _, variant in V.Kinds.PersonInWater do
@@ -67,20 +67,6 @@ return function(t)
 		t.expect(seenRarity("PersonInWater", "Legendary", true)).toBe(true)
 		t.expect(seenRarity("DisabledVessel", "Epic", false)).toBe(false)
 		t.expect(seenRarity("DisabledVessel", "Epic", true)).toBe(true)
-	end)
-
-	t.test("seasonal variants roll only inside their window", function()
-		local seen = {}
-		for i = 0, 999 do
-			local variant = V.choose("PersonInWater", i / 1000, true)
-			seen[variant.id] = true
-			t.expect(variant.season).toBeNil()
-		end
-		t.expect(seen.SkeletonSwimmer).toBeNil()
-		t.expect(seen.SantaSwimmer).toBeNil()
-		t.expect(V.choose("PersonInWater", 0.9999, true, nil, "Halloween").id)
-			.toBe("SkeletonSwimmer")
-		t.expect(V.choose("PersonInWater", 0.9999, true, nil, "Winter").id).toBe("SantaSwimmer")
 	end)
 
 	t.test("a forced variant wins only inside its own kind", function()
@@ -147,9 +133,9 @@ return function(t)
 		t.expect(#view.rows).toBe(7)
 		t.expect(view.rows[1].kind).toBe("PersonInWater")
 		t.expect(view.rows[1].owned).toBe(2)
-		t.expect(view.rows[1].total).toBe(12)
+		t.expect(view.rows[1].total).toBe(10)
 		t.expect(view.owned).toBe(2)
-		t.expect(view.total).toBe(41)
+		t.expect(view.total).toBe(39)
 		t.expect(view.rows[1].variants[1].owned).toBe(true)
 		t.expect(view.rows[1].variants[1].label).toBe("Swimmer")
 		t.expect(view.rows[1].variants[1].rarity).toBe("Common")

@@ -1,7 +1,7 @@
 --!strict
 -- EventBoardController: feeds the phone's Events page (docs/15 section 2). Pulls the station and
 -- streak views so a player's own crate and strongbox appear, and pushes the pure EventCalendar rows
--- once a second. Times use EventState's server Now, so every server agrees. (The harbour world
+-- once a second. Times use the server clock, so every server agrees. (The harbour world
 -- board was removed in a playtest round: timers live in the phone only.)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -23,7 +23,6 @@ type StationState = {
 	kennel: number,
 }
 
-local eventFolder: Folder? = nil
 local station: StationState? = nil
 local stationAnchoredAt = 0
 local streakAvailable = false
@@ -31,14 +30,7 @@ local stationGet: RemoteFunction? = nil
 local streakGet: RemoteFunction? = nil
 
 local function now(): number
-	local folder = eventFolder
-	if folder then
-		local value = folder:GetAttribute("Now")
-		if type(value) == "number" and value > 0 then
-			return value
-		end
-	end
-	return os.time()
+	return math.floor(Workspace:GetServerTimeNow())
 end
 
 -- The station view is anchored at the server's Cash; between pushes the phone lets it fill at the
@@ -102,22 +94,15 @@ local function liveOpsView(): EventCalendar.LiveOpsView?
 end
 
 local function draw()
-	if not eventFolder then
-		eventFolder = ReplicatedStorage:FindFirstChild("EventState")
-	end
 	local rows = EventCalendar.rows(now(), {
 		streak = { available = streakAvailable },
 		station = stationView(),
-		halloweenForced = Workspace:GetAttribute("SeasonalEventForce") == true,
 		liveOps = liveOpsView(),
-		stormOff = eventFolder ~= nil and eventFolder:GetAttribute("StormOff") == true,
 	})
 	Phone.setEventRows(rows)
 end
 
 function EventBoardController.Start()
-	eventFolder = ReplicatedStorage:FindFirstChild("EventState")
-
 	local net = ReplicatedStorage:WaitForChild("Net", 30)
 	if net then
 		local push = net:FindFirstChild("Station_State")
