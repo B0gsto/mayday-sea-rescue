@@ -5,10 +5,8 @@
 --
 -- Fair FOMO (docs/15 section 1): every variant is earnable by playing, nothing is sold. Common and
 -- Uncommon roll on every call; Rare rolls at a tiny base rate, and every rarity rolls at its full
--- weight only while the hourly Great Storm is active (EventService.IsEventActive("GreatStorm")).
+-- weight only while a Great Storm is on (Weather.isGreatStorm()).
 -- A Legendary call puts a flare over the scene and flashes its sticker to everyone (AlbumService).
--- Seasonal variants (season = "Halloween" / "Winter") roll only inside their event window
--- (Config/SeasonalEvents); they still show in the album all year and return each year.
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
 
@@ -20,7 +18,6 @@ export type Variant = {
 	weight: number,
 	accent: Color3, -- the sticker's fill once rescued
 	style: "Person" | "Creature" | "Boat",
-	season: string?, -- "Halloween" / "Winter": only rolls inside that window
 	paint: { [string]: Color3 }?, -- part name -> colour (RescueDressing)
 }
 
@@ -172,28 +169,6 @@ RescueVariants.Kinds = {
 			accent = Color3.fromRGB(112, 150, 84),
 			style = "Person",
 			paint = { Torso = Color3.fromRGB(138, 158, 96) },
-		},
-		{
-			id = "SkeletonSwimmer",
-			kind = "PersonInWater",
-			rarity = "Rare",
-			label = "Bones",
-			weight = 8,
-			accent = Color3.fromRGB(228, 226, 214),
-			style = "Person",
-			season = "Halloween",
-			paint = { Torso = Color3.fromRGB(38, 38, 46) },
-		},
-		{
-			id = "SantaSwimmer",
-			kind = "PersonInWater",
-			rarity = "Rare",
-			label = "Santa",
-			weight = 8,
-			accent = Color3.fromRGB(206, 54, 58),
-			style = "Person",
-			season = "Winter",
-			paint = { Torso = Color3.fromRGB(190, 46, 50) },
 		},
 	},
 	DisabledVessel = {
@@ -553,12 +528,8 @@ function RescueVariants.rarityColour(rarity: string): Color3
 end
 
 -- The weight a variant carries for this roll: Epics and Legendaries only come with the Great
--- Storm; Rares are scaled down to the tiny base rate outside it; a seasonal variant carries no
--- weight outside its own window.
-local function weightFor(variant: Variant, greatStorm: boolean, season: string?): number
-	if variant.season and variant.season ~= season then
-		return 0
-	end
+-- Storm; Rares are scaled down to the tiny base rate outside it.
+local function weightFor(variant: Variant, greatStorm: boolean): number
 	if greatStorm then
 		return variant.weight
 	elseif variant.rarity == "Rare" then
@@ -570,14 +541,12 @@ local function weightFor(variant: Variant, greatStorm: boolean, season: string?)
 end
 
 -- Roll one variant for a call kind. `roll` is [0, 1) from the server's Random. `forced` (Studio's
--- Workspace RescueVariantForce) wins when it belongs to the kind, window or not. `season` is the
--- live SeasonalEvents id ("Halloween" / "Winter"); seasonal variants roll only while it matches.
+-- Workspace RescueVariantForce) wins when it belongs to the kind, storm or not.
 function RescueVariants.choose(
 	kind: string,
 	roll: number,
 	greatStorm: boolean,
-	forced: string?,
-	season: string?
+	forced: string?
 ): Variant?
 	local list = RescueVariants.Kinds[kind]
 	if not list then
@@ -589,14 +558,14 @@ function RescueVariants.choose(
 	end
 	local total = 0
 	for _, variant in list do
-		total += weightFor(variant, greatStorm, season)
+		total += weightFor(variant, greatStorm)
 	end
 	if total <= 0 then
 		return list[1]
 	end
 	local target = math.clamp(roll, 0, 0.999999) * total
 	for _, variant in list do
-		target -= weightFor(variant, greatStorm, season)
+		target -= weightFor(variant, greatStorm)
 		if target < 0 then
 			return variant
 		end

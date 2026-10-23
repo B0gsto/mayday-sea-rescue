@@ -51,17 +51,6 @@ for _, d in Workspace:GetDescendants() do
 		npcs += 1
 	end
 end
-local halloween = Workspace:FindFirstChild("HalloweenWorld")
-local hParts, hLights = 0, 0
-if halloween then
-	for _, d in halloween:GetDescendants() do
-		if d:IsA("BasePart") then
-			hParts += 1
-		elseif d:IsA("PointLight") then
-			hLights += 1
-		end
-	end
-end
 local scatter = Workspace:FindFirstChild("ScatterLocal")
 local ambient = Workspace:FindFirstChild("AmbientLocal")
 local dts, total = {}, 0
@@ -77,7 +66,7 @@ local avg = if n > 0 then total / n else 0
 local p95 = if n > 0 then dts[math.min(n, math.max(1, math.ceil(n * 0.95)))] else 0
 return string.format(
 	"PERF2 spot=%s tier=%s cam=%s desc=%d parts=%d near=%d memMb=%.0f npc=%d particles=%d pointLights=%d "
-		.. "halloweenParts=%d halloweenLights=%d scatter=%s/%s ambient=%s avgMs=%.1f p95Ms=%.1f",
+		.. "scatter=%s/%s ambient=%s avgMs=%.1f p95Ms=%.1f",
 	spot,
 	tostring(Workspace:GetAttribute("PerfQuality")),
 	tostring(player:GetAttribute("CameraMode")),
@@ -88,8 +77,6 @@ return string.format(
 	npcs,
 	particles,
 	lights,
-	hParts,
-	hLights,
 	tostring(scatter and scatter:GetAttribute("ScatterTier")),
 	tostring(scatter and scatter:GetAttribute("ScatterTris")),
 	tostring(ambient and ambient:GetAttribute("AmbientTier")),

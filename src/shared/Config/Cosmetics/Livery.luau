@@ -109,32 +109,6 @@ local options: { Option } = {
 		pattern = "chevron",
 		metallic = true,
 	},
-	{
-		id = "Halloween",
-		name = "Lantern livery",
-		earn = "halloween:livery",
-		blurb = "Pumpkin tubes and a black hull with a live green glow trim (pumpkin stall).",
-		primary = Color3.fromRGB(190, 86, 26), -- pumpkin orange tubes
-		secondary = Color3.fromRGB(34, 30, 36), -- black hull
-		stripe = Color3.fromRGB(188, 214, 168), -- bone green band
-		stripe2 = Color3.fromRGB(188, 214, 168),
-		glow = Color3.fromRGB(124, 255, 154), -- lantern green Neon trim
-		pattern = "glow",
-		metallic = false,
-	},
-	{
-		id = "Winter",
-		name = "Festive livery",
-		earn = "winter:livery",
-		blurb = "Ice-blue tubes and a dark hull strung with warm fairy lights (Frost Fleet stall).",
-		primary = Color3.fromRGB(126, 190, 214), -- ice-blue tubes
-		secondary = Color3.fromRGB(30, 44, 58), -- deep winter hull
-		stripe = Color3.fromRGB(166, 214, 236), -- ice band
-		stripe2 = Color3.fromRGB(166, 214, 236),
-		glow = Color3.fromRGB(255, 214, 132), -- warm bulb Neon trim
-		pattern = "lights",
-		metallic = false,
-	},
 }
 
 -- The monthly livery (ChallengeService data.flags.monthlyLivery = "YYYY-MM"): one option per 2026

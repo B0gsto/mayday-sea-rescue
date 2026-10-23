@@ -57,14 +57,6 @@ local p = game:GetService("Players"):GetPlayers()[1]
 p:SetAttribute("ColdOpenDone", true)
 return tostring(game:GetService("ServerStorage").ProgressionDev:Invoke("certs"))
 """
-STATE = """
-local rs = game:GetService("ReplicatedStorage")
-local w = rs:FindFirstChild("Weather")
-local e = rs:FindFirstChild("EventState")
-local h = rs:FindFirstChild("HalloweenState")
-local p = game:GetService("Players"):GetPlayers()[1]
-return string.format("weather=%s great=%s event=%s phase=%s active=%s ghost=%s playerGreat=%s", tostring(w and w:GetAttribute("State")), tostring(w and w:GetAttribute("IsGreatStorm")), tostring(e and e:GetAttribute("Event")), tostring(e and e:GetAttribute("Phase")), tostring(h and h:GetAttribute("Active")), tostring(h and h:GetAttribute("GhostShipOp")), tostring(p and p:GetAttribute("EventGreatStorm")))
-"""
 PROBE = """
 local ok, err = pcall(function()
 	return game:GetService("DataStoreService"):GetDataStore("PlayerData_v1"):GetAsync("__sweep_probe")
@@ -260,67 +252,10 @@ def main():
                         system(kind, ok, detail)
                         pump(s)
 
-                    # ---- clock events -------------------------------------------------------
-                    now = int(time.time())
-                    storm_at = (now // 3600 + 1) * 3600 + 10
-                    server(s, 'game:GetService("Workspace"):SetAttribute("EventClockOffset", %d) return "ok"' % (storm_at - now))
-                    state = wait_for(lambda: server(s, STATE) if "event=GreatStorm" in server(s, STATE) else None, 20, 2) or ""
-                    system("GreatStorm", all(k in state for k in ("weather=Storm", "great=true", "event=GreatStorm", "phase=Active", "playerGreat=true")), state)
-
-                    now = int(time.time())
-                    ghost_at = (now // 10800) * 10800 + 1800 + 30
-                    if ghost_at <= now:
-                        ghost_at += 10800
-                    server(s, 'game:GetService("Workspace"):SetAttribute("EventClockOffset", %d) return "ok"' % (ghost_at - now))
-                    state = wait_for(lambda: server(s, STATE) if "event=GhostLight" in server(s, STATE) else None, 20, 2) or ""
-                    done_before, _ = status(s)
-                    done, last, offered = done_before, "", False
-                    end = time.monotonic() + 50
-                    while time.monotonic() < end:
-                        done, last = status(s)
-                        if "op=nil" not in last:
-                            offered = True
-                        if done != done_before and "op=nil" in last and "lastKind=DisabledVessel" in last:
-                            break
-                        time.sleep(1)
-                    ok = done != done_before and "lastKind=DisabledVessel" in last
-                    if not ok and "op=nil" not in last:
-                        end = time.monotonic() + OP_WAIT
-                        while time.monotonic() < end:
-                            done, last = status(s)
-                            if done != done_before and "op=nil" in last and "lastKind=DisabledVessel" in last:
-                                ok = True
-                                break
-                            time.sleep(2)
-                    system("GhostLight", bool(offered) and ok, "active=%s offered=%s %s" % (("event=GhostLight" in state and "phase=Active" in state), bool(offered), last))
-
-                    server(s, 'game:GetService("Workspace"):SetAttribute("SeasonalEventForce", true) return "ok"')
-                    state = ""
-                    ghost_id = ""
-                    end = time.monotonic() + 30
-                    while time.monotonic() < end:
-                        state = server(s, STATE)
-                        op = re.search(r"ghost=(\S+)", state)
-                        ghost_id = op.group(1) if op and op.group(1) not in ("", "nil") else ""
-                        if "active=true" in state and ghost_id:
-                            break
-                        time.sleep(2)
-                    done_before, _ = status(s)
-                    ok, last = False, ""
-                    if ghost_id:
-                        end = time.monotonic() + OP_WAIT * 2
-                        while time.monotonic() < end:
-                            done, last = status(s)
-                            if done != done_before and "op=nil" in last:
-                                ok = True
-                                break
-                            time.sleep(2)
-                    system("GhostShip", bool(ghost_id) and ok, "ghost=%s %s" % (ghost_id, last))
-
                     server(s, 'game:GetService("Workspace"):SetAttribute("RescueVariantForce", "GoldenGull") return "ok"')
                     ok, last = False, ""
                     for _attempt in range(2):
-                        # a follow-up call can be auto-accepted the moment the ghost ship ends; wait it out
+                        # a follow-up call can be auto-accepted the moment the last op ends; wait it out
                         wait_for(lambda: "op=nil" in status(s)[1], 30, 1)
                         time.sleep(2)
                         done_before, _ = status(s)

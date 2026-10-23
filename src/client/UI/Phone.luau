@@ -11,7 +11,6 @@
 --   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
 --   Logbook, Season, Settings   the existing panels (ExplorationController's Logbook, SeasonBook,
 --                        SettingsPanel): their frames are borrowed onto the phone screen
---   Events               EventBoard.buildPhone rows (EventBoardController pushes them)
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
@@ -19,11 +18,10 @@
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
 -- at home they close it.
 -- J (on foot) / gamepad L3 open the Logbook app, gamepad Start the Settings app. A red dot and a
--- bounce on the phone button: an event is on now.
+-- bounce on the phone button (badge, bounce) stay for an "affordable" cue.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
 --                               "phone" region, HudLayout)
---   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name) / Phone.openEvents()
---   Phone.setEventRows(rows)    EventBoardController pushes the EventCalendar rows once a second
+--   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name)
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -35,7 +33,6 @@ local UserInputService = game:GetService("UserInputService")
 local Client = script.Parent.Parent
 local Controllers = Client:WaitForChild("Controllers")
 local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
-local EventBoard = require(script.Parent:WaitForChild("EventBoard"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
@@ -115,8 +112,6 @@ local hand: Viewmodel.Handle? = nil
 local crew: { number } = {}
 local leader = 0
 local drawCrew: (() -> ())? = nil
-local eventBoard: EventBoard.Board? = nil
-local pendingRows: { any }? = nil
 local portraitSize = V(320, 694) -- du, set by fit
 
 local function tween(
@@ -486,17 +481,6 @@ local function crewApp(page: Frame): () -> ()
 	end
 end
 
-local function eventsApp(page: Frame): () -> ()
-	local board = EventBoard.buildPhone(page)
-	eventBoard = board
-	if pendingRows then
-		board.update(pendingRows)
-	end
-	return function()
-		eventBoard = nil
-	end
-end
-
 -- a sibling app module (OPTIONAL); nil when it is not there or fails to load
 local function optionalApp(moduleName: string): any
 	local m = script.Parent:FindFirstChild(moduleName)
@@ -547,11 +531,6 @@ local function appList(): { App }
 			run = function()
 				require(script.Parent:WaitForChild("PhotoMode")).setOpen(true)
 			end,
-		},
-		{
-			name = "Events",
-			label = "Events",
-			mount = eventsApp,
 		},
 		{
 			name = "Season",
@@ -636,32 +615,16 @@ function Phone.openApp(name: string)
 	end)
 end
 
--- the Events icon's page, for opening straight from a controller or a test
-function Phone.openEvents()
-	Phone.openApp("Events")
-end
-
--- EventBoardController pushes the same rows the harbour board shows.
-function Phone.setEventRows(rows: { any })
-	pendingRows = rows
-	local b = eventBoard
-	if b then
-		b.update(rows)
+-- the red dot (and one bounce as it appears) on the phone button
+function Phone.setBadge(on: boolean)
+	if not badge then
+		return
 	end
-	local live = false
-	for _, row in rows do
-		if type(row) == "table" and row.kind == "now" and not row.ready then
-			live = true
-			break
-		end
-	end
-	if badge then
-		local was = badge.Visible
-		badge.Visible = live
-		local hop = bounce
-		if live and not was and hop then
-			hop()
-		end
+	local was = badge.Visible
+	badge.Visible = on
+	local hop = bounce
+	if on and not was and hop then
+		hop()
 	end
 end
 

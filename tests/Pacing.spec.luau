@@ -19,7 +19,6 @@ return function(t)
 	local Variants = t.load("src/shared/Config/RescueVariants.luau")
 	local Album = t.load("src/shared/RescueAlbum.luau")
 	local FriendBonus = t.load("src/shared/FriendBonus.luau")
-	local EventClock = t.load("src/shared/EventClock.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 
 	local SESSION_MIN = 25
@@ -100,8 +99,8 @@ return function(t)
 		local towSeen = false
 		local stormSeen = false
 
-		local function isGreat(now: number): boolean
-			return not legacy and EventClock.phase("GreatStorm", now) == "Active"
+		local function isGreat(_now: number): boolean
+			return false -- the hourly Great Storm clock was cut (always sunny)
 		end
 
 		local function rank(): number

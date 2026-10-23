@@ -33,7 +33,6 @@ TelemetryNames.Custom = table.freeze({
 	"PetTreated", -- species, bond pips after the treat
 	"StockBuy", -- Chandlery shelf purchase: Gear / Cosmetic, item key
 	"SeasonClaim", -- Season Logbook tier claimed (value = tier)
-	"EventJoined", -- GhostLight / GhostShip / FrostFleet, once per event window
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown

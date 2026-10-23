@@ -22,9 +22,8 @@ local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes")
 local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
 local RescueVariants = require(Shared:WaitForChild("Config"):WaitForChild("RescueVariants"))
-local SeasonalEvents = require(Shared:WaitForChild("Config"):WaitForChild("SeasonalEvents"))
-local SeasonalRules = require(Shared:WaitForChild("SeasonalRules"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local Weather = require(Shared:WaitForChild("Weather"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
 local Condition = require(OpsFolder:WaitForChild("Condition"))
@@ -189,27 +188,6 @@ local function now(): number
 	return Workspace:GetServerTimeNow()
 end
 
--- The live seasonal window (Halloween / Winter), on the same clock and dev override as the
--- seasonal services. Seasonal call variants roll only while their event is live.
-local function liveSeason(): string?
-	local offset = Workspace:GetAttribute("EventClockOffset")
-	local t = os.time()
-		+ (
-			if type(offset) == "number"
-					and (RunService:IsStudio() or Workspace:GetAttribute("DevBoard"))
-				then offset
-				else 0
-		)
-	local forced = RunService:IsStudio()
-		and Workspace:GetAttribute(SeasonalEvents.DevAttribute) == true
-	for _, event in SeasonalEvents.List do
-		if SeasonalRules.live(event, t, forced) then
-			return event.id
-		end
-	end
-	return nil
-end
-
 local serviceCache: { [string]: any } = {}
 local function service(name: string): any?
 	local cached = serviceCache[name]
@@ -246,8 +224,7 @@ end
 
 -- A Great Storm or a live event quickens the offer rhythm (G69).
 local function offerRushed(): boolean
-	local ok, active = try("EventService", "IsEventActive", "GreatStorm")
-	if ok and active == true then
+	if Weather.isGreatStorm() then
 		return true
 	end
 	local live = ReplicatedStorage:FindFirstChild("LiveOpsState")
@@ -706,14 +683,12 @@ local function newOp(
 	-- 2026-10-21: a personal call's casualty is its crew's only until aboard (no stealing); big calls stay public
 	op.scene.privateTo = if def.isBig then nil else op.members
 	-- the rare-call variant (docs/15 H2): the storm gates the high rarities; Studio can force one
-	local okEvent, greatStorm = try("EventService", "IsEventActive", "GreatStorm")
 	local forcedVariant = RunService:IsStudio() and Workspace:GetAttribute("RescueVariantForce")
 	local variant = RescueVariants.choose(
 		kind,
 		rng:NextNumber(),
-		okEvent and greatStorm == true,
-		if type(forcedVariant) == "string" then forcedVariant else nil,
-		liveSeason()
+		Weather.isGreatStorm(),
+		if type(forcedVariant) == "string" then forcedVariant else nil
 	)
 	if variant then
 		op.variant = variant.id
@@ -1977,7 +1952,7 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 	return {
 		opId = op.id,
 		kind = op.kind,
-		title = op.title or op.def.displayName,
+		title = op.def.displayName,
 		radioLine = op.radioLine or op.def.radioLine,
 		zoneName = op.zoneName,
 		position = op.position,
@@ -2190,18 +2165,13 @@ local function joinBig(op: any, player: Player)
 	advance(op, track)
 end
 
-local function startBigOp(variant: string?)
+local function startBigOp()
 	if bigOp then
 		return
 	end
 	local count = CallLogic.bigCallVictimCount(#Players:GetPlayers())
 	local op =
 		newOp("CapsizedFerry", "CapsizedFerry", "FerrySite", CallTypes.SpawnZones.FerrySite.center)
-	op.variant = variant
-	op.title = if variant == "GhostShip"
-		then "Ghost Ship"
-		elseif variant == "FrostFleet" then "Frost Fleet"
-		else nil
 	op.state = "Active"
 	op.acceptedAt = now()
 	op.offerExpiresAt = op.acceptedAt + op.def.capSeconds
@@ -2582,8 +2552,8 @@ function OperationService.GetOperationOf(player: Player): OperationInfo?
 	return nil
 end
 
--- True while someone's cold open runs (at most Onboarding.WEATHER_HOLD s each): StormService and
--- EventService hold a new storm until it ends, so the first rescue stays in calm daylight.
+-- True while someone's cold open runs (at most Onboarding.WEATHER_HOLD s each): StormService
+-- holds a new storm until it ends, so the first rescue stays in calm daylight.
 function OperationService.ColdOpenHoldsWeather(): boolean
 	local t = now()
 	for player, e in coldOpenFlow do
@@ -2717,7 +2687,7 @@ function OperationService.StartColdOpen(
 end
 
 -- Offer a call to `player` without accepting it: the radio card appears and the player accepts as
--- usual (EventService's Ghost Light). opts.variant forces one RescueVariants id (Studio).
+-- usual. opts.variant forces one RescueVariants id (Studio).
 function OperationService.OfferCall(player: Player, kind: string?, opts: any?): string?
 	local st = stateOf(player)
 	if st.activeOpId and ops[st.activeOpId] then
@@ -2739,16 +2709,10 @@ function OperationService.OfferCall(player: Player, kind: string?, opts: any?): 
 	return op.id
 end
 
--- Offers the running big call to one free player (Halloween / Frost Fleet late joiners, docs/15
--- H7). `variant` defaults to whichever big call is running (the join path); a given variant only
--- offers its own call. It never interrupts an op or the after-op breather, and replaces a pending
+-- Offers the running big call to one free player (late joiners, docs/15 H7). It never interrupts an op or the after-op breather, and replaces a pending
 -- personal offer: the more special call wins (G69).
-function OperationService.OfferBigCall(player: Player, variant: string?): boolean
+function OperationService.OfferBigCall(player: Player): boolean
 	if not bigOp or bigOp.state ~= "Active" then
-		return false
-	end
-	local want = variant or bigOp.variant
-	if want and bigOp.variant ~= want then
 		return false
 	end
 	local st = stateOf(player)
@@ -2773,14 +2737,9 @@ function OperationService.OfferBigCall(player: Player, variant: string?): boolea
 	return true
 end
 
--- Dev helpers (Studio). true keeps the Halloween Ghost Ship variant; a string tags any event
--- variant (WinterService's "FrostFleet") on the same big-op flow.
-function OperationService.ForceBigCall(variant: boolean | string?)
-	if type(variant) == "string" then
-		startBigOp(variant)
-	else
-		startBigOp(if variant then "GhostShip" else nil)
-	end
+-- Dev helper (Studio).
+function OperationService.ForceBigCall()
+	startBigOp()
 end
 
 function OperationService.DevStart(player: Player, kind: string?): string?
@@ -2943,7 +2902,7 @@ local function onPlayerAdded(player: Player)
 	if bigOp then
 		task.delay(5, function()
 			if bigOp and player.Parent then
-				OperationService.OfferBigCall(player, bigOp.variant)
+				OperationService.OfferBigCall(player)
 			end
 		end)
 	end

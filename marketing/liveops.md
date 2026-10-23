@@ -34,9 +34,7 @@ and finished events are ignored.
 | Event | Players see | Effect (free) |
 |---|---|---|
 | **GoldenHour** | Warm gold sky, gold chip on the HUD | 2x Cash and Rep from rescues and live awards. Passive/flat rewards (crate, season tier) stay flat. Stacks with a Great Storm, like every other Cash multiplier |
-| **LegendaryRush** | Violet sky, gold chip | Rare/Epic/Legendary rescue variants roll as if a Great Storm were on; every variant is still earnable |
 | **CalmSeas** | Soft blue sky, gold chip | No new storms for the hour (the paid storm queue waits, the ticket is kept); relaxed, kid-friendly |
-| **DoubleCandy** | Pink sky, gold chip | The active seasonal currency (Candy Lanterns during the Ghost Ship) pays x2 while the seasonal event is live |
 
 Pending events show as a countdown row on the harbour events board and the phone's Events page.
 The last 10 minutes also put a gold banner icon + timer on the HUD. While the event runs, the chip
@@ -47,9 +45,7 @@ shows its 1-3 word name and the sky is tinted.
 | Day | Time | Event | Why |
 |---|---|---|---|
 | Saturday | 18:00 | GoldenHour (60 min) | Peak weekend play; a simple, obvious reward loop |
-| Sunday | 16:00 | LegendaryRush (30 min) | Album collectors chase the rare calls before the week starts |
 | Wednesday | 19:00 | CalmSeas (60 min) | Mid-week, low-pressure session for younger players |
-| Friday | 18:00 | DoubleCandy (60 min) | Only during a seasonal event (Ghost Ship runs 2026-10-24 to 11-02) |
 
 Vary the times by an hour or two week to week so different time zones get a turn. One event at a
 time; each is at most three hours. Nothing is ever sold by an event, so there is no paid timer to
@@ -66,8 +62,3 @@ Many players are children. Time pressure is used for **free, earnable** content 
 - Announce in advance (the board row) so players can gather; the owner tool's default is a dry run.
 - `cancel` is the off switch: it clears the schedule and every server goes back to normal.
 
-## Calendar for the current season
-
-The Ghost Ship seasonal window is **2026-10-24 00:00 to 2026-11-02 23:59:59 UTC**. DoubleCandy is
-only worth scheduling inside it. Outside a live seasonal event it simply does nothing (no currency
-to double), so prefer GoldenHour or LegendaryRush.

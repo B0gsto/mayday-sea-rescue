@@ -98,8 +98,6 @@ return function(t)
 		end
 		t.expect(opt("Season1").pattern).toBe("chevron")
 		t.expect(opt("Month2026-10").pattern).toBe("stripes")
-		t.expect(opt("Halloween").pattern).toBe("glow")
-		t.expect(opt("Halloween").earn).toBe("halloween:livery")
 	end)
 
 	t.test("G38: two-tone contrast is strong (primary vs secondary vs stripe)", function()

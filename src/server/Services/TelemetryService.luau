@@ -350,47 +350,12 @@ local function pollOps()
 	end
 end
 
--- Seasonal / live-event participation: EventService, HalloweenService, WinterService and
--- LiveOpsService publish replicated state; this watches those attributes (no edits to G52/G60/G63
--- files). One EventJoined per event window per player; StormJoined stays the Great Storm hook.
+-- LiveOps participation: LiveOpsService publishes replicated state; this watches it. One
+-- LiveEvent per event window per player; StormJoined stays the Great Storm hook.
 local function pollWorldEvents()
 	local players = Players:GetPlayers()
 	if #players == 0 then
 		return
-	end
-	local function once(key: string, eventName: string, field: string)
-		for _, player in players do
-			if Events.first(trackerOf(player), key) then
-				custom(player, Events.custom(eventName, 1, field))
-			end
-		end
-	end
-	local eventState = ReplicatedStorage:FindFirstChild("EventState")
-	if eventState and eventState:GetAttribute("Phase") == "Active" then
-		local id = eventState:GetAttribute("Event")
-		if id == "GhostLight" then
-			once(
-				`Event:GhostLight:{tostring(eventState:GetAttribute("StartAt"))}`,
-				"EventJoined",
-				"GhostLight"
-			)
-		end
-	end
-	local halloween = ReplicatedStorage:FindFirstChild("HalloweenState")
-	if halloween and halloween:GetAttribute("Active") == true then
-		once(
-			`Event:GhostShip:{tostring(halloween:GetAttribute("EndsAt"))}`,
-			"EventJoined",
-			"GhostShip"
-		)
-	end
-	local winter = ReplicatedStorage:FindFirstChild("WinterState")
-	if winter and winter:GetAttribute("Active") == true then
-		once(
-			`Event:FrostFleet:{tostring(winter:GetAttribute("EndsAt"))}`,
-			"EventJoined",
-			"FrostFleet"
-		)
 	end
 	local liveOps = ReplicatedStorage:FindFirstChild("LiveOpsState")
 	if liveOps and liveOps:GetAttribute("Phase") == "Active" then

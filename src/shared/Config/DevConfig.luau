@@ -97,9 +97,7 @@ end
 
 DevConfig.Vehicles = table.freeze(concat(VehicleConfig.Order, LandVehicleConfig.Order))
 DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), Exercises.Order, { "ColdOpen" }))
-DevConfig.Events = table.freeze(
-	concat({ "GhostLight", "Halloween", "Winter", "GhostShip", "FrostFleet" }, LiveOps.Order)
-)
+DevConfig.Events = LiveOps.Order
 DevConfig.Species = table.freeze(table.clone(Wildlife.SpeciesOrder))
 DevConfig.Certs = table.freeze(concat(ProgressionConfig.CertOrder, { "All" }))
 DevConfig.Passes = table.freeze(concat(keys(MonetizationConfig.GamePasses), { "All" }))

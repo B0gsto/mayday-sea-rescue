@@ -12,8 +12,8 @@ return function(t)
 		return (L.validate(msg, now or NOW))
 	end
 
-	t.test("all four events exist with a label, a tint and a sane default length", function()
-		t.expect(#L.Order).toBe(4)
+	t.test("both events exist with a label, a tint and a sane default length", function()
+		t.expect(#L.Order).toBe(2)
 		for _, id in L.Order do
 			local def = L.Events[id]
 			t.expect(def.id).toBe(id)
@@ -22,7 +22,7 @@ return function(t)
 			t.expect(def.tint.R > 0).toBe(true)
 		end
 		t.expect(L.Events.GoldenHour.label).toBe("Golden hour")
-		t.expect(L.Events.LegendaryRush.label).toBe("Legendary rush")
+		t.expect(L.Events.CalmSeas.label).toBe("Calm seas")
 	end)
 
 	t.test("a valid message needs a known event, a nonce and 1 min to 3 h", function()
@@ -43,8 +43,8 @@ return function(t)
 		t.expect(ok(message("CalmSeas", NOW + 7 * 86400, 3600))).toBe(true)
 		t.expect(ok(message("CalmSeas", NOW + 7 * 86400 + 1, 3600))).toBe(false)
 		-- a server booting mid-event still adopts it
-		t.expect(ok(message("DoubleCandy", NOW - 2 * HOUR, 3 * HOUR))).toBe(true)
-		t.expect(ok(message("DoubleCandy", NOW - 3 * HOUR, 3 * HOUR))).toBe(false)
+		t.expect(ok(message("GoldenHour", NOW - 2 * HOUR, 3 * HOUR))).toBe(true)
+		t.expect(ok(message("GoldenHour", NOW - 3 * HOUR, 3 * HOUR))).toBe(false)
 	end)
 
 	t.test("Cancel is a control message and only needs a nonce", function()
@@ -65,32 +65,20 @@ return function(t)
 		t.expect(L.countdown(state, NOW + 5000)).toBeNil()
 	end)
 
-	t.test("GoldenHour doubles Cash and Rep; DoubleCandy doubles candy only", function()
+	t.test("GoldenHour doubles Cash and Rep; CalmSeas pays nothing extra", function()
 		local gold = L.fromMessage(message("GoldenHour", NOW, 3600))
 		local m = L.multipliers(gold, NOW + 10)
 		t.expect(m.cash).toBe(2)
 		t.expect(m.rep).toBe(2)
-		t.expect(m.candy).toBe(1)
 
-		local candy = L.fromMessage(message("DoubleCandy", NOW, 3600))
-		local c = L.multipliers(candy, NOW + 10)
-		t.expect(c.cash).toBe(1)
-		t.expect(c.rep).toBe(1)
-		t.expect(c.candy).toBe(2)
-
-		for _, id in { "LegendaryRush", "CalmSeas" } do
-			local state = L.fromMessage(message(id, NOW, 3600))
-			local x = L.multipliers(state, NOW + 10)
-			t.expect(x.cash).toBe(1)
-			t.expect(x.rep).toBe(1)
-			t.expect(x.candy).toBe(1)
-		end
+		local calm = L.multipliers(L.fromMessage(message("CalmSeas", NOW, 3600)), NOW + 10)
+		t.expect(calm.cash).toBe(1)
+		t.expect(calm.rep).toBe(1)
 
 		-- pending or over: nothing applies yet, and the caps hold
 		t.expect(L.multipliers(gold, NOW - 1).cash).toBe(1)
 		t.expect(L.multipliers(gold, NOW + 3600).rep).toBe(1)
 		t.expect(L.multipliers(gold, NOW).cash <= L.MaxCash).toBe(true)
-		t.expect(L.multipliers(candy, NOW).candy <= L.MaxCandy).toBe(true)
 	end)
 
 	t.test("isActive names one event and only while it runs", function()
@@ -111,31 +99,5 @@ return function(t)
 		t.expect(L.supersedes(current, message("Cancel", 0, 0, "d"), NOW)).toBe(true)
 		-- an ended event is idle: the next schedule is accepted whenever it starts
 		t.expect(L.supersedes(current, older, NOW + 2 * HOUR)).toBe(true)
-	end)
-
-	t.test("the events board shows one LiveOps row: pending clock, then NOW", function()
-		local Calendar = t.load("src/shared/EventCalendar.luau")
-		local function live(now, startsAt, endsAt)
-			for _, row in
-				Calendar.rows(now, {
-					liveOps = { event = "GoldenHour", startsAt = startsAt, endsAt = endsAt },
-				})
-			do
-				if row.id == "LiveOps" then
-					return row
-				end
-			end
-			return nil
-		end
-		local soon = live(NOW, NOW + 300, NOW + 3900)
-		t.expect(soon.kind).toBe("clock")
-		t.expect(soon.seconds).toBe(300)
-		t.expect(soon.label).toBe("Golden hour")
-		t.expect(soon.icon).toBe("spark")
-		t.expect(Calendar.text(soon)).toBe("0:05:00")
-		t.expect(live(NOW, NOW, NOW + 3600).kind).toBe("now")
-		t.expect(live(NOW, NOW + 2 * 86400, NOW + 2 * 86400 + 3600).kind).toBe("days")
-		t.expect(live(NOW, NOW - 7200, NOW - 1)).toBeNil()
-		t.expect(live(NOW, NOW + 300, NOW + 1200)).toBeTruthy()
 	end)
 end

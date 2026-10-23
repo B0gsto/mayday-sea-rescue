@@ -5,9 +5,7 @@
 --
 --   GoldenHour     2x Cash and Rep from live awards (ProgressionService.Award's multiplier path;
 --                  flat/passive awards stay flat)
---   LegendaryRush  Rare/Epic/Legendary rescue variants roll as if a Great Storm were on
 --   CalmSeas       no new storms for the hour (kid-friendly, relaxed)
---   DoubleCandy    the active seasonal currency pays x2 (Halloween's Candy Lanterns)
 --
 -- Messages carry { event, startsAt (UTC epoch seconds), duration (seconds), nonce }. The owner tool
 -- also sends { event = "Cancel" } to clear the schedule. Fair rules: every benefit is free and
@@ -18,7 +16,7 @@
 -- event runs at a time; each multiplier is capped at x2 by LiveOps itself (the storm still stacks,
 -- as it does for every other Cash multiplier).
 
-export type EventId = "GoldenHour" | "LegendaryRush" | "CalmSeas" | "DoubleCandy"
+export type EventId = "GoldenHour" | "CalmSeas"
 export type Phase = "Idle" | "Pending" | "Active"
 
 export type Message = {
@@ -46,7 +44,6 @@ export type EventDef = {
 export type Multipliers = {
 	cash: number,
 	rep: number,
-	candy: number,
 }
 
 local LiveOps = {}
@@ -63,7 +60,6 @@ LiveOps.MaxNonce = 64
 -- The LiveOps contribution caps: one event at a time, so 2 is the ceiling for each benefit.
 LiveOps.MaxCash = 2
 LiveOps.MaxRep = 2
-LiveOps.MaxCandy = 2
 
 LiveOps.Events = table.freeze({
 	GoldenHour = table.freeze({
@@ -73,13 +69,6 @@ LiveOps.Events = table.freeze({
 		tint = Color3.fromRGB(255, 214, 150),
 		duration = 60 * 60,
 	}),
-	LegendaryRush = table.freeze({
-		id = "LegendaryRush",
-		label = "Legendary rush",
-		icon = "star",
-		tint = Color3.fromRGB(206, 178, 255),
-		duration = 30 * 60,
-	}),
 	CalmSeas = table.freeze({
 		id = "CalmSeas",
 		label = "Calm seas",
@@ -87,16 +76,9 @@ LiveOps.Events = table.freeze({
 		tint = Color3.fromRGB(176, 224, 240),
 		duration = 60 * 60,
 	}),
-	DoubleCandy = table.freeze({
-		id = "DoubleCandy",
-		label = "Double candy",
-		icon = "candy",
-		tint = Color3.fromRGB(255, 190, 216),
-		duration = 60 * 60,
-	}),
 } :: { [string]: EventDef })
 
-LiveOps.Order = table.freeze({ "GoldenHour", "LegendaryRush", "CalmSeas", "DoubleCandy" })
+LiveOps.Order = table.freeze({ "GoldenHour", "CalmSeas" })
 
 local function whole(value: any): boolean
 	return type(value) == "number" and value == value and value % 1 == 0
@@ -186,19 +168,16 @@ end
 
 -- The active event's multiplier contribution, 1 by default; never above the caps.
 function LiveOps.multipliers(state: State?, now: number): Multipliers
-	local out: Multipliers = { cash = 1, rep = 1, candy = 1 }
+	local out: Multipliers = { cash = 1, rep = 1 }
 	if not state or LiveOps.phase(state, now) ~= "Active" then
 		return out
 	end
 	if state.event == "GoldenHour" then
 		out.cash = LiveOps.MaxCash
 		out.rep = LiveOps.MaxRep
-	elseif state.event == "DoubleCandy" then
-		out.candy = LiveOps.MaxCandy
 	end
 	out.cash = math.min(out.cash, LiveOps.MaxCash)
 	out.rep = math.min(out.rep, LiveOps.MaxRep)
-	out.candy = math.min(out.candy, LiveOps.MaxCandy)
 	return out
 end
 

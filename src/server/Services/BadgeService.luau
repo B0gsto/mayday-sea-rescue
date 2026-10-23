@@ -24,12 +24,12 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
+local Weather = require(Shared:WaitForChild("Weather"))
 
 local BadgeService = {}
 BadgeService.Priority = 60
 
 local DataService: any = nil
-local EventService: any = nil
 local busy: { [Player]: { [string]: boolean } } = {}
 local rankIds: { string } = {}
 
@@ -145,7 +145,7 @@ local function onOperationCompleted(snap: any, helpers: { Player })
 		helperSet[p] = true
 	end
 	local done = BadgeRules.completed(snap)
-	local greatStorm = done and EventService ~= nil and EventService.IsEventActive("GreatStorm")
+	local greatStorm = done and Weather.isGreatStorm()
 	for _, p in snap.assignedTo or helpers do
 		if typeof(p) == "Instance" and p:IsA("Player") and p.Parent then
 			local ok, err = pcall(function()
@@ -179,7 +179,6 @@ function BadgeService.Init()
 		table.insert(rankIds, r.id)
 	end
 	DataService = require(script.Parent:WaitForChild("DataService")) :: any
-	EventService = require(script.Parent:WaitForChild("EventService")) :: any
 	Players.PlayerAdded:Connect(onPlayer)
 	Players.PlayerRemoving:Connect(function(p)
 		busy[p] = nil

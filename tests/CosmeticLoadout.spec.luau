@@ -65,20 +65,15 @@ return function(t)
 		t.expect(next(owned)).toBeNil()
 	end)
 
-	t.test("the monthly livery and Halloween pumpkin are earned keys", function()
+	t.test("the monthly livery is an earned key; a saved event flag (cut) earns nothing", function()
 		local flags =
 			{ monthlyLivery = "2026-10", halloween = { candy = 10, livery = true, decor = true } }
 		local owned = Loadout.owned(flags)
 		t.expect(owned["monthly:2026-10"]).toBe(true)
-		t.expect(owned["halloween:livery"]).toBe(true)
-		t.expect(owned["halloween:decor"]).toBe(true)
+		t.expect(owned["halloween:livery"]).toBeNil()
 		local show = Loadout.show(flags)
-		t.expect(show.newest.Livery.id).toBe("Halloween") -- the later earned livery wins
-		t.expect(show.newest.Livery.earn).toBe("halloween:livery")
-		local monthly = Loadout.show({ monthlyLivery = "2026-10" })
-		t.expect(monthly.newest.Livery.id).toBe("Month2026-10")
-		t.expect(monthly.decor[#monthly.decor]).toBe(nil)
-		t.expect(show.decor[#show.decor]).toBe("halloween:decor")
+		t.expect(show.newest.Livery.id).toBe("Month2026-10")
+		t.expect(#show.decor).toBe(0)
 		local config = Cosmetics.option("Livery", "Month2026-10")
 		t.expect(config ~= nil).toBe(true)
 		t.expect(config.earn).toBe("monthly:2026-10")
@@ -124,14 +119,6 @@ return function(t)
 						end
 					elseif string.sub(option.earn, 1, 8) == "monthly:" then
 						flags.monthlyLivery = string.sub(option.earn, 9)
-					elseif option.earn == "halloween:livery" then
-						flags.halloween = { livery = true }
-					elseif option.earn == "halloween:decor" then
-						flags.halloween = { decor = true }
-					elseif option.earn == "winter:livery" then
-						flags.winter = { livery = true }
-					elseif option.earn == "winter:decor" then
-						flags.winter = { decor = true }
 					end
 					local show = Loadout.show(flags)
 					t.expect(show.newest[slot] ~= nil).toBe(true)

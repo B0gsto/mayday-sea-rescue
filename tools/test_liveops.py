@@ -51,7 +51,7 @@ class LiveOpsTests(unittest.TestCase):
             liveops.build_message("CalmSeas", NOW + 60, 60, now=NOW, nonce="x" * 65)
 
     def test_publish_body_is_the_message_json_under_1kb(self):
-        msg = liveops.build_message("LegendaryRush", NOW + 60, 30, now=NOW, nonce="abc")
+        msg = liveops.build_message("CalmSeas", NOW + 60, 30, now=NOW, nonce="abc")
         method, path, body = liveops.publish_request(UNIVERSE, msg)
         self.assertEqual(method, "POST")
         self.assertEqual(path, f"/messaging-service/v1/universes/{UNIVERSE}/topics/LiveOps")
@@ -59,7 +59,7 @@ class LiveOpsTests(unittest.TestCase):
         self.assertLess(len(body["message"].encode()), 1024)
 
     def test_write_updates_the_sorted_map_with_a_ttl(self):
-        msg = liveops.build_message("DoubleCandy", NOW + 3600, 60, now=NOW, nonce="d")
+        msg = liveops.build_message("GoldenHour", NOW + 3600, 60, now=NOW, nonce="d")
         method, path, body = liveops.write_request(UNIVERSE, msg, now=NOW)
         self.assertEqual(method, "PATCH")
         self.assertIn(f"/memory-store/sorted-maps/LiveOpsActive/items/active", path)

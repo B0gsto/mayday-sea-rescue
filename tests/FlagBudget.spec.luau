@@ -7,8 +7,6 @@ return function(t)
 	local Variants = t.load("src/shared/Config/RescueVariants.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
 	local SeasonRules = t.load("src/shared/SeasonRules.luau")
-	local SeasonalRules = t.load("src/shared/SeasonalRules.luau")
-	local SeasonalEvents = t.load("src/shared/Config/SeasonalEvents.luau")
 	local PetRules = t.load("src/shared/PetRules.luau")
 	local StockConfig = t.load("src/shared/Config/StockConfig.luau")
 	local PlatformPrompts = t.load("src/shared/PlatformPrompts.luau")
@@ -24,11 +22,6 @@ return function(t)
 			end
 		end
 		local challenges = ChallengeRules.newState(1, NOW)
-		local halloween = SeasonalRules.newState()
-		halloween.candy = 999
-		for _, item in SeasonalEvents.Halloween.items do
-			halloween.owned[item.flag] = true
-		end
 		local pets = PetRules.newState()
 		for i = 1, PetRules.MAX do
 			table.insert(pets.entries, {
@@ -59,7 +52,6 @@ return function(t)
 				claimed = 2 ^ 30 - 1,
 				seen = 3,
 			}),
-			halloween = SeasonalRules.flagTable(halloween),
 			pets = PetRules.encode(pets),
 			lighthouses = { HarbourLight = true, SkerryLight = true },
 			stock = stock,

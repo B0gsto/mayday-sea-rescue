@@ -9,7 +9,6 @@
 --   c = claimed-tier bitfield, v = variants already seen (album sticker XP once per variant).
 
 local Config = require(script.Parent.Config.Season)
-local EventClock = require(script.Parent.EventClock)
 local RescueVariants = require(script.Parent.Config.RescueVariants)
 
 export type State = { id: string, xp: number, claimed: number, seen: number }
@@ -90,10 +89,7 @@ function SeasonRules.flagTable(state: State): { [string]: any }
 end
 
 function SeasonRules.live(now: number): boolean
-	return EventClock.inSeason(
-		{ id = Config.id, startAt = Config.startUtc, endsAt = Config.endUtc },
-		now
-	)
+	return now >= Config.startUtc and now <= Config.endUtc
 end
 
 -- Whole days shown by the clock: 43 on the first day, 1 on the last, 0 once it is over.

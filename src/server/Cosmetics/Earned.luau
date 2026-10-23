@@ -1,14 +1,14 @@
 --!strict
 -- Earned (server cosmetic feature, G28): makes the earned-but-data-only rewards show.
--- Stock trims, season rewards, the monthly livery and the Halloween bay pumpkin live in profile
--- flags (data.flags.stock / season / monthlyLivery / halloween). CosmeticLoadout turns those flags
+-- Stock trims, season rewards and the monthly livery live in profile
+-- flags (data.flags.stock / season / monthlyLivery). CosmeticLoadout turns those flags
 -- into the `earn` keys the cosmetic options use; this feature:
 --   * mirrors them to the player attribute "CosOwned" (client pickers read it) through
 --     CosmeticsService.Refresh;
 --   * auto-equips the newest earned option once so the player notices it (a claim, a purchase or a
 --     dev grant), and migrates existing saves once (flag `cosmeticAuto`);
 --   * has the Studio hook ServerStorage.CosmeticDev: "all" / "stock" / "season" / "monthly" /
---     "halloween" / "state".
+--     "state".
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -17,7 +17,6 @@ local ServerStorage = game:GetService("ServerStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CosmeticLoadout = require(Shared:WaitForChild("CosmeticLoadout"))
 local Season = require(Shared:WaitForChild("Config"):WaitForChild("Season"))
-local SeasonalRules = require(Shared:WaitForChild("SeasonalRules"))
 local StockConfig = require(Shared:WaitForChild("Config"):WaitForChild("StockConfig"))
 
 local Services = script.Parent.Parent:WaitForChild("Services")
@@ -121,18 +120,6 @@ local function grantSeason(player: Player)
 	})
 end
 
-local function grantHalloween(player: Player)
-	local data = dataOf(player)
-	if not data then
-		return
-	end
-	local state =
-		SeasonalRules.fromFlag(if type(data.flags) == "table" then data.flags.halloween else nil)
-	state.owned.livery = true
-	state.owned.decor = true
-	ProgressionService.SetFlag(player, "halloween", SeasonalRules.flagTable(state))
-end
-
 local function allStock(): string
 	local out = {}
 	for _, key in StockConfig.Order do
@@ -160,13 +147,10 @@ function Earned.Init(cosmeticsService: any)
 				grantSeason(player)
 			elseif cmd == "monthly" then
 				ProgressionService.SetFlag(player, "monthlyLivery", "2026-10")
-			elseif cmd == "halloween" then
-				grantHalloween(player)
 			elseif cmd == "all" then
 				grantStock(player, allStock())
 				grantSeason(player)
 				ProgressionService.SetFlag(player, "monthlyLivery", "2026-10")
-				grantHalloween(player)
 			end
 			sync(player, false)
 			return show(player)
