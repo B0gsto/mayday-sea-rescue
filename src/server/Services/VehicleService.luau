@@ -108,12 +108,14 @@ local SURVIVOR_WELD_DELAY = 0.2 -- s a boarded survivor rides anchored before it
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
 -- Recovery (VehicleRecovery): capsized (Driven or adrift), beached, sunk or pinned with the throttle
--- open glides back upright: capsized in open water rights in place, the rest go back to the last
--- spot afloat (or BOAT_BACKOFF astern of the obstacle), facing away from what they hit.
+-- open glides back upright: capsized in open water rights in place, the rest go to the nearest open
+-- water (BOAT_BACKOFF or more off), facing away from what they hit.
 local BEACHED_HEIGHT = 1.5 -- studs over the floating height while on terrain = beached -- tune
 local SUNK_HEIGHT = 5 -- studs under the floating height = sunk -- tune
 local AIR_HEIGHT = 3 -- studs over the floating height with no terrain near = mid-jump -- tune
 local BOAT_BACKOFF = 10 -- studs -- tune
+local OPEN_WATER_RANGE = 150 -- studs searched for open water off a beach or slipway -- tune
+local SEA_VIEW = 30 -- studs of open water ahead of a recovered hull -- tune
 local GLIDE_RANGE = 80 -- studs: further resets (out of bounds) snap instead of gliding
 local TOW_MIN_LENGTH = 12
 local SCRIPTED_TOW_SLACK = 10 -- extra rope on scripted tows so latency never makes it bind
@@ -951,12 +953,100 @@ local function resetVehicle(record: Record, reason: string, target: CFrame?)
 	end
 end
 
-local function terrainBelow(position: Vector3, reach: number): boolean
+-- Solid ground or structure (terrain, quay, slipway rails, jetty deck): never water, our vehicles,
+-- people or call props. Parts count too: a hull on the slipway rails is as beached as one on sand.
+local function solidParams(): RaycastParams
+	local ignore: { Instance } = { folder }
+	local props = Workspace:FindFirstChild("CallProps")
+	if props then
+		table.insert(ignore, props)
+	end
+	for _, p in Players:GetPlayers() do
+		if p.Character then
+			table.insert(ignore, p.Character)
+		end
+	end
 	local params = RaycastParams.new()
-	params.FilterType = Enum.RaycastFilterType.Include
-	params.FilterDescendantsInstances = { Workspace.Terrain }
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = ignore
 	params.IgnoreWater = true
+	params.RespectCanCollide = true
+	return params
+end
+
+local function solidBelow(position: Vector3, reach: number, params: RaycastParams): boolean
 	return Workspace:Raycast(position, Vector3.new(0, -reach, 0), params) ~= nil
+end
+
+-- Open water at (x, z): nothing solid from MAX_Y down to `depth` under the sea across radius r.
+local function openAt(
+	x: number,
+	z: number,
+	r: number,
+	depth: number,
+	params: RaycastParams
+): boolean
+	local down = Vector3.new(0, -(MAX_Y + depth), 0)
+	for _, o in
+		{
+			Vector3.zero,
+			Vector3.xAxis * r,
+			-Vector3.xAxis * r,
+			Vector3.zAxis * r,
+			-Vector3.zAxis * r,
+		}
+	do
+		if Workspace:Raycast(Vector3.new(x, MAX_Y, z) + o, down, params) then
+			return false
+		end
+	end
+	return true
+end
+
+-- The 16 compass bearings (flat unit vectors), nearest `away` first.
+local function bearings(away: Vector3): { Vector3 }
+	local base = math.atan2(away.Z, away.X)
+	local out = {}
+	for k = 0, 15 do
+		local a = base + math.ceil(k / 2) * (if k % 2 == 0 then 1 else -1) * math.pi / 8
+		table.insert(out, Vector3.new(math.cos(a), 0, math.sin(a)))
+	end
+	return out
+end
+
+-- The nearest open water from `pos` that a `hull` (beam, depth, length) fits in and can drive out of:
+-- rings from BOAT_BACKOFF out, bearings nearest `away` first, and the heading (nearest `away`, back
+-- out the way it came rather than along the shore) with a clear SEA_VIEW stud run. Nil when none.
+local function nearestOpenWater(
+	pos: Vector3,
+	away: Vector3,
+	hull: Vector3,
+	depth: number,
+	params: RaycastParams
+): (Vector3?, Vector3?)
+	local r, beam = math.max(hull.X, hull.Z) / 2 + 2, hull.X / 2 + 1
+	local dirs = bearings(away)
+	for ring = BOAT_BACKOFF, OPEN_WATER_RANGE, BOAT_BACKOFF do
+		for _, d in dirs do
+			local at = Vector3.new(pos.X + d.X * ring, 0, pos.Z + d.Z * ring)
+			if openAt(at.X, at.Z, r, depth, params) then
+				for _, f in dirs do
+					local clear = true
+					for k = BOAT_BACKOFF, SEA_VIEW, BOAT_BACKOFF do
+						local ahead = at + f * k
+						if not openAt(ahead.X, ahead.Z, beam, depth, params) then
+							clear = false
+							break
+						end
+					end
+					if clear then
+						return at, f
+					end
+				end -- boxed in (a pocket between pontoons): look further out
+			end
+		end
+	end
+	return nil, nil
 end
 
 -- Capsized, beached, sunk or pinned for long enough (VehicleRecovery). Returns whether the boat
@@ -966,31 +1056,35 @@ local function recoverBoat(record: Record, dt: number): boolean
 	local pos = root.Position
 	local look = root.CFrame.LookVector
 	local height = pos.Y - Simulator.restCFrame(record.model, pos.X, pos.Z, look).Y
-	local onTerrain = terrainBelow(pos, record.spec.hullSize.Y + 3)
+	local params = solidParams()
+	local reach = record.spec.hullSize.Y + 3
+	local onLand = solidBelow(pos, reach, params)
 	local driven = record.mode == "Driven"
-	local off = (height > BEACHED_HEIGHT and onTerrain) or height < -SUNK_HEIGHT
+	local off = (height > BEACHED_HEIGHT and onLand) or height < -SUNK_HEIGHT
 	local up = root.CFrame.UpVector.Y
 	local reason = VehicleRecovery.step(record.recovery, dt, os.clock(), {
 		up = up,
 		speed = root.AssemblyLinearVelocity.Magnitude,
 		throttle = if driven then record.seat.ThrottleFloat else 0,
-		grounded = height < AIR_HEIGHT or onTerrain,
+		grounded = height < AIR_HEIGHT or onLand,
 		off = driven and off, -- an empty hull on the beach waits for the wreck sweep
 	})
 	if not reason then
 		return not off and up >= VehicleRecovery.UP_MIN
 	end
-	if reason == "Flipped" and not onTerrain then
+	if reason == "Flipped" and not onLand then
 		resetVehicle(record, reason, CFrame.lookAt(pos, pos + look)) -- right it where it floats
 	else
+		-- off the beach, the rails or the wall: the nearest open water, facing away from it
 		local good = record.lastGood.Position
 		local away = Vector3.new(good.X - pos.X, 0, good.Z - pos.Z)
 		if away.Magnitude < 1 then
 			away = -Vector3.new(look.X, 0, look.Z) -- pinned where it was last good: astern of it
 		end
 		away = if away.Magnitude > 1e-3 then away.Unit else Vector3.new(0, 0, 1)
-		local at = good + away * BOAT_BACKOFF
-		resetVehicle(record, reason, CFrame.lookAt(at, at + away))
+		local at, face = nearestOpenWater(pos, away, record.spec.hullSize, reach, params)
+		local spot = at or good + away * BOAT_BACKOFF
+		resetVehicle(record, reason, CFrame.lookAt(spot, spot + (face or away)))
 	end
 	return false
 end

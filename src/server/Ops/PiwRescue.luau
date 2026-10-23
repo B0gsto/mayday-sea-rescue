@@ -15,6 +15,9 @@ local PiwRescue = {}
 
 PiwRescue.REMOTE = "PIW_Rescue"
 PiwRescue.MIN_INTERVAL = 0.2 -- s between a player's events
+-- The cold open (docs/16 B0): the player drives up to them, so the come-anyway clock (PiwWays
+-- COME_DEADLINE) starts this much later; before, they swam over during the opening shot. -- tune
+PiwRescue.COLD_OPEN_GRACE = 30
 
 type Engaged = { player: Player, ways: PiwWays.State, bumpUntil: number?, bumpVel: Vector3? }
 
@@ -116,7 +119,13 @@ local function onEvent(
 	if action == "arm" then
 		if not e or e.player ~= player then
 			local ways = PiwWays.new()
-			ways.since = now -- the idle clock: they come anyway COME_DEADLINE after the arm
+			-- the idle clock: they come anyway COME_DEADLINE after the arm
+			ways.since = now
+				+ (
+					if player:GetAttribute("ColdOpenActive") == true
+						then PiwRescue.COLD_OPEN_GRACE
+						else 0
+				)
 			engaged[victim] = { player = player, ways = ways }
 			setMode(victim, "idle")
 		end
