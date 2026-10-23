@@ -1,10 +1,10 @@
 --!strict
 -- Operation 3: Capsized Ferry (docs/09-rescue-operations.md section 7). Data only.
--- The server's big call: one track per joining crew. `shared` steps are done once for the whole
--- operation (the first track to reach one takes it; the others skip it); the `perCasualty` run
--- (pick-up, movement) loops once per casualty a track claims from the pool.
+-- The server's big call: one track per joining crew; the `perCasualty` run (pick-up, movement)
+-- loops once per casualty a track claims from the pool.
 -- 2026-10-21 (simple rescue): reach the survivors, they climb aboard (auto_board, any free one, as many
--- as the boat holds), bring them home. Scene command, hull knock, air pocket and triage are gone.
+-- as the boat holds), bring them home. Scene command, hull knock, air pocket, triage and the
+-- close-out are gone.
 -- MVP fallback (section 7): boats only; the helicopter ride-along (step 7) arrives at [L].
 local Types = require(script.Parent.Parent.Types)
 
@@ -80,23 +80,6 @@ local def: Types.OperationDef = {
 			npcSeconds = 40,
 			effect = "deliver",
 			tip = "A bigger boat brings more home per trip.",
-		},
-		{
-			id = "account",
-			label = "Account for everyone",
-			realTerm = "Account and stand down",
-			role = "Navigator",
-			mechanicId = "radio_closeout",
-			shared = true,
-			gradeBands = {
-				{ metric = "elapsed", gold = 12, silver = 20, bronze = 30 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 0.5,
-			timeoutSec = 30,
-			onFail = "npc",
-			npcSeconds = 10,
-			tip = "Check the manifest against the count rescued before you stand down.",
 		},
 	},
 }

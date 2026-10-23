@@ -29,9 +29,7 @@ export type StepDef = {
 	label: string, -- plain label shown on the step card ("Check them over")
 	realTerm: string, -- the real term underneath ("Primary survey")
 	role: Role,
-	mechanicId: string, -- src/client/Mechanics/<mechanicId>.luau (default stub when missing)
-	-- casualty state -> mechanicId override (e.g. recovery: Panicking uses recover_swimmer)
-	mechanicByState: { [string]: string }?,
+	mechanicId: string, -- radio_ack | launch | auto_board | transport (src/client/Mechanics/<id>.luau)
 	gradeBands: { GradeBand },
 	weight: number, -- grade points weight (docs 09 section 2.4: most 1, recovery and condition 2)
 	timeoutSec: number, -- hard cap (docs 09 section 10: no step over ~45 s of the same input)
@@ -41,16 +39,13 @@ export type StepDef = {
 	minSeconds: number?, -- results arriving faster than this are rejected (sanity)
 	serverMetrics: { string }?, -- metrics the server fills itself and the client cannot override
 	allowedEvents: { [string]: number }?, -- condition events a client may report, with a max count
-	when: string?, -- include only if the casualty starts in this state (e.g. "Panicking")
 	perCasualty: boolean?, -- consecutive perCasualty steps loop once per casualty the track claims
-	shared: boolean?, -- big calls: done once for the whole operation, not once per track
-	effect: string?, -- server side effect on success (see OperationService: "board", "tow", ...)
+	effect: string?, -- server side effect on success: "board" (they climb aboard) or "deliver" (home)
 	tip: string?, -- Chief Aggie's debrief tip when this is the weakest step
-	noTow: boolean?, -- berth with nothing in tow: no lashed pair, no tow-line release (RP-C1b)
 }
 
 export type OperationDef = {
-	id: string, -- "PersonInWater" | "DisabledVessel" | "CapsizedFerry"
+	id: string, -- "PersonInWater" | "CapsizedFerry" | ...
 	displayName: string,
 	radioLine: string,
 	weight: number, -- payout weight (docs 02 section 3)

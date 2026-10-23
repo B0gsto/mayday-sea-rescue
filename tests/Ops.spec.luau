@@ -7,11 +7,12 @@ return function(t)
 
 	local ROLES = { Helm = true, Navigator = true, Crew = true, Medic = true }
 	local ONFAIL = { retry = true, npc = true, skip = true, takeover = true, continue = true }
+	local SIMPLE = { radio_ack = true, launch = true, auto_board = true, transport = true }
 
 	t.test("every definition is well formed", function()
 		for id, def in Operations.Defs do
 			t.expect(def.id).toBe(id)
-			t.expect(#def.steps >= 4).toBeTruthy() -- PersonInWater is 4 since 2026-10-21
+			t.expect(#def.steps >= 3).toBeTruthy()
 			local seen = {}
 			for _, s in def.steps do
 				t.expect(seen[s.id]).toBeNil()
@@ -36,28 +37,32 @@ return function(t)
 					t.expect(banded).toBeTruthy()
 				end
 			end
-			-- every operation starts with a tasking on the radio and ends with a close-out
+			-- docs/16 K1: answer on the radio, get aboard, they climb on, bring them home; nothing else
 			t.expect(def.steps[1].mechanicId).toBe("radio_ack")
-			local last = def.steps[#def.steps].mechanicId
-			-- PersonInWater ends at the drop-off (transport, 2026-10-21)
-			t.expect(last == "handover" or last == "radio_closeout" or last == "transport")
-				.toBeTruthy()
+			t.expect(def.steps[#def.steps].mechanicId).toBe("transport")
+			for _, s in def.steps do
+				t.expect(SIMPLE[s.mechanicId]).toBeTruthy()
+			end
 		end
 	end)
 
-	t.test("PIW plan: answer, get aboard, pick them up, bring them home (2026-10-21)", function()
-		local def = Operations.get("PersonInWater")
-		for _, state in { "Alert", "Panicking", "Unresponsive" } do
+	t.test("every single-crew plan: answer, get aboard, pick them up, bring them home", function()
+		for _, def in Operations.Defs do
+			if def.isBig then
+				continue
+			end
 			local ids = {}
-			for _, s in Operations.plan(def, state) do
+			for _, s in def.steps do
 				table.insert(ids, s.id)
 			end
 			t.expect(table.concat(ids, ",")).toBe("tasking,launch,recovery,transport")
+			local rec = def.steps[3]
+			t.expect(rec.mechanicId).toBe("auto_board")
+			t.expect(rec.effect).toBe("board")
+			t.expect(rec.onFail).toBe("takeover")
+			-- one survivor at a time: a full craft goes home and comes back for the rest
+			t.expect(rec.perCasualty and def.steps[4].perCasualty).toBe(true)
 		end
-		local rec = def.steps[3]
-		t.expect(Operations.mechanicFor(rec, "VeryCold")).toBe("auto_board")
-		t.expect(rec.effect).toBe("board")
-		t.expect(rec.onFail).toBe("takeover")
 	end)
 
 	t.test("a failed call pays nothing; the first missions cannot fail", function()
@@ -129,21 +134,12 @@ return function(t)
 	end)
 
 	t.test("step grade is the worst band; missing metrics grade Bronze", function()
-		local step = Operations.get("WildlifeRescue").steps[3] -- approach
-		t.expect(step.id).toBe("approach")
-		t.expect(
-			Grading.stepGrade(step, { overSpeedSec = 0, neutralDistance = 5, fromDownwind = true })
-		)
-			.toBe("Gold")
-		t.expect(
-			Grading.stepGrade(step, { overSpeedSec = 1, neutralDistance = 5, fromDownwind = true })
-		)
-			.toBe("Silver")
-		t.expect(
-			Grading.stepGrade(step, { overSpeedSec = 9, neutralDistance = 5, fromDownwind = true })
-		)
-			.toBe("Fail")
-		t.expect(Grading.stepGrade(step, { overSpeedSec = 0, neutralDistance = 5 })).toBe("Bronze")
+		local step = Operations.get("PersonInWater").steps[4] -- transport
+		t.expect(step.id).toBe("transport")
+		t.expect(Grading.stepGrade(step, { conditionAtEnd = 80 })).toBe("Gold")
+		t.expect(Grading.stepGrade(step, { conditionAtEnd = 50 })).toBe("Silver")
+		t.expect(Grading.stepGrade(step, { conditionAtEnd = 10 })).toBe("Fail")
+		t.expect(Grading.stepGrade(step, {})).toBe("Bronze")
 	end)
 
 	t.test("NPC and stub caps", function()
@@ -154,10 +150,10 @@ return function(t)
 		-- push-to-talk: graded on elapsed alone, half weight
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Gold")
 		t.expect(tasking.weight).toBe(0.5)
-		local survey = Operations.get("CliffCasualty").steps[4]
-		t.expect(survey.id).toBe("survey")
-		-- stub: graded on server metrics only (elapsed), client "correct" ignored
-		t.expect(Grading.resolveStep(survey, { elapsed = 5 }, { stub = true })).toBe("Silver")
+		local recovery = Operations.get("CliffCasualty").steps[3]
+		t.expect(recovery.id).toBe("recovery")
+		-- stub: graded on server metrics only (elapsed)
+		t.expect(Grading.resolveStep(recovery, { elapsed = 5 }, { stub = true })).toBe("Silver")
 		t.expect(Grading.cap("Gold", Types.Rules.NpcGradeCap)).toBe("Silver")
 		t.expect(Grading.cap("Bronze", "Silver")).toBe("Bronze")
 	end)
@@ -209,8 +205,7 @@ return function(t)
 		t.expect(Grading.shareWithoutStep(1).cash).toBe(55)
 		t.expect(Grading.bigCasualtyPay().cash).toBe(165)
 		t.expect(Grading.bigCompletionBonus(5, 10).cash).toBe(688)
-		t.expect(Grading.bigCompletionBonus(10, 10, true).rep)
-			.toBe(math.floor(135 * 1.5 * 1.2 + 0.5))
+		t.expect(Grading.bigCompletionBonus(10, 10).rep).toBe(math.floor(135 * 1.5 + 0.5))
 	end)
 
 	t.test("rolls and triage truth", function()
@@ -218,7 +213,7 @@ return function(t)
 		t.expect(Operations.roll({ A = 1, B = 1 }, 0.99)).toBe("B")
 		t.expect(Operations.triageTag("Unresponsive")).toBe("Red")
 		t.expect(Operations.triageTag("Alert")).toBe("Green")
-		t.expect(Operations.FromCallKind.Tow).toBe("DisabledVessel")
+		t.expect(Operations.FromCallKind.Tow).toBeNil() -- the tow op is gone (docs/16 C2)
 	end)
 	t.test("drift scale softens the decline (cold open)", function()
 		local c = Condition.new("a", "Alert", true, 85)

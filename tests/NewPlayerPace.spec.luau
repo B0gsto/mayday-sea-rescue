@@ -72,9 +72,9 @@ return function(t)
 			if completed > 1 then
 				now += CallTypes.Scheduler.OfferDelay / 60
 			end
-			local choice = CallLogic.chooseCall(completed, "Calm", false, function()
+			local choice = CallLogic.chooseCall(completed, "Calm", function()
 				return 0.5
-			end, false)
+			end)
 			now += CALL_MIN
 			operation(choice.kind)
 		end

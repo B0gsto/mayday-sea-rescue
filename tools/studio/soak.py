@@ -26,14 +26,12 @@ import smoke  # noqa: E402
 REPORT = os.path.join(smoke.OUT, "sweep.txt")
 OP_KINDS = (
     "PersonInWater",
-    "DisabledVessel",
     "CapsizedFerry",
     "CliffCasualty",
     "RipCurrent",
     "SinkingVessel",
     "VesselFire",
     "WildlifeRescue",
-    "ExerciseCoxswain",
 )
 OP_WAIT = 100
 CONSOLE_EVERY = 8

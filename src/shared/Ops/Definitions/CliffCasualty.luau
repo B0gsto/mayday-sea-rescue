@@ -1,149 +1,25 @@
 --!strict
--- Operation 8.5: Cliff Casualty (docs/09-rescue-operations.md section 8.5, docs/13 LU-2).
--- A walker is stuck on the ledge at the foot of Haven Head. Reach them by land (the cliff-top
--- rescue point, then the line) or by sea (RIB / jet ski at the foot); treat them; then haul them
--- up on the stretcher or carry them to the boat; hand over to the ambulance. Data only.
+-- Operation 8.5: Cliff Casualty (docs/09-rescue-operations.md section 8.5, docs/16 K1). Data only.
+-- A walker slipped off the ledge at the foot of Haven Head and is in the surf below the cliff: open
+-- water, so the waves make holding steady the hard part. The plan is SimpleSteps (sea side only).
+local SimpleSteps = require(script.Parent.SimpleSteps)
 local Types = require(script.Parent.Parent.Types)
 
 local def: Types.OperationDef = {
 	id = "CliffCasualty",
 	displayName = "Cliff Casualty",
-	radioLine = "Haven Rescue, Gale Isles Coastguard. Walker stuck on the ledge below Haven Head, one casualty. Over.",
+	radioLine = "Haven Rescue, Gale Isles Coastguard. Walker in the water below Haven Head, one casualty. Over.",
 	weight = 1.4,
 	capSeconds = 600,
 	isBig = false,
 	casualtyKind = "Person",
 	states = { Exhausted = 0.5, VeryCold = 0.3, Alert = 0.2 },
 	lifejacketChance = 0,
-	takeoverAsset = "The cliff team",
+	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Cliff" },
-	steps = {
-		{
-			id = "tasking",
-			label = "Answer the Coastguard",
-			realTerm = "Tasking",
-			role = "Navigator",
-			mechanicId = "radio_ack",
-			gradeBands = {
-				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 0.5,
-			timeoutSec = 45,
-			onFail = "npc",
-			npcSeconds = 8,
-			tip = "Answer the Coastguard quickly; every second counts for the casualty.",
-		},
-		{
-			id = "passage",
-			label = "Get to the cliff",
-			realTerm = "Passage and ETA",
-			role = "Helm",
-			mechanicId = "passage",
-			gradeBands = {
-				{ metric = "routeRatio", gold = 1.1, silver = 1.3, bronze = 1.6 },
-			},
-			weight = 0.5,
-			timeoutSec = 240,
-			onFail = "continue",
-			npcSeconds = 40,
-			tip = "Drive the coast road to the cliff top, or take the boat to the foot and swim ashore.",
-		},
-		{
-			id = "access",
-			label = "Get down to them",
-			realTerm = "Access / rope lower",
-			role = "Crew",
-			mechanicId = "cliff_access",
-			gradeBands = {
-				{ metric = "elapsed", gold = 30, silver = 60, bronze = 90 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 90,
-			onFail = "npc",
-			npcSeconds = 20,
-			npcAllowed = false,
-			tip = "From the cliff top, lower yourself on the line; from the boat, step ashore at the foot.",
-		},
-		{
-			id = "survey",
-			label = "Check them over",
-			realTerm = "Primary survey",
-			role = "Medic",
-			mechanicId = "primary_survey",
-			gradeBands = {
-				{ metric = "correct", gold = 1, silver = 0.8, bronze = 0.5, higherIsBetter = true },
-				{ metric = "elapsed", gold = 25, silver = 35, bronze = 50 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 1,
-			timeoutSec = 50,
-			onFail = "npc",
-			npcSeconds = 25,
-			npcAllowed = false,
-			effect = "survey",
-			tip = "Survey first, then treat: DR ABCDE finds the hidden problem.",
-		},
-		{
-			id = "treatment",
-			label = "Treat what you found",
-			realTerm = "Treatment",
-			role = "Medic",
-			mechanicId = "treat",
-			gradeBands = {
-				{
-					metric = "matches",
-					gold = 1,
-					silver = 0.75,
-					bronze = 0.5,
-					higherIsBetter = true,
-				},
-			},
-			allowedEvents = { harmfulTreatment = 2, wrongHandling = 1 },
-			weight = 1,
-			timeoutSec = 45,
-			onFail = "npc",
-			npcSeconds = 20,
-			npcAllowed = false,
-			effect = "treat",
-			tip = "Shelter and wrap a cold casualty and keep them flat; never rub their limbs.",
-		},
-		{
-			id = "recovery",
-			label = "Get them up or aboard",
-			realTerm = "Recovery",
-			role = "Crew",
-			mechanicId = "cliff_recover",
-			gradeBands = {
-				{ metric = "score", gold = 0.8, silver = 0.5, bronze = 0.2, higherIsBetter = true },
-			},
-			weight = 2,
-			timeoutSec = 90,
-			onFail = "retry",
-			npcSeconds = 30,
-			npcAllowed = false,
-			effect = "cliff",
-			tip = "Pull with both hands on the line to haul them up, or carry them to the boat alongside.",
-		},
-		{
-			id = "handover",
-			label = "Hand over to the ambulance",
-			realTerm = "Handover (ATMIST)",
-			role = "Medic",
-			mechanicId = "handover",
-			gradeBands = {
-				{ metric = "elapsed", gold = 20, silver = 30, bronze = 45 },
-			},
-			serverMetrics = { "elapsed" },
-			weight = 0.5,
-			timeoutSec = 45,
-			onFail = "npc",
-			npcSeconds = 20,
-			npcAllowed = false,
-			tip = "ATMIST: Age, Time, Mechanism, Injuries, Signs, Treatment, in that order.",
-		},
-	},
+	steps = SimpleSteps(
+		"Answer the Coastguard quickly; the surf under the cliff is no place to wait."
+	),
 }
 
 return def

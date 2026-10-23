@@ -1,16 +1,12 @@
 --!strict
 -- RescueService: the physical side of calls. Builds victims (the rigged swimmer casualty from
--- Assets/CasualtyAsset, falling back to greybox people in Survivor Yellow life vests), drifting dinghies, disabled boats and the capsized ferry; bobs them on
--- Weather.heightAt every Heartbeat (anchored, no physics); runs the hold-to-pull and tow prompts;
--- and detects deliveries at the DropOff pads. Operation bookkeeping, steps and pay live in
--- OperationService (the scene table passed in here is OperationService's `op.scene`).
+-- Assets/CasualtyAsset, falling back to greybox people in Survivor Yellow life vests), drifting dinghies
+-- and the capsized ferry; bobs them on Weather.heightAt every Heartbeat (anchored, no physics); runs the
+-- hold-to-pull prompt; and detects deliveries at the DropOff pads. Operation bookkeeping, steps and pay
+-- live in OperationService (the scene table passed in here is OperationService's `op.scene`).
 --
--- Ops v2: a scene with `opsDriven = true` keeps its prompts disabled; the recovery and tow steps
--- call RescueService.BoardVictim / AttachTowFor when the step's mechanic succeeds.
---
--- CONTRACT: the towed NPC boat stays anchored and is moved by this script along the tow line.
--- VehicleService.AttachTow is still called (rope visual and hitch) inside pcall; if it errors or is
--- missing, a Beam stands in for the rope.
+-- Ops v2: a scene with `opsDriven = true` keeps its prompts disabled; the recovery step calls
+-- RescueService.BoardVictim when the survivor climbs aboard.
 local CollectionService = game:GetService("CollectionService")
 local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
@@ -26,7 +22,6 @@ local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("Casual
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RescueDressing = require(script.Parent.Parent.Ops.RescueDressing)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
-local TowMotion = require(script.Parent.Parent.Tow.TowMotion)
 local CasualtyAsset: any = (function()
 	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
 	if not ok then
@@ -51,7 +46,6 @@ end)()
 local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
 local FerryRig = require(Shared:WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local HullKnock = require(Shared:WaitForChild("Ferry"):WaitForChild("HullKnock"))
-local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
 local Waves = require(Shared:WaitForChild("Waves"))
 
@@ -64,16 +58,8 @@ local SKIN =
 local SHIRTS =
 	{ Color3.fromRGB(70, 120, 190), Color3.fromRGB(200, 80, 90), Color3.fromRGB(90, 160, 110) }
 local DELIVER_MARGIN = 12
-local TOW_DOCK_MARGIN = 16
-local TOW_DEFAULT_STUDS = 75 -- the tow mechanics' default rig until the Crew sends Ops_TowLength
-local TOW_LOST_STUDS = 400 -- hitch this far from the casualty (teleport, respawn): the tow is lost
--- People aboard a disabled boat (torso centres; the skipper waves from the bow, then the cockpit).
-local DECK_SEATS = {
-	CFrame.new(1.5, 2.6, -3.5),
-	CFrame.new(-1.5, 2.6, -3.5),
-	CFrame.new(1.4, 2.6, 5.6),
-	CFrame.new(-1.4, 2.6, 5.6),
-}
+-- Survivors of a vessel scene (sinking, fire) or the cliff foot: this far out from the scene's centre.
+local SCATTER_RADIUS = 32 -- clear of the 52-stud trawler
 
 type Floater = {
 	parts: { BasePart },
@@ -251,7 +237,7 @@ end
 -- Swaps a greybox person (addPerson's parts) for a Roblox R15 character dressed for `role`
 -- (NpcFactory / Config/NpcOutfits, docs/12 section 2.9) once its catalog assets have loaded. The
 -- greybox stays when the build fails or the floater was carried off meanwhile. The greybox "Torso"
--- stays as an invisible marker: the tow mechanics count POB by parts named Torso (Mechanics/Tow/Kit).
+-- stays as an invisible marker.
 local GREYBOX_FEET = 2.8 -- studs from addPerson's torso centre down to its feet
 local function upgradePerson(
 	f: Floater,
@@ -369,7 +355,6 @@ local function makePrompt(
 end
 
 local onPull: (victim: any, player: Player, forced: boolean?) -> ()
-local onTow: (call: any, player: Player, forced: boolean?) -> ()
 
 -- One victim in the water (or seated on a parent floater such as a dinghy).
 local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffset: CFrame?): any
@@ -434,8 +419,9 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		model:SetAttribute("PrivateTo", Board.privateList(ids))
 	end
 	model.Parent = mapFolder
-	-- the rare-call look (docs/15 H2): outfit colours, a kayak, a dog made of Parts, the golden gull
-	RescueDressing.apply(model, call.variant, {
+	-- the rare-call look (docs/15 H2): outfit colours, a kayak, a dog made of Parts, the golden gull. A
+	-- vessel look dresses the hull (SinkingScene, FireScene), never the people in the water.
+	RescueDressing.apply(model, if RescueDressing.isBoat(call.variant) then nil else call.variant, {
 		floater = f,
 		mount = function(mountPart: BasePart, offset: CFrame)
 			addPart(f, mountPart, offset)
@@ -513,79 +499,6 @@ local function buildDinghy(call: any, pos: Vector3): Floater
 	call.props = call.props or {}
 	table.insert(call.props, { model = model, floater = f })
 	return f
-end
-
-local function buildDisabledBoat(call: any, pos: Vector3)
-	local model = Instance.new("Model")
-	model.Name = "DisabledBoat"
-	model:SetAttribute("CallId", call.id)
-	local f = newFloater(pos.X, pos.Z, 0.3)
-	f.sway = 0.04
-	local hull = newPart(model, "Hull", Vector3.new(6, 2.4, 14), Color3.fromRGB(236, 236, 230))
-	addPart(f, hull, CFrame.identity)
-	model.PrimaryPart = hull
-	addPart(
-		f,
-		newPart(model, "Stripe", Vector3.new(6.1, 0.5, 14.1), Color3.fromRGB(40, 90, 160)),
-		CFrame.new(0, -0.4, 0)
-	)
-	addPart(
-		f,
-		newPart(model, "Cabin", Vector3.new(4.4, 3, 5), Color3.fromRGB(236, 236, 230)),
-		CFrame.new(0, 2.7, 2)
-	)
-	addPart(
-		f,
-		newPart(model, "Windshield", Vector3.new(4.2, 1.2, 0.3), Color3.fromRGB(120, 170, 200)),
-		CFrame.new(0, 3.4, -0.55)
-	)
-	addPart(
-		f,
-		newPart(
-			model,
-			"Smoke",
-			Vector3.new(1.2, 1.2, 1.2),
-			Color3.fromRGB(70, 70, 70),
-			Enum.PartType.Ball
-		),
-		CFrame.new(0, 1.6, 6)
-	)
-	-- scene.pob (OperationService, from the tasking) people aboard; assess_vessel counts the torsos
-	local pob = math.clamp(if type(call.pob) == "number" then call.pob else 1, 0, #DECK_SEATS)
-	for i = 1, pob do
-		local greybox = addPerson(f, model, DECK_SEATS[i], true)
-		-- the skipper waves from the bow; the rest stand by
-		upgradePerson(f, model, DECK_SEATS[i], greybox, "Boater", if i == 1 then "Wave" else "Idle")
-	end
-	RescueDressing.apply(model, call.variant, {
-		floater = f,
-		mount = function(mountPart: BasePart, offset: CFrame)
-			addPart(f, mountPart, offset)
-		end,
-	})
-	local bow = Instance.new("Attachment")
-	bow.Name = "BowPoint"
-	bow.Position = Vector3.new(0, 0.6, -7)
-	bow.Parent = hull
-	model.Parent = mapFolder
-	register(f)
-	local prompt = makePrompt(hull, "Attach tow line", "Disabled boat", call.spec.interaction)
-	prompt.Enabled = not call.opsDriven
-	prompt.Triggered:Connect(function(player)
-		onTow(call, player)
-	end)
-	call.boat = {
-		model = model,
-		floater = f,
-		hull = hull,
-		bow = bow,
-		prompt = prompt,
-		state = "Waiting",
-		tower = nil :: Model?,
-		motion = nil :: TowMotion.Motion?, -- the TowLine spring-damper while trailing
-		mode = "Trail", -- "Trail" on the line, "Alongside" lashed beside the tug
-		towLength = TOW_DEFAULT_STUDS,
-	}
 end
 
 -- The Gale Queen greybox (fallback when the C2 art can't load): Hull 16x7x60 + Keel, Deckhouse, Bridge, Funnel,
@@ -892,18 +805,25 @@ function RescueService.SpawnCall(call: any, victimPositions: { Vector3 }?)
 	liveCalls[call] = true
 	call.victims = {}
 	local pos: Vector3 = call.position
-	if call.kind == "Swimmer" or call.kind == "RipCurrent" then
-		table.insert(call.victims, spawnVictim(call, pos))
-	elseif call.kind == "DriftingCraft" then
+	if call.kind == "DriftingCraft" then
 		local dinghy = buildDinghy(call, pos)
 		for i = 1, call.total do
 			local seat = CFrame.new(0, 1.3, if i % 2 == 1 then -1.8 else 1.8)
 				* CFrame.Angles(0, if i % 2 == 1 then 0 else math.pi, 0)
 			table.insert(call.victims, spawnVictim(call, pos, dinghy, seat))
 		end
-	elseif call.kind == "Tow" then
-		buildDisabledBoat(call, pos)
-	elseif call.kind == "CapsizedFerry" then
+	elseif call.kind ~= "CapsizedFerry" then
+		-- swimmers: one on the spot, or spread round a vessel scene in the water beside her
+		local n = call.total or 1
+		for i = 1, n do
+			local a = i / n * math.pi * 2
+			local r = if n > 1 then SCATTER_RADIUS else 0
+			table.insert(
+				call.victims,
+				spawnVictim(call, pos + Vector3.new(math.cos(a) * r, 0, math.sin(a) * r))
+			)
+		end
+	else
 		local ferryF, rafts = buildFerry(call, pos)
 		local positions: { Vector3 } = victimPositions or {}
 		local seats = FerryRig.assignSeats(#positions, #rafts)
@@ -1081,174 +1001,11 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	CallService.OnVictimBoarded(call, player)
 end
 
-onTow = function(call: any, player: Player, forced: boolean?)
-	local boat = call.boat
-	if not boat or boat.state ~= "Waiting" or not liveCalls[call] then
-		return
-	end
-	local CallService = callService()
-	if not forced and not CallService.CanAct(call, player) then
-		notify(call, player, "That's another crew's call.")
-		return
-	end
-	local vehicle = vehicleOf(player)
-	if not vehicle then
-		notify(call, player, "Bring a boat alongside to attach the tow line.")
-		return
-	end
-	if
-		not forced
-		and CallLogic.flatDistance(vehicle:GetPivot().Position, boat.hull.Position)
-			> call.spec.interaction.vehicleRange
-	then
-		notify(call, player, "Bring your boat closer.")
-		return
-	end
-	local vehicleId = vehicle:GetAttribute("VehicleId")
-	local spec = if type(vehicleId) == "string" then VehicleConfig.get(vehicleId) else nil
-	if spec and not spec.canTow then
-		notify(call, player, `The {spec.displayName} can't tow. Take the RIB.`)
-		return
-	end
-	local svc = service("VehicleService")
-	local attached = false
-	if svc and type(svc.AttachTow) == "function" then
-		local ok, result = pcall(svc.AttachTow, vehicle, boat.model)
-		if ok and result == false then
-			notify(call, player, "Can't attach the tow line to this boat.")
-			return
-		end
-		attached = ok
-		if not ok then
-			warn(`[RescueService] AttachTow failed: {result}`)
-		end
-	end
-	if not attached then
-		-- visual stand-in for the rope
-		local root = vehicleRoot(vehicle)
-		if root then
-			local a0 = Instance.new("Attachment")
-			a0.Name = "CallTowA0"
-			a0.Position = Vector3.new(0, 0.5, root.Size.Z / 2)
-			a0.Parent = root
-			local beam = Instance.new("Beam")
-			beam.Name = "CallTowRope"
-			beam.Attachment0 = a0
-			beam.Attachment1 = boat.bow
-			beam.Width0, beam.Width1 = 0.3, 0.3
-			beam.Color = ColorSequence.new(Color3.fromRGB(240, 230, 200))
-			beam.FaceCamera = true
-			beam.Parent = boat.hull
-			boat.fallbackRope = { a0, beam } :: { Instance }
-		end
-	end
-	boat.state = "Towed"
-	boat.tower = vehicle
-	boat.usesVehicleService = attached
-	boat.prompt.Enabled = false
-	CallService.RecordAction(call, player)
-	local driver = driverOf(vehicle)
-	if driver then
-		CallService.RecordAction(call, driver)
-	end
-	CallService.OnTowAttached(call, player)
-end
-
-local function releaseTow(boat: any)
-	if boat.tower and boat.usesVehicleService then
-		try("VehicleService", "DetachTow", boat.tower)
-	end
-	if boat.fallbackRope then
-		for _, inst in boat.fallbackRope do
-			inst:Destroy()
-		end
-		boat.fallbackRope = nil
-	end
-	boat.tower = nil
-	boat.motion = nil
-	boat.mode = "Trail"
-end
-
 ---------------------------------------------------------------- per-frame motion
-
-local function hitchPosition(vehicle: Model): Vector3
-	local hitch = vehicle:FindFirstChild("TowHitch", true)
-	if hitch and hitch:IsA("Attachment") then
-		return hitch.WorldPosition
-	end
-	local cf = vehicle:GetPivot()
-	return (cf * CFrame.new(0, 0, 6)).Position
-end
-
--- Scripted tows: VehicleService's rope is a visual over an anchored casualty, so give it enough
--- slack for the elastic line's stretch (it must never bind the tug); ScriptedLength is nominal.
-local function fitRope(boat: any)
-	local tower: Model? = boat.tower
-	local rope = tower and tower:FindFirstChild("TowRope", true)
-	if rope and rope:IsA("RopeConstraint") and rope:GetAttribute("ScriptedLength") ~= nil then
-		rope:SetAttribute("ScriptedLength", boat.towLength)
-		local a0, a1 = rope.Attachment0, rope.Attachment1
-		local gap = if a0 and a1 then (a0.WorldPosition - a1.WorldPosition).Magnitude else 0
-		rope.Length = math.max(boat.towLength * 1.35, gap) + 10 -- never shorter than it lies now
-		rope.Visible = boat.mode ~= "Alongside"
-	end
-end
-
-local function towLost(call: any, boat: any, parted: boolean)
-	releaseTow(boat)
-	boat.state = "Waiting"
-	-- a parted line on an ops tow is re-passed by the steps; a lost one falls back to the prompt
-	boat.prompt.Enabled = not (parted and call.opsDriven)
-	local svc = callService()
-	if parted and type(svc.OnTowParted) == "function" then
-		svc.OnTowParted(call)
-	else
-		svc.OnTowLost(call)
-	end
-end
 
 local function turnToward(f: Floater, target: number, k: number)
 	local delta = (target - f.yaw + math.pi) % (2 * math.pi) - math.pi
 	f.yaw += delta * k
-end
-
-local function stepTow(call: any, dt: number)
-	local boat = call.boat
-	if not boat or boat.state ~= "Towed" then
-		return
-	end
-	local tower: Model? = boat.tower
-	if not tower or not tower.Parent then
-		towLost(call, boat, false)
-		return
-	end
-	local f: Floater = boat.floater
-	local root = vehicleRoot(tower)
-	if boat.mode == "Alongside" then
-		-- lashed to the tug's starboard side with fenders between, riding at the tug's heading
-		local cf = tower:GetPivot()
-		local half = if root then root.Size.X / 2 else 3
-		local spot = (cf * CFrame.new(half + boat.hull.Size.X / 2 + 1, 0, 0)).Position
-		local k = math.min(dt * 3, 1)
-		f.x += (spot.X - f.x) * k
-		f.z += (spot.Z - f.z) * k
-		turnToward(f, math.atan2(-cf.LookVector.X, -cf.LookVector.Z), k)
-		return
-	end
-	local hitch = hitchPosition(tower)
-	if Vector3.new(hitch.X - f.x, 0, hitch.Z - f.z).Magnitude > TOW_LOST_STUDS then
-		towLost(call, boat, false)
-		return
-	end
-	if not boat.motion then
-		boat.motion = TowMotion.new(f, hitch, boat.towLength, boat.hull.Size.Z)
-		fitRope(boat)
-	end
-	local velocity = if root then root.AssemblyLinearVelocity else Vector3.zero
-	TowMotion.step(boat.motion, f, hitch, velocity, math.min(dt, 0.1))
-	if TowMotion.parted(boat.motion) then
-		towLost(call, boat, true)
-	end
 end
 
 local bulkParts: { BasePart } = {}
@@ -1258,23 +1015,13 @@ local function stepFloaters(now: number)
 	table.clear(bulkParts)
 	table.clear(bulkCFrames)
 	for _, f in floaters do
-		-- VehicleService owns anything welded aboard (OnVehicle) or physically towed (VehicleTowed
-		-- without TowScripted); scripted tows stay ours.
+		-- VehicleService owns anything welded aboard (OnVehicle)
 		local owner = f.model
 		if not owner and f.parts[1] then
 			owner = f.parts[1]:FindFirstAncestorWhichIsA("Model")
 			f.model = owner
 		end
-		if
-			owner
-			and (
-				owner:GetAttribute("OnVehicle") ~= nil
-				or (
-					CollectionService:HasTag(owner, "VehicleTowed")
-					and owner:GetAttribute("TowScripted") ~= true
-				)
-			)
-		then
+		if owner and owner:GetAttribute("OnVehicle") ~= nil then
 			continue
 		end
 		if f.parent then
@@ -1451,17 +1198,6 @@ local function dropOffPads(): { BasePart }
 	return pads
 end
 
-function RescueService.GetDropOffs(dropOffs: { string }): { { name: string, position: Vector3 } }
-	local out = {}
-	for _, pad in dropOffPads() do
-		local name = pad:GetAttribute("DropOff")
-		if type(name) == "string" and table.find(dropOffs, name) then
-			table.insert(out, { name = name, position = pad.Position })
-		end
-	end
-	return out
-end
-
 local function padAt(pos: Vector3, allowed: { string }, margin: number): string?
 	for _, pad in dropOffPads() do
 		local name = pad:GetAttribute("DropOff")
@@ -1579,16 +1315,6 @@ local function checkDeliveries()
 				end
 			end
 		end
-		local boat = call.boat
-		if boat and boat.state == "Towed" then
-			local pos = Vector3.new(boat.floater.x, 0.2, boat.floater.z)
-			if padAt(pos, call.spec.dropOffs, TOW_DOCK_MARGIN) then
-				local tower = boat.tower
-				releaseTow(boat)
-				boat.state = "Moored"
-				callService().OnTowDelivered(call, tower and driverOf(tower))
-			end
-		end
 	end
 	for carrier, list in byCarrier do
 		local pos = carrier:GetPivot().Position
@@ -1693,14 +1419,6 @@ function RescueService.VictimPosition(call: any, index: number): Vector3?
 	return victim.root.Position
 end
 
--- Take-the-strain step succeeded: the tow goes on (needs the player's tow-capable boat).
-function RescueService.AttachTowFor(call: any, player: Player): boolean
-	if call.boat and call.boat.state == "Waiting" and vehicleOf(player) then
-		onTow(call, player, true)
-	end
-	return RescueService.IsTowing(call)
-end
-
 -- A casualty was handed over without reaching a pad (stub transport, big-call movement):
 -- take it off the boat or out of the water.
 function RescueService.RemoveVictim(call: any, index: number)
@@ -1720,16 +1438,13 @@ end
 
 ---------------------------------------------------------------- queries and cleanup
 
--- Positions still to reach: victims in the water, or the disabled boat waiting for a tow.
+-- Positions still to reach: victims in the water.
 function RescueService.GetTargets(call: any): { Vector3 }
 	local out = {}
 	for _, v in call.victims or {} do
 		if v.state == "Water" then
 			table.insert(out, v.floater.cf.Position)
 		end
-	end
-	if call.boat and call.boat.state == "Waiting" then
-		table.insert(out, Vector3.new(call.boat.floater.x, 0, call.boat.floater.z))
 	end
 	return out
 end
@@ -1742,39 +1457,6 @@ function RescueService.CountAboard(call: any): number
 		end
 	end
 	return n
-end
-
--- Ops_TowLength: the Crew stepped the tow out or in (studs, clamped 30..150 by TowMotion).
-function RescueService.SetTowLength(call: any, studs: number)
-	local boat = call.boat
-	if not boat or studs ~= studs then
-		return
-	end
-	boat.towLength = math.clamp(studs, 30, 150)
-	if boat.motion then
-		TowMotion.setLength(boat.motion, boat.towLength)
-	end
-	fitRope(boat)
-end
-
--- "Trail" (on the tow line) or "Alongside" (lashed beside the tug for the alongside/berth steps).
-function RescueService.SetTowMode(call: any, mode: string)
-	local boat = call.boat
-	if not boat or (mode ~= "Trail" and mode ~= "Alongside") or boat.mode == mode then
-		return
-	end
-	boat.mode = mode
-	boat.motion = nil -- back on the line: a fresh line from where she lies
-	fitRope(boat)
-end
-
-function RescueService.IsTowing(call: any): boolean
-	return call.boat ~= nil and call.boat.state == "Towed"
-end
-
-function RescueService.TowPosition(call: any): Vector3?
-	local boat = call.boat
-	return if boat then Vector3.new(boat.floater.x, 0, boat.floater.z) else nil
 end
 
 -- Removes everything a call spawned. Victims still aboard are taken off the boat too
@@ -1795,16 +1477,6 @@ function RescueService.Cleanup(call: any)
 	end
 	for carrier, list in aboard do
 		unloadVictims(carrier, list)
-	end
-	local boat = call.boat
-	if boat then
-		releaseTow(boat)
-		local delay = if boat.state == "Moored" then 8 else 0
-		boat.state = "Gone"
-		task.delay(delay, function()
-			unregister(boat.floater)
-			boat.model:Destroy()
-		end)
 	end
 	for _, prop in call.props or {} do
 		unregister(prop.floater)
@@ -1980,9 +1652,6 @@ function RescueService.Start()
 	local accum, poseAccum = 0, 0
 	RunService.Heartbeat:Connect(function(dt)
 		local now = Workspace:GetServerTimeNow()
-		for call in liveCalls do
-			stepTow(call, dt)
-		end
 		stepDrift(dt)
 		stepFloaters(now)
 		poseAccum += dt

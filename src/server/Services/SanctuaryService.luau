@@ -3,8 +3,9 @@
 --
 -- WildlifeRescue operations reuse the Person in the Water scene (a swimmer casualty), so this
 -- service dresses the victim as the species the call rolled: the human rig is hidden and a chunky
--- Part animal (WildlifeRig) rides the same floater, so the drag/throw/come-and-free mechanics work
--- unchanged. The animal (with its net / oil / line) follows the victim's root every frame.
+-- Part animal (WildlifeRig) rides the same floater, so it climbs aboard like any survivor (auto_board,
+-- docs/16 K16). The animal follows the victim's root every frame; its net / oil / line drops once it
+-- is aboard, and it rides home on the craft and climbs off at the drop-off.
 --
 -- When the operation finishes with a good grade, each rescuer gets the animal in their own
 -- sanctuary (PetService.AddRescue), where it recovers for 10 real minutes and can then be adopted.
@@ -171,7 +172,7 @@ local function dressScene(opId: string, t: Tracked): boolean
 	return true
 end
 
--- The animal follows the casualty's root (water, dragged, or lifted aboard).
+-- The animal follows the casualty's root (in the water or aboard); aboard, the net drops.
 local function stepLive()
 	for opId, l in live do
 		if not l.animal.Parent or not l.root.Parent then
@@ -184,6 +185,10 @@ local function stepLive()
 			live[opId] = nil
 		else
 			WildlifeRig.setCFrame(l.animal, l.root.CFrame * CFrame.new(0, Wildlife.RescueLift, 0))
+			local net = l.animal:FindFirstChild("Entanglement", true)
+			if net and (l.root.Parent :: Instance):GetAttribute("OnVehicle") ~= nil then
+				net:Destroy()
+			end
 		end
 	end
 end

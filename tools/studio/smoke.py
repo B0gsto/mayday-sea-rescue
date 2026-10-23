@@ -17,7 +17,7 @@ usage: python3 tools/studio/smoke.py <command> [args]
   close                close TestBench-<tag> without saving, give focus back to the previous app
   run                  open, play, console check, one shot, stop, close (verdict on the first line)
   ops                  open, play, then play operations end to end with the stub mechanics (PersonInWater,
-                       DisabledVessel, CapsizedFerry, CliffCasualty, RipCurrent, SinkingVessel, VesselFire,
+                       CapsizedFerry, CliffCasualty, RipCurrent, SinkingVessel, VesselFire,
                        WildlifeRescue, the cold open): the client's
                        OpsAutoStub attribute auto-completes every stub and auto-accepts offers; checks each
                        operation reaches its debrief
@@ -256,19 +256,12 @@ def cmd_ops(s):
     fails = []
     _, text = lua(s, "Server", OPS_SETUP)
     print("setup:", text.strip()[:200])
-    for kind in ("PersonInWater", "DisabledVessel", "CapsizedFerry", "CliffCasualty", "RipCurrent", "SinkingVessel", "VesselFire", "WildlifeRescue", "ExerciseCoxswain", "ColdOpen"):
-        exercise = kind.startswith("Exercise")
+    for kind in ("PersonInWater", "CapsizedFerry", "CliffCasualty", "RipCurrent", "SinkingVessel", "VesselFire", "WildlifeRescue", "ColdOpen"):
         _, before = lua(s, "Server", OPS_STATUS)
         m = re.search(r"completed=(\w+)", before)
         done_before = m.group(1) if m else "nil"
         if kind == "ColdOpen":
             code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("coldopen"))'
-        elif exercise:
-            # the board's gate: cold open done and the Coxswain prerequisites held
-            lua(s, "Server", 'local p = game:GetService("Players"):GetPlayers()[1] '
-                             'p:SetAttribute("ColdOpenDone", true) '
-                             'return tostring(game:GetService("ServerStorage").ProgressionDev:Invoke("certs"))')
-            code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("exercise", "%s"))' % kind
         else:
             code = 'return tostring(game:GetService("ServerStorage").OpsDev:Invoke("start", "%s"))' % kind
         _, started = lua(s, "Server", code)
@@ -281,8 +274,6 @@ def cmd_ops(s):
             _, status = lua(s, "Server", OPS_STATUS)
             m = re.search(r"completed=(\w+)", status)
             finished = m and m.group(1) != done_before
-            if exercise and "op=nil" in status and ("lastKind=" + kind) in status:
-                finished = True
             if finished and "op=nil" in status:
                 ok = True
                 break

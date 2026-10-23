@@ -286,15 +286,13 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		op = function(_, target, a)
 			local p = target :: Player
 			local kind = a[2] :: string
-			local id, why
+			local id
 			if kind == "ColdOpen" then
 				id = OperationService.StartColdOpen(p, nil, true)
-			elseif string.sub(kind, 1, 8) == "Exercise" then
-				id, why = OperationService.StartExercise(p, kind)
 			else
 				id = OperationService.DevStart(p, kind)
 			end
-			return id ~= nil, if id then kind else (why or "Busy")
+			return id ~= nil, if id then kind else "Busy"
 		end,
 		opEnd = function(_, target, a)
 			local ok = OperationService.DevEnd(target :: Player, a[2])

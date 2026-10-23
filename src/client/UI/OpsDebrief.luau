@@ -15,7 +15,6 @@ local Hud = require(
 ).Hud
 local HudTheme = require(script.Parent.HudTheme)
 local OpsFolder = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops")
-local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
 local Operations = require(OpsFolder:WaitForChild("Operations"))
 
 export type Debrief = {
@@ -57,8 +56,7 @@ function OpsDebrief.reasonFor(kind: string, s: { [string]: any }): string
 	if s.grade == "Gold" then
 		return "Textbook."
 	end
-	local ex = Exercises.get(kind)
-	local def = if ex then ex.def else Operations.get(kind)
+	local def = Operations.get(kind)
 	for _, st in (def and def.steps or {}) :: { any } do
 		if st.id == s.id and st.tip then
 			return st.tip

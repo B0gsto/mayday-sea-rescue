@@ -32,7 +32,6 @@ Grading.Payout = table.freeze({
 	BigCasualtyShare = 0.3, -- x zone base, to the player who hands the casualty over
 	BigBonusCash = 2.5, -- completion bonus x zone base, scaled by share saved
 	BigBonusRep = 1.5,
-	OscBonus = 0.2,
 })
 
 local NPC_CAP: Grade = Types.Rules.NpcGradeCap :: any
@@ -214,13 +213,12 @@ function Grading.bigCasualtyPay(): Reward
 end
 
 -- Big call: completion bonus for every player who completed a step, scaled by share saved.
-function Grading.bigCompletionBonus(saved: number, total: number, isOsc: boolean?): Reward
+function Grading.bigCompletionBonus(saved: number, total: number): Reward
 	local P = Grading.Payout
 	local share = if total > 0 then math.clamp(saved / total, 0, 1) else 0
-	local osc = if isOsc then 1 + P.OscBonus else 1
 	return {
-		cash = round(P.BaseCash * P.BigBonusCash * share * osc),
-		rep = round(P.BaseRep * P.BigBonusRep * share * osc),
+		cash = round(P.BaseCash * P.BigBonusCash * share),
+		rep = round(P.BaseRep * P.BigBonusRep * share),
 	}
 end
 
