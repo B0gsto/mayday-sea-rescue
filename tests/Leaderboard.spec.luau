@@ -24,14 +24,14 @@ return function(t)
 		t.expect(L.storeName(BadgeConfig.Boards[1], 7)).toBe("Lb1_Rescued_W7")
 	end)
 
-	t.test("credit counts rescues only, for helpers, storms on their own board", function()
+	t.test("credit counts rescues only, for helpers, the ferry on its own board", function()
 		t.expect(L.credit(3, false, true)).toEqual({ Rescued = 3, RescuedAllTime = 3 })
 		t.expect(L.credit(2, true, true))
-			.toEqual({ Rescued = 2, RescuedAllTime = 2, StormRescued = 2 })
+			.toEqual({ Rescued = 2, RescuedAllTime = 2, FerryRescued = 2 })
 		t.expect(next(L.credit(2, true, false))).toBeNil()
 		t.expect(next(L.credit(0, true, true))).toBeNil()
 		for _, b in BadgeConfig.Boards do
-			t.expect(b.key == "Rescued" or b.key == "StormRescued" or b.key == "RescuedAllTime")
+			t.expect(b.key == "Rescued" or b.key == "FerryRescued" or b.key == "RescuedAllTime")
 				.toBe(true)
 		end
 	end)
@@ -39,8 +39,8 @@ return function(t)
 	t.test("merge batches pending increments", function()
 		local p = {}
 		L.merge(p, { Rescued = 1, RescuedAllTime = 1 })
-		L.merge(p, { Rescued = 2, StormRescued = 2 })
-		t.expect(p).toEqual({ Rescued = 3, RescuedAllTime = 1, StormRescued = 2 })
+		L.merge(p, { Rescued = 2, FerryRescued = 2 })
+		t.expect(p).toEqual({ Rescued = 3, RescuedAllTime = 1, FerryRescued = 2 })
 	end)
 
 	t.test("rows pad to the board size and format numbers", function()

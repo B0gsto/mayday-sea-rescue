@@ -15,6 +15,9 @@ OfferPacing.AfterDecline = 15 -- s after an offer expires unanswered -- tune
 OfferPacing.Rush = 0.5 -- multiplier while a Great Storm or live event runs -- tune
 OfferPacing.IdleAfter = 120 -- s without an accepted call before the easy nudge -- tune
 OfferPacing.NudgeRadius = 40 -- studs (flat) from the station for the nudge -- tune
+OfferPacing.BigCallEvery = 13 * 60 -- s from the end of one big call to the next, calm or not -- tune
+OfferPacing.BigCallWarmup = 90 -- s someone must have been ready before the first one -- tune
+OfferPacing.BigCallAfterCalls = 5 -- saved calls (cold open + the tutorial chain) before a player is paged
 
 -- Seconds from an operation's close to the next offer. The debrief sits on the first 10 s of
 -- this; OpsHud closes it when the offer arrives (never holds the pager more than 10 s).
@@ -39,6 +42,22 @@ function OfferPacing.nudgesIdle(
 	return secondsSinceAccepted >= OfferPacing.IdleAfter
 		and onFoot
 		and stationDistance <= OfferPacing.NudgeRadius
+end
+
+-- The Capsized Ferry big call runs on its own server clock (the weather is always sunny): every
+-- BigCallEvery after the last one ended. Players are paged only once their tutorial chain is done
+-- (`opsCompletedTotal`, the saved count incl. the cold open), so it never lands on a first call.
+function OfferPacing.bigCallReady(opsCompletedTotal: number?): boolean
+	return (opsCompletedTotal or 0) >= OfferPacing.BigCallAfterCalls
+end
+
+-- When the next big call is due: `lastEnd` = the last one's end (or the server start), `readySince`
+-- = since when at least one player has been bigCallReady (nil: nobody is, no big call).
+function OfferPacing.nextBigCallAt(lastEnd: number, readySince: number?): number?
+	if not readySince then
+		return nil
+	end
+	return math.max(lastEnd + OfferPacing.BigCallEvery, readySince + OfferPacing.BigCallWarmup)
 end
 
 return OfferPacing

@@ -19,7 +19,7 @@ the `BadgeConfig.Badges` key; "How to earn" is for this doc only, not the store 
 | FirstPet | First Pet | Adopt your first pet at the sanctuary. | Adopt a recovered animal at the sanctuary pens. | A paw print inside a heart |
 | Streak7 | Seven-Day Streak | Open the daily crate seven days in a row. | Open the daily crate at your bay on 7 consecutive UTC days. | Seven lit lanterns in a row |
 | Streak30 | Thirty-Day Streak | Open the daily crate thirty days in a row. | Open the daily crate at your bay on 30 consecutive UTC days. | A calendar page with thirty lit lanterns |
-| EveryCall | Every Call | Complete every call type once: person in the water, cliff, rip current, sinking boat, boat on fire and wildlife. | Finish each of the 6 call types at least once (drifting dinghies count as person in the water). | Six small icons in a ring |
+| EveryCall | Every Call | Complete every call type once: person in the water, capsized ferry, cliff, rip current, sinking boat, boat on fire and wildlife. | Finish each of the 7 call types at least once (drifting dinghies count as person in the water; the ferry is the server-wide big call every ~13 min). | Seven small icons in a ring |
 | LifeboatBought | Lifeboat | Buy the All-Weather Lifeboat. | Buy the Lifeboat in the phone's Vehicles app (12,000 Cash, rank 4). | A lifeboat bow on over a crest |
 | RankCoxswain | Coxswain | Reach the rank of Coxswain. | Reach rank 4 (3,000 Rep). | A coxswain's cap over a lifeboat bow |
 | Rescue100 | Hundred Rescues | Finish 100 rescues. | Finish 100 calls with a passing grade. | A life ring with 100 on it |
@@ -27,3 +27,6 @@ the `BadgeConfig.Badges` key; "How to earn" is for this doc only, not the store 
 | RankAdmiral | Admiral | Reach the rank of Admiral. | Reach rank 8 (150,000 Rep). | An admiral's shoulder board with four stars |
 | FriendCrew | Crew Up | Join a crew with a friend. | Join a Roblox friend's crew, or have one join yours (boat prompt or the phone's Crew app). | Two clasped hands over a boat deck |
 | PhotoFirst | First Shot | Take your first photo in photo mode. | Press the shutter in the phone's Camera app. | A camera shutter with a wave inside |
+| FerryHero | Ferry Hero | Bring a survivor home from the capsized ferry. | Finish the Capsized Ferry big call (every ~13 min, once a player is past the tutorial calls) with at least one survivor saved. | A ferry with a life ring |
+| LegendaryRescue | Legendary Rescue | Finish a Legendary rarity call. | Finish any Legendary rarity call (the Golden Gull, a rare roll on person-in-the-water calls; a gold flare marks it). | A gold star over a rescue boat |
+| GoldenGull | Golden Gull | Bring in the Golden Gull. | Finish a call with the Golden Gull variant. | A golden gull with spread wings |

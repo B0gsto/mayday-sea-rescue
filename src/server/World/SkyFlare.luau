@@ -1,13 +1,14 @@
 --!strict
 -- SkyFlare: the Legendary / Epic call moment (docs/15 H2), kept when the Rescue Album was cut
--- (docs/16 C13). OperationService calls SkyFlare.announce(op) when a call with a variant appears.
+-- (docs/16 C13). OperationService calls SkyFlare.announce(op) when a call with a variant appears,
+-- and SkyFlare.distress(position) when the Capsized Ferry big call starts.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
-local RescueVariants = require(
-	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("RescueVariants")
-)
+local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
+local AudioConfig = require(Config:WaitForChild("AudioConfig"))
+local RescueVariants = require(Config:WaitForChild("RescueVariants"))
 
 local SkyFlare = {}
 
@@ -16,7 +17,10 @@ local SkyFlare = {}
 local FLARE_SECONDS = 60
 local EPIC_SECONDS = 22
 
-local function skyFlare(position: Vector3, legendary: boolean)
+local GOLD = Color3.fromRGB(255, 214, 90)
+local DISTRESS_RED = Color3.fromRGB(255, 70, 50)
+
+local function skyFlare(position: Vector3, legendary: boolean, colour: Color3?): Part
 	local at = position + Vector3.new(0, 110, 0)
 	local model = Instance.new("Model")
 	model.Name = if legendary then "LegendaryFlare" else "EpicFlare"
@@ -31,13 +35,13 @@ local function skyFlare(position: Vector3, legendary: boolean)
 	ball.CanTouch = false
 	ball.CastShadow = false
 	ball.Material = Enum.Material.Neon
-	ball.Color = Color3.fromRGB(255, 214, 90)
+	ball.Color = colour or GOLD
 	local size = if legendary then 14 else 8
 	ball.Size = Vector3.new(size, size, size)
 	ball.CFrame = CFrame.new(at)
 	ball.Parent = model
 	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(255, 202, 80)
+	light.Color = colour or Color3.fromRGB(255, 202, 80)
 	light.Brightness = if legendary then 7 else 3.5
 	light.Range = if legendary then 500 else 240
 	light.Shadows = false
@@ -86,6 +90,7 @@ local function skyFlare(position: Vector3, legendary: boolean)
 			model:Destroy()
 		end)
 	end)
+	return ball
 end
 
 function SkyFlare.announce(op: any)
@@ -98,6 +103,19 @@ function SkyFlare.announce(op: any)
 		return
 	end
 	skyFlare(op.position, legendary)
+end
+
+-- The Capsized Ferry's mayday: a red distress flare over the listing ferry and two blasts of
+-- its horn, heard across the bay.
+function SkyFlare.distress(position: Vector3)
+	local ball = skyFlare(position, false, DISTRESS_RED)
+	local horn = Instance.new("Sound")
+	horn.Name = "FerryHorn"
+	horn.SoundId = AudioConfig.id("Horn_Ferry")
+	horn.Volume = 1
+	horn.RollOffMaxDistance = 3000
+	horn.Parent = ball
+	horn:Play()
 end
 
 return SkyFlare

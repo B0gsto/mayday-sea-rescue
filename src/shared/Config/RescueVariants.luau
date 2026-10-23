@@ -3,9 +3,8 @@
 -- Pure data plus the roll, safe to load in Lune. The code-built dressing is
 -- src/server/Ops/RescueDressing.luau.
 --
--- Fair FOMO (docs/15 section 1): every variant is earnable by playing, nothing is sold. Common and
--- Uncommon roll on every call; Rare rolls at a tiny base rate, and every rarity rolls at its full
--- weight only while a Great Storm is on (Weather.isGreatStorm()).
+-- Fair FOMO (docs/15 section 1): every variant is earnable by playing, nothing is sold. Every
+-- rarity rolls at its own weight on every call, in any weather (the game is always sunny).
 -- A Legendary call puts a flare over the scene (src/server/World/SkyFlare.luau).
 
 export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
@@ -34,10 +33,6 @@ RescueVariants.Rarity = {
 	Epic = { colour = Color3.fromRGB(139, 91, 214), rank = 4 },
 	Legendary = { colour = Color3.fromRGB(227, 167, 47), rank = 5 },
 } :: { [string]: RarityInfo }
-
--- Outside a Great Storm a Rare keeps this share of its weight: a tiny base rate, never Epic or
--- Legendary (docs/15 section 1: rare calls are the storm's draw, but a collector can still meet one).
-RescueVariants.RareBaseRate = 0.06
 
 RescueVariants.Kinds = {
 	PersonInWater = {
@@ -397,27 +392,9 @@ function RescueVariants.rarityColour(rarity: string): Color3
 	return A11yPalette.colour("Rarity", rarity)
 end
 
--- The weight a variant carries for this roll: Epics and Legendaries only come with the Great
--- Storm; Rares are scaled down to the tiny base rate outside it.
-local function weightFor(variant: Variant, greatStorm: boolean): number
-	if greatStorm then
-		return variant.weight
-	elseif variant.rarity == "Rare" then
-		return variant.weight * RescueVariants.RareBaseRate
-	elseif variant.rarity == "Epic" or variant.rarity == "Legendary" then
-		return 0
-	end
-	return variant.weight
-end
-
 -- Roll one variant for a call kind. `roll` is [0, 1) from the server's Random. `forced` (Studio's
--- Workspace RescueVariantForce) wins when it belongs to the kind, storm or not.
-function RescueVariants.choose(
-	kind: string,
-	roll: number,
-	greatStorm: boolean,
-	forced: string?
-): Variant?
+-- Workspace RescueVariantForce) wins when it belongs to the kind.
+function RescueVariants.choose(kind: string, roll: number, forced: string?): Variant?
 	local list = RescueVariants.Kinds[kind]
 	if not list then
 		return nil
@@ -428,14 +405,14 @@ function RescueVariants.choose(
 	end
 	local total = 0
 	for _, variant in list do
-		total += weightFor(variant, greatStorm)
+		total += variant.weight
 	end
 	if total <= 0 then
 		return list[1]
 	end
 	local target = math.clamp(roll, 0, 0.999999) * total
 	for _, variant in list do
-		target -= weightFor(variant, greatStorm)
+		target -= variant.weight
 		if target < 0 then
 			return variant
 		end

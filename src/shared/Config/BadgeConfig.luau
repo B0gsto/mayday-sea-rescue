@@ -25,10 +25,11 @@ export type Badge = {
 
 local BadgeConfig = {}
 
--- Every operation kind a player can be offered, once each, for the EveryCall badge. CapsizedFerry is left
--- out: it only starts with a storm, and the game is always sunny (StormService ALWAYS_SUNNY).
+-- Every operation kind a player can be offered, once each, for the EveryCall badge (the ferry is the
+-- scheduled big call, OfferPacing.nextBigCallAt).
 BadgeConfig.OpKinds = table.freeze({
 	"PersonInWater",
+	"CapsizedFerry",
 	"CliffCasualty",
 	"RipCurrent",
 	"SinkingVessel",
@@ -55,6 +56,9 @@ BadgeConfig.Order = table.freeze({
 	"RankAdmiral",
 	"FriendCrew",
 	"PhotoFirst",
+	"FerryHero",
+	"LegendaryRescue",
+	"GoldenGull",
 })
 
 BadgeConfig.Badges = table.freeze({
@@ -142,9 +146,9 @@ BadgeConfig.Badges = table.freeze({
 	EveryCall = {
 		id = 0,
 		name = "Every Call",
-		description = "Complete every call type once: person in the water, cliff, rip current, sinking boat, boat on fire and wildlife.",
-		icon = "Six small icons in a ring",
-		count = 6,
+		description = "Complete every call type once: person in the water, capsized ferry, cliff, rip current, sinking boat, boat on fire and wildlife.",
+		icon = "Seven small icons in a ring",
+		count = 7,
 	},
 	LifeboatBought = {
 		id = 0,
@@ -175,6 +179,27 @@ BadgeConfig.Badges = table.freeze({
 		count = 1,
 		awardedBy = "TelemetryService (the client's PhotoTaken step)",
 	},
+	FerryHero = {
+		id = 0,
+		name = "Ferry Hero",
+		description = "Bring a survivor home from the capsized ferry.",
+		icon = "A ferry with a life ring",
+		count = 1,
+	},
+	LegendaryRescue = {
+		id = 0,
+		name = "Legendary Rescue",
+		description = "Finish a Legendary rarity call.",
+		icon = "A gold star over a rescue boat",
+		count = 1,
+	},
+	GoldenGull = {
+		id = 0,
+		name = "Golden Gull",
+		description = "Bring in the Golden Gull.",
+		icon = "A golden gull with spread wings",
+		count = 1,
+	},
 } :: { [string]: Badge })
 
 -- Station boards (docs/03 section 9.1): rescues only, never Cash, Rep or Robux. Weekly boards reset
@@ -187,7 +212,8 @@ export type Board = {
 
 BadgeConfig.Boards = table.freeze({
 	{ key = "Rescued", title = "Rescued this week", weekly = true },
-	{ key = "StormRescued", title = "Storm rescues this week", weekly = true },
+	-- was StormRescued (storms never come): a new store key, so no old data is read or written
+	{ key = "FerryRescued", title = "Ferry rescues this week", weekly = true },
 	{ key = "RescuedAllTime", title = "Rescued, all time", weekly = false },
 } :: { Board })
 

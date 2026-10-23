@@ -98,7 +98,9 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 - Shared data: `Ops/Types`, `Operations` (registry, `plan`), `Condition` (0-100 meter; survivors tire),
   `Grading` (step and op grades, `payout`), `Board` (pure auto_board rule: close, slow, level, room).
 - `OperationService` (server): offers and pacing (`Calls/CallLogic`, `Calls/OfferPacing`), tracks, the
-  condition tick and takeover, pay at the debrief. API: `GetActiveOperations()`, `GetOperationOf(player)`,
+  condition tick and takeover, pay at the debrief. The Capsized Ferry big call runs on its own clock
+  (`OfferPacing.nextBigCallAt`, calm weather; paged only to players past the tutorial chain, with a
+  `SkyFlare.distress` flare and horn). API: `GetActiveOperations()`, `GetOperationOf(player)`,
   `GetVictimPositions(player)`, `OperationCompleted (info, helpers)`, `ForceBigCall()`, `DevStart`,
   `StartColdOpen(player, cframe?)`, `ColdOpenHoldsWeather()`. Studio: `ServerStorage.OpsDev`
   (`timescale`, `start`, `coldopen`, `status`); `python3 tools/studio/smoke.py ops`.
