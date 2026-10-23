@@ -63,7 +63,7 @@ BadgeConfig.Order = table.freeze({
 
 BadgeConfig.Badges = table.freeze({
 	FirstRescue = {
-		id = 0,
+		id = 4274933981811790,
 		name = "First Rescue",
 		description = "Finish your first rescue operation.",
 		count = 1,
@@ -76,19 +76,19 @@ BadgeConfig.Badges = table.freeze({
 		count = 10,
 	},
 	RankLifeguard = {
-		id = 0,
+		id = 4175264142830449,
 		name = "Lifeguard",
 		description = "Reach the rank of Lifeguard.",
 		rank = "Lifeguard",
 	},
 	RankRescueSwimmer = {
-		id = 0,
+		id = 2536652141146668,
 		name = "Rescue Swimmer (rank)",
 		description = "Reach the rank of Rescue Swimmer.",
 		rank = "RescueSwimmer",
 	},
 	RankCoxswain = {
-		id = 0,
+		id = 679044961405564,
 		name = "Coxswain",
 		description = "Reach the rank of Coxswain.",
 		icon = "A coxswain's cap over a lifeboat bow",
@@ -109,7 +109,7 @@ BadgeConfig.Badges = table.freeze({
 		count = 100,
 	},
 	FirstWildlife = {
-		id = 0,
+		id = 214011811450046,
 		name = "First Wildlife Rescue",
 		description = "Free your first animal in a wildlife rescue.",
 		icon = "A life ring with a paw print in the middle",
