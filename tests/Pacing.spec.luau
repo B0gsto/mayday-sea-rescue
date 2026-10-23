@@ -1,25 +1,18 @@
--- Pacing: the docs/03 section 10 player (25-minute sessions, two a day, Silver grades, dailies,
+-- Pacing: the docs/03 section 10 player (25-minute sessions, two a day, Silver grades,
 -- occasional storm, solo or with one friend) against the real config and pure rules. Prints the
 -- unlock timeline and the Cash at each session end, then asserts the section 10 targets.
 -- Every number comes from a config or a pure rule module; only the play pattern below is assumed.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
 	local Progression = t.load("src/shared/ProgressionRules.luau")
-	local ChallengeConfig = t.load("src/shared/Config/ChallengeConfig.luau")
-	local ChallengeRules = t.load("src/shared/ChallengeRules.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
 	local StationConfig = t.load("src/shared/Config/StationConfig.luau")
 	local IdleIncome = t.load("src/shared/IdleIncome.luau")
-	local SeasonConfig = t.load("src/shared/Config/Season.luau")
-	local SeasonRules = t.load("src/shared/SeasonRules.luau")
-	local StockConfig = t.load("src/shared/Config/StockConfig.luau")
 	local MonetizationConfig = t.load("src/shared/Config/MonetizationConfig.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 	local Operations = t.load("src/shared/Ops/Operations.luau")
 	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
 	local Grading = t.load("src/shared/Ops/Grading.luau")
-	local Variants = t.load("src/shared/Config/RescueVariants.luau")
-	local Album = t.load("src/shared/RescueAlbum.luau")
 	local FriendBonus = t.load("src/shared/FriendBonus.luau")
 	local EventClock = t.load("src/shared/EventClock.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
@@ -33,10 +26,17 @@ return function(t)
 	-- docs/03 section 10.1: the three-operation cold open chain is about 13 minutes.
 	local TUTORIAL_MIN = { 1.5, 5.75, 5.75 }
 
-	-- Zone rows: the docs 03 payout bases (ChallengeConfig) paired with the docs 03 Cash rates
+	-- Zone rows: the docs 03 section 2 payout bases paired with the docs 03 Cash rates
 	-- (MonetizationConfig), in zone order. Ranks come from CashPackZones (the real zone gates).
 	local CASH_ZONES = MonetizationConfig.CashPackZones
-	local BASES = ChallengeConfig.ZoneBase
+	local BASES = {
+		{ cash = 550, rep = 135 },
+		{ cash = 900, rep = 200 },
+		{ cash = 1500, rep = 280 },
+		{ cash = 2400, rep = 390 },
+		{ cash = 3300, rep = 500 },
+	}
+	local START_UTC = 1792800000 -- 2026-10-24 00:00:00 UTC
 
 	local function zoneAt(rank: number): number
 		local index = 1
@@ -87,10 +87,7 @@ return function(t)
 			end
 		end
 
-		local season = SeasonRules.newState()
-		local tiersClaimed = 0
 		local streak = StreakRules.newState()
-		local albumState = Album.newState()
 		local pot = { lastAt = 0, cash = 0 }
 		local levels = IdleIncome.newLevels()
 		local gear = { EngineTune = 0 }
@@ -239,7 +236,7 @@ return function(t)
 			end
 		end
 
-		local sources = { op = 0, daily = 0, weekly = 0, season = 0, other = 0 }
+		local sources = { op = 0, other = 0 }
 		local function award(
 			cash: number,
 			rep: number,
@@ -266,20 +263,6 @@ return function(t)
 			sources[source or "other"] += data.rep - beforeRep
 			purchases()
 			checkRank()
-		end
-
-		local function addXp(amount: number, now: number)
-			if legacy then
-				return
-			end
-			season.xp = math.min(SeasonRules.MAX_XP, season.xp + math.floor(amount))
-			while SeasonRules.claimable(season, tiersClaimed + 1, now) do
-				tiersClaimed += 1
-				local reward = SeasonRules.claim(season, tiersClaimed, now)
-				if reward then
-					award(reward.cash, reward.rep, now, false, isGreat(now), "season")
-				end
-			end
 		end
 
 		local function canTow(): boolean
@@ -316,27 +299,6 @@ return function(t)
 				reward = { cash = base.cash * weight, rep = base.rep * weight }
 			end
 			award(reward.cash * scale, reward.rep * scale, completeAt, storm, great, "op")
-
-			-- Album sticker roll (AlbumService) and its Season XP.
-			if not legacy and totalOps >= #Grading.Payout.Tutorial and scale >= 1 then
-				local variant = Variants.choose(def.id, random(), great)
-				if variant then
-					local _, setKind = Album.record(albumState, variant.id)
-					if setKind then
-						award(Variants.SetCash[setKind] or 0, 0, completeAt, false, great)
-					end
-					addXp(SeasonRules.stickerXp(season, variant.id), completeAt)
-				end
-			end
-			addXp(
-				math.floor(scale * SeasonRules.xpForOperation({
-					grade = "Silver",
-					storm = storm,
-					isBig = def.isBig == true,
-					variant = nil,
-				})),
-				completeAt
-			)
 
 			totalOps += 1
 			opIndex += 1
@@ -407,32 +369,16 @@ return function(t)
 		end
 
 		local sessions = {}
-		local lastDay = 0
 		for d = 1, 80 do
 			for s = 1, 2 do
 				if playMin >= MAX_PLAY_MIN then
 					break
 				end
 				sessionNo += 1
-				if d ~= lastDay then
-					lastDay = d
-					-- One cosmetic trinket a week from the rotating Chandlery (a Cash sink).
-					if d % 7 == 1 and d > 1 then
-						local cheapest = math.huge
-						for _, item in StockConfig.Items do
-							if item.kind ~= "Gear" then
-								cheapest = math.min(cheapest, item.price)
-							end
-						end
-						if data.cash > cheapest then
-							data.cash -= cheapest
-						end
-					end
-				end
 				local startMinute = (
 					if s == 1 then 9 * HOUR + (d * 13) % 50 else 19 * HOUR + (d * 29) % 50
 				)
-				local now = SeasonConfig.startUtc + (d - 1) * 86400 + startMinute * 60
+				local now = START_UTC + (d - 1) * 86400 + startMinute * 60
 
 				if not legacy then
 					-- Station crew pot (docs/15 H6): collected at the start of every session.
@@ -470,36 +416,8 @@ return function(t)
 						if crate then
 							streak = crate.state
 							award(crate.cash, 0, now, false, isGreat(now))
-							addXp(SeasonConfig.xp.streak, now)
 							mark("Streak crate")
 						end
-					end
-					local r = rank()
-					for _ = 1, ChallengeConfig.DailyCount do
-						local cash, rep = ChallengeRules.rewardFor(ChallengeConfig.Pool[1], r)
-						award(cash, rep, now, false, isGreat(now), "daily")
-					end
-					award(ChallengeConfig.DailyBonusCash, 0, now, false, isGreat(now))
-					if not legacy then
-						addXp(ChallengeConfig.DailyCount * SeasonConfig.xp.challenge, now)
-					end
-					mark("Daily set")
-					if d % 7 == 0 then
-						local weekly
-						for _, def in ChallengeConfig.Pool do
-							if def.scope == "weekly" then
-								weekly = def
-								break
-							end
-						end
-						for _ = 1, ChallengeConfig.WeeklyCount do
-							local cash, rep = ChallengeRules.rewardFor(weekly, r)
-							award(cash, rep, now, false, isGreat(now), "weekly")
-						end
-						if not legacy then
-							addXp(ChallengeConfig.WeeklyCount * SeasonConfig.xp.challenge, now)
-						end
-						mark("Weekly set")
 					end
 				end
 				table.insert(sessions, {
@@ -526,7 +444,6 @@ return function(t)
 			sessions = sessions,
 			cash = data.cash,
 			rep = data.rep,
-			tiers = tiersClaimed,
 			totalOps = totalOps,
 			playMin = playMin,
 		}
@@ -570,31 +487,19 @@ return function(t)
 		end
 		print(
 			string.format(
-				"  end: %.1f h, cash %d, rep %d, season tiers %d, ops %d",
+				"  end: %.1f h, cash %d, rep %d, ops %d",
 				result.playMin / 60,
 				result.cash,
 				result.rep,
-				result.tiers,
 				result.totalOps
 			)
 		)
-		if not result.legacy then
-			print(
-				string.format(
-					"  rep by source: ops %d, dailies %d, weeklies %d, season %d",
-					result.sources.op,
-					result.sources.daily,
-					result.sources.weekly,
-					result.sources.season
-				)
-			)
-		end
 	end
 
 	local before = run(0, true)
 	local solo = run(0)
 	local friend = run(1)
-	report(before, "before (no station, streak, season, album, Great Storm)")
+	report(before, "before (no station, streak, Great Storm)")
 	report(solo, "after, solo")
 	report(friend, "after, one friend")
 
@@ -624,13 +529,15 @@ return function(t)
 		between(friend, "RIB bought", 24, 38)
 	end)
 
-	t.test("Coxswain and the lifeboat at about 1:15-1:35", function()
-		between(solo, "Rank 4 Coxswain", 60, 90)
-		between(solo, "Lifeboat bought", 60, 100)
+	-- docs/16 cut the dailies, weeklies and the season track: Rep now comes from rescues (and the
+	-- crate's Cash), so the mid and late ranks sit later than docs 03 section 10 until WP2 retunes.
+	t.test("Coxswain and the lifeboat at about 1:15-2:00", function()
+		between(solo, "Rank 4 Coxswain", 60, 110)
+		between(solo, "Lifeboat bought", 60, 130)
 	end)
 
 	t.test("helicopter in week 1", function()
-		between(solo, "Rank 5 Rescue Pilot", 140, 220)
+		between(solo, "Rank 5 Rescue Pilot", 140, 280)
 		between(solo, "Helicopter bought", 170, 8 * 60)
 	end)
 
@@ -660,18 +567,19 @@ return function(t)
 
 	t.test("week 1 fits the planned upgrades", function()
 		-- docs 03 section 10: RIB fully upgraded, lifeboat with two, jet ski fully upgraded
-		t.expect(minutes(solo, "RIB Tow post") <= 6 * 60).toBe(true)
-		t.expect(minutes(solo, "Lifeboat Storm hull") <= 6 * 60).toBe(true)
-		t.expect(minutes(solo, "Jet ski Rescue seat") <= 6 * 60).toBe(true)
+		t.expect(minutes(solo, "RIB Tow post") <= 9 * 60).toBe(true)
+		t.expect(minutes(solo, "Lifeboat Storm hull") <= 9 * 60).toBe(true)
+		t.expect(minutes(solo, "Jet ski Rescue seat") <= 9 * 60).toBe(true)
 	end)
 
 	t.test("session 1 still ends near the docs 03 3,200 Cash", function()
 		t.expect(solo.sessions[1].cash >= 2500 and solo.sessions[1].cash <= 4000).toBe(true)
 	end)
 
-	t.test("Admiral at about 32 hours (not before 25)", function()
-		local at = minutes(solo, "Rank 8 Admiral")
-		t.expect(at >= 25 * 60 and at <= 38 * 60).toBe(true)
+	t.test("Commodore at about 23 hours; Admiral not before 25", function()
+		between(solo, "Rank 7 Commodore", 15 * 60, 30 * 60)
+		local admiral = find(solo, "Rank 8 Admiral")
+		t.expect(admiral == nil or admiral.at >= 25 * 60).toBe(true)
 	end)
 
 	t.test("one friend only speeds Cash, never Rep", function()

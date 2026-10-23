@@ -7,8 +7,6 @@
 --   Ghost Light    EventClock (every 3 h at :30)
 --   Ghost Ship     SeasonalRules / SeasonalEvents (days left and the witching hour countdown,
 --                  shown only from a week before the window opens)
---   Season 1       SeasonRules (days left)
---   Chandlery      StockRotation (seconds to the next 10-minute window)
 --   Daily crate    StreakRules (seconds to the next UTC day, or ready now)
 --   Strongbox      IdleIncome (fill and seconds to full from the station view)
 --
@@ -18,10 +16,8 @@
 local EventClock = require(script.Parent.EventClock)
 local IdleIncome = require(script.Parent.IdleIncome)
 local LiveOps = require(script.Parent.LiveOps)
-local SeasonRules = require(script.Parent.SeasonRules)
 local SeasonalEvents = require(script.Parent.Config.SeasonalEvents)
 local SeasonalRules = require(script.Parent.SeasonalRules)
-local StockRotation = require(script.Parent.StockRotation)
 local StreakRules = require(script.Parent.StreakRules)
 
 export type Icon =
@@ -75,8 +71,6 @@ local EventCalendar = {}
 EventCalendar.HalloweenLead = 7 * 86400 -- the board shows the Ghost Ship from a week out
 EventCalendar.StormLabel = "Great storm"
 EventCalendar.GhostLightLabel = "Ghost light"
-EventCalendar.SeasonLabel = "Season 1"
-EventCalendar.RestockLabel = "Chandlery"
 EventCalendar.CrateLabel = "Daily crate"
 EventCalendar.StrongboxLabel = "Strongbox"
 
@@ -229,25 +223,6 @@ function EventCalendar.rows(now: number, opts: Options?): { Row }
 	if halloween then
 		add(list, halloween)
 	end
-
-	local seasonDays = SeasonRules.daysLeft(now)
-	if seasonDays > 0 then
-		add(list, {
-			id = "Season",
-			icon = "book",
-			label = EventCalendar.SeasonLabel,
-			kind = "days",
-			days = seasonDays,
-		})
-	end
-
-	add(list, {
-		id = "Restock",
-		icon = "bell",
-		label = EventCalendar.RestockLabel,
-		kind = "clock",
-		seconds = StockRotation.secondsToRestock(now),
-	})
 
 	local ready = o.streak ~= nil and o.streak.available == true
 	add(list, {

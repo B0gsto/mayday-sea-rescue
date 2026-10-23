@@ -1,11 +1,9 @@
 -- EventCalendar: the one "what's coming" list (docs/15 section 2): the Great Storm and Ghost Light
--- clocks, the Ghost Ship window, Season 1, the Chandlery restock, the daily crate and the strongbox,
+-- clocks, the Ghost Ship window, the daily crate and the strongbox,
 -- soonest first, icons + numbers only (no prices).
 return function(t)
 	local Calendar = t.load("src/shared/EventCalendar.luau")
 	local EventClock = t.load("src/shared/EventClock.luau")
-	local SeasonRules = t.load("src/shared/SeasonRules.luau")
-	local StockRotation = t.load("src/shared/StockRotation.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
 
 	local BASE = 1789948800 -- 2026-09-21 00:00:00 UTC
@@ -87,22 +85,6 @@ return function(t)
 		t.expect(witching.seconds).toBe(0)
 	end)
 
-	t.test("Season 1 shows its days left from SeasonRules", function()
-		local now = at(9, 17, 50)
-		local season = row(Calendar.rows(now), "Season")
-		t.expect(season.kind).toBe("days")
-		t.expect(season.days).toBe(SeasonRules.daysLeft(now))
-	end)
-
-	t.test("the Chandlery restock uses the shared 10-minute clock", function()
-		local now = at(9, 17, 50)
-		local bell = row(Calendar.rows(now), "Restock")
-		t.expect(bell.seconds).toBe(StockRotation.secondsToRestock(now))
-		t.expect((Calendar.text(bell))).toBe("2:10")
-		local fresh = row(Calendar.rows(BASE), "Restock")
-		t.expect((Calendar.text(fresh))).toBe("10:00")
-	end)
-
 	t.test("the daily crate counts down, then reads ready for that player", function()
 		local now = at(9, 17, 50)
 		local waiting = row(Calendar.rows(now, { streak = { available = false } }), "Crate")
@@ -134,7 +116,7 @@ return function(t)
 		for i = 2, #list do
 			t.expect(list[i] >= list[i - 1]).toBe(true)
 		end
-		t.expect(rows[1].id).toBe("Restock") -- 2:10 is the closest
+		t.expect(rows[1].id).toBe("GhostLight") -- 12:10 is the closest
 		for _, r in rows do
 			t.expect(r.price).toBeNil()
 			t.expect(r.robux).toBeNil()

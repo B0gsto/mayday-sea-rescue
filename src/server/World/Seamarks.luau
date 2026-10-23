@@ -11,8 +11,7 @@
 --     Transparency, the ship's bell (M_Sea_Bell) hung by its crown ATT_Bell at the wreck's ATT_Bell;
 --   * the Admiralty anchor (M_Sea_AdmiraltyAnchor): pivot 2.46 studs under the terrain (placement.json).
 --   The greybox Map.Seabed.Morwenna / AdmiraltyAnchor is destroyed once its asset is in (kept if the load fails);
---   the discovery attributes move to the new model. Discovery itself reads WorldConfig.POIs (Shared.Explore.Discovery),
---   whose position, yaw and footprint the models are placed on.
+--   the discovery attributes move to the new model. The models sit on the WorldConfig.POIs position, yaw and footprint.
 -- Workspace.Dressing.Seamarks attributes when done: SeamarksPlaced (marks), SeamarksWreck, SeamarksAnchor.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

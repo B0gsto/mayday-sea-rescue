@@ -101,15 +101,6 @@ local MonetizationConfig = {
 			cashMultiplier = 1.5,
 			boostMinutes = 20,
 		},
-		ChallengeReroll = {
-			id = 0,
-			name = "Challenge Reroll",
-			description = "Swap one daily challenge for another. Up to three a day.",
-			price = 19,
-			order = 7,
-			ready = false,
-			dailyLimit = 3,
-		},
 		CallTheStorm = {
 			id = 3719524960,
 			name = "Call the Storm",
@@ -127,15 +118,6 @@ local MonetizationConfig = {
 			order = 9,
 			ready = false, -- weather is always sunny (StormService.ALWAYS_SUNNY)
 			stormTier = "GreatStorm",
-		},
-		-- 3.1 Season Logbook: a developer product bought once per season (post-launch, needs the season track)
-		SeasonLogbook = {
-			id = 0,
-			name = "Season Logbook",
-			description = "The paid track of this season's logbook: a cosmetic on every stamp. Cosmetics only.",
-			price = 399,
-			order = 10,
-			ready = false,
 		},
 		-- Day passes (proposed prices, not in docs/04 yet): a game pass's effect for 24 hours of real
 		-- time. MonetizationService.OwnsPass accepts a running one. No Day VIP until VipCrewCard is ready.

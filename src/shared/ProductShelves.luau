@@ -71,7 +71,6 @@ end
 -- docs/04 section 1.1, in walking order through the shop
 ProductShelves.Order = {
 	"ServiceCards",
-	"Logbook",
 	"Till",
 	"UniformRack",
 	"DogCorner",
@@ -99,15 +98,6 @@ ProductShelves.Shelves = {
 			d("DayQuickLaunch"),
 		},
 	},
-	Logbook = {
-		id = "Logbook",
-		title = "SEASON LOGBOOK",
-		action = "Open the logbook",
-		object = "Season logbook",
-		attachment = "ATT_Logbook",
-		priced = true,
-		items = { d("SeasonLogbook") },
-	},
 	Till = {
 		id = "Till",
 		title = "THE TILL",
@@ -122,7 +112,6 @@ ProductShelves.Shelves = {
 			d("HarborFund"),
 			d("CashBoost"),
 			d("CrewBoost"),
-			d("ChallengeReroll"),
 		},
 	},
 	UniformRack = {

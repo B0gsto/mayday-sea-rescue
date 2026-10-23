@@ -20,7 +20,6 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local DevConfig = require(Config:WaitForChild("DevConfig"))
 local EventClock = require(Shared:WaitForChild("EventClock"))
-local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
@@ -360,27 +359,6 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		end,
 		event = function(_, _, a)
 			return event(a[1], a[2])
-		end,
-		light = function(_, target, a)
-			local p = target :: Player
-			local snap = ProgressionService.GetData(p)
-			if type(snap) ~= "table" then
-				return false, "Not loaded"
-			end
-			local flags: { [string]: boolean? } =
-				table.clone(Lighthouses.fromFlags(snap.flags)) :: any
-			for _, light in Lighthouses.List do
-				if a[2] == "All" or a[2] == light.id then
-					flags[light.id] = if a[3] then true else nil
-				end
-			end
-			local ok =
-				ProgressionService.SetFlag(p, Lighthouses.FLAG, if next(flags) then flags else nil)
-			ProgressionService.Refresh(p)
-			if ok and a[3] and a[2] ~= "All" then
-				p:SetAttribute("LighthouseRelit", a[2])
-			end
-			return ok, if a[3] then "Relit" else "Dark"
 		end,
 		award = function(_, target, a)
 			return edit(target :: Player, function(data)

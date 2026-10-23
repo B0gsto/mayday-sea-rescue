@@ -6,7 +6,6 @@ local Config = script.Parent
 local Exercises = require(Config.Parent.Ops.Definitions.Exercises)
 local GameConfig = require(Config.GameConfig)
 local LandVehicleConfig = require(Config.LandVehicleConfig)
-local Lighthouses = require(Config.Parent.Lighthouses)
 local LiveOps = require(Config.Parent.LiveOps)
 local MapConfig = require(Config.MapConfig)
 local MonetizationConfig = require(Config.MonetizationConfig)
@@ -46,9 +45,6 @@ for _, blip in MapConfig.Blips do
 end
 for _, zone in GameConfig.Zones do
 	table.insert(spots, { id = zone.id, label = zone.displayName, position = zone.center })
-end
-for _, light in Lighthouses.List do
-	table.insert(spots, { id = light.id, label = light.displayName, position = light.position })
 end
 for _, poi in WorldConfig.POIs do
 	table.insert(spots, { id = poi.id, label = poi.name, position = poi.position })
@@ -103,7 +99,6 @@ DevConfig.Events = table.freeze(
 DevConfig.Species = table.freeze(table.clone(Wildlife.SpeciesOrder))
 DevConfig.Certs = table.freeze(concat(ProgressionConfig.CertOrder, { "All" }))
 DevConfig.Passes = table.freeze(concat(keys(MonetizationConfig.GamePasses), { "All" }))
-DevConfig.Lights = table.freeze(concat(keys(Lighthouses.ById), { "All" }))
 DevConfig.RankCount = #ProgressionConfig.Ranks
 DevConfig.MaxAmount = 10_000_000
 
@@ -137,7 +132,6 @@ DevConfig.Actions = table.freeze({
 	storm = { enum({ "Storm", "GreatStorm", "Calm" }) },
 	clock = { num(7, 17) }, -- daylight only: the night look is buggy (2026-10-22)
 	event = { enum(DevConfig.Events), BOOL },
-	light = { PLAYER, enum(DevConfig.Lights), BOOL }, -- true: relit, false: dark again
 	award = { PLAYER, num(0, DevConfig.MaxAmount), num(0, DevConfig.MaxAmount) },
 	rank = { PLAYER, num(1, DevConfig.RankCount) },
 	cert = { PLAYER, enum(DevConfig.Certs) },

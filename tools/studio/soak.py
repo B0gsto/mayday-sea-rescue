@@ -335,13 +335,7 @@ def main():
                         if ok:
                             break
                     server(s, 'game:GetService("Workspace"):SetAttribute("RescueVariantForce", nil) return "ok"')
-                    album = ""
-                    for _ in range(8):
-                        album = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Album_Get:InvokeServer() return "golden="..tostring(v and v.owned and v.owned.GoldenGull)')
-                        if "golden=true" in album:
-                            break
-                        time.sleep(1)
-                    system("LegendaryVariant", ok and "golden=true" in album, "%s %s" % (album, last))
+                    system("LegendaryVariant", ok, last)
 
                     # ---- dev-hook systems ---------------------------------------------------
                     server(s, UNSEAT)
@@ -351,42 +345,6 @@ def main():
                     streak = client(s, 'local r=game:GetService("ReplicatedStorage").Net.Streak_Open:InvokeServer() return tostring(r and r.ok).."|"..tostring(r and r.streak)')
                     system("StreakCrate", streak == "true|7", streak)
 
-                    server(s, 'return tostring(game:GetService("ServerStorage").ProgressionDev:Invoke("award", 30000, 0))')
-                    # find the next stock window that actually has a Gear item, then jump to it
-                    found = server(s, """
-local SR = require(game:GetService("ReplicatedStorage").Shared.StockRotation)
-local cur = SR.windowIndex(os.time())
-for d = 0, 40 do
-	local slots = SR.roll((cur + d) * SR.Period + 1)
-	for slot, entry in slots do
-		if entry.item.kind == "Gear" then
-			return d .. "|" .. slot
-		end
-	end
-end
-return ""
-""")
-                    shift, _, gear_slot = found.partition("|")
-                    server(s, 'return tostring(game:GetService("ServerStorage").StockDev:Invoke("shift", %s))' % (shift or "0"))
-                    # the dev buy still has the in-world counter check: stand at the Chandlery counter
-                    shop = server(s, """
-local p = game:GetService("Players"):GetPlayers()[1]
-local target = nil
-for _, d in game:GetService("Workspace"):GetDescendants() do
-	if d:IsA("ProximityPrompt") and d:GetAttribute("Panel") == "ShopCounter" and d.Parent and d.Parent:IsA("BasePart") then
-		target = d.Parent.Position
-		break
-	end
-end
-local c = p and p.Character
-if target and c then c:PivotTo(CFrame.new(target + Vector3.new(0, 3, 8))) end
-return tostring(target)
-""")
-                    time.sleep(1)
-                    bought = server(s, 'local ok, why = game:GetService("ServerStorage").StockDev:Invoke("buy", %s) return tostring(ok).."|"..tostring(why)' % (gear_slot or "1"))
-                    gear = client(s, 'local d=game:GetService("ReplicatedStorage").Net.Progression_GetData:InvokeServer() return "gear="..tostring(d and d.gear and (d.gear.EngineTune or d.gear.StrongGrip))')
-                    system("StockPurchase", bought.startswith("true") and "gear=" in gear and not gear.endswith("nil"), "%s slot=%s shop=%s %s" % (bought, gear_slot, shop, gear))
-
                     server(s, 'return tostring(game:GetService("ServerStorage").StationDev:Invoke("level", 1))')
                     server(s, 'return tostring(game:GetService("ServerStorage").StationDev:Invoke("fill"))')
                     pos = server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-124, 8, -35)) end local r=c and c:FindFirstChild("HumanoidRootPart") return tostring(r and r.Position)')
@@ -395,15 +353,6 @@ return tostring(target)
                     station = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Station_Get:InvokeServer() return "level="..tostring(v and v.level)')
                     system("StationIdle", collected.startswith("true|") and "level=1" in station, "%s %s pos=%s" % (collected, station, pos))
 
-                    server(s, 'game:GetService("ServerStorage").SeasonDev:Invoke("force", true) return "ok"')
-                    server(s, 'return tostring(game:GetService("ServerStorage").SeasonDev:Invoke("set", 200))')
-                    claimed = server(s, 'local r=game:GetService("ServerStorage").SeasonDev:Invoke("claim", 1) return tostring(r and r.ok).."|"..tostring(r and r.reward and r.reward.tier)')
-                    system("SeasonClaim", claimed == "true|1", claimed)
-
-                    granted = server(s, 'return tostring(game:GetService("ServerStorage").AlbumDev:Invoke("grant", "Swimmer"))')
-                    album = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Album_Get:InvokeServer() return "swimmer="..tostring(v and v.owned and v.owned.Swimmer)')
-                    system("AlbumCredit", granted == "true" and "swimmer=true" in album, album)
-
                     server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-105, 8, -30)) end return "tp"')
                     add = server(s, 'return tostring(game:GetService("ServerStorage").SanctuaryDev:Invoke("add", "SealPup", false))')
                     ready = server(s, 'return tostring(game:GetService("ServerStorage").SanctuaryDev:Invoke("ready"))')
@@ -411,8 +360,8 @@ return tostring(target)
                     pets = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Pet_Get:InvokeServer() return "pets="..tostring(v and #v.pets).." active="..tostring(v and v.pets[1] and v.pets[1].active)')
                     system("PetAdopt", add != "nil" and ready == "true" and equip.startswith("true") and "active=true" in pets, "%s %s %s" % (equip, add, pets))
 
-                    server(s, 'return tostring(game:GetService("ServerStorage").CosmeticDev:Invoke("stock"))')
-                    cosmetic = client(s, 'local ok, why = game:GetService("ReplicatedStorage").Net.Cosmetics_Equip:InvokeServer("Livery", "StockRed") return tostring(ok).."|"..tostring(why).."|"..tostring(game:GetService("Players").LocalPlayer:GetAttribute("Cos_Livery"))')
+                    server(s, 'return tostring(game:GetService("ServerStorage").CosmeticDev:Invoke("monthly"))')
+                    cosmetic = client(s, 'local ok, why = game:GetService("ReplicatedStorage").Net.Cosmetics_Equip:InvokeServer("Livery", "Month2026-10") return tostring(ok).."|"..tostring(why).."|"..tostring(game:GetService("Players").LocalPlayer:GetAttribute("Cos_Livery"))')
                     system("CosmeticEquip", cosmetic.startswith("true|ok") or cosmetic.startswith("true|"), cosmetic)
 
                     server(s, 'game:GetService("Workspace"):SetAttribute("FriendCountForce", 3) return "ok"')
@@ -460,16 +409,10 @@ return ""
                         system("PersistStreak", "streak=7" in streak, streak)
                         pets = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Pet_Get:InvokeServer() return "pets="..tostring(v and #v.pets).." active="..tostring(v and v.pets[1] and v.pets[1].active)')
                         system("PersistPets", "pets=0" not in pets and "active=true" in pets, pets)
-                        album = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Album_Get:InvokeServer() return "swimmer="..tostring(v and v.owned and v.owned.Swimmer).." golden="..tostring(v and v.owned and v.owned.GoldenGull)')
-                        system("PersistAlbum", "swimmer=true" in album, album)
-                        season = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Season_Get:InvokeServer() return "xp="..tostring(v and v.xp).." claimed="..tostring(v and v.tiers and v.tiers[1] and v.tiers[1].claimed)')
-                        system("PersistSeason", "claimed=true" in season, season)
-                        gear = client(s, 'local d=game:GetService("ReplicatedStorage").Net.Progression_GetData:InvokeServer() return "gear="..tostring(d and d.gear and (d.gear.EngineTune or d.gear.StrongGrip))')
-                        system("PersistStock", "gear=" in gear and not gear.endswith("nil"), gear)
                         station = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Station_Get:InvokeServer() return "level="..tostring(v and v.level)')
                         system("PersistStation", "level=1" in station, station)
                         cosmetic = client(s, 'return tostring(game:GetService("Players").LocalPlayer:GetAttribute("Cos_Livery"))')
-                        system("PersistCosmetic", cosmetic.strip() == "StockRed", cosmetic)
+                        system("PersistCosmetic", cosmetic.strip() == "Month2026-10", cosmetic)
                     else:
                         skip("PersistRoundTrip", "DataStore unavailable in Studio (place not published): stop/start restarts in memory mode, so flags reset - open issue")
                     print("profile loaded:", loaded)

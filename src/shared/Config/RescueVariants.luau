@@ -1,12 +1,12 @@
 --!strict
 -- RescueVariants: the rare-call variants and their rarities (docs/15 section 2, hook H2).
--- Pure data plus the roll, safe to load in Lune (tests/RescueAlbum.spec.luau). The code-built
--- dressing is src/server/Ops/RescueDressing.luau; the collection is src/shared/RescueAlbum.luau.
+-- Pure data plus the roll, safe to load in Lune. The code-built dressing is
+-- src/server/Ops/RescueDressing.luau.
 --
 -- Fair FOMO (docs/15 section 1): every variant is earnable by playing, nothing is sold. Common and
 -- Uncommon roll on every call; Rare rolls at a tiny base rate, and every rarity rolls at its full
 -- weight only while the hourly Great Storm is active (EventService.IsEventActive("GreatStorm")).
--- A Legendary call puts a flare over the scene and flashes its sticker to everyone (AlbumService).
+-- A Legendary call puts a flare over the scene (src/server/World/SkyFlare.luau).
 -- Seasonal variants (season = "Halloween" / "Winter") roll only inside their event window
 -- (Config/SeasonalEvents); they still show in the album all year and return each year.
 

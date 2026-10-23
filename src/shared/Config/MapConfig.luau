@@ -168,7 +168,7 @@ local MapConfig = {
 			glyph = A11yPalette.symbol("Marker", "Storm"),
 			color = Color3.fromHex("8E5BD8"),
 		},
-		-- logbook discoveries (ExplorationController -> MapController.SetBlips("Logbook", ...))
+		-- static points of interest (MapController.SetBlips)
 		Discovery = {
 			label = "Logbook discovery",
 			glyph = A11yPalette.symbol("Marker", "Discovery"),

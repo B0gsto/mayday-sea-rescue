@@ -4,8 +4,7 @@
 --     at night or in a storm a rotating rig at ATT_Light carries two bullseye pairs (panels 0/30 and
 --     180/210 degrees) as Beam cones plus one SpotLight per pair, turning at 18 deg/s on the server
 --     clock, a warm PointLight in the lantern, and the _Lens Neon brightening as a panel sweeps the
---     camera. A light only shows for a player who has relit it (Shared.Lighthouses; profile flag
---     `lighthouses`); unlit ones show a small red lamp at night and no beam;
+--     camera;
 --   * the lifeguard tower's red-over-yellow flag (tag BeachFlag): its strips stream downwind and ripple, only while
 --     the camera is within FLAG_RANGE studs.
 -- Both models stream (Atomic in Workspace.Dressing): found by tag, rigs live inside them and go when they stream out.
@@ -17,8 +16,6 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local LightBeam = require(Shared:WaitForChild("HarbourLightBeam"))
-local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
-local Net = require(Shared:WaitForChild("Net"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local StreetController = {}
@@ -34,7 +31,6 @@ local FLAG_RANGE = 400
 
 type Rig = {
 	model: Model,
-	id: string?,
 	part: BasePart,
 	centre: Vector3,
 	beams: { Beam },
@@ -45,7 +41,6 @@ type Rig = {
 
 local rigs: { [Model]: Rig } = {}
 local flags: { [Model]: { parts: { BasePart }, hoist: Vector3 } } = {}
-local profileFlags: { [string]: any } = {}
 
 local function beamFor(parent: BasePart, bearing: number): Beam
 	local dir = CFrame.Angles(0, math.rad(bearing), 0) * Vector3.xAxis
@@ -129,13 +124,8 @@ local function build(model: Model): Rig?
 			end
 		end
 	end
-	local id = model:GetAttribute("LightId")
-	if type(id) ~= "string" and model.Name == "HarbourLight" then
-		id = "HarbourLight" -- the H6 asset predates the LightId attribute
-	end
 	return {
 		model = model,
-		id = if type(id) == "string" then id else nil,
 		part = part,
 		centre = att.WorldPosition,
 		beams = beams,
@@ -193,24 +183,6 @@ end
 function StreetController.Init() end
 
 function StreetController.Start()
-	-- each player sees only the lights they have relit (docs/03 section 7)
-	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
-		if type(data) == "table" and type(data.flags) == "table" then
-			profileFlags = data.flags
-		end
-	end)
-	task.spawn(function()
-		local getData = Net.init():WaitForChild("Progression_GetData", 30)
-		if not getData or not getData:IsA("RemoteFunction") then
-			return
-		end
-		local ok, data = pcall(function()
-			return getData:InvokeServer()
-		end)
-		if ok and type(data) == "table" and type(data.flags) == "table" then
-			profileFlags = data.flags
-		end
-	end)
 	local function addLight(m: Model)
 		task.defer(function() -- the Atomic model arrives whole; wait a frame for the lens tags
 			if rigs[m] == nil and m.Parent then
@@ -252,8 +224,7 @@ function StreetController.Start()
 				rigs[m] = nil
 				continue
 			end
-			local own = r.id == nil or Lighthouses.isLit(profileFlags, r.id)
-			local want = isNight and own
+			local want = isNight
 			if want ~= r.lit then
 				setLit(r, want)
 			end
@@ -268,14 +239,6 @@ function StreetController.Start()
 					l.Color = LENS_REST:Lerp(Color3.new(1, 1, 1), k)
 				end
 				r.point.Brightness = 1.2 + 2.5 * k
-			elseif isNight then
-				-- dark lights stand out: a small red lamp, no beam, until the player relights it
-				r.point.Enabled = true
-				r.point.Color = Lighthouses.DarkColour
-				r.point.Range = 22
-				r.point.Brightness = 0.45
-			else
-				r.point.Enabled = false
 			end
 		end
 		-- the beach flag: strips chained from the hoist, each yawed a little more than the last (a travelling ripple)

@@ -13,8 +13,7 @@
 --   Pet_Equip  C->S  function (id) -> (ok, reason); only when recovered
 --   Pet_Treat  C->S  function (id) -> (ok, reason); feeds one fish treat to the pet with you
 -- G48: one fish treat fills one bond pip; a full bond unlocks the code-built life vest. Treats
--- come from the Chandlery shelf (PetService.BuyTreat) or one from each daily crate (the
--- StreakClaim attribute). Studio: ServerStorage.SanctuaryDev "add" / "ready" / "equip" / "view";
+-- come from each daily crate (the StreakClaim attribute). Studio: ServerStorage.SanctuaryDev "add" / "ready" / "equip" / "view";
 -- ServerStorage.PetDev "view" / "equip" / "treat" n.
 
 local Players = game:GetService("Players")
@@ -130,32 +129,6 @@ function PetService.AddTreats(player: Player, count: number): boolean
 	end
 	local state = PetRules.addTreats(stateOf(data), count)
 	return store(player, state)
-end
-
--- StockService: pay Cash for one fish treat (the item is a consumable, never a one-time flag).
-function PetService.BuyTreat(player: Player, price: number): (boolean, string?)
-	local data = DataService.Get(player)
-	if not data then
-		return false, "Data not loaded"
-	end
-	if type(price) ~= "number" or price < 0 or data.cash < price then
-		return false, "Need Cash"
-	end
-	local state = stateOf(data)
-	if PetRules.treats(state) >= PetRules.TREAT_MAX then
-		return false, "Pocket full"
-	end
-	local nextState = PetRules.addTreats(state, 1)
-	data.cash -= price
-	if not ProgressionService.SetFlag(player, FLAG, PetRules.encode(nextState)) then
-		data.cash += price
-		return false, "Could not save"
-	end
-	Telemetry.CashSpent(player, price, data.cash, "Treat", "FishTreat")
-	DataService.MarkDirty(player)
-	ProgressionService.Refresh(player)
-	push(player, nextState)
-	return true, "ok"
 end
 
 function PetService.GiveTreat(player: Player, id: any): (boolean, string?)

@@ -3,7 +3,8 @@
 return function(t)
 	local Loadout = t.load("src/shared/CosmeticLoadout.luau")
 	local Cosmetics = t.load("src/shared/Cosmetics.luau")
-	local Season = t.load("src/shared/Config/Season.luau")
+	local SEASON_TIER =
+		{ Decal_Season1 = 3, Wake_Season1 = 8, Title_Season1 = 12, Livery_Season1 = 30 }
 
 	local function claimed(...)
 		local bits = 0
@@ -84,6 +85,14 @@ return function(t)
 		t.expect(config.earn).toBe("monthly:2026-10")
 	end)
 
+	t.test("Commodore unlocks the monthly liveries; saved ones stay without the rank", function()
+		local owned = Loadout.owned({}, 55000)
+		t.expect(owned["monthly:2026-01"]).toBe(true)
+		t.expect(owned["monthly:2026-12"]).toBe(true)
+		t.expect(next(Loadout.owned({}, 54999))).toBeNil()
+		t.expect(Loadout.owned({ monthlyLivery = "2026-03" }, 0)["monthly:2026-03"]).toBe(true)
+	end)
+
 	t.test("the newest earn wins per slot and decor keeps the fixed slot order", function()
 		local flags = {
 			stock = {
@@ -117,11 +126,7 @@ return function(t)
 					if string.sub(option.earn, 1, 6) == "stock:" then
 						flags.stock = { [string.sub(option.earn, 7)] = true }
 					elseif string.sub(option.earn, 1, 7) == "season:" then
-						for _, tier in Season.tiers do
-							if tier.cosmetic and "season:" .. tier.cosmetic == option.earn then
-								flags.season = { c = claimed(tier.tier) }
-							end
-						end
+						flags.season = { c = claimed(SEASON_TIER[string.sub(option.earn, 8)]) }
 					elseif string.sub(option.earn, 1, 8) == "monthly:" then
 						flags.monthlyLivery = string.sub(option.earn, 9)
 					elseif option.earn == "halloween:livery" then

@@ -36,7 +36,6 @@ local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
 local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local Swaps = require(script.Parent:WaitForChild("Swaps"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Discovery = require(Shared:WaitForChild("Explore"):WaitForChild("Discovery"))
 local RoadNet = require(Shared:WaitForChild("RoadNet"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
@@ -211,17 +210,6 @@ function Street.apply(shell: Model)
 		end
 	end
 	shell:AddTag(Street.LIGHTHOUSE_TAG)
-	local plaque = shell:FindFirstChild("ATT_Plaque", true)
-	local entry = Discovery.get("HarbourLightHistory")
-	if plaque and plaque:IsA("Attachment") and entry then
-		local off = (plaque.WorldPosition - entry.position).Magnitude
-		shell:SetAttribute("PlaqueOffset", math.floor(off * 10) / 10)
-		if off > 3 then
-			warn(
-				`[Street] Harbour Light plaque at {plaque.WorldPosition} is {off} studs from the logbook POI {entry.position}`
-			)
-		end
-	end
 end
 
 -- ---------------------------------------------------------------- queries

@@ -137,8 +137,9 @@ local options: { Option } = {
 	},
 }
 
--- The monthly livery (ChallengeService data.flags.monthlyLivery = "YYYY-MM"): one option per 2026
--- month so a key earned in any month of the season has something to show.
+-- The monthly liveries: once earned from weekly challenges (data.flags.monthlyLivery = "YYYY-MM",
+-- kept in saves); since the challenges were cut (docs/16 C12) Commodore unlocks all twelve
+-- (CosmeticLoadout).
 local MONTH_NAMES = {
 	"January",
 	"February",
@@ -174,7 +175,7 @@ for month, name in MONTH_NAMES do
 		id = "Month" .. key,
 		name = name .. " livery",
 		earn = "monthly:" .. key,
-		blurb = "The monthly livery for four weekly challenge stamps in " .. name .. ".",
+		blurb = "The " .. name .. " livery, a Commodore's colours.",
 		primary = paint[1],
 		secondary = paint[2],
 		stripe = Color3.fromRGB(230, 214, 172),

@@ -40,10 +40,8 @@ return function(t)
 			HarborFund = 149,
 			CashBoost = 15,
 			CrewBoost = 15,
-			ChallengeReroll = 19,
 			CallTheStorm = 49,
 			CallTheGreatStorm = 149,
-			SeasonLogbook = 399,
 			DayDoubleCash = 15, -- day passes: proposed, not in docs/04 yet
 			DayQuickLaunch = 10,
 		},

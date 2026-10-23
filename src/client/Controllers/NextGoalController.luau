@@ -44,8 +44,6 @@ local ICON: { [string]: string } = {
 	Cert = "+",
 	Gear = "◆",
 	Upgrade = "▲",
-	Season = "☆",
-	Light = "◉",
 }
 
 local ICON_COLOR: { [string]: Color3 } = {
@@ -54,8 +52,6 @@ local ICON_COLOR: { [string]: Color3 } = {
 	Cert = C.ready,
 	Gear = C.bar,
 	Upgrade = C.gold,
-	Season = C.gold,
-	Light = C.ready,
 }
 
 local gui: ScreenGui
