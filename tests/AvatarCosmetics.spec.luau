@@ -79,11 +79,4 @@ return function(t)
 		t.expect(AC.whistleReady(10, 11)).toBe(false)
 		t.expect(AC.whistleReady(10, 10 + AC.WHISTLE.cooldown)).toBe(true)
 	end)
-
-	t.test("roof-deck ladder: owners within reach only", function()
-		t.expect((AC.canClimb(false, 2))).toBe(false)
-		t.expect((AC.canClimb(true, 2))).toBe(true)
-		t.expect((AC.canClimb(true, AC.DECK.reach + 1))).toBe(false)
-		t.expect((AC.canClimb(true, 0 / 0))).toBe(false)
-	end)
 end

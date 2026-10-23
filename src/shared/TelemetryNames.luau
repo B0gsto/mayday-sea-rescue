@@ -36,7 +36,6 @@ TelemetryNames.Custom = table.freeze({
 	"EventJoined", -- GhostLight / GhostShip / FrostFleet, once per event window
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
-	"CrewFlare", -- a crew-up flare was fired
 	"PromptShown", -- notify / favorite / invite prompt was shown
 	"PhotoMode", -- photo mode was opened (once per session)
 } :: { string })

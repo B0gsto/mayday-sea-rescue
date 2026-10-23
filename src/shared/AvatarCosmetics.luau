@@ -2,7 +2,7 @@
 -- AvatarCosmetics (pure, RP-M5 E2): the rules behind the Captain's Locker / Storm Chaser outfits,
 -- the whistle emote and the VIP Crew Card status (gold nameplate, radio tag, roof deck access).
 -- No Roblox services: Lune-tested in tests/AvatarCosmetics.spec.luau. Used by
--- src/server/Cosmetics/{Outfits,VipStatus}.luau and src/client/Cosmetics/*.
+-- src/server/Cosmetics/Outfits.luau and src/client/Cosmetics/*.
 --
 --   AvatarCosmetics.plan(base, outfit?, cap?) -> Look
 --       The look to apply: the player's own look (`base`, read from their applied
@@ -12,8 +12,7 @@
 --   AvatarCosmetics.gold(badgeId) -> boolean         the Badge slot shows the gold nameplate / tag
 --   AvatarCosmetics.radioTag(badgeId) -> string?     "VIP" for the gold badge, else nil
 --   AvatarCosmetics.whistleReady(lastAt?, now) -> boolean     per-player cooldown
---   AvatarCosmetics.canClimb(ownsVip, distance) -> (boolean, reason)   the roof-deck ladder
---   AvatarCosmetics.WHISTLE / AvatarCosmetics.DECK            tuning constants
+--   AvatarCosmetics.WHISTLE                                   tuning constants
 
 export type Layer = { id: number, kind: string, order: number? }
 export type Look = {
@@ -29,11 +28,6 @@ AvatarCosmetics.WHISTLE = {
 	cooldown = 2.5, -- seconds between blasts per player
 	radius = 140, -- studs: clients beyond this get no event; the Sound rolls off to this
 	animSeconds = 1.4, -- the arm-raise is cut after this
-}
-
-AvatarCosmetics.DECK = {
-	reach = 12, -- studs from the ladder foot / head to use the prompt (server check)
-	sweep = 2, -- seconds between the server's non-owner sweep of the deck
 }
 
 local function copyLayers(layers: { Layer }): { Layer }
@@ -95,16 +89,6 @@ end
 
 function AvatarCosmetics.whistleReady(lastAt: number?, now: number): boolean
 	return lastAt == nil or now - lastAt >= AvatarCosmetics.WHISTLE.cooldown
-end
-
-function AvatarCosmetics.canClimb(ownsVip: boolean, distance: number): (boolean, string)
-	if not ownsVip then
-		return false, "The roof deck is for VIP Crew Card holders"
-	end
-	if distance ~= distance or distance > AvatarCosmetics.DECK.reach then
-		return false, "Too far from the ladder"
-	end
-	return true, "ok"
 end
 
 return AvatarCosmetics
