@@ -139,7 +139,10 @@ function FarPlane._strip(
 				em:AddVertex(p + Vector3.zAxis * 0.01)
 			)
 		end
-		local part = AssetService:CreateMeshPartAsync(Content.fromObject(em))
+		-- Precise, as MeshGrid: no LOD decimation of the flat sheet
+		local part = AssetService:CreateMeshPartAsync(Content.fromObject(em), {
+			RenderFidelity = Enum.RenderFidelity.Precise,
+		})
 		if part == nil then
 			error("CreateMeshPartAsync returned nil")
 		end
