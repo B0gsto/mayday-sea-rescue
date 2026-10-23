@@ -2,7 +2,8 @@
 -- SharedSetsRig (I2a H4/H5): the harbourmaster's office and the hospital use shared texture sets (Station Granite,
 -- Chandlery Slate, BldTrim Sheet, Cottage Render_White + Slate, Pontoon Kit) that AssetLoader cannot see from
 -- each asset's own Appearances folder (only the Details atlas lives there), so their shared-set parts get theirs
--- here from the Appearances model's prebuilt SurfaceAppearances. Called after each shell is placed (Swaps rig).
+-- here from the Appearances model's prebuilt SurfaceAppearances. Called after each shell is placed (Swaps rig). The
+-- slipway's library-set parts get plain tinted materials (PLAIN).
 
 local CollectionService = game:GetService("CollectionService")
 
@@ -37,6 +38,18 @@ local SETS: { [string]: { [string]: { string } } } = {
 		Trim = { "M_Bld_BoatyardShed", "Metal" },
 		Timber = { "M_Bld_BoatyardShed", "Details" },
 		Lit = { "M_Bld_BoatyardShed", "Details" },
+	},
+}
+
+-- M_Bld_Slipway's shared B02 library sets (Concrete, WeedyConcrete, QuayStone, KelpRock) are MaterialService
+-- variants TerrainOnly keeps off Parts, so those parts rendered plain white (docs/17 P1 17): unmapped materials tinted
+-- to build.py's base colours (a shade darker: wet) instead.
+local PLAIN: { [string]: { [string]: { any } } } = {
+	M_Bld_Slipway = {
+		Ramp = { Enum.Material.Plaster, Color3.fromRGB(146, 142, 134) },
+		Weedy = { Enum.Material.Granite, Color3.fromRGB(84, 92, 70) },
+		Wall = { Enum.Material.Granite, Color3.fromRGB(128, 124, 116) },
+		Rock = { Enum.Material.Granite, Color3.fromRGB(78, 80, 72) },
 	},
 }
 
@@ -122,8 +135,18 @@ function SharedSetsRig.apply(shell: Model)
 			if asset and token then
 				local sets = SETS[asset]
 				local spec = sets and sets[token]
+				local plain = PLAIN[asset] and PLAIN[asset][token]
 				if spec then
 					apply(part, spec[1], spec[2])
+				elseif plain then
+					for _, old in part:GetChildren() do
+						if old:IsA("SurfaceAppearance") or old.Name == "SurfaceVariants" then
+							old:Destroy()
+						end
+					end
+					part.MaterialVariant = ""
+					part.Material = plain[1]
+					part.Color = plain[2]
 				end
 			end
 		end

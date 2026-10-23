@@ -34,6 +34,13 @@ function CallLogic.isWater(pos: Vector3, area: string): boolean
 		if pos.X >= k.minX and pos.X <= k.maxX and pos.Z <= k.maxZ then
 			return false
 		end
+		local e = box.elbow
+		local dx, dz = e.headX - e.x, e.far - e.kneeZ
+		local len = math.sqrt(dx * dx + dz * dz)
+		-- distance from the dog-leg's centreline toward the basin (its normal (-dz, dx) points inward)
+		if ((math.abs(pos.X) - e.x) * -dz + (pos.Z - e.kneeZ) * dx) / len < e.clear then
+			return false
+		end
 		-- the breakwater box has corners outside the sheltered zone circles: keep calls sheltered
 		return CallLogic.zoneIdAt(pos) ~= "OpenSea"
 	end

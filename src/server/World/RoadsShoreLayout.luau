@@ -1,6 +1,6 @@
 --!strict
--- RoadsShoreLayout: the pure placement rules behind RoadsShore (I2c: road furniture, rock pools, intertidal wrack,
--- eelgrass and the far island proxies). Unit-tested in tests/RoadsShore.spec.luau. Studs, +X east, -Z north, Y up.
+-- RoadsShoreLayout: the pure placement rules behind RoadsShore (I2c: road furniture, field hedges, rock pools,
+-- intertidal wrack and eelgrass). Unit-tested in tests/RoadsShore.spec.luau. Studs, +X east, -Z north, Y up.
 --
 --   walk(points, step)                  -> { { pos, dir, s } }        StreetLayout's arc-length samples
 --   length(points)                      -> number
@@ -9,6 +9,7 @@
 --   run(points, from, to, side, off, piece) -> { Spot }               tiles a modular run on one side of the road
 --   spot(points, s, side, off)          -> Spot?                      one piece at arc length s
 --   barriers(points, opts)              -> { Spot }                   outside of sharp bends, deduped by gap
+--   fieldLines(points, from, to, side, off, depth, every, piece) -> { { Spot } }  field boundaries off a road
 --   scatter(center, radius, count, seed, inner) -> { Vector3 }        deterministic, even disk scatter (XZ)
 
 local StreetLayout = require(script.Parent.StreetLayout)
@@ -121,6 +122,37 @@ function RoadsShoreLayout.barriers(
 			end
 			lastS = samples[i].s
 		end
+	end
+	return out
+end
+
+-- Field boundaries off one side of a road: a straight hedge line running away from the road every `every` studs of
+-- arc length (from `offset` out to `offset + depth`), each a list of `piece`-stud spots; the caller adds the back
+-- hedge (run() at offset + depth) and stops a line where the ground is not field.
+function RoadsShoreLayout.fieldLines(
+	points: { Vector3 },
+	from: number,
+	to: number,
+	side: number,
+	offset: number,
+	depth: number,
+	every: number,
+	piece: number
+): { { Spot } }
+	local out: { { Spot } } = {}
+	local stop = math.min(to, RoadsShoreLayout.length(points))
+	for _, sm in StreetLayout.walk(points, every, math.max(from, 0) + every / 2, stop) do
+		local base = StreetLayout.offset(sm, side, offset)
+		local out_ = (base - StreetLayout.offset(sm, side, 0)).Unit
+		local line: { Spot } = {}
+		for k = 1, math.floor(depth / piece) do
+			table.insert(line, {
+				pos = base + out_ * (piece * (k - 0.5)),
+				yaw = RoadsShoreLayout.yawAlong(out_),
+				s = sm.s,
+			})
+		end
+		table.insert(out, line)
 	end
 	return out
 end
