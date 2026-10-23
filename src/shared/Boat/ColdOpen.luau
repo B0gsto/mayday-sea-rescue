@@ -123,7 +123,7 @@ ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 -- the straight, clear run home (Studio raycast checked; outside the Harbour Mouth the breakwater sat
 -- across the line home), so the drop-off distance only falls going straight on.
 ColdOpen.SPAWN = Vector3.new(-140, 0, 200)
-ColdOpen.DISTANCE = { 70, 85 } -- studs dead ahead of the spawn: on screen, about 23 m -- tune
+ColdOpen.DISTANCE = { 50, 60 } -- studs dead ahead: just outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
 ColdOpen.RADIO = "Person in the water. Dead ahead!"
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
@@ -152,14 +152,16 @@ end
 -- 5. The first mission ends on land (docs/14 section 3). The recovery only completes once the
 --    casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the station
 --    slipway (Map.Slipways.StationSlipway, waterline about z 30) or the Haven Sands slipway
---    (WorldConfig.Slipways.SandsSlipway). `dry` is where the shore party takes them over. `via`:
+--    (WorldConfig.Slipways.SandsSlipway). `water` is the drop-off in open water just past the ramp
+--    toe (station: the ramp runs to z ~75, Studio raycast; at the waterline the craft ran up the rails
+--    and stranded). `dry` is where the shore party takes them over. `via`:
 --    open-water turns the minimap route may go through (ColdOpen.nextHop) where the moored boats or
 --    the Dock jetty block the straight line (west of the jetty, its tip, east of it; Studio raycast checked).
 export type Shore = { id: string, water: Vector3, dry: Vector3, via: { Vector3 }? }
 ColdOpen.SHORE = {
 	{
 		id = "Station",
-		water = Vector3.new(-165, 0, 38),
+		water = Vector3.new(-165, 0, 85),
 		dry = Vector3.new(-171, 0, 18),
 		via = { Vector3.new(-165, 0, 120), Vector3.new(-112, 0, 130), Vector3.new(-80, 0, 120) },
 	},
