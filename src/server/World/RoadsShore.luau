@@ -10,7 +10,7 @@
 -- model per piece under Workspace.Dressing.RoadsShore, so streaming and LODs stay local. A piece whose asset or
 -- ground is missing is skipped with a warning: there is no greybox to keep for these props.
 -- Folder attributes when done: RoadsShoreBarriers, Walls, Hedges, Fields, Gates, Signs, RockPools, Wrack,
--- Eelgrass.
+-- Eelgrass, Gravel.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -595,6 +595,85 @@ local function eelgrass(folder: Folder): number
 	return n
 end
 
+-- The bake paints country verges and the West Cliff car park Pavement as gravel, but built-in Pavement draws white
+-- herringbone pavers (docs/17 N6): repaint them Limestone (the bake's seabed gravel; Town.paint tints it) and kerb
+-- the car park, leaving the Coast Road's mouth open. The car park also takes the road's asphalt end, so the road
+-- stops at its kerb line.
+local GRAVEL_ROADS = { "HighRoad", "CoastRoadWest" }
+local KERB = Color3.fromRGB(168, 162, 152)
+
+local function gravel(folder: Folder): number
+	local terrain = Workspace.Terrain
+	local n = 0
+	for _, id in GRAVEL_ROADS do
+		local half = (WIDTHS[id] or 0) / 2 + 8
+		for _, s in StreetLayout.walk(ROADS[id], 8) do
+			local region = Region3.new(
+				s.pos - Vector3.new(half, 12, half),
+				s.pos + Vector3.new(half, 12, half)
+			)
+			terrain:ReplaceMaterial(
+				region:ExpandToGrid(4),
+				4,
+				Enum.Material.Pavement,
+				Enum.Material.Limestone
+			)
+			n += 1
+			if n % 40 == 0 then
+				task.wait()
+			end
+		end
+	end
+	local cp: any = nil
+	for _, c in WorldConfig.CarParks do
+		if c.id == "WestCliffViewpoint" then
+			cp = c
+		end
+	end
+	local road = ROADS.CoastRoadWest
+	if not (cp and road) then
+		return n
+	end
+	local c, hx, hz = cp.center, cp.size[1] / 2, cp.size[2] / 2
+	local region =
+		Region3.new(c - Vector3.new(hx + 4, 20, hz + 4), c + Vector3.new(hx + 4, 20, hz + 4))
+			:ExpandToGrid(4)
+	for _, from in { Enum.Material.Pavement, Enum.Material.Asphalt, Enum.Material.Concrete } do
+		terrain:ReplaceMaterial(region, 4, from, Enum.Material.Limestone)
+	end
+	-- granite kerb round the rectangle (yaw 0), 6-stud stones, a gap where the road comes in
+	local mouth, gap = road[#road], (WIDTHS.CoastRoadWest or 26) / 2 + 2
+	local corners = {
+		Vector3.new(c.X - hx, 0, c.Z - hz),
+		Vector3.new(c.X + hx, 0, c.Z - hz),
+		Vector3.new(c.X + hx, 0, c.Z + hz),
+		Vector3.new(c.X - hx, 0, c.Z + hz),
+	}
+	for i, a in corners do
+		local b = corners[i % 4 + 1]
+		local len = (b - a).Magnitude
+		for d = 3, len - 3, 6 do
+			local p = a + (b - a).Unit * d
+			local y = groundY(p.X, p.Z)
+			local open = math.abs(p.X - (c.X + hx)) < 1 and math.abs(p.Z - mouth.Z) < gap
+			if y and not open then
+				local kerb = Instance.new("Part")
+				kerb.Name = "CarParkKerb"
+				kerb.Anchored = true
+				kerb.CanTouch = false
+				kerb.Material = Enum.Material.Granite
+				kerb.Color = KERB
+				kerb.Size = Vector3.new(0.9, 0.9, 6)
+				kerb.CFrame =
+					CFrame.lookAt(Vector3.new(p.X, y + 0.2, p.Z), Vector3.new(b.X, y + 0.2, b.Z))
+				kerb.Parent = folder
+				n += 1
+			end
+		end
+	end
+	return n
+end
+
 local function try(name: string, fn: (Folder) -> number, folder: Folder): number
 	local ok, n = pcall(fn, folder)
 	if not ok then
@@ -619,6 +698,7 @@ function RoadsShore.place(base: Instance)
 		RockPools = category(folder, "RockPools"),
 		Wrack = category(folder, "Wrack"),
 		Eelgrass = category(folder, "Eelgrass"),
+		Gravel = category(folder, "Gravel"),
 	}
 	for _, asset in
 		{
@@ -644,6 +724,7 @@ function RoadsShore.place(base: Instance)
 		RockPools = try("rock pools", rockPools, sections.RockPools),
 		Wrack = try("wrack", wrack, sections.Wrack),
 		Eelgrass = try("eelgrass", eelgrass, sections.Eelgrass),
+		Gravel = try("gravel", gravel, sections.Gravel),
 	}
 	folder:SetAttribute("RoadsShoreBarriers", counts.Barriers)
 	folder:SetAttribute("RoadsShoreWalls", counts.Walls)
@@ -654,6 +735,7 @@ function RoadsShore.place(base: Instance)
 	folder:SetAttribute("RoadsShoreRockPools", counts.RockPools)
 	folder:SetAttribute("RoadsShoreWrack", counts.Wrack)
 	folder:SetAttribute("RoadsShoreEelgrass", counts.Eelgrass)
+	folder:SetAttribute("RoadsShoreGravel", counts.Gravel)
 	print(
 		`[RoadsShore] {counts.Barriers} barriers, {counts.Walls} walls, {counts.Hedges} hedge modules, {counts.Fields} field hedge modules, {counts.Gates} gates, {counts.Signs} signs, {counts.RockPools} pools, {counts.Wrack} wrack, {counts.Eelgrass} eelgrass`
 	)

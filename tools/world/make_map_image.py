@@ -237,11 +237,11 @@ def main():
     # the harbour breakwaters (src/server/World/Harbour.luau breakwaterLine): each arm runs root -> knee at x +-x,
     # dog-legs in to the head, then out to the 60-stud mouth at x +-mouth; granite with a dark rock-armour edge
     hb = open(os.path.join(ROOT, "src", "server", "World", "Harbour.luau")).read()
-    B = {k: float(v) for k, v in re.findall(r"(\w+) = (-?[\d.]+)", re.search(r"Harbour\.BREAKWATER = \{([^}]*)\}", hb).group(1))}
+    B = {k: float(v) for k, v in re.findall(r"(\w+) = (-?[\d.]+)", re.search(r"Harbour\.BREAKWATER =\s*\{([^}]*)\}", hb).group(1))}
     wall, wall_edge = (190, 180, 160, 255), (52, 48, 42, 255)
     w = B["w"] * k
-    arms = [[to_px(s * B["x"], B["root"]), to_px(s * B["x"], B["knee"]), to_px(s * B["head"], B["far"]),
-             to_px(s * B["mouth"], B["far"])] for s in (-1, 1)]
+    arms = [[to_px(s * B["x"], B["root"]), to_px(s * B["x"], B["knee" + e]), to_px(s * B["head" + e], B["far"]),
+             to_px(s * B["mouth"], B["far"])] for s, e in ((-1, "W"), (1, "E"))]
     for fill, width in ((wall_edge, max(5, int(w) + 3)), (wall, max(3, int(w)))):
         for pts in arms:
             d.line(pts, fill=fill, width=width, joint="curve")
