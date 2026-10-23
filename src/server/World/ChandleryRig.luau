@@ -24,18 +24,11 @@
 -- "Calm" -> Clear, "Night", default Overcast as in WeatherController); "Night" whenever the sun is
 -- below the horizon (Lighting:GetSunDirection()). Re-evaluated on Weather.changed, Lighting
 -- WeatherBase and Lighting.ClockTime changes; no per-frame loop.
---
--- Product shelves (RP-M3, docs/04 section 1.1): apply() also tags the shop's ATT_ markers that
--- ProductShelves lists (ATT_ServiceCards, ATT_Logbook, ATT_Till, ATT_Rack_02, ATT_DogBasket,
--- ATT_SwatchBoard, ATT_HornBoard, ATT_RadioShelf) with the attribute ProductShelf = <shelf id>; the
--- client (UI/ProductCard) adds the prompts and opens the product cards. cleanup() removes the tags.
 
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ProductShelves =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("ProductShelves"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local ChandleryRig = {}
@@ -375,19 +368,6 @@ function ChandleryRig.apply(ext: Model, int: Model?, props: Model?, stock: Model
 		end
 	end
 
-	-- product shelves (RP-M3): tag the ATT_ markers the client turns into product-card prompts
-	local shelfOf = ProductShelves.attachmentShelves()
-	local tagged: { Attachment } = {}
-	for _, m in models do
-		for _, d in m:GetDescendants() do
-			local shelf = if d:IsA("Attachment") then shelfOf[d.Name] else nil
-			if shelf and d:IsA("Attachment") and d:GetAttribute("ProductShelf") == nil then
-				d:SetAttribute("ProductShelf", shelf)
-				table.insert(tagged, d)
-			end
-		end
-	end
-
 	-- positional lights (no marker): fills and the glazing glow, hosted on the base PrimaryPart
 	local host = base.PrimaryPart
 	if host then
@@ -451,10 +431,6 @@ function ChandleryRig.apply(ext: Model, int: Model?, props: Model?, stock: Model
 			inst:Destroy()
 		end
 		table.clear(created)
-		for _, a in tagged do
-			a:SetAttribute("ProductShelf", nil)
-		end
-		table.clear(tagged)
 	end
 	for _, m in models do
 		table.insert(connections, m.Destroying:Connect(cleanup))

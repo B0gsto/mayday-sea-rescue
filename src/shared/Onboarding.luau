@@ -56,16 +56,7 @@ function Onboarding.goal(f: Facts): Goal?
 	if f.callsCompleted < 1 then
 		return "Rescue"
 	end
-	if not f.gearOwned then
-		-- back to the station until the 5-minute unlock is due, then the Chandlery
-		return if f.seconds < Onboarding.GEAR_AT then "Station" else "Gear"
-	end
-	if not f.certEarned then
-		if f.seconds >= Onboarding.CERT_AT then
-			return "Cert"
-		end
-		return if f.offerReady then "Rescue" else "Station"
-	end
+	-- no Gear or Cert goal: the Chandlery counter and the exercise board are gone (docs/16 B5, B7)
 	return if f.offerReady then "Rescue" else nil
 end
 

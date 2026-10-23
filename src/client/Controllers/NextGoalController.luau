@@ -1,9 +1,9 @@
 --!strict
--- NextGoalController: the goal-gradient chip by the Cash / rank strip (docs/03 section 10).
--- One row: the icon of the nearest unlock, its 1-3 word name, the numbers and a thin bar, so the
--- player sees how close the next thing is. It peeks in for PEEK seconds when the goal moves (cash,
--- rep, a new goal), then gets out of the view; I / gamepad RB brings it back and opens the three
--- nearest goals (tapping the chip too); that view is information only, nothing to pick.
+-- NextGoalController: the goal-gradient chip by the Cash / rank strip (docs/03 section 10, docs/16
+-- K6). One row: the next rank (star, Rep) or the next boat (its dark silhouette, Cash), whichever is
+-- nearer, with the numbers and a thin bar. It peeks in for PEEK seconds when the goal moves (cash,
+-- rep, a new goal), then gets out of the view; I / gamepad RB brings it back and opens both goals
+-- (tapping the chip too); that view is information only, nothing to pick.
 -- Hidden in the cold open and while OnboardingController's world beacon has a goal, so the chip
 -- never competes with the new-player beacon. Placement is Layout's "goal" region.
 -- Snapshot data is the existing PlayerDataChanged push (NextGoal reads it); no new remote.
@@ -36,27 +36,10 @@ type Row = {
 	name: TextLabel,
 	value: TextLabel,
 	fill: Frame,
+	silhouette: ViewportFrame, -- Vehicle goals: the next boat's shape, dark (docs/16 K6)
 }
 
-local ICON: { [string]: string } = {
-	Rank = "★",
-	Vehicle = "▲",
-	Cert = "+",
-	Gear = "◆",
-	Upgrade = "▲",
-	Season = "☆",
-	Light = "◉",
-}
-
-local ICON_COLOR: { [string]: Color3 } = {
-	Rank = C.gold,
-	Vehicle = C.accent,
-	Cert = C.ready,
-	Gear = C.bar,
-	Upgrade = C.gold,
-	Season = C.gold,
-	Light = C.ready,
-}
+local SILHOUETTE = Color3.fromRGB(20, 26, 36)
 
 local gui: ScreenGui
 local region: Frame
@@ -64,8 +47,7 @@ local chip: TextButton
 local chipRow: Frame
 local icon: TextLabel
 local iconScale: UIScale
-local nameLabel: TextLabel
-local valueLabel: TextLabel
+local chipParts: Row
 local fill: Frame
 local info: TextButton
 local infoRows: { Row } = {}
@@ -83,15 +65,38 @@ local seenKey: string? = nil
 local seenValue: number? = nil
 
 local function numberText(goal: NextGoal.Goal): string
-	if goal.unit == "Steps" then
-		return `{goal.value}/{goal.target}`
-	end
 	return `{HudTheme.formatNumber(goal.value)} / {HudTheme.formatNumber(goal.target)}`
 end
 
+-- The boat's preview model (VehicleService fills ReplicatedStorage.VehiclePreviews), side on, tinted
+-- dark. Without a preview yet the star icon stays.
+local function showSilhouette(vp: ViewportFrame, vehicleId: string): boolean
+	if vp:GetAttribute("VehicleId") == vehicleId then
+		return true
+	end
+	local folder = ReplicatedStorage:FindFirstChild("VehiclePreviews")
+	local source = folder and folder:FindFirstChild(vehicleId)
+	if not (source and source:IsA("Model")) then
+		return false
+	end
+	vp:ClearAllChildren()
+	local model = source:Clone()
+	model.Parent = vp
+	local cf, size = model:GetBoundingBox()
+	local camera = Instance.new("Camera")
+	camera.FieldOfView = 30
+	camera.CFrame = CFrame.lookAt(cf.Position + cf.RightVector * size.Magnitude * 1.9, cf.Position)
+	camera.Parent = vp
+	vp.CurrentCamera = camera
+	vp:SetAttribute("VehicleId", vehicleId)
+	return true
+end
+
 local function paint(row: Row, goal: NextGoal.Goal)
-	row.icon.Text = ICON[goal.kind] or "●"
-	row.icon.TextColor3 = ICON_COLOR[goal.kind] or C.textDim
+	local boat = goal.vehicleId ~= nil and showSilhouette(row.silhouette, goal.vehicleId)
+	row.silhouette.Visible = boat
+	row.icon.Text = if boat then "" else "★"
+	row.icon.TextColor3 = if goal.kind == "Rank" then C.gold else C.accent
 	row.name.Text = goal.label
 	row.value.Text = numberText(goal)
 end
@@ -178,19 +183,12 @@ local function render()
 	if not snapshot then
 		return
 	end
-	local goals = NextGoal.goals(snapshot, os.time())
+	local goals = NextGoal.goals(snapshot)
 	local best = goals[1]
 	hasGoal = best ~= nil
 	local changed = best ~= nil and best.key ~= lastKey
 	if best then
-		local row: Row = {
-			frame = chipRow,
-			icon = icon,
-			name = nameLabel,
-			value = valueLabel,
-			fill = fill,
-		}
-		paint(row, best)
+		paint(chipParts, best)
 		if changed then
 			chipRow.Position = UDim2.fromOffset(16, 0)
 			TweenService:Create(
@@ -260,7 +258,24 @@ local function buildRow(parent: Instance, height: number): Row
 	rowFill.BackgroundColor3 = C.bar
 	rowFill.BorderSizePixel = 0
 	rowFill.Parent = bar
-	return { frame = frame, icon = rowIcon, name = rowName, value = rowValue, fill = rowFill }
+	local vp = Instance.new("ViewportFrame")
+	vp.Name = "Silhouette"
+	vp.Position = UDim2.fromOffset(-6, 0)
+	vp.Size = UDim2.fromOffset(34, 30)
+	vp.BackgroundTransparency = 1
+	vp.Ambient = SILHOUETTE
+	vp.LightColor = SILHOUETTE
+	vp.ImageColor3 = SILHOUETTE
+	vp.Visible = false
+	vp.Parent = frame
+	return {
+		frame = frame,
+		icon = rowIcon,
+		name = rowName,
+		value = rowValue,
+		fill = rowFill,
+		silhouette = vp,
+	}
 end
 
 local function build()
@@ -300,8 +315,7 @@ local function build()
 	local row = buildRow(chipRow, 28)
 	-- the chip has one row; keep its parts as named locals
 	icon = row.icon
-	nameLabel = row.name
-	valueLabel = row.value
+	chipParts = row
 	fill = row.fill
 	iconScale = Instance.new("UIScale")
 	iconScale.Parent = icon
@@ -310,7 +324,7 @@ local function build()
 	info.Name = "GoalInfo"
 	info.AnchorPoint = Vector2.new(1, 0)
 	info.Position = UDim2.new(1, 0, 0, 52)
-	info.Size = UDim2.fromOffset(260, 142)
+	info.Size = UDim2.fromOffset(260, 100)
 	info.BackgroundColor3 = C.panel
 	info.BackgroundTransparency = HudTheme.PromptTransparency
 	info.BorderSizePixel = 0
@@ -321,7 +335,7 @@ local function build()
 	HudTheme.padding(info, 8)
 	info.Visible = false
 	info.Parent = region
-	for i = 1, NextGoal.LIMIT do
+	for i = 1, 2 do
 		local r = buildRow(info, 38)
 		r.frame.Position = UDim2.fromOffset(0, (i - 1) * 42)
 		table.insert(infoRows, r)

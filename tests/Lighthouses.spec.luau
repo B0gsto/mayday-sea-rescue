@@ -2,9 +2,6 @@
 return function(t)
 	local Lighthouses = t.load("src/shared/Lighthouses.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
-	local NextGoal = t.load("src/shared/NextGoal.luau")
-
-	local NOW = 1792800000 + 10 * 86400
 
 	local function snap(rep: number, certs: { string }, flags: any?): any
 		local d = Rules.defaultData()
@@ -103,18 +100,5 @@ return function(t)
 			t.expect(seen.passage).toBe(true)
 			t.expect(Lighthouses.missionLight(def.id)).toBe(light)
 		end
-	end)
-
-	t.test("NextGoal offers the next ready, unlit light", function()
-		local goals = NextGoal.goals(snap(400, { "Helm" }), NOW)
-		local lightGoal
-		for _, goal in goals do
-			if goal.kind == "Light" then
-				lightGoal = goal
-			end
-		end
-		t.expect(lightGoal).toBeTruthy()
-		t.expect(lightGoal.key).toBe("Light:HarbourLight")
-		t.expect(lightGoal.label).toBe("Harbor Light")
 	end)
 end

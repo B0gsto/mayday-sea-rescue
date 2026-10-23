@@ -894,10 +894,12 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			tiles.BackgroundTransparency = 1
 			tiles.Parent = frame
 			list(tiles, true, 8)
-			for i, upgradeId in VehicleUpgrades.UpgradeOrder do
+			local upgrades = VehicleUpgrades.Vehicles[entry.id] -- the jet ski has no Extra seat
+			for i, upgrade in upgrades do
+				local upgradeId = upgrade.id
 				local b = button(tiles, upgradeId, C.panelLight)
 				b.LayoutOrder = i
-				b.Size = UDim2.new(1 / 3, -6, 1, 0)
+				b.Size = UDim2.new(1 / #upgrades, -6, 1, 0)
 				local icon = square(b, "Icon", 26)
 				icon.AnchorPoint = Vector2.new(0.5, 0)
 				icon.Position = UDim2.new(0.5, 0, 0, 5)

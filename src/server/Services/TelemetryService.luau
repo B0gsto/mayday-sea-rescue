@@ -13,7 +13,7 @@
 --   8 Call2Accepted          the active-operation poll sees the first station call
 --   9 FirstOpComplete        OperationService finish (call 2 complete)
 --   10 Call3Complete         OperationService finish (call 3 complete)
---   11 FirstChandleryVisit   the Chandlery gear counter prompt, Panel "ShopCounter" (here)
+--   11 FirstChandleryVisit   retired with the Chandlery counter (docs/16 C4); never fires
 --   12 FirstUnlock           the first gear or vehicle purchase (ProgressionService buy / BuyStock)
 --   13 FirstRank             ProgressionService.RankChanged (here)
 --   14 FirstDailyCrate       StreakService open
@@ -33,7 +33,6 @@
 --   TelemetryService.Recent -> { string }                       last events (Studio: ServerStorage.TelemetryDev)
 local AnalyticsService = game:GetService("AnalyticsService")
 local Players = game:GetService("Players")
-local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -462,12 +461,6 @@ function TelemetryService.Init()
 		trackers[player] = nil
 		lastClient[player] = nil
 		dayChecked[player] = nil
-	end)
-	-- the Chandlery gear counter's prompt is a server prompt (WorldService, Panel = "ShopCounter")
-	ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
-		if prompt:GetAttribute("Panel") == "ShopCounter" then
-			TelemetryService.Funnel(player, "FirstChandleryVisit")
-		end
 	end)
 end
 

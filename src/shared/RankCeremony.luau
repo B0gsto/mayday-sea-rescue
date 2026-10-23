@@ -41,11 +41,12 @@ function RankCeremony.rankIndex(rankIndex: number): number
 	return math.clamp(rankIndex, 1, #ProgressionConfig.Ranks)
 end
 
--- "Jet Ski" -> boat, "Gear level 3" -> gear, "Open Sea" -> mission, a certification -> medal.
+-- "Jet Ski" -> boat, "Captain's cap" -> gear, "Open Sea" -> mission, anything else -> medal.
 function RankCeremony.unlockKind(text: string): string
 	local t = string.lower(text)
 	if
-		t:find("boat")
+		t:find("4x4")
+		or t:find("boat")
 		or t:find("helicopter")
 		or t:find("rib")
 		or t:find("jet")
@@ -69,19 +70,12 @@ function RankCeremony.unlockKind(text: string): string
 	return "medal"
 end
 
--- The icons shown under the badge: the rank's unlocks, then the certifications it needs.
+-- The icons shown under the badge: the rank's unlocks.
 function RankCeremony.unlockIcons(rankIndex: number): { string }
 	local rank = ProgressionConfig.Ranks[RankCeremony.rankIndex(rankIndex)]
 	local kinds = {}
 	for _, text in rank.unlocks do
 		table.insert(kinds, RankCeremony.unlockKind(text))
-	end
-	if rank.cert then
-		table.insert(kinds, "medal")
-	end
-	local certs = rank.certs or {}
-	for _ = 1, #certs do
-		table.insert(kinds, "medal")
 	end
 	return kinds
 end

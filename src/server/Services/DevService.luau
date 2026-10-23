@@ -215,9 +215,6 @@ local function unlockAll(target: Player): (boolean, string)
 		for _, id in VehicleUpgrades.VehicleOrder do
 			data.vehicleUpgrades[id] = VehicleUpgrades.MAX_MASK
 		end
-		for _, id in ProgressionConfig.GearOrder do
-			data.gear[id] = Rules.maxGearLevel()
-		end
 	end)
 	for _, id in DevConfig.Passes do
 		if id ~= "All" then
@@ -391,11 +388,6 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		rank = function(_, target, a)
 			return edit(target :: Player, function(data)
 				data.rep = ProgressionConfig.Ranks[math.floor(a[2])].rep
-				for i = 1, math.floor(a[2]) do
-					for _, cert in Rules.rankCerts(ProgressionConfig.Ranks[i]) do
-						data.certs[cert] = true
-					end
-				end
 			end)
 		end,
 		cert = function(_, target, a)

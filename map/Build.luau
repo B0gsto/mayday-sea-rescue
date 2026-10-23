@@ -11,7 +11,7 @@
 -- Builds Workspace.Map (sea level Y = 0, no Terrain water: the ocean is a client mesh):
 --   OceanFloor   (fallback only) sand base, top at Y = -40
 --   PortHaven    quay, station, dock with launch bays Bay1..Bay4, hospital, houses (land and hill only as fallback),
---                the Chandlery (walk-in gear store, PromptAnchor ShopCounter)
+--                the Chandlery (walk-in store, dressing)
 --   DropOffs     DropOff_Hospital, DropOff_Dock (water-level pads, attribute DropOff)
 --   Breakwater   two arms enclosing Calm Bay; the 60-stud gap is Harbour Mouth
 --   Slipways     the station slipway (concrete ramp into the harbour)
@@ -1121,7 +1121,6 @@ end
 -- The door faces the road and the quay, about 45 studs from the station door and 35 from the spawn.
 -- Docs 10 gives its centre as (+40, -20) from the station; the greybox station is not yet re-laid
 -- on the docs origin, so the shop sits beside the greybox station in the same relation instead.
--- The gear counter carries PromptAnchor = "ShopCounter" (WorldService adds the ProximityPrompt).
 local function buildChandlery(parent: Instance, g: number)
 	local shop = folder(parent, "Chandlery", "Model")
 	-- greybox: the server's WorldDressingService swaps it for the H2 Packages (src/server/World/Swaps.luau)
@@ -1534,21 +1533,13 @@ local function buildChandlery(parent: Instance, g: number)
 		})
 	end
 	ceilingLight(shop, Vector3.new(-48, g + top - 0.2, -62), 30)
-
-	marker(
-		shop,
-		"CounterPrompt",
-		Vector3.new(-32, g + 4.5, -60.5),
-		{ PromptAnchor = "ShopCounter" }
-	)
 	return shop
 end
 
 -- Harbourmaster's desk (docs/04 sections 1.1 and 5, RP-M3): a greybox stand-in on the quay just east
 -- of the Chandlery until the H4 office building exists. A desk with a brass storm barometer behind it
 -- and a chalkboard by the side panel showing the server's storm queue (StormBoard: the client writes
--- its Sign.Text from ReplicatedStorage.Weather SummonQueue). The marker DeskShelf carries
--- ProductShelf = "StormDesk": the client adds the prompt that opens the Call the Storm cards.
+-- its Sign.Text from ReplicatedStorage.Weather SummonQueue). Dressing only: storms are sold in the phone Store.
 local function buildHarbourmasterDesk(parent: Instance, g: number)
 	local desk = folder(parent, "HarbourmasterDesk", "Model")
 	local navy = rgb(28, 50, 86)
@@ -1657,7 +1648,6 @@ local function buildHarbourmasterDesk(parent: Instance, g: number)
 	label.FontFace = Font.new("rbxasset://fonts/families/PatrickHand.json")
 	label.TextColor3 = rgb(226, 226, 216)
 	label.Parent = gui
-	marker(desk, "DeskShelf", Vector3.new(cx, g + 4.5, zf + 1.5), { ProductShelf = "StormDesk" })
 	return desk
 end
 

@@ -16,7 +16,6 @@ return function(t)
 	local MonetizationConfig = t.load("src/shared/Config/MonetizationConfig.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 	local Operations = t.load("src/shared/Ops/Operations.luau")
-	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local Variants = t.load("src/shared/Config/RescueVariants.luau")
 	local Album = t.load("src/shared/RescueAlbum.luau")
@@ -93,16 +92,9 @@ return function(t)
 		local albumState = Album.newState()
 		local pot = { lastAt = 0, cash = 0 }
 		local levels = IdleIncome.newLevels()
-		local gear = { EngineTune = 0 }
 		local owned = {}
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
-		local certs = {}
-		local exerciseDone = {}
 		local totalOps = 0
-		local swimmerOps = 0
-		local sinceSwimmer = 0
-		local towSeen = false
-		local stormSeen = false
 
 		local function isGreat(now: number): boolean
 			return not legacy and EventClock.phase("GreatStorm", now) == "Active"
@@ -177,7 +169,6 @@ return function(t)
 			{ "JetSki", "Engine", 290 },
 			{ "RIB", "Fit", 300 },
 			{ "Lifeboat", "Hull", 310 },
-			{ "JetSki", "Fit", 320 },
 		}
 
 		local function upgradesNext()
@@ -210,20 +201,6 @@ return function(t)
 		local function purchases()
 			vehicles()
 			upgradesNext()
-			local level = gear.EngineTune
-			if level < #ProgressionConfig.GearLevelPrices then
-				local nextLevel = level + 1
-				local price = ProgressionConfig.GearLevelPrices[nextLevel]
-				local gate = ProgressionConfig.GearLevelRank[nextLevel]
-				local wait = if nextLevel == 1 then 18 elseif nextLevel == 2 then 50 else 0
-				if rank() >= gate and playMin >= wait and data.cash >= price + reserve() then
-					data.cash -= price
-					gear.EngineTune = nextLevel
-					if nextLevel == 1 then
-						mark("First gear level")
-					end
-				end
-			end
 			-- Station workshop: a late-game Cash sink that raises the idle pot (docs/15 H6).
 			if
 				not legacy
@@ -343,67 +320,6 @@ return function(t)
 			if totalOps == 1 then
 				mark("First rescue")
 			end
-			if totalOps > #Grading.Payout.Tutorial then
-				swimmerOps += 1
-				sinceSwimmer += 1
-				towSeen = towSeen or def.id == "DisabledVessel"
-				stormSeen = stormSeen or storm
-			end
-		end
-
-		local function readyCert(): string?
-			for _, id in ProgressionConfig.CertOrder do
-				if not certs[id] then
-					local cert = ProgressionConfig.Certifications[id]
-					local needs = true
-					for _, need in cert.needs do
-						needs = needs and certs[need] == true
-					end
-					if needs then
-						if id == "Helm" or id == "CasualtyCare" then
-							if totalOps >= 2 and exerciseDone[id] ~= true then
-								return id
-							end
-						elseif id == "RescueSwimmer" then
-							if swimmerOps >= cert.live.count then
-								return id
-							end
-						elseif id == "Coxswain" then
-							if sinceSwimmer >= cert.live.count and towSeen and stormSeen then
-								return id
-							end
-						end
-					end
-				end
-			end
-			return nil
-		end
-
-		local function runExercise(id: string, now: number): number?
-			local cert = ProgressionConfig.Certifications[id]
-			local info = Exercises.Defs[cert.exercise]
-			if not info or info.minutes > SESSION_MIN then
-				return nil
-			end
-			certs[id] = true
-			data.certs[id] = true
-			data.exercises[cert.exercise] = "Silver"
-			exerciseDone[id] = true
-			mark(id .. " certification")
-			if id == "RescueSwimmer" then
-				sinceSwimmer = 0
-				towSeen = false
-				stormSeen = false
-			end
-			award(
-				ProgressionConfig.ExerciseReward.cash,
-				ProgressionConfig.ExerciseReward.rep,
-				now,
-				false,
-				isGreat(now)
-			)
-			playMin += info.minutes
-			return info.minutes
 		end
 
 		local sessions = {}
@@ -446,15 +362,6 @@ return function(t)
 				local remaining = SESSION_MIN
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local id = readyCert()
-					if id then
-						local minutes = runExercise(id, now)
-						if minutes and minutes <= remaining then
-							now += minutes * 60
-							remaining -= minutes
-							continue
-						end
-					end
 					local z = zoneAt(rank())
 					local planned = if totalOps < #Grading.Payout.Tutorial
 						then TUTORIAL_MIN[totalOps + 1]
@@ -614,14 +521,13 @@ return function(t)
 	end)
 
 	t.test("first rank at about 7-16 minutes", function()
-		-- this model runs the Helm exercise straight after call 2 (no gear walk); the real
-		-- onboarding order and clock are tests/NewPlayerPace.spec.luau (8 to 13 min)
+		-- ranks are Rep only (docs/16 K7); the onboarding clock is tests/NewPlayerPace.spec.luau
 		between(solo, "Rank 2 Lifeguard", 7, 16)
 	end)
 
-	t.test("RIB at about 0:30", function()
-		between(solo, "RIB bought", 24, 38)
-		between(friend, "RIB bought", 24, 38)
+	t.test("RIB at about 15-25 minutes (docs/16 K7)", function()
+		between(solo, "RIB bought", 15, 25)
+		between(friend, "RIB bought", 15, 25)
 	end)
 
 	t.test("Coxswain and the lifeboat at about 1:15-1:35", function()
@@ -659,14 +565,13 @@ return function(t)
 	end)
 
 	t.test("week 1 fits the planned upgrades", function()
-		-- docs 03 section 10: RIB fully upgraded, lifeboat with two, jet ski fully upgraded
-		t.expect(minutes(solo, "RIB Tow post") <= 6 * 60).toBe(true)
+		-- docs 03 section 10: RIB fully upgraded, lifeboat with two, jet ski Engine and Hull (it has no seat)
+		t.expect(minutes(solo, "RIB Extra seat") <= 6 * 60).toBe(true)
 		t.expect(minutes(solo, "Lifeboat Storm hull") <= 6 * 60).toBe(true)
-		t.expect(minutes(solo, "Jet ski Rescue seat") <= 6 * 60).toBe(true)
 	end)
 
-	t.test("session 1 still ends near the docs 03 3,200 Cash", function()
-		t.expect(solo.sessions[1].cash >= 2500 and solo.sessions[1].cash <= 4000).toBe(true)
+	t.test("session 1 buys the RIB (docs/16 K7) and still ends with Cash", function()
+		t.expect(solo.sessions[1].cash >= 1500 and solo.sessions[1].cash <= 4000).toBe(true)
 	end)
 
 	t.test("Admiral at about 32 hours (not before 25)", function()

@@ -38,22 +38,17 @@ return function(t)
 		t.expect(O.goal(facts({ stationReached = true }))).toBe("CallBoard")
 		local board = facts({ stationReached = true, boardReached = true })
 		t.expect(O.goal(board)).toBe("Rescue")
-		-- back to the station until the 5-minute gear unlock is due
-		local after = facts({ stationReached = true, boardReached = true, callsCompleted = 1 })
-		t.expect(O.goal(after)).toBe("Station")
-		t.expect(O.goal(facts({
-			stationReached = true,
-			boardReached = true,
-			callsCompleted = 1,
-			seconds = O.GEAR_AT,
-		}))).toBe("Gear")
-		t.expect(O.goal(facts({
-			stationReached = true,
-			boardReached = true,
-			callsCompleted = 1,
-			seconds = O.CERT_AT,
-			gearOwned = true,
-		}))).toBe("Cert")
+		-- no Gear or Cert goal any more (docs/16 B5, B7): nothing holds the next offers
+		for _, seconds in { 0, O.GEAR_AT, O.CERT_AT } do
+			local after = facts({
+				stationReached = true,
+				boardReached = true,
+				callsCompleted = 1,
+				seconds = seconds,
+			})
+			t.expect(O.goal(after)).toBe(nil)
+			t.expect(O.holdsOffers(O.goal(after))).toBe(false)
+		end
 	end)
 
 	t.test("the cert goal ends on an earned cert or a passed exercise (snapshot certs)", function()

@@ -1,19 +1,14 @@
--- Progression: rank thresholds, storm Cash multipliers, gear bonus math and purchase checks.
+-- Progression: rank thresholds, storm Cash multipliers, purchase checks and save migration.
 return function(t)
 	local Rules = t.load("src/shared/ProgressionRules.luau")
 	local Config = t.load("src/shared/Config/ProgressionConfig.luau")
+	local U = t.load("src/shared/VehicleUpgrades.luau")
 
-	local function data(cash, rep, gear, vehicles)
+	local function data(cash, rep, vehicles)
 		local d = Rules.defaultData()
 		d.cash = cash
 		d.rep = rep
-		d.gear = gear or {}
 		d.vehicles = vehicles or {}
-		-- certified for every rank, so these cases test Rep, Cash and gear (tests/Certs.spec.luau
-		-- covers the certification gate)
-		for _, id in Config.CertOrder do
-			d.certs[id] = true
-		end
 		return d
 	end
 
@@ -63,46 +58,17 @@ return function(t)
 		t.expect(flatMult).toBe(1)
 	end)
 
-	t.test("gear bonus math", function()
-		t.expect(Rules.gearBonus({}, "speed")).toBe(1)
-		t.expect(Rules.gearBonus(nil, "speed")).toBe(1)
-		t.expect(Rules.gearBonus({ EngineTune = 1 }, "speed")).toBeCloseTo(1.08, 1e-9)
-		t.expect(Rules.gearBonus({ EngineTune = 2 }, "speed")).toBeCloseTo(1.16, 1e-9)
-		t.expect(Rules.gearBonus({ StrongGrip = 1 }, "pullTime")).toBeCloseTo(0.75, 1e-9)
-		t.expect(Rules.gearBonus({ StrongGrip = 1 }, "speed")).toBe(1)
-		t.expect(Rules.gearBonus({ EngineTune = 99 }, "speed")).toBeCloseTo(1.24, 1e-9)
-		t.expect(Rules.gearBonus({ Unknown = 3 }, "speed")).toBe(1)
-		t.expect(Rules.gearBonus({ EngineTune = 1 }, "searchRadius")).toBe(1)
-	end)
-
-	t.test("gear purchase checks price, rank and max level", function()
-		local ok, _, price = Rules.canBuyGear(data(300, 0), "EngineTune")
-		t.expect(ok).toBe(true)
-		t.expect(price).toBe(300)
-		local poor = Rules.canBuyGear(data(299, 0), "EngineTune")
-		t.expect(poor).toBe(false)
-		local lowRank, why = Rules.canBuyGear(data(99999, 0, { EngineTune = 2 }), "EngineTune")
-		t.expect(lowRank).toBe(false)
-		t.expect(why).toBe("Needs Rescue Swimmer")
-		local l3 = Rules.canBuyGear(data(4000, 900, { EngineTune = 2 }), "EngineTune")
-		t.expect(l3).toBe(true)
-		local maxed, maxWhy = Rules.canBuyGear(data(99999, 900, { EngineTune = 3 }), "EngineTune")
-		t.expect(maxed).toBe(false)
-		t.expect(maxWhy).toBe("Max level")
-		t.expect((Rules.canBuyGear(data(99999, 900), "Nope"))).toBe(false)
-	end)
-
 	t.test("vehicle gates: jet ski free, RIB needs rank and Cash", function()
 		t.expect((Rules.canUseVehicle(data(0, 0), "JetSki"))).toBe(true)
 		local ok, why = Rules.canUseVehicle(data(99999, 0), "RIB")
 		t.expect(ok).toBe(false)
-		t.expect(why).toBe("Needs Rescue Swimmer")
-		t.expect((Rules.canUseVehicle(data(99999, 900), "RIB"))).toBe(false)
-		t.expect((Rules.canBuyVehicle(data(3999, 900), "RIB"))).toBe(false)
-		local buy, _, price = Rules.canBuyVehicle(data(4000, 900), "RIB")
+		t.expect(why).toBe("Needs Lifeguard")
+		t.expect((Rules.canUseVehicle(data(99999, 400), "RIB"))).toBe(false)
+		t.expect((Rules.canBuyVehicle(data(2499, 400), "RIB"))).toBe(false)
+		local buy, _, price = Rules.canBuyVehicle(data(2500, 400), "RIB")
 		t.expect(buy).toBe(true)
-		t.expect(price).toBe(4000)
-		t.expect((Rules.canUseVehicle(data(0, 900, {}, { RIB = true }), "RIB"))).toBe(true)
+		t.expect(price).toBe(2500)
+		t.expect((Rules.canUseVehicle(data(0, 400, { RIB = true }), "RIB"))).toBe(true)
 		t.expect((Rules.canUseVehicle(data(0, 900), "Helicopter"))).toBe(false)
 	end)
 
@@ -111,7 +77,7 @@ return function(t)
 		t.expect(Rules.vehiclePass("JetSki")).toBeNil() -- free at Recruit
 		-- the RIB: Cash-owned, or pass-owned at any rank
 		t.expect(Rules.ownsVehicle(data(0, 0), "RIB")).toBe(false)
-		t.expect(Rules.ownsVehicle(data(0, 0, {}, { RIB = true }), "RIB")).toBe(true)
+		t.expect(Rules.ownsVehicle(data(0, 0, { RIB = true }), "RIB")).toBe(true)
 		t.expect(Rules.ownsVehicle(data(0, 0), "RIB", true)).toBe(true)
 		t.expect((Rules.canUseVehicle(data(0, 0), "RIB", true))).toBe(true)
 		-- a Robux-only vehicle: never from Cash or a stale profile entry
@@ -126,7 +92,7 @@ return function(t)
 			}
 		do
 			t.expect(Rules.vehiclePass(id) ~= nil).toBe(true)
-			local ok, why = Rules.canUseVehicle(data(1e9, 1e6, {}, { [id] = true }), id)
+			local ok, why = Rules.canUseVehicle(data(1e9, 1e6, { [id] = true }), id)
 			t.expect(ok).toBe(false)
 			t.expect(why).toBe("Robux only")
 			t.expect((Rules.canBuyVehicle(data(1e9, 1e6), id))).toBe(false)
@@ -144,18 +110,48 @@ return function(t)
 		local d = Rules.migrate({
 			cash = -5,
 			rep = 0 / 0,
-			gear = { EngineTune = 10, Junk = 2 },
+			gear = { Junk = 2, StrongGrip = "x" },
 			vehicles = { RIB = true, Boat = true },
 		})
 		t.expect(d.version).toBe(Config.SchemaVersion)
 		t.expect(d.cash).toBe(0)
 		t.expect(d.rep).toBe(0)
-		t.expect(d.gear.EngineTune).toBe(Rules.maxGearLevel())
-		t.expect(d.gear.Junk).toBeNil()
 		t.expect(d.vehicles.RIB).toBe(true)
 		t.expect(d.vehicles.Boat).toBeNil()
+		t.expect(next(d.vehicleUpgrades)).toBeNil()
 		t.expect(Rules.migrate("garbage").cash).toBe(0)
 	end)
+
+	t.test(
+		"retired gear loads safely: Engine Tune fits the jet ski Engine, the rest is paid back",
+		function()
+			local engine = U.bit("Engine")
+			-- level 1 Engine Tune: the same +8% as the jet ski's Engine upgrade, nothing else
+			local one = Rules.migrate({ cash = 10, gear = { EngineTune = 1 } })
+			t.expect(one.vehicleUpgrades.JetSki).toBe(engine)
+			t.expect(one.cash).toBe(10)
+			t.expect((one :: any).gear).toBeNil()
+			-- higher levels come back as Cash (1,200 + 4,000); levels past 3 are clamped
+			t.expect(Rules.migrate({ gear = { EngineTune = 10 } }).cash).toBe(5200)
+			-- already fitted: the level-1 price comes back instead
+			local fitted =
+				Rules.migrate({ gear = { EngineTune = 1 }, vehicleUpgrades = { JetSki = engine } })
+			t.expect(fitted.vehicleUpgrades.JetSki).toBe(engine)
+			t.expect(fitted.cash).toBe(300)
+			-- Strong Grip did nothing with auto_board: every level paid back
+			t.expect(Rules.migrate({ cash = 1, gear = { StrongGrip = 2 } }).cash).toBe(1501)
+			-- the jet ski's old seat upgrade comes off (it holds one) and its 1,500 is paid back
+			local seat = Rules.migrate({ vehicleUpgrades = { JetSki = 7, RIB = 7 } })
+			t.expect(seat.vehicleUpgrades.JetSki).toBe(engine + U.bit("Hull"))
+			t.expect(seat.vehicleUpgrades.RIB).toBe(7)
+			t.expect(seat.cash).toBe(1500)
+			-- idempotent: saving re-runs migrate on the live table
+			local again =
+				Rules.migrate(Rules.migrate({ gear = { EngineTune = 3, StrongGrip = 1 } }))
+			t.expect(again.cash).toBe(1200 + 4000 + 300)
+			t.expect(again.vehicleUpgrades.JetSki).toBe(engine)
+		end
+	)
 
 	t.test("snapshot carries rank and next threshold", function()
 		local s = Rules.snapshot(data(10, 450))
