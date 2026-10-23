@@ -260,18 +260,29 @@ def main():
                     # ---- dev-hook systems ---------------------------------------------------
                     server(s, UNSEAT)
                     time.sleep(1.5)
-                    server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-112, 8, -36)) end return "tp"')
+                    # the crate sits in the player's own lifeboat bay (StreakService.open range check)
+                    # (execute_luau runs in its own VM: a require of VehicleService there has no bays, so read the published BayCFrame)
+                    tp = server(s, """
+local p = game:GetService("Players"):GetPlayers()[1]
+local c = p.Character
+local Shared = game:GetService("ReplicatedStorage").Shared
+local bay = p:GetAttribute("BayCFrame")
+local at = if bay then (bay * require(Shared.Boat.BayLaunch).CRATE).Position
+    else require(Shared.Config.StreakConfig).PorchPosition
+if c then c:PivotTo(CFrame.new(at + Vector3.new(0, 3, 0))) end
+return "tp=" .. tostring(bay ~= nil)
+""")
                     server(s, 'return tostring(game:GetService("ServerStorage").StreakDev:Invoke("day", 7))')
                     streak = client(s, 'local r=game:GetService("ReplicatedStorage").Net.Streak_Open:InvokeServer() return tostring(r and r.ok).."|"..tostring(r and r.streak)')
-                    system("StreakCrate", streak == "true|7", streak)
+                    system("StreakCrate", streak == "true|7", streak + " " + tp)
 
 
                     server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-105, 8, -30)) end return "tp"')
                     add = server(s, 'return tostring(game:GetService("ServerStorage").SanctuaryDev:Invoke("add", "SealPup", false))')
                     ready = server(s, 'return tostring(game:GetService("ServerStorage").SanctuaryDev:Invoke("ready"))')
-                    equip = server(s, 'local ok, why = game:GetService("ServerStorage").SanctuaryDev:Invoke("equip", 1) return tostring(ok).."|"..tostring(why)')
-                    pets = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Pet_Get:InvokeServer() return "pets="..tostring(v and #v.pets).." active="..tostring(v and v.pets[1] and v.pets[1].active)')
-                    system("PetAdopt", add != "nil" and ready == "true" and equip.startswith("true") and "active=true" in pets, "%s %s %s" % (equip, add, pets))
+                    # a recovered pet is adopted by PetController itself (Pet_Equip); a second equip here only trips the cooldown
+                    pets = wait_for(lambda: (lambda v: v if "active=true" in v else None)(client(s, 'local v=game:GetService("ReplicatedStorage").Net.Pet_Get:InvokeServer() return "pets="..tostring(v and #v.pets).." active="..tostring(v and v.pets[1] and v.pets[1].active)')), 10, 1) or "active=nil"
+                    system("PetAdopt", add != "nil" and ready == "true" and "active=true" in pets, "%s %s" % (add, pets))
 
                     server(s, 'return tostring(game:GetService("ServerStorage").CosmeticDev:Invoke("monthly"))')
                     cosmetic = client(s, 'local ok, why = game:GetService("ReplicatedStorage").Net.Cosmetics_Equip:InvokeServer("Livery", "Month2026-10") return tostring(ok).."|"..tostring(why).."|"..tostring(game:GetService("Players").LocalPlayer:GetAttribute("Cos_Livery"))')
