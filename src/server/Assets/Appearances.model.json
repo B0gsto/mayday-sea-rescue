@@ -2222,62 +2222,6 @@
    ]
   },
   {
-   "Name": "M_Kit_TowLine",
-   "ClassName": "Folder",
-   "Children": [
-    {
-     "Name": "Hardware",
-     "ClassName": "Folder",
-     "Children": [
-      {
-       "Name": "Dry",
-       "ClassName": "SurfaceAppearance",
-       "Properties": {
-        "ColorMap": "rbxassetid://86176366955151",
-        "NormalMap": "rbxassetid://96225831283263",
-        "RoughnessMap": "rbxassetid://96420556322798",
-        "MetalnessMap": "rbxassetid://137785951143323"
-       }
-      },
-      {
-       "Name": "Wet",
-       "ClassName": "SurfaceAppearance",
-       "Properties": {
-        "ColorMap": "rbxassetid://95482370004249",
-        "NormalMap": "rbxassetid://96225831283263",
-        "RoughnessMap": "rbxassetid://128692632917792",
-        "MetalnessMap": "rbxassetid://137785951143323"
-       }
-      }
-     ]
-    },
-    {
-     "Name": "Rope",
-     "ClassName": "Folder",
-     "Children": [
-      {
-       "Name": "Dry",
-       "ClassName": "SurfaceAppearance",
-       "Properties": {
-        "ColorMap": "rbxassetid://86813120372695",
-        "NormalMap": "rbxassetid://137604537306110",
-        "RoughnessMap": "rbxassetid://72217579991822"
-       }
-      },
-      {
-       "Name": "Wet",
-       "ClassName": "SurfaceAppearance",
-       "Properties": {
-        "ColorMap": "rbxassetid://83918942610385",
-        "NormalMap": "rbxassetid://137604537306110",
-        "RoughnessMap": "rbxassetid://102864521001179"
-       }
-      }
-     ]
-    }
-   ]
-  },
-  {
    "Name": "M_Kit_TriageTags",
    "ClassName": "Folder",
    "Children": [

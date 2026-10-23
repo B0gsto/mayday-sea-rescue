@@ -18,16 +18,16 @@ export type PlayerData = {
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
-	-- Retired certifications (docs/16 C3): kept as saved, never earned or checked any more.
-	certs: { [string]: boolean },
-	certLive: { [string]: number },
-	exercises: { [string]: string },
 	-- Equipped cosmetics, slot -> option id (RP-M5, src/shared/Cosmetics; CosmeticsService checks
 	-- ownership, this only keeps short strings).
 	cosmetics: { [string]: string },
 	-- BadgeService: counted badge progress and badges confirmed awarded (flat string keys).
 	badgeCounters: { [string]: number }?,
 	badgesAwarded: { [string]: boolean }?,
+	-- Retired certifications and exercises (docs/16 C3): kept as saved, never read.
+	certs: { [string]: any }?,
+	certLive: { [string]: any }?,
+	exercises: { [string]: any }?,
 }
 
 local Rules = {}
@@ -50,82 +50,6 @@ end
 -- The player's rank: Rep only (docs/16 K7, no certification gates).
 function Rules.rankIndex(data: PlayerData): number
 	return Rules.rankIndexForRep(data.rep)
-end
-
-local GRADE_RANK = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 } :: { [string]: number }
-
--- True when grade is minGrade or better ("Takeover" and unknown grades never are).
-function Rules.gradeAtLeast(grade: string?, minGrade: string): boolean
-	local g = if grade then GRADE_RANK[grade] else nil
-	local m = GRADE_RANK[minGrade]
-	return g ~= nil and m ~= nil and g >= m
-end
-
-function Rules.exercisePassed(data: PlayerData, exerciseId: string): boolean
-	return data.exercises[exerciseId] ~= nil
-end
-
-export type CertStatus = {
-	id: string,
-	displayName: string,
-	earned: boolean,
-	exercisePassed: boolean,
-	live: number,
-	liveNeeded: number,
-	liveLabel: string,
-	missing: { string }, -- prerequisite certifications not yet held (display names)
-	ready: boolean,
-}
-
--- shortcut: certStatus, certForExercise and canStartExercise only serve the retired exercise code
--- still in WP1's files (Ops/Definitions/Exercises, OperationService.StartExercise); drop with it.
-function Rules.certStatus(data: PlayerData, certId: string): CertStatus?
-	local cert = ProgressionConfig.Certifications[certId]
-	if not cert then
-		return nil
-	end
-	local missing = {}
-	for _, need in cert.needs do
-		if data.certs[need] ~= true then
-			local needDef = ProgressionConfig.Certifications[need]
-			table.insert(missing, if needDef then needDef.displayName else need)
-		end
-	end
-	local earned = data.certs[certId] == true
-	local passed = Rules.exercisePassed(data, cert.exercise)
-	local live = if earned
-		then cert.live.count
-		else math.min(data.certLive[certId] or 0, cert.live.count)
-	return {
-		id = certId,
-		displayName = cert.displayName,
-		earned = earned,
-		exercisePassed = passed or earned,
-		live = live,
-		liveNeeded = cert.live.count,
-		liveLabel = cert.live.label,
-		missing = missing,
-		ready = earned or (passed and live >= cert.live.count and #missing == 0),
-	}
-end
-
-function Rules.certForExercise(exerciseId: string): ProgressionConfig.Certification?
-	for _, id in ProgressionConfig.CertOrder do
-		local cert = ProgressionConfig.Certifications[id]
-		if cert and cert.exercise == exerciseId then
-			return cert
-		end
-	end
-	return nil
-end
-
--- Exercises are retired with the station board (docs/16 C3): none may start.
-function Rules.canStartExercise(
-	_data: PlayerData,
-	_exerciseId: string,
-	_busy: boolean?
-): (boolean, string)
-	return false, "Exercises are retired"
 end
 
 -- Next rank, plus 0..1 progress from the current threshold to the next. nil next at max rank.
@@ -314,15 +238,12 @@ function Rules.defaultData(): PlayerData
 		totalRescues = 0,
 		coldOpenDone = false,
 		flags = {},
-		certs = {},
-		certLive = {},
-		exercises = {},
 		cosmetics = {},
 	}
 end
 
 local MAX_FLAGS = 32
-local MAX_FLAG_FIELDS = 64 -- the album alone holds 48 (41 stickers, 7 sets); tests/FlagBudget.spec.luau
+local MAX_FLAG_FIELDS = 64 -- an old (cut) album flag holds 48 (41 stickers, 7 sets); tests/FlagBudget.spec.luau
 
 local function flagScalar(value: any): any
 	local kind = type(value)
@@ -436,31 +357,6 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
-	if type(raw.certs) == "table" then
-		for id, held in raw.certs do
-			if type(id) == "string" and ProgressionConfig.Certifications[id] and held == true then
-				data.certs[id] = true
-			end
-		end
-	end
-	if type(raw.certLive) == "table" then
-		for id, n in raw.certLive do
-			local cert = if type(id) == "string" then ProgressionConfig.Certifications[id] else nil
-			if cert and not data.certs[id] then
-				local count = math.clamp(math.floor(num(n, 0)), 0, cert.live.count)
-				if count > 0 then
-					data.certLive[id] = count
-				end
-			end
-		end
-	end
-	if type(raw.exercises) == "table" then
-		for id, grade in raw.exercises do
-			if type(id) == "string" and #id <= 40 and Rules.gradeAtLeast(grade, "Bronze") then
-				data.exercises[id] = grade
-			end
-		end
-	end
 	if type(raw.cosmetics) == "table" then
 		local n = 0
 		for slot, id in raw.cosmetics do
@@ -476,7 +372,7 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
-	for _, key in { "badgeCounters", "badgesAwarded" } do
+	for _, key in { "badgeCounters", "badgesAwarded", "certs", "certLive", "exercises" } do
 		if type(raw[key]) == "table" then
 			(data :: any)[key] = Rules.sanitizeFlag(raw[key])
 		end
@@ -502,11 +398,6 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		stars = stars,
 		nextStarRep = nextStarRep,
 		starProgress = starProgress,
-		-- shortcut: legacy fields for readers in other packages, drop with them (WP10): gear is
-		-- always empty (OperationService / OnboardingController call next() on it); certs mirrors
-		-- the saved, retired certifications (Lighthouses, Onboarding.certDone).
-		gear = {},
-		certs = table.clone(data.certs),
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
 		coldOpenDone = data.coldOpenDone,

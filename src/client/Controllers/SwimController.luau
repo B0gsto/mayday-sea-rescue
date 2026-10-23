@@ -7,7 +7,6 @@
 --     vertically; the eye floats at the surface, face down (mask under) when looking down
 --   * Jump (Space, gamepad A, touch jump) is taken off the Humanoid before physics (Stepped):
 --     the engine's own jump / swim handling outside Terrain water must never move the swimmer.
---   * Fins gear swims faster (PlayerDataChanged gear.Fins).
 -- Hands off while seated, anchored, climbing, dead, or while the player attribute SwimLocked is true
 -- (CONTRACT: a mechanic that moves the character itself in the water sets SwimLocked).
 local Players = game:GetService("Players")
@@ -18,14 +17,12 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
-local Net = require(Shared:WaitForChild("Net"))
 local OceanController = require(script.Parent.OceanController)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
 local Snorkel = require(Shared:WaitForChild("Explore"):WaitForChild("Snorkel"))
 
 local SwimController = {}
 
-local MODE: Snorkel.Mode = "surface"
 local DISABLED_STATES = {
 	Enum.HumanoidStateType.Running,
 	Enum.HumanoidStateType.RunningNoPhysics,
@@ -38,7 +35,6 @@ local DISABLED_STATES = {
 
 local player = Players.LocalPlayer
 local swimming = false
-local finsLevel = 0
 local lv: LinearVelocity? = nil
 local swimHumanoid: Humanoid? = nil
 local stroke: Sound? = nil
@@ -267,11 +263,8 @@ local function step(dt: number)
 	local cam = Workspace.CurrentCamera
 	local look = if cam then cam.CFrame.LookVector else root.CFrame.LookVector
 	local move = humanoid.MoveDirection
-	local flat = Vector3.new(look.X, 0, look.Z)
-	flat = if flat.Magnitude > 1e-3 then flat.Unit else Vector3.zAxis
-	local forward = math.max(0, move:Dot(flat))
-	local horizontal = move * Snorkel.speed(MODE, finsLevel)
-	local vy = Snorkel.verticalVelocity(MODE, eyeY, surfaceY, floorY, look.Y, forward)
+	local horizontal = move * Snorkel.SWIM_SPEED
+	local vy = Snorkel.verticalVelocity(eyeY, surfaceY, look.Y)
 	-- the rip off Haven Sands (docs/09 section 8.4): stroke plus the current, so swimming
 	-- straight back against it barely moves and going across it leaves the channel
 	local flow = RipCurrent.velocityAt(RipCurrent.HavenSands, Vector3.new(pos.X, 0, pos.Z))
@@ -293,14 +286,6 @@ local function step(dt: number)
 end
 
 function SwimController.Init()
-	local ev = Net.event("PlayerDataChanged")
-	if ev then
-		ev.OnClientEvent:Connect(function(snapshot: any)
-			if type(snapshot) == "table" and type(snapshot.gear) == "table" then
-				finsLevel = tonumber(snapshot.gear.Fins) or finsLevel
-			end
-		end)
-	end
 	player.CharacterRemoving:Connect(exitSwim)
 end
 

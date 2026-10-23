@@ -1,6 +1,6 @@
 --!strict
--- Telemetry (client, G64): the three first-session facts only the client knows (the reward burst
--- played, the station beacon reached, photo mode opened). Everything else is logged on the server;
+-- Telemetry (client, G64): the first-session facts only the client knows (the reward burst played,
+-- photo mode opened, the first pet petted). Everything else is logged on the server;
 -- this thin module only forwards a fixed name to TelemetryService over Telemetry_Client, once each.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

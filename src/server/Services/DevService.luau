@@ -325,15 +325,6 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 				data.rep = ProgressionConfig.Ranks[math.floor(a[2])].rep
 			end)
 		end,
-		cert = function(_, target, a)
-			return edit(target :: Player, function(data)
-				for _, id in ProgressionConfig.CertOrder do
-					if a[2] == "All" or a[2] == id then
-						data.certs[id] = true
-					end
-				end
-			end)
-		end,
 		unlockAll = function(_, target)
 			return unlockAll(target :: Player)
 		end,

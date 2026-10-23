@@ -1,5 +1,7 @@
 # 03 · Progression
 
+> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+
 This file owns every progression number: payouts, rank thresholds, prices in Cash, and the pacing model. Names come from [`01-game-canon.md`](01-game-canon.md), mechanics from [`02-core-loop-and-mechanics.md`](02-core-loop-and-mechanics.md), and operations, grading and certification content from [`09-rescue-operations.md`](09-rescue-operations.md). Every number marked **(tune)** is a first guess for playtests; nothing here is a Roblox benchmark.
 
 ## 1. Principles

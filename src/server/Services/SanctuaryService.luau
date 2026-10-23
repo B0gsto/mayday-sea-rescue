@@ -95,7 +95,7 @@ function SanctuaryService.DressOffer(op: any, player: Player?)
 	op.radioLine = Wildlife.callLine(species, rare)
 	op.wildlifeSpecies = species
 	op.wildlifeRare = rare
-	-- the Rescue Album sticker is the animal actually dressed, not a second roll
+	-- the variant is the animal actually dressed, not a second roll
 	op.variant = if rare then `Wildlife_{species}_Rare` else `Wildlife_{species}`
 	if type(op.scene) == "table" then
 		op.scene.wildlifeSpecies = species

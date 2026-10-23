@@ -21,7 +21,6 @@ export type OpSnapshot = {
 	reason: string?,
 	storm: boolean?,
 	saved: number?,
-	towParted: boolean?,
 	steps: { StepRecord }?,
 }
 
@@ -65,9 +64,6 @@ function BadgeRules.opProgress(
 	out.FirstRescue = 1
 	if snap.storm then
 		out.StormChaser = 1
-	end
-	if snap.kind == "DisabledVessel" and not snap.towParted then
-		out.TowTruck = 1
 	end
 	if snap.isBig and snap.kind == "CapsizedFerry" and (snap.saved or 0) > 0 then
 		out.FerryHero = 1

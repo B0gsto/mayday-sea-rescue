@@ -5,42 +5,30 @@
 -- every remote below under ReplicatedStorage.Net. Clients call Net.init() too (client Main does
 -- it), which waits for that folder. Then anyone gets a remote with a typed name:
 --
---   Net.event("CallOffered"):FireClient(player, call)        -- server
---   Net.event("CallAccepted").OnServerEvent:Connect(fn)      -- server
---   Net.func("BuyGear"):InvokeServer("Fins")                 -- client
+--   Net.event("DogPoint"):FireClient(player, payload)        -- server
+--   Net.event("CrewLeave").OnServerEvent:Connect(fn)         -- server
+--   Net.func("BuyGear"):InvokeServer("RIB")                  -- client
 --
 -- Names are string-literal types, so a typo is a luau-lsp error. To add a remote, add its name to
 -- EVENTS/FUNCTIONS and to the matching type below (this is the one shared file you must edit).
 --
 -- Direction and payload (S = server, C = client; payload shapes are owned by the service that fires):
---   CallOffered        S->C  a call card is offered to a player or crew
---   CallAccepted       C->S  player accepts an offered call (callId)
---   CallUpdated        S->C  call progress (victims found, comfort, timer)
---   CallCompleted      S->C  call delivered: grade and payout
---   CallFailed         S->C  call failed or released
 --   VehicleSpawned     S->C  a vehicle was launched from a bay (vehicle model, bay name)
---   RescueAction       C->S  hold-to-pull aboard, attach/detach tow, right the boat ({action, target})
 --   CrewJoin           C->S  join a crew / invite accept (S->C echoes crew changes)
 --   CrewLeave          C->S  leave the crew (S->C echoes)
---   PlayerDataChanged  S->C  a changed slice of the player's saved data (cash, rep, rank, gear)
+--   PlayerDataChanged  S->C  the player's progression snapshot (cash, rep, rank, vehicles)
 --   StormChanged       S->C  one-shot cue when the storm phase changes (siren, radio line). The
 --                            continuous storm state is NOT sent by remote: it lives in attributes on
 --                            ReplicatedStorage.Weather (State, StateStartTime, Intensity,
 --                            WindDirection, StormId), so late joiners read it without catch-up.
 --   DogPoint           S->C  Bosun points/barks toward a victim (direction or position)
 --   RequestVehicle     C->S  function: launch a vehicle at a bay (vehicleId, docked?) -> (ok, reasonOrVehicle)
---   BuyGear            C->S  function: buy or upgrade gear -> (ok, reason)
+--   BuyGear            C->S  function: buy a vehicle (vehicleId) -> (ok, reason)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 export type EventName =
-	"CallOffered"
-	| "CallAccepted"
-	| "CallUpdated"
-	| "CallCompleted"
-	| "CallFailed"
-	| "VehicleSpawned"
-	| "RescueAction"
+	"VehicleSpawned"
 	| "CrewJoin"
 	| "CrewLeave"
 	| "PlayerDataChanged"
@@ -55,13 +43,7 @@ local WAIT_TIMEOUT = 30
 local Net = {}
 
 Net.EVENTS = table.freeze({
-	"CallOffered",
-	"CallAccepted",
-	"CallUpdated",
-	"CallCompleted",
-	"CallFailed",
 	"VehicleSpawned",
-	"RescueAction",
 	"CrewJoin",
 	"CrewLeave",
 	"PlayerDataChanged",

@@ -1,6 +1,6 @@
 --!strict
 -- RescueDressing (server): the code-built look of each rare-call variant (docs/15 H2): outfit
--- colours, an accessory part, a dog made of Parts, a golden bird, a white yacht hull. Called from
+-- colours, an accessory part, a dog made of Parts, a golden bird, boat trim. Called from
 -- the places that build casualties and boats (RescueService.spawnVictim, SinkingScene, FireScene). Placeholder art until real models land (CLAUDE.md).
 --
 -- Two mounting modes, chosen by the caller's context:
@@ -20,7 +20,6 @@ export type Ctx = {
 	floater: any?,
 	mount: Mount?,
 	root: BasePart?,
-	large: boolean?, -- the sinking scene's 24 x 7 x 52 hull
 }
 
 local function part(
@@ -73,16 +72,6 @@ local function add(
 		p.CFrame = offset
 	end
 	return p
-end
-
-local function hide(model: Instance, names: { string })
-	for _, name in names do
-		local child = model:FindFirstChild(name, true)
-		if child and child:IsA("BasePart") then
-			child.Transparency = 1
-			child.CanQuery = false
-		end
-	end
 end
 
 local TORSO = -1.35 -- the swimmer's torso centre on a water floater (RescueService.RIG_TORSO - 4.55)
@@ -473,89 +462,7 @@ local function creature(model: Model, ctx: Ctx, id: string, legendary: boolean)
 end
 
 local function boat(model: Model, ctx: Ctx, id: string)
-	local large = ctx.large == true
-	if id == "FishingBoat" then
-		add(
-			model,
-			ctx,
-			"NetRoll",
-			Vector3.new(1.4, 1.4, if large then 8 else 4),
-			CFrame.new(0, if large then 4.2 else 1.5, if large then 12 else 4.5),
-			Color3.fromRGB(64, 84, 70)
-		)
-		for side = -1, 1, 2 do
-			add(
-				model,
-				ctx,
-				"Outrigger",
-				Vector3.new(0.18, if large then 7 else 4.5, 0.18),
-				CFrame.new(side * (if large then 10 else 3.4), if large then 4 else 2.2, 0)
-					* CFrame.Angles(0, 0, side * 0.3),
-				Color3.fromRGB(120, 96, 60)
-			)
-		end
-	elseif id == "RowingBoat" then
-		hide(model, { "Cabin", "Windshield", "Smoke" })
-		for side = -1, 1, 2 do
-			add(
-				model,
-				ctx,
-				"Oar",
-				Vector3.new(0.14, 0.14, 5.4),
-				CFrame.new(side * 1.8, 0.4, 0) * CFrame.Angles(0, side * 0.5, side * 0.22),
-				Color3.fromRGB(176, 130, 78)
-			)
-		end
-		add(
-			model,
-			ctx,
-			"Bench",
-			Vector3.new(5, 0.25, 0.8),
-			CFrame.new(0, 0.9, -1),
-			Color3.fromRGB(150, 104, 62)
-		)
-		add(
-			model,
-			ctx,
-			"Bench",
-			Vector3.new(5, 0.25, 0.8),
-			CFrame.new(0, 0.9, 3),
-			Color3.fromRGB(150, 104, 62)
-		)
-	elseif id == "CelebrityYacht" then
-		add(
-			model,
-			ctx,
-			"SunDeck",
-			Vector3.new(5.2, 0.3, 6.5),
-			CFrame.new(0, 4.5, 1.5),
-			Color3.fromRGB(250, 250, 246)
-		)
-		add(
-			model,
-			ctx,
-			"GoldRail",
-			Vector3.new(5.4, 0.12, 0.12),
-			CFrame.new(0, 5.1, 4.7),
-			Color3.fromRGB(218, 178, 74)
-		)
-		add(
-			model,
-			ctx,
-			"YachtFlag",
-			Vector3.new(1.4, 0.7, 0.06),
-			CFrame.new(0, 6.4, -5.6),
-			Color3.fromRGB(218, 178, 74)
-		)
-		add(
-			model,
-			ctx,
-			"FlagPole",
-			Vector3.new(0.1, 2.6, 0.1),
-			CFrame.new(0, 5.5, -5.6),
-			Color3.fromRGB(220, 220, 214)
-		)
-	elseif id == "CharterBoat" then
+	if id == "CharterBoat" then
 		add(
 			model,
 			ctx,
@@ -653,123 +560,6 @@ local function boat(model: Model, ctx: Ctx, id: string)
 				CFrame.new(i * 5, 5, 10) * CFrame.Angles(0, 0, math.pi / 2),
 				Color3.fromRGB(246, 246, 240),
 				Enum.PartType.Cylinder
-			)
-		end
-	elseif id == "SwanPedalo" then
-		hide(model, { "Cabin", "Windshield", "Smoke" })
-		add(
-			model,
-			ctx,
-			"SwanBody",
-			Vector3.new(3.6, 1.1, 5.6),
-			CFrame.new(0, 1.05, -0.4),
-			Color3.fromRGB(248, 248, 244)
-		)
-		add(
-			model,
-			ctx,
-			"SwanNeck",
-			Vector3.new(0.6, 2.4, 0.6),
-			CFrame.new(0, 3, -2) * CFrame.Angles(-0.35, 0, 0),
-			Color3.fromRGB(248, 248, 244)
-		)
-		add(
-			model,
-			ctx,
-			"SwanHead",
-			Vector3.new(0.95, 0.95, 0.95),
-			CFrame.new(0, 4.2, -2.6),
-			Color3.fromRGB(248, 248, 244),
-			Enum.PartType.Ball
-		)
-		add(
-			model,
-			ctx,
-			"SwanBeak",
-			Vector3.new(0.28, 0.24, 0.7),
-			CFrame.new(0, 4.15, -3.1),
-			Color3.fromRGB(232, 148, 52)
-		)
-	elseif id == "PirateShip" then
-		hide(model, { "Smoke" })
-		add(
-			model,
-			ctx,
-			"Mast",
-			Vector3.new(0.34, 9, 0.34),
-			CFrame.new(0, 5, 0.5),
-			Color3.fromRGB(96, 68, 44)
-		)
-		add(
-			model,
-			ctx,
-			"Sail",
-			Vector3.new(5.2, 3.2, 0.12),
-			CFrame.new(0, 6.2, 0.5),
-			Color3.fromRGB(226, 220, 202)
-		)
-		add(
-			model,
-			ctx,
-			"PirateFlag",
-			Vector3.new(1.5, 0.9, 0.06),
-			CFrame.new(0.9, 8.7, 0.5),
-			Color3.fromRGB(28, 26, 30)
-		)
-	elseif id == "Trawler" then
-		add(
-			model,
-			ctx,
-			"TrawlBoom",
-			Vector3.new(0.32, 0.32, 5.5),
-			CFrame.new(0, 4.5, 3.5) * CFrame.Angles(-0.5, 0, 0),
-			Color3.fromRGB(120, 96, 60)
-		)
-		add(
-			model,
-			ctx,
-			"TrawlNet",
-			Vector3.new(2.6, 2.2, 2.6),
-			CFrame.new(0, 1.6, 5.5),
-			Color3.fromRGB(52, 72, 58),
-			Enum.PartType.Ball
-		)
-		for side = -1, 1, 2 do
-			add(
-				model,
-				ctx,
-				"Float",
-				Vector3.new(0.7, 0.7, 0.7),
-				CFrame.new(side * 1.8, 1.1, 5.5),
-				Color3.fromRGB(240, 128, 40),
-				Enum.PartType.Ball
-			)
-		end
-	elseif id == "Houseboat" then
-		add(
-			model,
-			ctx,
-			"CabinTop",
-			Vector3.new(4.6, 1.8, 5.4),
-			CFrame.new(0, 3.5, 0),
-			Color3.fromRGB(240, 232, 208)
-		)
-		add(
-			model,
-			ctx,
-			"WindowStrip",
-			Vector3.new(4.65, 0.5, 5.45),
-			CFrame.new(0, 3.8, 0),
-			Color3.fromRGB(42, 66, 82)
-		)
-		for side = -1, 1, 2 do
-			add(
-				model,
-				ctx,
-				"Planter",
-				Vector3.new(1.6, 0.5, 0.6),
-				CFrame.new(side * 1.2, 4.65, -2.4),
-				Color3.fromRGB(74, 118, 66)
 			)
 		end
 	end

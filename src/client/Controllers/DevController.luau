@@ -356,12 +356,6 @@ local function fill(b: DevBoard.Board)
 			call("rank", { tgt(), i })
 		end)
 	end
-	g = DevBoard.section(page, "Certifications (target)")
-	for _, id in lists.Certs do
-		DevBoard.button(g, `📜 {id}`, function()
-			call("cert", { tgt(), id })
-		end)
-	end
 	g = DevBoard.section(page, "Passes, test owned (target)")
 	for _, id in lists.Passes do
 		DevBoard.button(g, `🎟 {id}`, function()

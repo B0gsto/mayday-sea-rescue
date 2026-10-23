@@ -35,7 +35,6 @@ local DogController = {}
 local SHOW_SECONDS = 2.2
 local BARK_GAP = 20 -- s between barks: DogService sniffs every 4 s, a bark each time nags
 local BUBBLE_NEAR = 16 -- studs from the camera: closer, the bubble would sit mid-screen (bark only)
-local TREAT_SECONDS = 1.6 -- one happy spin after the daily challenge set (DogService.Treat)
 local OWNER_LOOK_RANGE = 28 -- studs: he watches his owner inside this
 local ARROW_COLOR = Color3.fromHex("3EE07A") -- Waypoint Green: where to go (docs 05 section 3.2)
 local BUBBLE_TEXT = Color3.fromHex("0A2A3B")
@@ -50,8 +49,6 @@ type DogState = {
 	accel: Vector3,
 	pointAt: Vector3?,
 	pointUntil: number,
-	treatSerial: number,
-	treatUntil: number,
 	glanceDir: Vector3?,
 	glanceUntil: number,
 	nextGlance: number,
@@ -169,8 +166,6 @@ local function track(model: Instance)
 		accel = Vector3.zero,
 		pointAt = nil,
 		pointUntil = 0,
-		treatSerial = tonumber(model:GetAttribute("Treat")) or 0,
-		treatUntil = 0,
 		glanceDir = nil,
 		glanceUntil = 0,
 		nextGlance = os.clock() + rng:NextNumber(3, 7),
@@ -181,30 +176,6 @@ local function track(model: Instance)
 	end
 	table.insert(state.connections, model.DescendantAdded:Connect(markDirty))
 	table.insert(state.connections, model.DescendantRemoving:Connect(markDirty))
-	table.insert(
-		state.connections,
-		model:GetAttributeChangedSignal("Treat"):Connect(function()
-			local serial = tonumber(model:GetAttribute("Treat")) or 0
-			if serial <= state.treatSerial then
-				return
-			end
-			state.treatSerial = serial
-			state.treatUntil = os.clock() + TREAT_SECONDS
-			local body = model:FindFirstChild("Body") :: BasePart?
-			if body then
-				local old = body:FindFirstChild("WoofBubble")
-				if old then
-					old:Destroy()
-				end
-				local bubble = makeBubble(body)
-				task.delay(TREAT_SECONDS + 0.6, function()
-					if bubble.Parent then
-						bubble:Destroy()
-					end
-				end)
-			end
-		end)
-	)
 	dogs[model] = state
 end
 
@@ -280,9 +251,8 @@ local function stepDog(state: DogState, dt: number, now: number)
 	state.lastVel = vel
 	local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 	local pointing = state.pointAt ~= nil and now < state.pointUntil
-	local treating = now < state.treatUntil
-	local excited = if pointing or treating then 1 else 0
-	if not pointing and not treating and mode ~= "Swim" then
+	local excited = if pointing then 1 else 0
+	if not pointing and mode ~= "Swim" then
 		local head = ownerHead(model)
 		if head and (head - body.Position).Magnitude < 10 then
 			excited = 0.45
@@ -300,12 +270,6 @@ local function stepDog(state: DogState, dt: number, now: number)
 		deckPitch = math.asin(math.clamp(cf.LookVector.Y, -1, 1)),
 		wetness = if type(wetness) == "number" then wetness else 0,
 	})
-	if treating then
-		-- a hop and one full turn about the root pivot, easing in and out
-		local p = math.clamp(1 - (state.treatUntil - now) / TREAT_SECONDS, 0, 1)
-		local hop = 0.35 * math.sin(math.pi * p)
-		pose.Root = CFrame.new(0, hop, 0) * CFrame.Angles(0, 2 * math.pi * p, 0) * pose.Root
-	end
 	for name, list in state.motors do
 		local transform = pose[name]
 		if transform then

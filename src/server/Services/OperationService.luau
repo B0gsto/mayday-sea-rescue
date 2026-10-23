@@ -1037,11 +1037,7 @@ finish = function(op: any, reason: string)
 		end
 		-- the saved count of finished operations (ProgressionService); takeovers never count
 		if op.helpers[p] and not op.takeover then
-			local steps = {}
-			for _, r in op.results do
-				table.insert(steps, { id = r.stepId, grade = r.grade, userId = r.userId })
-			end
-			try("ProgressionService", "RecordTraining", p, op.kind, grade, steps, false)
+			try("ProgressionService", "RecordTraining", p, grade)
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
@@ -1233,25 +1229,6 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 	end
 	fire("Ops_StepAck", player, { opId = opId, stepKey = key, accepted = true, grade = grade })
 	complete(op, track, inst, grade, player)
-end
-
--- Swap station (docs 09 section 4.2): a human on the track takes a step an NPC is doing.
-local function onTakeStep(player: Player, opId: any, key: any)
-	local op = if type(opId) == "string" then ops[opId] else nil
-	if not op or op.state ~= "Active" then
-		return
-	end
-	local track = trackOf(op, player)
-	local inst = track and track.current
-	if not track or not inst or inst.key ~= key or not inst.npc then
-		return
-	end
-	inst.npc = false
-	inst.assignee = player
-	inst.startedAt = now()
-	inst.timeoutAt = inst.startedAt + inst.def.timeoutSec
-	fire("Ops_StepStart", player, stepContext(op, track, inst, player))
-	broadcast(op)
 end
 
 ---------------------------------------------------------------- RescueService hooks
@@ -2184,7 +2161,6 @@ function OperationService.Init()
 	Remotes.init()
 	Remotes.event("Ops_Accept").OnServerEvent:Connect(onAccept)
 	Remotes.event("Ops_StepResult").OnServerEvent:Connect(onStepResult)
-	Remotes.event("Ops_TakeStep").OnServerEvent:Connect(onTakeStep)
 	Players.PlayerAdded:Connect(onPlayerAdded)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 	for _, p in Players:GetPlayers() do

@@ -1,8 +1,8 @@
 --!strict
 -- A11yPalette: the colour-blind-safe palette and one glyph per state (docs 14 section 2). Every
 -- state in a group has its own symbol, and the group's colours are spaced in luminance, so nothing
--- depends on colour alone. SettingsPanel picks the palette ("Off" uses Default); AlbumBoard,
--- OpsDebrief, OpsStepCard and the triage tags read it. Pure, Lune-tested in tests/A11yPalette.spec.
+-- depends on colour alone. SettingsPanel picks the palette ("Off" uses Default); OpsDebrief,
+-- OpsStepCard and the map markers read it. Pure, Lune-tested in tests/A11yPalette.spec.
 --
 --   A11yPalette.setMode("Off" | "Deuteranopia" | "Protanopia" | "Tritanopia")
 --   A11yPalette.colour(group, state) / A11yPalette.symbol(group, state)
@@ -43,7 +43,6 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		Vehicle = "V",
 		Crew = "C",
 		Storm = "◉",
-		Discovery = "*",
 		SeamarkPort = "◀",
 		SeamarkStarboard = "▶",
 		SeamarkCardinal = "✦",

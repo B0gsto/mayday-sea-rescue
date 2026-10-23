@@ -3808,15 +3808,6 @@
   "source": "assets/textures/M_Bld_LifeguardTower/T_LifeguardTower_Frame_RGH_Wet.png",
   "type": "Image"
  },
- "Image:310a45fb6bfa5b8b1c4ab25d106863426d11f3fd579e9443fbad785e1803b98c": {
-  "assetId": "102864521001179",
-  "imageId": "102864521001179",
-  "moderation": "Approved",
-  "name": "T_TowLine_Rope_RGH_Wet",
-  "sha": "310a45fb6bfa5b8b1c4ab25d106863426d11f3fd579e9443fbad785e1803b98c",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_RGH_Wet.png",
-  "type": "Image"
- },
  "Image:310d4932f7defd34781a5d6c84c160f91c5165e7ccbbb1f9e881023dee479160": {
   "assetId": "118576858914698",
   "imageId": "118576858914698",
@@ -8573,15 +8564,6 @@
   "source": "assets/textures/Materials/T_Mat_TurfStraw_ALB_Wet.png",
   "type": "Image"
  },
- "Image:7153c2b9444478954e75b57cd5628afaa0330c4f72b2c2834419b5fd28fa1f46": {
-  "assetId": "137604537306110",
-  "imageId": "137604537306110",
-  "moderation": "Approved",
-  "name": "T_TowLine_Rope_NOR",
-  "sha": "7153c2b9444478954e75b57cd5628afaa0330c4f72b2c2834419b5fd28fa1f46",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_NOR.png",
-  "type": "Image"
- },
  "Image:715a3bc4dd0ac6abd2123a224e3c5831af904d6c8769b3aa1a3908ca1c4e6e93": {
   "aliases": [
    "T_HbrProps_Metal_MET_Wet"
@@ -9267,15 +9249,6 @@
   "name": "T_CasualtySwimmer_Body_RGH",
   "sha": "79e0d5b54763f99a4a559605cef102581c290ce024f607aceb5f143c0d925042",
   "source": "assets/textures/M_Chr_Casualty_Swimmer/T_CasualtySwimmer_Body_RGH.png",
-  "type": "Image"
- },
- "Image:79ed8a3b15f8fa8bb9b1b6858337209c47ad6a58cefafcfa09df331f7fcfb616": {
-  "assetId": "128692632917792",
-  "imageId": "128692632917792",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_RGH_Wet",
-  "sha": "79ed8a3b15f8fa8bb9b1b6858337209c47ad6a58cefafcfa09df331f7fcfb616",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_RGH_Wet.png",
   "type": "Image"
  },
  "Image:79ed8f416e2ed3b7f59bc2728e102beee4f428a90316274896741d8c25cf7e25": {
@@ -10563,15 +10536,6 @@
   "name": "T_Morwenna_Kelp_NOR",
   "sha": "8b41a012a16818698d7f06acc00c6a1c450d0d394376811bed6306b26d0a7342",
   "source": "assets/textures/M_Sea_Morwenna/T_Morwenna_Kelp_NOR.png",
-  "type": "Image"
- },
- "Image:8b6226b7920fc3b56a28be1aa2b947984f11f0d33a7f509ca4fb9b40a9b6cdd1": {
-  "assetId": "137785951143323",
-  "imageId": "137785951143323",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_MET",
-  "sha": "8b6226b7920fc3b56a28be1aa2b947984f11f0d33a7f509ca4fb9b40a9b6cdd1",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_MET.png",
   "type": "Image"
  },
  "Image:8b8db4f05e1c90f4c5ad554f2b268f16f6279f1ebc27cc1c40665f23e93d57f7": {
@@ -13262,15 +13226,6 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_ALB_Wet.png",
   "type": "Image"
  },
- "Image:af2cd67cabe76d59daf6bbae1a3af8ce92503eec002ee431bbe52d94148b488c": {
-  "assetId": "86813120372695",
-  "imageId": "86813120372695",
-  "moderation": "Approved",
-  "name": "T_TowLine_Rope_ALB",
-  "sha": "af2cd67cabe76d59daf6bbae1a3af8ce92503eec002ee431bbe52d94148b488c",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_ALB.png",
-  "type": "Image"
- },
  "Image:af621d9449b1512fbb3ba6daae9dfcd31abb7b84897a40c672ef9bf4f682402a": {
   "assetId": "73511196593796",
   "imageId": "73511196593796",
@@ -15693,15 +15648,6 @@
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Soft_RGH.png",
   "type": "Image"
  },
- "Image:d3f220bac650a7ffb29c97da6eb2dc2ffe1efe5571105c0e219e134e1010b16c": {
-  "assetId": "83918942610385",
-  "imageId": "83918942610385",
-  "moderation": "Approved",
-  "name": "T_TowLine_Rope_ALB_Wet",
-  "sha": "d3f220bac650a7ffb29c97da6eb2dc2ffe1efe5571105c0e219e134e1010b16c",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_ALB_Wet.png",
-  "type": "Image"
- },
  "Image:d3fd7aee9cebfff3bdea8cbb78e39787f08b3c4cc0e030a0e2076a30c9f718fd": {
   "assetId": "106282100105892",
   "imageId": "106282100105892",
@@ -16264,15 +16210,6 @@
   "name": "T_NavMarkNorth_Buoy_RGH",
   "sha": "daa41814ac94c21dab7b2593523bd6adde22129ead8b96c452a3cb1ca49830fb",
   "source": "assets/textures/M_Hbr_NavMark_North/T_NavMarkNorth_Buoy_RGH.png",
-  "type": "Image"
- },
- "Image:dab1776c7b7f0fa08d0e46d16a182f8cef9c26f27a87cafb0a17a1f8ec1b8b03": {
-  "assetId": "96225831283263",
-  "imageId": "96225831283263",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_NOR",
-  "sha": "dab1776c7b7f0fa08d0e46d16a182f8cef9c26f27a87cafb0a17a1f8ec1b8b03",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_NOR.png",
   "type": "Image"
  },
  "Image:dad67193bee9d62d81e8c722824f1a2f44cf3a8c85515b093acf9b00f9b71200": {
@@ -17163,15 +17100,6 @@
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_NOR.png",
   "type": "Image"
  },
- "Image:e5f89f84a4e29b5f2b81bec57f8fa7159944467c48e02d8ed4faa62723e6375a": {
-  "assetId": "96420556322798",
-  "imageId": "96420556322798",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_RGH",
-  "sha": "e5f89f84a4e29b5f2b81bec57f8fa7159944467c48e02d8ed4faa62723e6375a",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_RGH.png",
-  "type": "Image"
- },
  "Image:e60a8ba2de32f36c7d5d0f64cf043f1be4dea2ce4337996c23f954469b933c6d": {
   "assetId": "87594913388301",
   "imageId": "87594913388301",
@@ -17888,15 +17816,6 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_RGH.png",
   "type": "Image"
  },
- "Image:f20c51608ac25e3b046b58ec96b2730b6d6939f27315307f4eec1b4c89d93b43": {
-  "assetId": "95482370004249",
-  "imageId": "95482370004249",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_ALB_Wet",
-  "sha": "f20c51608ac25e3b046b58ec96b2730b6d6939f27315307f4eec1b4c89d93b43",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_ALB_Wet.png",
-  "type": "Image"
- },
  "Image:f2162c4b16556de1f7eeb07aceb4b0e36073ac1accc1780b2ef44607945fe199": {
   "assetId": "115139993525090",
   "imageId": "115139993525090",
@@ -18284,15 +18203,6 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_NOR.png",
   "type": "Image"
  },
- "Image:f62939cb41d4f2d0ba7cc10a8544db7116dfeaa0cf08440b9b6188770b5f012f": {
-  "assetId": "86176366955151",
-  "imageId": "86176366955151",
-  "moderation": "Approved",
-  "name": "T_TowLine_Hardware_ALB",
-  "sha": "f62939cb41d4f2d0ba7cc10a8544db7116dfeaa0cf08440b9b6188770b5f012f",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Hardware_ALB.png",
-  "type": "Image"
- },
  "Image:f6492010eafa0c19b3b0722480bdc95621e59bcf3bd5410ca4b136f2b62aaaa0": {
   "assetId": "77811983849815",
   "imageId": "77811983849815",
@@ -18548,15 +18458,6 @@
   "name": "T_RIB_Rig_RGH_Wet",
   "sha": "fa87f2048a6cfad4efa01ace9eb1bcd7a9d478910e9a3ebde84a4588789cbdbc",
   "source": "assets/textures/M_Veh_RIB/T_RIB_Rig_RGH_Wet.png",
-  "type": "Image"
- },
- "Image:fa8874d68dc781e1ccaa9126a3923d405b9f2eb6e81c6f35e33bb0e365fb2707": {
-  "assetId": "72217579991822",
-  "imageId": "72217579991822",
-  "moderation": "Approved",
-  "name": "T_TowLine_Rope_RGH",
-  "sha": "fa8874d68dc781e1ccaa9126a3923d405b9f2eb6e81c6f35e33bb0e365fb2707",
-  "source": "assets/textures/M_Kit_TowLine/T_TowLine_Rope_RGH.png",
   "type": "Image"
  },
  "Image:fa9548a09bf21588ba926260c568696f4277df4e1108c52ada2367cb27dfb70e": {
@@ -19697,16 +19598,6 @@
   "route": "delivery",
   "sha": "1d3297a791e4d3f65d2bb153236e856b6cb5933980382296a6ddf95f6a31199c",
   "source": "assets/fbx/M_Kit_FirstAidBag/M_Kit_FirstAidBag_LOD0.fbx",
-  "type": "Model"
- },
- "Model:1d7c5d661c065515b39c411198fae0eb80f442431d2862af0725a04808300f4f": {
-  "assetId": "104728219365055",
-  "moderation": "Approved",
-  "name": "M_Kit_TowLine_LOD1",
-  "rbxm": "assets/models/M_Kit_TowLine_LOD1.rbxm",
-  "route": "delivery",
-  "sha": "1d7c5d661c065515b39c411198fae0eb80f442431d2862af0725a04808300f4f",
-  "source": "assets/fbx/M_Kit_TowLine/M_Kit_TowLine_LOD1.fbx",
   "type": "Model"
  },
  "Model:1da706331f826fe4f170a070460361e87ccf94e6523ac995a676306adc59b641": {
@@ -23139,16 +23030,6 @@
   "source": "assets/fbx/M_Chr_HumanBase_M/M_Chr_HumanBase_M_LOD1.fbx",
   "type": "Model"
  },
- "Model:83ffa0037a7a8a04fc8f9040075017220963d58a4f079954d8313c5e49f07b20": {
-  "assetId": "138453642533040",
-  "moderation": "Approved",
-  "name": "M_Kit_TowLine",
-  "rbxm": "assets/models/M_Kit_TowLine.rbxm",
-  "route": "delivery",
-  "sha": "83ffa0037a7a8a04fc8f9040075017220963d58a4f079954d8313c5e49f07b20",
-  "source": "assets/fbx/M_Kit_TowLine/M_Kit_TowLine_LOD0.fbx",
-  "type": "Model"
- },
  "Model:8407789116f5e733a117f11182278e2e6263f76bc0c74f02d165cc05d8006836": {
   "assetId": "107098093538478",
   "moderation": "Approved",
@@ -23347,16 +23228,6 @@
   "route": "delivery",
   "sha": "8a9ea18ad187fbd4fb40ca23fc1b0c5818579826a9c225eb2ee18af9849da079",
   "source": "assets/fbx/M_Veg_SeaThrift_01/M_Veg_SeaThrift_01_LOD1.fbx",
-  "type": "Model"
- },
- "Model:8ac78dec95f2cf7a2dfd6dc0d1b037345f91efdcf565933115b783616aee5bb2": {
-  "assetId": "86803067164015",
-  "moderation": "Approved",
-  "name": "M_Kit_TowLine_LOD2",
-  "rbxm": "assets/models/M_Kit_TowLine_LOD2.rbxm",
-  "route": "delivery",
-  "sha": "8ac78dec95f2cf7a2dfd6dc0d1b037345f91efdcf565933115b783616aee5bb2",
-  "source": "assets/fbx/M_Kit_TowLine/M_Kit_TowLine_LOD2.fbx",
   "type": "Model"
  },
  "Model:8ac8a6010f3ec0017529302d8b5b3c81f942e2d36366e6a3e16b3fa2ca8ee741": {

@@ -383,11 +383,6 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://97197950442761",
 		LOD2 = "rbxassetid://109716566929607",
 	},
-	M_Kit_TowLine = {
-		LOD0 = "rbxassetid://138453642533040",
-		LOD1 = "rbxassetid://104728219365055",
-		LOD2 = "rbxassetid://86803067164015",
-	},
 	M_Kit_TriageTags = {
 		LOD0 = "rbxassetid://100121123743543",
 		LOD1 = "rbxassetid://126753549604996",
@@ -1481,21 +1476,6 @@ AssetIds.Textures = {
 			RGH = "rbxassetid://114309222207832",
 			MET = "rbxassetid://139796468945758",
 			Wet = { ALB = "rbxassetid://111387464906330", RGH = "rbxassetid://137049912125663" },
-		},
-	},
-	M_Kit_TowLine = {
-		Hardware = {
-			ALB = "rbxassetid://86176366955151",
-			NOR = "rbxassetid://96225831283263",
-			RGH = "rbxassetid://96420556322798",
-			MET = "rbxassetid://137785951143323",
-			Wet = { ALB = "rbxassetid://95482370004249", RGH = "rbxassetid://128692632917792" },
-		},
-		Rope = {
-			ALB = "rbxassetid://86813120372695",
-			NOR = "rbxassetid://137604537306110",
-			RGH = "rbxassetid://72217579991822",
-			Wet = { ALB = "rbxassetid://83918942610385", RGH = "rbxassetid://102864521001179" },
 		},
 	},
 	M_Kit_TriageTags = {
@@ -3028,12 +3008,6 @@ AssetIds.Attachments = {
 	M_Kit_ThrowLine = {
 		ATT_Grip = Vector3.new(0.1003, 0.0365, -0.0106),
 		ATT_LineEnd = Vector3.new(-0.7473, 0.023, -0.4634),
-	},
-	M_Kit_TowLine = {
-		ATT_Grip = Vector3.new(0.1853, 0.1537, 0.1612),
-		ATT_Eye = Vector3.new(-0.7147, 0.0367, -0.4088),
-		ATT_Shackle = Vector3.new(-0.7327, 0.2257, -0.4088),
-		ATT_LineEnd = Vector3.new(-0.1038, 0.0367, -0.7564),
 	},
 	M_Kit_TriageTags = {
 		ATT_Tie_Red = Vector3.new(0.3198, 0.0433, -0.2124),

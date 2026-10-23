@@ -24,8 +24,7 @@ Grading.Payout = table.freeze({
 	ShareWithoutStep = 0.1, -- crew on the op who completed no step: 10% Cash
 	Tutorial = table.freeze({
 		table.freeze({ cash = 500, rep = 150 }),
-		-- 200, not 160: with the Helm exercise (50) a new player has Lifeguard's 400 Rep at the
-		-- ~10 min certification without needing a lucky daily (tests/NewPlayerPace.spec.luau)
+		-- 200, not 160: keeps the first rank-up near 10 min (tests/NewPlayerPace.spec.luau)
 		table.freeze({ cash = 600, rep = 200 }),
 		table.freeze({ cash = 600, rep = 160 }),
 	}),

@@ -167,7 +167,6 @@ ColdOpen.SHORE = {
 } :: { Shore }
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
 ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in
-ColdOpen.WELCOME = { from = "Chief Aggie", text = "Welcome to the crew." }
 ColdOpen.NEXT_CALL_DELAY = 15 -- s after the cold open before call 2: the reward burst and debrief, still seated (docs/16 B2) -- tune
 
 -- The nearest shore point to `pos` (flat) and its distance.

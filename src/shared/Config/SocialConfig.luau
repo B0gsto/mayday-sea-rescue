@@ -6,8 +6,6 @@
 local SocialConfig = {
 	GroupId = 548313786, -- "Brightwake Games" (was "Tame A Titan Official"; shared with TameATitan)
 	BonusPercent = 0.10, -- flat +10% on the daily streak crate, group members only
-	NoticeboardPosition = Vector3.new(-178, 5.8, -50), -- the harbour events board's centre
-	CheckRange = 26, -- studs from the board where walking past rechecks membership
 	CheckCooldown = 15, -- s between membership checks for one player
 }
 

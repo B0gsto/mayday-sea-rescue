@@ -13,8 +13,7 @@
 -- no fur-card hero close-up).
 --
 -- Attributes on the dog model for the client: Mode ("Follow" | "Wait" | "Swim"), Wetness
--- (0..1, BosunWetness) and Wet (coat and wear darkened); Hidden (bool), Treat (a counter, bumped by
--- DogService.Treat for the daily challenge set: DogController spins him once and pops a "Woof!").
+-- (0..1, BosunWetness) and Wet (coat and wear darkened); Hidden (bool).
 --
 -- Every few seconds he sniffs for the nearest victim from OperationService.GetVictimPositions and, inside his
 -- nose range, faces it and fires DogPoint to his player:
@@ -31,7 +30,7 @@
 -- Shared.Dog.DogWear): a tint on the harness parts, and plain Parts in a "Wear" model welded to the Torso
 -- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
--- API (server): DogService.GetDog(player): Model?, DogService.Treat(player): ()
+-- API (server): DogService.GetDog(player): Model?
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -729,17 +728,6 @@ end
 function DogService.GetDog(player: Player): Model?
 	local dog = dogs[player]
 	return if dog then dog.model else nil
-end
-
--- A short happy moment: the client spins Bosun once, tail high, with a "Woof!" (no new remote:
--- the model attribute replicates the counter).
-function DogService.Treat(player: Player)
-	local dog = dogs[player]
-	if not (dog and dog.model.Parent) or dog.hidden then
-		return
-	end
-	local count = tonumber(dog.model:GetAttribute("Treat")) or 0
-	dog.model:SetAttribute("Treat", count + 1)
 end
 
 local function removeDog(player: Player)

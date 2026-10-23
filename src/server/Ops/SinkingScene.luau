@@ -111,7 +111,7 @@ function SinkingScene.Spawn(scene: any)
 		Color3.fromRGB(24, 40, 58)
 	)
 
-	RescueDressing.apply(model, scene.variant, { root = hull :: BasePart, large = true })
+	RescueDressing.apply(model, scene.variant, { root = hull :: BasePart })
 
 	-- where the water comes in: a bright swirl and bubbles on the starboard quarter
 	local leak = part(

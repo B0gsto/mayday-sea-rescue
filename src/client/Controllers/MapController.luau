@@ -68,8 +68,8 @@ local offers: { [string]: { position: Vector3, expires: number } } = {}
 local closedOps: { [string]: boolean } = {}
 local isOpen = false
 local objective: Vector3?, objectiveLabel: string? = nil, nil
-local PRE_LAUNCH = { tasking = true, relay = true, kit_launch = true, launch = true }
--- extra static blips other systems hand in (SetBlips), keyed by group: the logbook's discoveries
+local PRE_LAUNCH = { tasking = true, relay = true, launch = true }
+-- extra static blips other systems hand in (SetBlips), keyed by group: the seamarks
 local extraBlips: { [string]: { BlipDraw } } = {}
 local RING = 1.08 -- bezel size / minimap square
 local MAP_HALF = 0.395 -- map canvas radius / square side (just past the bezel hole, RING * 0.72 / 2)
@@ -340,11 +340,10 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	local s = OpsController and OpsController.GetState()
 	if s and s.opId and not closedOps[s.opId] then
 		local onBoard, target = false, nil :: Vector3?
-		local vessel = s.kind == "DisabledVessel"
 		for i, c in s.casualties or {} do
 			if typeof(c.position) == "Vector3" and not c.delivered and not c.takenOver then
 				if c.inWater ~= false then
-					local style = if vessel then S.Vessel else S.Casualty
+					local style = S.Casualty
 					table.insert(list, {
 						id = `Cas{i}`,
 						pos = c.position,
@@ -362,14 +361,10 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			end
 		end
 		local mech = s.current and s.current[1] and s.current[1].mechanicId
-		if mech == "transport" or mech == "tow" or mech == "berth" or mech == "alongside" then
+		if mech == "transport" then
 			onBoard = true
 		end
-		if
-			(vessel or #(s.casualties or {}) == 0)
-			and typeof(s.position) == "Vector3"
-			and not onBoard
-		then
+		if #(s.casualties or {}) == 0 and typeof(s.position) == "Vector3" and not onBoard then
 			table.insert(list, {
 				id = "OpPos",
 				pos = s.position,
@@ -403,7 +398,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			objective, objectiveLabel = nearestDropOff(me), "Drop-off"
 		elseif target and not PRE_LAUNCH[s.current and s.current[1] and s.current[1].id or ""] then
 			-- before you are aboard the step card is the one objective; the casualty blip stays
-			objective, objectiveLabel = target, if vessel then "Vessel" else "Casualty"
+			objective, objectiveLabel = target, "Casualty"
 		end
 	end
 	local now = Workspace:GetServerTimeNow()
@@ -905,9 +900,7 @@ local function buildFullMap()
 	layout.Padding = UDim.new(0, 0)
 	layout.Parent = body
 	local order = 1
-	for _, key in
-		{ "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Crew", "Storm", "Discovery" }
-	do
+	for _, key in { "Casualty", "Vessel", "DropOff", "Waypoint", "Vehicle", "Crew", "Storm" } do
 		legendRow(body, MapConfig.Styles[key], order)
 		order += 1
 	end
@@ -1288,14 +1281,14 @@ function MapController.SetWaypoint(pos: Vector3?)
 end
 
 -- Static blips from another system, replaced per group (nil clears it). Each item: a unique id,
--- a position and a MapConfig.Styles key (default "Discovery"). Used by the logbook (RP-X1).
+-- a position and a MapConfig.Styles key. Used by SeamarkController.
 function MapController.SetBlips(
 	group: string,
 	items: {
 		{
 			id: string,
 			position: Vector3,
-			style: string?,
+			style: string,
 			minimap: boolean?,
 			size: number?,
 		}
@@ -1310,7 +1303,7 @@ function MapController.SetBlips(
 		table.insert(list, {
 			id = `{group}_{b.id}`,
 			pos = b.position,
-			style = MapConfig.Styles[b.style or "Discovery"] or MapConfig.Styles.Discovery,
+			style = MapConfig.Styles[b.style],
 			minimap = b.minimap ~= false,
 			size = b.size or 18,
 		})

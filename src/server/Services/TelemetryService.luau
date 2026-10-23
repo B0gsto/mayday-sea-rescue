@@ -9,17 +9,15 @@
 --   3-4 ColdOpenApproach / ColdOpenRecovery   OperationService record() on the cold open
 --   5 ColdOpenEnded          OperationService endColdOpen (the reason is the ColdOpenEnded custom event)
 --   6 RewardSeen             the client's first reward burst (Telemetry_Client)
---   7 ReachedStation         the client reaches the station beacon (Telemetry_Client)
---   8 Call2Accepted          the active-operation poll sees the first station call
---   9 FirstOpComplete        OperationService finish (call 2 complete)
---   10 Call3Complete         OperationService finish (call 3 complete)
---   11 FirstChandleryVisit   retired with the Chandlery counter (docs/16 C4); never fires
---   12 FirstUnlock           the first gear or vehicle purchase (ProgressionService buy / BuyStock)
---   13 FirstRank             ProgressionService.RankChanged (here)
---   14 FirstDailyCrate       StreakService open
---   15 Day2Return            DataService.OnLoaded, a later UTC day than flags.lastSessionDay
+--   7 Call2Accepted          the active-operation poll sees the first station call
+--   8 FirstOpComplete        OperationService finish (call 2 complete)
+--   9 Call3Complete          OperationService finish (call 3 complete)
+--   10 FirstUnlock           the first vehicle bought (ProgressionService buy)
+--   11 FirstRank             ProgressionService.RankChanged (here)
+--   12 FirstDailyCrate       StreakService open
+--   13 Day2Return            DataService.OnLoaded, a later UTC day than flags.lastSessionDay
 -- Economy (currency "Cash"): sources from ProgressionService push() award extras (Award, Cash packs,
---   Starter Kit), sinks from ProgressionService buy()/BuyStock(), PetService treats.
+--   Starter Kit), sinks from ProgressionService buy(), PetService treats.
 -- Custom (LogCustomEvent): the fixed TelemetryNames.Custom list. OpStarted/OpComplete/OpGrade come
 --   from the active-operation poll and OperationService finish (variant rarity in the fields).
 --
@@ -217,7 +215,6 @@ function TelemetryService.OpFinished(player: Player, op: any, reason: string)
 		reason = reason,
 		helped = op.helpers ~= nil and op.helpers[player] == true,
 		coldOpen = op.coldOpen == true,
-		exercise = op.exercise ~= nil and op.exercise ~= false,
 		storm = op.storm == true,
 		big = op.isBig == true,
 		rarity = rarityOf(op.variant),
@@ -305,8 +302,6 @@ end
 local function opContext(player: Player, info: any): string
 	if player:GetAttribute("ColdOpenActive") == true then
 		return "ColdOpen"
-	elseif player:GetAttribute("OpsExercise") ~= nil then
-		return "Exercise"
 	elseif info.isBig == true then
 		return "Big"
 	end
@@ -315,8 +310,8 @@ local function opContext(player: Player, info: any): string
 end
 
 -- Operation started: OperationService has no start signal, so read its live list once a second.
--- One OpStarted per participant per operation; the first non-cold-open, non-exercise op accepted
--- is funnel step 12 (call 2 accepted).
+-- One OpStarted per participant per operation; the first non-cold-open op accepted is funnel step
+-- 7 (call 2 accepted).
 local function pollOps()
 	local operations = service("OperationService")
 	if not operations or type(operations.GetActiveOperations) ~= "function" then
@@ -338,9 +333,8 @@ local function pollOps()
 					and Events.first(trackerOf(player), `OpStart:{tostring(info.id)}`)
 				then
 					local coldOpen = player:GetAttribute("ColdOpenActive") == true
-					local exercise = player:GetAttribute("OpsExercise") ~= nil
 					custom(player, Events.opStarted(kind, rarity, opContext(player, info)))
-					if not coldOpen and not exercise then
+					if not coldOpen then
 						TelemetryService.Funnel(player, "Call2Accepted")
 					end
 				end
@@ -370,13 +364,11 @@ local function pollWorldEvents()
 	end
 end
 
--- The few first-session facts only the client knows: the reward burst played, the station beacon
--- reached, photo mode opened. One fixed-name RemoteEvent, rate limited, server-side logged.
+-- The few first-session facts only the client knows: the reward burst played, photo mode opened,
+-- the first pet. One fixed-name RemoteEvent, rate limited, server-side logged.
 local function clientStep(player: Player, name: string)
 	if name == "RewardSeen" then
 		TelemetryService.Funnel(player, "RewardSeen")
-	elseif name == "StationReached" then
-		TelemetryService.Funnel(player, "ReachedStation")
 	elseif name == "PhotoModeOpen" then
 		if Events.first(trackerOf(player), "PhotoMode") then
 			custom(player, Events.custom("PhotoMode"))

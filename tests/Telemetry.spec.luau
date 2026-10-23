@@ -10,7 +10,6 @@ return function(t)
 			reason = "Complete",
 			helped = true,
 			coldOpen = false,
-			exercise = false,
 			storm = false,
 			big = false,
 			rarity = "Common",
@@ -31,14 +30,13 @@ return function(t)
 		end
 		t.expect(Events.funnelStep("Joined").step).toBe(1)
 		t.expect(Events.funnelStep("RewardSeen").step).toBe(6)
-		t.expect(Events.funnelStep("ReachedStation").step).toBe(7)
-		t.expect(Events.funnelStep("Call2Accepted").step).toBe(8)
-		t.expect(Events.funnelStep("FirstOpComplete").step).toBe(9)
-		t.expect(Events.funnelStep("Call3Complete").step).toBe(10)
-		t.expect(Events.funnelStep("FirstUnlock").step).toBe(12)
-		t.expect(Events.funnelStep("FirstRank").step).toBe(13)
-		t.expect(Events.funnelStep("FirstDailyCrate").step).toBe(14)
-		t.expect(Events.funnelStep("Day2Return").step).toBe(15)
+		t.expect(Events.funnelStep("Call2Accepted").step).toBe(7)
+		t.expect(Events.funnelStep("FirstOpComplete").step).toBe(8)
+		t.expect(Events.funnelStep("Call3Complete").step).toBe(9)
+		t.expect(Events.funnelStep("FirstUnlock").step).toBe(10)
+		t.expect(Events.funnelStep("FirstRank").step).toBe(11)
+		t.expect(Events.funnelStep("FirstDailyCrate").step).toBe(12)
+		t.expect(Events.funnelStep("Day2Return").step).toBe(13)
 		t.expect(Events.funnelStep("Nope")).toBe(nil)
 		-- every cold open step id maps onto a funnel step, between started and ended
 		for _, name in Events.ColdOpenSteps do
@@ -88,11 +86,6 @@ return function(t)
 		tx, sku = Events.cashSource("Op:PersonInWater")
 		t.expect(tx).toBe("Gameplay")
 		t.expect(sku).toBe("Op:PersonInWater")
-		tx = Events.cashSource("Exercise:ExerciseSwimTest")
-		t.expect(tx).toBe("Onboarding")
-		tx, sku = Events.cashSource("Logbook: The Morwenna")
-		t.expect(tx).toBe("Gameplay")
-		t.expect(sku).toBe("Logbook")
 		tx, sku = Events.cashSource(nil)
 		t.expect(tx).toBe("Gameplay")
 		t.expect(sku).toBe("Unknown")
@@ -101,8 +94,6 @@ return function(t)
 		tx, sku = Events.cashSink("Vehicle", "Rib")
 		t.expect(tx).toBe("Shop")
 		t.expect(sku).toBe("Vehicle:Rib")
-		tx, sku = Events.cashSink("Stock", "Trim_Teal")
-		t.expect(sku).toBe("Stock:Trim_Teal")
 	end)
 
 	t.test("economy amounts are whole and positive", function()
@@ -147,16 +138,13 @@ return function(t)
 		t.expect(Events.countsAsFirstOp(facts({ reason = "Timer" }))).toBe(false)
 	end)
 
-	t.test("the cold open and exercises are tagged and never the first op", function()
+	t.test("the cold open is tagged and never the first op", function()
 		local out = Events.opEvents(facts({ coldOpen = true }))
 		t.expect(out[1].fields.CustomField02).toBe("Gold")
 		t.expect(Events.countsAsFirstOp(facts({ coldOpen = true }))).toBe(false)
-		out = Events.opEvents(facts({ exercise = true }))
-		t.expect(out[1].fields.CustomField03).toBe("Common")
-		local noRarity = facts({ exercise = true })
+		local noRarity = facts()
 		noRarity.rarity = nil
 		t.expect(Events.opEvents(noRarity)[1].fields.CustomField03).toBe("None")
-		t.expect(Events.countsAsFirstOp(facts({ exercise = true }))).toBe(false)
 		t.expect(Events.countsAsFirstOp(facts({ helped = false }))).toBe(false)
 	end)
 

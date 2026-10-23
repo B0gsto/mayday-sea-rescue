@@ -17,9 +17,7 @@
 -- storms and none within 2 minutes of a natural storm; the natural storm clock is never reset.
 -- Weather attributes: SummonQueue (number queued), SummonedBy (display name, "" when anonymous or
 -- natural), GreatStormCallers (names, comma separated, for the station board). Player attribute
--- StormCaller = true for 24 hours after their storm starts. Remotes (ReplicatedStorage.Net):
---   Storm_UseTicket   C->S function (tier: "Storm" | "GreatStorm") -> (ok, reason)
---   Storm_SetAnonymous C->S event (boolean) hide the buyer's name in announcements
+-- StormCaller = true for 24 hours after their storm starts. Both products are ready=false (docs/16 C9).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -374,26 +372,6 @@ local function setupSummons()
 		grantTicket("GreatStorm"),
 		afterTicket("GreatStorm")
 	)
-	local net = ReplicatedStorage:WaitForChild("Net")
-	local use = Instance.new("RemoteFunction")
-	use.Name = "Storm_UseTicket"
-	use.OnServerInvoke = function(player: Player, tier: any)
-		if type(tier) ~= "string" then
-			return false, "BadTier"
-		end
-		return StormService.QueueSummon(player, tier)
-	end
-	use.Parent = net
-	local anon = Instance.new("RemoteEvent")
-	anon.Name = "Storm_SetAnonymous"
-	anon.OnServerEvent:Connect(function(player: Player, value: any)
-		local shop = shopOf(player)
-		if shop and type(value) == "boolean" then
-			shop.anon = if value then true else nil
-			DataService.MarkDirty(player)
-		end
-	end)
-	anon.Parent = net
 	Players.PlayerRemoving:Connect(function(player: Player)
 		-- a queued storm whose buyer left does not run; their ticket stays saved
 		for i = #queue, 1, -1 do
