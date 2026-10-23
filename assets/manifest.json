@@ -5834,6 +5834,15 @@
   "source": "assets/textures/M_Hbr_NavMark_Bell/T_NavMarkBell_Buoy_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:4a46d6122daa3de0f5e57dcdc4e4b92bca4cf84096d17e300077a0057e74ad64": {
+  "assetId": "97250599507171",
+  "imageId": "97250599507171",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c0",
+  "sha": "4a46d6122daa3de0f5e57dcdc4e4b92bca4cf84096d17e300077a0057e74ad64",
+  "source": "art/map/gale_isles_map_r1c0.png",
+  "type": "Image"
+ },
  "Image:4a691c95d9ea79260bd046e944e4018137be4a645f7e73e7e2eff0a97f70e246": {
   "assetId": "110399575329167",
   "imageId": "110399575329167",
@@ -9035,6 +9044,15 @@
   "source": "assets/textures/M_Veh_LifeguardPickup/T_LifeguardPickup_Rack_NOR.png",
   "type": "Image"
  },
+ "Image:764767f13e8c0ccf59d10cbda27cd47a1b736e8548babbf43d7bd29862bf00d2": {
+  "assetId": "90317176049903",
+  "imageId": "90317176049903",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "764767f13e8c0ccf59d10cbda27cd47a1b736e8548babbf43d7bd29862bf00d2",
+  "source": "art/map/gale_isles_map_r1c1.png",
+  "type": "Image"
+ },
  "Image:765323be0bd4bd7b1db0e1df3843a78e2372651f8a5ed365257efa5a46e9a8d4": {
   "assetId": "115373436835648",
   "imageId": "115373436835648",
@@ -9051,6 +9069,15 @@
   "name": "sign_street_PortHaven_St2",
   "sha": "765d13ffe7d016898b9accea522fd08051979368d42f93d2623ed9e5ba734193",
   "source": "assets/ui/signs/sign_street_PortHaven_St2.png",
+  "type": "Image"
+ },
+ "Image:769439d9c9346cd45ad1ed54b6c01e7edee8c3de6a4bb78b6f7bb2da125906c9": {
+  "assetId": "124660107845917",
+  "imageId": "124660107845917",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map",
+  "sha": "769439d9c9346cd45ad1ed54b6c01e7edee8c3de6a4bb78b6f7bb2da125906c9",
+  "source": "art/map/gale_isles_map.png",
   "type": "Image"
  },
  "Image:76963e24bb85ff62deaf68ea234054a030d3e28e4f8b95fbb82106356550fc95": {
