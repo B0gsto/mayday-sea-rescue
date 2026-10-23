@@ -84,6 +84,37 @@ function StationRig.apply(shell: Model): () -> ()
 		end
 	end
 
+	-- docs/19: navy slats on the roller bay door (512 px tile, 24 slats, bottom rail in rows 490..512). A SurfaceGui,
+	-- not a Texture: a tiled Texture repeats the bottom rail as a seam mid-door, so the upper half crops it off.
+	local bayDoor = shell:FindFirstChild("M_Bld_Station_BayDoor_LOD0", true)
+	if bayDoor and bayDoor:IsA("BasePart") then
+		local ppS, crop = 40, 490
+		local railShare = 1 / (1 + crop / 512) -- the full tile (with the rail) at the bottom, cropped tiles above
+		local tile = bayDoor.Size.Y * railShare * ppS
+		local g = Instance.new("SurfaceGui")
+		g.Name = "Rig_DoorSlats"
+		g.Face = Enum.NormalId.Front -- the door's look is seaward
+		g.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		g.PixelsPerStud = ppS
+		g.LightInfluence = 1
+		g.Brightness = 1.8 -- with the tint, matches the lit navy of a Texture
+		g:SetAttribute(RIG_ATTR, true)
+		for i, rows in { crop, 512 } do
+			local l = Instance.new("ImageLabel")
+			l.BackgroundTransparency = 1
+			l.Image = "rbxassetid://81651947069484"
+			l.ImageColor3 = Color3.new(1, 0.92, 0.8)
+			l.ScaleType = Enum.ScaleType.Tile
+			l.ImageRectSize = Vector2.new(512, rows)
+			l.TileSize = UDim2.fromOffset(tile, tile * rows / 512)
+			l.Position = UDim2.fromScale(0, if i == 1 then 0 else 1 - railShare)
+			l.Size = UDim2.fromScale(1, if i == 1 then 1 - railShare else railShare)
+			l.Parent = g
+		end
+		g.Parent = bayDoor
+		table.insert(created, g)
+	end
+
 	local host = shell.PrimaryPart
 	local pivot = shell:GetPivot()
 	local seaward = Vector3.new(pivot.LookVector.X, 0, pivot.LookVector.Z).Unit -- the front faces the pivot's look

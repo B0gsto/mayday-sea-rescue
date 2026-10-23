@@ -117,6 +117,50 @@ local SIGNS = {
 	{ name = "CliffWarning", road = "HavenHeadTrack", s = 300, side = 1, offset = 11 },
 }
 
+-- docs/19 sign faces over the kit's plates, in the sign's frame (studs, the read side is -Z, art/source/roads/
+-- M_Road_Sign_Kit/build.py at 3 studs a metre). at = board centre X / Y and its front Z (proud of the bolt heads),
+-- size = board, aspect = image w / h (fitted inside the board, the rest in edge), back = the image's px size and the
+-- x cuts of its bolt end / text / tip, redrawn on the back with the ends mirrored (see signBack).
+local SIGN_ART = {
+	Fingerpost = { -- the top blade (blade_a, 1.10 m), on both sides
+		id = 137807483186889,
+		at = Vector3.new(-1.815, 6.0675, -0.09),
+		size = Vector2.new(3.3, 0.825),
+		aspect = 4,
+		depth = 0.18,
+		edge = Color3.fromRGB(224, 223, 219),
+		back = { w = 1024, h = 256, cuts = { 112, 874 } },
+	},
+	TideBoard = {
+		id = 132912601705738,
+		at = Vector3.new(0, 4.125, -0.245),
+		size = Vector2.new(2.7, 3.45),
+		aspect = 0.5,
+		edge = Color3.fromRGB(19, 20, 24),
+	},
+	LaunchSign = { -- main plate + KEEP CLEAR plate
+		id = 87986704526788,
+		at = Vector3.new(0, 5.655, -0.3),
+		size = Vector2.new(2.25, 2.04),
+		aspect = 1,
+		edge = Color3.fromRGB(227, 226, 222),
+	},
+	CarPark = {
+		id = 137304008972757,
+		at = Vector3.new(0, 6.36, -0.245),
+		size = Vector2.new(1.8, 1.8),
+		aspect = 1,
+		edge = Color3.fromRGB(0, 80, 153),
+	},
+	CliffWarning = { -- a square yellow plate over the triangle
+		id = 79975421420008,
+		at = Vector3.new(0, 6.0, -0.245),
+		size = Vector2.new(2.7, 2.7),
+		aspect = 1,
+		edge = Color3.fromRGB(233, 181, 2),
+	},
+}
+
 -- Haven Sands rock pools round the WorldConfig POI, on the basalt ledges at the foot of Haven Head. Only the
 -- intertidal ones are placed (ground within POOL_BAND of the sea): a pool under 10 studs of water or high on dry rock
 -- read as a dark stain, and Harbour Cove's two were both under water. CoastArtLayout.Ledges dress the ledges.
@@ -387,6 +431,62 @@ local function fields(folder: Folder): number
 	return n
 end
 
+-- Seen from behind, a fingerpost arm points the other way: the tip and the bolt end swap sides (mirrored strips), the
+-- text between them stays readable. Negative ImageRectSize mirrors a strip, so this is a SurfaceGui, not a Decal.
+local function signBack(face: BasePart, art: any)
+	local b = art.back
+	local g = Instance.new("SurfaceGui")
+	g.Face = Enum.NormalId.Back
+	g.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	g.PixelsPerStud = 100
+	g.LightInfluence = 1
+	local x = 0
+	for _, strip in { { b.w, b.cuts[2] }, { b.cuts[1], b.cuts[2] }, { b.cuts[1], 0 } } do -- tip, text, bolts
+		local share = math.abs(strip[2] - strip[1]) / b.w
+		local l = Instance.new("ImageLabel")
+		l.BackgroundTransparency = 1
+		l.Image = `rbxassetid://{art.id}`
+		l.ImageRectOffset = Vector2.new(strip[1], 0)
+		l.ImageRectSize = Vector2.new(strip[2] - strip[1], b.h)
+		l.Position = UDim2.fromScale(x, 0)
+		l.Size = UDim2.fromScale(share, 1)
+		l.Parent = g
+		x += share
+	end
+	g.Parent = face
+end
+
+-- An opaque slab (edge colour) over the kit plate, the image on it as a Decal: the plates are faces of one kit mesh.
+local function signFace(holder: Model, cf: CFrame, art: any)
+	local depth = art.depth or 0.08
+	local function slab(w: number, h: number, front: number): Part
+		local p = Instance.new("Part")
+		p.Name = "SignFace"
+		p.Anchored = true
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.Material = Enum.Material.SmoothPlastic
+		p.Color = art.edge
+		p.Size = Vector3.new(w, h, depth)
+		p.CFrame = cf * CFrame.new(art.at.X, art.at.Y, front + depth / 2)
+		p.Parent = holder
+		return p
+	end
+	local w = math.min(art.size.X, art.size.Y * art.aspect)
+	local face = slab(w, w / art.aspect, art.at.Z)
+	if art.size.X - w > 0.01 or art.size.Y - w / art.aspect > 0.01 then
+		slab(art.size.X, art.size.Y, art.at.Z + 0.01).Name = "SignBoard" -- the fit margins, a hair behind the face
+	end
+	local d = Instance.new("Decal")
+	d.Texture = `rbxassetid://{art.id}`
+	d.Face = Enum.NormalId.Front
+	d.Parent = face
+	if art.back then
+		signBack(face, art)
+	end
+end
+
 local function signs(folder: Folder): number
 	local n = 0
 	for i, spec in SIGNS do
@@ -406,6 +506,7 @@ local function signs(folder: Folder): number
 				local holder = atomic(`Sign_{i}_{spec.name}`, folder)
 				m.Parent = holder
 				holder.WorldPivot = cf
+				signFace(holder, cf, SIGN_ART[spec.name])
 				n += 1
 			end
 		else
