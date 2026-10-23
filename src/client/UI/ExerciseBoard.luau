@@ -36,6 +36,7 @@ function ExerciseBoard.build(gui: ScreenGui, onStart: (exerciseId: string) -> ()
 	frame.BackgroundTransparency = HudTheme.PromptTransparency
 	frame.Visible = false
 	HudTheme.padding(frame, 14)
+	HudTheme.skin(frame)
 	local scale = Instance.new("UIScale")
 	scale.Parent = frame
 	local function fit(mt: Layout.Metrics)

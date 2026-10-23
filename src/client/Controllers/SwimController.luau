@@ -73,6 +73,7 @@ local function buildHud()
 	root.Position = UDim2.fromScale(1, 1)
 	root.Visible = false
 	HudTheme.padding(root, 8)
+	HudTheme.skin(root)
 	local label =
 		HudTheme.label("Label", "BREATH", UDim2.new(0, 64, 1, 0), HudTheme.HeaderFont, 15, root)
 	label.TextColor3 = HudTheme.Colors.textDim

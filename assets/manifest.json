@@ -1939,6 +1939,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Rope_RGH.png",
   "type": "Image"
  },
+ "Image:190f04907bfaee47cd184e10d2340fa96880c078bcf1b7ea19fe0ea7c4f27e0c": {
+  "assetId": "86942769495305",
+  "imageId": "86942769495305",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_ALB",
+  "sha": "190f04907bfaee47cd184e10d2340fa96880c078bcf1b7ea19fe0ea7c4f27e0c",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB.png",
+  "type": "Image"
+ },
  "Image:19267295472d00c758225b863e2e479b341f2ea94a297eeec53e5a6bbb0ea4d8": {
   "assetId": "106746310737076",
   "imageId": "106746310737076",
@@ -2126,6 +2135,15 @@
   "name": "Mayday_T_Mat_Shingle_RGH_Wet",
   "sha": "1b8f307c12c5af49bb4fb1a361acb2973ea7db1d900b158c1bc3df6541d118b4",
   "source": "assets/textures/Materials/T_Mat_Shingle_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:1b9d8fb8cbf3c448d01e729cf061575cde5e742491d9f5bf0641fc7f70efbf46": {
+  "assetId": "72764795211670",
+  "imageId": "72764795211670",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_RGH_Wet",
+  "sha": "1b9d8fb8cbf3c448d01e729cf061575cde5e742491d9f5bf0641fc7f70efbf46",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH_Wet.png",
   "type": "Image"
  },
  "Image:1bae7b204da0e9005ccd5ac1e2cf63ab7f9a9ce9e05865c003d37daffa61bdf0": {
@@ -4702,6 +4720,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Details_NOR.png",
   "type": "Image"
  },
+ "Image:3d2a179bdad82b1109bfa495956cd4e2e562aed177505de211dde330ed64630e": {
+  "assetId": "109171456061729",
+  "imageId": "109171456061729",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_ALB_Wet",
+  "sha": "3d2a179bdad82b1109bfa495956cd4e2e562aed177505de211dde330ed64630e",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:3d542721c27a209aaeb99955bacdc3bfa340b696079fb6ba17cfd85f6a581063": {
   "assetId": "128506982395627",
   "imageId": "128506982395627",
@@ -6011,6 +6038,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB.png",
   "type": "Image"
  },
+ "Image:4faf5bb5cb1f48a09ae09b8f64d247afe1dfacb9865cb242c7034423678f94ea": {
+  "assetId": "106089106871671",
+  "imageId": "106089106871671",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_MET",
+  "sha": "4faf5bb5cb1f48a09ae09b8f64d247afe1dfacb9865cb242c7034423678f94ea",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_MET.png",
+  "type": "Image"
+ },
  "Image:50062f2ed4960b746e656ae4d8af2bc8e5023649bcc8c1b2d23a327340b49c58": {
   "assetId": "77071624407599",
   "imageId": "77071624407599",
@@ -6162,6 +6198,15 @@
   "name": "T_Tidewalker_Deck_ALB_Wet",
   "sha": "51deebe3d54a0ae1f4f728e51b96e77bef2fd5d14a41e88b4bba1aa4b97d06c8",
   "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Deck_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:51df545a6910baffc65927803d513cb933b6d1e34a36bdd0e0a5efdbffc1dab8": {
+  "assetId": "137555077699165",
+  "imageId": "137555077699165",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_RGH_Wet",
+  "sha": "51df545a6910baffc65927803d513cb933b6d1e34a36bdd0e0a5efdbffc1dab8",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH_Wet.png",
   "type": "Image"
  },
  "Image:51ec8ec72c7866f271f17f75c1579fa02175c32b26715a9ed0b64bd6f7e72356": {
@@ -7394,6 +7439,15 @@
   "source": "assets/textures/M_Hbr_MooringBuoy/T_MooringBuoy_Buoy_RGH.png",
   "type": "Image"
  },
+ "Image:6477e7cb358a17e5d7c8fefbbae39be17f0efedfe3c23c0e23cae1d4356b1972": {
+  "assetId": "134798222358821",
+  "imageId": "134798222358821",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_RGH",
+  "sha": "6477e7cb358a17e5d7c8fefbbae39be17f0efedfe3c23c0e23cae1d4356b1972",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH.png",
+  "type": "Image"
+ },
  "Image:64879a19d4ef2e96b20010004e46ac6fd123211b51743bfc20979a9e0fe8e2cb": {
   "aliases": [
    "T_LostPot_Shell_NOR"
@@ -8130,6 +8184,15 @@
   "name": "Mayday_T_Mat_SplashRock_ALB_Wet",
   "sha": "6e5aa454117f561c90521014db7777c5c6f40e84a2452ae6d3c563dc7e937dec",
   "source": "assets/textures/Materials/T_Mat_SplashRock_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:6e936aab72f55867b27dc469c622ea5282a83fa90762eaed42d994e2879d1dce": {
+  "assetId": "73699096245235",
+  "imageId": "73699096245235",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_NOR",
+  "sha": "6e936aab72f55867b27dc469c622ea5282a83fa90762eaed42d994e2879d1dce",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_NOR.png",
   "type": "Image"
  },
  "Image:6eaffd88391ea826163d09e0c480dae2146f498061d636c8b98531fa3176c01c": {
@@ -10223,6 +10286,15 @@
   "source": "assets/textures/M_Veh_GaleQueen/T_GaleQueen_Fittings_MET.png",
   "type": "Image"
  },
+ "Image:8aae9f99ccbaa5ec8c0ede03d58a56bcb1a97f6c542b1c1d2777e0e40cb7b934": {
+  "assetId": "120969017960254",
+  "imageId": "120969017960254",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_RGH",
+  "sha": "8aae9f99ccbaa5ec8c0ede03d58a56bcb1a97f6c542b1c1d2777e0e40cb7b934",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH.png",
+  "type": "Image"
+ },
  "Image:8ace113c752afcd87eb8fd6328de05ca7b65011f7713c248a6a020705112c42e": {
   "assetId": "132451860425718",
   "imageId": "132451860425718",
@@ -10518,6 +10590,15 @@
   "name": "T_Station_Render_RGH",
   "sha": "8e76bfdac6e25ae2bbd797d71d760a50936bad82f42295e4939aaab7cb44f27d",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_RGH.png",
+  "type": "Image"
+ },
+ "Image:8e9688135dd2cc4ac4b3c75b4c4b1bfc9718ab543413285e110913699364f136": {
+  "assetId": "90462989863423",
+  "imageId": "90462989863423",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_NOR",
+  "sha": "8e9688135dd2cc4ac4b3c75b4c4b1bfc9718ab543413285e110913699364f136",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_NOR.png",
   "type": "Image"
  },
  "Image:8eb747b0fa587d9362afd098c6864f49d009def93f9e2bdf01c4aca59fd7921f": {
@@ -13818,6 +13899,15 @@
   "name": "Mayday_T_Mat_Tarmac_ALB",
   "sha": "bd84c92e173fa3bc5fca0d102e87f5f4763cb98440520db9fd7320adbb32e1f6",
   "source": "assets/textures/Materials/T_Mat_Tarmac_ALB.png",
+  "type": "Image"
+ },
+ "Image:bd94177c2e67b430a9c184a67ef36911bf827c878d8adc6694c2a25094cf4e51": {
+  "assetId": "100222915992165",
+  "imageId": "100222915992165",
+  "moderation": "Reviewing",
+  "name": "T_LighthouseCruiser_Cab_ALB",
+  "sha": "bd94177c2e67b430a9c184a67ef36911bf827c878d8adc6694c2a25094cf4e51",
+  "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB.png",
   "type": "Image"
  },
  "Image:bdfb217e4f8f1de829f31ee520448f8713fc20ec603b26874bcb783485d0c99a": {
@@ -18400,6 +18490,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Slate_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:feb5058b69479879d7b1b3a2621987fe73c5f75c28061b846d4aaa9ab19ddafa": {
+  "assetId": "95536076178646",
+  "imageId": "95536076178646",
+  "moderation": "Reviewing",
+  "name": "T_HarbourGT_Cab_ALB_Wet",
+  "sha": "feb5058b69479879d7b1b3a2621987fe73c5f75c28061b846d4aaa9ab19ddafa",
+  "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB_Wet.png",
+  "type": "Image"
+ },
  "Image:febfeafcc01b7a85f09a0aa97b207a131bed1856c958871d1216dc56d2cb46ea": {
   "assetId": "133273002736919",
   "imageId": "133273002736919",
@@ -18846,6 +18945,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_East/M_Hbr_NavMark_East_LOD2.fbx",
   "type": "Model"
  },
+ "Model:0e1d10d990c1e06b206faa646c069769e17da3a440c3e815c0d6466cce4e0874": {
+  "assetId": "96055800485284",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT_LOD1",
+  "rbxm": "assets/models/M_Veh_HarbourGT_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "0e1d10d990c1e06b206faa646c069769e17da3a440c3e815c0d6466cce4e0874",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD1.fbx",
+  "type": "Model"
+ },
  "Model:0e43fe7fdfda7219c7577ef14147264ab1e8533a999e77e2306073214a04bff1": {
   "assetId": "86149424505857",
   "moderation": "Approved",
@@ -18894,6 +19003,16 @@
   "route": "delivery",
   "sha": "102c50258152e9b09457acc9b6326ee3dc8a9abd20c75b80884ae7a1c5ca2ead",
   "source": "assets/fbx/M_Hbr_Bollard_01/M_Hbr_Bollard_01_LOD1.fbx",
+  "type": "Model"
+ },
+ "Model:104409e135fa93fa39033761c8eb948dbea9db9073134630b90dc74f97830046": {
+  "assetId": "100290305413134",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT_LOD2",
+  "rbxm": "assets/models/M_Veh_HarbourGT_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "104409e135fa93fa39033761c8eb948dbea9db9073134630b90dc74f97830046",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx",
   "type": "Model"
  },
  "Model:112d3c45e7dd44084d77a2ee9fa9c13180a8ab68de355e70b1f3b44288252ec3": {
@@ -20166,6 +20285,16 @@
   "source": "assets/fbx/M_Kit_Lifebuoy/M_Kit_Lifebuoy_LOD1.fbx",
   "type": "Model"
  },
+ "Model:368e2086ea79b6fd9222888dadeeb0adc0d83bca55c36586c87d34c6ce5f9e86": {
+  "assetId": "91191442977422",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser_LOD2",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser_LOD2.rbxm",
+  "route": "delivery",
+  "sha": "368e2086ea79b6fd9222888dadeeb0adc0d83bca55c36586c87d34c6ce5f9e86",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD2.fbx",
+  "type": "Model"
+ },
  "Model:36a12f19e60ddae88c5610a099fad474f0ee8b0cbd285e41aa2ea86741f96913": {
   "assetId": "124013047422903",
   "moderation": "Approved",
@@ -21156,6 +21285,16 @@
   "source": "assets/fbx/M_Hbr_NavMark_Port/M_Hbr_NavMark_Port_LOD2.fbx",
   "type": "Model"
  },
+ "Model:50519c98bd520b6e20267e822a7c9635e7a590477472244b15ebac21df7a2b62": {
+  "assetId": "134477563793114",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser.rbxm",
+  "route": "delivery",
+  "sha": "50519c98bd520b6e20267e822a7c9635e7a590477472244b15ebac21df7a2b62",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD0.fbx",
+  "type": "Model"
+ },
  "Model:5057b5aeccfcef896c9224dd49380a98eacdf7bd9c3baa5d6c7096acd35d90b6": {
   "assetId": "101756973437405",
   "moderation": "Approved",
@@ -22044,6 +22183,16 @@
   "route": "delivery",
   "sha": "6f9ef75b7d2a1ddaef99f3c359449abb9e3aa58fb0d3bc4d294cc3281a64ed59",
   "source": "assets/fbx/M_Hbr_NavMark_South/M_Hbr_NavMark_South_LOD0.fbx",
+  "type": "Model"
+ },
+ "Model:70221f006da11ee5892acb462d63dd1ffca1021a07eed21d60f987d7f886ab10": {
+  "assetId": "71159174355347",
+  "moderation": "Approved",
+  "name": "M_Veh_HarbourGT",
+  "rbxm": "assets/models/M_Veh_HarbourGT.rbxm",
+  "route": "delivery",
+  "sha": "70221f006da11ee5892acb462d63dd1ffca1021a07eed21d60f987d7f886ab10",
+  "source": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD0.fbx",
   "type": "Model"
  },
  "Model:7060616900fce21b038b236e7a0487de4479eb948d63e782fd2ec36144430e94": {
@@ -23584,6 +23733,16 @@
   "route": "delivery",
   "sha": "9f527f7e4d708d286a6e4c4055676ab67fee69574a2397e3a423c0ff043f1ed0",
   "source": "assets/fbx/M_Bld_Station/M_Bld_Station_LOD2.fbx",
+  "type": "Model"
+ },
+ "Model:9f5b9c747eb3c84a87ec55d916b094db07350f2dc567b290808c52ae403f622a": {
+  "assetId": "93046731093247",
+  "moderation": "Approved",
+  "name": "M_Veh_LighthouseCruiser_LOD1",
+  "rbxm": "assets/models/M_Veh_LighthouseCruiser_LOD1.rbxm",
+  "route": "delivery",
+  "sha": "9f5b9c747eb3c84a87ec55d916b094db07350f2dc567b290808c52ae403f622a",
+  "source": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD1.fbx",
   "type": "Model"
  },
  "Model:9fe90999014a01c624064122e4770e4f8e5f7cafb81ec00e381ceb1e61c51621": {

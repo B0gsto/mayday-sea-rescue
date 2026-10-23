@@ -37,6 +37,7 @@ function HudShop.build(parent: Instance, onBuy: (itemId: string) -> ()): Shop
 	frame.Position = UDim2.fromScale(0.5, 0.5)
 	frame.Visible = false
 	HudTheme.padding(frame, 14)
+	HudTheme.skin(frame)
 
 	local title =
 		HudTheme.label("Title", "GEAR", UDim2.new(1, -60, 0, 36), HudTheme.HeaderFont, 24, frame)

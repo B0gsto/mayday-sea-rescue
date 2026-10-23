@@ -161,7 +161,7 @@ def cabin(g):
     V.box(g, (0, 5.75, 2.95), (5.2, 1.2, 0.8), M(g, "InteriorDark"), bev=0.14)
     V.box(g, (0, 5.70, 3.42), (5.1, 1.1, 0.16), M(g, "LeatherDark"), bev=0.07)
     V.box(g, (0, 6.37, 3.05), (5.0, 0.06, 0.22), M(g, "Walnut"), bev=0.02)
-    V.box(g, (-SEAT_X, 6.22, 3.48), (1.2, 0.10, 0.30), M(g, "Screen"), bev=0.03)
+    V.box(g, (SEAT_X, 6.22, 3.48), (1.2, 0.10, 0.30), M(g, "Screen"), bev=0.03)
     V.box(g, (0.0, 6.36, 3.40), (1.15, 0.06, 0.48), M(g, "Screen"), bev=0.02)
     for sx in (-1, 1):
         V.box(g, (sx * 2.15, 6.38, 3.30), (0.5, 0.04, 0.12), M(g, "Chrome"), bev=0.01)
@@ -169,8 +169,8 @@ def cabin(g):
     V.box(g, (0, 7.4, 1.9), (0.9, 3.2, 0.9), M(g, "LeatherDark"), bev=0.1)
     V.box(g, (0, 7.4, 2.37), (0.8, 3.0, 0.05), M(g, "Walnut"), bev=0.02)
     V.lathe(g, (0, 6.75, 2.40), (0, 0, 1), [(0.14, 0.0), (0.14, 0.10), (0.0, 0.11)], 14 if g.hi else 10, M(g, "Chrome"))
-    K.steering_wheel(g, (-SEAT_X, 6.55, 3.22), 0.60, 24, M(g, "LeatherDark"), M(g, "TrimGloss"))
-    V.tube(g, [(-SEAT_X, 6.58, 3.22), (-SEAT_X, 6.1, 3.38)], 0.10, M(g, "TrimGloss"), 8)
+    K.steering_wheel(g, (SEAT_X, 6.55, 3.22), 0.60, 24, M(g, "LeatherDark"), M(g, "TrimGloss"))
+    V.tube(g, [(SEAT_X, 6.58, 3.22), (SEAT_X, 6.1, 3.38)], 0.10, M(g, "TrimGloss"), 8)
 
 
 def wheel_fn(side, front):
@@ -385,7 +385,7 @@ def build():
             {"name": "wheel_1m", "target": at((HUB_X + 0.3, AX_F, R)), "dist": 3.2, "az": 70, "el": 6},
             {"name": "grille_1m", "target": at((0.9, 0.0, 2.45)), "dist": 3.5, "az": 18, "el": 6},
             {"name": "roof_bar", "target": at((0.0, ROOF_BAR_Y, 5.75)), "dist": 5, "az": 25, "el": 20},
-            {"name": "cabin", "target": at((-SEAT_X, 7.0, 3.4)), "dist": 6, "az": 280, "el": 14},
+            {"name": "cabin", "target": at((SEAT_X, 7.0, 3.4)), "dist": 6, "az": 280, "el": 14},
             {"name": "tail_hitch", "target": at((0.8, L, 1.9)), "dist": 5, "az": 160, "el": 10},
             {"name": "side_vent", "target": at((2.9, 4.6, 2.7)), "dist": 4, "az": 90, "el": 6},
         ],

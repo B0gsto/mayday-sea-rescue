@@ -13,7 +13,6 @@
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -321,17 +320,25 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 	card.AutomaticSize = Enum.AutomaticSize.Y
 	card.Visible = false
 	HudTheme.padding(card, 12)
+	HudTheme.skin(card)
+	-- the rows live in a body frame so the list layout doesn't stack the skin sprite
+	local body = Instance.new("Frame")
+	body.Name = "Body"
+	body.BackgroundTransparency = 1
+	body.Size = UDim2.fromScale(1, 0)
+	body.AutomaticSize = Enum.AutomaticSize.Y
+	body.Parent = card
 	local cl = Instance.new("UIListLayout")
 	cl.Padding = UDim.new(0, 2)
 	cl.SortOrder = Enum.SortOrder.LayoutOrder
-	cl.Parent = card
-	local kicker = text("Kicker", card, "LOGBOOK", 15, C.textDim)
+	cl.Parent = body
+	local kicker = text("Kicker", body, "LOGBOOK", 15, C.textDim)
 	kicker.Font = HudTheme.HeaderFont
 	kicker.LayoutOrder = 1
-	local cardName = text("Name", card, "", HudTheme.TextSize.body)
+	local cardName = text("Name", body, "", HudTheme.TextSize.body)
 	cardName.Font = HudTheme.BoldFont
 	cardName.LayoutOrder = 2
-	local cardPay = text("Pay", card, "", HudTheme.TextSize.small, C.gold)
+	local cardPay = text("Pay", body, "", HudTheme.TextSize.small, C.gold)
 	cardPay.LayoutOrder = 3
 	cardPay.TextWrapped = true
 	cardPay.TextTruncate = Enum.TextTruncate.None
@@ -361,14 +368,6 @@ function Logbook.build(onDuty: (offDuty: boolean) -> ()): Logbook
 			cardPay.Text = pay
 		end
 		card.Visible = true
-		card.BackgroundTransparency = 1
-		TweenService
-			:Create(
-				card,
-				TweenInfo.new(0.35),
-				{ BackgroundTransparency = HudTheme.PanelTransparency }
-			)
-			:Play()
 		task.delay(NOTICE_TIME, function()
 			if serial == noticeSerial then
 				card.Visible = false

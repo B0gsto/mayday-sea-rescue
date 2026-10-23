@@ -767,9 +767,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://123607537823134",
 	},
 	M_Veh_HarbourGT = {
-		LOD0 = "rbxassetid://110343145279421",
-		LOD1 = "rbxassetid://126837171762635",
-		LOD2 = "rbxassetid://102020145939883",
+		LOD0 = "rbxassetid://71159174355347",
+		LOD1 = "rbxassetid://96055800485284",
+		LOD2 = "rbxassetid://100290305413134",
 	},
 	M_Veh_JetSki = {
 		LOD0 = "rbxassetid://77535739244028",
@@ -798,9 +798,9 @@ AssetIds.Models = {
 		LOD2 = "rbxassetid://114718379095230",
 	},
 	M_Veh_LighthouseCruiser = {
-		LOD0 = "rbxassetid://83386940246211",
-		LOD1 = "rbxassetid://92503779788373",
-		LOD2 = "rbxassetid://114275671701276",
+		LOD0 = "rbxassetid://134477563793114",
+		LOD1 = "rbxassetid://93046731093247",
+		LOD2 = "rbxassetid://91191442977422",
 	},
 	M_Veh_MooredBoat_01 = {
 		LOD0 = "rbxassetid://72925216529877",
@@ -2151,10 +2151,10 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://112678579575900", RGH = "rbxassetid://92966939060691" },
 		},
 		Cab = {
-			ALB = "rbxassetid://135689489021570",
-			NOR = "rbxassetid://104657058308379",
-			RGH = "rbxassetid://70398971130830",
-			Wet = { ALB = "rbxassetid://106282100105892", RGH = "rbxassetid://89978684181097" },
+			ALB = "rbxassetid://86942769495305",
+			NOR = "rbxassetid://90462989863423",
+			RGH = "rbxassetid://120969017960254",
+			Wet = { ALB = "rbxassetid://95536076178646", RGH = "rbxassetid://137555077699165" },
 		},
 		Trim = {
 			ALB = "rbxassetid://74727637248227",
@@ -2279,11 +2279,11 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://86373248436998", RGH = "rbxassetid://70813290123503" },
 		},
 		Cab = {
-			ALB = "rbxassetid://91469057246324",
-			NOR = "rbxassetid://139642918189340",
-			RGH = "rbxassetid://98559526031888",
-			MET = "rbxassetid://90079206761117",
-			Wet = { ALB = "rbxassetid://96262056963855", RGH = "rbxassetid://97083574169654" },
+			ALB = "rbxassetid://100222915992165",
+			NOR = "rbxassetid://73699096245235",
+			RGH = "rbxassetid://134798222358821",
+			MET = "rbxassetid://106089106871671",
+			Wet = { ALB = "rbxassetid://109171456061729", RGH = "rbxassetid://72764795211670" },
 		},
 		Trim = {
 			ALB = "rbxassetid://107746447255628",

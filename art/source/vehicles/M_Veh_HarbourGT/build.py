@@ -134,8 +134,8 @@ def cabin(g):
     V.box(g, (0, 5.55, 2.15), (4.6, 1.0, 0.7), M(g, "InteriorDark"), bev=0.12)
     V.box(g, (0, 5.50, 2.56), (4.5, 0.95, 0.14), M(g, "LeatherBlack"), bev=0.06)
     V.box(g, (0, 6.03, 2.2), (4.3, 0.1, 0.16), M(g, "Carbon"), bev=0.03)
-    V.box(g, (-SEAT_X, 5.92, 2.74), (1.05, 0.34, 0.24), M(g, "TrimGloss"), bev=0.06)
-    V.box(g, (-SEAT_X, 6.09, 2.72), (0.92, 0.02, 0.16), M(g, "Screen"), bev=0.0)
+    V.box(g, (SEAT_X, 5.92, 2.74), (1.05, 0.34, 0.24), M(g, "TrimGloss"), bev=0.06)
+    V.box(g, (SEAT_X, 6.09, 2.72), (0.92, 0.02, 0.16), M(g, "Screen"), bev=0.0)
     V.box(g, (0.0, 6.03, 2.52), (0.95, 0.06, 0.40), M(g, "Screen"), bev=0.02)
     for sx in (-1, 1):   # air vents
         V.box(g, (sx * 1.95, 6.07, 2.34), (0.42, 0.04, 0.14), M(g, "TrimGloss"), bev=0.02)
@@ -143,9 +143,9 @@ def cabin(g):
     V.box(g, (0, 7.0, 1.0), (0.66, 2.8, 0.66), M(g, "Carbon"), bev=0.08)
     V.box(g, (0, 7.0, 1.36), (0.62, 2.6, 0.06), M(g, "LeatherBlack"), bev=0.02)
     V.box(g, (0, 6.55, 1.48), (0.14, 0.22, 0.20), M(g, "TrimGloss"), bev=0.04)
-    # steering wheel and column
-    K.steering_wheel(g, (-SEAT_X, 6.35, 2.28), 0.54, 22, M(g, "LeatherBlack"), M(g, "TrimGloss"))
-    V.tube(g, [(-SEAT_X, 6.38, 2.28), (-SEAT_X, 5.9, 2.42)], 0.09, M(g, "TrimGloss"), 8)
+    # steering wheel and column, left-hand drive (Blender +X); the seat markers stay RHD and Art.luau swaps them
+    K.steering_wheel(g, (SEAT_X, 6.35, 2.28), 0.54, 22, M(g, "LeatherBlack"), M(g, "TrimGloss"))
+    V.tube(g, [(SEAT_X, 6.38, 2.28), (SEAT_X, 5.9, 2.42)], 0.09, M(g, "TrimGloss"), 8)
     # parcel shelf behind the seats
     V.box(g, (0, 9.7, 2.6), (4.6, 2.2, 0.08), M(g, "InteriorDark"), bev=0.02)
 
@@ -318,7 +318,7 @@ def build():
             {"name": "wheel_1m", "target": at((HUB_X + 0.3, AX_F, R)), "dist": 3, "az": 70, "el": 6},
             {"name": "headlamp_1m", "target": at((1.9, 0.7, 1.95)), "dist": 3, "az": 40, "el": 10},
             {"name": "tail_1m", "target": at((1.3, L, 2.0)), "dist": 3.5, "az": 160, "el": 8},
-            {"name": "cabin", "target": at((-SEAT_X, 6.6, 2.4)), "dist": 5, "az": 280, "el": 14},
+            {"name": "cabin", "target": at((SEAT_X, 6.6, 2.4)), "dist": 5, "az": 280, "el": 14},
             {"name": "wing", "target": at((0.9, 12.9, 3.2)), "dist": 5, "az": 140, "el": 22},
             {"name": "nose", "target": at((0.0, 0.3, 1.3)), "dist": 5, "az": 20, "el": 8},
         ],

@@ -25,8 +25,10 @@ local WorldConfig = require(
 local RoadsShore = {}
 
 local ROADS: { [string]: { Vector3 } } = {}
+local WIDTHS: { [string]: number } = {}
 for _, r in WorldConfig.Roads do
 	ROADS[r.id] = r.points
+	WIDTHS[r.id] = r.width
 end
 
 local ATTACHMENTS = AssetIds.Attachments or {}
@@ -34,9 +36,9 @@ local ATTACHMENTS = AssetIds.Attachments or {}
 -- Havers' field walls: Coast Road fields (inland side) and the High Road moor (both sides). Runs are split around
 -- the gates below, so a gate always stands in a gap.
 local FIELD_WALLS = {
-	{ road = "CoastRoadEast", from = 80, to = 200, side = -1, offset = 16 },
-	{ road = "CoastRoadEast", from = 230, to = 380, side = -1, offset = 16 },
-	{ road = "CoastRoadWest", from = 40, to = 150, side = 1, offset = 14 }, -- runs west: +1 is inland
+	{ road = "CoastRoadEast", from = 80, to = 200, side = -1, offset = 20 },
+	{ road = "CoastRoadEast", from = 230, to = 380, side = -1, offset = 20 },
+	{ road = "CoastRoadWest", from = 40, to = 150, side = 1, offset = 18 }, -- runs west: +1 is inland
 	{ road = "HighRoad", from = 90, to = 260, side = 1, offset = 15 },
 	{ road = "HighRoad", from = 300, to = 470, side = 1, offset = 15 },
 	{ road = "HighRoad", from = 760, to = 830, side = -1, offset = 15 },
@@ -44,8 +46,8 @@ local FIELD_WALLS = {
 }
 
 local FIELD_GATES = {
-	{ road = "CoastRoadEast", s = 215, side = -1, offset = 16 },
-	{ road = "CoastRoadWest", s = 165, side = 1, offset = 14 },
+	{ road = "CoastRoadEast", s = 215, side = -1, offset = 20 },
+	{ road = "CoastRoadWest", s = 165, side = 1, offset = 18 },
 	{ road = "HighRoad", s = 280, side = 1, offset = 15 },
 	{ road = "HighRoad", s = 850, side = -1, offset = 15 },
 }
@@ -54,9 +56,9 @@ local FIELD_GATES = {
 -- clear of the junctions (Coast Road joins Harbour Road at s 0 and the Haven Head track / car park at ~503; the High
 -- Road leaves Chapel Hill at s 0). Pieces are 5 m modules (M_Road_CornishHedge, local X along the bank).
 local HEDGE_RUNS = {
-	{ road = "CoastRoadEast", from = 388, to = 468, side = -1, offset = 12.5 },
-	{ road = "CoastRoadWest", from = 180, to = 290, side = 1, offset = 12.5 },
-	{ road = "CoastRoadWest", from = 30, to = 290, side = -1, offset = 12.5 },
+	{ road = "CoastRoadEast", from = 388, to = 468, side = -1, offset = 16.5 },
+	{ road = "CoastRoadWest", from = 180, to = 290, side = 1, offset = 16.5 },
+	{ road = "CoastRoadWest", from = 30, to = 290, side = -1, offset = 16.5 },
 	{ road = "HavenHeadTrack", from = 25, to = 205, side = -1, offset = 8 },
 	{ road = "HavenHeadTrack", from = 250, to = 400, side = -1, offset = 8 },
 	{ road = "HighRoad", from = 500, to = 700, side = 1, offset = 10.5 },
@@ -73,10 +75,10 @@ local BARRIER_RUNS = {
 local BARRIER_BEND_ROADS = { "CoastRoadEast", "CoastRoadWest", "HighRoad" }
 
 local SIGNS = {
-	{ name = "Fingerpost", road = "HarbourRoad", s = -22, side = -1, offset = 15 },
-	{ name = "TideBoard", road = "HarbourRoad", s = 520, side = 1, offset = 14 },
+	{ name = "Fingerpost", road = "HarbourRoad", s = -22, side = -1, offset = 19 },
+	{ name = "TideBoard", road = "HarbourRoad", s = 520, side = 1, offset = 18 },
 	{ name = "LaunchSign", road = "SandsSlipway", s = 20, side = 1, offset = 12 },
-	{ name = "CarPark", road = "CoastRoadEast", s = -40, side = 1, offset = 15 },
+	{ name = "CarPark", road = "CoastRoadEast", s = -40, side = 1, offset = 19 },
 	{ name = "CliffWarning", road = "HavenHeadTrack", s = 300, side = 1, offset = 11 },
 }
 
@@ -191,7 +193,7 @@ local function barriers(folder: Folder): number
 	for _, id in BARRIER_BEND_ROADS do
 		local pts = ROADS[id]
 		if pts then
-			for k, spot in Layout.barriers(pts, { offset = 11.5, gap = 50 }) do
+			for k, spot in Layout.barriers(pts, { offset = WIDTHS[id] / 2 + 4, gap = 50 }) do
 				if pieceAt("M_Road_CrashBarrier", spot, folder, `Barrier_{id}_{k}`) then
 					n += 1
 				end

@@ -84,17 +84,18 @@ BAR = {"offshore": 250, "width": 46, "topY": -3, "from": (700, 170), "to": (1290
 
 # Roads: polylines with width and terrain material (doc 10 section 2.1). Heights follow the terrain, smoothed.
 ROADS = [
-    {"id": "HarbourRoad", "name": "Harbour Road", "surface": "Asphalt", "width": 22,
-     # jogs 5 studs onto the quay past the station so its forecourt row (z -37.6) stands on a pavement
-     "points": [(-560, -30), (-300, -30), (-190, -30), (-165, -25), (-55, -25), (-30, -30), (180, -30), (330, -40),
-                (420, -50)]},
-    {"id": "CoastRoadWest", "name": "Coast Road", "surface": "Asphalt", "width": 18,  # to the West Cliff car park
-     "points": [(-560, -30), (-640, -32), (-740, -24), (-840, -12), (-872, -8)]},
-    {"id": "CoastRoadEast", "name": "Coast Road", "surface": "Asphalt", "width": 18,
-     "points": [(420, -50), (560, -40), (700, -10), (820, 40), (900, 80)]},
+    {"id": "HarbourRoad", "name": "Harbour Road", "surface": "Asphalt", "width": 30,
+     # jogs 5 studs onto the quay past the station so its forecourt row (z -37.6) stands on a pavement; widened
+     # 22 -> 30 toward the quay (centre +4 z) so the north kerb stays put
+     "points": [(-560, -26), (-300, -26), (-190, -26), (-165, -21), (-55, -21), (-30, -26), (180, -26), (330, -36),
+                (420, -46)]},
+    {"id": "CoastRoadWest", "name": "Coast Road", "surface": "Asphalt", "width": 26,  # to the West Cliff car park
+     "points": [(-560, -26), (-640, -32), (-740, -24), (-840, -12), (-872, -8)]},
+    {"id": "CoastRoadEast", "name": "Coast Road", "surface": "Asphalt", "width": 26,
+     "points": [(420, -46), (560, -40), (700, -10), (820, 40), (900, 80)]},
     {"id": "HavenHeadTrack", "name": "Haven Head track", "surface": "Ground", "width": 10,
      "points": [(900, 80), (1060, 150), (1230, 260), (1390, 400), (1500, 520), (1590, 640)]},
-    {"id": "TownLane", "name": "Chapel Hill", "surface": "Asphalt", "width": 22,  # the Port Haven grid's x 20 avenue
+    {"id": "TownLane", "name": "Chapel Hill", "surface": "Asphalt", "width": 30,  # the Port Haven grid's x 20 avenue
      "points": [(20, -490), (60, -600), (140, -700), (180, -800)]},  # runs on up the hill to the High Road
     {"id": "HighRoad", "name": "High Road", "surface": "Asphalt", "width": 15,
      "points": [(180, -800), (120, -1100), (60, -1500), (0, -1900), (-20, -2060)]},  # the bake coast closes ~2,200 out
@@ -216,7 +217,7 @@ POINTS = [
     {"id": "StationSlipway", "kind": "Launch", "pos": (-165, 2, 30)},
     {"id": "HavenSandsSlipway", "kind": "Launch", "pos": (1015, None, 300)},
     {"id": "HavenSandsCarPark", "kind": "VehicleSpawn", "pos": (880, None, 115)},
-    {"id": "StationYard", "kind": "VehicleSpawn", "pos": (-250, 4, -60)},
+    {"id": "StationYard", "kind": "VehicleSpawn", "pos": (-260, 4, -52)},
     {"id": "HavenSandsAmbulance", "kind": "Handover", "pos": (850, None, 95)},
     {"id": "HavenSandsTower", "kind": "LifeguardTower", "pos": (1010, None, 250)},
     {"id": "HavenSandsBeach", "kind": "Beach", "pos": (1000, None, 370)},
