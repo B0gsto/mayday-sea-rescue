@@ -1,10 +1,13 @@
--- NewPlayerPace: the first 15 minutes, walked headlessly. A fresh profile goes through the cold
--- open and the tutorial calls CallLogic picks with the real payouts, buys the jet ski Engine
--- upgrade as soon as it is affordable (docs/16 B5) and ranks up on Rep alone (docs/16 K7). Only
--- the clock is assumed: the Round 4 Studio timings (docs/research/playtest-first-20-min.md).
--- Prints the milestone minutes per scenario.
+-- NewPlayerPace: the first 10 minutes (docs/16 section 4), walked headlessly. A fresh profile does
+-- the cold open, stays seated, takes the tutorial calls CallLogic picks (radio_ack -> launch ->
+-- auto_board -> transport) with the real payouts, buys the jet ski Engine upgrade at the first
+-- free moment after call 2 (B5) and ranks up on Rep alone (B7). The clock: the cold open as
+-- measured (docs/research/playtest-first-20-min.md Round 4), the next-call delay and capacities
+-- from config, and per trip the docs/02 travel budget out and back (CallTypes.TRAVEL_SECONDS,
+-- about 4x the real Calm Bay distance at jet-ski cruise). Prints the milestone minutes.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
+	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
@@ -12,16 +15,18 @@ return function(t)
 	local Operations = t.load("src/shared/Ops/Operations.luau")
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
+	local ColdOpen = t.load("src/shared/Boat/ColdOpen.luau")
 
-	-- Round 4 clock (minutes from spawn): cold open Complete 0:19, call 2 accepted at the board
-	-- 0:48 and done 5:55 (5.1 min incl. launch and travel). Opening the phone and buying the
-	-- upgrade: 1 minute (assumed).
-	local COLD_OPEN = 0.31
-	local FIRST_ACCEPT = 0.8
-	local CALL_MIN = 5.1
-	local BUY_MIN = 1
+	local COLD_OPEN = 0.31 -- min: Round 4, cold open Complete at 0:18.7
+	local ANSWER = 10 / 60 -- R / tap (or WP3's seated auto-accept)
+	local BOARD = 20 / 60 -- slow down, hold steady, they climb on
+	local DROP = 15 / 60 -- climb off at the pad, the debrief rolls
+	local TRIP = 2 * CallTypes.TRAVEL_SECONDS / 60 -- out and back
+	local BUY_MIN = 1 -- open the phone, Vehicles, buy the Engine
 	local ENGINE = (VehicleUpgrades.entry("JetSki", "Engine") :: any).price
-	local function run(approachGrades: { string })
+	local SEATS = VehicleConfig.JetSki.survivorCapacity
+
+	local function run(slow: number)
 		local data = Rules.defaultData()
 		local now = 0
 		local completed = 0 -- OperationService st.completed (the cold open is one)
@@ -46,22 +51,29 @@ return function(t)
 				mark("first rank-up")
 			end
 		end
-		local function operation(kind: string)
+		local function pay(kind: string)
 			local def = Operations.Defs[Operations.FromCallKind[kind]]
-			local grade = approachGrades[completed + 1] or approachGrades[#approachGrades]
 			local tut = if completed < #Grading.Payout.Tutorial then completed else nil
-			local reward = Grading.payout(def.weight, grade, 1, tut)
+			local reward = Grading.payout(def.weight, "Silver", 1, tut)
 			completed += 1
 			award(reward.cash, reward.rep)
 		end
 
 		now = COLD_OPEN
-		operation("Swimmer")
+		pay("Swimmer")
 		mark("first reward")
-		now = FIRST_ACCEPT
+		now += ColdOpen.NEXT_CALL_DELAY / 60 -- still seated on the jet ski (B2)
 		while now < 20 do
+			now += ANSWER * slow
+			mark("call 2 starts")
+			local choice = CallLogic.chooseCall(completed, "Calm", function()
+				return 0.5
+			end)
+			local trips = math.ceil((choice.victims or 1) / SEATS)
+			now += trips * (TRIP + BOARD + DROP) * slow
+			pay(choice.kind)
 			if not seen["upgrade bought"] and data.cash >= ENGINE then
-				now += BUY_MIN
+				now += BUY_MIN * slow
 				local streak = StreakRules.claim(StreakRules.newState(), 1792800000)
 				if streak then
 					award(streak.cash, 0) -- the daily crate on the way
@@ -69,14 +81,7 @@ return function(t)
 				data.cash -= ENGINE
 				mark("upgrade bought")
 			end
-			if completed > 1 then
-				now += CallTypes.Scheduler.OfferDelay / 60
-			end
-			local choice = CallLogic.chooseCall(completed, "Calm", function()
-				return 0.5
-			end)
-			now += CALL_MIN
-			operation(choice.kind)
+			now += CallTypes.Scheduler.OfferDelay / 60
 		end
 		local cash10 = 0
 		for _, row in cashAt do
@@ -95,8 +100,8 @@ return function(t)
 	end
 
 	local scenarios = {
-		{ name = "Silver", r = run({ "Silver" }) },
-		{ name = "Bronze call 2, Silver after", r = run({ "Silver", "Bronze", "Silver" }) },
+		{ name = "Budget clock", r = run(1) },
+		{ name = "Slow new player (x1.3)", r = run(1.3) },
 	}
 	print("\nNewPlayerPace (minutes from spawn)")
 	for _, s in scenarios do
@@ -106,7 +111,7 @@ return function(t)
 		end
 		print(
 			string.format(
-				"  %-34s %s | RIB %d%% at 10:00",
+				"  %-24s %s | RIB %d%% at 10:00",
 				s.name,
 				table.concat(parts, ", "),
 				math.floor(s.r.rib * 100 + 0.5)
@@ -114,22 +119,29 @@ return function(t)
 		)
 	end
 
-	local main, bronze = scenarios[1].r, scenarios[2].r
+	local main = scenarios[1].r
 
-	t.test("first reward under 3 minutes", function()
-		t.expect(main.at["first reward"] < 3).toBe(true)
+	t.test("first reward under 1 minute", function()
+		t.expect(main.at["first reward"] < 1).toBe(true)
 	end)
 
-	t.test("first upgrade bought by about 6 minutes", function()
-		for _, r in { main, bronze } do
-			t.expect(r.at["upgrade bought"] ~= nil and r.at["upgrade bought"] <= 8).toBe(true)
+	t.test("call 2 starts before 2:00 (docs/16 B2)", function()
+		for _, s in scenarios do
+			t.expect(s.r.at["call 2 starts"] < 2).toBe(true)
 		end
 	end)
 
-	t.test("first rank-up on Rep alone by about 11 minutes", function()
-		for _, r in { main, bronze } do
-			local at = r.at["first rank-up"]
-			t.expect(at ~= nil and at <= 13).toBe(true)
+	t.test("first upgrade bought by 6:00 (B5)", function()
+		for _, s in scenarios do
+			local at = s.r.at["upgrade bought"]
+			t.expect(at ~= nil and at <= 6).toBe(true)
+		end
+	end)
+
+	t.test("first rank-up on Rep alone by 11:00 (B7)", function()
+		for _, s in scenarios do
+			local at = s.r.at["first rank-up"]
+			t.expect(at ~= nil and at <= 11).toBe(true)
 		end
 	end)
 

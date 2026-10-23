@@ -1,6 +1,6 @@
 --!strict
--- OnboardingReward: the first reward burst (docs/15 section 3, 1:30): the Cash counter rolls, a
--- confetti pop, and Bosun leaps aboard. Client only, one shot. Mounted by OnboardingController
+-- OnboardingReward: the first reward burst (docs/16 B1): the Cash counter rolls, its coins fly
+-- into the HUD wallet (CashBurst), a confetti pop, and Bosun leaps aboard. Client only, one shot. Mounted by OnboardingController
 -- when the cold open ends on a rescue. Everything is code-built Parts and 2D frames (no text
 -- except the number and the one word "Cash").
 local Players = game:GetService("Players")
@@ -10,6 +10,7 @@ local Workspace = game:GetService("Workspace")
 
 local AudioController =
 	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("AudioController"))
+local CashBurst = require(script.Parent:WaitForChild("CashBurst"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local OceanQuality =
 	require(script.Parent.Parent:WaitForChild("Ocean"):WaitForChild("OceanQuality"))
@@ -214,6 +215,10 @@ local function cashRoll(parent: Instance, fromCash: number, cash: number, second
 				conn:Disconnect()
 			end
 			number.Text = HudTheme.formatNumber(cash)
+			-- the Cash leaves the panel for the wallet: where it lives from now on
+			local from = coin.AbsolutePosition + coin.AbsoluteSize / 2
+			CashBurst.playAt(parent, from, amount, false)
+			AudioController.play("UI_Pickup")
 			task.delay(1.8, function()
 				TweenService:Create(frame, TweenInfo.new(0.5), {
 					BackgroundTransparency = 1,

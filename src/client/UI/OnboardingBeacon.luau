@@ -4,7 +4,7 @@
 -- the station still reads through the roof; no light column (user, 2026-10-21). Hidden while a
 -- cutscene owns the camera (Scriptable). Off screen, an arrow on the screen edge points at it.
 -- Client only. Mounted by OnboardingController (one beacon, moved from goal to goal) and by the
--- launch step (kit_launch: on your boat).
+-- launch step (on your boat).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -24,10 +24,8 @@ export type Beacon = {
 -- the HUD palette (assets/ui/hud/mockup.png): rescue orange marks on navy edges
 local NAVY = Color3.fromHex("0A1830")
 local COLORS: { [string]: Color3 } = {
-	Place = Color3.fromHex("F2671F"),
-	Call = Color3.fromRGB(255, 120, 30),
-	Gear = Color3.fromHex("F2671F"),
-	Cert = Color3.fromRGB(120, 230, 160),
+	Place = Color3.fromHex("F2671F"), -- a spot on land
+	Call = Color3.fromRGB(255, 120, 30), -- on the water: the ring sits on the waves
 }
 
 local RING_MAX = 40
