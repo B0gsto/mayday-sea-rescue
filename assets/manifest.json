@@ -1468,6 +1468,15 @@
   "source": "assets/textures/M_Bld_Chandlery_Int/T_ChandleryInt_Joinery_ALB.png",
   "type": "Image"
  },
+ "Image:11ed8e378667e0a717ff99921f34189eb53244765223de57b37b8adcba8626a5": {
+  "assetId": "104897677184387",
+  "imageId": "104897677184387",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c0",
+  "sha": "11ed8e378667e0a717ff99921f34189eb53244765223de57b37b8adcba8626a5",
+  "source": "art/map/gale_isles_map_r0c0.png",
+  "type": "Image"
+ },
  "Image:11fd559232db84de6dad431dd0a70282b244f99310252bce2411ffdadd1b57e8": {
   "assetId": "111076796664722",
   "imageId": "111076796664722",
@@ -2747,6 +2756,15 @@
   "name": "T_Bridle_Hardware_RGH",
   "sha": "22df6b395ecdca35ee7a5b9e87e7f9e1ead1896e99233199fa3a7e3e5d2fc2b0",
   "source": "assets/textures/M_Kit_Bridle/T_Bridle_Hardware_RGH.png",
+  "type": "Image"
+ },
+ "Image:22e0a008ed70e9143bd4311ee4cf2e557caecc9079927e8c82d6d617d013e511": {
+  "assetId": "77935366130883",
+  "imageId": "77935366130883",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c1",
+  "sha": "22e0a008ed70e9143bd4311ee4cf2e557caecc9079927e8c82d6d617d013e511",
+  "source": "art/map/gale_isles_map_r0c1.png",
   "type": "Image"
  },
  "Image:232ddbb5ca368df50097caef7ad24f18d36d1505dbf27a62e9e74ef33164c132": {
@@ -6716,6 +6734,15 @@
   "source": "assets/textures/M_Rock_Boulder_05/T_Boulder05_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:56c31be7031a7b159ebef7731ac4eaf71901815e24fff92918301751273714e1": {
+  "assetId": "88839461921229",
+  "imageId": "88839461921229",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c0",
+  "sha": "56c31be7031a7b159ebef7731ac4eaf71901815e24fff92918301751273714e1",
+  "source": "art/map/gale_isles_map_r1c0.png",
+  "type": "Image"
+ },
  "Image:56c3cc39a549775065edcbce3db4c4b6696793b14fe89df52513aac7e4fd98fa": {
   "assetId": "129317377941646",
   "imageId": "129317377941646",
@@ -10430,6 +10457,15 @@
   "source": "assets/ui/settings/horizon.png",
   "type": "Image"
  },
+ "Image:896b0205a962431166b6dada8a31c0e82c8afab5d57246fdd0d67b1a111b389f": {
+  "assetId": "81651947069484",
+  "imageId": "81651947069484",
+  "moderation": "Reviewing",
+  "name": "T_Station_RollerDoor",
+  "sha": "896b0205a962431166b6dada8a31c0e82c8afab5d57246fdd0d67b1a111b389f",
+  "source": "assets/textures/T_Station_RollerDoor.png",
+  "type": "Image"
+ },
  "Image:89908285eb475cb2167a03e87fa707e74049b7158a4ed28b2b9b9210858a7eca": {
   "assetId": "120584434821371",
   "imageId": "120584434821371",
@@ -12605,6 +12641,15 @@
   "source": "assets/textures/Materials/T_Mat_NonSlipDeck_NOR.png",
   "type": "Image"
  },
+ "Image:a570c70567d5ecaa5e1e6affad6e65e304014a2827b5f07ef51c05a12e7ec251": {
+  "assetId": "111279922523468",
+  "imageId": "111279922523468",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map",
+  "sha": "a570c70567d5ecaa5e1e6affad6e65e304014a2827b5f07ef51c05a12e7ec251",
+  "source": "art/map/gale_isles_map.png",
+  "type": "Image"
+ },
  "Image:a57618eb1cef6bc6d9d3f7bed1f23c73d8a2d1f25a50e604099ada6351bc8466": {
   "assetId": "120530313220212",
   "imageId": "120530313220212",
@@ -13251,6 +13296,15 @@
   "name": "T_Station_Details_MET",
   "sha": "ae41a0b1acdcd7c330fce9dc7c67fa533f34af3a372553ca8a0d03beaaa7c145",
   "source": "assets/textures/M_Bld_Station/T_Station_Details_MET.png",
+  "type": "Image"
+ },
+ "Image:ae877a029719c93a450ced295e127c61b5e42242dda3d0d49fefc3351f8d02a4": {
+  "assetId": "104307809053820",
+  "imageId": "104307809053820",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "ae877a029719c93a450ced295e127c61b5e42242dda3d0d49fefc3351f8d02a4",
+  "source": "art/map/gale_isles_map_r1c1.png",
   "type": "Image"
  },
  "Image:aeab142fbc140b62ff7765b5fc37a0ec04504ccc646d722530df6be55a381b4b": {
