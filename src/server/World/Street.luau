@@ -8,7 +8,7 @@
 --   * Markings (white paint strips 5 mm proud, following the ray-cast terrain): two lanes on every Asphalt road,
 --     centre dashes and edge lines, broken at junctions; at each RoadNet junction stop lines and, where all roads are
 --     asphalt, three-aspect traffic lights cycled on the server clock (Shared/RoadNet, traffic keeps right).
---   * Granite kerbs (plain Granite, light warm grey; the RoadKerbGranite variant failed live, 125 mm upstand) along the town edge of Harbour Road
+--   * Granite kerbs (plain Granite, light warm grey; the RoadKerbGranite variant failed live, 125 mm upstand) along the town edge of Harbour Road (backed by a flush footway band hiding the terrain seam)
 --     and both sides of Chapel Hill, dropped at the station apron / slipway, junctions, doors and prompts.
 --   * R1a street furniture (AssetLoader.cloneStatic): M_Road_StreetLamp every ~28 m on Harbour Road (the quay side in
 --     town, alternate sides beyond) and Chapel Hill, warm SpotLights at ATT_Light (shadows on Harbour Road) with the
@@ -85,16 +85,17 @@ local PAVED = {
 	[Enum.Material.Cobblestone] = true,
 }
 local KERB = { seg = 5.4, w = 0.9, h = 0.75, up = 0.375 } -- two 0.9 m stones, 125 mm upstand
+-- Harbour Road's town-side footway: flush granite paving (Parts, straight edges) over the terrain's ragged asphalt /
+-- paving seam, the kerb on its road edge; non-colliding, so the boat's road crossing and doors stay flat
+local FOOTWAY = { w = 8, lift = 0.08, tint = Color3.fromRGB(150, 147, 140) }
 local QUAY = { x0 = -180, x1 = 180, z = -20, edge = 4 } -- the quay apron in front of Harbour Road (Build.luau)
 local KEEP_OUT: { StreetLayout.Rect } = {
 	{ -185, -46, -72, 8 }, -- the station apron, the boat's road crossing and the slipway head
 }
--- r2 art review: the station stretch of Harbour Road was bare asphalt. The lanes now run through it, broken only at
--- the boat's road crossing (a yellow hatched KEEP CLEAR box) and at a zebra crossing either side of the station.
-local BOAT_BOX = { x0 = -170, x1 = -106 } -- station doors (x -120..-100) to the slipway head (x -175..-155)
+-- the lanes run through the station stretch of Harbour Road (the boat's road crossing is left plain: the yellow
+-- hatched KEEP CLEAR box read as garish), broken only at a zebra crossing either side of the station
 local ZEBRA_X = { -190, -62 } -- west of the slipway; between the station and the Chandlery, by the spawn
-local YELLOW = Color3.fromRGB(236, 190, 40)
-local MARK_OUT: { StreetLayout.Rect } = { { BOAT_BOX.x0, -46, BOAT_BOX.x1, 8 } }
+local MARK_OUT: { StreetLayout.Rect } = {}
 for _, x in ZEBRA_X do
 	table.insert(MARK_OUT, { x - 6, -46, x + 6, 8 })
 end
@@ -392,7 +393,7 @@ local function paint(
 end
 
 -- Two lanes on every asphalt road (drive on the right): centre dashes and edge lines, stopping at junction boxes
--- (RoadNet) and the station apron.
+-- (RoadNet) and the zebras.
 local JUNCTIONS = RoadNet.junctions(WorldConfig.Roads)
 
 local function laneSegs(segs: { StreetLayout.Seg }): { StreetLayout.Seg }
@@ -421,40 +422,13 @@ local function roadAt(road: any, x: number): StreetLayout.Sample?
 	return best
 end
 
--- the boat crossing's KEEP CLEAR box (border and 45-degree hatching) and the zebra crossings
+-- the zebra crossings either side of the station
 local function stationPaint(parent: Instance, params: RaycastParams): number
 	local road = roadById("HarbourRoad")
 	if not road then
 		return 0
 	end
 	local n = 0
-	local L = BOAT_BOX.x1 - BOAT_BOX.x0
-	local H = road.width - 3 -- inside the edge lines
-	local c = roadAt(road, (BOAT_BOX.x0 + BOAT_BOX.x1) / 2)
-	if c then
-		local across = c.dir:Cross(Vector3.yAxis)
-		local function pt(u: number, v: number): Vector3
-			return c.pos + c.dir * (u - L / 2) + across * (v - H / 2)
-		end
-		local segs = {
-			{ a = pt(0, 0), b = pt(L, 0) },
-			{ a = pt(0, H), b = pt(L, H) },
-			{ a = pt(0, 0), b = pt(0, H) },
-			{ a = pt(L, 0), b = pt(L, H) },
-		}
-		for k = -H, L, 6 do -- lines u - v = k and u + v = k + H, clipped to the box
-			local u0, u1 = math.max(0, k), math.min(L, H + k)
-			if u1 > u0 then
-				table.insert(segs, { a = pt(u0, u0 - k), b = pt(u1, u1 - k) })
-			end
-			local k2 = k + H
-			u0, u1 = math.max(0, k2 - H), math.min(L, k2)
-			if u1 > u0 then
-				table.insert(segs, { a = pt(u0, k2 - u0), b = pt(u1, k2 - u1) })
-			end
-		end
-		n += paint(parent, segs, "KeepClear", params, 0.5, YELLOW)
-	end
 	for _, x in ZEBRA_X do
 		local z = roadAt(road, x)
 		if z and RoadNet.clear(JUNCTIONS, z.pos) then
@@ -699,6 +673,24 @@ local function kerbs(parent: Instance, block: { StreetLayout.Blocker }): number
 					and StreetLayout.distToPolyline(mid0, other.points) < other.width / 2 + 4
 				then
 					junction = true
+				end
+			end
+			if not junction and run.road == harbour then
+				local fa0 =
+					StreetLayout.offset(samples[i], run.side, run.road.width / 2 + FOOTWAY.w / 2)
+				local fb0 = StreetLayout.offset(
+					samples[i + 1],
+					run.side,
+					run.road.width / 2 + FOOTWAY.w / 2
+				)
+				local fa, fb = ground(fa0, params), ground(fb0, params)
+				if fa and fb and math.abs(fa.Y - fb.Y) < 3 then
+					local dir = (fb - fa).Unit * 0.3 -- overlap the next slab round the bends
+					local f =
+						strip(parent, "Footway", fa - dir, fb + dir, FOOTWAY.w, FOOTWAY.lift - 0.2)
+					f.Size = Vector3.new(FOOTWAY.w, 0.4, f.Size.Z)
+					f.Material = Enum.Material.Granite
+					f.Color = FOOTWAY.tint
 				end
 			end
 			if

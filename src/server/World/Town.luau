@@ -187,6 +187,32 @@ function Town.paint()
 				end
 			end
 		end
+		-- the bake's quayside setts (x -180..180, z -62..-20) covered the north half of Harbour Road with a voxel
+		-- saw-tooth seam: asphalt the whole carriageway (2 studs past the kerb, under Street's footway band) and pave
+		-- the forecourts behind it like the other footways
+		for _, r in WorldConfig.Roads do
+			if r.id == "HarbourRoad" then
+				for i = 1, #r.points - 1 do
+					local a, b = r.points[i], r.points[i + 1]
+					local h = r.width / 2 + 2
+					Workspace.Terrain:ReplaceMaterial(
+						Region3.new(
+							Vector3.new(math.min(a.X, b.X) - h, y - 8, math.min(a.Z, b.Z) - h),
+							Vector3.new(math.max(a.X, b.X) + h, y + 4, -20) -- not the quay kit's setts (z -8..4)
+						):ExpandToGrid(4),
+						4,
+						Enum.Material.Cobblestone,
+						Enum.Material.Asphalt
+					)
+				end
+			end
+		end
+		Workspace.Terrain:ReplaceMaterial(
+			Region3.new(Vector3.new(-184, y - 8, -64), Vector3.new(184, y + 4, -20)):ExpandToGrid(4),
+			4,
+			Enum.Material.Cobblestone,
+			Enum.Material.Concrete
+		)
 	end
 end
 
