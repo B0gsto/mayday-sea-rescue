@@ -1398,6 +1398,11 @@ function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean
 	return spawnVehicle(player, vehicleId, bayFor(player), true)
 end
 
+-- Dev board: launches the boat from the player's bay, seated (Quick Launch without the pass check).
+function VehicleService.DevLaunch(player: Player, vehicleId: string): (boolean, string | Model)
+	return spawnVehicle(player, vehicleId, bayFor(player), true)
+end
+
 -- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
 -- class so it rebuilds with the new parts and handling (a crewed hull is left until it is empty).
 function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)

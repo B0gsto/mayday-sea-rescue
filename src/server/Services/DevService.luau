@@ -304,16 +304,9 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			local p = target :: Player
 			local id = a[2] :: string
 			if VehicleConfig.get(id) then
-				local root = rootOf(p)
-				if not root then
-					return false, "No character"
-				end
-				-- shortcut: spawns at sea level just ahead, so teleport to open water first
-				local look = root.CFrame.LookVector * Vector3.new(1, 0, 1)
-				local at = root.Position * Vector3.new(1, 0, 1) + look.Unit * 12
-				local model =
-					VehicleService.SpawnSeated(p, id, CFrame.lookAt(at, at + look), 0, "Request")
-				return model ~= nil, if model then id else "Refused"
+				-- launched from the player's bay (spawning at the player put boats on the street)
+				local ok, result = VehicleService.DevLaunch(p, id)
+				return ok, if ok then id else tostring(result)
 			end
 			local ok, result = LandVehicleService.Spawn(p, id)
 			return ok, if ok then id else tostring(result)
