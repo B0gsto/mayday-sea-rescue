@@ -44,10 +44,21 @@ Harbour.DOCK_PONTOON_X = -124
 Harbour.HOSPITAL_PONTOON_X = 130
 Harbour.YARD_QUAY = { x0 = -317, kinds = "SSSSSSS..SSSSSS" } -- 15 slots to x -182; slots 8-9 the yard slipway
 -- map/Build.luau buildBreakwater: arms at x +-320 (16 wide, z -20..368), heads z 352..368 from the 60-stud mouth.
--- Map polish (docs/17 P0 7): the outer third dog-legs inward, so each arm runs root -> knee (x +-320, z `knee`)
--- -> head (x +-`head`, z `far`) -> the mouth; the mouth, the Harbour Light and the basin inside stay. CallTypes
--- Areas.Inside.elbow mirrors knee / head (tests/Harbour.spec.luau checks they match).
-Harbour.BREAKWATER = { x = 320, w = 16, far = 360, mouth = 30, root = -20, knee = 250, head = 140 }
+-- Map polish (docs/17 P0 7, pass 3): each arm runs root -> knee (x +-320, z knee) -> head (x +-head, z `far`) -> the
+-- mouth, but not as a mirror pair (a symmetric hexagon from above): the west arm runs long and straight to a short
+-- clipped corner, the east arm dog-legs in early on a long diagonal. The mouth, the Harbour Light and the basin stay.
+-- CallTypes Areas.Inside.elbow mirrors the knees / heads (tests/Harbour.spec.luau checks they match).
+Harbour.BREAKWATER = {
+	x = 320,
+	w = 16,
+	far = 360,
+	mouth = 30,
+	root = -20,
+	kneeW = 334,
+	headW = 294,
+	kneeE = 196,
+	headE = 164,
+}
 Harbour.BREAKWATER_LAMP = 40 -- lamp spacing along the arms
 Harbour.BREAKWATER_LADDER = 5 -- a ladder bay every 5th harbour-face slot (45 studs)
 Harbour.HINGE_BACK = 1.2
@@ -96,8 +107,8 @@ function Harbour.breakwaterLine(side: number): { Vector3 }
 	local B = Harbour.BREAKWATER
 	return {
 		Vector3.new(side * B.x, 0, B.root),
-		Vector3.new(side * B.x, 0, B.knee),
-		Vector3.new(side * B.head, 0, B.far),
+		Vector3.new(side * B.x, 0, if side < 0 then B.kneeW else B.kneeE),
+		Vector3.new(side * (if side < 0 then B.headW else B.headE), 0, B.far),
 		Vector3.new(side * B.mouth, 0, B.far),
 	}
 end

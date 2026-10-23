@@ -567,6 +567,14 @@ local function signal(parent: Instance, j: RoadNet.Junction, arm: RoadNet.Arm, f
 	local cf = CFrame.lookAt(at, at + arm.dir) -- front (-Z) toward the oncoming cars
 	signalPart(m, "Housing", Vector3.new(1.3, 3.9, 0.8), cf, dark)
 	signalPart(m, "Backboard", Vector3.new(2.5, 5.1, 0.1), cf * CFrame.new(0, 0, 0.45), dark)
+	-- the back is galvanised steel with two clamp straps: a black back read as a blank sign board (docs/17 N7)
+	local galv = Color3.fromRGB(146, 150, 148)
+	signalPart(m, "BackPlate", Vector3.new(2.5, 5.1, 0.04), cf * CFrame.new(0, 0, 0.52), galv).Material =
+		Enum.Material.Metal
+	for _, y in { 1.7, -1.7 } do
+		signalPart(m, "Bracket", Vector3.new(0.9, 0.3, 0.12), cf * CFrame.new(0, y, 0.6), galv).Material =
+			Enum.Material.Metal
+	end
 	-- the white border is a rim on the front face only: a white plate behind the board read as a blank sign board
 	-- from the back (map pass 2, docs/17 P0 6)
 	for _, rim in
@@ -1428,7 +1436,7 @@ local function roadWear(parent: Instance): number
 					Vector3.new(1.3, 0.1, 2.2),
 					0.06,
 					Color3.fromRGB(34, 34, 34),
-					Enum.Material.DiamondPlate
+					Enum.Material.Metal
 				)
 				if i % 4 == 1 then
 					lay(
@@ -1438,7 +1446,7 @@ local function roadWear(parent: Instance): number
 						Vector3.new(2.6, 0.1, 2.6),
 						0.05,
 						Color3.fromRGB(46, 46, 44),
-						Enum.Material.DiamondPlate
+						Enum.Material.Metal
 					)
 				end
 				if i % 6 == 0 then -- small patches in a lane's wheel track, 5 grey either side of BAY.tint

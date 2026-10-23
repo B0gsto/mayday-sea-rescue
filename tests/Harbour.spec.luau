@@ -151,8 +151,10 @@ return function(t)
 		function()
 			local B = Harbour.BREAKWATER
 			local e = t.load("src/shared/Calls/CallTypes.luau").Areas.Inside.elbow
-			t.expect(e.x == B.x and e.kneeZ == B.knee and e.headX == B.head and e.far == B.far)
-				.toBe(true)
+			t.expect(e.x == B.x and e.far == B.far).toBe(true)
+			for _, k in { "kneeW", "headW", "kneeE", "headE" } do
+				t.expect(e[k]).toBe(B[k])
+			end
 			local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 			for _, side in { -1, 1 } do
 				local P = Harbour.breakwaterLine(side)
@@ -168,8 +170,9 @@ return function(t)
 				-- the middle of the dog-leg (on the wall) and just seaward of it are not open water inside
 				local mid = (P[2] + P[3]) / 2
 				t.expect(CallLogic.isWater(mid, "Inside")).toBe(false)
+				-- (the west arm's short clipped corner lies outside Calm Bay's sheltered circle: no calls there)
 				t.expect(CallLogic.isWater(mid + Harbour.inward(P[2], P[3]) * 30, "Inside"))
-					.toBe(true)
+					.toBe(side > 0)
 			end
 			t.expect(#Harbour.armourRuns()).toBe(6)
 		end

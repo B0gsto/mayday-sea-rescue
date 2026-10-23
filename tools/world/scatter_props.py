@@ -396,8 +396,8 @@ def scatter_rocks(T, ex_all, reg, seed, space):
           "M_Rock_Boulder_05": 3, "M_Rock_Boulder_06": 3}, False, 0.7, 15.0, 0.85),
         ("cliffchunk", (slope > 0.84) & (wc + 0.5 * wr > 0.4) & (h > 1) & (dl < 400) & rock_mats & inside & ~ex_all,
          (0.2 + noise) * smooth(0.84, 1.3, slope + 0.2),
-         {"M_Rock_Cliff_01": 3, "M_Rock_Cliff_02": 3, "M_Rock_Cliff_03": 1.5, "M_Rock_Cliff_04": 2,
-          "M_Rock_Cliff_05": 1}, False, 0.8, 15.0, 0.7),
+         {"M_Rock_Boulder_05": 3, "M_Rock_Boulder_06": 3, "M_Rock_Boulder_01": 2, "M_Rock_Boulder_04": 1},
+         False, 0.8, 15.0, 0.7),  # closed meshes: the cliff scans are open shells, their backs showed as spires
         ("verge", (T.road_edge > 1.5) & (T.road_edge < 6) & (h > 1) & (slope < 0.5) & inside & ~T.ex_verge,
          0.2 + noise * smooth(-0.1, 0.4, G.fbm(X, Z, 20, seed + 330)),
          {"M_Rock_Boulder_02": 3, "M_Rock_Boulder_03": 3, "M_Rock_Boulder_01": 1}, False, 0.9, 20.0, 0.6),
@@ -409,7 +409,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
         ("outcrop", (mat == M["Rock"]) & (h > 8) & (dl > 45) & (slope > 0.06) & (slope < 0.75) & inside & ~ex_all,
          (0.2 + noise) * smooth(0.06, 0.3, slope),
          {"M_Rock_Boulder_01": 2, "M_Rock_Boulder_04": 2, "M_Rock_Boulder_05": 2, "M_Rock_Boulder_06": 3,
-          "M_Rock_Ledge_03": 2, "M_Rock_Cliff_02": 2}, False, 0.8, 18.0, 0.8),
+          "M_Rock_Boulder_02": 2, "M_Rock_Boulder_03": 2}, False, 0.8, 18.0, 0.8),  # closed meshes: the cliff / ledge scans are open shells
     ]
     out, meta = [], []
     for k, (name, cand, wgt, assets, waterline, follow, cap, fac) in enumerate(stages):
@@ -473,7 +473,9 @@ CLIFF_FACE = {"M_Rock_Cliff_05": 3, "M_Rock_Cliff_04": 3, "M_Rock_Cliff_03": 2, 
 CLIFF_TOP = {"M_Rock_Ledge_01": 2, "M_Rock_Ledge_02": 3, "M_Rock_Ledge_03": 2}
 CLIFF_APRON = {"M_Rock_Boulder_04": 3, "M_Rock_Boulder_05": 3, "M_Rock_Boulder_06": 2, "M_Rock_Boulder_01": 2}
 CLIFF_PLATFORM = {"M_Rock_Ledge_02": 3, "M_Rock_Ledge_01": 2, "M_Rock_Ledge_03": 2}
-CLIFF_BUDGET = {"face": 420, "top": 160, "apron": 520, "platform": 140}
+# no top lips (docs/17 N3): a ledge scan is an open shell, and a lip overhanging the face showed its missing
+# underside as thin shards in the sky from the cliff paths and from the sea
+CLIFF_BUDGET = {"face": 420, "top": 0, "apron": 520, "platform": 140}
 
 
 def max_filter(a, r):
@@ -593,12 +595,15 @@ def cliff_dressing(T, ex_all, reg, seed, space):
             # bury the base: never above the terrain under the piece's sea edge or centre (no floating overhang)
             fx, fz = x - ux * 0.45 * dp, z - uz * 0.45 * dp
             y = min(base, T.height(fx, fz) - 1.0, T.height(x, z) - 0.2 * hp) if k else base
+            # the scan is an open shell: keep its top under the turf behind it, or its missing back shows from the
+            # land as thin shards (docs/17 N3)
+            y = min(y, T.height(x + ux * 0.6 * dp, z + uz * 0.6 * dp) + 1.0 - hp)
             lean = math.radians(rng.uniform(3, 14))  # top leans back into the land, like a real face
             roll = math.radians(rng.uniform(-5, 5))
             up = np.array([ux * math.sin(lean) + tgx * math.sin(roll), math.cos(lean) * math.cos(roll),
                            uz * math.sin(lean) + tgz * math.sin(roll)])
             tx, tz = tilt_angles(up / np.linalg.norm(up), 1.0, 30.0)
-            put("face", asset, x, y, z, yaw0 + rng.uniform(-12, 12) + (180 if rng.random() < 0.15 else 0), tx, tz,
+            put("face", asset, x, y, z, yaw0 + rng.uniform(-12, 12), tx, tz,
                 s, 0.0, region, True)
             tiers[k].add(x, z, 0.5 * wp)
             space.add(x, z, 0.35 * wp)
