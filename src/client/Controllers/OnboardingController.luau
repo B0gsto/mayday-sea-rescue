@@ -15,7 +15,6 @@ local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 
 local OpsController = require(script.Parent:WaitForChild("OpsController"))
-local PyroController = require(script.Parent:WaitForChild("PyroController"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
@@ -43,7 +42,6 @@ local lastAward: { [string]: any }? = nil
 local rewardPending = false
 local rewardShown = false
 local rewardAt = math.huge
-local flared: { [string]: boolean } = {}
 
 local REWARD_DELAY = 0.6 -- s after the cold open ends: the survivor steps off, then the burst
 local REWARD_HOLD = 4 -- s the reward burst keeps the debrief tablet back (OnboardingRewardBusy)
@@ -142,18 +140,6 @@ local function showReward()
 	end)
 end
 
--- B2: a tutorial call's offer sends a flare up over the scene (once per call).
-local function flareFor(o: { [string]: any })
-	local id = tostring(o.opId)
-	if flared[id] or callsCompleted >= Onboarding.TUTORIAL_CALLS then
-		return
-	end
-	if typeof(o.position) == "Vector3" then
-		flared[id] = true
-		PyroController.parachute(o.position + Vector3.new(0, 2, 0))
-	end
-end
-
 local function update()
 	if not active then
 		if beacon then
@@ -200,10 +186,7 @@ function OnboardingController.Init()
 	beacon = OnboardingBeacon.start()
 
 	OpsController.OnOffer:Connect(function(data: { [string]: any })
-		offer = data
-		if active then
-			flareFor(data)
-		end
+		offer = data -- OpsHud sends the flare up over the scene
 	end)
 	OpsController.OnState:Connect(function(s: { [string]: any })
 		inOp = true
@@ -247,9 +230,6 @@ function OnboardingController.Init()
 			player:SetAttribute("OnboardingRewardBusy", true) -- OpsHud holds the debrief
 		end
 		rewardAt = endedAt + REWARD_DELAY
-		if offer then
-			flareFor(offer) -- call 2 was offered the moment the cold open ended
-		end
 	end)
 	-- a profile that was already past the cold open on join is a returning player: no cues
 	player:GetAttributeChangedSignal("ColdOpenDone"):Connect(function()
