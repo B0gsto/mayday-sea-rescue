@@ -126,3 +126,67 @@ and hide the KM/H HUD in aerials (it shows in all of them).
   sea to the horizon with no sand slab; distant headlands visibly hazed in `harbour_road_west`.
 - **WP-6 Tour fix (section 0) then pass 3.** `mayday-tour/build/tour/points.json` and its capture script only.
   Accept: 32 tiles, none inside a wall, vehicle or terrain; no HUD in aerials. Run after WP-1..5 land.
+
+## Pass 3 (2026-10-23)
+
+Source: `mayday-tour/build/tour/r3_sheet_1..4.png` (captured 22:18, after the far-sea commit 7f575859), full shots in
+`build/smoke/`. Street level improved a lot; aerials and the sea are now the weak side.
+
+### Pass-2 P0 verdicts
+
+| # | Verdict | Evidence |
+|---|---|---|
+| 1 Town one block | PARTLY | `map_aerial_harbour`: wall colours vary and landmarks break a few blocks, but it is still 25 equal rectangles, roofs pale grey not slate, one roofline; `ridge_view_town` reads as a white strip |
+| 2 Flat plain | PARTLY | green rise visible at the end of `fuel_dock_boatyard`, but `map_aerial_north` / `ridge_view_town` still show the town on a flat shelf, no skyline |
+| 3 Empty streets | FIXED | `chapel_hill`, `fore_street`: parked cars, double yellows, flagstones, lamps, bins, bunting, name plates |
+| 4 No gardens | FIXED | `fore_street`, `chapel_hill`: front walls, trees; only `harbour_road_west` still has open lawn |
+| 5 Caribbean sea | PARTLY | sampled `harbour_mouth` #3D949B, `harbour_light` #1F8591: still turquoise, target #2E5A55 |
+| 6 Blank white signs | FIXED | none left; `fuel_dock_boatyard`, `station_slipway` show plain black sign backs (P2 below) |
+| 7 Ruler arms | PARTLY | `map_aerial_south_sea`: outer ends now chamfer inward but read as a symmetric hexagon; inner two thirds straight and parallel in `map_aerial_harbour` |
+
+Also: P1 14 station yard FIXED (`station_yard`: bays, fence, flagpole); P1 13 shards NOT FIXED (spread, see N3);
+P1 9 moor PARTLY (`map_aerial_north`: grey dither blotches, hedges only hairlines); P1 12 sand still #DCD5C2.
+Section 0 viewpoints still broken: `harbour_quay` (inside a building), `town_crescent` (wall), `hospital` (under a
+canopy), `trevose_farm` (on a roof), `sandy_point` (open sea). WP-6 was not run.
+
+### New problems
+
+- **N1 P0 Near sea and far sea do not match.** `map_aerial_south_sea`, `map_aerial_east`, `map_aerial_overview`: the
+  wave-ring area is a bright cyan square with hard edges inside a navy far plane; `haven_head_viewpoint` (a player
+  lookout): a dark navy band across the bay beyond the teal water; `map_aerial_north`: a pale rectangle notch in the
+  sky at the plane's edge. Fix: drive FarPlane colour/reflectance from the same OceanPalette entry as the wave mesh
+  (one colour), add a 1-2 ring feather strip (transparency 0 -> 1) at the seam, and extend/fog the plane so its edge
+  never shows. Files: `src/client/Ocean/FarPlane.luau`, `OceanPalette.luau`, `Horizon.luau`.
+- **N2 P1 Road patches read as black holes.** `harbour_road_west`, `harbour_road_east`, `chapel_hill`, `fore_street`: a
+  glossy near-black rectangle mid-lane in nearly every street shot. Fix: patches Material Asphalt (not Granite), colour
+  within 4-6 RGB of the road, half as many, 3-6 studs, in the wheel tracks. File: `src/server/World/Street.luau`
+  roadWear() ~line 1444 (`Color3.fromRGB(22, 23, 25)`, `Enum.Material.Granite`).
+- **N3 P0 (was P1 13) Floating rock slivers.** `haven_head_track`, `west_cliff_car_park`, `west_cliff`: dozens of thin
+  dark shards hanging in the sky above cliff rocks. Looks like rock-kit meshes at broken scale/rotation, not terrain.
+  Fix: in Studio select them (smoke.py), drop any rock whose min size < 1 stud or that is not grounded (raycast down
+  > 3 studs). Files: `src/server/World/CoastArt.luau` / `CoastArtLayout.luau` (else `gen_terrain.py` shell).
+- **N4 P1 Trevose farm is a giant white slab roof.** `trevose_farm`, white box in `map_aerial_north`. Fix: dark slate or
+  grey-green corrugated roof, granite walls, split into farmhouse + barn + walled yard. File: `src/server/World/Town.luau`
+  farms() ~line 918.
+- **N5 P2 Sea at ground level still glittery cyan** (`sandy_point`, `harbour_light`): lower specular, darker deep tint,
+  with N1 (same files).
+- **N6 P2 West Cliff car park** (`west_cliff`, `west_cliff_car_park`): white herringbone slab, the road ends in a raw
+  black stub; `high_road_moor` herringbone pokes out under the road edge. Fix: car park gravel tint, a kerb/edge,
+  trim the paving strip. File: `src/server/World/RoadsShore.luau`.
+- **N7 P2 Black sign backs** on bare posts (`fuel_dock_boatyard`, `station_slipway`): galvanised grey back + bracket.
+  File: `RoadsShore.luau` SIGNS.
+- **N8 P2 Aerial haze too thick** (`map_aerial_overview`: island barely visible); row of orange sprite dots over the
+  north sea in `map_aerial_north` (identify; likely an AlwaysOnTop billboard). File: `LightingPresets.luau`.
+
+### Overall
+
+Publishable: **yes after N1 and N3** (street level is ship-quality; sea seam and flying rocks are the blockers).
+Top 5, three builders with disjoint files:
+1. **Builder A (Ocean: `FarPlane.luau`, `OceanPalette.luau`, `Horizon.luau`, `LightingPresets.luau`):** N1 seam, then
+   P0 5 / N5 green-grey water and less glitter; N8 aerial haze.
+2. **Builder B (Coast: `CoastArt*.luau`, `RoadsShore*.luau`, `Harbour.luau`):** N3 floating rocks; then P0 7 break the
+   hexagon (dog-leg only one arm, rock armour, uneven lengths); N6, N7.
+3. **Builder C (Town: `TownBuildings.luau`, `TownLayout.luau`, `Town.luau`, `Street.luau`):** P0 1 dark slate roofs
+   and 2/3/4-storey mix seen from above, plus N4 farm; N2 road patches.
+4. Then WP-3 follow-up (P0 2): a visible terraced hillside behind the town (`layout.py`, `gen_terrain.py`), alone.
+5. Then WP-6: re-place the 5 broken viewpoints and run pass 4.
