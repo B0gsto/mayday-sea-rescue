@@ -29,19 +29,15 @@ function LeaderboardRules.storeName(board: BadgeConfig.Board, week: number): str
 end
 
 -- people rescued credited to one helper of a finished op: the op's saved count (a crew shares the credit,
--- docs/03 section 9.1 counts crew rescues as everyone's), storm rescues when it was tasked in a storm
-function LeaderboardRules.credit(
-	saved: number,
-	storm: boolean,
-	helper: boolean
-): { [string]: number }
+-- docs/03 section 9.1 counts crew rescues as everyone's), ferry rescues when it was the big call
+function LeaderboardRules.credit(saved: number, big: boolean, helper: boolean): { [string]: number }
 	if not helper or saved <= 0 then
 		return {}
 	end
 	local n = math.floor(saved)
 	local out: { [string]: number } = { Rescued = n, RescuedAllTime = n }
-	if storm then
-		out.StormRescued = n
+	if big then
+		out.FerryRescued = n
 	end
 	return out
 end

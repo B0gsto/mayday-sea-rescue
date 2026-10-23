@@ -111,7 +111,7 @@ local function onOperationCompleted(snap: any, helpers: { Player })
 		if p.Parent then
 			LeaderboardService.Credit(
 				p,
-				LeaderboardRules.credit(snap.saved or 0, snap.storm == true, true)
+				LeaderboardRules.credit(snap.saved or 0, snap.isBig == true, true)
 			)
 		end
 	end

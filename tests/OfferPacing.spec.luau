@@ -33,4 +33,16 @@ return function(t)
 		t.expect(P.nudgesIdle(P.IdleAfter, false, 10)).toBe(false) -- seated or aboard
 		t.expect(P.nudgesIdle(P.IdleAfter, true, P.NudgeRadius + 1)).toBe(false)
 	end)
+
+	t.test("the big call runs on its own clock, once someone is past the tutorial", function()
+		t.expect(P.nextBigCallAt(0, nil)).toBeNil() -- nobody ready: no big call
+		t.expect(P.nextBigCallAt(100, 0)).toBe(100 + P.BigCallEvery)
+		-- the first ready player waits the warm-up, even long after the last big call
+		t.expect(P.nextBigCallAt(0, 5000)).toBe(5000 + P.BigCallWarmup)
+		t.expect(P.BigCallEvery >= 12 * 60 and P.BigCallEvery <= 15 * 60).toBe(true)
+		t.expect(P.bigCallReady(nil)).toBe(false)
+		t.expect(P.bigCallReady(P.BigCallAfterCalls - 1)).toBe(false) -- still in the tutorial chain
+		t.expect(P.bigCallReady(P.BigCallAfterCalls)).toBe(true)
+		t.expect(P.BigCallAfterCalls > 3).toBe(true) -- never during a new player's first 3 calls
+	end)
 end

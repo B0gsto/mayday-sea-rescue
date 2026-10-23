@@ -148,6 +148,8 @@ local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the 
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
 local nextId = 0
 local bigOp: any = nil
+local bigLastEnd = 0 -- the last big call's end (Start: the server start), for OfferPacing.nextBigCallAt
+local bigReadySince: number? = nil -- since when a player past the tutorial chain has been on
 local lastWeatherState = "Calm"
 local rng = Random.new()
 
@@ -566,12 +568,11 @@ local function newOp(
 	op.scene.casualties = op.casualties
 	-- 2026-10-21: a personal call's casualty is its crew's only until aboard (no stealing); big calls stay public
 	op.scene.privateTo = if def.isBig then nil else op.members
-	-- the rare-call variant (docs/15 H2): the storm gates the high rarities; Studio can force one
+	-- the rare-call variant (docs/15 H2), at its base weight in any weather; Studio can force one
 	local forcedVariant = RunService:IsStudio() and Workspace:GetAttribute("RescueVariantForce")
 	local variant = RescueVariants.choose(
 		kind,
 		rng:NextNumber(),
-		Weather.isGreatStorm(),
 		if type(forcedVariant) == "string" then forcedVariant else nil
 	)
 	if variant then
@@ -928,6 +929,7 @@ local function closeOp(op: any)
 	pcall(RescueService.Cleanup, op.scene)
 	if op == bigOp then
 		bigOp = nil
+		bigLastEnd = now()
 	end
 	for _, p in everyone(op) do
 		local st = playerState[p]
@@ -1511,6 +1513,12 @@ local function joinBig(op: any, player: Player)
 	advance(op, track)
 end
 
+-- past the cold open and the tutorial chain: the big call's pager reaches this player
+local function bigCallReady(player: Player): boolean
+	local total = player:GetAttribute("OpsCompletedTotal")
+	return OfferPacing.bigCallReady(if type(total) == "number" then total else nil)
+end
+
 local function startBigOp()
 	if bigOp then
 		return
@@ -1521,7 +1529,7 @@ local function startBigOp()
 	op.state = "Active"
 	op.acceptedAt = now()
 	op.offerExpiresAt = op.acceptedAt + op.def.capSeconds
-	op.storm = true
+	op.storm = weatherState() == "Storm" -- the scheduled ferry comes in calm weather: no storm pay
 	op.scene.total = count
 	bigOp = op
 	rollCasualties(op, count)
@@ -1533,7 +1541,13 @@ local function startBigOp()
 		"Outside"
 	)
 	RescueService.SpawnCall(op.scene, positions)
-	Remotes.event("Ops_Offered"):FireAllClients(offerPayload(op))
+	pcall(SkyFlare.distress, op.position) -- the world cue: a red flare and the ferry's horn out at sea
+	-- the server-wide pager, never to a player still in the tutorial chain
+	for _, p in Players:GetPlayers() do
+		if bigCallReady(p) then
+			Remotes.event("Ops_Offered"):FireClient(p, offerPayload(op))
+		end
+	end
 	print(`[OperationService] big op {op.id}: Capsized Ferry with {count} casualties`)
 end
 
@@ -1777,6 +1791,16 @@ local function tick()
 		startBigOp()
 	end
 	lastWeatherState = state
+	-- the Capsized Ferry's own clock (OfferPacing.nextBigCallAt), held while a cold open runs
+	local anyReady = false
+	for _, p in Players:GetPlayers() do
+		anyReady = anyReady or bigCallReady(p)
+	end
+	bigReadySince = if anyReady then bigReadySince or t else nil
+	local due = OfferPacing.nextBigCallAt(bigLastEnd, bigReadySince)
+	if due and t >= due and not bigOp and not OperationService.ColdOpenHoldsWeather() then
+		startBigOp()
+	end
 	for _, op in table.clone(ops) do
 		if op.state == "Offered" and t > op.offerExpiresAt then
 			withdrawOffer(op)
@@ -2020,7 +2044,7 @@ end
 -- Offers the running big call to one free player (late joiners, docs/15 H7). It never interrupts an op or the after-op breather, and replaces a pending
 -- personal offer: the more special call wins (G69).
 function OperationService.OfferBigCall(player: Player): boolean
-	if not bigOp or bigOp.state ~= "Active" then
+	if not bigOp or bigOp.state ~= "Active" or not bigCallReady(player) then
 		return false
 	end
 	local st = stateOf(player)
@@ -2214,6 +2238,7 @@ end
 
 function OperationService.Start()
 	lastWeatherState = weatherState()
+	bigLastEnd = now()
 	local vs = service("VehicleService")
 	if vs and type(vs.SpawnColdOpen) == "function" then
 		OperationService.ColdOpenAuto = true
