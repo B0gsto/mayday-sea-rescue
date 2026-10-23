@@ -4,6 +4,9 @@
 -- (the same rigged swimmer, drift, waving and VehicleService climb-aboard), boarded by the server with the
 -- auto_board rule (Ops/Board.ready: close, slow, level, room aboard; the server reads the boat itself, no
 -- client input) and paid on delivery to a pad via the scene's onDelivered hook. Smaller pay than a call.
+-- K13 (docs/16): one is always in view of the harbour mouth (checked every MOUTH_CHECK s, so an idle
+-- player sees one within ~45 s); at the cap the oldest one nobody is near makes way for it. Not while a
+-- cold open runs (that player's own swimmer comes first); the cold open's end seeds it in Calm Bay.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -12,6 +15,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueService = require(script.Parent.RescueService) :: any
@@ -26,6 +30,15 @@ AmbientRescueService.SPACING = 150 -- studs between free-roam swimmers
 AmbientRescueService.CASH = 120 -- per survivor delivered (a Silver call pays 550)
 AmbientRescueService.REP = 25
 AmbientRescueService.ZONES = { "Near", "CalmBay", "CalmBay", "Outer" }
+AmbientRescueService.MOUTH_VIEW = 220 -- studs from the harbour mouth: in view from it -- tune
+AmbientRescueService.MOUTH_CHECK = 5 -- s
+
+local MOUTH = Vector3.new(0, 0, 368)
+for _, zone in GameConfig.Zones do
+	if zone.id == "HarbourMouth" then
+		MOUTH = zone.center
+	end
+end
 
 type Scene = { [string]: any }
 
@@ -68,7 +81,7 @@ local function onDelivered(scene: Scene, count: number, driver: Player?)
 	remove(scene)
 end
 
-local function clearSpot(p: Vector3): boolean
+local function playersClear(p: Vector3): boolean
 	for _, player in Players:GetPlayers() do
 		local char = player.Character
 		if
@@ -78,6 +91,13 @@ local function clearSpot(p: Vector3): boolean
 			return false
 		end
 	end
+	return true
+end
+
+local function clearSpot(p: Vector3): boolean
+	if not playersClear(p) then
+		return false
+	end
 	for _, s in scenes do
 		if CallLogic.flatDistance(s.position, p) < AmbientRescueService.SPACING then
 			return false
@@ -86,36 +106,99 @@ local function clearSpot(p: Vector3): boolean
 	return true
 end
 
+local function roll(): number
+	return rng:NextNumber()
+end
+
+local function spawnAt(pos: Vector3): Scene
+	nextId += 1
+	local spec = CallTypes.Kinds.Swimmer
+	local scene: Scene = {
+		id = `AMB{nextId}`, -- never an op id: PIW_Rescue and OperationService.CanAct ignore it
+		kind = "Swimmer",
+		spec = spec,
+		position = pos,
+		total = 1,
+		victims = {},
+		isBig = false,
+		opsDriven = true, -- no hold prompt: the server boards them (below)
+		ambient = true,
+		bornAt = os.clock(),
+	}
+	scene.onDelivered = function(count: number, driver: Player?)
+		onDelivered(scene, count, driver)
+	end
+	RescueService.SpawnCall(scene)
+	table.insert(scenes, scene)
+	return scene
+end
+
 local function spawnOne(): Scene?
 	for _ = 1, 8 do
 		local zones = AmbientRescueService.ZONES
-		local pos = CallLogic.pickSpawnPoint(zones[rng:NextInteger(1, #zones)], function()
-			return rng:NextNumber()
-		end)
+		local pos = CallLogic.pickSpawnPoint(zones[rng:NextInteger(1, #zones)], roll)
 		if clearSpot(pos) then
-			nextId += 1
-			local spec = CallTypes.Kinds.Swimmer
-			local scene: Scene = {
-				id = `AMB{nextId}`, -- never an op id: PIW_Rescue and OperationService.CanAct ignore it
-				kind = "Swimmer",
-				spec = spec,
-				position = pos,
-				total = 1,
-				victims = {},
-				isBig = false,
-				opsDriven = true, -- no hold prompt: the server boards them (below)
-				ambient = true,
-				bornAt = os.clock(),
-			}
-			scene.onDelivered = function(count: number, driver: Player?)
-				onDelivered(scene, count, driver)
-			end
-			RescueService.SpawnCall(scene)
-			table.insert(scenes, scene)
-			return scene
+			return spawnAt(pos)
 		end
 	end
 	return nil
+end
+
+local function swimmingScenes(): { Scene }
+	local out = {}
+	for _, scene in scenes do
+		local v = scene.victims[1]
+		if v and v.state == "Water" then
+			table.insert(out, scene)
+		end
+	end
+	return out
+end
+
+-- K13: keep one swimmer in view of the harbour mouth, inside the breakwater, within the cap.
+local function stepMouth()
+	if #Players:GetPlayers() == 0 then
+		return
+	end
+	local swimming = swimmingScenes()
+	local oldest: Scene? = nil
+	for _, scene in swimming do
+		if CallLogic.flatDistance(scene.position, MOUTH) <= AmbientRescueService.MOUTH_VIEW then
+			return
+		end
+		if playersClear(scene.position) and (not oldest or scene.bornAt < oldest.bornAt) then
+			oldest = scene
+		end
+	end
+	for _, player in Players:GetPlayers() do
+		if player:GetAttribute("ColdOpenActive") == true then
+			return
+		end
+	end
+	for _ = 1, 20 do
+		local pos = CallLogic.ringPoint(MOUTH, 40, AmbientRescueService.MOUTH_VIEW - 20, roll)
+		if CallLogic.isWater(pos, "Inside") and clearSpot(pos) then
+			if #swimming >= AmbientRescueService.CAP then
+				if not oldest then
+					return
+				end
+				remove(oldest)
+			end
+			spawnAt(pos)
+			return
+		end
+	end
+end
+
+-- Free-roam swimmers still in the water (Bosun's guide points at the nearest: DogService).
+function AmbientRescueService.SwimmerPositions(): { Vector3 }
+	local out = {}
+	for _, scene in scenes do
+		for _, p in RescueService.GetTargets(scene) do
+			table.insert(out, p)
+		end
+	end
+	return out
 end
 
 local held: { [any]: number } = setmetatable({}, { __mode = "k" }) :: any
@@ -206,21 +289,20 @@ local function stepLife()
 			remove(scene)
 		end
 	end
-	local swimming = 0
-	for _, scene in scenes do
-		local v = scene.victims[1]
-		if v and v.state == "Water" then
-			swimming += 1
-		end
-	end
-	if swimming < AmbientRescueService.CAP and #Players:GetPlayers() > 0 then
+	if #swimmingScenes() < AmbientRescueService.CAP and #Players:GetPlayers() > 0 then
 		spawnOne()
 	end
 end
 
 function AmbientRescueService.Start()
 	local boardAccum, lifeAccum = 0, AmbientRescueService.RESPAWN - 10 -- the first one about 10 s in
+	local mouthAccum = 0
 	RunService.Heartbeat:Connect(function(dt)
+		mouthAccum += dt
+		if mouthAccum >= AmbientRescueService.MOUTH_CHECK then
+			mouthAccum = 0
+			stepMouth()
+		end
 		boardAccum += dt
 		if boardAccum >= 0.1 then
 			stepBoarding(boardAccum)

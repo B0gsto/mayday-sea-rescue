@@ -17,6 +17,8 @@
 -- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
 -- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
 -- skipped while ReplicatedStorage attribute UseMapWaypoints is true (the map shows the casualty).
+-- K14: a guide point while he rides hidden on the craft (payload.from = the craft) barks, pops the
+-- bubble and shows the arrow from the craft instead of his hidden body.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -328,6 +330,15 @@ local function onPoint(payload: any)
 	local direction = payload.direction
 	if not body or typeof(direction) ~= "Vector3" then
 		return
+	end
+	local from = payload.from
+	if
+		dog:GetAttribute("Hidden") == true
+		and typeof(from) == "Instance"
+		and from:IsA("Model")
+		and from.PrimaryPart
+	then
+		body = from.PrimaryPart
 	end
 	local serial = (active[dog] or 0) + 1
 	active[dog] = serial

@@ -3,7 +3,11 @@
 --
 --   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); near = the
 --                                        free bay nearest the player (phone Vehicles app) instead of theirs
---   Bay ProximityPrompts                 temporary launch UI until the HUD exists ("Launch Jet Ski")
+--   Bay ProximityPrompts                 one "Launch" per bay (K3): the player's last-launched craft
+--                                        (data.flags.lastVehicle); switching craft is the phone's Vehicles app
+--   Returning players (K11)              profile has coldOpenDone: every spawn stands them on the pier at
+--                                        their bay (BayLaunch.STAND) with that craft docked beside them.
+--                                        Player attribute BayCFrame = their bay's CFrame (the daily crate).
 --   Vehicle_ArrivalHandoff (RemoteEvent) after the arrival cinematic: unseat, dock, stand on the slipway
 --   Vehicle_QuickLaunch (RemoteFunction, ReplicatedStorage.Net)  Quick Launch pass owners (RP-M2, docs/04
 --     section 3): vehicleId -> (ok, reasonOrVehicle). From anywhere (the phone's Vehicles app Spawn), no
@@ -32,6 +36,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
@@ -43,6 +48,8 @@ local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("Vehicl
 local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
+
+local DataService = require(script.Parent:WaitForChild("DataService"))
 
 type VehicleSpec = VehicleConfig.VehicleSpec
 type Mode = "Dock" | "Driven" | "Drift"
@@ -469,6 +476,11 @@ local function bayFor(player: Player): BasePart?
 	return if index then bays[(index - 1) % math.max(#bays, 1) + 1] else bays[1]
 end
 
+local function publishBay(player: Player)
+	local bay = bayFor(player)
+	player:SetAttribute("BayCFrame", if bay then bay.CFrame else nil)
+end
+
 local function assignBay(player: Player)
 	local used = {}
 	for _, index in playerBay do
@@ -478,10 +490,12 @@ local function assignBay(player: Player)
 	for i = 1, count do
 		if not used[i] then
 			playerBay[player] = i
+			publishBay(player)
 			return
 		end
 	end
 	playerBay[player] = (#Players:GetPlayers() - 1) % count + 1
+	publishBay(player)
 end
 
 local function bayAllows(bay: BasePart, vehicleId: string): boolean
@@ -511,6 +525,19 @@ local function nearestFreeBay(player: Player, vehicleId: string): BasePart?
 		end
 	end
 	return best
+end
+
+local function lastVehicle(player: Player): string?
+	local data = DataService.Get(player)
+	local id = data and data.flags[BayLaunch.FLAG]
+	return if type(id) == "string" then id else nil
+end
+
+-- K3: the craft the bay's Launch prompt (and a returning player's spawn) puts out.
+local function bayCraft(player: Player, bay: BasePart): string?
+	return BayLaunch.pick(lastVehicle(player), VehicleConfig.Order, function(id)
+		return bayAllows(bay, id) and canUse(player, id)
+	end)
 end
 
 local function sitDriver(player: Player, seat: VehicleSeat)
@@ -872,6 +899,10 @@ local function spawnVehicle(
 		return false, why -- "Occupied": someone is aboard their current one
 	end
 	lastSpawn[player] = now
+	local p = getProgression()
+	if p and type(p.SetFlag) == "function" and lastVehicle(player) ~= vehicleId then
+		pcall(p.SetFlag, player, BayLaunch.FLAG, vehicleId)
+	end
 
 	local model, seat = createVehicle(player, spec, at.CFrame, "Request")
 	if not docked then
@@ -1071,33 +1102,27 @@ local function publishPreviews()
 	end
 end
 
--- Temporary launch UI: one ProximityPrompt per allowed vehicle on every bay.
+-- K3: one Launch prompt per bay; it puts out the player's last-launched craft (bayCraft).
 local function addPrompts()
-	local keys = { Enum.KeyCode.E, Enum.KeyCode.F, Enum.KeyCode.G }
 	for _, bay in bays do
-		local index = 0
-		for _, id in VehicleConfig.Order do
-			local spec = VehicleConfig.get(id)
-			if spec and not spec.base and bayAllows(bay, id) then -- premium boats: phone only
-				index += 1
-				local prompt = Instance.new("ProximityPrompt")
-				prompt.Name = `Launch_{id}`
-				prompt.ActionText = `Launch {spec.displayName}`
-				prompt.ObjectText = bay.Name
-				prompt.KeyboardKeyCode = keys[index] or Enum.KeyCode.E
-				prompt.HoldDuration = 0.3
-				prompt.MaxActivationDistance = 16
-				prompt.RequiresLineOfSight = false
-				prompt.UIOffset = Vector2.new(0, (index - 1) * 72)
-				prompt.Parent = bay
-				prompt.Triggered:Connect(function(player)
-					local ok, reason = spawnVehicle(player, id, bay)
-					if not ok then
-						warn(`[VehicleService] {player.Name} could not launch {id}: {reason}`)
-					end
-				end)
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.Name = "Launch"
+		prompt.ActionText = "Launch"
+		prompt.KeyboardKeyCode = Enum.KeyCode.E
+		prompt.HoldDuration = 0.3
+		prompt.MaxActivationDistance = 16
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = bay
+		prompt.Triggered:Connect(function(player)
+			local id = bayCraft(player, bay)
+			local ok, reason: any = false, "NoCraft"
+			if id then
+				ok, reason = spawnVehicle(player, id, bay)
 			end
-		end
+			if not ok then
+				warn(`[VehicleService] {player.Name} could not launch {id}: {reason}`)
+			end
+		end)
 	end
 end
 
@@ -1276,6 +1301,42 @@ local function arrivalHandoff(player: Player)
 	end
 end
 
+-- K11: a returning player spawns on the pier at their bay, their craft docked beside them and the
+-- daily crate (StreakController) on the path. New players keep the cold open (not hooked).
+local function homeAtBay(player: Player, character: Model)
+	local deadline = os.clock() + 15
+	while #bays == 0 and os.clock() < deadline do -- findBays runs in Start
+		task.wait(0.5)
+	end
+	local bay = bayFor(player)
+	if not bay or not character.Parent or not character:FindFirstChild("HumanoidRootPart") then
+		return
+	end
+	if not byPlayer[player] then
+		local id = bayCraft(player, bay)
+		if id then
+			spawnVehicle(player, id, bay, true, true)
+		end
+	end
+	local pos = standOnGround(character, (bay.CFrame * BayLaunch.STAND).Position)
+	character:PivotTo(CFrame.lookAt(pos, Vector3.new(bay.Position.X, pos.Y, bay.Position.Z)))
+end
+
+local function watchReturning(player: Player, data: any)
+	if not data.coldOpenDone then
+		return
+	end
+	local function onCharacter(character: Model)
+		character:WaitForChild("HumanoidRootPart", 10)
+		task.wait() -- after the engine's spawn placement
+		homeAtBay(player, character)
+	end
+	player.CharacterAdded:Connect(onCharacter)
+	if player.Character then
+		task.spawn(onCharacter, player.Character)
+	end
+end
+
 function VehicleService.Init()
 	local f = Instance.new("Folder")
 	f.Name = "Vehicles"
@@ -1317,6 +1378,7 @@ function VehicleService.Init()
 	for _, player in Players:GetPlayers() do
 		assignBay(player)
 	end
+	DataService.OnLoaded(watchReturning)
 	Players.PlayerRemoving:Connect(function(player)
 		local classes: { [string]: Record } = owned[player] or {}
 		for _, record in table.clone(classes) do
@@ -1356,6 +1418,9 @@ function VehicleService.Start()
 	end)
 	findBays()
 	addPrompts()
+	for _, player in Players:GetPlayers() do
+		publishBay(player)
+	end
 	local preload = {}
 	for _, names in VISUAL_ASSETS do
 		for _, name in names do
@@ -1494,6 +1559,11 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 			despawnModel(record.model)
 		end
 	end
+end
+
+-- The player's launch bay (the daily crate stands beside it: StreakService).
+function VehicleService.GetBay(player: Player): BasePart?
+	return bayFor(player)
 end
 
 function VehicleService.GetVehicle(player: Player): Model?

@@ -1,6 +1,7 @@
 --!strict
 -- StreakController: the client side of the daily streak crate (docs/15 hook H5).
--- Builds this player's crate and the porch clock sign (World/StreakCrate, World/StreakSign) from
+-- Builds this player's crate and its day-pip sign (World/StreakCrate, World/StreakSign) at their launch
+-- bay (player attribute BayCFrame, BayLaunch offsets; the station porch until it is set) from
 -- Streak_State / Streak_Get, opens the crate through Streak_Open and plays the reward burst
 -- (UI/StreakReward: lid, confetti, Cash roll, the day-7 star). Only the local player sees their
 -- own crate, so the patio never shows another player's chest.
@@ -9,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local StreakConfig = require(Shared:WaitForChild("Config"):WaitForChild("StreakConfig"))
 
 local World = script.Parent.Parent:WaitForChild("World")
@@ -35,12 +37,13 @@ local crate: StreakCrate.Crate? = nil
 local crateKey: string? = nil
 local bursting: StreakCrate.Crate? = nil
 local sign: StreakSign.Sign? = nil
-local deadline: number? = nil
+local lastView: any = nil
 local opening = false
 local openRemote: RemoteFunction? = nil
 
-local function porchCFrame(): CFrame
-	local p = StreakConfig.PorchPosition
+-- `at` dropped onto whatever is below it (the pier); `fallbackY` before the ground streams in.
+local function grounded(at: CFrame, fallbackY: number): CFrame
+	local p = at.Position
 	local filter = {}
 	if player.Character then
 		table.insert(filter, player.Character)
@@ -60,12 +63,22 @@ local function porchCFrame(): CFrame
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = filter
 	local hit = Workspace:Raycast(Vector3.new(p.X, p.Y + 50, p.Z), Vector3.new(0, -100, 0), params)
-	return CFrame.new(p.X, if hit then hit.Position.Y else p.Y, p.Z)
+	return at.Rotation + Vector3.new(p.X, if hit then hit.Position.Y else fallbackY, p.Z)
+end
+
+-- K12: the crate (and its sign) on the player's spawn path at their bay
+local function spot(offset: CFrame, porchOffset: CFrame): CFrame
+	local bay = player:GetAttribute("BayCFrame")
+	if typeof(bay) == "CFrame" then
+		return grounded(bay * offset, 4) -- the quay / pier top
+	end
+	local porch = StreakConfig.PorchPosition
+	return grounded(CFrame.new(porch) * porchOffset, porch.Y)
 end
 
 local function ensureSign()
 	if not sign then
-		sign = StreakSign.build(porchCFrame() * CFrame.new(5.9, 0, 0.2))
+		sign = StreakSign.build(spot(BayLaunch.SIGN, CFrame.new(5.9, 0, 0.2)))
 	end
 end
 
@@ -131,7 +144,7 @@ local function ensureCrate(view: View)
 		return
 	end
 	clearCrate()
-	local built = StreakCrate.build(porchCFrame(), {
+	local built = StreakCrate.build(spot(BayLaunch.CRATE, CFrame.new()), {
 		streak = preview.streak,
 		welcome = preview.welcome,
 		weekly = preview.streak == StreakConfig.WeekDays,
@@ -145,9 +158,14 @@ local function apply(view: any)
 	if type(view) ~= "table" then
 		return
 	end
-	deadline = os.clock() + (tonumber(view.secondsToDay) or 0)
+	lastView = view
 	ensureSign()
-	ensureCrate(view :: View)
+	local v = view :: View
+	local claimed = if v.available and v.preview then v.preview.streak - 1 else v.streak
+	if sign then
+		sign.setDays(tonumber(claimed) or 0, v.available == true)
+	end
+	ensureCrate(v)
 end
 
 function StreakController.Start()
@@ -171,13 +189,16 @@ function StreakController.Start()
 	if ok then
 		apply(view)
 	end
-	task.spawn(function()
-		while true do
-			task.wait(1)
-			if sign and deadline then
-				sign.setTime(math.max(0, deadline - os.clock()))
-			end
+	-- the bay is assigned after the first build: move both there
+	player:GetAttributeChangedSignal("BayCFrame"):Connect(function()
+		if sign then
+			sign.model:Destroy()
+			sign = nil
 		end
+		if crate ~= bursting then
+			clearCrate()
+		end
+		apply(lastView)
 	end)
 end
 

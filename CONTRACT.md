@@ -70,6 +70,7 @@ It contains these attachments on the hull root:
 
 Functions and events:
 
+- `VehicleService.GetBay(player): BasePart?` the player's launch bay (player attribute `BayCFrame` mirrors it for the client; the daily crate stands beside it, `shared/Boat/BayLaunch` offsets).
 - `VehicleService.GetVehicle(player): Model?`
 - `VehicleService.GetDriver(model): Player?`
 - `VehicleService.GetOccupants(model): { Player }`
@@ -278,7 +279,7 @@ Each stream owns only its files; the framework files above stay with the Ops fra
 
 ### Daily streak crate (H5)
 
-- `src/shared/Config/StreakConfig.luau` (day 1..7 payouts, welcome-back bonus, station-porch spot) and `src/shared/StreakRules.luau` (pure: UTC day keys, calm-day forgiveness, drop back 3 never zero, welcome-back, `data.flags.streak` encoding; `tests/Streak.spec.luau`); `src/server/Services/StreakService.luau` (persists `data.flags.streak`, pays Cash through `ProgressionService.Award`; remotes `Streak_State` S->C, `Streak_Get` / `Streak_Open` C->S functions; Studio `ServerStorage.StreakDev:Invoke("day", tier)` / `("break", days)`), client `Controllers/StreakController.luau` + `World/StreakCrate.luau` (one local wooden chest per player per UTC day: rope handles, 7-pip strip, lid lift) + `World/StreakSign.luau` (porch clock, `12:04` style) + `UI/StreakReward.luau` (confetti, Cash roll, day-7 star).
+- `src/shared/Config/StreakConfig.luau` (day 1..7 payouts, welcome-back bonus, station-porch spot) and `src/shared/StreakRules.luau` (pure: UTC day keys, calm-day forgiveness, drop back 3 never zero, welcome-back, `data.flags.streak` encoding; `tests/Streak.spec.luau`); `src/server/Services/StreakService.luau` (persists `data.flags.streak`, pays Cash through `ProgressionService.Award`; remotes `Streak_State` S->C, `Streak_Get` / `Streak_Open` C->S functions; Studio `ServerStorage.StreakDev:Invoke("day", tier)` / `("break", days)`), client `Controllers/StreakController.luau` + `World/StreakCrate.luau` (one local wooden chest per player per UTC day: rope handles, 7-pip strip, lid lift) + `World/StreakSign.luau` (seven day pips, no text; crate and sign at the player's bay, docs/16 K12) + `UI/StreakReward.luau` (confetti, Cash roll, day-7 star).
 
 ### Platform prompts (Roblox re-engagement)
 
