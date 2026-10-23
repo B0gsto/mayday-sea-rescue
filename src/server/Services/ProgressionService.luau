@@ -1,5 +1,5 @@
 --!strict
--- ProgressionService: Cash, Rep, rank, gear and vehicle ownership on top of DataService.
+-- ProgressionService: Cash, Rep, rank and vehicle ownership on top of DataService.
 --
 -- API (server, see CONTRACT.md):
 --   ProgressionService.Award(player, cash, rep, reason, flat?)   applies the storm and paid Cash multipliers
@@ -7,17 +7,15 @@
 --     flat = true skips every multiplier (Great Storm Rep x2 and friends included) for passive rewards;
 --     the snapshot carries rankUp and, past Admiral, starUp (Service Stars, docs 03 section 3)
 --   ProgressionService.Refresh(player, extra?)  re-push the snapshot (after a purchase grant)
---   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, gear, vehicles, ... }?
+--   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, vehicles, ... }?
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason; Cash-owned OR pass-owned)
 --   ProgressionService.OwnsVehiclePass(player, vehicleId) -> boolean
---   ProgressionService.GetGearBonus(player, stat) -> multiplier (1 by default)
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
 --   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
---   ProgressionService.RecordTraining(player, kind, grade, steps, isExercise, cannotFail?)
---     -> TrainingResult? (ProgressionRules): exercise passes and certification progress from a
---     finished operation; pays the exercise's first-pass reward; sets Cert<Id> attributes.
--- Remotes: BuyGear (Net, function: itemId = gear id or vehicle id -> ok, reason),
+--   ProgressionService.RecordTraining(player, kind, grade, steps, isExercise) -> nil
+--     counts a finished, graded operation (flags.opsCompleted, the OpsCompletedTotal attribute)
+-- Remotes: BuyGear (Net, function: itemId = vehicle id -> ok, reason; the name is historical),
 --   PlayerDataChanged (Net, S->C full snapshot plus optional rankUp / award fields),
 --   Progression_GetData (own RemoteFunction under ReplicatedStorage.Net: pull the snapshot).
 --   Camera_SaveSettings (own RemoteEvent under ReplicatedStorage.Net, C->S: the camera stream's
@@ -113,13 +111,13 @@ local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 	if cash then
 		cash.Value = data.cash
 	end
-	local rankIndex = Rules.rankIndex(data) -- Rep plus the rank's certification
+	local rankIndex = Rules.rankIndex(data)
 	if rank then
 		rank.Value = ProgressionConfig.Ranks[rankIndex].displayName
 	end
 	player:SetAttribute("RankIndex", rankIndex)
 	player:SetAttribute("ServiceStars", Rules.serviceStars(data))
-	-- CertHelm, CertCasualtyCare, CertRescueSwimmer: read by OperationService and the mechanics
+	-- saved (retired) certifications: OperationService (WP1) still reads CertHelm / CertCoxswain
 	for _, id in ProgressionConfig.CertOrder do
 		player:SetAttribute(`Cert{id}`, if data.certs[id] then true else nil)
 	end
@@ -184,81 +182,30 @@ function ProgressionService.Award(
 	end
 end
 
--- A finished operation or exercise: certification progress, exercise passes and their first-pass
--- reward (docs 03 sections 2 and 3.1). OperationService calls it once per player at the debrief
--- and puts result.badges in Ops_Debrief.
+-- A finished operation (OperationService calls it once per player at the debrief): a graded one
+-- counts toward the saved total (flags.opsCompleted, read as the OpsCompletedTotal attribute by the
+-- new-player HUD and the phone Store). Certifications and exercises are retired (docs/16 C3).
 function ProgressionService.RecordTraining(
 	player: Player,
-	kind: string,
+	_kind: string,
 	grade: string,
-	steps: { Rules.StepRecord },
-	isExercise: boolean,
-	cannotFail: boolean?
-): Rules.TrainingResult?
+	_steps: any,
+	isExercise: boolean
+): nil
 	local data = DataService.Get(player)
-	if not data then
+	if
+		not data
+		or isExercise
+		or not (grade == "Gold" or grade == "Silver" or grade == "Bronze")
+	then
 		return nil
 	end
-	local starsBefore = Rules.serviceStars(data)
-	local result = if isExercise
-		then Rules.recordExercise(data, kind, grade, steps, player.UserId, cannotFail)
-		else Rules.recordOperation(data, kind, steps, player.UserId)
-	if not isExercise and (grade == "Gold" or grade == "Silver" or grade == "Bronze") then
-		-- saved count of finished operations (the Chandlery's priced shelves open after 3, docs/04 rule 6)
-		local done = (
-			if type(data.flags.opsCompleted) == "number" then data.flags.opsCompleted else 0
-		) + 1
-		data.flags.opsCompleted = math.min(done, 1e6)
-		player:SetAttribute("OpsCompletedTotal", data.flags.opsCompleted)
-		DataService.MarkDirty(player)
-	end
-	if #result.counted == 0 and #result.earned == 0 and not result.passed then
-		return result
-	end
+	local done = (if type(data.flags.opsCompleted) == "number" then data.flags.opsCompleted else 0)
+		+ 1
+	data.flags.opsCompleted = math.min(done, 1e6)
+	player:SetAttribute("OpsCompletedTotal", data.flags.opsCompleted)
 	DataService.MarkDirty(player)
-	local paid = result.reward.cash > 0 or result.reward.rep > 0
-	if paid then
-		-- Award pushes the snapshot and reports a rank-up the reward's Rep itself brings
-		ProgressionService.Award(player, result.reward.cash, result.reward.rep, `Exercise:{kind}`)
-	end
-	-- a rank-up the certification brings (the Rep was already there): Award cannot see it
-	if result.rankAfter > result.rankBefore then
-		local rankDef = ProgressionConfig.Ranks[result.rankAfter]
-		local extra: { [string]: any } = {
-			certsEarned = result.earned,
-			rankUp = {
-				rankIndex = result.rankAfter,
-				rank = rankDef.displayName,
-				unlocks = rankDef.unlocks,
-			},
-		}
-		local starsAfter = Rules.serviceStars(data)
-		if starsAfter > starsBefore then
-			extra.starUp = { stars = starsAfter }
-		end
-		push(player, data, extra)
-		rankChanged:Fire(player, result.rankAfter, result.rankBefore)
-	elseif not paid then
-		push(player, data, { certsEarned = result.earned })
-	end
-	if #result.earned > 0 then
-		task.spawn(DataService.Save, player, false) -- a certification is a milestone
-		-- one Roblox badge per certification (RP-B1's BadgeService; skipped until it exists)
-		local module = script.Parent:FindFirstChild("BadgeService")
-		if module and module:IsA("ModuleScript") then
-			local ok, badges = pcall(require, module)
-			if ok and type(badges) == "table" and type((badges :: any).Award) == "function" then
-				for _, id in result.earned do
-					task.spawn(
-						(badges :: any).Award,
-						player,
-						ProgressionConfig.Certifications[id].badge
-					)
-				end
-			end
-		end
-	end
-	return result
+	return nil
 end
 
 function ProgressionService.Refresh(player: Player, extra: { [string]: any }?)
@@ -321,11 +268,6 @@ function ProgressionService.CanUseVehicle(player: Player, vehicleId: string): (b
 	)
 end
 
-function ProgressionService.GetGearBonus(player: Player, stat: string): number
-	local data = DataService.Get(player)
-	return if data then Rules.gearBonus(data.gear, stat) else 1
-end
-
 local function buy(player: Player, itemId: any): (boolean, string)
 	if type(itemId) ~= "string" or #itemId > 40 then
 		return false, "Bad item"
@@ -339,15 +281,7 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	if not data then
 		return false, "Data not loaded"
 	end
-	if ProgressionConfig.Gear[itemId] then
-		local ok, reason, price = Rules.canBuyGear(data, itemId)
-		if not ok then
-			return false, reason
-		end
-		data.cash -= price
-		data.gear[itemId] = (data.gear[itemId] or 0) + 1
-		Telemetry.CashSpent(player, price, data.cash, "Gear", itemId)
-	elseif ProgressionConfig.Vehicles[itemId] then
+	if ProgressionConfig.Vehicles[itemId] then
 		local ok, reason, price =
 			Rules.canBuyVehicle(data, itemId, ProgressionService.OwnsVehiclePass(player, itemId))
 		if not ok then
@@ -387,15 +321,6 @@ function ProgressionService.Init()
 					tonumber(rep) or 0,
 					"Studio dev grant"
 				)
-			elseif cmd == "certs" then
-				local d = DataService.Get(p)
-				if d then
-					for _, id in ProgressionConfig.CertOrder do
-						d.certs[id] = true
-					end
-					DataService.MarkDirty(p)
-					ProgressionService.Refresh(p)
-				end
 			end
 			return ProgressionService.GetData(p)
 		end

@@ -2,8 +2,8 @@
 -- WorldDressingService (I1, docs/12 section 3.2): places the production Packages in the world at run time
 -- (Build.luau runs under Lune and cannot load assets):
 --   * building swaps from src/server/World/Swaps.luau: greybox -> Packages at the shared pivot, the shell and
---     the interior as separate Atomic models in Workspace.Dressing, store prompt markers moved to the asset's
---     ATT_ point, an auto door, the building's light rig; the greybox stays when any asset fails to load;
+--     the interior as separate Atomic models in Workspace.Dressing,
+--     an auto door, the building's light rig; the greybox stays when any asset fails to load;
 --   * the K1 rocks and G1 plants from map/generated/props.json (tools/world/scatter_props.py, synced by Rojo as
 --     ReplicatedStorage.WorldPlacements): the server publishes LOD0/1/2 templates (ReplicatedStorage.ScatterTemplates)
 --     and places only the rocks' collision hulls (CELL x CELL Atomic models); ScatterController draws the meshes.
@@ -16,7 +16,6 @@ local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Swaps = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("Swaps"))
-local WorldService = require(script.Parent:WaitForChild("WorldService"))
 
 local WorldDressingService = {}
 WorldDressingService.Priority = 60
@@ -303,27 +302,12 @@ local function swap(key: string, authored: Swaps.Swap): boolean
 	if interior then
 		interior.WorldPivot = spec.pivot
 	end
-	-- store prompts: move the greybox marker (and its ProximityPrompt) onto the asset's attachment
 	local byName: { [string]: Model } = {}
 	for _, m in shellModels do
 		byName[m:GetAttribute("Asset") :: string] = m
 	end
 	for _, m in interiorModels do
 		byName[m:GetAttribute("Asset") :: string] = m
-	end
-	local prompts: { [string]: { marker: string, asset: string, attachment: string } } = spec.prompts
-		or {}
-	for id, p in prompts do
-		local marker = greybox and greybox:FindFirstChild(p.marker, true)
-		local owner = byName[p.asset]
-		local att = owner and findAttachment(owner, p.attachment)
-		if marker and marker:IsA("BasePart") and att and owner then
-			marker.CFrame = CFrame.new(att.WorldPosition)
-			marker.Parent = owner.Parent
-			WorldService.addStorePrompts(owner.Parent :: Instance)
-		else
-			warn(`[WorldDressing] {key}: prompt {id} not moved (marker {marker}, attachment {att})`)
-		end
 	end
 	if spec.door and byName[spec.door.asset] then
 		autoDoor(byName[spec.door.asset], spec.door)

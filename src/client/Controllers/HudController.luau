@@ -3,17 +3,11 @@
 --   Placement: UI/Layout regions. Top left ("wallet", under the phone button): Cash with a round
 --   "+" that opens the phone's Store app, and the rank with its Rep bar to the next rank. The
 --   phone button has its own region (UI/Phone: every menu, the crew's faces and Leave).
---   Top centre ("notice"): "+Cash +Rep" award pops, the rank-up toast with the
---   new unlocks and short notices for failed buys / launches.
+--   Top centre ("notice"): "+Cash +Rep" award pops (with the friends bonus as "+20%") and the
+--   rank-up toast with the new unlocks.
 --   Cold open (Layout.coldOpen): wallet, rank and pops stay hidden until it ends.
---   No shop or launch buttons (docs 04 section 1.1). Diegetic panels open from map prompts that
---   WorldService adds (attribute Panel on the prompt, read on this client's PromptTriggered):
---     ShopCounter  the Chandlery gear counter (HudShop: BuyGear)
---   Boats, cars and their upgrades are on the phone (VehiclesApp), not a world desk.
---   A panel closes from its X button, or when the player walks away from the prompt.
---   The engine only shows (and so only triggers) a prompt that is on screen; a player standing at
---   the counter but looking past it (or teleported there) pressed E and nothing happened. Fallback:
---   an unprocessed E / ButtonX within a store prompt's range opens the nearest store panel.
+--   No shop buttons or world shops (docs/16 C4, C5, K10): vehicles, upgrades and Robux items are on
+--   the phone (VehiclesApp, StoreApp).
 --   Stock CoreGui that clashes with the HUD is off: the leaderboard (PlayerList, it sat over the
 --   status strip; rank and Cash live there), Backpack (no Tools in the game), Health (casualty
 --   and crew condition are the game's own readouts) and the Emotes menu. Chat stays on (crew
@@ -22,17 +16,13 @@
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
-local HudShop = require(UI:WaitForChild("HudShop"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Layout = require(UI:WaitForChild("Layout"))
 local Phone = require(UI:WaitForChild("Phone"))
@@ -45,7 +35,6 @@ local HudController = {}
 HudController.Priority = 50
 
 local gui: ScreenGui
-local PANEL_DISPLAY_ORDER = 35 -- above Ops (15-22) and the radio wheel (30), below Cinematic (50)
 local cashLabel: TextLabel
 local rankLabel: TextLabel
 local repFill: ImageLabel
@@ -57,13 +46,7 @@ local toastBody: TextLabel
 local statusRegion: Frame
 local walletRegion: Frame
 local noticeRegion: Frame
-local shop: HudShop.Shop
 local snapshot: { [string]: any }? = nil
--- the open diegetic panel ("ShopCounter") and where its prompt is
-local openPanel: string? = nil
-local panelAnchor: Vector3? = nil
-local panelRange = 0
-local WALK_AWAY_MARGIN = 6 -- studs past the prompt's activation distance
 local toastSerial = 0
 local awardSerial = 0
 local cashShown: number? = nil
@@ -87,18 +70,16 @@ local function showToast(title: string, body: string, color: Color3, seconds: nu
 	end)
 end
 
-local function notice(text: string)
-	showToast(text, "", C.text, 2)
-end
-
 local function showAward(award: { [string]: any })
 	awardSerial += 1
 	local serial = awardSerial
 	local text = `+{HudTheme.formatNumber(award.cash or 0)} Cash   +{HudTheme.formatNumber(
 		award.rep or 0
 	)} Rep`
-	if type(award.multiplier) == "number" and award.multiplier > 1 then
-		text ..= `   (storm x{award.multiplier})`
+	-- the friends bonus shows only here, as "+20%" (docs/16 K10); FriendService sets the percent
+	local friends = player:GetAttribute("FriendBonus")
+	if typeof(friends) == "number" and friends > 0 and (award.cash or 0) > 0 then
+		text ..= `   +{math.floor(friends)}%`
 	end
 	awardLabel.Text = text
 	awardLabel.TextTransparency = 0
@@ -142,20 +123,12 @@ local function render(data: { [string]: any })
 	roll(cashLabel, cashShown or cash, cash, HudTheme.formatNumber)
 	cashShown = cash
 	rankLabel.Text = data.rank or "Recruit"
-	local rep = tonumber(data.rep) or 0
-	local goal = tonumber(data.nextRankRep) or tonumber(data.nextStarRep)
 	local progress = math.clamp(
 		tonumber(if data.nextRankRep then data.rankProgress else data.starProgress) or 0,
 		0,
 		1
 	)
-	-- Rep past the next rank's line but its certification not passed: a full bar and the exercise
-	-- still to do, not "1,209 / 400"
-	local certDue = goal ~= nil and data.nextRankRep ~= nil and rep >= goal
-	-- certification due: the full bar glows pale gold
-	repFill.ImageColor3 = if certDue then Color3.fromHex("FFF4C2") else Color3.new(1, 1, 1)
 	TweenService:Create(repFill, TweenInfo.new(0.4), { Size = UDim2.fromScale(progress, 1) }):Play()
-	shop.update(data)
 end
 
 local function onDataChanged(data: any)
@@ -172,109 +145,6 @@ local function onDataChanged(data: any)
 			then "Unlocked: " .. table.concat(unlocks, ", ")
 			else ""
 		showToast(`RANK UP!  {data.rankUp.rank}`, body, C.accent, 5)
-	end
-end
-
-local function buy(itemId: string)
-	task.spawn(function()
-		local ok, okResult, reason = pcall(function()
-			return Net.func("BuyGear"):InvokeServer(itemId)
-		end)
-		if not ok then
-			notice("Shop is closed")
-		elseif not okResult then
-			notice(tostring(reason or "Can't buy that"))
-		end
-	end)
-end
-
-local function closePanels()
-	shop.setOpen(false)
-	openPanel = nil
-	panelAnchor = nil
-end
-
-local function onPromptTriggered(prompt: ProximityPrompt)
-	local panel = prompt:GetAttribute("Panel")
-	if panel ~= "ShopCounter" then
-		return
-	end
-	local anchor = prompt.Parent
-	if not (anchor and anchor:IsA("BasePart")) then
-		return
-	end
-	closePanels()
-	openPanel = panel
-	panelAnchor = anchor.Position
-	panelRange = prompt.MaxActivationDistance + WALK_AWAY_MARGIN
-	shop.setOpen(true)
-end
-
--- E / ButtonX that no shown prompt consumed: open the nearest store panel in range (see header).
-local storePrompts: { ProximityPrompt } = {}
-
-local function trackStorePrompt(inst: Instance)
-	if inst:IsA("ProximityPrompt") then
-		local panel = inst:GetAttribute("Panel")
-		if panel == "ShopCounter" then
-			table.insert(storePrompts, inst)
-		end
-	end
-end
-
-local function onStoreKey(input: InputObject, processed: boolean)
-	if processed then
-		return
-	end
-	if input.KeyCode ~= Enum.KeyCode.E and input.KeyCode ~= Enum.KeyCode.ButtonX then
-		return
-	end
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-	if
-		not (root and root:IsA("BasePart") and humanoid)
-		or humanoid.SeatPart
-		or humanoid.Health <= 0
-	then
-		return
-	end
-	local best: ProximityPrompt? = nil
-	local bestDistance = math.huge
-	for _, prompt in storePrompts do
-		local anchor = prompt.Parent
-		if
-			prompt.Enabled
-			and anchor
-			and anchor:IsA("BasePart")
-			and anchor:IsDescendantOf(Workspace)
-		then
-			local distance = (anchor.Position - root.Position).Magnitude
-			if distance <= prompt.MaxActivationDistance and distance < bestDistance then
-				best, bestDistance = prompt, distance
-			end
-		end
-	end
-	if best and not (openPanel == best:GetAttribute("Panel") and shop.isOpen()) then
-		onPromptTriggered(best)
-	end
-end
-
--- Walking away (or dying) closes the open panel; a closed X clears the tracking.
-local function watchPanel()
-	if not openPanel then
-		return
-	end
-	local isOpen = shop.isOpen()
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if
-		not isOpen
-		or not panelAnchor
-		or not (root and root:IsA("BasePart"))
-		or (root.Position - panelAnchor).Magnitude > panelRange
-	then
-		closePanels()
 	end
 end
 
@@ -362,7 +232,7 @@ local function buildWallet(region: Frame)
 		Phone.openApp("Store")
 	end)
 
-	-- the rank over its Rep bar, no numbers (a full pale-gold bar: the exercise is due)
+	-- the rank over its Rep bar, no numbers
 	local star = HudTheme.image("Star", Hud.XpStar, UDim2.fromOffset(36, 36), wallet)
 	star.Position = UDim2.fromOffset(10, 52)
 	rankLabel =
@@ -446,23 +316,6 @@ function HudController.Init()
 	buildToast(noticeRegion)
 	require(UI:WaitForChild("SettingsPanel")).mount() -- the panel (the phone's Settings app shows it)
 	Phone.mount(statusRegion) -- phone button, P / gamepad L1
-	shop = HudShop.build(gui, buy)
-	-- an open store panel draws (and takes clicks) above the Ops call card / debrief (DisplayOrder
-	-- 15-22) so a Buy/Collect click never lands on "Accept - Launch" behind it; below Cinematic (50)
-	local setOpen = shop.setOpen
-	shop.setOpen = function(value: boolean)
-		setOpen(value)
-		gui.DisplayOrder = if value then PANEL_DISPLAY_ORDER else 0
-	end
-
-	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
-	for _, inst in Workspace:GetDescendants() do
-		trackStorePrompt(inst)
-	end
-	Workspace.DescendantAdded:Connect(trackStorePrompt)
-	UserInputService.InputBegan:Connect(onStoreKey)
-	RunService.Heartbeat:Connect(watchPanel)
-
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)
 

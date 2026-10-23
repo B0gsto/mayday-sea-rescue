@@ -7,7 +7,6 @@
 --   pivot     the shared authored pivot of all the entry's assets (they are built in one frame)
 --   shell     assets of the exterior model  (Workspace.Dressing.<key>, ModelStreamingMode Atomic)
 --   interior  assets of the interior model  (Workspace.Dressing.<key>Interior, Atomic, streams on its own)
---   prompts   greybox PromptAnchor marker -> asset attachment it moves to (the client needs a BasePart anchor)
 --   door      optional auto door: parts swung about a hinge attachment when a character comes near
 --             (roll = true: a roller door, the parts roll up into their head instead of swinging)
 --   hide      true: the greybox is kept as an invisible collider instead of destroyed (other services read it)
@@ -18,7 +17,6 @@ export type Swap = {
 	pivot: CFrame,
 	shell: { string },
 	interior: { string }?,
-	prompts: { [string]: { marker: string, asset: string, attachment: string } }?,
 	door: {
 		asset: string,
 		parts: { string },
@@ -120,13 +118,6 @@ local Swaps: { [string]: Swap } = {
 		pivot = CFrame.new(-44, LAND, -60) * CFrame.Angles(0, math.pi, 0),
 		shell = { "M_Bld_Chandlery_Ext" },
 		interior = { "M_Bld_Chandlery_Int", "M_Prop_Chandlery", "M_Prop_Chandlery_Stock" },
-		prompts = {
-			ShopCounter = {
-				marker = "CounterPrompt",
-				asset = "M_Bld_Chandlery_Int",
-				attachment = "ATT_Counter",
-			},
-		},
 		door = {
 			asset = "M_Bld_Chandlery_Ext",
 			parts = { "M_Bld_Chandlery_Ext_Door_LOD0", "M_Bld_Chandlery_Ext_DoorGlass_LOD0" },
@@ -234,20 +225,12 @@ local Swaps: { [string]: Swap } = {
 		rig = "SharedSetsRig", -- the shared texture sets AssetLoader cannot see from the hospital's folder
 	},
 	-- H4 harbourmaster's office (10 x 8 m) replacing the greybox desk stand-in: pivot at the desk's quay base,
-	-- yawed 180 degrees so the door and the storm queue board face the water. The greybox DeskShelf marker
-	-- (ProductShelf = "StormDesk", the RP-M3 Call the Storm prompt) moves onto the asset's storm queue board.
+	-- yawed 180 degrees so the door and the storm queue board face the water.
 	Harbourmaster = {
 		greybox = { "PortHaven", "HarbourmasterDesk" },
 		pivot = CFrame.new(-9, LAND, -8) * CFrame.Angles(0, math.pi, 0),
 		shell = { "M_Bld_Harbourmaster" },
 		rig = "SharedSetsRig", -- shared Station Granite / Chandlery Slate / BldTrim sets
-		prompts = {
-			StormDesk = {
-				marker = "DeskShelf",
-				asset = "M_Bld_Harbourmaster",
-				attachment = "ATT_StormQueueBoard",
-			},
-		},
 	},
 	-- H3 cottages (greybox spots and sizes from map/Build.luau buildHouse: 18 + (n % 3) * 4 wide, 12 + (n % 2) * 6 eaves)
 	House1 = cottage(1, Vector3.new(-150, LAND, -192), 22 / 3, 6, { 0.0 }),

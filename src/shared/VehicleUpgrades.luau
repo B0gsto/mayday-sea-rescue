@@ -1,9 +1,9 @@
 --!strict
--- VehicleUpgrades: the boatyard's per-vehicle upgrades (docs 03 section 4.1). Pure data and maths,
--- Lune-tested (tests/VehicleUpgrades.spec.luau). Each vehicle has three levels:
---   1 Tuned engine  -- +8% top speed
---   2 Storm hull    -- steadier in waves, turns better
---   3 Fit-out       -- +1 casualty seat plus a tow post / searchlight / rescue seat
+-- VehicleUpgrades: the per-vehicle upgrades sold in the phone's Vehicles app (docs 03 section 4.1,
+-- docs/16 K8). Pure data and maths, Lune-tested (tests/VehicleUpgrades.spec.luau):
+--   Engine  Tuned engine  -- +8% top speed
+--   Hull    Storm hull    -- steadier in waves, turns better
+--   Fit     Extra seat    -- +1 aboard (RIB and lifeboat only)
 -- Prices are a share of the vehicle's price (25 / 50 / 100%); the free jet ski uses fixed prices.
 -- Owned upgrades persist as a bitmask per vehicle in data.vehicleUpgrades (ProgressionRules).
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
@@ -23,34 +23,30 @@ VehicleUpgrades.UpgradeOrder = { "Engine", "Hull", "Fit" }
 VehicleUpgrades.MAX_MASK = 7 -- three bits
 VehicleUpgrades.SHORT = { JetSki = "Jet ski", RIB = "RIB", Lifeboat = "Lifeboat" }
 
-local FIT = {
-	JetSki = { name = "Rescue seat", effect = "+1 casualty seat" },
-	RIB = { name = "Tow post", effect = "+1 casualty seat" },
-	Lifeboat = { name = "Searchlight", effect = "+1 casualty seat" },
-}
-
 local BASE = {
 	{ id = "Engine", name = "Tuned engine", share = 0.25, fixed = 300, effect = "+8% top speed" },
 	{ id = "Hull", name = "Storm hull", share = 0.5, fixed = 800, effect = "Steady in waves" },
-	{ id = "Fit", name = "", share = 1, fixed = 1500, effect = "" },
+	{ id = "Fit", name = "Extra seat", share = 1, fixed = 0, effect = "+1 aboard" },
 }
 
--- vehicle id -> { Upgrade } in fitting order. Prices come from the vehicle price once, at load.
+-- vehicle id -> { Upgrade } in fitting order. Prices come from the vehicle price once, at load. The
+-- jet ski skips the Extra seat: it holds one, so a second survivor needs the RIB (docs/16 B4).
 VehicleUpgrades.Vehicles = {} :: { [string]: { Upgrade } }
 for _, vehicleId in VehicleUpgrades.VehicleOrder do
 	local unlock = ProgressionConfig.Vehicles[vehicleId]
-	local fit = FIT[vehicleId]
-	local list = {}
-	for i, base in BASE do
-		list[i] = {
-			id = base.id,
-			name = if base.id == "Fit" then fit.name else base.name,
-			price = if unlock.price > 0
-				then math.floor(unlock.price * base.share + 0.5)
-				else base.fixed,
-			rankIndex = unlock.rankIndex,
-			effect = if base.id == "Fit" then fit.effect else base.effect,
-		}
+	local list: { Upgrade } = {}
+	for _, base in BASE do
+		if base.id ~= "Fit" or vehicleId ~= "JetSki" then
+			table.insert(list, {
+				id = base.id :: string,
+				name = base.name,
+				price = if unlock.price > 0
+					then math.floor(unlock.price * base.share + 0.5)
+					else base.fixed,
+				rankIndex = unlock.rankIndex,
+				effect = base.effect,
+			})
+		end
 	end
 	VehicleUpgrades.Vehicles[vehicleId] = list
 end
@@ -150,14 +146,6 @@ function VehicleUpgrades.apply(spec: any, rawMask: any): any
 	end
 	if VehicleUpgrades.has(mask, "Fit") then
 		out.survivorCapacity += 1
-		if spec.id == "JetSki" then
-			out.pivotSpeed += 1
-		elseif spec.id == "RIB" then
-			out.lateralGrip = math.min(1, out.lateralGrip + 0.03)
-			out.turnRate *= 1.03
-		else
-			out.turnRate *= 1.03
-		end
 	end
 	return out
 end

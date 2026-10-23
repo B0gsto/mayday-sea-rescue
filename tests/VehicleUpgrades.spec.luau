@@ -14,36 +14,45 @@ return function(t)
 	end
 
 	t.test("prices follow docs 03 4.1 (25 / 50 / 100 % of the vehicle price)", function()
-		t.expect(prices("JetSki")).toEqual({ 300, 800, 1500 }) -- free vehicle: fixed
-		t.expect(prices("RIB")).toEqual({ 1000, 2000, 4000 })
+		t.expect(prices("JetSki")).toEqual({ 300, 800 }) -- free vehicle: fixed
+		t.expect(prices("RIB")).toEqual({ 625, 1250, 2500 })
 		t.expect(prices("Lifeboat")).toEqual({ 3000, 6000, 12000 })
 	end)
 
-	t.test("each vehicle fits three upgrades in order, gated by its rank", function()
-		for _, vehicleId in U.VehicleOrder do
-			local list = U.Vehicles[vehicleId]
-			t.expect(#list).toBe(3)
-			t.expect(list[3].name)
-				.toBe(
-					({ JetSki = "Rescue seat", RIB = "Tow post", Lifeboat = "Searchlight" })[vehicleId]
-				)
-			for _, upgrade in list do
-				t.expect(upgrade.rankIndex).toBe(ProgressionConfig.Vehicles[vehicleId].rankIndex)
+	t.test(
+		"boats fit Engine, Hull and an Extra seat (+1 aboard); the jet ski skips the seat",
+		function()
+			t.expect(#U.Vehicles.JetSki).toBe(2)
+			for _, vehicleId in U.VehicleOrder do
+				local list = U.Vehicles[vehicleId]
+				if vehicleId ~= "JetSki" then
+					t.expect(#list).toBe(3)
+					t.expect(list[3].id).toBe("Fit")
+					t.expect(list[3].name).toBe("Extra seat")
+					t.expect(list[3].effect).toBe("+1 aboard")
+				end
+				for _, upgrade in list do
+					t.expect(upgrade.name ~= "" and upgrade.effect ~= "").toBe(true)
+					t.expect(upgrade.rankIndex)
+						.toBe(ProgressionConfig.Vehicles[vehicleId].rankIndex)
+				end
 			end
 		end
-	end)
+	)
 
 	t.test("a purchase needs the vehicle, the rank and the Cash", function()
 		local ok, reason = U.canBuy("RIB", "Engine", 0, 5000, 3, false)
 		t.expect({ ok, reason }).toEqual({ false, "Not owned" })
-		ok, reason = U.canBuy("RIB", "Engine", 0, 5000, 2, true)
-		t.expect({ ok, reason }).toEqual({ false, "Needs Rescue Swimmer" })
-		ok, reason = U.canBuy("RIB", "Engine", 0, 900, 3, true)
+		ok, reason = U.canBuy("RIB", "Engine", 0, 5000, 1, true)
+		t.expect({ ok, reason }).toEqual({ false, "Needs Lifeguard" })
+		ok, reason = U.canBuy("RIB", "Engine", 0, 624, 3, true)
 		t.expect({ ok, reason }).toEqual({ false, "Need Cash" })
-		ok = U.canBuy("RIB", "Engine", 0, 1000, 3, true)
+		ok = U.canBuy("RIB", "Engine", 0, 625, 2, true)
 		t.expect(ok).toBe(true)
-		ok = U.canBuy("RIB", "Hull", 0, 2000, 3, true) -- independent fits: no fixed order
+		ok = U.canBuy("RIB", "Hull", 0, 1250, 3, true) -- independent fits: no fixed order
 		t.expect(ok).toBe(true)
+		ok, reason = U.canBuy("JetSki", "Fit", 0, 9000, 1, true) -- the jet ski holds one
+		t.expect({ ok, reason }).toEqual({ false, "Unknown upgrade" })
 		ok, reason = U.canBuy("RIB", "Engine", 1, 9000, 3, true)
 		t.expect({ ok, reason }).toEqual({ false, "Fitted" })
 	end)
@@ -68,10 +77,11 @@ return function(t)
 		local raw = Rules.defaultData()
 		raw.vehicleUpgrades = { RIB = 5, JetSki = 99, Lifeboat = "x", Nope = 3 }
 		local saved = Rules.migrate(raw)
-		t.expect(saved.vehicleUpgrades).toEqual({ RIB = 5, JetSki = 7 })
-		t.expect(Rules.snapshot(saved).vehicleUpgrades).toEqual({ RIB = 5, JetSki = 7 })
+		-- the jet ski's old seat bit comes off (ProgressionRules pays it back)
+		t.expect(saved.vehicleUpgrades).toEqual({ RIB = 5, JetSki = 3 })
+		t.expect(Rules.snapshot(saved).vehicleUpgrades).toEqual({ RIB = 5, JetSki = 3 })
 		t.expect(Rules.fromSnapshot(Rules.snapshot(saved)).vehicleUpgrades)
-			.toEqual({ RIB = 5, JetSki = 7 })
+			.toEqual({ RIB = 5, JetSki = 3 })
 	end)
 
 	t.test("fitted upgrades change the real handling numbers and the seat count", function()

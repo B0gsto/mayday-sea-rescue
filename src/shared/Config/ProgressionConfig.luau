@@ -1,7 +1,6 @@
 --!strict
--- ProgressionConfig: ranks, vehicle unlocks, gear and payout multipliers. Pure data (no services),
--- safe to load in Lune. Numbers come from docs/03-progression.md (ranks 1 to 8 plus Service Stars;
--- gear is still the MVP 3 levels).
+-- ProgressionConfig: ranks (by Rep only, docs/16 K7), vehicle unlocks and payout multipliers. Pure
+-- data (no services), safe to load in Lune. Numbers come from docs/03-progression.md and docs/16.
 -- The rules that read this table live in src/shared/ProgressionRules.luau.
 
 export type Rank = {
@@ -9,11 +8,6 @@ export type Rank = {
 	displayName: string,
 	rep: number, -- total Rep needed (docs 03 section 3)
 	unlocks: { string }, -- short lines for the rank-up toast
-	cert: string?, -- the certification this rank also needs (docs 03 section 3); nil: none
-	-- Every certification the rank needs (docs 03: Admiral needs all six). A gate is enforced once
-	-- Config.Certifications defines it, so ranks 4 and 5 stay reachable while their certification
-	-- content is still to land.
-	certs: { string }?,
 }
 
 -- What counts toward a certification's live half (docs 03 section 3.1, docs 09 section 11): an
@@ -47,17 +41,6 @@ export type VehicleUnlock = {
 	passOnly: boolean?, -- Robux only: owned through its MonetizationConfig.GamePasses `vehicle` pass, never Cash
 }
 
-export type GearStat = "speed" | "pullTime" | "searchRadius"
-
-export type GearItem = {
-	id: string,
-	displayName: string,
-	description: string,
-	stat: GearStat,
-	-- multiplier on the stat at each level (index = level); level 0 is always 1
-	levels: { number },
-}
-
 local ProgressionConfig = {}
 
 ProgressionConfig.SchemaVersion = 1
@@ -73,28 +56,24 @@ ProgressionConfig.Ranks = {
 		id = "Lifeguard",
 		displayName = "Lifeguard",
 		rep = 400, -- tune
-		cert = "Helm",
-		unlocks = { "Crew joining" },
+		unlocks = { "RIB", "Crew joining" },
 	},
 	{
 		id = "RescueSwimmer",
 		displayName = "Rescue Swimmer",
 		rep = 900, -- tune
-		cert = "RescueSwimmer",
-		unlocks = { "RIB (buy)", "Gear level 3" },
+		unlocks = { "Coastguard 4x4" },
 	},
 	{
 		id = "Coxswain",
 		displayName = "Coxswain",
 		rep = 3000, -- tune
-		certs = { "Coxswain" },
-		unlocks = { "Lifeboat", "Open Sea", "Gear 4" },
+		unlocks = { "Lifeboat", "Open Sea" },
 	},
 	{
 		id = "RescuePilot",
 		displayName = "Rescue Pilot",
 		rep = 9000, -- tune
-		certs = { "Pilot" }, -- Pilot itself needs Winch Operator (docs 03)
 		unlocks = { "Helicopter", "Helipad", "Winch work" },
 	},
 	{
@@ -113,7 +92,6 @@ ProgressionConfig.Ranks = {
 		id = "Admiral",
 		displayName = "Admiral",
 		rep = 150000, -- tune
-		certs = { "Helm", "CasualtyCare", "RescueSwimmer", "Coxswain", "WinchOperator", "Pilot" },
 		unlocks = { "Gold livery", "Admiral's coat", "Honor board" },
 	},
 } :: { Rank }
@@ -121,8 +99,9 @@ ProgressionConfig.Ranks = {
 -- docs 03 section 3: Service Stars are endless prestige levels, one per 30,000 Rep past Admiral.
 ProgressionConfig.ServiceStarStep = 30000
 
--- docs 03 section 3.1 and docs 09 section 11 (MVP: the first three). Never sold, never expire,
--- never lost. Coxswain, Winch Operator, Pilot and Rescue Diver are [L].
+-- Retired (docs/16 C3): nothing earns, gates or shows certifications any more; saved certs stay in
+-- profiles. shortcut: kept only for readers in other packages (Ops/Definitions/Exercises and
+-- OperationService.StartExercise, WP1; OnboardingController, WP9); delete with them (WP10).
 ProgressionConfig.Certifications = {
 	Helm = {
 		id = "Helm",
@@ -190,21 +169,12 @@ ProgressionConfig.Certifications = {
 	},
 } :: { [string]: Certification }
 
--- Ladder order (HUD, crew board, debrief).
 ProgressionConfig.CertOrder = { "Helm", "CasualtyCare", "RescueSwimmer", "Coxswain" }
 
--- docs 03 section 2: an exercise pays 200 Cash and 50 Rep the first time it is passed, nothing on
--- repeats. The optional Reopening Day drill pays a token amount (tune).
-ProgressionConfig.ExerciseReward = { cash = 200, rep = 50 }
-ProgressionConfig.DrillReward = { cash = 50, rep = 10 } -- tune
-ProgressionConfig.DrillExercise = "ExerciseReopeningDay"
--- The worst overall grade that passes an exercise (every step must be the player's own).
-ProgressionConfig.ExercisePassGrade = "Bronze" -- tune
-
--- docs 03 section 4: jet ski free at Recruit, RIB 4,000 Cash at Rescue Swimmer.
+-- docs/16 K7: jet ski free at Recruit, RIB 2,500 Cash at Lifeguard (RIBPass stays the instant path).
 ProgressionConfig.Vehicles = {
 	JetSki = { rankIndex = 1, price = 0 },
-	RIB = { rankIndex = 3, price = 4000 }, -- tune
+	RIB = { rankIndex = 2, price = 2500 }, -- tune: affordable ~15 to 20 min in (docs/16 B4)
 	-- docs 03 section 4: data only until the hull and the helicopter exist (no rows in VehicleConfig).
 	Lifeboat = { rankIndex = 4, price = 12000 }, -- tune
 	RescueHelicopter = { rankIndex = 5, price = 75000 }, -- tune
@@ -227,31 +197,6 @@ function ProgressionConfig.isLandVehicle(vehicleId: string): boolean
 	local unlock = ProgressionConfig.Vehicles[vehicleId]
 	return unlock ~= nil and unlock.land == true
 end
-
--- docs 03 section 5: level prices and the rank each level needs. MVP caps gear at level 3.
-ProgressionConfig.GearLevelPrices = { 300, 1200, 4000 } -- tune
-ProgressionConfig.GearLevelRank = { 1, 1, 3 } -- rank index needed for each level
-
-ProgressionConfig.Gear = {
-	EngineTune = {
-		id = "EngineTune",
-		displayName = "Engine Tune",
-		description = "+8% top speed per level",
-		stat = "speed",
-		levels = { 1.08, 1.16, 1.24 }, -- tune
-	},
-	StrongGrip = {
-		id = "StrongGrip",
-		displayName = "Strong Grip",
-		description = "Pull victims aboard faster",
-		stat = "pullTime",
-		levels = { 0.75, 0.65, 0.55 }, -- tune: -25% at level 1
-	},
-	-- Spotter Binoculars (searchRadius) are [L] in docs 03: deferred.
-} :: { [string]: GearItem }
-
--- Shop order.
-ProgressionConfig.GearOrder = { "EngineTune", "StrongGrip" }
 
 -- docs 03 section 2: Cash x1.5 in storms, x2 in a Great Storm; Rep is never multiplied.
 ProgressionConfig.StormCashMultiplier = 1.5
