@@ -5,8 +5,8 @@
 
 local OceanPalette = {}
 
-OceanPalette.DEEP_TEAL = Color3.fromHex("#1C5A5C") -- clear teal, matches the Clear preset
-OceanPalette.ABYSS_NAVY = Color3.fromHex("#163445")
+OceanPalette.DEEP_TEAL = Color3.fromHex("#2E5A55") -- green-grey teal, matches the Clear preset
+OceanPalette.ABYSS_NAVY = Color3.fromHex("#1B3534") -- green-grey trough, not navy
 OceanPalette.FOAM = Color3.fromHex("#EAF7F5")
 
 -- Height (studs above sea level) that maps to full Foam / full Navy. Storm crests (sum of
