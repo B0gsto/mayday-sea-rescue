@@ -6,6 +6,7 @@ Bakes the Gale Isles terrain (docs/10-world-and-map.md) and merges it into `buil
 |---|---|---|
 | 1. Bake (deterministic, seeded) | `python3 tools/world/gen_terrain.py [--preview build/world/terrain_preview.png]` | `map/generated/terrain.json`, `terrain_height.i16` (int16 LE, Y x 8), `terrain_material.u8`; `src/shared/Config/WorldConfig.luau` (generated, then run `stylua` on it) |
 | 2. Write in Studio | `python3 tools/world/studio_terrain.py` | `map/terrain/Terrain.rbxm` |
+| 1b. Check | `python3 tools/world/check_zones.py` | exit 1 if a gameplay point (zones, call sites, spawns, beach, platform, basin, roads) lost its land / water |
 | 3. Build | `~/RobloxProjects/tools/build.sh .` | `build/MaydaySeaRescue.rbxl` with the Terrain |
 
 **Layout.** `tools/world/layout.py` is the only hand-edited input: island polygons with a coast kind and height per vertex
@@ -150,3 +151,15 @@ hay / straw, 6 % heath, 6 % bracken), field floors calmed (no worn turf / earth 
 outcrops and hummocks x 0.15 under the farm mask), hedges a narrow Rock + LeafyGrass line; LeafyGrass moor only on high
 ground (upland) and cliff tops; less straw elsewhere. The town platform (x +-720, z -560..-20) is Grass inside, Grass /
 lush olive on its blend ring. `FARMS` yards are flattened and gravelled like car parks.
+**Map WP-3 (docs/17 P0 2, P1 8, 9, 13).** `town_hill()`: the hillside north of the town platform (`layout.TOWN_HILL`)
+stays a natural rising slope (to about Y 70 within 400 studs) of green fields: short noise-gated granite retaining-wall
+runs (9-stud steps) only in the band just above the town and along Chapel Hill, contour-following field hedges with
+gateways every 15 studs of height crossing the Voronoi field banks, and no rock dither elsewhere on it. Chapel Hill's
+max grade stays under the old one. `moor_ridge()`: a moor ridge on the skyline (crest z about -1,720, up to Y 260, a
+col where the High Road crosses) with granite `tors()` (stacked 5-stud slabs, forced Rock). The window shore on the west, north and east sides swings into
+2-3 headlands (30-60 stud cliffs) and round coves (beach kind) per side; inland, its kind and height fade back to the
+island's, which removes the medial-axis scarps that read as long grey streaks from the air. The south coast, Skerry
+and every gameplay point are unchanged (`check_zones.py`). More hay fields (`FIELD_*`) and a warm hay Snow
+MaterialColor make the patchwork read; `scatter_props.treeline()` adds a broken belt of large wind-bent hawthorns along the
+Y 64 contour behind the town. The Haven Head "shards" (docs/17 P1 13) are not terrain: a heightmap shell cannot float, and the
+bake is solid ground at Y 67 under that eye.

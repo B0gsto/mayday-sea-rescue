@@ -767,6 +767,30 @@ def thin(T, rocks, rmeta, plants, pmeta, seed):
     return [rocks[i] for i in kr], [rmeta[i] for i in kr], plants2, [pmeta[i] for i in kp]
 
 
+def treeline(T, seed):
+    """WP-3: a broken shelter belt of big wind-bent hawthorns along the TOWN_HILL treeY contour behind Port Haven, on
+    the town's skyline. Rows carry seen = 1."""
+    th, tp = L.TOWN_HILL, L.TOWN_PLATFORM
+    above = th["treeY"] + SURFACE_BIAS
+    rng = np.random.default_rng([seed, 31])
+    out = []
+    for x in np.arange(tp["minX"] + 40, tp["maxX"] - 39, 14.0):
+        x = float(x + rng.uniform(-4, 4))
+        if G.fbm(np.array([x]), np.array([0.0]), 90, seed + 32)[0] < -0.2:  # gaps between the clumps
+            continue
+        z = next((z for z in np.arange(tp["minZ"] - 20, tp["minZ"] - th["depth"], -4.0) if T.height(x, z) > above), None)
+        if z is None:
+            continue
+        z = float(z) - 6 + rng.uniform(-3, 3)
+        j, i = T.idx(x, z)
+        if T.road_edge[j, i] < 12:
+            continue
+        asset = ("M_Veg_Hawthorn_01", "M_Veg_Hawthorn_02")[int(rng.integers(2))]
+        out.append(row(asset, x, T.height(x, z), z, WIND_YAW + rng.uniform(-10, 10), 0, 0, rng.uniform(2.0, 2.8),
+                       0.05) + [1])
+    return out
+
+
 # ---------------------------------------------------------------- preview
 
 
@@ -811,6 +835,8 @@ def main():
     plants = plants[:PLANT_CAP]
     pmeta = pmeta[:PLANT_CAP]
     rocks, rmeta, plants, pmeta = thin(T, rocks, rmeta, plants, pmeta, seed)
+    trees = treeline(T, seed)
+    plants, pmeta = plants + trees, pmeta + ["Town"] * len(trees)
     by_asset, by_region = {}, {}
     for r in rocks + plants:
         by_asset[ASSETS[r[0] - 1]] = by_asset.get(ASSETS[r[0] - 1], 0) + 1
