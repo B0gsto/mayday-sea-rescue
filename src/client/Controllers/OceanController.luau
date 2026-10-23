@@ -374,8 +374,9 @@ local function buildFallback(parent: Instance)
 	local grid = PartGrid.new(parent, tier.fallbackCells, tier.fallbackCell)
 	fallback = grid
 	fadeStart, fadeEnd = grid.half * 0.6, grid.half -- tune
-	far = FarPlane.new(parent, grid.half, SEA, surfaceKind, Horizon.INNER_HALF)
-	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind)
+	-- All Parts in the grid's material: a SurfaceAppearance far sea never matched it (map pass 3 N1).
+	far = FarPlane.new(parent, grid.half, SEA, surfaceKind, Horizon.INNER_HALF, false)
+	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind, true)
 	snapStep = tier.fallbackCell
 	mode = "Parts"
 end

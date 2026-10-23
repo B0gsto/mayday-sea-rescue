@@ -151,9 +151,9 @@ local Clear: Preset = table.freeze({
 	OutdoorAmbient = hex("#6E7C8C"),
 	ColorShift_Top = hex("#FFE6C4"), -- warm sun (map pass 2: warmer)
 	EnvironmentDiffuseScale = 1,
-	EnvironmentSpecularScale = 0.75, -- less sky glitter on the sea
-	AtmosphereDensity = 0.26, -- map pass 2: distant land recedes
-	AtmosphereHaze = 0.6,
+	EnvironmentSpecularScale = 0.55, -- less sky glitter on the sea (map pass 3 N5: was 0.75)
+	AtmosphereDensity = 0.21, -- distant land recedes, but the island reads from the air (pass 3 N8: was 0.26)
+	AtmosphereHaze = 0.4,
 	AtmosphereColor = hex("#C9D8DF"),
 	AtmosphereDecay = hex("#5C8DB8"),
 	AtmosphereGlare = 0.25,
@@ -167,7 +167,7 @@ local Clear: Preset = table.freeze({
 	BloomSize = 24,
 	BloomThreshold = 1.4, -- sun glitter only, not the pale ground
 	SunRaysIntensity = 0.06,
-	WaterColor = hex("#2E5A55"), -- Cornish green-grey teal (map pass 2: #1C5A5C rendered Caribbean cyan)
+	WaterColor = hex("#24493C"), -- Cornish green-teal, renders ~#2E7E7D (#2E5A55 rendered cyan #3D949B, pass 3 N5)
 })
 
 local Overcast: Preset = table.freeze({
