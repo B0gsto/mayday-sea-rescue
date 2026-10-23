@@ -273,7 +273,14 @@ function SeamarkController.Start()
 		if m.map then
 			table.insert(
 				items,
-				{ id = m.id, position = Vector3.new(m.x, 0, m.z), style = m.map, size = 10 }
+				-- full map only: their red / green dots read as the survivor and the drop-off on the minimap (playtest 2)
+				{
+					id = m.id,
+					position = Vector3.new(m.x, 0, m.z),
+					style = m.map,
+					size = 10,
+					minimap = false,
+				}
 			)
 		end
 	end

@@ -83,8 +83,6 @@ local queue: { Entry } = {}
 local current: Entry? = nil
 local panel: RadioPanel.Panel
 local lastCoastguard: Line? = nil
-local lastTransmitAt = os.clock()
-local lastSitrepAsk = 0
 -- The same radio/intercom line is voiced at most once per REPEAT_COOLDOWN: re-broadcasts (offer
 -- refreshes, server loops) only refresh the subtitle. Player transmissions and "say again" are exempt.
 local REPEAT_COOLDOWN = 180
@@ -566,7 +564,6 @@ function Radio.transmit(msg: RadioFormat.Message, opts: { [string]: any }?): Han
 	o.mode = "tx"
 	o.priority = o.priority or P.Reply
 	local own = RadioFormat.Callsigns[msg.from]
-	lastTransmitAt = os.clock()
 	sfx("Key")
 	for _, fn in table.clone(replyListeners) do
 		task.spawn(fn, msg)
@@ -638,7 +635,7 @@ function Radio.Init()
 end
 
 function Radio.Start()
-	-- static level follows the storm; signal bars drop; the Coastguard asks for a sitrep when quiet
+	-- static level follows the storm; signal bars drop (no idle sitrep ask: playtest 2, a text pop-up with nothing to do)
 	local acc = 0
 	RunService.Heartbeat:Connect(function(dt)
 		acc += dt
@@ -655,18 +652,6 @@ function Radio.Start()
 			f.staticFader.Volume += (target - f.staticFader.Volume) * 0.5
 		end
 		panel.setSignal(1 - storm * 0.6)
-		local s = OpsController.GetState()
-		local now = os.clock()
-		if
-			s
-			and not current
-			and #queue == 0
-			and now - lastTransmitAt > 150
-			and now - lastSitrepAsk > 150
-		then
-			lastSitrepAsk = now
-			Radio.say("sitrep_request")
-		end
 	end)
 end
 

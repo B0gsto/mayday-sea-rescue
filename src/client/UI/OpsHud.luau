@@ -3,13 +3,13 @@
 -- the tasking pager (OnOffer), the objective strip (OnState), the debrief toast (OnDebrief) and
 -- closures (OnClosed). Mounted by RadioController.
 -- Placement (UI/Layout): the strip in the "objective" region (top left), the pager in the "right"
--- column, the debrief a toast in the "notice" band. In the cold open both are hidden: the
--- minimap's objective pill is the one objective line. A new player (Layout.newPlayer) gets no
+-- column, the debrief a toast in the "notice" band. In the cold open both are hidden: the world
+-- marker (UI/Waypoint) is the one objective readout. A new player (Layout.newPlayer) gets no
 -- relay / big-call alert.
 -- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
 -- (PyroController) and again every FLARE_EVERY s until the call is taken or withdrawn; the minimap
 -- draws its blip (MapController), and UI/Waypoint marks it on screen (icon + distance, pinned to the
--- edge when off screen) under a light pillar; the strip shows the same distance.
+-- edge when off screen); the strip shows the same distance.
 local Players = game:GetService("Players")
 
 local ColdOpenCue = require(script.Parent.ColdOpenCue)
@@ -56,7 +56,7 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
 	Waypoint.start(ops, MapController, step.distance)
-	-- cold open: one objective on screen, the minimap's pill ("Drop-off 100 m"), so no step strip
+	-- cold open: one objective on screen, the world marker (swimmer, then home), so no step strip
 	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
 	local function applyColdOpen(_: boolean?)
