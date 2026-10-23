@@ -4,7 +4,7 @@
 usage: tools/notify.py [--send]
 
 The game writes one NotifyDue entry per opted-in player when they leave:
-  { "c": <next crate UTC second>, "b": <strongbox full UTC second>, "l": <last notified> }
+  { "c": <next crate UTC second>, "l": <last notified> }   (older entries may hold "b", ignored)
 This tool reads those entries through Open Cloud and sends at most one notification per player per
 24 h. Default is a dry run; --send needs every message id in marketing/notifications.json filled in
 (the Refusing list names the TODOs). The API key is read from ~/RobloxProjects/.roblox-api-key and
@@ -36,10 +36,9 @@ STORE = "NotifyDue"
 # kind -> (launch data, analytics category), matching marketing/notifications.md
 MESSAGES = {
     "crate_ready": ("panel=dailycrate", "crate_ready"),
-    "strongbox_full": ("panel=strongbox", "strongbox_full"),
     "storm_soon": ("event=greatstorm", "storm_soon"),
 }
-TEMPLATE_KEYS = ("crate_ready", "strongbox_full", "storm_soon")
+TEMPLATE_KEYS = ("crate_ready", "storm_soon")
 
 
 class ApiError(Exception):
@@ -116,12 +115,8 @@ class Transport:
 
 
 def kind_for(entry, now):
-    """Crate first (it repeats daily), then the strongbox; None when neither is due."""
-    if int(entry.get("c") or 0) <= now:
-        return "crate_ready"
-    if int(entry.get("b") or 0) <= now:
-        return "strongbox_full"
-    return None
+    """The daily crate when it is ready; None otherwise."""
+    return "crate_ready" if int(entry.get("c") or 0) <= now else None
 
 
 def can_send(entry, now):
@@ -222,7 +217,7 @@ def main(argv=None):
         for user_id, entry, kind in due:
             print(
                 f"would send {kind} to {user_id} "
-                f"(crate {int(entry.get('c') or 0)}, strongbox {int(entry.get('b') or 0)}, "
+                f"(crate {int(entry.get('c') or 0)}, "
                 f"last {int(entry.get('l') or 0)})"
             )
         print(f"dry run: {len(due)} due, nothing sent")

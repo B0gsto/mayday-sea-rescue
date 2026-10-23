@@ -33,7 +33,7 @@ and finished events are ignored.
 
 | Event | Players see | Effect (free) |
 |---|---|---|
-| **GoldenHour** | Warm gold sky, gold chip on the HUD | 2x Cash and Rep from rescues and live awards. Passive/flat rewards (strongbox, crate, season tier) stay flat. Stacks with a Great Storm, like every other Cash multiplier |
+| **GoldenHour** | Warm gold sky, gold chip on the HUD | 2x Cash and Rep from rescues and live awards. Passive/flat rewards (crate, season tier) stay flat. Stacks with a Great Storm, like every other Cash multiplier |
 | **LegendaryRush** | Violet sky, gold chip | Rare/Epic/Legendary rescue variants roll as if a Great Storm were on; every variant is still earnable |
 | **CalmSeas** | Soft blue sky, gold chip | No new storms for the hour (the paid storm queue waits, the ticket is kept); relaxed, kid-friendly |
 | **DoubleCandy** | Pink sky, gold chip | The active seasonal currency (Candy Lanterns during the Ghost Ship) pays x2 while the seasonal event is live |

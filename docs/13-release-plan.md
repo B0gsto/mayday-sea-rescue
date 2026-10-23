@@ -69,7 +69,7 @@ If the user wants the full `[L]` list in 1.0, the LU packages move in front of R
 | Rotating Chandlery stock (H3) | done — 10-min UTC restock, 6-8 items, per-player limits, Cash only | Studio shelf and clock check (G17/G62) | S |
 | Animal sanctuary + pets (H4) | done — WildlifeRescue, 6 pens, 10-min recovery, adopt, tricks, bond vest | Studio pet visuals (G48/G62) | S |
 | Daily streak + welcome back (H5) | done — porch crate, calm day, drop 3 never zero, welcome-back crate | Studio crate check (G19/G62) | S |
-| Station idle income (H6) | done — strongbox pot, workshop/radio/kennel levels, capped and flat | Touch/pad is prompt-only; Studio check | S |
+| Station idle income (H6) | removed 2026-10-23 (Crew Pay / Pay Rise cut) | Touch/pad is prompt-only; Studio check | S |
 | Season Logbook (H8) | done — 30-tier free track, desk + phone app; paid track stays `ready = false` | Studio phone pass | S |
 | Friends (H9) | done — +10% Cash per friend (cap 3), crew-up flare, friend spawn | Real-friend path untested solo | S |
 | Live ops (G60) | done — MessagingService/MemoryStore, 4 events, board row, `tools/liveops.py` | Studio fake-message test pending | S |

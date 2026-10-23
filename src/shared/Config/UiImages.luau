@@ -23,8 +23,6 @@ return {
 		Camera = "rbxassetid://102410072009100",
 		Events = "rbxassetid://72738707163546",
 		Season = "rbxassetid://80586118394028",
-		CrewPay = "rbxassetid://90764462212641",
-		PayRise = "rbxassetid://84213752900110",
 		Logbook = "rbxassetid://103647314836433",
 		Crew = "rbxassetid://123697054940337",
 		Settings = "rbxassetid://85411600136649",

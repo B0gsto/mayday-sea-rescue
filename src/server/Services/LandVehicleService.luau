@@ -19,6 +19,8 @@
 -- Spawns face along the nearest WorldConfig road, away from the water (Car/RoadHeading).
 -- A towing car holds an ObjectValue "Trailer"; the trailer is a separate model on a
 -- BallSocketConstraint (TowHitch -> Coupler) with its own raycast wheels.
+-- Recovery (VehicleRecovery): a car on its side or roof, wedged with the throttle held, or sunk
+-- into terrain glides (lift-and-settle) upright onto the nearest road, driver still seated.
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local PhysicsService = game:GetService("PhysicsService")
@@ -39,6 +41,7 @@ local RoadHeading = require(CarFolder:WaitForChild("RoadHeading"))
 local Trailer = require(CarFolder:WaitForChild("Trailer"))
 local Tyre = require(CarFolder:WaitForChild("Tyre"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
 local Wading = require(CarFolder:WaitForChild("Wading"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
@@ -62,6 +65,7 @@ type Record = {
 	strikes: number,
 	resetting: boolean,
 	wade: Wading.State,
+	recovery: VehicleRecovery.State,
 }
 
 local GROUP = "LandVehicle"
@@ -74,6 +78,11 @@ local TELEPORT_SLACK = 14
 local STRIKES_TO_RESET = 2
 local MAX_Y, MIN_Y = 400, -45
 local RESCUE_BACKOFF = 8 -- studs further inland than the last dry spot when a flooded car is recovered
+local RECOVER_BACKOFF = 6 -- studs behind the last upright spot when no road is near -- tune
+local ROAD_SNAP = 40 -- studs: a recovered car goes onto a road centreline this close -- tune
+local GROUND_REACH = 4 -- studs under the ride height that still count as touching down -- tune
+local SUNK_DEPTH = 2 -- studs of the root under the terrain surface that count as sunk -- tune
+local GLIDE_RANGE = 80 -- studs: further resets (out of bounds) snap instead of gliding
 local HORN_MAX = 4 -- seconds a horn press can last
 local CONTROL_GAP = 0.08 -- seconds between control messages per player
 local BYPASS_ATTRIBUTE = "StudioBypassChecks"
@@ -564,6 +573,7 @@ local function spawnVehicle(
 		strikes = 0,
 		resetting = false,
 		wade = Wading.newState(),
+		recovery = VehicleRecovery.new(),
 	}
 	records[model] = record
 	byPlayer[player] = record
@@ -702,31 +712,138 @@ end
 
 -- Sanity checks (as the boats) -----------------------------------------------------------------
 
+local function yawOnly(cf: CFrame): CFrame
+	return CFrame.new(cf.Position)
+		* CFrame.fromAxisAngle(Vector3.yAxis, math.atan2(-cf.LookVector.X, -cf.LookVector.Z))
+end
+
+-- Puts the car (and trailer) upright at cf: a short lift-and-settle glide, anchored and
+-- server-owned, then velocities zeroed and the driver (still seated) gets ownership back.
 local function resetTo(record: Record, cf: CFrame, reason: string)
 	warn(`[LandVehicleService] reset {record.model.Name}: {reason}`)
 	record.resetting = true
 	record.strikes = 0
+	record.recovery.lastAt = os.clock()
 	setOwner(record.root, nil)
 	setOwner(record.trailer and record.trailer.PrimaryPart, nil)
-	record.root.AssemblyLinearVelocity = Vector3.zero
-	record.root.AssemblyAngularVelocity = Vector3.zero
-	local upright = CFrame.new(cf.Position + Vector3.new(0, 1, 0))
-		* CFrame.fromAxisAngle(Vector3.yAxis, math.atan2(-cf.LookVector.X, -cf.LookVector.Z))
+	local upright = yawOnly(cf) + Vector3.new(0, 1, 0)
 	local trailer = record.trailer
-	local offset = if trailer then record.root.CFrame:ToObjectSpace(trailer:GetPivot()) else nil
-	record.model:PivotTo(upright)
-	if trailer and offset then
-		trailer:PivotTo(upright * offset)
-	end
-	task.delay(0.5, function()
-		record.resetting = false
-		if records[record.model] == record and record.mode == "Driven" then
-			local humanoid = record.seat.Occupant
-			local driver = humanoid and Players:GetPlayerFromCharacter(humanoid.Parent)
-			setOwner(record.root, driver)
-			setOwner(record.trailer and record.trailer.PrimaryPart, driver)
+	local offset = if trailer
+		then yawOnly(record.root.CFrame):ToObjectSpace(yawOnly(trailer:GetPivot()))
+		else nil
+	local function place(at: CFrame)
+		record.model:PivotTo(at)
+		if trailer and offset then
+			trailer:PivotTo(at * offset)
 		end
-	end)
+	end
+	local function settle()
+		place(upright)
+		if record.mode ~= "Parked" then
+			setAnchored(record, false)
+		end
+		local trailerRoot = trailer and trailer.PrimaryPart
+		local parts: { BasePart } = if trailerRoot
+			then { record.root, trailerRoot }
+			else { record.root }
+		for _, part in parts do
+			part.AssemblyLinearVelocity = Vector3.zero
+			part.AssemblyAngularVelocity = Vector3.zero
+		end
+		task.delay(0.5, function()
+			record.resetting = false
+			if records[record.model] == record and record.mode == "Driven" then
+				local humanoid = record.seat.Occupant
+				local driver = humanoid and Players:GetPlayerFromCharacter(humanoid.Parent)
+				setOwner(record.root, driver)
+				setOwner(record.trailer and record.trailer.PrimaryPart, driver)
+			end
+		end)
+	end
+	local from = record.root.CFrame
+	if (from.Position - upright.Position).Magnitude > GLIDE_RANGE then
+		settle()
+	else
+		setAnchored(record, true)
+		VehicleRecovery.glide(from, upright, place, settle)
+	end
+end
+
+-- Where a flipped / wedged / sunk car goes: the nearest road centreline within ROAD_SNAP, facing
+-- the way it was heading, else its last upright dry spot backed off whatever it hit; stepped back
+-- a car length at a time until no other land vehicle is in the way.
+local function recoverySpot(record: Record): CFrame
+	local good = record.lastGood
+	local look = Vector3.new(good.LookVector.X, 0, good.LookVector.Z)
+	look = if look.Magnitude > 1e-3 then look.Unit else RoadHeading.INLAND
+	local at = good.Position - look * RECOVER_BACKOFF
+	local roads = world and world.Roads
+	local hit = if type(roads) == "table"
+		then RoadHeading.nearest(roads, record.root.Position, false, world.SeaLevel)
+		else nil
+	if hit and hit.distance < ROAD_SNAP then
+		at = hit.point
+		look = if hit.tangent:Dot(look) >= 0 then hit.tangent else -hit.tangent
+	end
+	local ignore: { Instance } = characters()
+	table.insert(ignore, folder)
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { folder }
+	local size = record.model:GetExtentsSize()
+	local lift = Builder.rideHeight(record.spec) + 0.15
+	local first: CFrame? = nil
+	for i = 0, 3 do
+		local p = at - look * (i * size.Z)
+		local y = groundY(p, ignore) + lift
+		local cf =
+			CFrame.lookAt(Vector3.new(p.X, y, p.Z), Vector3.new(p.X + look.X, y, p.Z + look.Z))
+		first = first or cf
+		local blocked = false
+		for _, part in Workspace:GetPartBoundsInBox(cf, size, params) do
+			if
+				not part:IsDescendantOf(record.model)
+				and not (record.trailer and part:IsDescendantOf(record.trailer))
+			then
+				blocked = true
+				break
+			end
+		end
+		if not blocked then
+			return cf
+		end
+	end
+	return first :: CFrame
+end
+
+-- shortcut: terrain overhanging a road (a cave or arch) would read as sunk; none on the map yet.
+local function terrainTop(position: Vector3): number
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { Workspace.Terrain }
+	params.IgnoreWater = true
+	local hit = Workspace:Raycast(position + Vector3.new(0, 60, 0), Vector3.new(0, -160, 0), params)
+	return if hit then hit.Position.Y else -math.huge
+end
+
+-- Flipped, wedged or sunk for long enough (VehicleRecovery): back onto the road. True on a reset.
+local function recover(record: Record, dt: number): boolean
+	local root = record.root
+	local pos = root.Position
+	local ignore: { Instance } = characters()
+	table.insert(ignore, folder)
+	local reason = VehicleRecovery.step(record.recovery, dt, os.clock(), {
+		up = root.CFrame.UpVector.Y,
+		speed = root.AssemblyLinearVelocity.Magnitude,
+		throttle = if record.mode == "Driven" then record.seat.ThrottleFloat else 0,
+		grounded = pos.Y - groundY(pos, ignore) < Builder.rideHeight(record.spec) + GROUND_REACH,
+		off = terrainTop(pos) - pos.Y > SUNK_DEPTH,
+	})
+	if not reason then
+		return false
+	end
+	resetTo(record, recoverySpot(record), reason)
+	return true
 end
 
 -- Shoreline guard (Car/Wading): warn past half the wading depth (CarController), flood the engine
@@ -804,16 +921,18 @@ local function check(record: Record, dt: number)
 		end
 		return
 	end
-	if record.mode ~= "Driven" then
-		return
-	end
-	if
-		IS_STUDIO
+	local bypass = IS_STUDIO
 		and (
 			model:GetAttribute(BYPASS_ATTRIBUTE) == true
 			or Workspace:GetAttribute(BYPASS_ATTRIBUTE) == true
 		)
-	then
+	if not bypass and recover(record, dt) then
+		return
+	end
+	if record.mode ~= "Driven" then
+		return
+	end
+	if bypass then
 		record.lastGood = root.CFrame
 		return
 	end

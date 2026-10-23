@@ -12,7 +12,7 @@ StreakConfig.DayCash = { 100, 150, 225, 325, 450, 600, 900 }
 -- Away more than 3 days: one bigger welcome-back crate, this Cash on top of that day's pay.
 StreakConfig.WelcomeCash = 500
 
--- The station porch: against the crew wing front, east of the workshop counter (StationConfig), facing the
+-- The station porch: against the crew wing front, east of the old workshop counter, facing the
 -- harbour (+Z). Y is found by the client with a downward ray, falling back to this Y (the apron's terrain top)
 -- before the terrain streams in. The sign stands at +5.9, clear of the bigger welcome-back crate.
 StreakConfig.PorchPosition = Vector3.new(-93.3, 5.8, -37.6)

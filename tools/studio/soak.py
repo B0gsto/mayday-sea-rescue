@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """G25b systems sweep: one Studio session that exercises every operation kind, the clock events,
-the seasonal Ghost Ship, a Legendary variant, the streak/stock/station/season/album/pet/cosmetic
+the seasonal Ghost Ship, a Legendary variant, the streak/stock/season/album/pet/cosmetic
 systems, the friend bonus and the rank ceremony, then does a profile round-trip (save, stop, new
 play session, check the flags came back).
 
@@ -387,14 +387,6 @@ return tostring(target)
                     gear = client(s, 'local d=game:GetService("ReplicatedStorage").Net.Progression_GetData:InvokeServer() return "gear="..tostring(d and d.gear and (d.gear.EngineTune or d.gear.StrongGrip))')
                     system("StockPurchase", bought.startswith("true") and "gear=" in gear and not gear.endswith("nil"), "%s slot=%s shop=%s %s" % (bought, gear_slot, shop, gear))
 
-                    server(s, 'return tostring(game:GetService("ServerStorage").StationDev:Invoke("level", 1))')
-                    server(s, 'return tostring(game:GetService("ServerStorage").StationDev:Invoke("fill"))')
-                    pos = server(s, 'local p=game:GetService("Players"):GetPlayers()[1] local c=p.Character if c then c:PivotTo(CFrame.new(-124, 8, -35)) end local r=c and c:FindFirstChild("HumanoidRootPart") return tostring(r and r.Position)')
-                    time.sleep(1)
-                    collected = client(s, 'local r=game:GetService("ReplicatedStorage").Net.Station_Collect:InvokeServer() return tostring(r and r.ok).."|"..tostring(r and r.cash)')
-                    station = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Station_Get:InvokeServer() return "level="..tostring(v and v.level)')
-                    system("StationIdle", collected.startswith("true|") and "level=1" in station, "%s %s pos=%s" % (collected, station, pos))
-
                     server(s, 'game:GetService("ServerStorage").SeasonDev:Invoke("force", true) return "ok"')
                     server(s, 'return tostring(game:GetService("ServerStorage").SeasonDev:Invoke("set", 200))')
                     claimed = server(s, 'local r=game:GetService("ServerStorage").SeasonDev:Invoke("claim", 1) return tostring(r and r.ok).."|"..tostring(r and r.reward and r.reward.tier)')
@@ -466,8 +458,6 @@ return ""
                         system("PersistSeason", "claimed=true" in season, season)
                         gear = client(s, 'local d=game:GetService("ReplicatedStorage").Net.Progression_GetData:InvokeServer() return "gear="..tostring(d and d.gear and (d.gear.EngineTune or d.gear.StrongGrip))')
                         system("PersistStock", "gear=" in gear and not gear.endswith("nil"), gear)
-                        station = client(s, 'local v=game:GetService("ReplicatedStorage").Net.Station_Get:InvokeServer() return "level="..tostring(v and v.level)')
-                        system("PersistStation", "level=1" in station, station)
                         cosmetic = client(s, 'return tostring(game:GetService("Players").LocalPlayer:GetAttribute("Cos_Livery"))')
                         system("PersistCosmetic", cosmetic.strip() == "StockRed", cosmetic)
                     else:

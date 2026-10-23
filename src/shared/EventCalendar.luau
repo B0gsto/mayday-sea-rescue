@@ -10,13 +10,11 @@
 --   Season 1       SeasonRules (days left)
 --   Chandlery      StockRotation (seconds to the next 10-minute window)
 --   Daily crate    StreakRules (seconds to the next UTC day, or ready now)
---   Strongbox      IdleIncome (fill and seconds to full from the station view)
 --
 -- Rows are icons, a 1-3 word label and numbers only (show, don't tell). No price, no Robux: the
 -- board is a planning aid for free, earnable content (docs/15 section 1). Rows sort by soonest.
 
 local EventClock = require(script.Parent.EventClock)
-local IdleIncome = require(script.Parent.IdleIncome)
 local LiveOps = require(script.Parent.LiveOps)
 local SeasonRules = require(script.Parent.SeasonRules)
 local SeasonalEvents = require(script.Parent.Config.SeasonalEvents)
@@ -24,37 +22,21 @@ local SeasonalRules = require(script.Parent.SeasonalRules)
 local StockRotation = require(script.Parent.StockRotation)
 local StreakRules = require(script.Parent.StreakRules)
 
-export type Icon =
-	"storm"
-	| "lantern"
-	| "pumpkin"
-	| "book"
-	| "bell"
-	| "crate"
-	| "strongbox"
-	| "spark"
-export type Kind = "now" | "clock" | "days" | "percent"
+export type Icon = "storm" | "lantern" | "pumpkin" | "book" | "bell" | "crate" | "spark"
+export type Kind = "now" | "clock" | "days"
 
 export type Row = {
 	id: string,
 	icon: Icon,
 	label: string, -- 1-3 words
-	kind: Kind, -- now (pulsing), clock, days, percent
-	seconds: number?, -- clock kind; the sub-clock on a days row; the fill clock on a percent row
+	kind: Kind, -- now (pulsing), clock, days
+	seconds: number?, -- clock kind; the sub-clock on a days row
 	hours: boolean?, -- clock text as h:mm:ss even under an hour (the Great Storm)
 	days: number?, -- days kind
-	fraction: number?, -- percent kind, 0..1
 	ready: boolean?, -- now kind: ready (a crate) instead of a live event
 }
 
 export type StreakView = { available: boolean }
-
-export type StationView = {
-	cash: number,
-	level: number,
-	radio: number?,
-	kennel: number?,
-}
 
 export type LiveOpsView = {
 	event: string,
@@ -64,7 +46,6 @@ export type LiveOpsView = {
 
 export type Options = {
 	streak: StreakView?,
-	station: StationView?,
 	halloweenForced: boolean?,
 	liveOps: LiveOpsView?,
 	stormOff: boolean?, -- no Great Storm row (StormService.ALWAYS_SUNNY)
@@ -78,7 +59,6 @@ EventCalendar.GhostLightLabel = "Ghost light"
 EventCalendar.SeasonLabel = "Season 1"
 EventCalendar.RestockLabel = "Chandlery"
 EventCalendar.CrateLabel = "Daily crate"
-EventCalendar.StrongboxLabel = "Strongbox"
 
 -- `0:42:10` with hours, `7:42` under one. Rounded up so a countdown never shows 0:00 early.
 function EventCalendar.formatClock(seconds: number, hours: boolean?): string
@@ -259,24 +239,6 @@ function EventCalendar.rows(now: number, opts: Options?): { Row }
 		ready = ready,
 	})
 
-	local station = o.station
-	if station then
-		local levels: IdleIncome.Levels = {
-			workshop = station.level,
-			radio = station.radio or 0,
-			kennel = station.kennel or 0,
-		}
-		local preview = IdleIncome.preview({ lastAt = now, cash = station.cash }, levels, now)
-		add(list, {
-			id = "Strongbox",
-			icon = "strongbox",
-			label = EventCalendar.StrongboxLabel,
-			kind = "percent",
-			fraction = preview.fill,
-			seconds = preview.secondsToFull,
-		})
-	end
-
 	return list
 end
 
@@ -287,17 +249,11 @@ function EventCalendar.text(row: Row): (string, string?)
 		return if row.ready == true then "✓" else "NOW", nil
 	elseif row.kind == "clock" then
 		return EventCalendar.formatClock(row.seconds or 0, row.hours), nil
-	elseif row.kind == "days" then
-		local sub = if row.seconds ~= nil
-			then EventCalendar.formatClock(row.seconds :: number, false)
-			else nil
-		return `{math.max(0, row.days or 0)}d`, sub
 	end
-	local fraction = math.clamp(row.fraction or 0, 0, 1)
-	local sub = if fraction >= 0.999
-		then "✓"
-		else EventCalendar.formatClock(row.seconds or 0, false)
-	return `{math.floor(fraction * 100 + 0.5)}%`, sub
+	local sub = if row.seconds ~= nil
+		then EventCalendar.formatClock(row.seconds :: number, false)
+		else nil
+	return `{math.max(0, row.days or 0)}d`, sub
 end
 
 return EventCalendar

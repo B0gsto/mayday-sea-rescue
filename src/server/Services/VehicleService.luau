@@ -40,6 +40,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local RespawnPolicy = require(Shared:WaitForChild("Boat"):WaitForChild("RespawnPolicy"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
+local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
@@ -63,6 +64,7 @@ type Record = {
 	wetUntil: number,
 	spawnedAt: number, -- os.clock()
 	lastOccupiedAt: number?, -- os.clock() when the last rider left (RespawnPolicy)
+	recovery: VehicleRecovery.State,
 }
 
 local TOW_TAG = "VehicleTowed"
@@ -98,6 +100,14 @@ local STRIKES_TO_RESET = 2
 local SURVIVOR_WELD_DELAY = 0.2 -- s a boarded survivor rides anchored before its weld goes on
 local MAX_Y, MIN_Y = 40, -20
 local RESET_HOLD = 0.5 -- seconds the server keeps ownership after a reset
+-- Recovery (VehicleRecovery): capsized (Driven or adrift), beached, sunk or pinned with the throttle
+-- open glides back upright: capsized in open water rights in place, the rest go back to the last
+-- spot afloat (or BOAT_BACKOFF astern of the obstacle), facing away from what they hit.
+local BEACHED_HEIGHT = 1.5 -- studs over the floating height while on terrain = beached -- tune
+local SUNK_HEIGHT = 5 -- studs under the floating height = sunk -- tune
+local AIR_HEIGHT = 3 -- studs over the floating height with no terrain near = mid-jump -- tune
+local BOAT_BACKOFF = 10 -- studs -- tune
+local GLIDE_RANGE = 80 -- studs: further resets (out of bounds) snap instead of gliding
 local TOW_MIN_LENGTH = 12
 local SCRIPTED_TOW_SLACK = 10 -- extra rope on scripted tows so latency never makes it bind
 
@@ -814,6 +824,7 @@ local function createVehicle(
 		wetUntil = 0,
 		spawnedAt = os.clock(),
 		lastOccupiedAt = nil,
+		recovery = VehicleRecovery.new(),
 	}
 	records[model] = record
 	byPlayer[player] = record
@@ -872,38 +883,102 @@ local function spawnVehicle(
 	return true, model
 end
 
--- Pulls a cheating or broken boat back to its last good spot, server-owned for RESET_HOLD.
-local function resetVehicle(record: Record, reason: string)
+-- Pulls a cheating or broken boat back upright to `target` (default its last good spot): a short
+-- lift-and-settle glide, anchored and server-owned, then RESET_HOLD before the helm gets it back.
+local function resetVehicle(record: Record, reason: string, target: CFrame?)
 	warn(`[VehicleService] reset {record.model.Name}: {reason}`)
 	record.resetting = true
 	record.strikes = 0
+	record.recovery.lastAt = os.clock()
 	local root = record.root
 	setOwner(root, nil)
-	root.AssemblyLinearVelocity = Vector3.zero
-	root.AssemblyAngularVelocity = Vector3.zero
-	local good = record.lastGood
-	record.model:PivotTo(Simulator.restCFrame(record.model, good.X, good.Z, good.LookVector))
-	task.delay(RESET_HOLD, function()
-		record.resetting = false
-		if records[record.model] == record and record.driver then
-			setOwner(root, record.driver)
-			record.lastGood = root.CFrame
+	local good = target or record.lastGood
+	local to = Simulator.restCFrame(record.model, good.X, good.Z, good.LookVector)
+	local function settle()
+		record.model:PivotTo(to)
+		if record.mode ~= "Dock" then
+			root.Anchored = false
 		end
-	end)
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+		task.delay(RESET_HOLD, function()
+			record.resetting = false
+			if records[record.model] == record and record.driver then
+				setOwner(root, record.driver)
+				record.lastGood = root.CFrame
+			end
+		end)
+	end
+	local from = record.model:GetPivot()
+	if (from.Position - to.Position).Magnitude > GLIDE_RANGE then
+		settle()
+	else
+		root.Anchored = true
+		VehicleRecovery.glide(from, to, function(cf)
+			record.model:PivotTo(cf)
+		end, settle)
+	end
+end
+
+local function terrainBelow(position: Vector3, reach: number): boolean
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { Workspace.Terrain }
+	params.IgnoreWater = true
+	return Workspace:Raycast(position, Vector3.new(0, -reach, 0), params) ~= nil
+end
+
+-- Capsized, beached, sunk or pinned for long enough (VehicleRecovery). Returns whether the boat
+-- is in a good state (upright and afloat) for lastGood.
+local function recoverBoat(record: Record, dt: number): boolean
+	local root = record.root
+	local pos = root.Position
+	local look = root.CFrame.LookVector
+	local height = pos.Y - Simulator.restCFrame(record.model, pos.X, pos.Z, look).Y
+	local onTerrain = terrainBelow(pos, record.spec.hullSize.Y + 3)
+	local driven = record.mode == "Driven"
+	local off = (height > BEACHED_HEIGHT and onTerrain) or height < -SUNK_HEIGHT
+	local up = root.CFrame.UpVector.Y
+	local reason = VehicleRecovery.step(record.recovery, dt, os.clock(), {
+		up = up,
+		speed = root.AssemblyLinearVelocity.Magnitude,
+		throttle = if driven then record.seat.ThrottleFloat else 0,
+		grounded = height < AIR_HEIGHT or onTerrain,
+		off = driven and off, -- an empty hull on the beach waits for the wreck sweep
+	})
+	if not reason then
+		return not off and up >= VehicleRecovery.UP_MIN
+	end
+	if reason == "Flipped" and not onTerrain then
+		resetVehicle(record, reason, CFrame.lookAt(pos, pos + look)) -- right it where it floats
+	else
+		local good = record.lastGood.Position
+		local away = Vector3.new(good.X - pos.X, 0, good.Z - pos.Z)
+		if away.Magnitude < 1 then
+			away = -Vector3.new(look.X, 0, look.Z) -- pinned where it was last good: astern of it
+		end
+		away = if away.Magnitude > 1e-3 then away.Unit else Vector3.new(0, 0, 1)
+		local at = good + away * BOAT_BACKOFF
+		resetVehicle(record, reason, CFrame.lookAt(at, at + away))
+	end
+	return false
 end
 
 local function checkVehicle(record: Record, dt: number)
-	if record.mode ~= "Driven" or record.resetting then
+	if record.mode == "Dock" or record.resetting then
 		return
 	end
-	local root = record.root
-	if
-		IS_STUDIO
+	local bypass = IS_STUDIO
 		and (
 			record.model:GetAttribute(BYPASS_ATTRIBUTE) == true
 			or Workspace:GetAttribute(BYPASS_ATTRIBUTE) == true
 		)
-	then
+	local fine = bypass or recoverBoat(record, dt)
+	if record.mode ~= "Driven" or record.resetting then
+		return
+	end
+	local root = record.root
+	if bypass then
 		record.strikes = 0
 		record.lastGood = root.CFrame
 		return
@@ -926,7 +1001,9 @@ local function checkVehicle(record: Record, dt: number)
 		end
 	else
 		record.strikes = 0
-		record.lastGood = root.CFrame
+		if fine then
+			record.lastGood = root.CFrame -- the last spot upright and afloat: where recovery returns
+		end
 	end
 end
 

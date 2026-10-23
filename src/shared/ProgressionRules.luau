@@ -831,7 +831,8 @@ function Rules.migrate(raw: any): PlayerData
 	if type(raw.flags) == "table" then
 		local n = 0
 		for name, value in raw.flags do
-			if Rules.validFlagName(name) and n < MAX_FLAGS then
+			-- "station" was the removed Crew Pay idle-income pot: dropped so it frees its flag slot
+			if name ~= "station" and Rules.validFlagName(name) and n < MAX_FLAGS then
 				local clean = Rules.sanitizeFlag(value)
 				if clean ~= nil then
 					data.flags[name] = clean

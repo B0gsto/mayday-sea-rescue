@@ -6,7 +6,7 @@
 -- bars (speed, people aboard, toughness), the boat's three upgrades (icon, word, coin price, tick once
 -- fitted) and the action row: Spawn when owned, else a Cash button (coin + price, or the rank it needs)
 -- and a Robux button (the vehicle's Game Pass, Roblox's live price).
--- Mouse / touch: tap and swipe; keyboard: Left / Right vehicles, Up / Down tabs; gamepad: L2 / R2
+-- Mouse / touch: round arrows and swipe; keyboard: Left / Right or Q / E vehicles, Up / Down tabs; gamepad: L2 / R2
 -- vehicles, Y tabs, A on the selected button.
 --   Buy with Cash   BuyGear(vehicleId)                   (ProgressionService: rank + Cash)
 --   Buy with Robux  PromptGamePassPurchase(pass id)      (MonetizationService grants Pass_<Key>; the
@@ -95,6 +95,7 @@ type Card = {
 	centre: Vector3,
 	size: Vector3,
 	out: Frame,
+	floor: Frame,
 	main: TextButton,
 	mainLabel: TextLabel,
 	mainBolt: Frame,
@@ -723,17 +724,31 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		grad.Rotation = 90
 		grad.Parent = stage
 		stage.Parent = frame
-		-- a soft floor shadow under the turntable
+		-- a soft floor shadow, kept under the vehicle by the turntable; two faded ellipses for a soft edge
 		local floor = Instance.new("Frame")
 		floor.Name = "Floor"
 		floor.AnchorPoint = Vector2.new(0.5, 0.5)
-		floor.Position = UDim2.fromScale(0.5, 0.78)
-		floor.Size = UDim2.fromScale(0.8, 0.16)
-		floor.BackgroundColor3 = Color3.new(0, 0, 0)
-		floor.BackgroundTransparency = 0.55
-		floor.BorderSizePixel = 0
-		HudTheme.corner(floor, 999)
+		floor.Position = UDim2.fromScale(0.5, 0.62)
+		floor.Size = UDim2.fromScale(0.6, 0.1)
+		floor.BackgroundTransparency = 1
 		floor.Parent = stage
+		for _, k in { 1, 0.55 } do
+			local blob = Instance.new("Frame")
+			blob.AnchorPoint = Vector2.new(0.5, 0.5)
+			blob.Position = UDim2.fromScale(0.5, 0.5)
+			blob.Size = UDim2.fromScale(k, k)
+			blob.BackgroundColor3 = Color3.new(0, 0, 0)
+			blob.BorderSizePixel = 0
+			HudTheme.corner(blob, 999)
+			local fade = Instance.new("UIGradient")
+			fade.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1),
+				NumberSequenceKeypoint.new(0.5, 0.6),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			fade.Parent = blob
+			blob.Parent = floor
+		end
 		local vp = Instance.new("ViewportFrame")
 		vp.Name = "Preview"
 		vp.Size = UDim2.fromScale(1, 1)
@@ -761,6 +776,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			centre = Vector3.zero,
 			size = Vector3.one,
 			out = square(stage, "Out", 28),
+			floor = floor,
 			main = button(actions, "Spawn", C.accent),
 			mainLabel = label(actions, "Label", 24, C.text),
 			mainBolt = bolt(actions, 24),
@@ -803,29 +819,66 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		card.out.ZIndex = 3
 		Glyph.draw("check", card.out, C.ready)
 
-		-- big arrows over the stage edges (mouse users; touch swipes)
+		-- big round arrows over the stage edges (touch also swipes); dimmed at the ends of the list
 		for _, side in { -1, 1 } do
+			local live = if side < 0 then order > 1 else order < count
 			local a = Instance.new("TextButton")
 			a.Name = if side < 0 then "Prev" else "Next"
-			a.AnchorPoint = Vector2.new(if side < 0 then 0 else 1, 0.5)
-			a.Position = UDim2.fromScale(if side < 0 then 0 else 1, 0.5)
-			a.Size = UDim2.fromOffset(44, 64)
-			a.BackgroundTransparency = 1
-			a.Font = HudTheme.HeaderFont
-			a.TextSize = 44
-			a.TextColor3 = C.text
-			a.TextTransparency = 0.2
-			a.Text = if side < 0 then "‹" else "›"
+			a.Text = ""
+			a.AutoButtonColor = false
+			a.Active = live
+			a.AnchorPoint = Vector2.new(0.5, 0.5)
+			a.Position = UDim2.new(if side < 0 then 0 else 1, -side * 30, 0.5, 0)
+			a.Size = UDim2.fromOffset(48, 48)
+			a.BackgroundColor3 = Color3.new(0, 0, 0)
+			a.BackgroundTransparency = if live then 0.45 else 0.8
 			a.ZIndex = 3
-			a.Visible = if side < 0 then order > 1 else order < count
+			HudTheme.corner(a, 999)
+			HudTheme.stroke(a, Color3.new(1, 1, 1), 1.5).Transparency = if live then 0.7 else 0.9
+			-- chevron from two rotated bars (the text "‹" read too thin)
+			for _, half in { -1, 1 } do
+				local bar = Instance.new("Frame")
+				bar.AnchorPoint = Vector2.new(0.5, 0.5)
+				bar.Position = UDim2.new(0.5, -side * 2, 0.5, half * 5.5)
+				bar.Size = UDim2.fromOffset(16, 4)
+				bar.Rotation = -side * half * 45
+				bar.BackgroundColor3 = Color3.new(1, 1, 1)
+				bar.BackgroundTransparency = if live then 0 else 0.7
+				bar.BorderSizePixel = 0
+				bar.ZIndex = 4
+				HudTheme.corner(bar, 2)
+				bar.Parent = a
+			end
 			a.Parent = stage
-			a.Activated:Connect(function()
-				if side < 0 then
-					tab.pages:Previous()
-				else
-					tab.pages:Next()
+			if live then
+				local scale = Instance.new("UIScale")
+				scale.Parent = a
+				local function to(v: number)
+					TweenService
+						:Create(scale, TweenInfo.new(0.12, Enum.EasingStyle.Quad), { Scale = v })
+						:Play()
 				end
-			end)
+				a.MouseEnter:Connect(function()
+					to(1.1)
+				end)
+				a.MouseLeave:Connect(function()
+					to(1)
+				end)
+				a.MouseButton1Down:Connect(function()
+					to(0.88)
+				end)
+				a.MouseButton1Up:Connect(function()
+					to(1)
+				end)
+				a.Activated:Connect(function()
+					pop(a, 0.85)
+					if side < 0 then
+						tab.pages:Previous()
+					else
+						tab.pages:Next()
+					end
+				end)
+			end
 		end
 
 		-- Quick Launch upsell for non-owners: the Roblox pass prompt (MonetizationService grants Pass_)
@@ -1103,6 +1156,12 @@ function VehiclesApp.mount(page: Frame): () -> ()
 					+ math.min(s.X, s.Z) / 2
 				local eye = Vector3.new(math.sin(angle), 0.36, math.cos(angle)).Unit * distance
 				card.camera.CFrame = CFrame.lookAt(card.centre + eye, card.centre)
+				-- park the shadow under the hull: project the bottom centre, size it to the length
+				local depth = distance + s.Y / 2 * eye.Unit.Y
+				local up = card.camera.CFrame.UpVector:Dot(Vector3.new(0, -s.Y / 2, 0) - eye)
+				local w = math.clamp(math.max(s.X, s.Z) / (2 * depth * tanH) * 0.85, 0.25, 0.85)
+				card.floor.Position = UDim2.fromScale(0.5, 0.5 - up / depth / tanV / 2)
+				card.floor.Size = UDim2.fromScale(w, w * 0.22 * px.X / math.max(px.Y, 1))
 			end
 		end)
 	)
@@ -1114,7 +1173,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 				return Enum.ContextActionResult.Pass
 			end
 			local pages = tabs[activeTab].pages
-			if input.KeyCode == Enum.KeyCode.Left or input.KeyCode == Enum.KeyCode.ButtonL2 then
+			local k = input.KeyCode
+			if k == Enum.KeyCode.Left or k == Enum.KeyCode.ButtonL2 or k == Enum.KeyCode.Q then
 				pages:Previous()
 			else
 				pages:Next()
@@ -1126,7 +1186,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		Enum.KeyCode.Left,
 		Enum.KeyCode.Right,
 		Enum.KeyCode.ButtonL2,
-		Enum.KeyCode.ButtonR2
+		Enum.KeyCode.ButtonR2,
+		Enum.KeyCode.Q,
+		Enum.KeyCode.E
 	)
 	ContextActionService:BindActionAtPriority(
 		ACTION_TAB,

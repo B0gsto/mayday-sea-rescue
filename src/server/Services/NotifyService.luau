@@ -38,13 +38,12 @@ local function onLeave(player: Player)
 
 	local now = os.time()
 	local streakFlag = data.flags.streak
-	local stationFlag = data.flags.station
 	local key = tostring(player.UserId)
 	task.spawn(function()
 		local ok, err = pcall(function()
 			store:UpdateAsync(key, function(old: any): any
 				local last = if type(old) == "table" then old.l else 0
-				return NotifyDue.entry(streakFlag, stationFlag, now, last)
+				return NotifyDue.entry(streakFlag, now, last)
 			end)
 		end)
 		if not ok then

@@ -10,7 +10,7 @@ import notify
 
 NOW = 1790000000
 UNIVERSE = 10771468869
-TEMPLATES = {"crate_ready": "id-crate", "strongbox_full": "id-box", "storm_soon": "id-storm"}
+TEMPLATES = {"crate_ready": "id-crate", "storm_soon": "id-storm"}
 
 
 class FakeTransport:
@@ -50,14 +50,10 @@ class NotifyTests(unittest.TestCase):
                 "analytics_data": {"category": "crate_ready"},
             },
         )
-        box = notify.notification_body(UNIVERSE, "id-box", "strongbox_full")
-        self.assertEqual(box["join_experience"]["launch_data"], "panel=strongbox")
-        self.assertEqual(box["analytics_data"]["category"], "strongbox_full")
 
     def test_kind_and_the_one_per_day_cap(self):
         self.assertEqual(notify.kind_for({"c": NOW, "b": NOW, "l": 0}, NOW), "crate_ready")
-        self.assertEqual(notify.kind_for({"c": NOW + 1, "b": NOW, "l": 0}, NOW), "strongbox_full")
-        self.assertIsNone(notify.kind_for({"c": NOW + 1, "b": NOW + 1, "l": 0}, NOW))
+        self.assertIsNone(notify.kind_for({"c": NOW + 1, "b": NOW, "l": 0}, NOW))  # legacy strongbox "b" is ignored
         self.assertTrue(notify.can_send({"c": NOW, "b": NOW, "l": NOW - notify.DAY}, NOW))
         self.assertFalse(notify.can_send({"c": NOW, "b": NOW, "l": NOW - notify.DAY + 1}, NOW))
         self.assertFalse(notify.can_send({"c": NOW, "b": NOW, "l": NOW + 60}, NOW))
@@ -95,7 +91,7 @@ class NotifyTests(unittest.TestCase):
 
     def test_send_is_refused_while_any_template_is_todo(self):
         self.assertEqual(notify.missing_templates(TEMPLATES), [])
-        self.assertEqual(notify.missing_templates({"crate_ready": "TODO", "strongbox_full": "x", "storm_soon": "y"}), ["crate_ready"])
+        self.assertEqual(notify.missing_templates({"crate_ready": "TODO", "storm_soon": "y"}), ["crate_ready"])
         self.assertEqual(notify.missing_templates({}), list(notify.TEMPLATE_KEYS))
 
 

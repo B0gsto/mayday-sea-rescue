@@ -32,7 +32,6 @@ TelemetryNames.Custom = table.freeze({
 	"PetPetted", -- the hold-to-pet action was used (client reports it, once per session)
 	"PetTreated", -- species, bond pips after the treat
 	"StockBuy", -- Chandlery shelf purchase: Gear / Cosmetic, item key
-	"IdleCollect", -- station idle income collected (value = Cash)
 	"SeasonClaim", -- Season Logbook tier claimed (value = tier)
 	"EventJoined", -- GhostLight / GhostShip / FrostFleet, once per event window
 	"LiveEvent", -- a LiveOps event was live while the player was in the server

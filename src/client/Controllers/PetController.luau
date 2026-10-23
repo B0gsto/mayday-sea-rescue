@@ -67,7 +67,6 @@ local petCF: CFrame? = nil
 local petYaw = 0
 local hopT = 0
 local clock = 0
-local ring: Model? = nil
 local adoptingId: number? = nil
 local nextVoice = 0
 
@@ -93,52 +92,8 @@ local VOICE: { [string]: string } = {
 	Turtle = "Pet_Turtle",
 }
 
-local RING_COLOUR = Color3.fromRGB(255, 232, 180)
-local RING_RADIUS = 3.2
-local RING_PARTS = 20
 local PROMPT_RANGE = 7
 local STATION_RANGE = 70 -- studs from the sanctuary centre: "at the station"
-
-local function clearRing()
-	local old = ring
-	ring = nil
-	if old then
-		old:Destroy()
-	end
-end
-
-local function ensureRing(): Model
-	local existing = ring
-	if existing and existing.Parent then
-		return existing
-	end
-	local model = Instance.new("Model")
-	model.Name = "PetRing"
-	for i = 0, RING_PARTS - 1 do
-		local theta = i / RING_PARTS * math.pi * 2
-		local part = Instance.new("Part")
-		part.Name = "Ring"
-		part.Anchored = true
-		part.CanCollide = false
-		part.CanQuery = false
-		part.CanTouch = false
-		part.CastShadow = false
-		part.Material = Enum.Material.Neon
-		part.Color = RING_COLOUR
-		part.Transparency = 0.72
-		part.Size = Vector3.new(0.3, 0.08, 1.1)
-		part.CFrame = CFrame.new(math.cos(theta) * RING_RADIUS, 0, math.sin(theta) * RING_RADIUS)
-			* CFrame.Angles(0, -theta, 0)
-		part.Parent = model
-	end
-	model.Parent = Workspace
-	ring = model
-	return model
-end
-
-local function showRing(x: number, y: number, z: number)
-	ensureRing():PivotTo(CFrame.new(x, y + 0.06, z))
-end
 
 local function awaitChild(parent: Instance, name: string, class: string): Instance?
 	local child = parent:WaitForChild(name, 30)
@@ -441,7 +396,6 @@ local function applyView(next: View)
 			activeModel = nil
 		end
 		activeHearts = {}
-		clearRing()
 		clearZz()
 		petCF = nil
 		trickName = nil
@@ -519,6 +473,13 @@ local function groundY(x: number, z: number): number
 	return if hit then hit.Position.Y else 0
 end
 
+local function heartsShown(model: Model, on: boolean)
+	local gui = model.PrimaryPart and model.PrimaryPart:FindFirstChild("PetHearts")
+	if gui and gui:IsA("BillboardGui") then
+		gui.Enabled = on -- the bond meter floating over a moving car read as clutter
+	end
+end
+
 local function stepBoat()
 	local boat = activeModel
 	if not (boat and active) then
@@ -528,8 +489,10 @@ local function stepBoat()
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	local vehicle = if humanoid then vehicleSeat(humanoid) else nil
 	if not vehicle then
+		heartsShown(boat, true)
 		return
 	end
+	heartsShown(boat, false)
 	-- land vehicles have no deck seat: the pet rides on the rear of the roof / load bed
 	if vehicle:GetAttribute("LandVehicle") == true then
 		local box, size = vehicle:GetBoundingBox()
@@ -539,7 +502,6 @@ local function stepBoat()
 		local spin, lift, roll = trickPose()
 		local cf = base * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll)
 		WildlifeRig.setCFrame(boat, cf)
-		showRing(cf.Position.X, cf.Position.Y, cf.Position.Z)
 		return
 	end
 	-- the recursive anchor lookup walks the whole hull: once per boarding, not per frame
@@ -572,7 +534,6 @@ local function stepBoat()
 	petCF = cf
 	petYaw = yawOf(cf)
 	WildlifeRig.setCFrame(boat, cf)
-	showRing(cf.Position.X, cf.Position.Y, cf.Position.Z)
 end
 
 local function stepLand(dt: number)
@@ -595,7 +556,6 @@ local function stepLand(dt: number)
 		local shown = CFrame.new(cf.Position + Vector3.new(0, math.sin(clock * 1.3) * 0.06, 0))
 			* CFrame.Angles(0, petYaw, math.sin(clock * 1.1) * 0.05)
 		WildlifeRig.setCFrame(boat, shown)
-		showRing(cf.Position.X, cf.Position.Y, cf.Position.Z)
 		return
 	end
 
@@ -613,7 +573,6 @@ local function stepLand(dt: number)
 		hopT = 0
 		local spin, lift, roll = trickPose()
 		WildlifeRig.setCFrame(boat, snapped * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll))
-		showRing(snapped.Position.X, snapped.Position.Y, snapped.Position.Z)
 		return
 	end
 	local delta = target - current.Position
@@ -631,7 +590,6 @@ local function stepLand(dt: number)
 	petCF = walked
 	local spin, lift, roll = trickPose()
 	WildlifeRig.setCFrame(boat, walked * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll))
-	showRing(pos.X, pos.Y, pos.Z)
 end
 
 local function rootOf(): BasePart?

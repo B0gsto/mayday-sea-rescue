@@ -19,8 +19,7 @@
 --   14 FirstDailyCrate       StreakService open
 --   15 Day2Return            DataService.OnLoaded, a later UTC day than flags.lastSessionDay
 -- Economy (currency "Cash"): sources from ProgressionService push() award extras (Award, Cash packs,
---   Starter Kit), sinks from ProgressionService buy()/BuyStock(), StationService upgrade, PetService
---   treats.
+--   Starter Kit), sinks from ProgressionService buy()/BuyStock(), PetService treats.
 -- Custom (LogCustomEvent): the fixed TelemetryNames.Custom list. OpStarted/OpComplete/OpGrade come
 --   from the active-operation poll and OperationService finish (variant rarity in the fields).
 --

@@ -1,7 +1,6 @@
 --!strict
--- CashBurst: coins fly from a world spot into the Cash counter (docs/15 H6). The strongbox
--- collects, the coins arc to the top-right HUD where the wallet lives, and a short +number floats
--- up. Icons and one number only. Client only.
+-- CashBurst: coins fly from a screen point (a debrief pay line) into the Cash counter: they arc to
+-- the top-right HUD where the wallet lives, and a short +number floats up. Icons and one number only. Client only.
 
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
@@ -40,20 +39,6 @@ local function coinAt(parent: Instance, position: Vector2, size: number): Frame
 	return coin
 end
 
--- `from` is the strongbox board in the world; nothing plays when it is off screen.
-function CashBurst.play(playerGui: Instance, from: Vector3, cash: number)
-	local camera = Workspace.CurrentCamera
-	if not camera then
-		return
-	end
-	local point, visible = camera:WorldToViewportPoint(from)
-	if not visible then
-		return
-	end
-	CashBurst.playAt(playerGui, Vector2.new(point.X, point.Y), cash)
-end
-
--- Same burst from a screen point (a debrief's pay line); the coins still land on the HUD counter.
 function CashBurst.playAt(playerGui: Instance, start: Vector2, cash: number, showAmount: boolean?)
 	local camera = Workspace.CurrentCamera
 	if not camera then

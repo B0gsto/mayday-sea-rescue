@@ -13,7 +13,6 @@
 --                        SettingsPanel): their frames are borrowed onto the phone screen
 --   Events               EventBoard.buildPhone rows (EventBoardController pushes them)
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
---   Crew Pay, Pay Rise   StationController.mountPay / mountRise (station pot and workshop)
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
 --                        missing or broken module just leaves its icon out.
@@ -519,9 +518,6 @@ end
 local function radioController(): any
 	return require(Controllers:WaitForChild("RadioController"))
 end
-local function stationController(): any
-	return require(Controllers:WaitForChild("StationController"))
-end
 local function seasonController(): any
 	return require(Controllers:WaitForChild("SeasonController"))
 end
@@ -561,20 +557,6 @@ local function appList(): { App }
 			name = "Season",
 			label = "Season",
 			mount = panelApp("SeasonHud", "SeasonBook", nil, seasonController),
-		},
-		{
-			name = "CrewPay",
-			label = "Crew Pay",
-			mount = function(page: Frame)
-				return stationController().mountPay(page)
-			end,
-		},
-		{
-			name = "PayRise",
-			label = "Pay Rise",
-			mount = function(page: Frame)
-				return stationController().mountRise(page)
-			end,
 		},
 		{
 			name = "Logbook",

@@ -59,7 +59,6 @@ Targets (docs/15 §3): 95% finish the cold open, 70% reach minute 10, 50% come b
 | PetPetted | 1 | none | Is the hold-to-pet interaction used (client-reported)? |
 | PetTreated | 1 | species, bond pips | Is the treat/bond loop used? |
 | StockBuy | 1 | Gear/Cosmetic, item key | What rotating stock sells? |
-| IdleCollect | Cash | none | Is the away-income pot worth returning for? |
 | SeasonClaim | tier | none | How far through the 30-tier track do players get? |
 | EventJoined | 1 | GhostLight/GhostShip/FrostFleet | Do the timed events bring players in? |
 | LiveEvent | 1 | event id | How many players see each LiveOps event? |

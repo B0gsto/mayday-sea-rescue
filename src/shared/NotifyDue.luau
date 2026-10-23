@@ -6,17 +6,13 @@
 --
 -- Entry shape (JSON in the `NotifyDue` DataStore, key = userId):
 --   c = UTC second the next daily crate is ready (StreakRules)
---   b = UTC second the station strongbox is full (IdleIncome)
 --   l = UTC second we last sent them a notification (updated by the sender)
---
--- The sender picks the crate first when both are due: it repeats daily, while a full strongbox
--- stays due forever and would otherwise starve the crate.
+-- Older entries may still carry `b` (the removed station strongbox); the sender ignores it.
 
-local IdleIncome = require(script.Parent.IdleIncome)
 local StreakRules = require(script.Parent.StreakRules)
 
-export type Entry = { c: number, b: number, l: number }
-export type Kind = "crate_ready" | "strongbox_full"
+export type Entry = { c: number, l: number }
+export type Kind = "crate_ready"
 
 local DAY = 86400
 
@@ -24,7 +20,7 @@ local NotifyDue = {}
 
 NotifyDue.STORE = "NotifyDue"
 NotifyDue.COOLDOWN = DAY
-NotifyDue.KINDS = table.freeze({ "crate_ready", "strongbox_full" })
+NotifyDue.KINDS = table.freeze({ "crate_ready" })
 
 -- Ready now when today's crate is unclaimed, else the next UTC midnight.
 function NotifyDue.nextCrateAt(streakFlag: any, now: number): number
@@ -34,29 +30,16 @@ function NotifyDue.nextCrateAt(streakFlag: any, now: number): number
 	return (StreakRules.dayIndex(now) + 1) * DAY
 end
 
--- A full pot is due now; otherwise when IdleIncome says it fills.
-function NotifyDue.strongboxAt(stationFlag: any, now: number): number
-	local levels, pot = IdleIncome.fromFlag(stationFlag)
-	return math.floor(now + IdleIncome.preview(pot, levels, now).secondsToFull)
-end
-
-function NotifyDue.entry(streakFlag: any, stationFlag: any, now: number, lastAt: any): Entry
+function NotifyDue.entry(streakFlag: any, now: number, lastAt: any): Entry
 	return {
 		c = NotifyDue.nextCrateAt(streakFlag, now),
-		b = NotifyDue.strongboxAt(stationFlag, now),
 		l = math.max(0, math.floor(tonumber(lastAt) or 0)),
 	}
 end
 
--- Which message a due entry should get; nil when neither is due.
+-- Which message a due entry should get; nil when nothing is due.
 function NotifyDue.kindFor(entry: Entry, now: number): Kind?
-	if entry.c <= now then
-		return "crate_ready"
-	end
-	if entry.b <= now then
-		return "strongbox_full"
-	end
-	return nil
+	return if entry.c <= now then "crate_ready" else nil
 end
 
 -- At most one notification per player per 24 h (the fair-rules cap).

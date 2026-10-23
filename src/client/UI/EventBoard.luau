@@ -32,7 +32,6 @@ local ROWS: { { id: string, icon: EventCalendar.Icon } } = {
 	{ id = "Season", icon = "book" },
 	{ id = "Restock", icon = "bell" },
 	{ id = "Crate", icon = "crate" },
-	{ id = "Strongbox", icon = "strongbox" },
 }
 
 local EventBoard = {}
@@ -131,7 +130,6 @@ local TINT: { [string]: Color3 } = {
 	book = Color3.fromRGB(92, 66, 40),
 	bell = Color3.fromRGB(44, 62, 104),
 	crate = Color3.fromRGB(52, 86, 58),
-	strongbox = Color3.fromRGB(84, 58, 44),
 }
 
 function EventBoard.buildPhone(parent: Instance): Board
@@ -265,7 +263,6 @@ function EventBoard.buildPhone(parent: Instance): Board
 				local main, sub = EventCalendar.text(row)
 				local now = row.kind == "now"
 				local urgent = row.kind == "clock" and (row.seconds or 0) <= 120
-				local full = row.kind == "percent" and (row.fraction or 0) >= 0.999
 				card.pill.Visible = now
 				card.value.Visible = not now
 				card.pill.BackgroundColor3 = if row.ready == true
@@ -274,7 +271,7 @@ function EventBoard.buildPhone(parent: Instance): Board
 					else GOLD
 				card.pillText.Text = if row.ready == true then "✓" else "Now"
 				card.value.Text = main
-				card.value.TextColor3 = if urgent then HOT elseif full then READY else GOLD
+				card.value.TextColor3 = if urgent then HOT else GOLD
 				card.sub.Text = sub or ""
 				card.stroke.Enabled = now or urgent
 				card.stroke.Color = if row.ready == true then READY else HOT

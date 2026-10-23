@@ -8,8 +8,6 @@ return function(t)
 	local ChallengeConfig = t.load("src/shared/Config/ChallengeConfig.luau")
 	local ChallengeRules = t.load("src/shared/ChallengeRules.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
-	local StationConfig = t.load("src/shared/Config/StationConfig.luau")
-	local IdleIncome = t.load("src/shared/IdleIncome.luau")
 	local SeasonConfig = t.load("src/shared/Config/Season.luau")
 	local SeasonRules = t.load("src/shared/SeasonRules.luau")
 	local StockConfig = t.load("src/shared/Config/StockConfig.luau")
@@ -91,8 +89,6 @@ return function(t)
 		local tiersClaimed = 0
 		local streak = StreakRules.newState()
 		local albumState = Album.newState()
-		local pot = { lastAt = 0, cash = 0 }
-		local levels = IdleIncome.newLevels()
 		local gear = { EngineTune = 0 }
 		local owned = {}
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
@@ -222,19 +218,6 @@ return function(t)
 					if nextLevel == 1 then
 						mark("First gear level")
 					end
-				end
-			end
-			-- Station workshop: a late-game Cash sink that raises the idle pot (docs/15 H6).
-			if
-				not legacy
-				and owned.RescueHelicopter
-				and levels.workshop < StationConfig.MaxLevel
-			then
-				local cost = StationConfig.UpgradeCost[levels.workshop + 1]
-				if data.cash >= cost then
-					data.cash -= cost
-					levels.workshop += 1
-					mark("Workshop " .. levels.workshop)
 				end
 			end
 		end
@@ -434,15 +417,6 @@ return function(t)
 				)
 				local now = SeasonConfig.startUtc + (d - 1) * 86400 + startMinute * 60
 
-				if not legacy then
-					-- Station crew pot (docs/15 H6): collected at the start of every session.
-					local claim = IdleIncome.claim(pot, levels, now)
-					pot = claim.pot
-					if claim.cash > 0 then
-						award(claim.cash, 0, now, false, isGreat(now))
-					end
-				end
-
 				local remaining = SESSION_MIN
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
@@ -594,7 +568,7 @@ return function(t)
 	local before = run(0, true)
 	local solo = run(0)
 	local friend = run(1)
-	report(before, "before (no station, streak, season, album, Great Storm)")
+	report(before, "before (no streak, season, album, Great Storm)")
 	report(solo, "after, solo")
 	report(friend, "after, one friend")
 

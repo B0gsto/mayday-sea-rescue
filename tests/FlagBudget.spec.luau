@@ -9,7 +9,6 @@ return function(t)
 	local SeasonRules = t.load("src/shared/SeasonRules.luau")
 	local SeasonalRules = t.load("src/shared/SeasonalRules.luau")
 	local SeasonalEvents = t.load("src/shared/Config/SeasonalEvents.luau")
-	local IdleIncome = t.load("src/shared/IdleIncome.luau")
 	local PetRules = t.load("src/shared/PetRules.luau")
 	local StockConfig = t.load("src/shared/Config/StockConfig.luau")
 	local PlatformPrompts = t.load("src/shared/PlatformPrompts.luau")
@@ -61,10 +60,6 @@ return function(t)
 				seen = 3,
 			}),
 			halloween = SeasonalRules.flagTable(halloween),
-			station = IdleIncome.toFlag(
-				{ workshop = 5, radio = 5, kennel = 5 },
-				{ lastAt = NOW, cash = 50000 }
-			),
 			pets = PetRules.encode(pets),
 			lighthouses = { HarbourLight = true, SkerryLight = true },
 			stock = stock,
@@ -77,6 +72,14 @@ return function(t)
 			),
 		}
 	end
+
+	t.test("the removed station pot flag is dropped on load, the rest kept", function()
+		local raw = Rules.defaultData()
+		raw.flags = { station = { lv = 1, at = NOW, c = 500 }, notifyOptIn = true }
+		local saved = Rules.migrate(raw)
+		t.expect(saved.flags.station).toBeNil()
+		t.expect(saved.flags.notifyOptIn).toBe(true)
+	end)
 
 	t.test("each system's fullest flag round-trips through the save sanitiser", function()
 		local flags = full()
