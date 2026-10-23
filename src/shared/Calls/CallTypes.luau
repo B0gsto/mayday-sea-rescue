@@ -301,7 +301,15 @@ CallTypes.SpawnZones = {
 
 -- Water areas (studs) used to reject spawn points on land, the dock or the breakwater.
 CallTypes.Areas = {
-	Inside = { minX = -290, maxX = 290, minZ = 30, maxZ = 340 },
+	-- elbow: the breakwaters dog-leg from the knee (x +-320, z kneeZ) to the head (x +-headX, z 360)
+	-- (Harbour.BREAKWATER); points within `clear` studs of that leg's centreline, or seaward of it, are not inside
+	Inside = {
+		minX = -290,
+		maxX = 290,
+		minZ = 30,
+		maxZ = 340,
+		elbow = { x = 320, kneeZ = 250, headX = 140, far = 360, clear = 20 },
+	},
 	DockKeepOut = { minX = -145, maxX = -75, maxZ = 125 }, -- dock, bays and drop-off pad
 	OutsideMinZ = 392, -- breakwater heads end at z = 368
 	MapMargin = 120, -- stay this far inside GameConfig.MapRadius

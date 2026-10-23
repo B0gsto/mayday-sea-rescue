@@ -1,14 +1,16 @@
 --!strict
--- RoadsShore (I2c): places the road furniture (crash barriers, field gates, dry-stone walls, Cornish hedges, signs)
--- and the shore dressing (rock pools, intertidal wrack, eelgrass) and the far island proxies at run time.
+-- RoadsShore (I2c): places the road furniture (crash barriers, field gates, dry-stone walls, Cornish hedges, signs),
+-- the hedged field boundaries off the country roads and the shore dressing (rock pools, intertidal wrack, eelgrass)
+-- at run time. (The far-island proxy kit is gone: its Skerry Isle stood as a non-colliding loaf in Calm Bay at
+-- (731, 704); the bake now builds Skerry Isle where it belongs.)
 -- WorldDressingService calls RoadsShore.place(Workspace.Dressing) once at server start; the layout maths is pure
 -- (RoadsShoreLayout, tests/RoadsShore.spec.luau).
 --
 -- Everything is snapped to the Terrain with raycasts (the road ribbons are meshes; the verge is Terrain). One Atomic
 -- model per piece under Workspace.Dressing.RoadsShore, so streaming and LODs stay local. A piece whose asset or
 -- ground is missing is skipped with a warning: there is no greybox to keep for these props.
--- Folder attributes when done: RoadsShoreBarriers, Walls, Hedges, Gates, Signs, RockPools, Wrack, Eelgrass,
--- Islands.
+-- Folder attributes when done: RoadsShoreBarriers, Walls, Hedges, Fields, Gates, Signs, RockPools, Wrack,
+-- Eelgrass.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -18,6 +20,7 @@ local AssetIds = require(
 ) :: any
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Layout = require(script.Parent:WaitForChild("RoadsShoreLayout"))
+local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local WorldConfig = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("WorldConfig")
 )
@@ -67,6 +70,38 @@ local HEDGE_RUNS = {
 local HEDGE_PIECE = 5
 local HEDGE_HALF = HEDGE_PIECE / 2
 
+-- Field boundaries (docs/17 P1 9): hedge lines running inland off the country roads every `every` studs and a back
+-- hedge `depth` out closing the fields. A piece goes only on open field ground (grass / moor, away from every road
+-- and the town), so a line stops at a cliff, beach, yard or road and the back hedge leaves gaps there.
+local FIELDS = {
+	{ road = "HighRoad", from = 40, to = 1500, side = 1, offset = 17, depth = 110, every = 135 },
+	{ road = "HighRoad", from = 40, to = 1500, side = -1, offset = 17, depth = 95, every = 160 },
+	{
+		road = "CoastRoadEast",
+		from = 60,
+		to = 470,
+		side = -1,
+		offset = 24,
+		depth = 100,
+		every = 125,
+	},
+	{
+		road = "CoastRoadWest",
+		from = 20,
+		to = 290,
+		side = 1,
+		offset = 22,
+		depth = 100,
+		every = 120,
+	},
+}
+local FIELD_GROUND = {
+	[Enum.Material.Grass] = true,
+	[Enum.Material.LeafyGrass] = true,
+	[Enum.Material.Ground] = true,
+}
+local TOWN_RECT = { -600, -500, 620, 20 } -- x0, z0, x1, z1: Port Haven and its quay
+
 -- Seaward cliff-edge barriers on Haven Head, plus the outside of the sharper bends on the Coast and High roads.
 local BARRIER_RUNS = {
 	{ road = "HavenHeadTrack", from = 40, to = 220, side = 1 },
@@ -82,23 +117,23 @@ local SIGNS = {
 	{ name = "CliffWarning", road = "HavenHeadTrack", s = 300, side = 1, offset = 11 },
 }
 
--- Haven Sands rock pools (WorldConfig POI) and the two rocky flanks of Harbour Cove.
+-- Haven Sands rock pools round the WorldConfig POI, on the basalt ledges at the foot of Haven Head. Only the
+-- intertidal ones are placed (ground within POOL_BAND of the sea): a pool under 10 studs of water or high on dry rock
+-- read as a dark stain, and Harbour Cove's two were both under water. CoastArtLayout.Ledges dress the ledges.
 local POOL_OFFSETS = {
 	{ 0, 0, 0 },
 	{ -34, 26, 1.1 },
 	{ 36, -18, 2.2 },
+	{ -12, -26, 2.9 },
+	{ 18, 22, 4.1 },
+	{ -40, -8, 5.0 },
 }
-local COVE_POOLS = {
-	{ x = 330, z = 60, yaw = 0.6 },
-	{ x = 180, z = 60, yaw = 2.0 },
-}
+local POOL_BAND = { -4, 3 }
 
 -- Intertidal wrack on the rocks round the pools and the cove.
 local WRACK_SPOTS = {
 	{ x = 1440, z = 700, r = 55, n = 32, seed = 41 },
 	{ x = 1520, z = 760, r = 38, n = 24, seed = 57 },
-	{ x = 330, z = 65, r = 40, n = 24, seed = 73 },
-	{ x = 180, z = 65, r = 36, n = 20, seed = 91 },
 }
 local WRACK_MATS = { "Bladder_01", "Bladder_02", "Egg_01", "Decal_01" }
 local EELGRASS_COUNT = 60
@@ -149,7 +184,7 @@ end
 local function place(
 	asset: string,
 	cf: CFrame,
-	folder: Folder,
+	folder: Instance,
 	name: string,
 	collide: boolean?
 ): Model?
@@ -230,27 +265,121 @@ local function gates(folder: Folder): number
 	return n
 end
 
--- Hedge modules follow the road height at both ends (the bank pitches along its length, so it neither floats nor
--- steps on the climbs) and butt on their 5 m snap.
+-- Hedge modules follow the ground height at both ends (the bank pitches along its length, so it neither floats nor
+-- steps on the climbs) and butt on their 5 m snap. `field`: only on open field ground, else nothing is placed.
+local function hedgePiece(
+	spot: Layout.Spot,
+	folder: Instance,
+	name: string,
+	field: boolean?
+): boolean
+	local axis = Vector3.new(math.cos(spot.yaw), 0, -math.sin(spot.yaw))
+	local a = spot.pos - axis * HEDGE_HALF
+	local b = spot.pos + axis * HEDGE_HALF
+	local ha = Workspace:Raycast(Vector3.new(a.X, 400, a.Z), Vector3.new(0, -800, 0), rayParams)
+	local hb = Workspace:Raycast(Vector3.new(b.X, 400, b.Z), Vector3.new(0, -800, 0), rayParams)
+	if not (ha and hb) then
+		return false
+	end
+	local ya, yb = ha.Position.Y, hb.Position.Y
+	if
+		field
+		and not (FIELD_GROUND[ha.Material] and FIELD_GROUND[hb.Material] and math.abs(yb - ya) < 3)
+	then
+		return false
+	end
+	local roll = math.atan2(yb - ya, HEDGE_PIECE)
+	local cf = CFrame.new(spot.pos.X, (ya + yb) / 2 + 0.02, spot.pos.Z)
+		* CFrame.Angles(0, spot.yaw, 0)
+		* CFrame.Angles(0, 0, roll)
+	return place("M_Road_CornishHedge", cf, folder, name) ~= nil
+end
+
 local function hedges(folder: Folder): number
 	local n = 0
 	for i, spec in HEDGE_RUNS do
 		local pts = ROADS[spec.road]
 		if pts then
 			for k, spot in Layout.run(pts, spec.from, spec.to, spec.side, spec.offset, HEDGE_PIECE) do
-				local axis = Vector3.new(math.cos(spot.yaw), 0, -math.sin(spot.yaw))
-				local a = spot.pos - axis * HEDGE_HALF
-				local b = spot.pos + axis * HEDGE_HALF
-				local ya = groundY(a.X, a.Z)
-				local yb = groundY(b.X, b.Z)
-				if ya and yb then
-					local roll = math.atan2(yb - ya, HEDGE_PIECE)
-					local cf = CFrame.new(spot.pos.X, (ya + yb) / 2 + 0.02, spot.pos.Z)
-						* CFrame.Angles(0, spot.yaw, 0)
-						* CFrame.Angles(0, 0, roll)
-					if place("M_Road_CornishHedge", cf, folder, `Hedge_{i}_{k}`) then
+				if hedgePiece(spot, folder, `Hedge_{i}_{k}`) then
+					n += 1
+				end
+			end
+		end
+	end
+	return n
+end
+
+-- every road centreline sampled every 8 studs, for the field hedges' keep-off test
+local roadSamples: { { pos: Vector3, clear: number } }? = nil
+local function nearRoad(p: Vector3): boolean
+	if not roadSamples then
+		local list = {}
+		for id, pts in ROADS do
+			for _, sm in StreetLayout.walk(pts, 8) do
+				table.insert(
+					list,
+					{ pos = Vector3.new(sm.pos.X, 0, sm.pos.Z), clear = WIDTHS[id] / 2 + 6 }
+				)
+			end
+		end
+		roadSamples = list
+	end
+	for _, r in roadSamples :: { { pos: Vector3, clear: number } } do
+		local dx, dz = p.X - r.pos.X, p.Z - r.pos.Z
+		if dx * dx + dz * dz < r.clear * r.clear then
+			return true
+		end
+	end
+	return false
+end
+
+local function openField(spot: Layout.Spot): boolean
+	local p = spot.pos
+	local t = TOWN_RECT
+	return not (p.X > t[1] and p.X < t[3] and p.Z > t[2] and p.Z < t[4]) and not nearRoad(p)
+end
+
+-- one Atomic model per field line (a hedge line is seen whole), so the 5 m modules stream together
+local function fields(folder: Folder): number
+	local n = 0
+	for i, spec in FIELDS do
+		local pts = ROADS[spec.road]
+		if pts then
+			local lines = Layout.fieldLines(
+				pts,
+				spec.from,
+				spec.to,
+				spec.side,
+				spec.offset,
+				spec.depth,
+				spec.every,
+				HEDGE_PIECE
+			)
+			table.insert(
+				lines,
+				Layout.run(
+					pts,
+					spec.from,
+					spec.to,
+					spec.side,
+					spec.offset + spec.depth,
+					HEDGE_PIECE
+				)
+			)
+			for j, line in lines do
+				local holder = atomic(`Field_{i}_{j}`, folder)
+				local back = j == #lines
+				for k, spot in line do
+					local ok = openField(spot) and hedgePiece(spot, holder, `Hedge_{k}`, true)
+					if ok then
 						n += 1
+					elseif not back then
+						break -- a field line ends where the field does
 					end
+				end
+				if #holder:GetChildren() == 0 then
+					holder:Destroy()
 				end
 			end
 		end
@@ -303,18 +432,15 @@ local function rockPools(folder: Folder): number
 			)
 		end
 	end
-	for _, p in COVE_POOLS do
-		table.insert(placements, p)
-	end
+	local sea = Workspace:GetAttribute("SeaLevel")
+	local seaY = if type(sea) == "number" then sea else WorldConfig.SeaLevel
 	for i, p in placements do
 		local y = groundY(p.x, p.z)
-		if y then
+		if y and y >= seaY + POOL_BAND[1] and y <= seaY + POOL_BAND[2] then
 			local cf = CFrame.new(p.x, y - 0.35, p.z) * CFrame.Angles(0, p.yaw, 0)
 			if place("M_Rock_RockPool_Kit", cf, folder, `Pool_{i}`, true) then
 				n += 1
 			end
-		else
-			warn(`[RoadsShore] rock pool {i}: no ground at {p.x}, {p.z}`)
 		end
 	end
 	return n
@@ -368,28 +494,6 @@ local function eelgrass(folder: Folder): number
 	return n
 end
 
-local function islands(folder: Folder): number
-	-- Authored in world space (M_Rock_IslandProxy_Kit.placements.json): the kit sits at the map origin, 1 stud low
-	-- so the streamed Terrain covers it. LOD1: these are 2 to 4 km out.
-	local m = AssetLoader.cloneStatic("M_Rock_IslandProxy_Kit", "LOD1", false)
-	if not m then
-		warn("[RoadsShore] M_Rock_IslandProxy_Kit did not load")
-		return 0
-	end
-	m:PivotTo(CFrame.identity)
-	-- Great Gale's proxy stood over the baked town (Eastgate's flat tan plane: the platform is cut below it) and
-	-- squared off the map edge; the bake now closes the island's coast inside the window, so drop it
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") and string.find(d.Name, "GreatGale", 1, true) then
-			d:Destroy()
-		end
-	end
-	local holder = atomic("Islands", folder)
-	m.Parent = holder
-	holder.WorldPivot = CFrame.identity
-	return 1
-end
-
 local function try(name: string, fn: (Folder) -> number, folder: Folder): number
 	local ok, n = pcall(fn, folder)
 	if not ok then
@@ -408,12 +512,12 @@ function RoadsShore.place(base: Instance)
 		Barriers = category(folder, "Barriers"),
 		Walls = category(folder, "Walls"),
 		Hedges = category(folder, "Hedges"),
+		Fields = category(folder, "Fields"),
 		Gates = category(folder, "Gates"),
 		Signs = category(folder, "Signs"),
 		RockPools = category(folder, "RockPools"),
 		Wrack = category(folder, "Wrack"),
 		Eelgrass = category(folder, "Eelgrass"),
-		Islands = category(folder, "Islands"),
 	}
 	for _, asset in
 		{
@@ -429,29 +533,28 @@ function RoadsShore.place(base: Instance)
 	do
 		task.spawn(AssetLoader.getTemplate, asset, "LOD0")
 	end
-	task.spawn(AssetLoader.getTemplate, "M_Rock_IslandProxy_Kit", "LOD1")
 	local counts = {
 		Barriers = try("barriers", barriers, sections.Barriers),
 		Walls = try("walls", walls, sections.Walls),
 		Hedges = try("hedges", hedges, sections.Hedges),
+		Fields = try("field hedges", fields, sections.Fields),
 		Gates = try("gates", gates, sections.Gates),
 		Signs = try("signs", signs, sections.Signs),
 		RockPools = try("rock pools", rockPools, sections.RockPools),
 		Wrack = try("wrack", wrack, sections.Wrack),
 		Eelgrass = try("eelgrass", eelgrass, sections.Eelgrass),
-		Islands = try("islands", islands, sections.Islands),
 	}
 	folder:SetAttribute("RoadsShoreBarriers", counts.Barriers)
 	folder:SetAttribute("RoadsShoreWalls", counts.Walls)
 	folder:SetAttribute("RoadsShoreHedges", counts.Hedges)
+	folder:SetAttribute("RoadsShoreFields", counts.Fields)
 	folder:SetAttribute("RoadsShoreGates", counts.Gates)
 	folder:SetAttribute("RoadsShoreSigns", counts.Signs)
 	folder:SetAttribute("RoadsShoreRockPools", counts.RockPools)
 	folder:SetAttribute("RoadsShoreWrack", counts.Wrack)
 	folder:SetAttribute("RoadsShoreEelgrass", counts.Eelgrass)
-	folder:SetAttribute("RoadsShoreIslands", counts.Islands)
 	print(
-		`[RoadsShore] {counts.Barriers} barriers, {counts.Walls} walls, {counts.Hedges} hedge modules, {counts.Gates} gates, {counts.Signs} signs, {counts.RockPools} pools, {counts.Wrack} wrack, {counts.Eelgrass} eelgrass, {counts.Islands} islands`
+		`[RoadsShore] {counts.Barriers} barriers, {counts.Walls} walls, {counts.Hedges} hedge modules, {counts.Fields} field hedge modules, {counts.Gates} gates, {counts.Signs} signs, {counts.RockPools} pools, {counts.Wrack} wrack, {counts.Eelgrass} eelgrass`
 	)
 end
 

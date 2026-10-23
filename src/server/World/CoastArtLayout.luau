@@ -33,6 +33,18 @@ CoastArtLayout.Ledges = {
 	{ asset = "M_Rock_Ledge_04", x = 1380, z = 760, yaw = 0.6, sink = 0.35 },
 	{ asset = "M_Rock_Ledge_04", x = 1872, z = 1040, yaw = -0.4, sink = 0.35 },
 	{ asset = "M_Rock_Ledge_04", x = 2300, z = 680, yaw = 0.9, sink = 0.35 },
+	-- Haven Sands (docs/17 P1 12): raised ledges over the dark basalt round the rock pools (1440, 700), which read as
+	-- an oil stain on the bright sand, and a low-tide reef at the waterline in front of the lifeguard tower
+	{ asset = "M_Rock_Ledge_01", x = 1428, z = 690, yaw = 0.3, sink = 0.6 },
+	{ asset = "M_Rock_Ledge_02", x = 1456, z = 672, yaw = 1.9, sink = 0.6 },
+	{ asset = "M_Rock_Ledge_03", x = 1410, z = 708, yaw = 2.6, sink = 0.6 },
+	{ asset = "M_Rock_Boulder_02", x = 1468, z = 694, yaw = 0.8, sink = 0.5 },
+	{ asset = "M_Rock_Boulder_05", x = 1442, z = 716, yaw = 2.2, sink = 0.5 },
+	{ asset = "M_Rock_Ledge_02", x = 968, z = 486, yaw = 0.7, sink = 1.2, scale = 2.2 },
+	{ asset = "M_Rock_Ledge_01", x = 1012, z = 476, yaw = 2.4, sink = 1.2, scale = 2.4 },
+	{ asset = "M_Rock_Ledge_03", x = 1052, z = 496, yaw = 1.2, sink = 1.2, scale = 2 },
+	{ asset = "M_Rock_Boulder_01", x = 990, z = 462, yaw = 0.2, sink = 0.5, scale = 1.6 },
+	{ asset = "M_Rock_Boulder_04", x = 1034, z = 464, yaw = 1.6, sink = 0.5, scale = 1.4 },
 }
 
 -- bed: WorldConfig.KelpBeds id; inner: keep the plants off the very centre where the scatter starts.

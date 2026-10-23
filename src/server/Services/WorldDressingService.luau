@@ -565,7 +565,17 @@ function WorldDressingService.Start()
 	end
 	task.spawn(Street.start)
 	-- I2 ship batches: each owns one module in World/ with place(base); absent modules are skipped
-	for _, name in { "Town", "TownExtras", "RoadsShore", "CoastArt", "SeabedLife", "SkerryLight" } do
+	for _, name in
+		{
+			"Town",
+			"TownExtras",
+			"RoadsShore",
+			"CoastArt",
+			"SeabedLife",
+			"SkerryLight",
+			"StationYard",
+		}
+	do
 		local mod = script.Parent.Parent.World:FindFirstChild(name)
 		if mod then
 			task.spawn((require :: any)(mod).place, base)

@@ -200,7 +200,7 @@ local function seaplane(folder: Folder): number
 end
 
 local function rocks(
-	spots: { { asset: string, x: number, z: number, yaw: number, sink: number } },
+	spots: { any }, -- CoastArtLayout.Cliffs / Ledges: asset, x, z, yaw, sink, scale?
 	folder: Folder,
 	prefix: string
 ): number
@@ -209,7 +209,12 @@ local function rocks(
 		local y = groundY(s.x, s.z)
 		if y then
 			local cf = CFrame.new(s.x, y - s.sink, s.z) * CFrame.Angles(0, s.yaw, 0)
-			if placeModel(s.asset, cf, folder, `{prefix}_{n + 1}`, true) then
+			local holder = placeModel(s.asset, cf, folder, `{prefix}_{n + 1}`, true)
+			if holder then
+				local scale = s.scale -- optional (the Haven Sands reef)
+				if scale then
+					holder:ScaleTo(scale) -- about the pivot on the ground
+				end
 				n += 1
 			end
 		else

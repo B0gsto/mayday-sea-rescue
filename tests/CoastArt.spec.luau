@@ -12,9 +12,9 @@ return function(t)
 		t.expect(Layout.Seaplane.poi).toBe("MailSeaplane")
 	end)
 
-	t.test("three cliffs and three ledges, each asset named and sunk", function()
+	t.test("three cliffs and the ledges, each asset named and sunk", function()
 		t.expect(#Layout.Cliffs).toBe(3)
-		t.expect(#Layout.Ledges).toBe(3)
+		t.expect(#Layout.Ledges >= 3).toBe(true)
 		for _, list in { Layout.Cliffs, Layout.Ledges } do
 			for _, s in list do
 				t.expect(string.sub(s.asset, 1, 7) == "M_Rock_").toBe(true)

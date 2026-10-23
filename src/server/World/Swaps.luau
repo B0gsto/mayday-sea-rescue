@@ -197,6 +197,7 @@ local Swaps: { [string]: Swap } = {
 		hide = true,
 		pivot = CFrame.new(-165, LAND, 4) * CFrame.Angles(0, math.pi, 0),
 		shell = { "M_Bld_Slipway" },
+		rig = "SharedSetsRig", -- ramp, weedy toe, walls and rock armour: tinted, not plain white
 		collide = false, -- the hull is one mesh (ramp prism + walls + winch house): boxes below instead
 		colliders = slipwayWalls({
 			{ -1.5, 4.0, 0, 1.5, 7.0, 3.1 }, -- winch house (behind the head, on the quay)
