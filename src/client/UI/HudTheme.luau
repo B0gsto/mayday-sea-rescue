@@ -240,6 +240,70 @@ function HudTheme.outline(label: TextLabel): TextLabel
 	return label
 end
 
+-- An iOS segmented control in the HUD colours: a dark track, an orange thumb that slides to the picked segment. Each segment
+-- is a TextButton (touch, mouse, gamepad A). set(i) moves the thumb (no callback); the caller wires
+-- onPick, which runs on a tap.
+function HudTheme.segmented(
+	parent: Instance,
+	labels: { string },
+	height: number,
+	onPick: (index: number) -> ()
+): (Frame, { TextButton }, (index: number) -> ())
+	local C = HudTheme.Colors
+	local track = Instance.new("Frame")
+	track.Name = "Segments"
+	track.Size = UDim2.new(1, 0, 0, height)
+	track.BackgroundColor3 = C.panel
+	track.BackgroundTransparency = 0.2
+	track.BorderSizePixel = 0
+	HudTheme.corner(track, 9)
+	HudTheme.padding(track, 2)
+	track.Parent = parent
+	local n = #labels
+	local thumb = Instance.new("Frame")
+	thumb.Name = "Thumb"
+	thumb.Size = UDim2.fromScale(1 / n, 1)
+	thumb.BackgroundColor3 = C.accent
+	thumb.BorderSizePixel = 0
+	HudTheme.corner(thumb, 7)
+	thumb.Parent = track
+	local buttons: { TextButton } = {}
+	for i, text in labels do
+		local b = Instance.new("TextButton")
+		b.Name = text
+		b.Text = text
+		b.Font = Enum.Font.BuilderSansBold
+		b.TextSize = 17 -- fixed: three ~90 du segments fit "Jet Skis" / "Day Pass" at 17
+		b.TextColor3 = C.text
+		b.AutoButtonColor = false
+		b.BackgroundTransparency = 1
+		b.Position = UDim2.fromScale((i - 1) / n, 0)
+		b.Size = UDim2.fromScale(1 / n, 1)
+		b.ZIndex = 2
+		b.Parent = track
+		HudTheme.corner(b, 7)
+		b.Activated:Connect(function()
+			onPick(i)
+		end)
+		buttons[i] = b
+	end
+	local first = true
+	local function set(index: number)
+		local at = UDim2.fromScale((index - 1) / n, 0)
+		if first then
+			thumb.Position, first = at, false
+		else
+			game:GetService("TweenService")
+				:Create(thumb, TweenInfo.new(0.22, Enum.EasingStyle.Quint), { Position = at })
+				:Play()
+		end
+		for i, b in buttons do
+			b.TextColor3 = if i == index then C.text else C.textDim
+		end
+	end
+	return track, buttons, set
+end
+
 -- 12345 -> "12,345"
 function HudTheme.formatNumber(n: number): string
 	local s = tostring(math.floor(n))

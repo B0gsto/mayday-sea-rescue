@@ -1,6 +1,6 @@
 --!strict
 -- StoreApp: the phone's Store (user 2026-10-21: "an actual store for passes, day passes + developer
--- products"). Three tabs, Passes / Day Passes / Items (ProductShelves.storeItems), over a two-column grid
+-- products"). A segmented control, Passes / Day Passes / Items (ProductShelves.storeItems), over a two-column grid
 -- of navy HUD cards (Hud.Panel skin): big icon, white name, an orange price chip with the live Roblox price (GetProductInfo, never the config number), a tick once
 -- a pass is owned, a clock chip while a day pass runs, the exact Cash on a Cash pack. Tapping a card opens
 -- the Roblox purchase prompt, gated like the world cards by ProductShelves.cardState / mayPrompt (offered
@@ -31,7 +31,7 @@ local studio = RunService:IsStudio()
 local ACTION_TAB = "StoreApp_Tab"
 local CATALOGUE_TTL = 20
 local PENDING_TIMEOUT = 30
-local TAB_H = 56
+local TAB_H = 40
 local INK = Color3.fromHex("1B2430")
 local WHITE = Color3.new(1, 1, 1)
 local GREEN = Color3.fromHex("38B864")
@@ -103,19 +103,14 @@ function StoreApp.mount(page: Frame): () -> ()
 	root.BackgroundTransparency = 1
 	root.Parent = page
 
-	local bar = Instance.new("Frame")
-	bar.Name = "Tabs"
-	bar.Size = UDim2.new(1, 0, 0, TAB_H)
-	bar.BackgroundColor3 = HudTheme.Colors.panelLight
-	bar.BackgroundTransparency = 0.2
-	HudTheme.corner(bar, TAB_H // 2)
-	HudTheme.padding(bar, 5)
-	bar.Parent = root
-	local barLayout = Instance.new("UIListLayout")
-	barLayout.FillDirection = Enum.FillDirection.Horizontal
-	barLayout.Padding = UDim.new(0, 5)
-	barLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	barLayout.Parent = bar
+	local showTab: (i: number) -> ()
+	local labels = {}
+	for i, tab in TABS do
+		labels[i] = tab.label
+	end
+	local _, _, setSegment = HudTheme.segmented(root, labels, TAB_H, function(i: number)
+		showTab(i)
+	end)
 
 	local grid = Instance.new("ScrollingFrame")
 	grid.Name = "Grid"
@@ -437,18 +432,11 @@ function StoreApp.mount(page: Frame): () -> ()
 				else ""
 			card.chip.BackgroundColor3 = if left > 0 then WHITE else HudTheme.Colors.gold
 		end
-		for i, tab in TABS do
-			local b = bar:FindFirstChild(tab.id)
-			if b and b:IsA("TextButton") then
-				b.BackgroundColor3 = if i == tabIndex then tab.color else HudTheme.Colors.panelLight
-				b.BackgroundTransparency = if i == tabIndex then 0 else 1
-				b.TextColor3 = if i == tabIndex then WHITE else HudTheme.Colors.textDim
-			end
-		end
 	end
 
-	local function showTab(i: number)
+	showTab = function(i: number)
 		tabIndex = math.clamp(i, 1, #TABS)
+		setSegment(tabIndex)
 		for _, card in cards do
 			card.button:Destroy()
 		end
@@ -463,22 +451,6 @@ function StoreApp.mount(page: Frame): () -> ()
 		if UserInputService.GamepadEnabled and shown() and cards[1] then
 			GuiService.SelectedObject = cards[1].button
 		end
-	end
-
-	for i, tab in TABS do
-		local b = Instance.new("TextButton")
-		b.Name = tab.id
-		b.LayoutOrder = i
-		b.Size = UDim2.new(1 / #TABS, -4, 1, 0)
-		b.Font = HudTheme.HeaderFont
-		b.TextSize = 20 -- fixed: 3 tabs of ~80 du fit "Passes" / "Day Pass" / "Items" at 20
-		b.Text = tab.label
-		b.AutoButtonColor = true
-		HudTheme.corner(b, 99)
-		b.Parent = bar
-		b.Activated:Connect(function()
-			showTab(i)
-		end)
 	end
 
 	ContextActionService:BindActionAtPriority(

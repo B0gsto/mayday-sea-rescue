@@ -6,9 +6,9 @@
 -- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
 -- backdrop frees the cursor. The home screen is stock iOS: a painted harbour wallpaper, a 4-column
 -- clock widget over a grid of big squircle icons (UiImages.Phone art, shadowed white label) and a frosted
--- dock of 4. Every app lays out on the upright phone.
--- Apps:
---   Map, Radio, Camera   close the phone and run (MapController.Open, Radio repeat, PhotoMode)
+-- dock of 4 (Map, Vehicles, Store, Camera). Every app lays out on the upright phone and zooms out of
+-- its icon (and back into it), as on iOS. Six apps (docs/16 K9):
+--   Map, Camera          close the phone and run (MapController.Open, PhotoMode)
 --   Settings             the existing SettingsPanel: its frame is borrowed onto the phone screen
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
@@ -16,8 +16,10 @@
 --                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
 -- at home they close it.
--- Gamepad Start opens the Settings app. A red dot and a
--- bounce on the phone button (badge, bounce) stay for an "affordable" cue.
+-- Gamepad Start opens the Settings app. Red dot (docs/16 B5/B6): when Cash covers something new
+-- (shared/Affordable: the cheapest vehicle or upgrade for sale), the phone button gets a red dot and
+-- a bounce and the Vehicles icon a badge; opening Vehicles clears it until a different item is the
+-- cheapest one affordable.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
 --                               "phone" region, HudLayout)
 --   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name)
@@ -31,11 +33,13 @@ local UserInputService = game:GetService("UserInputService")
 
 local Client = script.Parent.Parent
 local Controllers = Client:WaitForChild("Controllers")
+local Affordable = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Affordable"))
 local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
+local Rules = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("ProgressionRules"))
 local Viewmodel = require(Client:WaitForChild("Camera"):WaitForChild("Viewmodel"))
 
 local C = HudTheme.Colors
@@ -53,7 +57,8 @@ local OPTIONAL = {
 	{ module = "VehiclesApp", name = "Vehicles", label = "Vehicles" },
 	{ module = "StoreApp", name = "Store", label = "Store" },
 }
-local DOCK = { Map = 1, Radio = 2, Vehicles = 3, Camera = 4 } -- the dock's 4, in order
+local DOCK = { Map = 1, Vehicles = 2, Store = 3, Camera = 4 } -- the dock's 4, in order
+local RED = Color3.fromHex("FF3B30") -- iOS badge red
 local CANVAS = 300 -- du: the upright screen's width; home and apps lay out on it
 local ICON = 66 -- du, the squircle: 22% of the screen, as on a real home screen
 local CELL_W, CELL_H = 72, 98
@@ -90,6 +95,7 @@ local island: Frame
 local wake: Frame
 local home: Frame
 local appBg: Frame
+local bgScale: UIScale
 local appPage: Frame
 local pageScale: UIScale
 local content: Frame
@@ -98,6 +104,10 @@ local clockLabel: TextLabel
 local widgetTime: TextLabel
 local widgetDate: TextLabel
 local badge: Frame
+local appBadge: Frame? = nil -- the dot on the Vehicles icon
+local affordKey: string? = nil -- the cheapest affordable item now (Affordable.Pick.key)
+local seenKey: string? = nil -- ... when Vehicles was last opened
+local zoomFrom = Vector2.new(0.5, 0.5) -- the open app's icon, as a share of the screen
 local bounce: (() -> ())? = nil
 local tiles: { Tile } = {}
 local keys: { { edge: string, at: number, len: number, frame: Frame } } = {}
@@ -158,14 +168,6 @@ local function box(
 	end
 	f.Parent = parent
 	return f
-end
-
-local function gradient(parent: Instance, a: Color3, b: Color3, rotation: number): UIGradient
-	local g = Instance.new("UIGradient")
-	g.Color = ColorSequence.new(a, b)
-	g.Rotation = rotation
-	g.Parent = parent
-	return g
 end
 
 local function focus(obj: GuiObject?)
@@ -274,14 +276,48 @@ local function closeApp()
 	content:ClearAllChildren()
 end
 
+local zoomSerial = 0
+
+-- the centre of an app's home icon, as a share of the screen (the app zooms out of / into it)
+local function iconPoint(name: string): Vector2
+	for _, t in tiles do
+		local icon = t.button:FindFirstChild("Icon")
+		if
+			t.button.Name == name
+			and icon
+			and icon:IsA("GuiObject")
+			and screen.AbsoluteSize.X > 0
+		then
+			local at = icon.AbsolutePosition + icon.AbsoluteSize / 2 - screen.AbsolutePosition
+			local f = at / screen.AbsoluteSize
+			return Vector2.new(math.clamp(f.X, 0, 1), math.clamp(f.Y, 0, 1))
+		end
+	end
+	return Vector2.new(0.5, 0.5)
+end
+
 local function showHome()
 	-- hiding the app clears a keyboard selection: read it first so focus() keeps navigating
 	local navigating = GuiService.SelectedObject ~= nil
+	local wasApp = current ~= nil
 	if current then
 		closeApp()
 	end
 	appPage.Visible = false
-	appBg.Visible = false
+	zoomSerial += 1
+	if wasApp and appBg.Visible and not Comfort.reducedMotion() then
+		-- the app's card shrinks back into its icon
+		local z = zoomSerial
+		tween(bgScale, 0.3, { Scale = 0.2 }, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		tween(appBg, 0.3, { BackgroundTransparency = 1 }, Enum.EasingStyle.Quad, nil, 0.06)
+		task.delay(0.32, function()
+			if zoomSerial == z then
+				appBg.Visible = false
+			end
+		end)
+	else
+		appBg.Visible = false
+	end
 	home.Visible = true
 	backButton.Visible = false
 	clockLabel.Visible = true
@@ -388,12 +424,23 @@ local function panelApp(
 	end
 end
 
-local function pill(parent: Instance, name: string, text: string, color: Color3): TextButton
-	local b = HudTheme.button(name, text, UDim2.new(1, 0, 0, 63), parent)
-	b.BackgroundColor3 = color
-	b.TextSize = 24
-	HudTheme.corner(b, 18)
-	gradient(b, Color3.new(1, 1, 1), Color3.fromRGB(200, 200, 200), 90)
+-- an iOS full-width button (a filled primary, or a plain row with coloured text)
+local function pill(
+	parent: Instance,
+	name: string,
+	text: string,
+	fill: Color3,
+	ink: Color3
+): TextButton
+	local b = HudTheme.button(name, text, UDim2.new(1, 0, 0, 54), parent)
+	b.BackgroundColor3 = fill
+	b.TextColor3 = ink
+	b.Font = Enum.Font.BuilderSansBold
+	b.TextSize = 20
+	local corner = b:FindFirstChildOfClass("UICorner")
+	if corner then
+		corner.CornerRadius = UDim.new(0, 14)
+	end
 	return b
 end
 
@@ -418,7 +465,7 @@ local function crewApp(page: Frame): () -> ()
 	buttons.BackgroundTransparency = 1
 	buttons.AnchorPoint = Vector2.new(0.5, 1)
 	buttons.Position = UDim2.new(0.5, 0, 1, -16)
-	buttons.Size = UDim2.new(1, 0, 0, 138)
+	buttons.Size = UDim2.new(1, 0, 0, 120)
 	buttons.Parent = page
 	local row = Instance.new("UIListLayout")
 	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -429,7 +476,7 @@ local function crewApp(page: Frame): () -> ()
 
 	-- + friend (docs/15 H9): Roblox's own invite sheet. CanSendGameInviteAsync keeps platforms
 	-- that cannot invite silent; the pcall keeps a social outage off the phone.
-	local invite = pill(buttons, "Invite", "+ Invite", C.accent)
+	local invite = pill(buttons, "Invite", "+ Invite", C.accent, W)
 	invite.LayoutOrder = 1
 	invite.Activated:Connect(function()
 		task.spawn(function()
@@ -443,7 +490,7 @@ local function crewApp(page: Frame): () -> ()
 			end
 		end)
 	end)
-	local leave = pill(buttons, "Leave", "Leave", C.locked)
+	local leave = pill(buttons, "Leave", "Leave", C.panelLight, RED)
 	leave.LayoutOrder = 2
 	leave.Activated:Connect(function()
 		Net.event("CrewLeave"):FireServer()
@@ -498,9 +545,6 @@ end
 local function mapController(): any
 	return require(Controllers:WaitForChild("MapController"))
 end
-local function radioController(): any
-	return require(Controllers:WaitForChild("RadioController"))
-end
 local function appList(): { App }
 	local list: { App } = {
 		{
@@ -508,13 +552,6 @@ local function appList(): { App }
 			label = "Map",
 			run = function()
 				mapController().Open()
-			end,
-		},
-		{
-			name = "Radio",
-			label = "Radio",
-			run = function()
-				radioController().repeatLast()
 			end,
 		},
 		{
@@ -548,6 +585,11 @@ local function appList(): { App }
 	return list
 end
 
+-- red dot: something new is affordable (Vehicles opened since clears it)
+local function paintBadge()
+	Phone.setBadge(affordKey ~= nil and affordKey ~= seenKey)
+end
+
 function Phone.openApp(name: string)
 	local app = byName[name]
 	if not app then
@@ -570,7 +612,15 @@ function Phone.openApp(name: string)
 	if current then
 		closeApp()
 	end
+	if home.Visible then
+		zoomFrom = iconPoint(name)
+	end
+	if name == "Vehicles" then
+		seenKey = affordKey -- seen: the dot waits for the next new thing
+		paintBadge()
+	end
 	current = name
+	zoomSerial += 1
 	home.Visible = false
 	appBg.Visible = true
 	appPage.Visible = true
@@ -583,11 +633,18 @@ function Phone.openApp(name: string)
 	elseif not ok then
 		warn(`[Phone] {name}: {undo}`)
 	end
-	if not Comfort.reducedMotion() then
-		pageScale.Scale = 0.94
-		appPage.Position = UDim2.fromOffset(0, STATUS_H + 26)
-		tween(pageScale, 0.32, { Scale = 1 })
-		tween(appPage, 0.32, { Position = UDim2.fromOffset(0, STATUS_H) })
+	-- zoom out of the icon: the card and the page grow from the icon's centre (their anchor)
+	local f = zoomFrom
+	appBg.AnchorPoint, appBg.Position = f, UDim2.fromScale(f.X, f.Y)
+	appBg.BackgroundTransparency = 0
+	appPage.AnchorPoint = f
+	appPage.Position = UDim2.new(f.X, 0, f.Y, STATUS_H - f.Y * (STATUS_H + HOME_H))
+	if Comfort.reducedMotion() then
+		bgScale.Scale, pageScale.Scale = 1, 1
+	else
+		bgScale.Scale, pageScale.Scale = 0.2, 0.2
+		tween(bgScale, 0.4, { Scale = 1 })
+		tween(pageScale, 0.4, { Scale = 1 })
 	end
 	task.defer(function()
 		local sel = GuiService.SelectedObject
@@ -597,10 +654,13 @@ function Phone.openApp(name: string)
 	end)
 end
 
--- the red dot (and one bounce as it appears) on the phone button
+-- the red dot (and one bounce as it appears) on the phone button, and the Vehicles icon's badge
 function Phone.setBadge(on: boolean)
 	if not badge then
 		return
+	end
+	if appBadge then
+		appBadge.Visible = on
 	end
 	local was = badge.Visible
 	badge.Visible = on
@@ -637,6 +697,7 @@ function Phone.setOpen(value: boolean)
 			closeApp()
 		end
 		orient()
+		zoomSerial += 1
 		appPage.Visible = false
 		appBg.Visible = false
 		home.Visible = true
@@ -725,6 +786,14 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	icon.Parent = b
 	local scale = Instance.new("UIScale")
 	scale.Parent = icon
+	if app.name == "Vehicles" then -- the iOS badge: something new to buy
+		local dot = box(icon, RED, 0.9, 0.1, 0, 0, 99)
+		dot.Name = "Badge"
+		dot.Size = UDim2.fromOffset(20, 20)
+		dot.ZIndex = 3
+		dot.Visible = false
+		appBadge = dot
+	end
 
 	local label: TextLabel?, shadow: TextLabel? = nil, nil
 	if withLabel then
@@ -900,7 +969,7 @@ local function buildButton(region: Frame)
 	art.Image = PHONE_IMAGES.Button
 	art.ScaleType = Enum.ScaleType.Fit
 	art.Parent = button
-	badge = box(button, Color3.fromHex("FF3B30"), 0.92, 0.08, 0, 0, 99)
+	badge = box(button, RED, 0.92, 0.08, 0, 0, 99)
 	badge.Size = UDim2.fromOffset(22, 22)
 	badge.ZIndex = 3
 	badge.Visible = false
@@ -1052,6 +1121,8 @@ local function build(statusRegion: Frame)
 	appBg.Visible = false
 	HudTheme.corner(appBg, 40)
 	appBg.Parent = screen
+	bgScale = Instance.new("UIScale")
+	bgScale.Parent = appBg
 	buildStatusBar(screen)
 
 	-- home: the icon grid from the top, the frosted dock along the bottom
@@ -1295,6 +1366,45 @@ function Phone.mount(statusRegion: Frame)
 			leader = tonumber(payload.leader) or 0
 			if drawCrew then
 				drawCrew()
+			end
+		end
+	end)
+	-- the red dot follows Cash against the cheapest vehicle or upgrade for sale
+	local snapshot: { [string]: any }? = nil
+	local function afford()
+		local snap = snapshot
+		local pick = if snap
+			then Affordable.cheapest(snap, function(vehicleId: string): boolean
+				local pass = Rules.vehiclePass(vehicleId)
+				return pass ~= nil and player:GetAttribute("Pass_" .. pass) == true
+			end)
+			else nil
+		affordKey = if pick then pick.key else nil
+		if open and current == "Vehicles" then
+			seenKey = affordKey -- on screen already: no dot for it
+		end
+		paintBadge()
+	end
+	local function onData(d: any)
+		if type(d) == "table" then
+			snapshot = d
+			afford()
+		end
+	end
+	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
+	player.AttributeChanged:Connect(function(attr: string)
+		if string.sub(attr, 1, 5) == "Pass_" then
+			afford()
+		end
+	end)
+	task.spawn(function()
+		local getData = Net.init():WaitForChild("Progression_GetData", 30)
+		if getData and getData:IsA("RemoteFunction") and not snapshot then
+			local ok, d = pcall(function()
+				return getData:InvokeServer()
+			end)
+			if ok and not snapshot then
+				onData(d)
 			end
 		end
 	end)

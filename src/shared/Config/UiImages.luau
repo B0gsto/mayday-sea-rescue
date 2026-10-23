@@ -30,4 +30,17 @@ return {
 		Store = "rbxassetid://138403733104125",
 		Wallpaper = "rbxassetid://71603902912480", -- 1170x2532, assets/ui/phone_v2/wallpaper.png
 	},
+	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
+	-- placeholder instead. VehicleArt: the Vehicles app (upgrades by id, the three stat rows, the tick).
+	VehicleArt = {
+		Engine = "",
+		Hull = "",
+		Fit = "",
+		Speed = "",
+		People = "",
+		Tough = "",
+		Check = "",
+	},
+	-- SettingsPanel row glyphs, keyed like its SHAPES (waves, reset, horizon, ...); none uploaded yet
+	SettingsArt = {} :: { [string]: string },
 }
