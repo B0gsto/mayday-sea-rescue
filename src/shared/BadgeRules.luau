@@ -10,17 +10,15 @@
 --   BadgeRules.completed(snap) -> boolean                                   the op finished (not failed/taken over)
 
 local BadgeConfig = require(script.Parent.Config.BadgeConfig)
+local Grading = require(script.Parent.Ops.Grading)
 
 export type StepRecord = { id: string, grade: string?, userId: number? }
 
 -- the OperationCompleted snapshot fields BadgeRules reads (OperationService.info plus the debrief extras)
 export type OpSnapshot = {
 	kind: string,
-	isBig: boolean?,
 	grade: string?,
 	reason: string?,
-	storm: boolean?,
-	saved: number?,
 	steps: { StepRecord }?,
 }
 
@@ -30,17 +28,19 @@ function BadgeRules.completed(snap: OpSnapshot): boolean
 	return snap.reason == "Complete" and snap.grade ~= "Fail" and snap.grade ~= "Takeover"
 end
 
-local function stepsBy(snap: OpSnapshot, userId: number, stepId: string, grade: string?): number
-	local n = 0
+-- this player's own step records, in the shape Grading.mastery reads
+local function mine(
+	snap: OpSnapshot,
+	userId: number
+): { { id: string, grade: string, at: number? } }
+	local out = {}
 	local steps: { StepRecord } = snap.steps or {}
 	for _, s in steps do
-		if s.id == stepId and s.userId == userId and s.grade ~= nil and s.grade ~= "Fail" then
-			if grade == nil or s.grade == grade then
-				n += 1
-			end
+		if s.userId == userId and s.grade ~= nil then
+			table.insert(out, { id = s.id, grade = s.grade :: string })
 		end
 	end
-	return n
+	return out
 end
 
 -- helper: the player completed at least one step of this op (OperationService's `helpers` list)
@@ -50,23 +50,14 @@ function BadgeRules.opProgress(
 	helper: boolean
 ): { [string]: number }
 	local out: { [string]: number } = {}
-	if not helper then
-		return out
-	end
-	-- step badges count even when the op as a whole fails: the step itself was done
-	local gold = stepsBy(snap, userId, "approach", "Gold")
-	if gold > 0 then
-		out.Downwind = gold
-	end
-	if not BadgeRules.completed(snap) then
+	if not helper or not BadgeRules.completed(snap) then
 		return out
 	end
 	out.FirstRescue = 1
-	if snap.storm then
-		out.StormChaser = 1
-	end
-	if snap.isBig and snap.kind == "CapsizedFerry" and (snap.saved or 0) > 0 then
-		out.FerryHero = 1
+	out.Rescue100 = 1
+	-- the debrief's smooth-ride mastery, on this player's own rides home
+	if Grading.mastery(snap.grade or "", mine(snap, userId), 0, 0).smooth then
+		out.SmoothRide = 1
 	end
 	return out
 end

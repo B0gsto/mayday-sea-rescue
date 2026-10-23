@@ -39,6 +39,7 @@ local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("Pr
 local RescueVariants = require(Shared:WaitForChild("Config"):WaitForChild("RescueVariants"))
 local TelemetryNames = require(Shared:WaitForChild("TelemetryNames"))
 
+local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local Events = require(script.Parent:WaitForChild("Telemetry"):WaitForChild("Events"))
 
 local TelemetryService = {}
@@ -365,7 +366,8 @@ local function pollWorldEvents()
 end
 
 -- The few first-session facts only the client knows: the reward burst played, photo mode opened,
--- the first pet. One fixed-name RemoteEvent, rate limited, server-side logged.
+-- the first photo (First Shot badge), the first pet. One fixed-name RemoteEvent, rate limited,
+-- server-side logged.
 local function clientStep(player: Player, name: string)
 	if name == "RewardSeen" then
 		TelemetryService.Funnel(player, "RewardSeen")
@@ -373,6 +375,8 @@ local function clientStep(player: Player, name: string)
 		if Events.first(trackerOf(player), "PhotoMode") then
 			custom(player, Events.custom("PhotoMode"))
 		end
+	elseif name == "PhotoTaken" then
+		BadgeService.Count(player, "PhotoFirst")
 	elseif name == "PetPetted" then
 		if Events.first(trackerOf(player), "PetPetted") then
 			custom(player, Events.custom("PetPetted"))

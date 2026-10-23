@@ -188,6 +188,7 @@ local function click()
 end
 
 local function shutter()
+	Telemetry.once("PhotoTaken") -- the First Shot badge
 	-- Reduce motion: a soft glow instead of a full white flash.
 	local reduced = Comfort.reducedMotion()
 	flash.BackgroundTransparency = if reduced then 0.5 else 0.05

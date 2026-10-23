@@ -25,10 +25,10 @@ export type Badge = {
 
 local BadgeConfig = {}
 
--- Every operation kind, once each, for the EveryCall badge.
+-- Every operation kind a player can be offered, once each, for the EveryCall badge. CapsizedFerry is left
+-- out: it only starts with a storm, and the game is always sunny (StormService ALWAYS_SUNNY).
 BadgeConfig.OpKinds = table.freeze({
 	"PersonInWater",
-	"CapsizedFerry",
 	"CliffCasualty",
 	"RipCurrent",
 	"SinkingVessel",
@@ -39,31 +39,19 @@ BadgeConfig.OpKinds = table.freeze({
 -- order = the order of the table below (the Creator Hub list); keys are stable, never rename one
 BadgeConfig.Order = table.freeze({
 	"FirstRescue",
-	"CertHelm",
-	"CertCasualtyCare",
-	"CertRescueSwimmer",
-	"CertCoxswain",
-	"Downwind",
-	"TowTruck",
-	"StormChaser",
+	"SmoothRide",
 	"RankLifeguard",
 	"RankRescueSwimmer",
-	"FerryHero",
-	"FirstWreck",
 	"FirstWildlife",
 	"AllWildlife",
 	"FirstPet",
-	"LegendaryRescue",
-	"GoldenGull",
-	"AlbumSet",
-	"AlbumComplete",
 	"Streak7",
 	"Streak30",
-	"GreatStormRescue",
-	"SeasonTier10",
-	"SeasonTier30",
 	"EveryCall",
 	"LifeboatBought",
+	"RankCoxswain",
+	"Rescue100",
+	"RankCaptain",
 	"RankAdmiral",
 	"FriendCrew",
 	"PhotoFirst",
@@ -76,47 +64,12 @@ BadgeConfig.Badges = table.freeze({
 		description = "Finish your first rescue operation.",
 		count = 1,
 	},
-	CertHelm = {
+	SmoothRide = {
 		id = 0,
-		name = "Helm",
-		description = "Pass the Helm certification.",
-		awardedBy = "certifications (RP-C1)",
-	},
-	CertCasualtyCare = {
-		id = 0,
-		name = "Casualty Care",
-		description = "Pass the Casualty Care certification.",
-		awardedBy = "certifications (RP-C1)",
-	},
-	CertRescueSwimmer = {
-		id = 0,
-		name = "Rescue Swimmer",
-		description = "Pass the Rescue Swimmer certification.",
-		awardedBy = "certifications (RP-C1)",
-	},
-	CertCoxswain = {
-		id = 0,
-		name = "Coxswain",
-		description = "Pass the Coxswain certification.",
-		awardedBy = "certifications (RP-C1)",
-	},
-	Downwind = {
-		id = 0,
-		name = "Downwind",
-		description = "Make 10 approaches graded Gold.",
+		name = "Smooth Ride",
+		description = "Bring survivors home with a smooth ride 10 times.",
+		icon = "A boat on a flat gold wake",
 		count = 10,
-	},
-	TowTruck = {
-		id = 0,
-		name = "Tow Truck",
-		description = "Finish a tow without parting the line.",
-		count = 1,
-	},
-	StormChaser = {
-		id = 0,
-		name = "Storm Chaser",
-		description = "Finish an operation you were tasked to during a storm.",
-		count = 1,
 	},
 	RankLifeguard = {
 		id = 0,
@@ -130,17 +83,26 @@ BadgeConfig.Badges = table.freeze({
 		description = "Reach the rank of Rescue Swimmer.",
 		rank = "RescueSwimmer",
 	},
-	FerryHero = {
+	RankCoxswain = {
 		id = 0,
-		name = "Ferry Hero",
-		description = "Bring a casualty home from a Capsized Ferry.",
-		count = 1,
+		name = "Coxswain",
+		description = "Reach the rank of Coxswain.",
+		icon = "A coxswain's cap over a lifeboat bow",
+		rank = "Coxswain",
 	},
-	FirstWreck = {
+	RankCaptain = {
 		id = 0,
-		name = "First Wreck",
-		description = "Find the Morwenna in Calm Bay.",
-		awardedBy = "exploration logbook (RP-X1)",
+		name = "Captain",
+		description = "Reach the rank of Captain.",
+		icon = "A captain's cap with a gold anchor",
+		rank = "Captain",
+	},
+	Rescue100 = {
+		id = 0,
+		name = "Hundred Rescues",
+		description = "Finish 100 rescues.",
+		icon = "A life ring with 100 on it",
+		count = 100,
 	},
 	FirstWildlife = {
 		id = 0,
@@ -163,34 +125,6 @@ BadgeConfig.Badges = table.freeze({
 		icon = "A paw print inside a heart",
 		count = 1,
 	},
-	LegendaryRescue = {
-		id = 0,
-		name = "Legendary Rescue",
-		description = "Finish a Legendary rarity call.",
-		icon = "A gold star over a rescue boat",
-		count = 1,
-	},
-	GoldenGull = {
-		id = 0,
-		name = "Golden Gull",
-		description = "Bring in the Golden Gull.",
-		icon = "A golden gull with spread wings",
-		count = 1,
-	},
-	AlbumSet = {
-		id = 0,
-		name = "Set Complete",
-		description = "Complete any Rescue Album set.",
-		icon = "A full page of stickers with one gold frame",
-		count = 1,
-	},
-	AlbumComplete = {
-		id = 0,
-		name = "Full Album",
-		description = "Collect every sticker in the Rescue Album.",
-		icon = "A closed sticker album with a gold clasp",
-		count = 1,
-	},
 	Streak7 = {
 		id = 0,
 		name = "Seven-Day Streak",
@@ -205,33 +139,12 @@ BadgeConfig.Badges = table.freeze({
 		icon = "A calendar page with thirty lit lanterns",
 		count = 1,
 	},
-	GreatStormRescue = {
-		id = 0,
-		name = "Great Storm Rescue",
-		description = "Finish a rescue during a Great Storm.",
-		icon = "A boat on a huge wave under a dark sky",
-		count = 1,
-	},
-	SeasonTier10 = {
-		id = 0,
-		name = "Season One: Tier 10",
-		description = "Reach tier 10 of Season 1.",
-		icon = "A bronze season badge with a 10",
-		count = 1,
-	},
-	SeasonTier30 = {
-		id = 0,
-		name = "Season One: Tier 30",
-		description = "Reach tier 30 of Season 1.",
-		icon = "A gold season badge with a 30",
-		count = 1,
-	},
 	EveryCall = {
 		id = 0,
 		name = "Every Call",
-		description = "Complete every operation type once: swimmer, ferry, cliff, rip current, sinking, fire and wildlife.",
-		icon = "Seven small icons in a ring",
-		count = 7,
+		description = "Complete every call type once: person in the water, cliff, rip current, sinking boat, boat on fire and wildlife.",
+		icon = "Six small icons in a ring",
+		count = 6,
 	},
 	LifeboatBought = {
 		id = 0,
@@ -260,7 +173,7 @@ BadgeConfig.Badges = table.freeze({
 		description = "Take your first photo in photo mode.",
 		icon = "A camera shutter with a wave inside",
 		count = 1,
-		awardedBy = "photo mode (no server remote yet)",
+		awardedBy = "TelemetryService (the client's PhotoTaken step)",
 	},
 } :: { [string]: Badge })
 

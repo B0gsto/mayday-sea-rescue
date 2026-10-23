@@ -1,8 +1,8 @@
 --!strict
 -- BadgeService: Roblox badge awards (docs/03 section 8, MVP set; ids in Shared.Config.BadgeConfig, 0 = off).
 --
--- Triggers: OperationService.OperationCompleted (the debrief snapshot: step grades per userId, storm,
--- saved) through Shared.BadgeRules; the RankIndex player attribute (rank badges, also re-checked on
+-- Triggers: OperationService.OperationCompleted (the debrief snapshot: grade and step grades per
+-- userId) through Shared.BadgeRules; the RankIndex player attribute (rank badges, also re-checked on
 -- join); and BadgeService.Award / BadgeService.Count for other systems.
 --
 -- Profile fields (DataService, extra keys on the player's data): badgeCounters { [key]: number } and
@@ -24,7 +24,6 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
-local Weather = require(Shared:WaitForChild("Weather"))
 
 local BadgeService = {}
 BadgeService.Priority = 60
@@ -145,7 +144,6 @@ local function onOperationCompleted(snap: any, helpers: { Player })
 		helperSet[p] = true
 	end
 	local done = BadgeRules.completed(snap)
-	local greatStorm = done and Weather.isGreatStorm()
 	for _, p in snap.assignedTo or helpers do
 		if typeof(p) == "Instance" and p:IsA("Player") and p.Parent then
 			local ok, err = pcall(function()
@@ -154,9 +152,6 @@ local function onOperationCompleted(snap: any, helpers: { Player })
 					local s = store(p)
 					if s then
 						applyCounts(p, BadgeRules.once(s.badgeCounters, "EveryCall", snap.kind))
-					end
-					if greatStorm then
-						applyCounts(p, { GreatStormRescue = 1 })
 					end
 				end
 			end)

@@ -202,7 +202,7 @@ cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), 
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),
   `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once(name)`
-  over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PetPetted).
+  over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken (First Shot badge), PetPetted).
 - Settings: `SettingsRules` (pure), `Camera/Comfort` (saved in `flags.cameraSettings`), `SettingsPanel`,
   `A11yPalette` (colour-blind palette and glyphs).
 - Re-engagement: `PlatformPrompts` + `PlatformPromptService`; `NotifyDue` + `NotifyService`.

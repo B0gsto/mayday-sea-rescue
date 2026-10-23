@@ -11,21 +11,16 @@ Lists only what is in the 1.0 build (docs/07 §7 rule). Re-check before RP-L1 if
 ## Description
 
 ```
-Answer mayday calls and save people at sea! Race out on a jet ski or a
-rescue RIB, pull survivors from the waves, and bring them home to
-Port Haven.
+Mayday! Race out, pull up close and survivors climb aboard. Bring them home to Port Haven!
 
-Every 15 minutes a storm sweeps the Gale Isles. Waves rise, rain lashes
-the harbour and the big calls come in, like a capsized ferry with
-passengers trapped on the hull. Team up with your crew to save them all.
+- Jet ski (1 survivor), RIB (3) or the All-Weather Lifeboat (8): bigger boat, bigger rescue
+- Swimmers, rip currents, sinking boats, boats on fire, cliff falls and animals caught in nets
+- Free seal pups, puffins, otters, turtles and gulls, then adopt them as pets
+- Bosun the dog rides with you and points the way
+- Earn Cash and Rep, rank up from Recruit to Admiral and unlock new boats
+- Crew up with friends and rescue together
 
-- Rescue a person in the water, tow a disabled boat home, or work the
-  capsized ferry
-- Grab them, throw a line, or let them swim to you: more than one way works
-- Crew up with friends, or go solo with an NPC crew
-- Earn certifications and rank up from Recruit to Rescue Swimmer
-- Bosun, the station dog, comes along on every call
-- Dive the wrecks and explore the coast to fill your logbook
+Hold steady in the waves and be quick, or another boat gets there first!
 ```
 
 ## Social links

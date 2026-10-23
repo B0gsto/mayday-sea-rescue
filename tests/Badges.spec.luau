@@ -9,14 +9,11 @@ return function(t)
 	local function snap(over)
 		local s = {
 			kind = "PersonInWater",
-			isBig = false,
 			grade = "Silver",
 			reason = "Complete",
-			storm = false,
-			saved = 1,
 			steps = {
-				{ id = "approach", grade = "Gold", userId = ME },
 				{ id = "recovery", grade = "Silver", userId = ME },
+				{ id = "transport", grade = "Gold", userId = ME },
 			},
 		}
 		for k, v in over or {} do
@@ -56,63 +53,50 @@ return function(t)
 		end
 	end)
 
-	t.test("a finished op gives First Rescue and a Gold approach towards Downwind", function()
-		local p = BadgeRules.opProgress(snap(), ME, true)
-		t.expect(p.FirstRescue).toBe(1)
-		t.expect(p.Downwind).toBe(1)
-		t.expect(p.StormChaser).toBeNil()
-		t.expect(p.TowTruck).toBeNil()
-	end)
+	t.test(
+		"a finished op gives First Rescue, Hundred Rescues and Smooth Ride on a Gold ride home",
+		function()
+			local p = BadgeRules.opProgress(snap(), ME, true)
+			t.expect(p.FirstRescue).toBe(1)
+			t.expect(p.Rescue100).toBe(1)
+			t.expect(p.SmoothRide).toBe(1)
+			local rough = snap({
+				steps = {
+					{ id = "transport", grade = "Gold", userId = ME },
+					{ id = "transport", grade = "Silver", userId = ME },
+				},
+			})
+			t.expect(BadgeRules.opProgress(rough, ME, true).SmoothRide).toBeNil()
+		end
+	)
 
-	t.test("only the player's own step grades count; non-helpers get nothing", function()
-		t.expect(BadgeRules.opProgress(snap(), OTHER, true).Downwind).toBeNil()
+	t.test("only the player's own rides count; non-helpers get nothing", function()
+		t.expect(BadgeRules.opProgress(snap(), OTHER, true).SmoothRide).toBeNil()
 		t.expect(BadgeRules.opProgress(snap(), OTHER, true).FirstRescue).toBe(1)
 		t.expect(next(BadgeRules.opProgress(snap(), ME, false))).toBeNil()
 	end)
 
-	t.test(
-		"failed, timed-out and taken-over ops keep step credit but not completion badges",
-		function()
-			for _, over in
-				{
-					{ reason = "Timer" },
-					{ reason = "Takeover", grade = "Takeover" },
-					{ grade = "Fail" },
-				}
-			do
-				local p = BadgeRules.opProgress(snap(over), ME, true)
-				t.expect(p.FirstRescue).toBeNil()
-				t.expect(p.Downwind).toBe(1)
-			end
+	t.test("failed, timed-out and taken-over ops give nothing", function()
+		for _, over in
+			{
+				{ reason = "Timer" },
+				{ reason = "Takeover", grade = "Takeover" },
+				{ grade = "Fail" },
+			}
+		do
+			t.expect(next(BadgeRules.opProgress(snap(over), ME, true))).toBeNil()
 		end
-	)
-
-	t.test("storm and ferry badges", function()
-		t.expect(BadgeRules.opProgress(snap({ storm = true }), ME, true).StormChaser).toBe(1)
-		local ferry = snap({
-			kind = "CapsizedFerry",
-			isBig = true,
-		})
-		local p = BadgeRules.opProgress(ferry, ME, true)
-		t.expect(p.FerryHero).toBe(1)
-		t.expect(
-			BadgeRules.opProgress(
-				snap({ kind = "CapsizedFerry", isBig = true, saved = 0 }),
-				ME,
-				true
-			).FerryHero
-		).toBeNil()
 	end)
 
 	t.test("apply counts up and reports badges at or past their threshold", function()
 		local counters = {}
-		t.expect(#BadgeRules.apply(counters, { Downwind = 9 })).toBe(0)
-		t.expect(counters.Downwind).toBe(9)
-		t.expect(BadgeRules.apply(counters, { Downwind = 1 })).toEqual({ "Downwind" })
+		t.expect(#BadgeRules.apply(counters, { SmoothRide = 9 })).toBe(0)
+		t.expect(counters.SmoothRide).toBe(9)
+		t.expect(BadgeRules.apply(counters, { SmoothRide = 1 })).toEqual({ "SmoothRide" })
 		-- still due after the threshold (a badge switched on later is awarded then)
-		t.expect(BadgeRules.apply(counters, { Downwind = 1, FirstRescue = 1 }))
-			.toEqual({ "FirstRescue", "Downwind" })
-		t.expect(counters.Downwind).toBe(11)
+		t.expect(BadgeRules.apply(counters, { SmoothRide = 1, FirstRescue = 1 }))
+			.toEqual({ "FirstRescue", "SmoothRide" })
+		t.expect(counters.SmoothRide).toBe(11)
 		t.expect(#BadgeRules.apply(counters, { Unknown = 3 })).toBe(0)
 		t.expect(counters.Unknown).toBe(3) -- seen tokens persist, they are just not badges
 	end)
@@ -150,20 +134,17 @@ return function(t)
 	t.test("new badges are well formed and Admiral is a rank", function()
 		for _, key in
 			{
+				"SmoothRide",
+				"Rescue100",
 				"FirstWildlife",
 				"AllWildlife",
 				"FirstPet",
-				"LegendaryRescue",
-				"GoldenGull",
-				"AlbumSet",
-				"AlbumComplete",
 				"Streak7",
 				"Streak30",
-				"GreatStormRescue",
-				"SeasonTier10",
-				"SeasonTier30",
 				"EveryCall",
 				"LifeboatBought",
+				"RankCoxswain",
+				"RankCaptain",
 				"RankAdmiral",
 				"FriendCrew",
 				"PhotoFirst",
