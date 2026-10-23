@@ -5,7 +5,7 @@
 
 local OceanPalette = {}
 
-OceanPalette.DEEP_TEAL = Color3.fromHex("#2E5A55") -- green-grey teal, matches the Clear preset
+OceanPalette.DEEP_TEAL = Color3.fromHex("#24493C") -- Cornish green-teal, = the Clear preset's WaterColor
 OceanPalette.ABYSS_NAVY = Color3.fromHex("#1B3534") -- green-grey trough, not navy
 OceanPalette.FOAM = Color3.fromHex("#EAF7F5")
 

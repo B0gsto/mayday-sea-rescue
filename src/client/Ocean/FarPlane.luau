@@ -10,6 +10,7 @@
 -- (stream D lighting) should hide the edge. Moving it is 4 CFrame writes per snap (not per frame).
 
 local AssetService = game:GetService("AssetService")
+local MaterialService = game:GetService("MaterialService")
 
 local OceanPalette = require(script.Parent.OceanPalette)
 local OceanSurface = require(script.Parent.OceanSurface)
@@ -38,7 +39,8 @@ function FarPlane.new(
 	innerHalf: number,
 	seaLevel: number,
 	surface: string,
-	reach: number? -- half-size of the square the plane fills (default: as far as parts allow)
+	reach: number?, -- half-size of the square the plane fills (default: as far as parts allow)
+	withMesh: boolean? -- false: plain Parts in the Part grid's material, so the Parts-mode sea is one material
 ): FarPlane
 	local r = math.max(innerHalf - OVERLAP, 1)
 	local width = math.min(MAX_PART - 2 * r, (reach or math.huge) - r)
@@ -67,7 +69,7 @@ function FarPlane.new(
 	local offsets: { Vector3 } = {}
 	local meshes: { EditableMesh } = {}
 	local uvs: { { number } } = {}
-	local useMesh = true
+	local useMesh = withMesh ~= false
 	for n, entry in layout do
 		local part, em, uv = FarPlane._strip(entry.size, entry.offset, surface, useMesh)
 		useMesh = em ~= nil
@@ -167,7 +169,8 @@ function FarPlane._strip(
 		p.Material = Enum.Material.SmoothPlastic
 		p.MaterialVariant = "OceanWater" -- PartGrid's water normal map (plain plastic if absent)
 		p.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
-		p.Reflectance = 0.05 -- tune
+		-- As PartGrid: no Reflectance on top of the variant, or the far sea mirrors the sky brighter than the near
+		p.Reflectance = if MaterialService:FindFirstChild(p.MaterialVariant) then 0 else 0.05 -- tune
 		p.TopSurface = Enum.SurfaceType.Smooth
 		p.BottomSurface = Enum.SurfaceType.Smooth
 		part = p

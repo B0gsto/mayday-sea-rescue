@@ -15,11 +15,14 @@
 -- MID_RADIUS is a seam: a matte vertex-coloured sea next to the glossy one read as a straight line out at
 -- sea, as a dark wall under an Overcast sky, and from the air as a pale disc edge. Atmosphere haze does the
 -- fade to the horizon. (The vertex colours below only matter if the SurfaceAppearance template is missing.)
--- Fallback: if CreateEditableMesh / CreateMeshPartAsync fails (memory budget, permissions), the
--- horizon is a set of thin flat Parts in four square bands, each a flat fade colour; warned once.
+-- Flat: in the Parts-mode ocean (and if CreateEditableMesh / CreateMeshPartAsync fails, warned once) the
+-- horizon is thin flat Parts in four square bands wearing the Part grid's OceanWater MaterialVariant and the
+-- same tint: one material from the boat to the horizon (a SurfaceAppearance far sea around the variant-lit
+-- Part grid read as a bright cyan square in a navy sea from the air, map pass 3 N1). Haze does the fade.
 -- Moving it is one CFrame write per part per grid snap, never per frame.
 
 local AssetService = game:GetService("AssetService")
+local MaterialService = game:GetService("MaterialService")
 
 local OceanPalette = require(script.Parent.OceanPalette)
 local OceanSurface = require(script.Parent.OceanSurface)
@@ -37,6 +40,12 @@ local FLAT_THICKNESS = 0.2
 local MAX_PART = 2048
 -- Fallback square bands (Chebyshev distance from the centre), inner to outer. -- tune
 local FLAT_BANDS = { 700, 1200, 1800, 2600, OUTER_RADIUS }
+-- Skirt: 2048-stud tiles past the rings, shown only for a high camera (aerials, lookouts), so the sea's edge is
+-- lost in the haze instead of a square/disc against the sky (pass 3 N1). The central four are skipped (the
+-- rings cover them; a tile there poked through wave troughs). An earlier skirt was blamed for blank aerial
+-- shots; that was Studio's Automatic quality level dropping the draw distance, not the tiles.
+local SKIRT_TILES = 12 -- per side: +/-12288 studs -- tune
+local SKIRT_DROP = 1.2 -- under the outer ring (OUTER_DROP)
 
 type Template = {
 	ring: number,
@@ -62,7 +71,8 @@ export type Horizon = {
 	surfaced: { BasePart }, -- inner ring copies: SurfaceAppearance, part.Color = tint
 	colourIds: { { number } }, -- per mesh: colour ids
 	fades: { { number } }, -- per mesh: fade 0..1 per colour id
-	flatFades: { number }, -- per part, flat fallback only: fade 0..1 of the part's band
+	flat: { BasePart }, -- flat Part bands and skirt tiles: part.Color = tint
+	skirt: { BasePart }, -- high-camera tiles
 	tint: Color3,
 	haze: Color3,
 	seaLevel: number,
@@ -268,7 +278,6 @@ local function buildFlat(h: Horizon, parent: Instance)
 		local length = d0 + d1
 		local tiles = math.ceil(length / MAX_PART)
 		local tileLength = length / tiles
-		local fade = fadeAt((d0 + d1) / 2, Horizon.INNER_HALF)
 		for k = 0, 3 do
 			local rot = CFrame.Angles(0, -k * QUARTER, 0)
 			for i = 0, tiles - 1 do
@@ -278,6 +287,9 @@ local function buildFlat(h: Horizon, parent: Instance)
 				p.TopSurface = Enum.SurfaceType.Smooth
 				p.BottomSurface = Enum.SurfaceType.Smooth
 				configure(p)
+				if MaterialService:FindFirstChild("OceanWater") then
+					p.MaterialVariant = "OceanWater" -- PartGrid's water (same normal map, roughness, tiling)
+				end
 				p.Color = OceanPalette.colours[OceanPalette.SEA_BUCKET]
 				local local0 = Vector3.new(-d0 + (i + 0.5) * tileLength, y, -(d0 + d1) / 2)
 				local offset = rot * CFrame.new(local0)
@@ -285,7 +297,7 @@ local function buildFlat(h: Horizon, parent: Instance)
 				p.Parent = parent
 				table.insert(h.parts, p)
 				table.insert(h.offsets, offset)
-				table.insert(h.flatFades, fade)
+				table.insert(h.flat, p)
 			end
 		end
 	end
@@ -296,7 +308,8 @@ function Horizon.new(
 	seaLevel: number,
 	tint: Color3,
 	haze: Color3,
-	surface: string
+	surface: string,
+	flat: boolean? -- true: flat Parts only (the Parts-mode ocean)
 ): Horizon
 	local h: Horizon = {
 		parts = {},
@@ -305,16 +318,44 @@ function Horizon.new(
 		surfaced = {},
 		colourIds = {},
 		fades = {},
-		flatFades = {},
+		flat = {},
+		skirt = {},
 		tint = tint,
 		haze = haze,
 		seaLevel = seaLevel,
 	}
-	local ok = buildMeshes(h, parent, surface)
-	if not ok then
+	if flat then
+		buildFlat(h, parent)
+	elseif not buildMeshes(h, parent, surface) then
 		-- EditableMesh can be unavailable in Studio: the flat Part horizon is the shipped fallback
 		warnOnce("[Ocean] horizon mesh unavailable; using the flat Part horizon")
 		buildFlat(h, parent)
+	end
+	local c = (SKIRT_TILES - 1) / 2
+	for i = 0, SKIRT_TILES - 1 do
+		for j = 0, SKIRT_TILES - 1 do
+			if math.abs(i - c) < 1 and math.abs(j - c) < 1 then
+				continue
+			end
+			local tile = Instance.new("Part")
+			tile.Name = `OceanSkirt{i}_{j}`
+			tile.Size = Vector3.new(MAX_PART, FLAT_THICKNESS, MAX_PART)
+			tile.TopSurface = Enum.SurfaceType.Smooth
+			tile.BottomSurface = Enum.SurfaceType.Smooth
+			configure(tile)
+			if MaterialService:FindFirstChild("OceanWater") then
+				tile.MaterialVariant = "OceanWater"
+			end
+			tile.LocalTransparencyModifier = 1 -- shown by setHigh
+			local offset =
+				CFrame.new((i - c) * MAX_PART, -SKIRT_DROP - FLAT_THICKNESS / 2, (j - c) * MAX_PART)
+			tile.CFrame = CFrame.new(0, seaLevel, 0) * offset
+			tile.Parent = parent
+			table.insert(h.skirt, tile)
+			table.insert(h.flat, tile)
+			table.insert(h.parts, tile)
+			table.insert(h.offsets, offset)
+		end
 	end
 	Horizon.setColours(h, tint, haze, true)
 	return h
@@ -331,17 +372,23 @@ function Horizon.setColours(h: Horizon, tint: Color3, haze: Color3, force: boole
 			em:SetColor(id, colourAt(tint, haze, fade[n]))
 		end
 	end
-	for n, fade in h.flatFades do
-		h.parts[n].Color = colourAt(tint, haze, fade)
+	for _, part in h.flat do
+		part.Color = tint
 	end
 	for _, part in h.surfaced do
 		part.Color = tint
 	end
 end
 
--- No-op, kept for OceanController. The old high-camera skirt (2048-stud tiles out to +/-12288) blanked the whole
--- view from a camera a few hundred studs up, even hidden: tiles out at +/-4096 already did, +/-2048 did not.
-function Horizon.setHigh(_h: Horizon, _high: boolean) end
+function Horizon.setHigh(h: Horizon, high: boolean)
+	local modifier = if high then 0 else 1
+	if h.skirt[1] and h.skirt[1].LocalTransparencyModifier == modifier then
+		return
+	end
+	for _, tile in h.skirt do
+		tile.LocalTransparencyModifier = modifier
+	end
+end
 
 function Horizon.setSurface(h: Horizon, kind: string)
 	for _, part in h.surfaced do
@@ -369,7 +416,8 @@ function Horizon.destroy(h: Horizon)
 	table.clear(h.surfaced)
 	table.clear(h.colourIds)
 	table.clear(h.fades)
-	table.clear(h.flatFades)
+	table.clear(h.flat)
+	table.clear(h.skirt)
 end
 
 return Horizon
