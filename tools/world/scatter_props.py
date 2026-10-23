@@ -768,14 +768,16 @@ def thin(T, rocks, rmeta, plants, pmeta, seed):
 
 
 def treeline(T, seed):
-    """WP-3: a row of big wind-bent hawthorns along the back of the top terrace behind Port Haven (layout.TOWN_HILL),
-    on the town's skyline. Rows carry seen = 1."""
+    """WP-3: a broken shelter belt of big wind-bent hawthorns along the TOWN_HILL treeY contour behind Port Haven, on
+    the town's skyline. Rows carry seen = 1."""
     th, tp = L.TOWN_HILL, L.TOWN_PLATFORM
-    above = tp["y"] + th["step"] * th["shelves"] + 7 + SURFACE_BIAS  # the slope rising behind the top shelf
+    above = th["treeY"] + SURFACE_BIAS
     rng = np.random.default_rng([seed, 31])
     out = []
     for x in np.arange(tp["minX"] + 40, tp["maxX"] - 39, 14.0):
         x = float(x + rng.uniform(-4, 4))
+        if G.fbm(np.array([x]), np.array([0.0]), 90, seed + 32)[0] < -0.2:  # gaps between the clumps
+            continue
         z = next((z for z in np.arange(tp["minZ"] - 20, tp["minZ"] - th["depth"], -4.0) if T.height(x, z) > above), None)
         if z is None:
             continue

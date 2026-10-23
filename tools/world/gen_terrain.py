@@ -268,23 +268,40 @@ def moor_ridge(X, Z, dl, s):
     return amp * np.exp(-((Z - ridge_z(X, s)) / R["width"]) ** 2) * (0.85 + 0.15 * ridged(X, Z, 140, s + 95))
 
 
-def terraces(X, Z, h):
-    """WP-3: the hillside north of the town platform cut into TOWN_HILL shelves that follow the (~100-stud smoothed)
-    contours, with near-vertical granite retaining walls between them. Returns (h, wall mask)."""
+def town_hill(X, Z, h, s):
+    """WP-3: the hillside north of the town platform stays a natural rising slope. Granite retaining walls only as
+    short, noise-gated runs (`step` studs high) in the steep band just above the town and along Chapel Hill; across the
+    slope, field hedges (turf-and-stone banks with gaps) follow the wobbly contours every `hedgeRise` studs of height,
+    so with the Voronoi field banks the fields are irregular. Returns (h, wall mask, contour hedge 0..1, zone 0..1)."""
     th, tp = L.TOWN_HILL, L.TOWN_PLATFORM
-    step, n, wf = th["step"], th["shelves"], th["wall"]
+    step, wf = th["step"], th["wall"]
     hs = box_blur(h, 12)
+    zone = smoothstep(tp["minX"] - th["fadeX"], tp["minX"], X) * smoothstep(tp["maxX"] + th["fadeX"], tp["maxX"], X) \
+        * smoothstep(tp["minZ"], tp["minZ"] - 14, Z) * smoothstep(tp["minZ"] - th["depth"], tp["minZ"] - th["depth"] + 60, Z)
+    # walls: the band just above the town edge and the flanks of Chapel Hill, in short runs with gaps between
+    lane = next(r for r in L.ROADS if r["id"] == "TownLane")
+    dr = np.full(X.shape, 1e9)
+    for px, pz in catmull(lane["points"], 8):
+        dr = np.minimum(dr, np.hypot(X - px, Z - pz))
+    band = np.maximum(smoothstep(tp["minZ"] - th["wallBand"], tp["minZ"] - th["wallBand"] + 50, Z),
+                      smoothstep(th["roadBand"] + 40, th["roadBand"], dr))
+    Xw, Zw = warp(X, Z, s + 760, 20, 120)
+    seg = zone * band * smoothstep(0.0, 0.25, fbm(Xw, Zw, 70, s + 761, 2))
     t = np.maximum(hs - tp["y"], 0) / step
     k = np.floor(t)
     f = t - k
     rise = smoothstep(1 - wf, 1, f)
-    q = tp["y"] + step * (k + rise) + 1.2 * f * (1 - rise)  # shelves tilt 1.2 studs toward the wall below
-    top = tp["y"] + step * n
-    m = smoothstep(tp["minX"] - th["fadeX"], tp["minX"], X) * smoothstep(tp["maxX"] + th["fadeX"], tp["maxX"], X) \
-        * smoothstep(tp["minZ"], tp["minZ"] - 14, Z) * smoothstep(tp["minZ"] - th["depth"], tp["minZ"] - th["depth"] + 60, Z) \
-        * smoothstep(top + 0.6 * step, top + 0.1 * step, hs)
-    detail = np.clip(h - box_blur(h, 3), -1.5, 2.5) * (1 - rise)  # keep the hedges and hummocks on the shelves
-    return h + (q + detail - h) * m, (m > 0.5) & (f > 1 - wf - 0.03) & (k < n)
+    q = tp["y"] + step * (k + rise) + 1.0 * f * (1 - rise)
+    detail = np.clip(h - box_blur(h, 3), -1.5, 2.5) * (1 - rise)
+    h = h + (q + detail - h) * seg
+    wall = (seg > 0.5) & (f > 1 - wf - 0.04)
+    # contour hedges: lines of constant (warped) height, ~2.5 studs either side, with gateways and slumped gaps
+    gz_, gx_ = np.gradient(hs, L.CELL)
+    c = hs / th["hedgeRise"] + 0.45 * fbm(Xw, Zw, 160, s + 762, 3)
+    dist = np.abs(c - np.round(c)) * th["hedgeRise"] / np.maximum(np.hypot(gx_, gz_), 0.05)
+    gaps = smoothstep(-0.2, 0.0, fbm(X, Z, 55, s + 763, 2))
+    ch = smoothstep(4.0, 1.5, dist) * gaps * zone * (1 - seg) * smoothstep(0.06, 0.12, np.hypot(gx_, gz_))
+    return h + 2.2 * ch, wall, ch, zone
 
 
 def tors(X, Z, h, s):
@@ -469,8 +486,8 @@ def bake():
     hm = np.maximum(harbour_hill(X, Z), farm) * fk * smoothstep(2, 5, h) * smoothstep(6, 20, dl)
     hdh, hedge, hcid, hrock = hill_relief(X, Z, s)
     h = h + hdh * hm
-    hill = (hm, hedge * hm, hcid, hrock * hm)
-    h, granite = terraces(X, Z, h)
+    h, granite, chedge, hillzone = town_hill(X, Z, h, s)
+    hill = (np.maximum(hm, chedge), np.maximum(hedge * hm, chedge), hcid, hrock * hm)
     h, tor = tors(X, Z, h, s)
     granite = granite | tor
 
@@ -492,6 +509,8 @@ def bake():
     lush = fbm(X, Z, 70, s + 95, 2) > 0.25
     mat = np.where(town & (dp >= 40) & (dp < tp["blend"] + 20) & soft, np.where(lush, MI[OLIVE], MI["Grass"]), mat)
     mat = np.where(granite & (road_mat == 255), MI["Rock"], mat).astype(np.uint8)  # retaining walls and tors
+    # the town hillside is green fields: no rock dither on its banks or hedges (granite only in the wall runs)
+    mat = np.where((hillzone > 0.5) & ~granite & (mat == MI["Rock"]), np.where(lush, MI[OLIVE], MI["Grass"]), mat)
     return xs, h, mat, d
 
 

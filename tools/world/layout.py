@@ -75,11 +75,13 @@ ISLANDS = [GREAT_GALE, SKERRY_ISLE]
 # fit it rather than moving it (doc 10 section 6.6 re-lays the mouth to about 900 studs later).
 HARBOUR = {"minX": -312, "maxX": 312, "minZ": 4, "maxZ": 368, "innerY": -13, "mouthY": -24, "channelHalf": 40}
 TOWN_PLATFORM = {"minX": -720, "maxX": 720, "minZ": -560, "maxZ": -20, "y": 4, "blend": 140}
-# WP-3: the hillside behind (north of) the town platform: `shelves` terraces `step` studs apart with granite retaining
-# walls (`wall` = wall share of each terrace's run), fading into the natural slope over `fadeX` past the platform ends
-# and `depth` studs north of it; the moor ridge on the skyline behind it (crest z, half-width, height; a col at x colX
-# for the High Road) with tors.
-TOWN_HILL = {"step": 15, "shelves": 4, "wall": 0.08, "fadeX": 180, "depth": 520}
+# WP-3: the hillside behind (north of) the town platform (fading out `fadeX` past its ends and `depth` studs north):
+# a natural slope with short granite retaining-wall runs `step` studs high (`wall` = wall share of each run) only in
+# the `wallBand` studs above the town and within `roadBand` of Chapel Hill, and contour field hedges every `hedgeRise`
+# studs of height; the moor ridge on the skyline behind it (crest z, half-width, height; a col at x colX for the
+# High Road) with tors.
+TOWN_HILL = {"step": 9, "wall": 0.12, "fadeX": 180, "depth": 520, "wallBand": 150, "roadBand": 60, "hedgeRise": 15,
+             "treeY": 64}
 MOOR_RIDGE = {"z": -1720, "width": 240, "height": 85, "colX": 40, "tors": 9}
 HARBOUR_COVE = {"minX": 186, "maxX": 312, "topZ": -20, "toeZ": 110, "topY": 4, "toeY": -7}  # small sand cove
 
