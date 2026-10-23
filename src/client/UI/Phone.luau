@@ -4,7 +4,7 @@
 -- upright handset (thin bezel, Dynamic Island, status bar, home indicator) centred and nearly as
 -- tall as the screen slides up with a spring, the screen wakes and the icons pop in; closing plays
 -- it back (a short fade with reduced motion). The phone-in-hand Viewmodel loop plays and a Modal
--- backdrop frees the cursor. The home screen is stock iOS: a soft gradient wallpaper, a 4-column
+-- backdrop frees the cursor. The home screen is stock iOS: a painted harbour wallpaper, a 4-column
 -- clock widget over a grid of big squircle icons (UiImages.Phone art, shadowed white label) and a frosted
 -- dock of 4. Every app lays out on the upright phone.
 -- Apps:
@@ -925,49 +925,30 @@ local function buildStatusBar(parent: Frame)
 	nub.Parent = battery
 end
 
--- wallpaper: assets/ui/phone_v2/wallpaper.png pending
--- the wallpaper: a stock-iOS soft gradient with blurred colour blooms (no image asset). A
--- CanvasGroup so the blooms clip to the screen's rounded corners.
+-- the wallpaper: a painted sunny-harbour scene (Gemini), cropped to fill the screen. A CanvasGroup
+-- so it clips to the screen's rounded corners.
 local function buildWallpaper(parent: Frame)
 	local paper = Instance.new("CanvasGroup")
 	paper.Name = "Wallpaper"
 	paper.Size = UDim2.fromScale(1, 1)
-	paper.BackgroundColor3 = W
+	paper.BackgroundColor3 = Color3.fromHex("6FB8E8") -- the sky, while the image loads
 	paper.BorderSizePixel = 0
 	HudTheme.corner(paper, 40)
-	local base = Instance.new("UIGradient")
-	base.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromHex("2A2F86")),
-		ColorSequenceKeypoint.new(0.4, Color3.fromHex("6E4BDB")),
-		ColorSequenceKeypoint.new(0.72, Color3.fromHex("F07AB6")),
-		ColorSequenceKeypoint.new(1, Color3.fromHex("FFC38A")),
-	})
-	base.Rotation = 75
-	base.Parent = paper
 	paper.Parent = parent
-	-- each bloom: stacked faint discs, a soft radial falloff
-	for _, spec in
-		{
-			{ c = "3FC8FF", x = 0.12, y = 0.18, s = 1.1 },
-			{ c = "FF5FA8", x = 1.0, y = 0.52, s = 1.2 },
-			{ c = "FFD67A", x = 0.2, y = 0.92, s = 1.0 },
-			{ c = "8F7CFF", x = 0.7, y = 0.05, s = 0.8 },
-		}
-	do
-		for i = 1, 4 do
-			local d = Instance.new("Frame")
-			d.AnchorPoint = Vector2.new(0.5, 0.5)
-			d.Position = UDim2.fromScale(spec.x, spec.y)
-			local size = spec.s * (1.15 - i * 0.2)
-			d.Size = UDim2.fromScale(size, size)
-			d.SizeConstraint = Enum.SizeConstraint.RelativeXX
-			d.BackgroundColor3 = Color3.fromHex(spec.c)
-			d.BackgroundTransparency = 0.8
-			d.BorderSizePixel = 0
-			HudTheme.corner(d, 999)
-			d.Parent = paper
-		end
-	end
+	local art = Instance.new("ImageLabel")
+	art.Name = "Art"
+	art.Size = UDim2.fromScale(1, 1)
+	art.BackgroundTransparency = 1
+	art.Image = PHONE_IMAGES.Wallpaper
+	art.ScaleType = Enum.ScaleType.Crop
+	art.Parent = paper
+	local dim = Instance.new("Frame") -- iOS-style dim so the white icon labels read over the houses
+	dim.Name = "Dim"
+	dim.Size = UDim2.fromScale(1, 1)
+	dim.BackgroundColor3 = Color3.new(0, 0, 0)
+	dim.BackgroundTransparency = 0.75
+	dim.BorderSizePixel = 0
+	dim.Parent = paper
 end
 
 local function buildButton(region: Frame)
