@@ -1385,7 +1385,8 @@ local function foreStreet(
 end
 
 -- Road wear (P2 18) on the town grid, Harbour Road and Chapel Hill: gully gratings in the gutter, a manhole cover
--- now and then, and patched asphalt (darker or paler rectangles, under the paint). Never in a junction or a zebra.
+-- now and then, and small asphalt patches in the wheel tracks (a shade off the road, under the paint). Never in a
+-- junction or a zebra.
 local function roadWear(parent: Instance): number
 	local params = terrainParams()
 	local n = 0
@@ -1440,20 +1441,21 @@ local function roadWear(parent: Instance): number
 						Enum.Material.DiamondPlate
 					)
 				end
-				if i % 3 == 0 then
-					local dark = rng:NextNumber() < 0.6
+				if i % 6 == 0 then -- small patches in a lane's wheel track, 5 grey either side of BAY.tint
 					lay(
 						"Patch",
 						StreetLayout.offset(
 							c,
 							rng:NextNumber() < 0.5 and 1 or -1,
-							rng:NextNumber(3, 10)
+							e / 2 + (rng:NextNumber() < 0.5 and -2.2 or 2.2)
 						),
 						c.dir,
-						Vector3.new(rng:NextNumber(4, 9), 0.1, rng:NextNumber(5, 14)),
+						Vector3.new(rng:NextNumber(3, 4.5), 0.1, rng:NextNumber(3, 6)),
 						0.02,
-						if dark then Color3.fromRGB(22, 23, 25) else Color3.fromRGB(42, 43, 46),
-						Enum.Material.Granite
+						if rng:NextNumber() < 0.6
+							then Color3.fromRGB(59, 61, 65)
+							else Color3.fromRGB(69, 71, 75),
+						Enum.Material.Granite -- Asphalt on a Part is remapped to Granite (TerrainOnly)
 					)
 				end
 			end

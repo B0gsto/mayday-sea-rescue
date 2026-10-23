@@ -320,7 +320,7 @@ end
 local STONE = Color3.fromRGB(138, 132, 120) -- Cornish granite walling
 local SHED = Color3.fromRGB(96, 74, 52)
 -- MaterialService overrides Slate / WoodPlanks / Concrete / Brick for terrain: Parts use Granite, Wood, RoofShingles
-local SLATE = Color3.fromRGB(66, 72, 80)
+local SLATE = Color3.fromRGB(44, 48, 54)
 local CLOTHES =
 	{ Color3.fromRGB(230, 230, 236), Color3.fromRGB(60, 90, 150), Color3.fromRGB(196, 70, 64) }
 -- garden: a granite back wall and one side wall; every third gets a timber shed in the back corner
@@ -913,8 +913,10 @@ local function chapelSquare(parent: Instance, r: TownLayout.Rect, y0: number): M
 	return sq
 end
 
--- farmsteads (layout.py FARMS: gravel yards flattened in the bake): a farmhouse on the yard's north side facing
--- into it and the boatyard shed as a barn on its east side
+-- farmsteads (layout.py FARMS: gravel yards flattened in the bake): a granite farmhouse (a 2-storey terrace build)
+-- on the yard's north side facing into it, a granite barn under a grey-green corrugated roof on its east side, and a
+-- granite yard wall with a gate gap on the south. (The boatyard-shed mesh barn read as a giant white slab.)
+local BARN = { len = 40, wide = 22, h = 9, pitch = 0.45, roof = Color3.fromRGB(100, 108, 102) }
 local function farms(parent: Instance): number
 	local folder = Instance.new("Model")
 	folder.Name = "Farms"
@@ -922,32 +924,78 @@ local function farms(parent: Instance): number
 	folder.Parent = parent
 	local n = 0
 	for i, f in (WorldConfig :: any).Farms or {} do
-		local yard = CFrame.new(f.center.X, 0, f.center.Z) * CFrame.Angles(0, -math.rad(f.yaw), 0)
 		local y = ground(f.center.X, f.center.Z, f.center.Y)
-		local pieces: { { any } } = {
-			{
-				string.format("M_Bld_Cottage_%02d", (i % #TownLayout.COTTAGES) + 1),
-				Vector3.new(-8, 0, -f.size[2] / 2 + 12),
-				math.pi,
-			},
-			{ "M_Bld_BoatyardShed", Vector3.new(f.size[1] / 2 - 18, 0, 4), -math.pi / 2 },
-		}
-		for k, pc in pieces do
-			local m = AssetLoader.cloneStatic(pc[1], "LOD0", true)
-			if m then
-				m.Name = `{f.id}_{if k == 1 then "House" else "Barn"}`
-				m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-				m:PivotTo(
-					(yard * CFrame.new(pc[2]) * CFrame.Angles(0, pc[3], 0)) + Vector3.new(0, y, 0)
-				)
-				m.Parent = folder
-				if k == 1 then
-					m:SetAttribute("Render", TownLayout.RENDERS[(i % #TownLayout.RENDERS) + 1])
-					pcall(CottageRig.apply, m)
-				end
-				n += 1
-			end
+		local yard = CFrame.new(f.center.X, y, f.center.Z) * CFrame.Angles(0, -math.rad(f.yaw), 0)
+		local hx, hz = f.size[1] / 2, f.size[2] / 2
+		local house = yard * CFrame.new(-8, 0, -hz + 12) * CFrame.Angles(0, math.pi, 0)
+		local lot: any = { cf = house, w = 24, floors = 2, corner = false, shop = false, front = 0 }
+		local ok, res = pcall(TownBuildings.terrace, folder, lot, 6 * i, y, y) -- n % 6 == 0: a granite front
+		if ok then
+			res.Name = `{f.id}_House`
+			n += 1
+		else
+			warn(`[Town] {f.id} farmhouse: {res}`)
 		end
+		local barn = Instance.new("Model")
+		barn.Name = `{f.id}_Barn`
+		barn.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		-- barn X runs along the yard's Z; barn -Z faces into the yard
+		local at = yard
+			* CFrame.new(hx - BARN.wide / 2 - 4, 0, 4)
+			* CFrame.Angles(0, math.pi / 2, 0)
+		part(
+			barn,
+			"Walls",
+			Vector3.new(BARN.len, BARN.h, BARN.wide),
+			at * CFrame.new(0, BARN.h / 2, 0),
+			STONE,
+			Enum.Material.Granite
+		)
+		local run = BARN.wide / 2 + 1
+		local rise = run * BARN.pitch
+		for _, sz in { -1, 1 } do -- two corrugated slopes, their wedge ends close the gables
+			local w = Instance.new("WedgePart")
+			w.Name = "Roof"
+			w.Anchored = true
+			w.Size = Vector3.new(BARN.len + 1.6, rise, run)
+			w.CFrame = at
+				* CFrame.new(0, BARN.h + rise / 2, sz * run / 2)
+				* CFrame.Angles(0, if sz < 0 then 0 else math.pi, 0)
+			w.Color, w.Material = BARN.roof, Enum.Material.Metal
+			w.Parent = barn
+		end
+		part(
+			barn,
+			"Door",
+			Vector3.new(12, 9, 0.4),
+			at * CFrame.new(0, 4.5, -BARN.wide / 2 - 0.2),
+			SHED,
+			Enum.Material.Wood
+		)
+		barn.Parent = folder
+		n += 1
+		-- the yard wall, 1.4 thick and 3.4 high on the yard's edge, a 10-stud gate gap mid-south
+		local walls = Instance.new("Model")
+		walls.Name = `{f.id}_YardWall`
+		walls.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		local function wall(x0: number, z0: number, x1: number, z1: number)
+			local len = math.max(math.abs(x1 - x0), math.abs(z1 - z0)) + 1.4
+			local size = if x0 == x1 then Vector3.new(1.4, 3.4, len) else Vector3.new(len, 3.4, 1.4)
+			part(
+				walls,
+				"Wall",
+				size,
+				yard * CFrame.new((x0 + x1) / 2, 1.7, (z0 + z1) / 2),
+				STONE,
+				Enum.Material.Granite
+			)
+		end
+		wall(-hx, -hz, hx, -hz)
+		wall(-hx, -hz, -hx, hz)
+		wall(hx, -hz, hx, hz)
+		wall(-hx, hz, -5, hz)
+		wall(5, hz, hx, hz)
+		walls.Parent = folder
 	end
 	return n
 end

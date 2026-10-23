@@ -50,12 +50,12 @@ local BLINDS = {
 local RIDGES =
 	{ Color3.fromRGB(150, 82, 60), Color3.fromRGB(56, 60, 66), Color3.fromRGB(128, 72, 54) }
 TownBuildings.SLATES =
-	{ -- dark Delabole greys and blue-greys around #3A3F45 (RoofShingles reads lighter)
-		Color3.fromRGB(58, 63, 69),
-		Color3.fromRGB(48, 53, 61),
-		Color3.fromRGB(66, 69, 74),
-		Color3.fromRGB(52, 57, 64),
-		Color3.fromRGB(62, 64, 70),
+	{ -- dark Delabole greys: the sky light lifts an up-facing roof about +25 grey from the air (#3A3F45 read pale)
+		Color3.fromRGB(38, 41, 46),
+		Color3.fromRGB(32, 35, 41),
+		Color3.fromRGB(44, 46, 50),
+		Color3.fromRGB(35, 38, 44),
+		Color3.fromRGB(41, 42, 47),
 	}
 local DOORS = {
 	Color3.fromRGB(30, 52, 86),
@@ -414,7 +414,8 @@ local function shell(m: Model, at: CFrame, s: Spec): number
 			end
 		end
 	end
-	box("Cornice", Vector3.new(w + 0.6, 1, d + 1.2), 0, eave - 0.3, 0, s.trim, M.Plaster)
+	-- top flush with the eaves: higher, its white top showed as a line round every roof from the air
+	box("Cornice", Vector3.new(w + 0.6, 1, d + 1.2), 0, eave - 0.5, 0, s.trim, M.Plaster)
 	-- slate roof (a wedge's slope faces its -Z)
 	local run = d / 2 + 0.6
 	local rise = run * s.pitch
