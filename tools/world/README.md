@@ -30,6 +30,10 @@ parents that `Terrain` instance into Workspace (replacing any existing one). Lun
 (checked: the built place opens with the voxels). No base place file is needed. If `Terrain.rbxm` is missing, Build
 falls back to the old part-built ocean floor and land (Workspace attribute `WorldTerrain` says which).
 
+**Publish.** `tools/studio-load.py` clears the voxels and never carries them, so `tools/studio/publish_studio.py`
+loads the build with the bake staged (`build/MaydayPublish.rbxl`), runs `studio_terrain.write()` in the publish
+window, removes the staging and refuses to publish unless the town platform reads solid.
+
 **Materials.** `materials()` in gen_terrain.py weighs every material per 4-stud voxel cell by slope (12-stud
 smoothed), height, curvature (hollows: box-blurred height minus height), distance to the sea and to the road edge,
 then `choose()` takes a soft argmax: log weight + a domain-warped multi-octave patch noise per material + a little

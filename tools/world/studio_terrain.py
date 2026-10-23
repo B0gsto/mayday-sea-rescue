@@ -31,6 +31,23 @@ def lua_args(d):
     return f"local ARGS = {v(d)}\n"
 
 
+def write(run):
+    """Write the staged bake (ServerStorage.__WorldTerrain) as voxels, the arch and the material colours.
+    `run(args)` executes write_terrain.luau with ARGS in the Edit datamodel; also used by tools/studio/publish_studio.py."""
+    meta = json.load(open(os.path.join(REPO, "map/generated/terrain.json")))
+    rows = (meta["nx"] - 1) // 64
+    (gx0, gz0), (gx1, gz1) = L.GULLY["from"], L.GULLY["to"]
+    glen = math.hypot(gx1 - gx0, gz1 - gz0)
+    poi = next(p for p in L.POIS if p["id"] == "GullyArch")
+    arch = {"x": poi["pos"][0], "y": L.GULLY["floorY"] + 2, "z": poi["pos"][2], "ax": -(gz1 - gz0) / glen,
+            "az": (gx1 - gx0) / glen, "radius": L.GULLY["halfWidth"] + 8, "thick": 7}
+    step = 4
+    for r0 in range(0, rows, step):
+        print(run({"mode": "write", "row0": r0, "row1": min(rows, r0 + step)})[:200], flush=True)
+    print(run({"mode": "arch", "arch": arch}))
+    print(run({"mode": "colors"}))
+
+
 def main():
     work = os.path.join(REPO, "build/world/TerrainWork.rbxl")
     os.makedirs(os.path.dirname(work), exist_ok=True)
@@ -40,13 +57,6 @@ def main():
                     os.path.join(REPO, "build/MaydaySeaRescue.rbxl"), work, os.path.join(REPO, "map/generated")],
                        check=True)
         subprocess.run([sys.executable, os.path.join(TOOLS, "studio-open.py"), work, "--tag", TAG], check=True)
-    meta = json.load(open(os.path.join(REPO, "map/generated/terrain.json")))
-    rows = (meta["nx"] - 1) // 64
-    (gx0, gz0), (gx1, gz1) = L.GULLY["from"], L.GULLY["to"]
-    glen = math.hypot(gx1 - gx0, gz1 - gz0)
-    poi = next(p for p in L.POIS if p["id"] == "GullyArch")
-    arch = {"x": poi["pos"][0], "y": L.GULLY["floorY"] + 2, "z": poi["pos"][2], "ax": -(gz1 - gz0) / glen,
-            "az": (gx1 - gx0) / glen, "radius": L.GULLY["halfWidth"] + 8, "thick": 7}
     t0 = time.time()
     with studio_lock("mayday world terrain"):
         with StudioSession() as s:
@@ -60,12 +70,10 @@ def main():
                     raise RuntimeError(out[:2000])
                 return out
 
-            step = 4
-            for r0 in range(0, rows if not export_only else 0, step):
-                print(run({"mode": "write", "row0": r0, "row1": min(rows, r0 + step)})[:200], flush=True)
             if not export_only:
-                print(run({"mode": "arch", "arch": arch}))
-            print(run({"mode": "colors"}))
+                write(run)
+            else:
+                print(run({"mode": "colors"}))
             chunks, offset, total, n = [], 0, None, 72_000  # execute_luau output is cut near 100,000 chars
             while total is None or offset < total:
                 out = run({"mode": "export", "offset": offset, "length": n})

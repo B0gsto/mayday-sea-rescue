@@ -7,7 +7,10 @@ usage: python3 tools/studio/publish_studio.py [--skip-check] [--batch 15] [--gap
   1. check.sh (unless --skip-check) and build.sh
   2. open the test place (deploy/target.json, never the launch universe) from Roblox in a fresh Studio process
      (roblox-studio: URL) and wait until the Studio MCP lists it
-  3. tools/studio-load.py replaces its content with build/MaydaySeaRescue.rbxl
+  3. tools/studio-load.py replaces its content with build/MaydaySeaRescue.rbxl plus the terrain bake staged in
+     ServerStorage (build/MaydayPublish.rbxl, tools/world/make_work_place.luau): studio-load clears the voxels and
+     never carries them, so tools/world/write_terrain.luau writes them (as studio_terrain.py does), the staging is
+     removed, and a probe of the town platform must read solid ground
   4. wait for Studio's own texture-pack burst to end (it hits HTTP 429 / 504 on hundreds of packs at once), then
      re-trigger every pack slowly: blank and restore ColorMap on --batch surfaces every --gap seconds
   5. File > Publish to Roblox through the accessibility menu (tools/studio/studio-menu.swift), read the new
@@ -21,7 +24,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 TOOLS = os.path.expanduser("~/RobloxProjects/tools")
 sys.path.insert(0, TOOLS)
+sys.path.insert(0, os.path.join(REPO, "tools", "world"))
 from studio import StudioSession, studio_lock  # noqa: E402
+import studio_terrain  # noqa: E402
 
 TARGET = json.load(open(os.path.join(REPO, "deploy", "target.json")))
 UNIVERSE, PLACE = TARGET["universeId"], TARGET["placeId"]
@@ -40,6 +45,15 @@ for i, d in batch do saved[i] = d.ColorMap; d.ColorMap = "" end
 task.wait(0.5) -- a same-frame restore never reaches the texture-pack job
 for i, d in batch do d.ColorMap = saved[i] end
 return #list
+'''
+# the town platform (Y 4) under Harbour Road west of the Chandlery: solid voxels, else the cars spawn in the sea
+TOWN_PROBE = '''
+local m = workspace.Terrain:ReadVoxels(Region3.new(Vector3.new(-104, -8, -64), Vector3.new(-96, 4, -56)), 4)
+local solid = 0
+for x = 1, m.Size.X do for y = 1, m.Size.Y do for z = 1, m.Size.Z do
+	if m[x][y][z] ~= Enum.Material.Air then solid += 1 end
+end end end
+return solid
 '''
 
 
@@ -99,6 +113,9 @@ def main():
     if "--skip-check" not in sys.argv:
         run([os.path.join(TOOLS, "check.sh"), REPO])
     run([os.path.join(TOOLS, "build.sh"), REPO])
+    run(["lune", "run", os.path.join(REPO, "tools", "world", "make_work_place.luau"),
+         os.path.join(REPO, "build", "MaydaySeaRescue.rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
+         os.path.join(REPO, "map", "generated")])
     if studio_pids():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
     batch, gap = int(arg("--batch", 15)), arg("--gap", 15)
@@ -122,8 +139,21 @@ def main():
                 log = log_of(pid)
                 print("studio pid %d, log %s" % (pid, log), flush=True)
                 settle(log)  # Studio's on-open texture-pack pass
-                print(run([sys.executable, os.path.join(TOOLS, "studio-load.py"), REPO, sid]).strip().splitlines()[0],
-                      flush=True)
+                print(run([sys.executable, os.path.join(TOOLS, "studio-load.py"), REPO, sid, "--build", "MaydayPublish"])
+                      .strip().splitlines()[0], flush=True)
+
+                def luau(code, timeout=600):
+                    ok, texts, _ = s.call("execute_luau", {"studio_id": sid, "datamodel_type": "Edit", "code": code},
+                                          timeout)
+                    if not ok:
+                        sys.exit("terrain write failed, nothing published: " + " ".join(texts)[:1500])
+                    return " ".join(texts)
+                studio_terrain.write(lambda a: luau(studio_terrain.lua_args(a) + studio_terrain.WRITER))
+                luau('game:GetService("ServerStorage").__WorldTerrain:Destroy() return "ok"')
+                solid = int(luau(TOWN_PROBE).strip())
+                print("town platform probe: %d solid voxels" % solid, flush=True)
+                if solid < 6:
+                    sys.exit("the loaded place has no terrain at the town platform: nothing published")
                 settle(log)  # the burst for the freshly loaded surfaces
                 time.sleep(60)  # let the upload rate limit cool down
                 start = len(log_lines(log))
