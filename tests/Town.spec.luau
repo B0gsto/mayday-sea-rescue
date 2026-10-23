@@ -41,7 +41,8 @@ return function(t)
 
 	t.test("every lot faces its street (front = asset -Z toward the nearest grid line)", function()
 		for _, lot in TownLayout.lots(town) do
-			local front = lot.cf.Position + lot.cf.LookVector * (town.width / 2 + town.footway + 1) -- the setback less D / 2
+			local front = lot.cf.Position
+				+ lot.cf.LookVector * (town.width / 2 + town.footway + 1 + lot.front) -- the setback less D / 2
 			local xs, zs = TownLayout.lines(town)
 			local best = math.huge
 			for _, x in xs do
@@ -127,6 +128,37 @@ return function(t)
 					t.expect(overlaps(g.rect, lm.rect)).toBe(false)
 				end
 			end
+		end
+	)
+
+	t.test(
+		"rows vary: 2, 3 and 4 storeys, lot variants never side by side, gardened fronts",
+		function()
+			local lots = TownLayout.lots(town, nil, TownLayout.southZ(town, WorldConfig.Roads))
+			local heights, kinds, gardened = {}, {}, 0
+			for i, l in lots do
+				if l.floors then
+					heights[l.floors] = true
+				end
+				if l.kind then
+					kinds[l.kind] = (kinds[l.kind] or 0) + 1
+					t.expect(l.corner).toBe(false)
+					local nb = lots[i + 1]
+					if
+						nb
+						and nb.face == l.face
+						and (nb.cf.Position - l.cf.Position).Magnitude < 30
+					then
+						t.expect(nb.kind).toBeNil()
+					end
+				end
+				t.expect(l.front).toBe(if l.shop then 0 else TownLayout.FRONT)
+				gardened += if l.front > 0 then 1 else 0
+			end
+			t.expect(heights[2] and heights[3] and heights[4]).toBe(true)
+			t.expect((kinds.gap or 0) > 3 and (kinds.endon or 0) > 3 and (kinds.pub or 0) > 0)
+				.toBe(true)
+			t.expect(gardened > #lots / 2).toBe(true)
 		end
 	)
 end

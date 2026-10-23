@@ -11,7 +11,8 @@
 --                     the TownLayout.LANDMARKS (hotel, customs house, market hall); gardens get outshuts, washing
 --                     lines and trees; the residential blocks a gravel back lane.
 -- Grid roads are axis-aligned, so Region3 repaints are exact. shortcut: a rotated town needs per-segment wedges.
--- Folder attributes: TownCottages, TownTerraces, TownSkipped, TownGardens.
+-- Every non-shop lot gets a walled front garden (frontGarden); "gap" lots are all garden.
+-- Folder attributes: TownCottages, TownTerraces, TownSkipped, TownGardens, TownGaps.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -71,12 +72,12 @@ local TINT: { [string]: { number } } = {
 	Concrete = { 176, 174, 168 },
 	Pavement = { 150, 146, 136 },
 	Cobblestone = { 128, 122, 112 },
-	Grass = { 98, 128, 62 },
-	LeafyGrass = { 122, 128, 74 },
+	Grass = { 100, 118, 64 }, -- olive, not lawn green
+	LeafyGrass = { 116, 120, 70 }, -- clover / weed patches (Town.paint)
 	Ground = { 110, 96, 70 },
 	Mud = { 74, 60, 46 },
-	Sand = { 196, 178, 138 },
-	Sandstone = { 170, 150, 112 },
+	Sand = { 205, 187, 148 }, -- warm Cornish sand (#CDBB94)
+	Sandstone = { 168, 150, 114 },
 	Salt = { 176, 160, 124 },
 	Limestone = { 165, 158, 140 },
 	Rock = { 112, 114, 116 },
@@ -85,10 +86,10 @@ local TINT: { [string]: { number } } = {
 	CrackedLava = { 100, 96, 90 },
 	-- until naturalGround() reaches them: their replacement's tint
 	Snow = { 122, 128, 74 },
-	WoodPlanks = { 98, 128, 62 },
+	WoodPlanks = { 100, 118, 64 },
 	Brick = { 110, 96, 70 },
-	Glacier = { 196, 178, 138 },
-	Ice = { 196, 178, 138 },
+	Glacier = { 205, 187, 148 },
+	Ice = { 205, 187, 148 },
 }
 local NATURAL: { [Enum.Material]: Enum.Material } = {
 	[Enum.Material.Snow] = Enum.Material.LeafyGrass,
@@ -154,6 +155,21 @@ function Town.paint()
 		local _, zs = TownLayout.lines(town :: any)
 		for _, b in TownLayout.blocks(town :: any) do
 			replace(b[1], b[2], b[3], b[4], y, Enum.Material.Grass)
+			for k = 1, 4 do -- clover and weed patches: the mown grass is never one even green
+				local u, v = TownLayout.hash(b[1] + k, b[2]), TownLayout.hash(b[3], b[4] + k)
+				local px, pz = b[1] + u * (b[3] - b[1]), b[2] + v * (b[4] - b[2])
+				local r = 4 + 6 * TownLayout.hash(px, pz)
+				Workspace.Terrain:ReplaceMaterial(
+					Region3.new(
+						Vector3.new(px - r, y - 8, pz - r),
+						Vector3.new(px + r, y + 4, pz + r)
+					)
+						:ExpandToGrid(4),
+					4,
+					Enum.Material.Grass,
+					Enum.Material.LeafyGrass
+				)
+			end
 			if b[4] < zs[2] then -- north of the first street: back-to-back gardens, a gravel back lane between
 				local mid = (b[2] + b[4]) / 2
 				replace(b[1] + 52, mid - 3, b[3] - 52, mid + 3, y, Enum.Material.Pavement)
@@ -343,12 +359,13 @@ local function garden(
 	)
 	local wood = Color3.fromRGB(110, 92, 72)
 	if n % 2 == 0 then -- a back extension (lean-to outshut) against the house on the far side from the shed
-		local at = Vector3.new(cx, y, cz) - backDir * (d / 2 - 3.5) + side * (w / 4)
+		local od = math.min(7, d - 1) -- outshut depth
+		local at = Vector3.new(cx, y, cz) - backDir * (d / 2 - od / 2) + side * (w / 4)
 		local rot = CFrame.Angles(0, math.atan2(-backDir.X, -backDir.Z), 0) -- local -Z = out into the garden
 		part(
 			parent,
 			`Outshut{n}`,
-			Vector3.new(w / 2 - 1, 8, 7),
+			Vector3.new(w / 2 - 1, 8, od),
 			CFrame.new(at + Vector3.yAxis * 4) * rot,
 			lot.render == "White" and Color3.fromRGB(236, 232, 222) or Color3.fromRGB(218, 210, 192),
 			Enum.Material.Plaster
@@ -356,7 +373,7 @@ local function garden(
 		local roof = Instance.new("WedgePart")
 		roof.Name = `OutshutRoof{n}`
 		roof.Anchored, roof.CanCollide, roof.CanQuery = true, false, false
-		roof.Size = Vector3.new(w / 2 - 0.4, 2.6, 7.6)
+		roof.Size = Vector3.new(w / 2 - 0.4, 2.6, od + 0.6)
 		roof.CFrame = CFrame.new(at + Vector3.yAxis * 9.3) * rot
 		roof.Color, roof.Material = SLATE, Enum.Material.RoofShingles
 		roof.Parent = parent
@@ -364,7 +381,7 @@ local function garden(
 			parent,
 			`OutshutGlass{n}`,
 			Vector3.new(3, 3.6, 0.2),
-			CFrame.new(at + Vector3.yAxis * 4.6) * rot * CFrame.new(0, 0, -3.55),
+			CFrame.new(at + Vector3.yAxis * 4.6) * rot * CFrame.new(0, 0, -od / 2 - 0.05),
 			Color3.fromRGB(38, 48, 58),
 			Enum.Material.Glass
 		)
@@ -402,7 +419,7 @@ local function garden(
 			)
 		end
 	end
-	if n % 5 == 2 then -- a garden tree in the far corner
+	if n % 4 == 2 then -- a garden tree in the far corner
 		local at = far - backDir * 3 + side * (w / 2 - 3)
 		local trunk = part(
 			parent,
@@ -425,7 +442,7 @@ local function garden(
 			crown.Shape = Enum.PartType.Ball
 		end
 	end
-	if n % 3 == 0 then
+	if n % 3 == 0 and d >= 10 then
 		local at = far - backDir * 4.5 - side * (w / 2 - 4.5)
 		part(
 			parent,
@@ -445,6 +462,192 @@ local function garden(
 			SLATE,
 			Enum.Material.RoofShingles
 		)
+	end
+end
+
+-- front gardens (TownLayout.FRONT between the pavement and the house): a granite wall or a Cornish hedge (stone
+-- base, turf top) along the pavement with a painted gate opposite the door, a flagged path, a low party wall,
+-- hydrangea / fuchsia shrubs, now and then a cabbage palm; `tree`: a street tree (outer rows, about one per 60
+-- studs). A "gap" lot is all garden (pavement to the lot's back) with a tree. Parts go in the house's own Model
+-- (`m`, Atomic) so they stream with it.
+local HEDGE = Color3.fromRGB(84, 104, 56)
+local LEAF = Color3.fromRGB(58, 84, 46)
+local FLOWERS = {
+	Color3.fromRGB(96, 124, 196), -- hydrangea blue
+	Color3.fromRGB(214, 132, 176), -- hydrangea pink
+	Color3.fromRGB(236, 234, 238), -- white
+	Color3.fromRGB(176, 40, 66), -- fuchsia
+	Color3.fromRGB(146, 120, 188), -- lavender
+	LEAF,
+}
+local GATES = {
+	Color3.fromRGB(236, 234, 226),
+	Color3.fromRGB(34, 70, 52),
+	Color3.fromRGB(30, 52, 86),
+	Color3.fromRGB(96, 74, 52),
+}
+-- door x (asset local) of M_Bld_Cottage_01..06 (assets/fbx/*/attachments.json ATT_Door)
+local COTTAGE_DOOR = { 0, 9, 4.8, 0, 2.16, 4.5 }
+
+local function tree(m: Instance, at: Vector3, scale: number)
+	local h = 9 * scale
+	local trunk = part(
+		m,
+		"TreeTrunk",
+		Vector3.new(h, 1.1 * scale, 1.1 * scale),
+		CFrame.new(at + Vector3.yAxis * h / 2) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(84, 70, 56),
+		Enum.Material.Wood
+	)
+	trunk.Shape = Enum.PartType.Cylinder
+	local green = LEAF:Lerp(Color3.fromRGB(96, 116, 58), TownLayout.hash(at.X, at.Z))
+	for k, c in { { 0, 1.1, 0, 9 }, { 1.8, 1.35, -1.2, 6.5 }, { -1.6, 1.25, 1.4, 6 } } do
+		local crown = part(
+			m,
+			"TreeCrown",
+			Vector3.one * c[4] * scale,
+			CFrame.new(at + Vector3.new(c[1] * scale, h * c[2], c[3] * scale)),
+			if k == 2 then green:Lerp(Color3.new(1, 1, 0.8), 0.08) else green,
+			Enum.Material.Grass
+		)
+		crown.Shape = Enum.PartType.Ball
+		crown.CanCollide = false
+	end
+end
+
+-- a Cornish cabbage palm: a slim leaning trunk and a burst of strap leaves
+local function palm(m: Instance, at: Vector3, n: number)
+	local h = 7 + (n % 3)
+	local lean = CFrame.new(at) * CFrame.Angles(math.rad(4 + n % 5), math.rad(n * 47), 0)
+	local trunk = part(
+		m,
+		"PalmTrunk",
+		Vector3.new(h, 0.7, 0.7),
+		lean * CFrame.new(0, h / 2, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(110, 96, 80),
+		Enum.Material.Wood
+	)
+	trunk.Shape = Enum.PartType.Cylinder
+	local top = lean * CFrame.new(0, h, 0)
+	for k = 0, 6 do
+		local leaf = part(
+			m,
+			"PalmLeaf",
+			Vector3.new(0.5, 3.8, 0.12),
+			top
+				* CFrame.Angles(0, k * 2 * math.pi / 7, 0)
+				* CFrame.Angles(math.rad(if k % 2 == 0 then 30 else 75), 0, 0)
+				* CFrame.new(0, 1.8, 0),
+			Color3.fromRGB(104, 124, 66),
+			Enum.Material.Grass
+		)
+		leaf.CanCollide = false
+	end
+end
+
+-- `zf`: the garden's inner edge (local z: the house front, or the lot back for a gap); y: the house floor
+local function frontGarden(
+	m: Instance,
+	lot: TownLayout.Lot,
+	n: number,
+	y: number,
+	doorX: number,
+	zf: number,
+	big: boolean
+)
+	local w, D = lot.w, TownLayout.DEPTH
+	local at = CFrame.new(lot.cf.X, y, lot.cf.Z) * lot.cf.Rotation
+	local zw = -D / 2 - lot.front + 0.5 -- wall centre: on the pavement's back edge
+	local gy = ground((at * CFrame.new(0, 0, zw)).X, (at * CFrame.new(0, 0, zw)).Z, y)
+	local base = math.min(gy, y) - 0.6
+	local hedge = n % 3 == 0
+	local top = y + (if hedge then 2 else 2.4)
+	local g0, g1 = doorX - 1.8, doorX + 1.8 -- the gate gap
+	for _, seg in { { -w / 2, g0 }, { g1, w / 2 } } do
+		local len = seg[2] - seg[1]
+		if len > 0.6 then
+			local x = (seg[1] + seg[2]) / 2
+			part(
+				m,
+				"GardenWall",
+				Vector3.new(len, top - base, 1),
+				at * CFrame.new(x, (top + base) / 2 - y, zw),
+				STONE,
+				Enum.Material.Granite
+			)
+			if hedge then
+				part(
+					m,
+					"HedgeTop",
+					Vector3.new(len, 1.1, 1.5),
+					at * CFrame.new(x, top - y + 0.45, zw),
+					HEDGE,
+					Enum.Material.Grass
+				)
+			else
+				part(
+					m,
+					"Coping",
+					Vector3.new(len, 0.35, 1.3),
+					at * CFrame.new(x, top - y + 0.17, zw),
+					STONE:Lerp(Color3.new(1, 1, 1), 0.15),
+					Enum.Material.Granite
+				)
+			end
+		end
+	end
+	part(
+		m,
+		"Gate",
+		Vector3.new(3.2, 2.4, 0.2),
+		at * CFrame.new(doorX, 1.4, zw),
+		GATES[n % #GATES + 1],
+		Enum.Material.Wood
+	)
+	local depth = zf - (zw + 0.5)
+	part(
+		m,
+		"GardenPath",
+		Vector3.new(2.4, 0.3, depth),
+		at * CFrame.new(doorX, 0.05, zw + 0.5 + depth / 2),
+		Color3.fromRGB(150, 146, 138),
+		Enum.Material.Granite
+	)
+	part(
+		m,
+		"PartyWall",
+		Vector3.new(0.8, 1.8, depth),
+		at * CFrame.new(-w / 2 + 0.4, 0.9, zw + 0.5 + depth / 2),
+		STONE,
+		Enum.Material.Granite
+	)
+	-- shrubs on the wider side of the path, against the wall
+	local sx = if doorX < 0 then 1 else -1
+	local room = w / 2 - doorX * sx - 2
+	for k = 1, 2 do
+		local sz = 2.4 + TownLayout.hash(n, k) * 1.4
+		local x = doorX + sx * (2 + room * (k - 0.5) / 2)
+		x = math.clamp(x, -w / 2 + 1.6, w / 2 - 1.6)
+		local shrub = part(
+			m,
+			"Shrub",
+			Vector3.new(sz * 1.3, sz, sz),
+			at * CFrame.new(x, sz * 0.35, zw + 1.6),
+			FLOWERS[(n + k * 2) % #FLOWERS + 1],
+			Enum.Material.Grass
+		)
+		shrub.Shape = Enum.PartType.Ball
+		shrub.CanCollide = false
+	end
+	local spot = (at * CFrame.new(
+		math.clamp(doorX + sx * w, -w / 2 + 2.5, w / 2 - 2.5), -- the corner away from the path
+		0,
+		(zw + zf) / 2
+	)).Position
+	if big then
+		tree(m, spot, 1.1)
+	elseif n % 5 == 1 then
+		palm(m, spot, n)
 	end
 end
 
@@ -471,17 +674,71 @@ local function chapelSquare(parent: Instance, r: TownLayout.Rect, y0: number): M
 		SLATE,
 		Enum.Material.RoofShingles
 	)
+	local DRESS = STONE:Lerp(Color3.new(1, 1, 1), 0.25) -- dressed granite: surrounds, sills, courses
+	-- plinth and eaves cornice round the nave
+	part(
+		sq,
+		"Plinth",
+		Vector3.new(W + 0.8, 1.6, L + 0.8),
+		navC * CFrame.new(0, -H / 2 + 0.6, 0),
+		DRESS,
+		Enum.Material.Granite
+	)
+	for side = -1, 1, 2 do
+		part(
+			sq,
+			"Cornice",
+			Vector3.new(1, 1, L + 1),
+			CFrame.new(cx + side * (W / 2 + 0.3), y + H - 0.5, back + L / 2),
+			DRESS,
+			Enum.Material.Granite
+		)
+	end
+	-- round-headed lancets in dressed surrounds, with sills (one surround / glass / head part serves both sides)
 	for i = 1, 3 do
-		for side = -1, 1, 2 do
-			part(
-				sq,
-				"Window",
-				Vector3.new(0.4, 9, 3.4),
-				CFrame.new(cx + side * (W / 2 + 0.1), y + 10, back + i * L / 4),
-				Color3.fromRGB(40, 52, 66),
-				Enum.Material.Glass
-			)
-		end
+		local z = back + i * L / 4
+		part(
+			sq,
+			"Surround",
+			Vector3.new(W + 0.6, 10, 4.6),
+			CFrame.new(cx, y + 9.6, z),
+			DRESS,
+			Enum.Material.Granite
+		)
+		part(
+			sq,
+			"Window",
+			Vector3.new(W + 0.8, 9, 3.2),
+			CFrame.new(cx, y + 9.8, z),
+			Color3.fromRGB(40, 52, 66),
+			Enum.Material.Glass
+		)
+		part(
+			sq,
+			"WindowHead",
+			Vector3.new(W + 0.6, 4.6, 4.6),
+			CFrame.new(cx, y + 14.6, z),
+			DRESS,
+			Enum.Material.Granite
+		).Shape =
+			Enum.PartType.Cylinder
+		part(
+			sq,
+			"WindowHeadGlass",
+			Vector3.new(W + 0.8, 3.2, 3.2),
+			CFrame.new(cx, y + 14.3, z),
+			Color3.fromRGB(40, 52, 66),
+			Enum.Material.Glass
+		).Shape =
+			Enum.PartType.Cylinder
+		part(
+			sq,
+			"Sill",
+			Vector3.new(W + 1.4, 0.5, 5.2),
+			CFrame.new(cx, y + 4.6, z),
+			DRESS,
+			Enum.Material.Granite
+		)
 	end
 	local T, TH = 13, 48
 	local tz = back + L + T / 2
@@ -493,31 +750,112 @@ local function chapelSquare(parent: Instance, r: TownLayout.Rect, y0: number): M
 		STONE,
 		Enum.Material.Granite
 	)
+	-- string courses, a parapet, a round-headed doorway in a dressed surround, louvred belfry openings each side
+	for _, h in { 14, 27, TH - 4 } do
+		part(
+			sq,
+			"Course",
+			Vector3.new(T + 0.8, 0.8, T + 0.8),
+			CFrame.new(cx, y + h, tz),
+			DRESS,
+			Enum.Material.Granite
+		)
+	end
+	part(
+		sq,
+		"Parapet",
+		Vector3.new(T + 0.8, 1.4, T + 0.8),
+		CFrame.new(cx, y + TH - 0.2, tz),
+		DRESS,
+		Enum.Material.Granite
+	)
+	part(
+		sq,
+		"DoorSurround",
+		Vector3.new(7, 10, 0.6),
+		CFrame.new(cx, y + 5, tz + T / 2 + 0.2),
+		DRESS,
+		Enum.Material.Granite
+	)
+	part(
+		sq,
+		"DoorArch",
+		Vector3.new(0.6, 7, 7),
+		CFrame.new(cx, y + 10, tz + T / 2 + 0.2) * CFrame.Angles(0, math.rad(90), 0),
+		DRESS,
+		Enum.Material.Granite
+	).Shape =
+		Enum.PartType.Cylinder
 	part(
 		sq,
 		"Door",
 		Vector3.new(5, 9, 0.4),
-		CFrame.new(cx, y + 4.5, tz + T / 2 + 0.1),
+		CFrame.new(cx, y + 4.5, tz + T / 2 + 0.45),
 		Color3.fromRGB(70, 36, 24),
 		Enum.Material.Wood
 	)
 	part(
 		sq,
-		"Belfry",
-		Vector3.new(3, 6, 0.4),
-		CFrame.new(cx, y + TH - 9, tz + T / 2 + 0.1),
-		Color3.fromRGB(30, 30, 32),
+		"DoorHead",
+		Vector3.new(0.4, 5, 5),
+		CFrame.new(cx, y + 9, tz + T / 2 + 0.45) * CFrame.Angles(0, math.rad(90), 0),
+		Color3.fromRGB(70, 36, 24),
 		Enum.Material.Wood
-	)
+	).Shape =
+		Enum.PartType.Cylinder
+	for _, ax in { Vector3.new(T + 0.2, 6, 3), Vector3.new(3, 6, T + 0.2) } do -- through-parts: 4 openings from 2
+		part(
+			sq,
+			"Belfry",
+			ax,
+			CFrame.new(cx, y + TH - 9, tz),
+			Color3.fromRGB(30, 30, 32),
+			Enum.Material.Wood
+		)
+		part(
+			sq,
+			"BelfrySurround",
+			ax
+				+ Vector3.new(
+					if ax.X > ax.Z then 0.4 else 1.4,
+					1.4,
+					if ax.X > ax.Z then 1.4 else 0.4
+				),
+			CFrame.new(cx, y + TH - 8.3, tz),
+			DRESS,
+			Enum.Material.Granite
+		)
+	end
+	part(
+		sq,
+		"ClockRing",
+		Vector3.new(0.3, 6.2, 6.2),
+		CFrame.new(cx, y + TH - 17, tz + T / 2 + 0.05) * CFrame.Angles(0, math.rad(90), 0),
+		Color3.fromRGB(30, 34, 40),
+		Enum.Material.Metal
+	).Shape =
+		Enum.PartType.Cylinder
 	part(
 		sq,
 		"Clock",
 		Vector3.new(0.3, 5, 5),
-		CFrame.new(cx, y + TH - 17, tz + T / 2 + 0.1) * CFrame.Angles(0, math.rad(90), 0),
+		CFrame.new(cx, y + TH - 17, tz + T / 2 + 0.15) * CFrame.Angles(0, math.rad(90), 0),
 		Color3.fromRGB(236, 232, 220),
 		Enum.Material.SmoothPlastic
 	).Shape =
 		Enum.PartType.Cylinder
+	for k, hand in { { 1.9, -60 }, { 2.4, 0 } } do
+		part(
+			sq,
+			`Hand{k}`,
+			Vector3.new(0.25, hand[1], 0.1),
+			CFrame.new(cx, y + TH - 17, tz + T / 2 + 0.35)
+				* CFrame.Angles(0, 0, math.rad(hand[2]))
+				* CFrame.new(0, hand[1] / 2 - 0.2, 0),
+			Color3.fromRGB(24, 24, 26),
+			Enum.Material.Metal
+		)
+	end
 	for i = -1, 1, 2 do
 		for j = -1, 1, 2 do
 			part(
@@ -638,10 +976,37 @@ function Town.place(base: Instance)
 		extras.Name = "Streetscape" -- gardens, shopfronts, Chapel Square
 		extras.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
 		extras.Parent = folder
-		local terraces = 0
+		local terraces, gaps = 0, 0
+		local D = TownLayout.DEPTH
 		for n, lot in lots do
-			-- a cottage lot on uneven ground becomes a 2-storey code-built house (no gaps in the street face)
-			local y0 = if lot.floors then nil else level(lot, town.origin.Y)
+			-- front-garden trees: about one lot in three (one per 60-odd studs), seeded by position
+			local big = TownLayout.hash(math.floor(lot.cf.X / 4) + 0.3, math.floor(lot.cf.Z / 4))
+				< 0.3
+			if lot.kind == "gap" then -- a walled garden from the pavement to the lot's back, a tree in it
+				local lo, hi = span(lot.rect, town.origin.Y)
+				if hi - lo <= 8 then
+					local gm = Instance.new("Model")
+					gm.Name = `Gap{n}`
+					gm.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+					gm.Parent = extras
+					frontGarden(gm, lot, n, hi, 0, D / 2, true)
+					part(
+						gm,
+						"BackWall",
+						Vector3.new(lot.w, 3.2, 1),
+						CFrame.new(lot.cf.X, hi, lot.cf.Z)
+							* lot.cf.Rotation
+							* CFrame.new(0, 1, D / 2 - 0.5),
+						STONE,
+						Enum.Material.Granite
+					)
+					gaps += 1
+				end
+				continue
+			end
+			-- a cottage lot on uneven ground becomes a 2-storey code-built house (no gaps in the street face); lots
+			-- with a kind are always code-built
+			local y0 = if lot.floors or lot.kind then nil else level(lot, town.origin.Y)
 			if not lot.floors and not y0 then
 				lot = table.clone(lot)
 				lot.floors = 2
@@ -649,13 +1014,28 @@ function Town.place(base: Instance)
 			if lot.floors then -- code-built terrace: stands on a plinth, so slopes up to 8 studs are fine
 				local lo, hi = span(lot.rect, town.origin.Y)
 				if hi - lo <= 8 then
-					local ok, err = pcall(TownBuildings.terrace, folder, lot, n, lo, hi)
+					local ok, res = pcall(TownBuildings.terrace, folder, lot, n, lo, hi)
 					if ok then
 						terraces += 1
 						table.insert(placedLots, lot)
 						ys[lot] = hi
+						if lot.kind == "garage" then -- a granite-paved forecourt instead of a garden
+							part(
+								res,
+								"Forecourt",
+								Vector3.new(lot.w, 0.3, lot.front),
+								CFrame.new(lot.cf.X, hi, lot.cf.Z)
+									* lot.cf.Rotation
+									* CFrame.new(0, 0.05, -D / 2 - lot.front / 2),
+								Color3.fromRGB(132, 130, 124),
+								Enum.Material.Granite
+							)
+						elseif lot.front > 0 then
+							local doorX = if lot.kind == "chapel" then 0 else -lot.w / 4
+							frontGarden(res, lot, n, hi, doorX, -D / 2, big)
+						end
 					else
-						warn(`[Town] {town.id} terrace {n}: {err}`)
+						warn(`[Town] {town.id} terrace {n}: {res}`)
 					end
 				else
 					skipped += 1
@@ -677,6 +1057,15 @@ function Town.place(base: Instance)
 				if not ok then
 					warn(`[Town] {town.id} cottage {n}: rig failed: {err}`)
 				end
+				-- the rig's slate greys read pale from above: the terraces' dark Delabole slates
+				local slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1]
+				for _, d in model:GetDescendants() do
+					if d:IsA("MeshPart") and string.find(d.Name, "_Roof_", 1, true) then
+						d.Color = slate
+					end
+				end
+				local v = tonumber(string.sub(lot.asset, -2)) :: number
+				frontGarden(model, lot, n, y :: number, COTTAGE_DOOR[v] or 0, -D / 2, big)
 				placed += 1
 				table.insert(placedLots, lot)
 				ys[lot] = y :: number
@@ -693,6 +1082,7 @@ function Town.place(base: Instance)
 		end
 		root:SetAttribute("TownGardens", #gardens)
 		root:SetAttribute("TownTerraces", terraces)
+		root:SetAttribute("TownGaps", gaps)
 		local lms: { TownLayout.Landmark } = TownLayout.LANDMARKS[town.id] or {}
 		for _, lm in lms do
 			local lo, hi = span(lm.rect, town.origin.Y)
