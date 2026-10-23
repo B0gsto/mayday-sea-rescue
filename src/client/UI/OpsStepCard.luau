@@ -5,7 +5,8 @@
 --   flare + "Go"      answer and get aboard (tasking, launch)
 --   ring  + "1/3"     pick them up: survivors picked up / survivors in the call
 --   home  + "Home"    bring them home
--- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change.
+-- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change. Under the
+-- word, the distance to the objective (UI/Waypoint feeds distance()).
 local TweenService = game:GetService("TweenService")
 
 local Glyph = require(script.Parent.Glyph)
@@ -14,6 +15,7 @@ local HudTheme = require(script.Parent.HudTheme)
 export type StepCard = {
 	update: (s: { [string]: any }) -> (),
 	hide: () -> (),
+	distance: (text: string?) -> (),
 }
 
 local RED = Color3.fromHex("E8332A")
@@ -102,6 +104,17 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 		HudTheme.label("Step", "", UDim2.new(1, -(DISC + 26), 1, 0), HudTheme.NumberFont, 30, body)
 	word.Position = UDim2.fromOffset(DISC + 18, 0)
 	HudTheme.outline(word)
+	local range = HudTheme.label(
+		"Range",
+		"",
+		UDim2.new(1, -(DISC + 26), 0, 22),
+		HudTheme.NumberFont,
+		18,
+		body
+	)
+	range.Position = UDim2.new(0, DISC + 18, 1, -26)
+	range.Visible = false
+	HudTheme.outline(range)
 
 	local shown = { glyph = "", text = "" }
 	local function popIn(target: Instance, from: number)
@@ -147,6 +160,15 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 		hide = function()
 			body.Visible = false
 			shown.glyph, shown.text = "", ""
+		end,
+		distance = function(text: string?)
+			local has = text ~= nil
+			if range.Visible ~= has then
+				range.Visible = has
+				-- the word moves up to make room
+				word.Size = UDim2.new(1, -(DISC + 26), if has then 0 else 1, if has then 38 else 0)
+			end
+			range.Text = text or ""
 		end,
 	}
 	return card

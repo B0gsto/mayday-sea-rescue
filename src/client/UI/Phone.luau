@@ -1119,7 +1119,7 @@ local function build(statusRegion: Frame)
 	home.Position = UDim2.fromOffset(0, STATUS_H)
 	home.Size = UDim2.new(1, 0, 1, -STATUS_H - HOME_H)
 	home.Parent = screen
-	local dockH = ICON + 24
+	local dockH = CELL_H + 6 -- dock icons carry their label too (playtest: unlabelled icons)
 	local gridW = 4 * CELL_W
 	-- a wide clock widget on top (iOS), the icon grid under it
 	local widgetH = 128
@@ -1205,7 +1205,7 @@ local function build(statusRegion: Frame)
 		return DOCK[a.name] < DOCK[b.name]
 	end)
 	for _, app in docked do
-		table.insert(tiles, makeTile(app, DOCK[app.name], dock, false))
+		table.insert(tiles, makeTile(app, DOCK[app.name], dock, true))
 	end
 
 	-- the Dynamic Island, over everything on the screen

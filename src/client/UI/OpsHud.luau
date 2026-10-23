@@ -8,7 +8,8 @@
 -- relay / big-call alert.
 -- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
 -- (PyroController) and again every FLARE_EVERY s until the call is taken or withdrawn; the minimap
--- draws its blip (MapController).
+-- draws its blip (MapController), and UI/Waypoint marks it on screen (icon + distance, pinned to the
+-- edge when off screen) under a light pillar; the strip shows the same distance.
 local Players = game:GetService("Players")
 
 local ColdOpenCue = require(script.Parent.ColdOpenCue)
@@ -16,8 +17,10 @@ local Layout = require(script.Parent.Layout)
 local OpsDebrief = require(script.Parent.OpsDebrief)
 local OpsStepCard = require(script.Parent.OpsStepCard)
 local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
-local PyroController =
-	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("PyroController"))
+local Waypoint = require(script.Parent.Waypoint)
+local Controllers = script.Parent.Parent:WaitForChild("Controllers")
+local MapController = require(Controllers:WaitForChild("MapController"))
+local PyroController = require(Controllers:WaitForChild("PyroController"))
 
 local OpsHud = {}
 
@@ -52,6 +55,7 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
+	Waypoint.start(ops, MapController, step.distance)
 	-- cold open: one objective on screen, the minimap's pill ("Drop-off 100 m"), so no step strip
 	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
