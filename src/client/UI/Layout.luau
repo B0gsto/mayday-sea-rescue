@@ -105,6 +105,11 @@ local ZERO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
 
 -- Touch hardware, not the last input: a paired gamepad must not flip the HUD mid-rescue.
 local function device(): string
+	-- Studio only: Workspace attribute HudDevice ("Touch" | "Gamepad" | "Keyboard") previews another layout
+	local forced = RunService:IsStudio() and Workspace:GetAttribute("HudDevice")
+	if forced == "Touch" or forced == "Gamepad" or forced == "Keyboard" then
+		return forced
+	end
 	if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
 		return "Touch"
 	elseif UserInputService.GamepadEnabled and not UserInputService.MouseEnabled then
@@ -162,6 +167,11 @@ function Layout.prepare(gui: ScreenGui): ScreenGui
 	gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 		refresh(gui)
 	end)
+	if RunService:IsStudio() then
+		Workspace:GetAttributeChangedSignal("HudDevice"):Connect(function()
+			refresh(gui)
+		end)
+	end
 	return gui
 end
 
