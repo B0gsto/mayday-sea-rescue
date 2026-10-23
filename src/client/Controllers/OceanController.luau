@@ -65,10 +65,7 @@ local EPS = 1e-6
 local TILE = OceanSurface.TILE_STUDS
 local DRIFT_SPEED = 0.9 -- studs/s the ripple normal map drifts downwind (High tier) -- tune
 local STORM_ON, STORM_OFF = 0.55, 0.45 -- intensity hysteresis for the storm material -- tune
--- shortcut: the whitecap overlay mesh is off. With it the EditableMesh budget is nearly full and the
--- near/ring meshes intermittently draw pure black sheets (2026-10-23, 0/30 shots without it); the
--- weather is always calm, where it barely shows. Re-enable once the ocean frees mesh memory.
-local FOAM_OVERLAY = false
+local USE_MESH_OCEAN = false -- see rebuild(): the mesh ocean draws black sheets
 local FOAM_SINK = -0.9 -- foam overlay offset where there is no foam (hidden under the water)
 local FOAM_LIFT = 0.06 -- foam overlay offset on full-foam crests -- tune
 -- Shallows: the seabed depth under the camera lightens the whole sea's tint (never per-part
@@ -281,7 +278,7 @@ local function buildMesh(parent: Instance): boolean
 	end
 	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind)
 	seabed = Seabed.new(parent)
-	if FOAM_OVERLAY and tier.name ~= "Low" then
+	if tier.name ~= "Low" then
 		-- Foam overlay: half the near patch's resolution; round 4 widens it (up to twice the near
 		-- patch, inside the ring's unfaded area) so whitecaps reach past the boat in wide shots.
 		local foamCell = tier.nearCell * 2
@@ -721,9 +718,11 @@ local function build()
 		teardown()
 		tier = OceanQuality.current()
 		local parent = folder :: Folder
-		-- Studio only: Workspace attribute OceanForceParts previews the live-client fallback.
-		local forceParts = RunService:IsStudio()
-			and Workspace:GetAttribute("OceanForceParts") == true
+		-- shortcut: always the Part grid. The EditableMesh near/ring patches intermittently draw large
+		-- pure-black sheets (2026-10-23: 8/12 Studio shots, foam overlay on or off; 0/8 on Parts).
+		-- Set USE_MESH_OCEAN once that's fixed; Studio attribute OceanForceParts still forces Parts.
+		local forceParts = not USE_MESH_OCEAN
+			or RunService:IsStudio() and Workspace:GetAttribute("OceanForceParts") == true
 		if forceParts or not buildMesh(parent) then
 			teardown()
 			buildFallback(parent)
