@@ -42,6 +42,7 @@ return function(t)
 			{ "vehicle", { 1.5, "JetSki" } },
 			{ "vehicle", { -3, "JetSki" } },
 			{ "clock", { 25 } },
+			{ "clock", { 2 } }, -- night is off
 			{ "clock", { 0 / 0 } },
 			{ "award", { 7, -1, 0 } },
 			{ "award", { 7, math.huge, 0 } },

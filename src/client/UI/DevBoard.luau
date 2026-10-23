@@ -76,19 +76,20 @@ function DevBoard.build(parent: Instance, tabs: { string }): Board
 	close.Position = UDim2.new(1, 0, 0, 3)
 	close.BackgroundColor3 = C.panelLight
 
-	local bar = Instance.new("ScrollingFrame")
+	-- tabs wrap in rows of 4, all visible at once
+	local tabRows = math.ceil(#tabs / 4)
+	local bar = Instance.new("Frame")
 	bar.Name = "Tabs"
 	bar.BackgroundTransparency = 1
-	bar.BorderSizePixel = 0
 	bar.Position = UDim2.fromOffset(0, ROW + 4)
-	bar.Size = UDim2.new(1, 0, 0, ROW)
-	bar.ScrollingDirection = Enum.ScrollingDirection.X
-	bar.AutomaticCanvasSize = Enum.AutomaticSize.X
-	bar.CanvasSize = UDim2.new()
-	bar.ScrollBarThickness = 3
+	bar.Size = UDim2.new(1, 0, 0, tabRows * ROW)
 	bar.Parent = panel
-	local barList = list(bar, 4)
-	barList.FillDirection = Enum.FillDirection.Horizontal
+	local barGrid = Instance.new("UIGridLayout")
+	barGrid.CellSize = UDim2.new(0.25, -4, 0, ROW - 4)
+	barGrid.CellPadding = UDim2.fromOffset(4, 4)
+	barGrid.SortOrder = Enum.SortOrder.LayoutOrder
+	barGrid.Parent = bar
+	local top = (tabRows + 1) * ROW + 12
 
 	local status =
 		HudTheme.label("Status", "", UDim2.new(1, 0, 0, 24), nil, HudTheme.TextSize.small, panel)
@@ -105,14 +106,14 @@ function DevBoard.build(parent: Instance, tabs: { string }): Board
 		end
 	end
 	for i, name in tabs do
-		local b = HudTheme.button(name, name, UDim2.new(0, 104, 1, -6), bar)
+		local b = HudTheme.button(name, name, UDim2.new(), bar)
 		b.LayoutOrder = i
 		local page = Instance.new("ScrollingFrame")
 		page.Name = name
 		page.BackgroundTransparency = 1
 		page.BorderSizePixel = 0
-		page.Position = UDim2.fromOffset(0, 2 * ROW + 12)
-		page.Size = UDim2.new(1, 0, 1, -(2 * ROW + 12 + 28))
+		page.Position = UDim2.fromOffset(0, top)
+		page.Size = UDim2.new(1, 0, 1, -(top + 28))
 		page.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		page.CanvasSize = UDim2.new()
 		page.ScrollBarThickness = 6

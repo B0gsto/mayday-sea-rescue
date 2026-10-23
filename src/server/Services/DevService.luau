@@ -353,6 +353,7 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 			return ok, if ok then (if a[2] then "Completed" else "Cancelled") else "No op"
 		end,
 		storm = function(_, _, a)
+			StormService.SetDevStorms(a[1] ~= "Calm")
 			if a[1] == "Calm" then
 				StormService.ForceCalm()
 			else

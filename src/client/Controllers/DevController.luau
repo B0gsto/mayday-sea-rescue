@@ -1,7 +1,8 @@
 --!strict
 -- DevController: the client half of the dev board (DevService). Inert until the server sends
--- Dev_Grant (only to allowed players). Then: F8, chat "/dev", gamepad L1 + R1 + Select, or the
--- small corner button on touch toggles the panel (UI/DevBoard). Fly, noclip, walk speed and
+-- Dev_Grant (only to allowed players). Then: the DEV HUD button (right of the phone button; under
+-- the minimap on touch), F8, chat "/dev" or gamepad L1 + R1 + Select toggles the panel (UI/DevBoard).
+-- Cutscenes replay here for the dev only (Camera/Cinematic shot lists, the rank-up beat). Fly, noclip, walk speed and
 -- click-teleport aim run here (the character is client-owned); everything else is a Dev_Action
 -- the server re-checks.
 local ContextActionService = game:GetService("ContextActionService")
@@ -11,7 +12,14 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
-local DevBoard = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("DevBoard"))
+local CameraController = require(script.Parent:WaitForChild("CameraController"))
+local Cinematic =
+	require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Cinematic")) :: any
+local RankCeremonyController = require(script.Parent:WaitForChild("RankCeremonyController"))
+local UI = script.Parent.Parent:WaitForChild("UI")
+local DevBoard = require(UI:WaitForChild("DevBoard"))
+local HudTheme = require(UI:WaitForChild("HudTheme"))
+local Layout = require(UI:WaitForChild("Layout"))
 
 local DevController = {}
 DevController.Priority = 200
@@ -118,6 +126,31 @@ local function flyStep()
 	local dir = look * forward + cam.CFrame.RightVector * side + Vector3.yAxis * up
 	vel.VectorVelocity = if dir.Magnitude > 0.01 then dir.Unit * flySpeed else Vector3.zero
 	align.CFrame = CFrame.lookAt(Vector3.zero, flat)
+end
+
+-- The cutscene subject: the vehicle I ride, else the nearest spawned one, else my character.
+local function subject(): Model?
+	local humanoid, root = humanoidRoot()
+	local node: Instance? = humanoid and humanoid.SeatPart and humanoid.SeatPart.Parent
+	while node and node ~= Workspace do
+		if node:IsA("Model") and node:GetAttribute("VehicleId") ~= nil then
+			return node
+		end
+		node = node.Parent
+	end
+	local folder = Workspace:FindFirstChild("Vehicles")
+	local best, bestD = nil :: Model?, math.huge
+	if folder and root then
+		for _, m in folder:GetChildren() do
+			if m:IsA("Model") then
+				local d = (m:GetPivot().Position - root.Position).Magnitude
+				if d < bestD then
+					best, bestD = m, d
+				end
+			end
+		end
+	end
+	return best or player.Character
 end
 
 local function targetName(): string
@@ -250,19 +283,47 @@ local function fill(b: DevBoard.Board)
 		end)
 	end
 
+	-- Cutscenes: local to my client, no once-per-session gating (no id)
+	page = b.tab("🎬 Cutscenes")
+	g = DevBoard.section(page, "Play (me)")
+	local function cut(text: string, shots: (Model) -> { any })
+		DevBoard.button(g, text, function()
+			local m = subject()
+			if not m then
+				b.setStatus("❌ No subject")
+				return
+			end
+			b.setVisible(false)
+			CameraController.PlayCinematic(shots(m), { skippable = true })
+		end)
+	end
+	cut("🏠 Arrival", function()
+		return Cinematic.Lists.arrival()
+	end)
+	cut("🛟 Cold open", Cinematic.Lists.coldOpen)
+	cut("🚤 Launch", Cinematic.Lists.launch)
+	cut("🌩 Storm", Cinematic.Lists.storm)
+	DevBoard.button(g, "🎖 Rank up", function()
+		b.setVisible(false)
+		RankCeremonyController.Replay(player:GetAttribute("RankIndex") or 2)
+	end)
+	DevBoard.button(g, "⏹ Stop", function()
+		Cinematic.stop()
+	end)
+
 	-- World
 	page = b.tab("🌩 World")
-	g = DevBoard.section(page, "Weather")
+	g = DevBoard.section(page, "Weather (server)")
+	DevBoard.button(g, "🌤 Clear", function()
+		call("storm", { "Calm" })
+	end)
 	DevBoard.button(g, "🌧 Storm", function()
 		call("storm", { "Storm" })
 	end)
 	DevBoard.button(g, "🌪 Great storm", function()
 		call("storm", { "GreatStorm" })
 	end)
-	DevBoard.button(g, "🌤 Clear", function()
-		call("storm", { "Calm" })
-	end)
-	DevBoard.slider(page, "Time", 0, 24, 14, function(v)
+	DevBoard.slider(page, "Time", 7, 17, 14, function(v)
 		call("clock", { math.floor(v * 4 + 0.5) / 4 })
 	end)
 	g = DevBoard.section(page, "Events")
@@ -374,29 +435,46 @@ local function onGrant(payload: any)
 		"📍 Teleport",
 		"🚤 Spawn",
 		"🆘 Ops",
+		"🎬 Cutscenes",
 		"🌩 World",
 		"⭐ Progress",
 		"🖥 Server",
 	})
 	board = b
 	fill(b)
-	if UserInputService.TouchEnabled then
-		local corner = Instance.new("ScreenGui")
-		corner.Name = "DevBoardButton"
-		corner.ResetOnSpawn = false
-		corner.DisplayOrder = 59
-		corner.Parent = player:WaitForChild("PlayerGui")
-		local button = Instance.new("TextButton")
-		button.Text = "🛠"
-		button.TextSize = 18
-		button.BackgroundColor3 = Color3.fromHex("26323A")
-		button.BackgroundTransparency = 0.3
-		button.Size = UDim2.fromOffset(36, 36)
-		button.AnchorPoint = Vector2.new(1, 0)
-		button.Position = UDim2.new(1, -8, 0, 52)
-		button.Parent = corner
-		button.Activated:Connect(toggle)
+	-- the DEV HUD button: right of the phone button, under the minimap on touch (HudLayout)
+	local hud = Instance.new("ScreenGui")
+	hud.Name = "DevBoardButton"
+	hud.ResetOnSpawn = false
+	hud.DisplayOrder = 59
+	Layout.prepare(hud)
+	hud.Parent = player:WaitForChild("PlayerGui")
+	local button = Instance.new("TextButton")
+	button.Name = "Dev"
+	button.Text = ""
+	button.AutoButtonColor = false
+	button.Size = UDim2.fromOffset(84, 44)
+	HudTheme.skin(button)
+	local label = HudTheme.label(
+		"Label",
+		"🛠 DEV",
+		UDim2.fromScale(1, 1),
+		HudTheme.LabelFont,
+		HudTheme.TextSize.small,
+		button
+	)
+	label.TextXAlignment = Enum.TextXAlignment.Center
+	HudTheme.outline(label)
+	button.Activated:Connect(toggle)
+	local function place(mt: Layout.Metrics)
+		local region = Layout.region(hud, if mt.touch then "minimap" else "phone")
+		button.Position = if mt.touch
+			then UDim2.new(0, 0, 1, Layout.GAP)
+			else UDim2.new(1, Layout.GAP, 0, 0)
+		button.Parent = region
 	end
+	place(Layout.current())
+	Layout.onMetrics(place)
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if input.KeyCode == Enum.KeyCode.F8 and not processed then
 			toggle()

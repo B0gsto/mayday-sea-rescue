@@ -229,6 +229,11 @@ local function onData(data: any)
 	pump()
 end
 
+-- Dev board: replays the rank-up beat for a rank (no progress change).
+function RankCeremonyController.Replay(rankIndex: number)
+	onData({ rankIndex = rankIndex, rankUp = { rankIndex = rankIndex } })
+end
+
 function RankCeremonyController.Init()
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
 	-- Any input (keyboard, touch, gamepad) skips the beat and drops a queued one.
