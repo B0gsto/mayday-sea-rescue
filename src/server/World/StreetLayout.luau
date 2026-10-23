@@ -13,12 +13,14 @@
 --   StreetLayout.distToPolyline(p, points)        -> number               XZ distance to the polyline
 --   StreetLayout.clear(p, blockers, rects?)       -> boolean              false within a blocker radius or a rect
 --   StreetLayout.inRect(p, rect)                  -> boolean              rect = { x0, z0, x1, z1 }
+--   StreetLayout.bays(ok, len)                    -> { [i]: bay }         parking bays of `len` kerb segments, aligned
+--                                                                         to the run, on segments that are all ok
 
 local StreetLayout = {}
 
 export type Sample = { pos: Vector3, dir: Vector3, s: number }
 export type Seg = { a: Vector3, b: Vector3 }
-export type Blocker = { pos: Vector3, r: number }
+export type Blocker = { pos: Vector3, r: number, cars: boolean? } -- cars: a parked car may stand here
 export type Rect = { number }
 
 local function flat(v: Vector3): Vector3
@@ -129,6 +131,26 @@ function StreetLayout.clear(p: Vector3, blockers: { Blocker }, rects: { Rect }?)
 		end
 	end
 	return true
+end
+
+-- ok[i]: kerb segment i may hold a parked car. Bay g takes segments len*(g-1)+1 .. len*g when all are ok;
+-- returns segment index -> bay number (1, 2, ..), nil = no bay.
+function StreetLayout.bays(ok: { boolean }, len: number): { [number]: number }
+	local out: { [number]: number } = {}
+	local n = 0
+	for g = 0, #ok // len - 1 do
+		local all = true
+		for k = 1, len do
+			all = all and ok[g * len + k] == true
+		end
+		if all then
+			n += 1
+			for k = 1, len do
+				out[g * len + k] = n
+			end
+		end
+	end
+	return out
 end
 
 return StreetLayout

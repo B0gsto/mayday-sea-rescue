@@ -3,15 +3,19 @@
 -- TownExtras.place(Workspace.Dressing)):
 --   * the moored boats (M_Veh_MooredBoat_01) at the visitors' moorings of Shared.SeamarkRules (one per mooring,
 --     bow to the buoy, WS sea level): Workspace.Dressing.TownExtras.Mooring<N>Boat;
---   * three M_Veh_MooredBoat_02 crabbers and two M_Veh_MooredBoat_03 trawlers swinging at anchor in the harbour
---     pool (TownExtrasLayout.harbourBoats), the crabber by the quay alongside at z 12.5; still at sea level;
+--   * five M_Veh_MooredBoat_02 crabbers, two M_Veh_MooredBoat_03 trawlers and four M_Veh_MooredBoat_01 punts swinging
+--     at anchor in the harbour pool (TownExtrasLayout.harbourBoats), one crabber alongside the quay at z 12.5; still
+--     at sea level;
+--   * herring gulls (M_Ani_HerringGull, static) perched on every third quay bollard once Harbour has placed them;
+--   * washing lines (code-built: posts, line, clothes pegged out) in the yards up Chapel Hill (TownLane);
 --   * the boatyard: Port Haven's west block (Quay Lane / Station Hill / Fore Street, WorldConfig.Towns keep rect)
 --     repainted as Concrete hardstanding; the shed (M_Bld_BoatyardShed, roller door west) on its north half and
 --     the travel hoist (M_Hbr_TravelHoist) straddling a hoist dock (two concrete piers off the yard quay wall) with a
 --     crabber (M_Veh_MooredBoat_02) hanging in its slings over the water, a concrete slipway (Part `Slipway`) east of it. The asset's 80 x 50 m yard slab and markings are dropped (the block is the yard).
 --     The BoatDesk kiosk and its prompt are untouched.
 -- Every item is pcall'd: a missing asset is skipped and the terrain stays.
--- Workspace.Dressing.TownExtras attributes when done: TownExtrasBoats, TownExtrasShed, TownExtrasHoist.
+-- Workspace.Dressing.TownExtras attributes when done: TownExtrasBoats, TownExtrasShed, TownExtrasHoist,
+-- TownExtrasWashing; TownExtrasGulls once the bollards are in.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -19,6 +23,7 @@ local Workspace = game:GetService("Workspace")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Layout = require(script.Parent:WaitForChild("TownExtrasLayout"))
 local SharedSetsRig = require(script.Parent:WaitForChild("SharedSetsRig"))
+local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local SeamarkRules = require(Shared:WaitForChild("SeamarkRules"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
@@ -129,6 +134,159 @@ local function placeBoats(parent: Instance): number
 	return n
 end
 
+local GULL = "M_Ani_HerringGull"
+
+-- a static herring gull on every third quay bollard (M_Hbr_Bollard_01/02 from Harbour; the pier-head cannon
+-- bollards are the client's live perches, WildlifeController)
+local function gulls(base: Instance, parent: Instance): number
+	local found: { Model } = {}
+	local last = -1
+	for _ = 1, 30 do
+		found = {}
+		for _, d in base:GetDescendants() do
+			local a = d:IsA("Model") and d:GetAttribute("Asset")
+			if type(a) == "string" and string.match(a, "^M_Hbr_Bollard_0[12]$") then
+				table.insert(found, d :: Model)
+			end
+		end
+		if #found > 0 and #found == last then -- Harbour has finished placing them
+			break
+		end
+		last = #found
+		task.wait(2)
+	end
+	table.sort(found, function(a, b)
+		return a:GetPivot().X < b:GetPivot().X
+	end)
+	local n = 0
+	for i, b in found do
+		if i % 3 == 1 then
+			local gull = AssetLoader.cloneStatic(GULL, "LOD0", false)
+			if gull then
+				local bcf, bsize = b:GetBoundingBox()
+				local gcf, gsize = gull:GetBoundingBox()
+				local lift = gull:GetPivot().Y - (gcf.Y - gsize.Y / 2) -- the pivot above the feet
+				local top = bcf.Y + bsize.Y / 2
+				gull:PivotTo(CFrame.new(bcf.X, top + lift, bcf.Z) * CFrame.Angles(0, i * 1.7, 0))
+				for _, d in gull:GetDescendants() do
+					if d:IsA("BasePart") then
+						d.CanCollide, d.CanQuery, d.CanTouch = false, false, false
+					end
+				end
+				gull.Parent = atomic(`Gull{n + 1}`, parent)
+				n += 1
+			end
+		end
+	end
+	return n
+end
+
+-- washing lines up Chapel Hill: in the yards beside TownLane, parallel to the road, alternate sides
+local WASHING = { from = 40, to = 320, step = 46, off = 27, span = 12, high = 6.5 }
+local CLOTHES = {
+	{ size = Vector3.new(1.6, 1.9, 0.08), colour = Color3.fromRGB(236, 236, 228) }, -- shirt
+	{ size = Vector3.new(2.4, 1.5, 0.08), colour = Color3.fromRGB(70, 120, 180) }, -- towel
+	{ size = Vector3.new(1.2, 2.3, 0.08), colour = Color3.fromRGB(52, 66, 96) }, -- jeans
+	{ size = Vector3.new(2.6, 1.7, 0.08), colour = Color3.fromRGB(214, 92, 84) }, -- towel
+	{ size = Vector3.new(1.5, 1.7, 0.08), colour = Color3.fromRGB(240, 210, 90) }, -- shirt
+	{ size = Vector3.new(0.5, 0.9, 0.08), colour = Color3.fromRGB(230, 230, 230) }, -- socks
+}
+
+local function washing(parent: Instance): number
+	local lane: any = nil
+	for _, r in WorldConfig.Roads do
+		if r.id == "TownLane" then
+			lane = r
+		end
+	end
+	if not lane then
+		return 0
+	end
+	local function piece(
+		m: Model,
+		name: string,
+		size: Vector3,
+		cf: CFrame,
+		colour: Color3,
+		mat: Enum.Material
+	)
+		local p = Instance.new("Part")
+		p.Name = name
+		p.Anchored = true
+		p.CanCollide = name == "Post"
+		p.CanTouch = false
+		p.Size = size
+		p.CFrame = cf
+		p.Color = colour
+		p.Material = mat
+		p.Parent = m
+	end
+	local op = OverlapParams.new()
+	op.FilterType = Enum.RaycastFilterType.Exclude
+	op.FilterDescendantsInstances = { Workspace.Terrain }
+	local n = 0
+	for i, c in StreetLayout.walk(lane.points, WASHING.step, WASHING.from, WASHING.to) do
+		local side = if i % 2 == 0 then 1 else -1
+		local at = StreetLayout.offset(c, side, WASHING.off)
+		local hit =
+			Workspace:Raycast(at + Vector3.new(0, 40, 0), Vector3.new(0, -80, 0), terrainParams)
+		local basis = CFrame.lookAt(Vector3.zero, c.dir)
+		if hit and hit.Material ~= Enum.Material.Asphalt then
+			local cf = CFrame.new(hit.Position) * basis -- local Z along the road
+			local clear = #Workspace:GetPartBoundsInBox(
+				cf * CFrame.new(0, 4, 0),
+				Vector3.new(4, 7, WASHING.span + 4),
+				op
+			) == 0
+			if clear then
+				local m = Instance.new("Model")
+				m.Name = `WashingLine{n + 1}`
+				local wood = Color3.fromRGB(110, 92, 70)
+				for _, z in { -WASHING.span / 2, WASHING.span / 2 } do
+					piece(
+						m,
+						"Post",
+						Vector3.new(0.3, 7, 0.3),
+						cf * CFrame.new(0, 3.3, z),
+						wood,
+						Enum.Material.Wood
+					)
+				end
+				piece(
+					m,
+					"Line",
+					Vector3.new(0.05, 0.05, WASHING.span),
+					cf * CFrame.new(0, WASHING.high, 0),
+					Color3.fromRGB(220, 220, 214),
+					Enum.Material.SmoothPlastic
+				)
+				local z = -WASHING.span / 2 + 1
+				for k = 1, 5 do
+					local cl = CLOTHES[(i + k) % #CLOTHES + 1]
+					local size = cl.size
+					if z + size.X > WASHING.span / 2 - 0.5 then
+						break
+					end
+					piece(
+						m,
+						`Cloth{k}`,
+						size,
+						cf
+							* CFrame.new(0, WASHING.high - size.Y / 2 - 0.05, z + size.X / 2)
+							* CFrame.Angles(0, math.pi / 2, (k % 2 - 0.5) * 0.06),
+						cl.colour,
+						Enum.Material.Fabric
+					)
+					z += size.X + 0.4
+				end
+				m.Parent = atomic(m.Name, parent)
+				n += 1
+			end
+		end
+	end
+	return n
+end
+
 function TownExtras.place(base: Instance)
 	local folder = Instance.new("Model")
 	folder.Name = "TownExtras"
@@ -148,6 +306,7 @@ function TownExtras.place(base: Instance)
 	end
 	task.spawn(AssetLoader.getTemplate, SHED, "LOD0")
 	task.spawn(AssetLoader.getTemplate, HOIST, "LOD0")
+	task.spawn(AssetLoader.getTemplate, GULL, "LOD0")
 	local okB, boats = pcall(placeBoats, folder)
 	local shedAt = grounded(SHED_AT, 30)
 	local okS, shed = pcall(place, SHED, shedAt, "BoatyardShed", folder, YARD_DROP)
@@ -255,6 +414,18 @@ function TownExtras.place(base: Instance)
 	folder:SetAttribute("TownExtrasBoats", if okB then boats else 0)
 	folder:SetAttribute("TownExtrasShed", okS and shed == true)
 	folder:SetAttribute("TownExtrasHoist", okH and hoist == true)
+	local okW, lines = pcall(washing, folder)
+	folder:SetAttribute("TownExtrasWashing", if okW then lines else 0)
+	if not okW then
+		warn(`[TownExtras] washing lines failed: {lines}`)
+	end
+	task.spawn(function()
+		local okG, n = pcall(gulls, base, folder)
+		folder:SetAttribute("TownExtrasGulls", if okG then n else 0)
+		if not okG then
+			warn(`[TownExtras] gulls failed: {n}`)
+		end
+	end)
 	if not (okB and okS and okH) then
 		warn(`[TownExtras] failed: boats {boats}, shed {shed}, hoist {hoist}`)
 	end

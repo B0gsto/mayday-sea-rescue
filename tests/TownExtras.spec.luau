@@ -44,7 +44,7 @@ return function(t)
 		"harbour crabbers and trawlers float at sea level, spaced and out of the channel",
 		function()
 			local boats = Layout.harbourBoats(0)
-			t.expect(#boats).toBe(5)
+			t.expect(#boats).toBe(11)
 			local small = Layout.mooredBoats(moorings, 0)
 			for _, b in boats do
 				t.expect(b.cf.Position.Y).toBe(0)

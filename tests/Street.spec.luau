@@ -31,6 +31,17 @@ return function(t)
 		t.expect(math.abs(d[2].a.X - 27) < 1e-4).toBe(true)
 	end)
 
+	t.test("parking bays take whole aligned groups of ok segments", function()
+		local ok = { true, true, true, true, false, true, true, true, true, true }
+		local b = StreetLayout.bays(ok, 3)
+		t.expect(b[1]).toBe(1)
+		t.expect(b[3]).toBe(1)
+		t.expect(b[4]).toBe(nil) -- group 2 holds a blocked segment
+		t.expect(b[7]).toBe(2)
+		t.expect(b[9]).toBe(2)
+		t.expect(b[10]).toBe(nil) -- a partial group at the end
+	end)
+
 	t.test("edge lines chain the offset curve without gaps", function()
 		local c = StreetLayout.chain({ Vector3.new(0, 0, 0), Vector3.new(64, 0, 0) }, 16, -1, 8)
 		t.expect(#c).toBe(4)

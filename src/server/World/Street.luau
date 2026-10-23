@@ -19,10 +19,18 @@
 --     M_Bld_LifeguardTower) the Haven Sands greybox through Street.swaps; Street.apply is their rig: _Glass Glass,
 --     the Light's _Lens plain for the client beam, the tower's red-over-yellow flag at ATT_Flag (waved by the client,
 --     src/client/Controllers/StreetController.luau, which also turns the Harbour Light's Fl(2) W 10s beam).
---   * Parked cars (G73): M_Road_ParkedCar_01..03 at the Harbour Road / Chapel Hill kerbs and in the Haven Sands car
---     park, parallel to the kerb, facing either way.
+--   * Town streets (map pass 2, docs/17 P0 3): one side of every grid street parks in painted bays, a lay-by off the
+--     30-stud carriageway with the kerb stepped out behind it (Harbour Road's town side too, west of the station and
+--     east of the Chandlery); the other side and the junction approaches get double yellows. Slate-grey granite
+--     flagstones (Parts: the terrain Concrete band reads as pale gravel) run kerb to house front; lamps every 56 studs
+--     on the no-parking side with a bin at every other one. Fore Street: planters, benches, A-boards, hanging baskets
+--     on the lamps and bunting across the shops. Road wear (P2 18): worn paint, patched asphalt, gully gratings and
+--     manhole covers.
+--   * Parked cars (G73): M_Road_ParkedCar_01..03 in the bays (about 3 in 10 left empty) and the Haven Sands car park,
+--     facing the flow of the lane beside them.
 -- Placement rules in StreetLayout (pure). Workspace.Dressing.Street attributes when done: StreetReady, StreetLamps,
--- StreetBenches, StreetBins, StreetParkedCars, StreetKerbs, StreetMarkings, StreetTrackCells.
+-- StreetBenches, StreetBins, StreetParkedCars, StreetBays, StreetKerbs, StreetMarkings, StreetTrackCells, StreetWear,
+-- StreetForeStreet.
 
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
@@ -78,12 +86,20 @@ local KERB_TINT = Color3.fromRGB(168, 162, 152) -- light warm granite (236 read 
 local MARK, GAP = 12, 15 -- centre dash 4 m mark, 5 m gap (TSM diagram 1004, <= 40 mph: verify)
 local LINE_W = 0.3 -- 100 mm
 local CATS_EYE = 54 -- studs (18 m, rural UK spacing)
+local rng = Random.new(1729) -- paint wear, patches: the same street every run
 local PAVED = {
 	[Enum.Material.Concrete] = true,
 	[Enum.Material.Asphalt] = true,
 	[Enum.Material.Cobblestone] = true,
 }
 local KERB = { seg = 5.4, w = 0.9, h = 0.75, up = 0.375 } -- two 0.9 m stones, 125 mm upstand
+-- parking bays: `len` kerb segments (16.2 studs, a 14-stud car) by `d` deep off the carriageway, none within `clear`
+-- of a crossing road's edge; Granite tinted like the terrain asphalt (Parts cannot use Asphalt, TerrainOnly)
+local BAY = { len = 3, d = 6.2, clear = 14, tint = Color3.fromRGB(64, 66, 70) }
+local YELLOW = Color3.fromRGB(224, 176, 36)
+local FLAG = { row = 4, back = 0.5, tint = Color3.fromRGB(100, 103, 106) } -- flags to footway + back (house front)
+local FORE = "PortHaven_St1" -- Fore Street: the shops
+local TOWN_LAMP = 56 -- studs between town lamps (one side)
 -- Harbour Road's town-side footway: flush granite paving (Parts, straight edges) over the terrain's ragged asphalt /
 -- paving seam, the kerb on its road edge; non-colliding, so the boat's road crossing and doors stay flat
 local FOOTWAY = { w = 8, lift = 0.08, tint = Color3.fromRGB(150, 147, 140) }
@@ -275,8 +291,8 @@ local function blockers(): { StreetLayout.Blocker }
 			table.insert(roots, r)
 		end
 	end
-	local function add(pos: Vector3, r: number)
-		table.insert(out, { pos = pos, r = r })
+	local function add(pos: Vector3, r: number, cars: boolean?)
+		table.insert(out, { pos = pos, r = r, cars = cars })
 	end
 	for _, root in roots do
 		for _, d in root:GetDescendants() do
@@ -290,7 +306,7 @@ local function blockers(): { StreetLayout.Blocker }
 			elseif d:IsA("SpawnLocation") then
 				add(d.Position, 10)
 			elseif d:IsA("Attachment") and string.sub(d.Name, 1, 8) == "ATT_Door" then
-				add(d.WorldPosition, 7)
+				add(d.WorldPosition, 7, true) -- a car may park in front of a plain front door
 			elseif d:IsA("Attachment") and string.sub(d.Name, 1, 11) == "ATT_BayDoor" then
 				add(d.WorldPosition, 14)
 			elseif d:IsA("BasePart") then
@@ -373,7 +389,10 @@ local function paint(
 		if a and b and math.abs(a.Y - b.Y) < 4 then
 			local p = strip(parent, name, a, b, width or LINE_W, 0.03) -- top 5 mm (0.016) + clearance over the chord
 			p.Material = Enum.Material.SmoothPlastic
-			p.Color = colour or PAINT
+			-- worn: every stretch a little faded, some scuffed through to the asphalt
+			local wear = rng:NextNumber()
+			p.Color = (colour or PAINT):Lerp(Color3.fromRGB(150, 148, 140), wear * 0.25)
+			p.Transparency = if wear > 0.8 then 0.35 else wear * 0.15
 			n += 1
 		end
 	end
@@ -458,7 +477,8 @@ local function markings(parent: Instance): number
 				end
 			end
 			local d = road.width / 2 - 0.75 -- line centre 0.25 m in from the edge
-			for _, side in { -1, 1 } do
+			local sides: { number } = if (road :: any).town then {} else { -1, 1 }
+			for _, side in sides do
 				n += paint(
 					parent,
 					laneSegs(StreetLayout.chain(road.points, 8, side, d)),
@@ -546,14 +566,25 @@ local function signal(parent: Instance, j: RoadNet.Junction, arm: RoadNet.Arm, f
 	local at = foot + Vector3.new(0, 9.4, 0)
 	local cf = CFrame.lookAt(at, at + arm.dir) -- front (-Z) toward the oncoming cars
 	signalPart(m, "Housing", Vector3.new(1.3, 3.9, 0.8), cf, dark)
-	signalPart(m, "Backboard", Vector3.new(2.2, 4.8, 0.1), cf * CFrame.new(0, 0, 0.45), dark)
-	signalPart(
-		m,
-		"Border",
-		Vector3.new(2.5, 5.1, 0.08),
-		cf * CFrame.new(0, 0, 0.52),
-		Color3.new(1, 1, 1)
-	)
+	signalPart(m, "Backboard", Vector3.new(2.5, 5.1, 0.1), cf * CFrame.new(0, 0, 0.45), dark)
+	-- the white border is a rim on the front face only: a white plate behind the board read as a blank sign board
+	-- from the back (map pass 2, docs/17 P0 6)
+	for _, rim in
+		{
+			{ Vector3.new(2.5, 0.16, 0.04), Vector3.new(0, 2.47, 0) },
+			{ Vector3.new(2.5, 0.16, 0.04), Vector3.new(0, -2.47, 0) },
+			{ Vector3.new(0.16, 5.1, 0.04), Vector3.new(1.17, 0, 0) },
+			{ Vector3.new(0.16, 5.1, 0.04), Vector3.new(-1.17, 0, 0) },
+		}
+	do
+		signalPart(
+			m,
+			"Border",
+			rim[1],
+			cf * CFrame.new(rim[2] + Vector3.new(0, 0, 0.38)),
+			Color3.new(1, 1, 1)
+		)
+	end
 	local lamps: { [string]: BasePart } = {}
 	for i, name in { "red", "amber", "green" } do
 		local lamp = signalPart(
@@ -626,80 +657,323 @@ local function junctions(parent: Instance): ({ Head }, number)
 	return heads, #JUNCTIONS
 end
 
-local function kerbs(parent: Instance, block: { StreetLayout.Blocker }): number
+-- the side of a town street that parks: odd-numbered streets and avenues on the right (+1), even on the left
+local function baySide(r: any): number
+	local n = tonumber(string.match(r.id, "%d+$")) or 1
+	return if n % 2 == 1 then 1 else -1
+end
+
+-- Harbour Road parks on its town side west of the station and east of the Chandlery (arc length from the west end)
+local HARBOUR_BAYS = { { 40, 330 }, { 670, 830 } }
+
+-- who owns a junction corner's paving: Harbour Road, then the streets; the avenues' flags stop at their footways
+local function rank(r: any): number
+	return if r.id == "HarbourRoad" then 2 elseif string.find(r.id, "_St", 1, true) then 1 else 0
+end
+
+local BOXES: { [any]: { number } } = {} -- road -> XZ bounds, to skip far roads in the paving test
+for _, r in WorldConfig.Roads do
+	local b = { math.huge, math.huge, -math.huge, -math.huge }
+	for _, p in r.points do
+		b = { math.min(b[1], p.X), math.min(b[2], p.Z), math.max(b[3], p.X), math.max(b[4], p.Z) }
+	end
+	BOXES[r] = b
+end
+
+local TOWN = WorldConfig.Towns[1] :: any
+local FOOT = (if TOWN then TOWN.width / 2 + TOWN.footway else 23) + FLAG.back -- road centre to the paving's back
+
+-- may `road`'s paving cover p: off the station apron, off every other carriageway and its kerb, and off the
+-- footway of a road that owns the corner
+local function paveClear(p: Vector3, road: any): boolean
+	if not StreetLayout.clear(p, {}, KEEP_OUT) then
+		return false
+	end
+	for _, o in WorldConfig.Roads do
+		local b = BOXES[o]
+		if
+			o ~= road
+			and p.X > b[1] - 30
+			and p.X < b[3] + 30
+			and p.Z > b[2] - 30
+			and p.Z < b[4] + 30
+		then
+			local d = StreetLayout.distToPolyline(p, o.points)
+			if d < o.width / 2 + KERB.w or (rank(o) > rank(road) and d < FOOT) then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+-- the clear part of the a..b span (both ends tested, a blocked end pulled in by bisection), or nil
+local function clip(a: Vector3, b: Vector3, road: any): (Vector3?, Vector3?)
+	local ca, cb = paveClear(a, road), paveClear(b, road)
+	if ca and cb then
+		return a, b
+	elseif not ca and not cb then
+		return nil, nil
+	end
+	local good, bad = if ca then a else b, if ca then b else a
+	local lo, hi = 0, 1
+	for _ = 1, 6 do
+		local m = (lo + hi) / 2
+		if paveClear(good:Lerp(bad, m), road) then
+			lo = m
+		else
+			hi = m
+		end
+	end
+	local edge = good:Lerp(bad, lo)
+	if (edge - good).Magnitude < 0.5 then
+		return nil, nil
+	end
+	return if ca then good else edge, if ca then edge else good
+end
+
+type Bay = { pos: Vector3, dir: Vector3, side: number }
+type Run =
+	{ road: any, side: number, from: number, to: number, bays: { { number } }, town: boolean }
+
+-- Kerbs, paving, bays and edge paint along every kerbed run (Harbour Road's town side, Chapel Hill, the town grid).
+-- Returns the kerb count and the bays (centre, travel dir, side) for parkedCars.
+local function kerbs(parent: Instance, block: { StreetLayout.Blocker }): (number, { Bay })
 	local params = terrainParams()
 	local lane = roadById("TownLane")
 	local harbour = roadById("HarbourRoad")
-	local runs: { { road: any, side: number, from: number, to: number } } = {}
-	if harbour then
-		table.insert(runs, { road = harbour, side = -1, from = 0, to = math.huge }) -- the town (north) edge, end to end
+	local carsOk: { StreetLayout.Blocker } = {}
+	for _, b in block do
+		if not b.cars then
+			table.insert(carsOk, b)
+		end
+	end
+	local runs: { Run } = {}
+	if harbour then -- the town (north) edge, end to end
+		table.insert(runs, {
+			road = harbour,
+			side = -1,
+			from = 0,
+			to = math.huge,
+			bays = HARBOUR_BAYS,
+			town = false,
+		})
 	end
 	if lane then
-		for _, side in { -1, 1 } do
-			table.insert(runs, { road = lane, side = side, from = 10, to = 240 }) -- up Chapel Hill to the last cottages
+		for _, side in { -1, 1 } do -- up Chapel Hill to the last cottages
+			table.insert(
+				runs,
+				{ road = lane, side = side, from = 10, to = 240, bays = {}, town = false }
+			)
 		end
 	end
 	for _, r in WorldConfig.Roads do
 		if (r :: any).town then -- city grid streets: both kerbs, the whole length (junction gaps below)
 			for _, side in { -1, 1 } do
-				table.insert(runs, { road = r, side = side, from = 0, to = math.huge })
-			end
-		end
-	end
-	local n = 0
-	for _, run in runs do
-		local d = run.road.width / 2 + KERB.w / 2
-		local samples = StreetLayout.walk(run.road.points, KERB.seg, run.from, run.to)
-		for i = 1, #samples - 1 do
-			local a0 = StreetLayout.offset(samples[i], run.side, d)
-			local b0 = StreetLayout.offset(samples[i + 1], run.side, d)
-			local mid0 = (a0 + b0) / 2
-			local junction = false
-			for _, other in WorldConfig.Roads do
-				if
-					other ~= run.road
-					and StreetLayout.distToPolyline(mid0, other.points) < other.width / 2 + 4
-				then
-					junction = true
-				end
-			end
-			if not junction and run.road == harbour then
-				local fa0 =
-					StreetLayout.offset(samples[i], run.side, run.road.width / 2 + FOOTWAY.w / 2)
-				local fb0 = StreetLayout.offset(
-					samples[i + 1],
-					run.side,
-					run.road.width / 2 + FOOTWAY.w / 2
+				local bays = if side == baySide(r) then { { 0, math.huge } } else {}
+				table.insert(
+					runs,
+					{ road = r, side = side, from = 0, to = math.huge, bays = bays, town = true }
 				)
-				local fa, fb = ground(fa0, params), ground(fb0, params)
-				if fa and fb and math.abs(fa.Y - fb.Y) < 3 then
-					local dir = (fb - fa).Unit * 0.3 -- overlap the next slab round the bends
-					local f =
-						strip(parent, "Footway", fa - dir, fb + dir, FOOTWAY.w, FOOTWAY.lift - 0.2)
-					f.Size = Vector3.new(FOOTWAY.w, 0.4, f.Size.Z)
-					f.Material = Enum.Material.Granite
-					f.Color = FOOTWAY.tint
-				end
-			end
-			if
-				not junction
-				and StreetLayout.clear(mid0, block, KEEP_OUT)
-				and harbour
-				and StreetLayout.distToPolyline(mid0, harbour.points) >= harbour.width / 2
-			then
-				local a, b = ground(a0, params), ground(b0, params)
-				if a and b and math.abs(a.Y - b.Y) < 3 then
-					local p = strip(parent, "Kerb", a, b, KERB.w, KERB.up - KERB.h / 2)
-					p.Size = Vector3.new(KERB.w, KERB.h, p.Size.Z)
-					p.Material = Enum.Material.Granite
-					p.Color = KERB_TINT
-					p.CastShadow = true
-					n += 1
-				end
 			end
 		end
 	end
-	return n
+	local keeps: { StreetLayout.Rect } = if TOWN then TOWN.keep else {}
+	local n = 0
+	local out: { Bay } = {}
+	for _, run in runs do
+		local road = run.road
+		local e = road.width / 2
+		local samples = StreetLayout.walk(road.points, KERB.seg, run.from, run.to)
+		local segs = #samples - 1
+		local function at(i: number, d: number): Vector3
+			return StreetLayout.offset(samples[i], run.side, d)
+		end
+		local function mid(i: number, d: number): Vector3
+			return (at(i, d) + at(i + 1, d)) / 2
+		end
+		-- a flat Granite slab along segment i from d0 to d1 off the centre, its top `top` over the ground
+		local function slab(
+			name: string,
+			i: number,
+			d0: number,
+			d1: number,
+			top: number,
+			thick: number
+		): BasePart?
+			local a = ground(at(i, (d0 + d1) / 2), params)
+			local b = ground(at(i + 1, (d0 + d1) / 2), params)
+			if not (a and b and math.abs(a.Y - b.Y) < 3) then
+				return nil
+			end
+			local p = strip(parent, name, a, b, d1 - d0, top - thick / 2)
+			p.Size = Vector3.new(d1 - d0, thick, p.Size.Z)
+			p.Material = Enum.Material.Granite
+			return p
+		end
+		-- a strip across the run at sample j from d0 to d1 off the centre, nudged `shift` along the road
+		local function across(
+			name: string,
+			j: number,
+			d0: number,
+			d1: number,
+			w: number,
+			shift: number
+		): BasePart?
+			local dir = samples[j].dir * shift
+			local a, b = ground(at(j, d0) + dir, params), ground(at(j, d1) + dir, params)
+			if not (a and b) then
+				return nil
+			end
+			return strip(parent, name, a, b, w, 0.03)
+		end
+		-- a bay's end at sample j (sgn -1 its start, +1 its end): a white tick, and the kerb's return to the road
+		-- edge where the bays stop
+		local function bayEnd(j: number, sgn: number, last: boolean)
+			local t = across("BayEnd", j, e, e + BAY.d - 0.2, LINE_W, -sgn * LINE_W)
+			if t then
+				t.Material = Enum.Material.SmoothPlastic
+				t.Color = PAINT
+			end
+			local kb = if last
+				then across("KerbReturn", j, e, e + BAY.d + KERB.w, KERB.w, sgn * KERB.w / 2)
+				else nil
+			if kb then
+				kb.Size = Vector3.new(KERB.w, KERB.h, kb.Size.Z)
+				kb.CFrame += Vector3.new(0, KERB.up - KERB.h / 2 - 0.03, 0)
+				kb.Material = Enum.Material.Granite
+				kb.Color = KERB_TINT
+				kb.CastShadow = true
+			end
+		end
+		local junction: { boolean } = {}
+		local ok: { boolean } = {}
+		for i = 1, segs do
+			local k = mid(i, e + KERB.w / 2)
+			local near = math.huge -- studs beyond the nearest crossing road's edge
+			for _, other in WorldConfig.Roads do
+				if other ~= road then
+					near = math.min(
+						near,
+						StreetLayout.distToPolyline(k, other.points) - other.width / 2
+					)
+				end
+			end
+			junction[i] = near < 4
+			local inRange = false
+			for _, r in run.bays do
+				inRange = inRange or (samples[i].s >= r[1] and samples[i + 1].s <= r[2])
+			end
+			local c = mid(i, e + BAY.d / 2)
+			local keep = false
+			for _, r in keeps do
+				keep = keep or StreetLayout.inRect(c, r)
+			end
+			ok[i] = inRange
+				and near >= BAY.clear
+				and not keep
+				and StreetLayout.clear(c, carsOk, KEEP_OUT)
+				and paved(c)
+		end
+		local bay = StreetLayout.bays(ok, BAY.len)
+		for i = 1, segs do
+			local inBay = bay[i] ~= nil
+			local kd = if inBay then e + BAY.d else e -- the kerb's road face
+			-- paving behind the kerb: Harbour Road's footway band (one granite strip), else flagstones out to the
+			-- house fronts in rows of about FLAG.row, each stone a shade off its neighbours, hairline joints
+			if road == harbour or run.town then
+				local d0, d1 = kd + KERB.w / 2, if run.town then FOOT else e + FOOTWAY.w
+				local rows = if run.town
+					then math.max(1, math.floor((d1 - d0) / FLAG.row + 0.5))
+					else 1
+				local w = (d1 - d0) / rows
+				local joint = if run.town then 0.06 else 0
+				for r = 1, rows do
+					local c = d0 + (r - 0.5) * w
+					local a, b = clip(at(i, c), at(i + 1, c), road)
+					local ga = if a then ground(a, params) else nil
+					local gb = if b then ground(b, params) else nil
+					if ga and gb and math.abs(ga.Y - gb.Y) < 3 then
+						local dir = (gb - ga).Unit * (if run.town then 0 else 0.3) -- overlap the next slab round bends
+						local f = strip(
+							parent,
+							if run.town then "Flag" else "Footway",
+							ga - dir,
+							gb + dir,
+							w,
+							0
+						)
+						f.Size = Vector3.new(w - joint, 0.4, f.Size.Z - joint)
+						f.CFrame += Vector3.new(0, FOOTWAY.lift - 0.2, 0)
+						f.Material = Enum.Material.Granite
+						if run.town then
+							local j = rng:NextNumber(-1, 1)
+							local toward = if j > 0
+								then Color3.fromRGB(132, 128, 120)
+								else Color3.fromRGB(72, 76, 82)
+							f.Color = FLAG.tint:Lerp(toward, math.abs(j) * 0.4)
+						else
+							f.Color = FOOTWAY.tint
+						end
+					end
+				end
+			end
+			if not junction[i] then
+				if
+					StreetLayout.clear(
+						mid(i, kd + KERB.w / 2),
+						if inBay then carsOk else block,
+						KEEP_OUT
+					)
+					and harbour
+					and StreetLayout.distToPolyline(mid(i, kd + KERB.w / 2), harbour.points)
+						>= harbour.width / 2
+				then
+					local p = slab("Kerb", i, kd, kd + KERB.w, KERB.up, KERB.h)
+					if p then
+						p.Color = KERB_TINT
+						p.CastShadow = true
+						n += 1
+					end
+				end
+				if inBay then
+					local p = slab("Bay", i, e - 0.3, e + BAY.d + 0.1, 0.05, 0.2)
+					if p then
+						p.Color = BAY.tint
+					end
+					if run.town then -- the bay's carriageway edge, over the asphalt / bay seam
+						local l = slab("BayLine", i, e - 0.35, e - 0.05, 0.08, 0.1)
+						if l then
+							l.Material = Enum.Material.SmoothPlastic
+							l.Color = PAINT
+						end
+					end
+					if bay[i - 1] ~= bay[i] then
+						bayEnd(i, -1, bay[i - 1] == nil)
+						local c = (at(i + 1, e + BAY.d / 2) + at(i + 2, e + BAY.d / 2)) / 2 -- the middle segment's mid
+						table.insert(out, { pos = c, dir = samples[i].dir, side = run.side })
+					end
+					if bay[i + 1] == nil then
+						bayEnd(i + 1, 1, true)
+					end
+				elseif run.town then -- no waiting: double yellows along the kerb
+					for _, d in { e - 0.45, e - 1.05 } do
+						local l = slab("Yellow", i, d - LINE_W / 2, d + LINE_W / 2, 0.08, 0.1)
+						if l then
+							l.Material = Enum.Material.SmoothPlastic
+							local wear = rng:NextNumber()
+							l.Color = YELLOW:Lerp(Color3.fromRGB(170, 150, 100), wear * 0.3)
+							l.Transparency = wear * 0.15
+						end
+					end
+				end
+			end
+			if i % 40 == 0 then
+				task.wait()
+			end
+		end
+	end
+	return n, out
 end
 
 -- ---------------------------------------------------------------- furniture
@@ -749,21 +1023,31 @@ local function lamps(
 	params: RaycastParams
 ): { Lamp }
 	local out: { Lamp } = {}
-	local runs = {
-		{ id = "HarbourRoad", start = 30, shadows = true },
-		{ id = "TownLane", start = 40, shadows = false },
-	}
+	local runs: { { id: string, start: number, shadows: boolean, spacing: number, side: number? } } =
+		{
+			{ id = "HarbourRoad", start = 30, shadows = true, spacing = LAMP.spacing },
+			{ id = "TownLane", start = 40, shadows = false, spacing = LAMP.spacing },
+		}
 	for _, r in WorldConfig.Roads do
-		if (r :: any).town then
-			table.insert(runs, { id = r.id, start = 30, shadows = false })
+		if (r :: any).town then -- the side without bays
+			table.insert(
+				runs,
+				{ id = r.id, start = 30, shadows = false, spacing = TOWN_LAMP, side = -baySide(r) }
+			)
 		end
 	end
 	for _, run in runs do
 		local road = roadById(run.id)
 		if road then
-			for i, s in StreetLayout.walk(road.points, LAMP.spacing, run.start) do
+			for i, s in StreetLayout.walk(road.points, run.spacing, run.start) do
 				local quay = run.id == "HarbourRoad" and s.pos.X > QUAY.x0 and s.pos.X < QUAY.x1
-				local side = if quay then 1 else (if i % 2 == 0 then 1 else -1)
+				local parking = false -- Harbour Road's town-side bays: the lamp goes to the sea side
+				for _, r in HARBOUR_BAYS do
+					parking = parking
+						or (run.id == "HarbourRoad" and s.s > r[1] - 16 and s.s < r[2] + 16)
+				end
+				local side = run.side
+					or (if quay or parking then 1 else (if i % 2 == 0 then 1 else -1))
 				for _, shift in { 0, 8, -8, 16, -16 } do
 					local moved = StreetLayout.walk(road.points, 1, s.s + shift, s.s + shift)[1]
 					if moved then
@@ -785,6 +1069,40 @@ local function lamps(
 						if got then
 							table.insert(out, { model = got.model, shadows = run.shadows })
 							table.insert(block, { pos = got.pos, r = 3 })
+							if run.side and i % 2 == 0 then -- town: a bin by every other lamp
+								local bin = place(
+									parent,
+									"M_Road_Bin",
+									at + moved.dir * 3.2,
+									StreetLayout.faceYaw(-toward),
+									Vector3.new(2, 3, 2),
+									block,
+									params
+								)
+								if bin then
+									table.insert(block, { pos = bin.pos, r = 2 })
+								end
+							end
+							if run.id == FORE then -- a hanging basket on a bracket, pavement side
+								local away = -toward.Unit
+								local hook = got.pos + away * 1.5 + Vector3.new(0, 8.8, 0)
+								local arm = strip(
+									got.model,
+									"BasketArm",
+									got.pos + Vector3.new(0, 8.6, 0),
+									hook,
+									0.16,
+									0
+								)
+								arm.Size = Vector3.new(0.16, 0.16, arm.Size.Z)
+								arm.Material = Enum.Material.Metal
+								arm.Color = Color3.fromRGB(24, 26, 26)
+								local b = StreetFurniture.build("HangingBasket")
+								if b then
+									b:PivotTo(CFrame.new(hook) * CFrame.Angles(0, i, 0))
+									b.Parent = got.model
+								end
+							end
 							break
 						end
 					end
@@ -835,20 +1153,12 @@ local function quayFurniture(
 	return benches, bins
 end
 
--- Parked cars (G73): static M_Road_ParkedCar_0N at the kerb and in the Haven Sands car park. Each sits just outside
--- the carriageway (road half width + 3.3, clear of the kerb line) and parallel to it, facing the flow of the lane
--- beside it (right-hand traffic: forward along the road on its right side, backward on its left); place()
--- drops the ones by a door, prompt or lamp and keeps them off the station apron and drivable lanes.
-local TOWN_CAR = 70 -- studs between parked cars on a town street
+-- Parked cars (G73): static M_Road_ParkedCar_0N in the kerbs() bays (off the carriageway, parallel to it) and in
+-- the Haven Sands car park, facing the flow of the lane beside them (right-hand traffic: forward along the road on
+-- its right side, backward on its left); place() drops the ones by a prompt or lamp and keeps them off the station
+-- apron and drivable lanes; front doors do not stop a car (Blocker.cars).
 local CAR_IDS = { "M_Road_ParkedCar_01", "M_Road_ParkedCar_02", "M_Road_ParkedCar_03" }
-local CAR_KERB = {
-	{ road = "HarbourRoad", s = 60, side = -1 },
-	{ road = "HarbourRoad", s = 130, side = -1 },
-	{ road = "HarbourRoad", s = 210, side = -1 },
-	{ road = "HarbourRoad", s = 300, side = -1 },
-	{ road = "HarbourRoad", s = 700, side = -1 },
-	{ road = "HarbourRoad", s = 790, side = -1 },
-} :: { { road: string, s: number, side: number } }
+local EMPTY_BAY = 0.3 -- share of bays left free
 
 -- yaw of a car parked on `side` (+1 right of the road's point order) facing the traffic flow there
 local function kerbYaw(dir: Vector3, side: number): number
@@ -859,40 +1169,36 @@ local CAR_SIZE = Vector3.new(6, 6, 14)
 local function parkedCars(
 	parent: Instance,
 	block: { StreetLayout.Blocker },
-	params: RaycastParams
+	params: RaycastParams,
+	bays: { Bay }
 ): number
 	local n = 0
+	local carsOk: { StreetLayout.Blocker } = {}
+	for _, b in block do
+		if not b.cars then
+			table.insert(carsOk, b)
+		end
+	end
 	local function park(at: Vector3, yaw: number): boolean
-		local asset = CAR_IDS[n % #CAR_IDS + 1]
+		local asset = CAR_IDS[rng:NextInteger(1, #CAR_IDS)]
 		local got = if paved(at)
-			then place(parent, asset, at, yaw, CAR_SIZE, block, params)
+			then place(parent, asset, at, yaw, CAR_SIZE, carsOk, params)
 			else nil
 		if not got then
 			return false
 		end
 		n += 1
 		got.model.Name = `ParkedCar_{n}`
+		table.insert(carsOk, { pos = got.pos, r = 8 })
 		table.insert(block, { pos = got.pos, r = 8 })
 		return true
 	end
-	for _, spec in CAR_KERB do
-		local road = roadById(spec.road)
-		local sample = road and StreetLayout.walk(road.points, 1, spec.s, spec.s)[1]
-		if sample then
-			local at = StreetLayout.offset(sample, spec.side, road.width / 2 + 3.3)
-			park(at, kerbYaw(sample.dir, spec.side))
+	for i, bay in bays do
+		if rng:NextNumber() >= EMPTY_BAY then
+			park(bay.pos, kerbYaw(bay.dir, bay.side))
 		end
-	end
-	-- city grid streets: one car at the kerb every TOWN_CAR studs, sides alternating, facing the traffic lane
-	for _, r in WorldConfig.Roads do
-		if (r :: any).town then
-			for i, sample in StreetLayout.walk(r.points, TOWN_CAR, 45) do
-				local side = if i % 2 == 0 then 1 else -1
-				park(
-					StreetLayout.offset(sample, side, r.width / 2 + 3.3),
-					kerbYaw(sample.dir, side)
-				)
-			end
+		if i % 30 == 0 then
+			task.wait()
 		end
 	end
 	-- two rows of three nose-in bays in the Haven Sands car park, aligned with its yaw
@@ -903,6 +1209,326 @@ local function parkedCars(
 			for col = -1, 1 do
 				local at = cp.center + rot:VectorToWorldSpace(Vector3.new(col * 8, 0, row * 12))
 				park(at, math.rad(cp.yaw) + (if row > 0 then math.pi else 0))
+			end
+		end
+	end
+	return n
+end
+
+-- Fore Street (the shops): planters and benches on the wide pavement between the lamps, chalkboard A-boards at the
+-- shopfronts on both sides, bunting strung across the central stretch.
+local BUNTING = { x0 = -230, x1 = 210, step = 64, y = 17, sag = 2.6, flag = 1.7, drop = 2.1 }
+local BUNTING_COLOURS = {
+	Color3.fromRGB(196, 40, 44),
+	Color3.fromRGB(240, 196, 52),
+	Color3.fromRGB(36, 84, 168),
+	Color3.fromRGB(238, 236, 228),
+	Color3.fromRGB(44, 138, 84),
+}
+
+local function flagPart(
+	parent: Instance,
+	name: string,
+	size: Vector3,
+	cf: CFrame,
+	colour: Color3,
+	wedge: boolean
+)
+	local p: BasePart = if wedge then Instance.new("WedgePart") else Instance.new("Part")
+	p.Name = name
+	p.Anchored = true
+	p.CanCollide = false
+	p.CanQuery = false
+	p.CanTouch = false
+	p.CastShadow = false
+	p.Material = Enum.Material.Fabric
+	p.Color = colour
+	p.Size = size
+	p.CFrame = cf
+	p.Parent = parent
+end
+
+-- one string of pennants from a to b (house front to house front), sagging in the middle
+local function bunting(parent: Instance, a: Vector3, b: Vector3): number
+	local m = Instance.new("Model")
+	m.Name = "Bunting"
+	local along = (b - a) * Vector3.new(1, 0, 1)
+	local len = along.Magnitude
+	local u = along.Unit
+	local count = math.floor(len / (BUNTING.flag * 1.5))
+	local function point(t: number): Vector3
+		return a:Lerp(b, t) - Vector3.new(0, BUNTING.sag * 4 * t * (1 - t), 0)
+	end
+	local prev = point(0)
+	for k = 1, count do
+		local t = k / count
+		local p = point(t)
+		local rope = CFrame.lookAt((prev + p) / 2, p)
+		flagPart(
+			m,
+			"Rope",
+			Vector3.new(0.08, 0.08, (p - prev).Magnitude + 0.05),
+			rope,
+			Color3.fromRGB(230, 226, 214),
+			false
+		)
+		prev = p
+		-- a pennant hangs between this point and the last: two flipped wedges, tip down at the middle
+		local c = point(t - 0.5 / count)
+		local colour = BUNTING_COLOURS[(k % #BUNTING_COLOURS) + 1]
+		for _, sgn in { -1, 1 } do
+			local z = -u * sgn -- local +Z (the wedge's upright edge) toward the pennant's middle
+			local y = -Vector3.yAxis
+			local x = y:Cross(z)
+			local half = BUNTING.flag / 2
+			local pos = c + u * sgn * half / 2 - Vector3.new(0, BUNTING.drop / 2, 0)
+			flagPart(
+				m,
+				"Pennant",
+				Vector3.new(0.05, BUNTING.drop, half),
+				CFrame.fromMatrix(pos, x, y, z),
+				colour,
+				true
+			)
+		end
+	end
+	m.Parent = parent
+	return count
+end
+
+local function foreStreet(
+	parent: Instance,
+	block: { StreetLayout.Blocker },
+	params: RaycastParams
+): number
+	local road = roadById(FORE)
+	if not road then
+		return 0
+	end
+	local e = road.width / 2
+	local wide = -baySide(road)
+	local n = 0
+	local function put(
+		asset: string,
+		s: number,
+		side: number,
+		d: number,
+		yaw: number,
+		size: Vector3
+	): boolean
+		local c = StreetLayout.walk(road.points, 1, s, s)[1]
+		if not c then
+			return false
+		end
+		local got = place(parent, asset, StreetLayout.offset(c, side, d), yaw, size, block, params)
+		if got then
+			n += 1
+			table.insert(block, { pos = got.pos, r = 2 })
+		end
+		return got ~= nil
+	end
+	for i, c in StreetLayout.walk(road.points, TOWN_LAMP, 30) do
+		local toRoad = StreetLayout.offset(c, -wide, 1) - StreetLayout.offset(c, wide, 1) -- across, toward the road
+		-- the wide pavement: a planter at the kerb, a bench against the shops every other bay, facing the road
+		put(
+			"Planter",
+			c.s + 20,
+			wide,
+			e + 2.4,
+			StreetLayout.faceYaw(toRoad),
+			Vector3.new(5.4, 2.4, 2.4)
+		)
+		if i % 2 == 0 then
+			put(
+				"M_Road_Bench",
+				c.s + 36,
+				wide,
+				FOOT - 2.2,
+				StreetLayout.faceYaw(toRoad),
+				Vector3.new(6, 3, 2.4)
+			)
+		end
+		-- A-boards at the shop doors, both sides, facing along the pavement
+		put(
+			"ABoard",
+			c.s + 10,
+			wide,
+			FOOT - 1.8,
+			StreetLayout.faceYaw(c.dir),
+			Vector3.new(1.8, 2.8, 1.2)
+		)
+		put(
+			"ABoard",
+			c.s + 42,
+			-wide,
+			FOOT - 0.8,
+			StreetLayout.faceYaw(-c.dir),
+			Vector3.new(1.8, 2.8, 1.2)
+		)
+	end
+	local strings = 0
+	for _, c in StreetLayout.walk(road.points, BUNTING.step, 0) do
+		if c.pos.X > BUNTING.x0 and c.pos.X < BUNTING.x1 then
+			local ga = ground(StreetLayout.offset(c, -1, FOOT - 0.4), params)
+			local gb = ground(StreetLayout.offset(c, 1, FOOT - 0.4), params)
+			if ga and gb then
+				bunting(
+					parent,
+					ga + Vector3.new(0, BUNTING.y, 0),
+					gb + Vector3.new(0, BUNTING.y, 0)
+				)
+				strings += 1
+			end
+		end
+	end
+	return n + strings
+end
+
+-- Road wear (P2 18) on the town grid, Harbour Road and Chapel Hill: gully gratings in the gutter, a manhole cover
+-- now and then, and patched asphalt (darker or paler rectangles, under the paint). Never in a junction or a zebra.
+local function roadWear(parent: Instance): number
+	local params = terrainParams()
+	local n = 0
+	local function lay(
+		name: string,
+		c: Vector3,
+		dir: Vector3,
+		size: Vector3,
+		top: number,
+		colour: Color3,
+		mat: Enum.Material
+	)
+		local g = ground(c, params)
+		if not g or not RoadNet.clear(JUNCTIONS, g) or not StreetLayout.clear(g, {}, MARK_OUT) then
+			return
+		end
+		local p = strip(
+			parent,
+			name,
+			g - dir * size.Z / 2,
+			g + dir * size.Z / 2,
+			size.X,
+			top - size.Y / 2
+		)
+		p.Size = size
+		p.Material = mat
+		p.Color = colour
+		n += 1
+	end
+	for _, road in WorldConfig.Roads do
+		if (road :: any).town or road.id == "HarbourRoad" or road.id == "TownLane" then
+			local e = road.width / 2
+			for i, c in StreetLayout.walk(road.points, 37, 18) do
+				local side = if i % 2 == 0 then 1 else -1
+				lay(
+					"Gully",
+					StreetLayout.offset(c, side, e - 1.1),
+					c.dir,
+					Vector3.new(1.3, 0.1, 2.2),
+					0.06,
+					Color3.fromRGB(34, 34, 34),
+					Enum.Material.DiamondPlate
+				)
+				if i % 4 == 1 then
+					lay(
+						"Manhole",
+						StreetLayout.offset(c, -side, rng:NextNumber(4, 9)),
+						c.dir,
+						Vector3.new(2.6, 0.1, 2.6),
+						0.05,
+						Color3.fromRGB(46, 46, 44),
+						Enum.Material.DiamondPlate
+					)
+				end
+				if i % 3 == 0 then
+					local dark = rng:NextNumber() < 0.6
+					lay(
+						"Patch",
+						StreetLayout.offset(
+							c,
+							rng:NextNumber() < 0.5 and 1 or -1,
+							rng:NextNumber(3, 10)
+						),
+						c.dir,
+						Vector3.new(rng:NextNumber(4, 9), 0.1, rng:NextNumber(5, 14)),
+						0.02,
+						if dark then Color3.fromRGB(22, 23, 25) else Color3.fromRGB(42, 43, 46),
+						Enum.Material.Granite
+					)
+				end
+			end
+			task.wait()
+		end
+	end
+	return n
+end
+
+-- Street name plates (black on white enamel) on two short posts at a corner of each junction, facing into it. The
+-- face is a Gemini image per street (docs/19-world-sign-art.md, sign_street_<id>.png): a street still "" gets no
+-- plate, so no blank white board ever stands in the town.
+local NAME_PLATES: { [string]: string } = {
+	HarbourRoad = "",
+	PortHaven_Av1 = "",
+	PortHaven_Av2 = "",
+	PortHaven_Av3 = "",
+	PortHaven_Av4 = "",
+	PortHaven_Av5 = "",
+	PortHaven_Av6 = "",
+	PortHaven_Av7 = "",
+	PortHaven_St1 = "",
+	PortHaven_St2 = "",
+	PortHaven_St3 = "",
+	PortHaven_St4 = "",
+}
+local PLATE = { w = 4.4, h = 1.1, high = 3.2 }
+
+local function namePlates(
+	parent: Instance,
+	block: { StreetLayout.Blocker },
+	params: RaycastParams
+): number
+	local n = 0
+	for _, j in JUNCTIONS do
+		for _, arm in j.arms do
+			local art = NAME_PLATES[arm.road]
+			if art and art ~= "" then
+				local _, across = RoadNet.incoming(arm)
+				-- the corner left of the incoming lane (the signal stands on the right), behind the kerb
+				local at = j.pos + arm.dir * (arm.stop + 6) - across * (arm.width / 2 + 5)
+				local g = if StreetLayout.clear(at, block, KEEP_OUT)
+					then ground(at, params, 8, 10)
+					else nil
+				if g then
+					local m = Instance.new("Model")
+					m.Name = `NamePlate_{arm.road}`
+					local cf = CFrame.lookAt(g, g - arm.dir) -- front (-Z) toward the junction
+					local iron = Color3.fromRGB(26, 28, 28)
+					for _, x in { -PLATE.w / 2 + 0.3, PLATE.w / 2 - 0.3 } do
+						signalPart(
+							m,
+							"Post",
+							Vector3.new(0.22, PLATE.high, 0.22),
+							cf * CFrame.new(x, PLATE.high / 2, 0),
+							iron
+						)
+					end
+					local plate = signalPart(
+						m,
+						"Plate",
+						Vector3.new(PLATE.w, PLATE.h, 0.12),
+						cf * CFrame.new(0, PLATE.high - PLATE.h / 2, 0),
+						Color3.fromRGB(236, 234, 226)
+					)
+					for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
+						local d = Instance.new("Decal")
+						d.Face = face
+						d.Texture = art
+						d.Parent = plate
+					end
+					m.Parent = parent
+					table.insert(block, { pos = g, r = 3 })
+					n += 1
+				end
 			end
 		end
 	end
@@ -1014,8 +1640,17 @@ function Street.start()
 		return junctions(sub("Junctions"))
 	end)
 	local block = blockers()
+	local bays: { Bay } = {}
 	local nKerbs = step("kerbs", function()
-		return kerbs(sub("Kerbs"), block)
+		local k, b = kerbs(sub("Kerbs"), block)
+		bays = b
+		return k
+	end)
+	for _, b in bays do -- no lamp or bin in a bay (a car may: cars)
+		table.insert(block, { pos = b.pos, r = 9, cars = true })
+	end
+	local wear = step("wear", function()
+		return roadWear(sub("Wear"))
 	end)
 	local params = solidParams()
 	local furniture = sub("Furniture")
@@ -1028,7 +1663,14 @@ function Street.start()
 		return quayFurniture(furniture, block, params)
 	end)
 	local nCars = step("parked cars", function()
-		return parkedCars(furniture, block, params)
+		return parkedCars(furniture, block, params, bays)
+	end)
+	local plates = step("name plates", function()
+		return namePlates(furniture, block, params)
+	end)
+	m:SetAttribute("StreetNamePlates", plates)
+	local fore = step("fore street", function()
+		return foreStreet(furniture, block, params)
 	end)
 	m:SetAttribute("StreetLamps", #lampList)
 	m:SetAttribute("StreetBenches", benches)
@@ -1039,9 +1681,12 @@ function Street.start()
 	m:SetAttribute("StreetJunctions", nJunctions)
 	m:SetAttribute("StreetSignals", if type(heads) == "table" then #heads else 0)
 	m:SetAttribute("StreetTrackCells", cells)
+	m:SetAttribute("StreetBays", #bays)
+	m:SetAttribute("StreetWear", wear)
+	m:SetAttribute("StreetForeStreet", fore)
 	m:SetAttribute("StreetReady", true)
 	print(
-		`[Street] {#lampList} lamps, {benches} benches, {bins} bins, {nCars} parked cars, {nKerbs} kerbs, {marks} markings, track {cells} cells in {math.floor(
+		`[Street] {#lampList} lamps, {benches} benches, {bins} bins, {nCars} parked cars in {#bays} bays, {nKerbs} kerbs, {fore} Fore Street props, {wear} wear, {marks} markings, track {cells} cells in {math.floor(
 			(os.clock() - t0) * 10
 		) / 10} s`
 	)

@@ -1,7 +1,8 @@
 --!strict
 -- StreetFurniture: code-built bench and litter bin standing in for M_Road_Bench / M_Road_Bin, whose
--- uploads render as flat navy blocks in the live client (round-2 art review). Same conventions as the
--- assets: pivot at the base centre, front (the sitting side) = local -Z.
+-- uploads render as flat navy blocks in the live client (round-2 art review), plus the Fore Street clutter:
+-- Planter (granite trough of bedding flowers), ABoard (chalkboard A-frame), HangingBasket (pivot = the hook, hangs
+-- below it). Same conventions as the assets: pivot at the base centre, front (the sitting side) = local -Z.
 --   StreetFurniture.build(asset) -> Model?   nil for any other asset (the caller clones the real one)
 
 local StreetFurniture = {}
@@ -121,7 +122,143 @@ local function bin(m: Model)
 	)
 end
 
-local BUILDERS: { [string]: (Model) -> () } = { M_Road_Bench = bench, M_Road_Bin = bin }
+-- bedding colours: geranium red, petunia pink and purple, white alyssum, marigold
+local BLOOMS = {
+	Color3.fromRGB(200, 36, 44),
+	Color3.fromRGB(226, 108, 160),
+	Color3.fromRGB(122, 64, 150),
+	Color3.fromRGB(236, 232, 222),
+	Color3.fromRGB(232, 150, 40),
+}
+local LEAF = Color3.fromRGB(62, 92, 48)
+
+-- a mound of flowers: leafy cushion (Fabric: Grass is a terrain slot) dotted with blooms
+local function blooms(m: Model, at: CFrame, w: number, d: number, seed: number)
+	part(m, "Leaves", Vector3.new(w, 0.7, d), at, LEAF, Enum.Material.Fabric)
+	local rng = Random.new(seed)
+	for i = 1, math.floor(w * d * 1.2) do
+		local s = rng:NextNumber(0.35, 0.6)
+		part(
+			m,
+			`Bloom{i}`,
+			Vector3.new(s, s, s),
+			at
+				* CFrame.new(
+					rng:NextNumber(-w / 2, w / 2) * 0.9,
+					0.35,
+					rng:NextNumber(-d / 2, d / 2) * 0.9
+				),
+			BLOOMS[rng:NextInteger(1, #BLOOMS)],
+			Enum.Material.SmoothPlastic,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+local function planter(m: Model)
+	local stone = Color3.fromRGB(150, 146, 138)
+	part(m, "Trough", Vector3.new(5, 1.8, 2), CFrame.new(0, 0.9, 0), stone, Enum.Material.Granite)
+	part(
+		m,
+		"Lip",
+		Vector3.new(5.3, 0.25, 2.3),
+		CFrame.new(0, 1.85, 0),
+		stone,
+		Enum.Material.Granite
+	)
+	part(
+		m,
+		"Soil",
+		Vector3.new(4.6, 0.1, 1.6),
+		CFrame.new(0, 1.95, 0),
+		Color3.fromRGB(58, 44, 32),
+		Enum.Material.Fabric
+	)
+	blooms(m, CFrame.new(0, 2.2, 0), 4.4, 1.5, 7)
+end
+
+-- chalkboard A-frame: two boards leaning together, the -Z face toward the passers-by; pale chalk strokes, no words
+local function aBoard(m: Model)
+	local frame = Color3.fromRGB(40, 58, 46)
+	local chalk = Color3.fromRGB(220, 218, 206)
+	for _, side in { -1, 1 } do
+		local lean = CFrame.new(0, 1.35, side * 0.42) * CFrame.Angles(side * 0.17, 0, 0)
+		part(m, "Board", Vector3.new(1.7, 2.7, 0.12), lean, frame, Enum.Material.Wood)
+		local face = lean * CFrame.new(0, 0.05, side * 0.07)
+		part(
+			m,
+			"Slate",
+			Vector3.new(1.4, 2.1, 0.02),
+			face,
+			Color3.fromRGB(30, 33, 34),
+			Enum.Material.SmoothPlastic
+		)
+		for i, w in { 0.9, 1.1, 0.7, 1.0 } do
+			part(
+				m,
+				`Chalk{i}`,
+				Vector3.new(w, 0.07, 0.01),
+				face * CFrame.new((i % 2) * 0.1 - 0.05, 0.75 - i * 0.38, side * 0.015),
+				if i == 1 then Color3.fromRGB(236, 190, 90) else chalk,
+				Enum.Material.SmoothPlastic
+			)
+		end
+	end
+end
+
+-- hanging basket: the hook at the pivot, a chain, a moss bowl trailing flowers
+local function basket(m: Model)
+	local iron = Color3.fromRGB(24, 26, 26)
+	part(
+		m,
+		"Chain",
+		Vector3.new(0.08, 1.2, 0.08),
+		CFrame.new(0, -0.6, 0),
+		iron,
+		Enum.Material.Metal
+	)
+	part(
+		m,
+		"Bowl",
+		Vector3.new(0.9, 2.2, 2.2),
+		CFrame.new(0, -1.75, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		Color3.fromRGB(70, 74, 46),
+		Enum.Material.Fabric,
+		Enum.PartType.Cylinder
+	)
+	part(
+		m,
+		"Mound",
+		Vector3.new(2.4, 1.3, 2.4),
+		CFrame.new(0, -1.5, 0),
+		LEAF,
+		Enum.Material.Fabric,
+		Enum.PartType.Ball
+	)
+	local rng = Random.new(11)
+	for i = 1, 14 do
+		local a = i * 2.4
+		local r = rng:NextNumber(0.8, 1.25)
+		local s = rng:NextNumber(0.35, 0.55)
+		part(
+			m,
+			`Bloom{i}`,
+			Vector3.new(s, s, s),
+			CFrame.new(math.cos(a) * r, rng:NextNumber(-2.4, -1.0), math.sin(a) * r),
+			BLOOMS[rng:NextInteger(1, #BLOOMS)],
+			Enum.Material.SmoothPlastic,
+			Enum.PartType.Ball
+		)
+	end
+end
+
+local BUILDERS: { [string]: (Model) -> () } = {
+	M_Road_Bench = bench,
+	M_Road_Bin = bin,
+	Planter = planter,
+	ABoard = aBoard,
+	HangingBasket = basket,
+}
 
 function StreetFurniture.build(asset: string): Model?
 	local fn = BUILDERS[asset]

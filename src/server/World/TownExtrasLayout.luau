@@ -20,10 +20,18 @@ local HARBOUR = {
 	{ id = "Crabber3", asset = "M_Veh_MooredBoat_02", x = -270, z = 190, yaw = 120 },
 	{ id = "Trawler1", asset = "M_Veh_MooredBoat_03", x = 250, z = 90, yaw = 200 },
 	{ id = "Trawler2", asset = "M_Veh_MooredBoat_03", x = -160, z = 300, yaw = 15 },
+	{ id = "Crabber4", asset = "M_Veh_MooredBoat_02", x = 100, z = 250, yaw = 160 },
+	{ id = "Crabber5", asset = "M_Veh_MooredBoat_02", x = -90, z = 230, yaw = 300 },
+	-- punts: small open boats on their own moorings, swung every which way
+	{ id = "Punt1", asset = "M_Veh_MooredBoat_01", x = -215, z = 135, yaw = 30 },
+	{ id = "Punt2", asset = "M_Veh_MooredBoat_01", x = 190, z = 145, yaw = 250 },
+	{ id = "Punt3", asset = "M_Veh_MooredBoat_01", x = 228, z = 185, yaw = 100 },
+	{ id = "Punt4", asset = "M_Veh_MooredBoat_01", x = -75, z = 120, yaw = 200 },
 }
 
 -- hull half-length / half-beam (studs, from ATT_Moor_Bow / ATT_Moor_Stern and the boarding points)
 TownExtrasLayout.HULL = {
+	M_Veh_MooredBoat_01 = { half = 6, beam = 2.5 },
 	M_Veh_MooredBoat_02 = { half = 13.5, beam = 4.5 },
 	M_Veh_MooredBoat_03 = { half = 22, beam = 7 },
 }
