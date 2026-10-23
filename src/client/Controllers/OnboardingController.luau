@@ -2,7 +2,7 @@
 -- OnboardingController: a new player's first 10 minutes (docs/16 section 4) on the client. No
 -- tutorial text: the reward burst when the cold open is rescued (B1, still seated on the jet ski,
 -- which stays theirs: K18), then for each tutorial call a red parachute flare over the scene and
--- one world beacon (B2): on the offer, then on the craft (on foot), the survivor and the drop-off.
+-- the world waypoint (UI/Waypoint, B2) on the offer, the survivor and the drop-off.
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot and a few
 -- player attributes.
 local Players = game:GetService("Players")
@@ -36,7 +36,6 @@ local opStep: string? = nil -- my current step id in the running operation
 local opId: string? = nil
 local opPosition: Vector3? = nil
 local currentGoal: string? = nil
-local currentTarget: Vector3? = nil
 local cash = 0
 local lastAward: { [string]: any }? = nil
 local rewardPending = false
@@ -166,16 +165,11 @@ local function update()
 		if beacon and currentGoal then
 			beacon.hide()
 		end
-		currentGoal, currentTarget = nil, nil
+		currentGoal = nil
 		return
 	end
-	-- a survivor drifts: only re-place the beacon once they have moved a little
-	if goal ~= currentGoal or not currentTarget or (target - currentTarget).Magnitude > 3 then
-		currentGoal, currentTarget = goal, target
-		if beacon then
-			beacon.show(target, "Call")
-		end
-	end
+	-- UI/Waypoint marks every call now (one marker on screen, not two): the goal is only tracked
+	currentGoal = goal
 end
 
 function OnboardingController.Init()

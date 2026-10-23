@@ -44,6 +44,7 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 }
 
 local OpsTaskingCard = {}
+OpsTaskingCard.KIND = KIND -- the world waypoint (UI/Waypoint) draws the same icon
 
 function OpsTaskingCard.new(gui: GuiBase2d): Card
 	local body = HudTheme.image(

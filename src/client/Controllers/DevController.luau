@@ -433,9 +433,11 @@ local function onGrant(payload: any)
 	})
 	board = b
 	fill(b)
-	-- the DEV HUD button: right of the phone button, under the minimap on touch (HudLayout)
+	-- the DEV HUD button: right of the minimap (under it on touch), clear of the radio strip (HudLayout). Studio only:
+	-- on a live server an allowed dev opens the board with F8 and players never see a DEV badge
 	local hud = Instance.new("ScreenGui")
 	hud.Name = "DevBoardButton"
+	hud.Enabled = RunService:IsStudio()
 	hud.ResetOnSpawn = false
 	hud.DisplayOrder = 59
 	Layout.prepare(hud)
@@ -458,10 +460,10 @@ local function onGrant(payload: any)
 	HudTheme.outline(label)
 	button.Activated:Connect(toggle)
 	local function place(mt: Layout.Metrics)
-		local region = Layout.region(hud, if mt.touch then "minimap" else "phone")
+		local region = Layout.region(hud, "minimap")
 		button.Position = if mt.touch
 			then UDim2.new(0, 0, 1, Layout.GAP)
-			else UDim2.new(1, Layout.GAP, 0, 0)
+			else UDim2.new(1, Layout.GAP, 1, -44)
 		button.Parent = region
 	end
 	place(Layout.current())

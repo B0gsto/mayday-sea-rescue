@@ -60,6 +60,8 @@ local FOLDERS = { "Vehicles", "LandVehicles" } -- VehicleService / LandVehicleSe
 local PREVIEWS = "VehiclePreviews" -- ReplicatedStorage folder the two services fill
 local UPGRADE_ICON = { Engine = "speed", Hull = "shield", Fit = "seat" }
 local STAT_ART = { "Speed", "People", "Tough" } -- UiImages.VehicleArt keys of the three stat rows
+local STAT_WORD = { "SPEED", "SEATS", "TOUGH" } -- the small-caps word after each stat icon
+local STAT_WORD_W = 52 -- du
 local ENGINE, HULL = 1.08, 0.1 -- how far a fitted Engine / Hull lengthens the speed / toughness bar
 local UPGRADE_WORD = { Engine = "Engine", Hull = "Hull", Fit = "Seat" }
 local TABS = {
@@ -850,10 +852,21 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		r.Parent = parent
 		local i = square(r, "Icon", 20)
 		art(STAT_ART[order], icon, i, C.textDim)
+		local word = HudTheme.label(
+			"Word",
+			STAT_WORD[order],
+			UDim2.new(0, STAT_WORD_W, 1, 0),
+			HudTheme.LabelFont,
+			12,
+			r
+		)
+		word.Position = UDim2.fromOffset(26, 0)
+		word.TextColor3 = C.textDim
+		local x = 30 + STAT_WORD_W
 		local track = Instance.new("Frame")
 		track.Name = "Track"
-		track.Position = UDim2.new(0, 30, 0.5, -4)
-		track.Size = UDim2.new(1, -30, 0, 8)
+		track.Position = UDim2.new(0, x, 0.5, -4)
+		track.Size = UDim2.new(1, -x, 0, 8)
 		track.BackgroundColor3 = C.locked
 		track.BorderSizePixel = 0
 		HudTheme.corner(track, 4)

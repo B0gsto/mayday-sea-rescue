@@ -20,7 +20,17 @@ return function(t)
 			insets = { top = 58, bottom = 20, left = 0, right = 0 },
 		},
 	}
-	local HUD = { "status", "objective", "notice", "right", "minimap", "wallet", "goal", "phone" }
+	local HUD = {
+		"status",
+		"objective",
+		"notice",
+		"right",
+		"minimap",
+		"wallet",
+		"goal",
+		"phone",
+		"subtitle",
+	}
 
 	local function box(rect)
 		local x = rect.pos.X - rect.anchor.X * rect.size.X
@@ -82,14 +92,15 @@ return function(t)
 		t.expect(HudLayout.compute(Vector2.new(640, 360), NO_INSETS, "Keyboard").scale).toBe(0.7)
 	end)
 
-	t.test("desktop pins the phone top left, the wallet under it, the card top right", function()
+	t.test("desktop pins the phone top left, the wallet beside it, the card top right", function()
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 			t.expect(mt.touch).toBe(false)
 			local m, g = HudLayout.MARGIN, HudLayout.GAP
 			local phone, wallet, right = mt.rects.phone, mt.rects.wallet, mt.rects.right
 			t.expect(phone.pos).toEqual(Vector2.new(m, m))
-			t.expect(wallet.pos).toEqual(Vector2.new(m, m + phone.size.Y + g))
+			t.expect(wallet.pos).toEqual(Vector2.new(m + phone.size.X + g, m))
+			t.expect(phone.size.Y).toBe(wallet.size.Y)
 			t.expect(right.anchor).toEqual(Vector2.new(1, 0))
 			t.expect(right.pos).toEqual(Vector2.new(mt.usable.X - m, m))
 			local mini = mt.rects.minimap
@@ -100,12 +111,16 @@ return function(t)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
 	t.test("desktop left column clears the minimap pill, no overlaps", function()
-		local LEFT = { "phone", "wallet", "objective", "minimap", "right", "notice", "goal" }
+		local LEFT =
+			{ "phone", "wallet", "objective", "minimap", "right", "notice", "goal", "subtitle" }
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 			local _, _, _, oy2 = box(mt.rects.objective)
 			local _, my = box(mt.rects.minimap)
 			t.expect(oy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
+			-- the radio strip stays in the top quarter, clear of the craft in the chase camera
+			local _, _, _, ry2 = box(mt.rects.subtitle)
+			t.expect(ry2 <= mt.usable.Y * 0.25).toBe(true)
 			for i = 1, #LEFT do
 				for j = i + 1, #LEFT do
 					t.expect(overlaps(mt.rects[LEFT[i]], mt.rects[LEFT[j]])).toBe(false)

@@ -3,10 +3,12 @@
 -- design units (du): the safe area divided by `scale`. UI/Layout turns the rects into ScreenGui
 -- frames; the touch arrangement is decided here, from the screen size, the insets and the device.
 --
--- Desktop / gamepad (assets/ui/hud/mockup.png): a left column pinned to the top-left corner
--- (phone button, wallet under it, then the objective strip), the mission card pinned top right,
--- notice top centre, minimap bottom left, gauges bottom right, radio bottom centre. Persistent
--- pieces sit first in a column, so a hidden region never leaves a hole above them.
+-- Desktop / gamepad (assets/ui/hud/mockup.png): one top-left group (the phone button and the
+-- wallet side by side at the wallet's height, the objective strip under them), the mission card
+-- pinned top right, the radio strip top centre with the notice band under it, minimap bottom
+-- left, gauges bottom right. Persistent pieces sit first in a column, so a hidden region never
+-- leaves a hole above them. The radio ("subtitle") never sits over the craft (bottom centre in
+-- the chase camera): top centre on desktop, under the objective strip on touch.
 --
 -- Touch (thumbstick bottom left, jump / action buttons bottom right):
 --
@@ -15,7 +17,8 @@
 --   | (130 px)                                               card      |
 --   |          wallet   notice                               column    |
 --   |                                                        goal      |
---   |            radio / prompt (unchanged)                             |
+--   |          (radio under the objective strip)       goal      |
+--   |            prompt (unchanged)                                     |
 --   | [thumbstick]                                  [jump / actions]    |
 --   +------------------------------------------------------------------+
 --
@@ -30,7 +33,8 @@ local HudLayout = {}
 
 HudLayout.MARGIN = 24 -- du from the safe-area edge
 HudLayout.GAP = 14 -- du between stacked regions
-HudLayout.SUBTITLE_HEIGHT = 118 -- the VHF set
+HudLayout.SUBTITLE_HEIGHT = 118 -- the prompt's clearance over the speed dock (bottom centre)
+HudLayout.RADIO_HEIGHT = 52 -- the compact radio strip ("subtitle" region)
 HudLayout.OBJECTIVE_HEIGHT = 132 -- step card (92) + takeover banner
 HudLayout.PROMPT_HEIGHT = 230
 HudLayout.NOTICE_HEIGHT = 120
@@ -78,7 +82,6 @@ export type Metrics = {
 	objectiveWidth: number,
 	rightWidth: number,
 	centreWidth: number, -- prompt
-	subtitleWidth: number,
 	noticeWidth: number,
 	rects: { [string]: Rect },
 }
@@ -110,7 +113,6 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		objectiveWidth = objectiveWidth,
 		rightWidth = rightWidth,
 		centreWidth = math.min(u.X - 2 * (outer + 2 * m), 640),
-		subtitleWidth = math.min(u.X - 2 * (side + 2 * m), 620),
 		noticeWidth = math.min(u.X - 2 * (outer + 2 * m), 420),
 		rects = {},
 	}
@@ -139,10 +141,17 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		mt.rects["minimap"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(side, side))
 		mt.rects["phone"] =
 			rect(Vector2.new(0, 0), Vector2.new(phoneX, m), Vector2.new(phone, phone))
+		-- the step card's row, then the radio strip under it (inside the old objective height)
+		local radioY = m + objectiveHeight - HudLayout.RADIO_HEIGHT
 		mt.rects["objective"] = rect(
 			Vector2.new(0, 0),
 			Vector2.new(objectiveX, m),
-			Vector2.new(objectiveWidth, objectiveHeight)
+			Vector2.new(objectiveWidth, radioY - g - m)
+		)
+		mt.rects["subtitle"] = rect(
+			Vector2.new(0, 0),
+			Vector2.new(objectiveX, radioY),
+			Vector2.new(objectiveWidth, HudLayout.RADIO_HEIGHT)
 		)
 		mt.rects["wallet"] =
 			rect(Vector2.new(0, 0), Vector2.new(phoneX, walletY), Vector2.new(walletW, walletH))
@@ -163,17 +172,28 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			Vector2.new(HudLayout.GOAL_WIDTH, HudLayout.GOAL_HEIGHT)
 		)
 	else
-		local walletY = m + phone + g
-		mt.rects["phone"] = rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(phone, phone))
+		-- one group: the phone button squared to the wallet's height, the wallet beside it
+		local deskPhone = HudLayout.WALLET_HEIGHT
+		local groupW = deskPhone + g + HudLayout.WALLET_WIDTH
+		mt.rects["phone"] =
+			rect(Vector2.new(0, 0), Vector2.new(m, m), Vector2.new(deskPhone, deskPhone))
 		mt.rects["wallet"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m, walletY),
+			Vector2.new(m + deskPhone + g, m),
 			Vector2.new(HudLayout.WALLET_WIDTH, HudLayout.WALLET_HEIGHT)
 		)
 		mt.rects["objective"] = rect(
 			Vector2.new(0, 0),
-			Vector2.new(m, walletY + HudLayout.WALLET_HEIGHT + g),
+			Vector2.new(m, m + HudLayout.WALLET_HEIGHT + g),
 			Vector2.new(objectiveWidth, objectiveHeight)
+		)
+		-- the top-centre band clears the group on the left and the card column on the right
+		mt.noticeWidth = math.min(u.X - 2 * (math.max(outer, groupW) + 2 * m), 420)
+		local noticeY = m + HudLayout.RADIO_HEIGHT + g
+		mt.rects["subtitle"] = rect(
+			Vector2.new(0.5, 0),
+			Vector2.new(u.X / 2, m),
+			Vector2.new(mt.noticeWidth, HudLayout.RADIO_HEIGHT)
 		)
 		mt.rects["right"] = rect(
 			Vector2.new(1, 0),
@@ -182,19 +202,19 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 		)
 		mt.rects["notice"] = rect(
 			Vector2.new(0.5, 0),
-			Vector2.new(u.X / 2, m),
+			Vector2.new(u.X / 2, noticeY),
 			Vector2.new(mt.noticeWidth, HudLayout.NOTICE_HEIGHT)
 		)
 		mt.rects["minimap"] =
 			rect(Vector2.new(0, 1), Vector2.new(m, bottom), Vector2.new(side, side))
 		mt.rects["goal"] = rect(
 			Vector2.new(1, 0),
-			Vector2.new(rightLeft - g, m + HudLayout.NOTICE_HEIGHT + g),
+			Vector2.new(rightLeft - g, noticeY + HudLayout.NOTICE_HEIGHT + g),
 			Vector2.new(HudLayout.GOAL_WIDTH, HudLayout.GOAL_HEIGHT)
 		)
 	end
-	-- prompt, radio and gauges keep their place on every device (touch prompts are panels above
-	-- the radio; gauges holds the touch action buttons at the bottom right on purpose)
+	-- prompt and gauges keep their place on every device (the prompt clears the speed dock;
+	-- gauges holds the touch action buttons at the bottom right on purpose)
 	local b = bottom - HudLayout.SUBTITLE_HEIGHT - g
 	mt.rects["prompt"] = rect(
 		Vector2.new(0.5, 1),
@@ -203,11 +223,6 @@ function HudLayout.metrics(px: Vector2, touch: boolean): Metrics
 			mt.centreWidth,
 			math.min(HudLayout.PROMPT_HEIGHT, b - (m + HudLayout.OBJECTIVE_HEIGHT + g))
 		)
-	)
-	mt.rects["subtitle"] = rect(
-		Vector2.new(0.5, 1),
-		Vector2.new(u.X / 2, bottom),
-		Vector2.new(mt.subtitleWidth, HudLayout.SUBTITLE_HEIGHT)
 	)
 	mt.rects["gauges"] =
 		rect(Vector2.new(1, 1), Vector2.new(u.X - m, bottom), Vector2.new(side, side))

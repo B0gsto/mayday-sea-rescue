@@ -455,22 +455,41 @@ local function showGauges(g: Gauges, car: boolean)
 	end
 end
 
--- Boats and jet skis, the cold open too: the same dock, speed only (BoatController's Simulator
--- telemetry has no gear or rpm).
+-- The readout is the seat's own ground speed (position change per frame, eased): it reads
+-- right however the craft moves (physics, a scripted ride, someone else's network ownership),
+-- where the sims' telemetry showed 0 on a moving jet ski (playtest 2026-10-23).
+local lastPos: Vector3?, lastAt, shownSpeed = nil, 0, 0
+local function measuredKmh(part: BasePart): number
+	local now, p = os.clock(), part.Position
+	local dt = now - lastAt
+	if lastPos and dt > 0 and dt < 0.5 then
+		local d = p - lastPos
+		local v = Vector3.new(d.X, 0, d.Z).Magnitude / dt
+		if v < 300 then -- a teleport is not speed
+			shownSpeed += (v - shownSpeed) * math.min(1, dt * 6)
+		end
+	else
+		shownSpeed = 0
+	end
+	lastPos, lastAt = p, now
+	return shownSpeed / LandVehicleConfig.KMH
+end
+
+-- Boats and jet skis, the cold open too: the same dock, speed only (no gear or rpm).
 local function boatSpeed()
 	if driving or not hud then
 		return
 	end
-	local telemetry = BoatController.GetDrivenVehicle() and BoatController.GetTelemetry()
-	local show = telemetry ~= nil
+	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	local seat = BoatController.GetDrivenVehicle() and hum and hum.SeatPart
+	local show = seat ~= nil
 	if show ~= hud.gui.Enabled then
 		showGauges(hud, false)
 		hud.extras.Text = ""
 		hud.gui.Enabled = show
 	end
-	if telemetry and show then
-		hud.speed.Text =
-			tostring(math.floor(math.abs(telemetry.speed) / LandVehicleConfig.KMH + 0.5))
+	if seat then
+		hud.speed.Text = tostring(math.floor(measuredKmh(seat) + 0.5))
 	end
 end
 
@@ -646,7 +665,7 @@ local function drive(dt: number)
 		end
 	end
 	if hud then
-		local kmh = math.abs(telemetry.speed) / LandVehicleConfig.KMH
+		local kmh = measuredKmh(seat)
 		local gear = if telemetry.gear == -1 then "R" else `D{telemetry.gear}`
 		local extras = {}
 		if lowRange then

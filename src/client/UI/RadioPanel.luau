@@ -1,7 +1,9 @@
 --!strict
--- RadioPanel: the radio subtitle (Layout "subtitle" region, bottom centre, lifted over the speed
--- dock while it shows): a navy 9-slice card, the speaker as an orange name chip over the line, with
--- an RX/TX lamp and a signal bar that drops in storms. The log (last lines) unfolds while the radio wheel is open.
+-- RadioPanel: the radio subtitle as one compact strip (Layout "subtitle" region: top centre on
+-- desktop, under the objective strip on touch, never over the craft): a navy 9-slice bar, the
+-- speaker as an orange name chip then the line, with an RX/TX lamp and a signal bar that drops in
+-- storms. It clears itself 1.5 s after the line. The log (last lines) unfolds under it while the
+-- radio wheel is open.
 local AvatarCosmetics = require(
 	game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("AvatarCosmetics")
 )
@@ -27,7 +29,7 @@ local NAVY = Color3.fromHex("0A1830")
 local LAMP_RX = Color3.fromHex("3EE07A")
 local LAMP_TX = Color3.fromHex("FF4D3A")
 local LOG_MAX = 8
-local LIFT = 96 -- du: clear of the speed dock (CarController "CarHud", 84 du at the bottom)
+local LINGER = 1.5 -- s the strip stays after the line ends
 
 local RadioPanel = {}
 
@@ -46,42 +48,31 @@ function RadioPanel.new(playerGui: Instance): Panel
 	gui.Parent = playerGui
 	local region = Layout.region(gui, "subtitle")
 
-	-- the navy 9-slice panel (UiImages Hud.Panel), half the region wide: speaker chip over the line
-	local body = HudTheme.image(
-		"VHF",
-		Hud.Panel,
-		UDim2.new(0.5, 0, 0, 92),
-		region,
-		HudTheme.Slice.Panel,
-		0.45
-	)
-	body.AnchorPoint = Vector2.new(0.5, 1)
-	body.Position = UDim2.fromScale(0.5, 1)
+	-- the navy 9-slice bar (UiImages Hud.Panel), the region's size: speaker chip, then the line
+	local body =
+		HudTheme.image("VHF", Hud.Panel, UDim2.fromScale(1, 1), region, HudTheme.Slice.Panel, 0.45)
 	body.Visible = false
-	-- sit above the speed dock while it shows (boats, jet skis, cars)
-	local function watchDock(child: Instance)
-		if child.Name == "CarHud" and child:IsA("ScreenGui") then
-			local function lift()
-				body.Position = UDim2.new(0.5, 0, 1, if child.Enabled then -LIFT else 0)
-			end
-			child:GetPropertyChangedSignal("Enabled"):Connect(lift)
-			lift()
-		end
-	end
-	local dock = playerGui:FindFirstChild("CarHud")
-	if dock then
-		watchDock(dock)
-	else
-		playerGui.ChildAdded:Connect(watchDock)
-	end
+	local row = Instance.new("Frame")
+	row.Name = "Row"
+	row.BackgroundTransparency = 1
+	row.Position = UDim2.fromOffset(10, 0)
+	row.Size = UDim2.new(1, -100, 1, 0)
+	row.ClipsDescendants = true
+	row.Parent = body
+	local rowList = Instance.new("UIListLayout")
+	rowList.FillDirection = Enum.FillDirection.Horizontal
+	rowList.VerticalAlignment = Enum.VerticalAlignment.Center
+	rowList.SortOrder = Enum.SortOrder.LayoutOrder
+	rowList.Padding = UDim.new(0, 10)
+	rowList.Parent = row
 
 	local chip = Instance.new("Frame")
 	chip.Name = "SpeakerChip"
-	chip.Position = UDim2.fromOffset(14, 12)
+	chip.LayoutOrder = 1
 	chip.Size = UDim2.fromOffset(0, 28)
 	chip.AutomaticSize = Enum.AutomaticSize.X
 	chip.BackgroundColor3 = HudTheme.Colors.accent
-	chip.Parent = body
+	chip.Parent = row
 	corner(chip, 14)
 	local chipPad = Instance.new("UIPadding")
 	chipPad.PaddingLeft = UDim.new(0, 10)
@@ -96,8 +87,8 @@ function RadioPanel.new(playerGui: Instance): Panel
 
 	local lamp = Instance.new("Frame")
 	lamp.Name = "Lamp"
-	lamp.AnchorPoint = Vector2.new(1, 0)
-	lamp.Position = UDim2.new(1, -16, 0, 20)
+	lamp.AnchorPoint = Vector2.new(1, 0.5)
+	lamp.Position = UDim2.new(1, -14, 0.5, 0)
 	lamp.Size = UDim2.fromOffset(12, 12)
 	lamp.BackgroundColor3 = LAMP_RX
 	lamp.BorderSizePixel = 0
@@ -105,8 +96,8 @@ function RadioPanel.new(playerGui: Instance): Panel
 	corner(lamp, 6)
 	local mode =
 		HudTheme.label("Mode", "RX", UDim2.fromOffset(40, 16), HudTheme.LabelFont, 14, body)
-	mode.AnchorPoint = Vector2.new(1, 0)
-	mode.Position = UDim2.new(1, -34, 0, 18)
+	mode.AnchorPoint = Vector2.new(1, 0.5)
+	mode.Position = UDim2.new(1, -32, 0.5, 0)
 	mode.TextXAlignment = Enum.TextXAlignment.Right
 	mode.TextColor3 = HudTheme.Colors.textDim
 	-- signal bars
@@ -114,7 +105,7 @@ function RadioPanel.new(playerGui: Instance): Panel
 	for i = 1, 4 do
 		local b = Instance.new("Frame")
 		b.AnchorPoint = Vector2.new(1, 1)
-		b.Position = UDim2.new(1, -80 - (4 - i) * 6, 0, 34)
+		b.Position = UDim2.new(1, -76 - (4 - i) * 6, 0.5, 8)
 		b.Size = UDim2.fromOffset(4, 4 + i * 3)
 		b.BackgroundColor3 = Color3.new(1, 1, 1)
 		b.BorderSizePixel = 0
@@ -123,15 +114,16 @@ function RadioPanel.new(playerGui: Instance): Panel
 	end
 
 	local line = HudTheme.outline(
-		HudTheme.label("Line", "", UDim2.new(1, -28, 0, 30), HudTheme.BoldFont, 20, body)
+		HudTheme.label("Line", "", UDim2.fromScale(0, 1), HudTheme.BoldFont, 20, row)
 	)
-	line.Position = UDim2.fromOffset(14, 50)
+	line.LayoutOrder = 2
+	line.AutomaticSize = Enum.AutomaticSize.X
+	line.TextTruncate = Enum.TextTruncate.None
 
-	-- the radio log, unfolded above the set while the wheel is open
+	-- the radio log, unfolded under the strip while the wheel is open
 	local log = Instance.new("Frame")
 	log.Name = "Log"
-	log.AnchorPoint = Vector2.new(0, 1)
-	log.Position = UDim2.fromOffset(0, -8)
+	log.Position = UDim2.new(0, 0, 1, 8)
 	log.Size = UDim2.new(1, 0, 0, 190)
 	log.BackgroundColor3 = NAVY
 	log.BackgroundTransparency = 0.12
@@ -193,7 +185,7 @@ function RadioPanel.new(playerGui: Instance): Panel
 				if serial == mine then
 					lamp.BackgroundTransparency = 0.8
 					mode.Text = "--"
-					task.delay(4, function()
+					task.delay(LINGER, function()
 						if serial == mine and not logOpen then
 							body.Visible = false
 						end

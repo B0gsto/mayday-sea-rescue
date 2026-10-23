@@ -2,7 +2,7 @@
 -- MapController: the GTA-style map that replaces 3D guidance arrows (docs 05 HUD style).
 --
 --   * Minimap (bottom left, top left on touch, Layout region): the player at the centre, the map
---     rotating with the camera heading, a north marker on the rim, zoom from speed (close on foot,
+--     heading-up (the bow while seated, else the camera), a north marker on the rim, zoom from speed (close on foot,
 --     wide at speed in a boat),
 --     blips (the operation's casualty / vessel pulsing, the drop-off when transporting, offers,
 --     the station, Chandlery, quay desk, car park, your vehicles, other crew, storm areas, your
@@ -20,7 +20,7 @@
 --     ReplicatedStorage attribute UseMapWaypoints is true (MapService sets it on the server).
 --
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
---      GetObjective(): (Vector3?, string?)
+--      GetObjective(): (Vector3?, string?), GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -68,7 +68,7 @@ local offers: { [string]: { position: Vector3, expires: number } } = {}
 local closedOps: { [string]: boolean } = {}
 local isOpen = false
 local objective: Vector3?, objectiveLabel: string? = nil, nil
-local PRE_LAUNCH = { tasking = true, relay = true, kit_launch = true, launch = true }
+local targets: { Vector3 } = {} -- the pulsing call blips (survivors, vessels, offers) last frame
 -- extra static blips other systems hand in (SetBlips), keyed by group: the logbook's discoveries
 local extraBlips: { [string]: { BlipDraw } } = {}
 local RING = 1.08 -- bezel size / minimap square
@@ -401,8 +401,8 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				)
 			end
 			objective, objectiveLabel = nearestDropOff(me), "Drop-off"
-		elseif target and not PRE_LAUNCH[s.current and s.current[1] and s.current[1].id or ""] then
-			-- before you are aboard the step card is the one objective; the casualty blip stays
+		elseif target then
+			-- from the moment you take it (playtest: the distance vanished on accept)
 			objective, objectiveLabel = target, if vessel then "Vessel" else "Casualty"
 		end
 	end
@@ -456,6 +456,12 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				list,
 				{ id = `Crew{p.UserId}`, pos = r.Position, style = S.Crew, size = 16 }
 			)
+		end
+	end
+	table.clear(targets)
+	for _, b in list do
+		if b.pulse then
+			table.insert(targets, b.pos)
 		end
 	end
 	return list
@@ -604,7 +610,10 @@ local function updateMinimap(dt: number, now: number)
 	local want = MapConfig.zoomFor(mode, speed)
 	viewRadius += (want - viewRadius) * math.clamp(dt / MapConfig.Zoom.easeSeconds, 0, 1)
 
-	local fx, fz = flatYaw(cam.CFrame.LookVector)
+	-- heading-up like a chart plotter (the bezel's lubber mark sits at the top): the bow while
+	-- seated, the camera on foot. Following the chase camera's lag and free look swung the call
+	-- blip round the rim while turning (playtest 2026-10-23).
+	local fx, fz = flatYaw(if vehicle then root.CFrame.LookVector else cam.CFrame.LookVector)
 	if not fx then
 		fx, fz = flatYaw(root.CFrame.LookVector)
 	end
@@ -619,9 +628,9 @@ local function updateMinimap(dt: number, now: number)
 	mini.img.Size = UDim2.fromOffset(mapPx, mapPx)
 	mini.img.Position = UDim2.fromOffset(-u * mapPx, -v * mapPx)
 
-	-- player arrow: the body's heading relative to the view
-	local bodyLook = if vehicle then vehicle:GetPivot().LookVector else root.CFrame.LookVector
-	local bx, bz = flatYaw(bodyLook)
+	-- player arrow: the body's heading relative to the view (seated, the body faces the bow; a
+	-- model's pivot need not)
+	local bx, bz = flatYaw(root.CFrame.LookVector)
 	if bx then
 		mini.arrow.Rotation = math.deg(math.atan2(bx :: number, -(bz :: number))) - heading
 	end
@@ -1074,8 +1083,7 @@ local function updateFullMap(now: number)
 	if root then
 		local x, y = at(me)
 		full.me.Position = UDim2.fromOffset(x, y)
-		local bx, bz =
-			flatYaw(if vehicle then vehicle:GetPivot().LookVector else root.CFrame.LookVector)
+		local bx, bz = flatYaw(root.CFrame.LookVector)
 		if bx then
 			full.me.Rotation = math.deg(math.atan2(bx :: number, -(bz :: number)))
 		end
@@ -1324,6 +1332,11 @@ end
 
 function MapController.GetObjective(): (Vector3?, string?)
 	return objective, objectiveLabel
+end
+
+-- Where the call blips pulse (survivors, vessels, offered calls), as of the last map frame.
+function MapController.GetTargets(): { Vector3 }
+	return targets
 end
 
 function MapController.IsOpen(): boolean
