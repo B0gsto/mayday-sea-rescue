@@ -124,7 +124,7 @@ def main():
         key = os.path.expanduser(TARGET.get("apiKey", "~/RobloxProjects/.roblox-api-key"))
         os.environ["ROBLOX_API_KEY_FILE"] = key
         try:
-            run([sys.executable, os.path.join(TOOLS, "deploy.py"), os.path.basename(REPO), str(UNIVERSE), str(PLACE),
+            run([sys.executable, os.path.join(TOOLS, "deploy.py"), REPO, str(UNIVERSE), str(PLACE),
                  "--state", os.path.relpath(STATE, REPO), "--steps", "config"])
             run([os.path.join(TOOLS, "build.sh"), REPO])
         finally:
