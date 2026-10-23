@@ -4,7 +4,7 @@
 usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 2048] [--preview PATH] [--labels]
 
 Inputs (read only): map/generated/terrain.json + terrain_height.i16 + terrain_material.u8 (gen_terrain.py),
-src/shared/Config/WorldConfig.luau (road splines, car parks), the greybox harbour from tools/world/layout.py.
+src/shared/Config/WorldConfig.luau (road splines, car parks), the breakwater arms from src/server/World/Harbour.luau.
 
 World -> image (north up, the same frame as the bake: rows are +Z = south):
     u = (x - originX) / extent,  v = (z - originZ) / extent,  extent = (nx - 1) * cell  (5120 studs)
@@ -234,16 +234,17 @@ def main():
     d = ImageDraw.Draw(img, "RGBA")
     k = px_per_stud
 
-    # the greybox harbour (map/Build.luau): breakwater arms at x = +-320 (z -20 .. 368), cross arms to the
-    # 60-stud mouth at x = +-30, Harbour Light on the east head, the quay along the town front
+    # the harbour breakwaters (src/server/World/Harbour.luau breakwaterLine): each arm runs root -> knee at x +-x,
+    # dog-legs in to the head, then out to the 60-stud mouth at x +-mouth; granite with a dark rock-armour edge
+    hb = open(os.path.join(ROOT, "src", "server", "World", "Harbour.luau")).read()
+    B = {k: float(v) for k, v in re.findall(r"(\w+) = (-?[\d.]+)", re.search(r"Harbour\.BREAKWATER = \{([^}]*)\}", hb).group(1))}
     wall, wall_edge = (190, 180, 160, 255), (52, 48, 42, 255)
-    w = 16 * k
-    for side in (-1, 1):
-        d.line([to_px(side * 320, -20), to_px(side * 320, 368)], fill=wall_edge, width=max(5, int(w) + 3))
-        d.line([to_px(side * 320, 368), to_px(side * 30, 368)], fill=wall_edge, width=max(5, int(w) + 3))
-    for side in (-1, 1):
-        d.line([to_px(side * 320, -20), to_px(side * 320, 368)], fill=wall, width=max(3, int(w)))
-        d.line([to_px(side * 320, 368), to_px(side * 30, 368)], fill=wall, width=max(3, int(w)))
+    w = B["w"] * k
+    arms = [[to_px(s * B["x"], B["root"]), to_px(s * B["x"], B["knee"]), to_px(s * B["head"], B["far"]),
+             to_px(s * B["mouth"], B["far"])] for s in (-1, 1)]
+    for fill, width in ((wall_edge, max(5, int(w) + 3)), (wall, max(3, int(w)))):
+        for pts in arms:
+            d.line(pts, fill=fill, width=width, joint="curve")
     roads, parks, towns = parse_world_config()
     for t in towns:  # built-up blocks in a pale stone tone; kept rects (squares, greens) stay terrain
         x0, z0, x1, z1 = t["rect"]
@@ -286,7 +287,8 @@ def main():
         px, pz = to_px(x, z)
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
-    dot(44, 368, (255, 214, 90, 255))
+    dot(44, 360, (255, 214, 90, 255))  # Harbour Light, east pierhead
+    dot(-36, 360, (220, 50, 40, 255), r=4)  # west pierhead light (Harbour.luau: x -(mouth + 6))
     dot(1800, 1750, (255, 214, 90, 255))
     # Place names are drawn live by MapController from MapConfig.Places (so they stay screen-size,
     # dodge the legend / title / top bar and never sit under a panel). --labels bakes them in too,
