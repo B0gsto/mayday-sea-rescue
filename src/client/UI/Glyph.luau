@@ -2,7 +2,7 @@
 -- Glyph: small vector icons drawn from rounded Frames (no emoji, no image assets), for HUD cards,
 -- SurfaceGui tags and billboards. Every glyph fills a square parent in scale units.
 --   Glyph.draw(kind, parent, colour)  kind: "swimmer" | "boat" | "cross" | "ring" | "check"
---                                     | "speed" | "seat" | "coin" | "home"
+--                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock"
 --   Glyph.bar(parent, size, pos, rotation, colour)  one pill (scale units), the building block
 local Glyph = {}
 
@@ -88,6 +88,20 @@ local function coin(p: Instance, _: Color3)
 	bar(p, Vector2.new(0.62, 0.62), Vector2.new(0.5, 0.5), 0, Color3.fromRGB(214, 164, 62))
 end
 
+local function flare(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.13, 0.4), Vector2.new(0.5, 0.72), 0, c, 0.3) -- hand flare stick
+	bar(p, Vector2.new(0.3, 0.3), Vector2.new(0.5, 0.36), 0, c) -- the burning head
+	bar(p, Vector2.new(0.08, 0.2), Vector2.new(0.24, 0.2), -45, c) -- sparks
+	bar(p, Vector2.new(0.08, 0.2), Vector2.new(0.76, 0.2), 45, c)
+	bar(p, Vector2.new(0.08, 0.16), Vector2.new(0.5, 0.06), 0, c)
+end
+
+local function clock(p: Instance, c: Color3)
+	ring(p, c)
+	bar(p, Vector2.new(0.08, 0.24), Vector2.new(0.5, 0.39), 0, c) -- hands
+	bar(p, Vector2.new(0.2, 0.08), Vector2.new(0.59, 0.5), 0, c)
+end
+
 local DRAW: { [string]: (Instance, Color3) -> () } = {
 	swimmer = swimmer,
 	boat = boat,
@@ -98,6 +112,8 @@ local DRAW: { [string]: (Instance, Color3) -> () } = {
 	seat = seat,
 	coin = coin,
 	home = home,
+	flare = flare,
+	clock = clock,
 }
 
 function Glyph.draw(kind: string, parent: Instance, colour: Color3)

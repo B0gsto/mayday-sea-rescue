@@ -240,4 +240,50 @@ function Grading.weakest(steps: { ScoredStep }): number?
 	return best
 end
 
+-- The debrief's wordless summary (docs/16 K5) from its step timeline ({ id, grade, at }):
+-- stars (Gold 3, Silver 2, Bronze 1, else 0), seconds from the answer to the last step, and the
+-- three masteries: smooth (every ride home Gold), all (nobody left for the NPC boat) and fast
+-- (every pick-up Gold).
+export type Mastery = {
+	stars: number,
+	seconds: number,
+	smooth: boolean,
+	all: boolean,
+	fast: boolean,
+}
+
+function Grading.mastery(
+	grade: string,
+	steps: { { id: string, grade: string, at: number? } },
+	saved: number,
+	total: number
+): Mastery
+	-- the ferry's steps carry their own ids (pickup / movement)
+	local function allGold(id: string, alt: string): boolean
+		local any = false
+		for _, s in steps do
+			if s.id == id or s.id == alt then
+				if s.grade ~= "Gold" then
+					return false
+				end
+				any = true
+			end
+		end
+		return any
+	end
+	local seconds = 0
+	for _, s in steps do
+		seconds = math.max(seconds, s.at or 0)
+	end
+	local points = Grading.Points[grade]
+	local won = points ~= nil and points > 0
+	return {
+		stars = if won then points else 0,
+		seconds = seconds,
+		smooth = won and allGold("transport", "movement"),
+		all = won and total > 0 and saved >= total,
+		fast = won and allGold("recovery", "pickup"),
+	}
+end
+
 return Grading

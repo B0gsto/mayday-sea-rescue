@@ -2,14 +2,16 @@
 -- OpsController: the client side of operations v2 (CONTRACT.md "Operations v2").
 -- Discovers step mechanics in src/client/Mechanics/<mechanicId>.luau (Mechanics/Default when one is
 -- missing), plays the one the server starts for this player (Ops_StepStart), and submits its
--- result (Ops_StepResult). It also draws a greybox tasking card, an operation strip and a debrief;
--- the radio wheel / tasking card / debrief stream replaces those through the signals below and
--- sets OpsController.UseBuiltInUi = false.
+-- result (Ops_StepResult). The HUD (UI/OpsHud, mounted by RadioController) draws everything from
+-- the signals below.
+--
+-- Taking a call (docs/16 K2): the pager's key or tap accepts, and so does driving at it: seated
+-- at a craft's helm, moving at AUTO_SPEED or more with the course within AUTO_CONE of the call for
+-- AUTO_HOLD s (shared/Calls/CallLogic.headingToward). Big calls (join) take the key only.
 --
 -- API for other controllers:
 --   OpsController.OnOffer / OnState / OnDebrief / OnRadio / OnClosed : { Connect(self, fn) }
 --   OpsController.Accept(opId)            accept a tasking (big call: join)
---   OpsController.TakeStep(stepKey)       swap station: take the step an NPC is doing
 --   OpsController.GetState(): snapshot?   the last Ops_State
 --   OpsController.GetMechanic(mechanicId) the module that would play it (Default if missing)
 -- While a cinematic plays (LocalPlayer attribute CinematicPlaying) the Ops ScreenGuis are hidden.
@@ -17,10 +19,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
-local Layout = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
-local Remotes =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Remotes"))
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
+local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
+local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
 type Mechanic = {
 	start: (ctx: { [string]: any }, finish: (result: { [string]: any }) -> ()) -> (() -> ())?,
@@ -28,7 +30,10 @@ type Mechanic = {
 
 local OpsController = {}
 OpsController.Priority = 80
-OpsController.UseBuiltInUi = true
+
+local AUTO_SPEED = 10 -- studs/s: really driving, not drifting at the pier
+local AUTO_CONE = 35 -- degrees either side of the bearing to the call
+local AUTO_HOLD = 0.75 -- s on course before it counts
 
 local function signal()
 	local list: { (any) -> () } = {}
@@ -127,167 +132,45 @@ local function onStepStart(ctx: { [string]: any })
 	end
 end
 
----------------------------------------------------------------- greybox UI
+---------------------------------------------------------------- taking a call
 
-local gui: ScreenGui
-local offerFrame: Frame
-local stripFrame: Frame
-local debriefFrame: Frame
-local radioLabel: TextLabel
-local offerId: string? = nil
+local pending: { opId: string, position: Vector3 }? = nil -- the solo offer driving can take
+local onCourse = 0
 
-local function label(
-	parent: Instance,
-	text: string,
-	y: number,
-	h: number,
-	size: number,
-	dim: boolean?
-): TextLabel
-	local l = Instance.new("TextLabel")
-	l.BackgroundTransparency = 1
-	l.Position = UDim2.fromOffset(14, y)
-	l.Size = UDim2.new(1, -28, 0, h)
-	l.Font = if dim then HudTheme.BodyFont else HudTheme.BoldFont
-	l.TextColor3 = if dim then HudTheme.Colors.textDim else HudTheme.Colors.text
-	l.TextSize = size
-	l.TextWrapped = true
-	l.TextXAlignment = Enum.TextXAlignment.Left
-	l.TextYAlignment = Enum.TextYAlignment.Top
-	l.Text = text
-	l.Parent = parent
-	return l
+-- The craft whose helm the player holds, or nil (on foot, a passenger, in a car).
+local function helmSeat(): VehicleSeat?
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local model = seat and seat.Parent
+	if not (seat and seat:IsA("VehicleSeat") and seat.Name == "DriverSeat" and model) then
+		return nil
+	end
+	local id = model:GetAttribute("VehicleId")
+	return if type(id) == "string" and VehicleConfig.get(id) then seat else nil
 end
 
-local function panel(name: string, pos: UDim2, size: UDim2, anchor: Vector2): Frame
-	local f = Instance.new("Frame")
-	f.Name = name
-	f.AnchorPoint = anchor
-	f.Position = pos
-	f.Size = size
-	f.BackgroundColor3 = HudTheme.Colors.panel
-	f.BackgroundTransparency = HudTheme.PanelTransparency
-	f.Visible = false
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, HudTheme.Corner)
-	c.Parent = f
-	f.Parent = gui
-	return f
-end
-
-local function button(parent: Instance, text: string, onClick: () -> ()): TextButton
-	local b = Instance.new("TextButton")
-	b.AnchorPoint = Vector2.new(1, 1)
-	b.Position = UDim2.new(1, -12, 1, -10)
-	b.Size = UDim2.fromOffset(150, HudTheme.MinButtonHeight)
-	b.BackgroundColor3 = HudTheme.Colors.accent
-	b.Font = HudTheme.BoldFont
-	b.TextColor3 = HudTheme.Colors.text
-	b.TextSize = 20
-	b.Text = text
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, HudTheme.Corner)
-	c.Parent = b
-	b.Activated:Connect(onClick)
-	b.Parent = parent
-	return b
-end
-
-local function clear(f: Frame)
-	for _, ch in f:GetChildren() do
-		if not ch:IsA("UICorner") then
-			ch:Destroy()
+local function watchCourse(dt: number)
+	local offer = pending
+	local seat = offer and helmSeat()
+	if
+		offer
+		and seat
+		and CallLogic.headingToward(
+			seat.Position,
+			seat.AssemblyLinearVelocity,
+			offer.position,
+			AUTO_SPEED,
+			AUTO_CONE
+		)
+	then
+		onCourse += dt
+		if onCourse >= AUTO_HOLD then
+			OpsController.Accept(offer.opId)
 		end
+	else
+		onCourse = 0
 	end
-end
-
-local function showOffer(data: { [string]: any })
-	if not OpsController.UseBuiltInUi then
-		return
-	end
-	offerId = data.opId
-	clear(offerFrame)
-	label(offerFrame, `RADIO · {data.title}`, 10, 26, 22)
-	label(offerFrame, data.radioLine, 40, 44, 16, true)
-	label(offerFrame, `{data.zoneName} · ~{data.cash} Cash · {data.rep} Rep`, 88, 20, 15, true)
-	button(offerFrame, if data.isBig then "Join" else "Accept", function()
-		OpsController.Accept(data.opId)
-	end)
-	offerFrame.Visible = true
-end
-
-local function showState(s: { [string]: any })
-	if not OpsController.UseBuiltInUi then
-		return
-	end
-	clear(stripFrame)
-	local current = "Next step..."
-	local takeKey: string? = nil
-	for _, c in s.current do
-		if c.trackId == s.myTrack then
-			current = if c.npc then `{c.label} (NPC crew)` else `{c.label} · {c.assignee}`
-			if c.npc then
-				takeKey = c.key
-			end
-		end
-	end
-	local cas = s.casualties[1]
-	local condText = if cas
-		then `{cas.label} {cas.condition}%` .. (if s.total > 1
-			then ` · {s.saved}/{s.total} safe`
-			else "")
-		else ""
-	label(stripFrame, `{s.title} · {#s.results}/{#s.plan} steps`, 8, 22, 18)
-	label(stripFrame, current, 32, 20, 16, true)
-	label(stripFrame, condText, 54, 20, 16, true)
-	if takeKey then
-		local key = takeKey
-		button(stripFrame, "Do it myself", function()
-			OpsController.TakeStep(key)
-		end)
-	end
-	stripFrame.Visible = true
-end
-
-local function showDebrief(d: { [string]: any })
-	stripFrame.Visible = false
-	if not OpsController.UseBuiltInUi then
-		return
-	end
-	clear(debriefFrame)
-	label(debriefFrame, `{d.title}: {d.grade}`, 10, 30, 26)
-	local lines = {}
-	for _, s in d.steps do
-		table.insert(lines, `{s.grade} · {s.label} ({s.by})`)
-	end
-	label(debriefFrame, table.concat(lines, "\n"), 46, 220, 14, true)
-	label(debriefFrame, `+{d.cash} Cash · +{d.rep} Rep`, 272, 22, 18)
-	if d.tip then
-		label(debriefFrame, `Chief Aggie: {d.tip}`, 298, 40, 15, true)
-	end
-	button(debriefFrame, "Close", function()
-		debriefFrame.Visible = false
-	end)
-	debriefFrame.Visible = true
-	task.delay(10, function()
-		debriefFrame.Visible = false
-	end)
-end
-
-local radioSerial = 0
-local function showRadio(r: { [string]: any })
-	if not OpsController.UseBuiltInUi then
-		return
-	end
-	radioSerial += 1
-	local mine = radioSerial
-	radioLabel.Text = `{r.from}: {r.text}`
-	radioLabel.Visible = true
-	task.delay(6, function()
-		if radioSerial == mine then
-			radioLabel.Visible = false
-		end
-	end)
 end
 
 ---------------------------------------------------------------- API
@@ -366,15 +249,10 @@ local function watchCinematics(playerGui: Instance)
 end
 
 function OpsController.Accept(opId: string)
-	offerFrame.Visible = false
-	Remotes.event("Ops_Accept"):FireServer(opId)
-end
-
-function OpsController.TakeStep(stepKey: string)
-	local s = state
-	if s then
-		Remotes.event("Ops_TakeStep"):FireServer(s.opId, stepKey)
+	if pending and pending.opId == opId then
+		pending = nil
 	end
+	Remotes.event("Ops_Accept"):FireServer(opId)
 end
 
 function OpsController.GetState(): { [string]: any }?
@@ -397,37 +275,8 @@ function OpsController.Init()
 		end
 	end)
 	mechanicsFolder = script.Parent.Parent:WaitForChild("Mechanics", 10)
-	gui = Instance.new("ScreenGui")
-	gui.Name = "OpsGreybox"
-	gui.ResetOnSpawn = false
-	gui.DisplayOrder = 15
-	offerFrame =
-		panel("Offer", UDim2.new(1, -16, 0, 120), UDim2.fromOffset(380, 170), Vector2.new(1, 0))
-	stripFrame =
-		panel("Strip", UDim2.new(0.5, 0, 0, 12), UDim2.fromOffset(460, 84), Vector2.new(0.5, 0))
-	debriefFrame = panel(
-		"Debrief",
-		UDim2.fromScale(0.5, 0.5),
-		UDim2.fromOffset(440, 400),
-		Vector2.new(0.5, 0.5)
-	)
-	-- greybox fallback, placed on the shared HUD layout (UI/Layout) like the real UI
-	Layout.prepare(gui)
-	local function slot(f: GuiObject, region: Layout.RegionName, size: UDim2)
-		f.AnchorPoint = Vector2.zero
-		f.Position = UDim2.new()
-		f.Size = size
-		f.Parent = Layout.region(gui, region)
-	end
-	slot(offerFrame, "right", UDim2.new(1, 0, 0, 170))
-	slot(stripFrame, "objective", UDim2.new(1, 0, 0, 84))
-	radioLabel = label(gui, "", 0, 24, 18)
-	slot(radioLabel, "subtitle", UDim2.new(1, 0, 0, 48))
-	radioLabel.BackgroundTransparency = 0.3
-	radioLabel.BackgroundColor3 = HudTheme.Colors.panel
-	radioLabel.Visible = false
-	gui.Parent = player:WaitForChild("PlayerGui")
-	watchCinematics(gui.Parent :: Instance)
+	RunService.Heartbeat:Connect(watchCourse)
+	watchCinematics(player:WaitForChild("PlayerGui"))
 	-- the rip off Haven Sands (docs/09 section 8.4): its channel shows near the beach, and a rip
 	-- tasking speaks its radio line (Mechanics/Rip/View; required through any so its require of
 	-- RadioController does not type as a cycle through this controller)
@@ -438,7 +287,10 @@ function OpsController.Init()
 
 	Remotes.event("Ops_Offered").OnClientEvent:Connect(function(data)
 		OpsController.OnOffer:Fire(data)
-		showOffer(data)
+		if not data.isBig and typeof(data.position) == "Vector3" then
+			pending = { opId = data.opId, position = data.position }
+			onCourse = 0
+		end
 		if player:GetAttribute("OpsAutoStub") == true then
 			task.delay(1, OpsController.Accept, data.opId)
 		end
@@ -446,8 +298,8 @@ function OpsController.Init()
 	Remotes.event("Ops_State").OnClientEvent:Connect(function(s)
 		state = s
 		RipView.sync(s)
-		if offerId == s.opId then
-			offerFrame.Visible = false
+		if pending and pending.opId == s.opId then
+			pending = nil
 		end
 		-- the server moved on (takeover, NPC took it, another unit): drop the running mechanic
 		local r = running
@@ -461,7 +313,6 @@ function OpsController.Init()
 			end
 		end
 		OpsController.OnState:Fire(s)
-		showState(s)
 	end)
 	Remotes.event("Ops_StepStart").OnClientEvent:Connect(onStepStart)
 	Remotes.event("Ops_StepAck").OnClientEvent:Connect(function(ack)
@@ -471,18 +322,15 @@ function OpsController.Init()
 	end)
 	Remotes.event("Ops_Radio").OnClientEvent:Connect(function(r)
 		OpsController.OnRadio:Fire(r)
-		showRadio(r)
 	end)
 	Remotes.event("Ops_Debrief").OnClientEvent:Connect(function(d)
 		cancelRunning()
 		state = nil
 		OpsController.OnDebrief:Fire(d)
-		showDebrief(d)
 	end)
 	Remotes.event("Ops_Closed").OnClientEvent:Connect(function(c)
-		if offerId == c.opId then
-			offerFrame.Visible = false
-			offerId = nil
+		if pending and pending.opId == c.opId then
+			pending = nil
 		end
 		-- a closed op (abandoned, expired, taken over) takes its mechanic panel with it
 		if running and running.opId == c.opId then

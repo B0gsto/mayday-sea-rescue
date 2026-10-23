@@ -1,42 +1,36 @@
 --!strict
--- OpsHud: wires the operation UI to OpsController's signals (CONTRACT.md "Operations v2", stream d):
--- the tasking pager (OnOffer), the step card and casualty monitor (OnState), the debrief toast
--- (OnDebrief) and closures (OnClosed). Mounted by RadioController, which also sets
--- OpsController.UseBuiltInUi = false so the greybox UI stays hidden.
--- Placement (UI/Layout): the step card in the "objective" region (top left), the pager and the
--- casualty monitor stacked in the "right" column; the debrief is a toast in the "notice" band. In the cold
--- open both are hidden: the minimap's objective pill is the one objective line. A new player (Layout.newPlayer) gets no relay / big-call alert
--- and no casualty monitor until a treat step is up (docs/15 section 3).
+-- OpsHud: wires the operation UI to OpsController's signals (CONTRACT.md "Operations v2"):
+-- the tasking pager (OnOffer), the objective strip (OnState), the debrief toast (OnDebrief) and
+-- closures (OnClosed). Mounted by RadioController.
+-- Placement (UI/Layout): the strip in the "objective" region (top left), the pager in the "right"
+-- column, the debrief a toast in the "notice" band. In the cold open both are hidden: the
+-- minimap's objective pill is the one objective line. A new player (Layout.newPlayer) gets no
+-- relay / big-call alert.
+-- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
+-- (PyroController) and again every FLARE_EVERY s until the call is taken or withdrawn; the minimap
+-- draws its blip (MapController).
 local Players = game:GetService("Players")
 
 local ColdOpenCue = require(script.Parent.ColdOpenCue)
 local Layout = require(script.Parent.Layout)
-local OpsConditionMonitor = require(script.Parent.OpsConditionMonitor)
 local OpsDebrief = require(script.Parent.OpsDebrief)
 local OpsStepCard = require(script.Parent.OpsStepCard)
 local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
+local PyroController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("PyroController"))
 
 local OpsHud = {}
 
 local NEW_PLAYER_DEBRIEF = 6 -- s: the first calls' debrief stays up a little longer
+local FLARE_EVERY = 25 -- s: a parachute flare burns ~40 s, so one is always in the sky
 -- first station calls: the casualty keeps the cold open's world cues while you go and get them
-local FIND_STEPS = { passage = true, search = true, approach = true, calm = true, recovery = true }
+local FIND_STEPS = { recovery = true, pickup = true }
 
 local DEBRIEF_LINE: { [string]: string } = {
 	Gold = "AGG_DEBRIEF_GOLD",
 	Silver = "AGG_DEBRIEF_SILVER",
 	Bronze = "AGG_DEBRIEF_BRONZE",
 }
-
--- The casualty monitor is a training aid only while a treat step is up for this player.
-local function treatStep(s: { [string]: any }): boolean
-	for _, c in s.current or {} do
-		if c.mechanicId == "treat" and (c.trackId == nil or c.trackId == s.myTrack) then
-			return true
-		end
-	end
-	return false
-end
 
 function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	local player = Players.LocalPlayer
@@ -58,7 +52,6 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
-	local monitor = OpsConditionMonitor.new(right)
 	-- cold open: one objective on screen, the minimap's pill ("Drop-off 100 m"), so no step strip
 	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
@@ -90,6 +83,23 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 		end
 	end
 
+	-- the flare over the call: one now, then every FLARE_EVERY s while it stands
+	local flareOp: any = nil
+	local function flareOver(opId: any, at: Vector3)
+		flareOp = opId
+		task.spawn(function()
+			while flareOp == opId do
+				pcall(PyroController.parachute, at)
+				task.wait(FLARE_EVERY)
+			end
+		end)
+	end
+	local function stopFlare(opId: any)
+		if flareOp == opId then
+			flareOp = nil
+		end
+	end
+
 	local lastOfferId: any = nil
 	ops.OnOffer:Connect(function(data: { [string]: any })
 		-- a re-broadcast of the same offer refreshes the card only, no second radio call
@@ -109,7 +119,11 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 		end)
 		if not fresh then
 			return
-		elseif data.isBig then
+		end
+		if typeof(data.position) == "Vector3" then
+			flareOver(data.opId, data.position)
+		end
+		if data.isBig then
 			radio.sayText(
 				"Gale Isles Coastguard",
 				tostring(data.radioLine or ""),
@@ -123,14 +137,8 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	ops.OnState:Connect(function(s: { [string]: any })
 		activeOp = s.opId
 		tasking.hide(s.opId)
-		step.update(s, function(key: string)
-			ops.TakeStep(key)
-		end)
-		local vitals = player:GetAttribute("OpsPro") ~= true
-		if vitals and Layout.newPlayer() and not treatStep(s) then
-			vitals = false
-		end
-		monitor.update(s.casualties or {}, vitals)
+		stopFlare(s.opId) -- taken: the survivor's own cues take over
+		step.update(s)
 		local mine: { [string]: any }? = nil
 		for _, c in s.current or {} do
 			if c.trackId == s.myTrack then
@@ -144,7 +152,6 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 	ops.OnDebrief:Connect(function(d: { [string]: any })
 		activeOp = nil
 		step.hide()
-		monitor.hide()
 		setFind(nil)
 		local fresh = Layout.newPlayer()
 		task.spawn(function()
@@ -171,10 +178,10 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 
 	ops.OnClosed:Connect(function(c: { [string]: any })
 		tasking.hide(c.opId)
+		stopFlare(c.opId)
 		if c.opId == activeOp then
 			activeOp = nil
 			step.hide()
-			monitor.hide()
 			setFind(nil)
 		end
 		if c.message and not c.silent then

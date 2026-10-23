@@ -267,4 +267,22 @@ function CallLogic.timerFor(kind: string, zoneId: string): number
 	return math.floor(spec.timer * (if zone then zone.timerMultiplier else 1) + 0.5)
 end
 
+-- Driving at a call (docs/16 K2: a seated player who heads for the flare takes the call): flat
+-- speed of at least minSpeed and the course within maxDeg of the bearing to target.
+function CallLogic.headingToward(
+	from: Vector3,
+	velocity: Vector3,
+	target: Vector3,
+	minSpeed: number,
+	maxDeg: number
+): boolean
+	local vx, vz = velocity.X, velocity.Z
+	local tx, tz = target.X - from.X, target.Z - from.Z
+	local speed, dist = math.sqrt(vx * vx + vz * vz), math.sqrt(tx * tx + tz * tz)
+	if speed < minSpeed or dist < 1 then
+		return false
+	end
+	return (vx * tx + vz * tz) / (speed * dist) >= math.cos(math.rad(maxDeg))
+end
+
 return CallLogic

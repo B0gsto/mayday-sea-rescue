@@ -23,7 +23,7 @@ local def: Types.OperationDef = {
 	steps = {
 		{
 			id = "relay",
-			label = "Answer the MAYDAY RELAY",
+			label = "Answer",
 			realTerm = "MAYDAY RELAY",
 			role = "Navigator",
 			mechanicId = "radio_ack",
@@ -39,7 +39,7 @@ local def: Types.OperationDef = {
 		},
 		{
 			id = "pickup",
-			label = "Pick up a casualty",
+			label = "Pick up",
 			realTerm = "Search and pick-up",
 			role = "Crew",
 			mechanicId = "auto_board", -- 2026-10-21: close and steady, they climb aboard
@@ -58,7 +58,7 @@ local def: Types.OperationDef = {
 		},
 		{
 			id = "movement",
-			label = "Bring them home",
+			label = "Home",
 			realTerm = "Casualty movement",
 			role = "Helm",
 			mechanicId = "transport",

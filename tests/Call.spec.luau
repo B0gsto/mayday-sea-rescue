@@ -123,4 +123,15 @@ return function(t)
 		t.expect(CallLogic.insidePad(cf, size, Vector3.new(-134, 1, 92), 5)).toBeTruthy()
 		t.expect(CallLogic.insidePad(cf, size, Vector3.new(-150, 1, 92), 5)).toBeFalsy()
 	end)
+
+	t.test("heading toward a call: fast enough and inside the cone", function()
+		local from, target = Vector3.new(0, 0, 0), Vector3.new(0, 0, -200)
+		local h = CallLogic.headingToward
+		t.expect(h(from, Vector3.new(0, 0, -20), target, 8, 35)).toBe(true)
+		t.expect(h(from, Vector3.new(10, 3, -20), target, 8, 35)).toBe(true) -- ~27 deg off
+		t.expect(h(from, Vector3.new(20, 0, -10), target, 8, 35)).toBe(false) -- ~63 deg off
+		t.expect(h(from, Vector3.new(0, 0, 20), target, 8, 35)).toBe(false) -- away
+		t.expect(h(from, Vector3.new(0, 0, -4), target, 8, 35)).toBe(false) -- drifting
+		t.expect(h(target, Vector3.new(0, 0, -20), target, 8, 35)).toBe(false) -- already there
+	end)
 end

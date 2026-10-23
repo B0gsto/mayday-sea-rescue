@@ -9,10 +9,9 @@
 --   isPreset(values, preset)       true when every preset key already has the preset value
 --   qualityTier(override, savedLevel, touchOnly)   "High" | "Medium" | "Low"
 --   mix(values)                   SoundGroup volumes (Master, SFX, Ambience, Radio, Music, Voice)
---   resolvePro(want, current, inOp, coldOpenDone)  the OpsPro attribute the server sets
 --
 -- Everything is saved in the profile's flags.cameraSettings table (ProgressionRules keeps up to
--- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 24).
+-- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 23).
 
 local SettingsRules = {}
 
@@ -47,8 +46,6 @@ local DEFAULTS = {
 	textSize = 100, -- % applied through Layout's text scale
 	reduceMotion = false, -- no shake/bob; bursts and flashes become fades/glows
 	holdToTap = false, -- hold actions also toggle on a second press; prompts tap
-	-- gameplay
-	pro = false, -- Assist (false, default) or Pro (docs 09 section 9.3)
 }
 SettingsRules.Defaults = table.freeze(table.clone(DEFAULTS))
 
@@ -84,7 +81,7 @@ SettingsRules.SEASICK = table.freeze({
 	motionBlur = false,
 } :: { [string]: any })
 
--- The comfort keys "Reset comfort" restores (graphics, audio and Pro are left alone).
+-- The comfort keys "Reset comfort" restores (graphics and audio are left alone).
 SettingsRules.COMFORT_KEYS = table.freeze({
 	"horizonStab",
 	"fov",
@@ -168,24 +165,6 @@ function SettingsRules.mix(values: { [string]: any }): { [string]: number }
 		Music = unit(values.volMusic),
 		Voice = if values.voice == false then 0 else 1,
 	}
-end
-
--- Assist / Pro (docs 09 section 9.3): dropping to Assist is always allowed, even mid-operation
--- (the Pro bonus is lost); moving up to Pro waits until the player is not in an operation, and
--- the cold open (a trainee's first rescue) always plays with Assist.
-function SettingsRules.resolvePro(
-	want: boolean,
-	current: boolean,
-	inOp: boolean,
-	coldOpenDone: boolean
-): boolean
-	if not want then
-		return false
-	end
-	if current then
-		return true
-	end
-	return coldOpenDone and not inOp
 end
 
 return table.freeze(SettingsRules)

@@ -2,8 +2,8 @@
 -- SettingsPanel: the settings menu (docs 13 RP-S1). Camera comfort (horizon stabilisation, FOV,
 -- head bob, shake, G-force lean, look sensitivity, speed FOV, motion blur, lens spray), a
 -- "Seasick-safe" preset, a graphics override (ocean and scatter detail), volumes (master,
--- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, Assist /
--- Pro, and "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
+-- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, and
+-- "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
 -- Layout: the stock iOS Settings look, a dark grouped list in one ScrollingFrame (icon tile,
 -- 1-3 word label, switch / slider / segmented control per row).
@@ -15,8 +15,6 @@
 -- Audio: sets the AudioConfig SoundGroup tree (SoundService.Master > Music, SFX, Ambience, Radio >
 -- Voice) to the slider values; "Voice" (voiced radio clips) is muted while voice is off. Sounds
 -- join a group through Sound.SoundGroup (SettingsPanel.soundGroup(name) finds or makes it).
--- Assist / Pro: sent to the server (Settings_SetPro, SettingsService), which owns the OpsPro
--- attribute; switching to Pro waits until the current operation ends.
 --
 --   SettingsPanel.mount()   HudController calls this once
 --   SettingsPanel.setOpen(open) / SettingsPanel.isOpen()
@@ -100,24 +98,6 @@ local function applyAudio()
 			pcall(ac.setVolume, name, volume)
 		end
 	end
-end
-
----------------------------------------------------------------- Assist / Pro
-
-local proQueued = false
-local function sendPro()
-	if proQueued then
-		return
-	end
-	proQueued = true
-	task.delay(0.3, function()
-		proQueued = false
-		local net = ReplicatedStorage:FindFirstChild("Net")
-		local remote = net and net:FindFirstChild("Settings_SetPro")
-		if remote and remote:IsA("RemoteEvent") then
-			remote:FireServer(Comfort.get("pro") == true)
-		end
-	end)
 end
 
 ---------------------------------------------------------------- Hold to tap
@@ -857,19 +837,6 @@ local function build()
 	toggle(audio, "muteSirens", "burst", Tint.red, "Mute sirens")
 	toggle(audio, "muteRadios", "no", Tint.grey, "Mute radios")
 
-	local ops = section(s, "Operations")
-	local mode =
-		segmented(ops, "pro", "star", Tint.yellow, "Mode", { { "Assist", false }, { "Pro", true } })
-	local proNote = valueLabel(mode, 96)
-	local function updateProNote()
-		local want = Comfort.get("pro") == true
-		local active = player:GetAttribute("OpsPro") == true
-		proNote.Text = if not want then "Hints" elseif active then "+20% Rep" else "Next op"
-	end
-	table.insert(extraRefresh, updateProNote)
-	player:GetAttributeChangedSignal("OpsPro"):Connect(updateProNote)
-	updateProNote()
-
 	-- Owned items (RP-M5): one cycler per cosmetic slot whose game pass the player owns
 	local owned = section(s, "Owned items")
 	owned.Name = "OwnedItems"
@@ -988,15 +955,12 @@ function SettingsPanel.mount()
 		refresh(key)
 		if string.sub(key, 1, 3) == "vol" or key == "voice" then
 			applyAudio()
-		elseif key == "pro" then
-			sendPro()
 		elseif key == "colourAssist" then
 			A11yPalette.setMode(Comfort.get("colourAssist") :: string)
 		elseif key == "holdToTap" then
 			applyHoldToTap()
 		end
 	end)
-	Comfort.whenReady(sendPro)
 end
 
 return SettingsPanel

@@ -1,5 +1,5 @@
 --!strict
--- Comfort: the player's settings (camera comfort, graphics override, audio, voice, Assist/Pro),
+-- Comfort: the player's settings (camera comfort, graphics override, audio, voice),
 -- persisted on the profile.
 -- Loaded once from Progression_GetData (flags.cameraSettings) and saved through the
 -- Camera_SaveSettings RemoteEvent (ProgressionService stores it with SetFlag; rate limited, so
@@ -17,7 +17,7 @@ local SettingsRules =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("SettingsRules"))
 
 -- The keys, defaults, ranges and choices live in shared/SettingsRules (comfort, graphics
--- override, audio volumes, voice, Assist/Pro); this module is the client store.
+-- override, audio volumes, voice); this module is the client store.
 export type Settings = {
 	horizonStab: number, -- 0 hull locked .. 1 horizon locked (vehicle first person)
 	fov: number, -- base field of view, degrees
@@ -39,7 +39,6 @@ export type Settings = {
 	textSize: number,
 	reduceMotion: boolean,
 	holdToTap: boolean,
-	pro: boolean,
 }
 
 local DEFAULTS: Settings = SettingsRules.Defaults :: any

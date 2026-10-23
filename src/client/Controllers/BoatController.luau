@@ -22,8 +22,8 @@
 --    ColdOpenAutoThrottle = true. Here the auto-throttle holds about 20 knots until AUTO_HOLD s,
 --    HANDOVER_DISTANCE studs from the casualty or the player's first throttle input, then sets
 --    ColdOpenAutoThrottle = false (locally) and the throttle is the player's (W released coasts).
---    While ColdOpenApproach is true (server: the approach step is current) and the player is in
---    Assist (OpsPro ~= true), a hull still fast near the casualty is braked to approach speed;
+--    While ColdOpenApproach is true (server: the approach step is current), a hull still fast
+--    near the casualty is braked to approach speed;
 --    AssistEase (bool) is true while that ease acts and AssistEaseCount counts its engagements
 --    (Mechanics/approach reports it; the server caps the grade at Silver).
 --
@@ -335,13 +335,12 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 			model:SetAttribute("ColdOpenAutoThrottle", false) -- handed over (verification hook)
 		end
 	end
-	local assist = localPlayer:GetAttribute("OpsPro") ~= true
 	local onApproach = model:GetAttribute("ColdOpenApproach") == true and not coldOpenHeld(model)
 	local wasEasing = st.easing
 	st.easing = onApproach
 		and ColdOpen.updateEase(
 			st.easing,
-			assist,
+			true, -- always Assist (the Pro mode is gone, docs/16 C16)
 			distance,
 			forwardSpeed,
 			if spec then spec.brakeDecel else nil

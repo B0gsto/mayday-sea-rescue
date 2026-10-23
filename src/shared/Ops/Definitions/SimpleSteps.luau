@@ -10,7 +10,7 @@ return function(answerTip: string): { Types.StepDef }
 	return {
 		{
 			id = "tasking",
-			label = "Answer the Coastguard",
+			label = "Answer",
 			realTerm = "Tasking",
 			role = "Navigator",
 			mechanicId = "radio_ack",
@@ -26,7 +26,7 @@ return function(answerTip: string): { Types.StepDef }
 		},
 		{
 			id = "launch",
-			label = "Get aboard your boat",
+			label = "Go",
 			realTerm = "Launch",
 			role = "Helm",
 			mechanicId = "launch",
@@ -42,7 +42,7 @@ return function(answerTip: string): { Types.StepDef }
 		},
 		{
 			id = "recovery",
-			label = "Pick them up",
+			label = "Pick up",
 			realTerm = "Recovery",
 			role = "Helm",
 			mechanicId = "auto_board",
@@ -62,7 +62,7 @@ return function(answerTip: string): { Types.StepDef }
 		},
 		{
 			id = "transport",
-			label = "Bring them home smoothly",
+			label = "Home",
 			realTerm = "Transport",
 			role = "Helm",
 			mechanicId = "transport",

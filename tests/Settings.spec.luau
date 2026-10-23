@@ -1,5 +1,5 @@
 -- Settings data model (shared/SettingsRules): cleaning, the Seasick-safe preset, the graphics
--- override, the audio mix, Assist/Pro rules, and a save/load round trip through ProgressionRules.
+-- override, the audio mix, and a save/load round trip through ProgressionRules.
 return function(t)
 	local S = t.load("src/shared/SettingsRules.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
@@ -85,21 +85,11 @@ return function(t)
 		t.expect(m.Music).toBe(1)
 	end)
 
-	t.test("Assist/Pro: drop any time, up only outside an operation after the cold open", function()
-		-- want, current, inOp, coldOpenDone
-		t.expect(S.resolvePro(false, true, true, true)).toBe(false) -- drop mid-op
-		t.expect(S.resolvePro(true, false, true, true)).toBe(false) -- not up mid-op
-		t.expect(S.resolvePro(true, false, false, true)).toBe(true)
-		t.expect(S.resolvePro(true, false, false, false)).toBe(false) -- cold open: Assist
-		t.expect(S.resolvePro(true, true, true, true)).toBe(true) -- stays Pro
-	end)
-
 	t.test("all settings plus cinematic flags survive the profile flag sanitiser", function()
 		local stored = table.clone(S.Defaults)
 		stored.fov = 88
 		stored.oceanQuality = "Low"
 		stored.voice = false
-		stored.pro = true
 		stored.seen_arrival = true
 		stored.seen_launch = true
 		stored.seen_storm = true

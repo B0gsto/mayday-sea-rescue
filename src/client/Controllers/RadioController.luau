@@ -614,7 +614,6 @@ end
 ---------------------------------------------------------------- lifecycle
 
 function Radio.Init()
-	OpsController.UseBuiltInUi = false
 	local pg = player:WaitForChild("PlayerGui")
 	panel = RadioPanel.new(pg)
 	buildAudio()

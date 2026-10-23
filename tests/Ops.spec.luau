@@ -225,4 +225,38 @@ return function(t)
 		c.sheltered = true
 		t.expect(Condition.rate(c)).toBeCloseTo(0.1, 1e-9)
 	end)
+
+	t.test("debrief mastery: stars, time and the three masteries", function()
+		local steps = {
+			{ id = "tasking", grade = "Gold", at = 2 },
+			{ id = "recovery", grade = "Gold", at = 50 },
+			{ id = "transport", grade = "Silver", at = 95 },
+			{ id = "recovery", grade = "Gold", at = 130 },
+			{ id = "transport", grade = "Gold", at = 170 },
+		}
+		local m = Grading.mastery("Silver", steps, 2, 2)
+		t.expect(m.stars).toBe(2)
+		t.expect(m.seconds).toBe(170)
+		t.expect(m.fast).toBe(true)
+		t.expect(m.smooth).toBe(false) -- one bumpy ride
+		t.expect(m.all).toBe(true)
+		t.expect(Grading.mastery("Gold", steps, 1, 2).all).toBe(false)
+		local lost = Grading.mastery("Takeover", steps, 2, 2)
+		t.expect(lost.stars).toBe(0)
+		t.expect(lost.fast or lost.all or lost.smooth).toBe(false)
+		local bare = Grading.mastery("Gold", { { id = "tasking", grade = "Gold" } }, 0, 1)
+		t.expect(bare.fast).toBe(false)
+	end)
+
+	t.test("every step label is at most two words (docs/16 K4)", function()
+		for id, def in Operations.Defs do
+			for _, s in def.steps do
+				local n = select(2, string.gsub(s.label, "%S+", ""))
+				t.expect(n <= 2).toBe(true)
+				if n > 2 then
+					error(`{id}.{s.id}: "{s.label}"`)
+				end
+			end
+		end
+	end)
 end

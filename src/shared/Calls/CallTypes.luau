@@ -71,7 +71,7 @@ CallTypes.Payout = {
 CallTypes.Scheduler = {
 	OfferDelay = 9, -- seconds after a player is free before the next offer (within ~10 s) -- tune
 	FirstOfferDelay = 3, -- a new player's first radio call (docs 02 section 2, 0:02) -- tune
-	OfferSeconds = 30, -- an unanswered offer is withdrawn after this -- tune
+	OfferSeconds = 180, -- docs/16 K2: the call stands while you run to the bay and head out -- tune
 	LateGrace = 90, -- a call with a survivor aboard at timer end gets this long to deliver -- tune
 }
 
