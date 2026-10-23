@@ -13,7 +13,7 @@
 local OnboardingWeather = {}
 
 OnboardingWeather.BLEND = 5 -- s the sea eases back to the server's storm after the cold open
-OnboardingWeather.PENDING = 10 -- s a not-yet-done profile counts as "cold open about to start"
+OnboardingWeather.PENDING = 45 -- s a not-yet-done profile counts as "cold open about to start" (slow profile loads: K18)
 
 -- 1 = fully calm, 0 = the server's weather.
 function OnboardingWeather.target(active: boolean, done: boolean, age: number): number

@@ -1,19 +1,11 @@
--- Onboarding (docs/15 section 3): the one-goal-at-a-time sequence, the fail-safe calls, the
--- throw assist and the touch targets.
+-- Onboarding (docs/16 section 4): the tutorial call is the only goal, the fail-safe calls and the
+-- stripped HUD.
 return function(t)
 	local O = t.load("src/shared/Onboarding.luau")
+	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 
 	local function facts(over)
-		local f = {
-			coldOpenDone = true,
-			stationReached = false,
-			boardReached = false,
-			callsCompleted = 0,
-			offerReady = false,
-			gearOwned = false,
-			certEarned = false,
-			seconds = 0,
-		}
+		local f = { coldOpenDone = true, callsCompleted = 0, offerReady = false }
 		for k, v in over or {} do
 			f[k] = v
 		end
@@ -21,61 +13,38 @@ return function(t)
 	end
 
 	t.test("nothing to show before the cold open ends", function()
-		t.expect(O.goal(facts({ coldOpenDone = false }))).toBe(nil)
+		t.expect(O.goal(facts({ coldOpenDone = false, offerReady = true }))).toBe(nil)
 	end)
 
-	t.test("new taskings wait while a beacon goal is up", function()
-		t.expect(O.holdsOffers("Gear")).toBe(true)
-		t.expect(O.holdsOffers("Cert")).toBe(true)
-		t.expect(O.holdsOffers("Station")).toBe(true)
-		t.expect(O.holdsOffers("CallBoard")).toBe(true)
-		t.expect(O.holdsOffers("Rescue")).toBe(false) -- the offer already is the goal
-		t.expect(O.holdsOffers(nil)).toBe(false) -- the first session's goals are done
-	end)
-
-	t.test("the first session's goals arrive one at a time, in order", function()
-		t.expect(O.goal(facts())).toBe("Station")
-		t.expect(O.goal(facts({ stationReached = true }))).toBe("CallBoard")
-		local board = facts({ stationReached = true, boardReached = true })
-		t.expect(O.goal(board)).toBe("Rescue")
-		-- no Gear or Cert goal any more (docs/16 B5, B7): nothing holds the next offers
-		for _, seconds in { 0, O.GEAR_AT, O.CERT_AT } do
-			local after = facts({
-				stationReached = true,
-				boardReached = true,
-				callsCompleted = 1,
-				seconds = seconds,
-			})
-			t.expect(O.goal(after)).toBe(nil)
-			t.expect(O.holdsOffers(O.goal(after))).toBe(false)
+	t.test("each tutorial call's offer is the goal; no station or board walk (B2)", function()
+		t.expect(O.goal(facts())).toBe(nil) -- between calls: nothing to chase
+		for done = 0, O.TUTORIAL_CALLS - 1 do
+			t.expect(O.goal(facts({ callsCompleted = done, offerReady = true }))).toBe("Rescue")
 		end
 	end)
 
-	t.test("the cert goal ends on an earned cert or a passed exercise (snapshot certs)", function()
-		local none = { Helm = { earned = false, exercisePassed = false } }
-		t.expect(O.certDone(none)).toBe(false)
-		t.expect(O.certDone({ Helm = { earned = false, exercisePassed = true } })).toBe(true)
-		t.expect(O.certDone({ Helm = { earned = true, exercisePassed = true } })).toBe(true)
-		t.expect(O.certDone(nil)).toBe(false)
+	t.test("after the last tutorial call the normal mix runs (B9)", function()
+		t.expect(O.TUTORIAL_CALLS).toBe(#CallTypes.TutorialChain - 1)
+		local after = facts({ callsCompleted = O.TUTORIAL_CALLS, offerReady = true })
+		t.expect(O.goal(after)).toBe(nil)
 	end)
 
-	t.test("offers become the rescue goal; after certification only calls remain", function()
-		local ready = facts({
-			stationReached = true,
-			boardReached = true,
-			callsCompleted = 1,
-			gearOwned = true,
-			offerReady = true,
-		})
-		t.expect(O.goal(ready)).toBe("Rescue")
-		t.expect(O.goal(facts({
-			stationReached = true,
-			boardReached = true,
-			callsCompleted = 1,
-			gearOwned = true,
-			certEarned = true,
-		}))).toBe(nil)
+	t.test("nothing holds offers back any more (B2, B7)", function()
+		t.expect(O.holdsOffers).toBe(nil)
+		t.expect(O.certDone).toBe(nil)
 	end)
+
+	t.test(
+		"the tutorial chain: drifting craft with 1, then 2, then the seal pup (B3, B4, B9)",
+		function()
+			local chain = CallTypes.TutorialChain
+			t.expect(chain[2].kind).toBe("DriftingCraft")
+			t.expect(chain[2].victims).toBe(1)
+			t.expect(chain[3].kind).toBe("DriftingCraft")
+			t.expect(chain[3].victims).toBe(2)
+			t.expect(chain[5].kind).toBe("WildlifeRescue")
+		end
+	)
 
 	t.test("the cold open and three calls are fail-safe; later calls are not", function()
 		for completed = 0, O.FAILSAFE_CALLS do
@@ -98,19 +67,6 @@ return function(t)
 		end
 		t.expect(O.newPlayerHud(true, O.FAILSAFE_CALLS + 1)).toBe(false)
 		t.expect(O.newPlayerHud(true, 40)).toBe(false)
-	end)
-
-	t.test("the throw aims itself after two misses, only in Assist", function()
-		t.expect(O.throwAssist(1, true)).toBe(false)
-		t.expect(O.throwAssist(2, true)).toBe(true)
-		t.expect(O.throwAssist(3, true)).toBe(true)
-		t.expect(O.throwAssist(9, false)).toBe(false)
-	end)
-
-	t.test("touch targets are bigger than the old 130 px pads", function()
-		t.expect(O.TOUCH.throw > 130).toBe(true)
-		t.expect(O.TOUCH.grab > 130).toBe(true)
-		t.expect(O.TOUCH.throw).toBe(O.TOUCH.grab)
 	end)
 
 	t.test("only a rescued cold open gets the reward burst", function()

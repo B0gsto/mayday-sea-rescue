@@ -8,7 +8,7 @@
 -- squelch is open, scaled by Weather.getIntensity(); squelch open/close clicks around each line.
 -- Clips come only from src/shared/Config/VoiceManifest.luau; a line with any clip missing is spoken
 -- by Roblox text-to-speech (VoiceTTS, into the same EQ), and as subtitles only if that fails or is
--- throttled (with squelch and static). Subtitles are always on.
+-- throttled (with squelch and static). Subtitles are always on, six words at most (RadioSubtitle).
 --
 -- API (other controllers and mechanics):
 --   Radio.say(templateId, params?, opts?) -> Handle     Coastguard template (UI/RadioTemplates)
@@ -41,6 +41,7 @@ local RadioFormat = require(UI:WaitForChild("RadioFormat"))
 local RadioLines = require(UI:WaitForChild("RadioLines"))
 local RadioPanel = require(UI:WaitForChild("RadioPanel"))
 local RadioStitch = require(UI:WaitForChild("RadioStitch"))
+local RadioSubtitle = require(UI:WaitForChild("RadioSubtitle"))
 local RadioTemplates = require(UI:WaitForChild("RadioTemplates"))
 local VoiceCast = require(UI:WaitForChild("VoiceCast"))
 local VoiceManifest = require(Shared:WaitForChild("Config"):WaitForChild("VoiceManifest"))
@@ -319,7 +320,12 @@ local function enqueue(line: Line, speaker: string, opts: { [string]: any }?): H
 		local last = lastVoicedAt[line.text]
 		if last and os.clock() - last < REPEAT_COOLDOWN then
 			if not current and #queue == 0 then
-				panel.show(o.from or speaker, line.text, mode, RadioStitch.readSeconds(line.text))
+				panel.show(
+					o.from or speaker,
+					RadioSubtitle.of(line.text),
+					mode,
+					RadioStitch.readSeconds(line.text)
+				)
 			end
 			if o.onStart then
 				task.spawn(o.onStart)
@@ -441,7 +447,9 @@ local function playEntry(e: Entry)
 		sfx("SquelchOpen")
 		task.wait(0.12)
 	end
-	panel.show(e.speaker, line.text, if e.mode == "tx" then "tx" else e.mode, seconds + 0.5)
+	-- the voice says the whole line; the subtitle is six words at most (docs/16 K17)
+	local mode = if e.mode == "tx" then "tx" else e.mode
+	panel.show(e.speaker, RadioSubtitle.of(line.text), mode, seconds + 0.5)
 	if voiced then
 		local assets = {}
 		for _, id in line.ids do

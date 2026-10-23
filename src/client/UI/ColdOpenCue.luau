@@ -11,13 +11,16 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
 local Weather = require(Shared:WaitForChild("Weather"))
+
+-- the photoreal red parachute rocket (flipbooks), the same flare every distress call uses
+local PyroController =
+	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("PyroController"))
 
 local ColdOpenCue = {}
 
@@ -123,48 +126,6 @@ local function splash(parent: Attachment): ParticleEmitter
 	e.EmissionDirection = Enum.NormalId.Top
 	e.Parent = parent
 	return e
-end
-
--- A red parachute flare: shoots up over `at`, hangs and drifts down, lighting the sea.
-local function flare(at: Vector3, parent: Instance)
-	local p = Instance.new("Part")
-	p.Name = "Flare"
-	p.Shape = Enum.PartType.Ball
-	p.Size = Vector3.new(1.4, 1.4, 1.4)
-	p.Material = Enum.Material.Neon
-	p.Color = Color3.fromRGB(255, 40, 30)
-	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
-	p.Position = at
-	local light = Instance.new("PointLight")
-	light.Color = p.Color
-	light.Range = 60
-	light.Brightness = 4
-	light.Parent = p
-	local trail = Instance.new("ParticleEmitter")
-	trail.Color = ColorSequence.new(Color3.fromRGB(255, 230, 225))
-	trail.Size = NumberSequence.new(1, 3)
-	trail.Transparency = NumberSequence.new(0.4, 1)
-	trail.Lifetime = NumberRange.new(2, 3)
-	trail.Rate = 40
-	trail.Speed = NumberRange.new(0, 0.5)
-	trail.Parent = p
-	p.Parent = parent
-	local up = TweenService:Create(
-		p,
-		TweenInfo.new(1.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		{ Position = at + Vector3.new(0, 90, 0) }
-	)
-	up.Completed:Connect(function()
-		trail.Rate = 6
-		TweenService:Create(p, TweenInfo.new(8, Enum.EasingStyle.Linear), {
-			Position = at + Vector3.new(6, 35, 0),
-			Transparency = 0.6,
-		}):Play()
-	end)
-	up:Play()
-	task.delay(9.6, function()
-		p:Destroy()
-	end)
 end
 
 -- Runs until the returned stop is called. onHeld(held) fires when the casualty takes hold or lets go.
@@ -278,7 +239,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 				for _, e in shoreSmoke do
 					e.Rate = math.min(e.Rate * 1.6, 40)
 				end
-				flare(near.dry + Vector3.new(0, 4, 0), shore)
+				PyroController.parachute(near.dry + Vector3.new(0, 4, 0))
 			end
 			return
 		end
@@ -305,7 +266,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		if pivot and folder then
 			local d = (Vector3.new(pivot.X, 0, pivot.Z) - Vector3.new(base.X, 0, base.Z)).Magnitude
 			if ColdOpen.nudge(nudge, t, d) then
-				flare(base, folder)
+				PyroController.parachute(base)
 			end
 		end
 	end)

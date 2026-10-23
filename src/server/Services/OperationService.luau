@@ -144,7 +144,6 @@ local playerState: { [Player]: PlayerState } = {}
 local coldOpenFlow: { [Player]: ColdOpenFlow.Entry } = {} -- this session's cold-open state
 local stationOnSpawn: { [Player]: boolean } = {} -- died in the cold open: next spawn at station
 local coldOpenBegunAt: { [Player]: number } = {} -- StartColdOpen may yield (SpawnColdOpen)
-local coldOpenEndedAt: { [Player]: number } = {} -- onboarding's clock starts at the hand-over
 local lastActiveAt: { [Player]: number } = {} -- last tick on an operation: the idle nudge's clock
 local COLD_OPEN_START_GRACE = 10 -- s before a cold open that never got its op counts as lost
 local nextId = 0
@@ -242,34 +241,6 @@ local function onboardingCall(player: Player?): boolean
 	return type(total) == "number" and Onboarding.failsafeCall(total)
 end
 
--- docs/15 "one next thing": no new tasking while the client's onboarding beacon points at
--- something else (gear at 5 min, certification at 10 min). The first station call is exempt:
--- its offer is what the call board accepts.
-local function onboardingHoldsOffers(player: Player, completed: number): boolean
-	if completed < 1 then
-		return false
-	end
-	local ended = coldOpenEndedAt[player]
-	if not ended then
-		return false -- a returning player: no beacons this session
-	end
-	local ok, data = try("ProgressionService", "GetData", player)
-	if not ok or type(data) ~= "table" or data.coldOpenDone ~= true then
-		return false
-	end
-	local goal = Onboarding.goal({
-		coldOpenDone = true,
-		stationReached = true, -- a completed call means the station and board were reached
-		boardReached = true,
-		callsCompleted = math.max(0, completed - 1), -- the cold open is one of st.completed
-		offerReady = false,
-		gearOwned = next(data.gear) ~= nil,
-		certEarned = Onboarding.certDone(data.certs), -- snapshot certs always has every id
-		seconds = now() - ended,
-	})
-	return Onboarding.holdsOffers(goal)
-end
-
 local function markColdOpenDone(player: Player)
 	player:SetAttribute("ColdOpenDone", true)
 	-- CONTRACT: ProgressionService.SetFlag(player, "coldOpenDone", true) persists it (stream E).
@@ -348,7 +319,6 @@ local function endColdOpen(player: Player, reason: string)
 	if not ColdOpenFlow.finish(e, reason) then
 		return
 	end
-	coldOpenEndedAt[player] = now()
 	player:SetAttribute("ColdOpenActive", nil)
 	markColdOpenDone(player)
 	try("TelemetryService", "ColdOpenEnded", player, reason) -- RP-A1 onboarding funnel
@@ -361,7 +331,7 @@ local function endColdOpen(player: Player, reason: string)
 	fire("Ops_Radio", player, { opId = opId or "", from = msg.from, text = msg.text })
 	local alive, onCraft = coldOpenRiderStatus(player)
 	local how = ColdOpenFlow.handover(alive, onCraft)
-	-- Handover first: OnboardingController reads it when ColdOpenEnded fires (Ride waits for the arrival)
+	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
 	player:SetAttribute("ColdOpenHandover", how)
 	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
 	if how ~= "Ride" then
@@ -371,7 +341,7 @@ local function endColdOpen(player: Player, reason: string)
 		sendToStation(player)
 	elseif how == "Respawn" then
 		stationOnSpawn[player] = true
-	end -- "Ride": the client's arrival shot and Vehicle_ArrivalHandoff dock them at the station
+	end -- "Ride": they keep the jet ski and stay seated; call 2 is offered there (docs/16 B2, K18)
 end
 
 local function everyone(op: any): { Player }
@@ -1884,11 +1854,7 @@ local function tick()
 				if t - (coldOpenBegunAt[player] or -math.huge) > COLD_OPEN_START_GRACE then
 					endColdOpen(player, "Lost")
 				end
-			elseif
-				decision == "Offer"
-				and not onboardingHoldsOffers(player, st.completed)
-				and not inWater(player)
-			then
+			elseif decision == "Offer" and not inWater(player) then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
 				local nudge = st.completed >= #Grading.Payout.Tutorial
@@ -2064,8 +2030,8 @@ function OperationService.OfferCall(player: Player, kind: string?, opts: any?): 
 	if pending and pending.isBig then
 		return nil -- the server-wide call is the more special one
 	end
-	if onboardingHoldsOffers(player, st.completed) or now() < st.nextOfferAt then
-		return nil -- Onboarding's own pacing, or the breather after the last op
+	if now() < st.nextOfferAt then
+		return nil -- the breather after the last op
 	end
 	if pending then
 		withdrawOffer(pending)
@@ -2084,7 +2050,7 @@ function OperationService.OfferBigCall(player: Player): boolean
 	if st.activeOpId and ops[st.activeOpId] then
 		return false
 	end
-	if onboardingHoldsOffers(player, st.completed) or now() < st.nextOfferAt then
+	if now() < st.nextOfferAt then
 		return false
 	end
 	if st.offerOpId and ops[st.offerOpId] then
@@ -2184,7 +2150,6 @@ local function onPlayerRemoving(player: Player)
 	coldOpenFlow[player] = nil
 	stationOnSpawn[player] = nil
 	coldOpenBegunAt[player] = nil
-	coldOpenEndedAt[player] = nil
 	lastActiveAt[player] = nil
 	for _, op in table.clone(ops) do
 		local j = table.find(op.offeredTo, player)
