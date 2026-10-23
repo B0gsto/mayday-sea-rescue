@@ -1515,7 +1515,7 @@ function VehicleService.RestCFrame(model: Model, x: number, z: number, look: Vec
 end
 
 -- Welds the survivor to the next free SurvivorSlot. False when the boat is full.
--- CONTRACT: CallService/RescueService stop moving a survivor by script while its
+-- CONTRACT: RescueService stops moving a survivor by script while its
 -- "OnVehicle" attribute is set (it holds the vehicle model's name).
 function VehicleService.AddSurvivor(model: Model, survivorModel: Model): boolean
 	local record = records[model]
@@ -1614,7 +1614,7 @@ end
 
 -- Ropes the target's BowPoint to this vehicle's TowHitch. Targets need a PrimaryPart (or any
 -- BasePart) and should be welded into one assembly. Anchored non-vehicle targets are scripted tows.
--- CONTRACT: CallService stops moving a towed NPC boat by script while it has the VehicleTowed tag;
+-- CONTRACT: RescueService stops moving a towed NPC boat by script while it has the VehicleTowed tag;
 -- DetachTow re-anchors non-vehicle targets so script motion can resume.
 function VehicleService.AttachTow(model: Model, targetModel: Model): boolean
 	local record = records[model]

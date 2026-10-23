@@ -16,7 +16,7 @@
 -- (0..1, BosunWetness) and Wet (coat and wear darkened); Hidden (bool), Treat (a counter, bumped by
 -- DogService.Treat for the daily challenge set: DogController spins him once and pops a "Woof!").
 --
--- Every few seconds he sniffs for the nearest victim from CallService.GetVictimPositions and, inside his
+-- Every few seconds he sniffs for the nearest victim from OperationService.GetVictimPositions and, inside his
 -- nose range, faces it and fires DogPoint to his player:
 --   DogPoint:FireClient(player, { dog = Model, direction = Vector3 (unit, flat),
 --                                 position = Vector3, distance = number })
@@ -113,25 +113,25 @@ local function seaHeight(position: Vector3): number
 	return 0
 end
 
-local callService: any = nil
+local operationService: any = nil
 local function victimPositions(player: Player): { Vector3 }
-	if callService == nil then
-		local module = script.Parent:FindFirstChild("CallService")
+	if operationService == nil then
+		local module = script.Parent:FindFirstChild("OperationService")
 		local ok, result = false, nil
 		if module and module:IsA("ModuleScript") then
 			ok, result = pcall(require, module)
 		end
-		callService = if ok and type(result) == "table" then result else false
-		if not callService then
+		operationService = if ok and type(result) == "table" then result else false
+		if not operationService then
 			task.delay(10, function()
-				callService = nil -- retry later; CallService may not exist yet
+				operationService = nil -- retry later; OperationService may not exist yet
 			end)
 		end
 	end
-	if not callService or type(callService.GetVictimPositions) ~= "function" then
+	if not operationService or type(operationService.GetVictimPositions) ~= "function" then
 		return {}
 	end
-	local ok, positions = pcall(callService.GetVictimPositions, player)
+	local ok, positions = pcall(operationService.GetVictimPositions, player)
 	return if ok and type(positions) == "table" then positions else {}
 end
 
