@@ -213,57 +213,36 @@ function CallLogic.offerDelay(weatherState: string?, isFirst: boolean?): number
 	return base
 end
 
-export type KindChoice = { kind: string, zone: string }
+export type KindChoice = { kind: string, zone: string, victims: number? }
 
 -- Choose the next call for a player. completed = calls finished this session.
-function CallLogic.chooseCall(
-	completed: number,
-	weatherState: string?,
-	canTow: boolean,
-	rng: Rng?,
-	openOuter: boolean?
-): KindChoice
+function CallLogic.chooseCall(completed: number, weatherState: string?, rng: Rng?): KindChoice
 	local roll: Rng = rng or (math.random :: any)
 	local tut = CallTypes.TutorialChain[completed + 1]
 	if tut then
-		if tut.kind == "Tow" and not canTow then
-			return { kind = "DriftingCraft", zone = tut.zone }
-		end
-		return { kind = tut.kind, zone = tut.zone }
+		return { kind = tut.kind, zone = tut.zone, victims = tut.victims }
 	end
 	local total = 0
 	for _, k in CallTypes.NormalKinds do
-		if k ~= "Tow" or canTow then
-			total += CallTypes.KindWeights[k]
-		end
+		total += CallTypes.KindWeights[k]
 	end
 	local pick = roll() * total
 	local kind = "Swimmer"
 	for _, k in CallTypes.NormalKinds do
-		if k ~= "Tow" or canTow then
-			pick -= CallTypes.KindWeights[k]
-			if pick < 0 then
-				kind = k
-				break
-			end
+		pick -= CallTypes.KindWeights[k]
+		if pick < 0 then
+			kind = k
+			break
 		end
 	end
 	local spec = CallTypes.Kinds[kind]
-	-- the cliff casualty is one fixed ledge, not a water ring (docs/09 section 8.5)
-	if kind == "Cliff" then
-		return { kind = kind, zone = "HavenHeadCliff" }
-	end
-	-- a vessel fire is fought at anchor in open water, never in Calm Bay (docs/02 section 3)
-	if kind == "VesselFire" then
-		return { kind = kind, zone = "Outer" }
+	-- one-place scenes (the cliff foot, the rip, the sinking boat; a fire is never in Calm Bay)
+	if #spec.zones == 1 then
+		return { kind = kind, zone = spec.zones[1] }
 	end
 	-- storm: beginner storm calls at the harbour mouth (docs 02 section 8)
 	if weatherState == "Storm" and table.find(spec.zones, "HarbourMouth") and roll() < 0.6 then
 		return { kind = kind, zone = "HarbourMouth" }
-	end
-	-- the Skerries (Outer) open with the Harbor Light; before it, calls stay in Calm Bay
-	if openOuter == false then
-		return { kind = kind, zone = "CalmBay" }
 	end
 	return { kind = kind, zone = if roll() < 0.4 then "CalmBay" else "Outer" }
 end

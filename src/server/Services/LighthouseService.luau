@@ -227,7 +227,8 @@ local function relight(player: Player, lightId: string): boolean
 	return true
 end
 
-local function onMissionCompleted(snap: any, helpers: { Player })
+-- WP1 retired OperationService's mission path; WP5 deletes this service (docs/16 C15)
+local function _onMissionCompleted(snap: any, helpers: { Player })
 	if snap.reason ~= "Complete" then
 		return
 	end
@@ -254,7 +255,6 @@ function LighthouseService.Init() end
 function LighthouseService.Start()
 	buildSkerry()
 	buildBoard()
-	OperationService.MissionCompleted:Connect(onMissionCompleted)
 	if RunService:IsStudio() then
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "LighthouseDev"

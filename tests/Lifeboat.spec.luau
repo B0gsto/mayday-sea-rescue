@@ -1,9 +1,8 @@
--- Lifeboat: the all-weather lifeboat's spec, the Coxswain exercise wiring and the rank gate.
+-- Lifeboat: the all-weather lifeboat's spec and the rank gate.
 return function(t)
 	local Buoyancy = t.load("src/shared/Boat/Buoyancy.luau")
 	local Config = t.load("src/shared/Config/VehicleConfig.luau")
 	local Progression = t.load("src/shared/Config/ProgressionConfig.luau")
-	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
 
 	local G = 29.43
 	local KNOT = 1.543
@@ -81,17 +80,10 @@ return function(t)
 		t.expect(boat.leanFactor < Config.RIB.leanFactor).toBeTruthy()
 	end)
 
-	t.test("the Coxswain exercise is on the board, in the lifeboat, for the cert", function()
-		local ex = Exercises.get("ExerciseCoxswain")
-		t.expect(ex).toBeTruthy()
-		t.expect(ex.vehicle).toBe("Lifeboat")
-		t.expect(ex.certification).toBe("Coxswain")
-		t.expect(ex.def.id).toBe("ExerciseCoxswain")
-		t.expect(#ex.def.steps >= 3).toBeTruthy()
+	t.test("the lifeboat is rank-gated", function()
 		local cert = Progression.Certifications.Coxswain
 		t.expect(cert).toBeTruthy()
 		t.expect(cert.exercise).toBe("ExerciseCoxswain")
-		t.expect(Exercises.forCertification("Coxswain").id).toBe("ExerciseCoxswain")
 		t.expect(table.find(Progression.CertOrder, "Coxswain")).toBeTruthy()
 		-- the lifeboat is rank-gated data: Coxswain, 12,000 Cash
 		local unlock = Progression.Vehicles.Lifeboat

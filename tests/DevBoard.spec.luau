@@ -62,7 +62,7 @@ return function(t)
 		t.expect(#DevConfig.SpotOrder > 10).toBe(true)
 		t.expect(table.find(DevConfig.Vehicles, "LifeguardPickup") ~= nil).toBe(true)
 		t.expect(table.find(DevConfig.Ops, "CapsizedFerry") ~= nil).toBe(true)
-		t.expect(table.find(DevConfig.Ops, "ExerciseSwimTest") ~= nil).toBe(true)
+		t.expect(table.find(DevConfig.Ops, "ColdOpen") ~= nil).toBe(true)
 		t.expect(table.find(DevConfig.Events, "GoldenHour") ~= nil).toBe(true)
 		for _, id in DevConfig.SpotOrder do
 			t.expect(typeof(DevConfig.Spots[id].position)).toBe("Vector3")

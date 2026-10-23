@@ -1,22 +1,14 @@
 --!strict
 -- RipFlow (server): the rip-current beach rescue's world glue (docs/09 section 8.4, docs/13 LU-2).
--- The casualty is the ordinary swimmer scene (RescueService) and the rescue ways are the Person
--- in the Water ones: nothing is forked here. What is special is the variant (a body-boarder as
+-- The casualty is the ordinary swimmer scene (RescueService) and climbs aboard like any other:
+-- nothing is forked here. What is special is the variant (a body-boarder as
 -- well as a swimmer) and the current itself (shared/RipCurrent): RescueService drifts casualties
 -- with it, the client swims and floats kit with it. OperationService calls Task when the
 -- operation is offered (the variant and its radio line) and Spawn after the scene spawns (the
 -- rip is the current; the body-boarder's board is tagged for the client view).
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Shared = ReplicatedStorage:WaitForChild("Shared")
-local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
-
 local rng = Random.new()
 
 local RipFlow = {}
-
--- The beach handover points (OperationService's "shore" effect -> NpcService.ShoreHandover).
-RipFlow.Shore = RipCurrent.Shore
 
 RipFlow.BOARDER_CHANCE = 0.35 -- the body-boarder variant -- tune
 

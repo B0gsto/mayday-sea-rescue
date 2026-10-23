@@ -10,7 +10,15 @@ return function(t)
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local Operations = t.load("src/shared/Ops/Operations.luau")
-	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
+	-- shortcut: the exercise board's times, inlined when WP1 cut the exercises; WP9 rewrites this pace model
+	local Exercises = {
+		Defs = {
+			ExerciseBoatHandling = { minutes = 3 },
+			ExerciseCasualtyCare = { minutes = 2.5 },
+			ExerciseSwimTest = { minutes = 2.5 },
+			ExerciseCoxswain = { minutes = 3.5 },
+		},
+	}
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local ChallengeRules = t.load("src/shared/ChallengeRules.luau")
 	local StreakRules = t.load("src/shared/StreakRules.luau")
@@ -121,9 +129,9 @@ return function(t)
 				if completed > 1 then
 					now += CallTypes.Scheduler.OfferDelay / 60
 				end
-				local choice = CallLogic.chooseCall(completed, "Calm", false, function()
+				local choice = CallLogic.chooseCall(completed, "Calm", function()
 					return 0.5
-				end, false)
+				end)
 				now += CALL_MIN
 				operation(choice.kind)
 				if completed == 2 and dailyOnCall2 then

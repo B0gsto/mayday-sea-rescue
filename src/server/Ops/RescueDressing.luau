@@ -1,8 +1,7 @@
 --!strict
 -- RescueDressing (server): the code-built look of each rare-call variant (docs/15 H2): outfit
 -- colours, an accessory part, a dog made of Parts, a golden bird, a white yacht hull. Called from
--- the places that build casualties and boats (RescueService.spawnVictim/buildDisabledBoat,
--- CliffScene, SinkingScene). Placeholder art until real models land (CLAUDE.md).
+-- the places that build casualties and boats (RescueService.spawnVictim, SinkingScene, FireScene). Placeholder art until real models land (CLAUDE.md).
 --
 -- Two mounting modes, chosen by the caller's context:
 --   floater + mount  parts ride a RescueService floater (offset from its sea-surface frame)
@@ -836,6 +835,12 @@ function RescueDressing.isCreature(variantId: any): boolean
 	return variant ~= nil and variant.style == "Creature"
 end
 
+-- True for the variants that dress a vessel (a hull look, not a person's).
+function RescueDressing.isBoat(variantId: any): boolean
+	local variant = RescueVariants.ById(variantId)
+	return variant ~= nil and variant.style == "Boat"
+end
+
 -- Dress a casualty model for `variantId`. `ctx` carries how the model moves (see the header).
 function RescueDressing.apply(model: Model, variantId: any, ctx: Ctx?)
 	local variant = RescueVariants.ById(variantId)
@@ -857,22 +862,7 @@ function RescueDressing.apply(model: Model, variantId: any, ctx: Ctx?)
 	elseif variant.style == "Boat" then
 		boat(model, context, variant.id)
 	else
-		local torso = CFrame.new(0, TORSO, 0)
-		local head = CFrame.new(0, HEAD, 0)
-		if context.root and not context.floater then
-			-- CliffScene's stationary casualty: place the hat and pack from the model's own bounds
-			local ok, box, size = pcall(function()
-				return model:GetBoundingBox()
-			end)
-			if ok then
-				local centre = (box :: CFrame).Position
-				torso = context.root.CFrame:ToObjectSpace(CFrame.new(centre))
-				head = context.root.CFrame:ToObjectSpace(
-					CFrame.new(centre.X, centre.Y + (size :: Vector3).Y * 0.32, centre.Z)
-				)
-			end
-		end
-		personProp(model, context, variant.id, torso, head)
+		personProp(model, context, variant.id, CFrame.new(0, TORSO, 0), CFrame.new(0, HEAD, 0))
 	end
 	if variant.rarity == "Epic" then
 		local host = model:FindFirstChild("SunDeck", true) or model.PrimaryPart

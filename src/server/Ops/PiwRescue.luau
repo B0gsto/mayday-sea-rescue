@@ -1,14 +1,10 @@
 --!strict
--- PiwRescue: the server half of the three Person in the Water rescue ways (docs/14 section 3;
--- client: src/client/Mechanics/PIW/Ways.luau). Remote Net.PIW_Rescue, C->S
--- (opId, casualtyIndex, action, landing?):
+-- PiwRescue: the server half of a survivor answering the boat that comes for them (docs/14 section 3;
+-- client: src/client/Mechanics/auto_board.luau). Remote Net.PIW_Rescue, C->S (opId, casualtyIndex, action):
 --   "arm"    the recovery step started: the casualty now answers this rescuer (10 s rule)
---   "grab"   drag: the rescuer took hold (checked: in arm's reach)
 --   "bump"   auto_board: the boat ran into them (checked: fast and close), they are knocked back
---   "throw"  the throw bag landed at `landing` (checked: within the line's reach of the
---            thrower and near the casualty), so they hold the line and are pulled in
 -- RescueService's drift step asks `velocity` for each victim and moves the floater with it.
--- The victim model's PiwMode attribute (idle | swim | line | held) tells the clients.
+-- The victim model's PiwMode attribute (idle | swim | held) tells the clients.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -91,8 +87,7 @@ local function onEvent(
 	canAct: (any, Player) -> boolean,
 	opId: any,
 	index: any,
-	action: any,
-	landing: any
+	action: any
 )
 	if type(opId) ~= "string" or type(index) ~= "number" or type(action) ~= "string" then
 		return
@@ -143,14 +138,6 @@ local function onEvent(
 			e.ways = PiwWays.new()
 			e.ways.since = now
 		end
-	elseif action == "grab" then
-		if PiwWays.canGrab(pos, cas, onBoat) then
-			PiwWays.begin(e.ways, "held", now)
-		end
-	elseif action == "throw" then
-		if typeof(landing) == "Vector3" and PiwWays.throwHits(pos, landing, cas) then
-			PiwWays.begin(e.ways, "line", now)
-		end
 	end
 	setMode(victim, e.ways.mode)
 end
@@ -165,8 +152,8 @@ function PiwRescue.start(liveCalls: { [any]: boolean }, canAct: (any, Player) ->
 	local remote = Instance.new("RemoteEvent")
 	remote.Name = PiwRescue.REMOTE
 	remote.Parent = net
-	remote.OnServerEvent:Connect(function(player, opId, index, action, landing)
-		onEvent(player, liveCalls, canAct, opId, index, action, landing)
+	remote.OnServerEvent:Connect(function(player, opId, index, action)
+		onEvent(player, liveCalls, canAct, opId, index, action)
 	end)
 	Players.PlayerRemoving:Connect(function(player)
 		lastEvent[player] = nil

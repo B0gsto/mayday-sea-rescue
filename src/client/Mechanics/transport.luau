@@ -1,19 +1,19 @@
 --!strict
--- transport (docs 09 step 9, section 5.7): the pad you drive to is the choice. The right one is lit
--- (blue ambulance beacon, or a white heli beacon at the station for a heli case); no panel in
--- play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the server turns `slam`
--- events into condition, cap 6). The server measures conditionAtEnd and destinationRight when the
--- boat reaches a pad; this client reports when it is home: the boat slow and close to a pad or a
+-- transport (docs 09 step 9, section 5.7): bring them home. The ambulance pad is lit (a blinking blue
+-- beacon); no panel in play, the crew braces on every hard landing. Hard slams hurt a cold casualty (the
+-- server turns `slam` events into condition, cap 6). The server measures conditionAtEnd when the boat
+-- reaches a pad; this client reports when it is home: the boat slow and close to a pad or a
 -- shore point (station slipway, Haven Sands), or the player ashore on foot at one (they landed the
 -- casualty and walked up; the step used to hang until its timeout then). Controls: drive.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
+local Board =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Board"))
 local BoatColdOpen =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Boat"):WaitForChild("ColdOpen"))
 
-local Record = require(script.Parent.PIW.Record)
 local Step = require(script.Parent.PIW.Step)
 local Ui = require(script.Parent.PIW.Ui)
 local Units = require(script.Parent.PIW.Units)
@@ -54,9 +54,8 @@ function Transport.isHome(p: Vector3): boolean
 	return d <= Transport.PAD_RANGE or shore <= BoatColdOpen.SHORE_RADIUS
 end
 
--- The pad that suits the casualty (mirrors PiwMetrics.destinationRight): a heli case goes to the
--- station ("Dock"), anyone else to the ambulance at the hospital pontoon (else the station).
-local function rightPad(needsHeli: boolean): BasePart?
+-- The ambulance at the hospital pontoon, else the station.
+local function homePad(): BasePart?
 	local dock, hospital
 	for _, pad in pads() do
 		local name = pad:GetAttribute("DropOff")
@@ -66,17 +65,17 @@ local function rightPad(needsHeli: boolean): BasePart?
 			hospital = pad
 		end
 	end
-	return if needsHeli then dock else hospital or dock
+	return hospital or dock
 end
 
--- A code-built beacon over the pad: blinking blue (ambulance) or steady white (helicopter).
-local function beacon(pad: BasePart, heli: boolean): BasePart
+-- A code-built blinking blue beacon over the pad.
+local function beacon(pad: BasePart): BasePart
 	local b = Instance.new("Part")
 	b.Name = "TransportBeacon"
 	b.Shape = Enum.PartType.Ball
 	b.Size = Vector3.one * 3
 	b.Material = Enum.Material.Neon
-	b.Color = if heli then Color3.new(1, 1, 1) else Color3.fromRGB(40, 110, 255)
+	b.Color = Color3.fromRGB(40, 110, 255)
 	b.Anchored = true
 	b.CanCollide = false
 	b.CanQuery = false
@@ -101,19 +100,49 @@ function Transport.start(
 	if Step.autoStub(s) then
 		return Step.cleanup(s)
 	end
-	local profile = Record.profile(ctx)
-	local band = ctx.casualty and ctx.casualty.band or "Stable"
-	local needsHeli = profile.notBreathing or band == "Critical" or band == "Serious"
-	local cold = profile.state == "VeryCold"
-		or profile.state == "Unresponsive"
-		or profile.state == "Exhausted"
-	local pad = rightPad(needsHeli)
-	local lamp = if pad then Ui.add(s.bag, beacon(pad, needsHeli)) else nil
+	local state = ctx.casualty and ctx.casualty.state
+	local cold = state == "VeryCold" or state == "Unresponsive" or state == "Exhausted"
+	local pad = homePad()
+	local lamp = if pad then Ui.add(s.bag, beacon(pad)) else nil
 	local slams = 0
+	-- a full craft (docs/16 B4): survivors still waiting near you show a red ring (no room, come back)
+	local rings: { [Model]: Highlight } = {}
+	Ui.add(s.bag, function()
+		for _, r in rings do
+			r:Destroy()
+		end
+	end)
+	local function ringWaiting(h: World.Hull?)
+		local craft = h and h.root:FindFirstAncestorOfClass("Model")
+		local full = craft ~= nil and not Board.hasRoom(craft)
+		local folder = Workspace:FindFirstChild("CallProps")
+		for _, m in if folder then folder:GetChildren() else {} do
+			local at = m:IsA("Model") and m.Name == "Victim" and m.PrimaryPart
+			if not at or m:GetAttribute("CallId") ~= ctx.operation.id then
+				continue
+			end
+			local show = full
+				and h ~= nil
+				and m:GetAttribute("OnVehicle") == nil
+				and Units.flatDistance(h.position, at.Position) <= Board.REACH * 4
+			local model = m :: Model
+			if show and not rings[model] then
+				local ring = Instance.new("Highlight")
+				ring.FillTransparency = 1
+				ring.OutlineColor = Color3.fromRGB(230, 70, 60)
+				ring.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+				ring.Parent = model
+				rings[model] = ring
+			end
+			if rings[model] then
+				rings[model].Enabled = show
+			end
+		end
+	end
 
 	local function drive()
 		Step.heartbeat(s, function()
-			if lamp and not needsHeli then
+			if lamp then
 				lamp.Transparency = if os.clock() % 0.8 < 0.4 then 0 else 0.9
 			end
 			local slam = World.slam()
@@ -129,6 +158,7 @@ function Transport.start(
 				Ui.hands("brace")
 			end
 			local h = World.hull(World.vehicle(ctx))
+			ringWaiting(h)
 			local char = Players.LocalPlayer.Character
 			local hum = char and char:FindFirstChildOfClass("Humanoid")
 			local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
@@ -144,9 +174,6 @@ function Transport.start(
 		end)
 	end
 
-	if needsHeli then
-		s.say('Coastguard: "Rescue Gale One meets you ashore."', 3)
-	end
 	drive()
 	return Step.cleanup(s)
 end

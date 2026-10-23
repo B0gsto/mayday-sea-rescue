@@ -1,6 +1,6 @@
 --!strict
--- Ops/Operations: the registry of operation definitions, the legacy call-kind mapping, and the
--- per-casualty step plan. Pure (Lune-testable).
+-- Ops/Operations: the registry of operation definitions and the legacy call-kind mapping.
+-- Pure (Lune-testable).
 local Types = require(script.Parent.Types)
 
 type OperationDef = Types.OperationDef
@@ -10,7 +10,6 @@ local Operations = {}
 
 Operations.Defs = table.freeze({
 	PersonInWater = require(script.Parent.Definitions.PersonInWater),
-	DisabledVessel = require(script.Parent.Definitions.DisabledVessel),
 	CapsizedFerry = require(script.Parent.Definitions.CapsizedFerry),
 	CliffCasualty = require(script.Parent.Definitions.CliffCasualty),
 	RipCurrent = require(script.Parent.Definitions.RipCurrent),
@@ -23,7 +22,6 @@ Operations.Defs = table.freeze({
 Operations.FromCallKind = table.freeze({
 	Swimmer = "PersonInWater",
 	DriftingCraft = "PersonInWater",
-	Tow = "DisabledVessel",
 	CapsizedFerry = "CapsizedFerry",
 	Cliff = "CliffCasualty",
 	RipCurrent = "RipCurrent",
@@ -35,36 +33,6 @@ Operations.FromCallKind = table.freeze({
 function Operations.get(id: string): OperationDef?
 	return Operations.Defs[id]
 end
-
--- The steps a track runs for this casualty state (drops `when` steps that don't apply).
-function Operations.plan(def: OperationDef, casualtyState: string?): { StepDef }
-	local out = {}
-	for _, step in def.steps do
-		if step.when == nil or step.when == casualtyState then
-			table.insert(out, step)
-		end
-	end
-	return out
-end
-
--- Which client mechanic plays this step for this casualty.
-function Operations.mechanicFor(step: StepDef, casualtyState: string?): string
-	local by = step.mechanicByState
-	if by and casualtyState and by[casualtyState] then
-		return by[casualtyState]
-	end
-	return step.mechanicId
-end
-
--- The recovery method the book calls for (docs 09 section 2.3); a recovery mechanic reports
--- metrics.method and the server sets rightMethod from this.
-Operations.RecoveryMethod = table.freeze({
-	Alert = "throwbag",
-	Panicking = "swimmer",
-	Exhausted = "swimmer",
-	VeryCold = "horizontal",
-	Unresponsive = "horizontal",
-} :: { [string]: string })
 
 -- Triage sieve truth for a casualty (docs 09 section 7 step 4), simplified for greybox:
 -- walking -> Green; breathing but not walking -> Yellow; unresponsive or very cold -> Red.

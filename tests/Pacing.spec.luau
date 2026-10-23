@@ -16,7 +16,15 @@ return function(t)
 	local MonetizationConfig = t.load("src/shared/Config/MonetizationConfig.luau")
 	local CallTypes = t.load("src/shared/Calls/CallTypes.luau")
 	local Operations = t.load("src/shared/Ops/Operations.luau")
-	local Exercises = t.load("src/shared/Ops/Definitions/Exercises.luau")
+	-- shortcut: the exercise board's times, inlined when WP1 cut the exercises; WP9 rewrites this pace model
+	local Exercises = {
+		Defs = {
+			ExerciseBoatHandling = { minutes = 3 },
+			ExerciseCasualtyCare = { minutes = 2.5 },
+			ExerciseSwimTest = { minutes = 2.5 },
+			ExerciseCoxswain = { minutes = 3.5 },
+		},
+	}
 	local Grading = t.load("src/shared/Ops/Grading.luau")
 	local Variants = t.load("src/shared/Config/RescueVariants.luau")
 	local Album = t.load("src/shared/RescueAlbum.luau")
@@ -101,7 +109,6 @@ return function(t)
 		local totalOps = 0
 		local swimmerOps = 0
 		local sinceSwimmer = 0
-		local towSeen = false
 		local stormSeen = false
 
 		local function isGreat(now: number): boolean
@@ -346,7 +353,6 @@ return function(t)
 			if totalOps > #Grading.Payout.Tutorial then
 				swimmerOps += 1
 				sinceSwimmer += 1
-				towSeen = towSeen or def.id == "DisabledVessel"
 				stormSeen = stormSeen or storm
 			end
 		end
@@ -369,7 +375,7 @@ return function(t)
 								return id
 							end
 						elseif id == "Coxswain" then
-							if sinceSwimmer >= cert.live.count and towSeen and stormSeen then
+							if sinceSwimmer >= cert.live.count and stormSeen then
 								return id
 							end
 						end
@@ -392,7 +398,6 @@ return function(t)
 			mark(id .. " certification")
 			if id == "RescueSwimmer" then
 				sinceSwimmer = 0
-				towSeen = false
 				stormSeen = false
 			end
 			award(

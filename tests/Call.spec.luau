@@ -29,7 +29,7 @@ return function(t)
 	end)
 
 	t.test("the first call is a Swimmer close to the harbour", function()
-		local choice = CallLogic.chooseCall(0, "Calm", true, makeRng(1))
+		local choice = CallLogic.chooseCall(0, "Calm", makeRng(1))
 		t.expect(choice.kind).toBe("Swimmer")
 		t.expect(choice.zone).toBe("Near")
 		local rng = makeRng(3)
@@ -57,20 +57,26 @@ return function(t)
 		t.expect(CallLogic.offerDelay("Calm", true) <= 5).toBeTruthy()
 	end)
 
-	t.test("tow falls back when the player cannot tow; storm uses the harbour mouth", function()
-		t.expect(CallLogic.chooseCall(1, "Calm", false).kind).toBe("DriftingCraft")
-		t.expect(CallLogic.chooseCall(1, "Calm", true).kind).toBe("Tow")
-		local rng = makeRng(5)
-		local mouth = 0
-		for _ = 1, 300 do
-			local c = CallLogic.chooseCall(10, "Storm", false, rng)
-			t.expect(c.kind ~= "Tow").toBeTruthy()
-			if c.zone == "HarbourMouth" then
-				mouth += 1
+	t.test(
+		"the first calls follow the chain (docs/16 B3, B9); storm uses the harbour mouth",
+		function()
+			local second = CallLogic.chooseCall(1, "Calm")
+			t.expect(second.kind).toBe("DriftingCraft")
+			t.expect(second.victims).toBe(1)
+			t.expect(CallLogic.chooseCall(2, "Calm").victims).toBe(2)
+			t.expect(CallLogic.chooseCall(4, "Calm").kind).toBe("WildlifeRescue")
+			local rng = makeRng(5)
+			local mouth = 0
+			for _ = 1, 300 do
+				local c = CallLogic.chooseCall(10, "Storm", rng)
+				t.expect(CallTypes.Kinds[c.kind]).toBeTruthy()
+				if c.zone == "HarbourMouth" then
+					mouth += 1
+				end
 			end
+			t.expect(mouth > 50).toBeTruthy()
 		end
-		t.expect(mouth > 50).toBeTruthy()
-	end)
+	)
 
 	t.test("grades and rewards follow docs 03", function()
 		t.expect(CallLogic.grade(50, 100)).toBe("Gold")
@@ -79,8 +85,8 @@ return function(t)
 		local silver = CallLogic.reward("Swimmer", 70, 100, 1, nil)
 		t.expect(silver.cash).toBe(250)
 		t.expect(silver.rep).toBe(60)
-		t.expect(CallLogic.reward("Tow", 10, 100, 1, nil).cash)
-			.toBe(math.floor(250 * 1.3 * 1.25 + 0.5))
+		t.expect(CallLogic.reward("Cliff", 10, 100, 1, nil).cash)
+			.toBe(math.floor(250 * 1.4 * 1.25 + 0.5))
 		local first = CallLogic.reward("Swimmer", 90, 100, 1, 0)
 		t.expect(first.cash).toBe(500)
 		t.expect(first.rep).toBe(150)

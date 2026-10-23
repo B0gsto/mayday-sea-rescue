@@ -7,10 +7,10 @@
 -- The station's launch bays sit at about (-95, 0, 50) on the east side of the dock.
 
 export type Interaction = {
-	kind: "Pull" | "Tow",
+	kind: "Pull",
 	holdSeconds: number, -- ProximityPrompt hold time
 	range: number, -- studs: how close the player must be to trigger the prompt
-	vehicleRange: number, -- studs: how close the player's boat must be to the victim / tow target
+	vehicleRange: number, -- studs: how close the player's boat must be to the victim
 }
 
 export type CallKind = {
@@ -19,7 +19,7 @@ export type CallKind = {
 	radioLine: string, -- shown on the call card
 	weight: number, -- payout weight (docs 02 section 3)
 	timer: number, -- seconds from accept until the fail-safe (harbour patrol) takes over
-	victims: number, -- people to pick up (0 for a tow: the skipper stays aboard)
+	victims: number, -- people to pick up
 	interaction: Interaction,
 	zones: { string }, -- spawn zone ids (SpawnZones below) this kind may use
 	dropOffs: { string }, -- DropOff attribute values that complete it ("Dock", "Hospital")
@@ -100,18 +100,6 @@ CallTypes.Kinds = {
 		dropOffs = { "Dock", "Hospital" },
 		isBig = false,
 	},
-	Tow = {
-		id = "Tow",
-		displayName = "Disabled Boat",
-		radioLine = "Engine failure! Requesting a tow back to the dock.",
-		weight = 1.3,
-		timer = 240, -- tune
-		victims = 0,
-		interaction = { kind = "Tow", holdSeconds = 1.0, range = 18, vehicleRange = 35 },
-		zones = { "CalmBay", "Outer" },
-		dropOffs = { "Dock" },
-		isBig = false,
-	},
 	CapsizedFerry = {
 		id = "CapsizedFerry",
 		displayName = "Capsized Ferry",
@@ -127,7 +115,7 @@ CallTypes.Kinds = {
 	Cliff = {
 		id = "Cliff",
 		displayName = "Cliff Casualty",
-		radioLine = "Walker stuck on the ledge below Haven Head, one casualty.",
+		radioLine = "Walker in the water below Haven Head, one casualty.",
 		weight = 1.4, -- docs/02 section 3: cliff is a Skerries-rate rescue
 		timer = 600,
 		victims = 1,
@@ -163,10 +151,10 @@ CallTypes.Kinds = {
 	VesselFire = {
 		id = "VesselFire",
 		displayName = "Vessel Fire",
-		radioLine = "MAYDAY from the motor cruiser Firefly: engine fire at anchor, two people on board.",
+		radioLine = "MAYDAY from the motor cruiser Firefly: engine fire, two people in the water.",
 		weight = 1.5, -- docs/02 section 3: all but Calm Bay
 		timer = 480,
-		victims = 0,
+		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Outer" },
 		dropOffs = { "Dock", "Hospital" },
@@ -190,7 +178,6 @@ CallTypes.Kinds = {
 CallTypes.NormalKinds = {
 	"Swimmer",
 	"DriftingCraft",
-	"Tow",
 	"Cliff",
 	"RipCurrent",
 	"Sinking",
@@ -200,7 +187,6 @@ CallTypes.NormalKinds = {
 CallTypes.KindWeights = {
 	Swimmer = 0.45,
 	DriftingCraft = 0.3,
-	Tow = 0.25,
 	Cliff = 0.18,
 	RipCurrent = 0.2,
 	Sinking = 0.16,
@@ -208,11 +194,15 @@ CallTypes.KindWeights = {
 	WildlifeRescue = 0.16,
 } -- tune
 
--- Fixed tutorial chain for a player's first calls (docs 02 section 2), each { kind, zone }.
+-- Fixed chain for a player's first calls (docs/16 B3, B4, B9), each { kind, zone, victims? }. The
+-- cold open is call 1, so a new player meets the chain from entry 2: one aboard a drifting dinghy, then
+-- two (a jet ski holds one: the second waits for another trip or a bigger boat), then the seal pup.
 CallTypes.TutorialChain = {
 	{ kind = "Swimmer", zone = "Near" },
-	{ kind = "Tow", zone = "CalmBay" },
-	{ kind = "DriftingCraft", zone = "CalmBay" },
+	{ kind = "DriftingCraft", zone = "CalmBay", victims = 1 },
+	{ kind = "DriftingCraft", zone = "CalmBay", victims = 2 },
+	{ kind = "Swimmer", zone = "CalmBay" },
+	{ kind = "WildlifeRescue", zone = "Near" },
 }
 
 local OUTER_MAX = CallTypes.TRAVEL_SECONDS * 75 * CallTypes.CRUISE_FACTOR -- JetSki topSpeed 75
@@ -271,16 +261,17 @@ CallTypes.SpawnZones = {
 		timerMultiplier = 1,
 		fallback = Vector3.new(60, 0, 500),
 	},
-	-- Cliff casualty: a fixed ledge at the foot of Haven Head (docs/09 section 8.5).
+	-- Cliff casualty: in the surf off the ledge at the foot of Haven Head (the shelf is at (1740, 22, 890),
+	-- facing +Z out to sea; docs/09 section 8.5).
 	HavenHeadCliff = {
 		id = "HavenHeadCliff",
 		displayName = "Haven Head",
-		center = Vector3.new(1740, 0, 890),
+		center = Vector3.new(1740, 0, 925),
 		minRadius = 0,
 		maxRadius = 0,
 		area = "Outside",
 		timerMultiplier = 1,
-		fallback = Vector3.new(1740, 0, 890),
+		fallback = Vector3.new(1740, 0, 925),
 	},
 	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Haven Sands.
 	-- The casualty starts about 120 studs down the rip and is carried seaward (shared/RipCurrent):

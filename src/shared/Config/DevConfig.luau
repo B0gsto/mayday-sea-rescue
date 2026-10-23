@@ -3,7 +3,6 @@
 -- accepts. Pure (Lune-tested in tests/DevBoard.spec.luau). The server checks every Dev_Action
 -- against isAllowed and validate; the client only uses the lists to draw the panel.
 local Config = script.Parent
-local Exercises = require(Config.Parent.Ops.Definitions.Exercises)
 local GameConfig = require(Config.GameConfig)
 local LandVehicleConfig = require(Config.LandVehicleConfig)
 local Lighthouses = require(Config.Parent.Lighthouses)
@@ -96,7 +95,7 @@ local function concat(...: { string }): { string }
 end
 
 DevConfig.Vehicles = table.freeze(concat(VehicleConfig.Order, LandVehicleConfig.Order))
-DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), Exercises.Order, { "ColdOpen" }))
+DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), { "ColdOpen" }))
 DevConfig.Events = table.freeze(
 	concat({ "GhostLight", "Halloween", "Winter", "GhostShip", "FrostFleet" }, LiveOps.Order)
 )

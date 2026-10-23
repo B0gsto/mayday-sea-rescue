@@ -1,11 +1,11 @@
 --!strict
 -- OperationService: rescue operations v2 (docs/09-rescue-operations.md, CONTRACT.md "Operations v2").
 -- The one source of truth for the radio and rescues. It offers operations (the first-call chain,
--- the storm rate, the Capsized Ferry at storm start), runs each operation's step state machine,
--- assigns steps to crew roles (NPC crew fill empty seats: slower, Silver at most), validates the
--- step results clients submit (the server recomputes the grade from metrics), ticks every
--- casualty's condition meter, runs the takeover at Critical, and pays through
--- ProgressionService.Award with CrewService.RecordRoleAction for every step a player completes.
+-- the storm rate, the Capsized Ferry at storm start), runs each operation's step state machine
+-- (every op: radio_ack -> launch -> auto_board -> transport, docs/16 K1; the track owner does every
+-- step, an NPC crewmate only fills in when they leave), validates the step results clients submit
+-- (the server recomputes the grade from metrics), ticks every casualty's condition meter, runs the
+-- takeover at Critical, and pays through ProgressionService.Award.
 --
 -- The physical scene (victims, NPC boats, bobbing, deliveries at the pads) is RescueService; this
 -- service hands it an `op.scene` table and reacts to its hooks (OnVictimsDelivered, ...).
@@ -19,12 +19,8 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
-local Lighthouses = require(Shared:WaitForChild("Lighthouses"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
 local RescueVariants = require(Shared:WaitForChild("Config"):WaitForChild("RescueVariants"))
-local SeasonalEvents = require(Shared:WaitForChild("Config"):WaitForChild("SeasonalEvents"))
-local SeasonalRules = require(Shared:WaitForChild("SeasonalRules"))
-local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
 local Condition = require(OpsFolder:WaitForChild("Condition"))
@@ -32,32 +28,19 @@ local Grading = require(OpsFolder:WaitForChild("Grading"))
 local Operations = require(OpsFolder:WaitForChild("Operations"))
 local Remotes = require(OpsFolder:WaitForChild("Remotes"))
 local Types = require(OpsFolder:WaitForChild("Types"))
--- training exercises (RP-C1): exercise kinds record a pass, not certification progress
-local Exercises = require(OpsFolder:WaitForChild("Definitions"):WaitForChild("Exercises"))
-local ProgressionRules = require(Shared:WaitForChild("ProgressionRules")) -- exercise gate (RP-C1b)
 
-local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
--- Ferry (stream c): server-side metric checks and the scene board's task list.
-local FerryValidate = require(
-	script.Parent.Parent:WaitForChild("Ferry"):WaitForChild("FerryValidate") :: ModuleScript
-) :: any
-local SceneBoard = require(Shared:WaitForChild("Ferry"):WaitForChild("SceneBoard")) :: any
--- Person in the Water: onPattern and destinationRight, measured on the server.
 local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
 -- the cold open's per-player lifecycle: runs at most once, never restarts by itself
 local ColdOpenFlow = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpenFlow"))
 -- the first session's fail-safe calls (docs/15 section 3)
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
-local PiwMetrics = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("PiwMetrics"))
--- Cliff casualty (G7): the ledge, the line and the cliff-top anchor (src/server/Ops/CliffScene).
-local CliffScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("CliffScene"))
--- Rip-current beach rescue (G4): the variant and the beach handover (src/server/Ops/RipFlow).
+-- The scenes around the survivors (spectacle only, docs/16 K1): the rip's variant and current,
 local RipFlow = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("RipFlow"))
--- Sinking vessel (G10): the listing fishing boat and its flooding (src/server/Ops/SinkingScene).
-local SinkingScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("SinkingScene"))
--- Vessel fire (G11): the burning cruiser, its growth and the monitor (src/server/Ops/FireScene).
+-- the listing fishing boat, the burning cruiser.
 local FireScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("FireScene"))
 local NpcPickup = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("NpcPickup"))
+local SinkingScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("SinkingScene"))
 
 type StepDef = Types.StepDef
 type OperationDef = Types.OperationDef
@@ -87,8 +70,6 @@ type StepInst = {
 	startedAt: number,
 	timeoutAt: number,
 	attempt: number,
-	tag: string?, -- triage: the tag the client chose
-	board: { [string]: string }?, -- scene_command: unit -> task id (optional result.board)
 	failed: boolean?, -- timed out or failed (failStep): a ride home then never takes them off the boat
 }
 
@@ -127,6 +108,9 @@ type PlayerState = {
 local OperationService = {}
 OperationService.Priority = 70
 
+-- Fire and sinking: the survivors tire this much faster (docs/16 K1, urgency). -- tune
+OperationService.FAST_TIRING = 1.6
+
 -- New players get the cold open instead of their first offer. Turned on in Start() once
 -- VehicleService.SpawnColdOpen exists (a cold open without the jet ski would strand them).
 OperationService.ColdOpenAuto = false
@@ -152,24 +136,6 @@ OperationService.OperationCompleted = {
 	end,
 }
 
--- Story missions (lighthouses, G67) finish under exercise rules but still need a completion
--- signal (the rescue listeners below never see them).
-type MissionHandler = (any, { Player }) -> ()
-local missionHandlers: { MissionHandler } = {}
-OperationService.MissionCompleted = {
-	Connect = function(_self: any, fn: MissionHandler)
-		table.insert(missionHandlers, fn)
-		return {
-			Disconnect = function()
-				local i = table.find(missionHandlers, fn)
-				if i then
-					table.remove(missionHandlers, i)
-				end
-			end,
-		}
-	end,
-}
-
 ---------------------------------------------------------------- state
 
 local ops: { [string]: any } = {}
@@ -187,27 +153,6 @@ local rng = Random.new()
 
 local function now(): number
 	return Workspace:GetServerTimeNow()
-end
-
--- The live seasonal window (Halloween / Winter), on the same clock and dev override as the
--- seasonal services. Seasonal call variants roll only while their event is live.
-local function liveSeason(): string?
-	local offset = Workspace:GetAttribute("EventClockOffset")
-	local t = os.time()
-		+ (
-			if type(offset) == "number"
-					and (RunService:IsStudio() or Workspace:GetAttribute("DevBoard"))
-				then offset
-				else 0
-		)
-	local forced = RunService:IsStudio()
-		and Workspace:GetAttribute(SeasonalEvents.DevAttribute) == true
-	for _, event in SeasonalEvents.List do
-		if SeasonalRules.live(event, t, forced) then
-			return event.id
-		end
-	end
-	return nil
 end
 
 local serviceCache: { [string]: any } = {}
@@ -457,66 +402,24 @@ local function radio(op: any, from: string, text: string, only: Player?)
 	end
 end
 
----------------------------------------------------------------- roles
-
-local ROLE_ORDER = { "Helm", "Navigator", "Crew", "Medic" }
+---------------------------------------------------------------- crew
 
 local function vehicleOf(player: Player): Model?
 	local ok, v = try("VehicleService", "GetVehicle", player)
 	return if ok and typeof(v) == "Instance" and v:IsA("Model") then v else nil
 end
 
--- A one-person craft (the jet ski): its rider is Helm, Crew and Medic at once (docs 09 4.1).
-local function soloCraft(player: Player): boolean
-	local v = vehicleOf(player)
-	return v ~= nil and VehicleConfig.isJetSki(v:GetAttribute("VehicleId"))
-end
-
--- Crew roles come from what each player is doing (G30, src/shared/CrewRoles): the helm seat,
--- the chart table or tablet, the water or drysuit, the med bag. Taking a seat or tool takes the
--- role; nobody holding it means an NPC takes the step. Solo keeps the old implicit roles.
-local function roleOf(track: Track, player: Player): { string }
-	local i = table.find(track.members, player)
-	if not i then
-		return {}
+-- Every step is the track owner's (a crewmate rides along); nobody left: an NPC crewmate takes it.
+local function stepAssignee(track: Track): Player?
+	if track.owner.Parent then
+		return track.owner
 	end
-	if #track.members == 1 then
-		-- solo: the jet ski rider is everyone; in a bigger boat the helm also works the radio
-		return if soloCraft(player) then table.clone(ROLE_ORDER) else { "Helm", "Navigator" }
-	end
-	local ok, roles = try("CrewService", "GetRoles", player)
-	if ok and type(roles) == "table" then
-		return roles
-	end
-	return { ROLE_ORDER[i] or "Crew" } -- CrewService unavailable: keep the old join order
-end
-
-local function assigneeFor(track: Track, step: StepDef): Player?
 	for _, p in track.members do
-		if p.Parent and table.find(roleOf(track, p), step.role) then
+		if p.Parent then
 			return p
 		end
 	end
-	if step.npcAllowed == false then
-		return if track.owner.Parent then track.owner else track.members[1]
-	end
-	return nil -- an NPC crewmate takes it
-end
-
--- Scene command (ferry) needs a Coxswain or Helm certification (player attribute, stream E);
--- otherwise the NPC Coastguard officer runs the scene. Studio skips the check for testing.
-local function canCommand(player: Player): boolean
-	return RunService:IsStudio()
-		or player:GetAttribute("CertCoxswain") == true
-		or player:GetAttribute("CertHelm") == true
-end
-
-local function stepAssignee(track: Track, step: StepDef): Player?
-	local p = assigneeFor(track, step)
-	if p and step.id == "scene_command" and not canCommand(p) then
-		return nil
-	end
-	return p
+	return nil
 end
 
 ---------------------------------------------------------------- snapshots
@@ -525,10 +428,6 @@ local function casualtyPosition(op: any, index: number): Vector3
 	local v = op.scene.victims and op.scene.victims[index]
 	if v and v.floater and v.state == "Water" then
 		return v.floater.cf.Position
-	end
-	local boat = op.scene.boat
-	if boat and boat.floater then
-		return Vector3.new(boat.floater.x, 0, boat.floater.z)
 	end
 	return op.position
 end
@@ -576,7 +475,6 @@ local function stepView(inst: StepInst, track: Track): { [string]: any }
 		npcDoneAt = if inst.npc then inst.npcDoneAt else nil,
 		trackId = track.id,
 		casualtyIndex = inst.casualtyIndex,
-		noTow = inst.def.noTow, -- berth alone: skip the tow-line parts (RP-C1b)
 	}
 end
 
@@ -616,14 +514,12 @@ local function snapshot(op: any, player: Player): { [string]: any }
 		storm = op.storm,
 		takeover = op.takeover,
 		myTrack = if track then track.id else nil,
-		myRoles = if track then roleOf(track, player) else {},
 		plan = plan,
 		results = done,
 		current = current,
 		casualties = casualties,
 		saved = op.saved,
 		total = #op.casualties,
-		board = op.board, -- ferry: the last Ops_Board payload, for late listeners
 	}
 end
 
@@ -649,17 +545,15 @@ end
 
 ---------------------------------------------------------------- creation
 
-local POB_WORDS = { "one", "two", "three", "four" }
-
 local function newOp(
 	kind: string,
 	sceneKind: string,
 	zone: string,
 	position: Vector3,
-	exerciseDef: OperationDef? -- a station exercise (never in Operations.Defs, never offered)
+	victims: number? -- survivors in the water (default: the scene kind's count)
 ): any
 	nextId += 1
-	local def = assert(exerciseDef or Operations.get(kind), kind)
+	local def = assert(Operations.get(kind), kind)
 	local spec = assert(CallTypes.Kinds[sceneKind], sceneKind)
 	local id = `O{nextId}`
 	local op = {
@@ -682,26 +576,23 @@ local function newOp(
 		casualties = {} :: { CasualtyState },
 		results = {} :: { StepRecord },
 		helpers = {} :: { [Player]: boolean },
-		shared = {} :: { [string]: string },
 		history = {} :: { { t: number, c: { number } } },
 		lastSample = 0,
 		saved = 0,
 		takeover = nil :: { reason: string, at: number }?,
-		osc = nil :: Player?,
 		grade = nil :: string?,
 		scene = {
 			id = id,
 			kind = sceneKind,
 			spec = spec,
 			position = position,
-			total = if sceneKind == "Tow" then 1 else spec.victims,
+			total = victims or spec.victims,
 			victims = {},
 			isBig = def.isBig,
 			opsDriven = true,
 			opId = id,
 		},
 	}
-	-- RescueService reads casualties[i].panicking live (the rigged swimmer thrashes until calmed)
 	op.scene.casualties = op.casualties
 	-- 2026-10-21: a personal call's casualty is its crew's only until aboard (no stealing); big calls stay public
 	op.scene.privateTo = if def.isBig then nil else op.members
@@ -712,19 +603,11 @@ local function newOp(
 		kind,
 		rng:NextNumber(),
 		okEvent and greatStorm == true,
-		if type(forcedVariant) == "string" then forcedVariant else nil,
-		liveSeason()
+		if type(forcedVariant) == "string" then forcedVariant else nil
 	)
 	if variant then
 		op.variant = variant.id
 		op.scene.variant = variant.id
-	end
-	if sceneKind == "Tow" then
-		-- people aboard the disabled vessel: the tasking says it and RescueService builds them
-		local n = rng:NextInteger(1, #POB_WORDS)
-		op.pob = n
-		op.scene.pob = n
-		op.radioLine = (string.gsub(def.radioLine, "%a+ aboard", `{POB_WORDS[n]} aboard`, 1))
 	end
 	ops[id] = op
 	return op
@@ -744,10 +627,10 @@ local function newTrack(op: any, owner: Player, members: { Player }): Track
 		id = `{op.id}T{#op.tracks + 1}`,
 		owner = owner,
 		members = members,
-		plan = Operations.plan(op.def, if op.isBig then nil else op.casualties[1].state),
+		plan = op.def.steps,
 		index = 0,
 		current = nil,
-		casualtyIndex = if op.isBig then nil else 1,
+		casualtyIndex = nil, -- claimed by the per-casualty run (advance)
 		loopStart = nil,
 		done = false,
 		seq = 0,
@@ -791,7 +674,6 @@ local function stepContext(op: any, track: Track, inst: StepInst, player: Player
 		casualty = if ci then casualtyView(op, ci) else nil,
 		vehicle = vehicleOf(player),
 		role = inst.def.role,
-		isAssist = player:GetAttribute("OpsPro") ~= true,
 		attempt = inst.attempt,
 		scene = {
 			windDirection = (function()
@@ -807,13 +689,12 @@ end
 local function beginStep(op: any, track: Track, def: StepDef, attempt: number?)
 	track.seq += 1
 	local ci = track.casualtyIndex
-	local cstate = if ci then op.casualties[ci].state else nil
-	local assignee = stepAssignee(track, def)
+	local assignee = stepAssignee(track)
 	local t = now()
 	local inst: StepInst = {
 		key = `{track.id}:{track.seq}`,
 		def = def,
-		mechanicId = Operations.mechanicFor(def, cstate),
+		mechanicId = def.mechanicId,
 		casualtyIndex = ci,
 		assignee = assignee,
 		npc = assignee == nil,
@@ -825,9 +706,6 @@ local function beginStep(op: any, track: Track, def: StepDef, attempt: number?)
 	track.current = inst
 	if assignee then
 		fire("Ops_StepStart", assignee, stepContext(op, track, inst, assignee))
-	end
-	if (def.id == "alongside" or def.id == "berth") and not def.noTow then
-		pcall(RescueService.SetTowMode, op.scene, "Alongside") -- lashed beside the tug
 	end
 	broadcast(op)
 end
@@ -843,8 +721,6 @@ local function record(op: any, track: Track, inst: StepInst, grade: Grade, by: P
 		userId = if by then by.UserId else nil,
 		trackId = track.id,
 		at = now() - op.acceptedAt,
-		-- the cold open's Assist ease braked the hull on this step (grade capped at Silver)
-		assistEase = if (inst :: any).assistEase then true else nil,
 	})
 	if op.coldOpen and op.owner then -- RP-A1 onboarding funnel
 		try("TelemetryService", "ColdOpenStep", op.owner, inst.def.id)
@@ -879,13 +755,7 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	end
 end
 
-local function applyEffect(
-	op: any,
-	track: Track,
-	inst: StepInst,
-	by: Player?,
-	metrics: Types.Metrics
-)
+local function applyEffect(op: any, track: Track, inst: StepInst, by: Player?)
 	local effect = inst.def.effect
 	local ci = inst.casualtyIndex
 	local c: CasualtyState? = if ci then op.casualties[ci] else nil
@@ -895,41 +765,6 @@ local function applyEffect(
 		c.aboard = true
 		c.panicking = false
 		pcall(RescueService.BoardVictim, op.scene, ci, actor)
-	elseif effect == "calm" and c then
-		c.panicking = false
-	elseif effect == "survey" and c then
-		c.surveyed = true
-	elseif effect == "treat" and c then
-		c.treated = true
-		c.sheltered = true
-		c.wet = false
-	elseif effect == "tow" and c then
-		c.towed = true
-		pcall(RescueService.AttachTowFor, op.scene, actor)
-	elseif effect == "triage" and c then
-		c.tag = inst.tag or Operations.triageTag(c.state)
-	elseif effect == "cliff" and c and ci then
-		-- the line haul or the carry to the boat is done: they are off the cliff and safe
-		c.delivered = true
-		op.saved += 1
-		pcall(CliffScene.Recovered, op.scene, by)
-	elseif effect == "sinking" and c and ci and not c.delivered then
-		-- any of pump, plug or crew off: the people are safe and the scene starts to win
-		c.delivered = true
-		c.inWater = false
-		op.saved += 1
-		pcall(SinkingScene.Saved, op.scene, by, metrics)
-	elseif effect == "fire" then
-		pcall(FireScene.Extinguish, op.scene, metrics)
-	elseif effect == "fire_crew" then
-		pcall(FireScene.PeopleOff, op.scene)
-	elseif effect == "shore" and c and ci and not c.delivered then
-		-- the beach handover (docs 09 section 8.4): a lifeguard / passer-by takes them over
-		c.delivered = true
-		c.inWater = false
-		op.saved += 1
-		pcall(RescueService.RemoveVictim, op.scene, ci)
-		try("NpcService", "ShoreHandover", RipFlow.Shore.dry, RipFlow.Shore.water)
 	elseif effect == "deliver" and ci and not (inst.failed and op.isBig) then
 		-- a big call's delivery takes them off the boat: a failed ride home leaves them aboard, and
 		-- the pad lands them whenever the boat gets in (OnVictimsDelivered)
@@ -937,71 +772,18 @@ local function applyEffect(
 	end
 end
 
--- Ferry: the on-scene commander's assignments, to every crew on the operation (Ops_Board).
--- A human OSC's map comes from the optional `result.board` (unit -> task id, sanitised in
--- onStepResult); the NPC officer fills the board with every crew on scene plus NPC lifeboats.
-local function sendBoard(op: any, inst: StepInst, by: Player?, metrics: Types.Metrics)
-	local board = inst.board
-	if not by then
-		local units = {}
-		for _, t in op.tracks do
-			table.insert(units, `Haven {t.owner.DisplayName}`)
-		end
-		-- the NPC units scene_command.luau lists
-		for _, n in
-			{ "Lifeboat 17-01", "Haven Patrol", "ILB Two-Two", "ILB Two-Three", "Lifeboat 14-07" }
-		do
-			table.insert(units, `{n} (NPC)`)
-		end
-		board = SceneBoard.autoAssign(units)
-	end
-	local assigned: number? = if type(metrics.assigned) == "number" then metrics.assigned else nil
-	if board and assigned == nil then
-		local n = 0
-		for _ in board do
-			n += 1
-		end
-		assigned = n
-	end
-	op.board = {
-		opId = op.id,
-		osc = if by then by.DisplayName else "Coastguard (NPC)",
-		npc = by == nil,
-		assigned = assigned,
-		tasksCovered = if board then SceneBoard.tasksCovered(board) else nil,
-		board = board,
-	}
-	for _, p in everyone(op) do
-		fire("Ops_Board", p, op.board)
-	end
-end
-
-local function complete(
-	op: any,
-	track: Track,
-	inst: StepInst,
-	grade: Grade,
-	by: Player?,
-	metrics: Types.Metrics
-)
+local function complete(op: any, track: Track, inst: StepInst, grade: Grade, by: Player?)
 	if track.current ~= inst then
 		return
 	end
 	track.current = nil
 	record(op, track, inst, grade, by)
-	applyEffect(op, track, inst, by, metrics)
-	if inst.def.id == "scene_command" then
-		sendBoard(op, inst, by, metrics)
-	end
-	if op.takeover and inst.def.id == "standby" then
-		finish(op, "Takeover")
-		return
-	end
+	applyEffect(op, track, inst, by)
 	advance(op, track)
 end
 
 local function npcFinish(op: any, track: Track, inst: StepInst)
-	complete(op, track, inst, "Silver", nil, {})
+	complete(op, track, inst, "Silver", nil)
 end
 
 -- onFail handling (timeout or a client failed = true).
@@ -1038,13 +820,13 @@ local function failStep(op: any, track: Track, inst: StepInst, why: string)
 		end
 		return
 	elseif action == "continue" then
-		complete(op, track, inst, "Bronze", inst.assignee, {})
+		complete(op, track, inst, "Bronze", inst.assignee)
 		return
 	end
-	complete(op, track, inst, "Fail", nil, {})
+	complete(op, track, inst, "Fail", nil)
 end
 
--- Claims the next casualty for a big-call track: its own still to bring home, else an unclaimed one.
+-- Claims the next casualty for a track: its own still to bring home, else an unclaimed one.
 local function claimCasualty(op: any, track: Track): number?
 	for i, c in op.casualties do
 		if Board.mayTake(c, track.id) then
@@ -1060,16 +842,10 @@ advance = function(op: any, track: Track)
 		return
 	end
 	while true do
-		-- big calls: a finished per-casualty run loops back while casualties remain
+		-- a finished per-casualty run loops back while casualties remain
 		local prev = track.plan[track.index]
 		local after = track.plan[track.index + 1]
-		if
-			op.isBig
-			and track.loopStart
-			and prev
-			and prev.perCasualty
-			and not (after and after.perCasualty)
-		then
+		if track.loopStart and prev and prev.perCasualty and not (after and after.perCasualty) then
 			track.casualtyIndex = claimCasualty(op, track)
 			if track.casualtyIndex then
 				track.index = track.loopStart - 1
@@ -1081,16 +857,7 @@ advance = function(op: any, track: Track)
 			track.done = true
 			break
 		end
-		if def.shared then
-			if op.shared[def.id] and op.shared[def.id] ~= track.id then
-				continue -- another unit has it
-			end
-			op.shared[def.id] = track.id
-			if def.id == "scene_command" then
-				op.osc = if canCommand(track.owner) then track.owner else nil
-			end
-		end
-		if def.perCasualty and op.isBig then
+		if def.perCasualty then
 			if track.loopStart == nil then
 				track.loopStart = track.index
 			end
@@ -1164,17 +931,7 @@ startTakeover = function(op: any, reason: string)
 			end)
 		end
 	end
-	if waiting > 0 then
-		for _, t in op.tracks do
-			t.current = nil
-			t.done = true
-		end
-		broadcast(op)
-		return
-	end
-	-- stand by and assist: its own short step for the owner (docs 09 section 2.5)
-	local track = op.tracks[1]
-	if not track then
+	if waiting == 0 then
 		finish(op, "Takeover")
 		return
 	end
@@ -1182,22 +939,7 @@ startTakeover = function(op: any, reason: string)
 		t.current = nil
 		t.done = true
 	end
-	track.done = false
-	local standby: StepDef = {
-		id = "standby",
-		label = "Stand by and assist",
-		realTerm = "Assisting the takeover",
-		role = "Helm",
-		mechanicId = "standby_assist",
-		gradeBands = {
-			{ metric = "steady", gold = 1, silver = 0.6, bronze = 0.2, higherIsBetter = true },
-		},
-		weight = 1,
-		timeoutSec = 40,
-		onFail = "skip",
-		npcAllowed = false,
-	}
-	beginStep(op, track, standby)
+	broadcast(op)
 end
 
 ---------------------------------------------------------------- finishing and pay
@@ -1205,16 +947,9 @@ end
 local function closeOp(op: any)
 	op.state = "Done"
 	ops[op.id] = nil
-	pcall(CliffScene.Cleanup, op.scene)
 	pcall(SinkingScene.Cleanup, op.scene)
 	pcall(FireScene.Cleanup, op.scene)
 	pcall(RescueService.Cleanup, op.scene)
-	if op.exercise then
-		try("ExerciseBoardService", "EndExercise", op.id) -- the station-floor manikin
-		if op.owner then
-			op.owner:SetAttribute("OpsExercise", nil)
-		end
-	end
 	if op == bigOp then
 		bigOp = nil
 	end
@@ -1255,9 +990,7 @@ finish = function(op: any, reason: string)
 	op.state = "Done"
 	local scored: { Grading.ScoredStep } = {}
 	for _, r in op.results do
-		if r.stepId ~= "standby" then
-			table.insert(scored, { grade = r.grade, weight = r.weight })
-		end
+		table.insert(scored, { grade = r.grade, weight = r.weight })
 	end
 	local grade: Grade = Grading.operationGrade(scored) :: any
 	op.grade = if op.takeover then "Takeover" else grade
@@ -1291,26 +1024,19 @@ finish = function(op: any, reason: string)
 		if op.helpers[p] then
 			table.insert(helpers, p)
 			if op.isBig then
-				reward = Grading.bigCompletionBonus(op.saved, #op.casualties, op.osc == p)
+				reward = Grading.bigCompletionBonus(op.saved, #op.casualties)
 				paidAs = "Op:CapsizedFerry"
 			elseif op.takeover then
 				-- 2026-10-21: no pay for failing; only casualties brought home pay
 				reward = Grading.takeoverPayout(op.def.weight, op.saved, #op.casualties, humans)
 				paidAs = `Op:{op.kind}:Takeover`
-			elseif op.exercise then
-				-- exercises pay only their first-pass reward (RecordTraining, below) and never
-				-- count toward the tutorial chain (RP-C1b)
-				reward = { cash = 0, rep = 0 }
-				paidAs = `Op:{op.kind}`
 			else
 				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
 				reward = Grading.payout(op.def.weight, grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 			end
-			if not op.exercise then
-				st.completed += 1
-				p:SetAttribute("OpsCompleted", st.completed)
-			end
+			st.completed += 1
+			p:SetAttribute("OpsCompleted", st.completed)
 		else
 			reward = if op.takeover
 				then { cash = 0, rep = 0 }
@@ -1333,54 +1059,13 @@ finish = function(op: any, reason: string)
 				boat:SetAttribute("ColdOpenAutoThrottle", false)
 			end
 		end
-		-- certification progress and exercise passes (RP-C1); takeovers never count
-		local training: any = nil
-		if op.helpers[p] and not op.takeover and not op.mission then
-			local casualty = op.casualties[1]
+		-- the saved count of finished operations (ProgressionService); takeovers never count
+		if op.helpers[p] and not op.takeover then
 			local steps = {}
 			for _, r in op.results do
-				local stepDef: StepDef? = nil
-				for _, sd in op.def.steps do
-					if sd.id == r.stepId then
-						stepDef = sd
-						break
-					end
-				end
-				table.insert(steps, {
-					id = r.stepId,
-					grade = r.grade,
-					userId = r.userId,
-					assistEase = r.assistEase,
-					mechanicId = if stepDef
-						then Operations.mechanicFor(stepDef, casualty and casualty.state)
-						else nil,
-				})
+				table.insert(steps, { id = r.stepId, grade = r.grade, userId = r.userId })
 			end
-			if op.coldOpen and reason == "Complete" then
-				-- design: the cold open's run-in is the first Helm live approach, so a new player
-				-- reaches Lifeguard at about 10 min (docs/03 pacing)
-				table.insert(steps, {
-					id = "approach",
-					grade = "Silver",
-					userId = p.UserId,
-					assistEase = false,
-					mechanicId = "approach",
-				})
-			end
-			local ex = Exercises.get(op.kind)
-			local ok, res = try(
-				"ProgressionService",
-				"RecordTraining",
-				p,
-				op.kind,
-				grade,
-				steps,
-				ex ~= nil,
-				ex ~= nil and ex.cannotFail
-			)
-			if ok and type(res) == "table" then
-				training = res
-			end
+			try("ProgressionService", "RecordTraining", p, op.kind, grade, steps, false)
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
 		p:SetAttribute("OpsLastKind", op.kind)
@@ -1396,46 +1081,18 @@ finish = function(op: any, reason: string)
 			condition = op.history,
 			saved = op.saved,
 			total = #op.casualties,
-			cash = if op.exercise
-				then (training and training.reward and training.reward.cash or 0)
-				else math.floor(reward.cash * mult + 0.5),
-			rep = if op.exercise
-				then (training and training.reward and training.reward.rep or 0)
-				else reward.rep,
-			exercise = op.exercise == true,
+			cash = math.floor(reward.cash * mult + 0.5),
+			rep = reward.rep,
 			tip = tip,
 			me = p.UserId,
-			-- certifications earned, progress, exercise pass, promotion (ProgressionRules)
-			badges = if training then training.badges else nil,
 		})
 	end
 	closeOp(op)
 	if op.coldOpen and op.owner then
 		endColdOpen(op.owner, reason)
 	end
-	if op.mission then
-		local missionSnap: any = info(op)
-		missionSnap.reason, missionSnap.grade = reason, op.grade
-		missionSnap.steps = table.create(#op.results)
-		for _, r in op.results do
-			table.insert(missionSnap.steps, {
-				id = r.stepId,
-				grade = r.grade,
-				userId = r.userId,
-			})
-		end
-		for _, fn in table.clone(missionHandlers) do
-			task.spawn(fn, missionSnap, helpers)
-		end
-	end
-	if op.exercise then
-		-- a training exercise is no rescue: no leaderboard, badge or call-chain listeners
-		print(`[OperationService] {op.id} {op.kind} exercise finished ({reason}): {op.grade}`)
-		return
-	end
 	local snap: any = info(op) -- plus the debrief facts BadgeService / LeaderboardService read
-	snap.reason, snap.storm, snap.saved, snap.towParted =
-		reason, op.storm == true, op.saved, op.towParted == true
+	snap.reason, snap.storm, snap.saved = reason, op.storm == true, op.saved
 	snap.steps = table.create(#op.results)
 	for _, r in op.results do
 		table.insert(snap.steps, { id = r.stepId, grade = r.grade, userId = r.userId })
@@ -1473,73 +1130,13 @@ local function sanitize(raw: any): Types.Metrics
 	return out
 end
 
----------------------------------------------------------------- PIW server metrics
-
--- Per step instance (weak keys): the search pattern the server measures from the boat's track,
--- and whether the casualty needed the helicopter when the transport step started.
-local piwState: { [StepInst]: { pattern: PiwMetrics.Pattern?, needsHeli: boolean? } } = setmetatable(
-	{},
-	{ __mode = "k" }
-) :: any
--- The deliver step a pad completed, per track. The client's own transport result for that step
--- arrives late: it is acknowledged with the pad's grade and otherwise ignored (no second
--- completion, step advance or pay).
+-- The deliver or board step the server completed itself (a pad reached, a survivor aboard), per track.
+-- The client's own result for that step arrives late: it is acknowledged with the server's grade and
+-- otherwise ignored (no second completion, step advance or pay).
 local padDone: { [Track]: { key: string, grade: Grade } } = setmetatable({}, { __mode = "k" }) :: any
 
-local function windDirection(): number
-	local f = ReplicatedStorage:FindFirstChild("Weather")
-	local w = f and f:GetAttribute("WindDirection")
-	return if type(w) == "number" then w else 0
-end
-
--- Every tick: sample the boat on a search step, note a transport's heli need at its start.
-local function samplePiw(op: any, dt: number)
-	for _, track in op.tracks do
-		local inst = track.current
-		local ci = inst and inst.casualtyIndex
-		if not inst or not ci or inst.npc then
-			continue
-		end
-		local st = piwState[inst]
-		if inst.mechanicId == "search" then
-			if not st then
-				local rank = inst.assignee and inst.assignee:GetAttribute("RankIndex")
-				local due = type(rank) == "number" and rank >= PiwMetrics.PATTERN_RANK_INDEX
-				st = {
-					pattern = if due
-						then PiwMetrics.newPattern(casualtyPosition(op, ci), windDirection())
-						else nil,
-				}
-				piwState[inst] = st
-			end
-			local pattern = st and st.pattern
-			local boat = inst.assignee and (vehicleOf(inst.assignee) or vehicleOf(track.owner))
-			if pattern and boat then
-				PiwMetrics.samplePattern(
-					pattern,
-					boat:GetPivot().Position,
-					casualtyPosition(op, ci),
-					dt
-				)
-			end
-		elseif inst.mechanicId == "transport" and not st then
-			local c: CasualtyState = op.casualties[ci]
-			piwState[inst] = {
-				needsHeli = PiwMetrics.needsHeli(
-					c.state,
-					c.lifejacket,
-					Condition.band(c.condition)
-				),
-			}
-		end
-	end
-end
-
--- Cold open (docs 09 9.1): tell the jet ski when the approach step is current (BoatController's
--- Assist ease only acts then) and watch the replicated motion for an ease the client must have
--- made, so the Silver cap holds even if a client leaves its assistEase flag out.
-local coldOpenEase: { [any]: boolean } = setmetatable({}, { __mode = "k" }) :: any
-
+-- Cold open (docs 09 9.1): tell the jet ski when the recovery step is current (BoatController's
+-- ease only acts then, so a full-throttle run brakes near the casualty) and end the auto-throttle.
 local function sampleColdOpen(op: any)
 	if not op.coldOpen then
 		return
@@ -1551,11 +1148,7 @@ local function sampleColdOpen(op: any)
 		if not boat then
 			continue
 		end
-		-- the cold open plan has no approach step: its recovery gets the Assist ease too, so a
-		-- full-throttle run brakes near the casualty instead of driving past (no grade effect)
-		local onApproach = inst ~= nil
-			and not inst.npc
-			and (inst.mechanicId == "approach" or inst.def.id == "recovery")
+		local onApproach = inst ~= nil and not inst.npc and inst.def.id == "recovery"
 		if boat:GetAttribute("ColdOpenApproach") ~= onApproach then
 			boat:SetAttribute("ColdOpenApproach", onApproach)
 		end
@@ -1572,92 +1165,15 @@ local function sampleColdOpen(op: any)
 				boat:SetAttribute("ColdOpenAutoThrottle", false)
 			end
 		end
-		if onApproach and root and not coldOpenEase[inst] then
-			local cas = casualtyPosition(op, inst.casualtyIndex or 1)
-			local distance = ((cas - root.Position) * Vector3.new(1, 0, 1)).Magnitude
-			local look = root.CFrame.LookVector * Vector3.new(1, 0, 1)
-			local speed = if look.Magnitude > 1e-3
-				then root.AssemblyLinearVelocity:Dot(look.Unit)
-				else 0
-			local spec = VehicleConfig.get(tostring(boat:GetAttribute("VehicleId")))
-			local assist = player:GetAttribute("OpsPro") ~= true
-			if
-				BoatColdOpen.serverSawEase(
-					assist,
-					distance,
-					speed,
-					if spec then spec.brakeDecel else nil
-				)
-			then
-				coldOpenEase[inst] = true
-			end
-		end
 	end
-end
-
--- destinationRight for a transport step: the pad reached (or, for the client's result, the pad
--- nearest the boat) suits the casualty. nil when there is no casualty to judge.
-local function destinationRight(op: any, inst: StepInst, pad: string?, player: Player?): boolean?
-	local ci = inst.casualtyIndex
-	local c: CasualtyState? = if ci then op.casualties[ci] else nil
-	if not c then
-		return nil
-	end
-	local allowed: { string } = op.scene.spec.dropOffs or {}
-	if not pad then
-		local boat = player and vehicleOf(player)
-		if boat then
-			pad =
-				PiwMetrics.nearestPad(RescueService.GetDropOffs(allowed), boat:GetPivot().Position)
-		end
-	end
-	local st = piwState[inst]
-	local heli = if st and st.needsHeli ~= nil
-		then st.needsHeli
-		else PiwMetrics.needsHeli(c.state, c.lifejacket, Condition.band(c.condition))
-	return PiwMetrics.destinationRight(pad, heli, allowed)
 end
 
 -- Server-owned and server-derived metrics (CONTRACT.md "Operations v2": never taken from the client).
-local function serverMetrics(op: any, inst: StepInst, metrics: Types.Metrics, rawResult: any)
+local function serverMetrics(op: any, inst: StepInst, metrics: Types.Metrics)
 	metrics.elapsed = now() - inst.startedAt
-	local ci = inst.casualtyIndex
-	local c: CasualtyState? = if ci then op.casualties[ci] else nil
+	local c: CasualtyState? = if inst.casualtyIndex then op.casualties[inst.casualtyIndex] else nil
 	if c then
 		metrics.conditionAtEnd = c.condition
-		local method = type(rawResult.metrics) == "table" and rawResult.metrics.method
-		if type(method) == "string" then
-			metrics.rightMethod = method == Operations.RecoveryMethod[c.state]
-		else
-			(metrics :: any).rightMethod = nil
-		end
-		if inst.def.id == "movement" then
-			local redWaiting = false
-			for j, other in op.casualties do
-				if
-					j ~= ci
-					and other.tag == "Red"
-					and not other.delivered
-					and not other.takenOver
-				then
-					redWaiting = true
-				end
-			end
-			metrics.priorityOrder = not (redWaiting and c.tag ~= "Red")
-		end
-	end
-	if op.kind == "VesselFire" and inst.def.id == "fire_fight" then
-		-- how far the fire ran while it was left alone (shared/Ops/FireSpread)
-		metrics.spread = FireScene.Level(op.scene)
-	end
-	if inst.mechanicId == "search" then
-		local st = piwState[inst]
-		metrics.onPattern = PiwMetrics.onPattern(st and st.pattern)
-	elseif inst.mechanicId == "transport" then
-		local right = destinationRight(op, inst, nil, inst.assignee)
-		-- a stub away from any pad has no destination to judge: graded on the rest
-		local m: any = metrics
-		m.destinationRight = if rawResult.stub == true and not right then nil else right
 	end
 end
 
@@ -1674,7 +1190,7 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 	if not track or not inst or inst.key ~= key then
 		local done = track and padDone[track]
 		if done and done.key == key then
-			-- the pad already completed this deliver step: acknowledge it, change nothing
+			-- the server already completed this step: acknowledge it, change nothing
 			fire(
 				"Ops_StepAck",
 				player,
@@ -1711,40 +1227,8 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 		failStep(op, track, inst, "Failed")
 		return
 	end
-	-- the PIW ways (docs/14 section 3): a recovery only counts once the casualty really holds on
-	local piw = (inst.mechanicId == "recover_throwbag" or inst.mechanicId == "recover_swimmer")
-		and (op.kind == "PersonInWater" or op.kind == "RipCurrent")
-		and inst.casualtyIndex
-		and op.scene.victims
-		and op.scene.victims[inst.casualtyIndex]
-	-- Studio smoke stub (tools/studio/smoke.py ops) auto-completes steps: skip the held / ashore checks
-	local devStub = RunService:IsStudio() and player:GetAttribute("OpsAutoStub") == true
-	local piwMode = not devStub
-		and piw
-		and piw.state == "Water"
-		and piw.model
-		and piw.model:GetAttribute("PiwMode")
-	if type(piwMode) == "string" and piwMode ~= "held" then
-		fire(
-			"Ops_StepAck",
-			player,
-			{ opId = opId, stepKey = key, accepted = false, reason = "NotHeld" }
-		)
-		beginStep(op, track, inst.def, inst.attempt)
-		return
-	end
-	-- the cold open ends on land (docs/14 section 3): held at sea, keep the result for coldOpenShore
-	if
-		op.coldOpen
-		and piwMode == "held"
-		and not BoatColdOpen.landed(piwMode, piw.floater.cf.Position)
-	then
-		(inst :: any).coldOpenRaw = raw
-		return
-	end
 	local metrics = sanitize(raw.metrics)
-	local rawTag = if type(raw.metrics) == "table" then raw.metrics.tag else nil
-	serverMetrics(op, inst, metrics, raw)
+	serverMetrics(op, inst, metrics)
 	-- condition events the step allows, capped
 	local ci = inst.casualtyIndex
 	if ci and type(raw.events) == "table" and inst.def.allowedEvents then
@@ -1771,35 +1255,11 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 			Types.Rules.StubGradeCap :: any
 		) :: any
 	end
-	if
-		op.coldOpen
-		and inst.mechanicId == "approach"
-		and (metrics.assistEase == true or coldOpenEase[inst])
-	then
-		-- an Assist ease did part of the approach: Silver at best (docs 09 9.1, honest grades)
-		metrics.assistEase = true
-		(inst :: any).assistEase = true
-		grade = BoatColdOpen.capGrade(grade, true) :: any
-	end
-	if rawTag == "Red" or rawTag == "Yellow" or rawTag == "Green" then
-		inst.tag = rawTag
-	end
 	fire("Ops_StepAck", player, { opId = opId, stepKey = key, accepted = true, grade = grade })
-	complete(op, track, inst, grade, player, metrics)
+	complete(op, track, inst, grade, player)
 end
 
 -- Swap station (docs 09 section 4.2): a human on the track takes a step an NPC is doing.
--- Ops_TowLength: the Crew stepped the tow out or in; the server line follows (clamped 30..150).
-local function onTowLength(player: Player, opId: any, studs: any)
-	local op = if type(opId) == "string" then ops[opId] else nil
-	if not op or op.state ~= "Active" or type(studs) ~= "number" or studs ~= studs then
-		return
-	end
-	if table.find(op.members, player) then
-		pcall(RescueService.SetTowLength, op.scene, studs)
-	end
-end
-
 local function onTakeStep(player: Player, opId: any, key: any)
 	local op = if type(opId) == "string" then ops[opId] else nil
 	if not op or op.state ~= "Active" then
@@ -1809,13 +1269,6 @@ local function onTakeStep(player: Player, opId: any, key: any)
 	local inst = track and track.current
 	if not track or not inst or inst.key ~= key or not inst.npc then
 		return
-	end
-	if inst.def.id == "scene_command" then
-		if not canCommand(player) then
-			radio(op, "Coastguard", "Scene command needs a Coxswain or Helm certification.", player)
-			return
-		end
-		op.osc = player
 	end
 	inst.npc = false
 	inst.assignee = player
@@ -1860,100 +1313,34 @@ function OperationService.OnVictimLost(scene: any)
 	end
 end
 
-function OperationService.OnTowAttached(_scene: any, _player: Player) end
-
-function OperationService.OnTowLost(scene: any)
-	local op = opOfScene(scene)
-	if op then
-		radio(op, "Crew", "The tow line came off!")
-	end
-end
-
--- RescueService's server line (TowMotion) parted: the casualty is adrift again, so the crew
--- re-passes the tow from the heaving line; those steps' old records go so the re-run grades count.
-function OperationService.OnTowParted(scene: any)
-	local op = opOfScene(scene)
-	if not op or op.state ~= "Active" or op.takeover then
-		return
-	end
-	radio(op, "Crew", "Line's parted! Heads down! Stand by, we'll pass it again.")
-	op.towParted = true -- no Tow Truck badge for this op
-	for _, c in op.casualties do
-		c.towed = false
-	end
-	local track: Track? = op.tracks[1]
-	local back: number? = nil
-	if track then
-		for i, sdef in track.plan do
-			if sdef.id == "heaving_line" then
-				back = i
-				break
-			end
-		end
-	end
-	if not track or not back or track.index <= back then
-		return
-	end
-	local redo: { [string]: boolean } = {}
-	for i = back, math.min(track.index, #track.plan) do
-		redo[track.plan[i].id] = true
-	end
-	for i = #op.results, 1, -1 do
-		local r = op.results[i]
-		if r.trackId == track.id and redo[r.stepId] then
-			table.remove(op.results, i)
-		end
-	end
-	track.current = nil
-	track.done = false
-	track.index = back - 1
-	advance(op, track)
-end
-
-function OperationService.OnTowDelivered(scene: any, _driver: Player?)
-	local op = opOfScene(scene)
-	if op then
-		radio(op, "Haven Harbour", "Tow's at the pontoon. Bring her alongside.")
-	end
-end
-
 -- A boat with casualties reached a pad: the real transport path. The current "deliver" step of
--- the driver's track completes with the server-measured condition and destination (no stub cap).
+-- the driver's track completes with the server-measured condition (no stub cap).
 -- The pad and the client's transport result race: whichever reaches the step first completes it
 -- (complete() checks track.current), and the other is acknowledged and ignored.
 function OperationService.OnVictimsDelivered(
 	scene: any,
 	_count: number,
 	driver: Player?,
-	pad: string?
+	_pad: string?
 )
 	local op = opOfScene(scene)
 	if not op or not driver or op.state ~= "Active" then
 		return
 	end
-	if op.isBig then
-		-- everyone this boat landed counts, not only the current step's casualty
-		for i, v in scene.victims do
-			local c = op.casualties[i]
-			if v.state == "Delivered" and c and not c.delivered then
-				deliverCasualty(op, i, driver)
-			end
+	-- everyone this boat landed counts, not only the current step's casualty
+	for i, v in scene.victims do
+		local c = op.casualties[i]
+		if v.state == "Delivered" and c and not c.delivered then
+			deliverCasualty(op, i, driver)
 		end
 	end
 	local track = trackOf(op, driver)
 	local inst = track and track.current
-	-- berth (the boat-handling exercise's alongside) is graded by its own mechanic, never the pad
-	if track and inst and inst.def.effect == "deliver" and inst.mechanicId ~= "berth" then
+	if track and inst and inst.def.effect == "deliver" then
 		local metrics: Types.Metrics = { elapsed = now() - inst.startedAt }
 		local ci = inst.casualtyIndex
 		if ci then
 			metrics.conditionAtEnd = op.casualties[ci].condition
-		end
-		if inst.mechanicId == "transport" then
-			local right = destinationRight(op, inst, pad, driver)
-			if right ~= nil then
-				metrics.destinationRight = right
-			end
 		end
 		local grade: Grade = Grading.stepGrade(inst.def, metrics, inst.def.serverMetrics) :: any
 		padDone[track] = { key = inst.key, grade = grade }
@@ -1964,7 +1351,7 @@ function OperationService.OnVictimsDelivered(
 				{ opId = op.id, stepKey = inst.key, accepted = true, grade = grade }
 			)
 		end
-		complete(op, track, inst, grade, driver, metrics)
+		complete(op, track, inst, grade, driver)
 	end
 end
 
@@ -1986,11 +1373,6 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 		cash = preview.cash,
 		rep = preview.rep,
 	}
-end
-
-local function canTow(player: Player): boolean
-	local ok, result = try("ProgressionService", "CanUseVehicle", player, "RIB")
-	return if ok then result == true else true
 end
 
 -- G69 idle nudge: standing on foot (not seated in a boat or car) and how far from the station.
@@ -2021,69 +1403,25 @@ local function albumAnnounce(op: any)
 	try("AlbumService", "AnnounceCall", op)
 end
 
+-- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
-	local missionDef: OperationDef? = if opts then opts.def else nil
-	-- the Outer (Skerries) calls wait for the Harbor Light (docs/03 section 7); a missing profile
-	-- (or a Studio offer before data loads) keeps the old behaviour
-	local openOuter = true
-	local okSnap, snap = try("ProgressionService", "GetData", player)
-	if okSnap and type(snap) == "table" then
-		openOuter = Lighthouses.zoneOpen(snap.flags, "Outer")
-	end
-	local choice =
-		CallLogic.chooseCall(st.completed, weatherState(), canTow(player), nil, openOuter)
-	local sceneKind = choice.kind
-	local zone = choice.zone
-	local wildlife = forcedKind == "WildlifeRescue"
-		or (forcedKind == nil and choice.kind == "WildlifeRescue")
-	if missionDef then
-		sceneKind, zone = "Tow", (opts.zone or "CalmBay")
-	elseif forcedKind == "EasyCall" then
-		sceneKind, zone = "Swimmer", "CalmBay" -- the idle nudge: close in, calm water
-	elseif forcedKind == "CliffCasualty" then
-		sceneKind, zone = "Cliff", "HavenHeadCliff"
-	elseif forcedKind == "RipCurrent" then
-		sceneKind, zone = "RipCurrent", "HavenSandsRip"
-	elseif forcedKind == "SinkingVessel" then
-		sceneKind, zone = "Sinking", "SinkingSite"
-	elseif forcedKind == "VesselFire" then
-		sceneKind, zone = "VesselFire", "Outer"
+	local choice = CallLogic.chooseCall(st.completed, weatherState())
+	local kind = Operations.FromCallKind[choice.kind]
+	local sceneKind, zone, victims = choice.kind, choice.zone, choice.victims
+	if forcedKind == "EasyCall" then
+		kind, sceneKind, zone, victims = "PersonInWater", "Swimmer", "CalmBay", nil
 	elseif forcedKind then
-		sceneKind = if forcedKind == "DisabledVessel" then "Tow" else "Swimmer"
-		zone = if sceneKind == "Tow" then "CalmBay" else "Near"
-	end
-	if sceneKind == "DriftingCraft" then
-		sceneKind = "Swimmer" -- the two-casualty variant is [L] (docs 09 section 5)
+		local forced = Operations.get(forcedKind)
+		-- an unknown kind (or the ferry): a swimmer
+		local def = if forced and not forced.isBig then forced else Operations.Defs.PersonInWater
+		kind, sceneKind = def.id, def.sceneKinds[1]
+		zone, victims = CallTypes.Kinds[sceneKind].zones[1], nil
 	end
 	if sceneKind == "WildlifeRescue" then
 		sceneKind, zone = "Swimmer", "Near" -- the animal rides the swimmer scene (SanctuaryService)
 	end
-	if sceneKind == "RipCurrent" then
-		zone = "HavenSandsRip" -- the rip is one place: the channel off Haven Sands (docs 09 8.4)
-	end
-	if sceneKind == "Sinking" then
-		zone = "SinkingSite" -- the sinking boat is one fixed scene in Calm Bay (docs 09 8.1)
-	end
-	if sceneKind == "VesselFire" then
-		sceneKind = "Tow" -- the burning cruiser is RescueService's ordinary boat scene
-	end
-	local kind = if missionDef
-		then missionDef.id
-		elseif wildlife then "WildlifeRescue"
-		elseif forcedKind == "EasyCall" then "PersonInWater"
-		elseif choice.kind == "VesselFire" or forcedKind == "VesselFire" then "VesselFire"
-		else Operations.FromCallKind[sceneKind]
-	local op = newOp(kind, sceneKind, zone, CallLogic.pickSpawnPoint(zone), missionDef)
-	if missionDef then
-		-- a story mission: exercise rules (no rescue pay, no tutorial or certification progress)
-		op.mission = true
-		op.exercise = true
-		op.position = if opts.position then opts.position else op.position
-		op.scene.position = op.position
-		op.zoneId = CallLogic.zoneIdAt(op.position)
-		op.zoneName = opts.zoneName or missionDef.displayName
-	end
+	local op = newOp(kind, sceneKind, zone, CallLogic.pickSpawnPoint(zone), victims)
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
 	end
@@ -2097,8 +1435,6 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	albumAnnounce(op)
 	if kind == "RipCurrent" then
 		RipFlow.Task(op) -- the variant (swimmer / body-boarder): the radio line
-	elseif kind == "VesselFire" then
-		FireScene.Task(op) -- two people at the bow, no drift, the fire is the clock
 	end
 	table.insert(op.offeredTo, player)
 	st.offerOpId = op.id
@@ -2153,18 +1489,22 @@ local function activate(op: any, player: Player)
 		stateOf(p).offerOpId = nil
 		table.insert(op.members, p)
 	end
-	rollCasualties(op, 1)
-	if onboardingCall(player) and op.def.states.Alert then
-		op.casualties[1] = Condition.new(`{op.id}-1`, "Alert", true)
+	rollCasualties(op, op.scene.total)
+	for i, c in op.casualties do
+		if onboardingCall(player) and op.def.states.Alert then
+			c = Condition.new(`{op.id}-{i}`, "Alert", true)
+			op.casualties[i] = c
+		end
+		if op.kind == "SinkingVessel" or op.kind == "VesselFire" then
+			c.driftScale = OperationService.FAST_TIRING
+		end
 	end
 	RescueService.SpawnCall(op.scene)
-	if op.scene.kind == "Cliff" then
-		pcall(CliffScene.Spawn, op.scene)
-	elseif op.scene.kind == "RipCurrent" then
+	if op.scene.kind == "RipCurrent" then
 		pcall(RipFlow.Spawn, op.scene) -- the rip is the current; tag the body-boarder's board
 	elseif op.scene.kind == "Sinking" then
 		pcall(SinkingScene.Spawn, op.scene)
-	elseif op.kind == "VesselFire" then
+	elseif op.scene.kind == "VesselFire" then
 		pcall(FireScene.Spawn, op.scene)
 	end
 	newTrack(op, player, members)
@@ -2267,15 +1607,11 @@ local function coldOpenShore(op: any)
 		end
 		local cas = v.floater.cf.Position
 		inst.timeoutAt = math.max(inst.timeoutAt, now() + 30)
-		-- Studio smoke stub (smoke.py ops): a result already kept at sea counts as ashore
-		local devStub = RunService:IsStudio()
-			and player:GetAttribute("OpsAutoStub") == true
-			and inst.coldOpenRaw ~= nil
-		if devStub or BoatColdOpen.landed(mode, cas) then
+		if BoatColdOpen.landed(mode, cas) then
 			local shore = BoatColdOpen.nearestShore(cas)
 			pcall(RescueService.RemoveVictim, op.scene, ci)
 			try("NpcService", "ShoreHandover", shore.dry, shore.water)
-			onStepResult(player, op.id, inst.key, inst.coldOpenRaw or { metrics = { score = 0.7 } })
+			onStepResult(player, op.id, inst.key, { metrics = {} })
 			continue
 		end
 		local n = coldOpenNudge[inst]
@@ -2291,10 +1627,10 @@ local function coldOpenShore(op: any)
 end
 
 -- Server-side auto_board for every op: AmbientRescueService.StepBoarding, the free-roam rule (close, slow,
--- level, room aboard). A crew's boat boards a survivor its track may take: on a big call any free one while
--- picking up or carrying (a RIB or lifeboat fits several, all landed together); on a single call its own.
--- The client auto_board mechanic stays as the visuals and a second path; whichever comes first wins.
-local function boardingStep(op: any, track: Track): StepInst?
+-- level, room aboard). A crew's boat boards any survivor its track may take while picking up or carrying
+-- (a RIB or lifeboat fits several, all landed together). The client auto_board mechanic stays as the
+-- visuals and a second path; whichever comes first wins.
+local function boardingStep(track: Track): StepInst?
 	local inst = track.current
 	if not inst or inst.npc then
 		return nil
@@ -2302,7 +1638,7 @@ local function boardingStep(op: any, track: Track): StepInst?
 	if inst.def.effect == "board" and inst.mechanicId == "auto_board" then
 		return inst
 	end
-	return if op.isBig and inst.def.effect == "deliver" then inst else nil
+	return if inst.def.effect == "deliver" then inst else nil
 end
 
 local function stepBoarding(op: any, dt: number)
@@ -2312,13 +1648,11 @@ local function stepBoarding(op: any, dt: number)
 	end
 	local function may(player: Player, i: number): boolean
 		local track = trackOf(op, player)
-		local inst = track and boardingStep(op, track)
-		if not (track and inst and op.casualties[i]) then
-			return false
-		end
-		return if op.isBig
-			then Board.mayTake(op.casualties[i], track.id)
-			else inst.casualtyIndex == i
+		local inst = track and boardingStep(track)
+		return track ~= nil
+			and inst ~= nil
+			and op.casualties[i] ~= nil
+			and Board.mayTake(op.casualties[i], track.id)
 	end
 	ambient.StepBoarding(
 		op.scene,
@@ -2327,23 +1661,21 @@ local function stepBoarding(op: any, dt: number)
 		may,
 		function(i: number, player: Player)
 			local track = trackOf(op, player)
-			local inst = track and boardingStep(op, track)
+			local inst = track and boardingStep(track)
 			if not (track and inst) or op.state ~= "Active" then
 				return
 			end
 			local c: CasualtyState = op.casualties[i]
-			if op.isBig then
-				local old = inst.casualtyIndex
-				if inst.def.effect == "board" and old ~= i then
-					-- they reached another survivor than the one claimed: that one is free again
-					if old then
-						op.casualties[old].claimedBy = nil
-					end
-					inst.casualtyIndex = i
-					track.casualtyIndex = i
+			local old = inst.casualtyIndex
+			if inst.def.effect == "board" and old ~= i then
+				-- they reached another survivor than the one claimed: that one is free again
+				if old then
+					op.casualties[old].claimedBy = nil
 				end
-				c.claimedBy = track.id
+				inst.casualtyIndex = i
+				track.casualtyIndex = i
 			end
+			c.claimedBy = track.id
 			if inst.def.effect == "board" then
 				local metrics: Types.Metrics = { elapsed = now() - inst.startedAt }
 				local grade: Grade =
@@ -2356,7 +1688,7 @@ local function stepBoarding(op: any, dt: number)
 						{ opId = op.id, stepKey = inst.key, accepted = true, grade = grade }
 					)
 				end
-				complete(op, track, inst, grade, player, metrics) -- the board effect plays the climb
+				complete(op, track, inst, grade, player) -- the board effect plays the climb
 			else
 				-- one more while carrying: aboard now, landed with the rest
 				c.inWater = false
@@ -2373,33 +1705,20 @@ local function tickOp(op: any, dt: number, t: number)
 	if op.state ~= "Active" then
 		return
 	end
-	samplePiw(op, dt)
 	sampleColdOpen(op)
 	coldOpenShore(op)
 	local env = {
 		storm = not op.coldOpen and (op.storm or weatherState() == "Storm"),
 		coldWater = false,
 	}
-	local ferry = op.kind == "CapsizedFerry"
-	-- an exercise's manikin never deteriorates and nobody takes over: the cap just ends it
-	for _, c in (if op.exercise then {} else op.casualties) :: { CasualtyState } do
-		local before = c.condition
+	for _, c in op.casualties do
 		Condition.step(c, dt, env)
-		if ferry and c.tag and not c.delivered and not c.takenOver and c.condition < before then
-			-- an under-triaged casualty waiting on scene declines faster (docs 09 section 7)
-			local f = FerryValidate.driftFactor(c.tag, c.state)
-			if f > 1 then
-				c.condition = math.clamp(c.condition - (before - c.condition) * (f - 1), 0, 100)
-			end
-		end
 	end
 	-- first session: no fail state on the cold open and the next three calls (docs/15 section 3)
-	if not op.exercise then
-		Onboarding.protect(
-			op.casualties,
-			if op.owner and playerState[op.owner] then playerState[op.owner].completed else 0
-		)
-	end
+	Onboarding.protect(
+		op.casualties,
+		if op.owner and playerState[op.owner] then playerState[op.owner].completed else 0
+	)
 	if t - op.lastSample >= 5 then
 		op.lastSample = t
 		local values = {}
@@ -2417,11 +1736,6 @@ local function tickOp(op: any, dt: number, t: number)
 				radio(op, "Rescue Gale One", "Rescue Gale One has the casualty. Carry on.")
 			end
 		end
-		if elapsed > op.def.capSeconds then
-			finish(op, "Timer")
-			return
-		end
-	elseif op.exercise then
 		if elapsed > op.def.capSeconds then
 			finish(op, "Timer")
 			return
@@ -2545,11 +1859,6 @@ local function tick()
 				decision == "Offer"
 				and not onboardingHoldsOffers(player, st.completed)
 				and not inWater(player)
-				-- Off duty (ExplorationService, docs 10 section 5.1): no standard taskings after the tutorials
-				and not (
-					player:GetAttribute("OffDuty") == true
-					and st.completed >= #Grading.Payout.Tutorial
-				)
 			then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
@@ -2672,7 +1981,6 @@ function OperationService.StartColdOpen(
 	try("TelemetryService", "ColdOpenStep", player, "approach")
 	op.planIds = OperationService.ColdOpenPlan
 	op.offeredTo = { player }
-	player:SetAttribute("OpsPro", false) -- Assist mode
 	op.state = "Active"
 	op.owner = player
 	op.acceptedAt = now()
@@ -2717,19 +2025,17 @@ function OperationService.StartColdOpen(
 end
 
 -- Offer a call to `player` without accepting it: the radio card appears and the player accepts as
--- usual (EventService's Ghost Light). opts.variant forces one RescueVariants id (Studio).
+-- usual. opts.variant forces one RescueVariants id (Studio).
 function OperationService.OfferCall(player: Player, kind: string?, opts: any?): string?
 	local st = stateOf(player)
 	if st.activeOpId and ops[st.activeOpId] then
 		return nil
 	end
-	-- a story mission is asked for at the lighthouse board (G67): the player's own action, no wait
-	local mission = opts ~= nil and opts.def ~= nil
 	local pending = st.offerOpId and ops[st.offerOpId]
-	if not mission and pending and pending.isBig then
+	if pending and pending.isBig then
 		return nil -- the server-wide call is the more special one
 	end
-	if not mission and (onboardingHoldsOffers(player, st.completed) or now() < st.nextOfferAt) then
+	if onboardingHoldsOffers(player, st.completed) or now() < st.nextOfferAt then
 		return nil -- Onboarding's own pacing, or the breather after the last op
 	end
 	if pending then
@@ -2819,109 +2125,6 @@ function OperationService.DevEnd(player: Player, graded: boolean): boolean
 	return true
 end
 
--- Training exercises (RP-C1b; docs 09 section 9.2): started from the station exercise board
--- (ExerciseBoardService), never offered as calls. Gated by ProgressionRules.canStartExercise (the
--- cold open done, the certification's prerequisites, not already on an operation). The station's
--- loaner is spawned on the slip for a boat exercise; on foot the player is walked to the venue.
--- The manikin floats off the slipway (or in the harbour for boat handling) as a swimmer scene that
--- does not drift or deteriorate; the casualty-care manikin lies on the station floor. Solo, no crew,
--- no takeover, no payout but the first-pass reward, no tutorial-chain count. Returns the
--- operation id, or nil and the reason.
-function OperationService.StartExercise(player: Player, exerciseId: string): (string?, string?)
-	local ex = Exercises.get(exerciseId)
-	if not ex then
-		return nil, "Unknown exercise"
-	end
-	local st = stateOf(player)
-	local flow = coldOpenFlow[player]
-	local busy = (st.activeOpId ~= nil and ops[st.activeOpId] ~= nil)
-		or (flow ~= nil and flow.phase == "Running")
-	if coldOpenDone(player) ~= true then
-		return nil, "Finish your first rescue first"
-	end
-	local okData, snap = try("ProgressionService", "GetData", player)
-	if not okData or type(snap) ~= "table" then
-		return nil, "Your service record is still loading"
-	end
-	local data = ProgressionRules.fromSnapshot(snap)
-	data.coldOpenDone = true -- checked above (the attribute or the profile)
-	local allowed, why = ProgressionRules.canStartExercise(data, exerciseId, busy)
-	if not allowed then
-		return nil, why
-	end
-	local okVenue, venue = try("ExerciseBoardService", "Venue", ex.venue)
-	if not okVenue or type(venue) ~= "table" then
-		return nil, "The station is not ready yet"
-	end
-	local character = player.Character
-	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-	if not (character and humanoid and humanoid.Health > 0) then
-		return nil, "Not while you're down"
-	end
-	if ex.vehicle then
-		local okBoat, boat =
-			try("VehicleService", "SpawnSeated", player, ex.vehicle, venue.launch, 0, "Scripted")
-		if not okBoat or typeof(boat) ~= "Instance" then
-			return nil, "No boat on the slip right now"
-		end
-	else
-		if humanoid.SeatPart then
-			local weld = humanoid.SeatPart:FindFirstChild("SeatWeld")
-			if weld then
-				weld:Destroy()
-			end
-		end
-		humanoid.Sit = false
-		character:PivotTo(venue.stand)
-	end
-	if st.offerOpId and ops[st.offerOpId] then
-		withdrawOffer(ops[st.offerOpId])
-	end
-	local op = newOp(ex.id, "Swimmer", "Near", venue.casualty, ex.def)
-	op.exercise = true
-	op.zoneName = "Haven Station"
-	op.offeredTo = { player }
-	op.state = "Active"
-	op.owner = player
-	op.acceptedAt = now()
-	st.activeOpId = op.id
-	st.offerOpId = nil
-	table.insert(op.members, player)
-	local state = Operations.roll(ex.def.states, rng:NextNumber())
-	local c = Condition.new(`{op.id}-1`, state, rng:NextNumber() < ex.def.lifejacketChance)
-	table.insert(op.casualties, c)
-	op.scene.driftCurrent = Vector3.zero -- the manikin is on a line: only the wind moves it
-	if ex.venue == "StationFloor" then
-		c.inWater = false
-		c.wet = false
-		try("ExerciseBoardService", "BeginExercise", op.id, ex.venue)
-	else
-		RescueService.SpawnCall(op.scene)
-	end
-	player:SetAttribute("OpsExercise", ex.id) -- the board closes; cleared in closeOp
-	newTrack(op, player, { player })
-	radio(op, "Haven Station", ex.def.radioLine)
-	advance(op, op.tracks[1])
-	return op.id, nil
-end
-
-local function onStartExercise(player: Player, exerciseId: any)
-	if type(exerciseId) ~= "string" or #exerciseId > 64 then
-		return
-	end
-	-- only from the board: the prompt's range plus a margin
-	local okNear, near = try("ExerciseBoardService", "IsNearBoard", player)
-	local id, why
-	if okNear and near == true then
-		id, why = OperationService.StartExercise(player, exerciseId)
-	else
-		why = "Use the exercise board in the station"
-	end
-	if not id then
-		fire("Ops_ExerciseRefused", player, { exerciseId = exerciseId, reason = why or "Not now" })
-	end
-end
-
 local function onPlayerAdded(player: Player)
 	stateOf(player)
 	coldOpenEntry(player)
@@ -2951,11 +2154,8 @@ local function onPlayerAdded(player: Player)
 		player.Chatted:Connect(function(msg)
 			if msg == "/ferry" then
 				startBigOp()
-			elseif msg == "/op" or msg == "/tow" then
-				OperationService.DevStart(
-					player,
-					if msg == "/tow" then "DisabledVessel" else "PersonInWater"
-				)
+			elseif msg == "/op" then
+				OperationService.DevStart(player, "PersonInWater")
 			end
 		end)
 	end
@@ -3002,8 +2202,6 @@ function OperationService.Init()
 	Remotes.event("Ops_Accept").OnServerEvent:Connect(onAccept)
 	Remotes.event("Ops_StepResult").OnServerEvent:Connect(onStepResult)
 	Remotes.event("Ops_TakeStep").OnServerEvent:Connect(onTakeStep)
-	Remotes.event("Ops_TowLength").OnServerEvent:Connect(onTowLength)
-	Remotes.event("Ops_StartExercise").OnServerEvent:Connect(onStartExercise)
 	Players.PlayerAdded:Connect(onPlayerAdded)
 	Players.PlayerRemoving:Connect(onPlayerRemoving)
 	for _, p in Players:GetPlayers() do
@@ -3029,13 +2227,6 @@ function OperationService.Init()
 					end
 				end
 				return nil
-			elseif cmd == "exercise" then
-				local p = Players:GetPlayers()[1]
-				if not p then
-					return nil
-				end
-				local id, why = OperationService.StartExercise(p, a)
-				return id or why
 			elseif cmd == "coldopen" then
 				local p = Players:GetPlayers()[1]
 				return if p then OperationService.StartColdOpen(p, nil, true) else nil
