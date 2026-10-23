@@ -125,6 +125,8 @@ local function bell()
 	end)
 end
 
+local startedAt = 0
+
 local function play(beat: Beat)
 	local root = rootPart()
 	if not root then
@@ -149,6 +151,7 @@ local function play(beat: Beat)
 		end
 	end
 	stopCurrent = finish
+	startedAt = os.clock()
 
 	local badge = RankBadge.play({
 		kind = beat.kind,
@@ -237,8 +240,9 @@ end
 function RankCeremonyController.Init()
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
 	-- Any input (keyboard, touch, gamepad) skips the beat and drops a queued one.
-	UserInputService.InputBegan:Connect(function()
-		if stopCurrent then
+	-- (not the click that started it: a GUI-handled input or one in the first half second)
+	UserInputService.InputBegan:Connect(function(_, gameProcessed: boolean)
+		if stopCurrent and not gameProcessed and os.clock() - startedAt > 0.5 then
 			table.clear(queue)
 			stopCurrent()
 		end
