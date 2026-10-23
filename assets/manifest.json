@@ -2083,6 +2083,15 @@
   "source": "assets/textures/Materials/T_Mat_SandWet_NOR.png",
   "type": "Image"
  },
+ "Image:1a3a7a7a720fcf99e962b63d901b12956be6087ff796390c09f84bffc258bf4f": {
+  "assetId": "136087001159758",
+  "imageId": "136087001159758",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av7",
+  "sha": "1a3a7a7a720fcf99e962b63d901b12956be6087ff796390c09f84bffc258bf4f",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av7.png",
+  "type": "Image"
+ },
  "Image:1a400d1a39ad8410509da4aff09fcf8782bb35c760b52cae68cf0fcf747473ce": {
   "assetId": "80970435733494",
   "imageId": "80970435733494",
@@ -3205,6 +3214,15 @@
   "source": "assets/textures/M_Hbr_NavMark_West/T_NavMarkWest_Buoy_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:28c8f7743b39254bbc2dc017072524b9a3a5a90eadd9e23ddede20bd2010b836": {
+  "assetId": "115766599123311",
+  "imageId": "115766599123311",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av4",
+  "sha": "28c8f7743b39254bbc2dc017072524b9a3a5a90eadd9e23ddede20bd2010b836",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av4.png",
+  "type": "Image"
+ },
  "Image:28e0d22aeb8c6e339f6119661753350012d2c9bc45e874c9b08af3e86182aff7": {
   "assetId": "115695218548179",
   "imageId": "115695218548179",
@@ -3844,6 +3862,15 @@
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Foil_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:312fee4fbafecab6a6b016b7cb456f0a32e97a3602ed348565166330e8d66ce7": {
+  "assetId": "79975421420008",
+  "imageId": "79975421420008",
+  "moderation": "Reviewing",
+  "name": "sign_cliff_warning",
+  "sha": "312fee4fbafecab6a6b016b7cb456f0a32e97a3602ed348565166330e8d66ce7",
+  "source": "assets/ui/signs/sign_cliff_warning.png",
+  "type": "Image"
+ },
  "Image:316cf955b26a5f597c6038aacf8cae0376cf6fe142fb382cb460cbc721e35ed1": {
   "assetId": "79801658530306",
   "imageId": "79801658530306",
@@ -4178,6 +4205,15 @@
   "name": "T_JetSki_Hull_RGH",
   "sha": "352958b8df1bcf5219a1618dfd227ddea637f81acc8bb36a74ca1a595583e7db",
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Hull_RGH.png",
+  "type": "Image"
+ },
+ "Image:3529c3375ed035855d9637d19e2449c1e473a712bca7d271e67341df1a0a984b": {
+  "assetId": "97228817889577",
+  "imageId": "97228817889577",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av1",
+  "sha": "3529c3375ed035855d9637d19e2449c1e473a712bca7d271e67341df1a0a984b",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av1.png",
   "type": "Image"
  },
  "Image:355336cd18f7b0734c48d8fa09e76221f52c1feb0e4ae1d68c6d542a0c8e3358": {
@@ -5843,6 +5879,15 @@
   "source": "assets/textures/M_Hbr_Ladder/T_Ladder_Steel_ALB.png",
   "type": "Image"
  },
+ "Image:4b34edab9058102c5e0f93efef9bd69265cbb59b3e01282d7d6ca06fecb70023": {
+  "assetId": "122850744429554",
+  "imageId": "122850744429554",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_St3",
+  "sha": "4b34edab9058102c5e0f93efef9bd69265cbb59b3e01282d7d6ca06fecb70023",
+  "source": "assets/ui/signs/sign_street_PortHaven_St3.png",
+  "type": "Image"
+ },
  "Image:4b5a0aae9dd254cf7129489db3a704892f11a50a781374720b053e8086f76141": {
   "assetId": "95344988024726",
   "imageId": "95344988024726",
@@ -6108,6 +6153,15 @@
   "name": "T_ChandleryStock_Atlas_MET",
   "sha": "4ed76184cb23357342c6fcd06f8601864395ce5b14a0cfd0a24ca64a0ddffda5",
   "source": "assets/textures/M_Prop_Chandlery_Stock/T_ChandleryStock_Atlas_MET.png",
+  "type": "Image"
+ },
+ "Image:4ee34751059b4fb293706d11fc34aa439b14a984b838c5da2c45bb032daa0124": {
+  "assetId": "87986704526788",
+  "imageId": "87986704526788",
+  "moderation": "Reviewing",
+  "name": "sign_slipway",
+  "sha": "4ee34751059b4fb293706d11fc34aa439b14a984b838c5da2c45bb032daa0124",
+  "source": "assets/ui/signs/sign_slipway.png",
   "type": "Image"
  },
  "Image:4f0b0f7ef700ff5751e78558d1a8fe58989c7f567ac336353aebd0937142ad07": {
@@ -8963,6 +9017,15 @@
   "source": "assets/textures/M_Veh_Coastguard4x4/T_Coastguard4x4_Rack_RGH.png",
   "type": "Image"
  },
+ "Image:765d13ffe7d016898b9accea522fd08051979368d42f93d2623ed9e5ba734193": {
+  "assetId": "97268713759394",
+  "imageId": "97268713759394",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_St2",
+  "sha": "765d13ffe7d016898b9accea522fd08051979368d42f93d2623ed9e5ba734193",
+  "source": "assets/ui/signs/sign_street_PortHaven_St2.png",
+  "type": "Image"
+ },
  "Image:76963e24bb85ff62deaf68ea234054a030d3e28e4f8b95fbb82106356550fc95": {
   "assetId": "135221035341261",
   "imageId": "135221035341261",
@@ -9474,6 +9537,15 @@
   "name": "T_Tidewalker_Fittings_RGH_Wet",
   "sha": "7c6a26ba31f4e7d3f08848590396a900e200fbfba37e8e40b3b912029086bec4",
   "source": "assets/textures/M_Veh_Tidewalker/T_Tidewalker_Fittings_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:7cc62e53c0e032759f7d0f23da6b6d4b4756d18b53b4bff5e76bd5af0d89acd2": {
+  "assetId": "88878447575996",
+  "imageId": "88878447575996",
+  "moderation": "Reviewing",
+  "name": "sign_street_HarbourRoad",
+  "sha": "7cc62e53c0e032759f7d0f23da6b6d4b4756d18b53b4bff5e76bd5af0d89acd2",
+  "source": "assets/ui/signs/sign_street_HarbourRoad.png",
   "type": "Image"
  },
  "Image:7cc76ede9e7a5fa3cbab203e7c7c851fa34f2143c9ff1b139e893de26760839f": {
@@ -10556,6 +10628,15 @@
   "source": "assets/textures/M_Rock_Ledge_01/T_Ledge01_Granite_ALB.png",
   "type": "Image"
  },
+ "Image:8bbccc2d062c16b09cfb2cc64678eed3220cbb6aa24629b1cd324dccd5e42019": {
+  "assetId": "124619086186962",
+  "imageId": "124619086186962",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av5",
+  "sha": "8bbccc2d062c16b09cfb2cc64678eed3220cbb6aa24629b1cd324dccd5e42019",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av5.png",
+  "type": "Image"
+ },
  "Image:8bbd3687632204e88e9e546079ea406b5315800b3bf14ab94c5733cddae7a212": {
   "assetId": "112298912558260",
   "imageId": "112298912558260",
@@ -10689,6 +10770,15 @@
   "name": "T_HumanBaseF_Head_RGH",
   "sha": "8d1355912aad8ff9c47f68b757f94742fbc77d40bd6533d0bafc18248077a90f",
   "source": "assets/textures/M_Chr_HumanBase_F/T_HumanBaseF_Head_RGH.png",
+  "type": "Image"
+ },
+ "Image:8d4036248eb11994a4b4e37b0e610d2d01a11d6371d996c1c3f01a1b83c590e8": {
+  "assetId": "100096148369959",
+  "imageId": "100096148369959",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av2",
+  "sha": "8d4036248eb11994a4b4e37b0e610d2d01a11d6371d996c1c3f01a1b83c590e8",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av2.png",
   "type": "Image"
  },
  "Image:8d572ccc0850251bc4370c1f05a9375c7ae5428030bf69b8d9542ea1dbd1a015": {
@@ -13679,6 +13769,15 @@
   "source": "assets/textures/M_Chr_Bosun/T_Bosun_Harness_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b67f7e2f4ae53da24a2cd1e36498a5a736b257fc37f661ad16b34144455f68fa": {
+  "assetId": "84736448216892",
+  "imageId": "84736448216892",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_St1",
+  "sha": "b67f7e2f4ae53da24a2cd1e36498a5a736b257fc37f661ad16b34144455f68fa",
+  "source": "assets/ui/signs/sign_street_PortHaven_St1.png",
+  "type": "Image"
+ },
  "Image:b68852b8ffcbf3bba40899d1d0f142d584a73a6fa109ffc55dd5e1dca6af3995": {
   "assetId": "94511552575723",
   "imageId": "94511552575723",
@@ -14133,6 +14232,15 @@
   "name": "T_NavMarkPort_Buoy_RGH_Wet",
   "sha": "bdfb217e4f8f1de829f31ee520448f8713fc20ec603b26874bcb783485d0c99a",
   "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:be04176a504f67bd04ebcb15b3679b3f4385636bfbe3a29a585055b54c2e4d77": {
+  "assetId": "121843522280106",
+  "imageId": "121843522280106",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_St4",
+  "sha": "be04176a504f67bd04ebcb15b3679b3f4385636bfbe3a29a585055b54c2e4d77",
+  "source": "assets/ui/signs/sign_street_PortHaven_St4.png",
   "type": "Image"
  },
  "Image:be089529163ca25479e9beb1fb7016e4e04f90433d64dad5e810163ba48e8135": {
@@ -15468,6 +15576,15 @@
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Pink_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:d0a43efcd26f9471c1c460666f1bc6ca53a5f5ecaaa0202c05b4369353d6b4bc": {
+  "assetId": "106608538637645",
+  "imageId": "106608538637645",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av6",
+  "sha": "d0a43efcd26f9471c1c460666f1bc6ca53a5f5ecaaa0202c05b4369353d6b4bc",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av6.png",
+  "type": "Image"
+ },
  "Image:d0c8e309d30505f55b559b2313110916d1d061cca87122e4bec3601ae1324fa5": {
   "assetId": "114094302637870",
   "imageId": "114094302637870",
@@ -15502,6 +15619,15 @@
   "name": "T_LighthouseCruiser_Trim_NOR",
   "sha": "d0e0714627a3c0387d4d103a598f9ec76906ca20c61ab611cf683533119a617b",
   "source": "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_NOR.png",
+  "type": "Image"
+ },
+ "Image:d0e56e071d163a8ce34582819cb2763401e9ed48f2fac46ac9b40c28976efb59": {
+  "assetId": "137304008972757",
+  "imageId": "137304008972757",
+  "moderation": "Reviewing",
+  "name": "sign_car_park",
+  "sha": "d0e56e071d163a8ce34582819cb2763401e9ed48f2fac46ac9b40c28976efb59",
+  "source": "assets/ui/signs/sign_car_park.png",
   "type": "Image"
  },
  "Image:d0f950cfa42827fedd2420f7618b78a5b123be494d6d20b56e4516552e693ff5": {
@@ -15960,6 +16086,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_Asphalt_ALB.png",
   "type": "Image"
  },
+ "Image:d78afd64b8cbf0e6c21ae263d6d97d19a96782a9d74760382fbb778840428f03": {
+  "assetId": "132912601705738",
+  "imageId": "132912601705738",
+  "moderation": "Reviewing",
+  "name": "sign_tide_board",
+  "sha": "d78afd64b8cbf0e6c21ae263d6d97d19a96782a9d74760382fbb778840428f03",
+  "source": "assets/ui/signs/sign_tide_board.png",
+  "type": "Image"
+ },
  "Image:d7c4cea685fe0480073141394974869ccb65f36644589f59fef6fc6d1d9e12f9": {
   "assetId": "112812102168374",
   "imageId": "112812102168374",
@@ -16174,6 +16309,15 @@
   "name": "T_ParkedCar02_Body_NOR",
   "sha": "d9ec1ff2730015019a38eece52db5a104c618b06e29ba45e7ded48d567f5d6b4",
   "source": "assets/textures/M_Road_ParkedCar_02/T_ParkedCar02_Body_NOR.png",
+  "type": "Image"
+ },
+ "Image:da096b205226efe758b348fc8e3df4f39755278ec525a2abb75d63a0b64ff7d5": {
+  "assetId": "137807483186889",
+  "imageId": "137807483186889",
+  "moderation": "Reviewing",
+  "name": "sign_fingerpost_arms",
+  "sha": "da096b205226efe758b348fc8e3df4f39755278ec525a2abb75d63a0b64ff7d5",
+  "source": "assets/ui/signs/sign_fingerpost_arms.png",
   "type": "Image"
  },
  "Image:da47b3678d24aaf13b48a785ced98e6b45e75279bb01dda869b3766f091a9f39": {
@@ -16438,6 +16582,15 @@
   "name": "UI_Phone_logbook",
   "sha": "dd1758cd60092c23f8f46b0861d671dea45867a3122f0354d9ec3a560339b6bf",
   "source": "assets/ui/phone/logbook.png",
+  "type": "Image"
+ },
+ "Image:dd1cb685d21e75e80ca184a9bca87739d0302130e98c0308d756a98f9320e4fb": {
+  "assetId": "107822329358872",
+  "imageId": "107822329358872",
+  "moderation": "Reviewing",
+  "name": "sign_street_PortHaven_Av3",
+  "sha": "dd1cb685d21e75e80ca184a9bca87739d0302130e98c0308d756a98f9320e4fb",
+  "source": "assets/ui/signs/sign_street_PortHaven_Av3.png",
   "type": "Image"
  },
  "Image:dd1d3bfb440d9b7475d3c971641f51a95307e3fb0e4a886ce6969f18804b9d49": {

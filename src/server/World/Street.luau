@@ -1467,18 +1467,18 @@ end
 -- face is a Gemini image per street (docs/19-world-sign-art.md, sign_street_<id>.png): a street still "" gets no
 -- plate, so no blank white board ever stands in the town.
 local NAME_PLATES: { [string]: string } = {
-	HarbourRoad = "",
-	PortHaven_Av1 = "",
-	PortHaven_Av2 = "",
-	PortHaven_Av3 = "",
-	PortHaven_Av4 = "",
-	PortHaven_Av5 = "",
-	PortHaven_Av6 = "",
-	PortHaven_Av7 = "",
-	PortHaven_St1 = "",
-	PortHaven_St2 = "",
-	PortHaven_St3 = "",
-	PortHaven_St4 = "",
+	HarbourRoad = "rbxassetid://88878447575996",
+	PortHaven_Av1 = "rbxassetid://97228817889577",
+	PortHaven_Av2 = "rbxassetid://100096148369959",
+	PortHaven_Av3 = "rbxassetid://107822329358872",
+	PortHaven_Av4 = "rbxassetid://115766599123311",
+	PortHaven_Av5 = "rbxassetid://124619086186962",
+	PortHaven_Av6 = "rbxassetid://106608538637645",
+	PortHaven_Av7 = "rbxassetid://136087001159758",
+	PortHaven_St1 = "rbxassetid://84736448216892",
+	PortHaven_St2 = "rbxassetid://97268713759394",
+	PortHaven_St3 = "rbxassetid://122850744429554",
+	PortHaven_St4 = "rbxassetid://121843522280106",
 }
 local PLATE = { w = 4.4, h = 1.1, high = 3.2 }
 
