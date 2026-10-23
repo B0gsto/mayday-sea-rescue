@@ -550,6 +550,15 @@
   "source": "assets/textures/M_Bld_Station/T_Station_Render_NOR.png",
   "type": "Image"
  },
+ "Image:0787d2132ef0fe3ac338457245f99fbda6be076088035daf383fd826137c0def": {
+  "assetId": "138050699324414",
+  "imageId": "138050699324414",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Ft",
+  "sha": "0787d2132ef0fe3ac338457245f99fbda6be076088035daf383fd826137c0def",
+  "source": "assets/ocean/sky_v2/faces/Clear_Ft.png",
+  "type": "Image"
+ },
  "Image:07a9146c653a0e42638dd3a6d28fe9feec1d1c8fd4ede291377b9b13228c8773": {
   "assetId": "135635036600670",
   "imageId": "135635036600670",
@@ -584,6 +593,15 @@
   "name": "Mayday_T_Mat_SandRipple_NOR",
   "sha": "07f83e6b2bd639854bc8a7bea3f2f820e946f3dbb215e103ff196c9d83df24c3",
   "source": "assets/textures/Materials/T_Mat_SandRipple_NOR.png",
+  "type": "Image"
+ },
+ "Image:0814d8bcec1088e5a7d2078280008cb837f79c53c940590c5b3904f38c9519bf": {
+  "assetId": "86690950355373",
+  "imageId": "86690950355373",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Up",
+  "sha": "0814d8bcec1088e5a7d2078280008cb837f79c53c940590c5b3904f38c9519bf",
+  "source": "assets/ocean/sky_v2/faces/Clear_Up.png",
   "type": "Image"
  },
  "Image:082a53f2abe10480a897b96f449e74b734c813f9aa1b30e6532ff32535ef930a": {
@@ -10610,6 +10628,15 @@
   "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_NOR.png",
   "type": "Image"
  },
+ "Image:8eb4c9406292452651f589c394714a20b31771e248c3f6c8f5d09675eac2cc03": {
+  "assetId": "114780638646644",
+  "imageId": "114780638646644",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Dn",
+  "sha": "8eb4c9406292452651f589c394714a20b31771e248c3f6c8f5d09675eac2cc03",
+  "source": "assets/ocean/sky_v2/faces/Clear_Dn.png",
+  "type": "Image"
+ },
  "Image:8eb747b0fa587d9362afd098c6864f49d009def93f9e2bdf01c4aca59fd7921f": {
   "assetId": "129655332194316",
   "imageId": "129655332194316",
@@ -13544,6 +13571,15 @@
   "source": "assets/textures/M_Rock_Boulder_03/T_Boulder03_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:b73a8182454f67697a3a0503cf7ceca230e221d081d923036b3919be23724859": {
+  "assetId": "73734813413865",
+  "imageId": "73734813413865",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Lf",
+  "sha": "b73a8182454f67697a3a0503cf7ceca230e221d081d923036b3919be23724859",
+  "source": "assets/ocean/sky_v2/faces/Clear_Lf.png",
+  "type": "Image"
+ },
  "Image:b77404cef7049b4e7e62bd38220e6f1336e0d8417736b603f4cc7bdbfd866dcf": {
   "assetId": "86690278841191",
   "imageId": "86690278841191",
@@ -14079,6 +14115,15 @@
   "name": "T_QuayKit_Tide_ALB_Wet",
   "sha": "c0d259eefa0187f3fd6f13ee228c8c4ea3cd5e8f89111586778b1fbe7330a04f",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:c0e42f652781995b8029c38bd598544127bb42366e5fcb8e8f201aed9c33f336": {
+  "assetId": "98189345898092",
+  "imageId": "98189345898092",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Rt",
+  "sha": "c0e42f652781995b8029c38bd598544127bb42366e5fcb8e8f201aed9c33f336",
+  "source": "assets/ocean/sky_v2/faces/Clear_Rt.png",
   "type": "Image"
  },
  "Image:c0feb518944ed40665532d673dfa4bee81cf371a411608fe7691a4e713387bb3": {
@@ -15604,6 +15649,15 @@
   "name": "Mayday_T_Mat_Mud_RGH_Wet",
   "sha": "d640fb0635e0a50663e1d44a0c4b240117fd6a20f67f4470a5ba308da308664b",
   "source": "assets/textures/Materials/T_Mat_Mud_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:d645668c0a170bc50b9ec4dff26ded8c94e9145209d1b3a07d0e61014a574724": {
+  "assetId": "81127735141699",
+  "imageId": "81127735141699",
+  "moderation": "Reviewing",
+  "name": "Mayday_sky_ClearV2_Bk",
+  "sha": "d645668c0a170bc50b9ec4dff26ded8c94e9145209d1b3a07d0e61014a574724",
+  "source": "assets/ocean/sky_v2/faces/Clear_Bk.png",
   "type": "Image"
  },
  "Image:d64bf8936d5361c897cc1245d831f17912026c548a7c0514fd2da467ae467869": {

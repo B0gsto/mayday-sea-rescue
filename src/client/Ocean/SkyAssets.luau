@@ -4,17 +4,19 @@
 -- third-party licence applies). Sources: assets/ocean/sky/<Preset>_<Face>.png, 1024x1024. Faces follow the Roblox
 -- Sky convention documented in the script header (Ft looks -Z, Lf looks +X, Up top edge borders Lf).
 -- No sun or moon disc is baked in; Roblox draws those.
+-- Exception: Clear is a Gemini panorama (assets/ocean/sky_v2/clear_pano.png, seam blended, 4096x2048) baked with
+-- cubemap.py --hdri ... --tonemap clip into assets/ocean/sky_v2/faces/.
 
 export type SkyFaces = { Bk: string, Dn: string, Ft: string, Lf: string, Rt: string, Up: string }
 
 local SkyAssets: { [string]: SkyFaces } = table.freeze({
 	Clear = table.freeze({
-		Bk = "rbxassetid://80342858122314",
-		Dn = "rbxassetid://88889272739087",
-		Ft = "rbxassetid://71997081960782",
-		Lf = "rbxassetid://116268322822329",
-		Rt = "rbxassetid://134673607013939",
-		Up = "rbxassetid://99172177613919",
+		Bk = "rbxassetid://81127735141699",
+		Dn = "rbxassetid://114780638646644",
+		Ft = "rbxassetid://138050699324414",
+		Lf = "rbxassetid://73734813413865",
+		Rt = "rbxassetid://98189345898092",
+		Up = "rbxassetid://86690950355373",
 	}),
 	Calm = table.freeze({
 		Bk = "rbxassetid://100291769636759",
