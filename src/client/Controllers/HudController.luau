@@ -120,8 +120,12 @@ local function roll(label: TextLabel, from: number, to: number, fmt: (number) ->
 	end
 	task.spawn(function()
 		local t = 0
-		while rolls[label] == serial and t < 1 do
+		while t < 1 do
 			t = math.min(t + task.wait() / 0.45, 1)
+			-- re-check after the wait: a newer roll (or same-value snapshot) already wrote the final text
+			if rolls[label] ~= serial then
+				return
+			end
 			label.Text = fmt(from + (to - from) * (1 - (1 - t) ^ 3) + 0.5)
 		end
 	end)
