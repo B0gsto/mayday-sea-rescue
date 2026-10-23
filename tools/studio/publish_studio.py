@@ -2,7 +2,8 @@
 """Publish the Rojo build to the PRIVATE test place from Roblox Studio, so Studio creates the PBR texture packs
 (SurfaceAppearance / MaterialVariant) that an Open Cloud place upload never makes.
 
-usage: python3 tools/studio/publish_studio.py [--skip-check] [--batch 15] [--gap 15]
+usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch 15] [--gap 15]
+  --launch  the launch experience (deploy/launch-target.json, deploy/state-launch.json, launch pass ids); ask the user first
 
   1. check.sh (unless --skip-check) and build.sh
   2. open the test place (deploy/target.json, never the launch universe) from Roblox in a fresh Studio process
@@ -28,9 +29,13 @@ sys.path.insert(0, os.path.join(REPO, "tools", "world"))
 from studio import StudioSession, studio_lock  # noqa: E402
 import studio_terrain  # noqa: E402
 
-TARGET = json.load(open(os.path.join(REPO, "deploy", "target.json")))
-UNIVERSE, PLACE = TARGET["universeId"], TARGET["placeId"]
 LAUNCH = os.path.join(REPO, "deploy", "state-launch.json")
+# --launch (only on the user's say-so): the launch experience, with its own pass / product ids in the build
+IS_LAUNCH = "--launch" in sys.argv
+TARGET = json.load(open(os.path.join(REPO, "deploy", "launch-target.json" if IS_LAUNCH else "target.json")))
+UNIVERSE, PLACE = TARGET["universeId"], TARGET["placeId"]
+STATE = LAUNCH if IS_LAUNCH else os.path.join(REPO, "deploy", "state.json")
+MONETIZATION = os.path.join("src", "shared", "Config", "MonetizationConfig.luau")
 AUTOSAVES = os.path.expanduser("~/Library/Application Support/Roblox/RobloxStudio/AutoSaves")
 PACK = re.compile(r"TexturePack|AssetResolutionWorkflow|Could not find asset with hash")
 PACK_FAIL = re.compile(r"Failed to upload TexturePack|TexturePack asset creation has failed")
@@ -108,11 +113,24 @@ def find_place(s):
 
 
 def main():
-    if os.path.exists(LAUNCH) and json.load(open(LAUNCH)).get("placeId") == PLACE:
+    if not IS_LAUNCH and os.path.exists(LAUNCH) and json.load(open(LAUNCH)).get("placeId") == PLACE:
         sys.exit("deploy/target.json points at the launch place: refusing")
     if "--skip-check" not in sys.argv:
         run([os.path.join(TOOLS, "check.sh"), REPO])
-    run([os.path.join(TOOLS, "build.sh"), REPO])
+    if IS_LAUNCH:
+        # the repo keeps the test universe's ids; build with the launch ones, then put the file back
+        if subprocess.run(["git", "diff", "--quiet", "--", MONETIZATION], cwd=REPO).returncode != 0:
+            sys.exit(MONETIZATION + " has uncommitted changes; commit them first")
+        key = os.path.expanduser(TARGET.get("apiKey", "~/RobloxProjects/.roblox-api-key"))
+        os.environ["ROBLOX_API_KEY_FILE"] = key
+        try:
+            run([sys.executable, os.path.join(TOOLS, "deploy.py"), os.path.basename(REPO), str(UNIVERSE), str(PLACE),
+                 "--state", os.path.relpath(STATE, REPO), "--steps", "config"])
+            run([os.path.join(TOOLS, "build.sh"), REPO])
+        finally:
+            subprocess.run(["git", "checkout", "--", MONETIZATION], cwd=REPO)
+    else:
+        run([os.path.join(TOOLS, "build.sh"), REPO])
     run(["lune", "run", os.path.join(REPO, "tools", "world", "make_work_place.luau"),
          os.path.join(REPO, "build", "MaydaySeaRescue.rbxl"), os.path.join(REPO, "build", "MaydayPublish.rbxl"),
          os.path.join(REPO, "map", "generated")])
@@ -197,10 +215,9 @@ def main():
         finally:
             if pid:
                 subprocess.run(["kill", "-9", str(pid)])  # published or abandoned: never leave a cloud-place window
-    state_path = os.path.join(REPO, "deploy", "state.json")
-    state = json.load(open(state_path)) if os.path.exists(state_path) else {}
+    state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     state["placeVersion"] = version
-    with open(state_path, "w") as f:
+    with open(STATE, "w") as f:
         json.dump(state, f, indent=2)
     print("published place %d version %d from Studio: https://www.roblox.com/games/%d" % (PLACE, version, PLACE))
 
