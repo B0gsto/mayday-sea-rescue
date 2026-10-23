@@ -4,8 +4,7 @@
 -- Friends: Player:IsFriendsWith is cached on join and refreshed on PlayerAdded / PlayerRemoving.
 -- Each player carries `FriendCount` and `FriendBonus` (percent) attributes; ProgressionService.Award
 -- multiplies Cash by FriendBonus.multiplier(FriendService.Count(player)) (cap +30%).
--- Friends in the server and joining mid-session spawn at the station's QuaySpawn instead of a
--- random neutral spawn, and respawn there.
+-- Spawning is VehicleService's (a returning player spawns at their bay).
 -- Studio: Workspace attribute FriendCountForce (number) overrides every player's count.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -66,25 +65,6 @@ local function publishAll()
 	end
 end
 
-local function stationSpawn(): SpawnLocation?
-	local found = Workspace:FindFirstChild("QuaySpawn", true)
-	return if found and found:IsA("SpawnLocation") then found else nil
-end
-
--- Joining mid-session with a friend already here: at the station, not a random spawn.
-local function spawnAtStation(player: Player)
-	local spawn = stationSpawn()
-	if not spawn then
-		return
-	end
-	player.RespawnLocation = spawn
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if root and root:IsA("BasePart") then
-		root.CFrame = spawn.CFrame * CFrame.new(0, 3, 0)
-	end
-end
-
 local function remember(a: Player, b: Player, friends: boolean)
 	if a == b or not friends then
 		return
@@ -112,9 +92,6 @@ local function resolveFriends(player: Player)
 		return
 	end
 	publishAll()
-	if FriendService.Count(player) > 0 and #Players:GetPlayers() > 1 then
-		spawnAtStation(player)
-	end
 end
 
 function FriendService.Init()
