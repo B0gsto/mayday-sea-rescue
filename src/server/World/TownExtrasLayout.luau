@@ -27,7 +27,8 @@ local HARBOUR = {
 	{ id = "Punt1", asset = "M_Veh_MooredBoat_01", x = -215, z = 135, yaw = 30 },
 	{ id = "Punt2", asset = "M_Veh_MooredBoat_01", x = 190, z = 145, yaw = 250 },
 	{ id = "Punt3", asset = "M_Veh_MooredBoat_01", x = 228, z = 185, yaw = 100 },
-	{ id = "Punt4", asset = "M_Veh_MooredBoat_01", x = -75, z = 120, yaw = 200 },
+	-- clear of the launch bays' exit lane (x -100..-60, z < 160): at -75, 120 it stopped boats leaving the bays
+	{ id = "Punt4", asset = "M_Veh_MooredBoat_01", x = -210, z = 230, yaw = 200 },
 }
 
 -- hull half-length / half-beam (studs, from ATT_Moor_Bow / ATT_Moor_Stern and the boarding points)

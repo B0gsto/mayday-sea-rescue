@@ -904,7 +904,10 @@ local function spawnVehicle(
 		pcall(p.SetFlag, player, BayLaunch.FLAG, vehicleId)
 	end
 
-	local model, seat = createVehicle(player, spec, at.CFrame, "Request")
+	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
+	-- sat with its stern on the quay road)
+	local out = math.max(0, spec.hullSize.Z / 2 - at.Size.Z / 2)
+	local model, seat = createVehicle(player, spec, at.CFrame * CFrame.new(0, 0, -out), "Request")
 	if not docked then
 		sitDriver(player, seat)
 	end
