@@ -44,7 +44,15 @@ def write(run):
     step = 4
     for r0 in range(0, rows, step):
         print(run({"mode": "write", "row0": r0, "row1": min(rows, r0 + step)})[:200], flush=True)
+    for w in meta.get("windows", []):  # docs/21 archipelago: one small grid per island, after the main one
+        wrows = (w["nz"] - 1) // 64
+        for r0 in range(0, wrows, step):
+            print(w["id"], run({"mode": "write", "window": w["id"], "row0": r0, "row1": min(wrows, r0 + step)})[:200],
+                  flush=True)
     print(run({"mode": "arch", "arch": arch}))
+    for a in L.ARCHES:
+        print(run({"mode": "arch", "arch": {"x": a["center"][0], "y": a["y"], "z": a["center"][1], "ax": a["across"][0],
+                                            "az": a["across"][1], "radius": a["radius"], "thick": a["thick"]}}))
     print(run({"mode": "colors"}))
 
 

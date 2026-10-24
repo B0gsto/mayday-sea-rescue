@@ -4,8 +4,8 @@
 -- The map texture is rendered from the terrain bake by tools/world/make_map_image.py (north up, the
 -- bake's frame: rows are +Z = south). World -> UV:
 --     u = (x - Origin.X) / Extent,  v = (z - Origin.Y) / Extent      (Origin = (originX, originZ))
--- 2048 px over 5,120 studs = 2.5 studs per pixel. Roblox serves images at up to 1024 px, so the game
--- draws the four 1024 px Tiles (row-major from the north-west); Image is the whole map (1024 px in game).
+-- docs/21 archipelago: 4,096 px over 14,336 studs (+-7,168) = 3.5 studs per pixel. Roblox serves images at up to
+-- 1024 px, so the game draws 4 x 4 Tiles of 1024 px (row-major from the north-west); Image is unused.
 --
 -- Global flag: ReplicatedStorage attribute UseMapWaypoints (bool, MapController sets it true on the
 -- client). Any system that draws 3D guidance arrows / markers should skip them while it is true; the
@@ -25,13 +25,16 @@ export type Blip = {
 
 local MapConfig = {
 	Image = "rbxassetid://124660107845917", -- art/map/gale_isles_map.png (2048 px)
+	-- art/map/gale_isles_map_r{row}c{col}.png; "" until B4 uploads them (the old 2 x 2 set covered only +-2,560)
 	Tiles = {
-		{ "rbxassetid://104897677184387", "rbxassetid://77935366130883" }, -- r0c0, r0c1 (north)
-		{ "rbxassetid://97250599507171", "rbxassetid://90317176049903" }, -- r1c0, r1c1 (south)
+		{ "", "", "", "" }, -- r0 (north)
+		{ "", "", "", "" },
+		{ "", "", "", "" },
+		{ "", "", "", "" }, -- r3 (south)
 	},
-	ImagePixels = 2048,
-	Origin = Vector2.new(-2560, -2560), -- world (x, z) of the image's top-left corner
-	Extent = 5120, -- studs covered by the image on each side
+	ImagePixels = 4096,
+	Origin = Vector2.new(-7168, -7168), -- world (x, z) of the image's top-left corner
+	Extent = 14336, -- studs covered by the image on each side
 
 	-- Minimap view radius (studs from the player to the rim), eased toward the target.
 	Zoom = {
@@ -40,7 +43,7 @@ local MapConfig = {
 		boat = { slow = 260, fast = 760, fastSpeed = 110 },
 		easeSeconds = 0.8,
 	},
-	FullMap = { minRadius = 180, maxRadius = 2600, startRadius = 900 },
+	FullMap = { minRadius = 180, maxRadius = 7000, startRadius = 900 },
 
 	-- Place names on the full map, drawn live by MapController at a fixed screen size (not baked
 	-- into the image): a name is skipped when it would touch the legend, the title, the buttons, the
