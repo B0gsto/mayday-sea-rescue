@@ -279,7 +279,8 @@ local function buy(player: Player, itemId: any): (boolean, string)
 	else
 		return false, "Unknown item"
 	end
-	Telemetry.Funnel(player, "FirstUnlock") -- RP-A1 onboarding: the first vehicle
+	Telemetry.Funnel(player, "FirstVehicle") -- RP-A1 onboarding: the first vehicle
+	Telemetry.Shop(player, "Bought", nil, itemId, "Cash")
 	DataService.MarkDirty(player)
 	push(player, data, { bought = itemId })
 	task.spawn(DataService.Save, player, false) -- purchases are saved right away

@@ -15,6 +15,7 @@ local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local DataService = require(script.Parent.DataService)
 local ProgressionService = require(script.Parent.ProgressionService)
+local Telemetry = require(script.Parent.TelemetryService)
 local VehicleService = require(script.Parent.VehicleService)
 
 local UpgradeService = {}
@@ -50,6 +51,9 @@ local function fit(player: Player, vehicleId: string, upgradeId: string): (boole
 	end
 	data.cash -= price
 	data.vehicleUpgrades[vehicleId] = mask + VehicleUpgrades.bit(upgradeId)
+	Telemetry.CashSpent(player, price, data.cash, "Upgrade", `{vehicleId}:{upgradeId}`)
+	Telemetry.Funnel(player, "FirstUpgrade")
+	Telemetry.Shop(player, "Bought", nil, `{vehicleId}:{upgradeId}`, "Cash")
 	DataService.MarkDirty(player)
 	ProgressionService.Refresh(player, { upgrade = { vehicleId = vehicleId, id = upgradeId } })
 	VehicleService.RefreshUpgrades(player, vehicleId)
