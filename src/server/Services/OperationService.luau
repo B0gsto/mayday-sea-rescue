@@ -1356,6 +1356,10 @@ end
 
 local SkyFlare = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("SkyFlare"))
 
+local function clearSpawn(p: Vector3): boolean
+	return RescueService.ClearWater(p, RescueService.CLEAR_SPAWN)
+end
+
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
@@ -1374,7 +1378,8 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	if sceneKind == "WildlifeRescue" then
 		sceneKind, zone = "Swimmer", "Near" -- the animal rides the swimmer scene (SanctuaryService)
 	end
-	local op = newOp(kind, sceneKind, zone, CallLogic.pickSpawnPoint(zone), victims)
+	local op =
+		newOp(kind, sceneKind, zone, CallLogic.pickSpawnPoint(zone, nil, clearSpawn), victims)
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
 	end

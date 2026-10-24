@@ -22,8 +22,8 @@
 --    ColdOpenAutoThrottle = true. Here the auto-throttle holds about 20 knots until AUTO_HOLD s,
 --    HANDOVER_DISTANCE studs from the casualty or the player's first throttle input, then sets
 --    ColdOpenAutoThrottle = false (locally) and the throttle is the player's (W released coasts).
---    While ColdOpenApproach is true (server: the approach step is current), a hull still fast
---    near the casualty is braked to approach speed;
+--    While ColdOpenApproach is true (server: the approach step is current), a hull still closing
+--    fast on the casualty is braked to approach speed (steering away or past is never braked);
 --    AssistEase (bool) is true while that ease acts and AssistEaseCount counts its engagements
 --    (Mechanics/approach reports it; the server caps the grade at Silver).
 --
@@ -336,13 +336,17 @@ local function coldOpenThrottle(model: Model, input: number, now: number): numbe
 		end
 	end
 	local onApproach = model:GetAttribute("ColdOpenApproach") == true and not coldOpenHeld(model)
+	-- only speed toward the casualty counts: braking a ski that steers past or away held it at 5-9 km/h
+	-- inside 60 studs whichever way it pointed (playtest 2026-10-24: "the jet ski is slow")
+	local toCas = if cas and distance > 0.5 then ((cas - root.Position) * flat).Unit else forward
+	local closing = root.AssemblyLinearVelocity:Dot(toCas)
 	local wasEasing = st.easing
 	st.easing = onApproach
 		and ColdOpen.updateEase(
 			st.easing,
 			true, -- always Assist (the Pro mode is gone, docs/16 C16)
 			distance,
-			forwardSpeed,
+			closing,
 			if spec then spec.brakeDecel else nil
 		)
 	if st.easing then

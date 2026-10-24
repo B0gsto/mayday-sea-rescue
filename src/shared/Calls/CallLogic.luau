@@ -59,14 +59,19 @@ function CallLogic.ringPoint(center: Vector3, minR: number, maxR: number, rng: R
 	return Vector3.new(center.X + math.cos(angle) * r, 0, center.Z + math.sin(angle) * r)
 end
 
--- A spawn point for a call in a SpawnZone: in the zone's ring and in open water.
-function CallLogic.pickSpawnPoint(zoneId: string, rng: Rng?): Vector3
+-- A spawn point for a call in a SpawnZone: in the zone's ring and in open water. clear: the server's
+-- world check (RescueService.ClearWater: no moored boat or quay alongside).
+function CallLogic.pickSpawnPoint(
+	zoneId: string,
+	rng: Rng?,
+	clear: ((Vector3) -> boolean)?
+): Vector3
 	local zone = CallTypes.SpawnZones[zoneId]
 	assert(zone, `unknown spawn zone {zoneId}`)
 	local roll: Rng = rng or (math.random :: any)
 	for _ = 1, 60 do
 		local p = CallLogic.ringPoint(zone.center, zone.minRadius, zone.maxRadius, roll)
-		if CallLogic.isWater(p, zone.area) then
+		if CallLogic.isWater(p, zone.area) and (clear == nil or clear(p)) then
 			return p
 		end
 	end

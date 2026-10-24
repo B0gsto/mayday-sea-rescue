@@ -1123,6 +1123,36 @@ RescueService.DRIFT_LEEWAY = 0.15 -- studs/s downwind, doubled in a storm -- tun
 RescueService.DRIFT_RANGE = 240 -- studs from where they went in: the base drift fades out here
 RescueService.WAKE_PUSH_MAX = 12 -- studs/s cap on the summed wake push -- tune
 
+-- Open water round a point: no quay, breakwater or moored boat (Workspace.Map / Dressing) within
+-- `radius` at the waterline, nor overhead, so a craft can come alongside. Call spawns check it, and the
+-- drift stops short of one (playtest 2026-10-24: call 2's dinghy lay against a moored crabber and the
+-- jet ski could never get within reach). dir: check that way only (the drift's heading).
+RescueService.CLEAR_SPAWN = 25 -- studs -- tune
+RescueService.CLEAR_DRIFT = 8 -- studs -- tune
+local seaParams = RaycastParams.new()
+seaParams.FilterType = Enum.RaycastFilterType.Include
+seaParams.RespectCanCollide = true
+seaParams.IgnoreWater = true
+local COMPASS = {}
+for i = 0, 7 do
+	table.insert(COMPASS, Vector3.new(math.cos(i * math.pi / 4), 0, math.sin(i * math.pi / 4)))
+end
+function RescueService.ClearWater(p: Vector3, radius: number, dir: Vector3?): boolean
+	seaParams.FilterDescendantsInstances =
+		{ Workspace:FindFirstChild("Map") :: any, Workspace:FindFirstChild("Dressing") }
+	local at = Vector3.new(p.X, 1, p.Z)
+	if Workspace:Raycast(at + Vector3.new(0, 30, 0), Vector3.new(0, -30, 0), seaParams) then
+		return false -- under a hull or a deck
+	end
+	local dirs: { Vector3 } = if dir and dir.Magnitude > 1e-3 then { dir.Unit } else COMPASS
+	for _, d in dirs do
+		if Workspace:Raycast(at, d * radius, seaParams) then
+			return false
+		end
+	end
+	return true
+end
+
 local function currentOf(call: any): Vector3
 	local c = call.driftCurrent
 	if typeof(c) ~= "Vector3" then
@@ -1176,6 +1206,9 @@ local function stepDrift(dt: number)
 			-- the rip off Haven Sands carries anything drifting in its channel out to sea (docs 09
 			-- section 8.4). Engaged casualties (swimming to / held by a rescuer) are the rescuer's.
 			vel += RipCurrent.velocityAt(RipCurrent.HavenSands, Vector3.new(f.x, 0, f.z))
+			if not RescueService.ClearWater(f.cf.Position, RescueService.CLEAR_DRIFT, vel) then
+				continue -- held off the quay / moored boat
+			end
 			f.x += vel.X * dt
 			f.z += vel.Z * dt
 		end

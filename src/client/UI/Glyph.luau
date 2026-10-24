@@ -30,11 +30,18 @@ end
 
 local bar = Glyph.bar
 
+-- a head and both arms in a lifebuoy (the pager's PIW sprite): the old bars read as a flare, and
+-- next to the home glyph as the same marker (playtest 2026-10-24)
 local function swimmer(p: Instance, c: Color3)
-	bar(p, Vector2.new(0.2, 0.2), Vector2.new(0.74, 0.3), 0, c) -- head
-	bar(p, Vector2.new(0.56, 0.11), Vector2.new(0.42, 0.42), -18, c) -- body + arm
-	bar(p, Vector2.new(0.86, 0.08), Vector2.new(0.5, 0.64), 0, c) -- water
-	bar(p, Vector2.new(0.64, 0.08), Vector2.new(0.5, 0.8), 0, c)
+	local buoy = bar(p, Vector2.new(0.84, 0.84), Vector2.new(0.5, 0.56), 0, c)
+	buoy.BackgroundTransparency = 1
+	local s = Instance.new("UIStroke")
+	s.Color = c
+	s.Thickness = 3
+	s.Parent = buoy
+	bar(p, Vector2.new(0.3, 0.3), Vector2.new(0.5, 0.28), 0, c) -- head
+	bar(p, Vector2.new(0.14, 0.42), Vector2.new(0.24, 0.3), 25, c) -- arms up, waving
+	bar(p, Vector2.new(0.14, 0.42), Vector2.new(0.76, 0.3), -25, c)
 end
 
 local function boat(p: Instance, c: Color3)

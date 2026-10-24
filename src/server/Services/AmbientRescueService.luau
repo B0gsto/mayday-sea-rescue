@@ -95,7 +95,7 @@ local function playersClear(p: Vector3): boolean
 end
 
 local function clearSpot(p: Vector3): boolean
-	if not playersClear(p) then
+	if not playersClear(p) or not RescueService.ClearWater(p, RescueService.CLEAR_SPAWN) then
 		return false
 	end
 	for _, s in scenes do

@@ -31,8 +31,8 @@ ColdOpen.HANDOVER_DISTANCE = 170 -- studs to the casualty: hand the throttle ove
 ColdOpen.INPUT_DEADZONE = 0.05 -- |throttle input| that counts as the player taking over
 ColdOpen.AUTO_GAIN = 0.08 -- throttle per stud/s of speed error
 
-ColdOpen.EASE_RADIUS = 60 -- studs, hull centre to casualty -- tune
-ColdOpen.EASE_TRIGGER = 5 * KNOT -- 7.7 studs/s: "still fast" -- tune
+ColdOpen.EASE_RADIUS = 30 -- studs, hull centre to casualty: punchy up to here, then a firm stop -- tune
+ColdOpen.EASE_TRIGGER = 5.5 -- studs/s: just under Board.STEADY_SPEED, so a rider holding W still boards -- tune
 ColdOpen.EASE_TARGET = 2.5 * KNOT -- 3.9 studs/s: under the 3 knot slow mark -- tune
 ColdOpen.EASE_SPAN = 12 -- studs/s over the target for full brake
 ColdOpen.EASE_MIN_BRAKE = 0.25

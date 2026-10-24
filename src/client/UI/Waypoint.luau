@@ -170,8 +170,11 @@ function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
 		local p = c:WorldToViewportPoint((pos :: Vector3) + Vector3.new(0, 3, 0))
 		local x, y = p.X, p.Y - LIFT
 		local behind = p.Z <= 0
-		if behind then -- the projection flips behind the camera
-			x, y = vp.X - p.X, vp.Y - p.Y
+		if behind then
+			-- pin it to the side to turn toward: pinned bottom-centre it sat right under the craft and
+			-- read as "here", so players drove on away from it (playtest 2026-10-24: 650 m and growing)
+			local rel = c.CFrame:PointToObjectSpace(pos :: Vector3)
+			x, y = if rel.X < 0 then -vp.X else 2 * vp.X, vp.Y / 2
 		end
 		-- the marker stays inside a central ellipse, clear of the HUD in the corners and the
 		-- speed dock: past it (or behind you) it pins to the rim, its tip pointing the way

@@ -20,6 +20,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
@@ -260,18 +261,26 @@ function OpsController.GetState(): { [string]: any }?
 end
 
 function OpsController.Init()
-	-- Space jumps a seated character out of the seat (Roblox default). Until the cold open is done
-	-- and during any operation step, keep the rider in it; a mechanic's own Space taps come through
-	-- CAS first.
+	-- Space jumps a seated character out of the seat (Roblox default): hop off and swim, the seat takes
+	-- you back when you swim into it. Not in the cold open, and never with a survivor riding behind you
+	-- (they'd be left at sea): then Space stays in the seat and buzzes, so it never reads as broken
+	-- (playtest 2026-10-24). A mechanic's own Space taps come through CAS first.
+	local lastBuzz = 0
 	RunService.Stepped:Connect(function()
-		local coldOpen = player:GetAttribute("ColdOpenDone") ~= true
-		if not (running or state or coldOpen) then
-			return
-		end
 		local character = player.Character
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-		if humanoid and humanoid.SeatPart and humanoid.Jump then
+		local seat = humanoid and humanoid.SeatPart
+		if not (seat and humanoid.Jump) then
+			return
+		end
+		local craft = seat.Parent
+		local carrying = craft ~= nil and (tonumber(craft:GetAttribute("SurvivorCount")) or 0) > 0
+		if carrying or player:GetAttribute("ColdOpenDone") ~= true then
 			humanoid.Jump = false
+			if os.clock() - lastBuzz > 1 then
+				lastBuzz = os.clock()
+				AudioController.play("UI_Fail", nil, 0.5)
+			end
 		end
 	end)
 	mechanicsFolder = script.Parent.Parent:WaitForChild("Mechanics", 10)
