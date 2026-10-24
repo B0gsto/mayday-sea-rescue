@@ -4,9 +4,9 @@
 -- orange ring on the water, a pulse ring spreading from it, orange smoke and splashes (and the
 -- casualty waves: CasualtyController), so the goal reads from the world with no text to read. If the player makes no headway
 -- for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over them. All of it goes once the
--- casualty holds on (PiwMode "held") or the cold open ends. Then the way in shows: orange smoke
--- and a pulse ring at each shore point (ColdOpen.SHORE: the station slipway, Haven Sands), and
--- after 10 s without headway toward land the smoke thickens and a flare pops over the nearest one.
+-- casualty holds on (PiwMode "held") or climbs aboard, or the cold open ends.
+-- ColdOpenCue.home (docs/20 change 4, every delivery): with survivors aboard, the drop-off pulses
+-- green from 60 m (the slipway in the cold open, else the nearest pad), where the green house pin points.
 -- Started by OpsHud.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -24,7 +24,8 @@ local PyroController =
 
 local ColdOpenCue = {}
 
-local ORANGE = Color3.fromRGB(255, 120, 20)
+local RED = Color3.fromRGB(235, 60, 50) -- someone in trouble (docs/20 rule 9: one colour, one meaning)
+local GREEN = Color3.fromRGB(90, 225, 120) -- home
 local PULSE = 1.6 -- s per ring
 local RING_MAX = 40 -- studs across at the end of a pulse (26 read too small at range: playtest)
 local MARK = 10 -- studs across the steady ring round the casualty
@@ -129,8 +130,7 @@ local function splash(parent: Attachment): ParticleEmitter
 end
 
 -- Runs until the returned stop is called. onHeld(held) fires when the casualty takes hold or lets go.
--- `opIdOf` (the first station calls) points the casualty cues at that op's victim instead; no
--- shore cues then (the transport step has its own way home).
+-- `opIdOf` (the first station calls) points the casualty cues at that op's victim instead.
 function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> string?)?): () -> ()
 	local folder: Folder? = nil
 	local victim: Model? = nil
@@ -139,40 +139,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 	local pulse: Ring? = nil
 	local nudge = ColdOpen.newNudge(os.clock())
 	local lastBurst = 0
-	local shore: Folder? = nil
-	local shoreSmoke: { ParticleEmitter } = {}
-	local shoreRings: { Ring } = {}
-	local shoreNudge = ColdOpen.newNudge(os.clock())
 	local wasHeld: boolean? = nil
-
-	local function clearShore()
-		if shore then
-			shore:Destroy()
-		end
-		shore, shoreSmoke, shoreRings = nil, {}, {}
-	end
-
-	-- the way in: smoke on the dry end of each shore point, a ring on its water
-	local function buildShore()
-		local f = Instance.new("Folder")
-		f.Name = "ColdOpenShore"
-		f.Parent = Workspace
-		shore = f
-		for _, sp in ColdOpen.SHORE do
-			local post = Instance.new("Part")
-			post.Name = `Smoke_{sp.id}`
-			post.Size = Vector3.new(1, 1, 1)
-			post.Transparency = 1
-			post.Anchored, post.CanCollide, post.CanQuery, post.CanTouch = true, false, false, false
-			post.Position = sp.dry + Vector3.new(0, 6, 0)
-			post.Parent = f
-			local a = Instance.new("Attachment")
-			a.Parent = post
-			table.insert(shoreSmoke, smoke(a))
-			table.insert(shoreRings, ring(`Ring_{sp.id}`, Color3.fromRGB(255, 170, 60), f))
-		end
-		shoreNudge = ColdOpen.newNudge(os.clock())
-	end
 
 	local function clear()
 		if folder then
@@ -189,8 +156,8 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		f.Name = "ColdOpenCue"
 		f.Parent = Workspace
 		folder = f
-		mark = ring("Mark", ORANGE, f)
-		pulse = ring("Pulse", Color3.fromRGB(255, 170, 60), f)
+		mark = ring("Mark", RED, f)
+		pulse = ring("Pulse", Color3.fromRGB(255, 110, 90), f)
 		local a = Instance.new("Attachment")
 		a.Name = "ColdOpenCue"
 		a.Parent = root
@@ -215,35 +182,8 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		end
 		if not m or held then
 			clear()
-			if not m or opIdOf then
-				clearShore()
-				return
-			end
-			if not shore then
-				buildShore()
-			end
-			local t = os.clock()
-			local k = (t % PULSE) / PULSE
-			for i, sp in ColdOpen.SHORE do
-				setRing(
-					shoreRings[i],
-					Vector3.new(sp.water.X, waterY(sp.water) + 0.08, sp.water.Z),
-					6 + k * ColdOpen.SHORE_RADIUS * 2,
-					0.25 + 0.75 * k
-				)
-			end
-			-- 10 s rule on the way in: thicker smoke and a flare over the nearest shore
-			local root = m.PrimaryPart :: BasePart
-			local near, d = ColdOpen.nearestShore(root.Position)
-			if shore and ColdOpen.nudge(shoreNudge, t, d) then
-				for _, e in shoreSmoke do
-					e.Rate = math.min(e.Rate * 1.6, 40)
-				end
-				PyroController.parachute(near.dry + Vector3.new(0, 4, 0))
-			end
 			return
 		end
-		clearShore()
 		if m ~= victim then
 			build(m)
 		end
@@ -274,7 +214,89 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 	return function()
 		conn:Disconnect()
 		clear()
-		clearShore()
+	end
+end
+
+local HOME_RANGE = 180 -- studs (60 m): the drop-off starts to pulse -- tune
+local HOME_MARK = 14 -- studs across the steady ring
+
+-- Where the craft's survivors land: the nearest cold-open slipway while the cold open runs (the
+-- server lands them there, OperationService isHome), else the nearest drop-off pad's top.
+local function homePoint(from: Vector3): Vector3?
+	local best: Vector3?, bestD = nil, math.huge
+	local function consider(p: Vector3)
+		local d = (Vector3.new(p.X, 0, p.Z) - Vector3.new(from.X, 0, from.Z)).Magnitude
+		if d < bestD then
+			best, bestD = p, d
+		end
+	end
+	if Players.LocalPlayer:GetAttribute("ColdOpenActive") == true then
+		for _, sp in ColdOpen.SHORE do
+			consider(Vector3.new(sp.water.X, waterY(sp.water) + 0.08, sp.water.Z))
+		end
+		return best
+	end
+	local map = Workspace:FindFirstChild("Map")
+	local folder = map and map:FindFirstChild("DropOffs")
+	for _, pad in if folder then folder:GetChildren() else {} do
+		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
+			consider(pad.Position + Vector3.new(0, pad.Size.Y / 2 + 0.08, 0))
+		end
+	end
+	return best
+end
+
+-- The local player's craft while they carry survivors, else nil.
+local function carryingCraft(): Model?
+	local folder = Workspace:FindFirstChild("Vehicles")
+	for _, m in if folder then folder:GetChildren() else {} do
+		if
+			m:IsA("Model")
+			and m:GetAttribute("Owner") == Players.LocalPlayer.UserId
+			and (tonumber(m:GetAttribute("SurvivorCount")) or 0) > 0
+		then
+			return m
+		end
+	end
+	return nil
+end
+
+-- Every delivery (started once by OnboardingController): a green steady ring and a pulse spreading
+-- from the drop-off while your craft carries someone and is within HOME_RANGE of it.
+function ColdOpenCue.home(): () -> ()
+	local folder: Folder? = nil
+	local mark: Ring? = nil
+	local pulse: Ring? = nil
+	local conn = RunService.Heartbeat:Connect(function()
+		local craft = carryingCraft()
+		local at = craft and homePoint(craft:GetPivot().Position)
+		local near = at and craft and (at - craft:GetPivot().Position) * Vector3.new(1, 0, 1)
+		if not (at and near and near.Magnitude <= HOME_RANGE) then
+			if folder then
+				folder:Destroy()
+				folder, mark, pulse = nil, nil, nil
+			end
+			return
+		end
+		if not folder then
+			local f = Instance.new("Folder")
+			f.Name = "HomeCue"
+			f.Parent = Workspace
+			folder = f
+			mark = ring("Mark", GREEN, f)
+			pulse = ring("Pulse", GREEN, f)
+		end
+		local k = (os.clock() % PULSE) / PULSE
+		if mark and pulse then
+			setRing(mark, at, HOME_MARK, 0.1)
+			setRing(pulse, at, HOME_MARK + k * (RING_MAX * 1.5 - HOME_MARK), 0.2 + 0.8 * k)
+		end
+	end)
+	return function()
+		conn:Disconnect()
+		if folder then
+			folder:Destroy()
+		end
 	end
 end
 

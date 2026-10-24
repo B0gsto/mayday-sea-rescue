@@ -7,11 +7,11 @@
 -- backdrop frees the cursor. The home screen is stock iOS: a painted harbour wallpaper, a 4-column
 -- clock widget over a grid of big squircle icons (UiImages.Phone art, shadowed white label) and a frosted
 -- dock of 4 (Map, Vehicles, Store, Camera). Every app lays out on the upright phone and zooms out of
--- its icon (and back into it), as on iOS. Six apps (docs/16 K9):
+-- its icon (and back into it), as on iOS. Seven apps (docs/16 K9):
 --   Map, Camera          close the phone and run (MapController.Open, PhotoMode)
 --   Settings             the existing SettingsPanel: its frame is borrowed onto the phone screen
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
---   Vehicles, Store      sibling modules UI/VehiclesApp, UI/StoreApp (see OPTIONAL below): each
+--   Vehicles, Store, Pets sibling modules UI/VehiclesApp, UI/StoreApp, UI/PetsApp (OPTIONAL): each
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
 --                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
@@ -56,6 +56,7 @@ local PHONE_IMAGES = require(
 local OPTIONAL = {
 	{ module = "VehiclesApp", name = "Vehicles", label = "Vehicles" },
 	{ module = "StoreApp", name = "Store", label = "Store" },
+	{ module = "PetsApp", name = "Pets", label = "Pets" },
 }
 local DOCK = { Map = 1, Vehicles = 2, Store = 3, Camera = 4 } -- the dock's 4, in order
 local RED = Color3.fromHex("FF3B30") -- iOS badge red
@@ -78,6 +79,7 @@ type App = {
 	label: string,
 	run: (() -> ())?,
 	mount: Mount?,
+	icon: ((ImageLabel) -> ())?, -- draws the tile while UiImages.Phone has no art for it
 }
 type Tile = { button: TextButton, scale: UIScale, label: TextLabel?, shadow: TextLabel? }
 
@@ -566,6 +568,7 @@ local function appList(): { App }
 				name = spec.name,
 				label = spec.label,
 				mount = mod.mount,
+				icon = mod.icon,
 			})
 		end
 	end
@@ -771,6 +774,9 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	icon.BackgroundTransparency = 1
 	icon.Image = PHONE_IMAGES[app.name] or ""
 	icon.Parent = b
+	if icon.Image == "" and app.icon then
+		app.icon(icon)
+	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = icon
 	if app.name == "Vehicles" then -- the iOS badge: something new to buy

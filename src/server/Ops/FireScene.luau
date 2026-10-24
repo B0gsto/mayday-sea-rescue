@@ -1,18 +1,31 @@
 --!strict
 -- FireScene (server): the burning motor cruiser of the Vessel Fire operation (docs/09 8.2, docs/16 K1).
--- Spectacle only: a code-built cruiser at anchor with fire and smoke on the stern; the fire grows over
+-- Spectacle only: a motor cruiser (textured mesh via AssetLoader) at anchor with fire and smoke on the stern; the fire grows over
 -- the call and the smoke drifts downwind. Her two people are already in the water beside her
 -- (RescueService survivors). OperationService calls Spawn on activate and Cleanup when it closes.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Flipbooks = require(Shared:WaitForChild("Fx"):WaitForChild("Flipbooks"))
-local RescueDressing = require(script.Parent:WaitForChild("RescueDressing"))
 
 local FireScene = {}
 
 FireScene.GROW_SECONDS = 180 -- the fire reaches full size this long after the call starts -- tune
+
+-- rescue variant -> textured hull (existing meshes); the meshes carry their own look, so RescueDressing's Part extras
+-- (sized for the old 6 x 14 block cruiser) are not added
+local HULLS = {
+	default = "M_Veh_Tidewalker", -- motor cruiser
+	CharterBoat = "M_Veh_MooredBoat_02", -- the crabber as a charter fishing boat
+}
+local DRAFT = { M_Veh_Tidewalker = 1.6, M_Veh_MooredBoat_02 = 0 } -- pivot depth below the sea surface
+local FIRE_AT = { -- the fire's seat in the hull's pivot space (forward is -Z: the aft deck is +Z)
+	M_Veh_Tidewalker = CFrame.new(0, 8, 12), -- the cockpit sole among the sofas
+	M_Veh_MooredBoat_02 = CFrame.new(0, 4.5, 9),
+}
+AssetLoader.preload({ HULLS.default, HULLS.CharterBoat })
 
 local function wind(): number
 	local folder = ReplicatedStorage:FindFirstChild("Weather")
@@ -65,21 +78,6 @@ local function smoke(parent: Attachment): ParticleEmitter
 	return e
 end
 
-local function part(parent: Instance, name: string, size: Vector3, cf: CFrame, colour: Color3): Part
-	local p = Instance.new("Part")
-	p.Name = name
-	p.Anchored = true
-	p.CanCollide = false
-	p.CanQuery = false
-	p.CanTouch = false
-	p.Size = size
-	p.CFrame = cf
-	p.Color = colour
-	p.Material = Enum.Material.SmoothPlastic
-	p.Parent = parent
-	return p
-end
-
 function FireScene.Spawn(scene: any)
 	if scene.fire then
 		return
@@ -88,56 +86,48 @@ function FireScene.Spawn(scene: any)
 	local model = Instance.new("Model")
 	model.Name = "BurningCruiser"
 	model:SetAttribute("CallId", scene.opId)
-	-- at anchor, listing a little, low in the water
-	local base = CFrame.new(scene.position.X, 0.6, scene.position.Z)
-		* CFrame.Angles(0, math.rad(25), math.rad(6))
-	local white = Color3.fromRGB(236, 236, 230)
-	local hull = part(model, "Hull", Vector3.new(6, 2.4, 14), base, white)
-	model.PrimaryPart = hull
-	part(
-		model,
-		"Stripe",
-		Vector3.new(6.1, 0.5, 14.1),
-		base * CFrame.new(0, -0.4, 0),
-		Color3.fromRGB(40, 90, 160)
-	)
-	part(
-		model,
-		"Cabin",
-		Vector3.new(4.4, 3, 5),
-		base * CFrame.new(0, 2.7, 2),
-		Color3.fromRGB(70, 66, 62)
-	)
-	part(
-		model,
-		"Windshield",
-		Vector3.new(4.2, 1.2, 0.3),
-		base * CFrame.new(0, 3.4, -0.55),
-		Color3.fromRGB(30, 34, 40)
-	)
-	RescueDressing.apply(
-		model,
-		if RescueDressing.isBoat(scene.variant) then scene.variant else nil,
-		{
-			root = hull :: BasePart,
-		}
-	)
-	local stern = Instance.new("Attachment")
-	stern.Name = "FireBase"
-	stern.Position = Vector3.new(0, 1.4, 4.6)
-	stern.Parent = hull
-	local flames = flame(stern)
-	local plume = smoke(stern)
-	local light = Instance.new("PointLight")
-	light.Color = Color3.fromRGB(255, 130, 50)
-	light.Range = 34
-	light.Brightness = 2
-	light.Shadows = false
-	light.Parent = stern
 	model.Parent = callProps
 	scene.fire = model
-	local started = os.clock()
+	-- the first load yields (LoadAsset); the call starts without waiting for it
 	task.spawn(function()
+		local asset = HULLS[scene.variant] or HULLS.default
+		local hull = AssetLoader.cloneStatic(asset, "LOD0", false)
+		if scene.fire ~= model then
+			if hull then
+				hull:Destroy()
+			end
+			return
+		end
+		if not hull then
+			warn(`[FireScene] {asset} did not load: no hull this call`)
+			return
+		end
+		hull.Parent = model
+		-- at anchor, listing a little, low in the water (the pivot is the keel)
+		local base = CFrame.new(scene.position.X, -DRAFT[asset], scene.position.Z)
+			* CFrame.Angles(0, math.rad(25), math.rad(6))
+		hull:PivotTo(base)
+		-- the fire sits on the aft deck; an invisible anchor carries it (the mesh's own primary part is off-centre)
+		local root = Instance.new("Part")
+		root.Name = "FireRoot"
+		root.Anchored, root.CanCollide, root.CanQuery, root.CanTouch = true, false, false, false
+		root.Transparency = 1
+		root.Size = Vector3.one
+		root.CFrame = base * FIRE_AT[asset]
+		root.Parent = model
+		model.PrimaryPart = root
+		local stern = Instance.new("Attachment")
+		stern.Name = "FireBase"
+		stern.Parent = root
+		local flames = flame(stern)
+		local plume = smoke(stern)
+		local light = Instance.new("PointLight")
+		light.Color = Color3.fromRGB(255, 130, 50)
+		light.Range = 34
+		light.Brightness = 2
+		light.Shadows = false
+		light.Parent = stern
+		local started = os.clock()
 		while scene.fire == model and model.Parent do
 			local grown = math.clamp((os.clock() - started) / FireScene.GROW_SECONDS, 0, 1)
 			flames.Rate = 14 + 22 * grown

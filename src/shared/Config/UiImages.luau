@@ -24,6 +24,7 @@ return {
 		Settings = "rbxassetid://85411600136649",
 		Vehicles = "rbxassetid://140273799789221",
 		Store = "rbxassetid://138403733104125",
+		Pets = "rbxassetid://87898331265122",
 		Wallpaper = "rbxassetid://71603902912480", -- 1170x2532, assets/ui/phone_v2/wallpaper.png
 	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph

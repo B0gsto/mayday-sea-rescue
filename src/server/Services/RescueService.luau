@@ -19,6 +19,7 @@ local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
+local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
 local RescueDressing = require(script.Parent.Parent.Ops.RescueDressing)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
@@ -1246,48 +1247,104 @@ local function padAt(pos: Vector3, allowed: { string }, margin: number): string?
 end
 
 -- Removes the given victims from a vehicle, putting back any survivors that aren't in the list.
--- The drop-off: a delivered survivor climbs off onto the nearest dry footing beside the boat (quay,
--- pontoon, slipway), stands and waves, then goes up the quay (removed). No footing: handed straight in.
+-- The drop-off (docs/20 change 4, a visible beat): a delivered survivor climbs off onto the nearest dry
+-- footing beside the boat (quay, pontoon, slipway); with none in reach (a shore point lands them up to
+-- 40 studs out) they swim to the first footing toward the nearest pad or slipway, then climb out, stand
+-- and wave, and go up the quay (removed). No footing anywhere: handed straight in.
 local CLIMB_OFF_SECONDS = 1.0
+local SWIM_OFF_SPEED = 16 -- studs/s: a quick swim the camera can follow -- tune
+local SWIM_OFF_MAX = 4 -- s cap on that swim
+local FOOT_SEARCH = 150 -- studs toward the drop-off
 local footParams = RaycastParams.new()
 footParams.FilterType = Enum.RaycastFilterType.Exclude
 footParams.IgnoreWater = true
+
+local function footAt(p: Vector3, fromY: number): Vector3?
+	local hit =
+		Workspace:Raycast(Vector3.new(p.X, fromY + 20, p.Z), Vector3.new(0, -40, 0), footParams)
+	return if hit and hit.Position.Y > 1 then hit.Position else nil
+end
+
+-- The nearest drop-off pad or cold-open slipway (its dry end) to `from`.
+local function nearestHome(from: Vector3): Vector3?
+	local best, bestD = nil :: Vector3?, math.huge
+	local points = {}
+	for _, pad in dropOffPads() do
+		table.insert(points, pad.Position)
+	end
+	for _, sp in ColdOpen.SHORE do
+		table.insert(points, sp.dry)
+	end
+	for _, p in points do
+		local d = CallLogic.flatDistance(p, from)
+		if d < bestD then
+			best, bestD = p, d
+		end
+	end
+	return best
+end
+
+local function findFooting(from: Vector3): Vector3?
+	for r = 5, 13, 4 do
+		for k = 0, 7 do
+			local a = k * math.pi / 4
+			local foot = footAt(from + Vector3.new(math.cos(a) * r, 0, math.sin(a) * r), from.Y)
+			if foot then
+				return foot
+			end
+		end
+	end
+	local home = nearestHome(from)
+	local dir = home and (home - from) * Vector3.new(1, 0, 1)
+	if not (dir and dir.Magnitude > 1) then
+		return nil
+	end
+	dir = dir.Unit
+	for d = 14, FOOT_SEARCH, 3 do
+		local foot = footAt(from + dir * d, from.Y)
+		if foot then
+			return foot + dir * 3 -- a step in from the edge
+		end
+	end
+	return nil
+end
+
 local function climbOff(v: any, from: Vector3)
 	local model: Model = v.model
 	local vehicles = Workspace:FindFirstChild("Vehicles")
 	footParams.FilterDescendantsInstances = if vehicles then { model, vehicles } else { model }
-	local foot: Vector3? = nil
-	for r = 5, 13, 4 do
-		for k = 0, 7 do
-			local a = k * math.pi / 4
-			local p = from + Vector3.new(math.cos(a) * r, 0, math.sin(a) * r)
-			local hit = Workspace:Raycast(
-				Vector3.new(p.X, from.Y + 20, p.Z),
-				Vector3.new(0, -40, 0),
-				footParams
-			)
-			if hit and hit.Position.Y > 1 then
-				foot = hit.Position
-				break
-			end
-		end
-		if foot then
-			break
-		end
-	end
+	local foot = findFooting(from)
 	if not foot then
 		model:Destroy()
 		return
 	end
-	local start = model:GetPivot()
 	local _, size = model:GetBoundingBox()
+	local start = model:GetPivot()
 	local flat = Vector3.new(foot.X - start.X, 0, foot.Z - start.Z)
-	local finish = CFrame.lookAt(
-		foot + Vector3.new(0, size.Y / 2, 0),
-		foot
-			+ Vector3.new(0, size.Y / 2, 0)
-			+ (if flat.Magnitude > 0.1 then flat.Unit else start.LookVector)
-	)
+	local look = if flat.Magnitude > 0.1 then flat.Unit else start.LookVector
+	-- far from the footing: off the side and a swim to just short of it, at the waterline
+	local swimTo = foot - look * 2
+	local swim = CallLogic.flatDistance(swimTo, start.Position)
+	if swim > 6 then
+		if v.rig then
+			v.rig:SetAttribute("CasualtyPose", "TreadWater")
+		end
+		local seconds = math.min(swim / SWIM_OFF_SPEED, SWIM_OFF_MAX)
+		local t0 = os.clock()
+		while model.Parent do
+			local u = math.min((os.clock() - t0) / seconds, 1)
+			local p = start.Position:Lerp(swimTo, u)
+			local y = heightAt(p, Workspace:GetServerTimeNow())
+			model:PivotTo(CFrame.lookAt(Vector3.new(p.X, y, p.Z), Vector3.new(p.X, y, p.Z) + look))
+			if u >= 1 then
+				break
+			end
+			RunService.Heartbeat:Wait()
+		end
+		start = model:GetPivot()
+	end
+	local stand = foot + Vector3.new(0, size.Y / 2, 0)
+	local finish = CFrame.lookAt(stand, stand + look)
 	if v.rig then
 		v.rig:SetAttribute("CasualtyPose", "Wave")
 	end

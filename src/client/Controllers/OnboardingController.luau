@@ -5,9 +5,13 @@
 -- the world waypoint (UI/Waypoint, B2) on the offer, the survivor and the drop-off.
 -- It reads only replicated facts: the Ops signals, the PlayerDataChanged snapshot and a few
 -- player attributes.
+-- Beats (docs/20 changes 4, 7, 8): a new player sees a sea-blue cover, not the town, until they sit on
+-- the cold-open jet ski (then it fades); for everyone, a board pops the craft's seat count ("1/1", seat
+-- pips, red when full) and the drop-off pulses green on the way in (ColdOpenCue.home).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -17,6 +21,7 @@ local Onboarding = require(Shared:WaitForChild("Onboarding"))
 local OpsController = require(script.Parent:WaitForChild("OpsController"))
 local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local UI = script.Parent.Parent:WaitForChild("UI")
+local ColdOpenCue = require(UI:WaitForChild("ColdOpenCue"))
 local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
 local OnboardingReward = require(UI:WaitForChild("OnboardingReward"))
 
@@ -42,7 +47,7 @@ local rewardPending = false
 local rewardShown = false
 local rewardAt = math.huge
 
-local REWARD_DELAY = 0.6 -- s after the cold open ends: the survivor steps off, then the burst
+local REWARD_DELAY = 2 -- s after the cold open ends: the survivor swims in and climbs off, then the burst
 local REWARD_HOLD = 4 -- s the reward burst keeps the debrief tablet back (OnboardingRewardBusy)
 
 local function rootPosition(): Vector3?
@@ -139,6 +144,122 @@ local function showReward()
 	end)
 end
 
+-- The cold-open cover (docs/20 change 7): no visible town wait. Up from Init for a player whose profile
+-- has not said "done"; fades once they sit on the cold-open jet ski, as soon as the profile says they
+-- are returning, or after COVER_MAX s whatever happens.
+local COVER_MAX = 20
+local COVER_FADE = 0.8
+local function coverUntilAtSea()
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "ColdOpenCover"
+	gui.IgnoreGuiInset = true
+	gui.ResetOnSpawn = false
+	gui.DisplayOrder = 60 -- over the HUD, the phone and Cinematic
+	local sea = Instance.new("Frame")
+	sea.Size = UDim2.fromScale(1, 1)
+	sea.BackgroundColor3 = Color3.new(1, 1, 1)
+	sea.BorderSizePixel = 0
+	sea.Parent = gui
+	local grad = Instance.new("UIGradient")
+	grad.Rotation = 90
+	grad.Color = ColorSequence.new(Color3.fromRGB(40, 120, 170), Color3.fromRGB(8, 34, 58))
+	grad.Parent = sea
+	gui.Parent = playerGui
+	local t0 = os.clock()
+	local seatedAt: number? = nil
+	local conn: RBXScriptConnection
+	conn = RunService.Heartbeat:Connect(function()
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		local atSea = player:GetAttribute("ColdOpenActive") == true
+			and hum ~= nil
+			and hum.SeatPart ~= nil
+		seatedAt = if atSea then seatedAt or os.clock() else nil
+		local returning = player:GetAttribute("ColdOpenDone") == true
+			and player:GetAttribute("ColdOpenActive") ~= true
+		if
+			returning
+			or (seatedAt and os.clock() - seatedAt > 0.3) -- the chase camera has settled on the ski
+			or os.clock() - t0 > COVER_MAX
+		then
+			conn:Disconnect()
+			TweenService:Create(sea, TweenInfo.new(COVER_FADE), { BackgroundTransparency = 1 })
+				:Play()
+			task.delay(COVER_FADE, gui.Destroy, gui)
+		end
+	end)
+end
+
+-- Seat count over your craft while you drive it with someone aboard: "n/cap" and pips, red when
+-- full; it pops on every board (the survivor climbing on is the beat, this is the count).
+local function seatPips(): () -> ()
+	-- projected like UI/Waypoint (a ScreenGui follows the craft); a BillboardGui never showed in play
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "SeatPips"
+	gui.IgnoreGuiInset = true
+	gui.ResetOnSpawn = false
+	local box = Instance.new("Frame")
+	box.AnchorPoint = Vector2.new(0.5, 0.5)
+	box.Size = UDim2.fromOffset(150, 60)
+	box.BackgroundTransparency = 1
+	box.Parent = gui
+	local scale = Instance.new("UIScale")
+	scale.Parent = box
+	local function label(y: number, h: number): TextLabel
+		local l = Instance.new("TextLabel")
+		l.BackgroundTransparency = 1
+		l.Position = UDim2.fromScale(0, y)
+		l.Size = UDim2.fromScale(1, h)
+		l.Font = Enum.Font.GothamBlack
+		l.TextScaled = true
+		l.TextColor3 = Color3.new(1, 1, 1)
+		l.TextStrokeTransparency = 0.4
+		l.Parent = box
+		return l
+	end
+	local count = label(0, 0.6)
+	local pips = label(0.6, 0.4)
+	local last = 0
+	local conn = RunService.Heartbeat:Connect(function()
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		local seat = hum and hum.SeatPart
+		local craft = seat and seat:FindFirstAncestorOfClass("Model")
+		while craft and craft:GetAttribute("VehicleId") == nil do
+			craft = craft:FindFirstAncestorOfClass("Model")
+		end
+		local n = craft and tonumber(craft:GetAttribute("SurvivorCount")) or 0
+		local cap = craft and tonumber(craft:GetAttribute("Capacity"))
+		if not (craft and cap and n > 0) then
+			gui.Parent = nil
+			last = 0
+			return
+		end
+		local full = n >= cap
+		count.Text = `{n}/{cap}`
+		pips.Text = string.rep("●", math.min(n, cap)) .. string.rep("○", math.max(cap - n, 0))
+		pips.TextColor3 = if full
+			then Color3.fromRGB(240, 80, 70)
+			else Color3.fromRGB(120, 235, 140)
+		-- beside the rider, not over them: the chase camera looks down the line to the house pin
+		local cam = Workspace.CurrentCamera
+		local at, onScreen = cam:WorldToViewportPoint(
+			craft:GetPivot().Position + cam.CFrame.RightVector * 4 + Vector3.yAxis * 3
+		)
+		box.Visible = onScreen
+		box.Position = UDim2.fromOffset(at.X, at.Y)
+		gui.Parent = playerGui
+		if n > last then
+			scale.Scale = 1.8
+			TweenService:Create(scale, TweenInfo.new(0.45, Enum.EasingStyle.Back), { Scale = 1 })
+				:Play()
+		end
+		last = n
+	end)
+	return function()
+		conn:Disconnect()
+		gui:Destroy()
+	end
+end
+
 local function update()
 	if not active then
 		if beacon then
@@ -177,6 +298,7 @@ function OnboardingController.Init()
 	if player:GetAttribute("ColdOpenDone") == true then
 		return
 	end
+	coverUntilAtSea()
 	beacon = OnboardingBeacon.start()
 
 	OpsController.OnOffer:Connect(function(data: { [string]: any })
@@ -239,6 +361,8 @@ function OnboardingController.Init()
 end
 
 function OnboardingController.Start()
+	ColdOpenCue.home() -- every delivery, for the session
+	seatPips()
 	if not beacon then
 		return
 	end

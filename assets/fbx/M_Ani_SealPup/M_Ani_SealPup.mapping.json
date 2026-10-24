@@ -1,0 +1,530 @@
+{
+ "asset": "M_Pet_SealPup",
+ "source": "src/shared/Config/Wildlife.luau Species.SealPup.parts (WildlifeRig)",
+ "axes": "Roblox studs, rig pivot on the ground, front -Z; FBX via rbxkit (roblox = (-bx, bz, by))",
+ "fbx": "fbx/M_Pet_SealPup/M_Ani_SealPup_LOD0.fbx (nodes named like the keys below; LOD1/LOD2 nodes add _LOD1/_LOD2)",
+ "swap": "rig_index is the part's position in Species.parts (duplicate rig names Eye/Glint/Flipper are split Left/Right). Each FBX node's origin is its part's `at` CFrame. A MeshPart's position is its mesh bounds centre: MeshPart.CFrame = rig pivot * at * CFrame.new(offset), Size = size (mesh bounds, studs). size differs from placeholder_size on purpose where the placeholder box was a stand-in.",
+ "textures": {
+  "set": "T_SealPup_Coat_<ALB|NOR|RGH|MET>.png",
+  "rare_albedo": "T_SealPup_Rare_ALB.png",
+  "dir": "textures/M_Pet_SealPup"
+ },
+ "parts": {
+  "Body": {
+   "rig_part": "Body",
+   "rig_index": 1,
+   "placeholder_size": [
+    2.8,
+    1.4,
+    1.9
+   ],
+   "at": {
+    "position": [
+     0,
+     0.95,
+     0
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    2.1,
+    1.475,
+    2.65
+   ],
+   "offset": [
+    0.0,
+    0.2375,
+    -0.125
+   ]
+  },
+  "Belly": {
+   "rig_part": "Belly",
+   "rig_index": 2,
+   "placeholder_size": [
+    2.3,
+    0.7,
+    1.5
+   ],
+   "at": {
+    "position": [
+     0,
+     0.55,
+     -0.1
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    1.7,
+    0.6,
+    2.1
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "Head": {
+   "rig_part": "Head",
+   "rig_index": 3,
+   "placeholder_size": [
+    1.3,
+    1.15,
+    1.2
+   ],
+   "at": {
+    "position": [
+     0,
+     1.55,
+     -1.45
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    1.3,
+    1.12,
+    1.2
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "Snout": {
+   "rig_part": "Snout",
+   "rig_index": 4,
+   "placeholder_size": [
+    0.7,
+    0.5,
+    0.6
+   ],
+   "at": {
+    "position": [
+     0,
+     1.38,
+     -2.05
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    1.3324,
+    0.46,
+    0.42
+   ],
+   "offset": [
+    0.0,
+    -0.04,
+    -0.0
+   ]
+  },
+  "Nose": {
+   "rig_part": "Nose",
+   "rig_index": 5,
+   "placeholder_size": [
+    0.22,
+    0.18,
+    0.18
+   ],
+   "at": {
+    "position": [
+     0,
+     1.5,
+     -2.36
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.24,
+    0.15,
+    0.13
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "EyeLeft": {
+   "rig_part": "Eye",
+   "rig_index": 6,
+   "placeholder_size": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "at": {
+    "position": [
+     -0.38,
+     1.78,
+     -1.98
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.36,
+    0.36,
+    0.3
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "EyeRight": {
+   "rig_part": "Eye",
+   "rig_index": 7,
+   "placeholder_size": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "at": {
+    "position": [
+     0.38,
+     1.78,
+     -1.98
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.36,
+    0.36,
+    0.3
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "GlintLeft": {
+   "rig_part": "Glint",
+   "rig_index": 8,
+   "placeholder_size": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "at": {
+    "position": [
+     -0.32,
+     1.86,
+     -2.14
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.12,
+    0.12,
+    0.06
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "GlintRight": {
+   "rig_part": "Glint",
+   "rig_index": 9,
+   "placeholder_size": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "at": {
+    "position": [
+     0.32,
+     1.86,
+     -2.14
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.12,
+    0.12,
+    0.06
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "FlipperLeft": {
+   "rig_part": "Flipper",
+   "rig_index": 10,
+   "placeholder_size": [
+    1.0,
+    0.18,
+    1.3
+   ],
+   "at": {
+    "position": [
+     -1.05,
+     0.45,
+     -0.55
+    ],
+    "matrix": [
+     [
+      0.96106,
+      -0.27636,
+      0.0
+     ],
+     [
+      0.27636,
+      0.96106,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.93,
+    0.17,
+    1.07
+   ],
+   "offset": [
+    -0.015,
+    0.0,
+    0.015
+   ]
+  },
+  "FlipperRight": {
+   "rig_part": "Flipper",
+   "rig_index": 11,
+   "placeholder_size": [
+    1.0,
+    0.18,
+    1.3
+   ],
+   "at": {
+    "position": [
+     1.05,
+     0.45,
+     -0.55
+    ],
+    "matrix": [
+     [
+      0.96106,
+      0.27636,
+      0.0
+     ],
+     [
+      -0.27636,
+      0.96106,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "size": [
+    0.93,
+    0.17,
+    1.07
+   ],
+   "offset": [
+    0.015,
+    0.0,
+    0.015
+   ]
+  },
+  "Tail": {
+   "rig_part": "Tail",
+   "rig_index": 12,
+   "placeholder_size": [
+    0.95,
+    0.16,
+    1.0
+   ],
+   "at": {
+    "position": [
+     0,
+     0.5,
+     1.05
+    ],
+    "matrix": [
+     [
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.98007,
+      -0.19867
+     ],
+     [
+      0.0,
+      0.19867,
+      0.98007
+     ]
+    ]
+   },
+   "size": [
+    0.8967,
+    0.2,
+    1.0874
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    -0.0313
+   ]
+  }
+ }
+}

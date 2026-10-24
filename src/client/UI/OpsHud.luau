@@ -9,7 +9,7 @@
 -- The world shows the way to a call (docs/16 K2): a red parachute flare goes up over it
 -- (PyroController) and again every FLARE_EVERY s until the call is taken or withdrawn; the minimap
 -- draws its blip (MapController), and UI/Waypoint marks it on screen (icon + distance, pinned to the
--- edge when off screen); the strip shows the same distance.
+-- edge when off screen); the strip shows the same goal (MapController.GetObjective), icon and distance.
 local Players = game:GetService("Players")
 
 local ColdOpenCue = require(script.Parent.ColdOpenCue)
@@ -55,7 +55,7 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 
 	local tasking = OpsTaskingCard.new(right)
 	local step = OpsStepCard.new(objective)
-	Waypoint.start(ops, MapController, step.distance)
+	Waypoint.start(ops, MapController, step.goal)
 	-- cold open: one objective on screen, the world marker (swimmer, then home), so no step strip
 	-- the world shows the goal (docs/14 F-3): dye, pulse ring, smoke and a flare at the casualty
 	local stopCue: (() -> ())? = nil
@@ -106,6 +106,10 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 
 	local lastOfferId: any = nil
 	ops.OnOffer:Connect(function(data: { [string]: any })
+		-- one goal (docs/20 rule 1): no second card while your own call runs
+		if activeOp and data.opId ~= activeOp then
+			return
+		end
 		-- a re-broadcast of the same offer refreshes the card only, no second radio call
 		local fresh = data.opId == nil or data.opId ~= lastOfferId
 		lastOfferId = data.opId

@@ -20,6 +20,14 @@ soft single-light shading, no outlines thicker than ~6% of the canvas, centred w
 | `Tough` | `stat_tough.png` | 128×128 | transparent | Monochrome light grey (#B4BEC5) shield glyph | Stat row 3 |
 | `Check` | `check.png` | 128×128 | transparent | Green (#30D158) filled circle with a white tick | "Fitted" on an upgrade tile; "out now" on the 3D stage |
 
+## Pets app (`UiImages.Phone.Pets`, set `assets/ui/phone_v2/`)
+
+| Key | File | Size | Alpha | Description | Where |
+|---|---|---|---|---|---|
+| `Pets` | `pets.png` | 512×512 | transparent corners | iOS-style app squircle like the other phone_v2 tiles: warm orange (#FF6B1A) gradient, a big white paw print centred, a tiny navy dog tag hanging off one toe. Reads "my pets" at 66 du | Phone home grid (Pets app). Until uploaded `PetsApp.icon` draws a flat paw tile |
+
+Portraits inside the app are live 3D ViewportFrames of Bosun and each pet, so they need no art.
+
 ## Settings rows (`UiImages.SettingsArt`, set `assets/ui/settings/`)
 
 Pure white (#FFFFFF) monochrome SF-Symbols-style glyphs, 96×96, transparent. The coloured iOS tile behind

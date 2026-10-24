@@ -21,6 +21,8 @@ local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("M
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
+
 local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 
@@ -276,6 +278,7 @@ function StoreApp.mount(page: Frame): () -> ()
 		end
 		pendingKey, pendingAt = keyOf(ref), os.clock()
 		paint()
+		Telemetry.shop("BuyTapped", "Store", ref.key, "Robux")
 		local ok, err = pcall(function()
 			if ref.kind == "GamePasses" then
 				MarketplaceService:PromptGamePassPurchase(player, item.id)
@@ -448,6 +451,7 @@ function StoreApp.mount(page: Frame): () -> ()
 		grid.CanvasPosition = Vector2.zero
 		fetchCatalogue(false)
 		paint()
+		Telemetry.shop("ItemViewed", "Store", nil, "Robux") -- a shelf (tab) was shown
 		if UserInputService.GamepadEnabled and shown() and cards[1] then
 			GuiService.SelectedObject = cards[1].button
 		end
@@ -510,6 +514,7 @@ function StoreApp.mount(page: Frame): () -> ()
 		end
 	end)
 
+	Telemetry.shop("AppOpened", "Store")
 	showTab(1)
 
 	return function()

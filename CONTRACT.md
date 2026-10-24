@@ -180,10 +180,11 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
 
 ## Phone (all menus)
 
-`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Six
-apps (K9): Map, Vehicles, Store, Crew, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
+`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Seven
+apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
 bounce mean "something is affordable" and badge the Vehicles icon. `UI/VehiclesApp` (boats, jet skis,
-cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), Settings borrows
+cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
+recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
 `SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`.
 
 ## HUD and map
@@ -210,8 +211,9 @@ cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), 
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),
-  `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once(name)`
-  over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken (First Shot badge), PetPetted).
+  `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once`,
+  `send`, `shop` over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken, Device, Shop, InputDead,
+  StuckReset; values checked server-side). Spec and Phase 2 hook list: `docs/research/analytics.md`.
 - Settings: `SettingsRules` (pure), `Camera/Comfort` (saved in `flags.cameraSettings`), `SettingsPanel`,
   `A11yPalette` (colour-blind palette and glyphs).
 - Re-engagement: `PlatformPrompts` + `PlatformPromptService`; `NotifyDue` + `NotifyService`.

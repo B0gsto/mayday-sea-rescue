@@ -3,10 +3,11 @@
 -- to the person in the water and hold the boat close and steady; they swim the last bit (PIW_Rescue
 -- "arm": the 10 s rule) and climb aboard by themselves (the server's board effect plays the climb in
 -- VehicleService.AddSurvivor). Depth comes from the situation, never from text:
---   room    a full craft (SurvivorCount = Capacity: jet ski 1, RIB 3, lifeboat 8) takes nobody (red ring)
+--   room    a full craft (SurvivorCount = Capacity: jet ski 1, RIB 3, lifeboat 8) takes nobody: they wait
+--           5 m off and wave (PiwRescue); full shows on the craft's seat pips, never on them (docs/20 rule 5)
 --   steady  under STEADY_SPEED and pitching / rolling under STEADY_TILT: big waves make it a skill
 --   ramming coming in fast on top of them knocks them back (a "bump" event, PiwRescue pushes them off)
--- Their outline shows white in reach, green while they get ready, red with no room. Metrics: none (the server times
+-- Their outline shows white in reach, green while they get ready, none with no room. Metrics: none (the server times
 -- it, elapsed); events: bump.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -22,7 +23,6 @@ local AutoBoard = {}
 
 local WHITE = Color3.fromRGB(240, 240, 235)
 local GREEN = Color3.fromRGB(110, 230, 120)
-local RED = Color3.fromRGB(230, 70, 60)
 
 local function remote(): RemoteEvent?
 	local net = ReplicatedStorage:FindFirstChild("Net")
@@ -86,8 +86,8 @@ function AutoBoard.start(
 				r:FireServer(opId, index, "bump")
 			end
 		end
-		ring.Enabled = gap <= Board.REACH * 2
-		ring.OutlineColor = if not room then RED elseif held > 0 then GREEN else WHITE
+		ring.Enabled = room and gap <= Board.REACH * 2
+		ring.OutlineColor = if held > 0 then GREEN else WHITE
 		if Board.ready(gap, speed, tilt, room) then
 			held += dt
 			if held >= Board.HOLD then

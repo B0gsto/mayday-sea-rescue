@@ -1,11 +1,12 @@
 --!strict
 -- Waypoint (playtest 2026-10-23: a new player could not find the second call): the way to the
--- call, in the world. MapController's objective (the offered call, the nearest survivor or vessel,
--- the drop-off once they are aboard) gets a screen marker (no light pillar: user, 2026-10-21): the call-type icon on a disc
+-- call, in the world. MapController's objective (your craft while you are off it, the offered call,
+-- the nearest survivor or vessel, the drop-off once they are aboard) gets a screen marker (no light pillar: user, 2026-10-21): the call-type icon on a disc
 -- (OpsTaskingCard.KIND) with its distance under it, pinned to the screen edge with its tip pointing
--- the way while off screen. The one distance on screen (the strip repeats it; the minimap has no
--- pill: playtest 2). Hidden under the phone or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
---   Waypoint.start(ops, map, onDistance)  onDistance("240 m" | nil) each frame, for the strip
+-- the way while off screen. Close in (NEAR) it never hides: it bobs over the target, tip down, until
+-- the goal is done (docs/20 rule 2). The strip shows the same icon and distance (onGoal); the minimap
+-- has no pill. Hidden under the phone or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
+--   Waypoint.start(ops, map, onGoal)  onGoal(label, glyph, colour, "240 m") or onGoal(nil) each frame
 --   Waypoint.metres(studs) -> "240 m" | "1.2 km"
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -21,14 +22,17 @@ local Waypoint = {}
 local NAVY = Color3.fromHex("0A1830")
 local GREEN = Color3.fromHex("2FA866") -- the strip's "Home" disc
 local BEAM = Color3.fromHex("FF6A3D")
+local CRAFT = Color3.fromHex("F2671F") -- your boat: orange, the boat glyph
+
 local STUDS_PER_M = 3
-local NEAR = 25 * STUDS_PER_M -- studs: this close the survivor is right there, the marker steps aside
+local NEAR = 25 * STUDS_PER_M -- studs: this close the marker bobs over the target
+local BOB = 8 -- px: how far it bobs
 local DISC = 46 -- du
 local LIFT = 34 -- px: the disc floats over the target, its tip pointing down at it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
 local RIM_UP = 0.24 -- its upward radius: the top band holds the strip and the radio
 local SHOWN: { [string]: boolean } =
-	{ Mayday = true, Casualty = true, Vessel = true, ["Drop-off"] = true }
+	{ Mayday = true, Casualty = true, Vessel = true, ["Drop-off"] = true, Craft = true }
 
 function Waypoint.metres(studs: number): string
 	local m = studs / STUDS_PER_M
@@ -37,7 +41,16 @@ function Waypoint.metres(studs: number): string
 		else `{math.floor(m / 10 + 0.5) * 10} m`
 end
 
-function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
+function Waypoint.start(
+	ops: any,
+	map: any,
+	onGoal: (
+		label: string?,
+		glyph: string?,
+		color: Color3?,
+		distance: string?
+	) -> ()
+)
 	local player = Players.LocalPlayer
 	local playerGui = player:WaitForChild("PlayerGui")
 	local gui = Instance.new("ScreenGui")
@@ -122,23 +135,27 @@ function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
 		offerKind = data.kind
 	end)
 
-	local shownKey = ""
-	local function look(label: string)
+	-- one icon, one meaning (docs/20 rule 9): house = home, boat = your craft, else the call's icon
+	local function style(label: string): (string, Color3)
+		if label == "Drop-off" then
+			return "home", GREEN
+		elseif label == "Craft" then
+			return "boat", CRAFT
+		end
 		local s = ops.GetState()
 		local kind = if label == "Mayday" then offerKind elseif s then s.kind else nil
-		local key = `{label}/{kind}`
-		if key == shownKey then
-			return
-		end
-		shownKey = key
 		local k = OpsTaskingCard.KIND[kind or ""]
-		local glyph = if label == "Drop-off"
-			then "home"
-			elseif k then k.icon
-			elseif label == "Vessel" then "boat"
-			else "swimmer"
-		local color = if label == "Drop-off" then GREEN elseif k then k.color else BEAM
-		Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
+		if k then
+			return k.icon, k.color
+		end
+		return if label == "Vessel" then "boat" else "swimmer", BEAM
+	end
+	local shownGlyph = ""
+	local function look(glyph: string, color: Color3)
+		if glyph ~= shownGlyph then
+			shownGlyph = glyph
+			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
+		end
 		disc.BackgroundColor3, tip.BackgroundColor3 = color, color
 	end
 
@@ -158,17 +175,24 @@ function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
 		-- the marker on the objective
 		local want = pos ~= nil and label ~= nil and SHOWN[label] == true
 		local flat = if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
-		-- the strip drops its distance with the marker (right there: the world cues take over)
-		onDistance(if want and root and flat > NEAR then Waypoint.metres(flat) else nil)
-		if hidden or not want or flat <= NEAR or map.IsOpen() or phoneUp() then
+		if not (want and root) then
+			onGoal(nil)
 			mark.Visible = false
 			return
 		end
-		look(label :: string)
+		local glyph, color = style(label :: string)
+		onGoal(label, glyph, color, Waypoint.metres(flat))
+		if hidden or map.IsOpen() or phoneUp() then
+			mark.Visible = false
+			return
+		end
+		look(glyph, color)
 		local c = cam :: Camera
 		local vp = c.ViewportSize
 		local p = c:WorldToViewportPoint((pos :: Vector3) + Vector3.new(0, 3, 0))
-		local x, y = p.X, p.Y - LIFT
+		-- right there: it bobs over them, tip down, so it reads as "this one" (playtest 2026-10-24 M8, M9)
+		local bob = if flat <= NEAR then BOB * math.abs(math.sin(os.clock() * 5)) else 0
+		local x, y = p.X, p.Y - LIFT - bob
 		local behind = p.Z <= 0
 		if behind then
 			-- pin it to the side to turn toward: pinned bottom-centre it sat right under the craft and

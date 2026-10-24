@@ -52,6 +52,7 @@ local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local FootTrail = require(script.Parent:WaitForChild("FootTrail"))
 local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
+local Telemetry = require(Client:WaitForChild("Telemetry"))
 
 local C = HudTheme.Colors
 local ROBUX_GREEN = Color3.fromHex("2F9E5B")
@@ -409,6 +410,7 @@ local function visibleBounds(model: Model): (Vector3, Vector3)
 end
 
 function VehiclesApp.mount(page: Frame): () -> ()
+	Telemetry.shop("AppOpened", "Vehicles")
 	local all = entries()
 	local fills = statFills(all)
 	local tabs: { Tab } = {}
@@ -795,6 +797,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			shake(card.cash)
 			return
 		end
+		Telemetry.shop("BuyTapped", "Vehicles", card.entry.id, "Cash")
 		call(card, card.cash, function()
 			return Net.func("BuyGear"):InvokeServer(card.entry.id)
 		end, function()
@@ -808,6 +811,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			shake(card.robux)
 			return
 		end
+		Telemetry.shop("BuyTapped", "Vehicles", card.entry.pass, "Robux")
 		local ok, err = pcall(function()
 			MarketplaceService:PromptGamePassPurchase(player, id)
 		end)
@@ -1107,6 +1111,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			chip.Parent = stage
 			card.quick = chip
 			chip.Activated:Connect(function()
+				Telemetry.shop("BuyTapped", "Vehicles", "QuickLaunch", "Robux")
 				local ok, err = pcall(function()
 					MarketplaceService:PromptGamePassPurchase(player, quickPass.id)
 				end)
@@ -1187,6 +1192,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 					glow = glow,
 				})
 				b.Activated:Connect(function()
+					Telemetry.shop("BuyTapped", "Vehicles", `{entry.id}:{upgradeId}`, "Cash")
 					call(card, b, function()
 						local remote = Net.init():WaitForChild("Upgrade_Buy", 10)
 						if not (remote and remote:IsA("RemoteFunction")) then
@@ -1206,7 +1212,12 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		return card
 	end
 
+	local viewed = false
 	local function selectFor(card: Card?)
+		if card and not viewed then
+			viewed = true -- the funnel counts the first view per visit; swipes would only spend rate
+			Telemetry.shop("ItemViewed", "Vehicles", card.entry.id)
+		end
 		if card and UserInputService.GamepadEnabled and page.Visible then
 			GuiService.SelectedObject = if card.hot
 				then card.hot

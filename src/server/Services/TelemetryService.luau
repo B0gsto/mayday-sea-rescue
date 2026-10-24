@@ -2,42 +2,46 @@
 -- TelemetryService (RP-A1, G64): the thin Telemetry module in front of Roblox AnalyticsService.
 -- Other services call it with one-line hooks; what each event carries is decided in Telemetry/Events
 -- (pure, tested). Every AnalyticsService call is pcall-wrapped: analytics never breaks a game path.
+-- The spec (every funnel step, where it fires, and the Phase 2 hook list): docs/research/analytics.md.
 --
--- Onboarding funnel (Creator Dashboard > Analytics > Funnels > Onboarding), Telemetry/Events.Funnel:
---   1 Joined                 PlayerAdded (here)
---   2 ColdOpenStarted        OperationService.StartColdOpen (the radio tasking is auto-done there)
---   3-4 ColdOpenApproach / ColdOpenRecovery   OperationService record() on the cold open
---   5 ColdOpenEnded          OperationService endColdOpen (the reason is the ColdOpenEnded custom event)
---   6 RewardSeen             the client's first reward burst (Telemetry_Client)
---   7 Call2Accepted          the active-operation poll sees the first station call
---   8 FirstOpComplete        OperationService finish (call 2 complete)
---   9 Call3Complete          OperationService finish (call 3 complete)
---   10 FirstUnlock           the first vehicle bought (ProgressionService buy)
---   11 FirstRank             ProgressionService.RankChanged (here)
---   12 FirstDailyCrate       StreakService open
---   13 Day2Return            DataService.OnLoaded, a later UTC day than flags.lastSessionDay
--- Economy (currency "Cash"): sources from ProgressionService push() award extras (Award, Cash packs,
---   Starter Kit), sinks from ProgressionService buy(), PetService treats.
--- Custom (LogCustomEvent): the fixed TelemetryNames.Custom list. OpStarted/OpComplete/OpGrade come
---   from the active-operation poll and OperationService finish (variant rarity in the fields).
+-- Funnels: Onboarding (one-time, Events.Funnel) and the recurring TelemetryNames.Funnels Call, Shop,
+-- Vehicle, Explore and Companion. Economy: currency "Cash" (sources from ProgressionService push()
+-- extra.award, sinks from vehicle and upgrade buys). Progression: Rank (rank-ups), Explorer (stamps).
+-- Custom: the fixed TelemetryNames.Custom list.
 --
---   TelemetryService.Funnel(player, stepName)
+--   TelemetryService.Funnel(player, stepName)                         onboarding step (once per player)
+--   TelemetryService.Step(player, funnel, sessionId, stepName, a?, b?, c?)   any recurring funnel step
+--   TelemetryService.Call(player, opId, step, kind?)                   Call funnel (session = the call)
+--   TelemetryService.Shop(player, step, app?, item?, currency?)        Shop funnel (session = the visit)
+--   TelemetryService.Vehicle(player, step, vehicleId, where?)          Vehicle funnel (Spawned = new)
+--   TelemetryService.Explore(player, islandId, step, stamps?)          Explore funnel (session = island)
+--   TelemetryService.Companion(player, species, step)                  Companion funnel (session = species)
+--   TelemetryService.RobuxPrompt(player, kind, key, purchased)         a Robux prompt closed
 --   TelemetryService.Custom(player, name, value?, field1?, field2?, field3?)   one line at a site
---   TelemetryService.CashFlow(player, extra?, balance)          push() hook: logs extra.award Cash
+--   TelemetryService.CashFlow(player, extra?, balance)                 push() hook: logs extra.award Cash
 --   TelemetryService.CashSpent(player, price, balance, kind, itemId)
 --   TelemetryService.ColdOpenStarted(player) / ColdOpenStep(player, stepId) / ColdOpenEnded(player, reason)
---   TelemetryService.OpFinished(player, op, reason)            op: OperationService's live op table
---   TelemetryService.Recent -> { string }                       last events (Studio: ServerStorage.TelemetryDev)
+--   TelemetryService.OpFinished(player, op, reason)                    op: OperationService's live op table
+--   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
+-- Client (Telemetry_Client, rate limited, every value checked against a fixed set): RewardSeen,
+-- PhotoModeOpen, PhotoTaken, Device(type), Shop(step, app, item?, currency?), InputDead(context),
+-- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = Shared:WaitForChild("Config")
+local LandVehicleConfig = require(Config:WaitForChild("LandVehicleConfig"))
+local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
-local ProgressionConfig = require(Shared:WaitForChild("Config"):WaitForChild("ProgressionConfig"))
-local RescueVariants = require(Shared:WaitForChild("Config"):WaitForChild("RescueVariants"))
+local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
+local RescueVariants = require(Config:WaitForChild("RescueVariants"))
 local TelemetryNames = require(Shared:WaitForChild("TelemetryNames"))
+local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
+local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local Events = require(script.Parent:WaitForChild("Telemetry"):WaitForChild("Events"))
@@ -47,11 +51,19 @@ TelemetryService.Priority = 5 -- before the services whose signals it watches
 TelemetryService.Verbose = false -- Studio: print every event (Studio already logs "event fired")
 TelemetryService.Recent = {} :: { string }
 
+type Shop = { id: string, at: number, app: string }
+type Session = { joinedAt: number, device: string?, day: string? }
+
 local RECENT_MAX = 60
+local JOB = if game.JobId ~= "" then string.sub(game.JobId, 1, 8) else "studio" -- call session ids per server
 local trackers: { [Player]: Events.Tracker } = {}
-local lastClient: { [Player]: number } = {}
+local buckets: { [Player]: Events.Bucket } = {}
+local shops: { [Player]: Shop } = {}
+local vehicles: { [Player]: string } = {}
+local sessions: { [Player]: Session } = {}
 local clientRemote: RemoteEvent? = nil
 local dayChecked: { [Player]: boolean } = {}
+local knownItems: { [string]: boolean } = {}
 
 local function trackerOf(player: Player): Events.Tracker
 	local t = trackers[player]
@@ -117,23 +129,59 @@ function TelemetryService.Funnel(player: Player, stepName: string)
 	end)
 end
 
--- Rank progression (LogProgressionEvent, Creator Dashboard > Analytics > Progression): one
--- Complete per promotion, with the rank index and display name (never the player's name).
+-- Any recurring funnel step (LogFunnelStepEvent). Each step is sent once per session id: Roblox
+-- only counts the first anyway, and repeats eat the global rate limit.
+function TelemetryService.Step(
+	player: Player,
+	funnel: string,
+	sessionId: string,
+	stepName: string,
+	a: string?,
+	b: string?,
+	c: string?
+)
+	local n = Events.stepOf(TelemetryNames.Funnels[funnel], stepName)
+	if not n then
+		warn(`[TelemetryService] {funnel}/{stepName} is not a TelemetryNames.Funnels step; dropped`)
+		return
+	end
+	if not (player.Parent and Events.first(trackerOf(player), `{funnel}:{sessionId}:{n}`)) then
+		return
+	end
+	note(`{player.UserId} {funnel} {sessionId} {n} {stepName}`)
+	send(funnel, function()
+		AnalyticsService:LogFunnelStepEvent(
+			player,
+			funnel,
+			sessionId,
+			n,
+			stepName,
+			Events.fields(a, b, c)
+		)
+	end)
+end
+
+local function progression(player: Player, path: string, level: number, levelName: string)
+	note(`{player.UserId} progression {path} {level} {levelName}`)
+	send("Progression", function()
+		AnalyticsService:LogProgressionEvent(
+			player,
+			path,
+			Enum.AnalyticsProgressionType.Complete,
+			level,
+			levelName
+		)
+	end)
+end
+
+-- Rank progression (Creator Dashboard > Analytics > Progression): one Complete per promotion, with
+-- the rank index and display name (never the player's name).
 local function rankProgression(player: Player, rankIndex: number)
 	local def = ProgressionConfig.Ranks[rankIndex]
 	local name = if def and type(def.displayName) == "string"
 		then def.displayName
 		else `Rank{rankIndex}`
-	note(`{player.UserId} progression Rank {rankIndex} {name}`)
-	send("Progression", function()
-		AnalyticsService:LogProgressionEvent(
-			player,
-			"Rank",
-			Enum.AnalyticsProgressionType.Complete,
-			rankIndex,
-			name
-		)
-	end)
+	progression(player, "Rank", rankIndex, name)
 end
 
 local function economy(
@@ -183,8 +231,91 @@ function TelemetryService.CashSpent(
 	end
 end
 
+local function callContext(player: Player, big: boolean?): string
+	local weather = ReplicatedStorage:FindFirstChild("Weather")
+	return Events.callContext(
+		player:GetAttribute("ColdOpenActive") == true,
+		big == true,
+		weather ~= nil and weather:GetAttribute("State") == "Storm"
+	)
+end
+
+-- Call funnel: Offered -> Accepted -> Seated -> Boarded -> Delivered, one session per call. Accepted
+-- comes from the active-operation poll and Delivered from OpFinished; the others are one-line hooks.
+function TelemetryService.Call(player: Player, opId: any, step: string, kind: string?)
+	if step == "Boarded" then
+		TelemetryService.Funnel(player, "FirstBoard")
+	end
+	TelemetryService.Step(player, "Call", `{JOB}:{tostring(opId)}`, step, kind, callContext(player))
+end
+
+-- Shop funnel: PhoneOpened -> AppOpened -> ItemViewed -> BuyTapped -> Bought, one session per visit
+-- (Events.shopFresh). Fields: app, item, currency. The client sends the first four, the server Bought.
+function TelemetryService.Shop(
+	player: Player,
+	step: string,
+	app: string?,
+	item: string?,
+	currency: string?
+)
+	local n = Events.stepOf(TelemetryNames.Funnels.Shop, step)
+	if not n then
+		return
+	end
+	local now = os.clock()
+	local last = shops[player]
+	local s: Shop = if last and not Events.shopFresh(last.at, n, now)
+		then last
+		else { id = HttpService:GenerateGUID(false), at = now, app = "None" }
+	shops[player] = s
+	s.at = now
+	s.app = app or s.app
+	if n <= 2 then
+		TelemetryService.Funnel(player, "PhoneOpened")
+	end
+	TelemetryService.Step(player, "Shop", s.id, step, s.app, item or "None", currency or "None")
+end
+
+-- Vehicle funnel: Spawned (a new session) -> Boarded -> Underway. Fields: vehicle, where it spawned.
+-- How a vehicle goes away is the VehicleDespawned / VehicleRecovered custom events.
+function TelemetryService.Vehicle(player: Player, step: string, vehicleId: string, where: string?)
+	if step == "Spawned" or not vehicles[player] then
+		vehicles[player] = HttpService:GenerateGUID(false)
+	end
+	TelemetryService.Step(player, "Vehicle", vehicles[player], step, vehicleId, where)
+end
+
+-- Explore funnel: Sighted -> Reached -> Stamped, one session per island. A stamp with the player's
+-- stamp count also goes to Progression (path Explorer, level = stamps).
+function TelemetryService.Explore(player: Player, islandId: string, step: string, stamps: number?)
+	TelemetryService.Step(player, "Explore", islandId, step, islandId)
+	if step == "Stamped" and type(stamps) == "number" then
+		progression(player, "Explorer", stamps, islandId)
+	end
+end
+
+-- Companion funnel: Rescued -> Adopted -> Chosen, one session per species. A switch away from the
+-- current companion is the CompanionSwitch custom event.
+function TelemetryService.Companion(player: Player, species: string, step: string)
+	TelemetryService.Step(player, "Companion", species, step, species)
+end
+
+-- A Robux prompt closed (MonetizationService, from MarketplaceService's Prompt*PurchaseFinished).
+function TelemetryService.RobuxPrompt(player: Player, kind: string, key: string, purchased: boolean)
+	if not (player and player.Parent) then
+		return
+	end
+	custom(
+		player,
+		Events.custom("RobuxPrompt", 1, kind, key, if purchased then "Purchased" else "Cancelled")
+	)
+	if purchased then
+		TelemetryService.Shop(player, "Bought", nil, key, "Robux")
+	end
+end
+
 function TelemetryService.ColdOpenStarted(player: Player)
-	TelemetryService.Funnel(player, "ColdOpenStarted")
+	TelemetryService.Funnel(player, "AtSea")
 end
 
 function TelemetryService.ColdOpenStep(player: Player, stepId: string)
@@ -195,7 +326,6 @@ function TelemetryService.ColdOpenStep(player: Player, stepId: string)
 end
 
 function TelemetryService.ColdOpenEnded(player: Player, reason: string)
-	TelemetryService.Funnel(player, "ColdOpenEnded")
 	if Events.first(trackerOf(player), "ColdOpenEnded") then
 		custom(player, { name = "ColdOpenEnded", value = 1, fields = Events.fields(reason) })
 	end
@@ -219,15 +349,20 @@ function TelemetryService.OpFinished(player: Player, op: any, reason: string)
 		storm = op.storm == true,
 		big = op.isBig == true,
 		rarity = rarityOf(op.variant),
+		saved = if type(op.saved) == "number" then op.saved else 0,
 	}
 	for _, event in Events.opEvents(facts) do
 		custom(player, event)
 	end
+	if Events.delivered(facts) then
+		TelemetryService.Call(player, op.id, "Delivered", facts.kind)
+		TelemetryService.Funnel(player, "FirstDelivery")
+	end
 	if Events.countsAsFirstOp(facts) then
-		TelemetryService.Funnel(player, "FirstOpComplete")
+		TelemetryService.Funnel(player, "Call2Delivered")
 		local done = player:GetAttribute("OpsCompleted")
 		if type(done) == "number" and done >= 3 then
-			TelemetryService.Funnel(player, "Call3Complete")
+			TelemetryService.Funnel(player, "Call3Delivered")
 		end
 	end
 end
@@ -251,8 +386,9 @@ local function service(name: string): any?
 	return if ok and type(result) == "table" then result else nil
 end
 
--- Day2Return: the first session on a later UTC day than the profile's last recorded one. The flag
--- is written once per day, after the funnel step, so a same-day rejoin is not a return.
+-- Profile loaded: Day2Return, and SessionStart (value = days since the first session, the day and
+-- gap buckets, New / Returning). flags.firstSessionDay / lastSessionDay are written once per day,
+-- after the events, so a same-day rejoin is not a return.
 local function sessionDay(player: Player, data: any)
 	if dayChecked[player] or not player.Parent then
 		return
@@ -261,13 +397,35 @@ local function sessionDay(player: Player, data: any)
 	local today = Events.utcDay(os.time())
 	local flags = if type(data) == "table" then data.flags else nil
 	local previous = if type(flags) == "table" then flags.lastSessionDay else nil
+	local first = if type(flags) == "table" then flags.firstSessionDay else nil
+	previous = if type(previous) == "number" and previous > 0 then previous else nil
+	first = if type(first) == "number" and first > 0 then first else (previous or today)
 	if Events.day2Return(previous, today) then
 		TelemetryService.Funnel(player, "Day2Return")
 	end
-	if previous ~= today then
-		local progression = service("ProgressionService")
-		if progression and type(progression.SetFlag) == "function" then
-			pcall(progression.SetFlag, player, "lastSessionDay", today)
+	local days = math.max(0, today - first)
+	local day = Events.dayBucket(days)
+	local session = sessions[player]
+	if session then
+		session.day = day
+	end
+	custom(
+		player,
+		Events.custom(
+			"SessionStart",
+			days,
+			day,
+			Events.gapBucket(if previous then today - previous else nil),
+			if previous then "Returning" else "New"
+		)
+	)
+	local progressionService = service("ProgressionService")
+	if progressionService and type(progressionService.SetFlag) == "function" then
+		if previous ~= today then
+			pcall(progressionService.SetFlag, player, "lastSessionDay", today)
+		end
+		if not (type(flags) == "table" and flags.firstSessionDay == first) then
+			pcall(progressionService.SetFlag, player, "firstSessionDay", first)
 		end
 	end
 end
@@ -300,19 +458,8 @@ local function watchFriends(player: Player)
 	task.defer(check)
 end
 
-local function opContext(player: Player, info: any): string
-	if player:GetAttribute("ColdOpenActive") == true then
-		return "ColdOpen"
-	elseif info.isBig == true then
-		return "Big"
-	end
-	local weather = ReplicatedStorage:FindFirstChild("Weather")
-	return if weather and weather:GetAttribute("State") == "Storm" then "Storm" else "Calm"
-end
-
--- Operation started: OperationService has no start signal, so read its live list once a second.
--- One OpStarted per participant per operation; the first non-cold-open op accepted is funnel step
--- 7 (call 2 accepted).
+-- Call accepted: OperationService has no start signal, so read its live list once a second. One
+-- Call/Accepted per participant per call; the first non-cold-open call is onboarding Call2Accepted.
 local function pollOps()
 	local operations = service("OperationService")
 	if not operations or type(operations.GetActiveOperations) ~= "function" then
@@ -324,8 +471,6 @@ local function pollOps()
 	end
 	for _, info in list do
 		if type(info) == "table" then
-			local kind = tostring(info.kind)
-			local rarity = rarityOf(info.variant)
 			for _, player in info.assignedTo or {} do
 				if
 					typeof(player) == "Instance"
@@ -333,9 +478,15 @@ local function pollOps()
 					and player.Parent
 					and Events.first(trackerOf(player), `OpStart:{tostring(info.id)}`)
 				then
-					local coldOpen = player:GetAttribute("ColdOpenActive") == true
-					custom(player, Events.opStarted(kind, rarity, opContext(player, info)))
-					if not coldOpen then
+					TelemetryService.Step(
+						player,
+						"Call",
+						`{JOB}:{tostring(info.id)}`,
+						"Accepted",
+						tostring(info.kind),
+						callContext(player, info.isBig)
+					)
+					if player:GetAttribute("ColdOpenActive") ~= true then
 						TelemetryService.Funnel(player, "Call2Accepted")
 					end
 				end
@@ -365,10 +516,13 @@ local function pollWorldEvents()
 	end
 end
 
--- The few first-session facts only the client knows: the reward burst played, photo mode opened,
--- the first photo (First Shot badge), the first pet. One fixed-name RemoteEvent, rate limited,
--- server-side logged.
-local function clientStep(player: Player, name: string)
+local function str(v: any): string?
+	return if type(v) == "string" then v else nil
+end
+
+-- What only the client knows. Every value is checked against a fixed set (a client cannot grow the
+-- dashboard's field cardinality) and the remote is rate limited (Events.allow).
+local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
 	if name == "RewardSeen" then
 		TelemetryService.Funnel(player, "RewardSeen")
 	elseif name == "PhotoModeOpen" then
@@ -377,14 +531,58 @@ local function clientStep(player: Player, name: string)
 		end
 	elseif name == "PhotoTaken" then
 		BadgeService.Count(player, "PhotoFirst")
-	elseif name == "PetPetted" then
-		if Events.first(trackerOf(player), "PetPetted") then
-			custom(player, Events.custom("PetPetted"))
+	elseif name == "Device" then
+		local session = sessions[player]
+		if session and Events.Devices[a] then
+			session.device = a
+		end
+	elseif name == "InputDead" or name == "StuckReset" then
+		local session = sessions[player]
+		if Events.InputContexts[a] then
+			custom(player, Events.custom(name, 1, session and session.device or "Unknown", a))
+		end
+	elseif name == "Shop" then
+		local step, app, item, currency = str(a), str(b), str(c), str(d)
+		local n = step and Events.stepOf(TelemetryNames.Funnels.Shop, step)
+		if
+			not step
+			or not n
+			or n > 4 -- Bought is the server's
+			or (app ~= nil and not Events.ShopApps[app])
+			or (item ~= nil and not Events.knownItem(item, knownItems))
+			or (currency ~= nil and currency ~= "Cash" and currency ~= "Robux")
+		then
+			return
+		end
+		TelemetryService.Shop(player, step, app, item, currency)
+		if step == "BuyTapped" and currency == "Robux" and item then
+			local kind = if MonetizationConfig.GamePasses[item] then "GamePasses" else "Products"
+			custom(player, Events.custom("RobuxPrompt", 1, kind, item, "Shown"))
 		end
 	end
 end
 
+local function addKnown(list: { string })
+	for _, key in list do
+		knownItems[key] = true
+	end
+end
+
+local function onJoin(player: Player)
+	sessions[player] = sessions[player] or { joinedAt = os.clock() }
+	TelemetryService.Funnel(player, "Joined")
+	watchFriends(player)
+end
+
 function TelemetryService.Init()
+	addKnown(VehicleConfig.Order)
+	addKnown(LandVehicleConfig.Order)
+	addKnown(VehicleUpgrades.UpgradeOrder)
+	for _, group in { MonetizationConfig.Products, MonetizationConfig.GamePasses } do
+		for key in group :: { [string]: any } do
+			knownItems[key] = true
+		end
+	end
 	local folder = Net.init()
 	local existing = folder:FindFirstChild("Telemetry_Client")
 	if existing and existing:IsA("RemoteEvent") then
@@ -396,30 +594,50 @@ function TelemetryService.Init()
 		clientRemote = created
 	end
 	if clientRemote then
-		clientRemote.OnServerEvent:Connect(function(player: Player, name: any)
-			if type(name) ~= "string" then
-				return
+		clientRemote.OnServerEvent:Connect(
+			function(player: Player, name: any, a: any, b: any, c: any, d: any)
+				if type(name) ~= "string" then
+					return
+				end
+				local now = os.clock()
+				local bucket = buckets[player]
+				if not bucket then
+					bucket = Events.newBucket(now)
+					buckets[player] = bucket
+				end
+				if Events.allow(bucket, now) then
+					clientStep(player, name, a, b, c, d)
+				end
 			end
-			local now = os.clock()
-			if now - (lastClient[player] or -math.huge) < 0.5 then
-				return
-			end
-			lastClient[player] = now
-			clientStep(player, name)
-		end)
+		)
 	end
 	Players.PlayerAdded:Connect(function(player)
-		TelemetryService.Funnel(player, "Joined")
-		watchFriends(player)
+		onJoin(player)
 		task.defer(stormCheck, player, true)
 	end)
 	for _, player in Players:GetPlayers() do
-		TelemetryService.Funnel(player, "Joined")
-		watchFriends(player)
+		onJoin(player)
 	end
 	Players.PlayerRemoving:Connect(function(player)
+		local session = sessions[player]
+		if session then
+			local seconds = math.floor(os.clock() - session.joinedAt)
+			custom(
+				player,
+				Events.custom(
+					"SessionEnd",
+					seconds,
+					Events.lengthBucket(seconds),
+					session.device or "Unknown",
+					session.day or "Unknown"
+				)
+			)
+		end
 		trackers[player] = nil
-		lastClient[player] = nil
+		buckets[player] = nil
+		shops[player] = nil
+		vehicles[player] = nil
+		sessions[player] = nil
 		dayChecked[player] = nil
 	end)
 end
@@ -450,20 +668,15 @@ end
 
 function TelemetryService.Start()
 	devHook()
-	local progression = script.Parent:FindFirstChild("ProgressionService")
-	if progression and progression:IsA("ModuleScript") then
-		local ok, progressionService = pcall(require, progression)
-		local signal = ok
-			and type(progressionService) == "table"
-			and (progressionService :: any).RankChanged
-		if typeof(signal) == "RBXScriptSignal" then
-			signal:Connect(function(player: Player, newRank: number, oldRank: number)
-				if newRank > oldRank then
-					TelemetryService.Funnel(player, "FirstRank")
-					rankProgression(player, newRank)
-				end
-			end)
-		end
+	local progressionService = service("ProgressionService")
+	local signal = progressionService and progressionService.RankChanged
+	if typeof(signal) == "RBXScriptSignal" then
+		signal:Connect(function(player: Player, newRank: number, oldRank: number)
+			if newRank > oldRank then
+				TelemetryService.Funnel(player, "FirstRank")
+				rankProgression(player, newRank)
+			end
+		end)
 	end
 	task.spawn(function()
 		local weather = ReplicatedStorage:WaitForChild("Weather", 60)

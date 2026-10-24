@@ -163,3 +163,16 @@ and every gameplay point are unchanged (`check_zones.py`). More hay fields (`FIE
 MaterialColor make the patchwork read; `scatter_props.treeline()` adds a broken belt of large wind-bent hawthorns along the
 Y 64 contour behind the town. The Haven Head "shards" (docs/17 P1 13) are not terrain: a heightmap shell cannot float, and the
 bake is solid ground at Y 67 under that eye.
+
+**Archipelago A (docs/21 section 6.1).** The main +-2,560 bake is byte-identical; `layout.ARCHIPELAGO` adds one bake
+window per new island (St Elowen's Mount, Puffin Isle, Penwyn, Wreck Reef, The Arches, Gannet Rock, Mermaid Lagoon) on the
+256-stud tile grid, disjoint from the main window and from each other. `bake_island()` uses only that island's polygons
+(rings round a centre), the main coast profiles on a smaller rise, gaussian `peaks`, flat `pads` (B1 building ground),
+`basins` (Penwyn harbour), `shoals` (Wreck Reef rock, the lagoon's sand floor) and the Mount `CAUSEWAY` spit (Mount
+window only: the main window is untouched, so north of z -2,560 C4's walkway stands on the -30 stud seabed). The seabed
+ramps to the -165 floor at every window edge, except the Mount's south edge, which meets the main bake's edge row. Outputs
+`map/generated/island_<Id>_{height.i16,material.u8}` and `terrain.json` `windows`; `make_work_place.luau` stages each as a
+child Folder of `__WorldTerrain`, `write_terrain.luau` writes it with `ARGS.window`, and `studio_terrain.write()` adds the
+`ARCHES` (the Door). WorldConfig gains `Islands` (centre, radius, landmark, stamp, landing, dock, pads), `Causeway` and
+`Terrain.windows`; `check_zones.py` checks every island point, the windows, the Mount seam, the causeway and the Door's
+channel. `make_map_image.py` composites every window on the +-7,168 canvas (4,096 px, 4 x 4 tiles).

@@ -42,19 +42,32 @@ for _, key in { "nx", "nz", "originX", "originZ", "cell", "heightScale", "shellL
 	folder:SetAttribute(key, meta[key])
 end
 folder:SetAttribute("materials", table.concat(meta.materials, ","))
-for _, entry in { { "H", meta.height }, { "M", meta.material } } do
-	local raw = fs.readFile(genDir .. "/" .. entry[2])
-	local b64 = base64(raw)
-	local count = 0
-	for i = 1, #b64, CHUNK do
-		count += 1
-		local sv = roblox.Instance.new("StringValue")
-		sv.Name = entry[1] .. count
-		sv.Value = string.sub(b64, i, i + CHUNK - 1)
-		sv.Parent = folder
+local function stage(into, grid)
+	for _, entry in { { "H", grid.height }, { "M", grid.material } } do
+		local raw = fs.readFile(genDir .. "/" .. entry[2])
+		local b64 = base64(raw)
+		local count = 0
+		for i = 1, #b64, CHUNK do
+			count += 1
+			local sv = roblox.Instance.new("StringValue")
+			sv.Name = entry[1] .. count
+			sv.Value = string.sub(b64, i, i + CHUNK - 1)
+			sv.Parent = into
+		end
+		into:SetAttribute(entry[1] .. "Count", count)
+		into:SetAttribute(entry[1] .. "Bytes", #raw)
 	end
-	folder:SetAttribute(entry[1] .. "Count", count)
-	folder:SetAttribute(entry[1] .. "Bytes", #raw)
+end
+stage(folder, meta)
+-- docs/21 archipelago: one child Folder per island bake window (same attributes and chunks as the main grid)
+for _, w in meta.windows or {} do
+	local sub = roblox.Instance.new("Folder")
+	sub.Name = w.id
+	for _, key in { "nx", "nz", "originX", "originZ" } do
+		sub:SetAttribute(key, w[key])
+	end
+	stage(sub, w)
+	sub.Parent = folder
 end
 folder.Parent = ss
 fs.writeFile(outPath, roblox.serializePlace(game))

@@ -138,7 +138,6 @@ local function open(player: Player): any
 		if claim.welcome then "Welcome" else "Daily",
 		tostring(claim.day)
 	)
-	Telemetry.Funnel(player, "FirstDailyCrate")
 	local reason = if claim.welcome then "Streak:Welcome" else `Streak:Day{claim.streak}`
 	ProgressionService.Award(player, claim.cash, 0, reason, true)
 	-- Group members get a flat +10% on the crate (G68); never multiplied, never a second crate.

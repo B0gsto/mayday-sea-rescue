@@ -3,7 +3,7 @@ return function(t)
 	local MapConfig = t.require("Config/MapConfig")
 
 	t.test("world <-> UV round-trips and covers the bake square", function()
-		local u, v = MapConfig.worldToUV(-2560, -2560)
+		local u, v = MapConfig.worldToUV(-7168, -7168)
 		t.expect(u).toBe(0)
 		t.expect(v).toBe(0)
 		u, v = MapConfig.worldToUV(0, 0)
