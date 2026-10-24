@@ -6,8 +6,8 @@
 --     wide at speed in a boat),
 --     blips (the operation's casualty / vessel pulsing, the drop-off when transporting, offers,
 --     the station, Chandlery, quay desk, car park, your vehicles, other crew, storm areas, your
---     waypoint) with objective blips clamped to the rim, a dotted line to the current objective and
---     its distance. Tap / click it to open the full map.
+--     waypoint) with objective blips clamped to the rim, a dotted line to the current objective (its
+--     distance lives on UI/Waypoint's marker and the strip, one readout: playtest 2). Tap / click it to open the full map.
 --   * Full map (M, gamepad View/Select, the MAP button): pan (drag / left stick), zoom (wheel,
 --     pinch, + / -, triggers), click / tap / A to set your own waypoint (again on it, or X, clears
 --     it), close with M, Esc, Backspace, B or the close button. Every control sits in a "safe"
@@ -43,7 +43,6 @@ MapController.Priority = 120
 local player = Players.LocalPlayer
 local C = HudTheme.Colors
 local DEEP = Color3.fromRGB(8, 38, 82)
-local STUDS_PER_M = 3
 
 type Style = { label: string, glyph: string, color: Color3 }
 type BlipDraw = {
@@ -360,9 +359,11 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 				end
 			end
 		end
-		local mech = s.current and s.current[1] and s.current[1].mechanicId
-		if mech == "transport" then
-			onBoard = true
+		-- my step says it first (the strip reads the same step): on the ride home, home is the goal
+		for _, cur in s.current or {} do
+			if (cur.trackId == s.myTrack or #s.current == 1) and cur.mechanicId == "transport" then
+				onBoard = true
+			end
 		end
 		if #(s.casualties or {}) == 0 and typeof(s.position) == "Vector3" and not onBoard then
 			table.insert(list, {
@@ -536,42 +537,6 @@ local function buildMinimap()
 	text("N", north, "N", 15).Size = UDim2.fromScale(1, 1)
 	mini.north = north
 
-	-- the orange objective pill ("Mayday 140 m", assets/ui/hud/mockup.png)
-	local pill = frame("Objective", root, {
-		AutomaticSize = Enum.AutomaticSize.X,
-		BackgroundTransparency = 0,
-		BackgroundColor3 = Color3.fromHex("F2671F"),
-		Visible = false,
-		ZIndex = 9,
-	})
-	corner(pill)
-	stroke(pill, Color3.fromRGB(255, 255, 255), 2, 0.25)
-	local shade = Instance.new("UIGradient")
-	shade.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHex("D9D9D9"))
-	shade.Rotation = 90
-	shade.Parent = pill
-	local pad = Instance.new("UIPadding")
-	pad.PaddingLeft = UDim.new(0, 14)
-	pad.PaddingRight = UDim.new(0, 14)
-	pad.Parent = pill
-	local pt = HudTheme.outline(text("Text", pill, "", 18))
-	pt.Font = HudTheme.NumberFont
-	pt.AutomaticSize = Enum.AutomaticSize.X
-	pt.Size = UDim2.fromScale(0, 1)
-	pt.ZIndex = 10
-	mini.pill, mini.pillText = pill, pt
-	-- desktop: just right of the bezel's upper right rim, like the mockup (x 0.97 clears the ring
-	-- over the pill's height); touch: the minimap sits at the top edge with the phone button right
-	-- of it, so the pill sits on the bezel's bottom edge instead
-	local function placePill(mt: Layout.Metrics)
-		pill.AnchorPoint = if mt.touch then Vector2.new(0.5, 0.5) else Vector2.new(0, 0.5)
-		pill.Position = if mt.touch then UDim2.new(0.5, 0, 1, -10) else UDim2.fromScale(0.97, 0.2)
-		pill.Size = UDim2.fromOffset(0, if mt.touch then 28 else 40)
-		pt.TextSize = if mt.touch then 18 else 24
-	end
-	placePill(Layout.current())
-	Layout.onMetrics(placePill)
-
 	if UserInputService.TouchEnabled then
 		-- in the square's empty top-right corner, so it stays inside the minimap region
 		local b = button("MapButton", root, "MAP", UDim2.fromOffset(52, 40))
@@ -672,7 +637,7 @@ local function updateMinimap(dt: number, now: number)
 	poolFlush(pool)
 	pulseAll(pool, now)
 
-	-- dotted route line and the distance pill
+	-- dotted route line (the distance is on the world marker and the strip: UI/Waypoint)
 	local dots = mini.dots :: Frame
 	if objective then
 		local d = objective - me
@@ -701,20 +666,10 @@ local function updateMinimap(dt: number, now: number)
 				dot.Visible = false
 			end
 		end
-		local metres = (Vector3.new(d.X, 0, d.Z)).Magnitude / STUDS_PER_M
-		mini.pillText.Text = if metres >= 1000
-			then string.format("%s  %.1f km", objectiveLabel or "", metres / 1000)
-			else string.format(
-				"%s  %d m",
-				objectiveLabel or "",
-				math.floor(metres / 10 + 0.5) * 10
-			)
-		mini.pill.Visible = true
 	else
 		for _, dot in dots:GetChildren() do
 			(dot :: Frame).Visible = false
 		end
-		mini.pill.Visible = false
 	end
 end
 

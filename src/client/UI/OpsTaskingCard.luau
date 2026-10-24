@@ -2,7 +2,8 @@
 -- OpsTaskingCard: the call as a DSC pager (top right), wordless (docs/16 K2): a flashing alert
 -- strip, the call-type icon (the PIW sprite, else a Glyph disc) and a pulsing accept button
 -- (check sprite + device key chip: R / gamepad DPadUp; the check alone on touch). The world shows
--- the way (flare, minimap blip, Bosun); driving at the call takes it too (OpsController).
+-- the way (flare, minimap blip, Bosun) and a chevron off the pager points at the call's world
+-- marker; driving at the call takes it too (OpsController).
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -116,6 +117,34 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	chip.AnchorPoint = Vector2.new(0.5, 0.5)
 	chip.Position = UDim2.fromScale(0.92, 0.12)
 
+	-- the way to the call (playtest 2: the pager did not read as "drive there"): a chevron round the
+	-- pager's rim, pointing at the world marker (UI/Waypoint's Mark) and nudging toward it
+	local HALF = Vector2.new(60, 88) -- the pager's half size
+	local way = Instance.new("Frame")
+	way.Name = "Way"
+	way.Position = UDim2.fromScale(0.5, 0.5)
+	way.Size = UDim2.fromOffset(0, 0) -- turns about the pager's centre
+	way.BackgroundTransparency = 1
+	way.Visible = false
+	way.Parent = body
+	local arrow = Instance.new("Frame")
+	arrow.Name = "Chevron"
+	arrow.AnchorPoint = Vector2.new(0.5, 0.5)
+	arrow.Size = UDim2.fromOffset(34, 26)
+	arrow.BackgroundTransparency = 1
+	arrow.Parent = way
+	for _, side in { -1, 1 } do
+		local arm = Instance.new("Frame")
+		arm.AnchorPoint = Vector2.new(0.5, 0.5)
+		arm.Position = UDim2.new(0.5, side * 7.5, 0.5, 3)
+		arm.Size = UDim2.fromOffset(25, 9)
+		arm.Rotation = side * 45
+		arm.BorderSizePixel = 0
+		arm.Parent = arrow
+		HudTheme.corner(arm, 4)
+		HudTheme.stroke(arm, Color3.new(1, 1, 1), 2)
+	end
+
 	local currentId: string? = nil
 	local acceptFn: ((string) -> ())? = nil
 	local conn: RBXScriptConnection? = nil
@@ -142,6 +171,9 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			end
 			badge.BackgroundColor3 = kind.color
 			strip.BackgroundColor3 = kind.color
+			for _, arm in arrow:GetChildren() do
+				(arm :: Frame).BackgroundColor3 = kind.color
+			end
 			body.Visible = false -- the Heartbeat shows it (and binds R) while the phone is shut
 			if conn then
 				conn:Disconnect()
@@ -184,6 +216,21 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 				-- the alert strip flashes and the accept button pulses like a DSC alarm
 				strip.BackgroundTransparency = if math.floor(t * 2.5) % 2 == 0 then 0 else 0.5
 				pulse.Scale = 1 + 0.05 * math.sin(t * 5)
+				local wp = pg and pg:FindFirstChild("Waypoint")
+				local mark = wp and wp:FindFirstChild("Mark") :: GuiObject?
+				way.Visible = shown and mark ~= nil and mark.Visible
+				if way.Visible then
+					local m = mark :: GuiObject
+					local d = m.AbsolutePosition
+						+ m.AbsoluteSize / 2
+						- body.AbsolutePosition
+						- body.AbsoluteSize / 2
+					local a = math.atan2(d.X, -d.Y) -- 0 = up, clockwise
+					local sa, ca = math.abs(math.sin(a)), math.abs(math.cos(a))
+					local rim = math.min(HALF.X / math.max(sa, 1e-3), HALF.Y / math.max(ca, 1e-3))
+					way.Rotation = math.deg(a)
+					arrow.Position = UDim2.fromOffset(0, -(rim + 24 + 6 * math.sin(t * 6)))
+				end
 				local left = (data.offerExpiresAt or math.huge) - workspace:GetServerTimeNow()
 				if left < -2 then
 					card.hide(data.opId)

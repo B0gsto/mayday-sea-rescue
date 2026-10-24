@@ -68,7 +68,14 @@ function Step.finish(s: S, result: { [string]: any })
 	end
 	s.finished = true
 	Ui.clean(s.bag)
-	s.finishFn(result)
+	-- the server rejects a result under the step's minSeconds (TooFast) and restarts the step: a
+	-- launch accepted while already seated looped there for good, the strip stuck on "Go" (playtest 2)
+	local early = (s.ctx.step and s.ctx.step.minSeconds or 0.5) + 0.15 - Step.elapsed(s)
+	if early > 0 then
+		task.delay(early, s.finishFn, result)
+	else
+		s.finishFn(result)
+	end
 end
 
 function Step.cleanup(s: S): () -> ()

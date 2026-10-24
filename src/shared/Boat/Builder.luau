@@ -588,11 +588,10 @@ local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 		at("ATT_TowHitch", Vector3.new(0, -0.3, 4.95)),
 		at("ATT_BowPoint", Vector3.new(0, -0.3, -4.95))
 	)
-	-- the casualty lies prone along the rear deck, head to the rider: upright they blocked the chase view
-	-- (r2 art review). VehicleService/NpcPickup stack the body up the slot's Y axis, which now points forward.
+	-- the casualty sits up on the rear deck behind the rider (the rig's Sit pose): lying prone they read
+	-- as an orange box from the chase camera (playtest 2). VehicleService/NpcPickup stand the body on the slot.
 	local slot = ctx.root:FindFirstChild("SurvivorSlot1") :: Attachment
-	slot.CFrame = CFrame.new(slot.Position + Vector3.new(0, 0.6, 0))
-		* CFrame.Angles(-math.pi / 2, 0, 0)
+	slot.Position += Vector3.new(0, 0.6, 0)
 	-- the rider's seated eye (ATT_EyePoint), relative to the seat
 	local eye = driver:FindFirstChild("EyePoint") :: Attachment
 	eye.Position = at("ATT_EyePoint", seatPos + spec.eyePoint) - seatPos

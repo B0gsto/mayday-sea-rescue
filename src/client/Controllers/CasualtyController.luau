@@ -8,8 +8,8 @@
 --   * the lifejacket strobe: a small Neon lens + PointLight on the ATT_Strobe bone, flashing at about
 --     1 Hz (SOLAS lights: 50-70 flashes a minute) when it's dark, stormy or the light is low
 --     (Workspace attribute CasualtyStrobeHold = true holds it lit, for stills);
---   * hi-vis aboard: a casualty riding a craft (Victim model attribute OnVehicle) gets an orange
---     tint and outline so they read apart from the seat at range (playtest 2);
+--   * hi-vis aboard: a casualty riding a craft (Victim model attribute OnVehicle) gets a light
+--     outline so they read apart from the seat at range (no fill: it read as an orange box);
 --   * shouting (VoiceTTS, 3D from the model): the nearest casualty in earshot who is waving,
 --     panicking or tiring calls out every few seconds, and says thanks once aboard.
 local CollectionService = game:GetService("CollectionService")
@@ -288,8 +288,7 @@ function CasualtyController.Start()
 						end
 						local h = Instance.new("Highlight")
 						h.Name = "HiVis"
-						h.FillColor = Color3.fromRGB(255, 110, 10)
-						h.FillTransparency = 0.45
+						h.FillTransparency = 1 -- outline only: an orange fill flattened them into a box (playtest 2)
 						h.OutlineColor = Color3.fromRGB(255, 225, 120)
 						h.OutlineTransparency = 0.1
 						h.DepthMode = Enum.HighlightDepthMode.Occluded

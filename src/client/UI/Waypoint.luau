@@ -3,8 +3,8 @@
 -- call, in the world. MapController's objective (the offered call, the nearest survivor or vessel,
 -- the drop-off once they are aboard) gets a screen marker (no light pillar: user, 2026-10-21): the call-type icon on a disc
 -- (OpsTaskingCard.KIND) with its distance under it, pinned to the screen edge with its tip pointing
--- the way while off screen. Hidden in the cold open (ColdOpenCue
--- owns it), under the phone or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
+-- the way while off screen. The one distance on screen (the strip repeats it; the minimap has no
+-- pill: playtest 2). Hidden under the phone or the full map, and in cinematics (OpsUiHidden). Mounted by OpsHud.
 --   Waypoint.start(ops, map, onDistance)  onDistance("240 m" | nil) each frame, for the strip
 --   Waypoint.metres(studs) -> "240 m" | "1.2 km"
 local Players = game:GetService("Players")
@@ -44,6 +44,7 @@ function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
 	gui.Name = "Waypoint"
 	gui.ResetOnSpawn = false
 	gui.IgnoreGuiInset = true -- viewport pixels, as WorldToViewportPoint gives them
+	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- Global hid the icon's glyph bars under the disc
 	gui.DisplayOrder = 15
 	gui.Parent = playerGui
 
@@ -151,15 +152,14 @@ function Waypoint.start(ops: any, map: any, onDistance: (string?) -> ())
 		local char = player.Character
 		local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
 		local pos, label = map.GetObjective()
-		local hidden = not (cam and root)
-			or Layout.coldOpen()
-			or player:GetAttribute("OpsUiHidden") == true -- a cinematic (the chase camera is Scriptable too)
+		local hidden = not (cam and root) or player:GetAttribute("OpsUiHidden") == true -- a cinematic (the chase camera is Scriptable too)
 		local me = if root then root.Position else Vector3.zero
 
 		-- the marker on the objective
 		local want = pos ~= nil and label ~= nil and SHOWN[label] == true
 		local flat = if pos then Vector3.new(pos.X - me.X, 0, pos.Z - me.Z).Magnitude else 0
-		onDistance(if want and root then Waypoint.metres(flat) else nil)
+		-- the strip drops its distance with the marker (right there: the world cues take over)
+		onDistance(if want and root and flat > NEAR then Waypoint.metres(flat) else nil)
 		if hidden or not want or flat <= NEAR or map.IsOpen() or phoneUp() then
 			mark.Visible = false
 			return

@@ -28,7 +28,7 @@
 -- from the moment the player rides a ColdOpen craft until the player attribute ColdOpenDone; the
 -- HUD shows only the radio subtitle, the interaction prompt, the speed dock and the minimap then.
 -- The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance to
--- the casualty, and its objective pill ("Drop-off 100 m") is the one objective line (no step strip).
+-- the casualty; the world marker (UI/Waypoint: icon + distance) is the one objective readout (no step strip).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.
 -- Layout.newPlayer() is true on a new-profile HUD: the cold open and the first 3 calls after it
 -- (Layout.onNewPlayer(fn) calls fn(active) now and on every change).

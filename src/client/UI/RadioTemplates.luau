@@ -94,11 +94,6 @@ local T: { [string]: Template } = {
 		tokens = { "SHORT_{cs}", "'Confirm you are able to launch, over.'" },
 	},
 	nudge = { voice = "CG", priority = P.Reply, tokens = { "SHORT_{cs}", "'Do you copy? Over.'" } },
-	sitrep_request = {
-		voice = "CG",
-		priority = P.Reply,
-		tokens = { "SHORT_{cs}", "TASKING_SITREP_REQ" },
-	},
 	roger_out = { voice = "CG", priority = P.Reply, tokens = { "SHORT_{cs}", "TASKING_ROGER_OUT" } },
 	copy_eta = {
 		voice = "CG",

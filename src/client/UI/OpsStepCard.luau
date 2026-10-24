@@ -2,15 +2,17 @@
 -- OpsStepCard: the running operation as a slim objective strip (Layout "objective" region, top
 -- left): a Glyph disc and one or two words (docs/16 K4). Every op runs radio_ack -> launch ->
 -- auto_board -> transport (shared/Ops/Definitions/SimpleSteps), so there are three looks:
---   flare + "Go"      answer and get aboard (tasking, launch)
---   ring  + "1/3"     pick them up: survivors picked up / survivors in the call
---   home  + "Home"    bring them home
+--   call icon + "Go"    answer and get aboard (tasking, launch)
+--   call icon + "1/3"   pick them up: survivors picked up / survivors in the call
+--   home + "Home"       bring them home
+-- The call icon and colour are the world marker's (OpsTaskingCard.KIND), so both switch together.
 -- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change. Under the
 -- word, the distance to the objective (UI/Waypoint feeds distance()).
 local TweenService = game:GetService("TweenService")
 
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
+local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 
 export type StepCard = {
 	update: (s: { [string]: any }) -> (),
@@ -21,11 +23,11 @@ export type StepCard = {
 local RED = Color3.fromHex("E8332A")
 local GREEN = Color3.fromHex("2FA866")
 
--- step id -> glyph, disc colour, text ("count" = picked up / total)
+-- step id -> glyph, disc colour, text ("count" = picked up / total; glyph "call" = the call's icon)
 local LOOK: { [string]: { glyph: string, color: Color3, text: string } } = {
-	tasking = { glyph = "flare", color = RED, text = "Go" },
-	launch = { glyph = "flare", color = RED, text = "Go" },
-	recovery = { glyph = "ring", color = HudTheme.Colors.accent, text = "count" },
+	tasking = { glyph = "call", color = RED, text = "Go" },
+	launch = { glyph = "call", color = RED, text = "Go" },
+	recovery = { glyph = "call", color = RED, text = "count" },
 	transport = { glyph = "home", color = GREEN, text = "Home" },
 }
 -- the ferry's own step ids
@@ -143,19 +145,25 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 				return -- between steps (or an unknown step): keep the last look
 			end
 			local text = if look.text == "count" then count(s) else look.text
+			local kind = OpsTaskingCard.KIND[s.kind or ""]
+			local glyph, color = look.glyph, look.color
+			if glyph == "call" then
+				glyph, color =
+					if kind then kind.icon else "swimmer", if kind then kind.color else RED
+			end
 			if not body.Visible then
 				body.Visible = true
 				popIn(body, 0.7)
 			end
-			if look.glyph ~= shown.glyph then
-				Glyph.draw(look.glyph, icon, Color3.new(1, 1, 1))
-				disc.BackgroundColor3 = look.color
+			if glyph ~= shown.glyph then
+				Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
+				disc.BackgroundColor3 = color
 				popIn(disc, 1.35)
 			elseif text ~= shown.text then
 				popIn(disc, 1.2) -- someone climbed aboard
 			end
 			word.Text = text
-			shown.glyph, shown.text = look.glyph, text
+			shown.glyph, shown.text = glyph, text
 		end,
 		hide = function()
 			body.Visible = false
