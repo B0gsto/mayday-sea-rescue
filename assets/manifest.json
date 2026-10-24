@@ -937,6 +937,18 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:0c8621b68a15d732efd88c1e23895eb0b63835ea1ab112d69e12ddd765a8e4a1": {
+  "aliases": [
+   "gale_isles_map_r0c3"
+  ],
+  "assetId": "95526658035291",
+  "imageId": "95526658035291",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c0",
+  "sha": "0c8621b68a15d732efd88c1e23895eb0b63835ea1ab112d69e12ddd765a8e4a1",
+  "source": "art/map/v2/gale_isles_map_r0c0.png",
+  "type": "Image"
+ },
  "Image:0c8f448105a6d133dce6b35974951cd098a0ee7dd620f31206d076680259bc96": {
   "assetId": "104514624045304",
   "imageId": "104514624045304",
@@ -2416,6 +2428,15 @@
   "source": "assets/textures/Materials/T_Mat_QuayStone_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:1e431de0fcb59dfdefe446c9ef1fd590e3ecfa60cd8916339fb19489f8355817": {
+  "assetId": "128377183688426",
+  "imageId": "128377183688426",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "1e431de0fcb59dfdefe446c9ef1fd590e3ecfa60cd8916339fb19489f8355817",
+  "source": "art/map/v2/gale_isles_map_r1c1.png",
+  "type": "Image"
+ },
  "Image:1e5a0d30e278188ef7e85c92c5679383ece4a0ce77267cd43bb05be54619bc51": {
   "assetId": "73509303331969",
   "imageId": "73509303331969",
@@ -2533,6 +2554,15 @@
   "name": "Mayday_T_BldTrim_Sheet_RGH",
   "sha": "1f698020100b0bad8f21b25077889122bca8df4afc28cb3b1be19401fe7f56de",
   "source": "assets/textures/M_Bld_TrimSheet/T_BldTrim_Sheet_RGH.png",
+  "type": "Image"
+ },
+ "Image:1f8ed64f29d1bff29f5437157b9659c7157b472a450e934f11953756cc6ffbdd": {
+  "assetId": "78356896818176",
+  "imageId": "78356896818176",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c3",
+  "sha": "1f8ed64f29d1bff29f5437157b9659c7157b472a450e934f11953756cc6ffbdd",
+  "source": "art/map/v2/gale_isles_map_r1c3.png",
   "type": "Image"
  },
  "Image:1fb982c86fcb80871dd6b2d3d56f03d16547049ec561ca0127b322932f826471": {
@@ -5035,6 +5065,15 @@
   "source": "assets/textures/M_Veh_StormRunner/T_StormRunner_Rig_ALB.png",
   "type": "Image"
  },
+ "Image:3f6a4ff65ab53c6e4abb78831cf29355b43a00d0e0cc0749795b189cfaa2fe4b": {
+  "assetId": "100758580068795",
+  "imageId": "100758580068795",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r3c3",
+  "sha": "3f6a4ff65ab53c6e4abb78831cf29355b43a00d0e0cc0749795b189cfaa2fe4b",
+  "source": "art/map/v2/gale_isles_map_r3c3.png",
+  "type": "Image"
+ },
  "Image:3faa3e210054ae539b5766a23f04a36029f347e1aa1ce38fa032072171db572d": {
   "assetId": "122985718913326",
   "imageId": "122985718913326",
@@ -5096,6 +5135,15 @@
   "name": "T_Cliff01_Granite_ALB_Wet",
   "sha": "4036c549db489514d3f2b0bfa7db39587b6c17f60c06170e8e6d14ba6cba07c0",
   "source": "assets/textures/M_Rock_Cliff_01/T_Cliff01_Granite_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:403be8b71e4e2996725a18fc3420e618ed3eda80f1838a219ac6ac1960011769": {
+  "assetId": "112341694227254",
+  "imageId": "112341694227254",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r3c0",
+  "sha": "403be8b71e4e2996725a18fc3420e618ed3eda80f1838a219ac6ac1960011769",
+  "source": "art/map/v2/gale_isles_map_r3c0.png",
   "type": "Image"
  },
  "Image:405e86d58b4cbaa60aec7c4317692b0e9935fe37bb8c8244a19a88f977f56a26": {
@@ -6389,6 +6437,15 @@
   "source": "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:51e60c77f4938fefc58fe0ba60fa659c89ed5ee48c43c197b2c2b819af19d539": {
+  "assetId": "103617855016958",
+  "imageId": "103617855016958",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c0",
+  "sha": "51e60c77f4938fefc58fe0ba60fa659c89ed5ee48c43c197b2c2b819af19d539",
+  "source": "art/map/v2/gale_isles_map_r2c0.png",
+  "type": "Image"
+ },
  "Image:51ec8ec72c7866f271f17f75c1579fa02175c32b26715a9ed0b64bd6f7e72356": {
   "assetId": "126824418813348",
   "imageId": "126824418813348",
@@ -7572,6 +7629,15 @@
   "name": "T_HarbourLight_Lantern_RGH",
   "sha": "62bcc11a68850af0657927af834e729fd2d0a9571d8e03191c6bfd74d560061b",
   "source": "assets/textures/M_Bld_HarbourLight/T_HarbourLight_Lantern_RGH.png",
+  "type": "Image"
+ },
+ "Image:62d9e9c0278b877c670a26560c036a6e129fcd1fabd226474c75c14e5f67ebf7": {
+  "assetId": "132459975547667",
+  "imageId": "132459975547667",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c2",
+  "sha": "62d9e9c0278b877c670a26560c036a6e129fcd1fabd226474c75c14e5f67ebf7",
+  "source": "art/map/v2/gale_isles_map_r2c2.png",
   "type": "Image"
  },
  "Image:62e42f842e6994fdc171df1df2d3147f63e751300aad4a3d2632d98e08632bef": {
@@ -10304,6 +10370,15 @@
   "source": "assets/textures/M_Veh_JetSki/T_JetSki_Sled_MET.png",
   "type": "Image"
  },
+ "Image:863a63a4cf9fe6032a558e96c60aa0719f910b6c0decb1b9f86ebad7c983b8b6": {
+  "assetId": "131848618270373",
+  "imageId": "131848618270373",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c2",
+  "sha": "863a63a4cf9fe6032a558e96c60aa0719f910b6c0decb1b9f86ebad7c983b8b6",
+  "source": "art/map/v2/gale_isles_map_r1c2.png",
+  "type": "Image"
+ },
  "Image:8641276ef2cdcfd15f89ab84724a42d48f948eeb52bf88cee9a13d9375bb2542": {
   "assetId": "76142609563953",
   "imageId": "76142609563953",
@@ -11660,6 +11735,15 @@
   "source": "assets/textures/M_Hbr_PropAtlas/T_HbrProps_Metal_ALB.png",
   "type": "Image"
  },
+ "Image:95d204aa3456cb41edbf68d1ca0f730562f4704b54d9f34c601f587dac98c23e": {
+  "assetId": "73074170715404",
+  "imageId": "73074170715404",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c3",
+  "sha": "95d204aa3456cb41edbf68d1ca0f730562f4704b54d9f34c601f587dac98c23e",
+  "source": "art/map/v2/gale_isles_map_r2c3.png",
+  "type": "Image"
+ },
  "Image:95dd15970afe42f998570027df6dade9f0b92d7402914a814857b3af71e3a8fc": {
   "assetId": "125426107137497",
   "imageId": "125426107137497",
@@ -12096,6 +12180,15 @@
   "name": "T_QuayKit_Tide_RGH",
   "sha": "9cb0e6de8632cc7724f81a4c941f75bf6aadff0afb07936ba3a95b80d2a6c076",
   "source": "assets/textures/M_Hbr_QuayKit/T_QuayKit_Tide_RGH.png",
+  "type": "Image"
+ },
+ "Image:9cde3e3c7390fc10de390ed4226bdbde7ca3168a9db73b86676ee3b760adb59c": {
+  "assetId": "82392629768586",
+  "imageId": "82392629768586",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r3c1",
+  "sha": "9cde3e3c7390fc10de390ed4226bdbde7ca3168a9db73b86676ee3b760adb59c",
+  "source": "art/map/v2/gale_isles_map_r3c1.png",
   "type": "Image"
  },
  "Image:9cf16d5187f8b9ca41ff68aa2a10bb034d3c2c78faaf0784c6d1c08b805f848d": {
@@ -15078,6 +15171,15 @@
   "source": "assets/ocean/ocean_normal.png",
   "type": "Image"
  },
+ "Image:ca14058e3376ee4642d9373c4c3d98713bea9e3f3ef98b2e058568de7eb734bc": {
+  "assetId": "112256394674574",
+  "imageId": "112256394674574",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c1",
+  "sha": "ca14058e3376ee4642d9373c4c3d98713bea9e3f3ef98b2e058568de7eb734bc",
+  "source": "art/map/v2/gale_isles_map_r2c1.png",
+  "type": "Image"
+ },
  "Image:ca1b334e141e03637083312545394239024f4ad8c94cf6b35e43e472e3311d5f": {
   "assetId": "135720549777349",
   "imageId": "135720549777349",
@@ -15166,6 +15268,15 @@
   "name": "T_ATV_Gear_ALB_Wet",
   "sha": "cb7448cf166107a4023ea56678dd1d53e7953f3e431a66739701e59b66c584ac",
   "source": "assets/textures/M_Veh_ATV/T_ATV_Gear_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:cba7d202c4aa728820a0acab6a0ac49ce80a7ed8305e0a575593b0fde5df09fc": {
+  "assetId": "117528142487204",
+  "imageId": "117528142487204",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r3c2",
+  "sha": "cba7d202c4aa728820a0acab6a0ac49ce80a7ed8305e0a575593b0fde5df09fc",
+  "source": "art/map/v2/gale_isles_map_r3c2.png",
   "type": "Image"
  },
  "Image:cbafbbd29f27b4e5bdd59aad5212eb93b8ffaaf34deaae89c114cf10bc3f2372": {
@@ -17708,6 +17819,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Decals_NOR.png",
   "type": "Image"
  },
+ "Image:eccb8e483e68676ec0ddf33b7db198f8dfd0fcf5fae4d1f28672f6e3e2833e82": {
+  "assetId": "139523893751651",
+  "imageId": "139523893751651",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c1",
+  "sha": "eccb8e483e68676ec0ddf33b7db198f8dfd0fcf5fae4d1f28672f6e3e2833e82",
+  "source": "art/map/v2/gale_isles_map_r0c1.png",
+  "type": "Image"
+ },
  "Image:ece258d644f6570c49ce9732691a2c4368a3f878eb803d211ad82e75055da6d7": {
   "assetId": "83458326770407",
   "imageId": "83458326770407",
@@ -17739,6 +17859,15 @@
   "name": "T_Cottage_Render_Blue_RGH",
   "sha": "ecf9cb4355ead69421145a3779eb5ccc806abe4359281dc8eb058676b09a30fa",
   "source": "assets/textures/M_Bld_Cottage_Kit/T_Cottage_Render_Blue_RGH.png",
+  "type": "Image"
+ },
+ "Image:ed18af8cd4514fb3c035254ae04033e64a2ab9345f00a9315f177602d4e5b170": {
+  "assetId": "94325816983082",
+  "imageId": "94325816983082",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c0",
+  "sha": "ed18af8cd4514fb3c035254ae04033e64a2ab9345f00a9315f177602d4e5b170",
+  "source": "art/map/v2/gale_isles_map_r1c0.png",
   "type": "Image"
  },
  "Image:ed1e72a4c3d58bc782a2eac7be49165e97777a9e89f515c19e6730ea1a9c0ddf": {
@@ -18012,6 +18141,15 @@
   "name": "T_GildedGull_Hull_RGH_Wet",
   "sha": "f13b58a2bd44812eb51e728acd44ce444cc9ae575cfd26b544c6f71b64abb105",
   "source": "assets/textures/M_Veh_JetSki_GildedGull/T_GildedGull_Hull_RGH_Wet.png",
+  "type": "Image"
+ },
+ "Image:f14846bdc6708f7f1ed7b33b36e08e259f268da5ea059ddd7ed44705a31517da": {
+  "assetId": "110893276868583",
+  "imageId": "110893276868583",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r0c2",
+  "sha": "f14846bdc6708f7f1ed7b33b36e08e259f268da5ea059ddd7ed44705a31517da",
+  "source": "art/map/v2/gale_isles_map_r0c2.png",
   "type": "Image"
  },
  "Image:f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453": {

@@ -25,12 +25,32 @@ export type Blip = {
 
 local MapConfig = {
 	Image = "rbxassetid://124660107845917", -- art/map/gale_isles_map.png (2048 px)
-	-- art/map/gale_isles_map_r{row}c{col}.png; "" until B4 uploads them (the old 2 x 2 set covered only +-2,560)
+	-- art/map/v2/gale_isles_map_r{row}c{col}.png (4 x 4, 1024 px each)
 	Tiles = {
-		{ "", "", "", "" }, -- r0 (north)
-		{ "", "", "", "" },
-		{ "", "", "", "" },
-		{ "", "", "", "" }, -- r3 (south)
+		{
+			"rbxassetid://95526658035291",
+			"rbxassetid://139523893751651",
+			"rbxassetid://110893276868583",
+			"rbxassetid://95526658035291",
+		},
+		{
+			"rbxassetid://94325816983082",
+			"rbxassetid://128377183688426",
+			"rbxassetid://131848618270373",
+			"rbxassetid://78356896818176",
+		},
+		{
+			"rbxassetid://103617855016958",
+			"rbxassetid://112256394674574",
+			"rbxassetid://132459975547667",
+			"rbxassetid://73074170715404",
+		},
+		{
+			"rbxassetid://112341694227254",
+			"rbxassetid://82392629768586",
+			"rbxassetid://117528142487204",
+			"rbxassetid://100758580068795",
+		},
 	},
 	ImagePixels = 4096,
 	Origin = Vector2.new(-7168, -7168), -- world (x, z) of the image's top-left corner
