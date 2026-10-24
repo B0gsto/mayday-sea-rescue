@@ -17,8 +17,9 @@
 -- DogPoint (DogService): his head turns toward the victim and the tail goes, a "Woof!" bubble pops
 -- over his head and a small Waypoint Green arrow hovers beside him pointing the way. The arrow is
 -- skipped while ReplicatedStorage attribute UseMapWaypoints is true (the map shows the casualty).
--- K14: a guide point while he rides hidden on the craft (payload.from = the craft) barks, pops the
--- bubble and shows the arrow from the craft instead of his hidden body.
+-- K14: a guide point while he rides hidden on the craft (payload.from = the craft) barks and shows
+-- the arrow from the craft instead of his hidden body; a "Woof!" with no dog in sight read wrong,
+-- so the bubble there is a paw print on the craft's side toward the casualty.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -60,11 +61,34 @@ local dogs: { [Model]: DogState } = {}
 local lastBark: { [Model]: number } = {}
 local rng = Random.new()
 
-local function makeBubble(body: BasePart): BillboardGui
+-- A paw print: one pad and four toes, in the bubble's stroke colour.
+local function addPaw(frame: Frame)
+	local function dot(size: number, x: number, y: number)
+		local d = Instance.new("Frame")
+		d.AnchorPoint = Vector2.new(0.5, 0.5)
+		d.Size = UDim2.fromScale(size, size * (if size > 0.3 then 0.85 else 1.15))
+		d.Position = UDim2.fromScale(x, y)
+		d.BackgroundColor3 = Color3.fromHex("FF6B1A")
+		d.BorderSizePixel = 0
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0.5, 0)
+		c.Parent = d
+		d.Parent = frame
+	end
+	dot(0.42, 0.5, 0.64)
+	dot(0.15, 0.24, 0.42)
+	dot(0.15, 0.4, 0.28)
+	dot(0.15, 0.6, 0.28)
+	dot(0.15, 0.76, 0.42)
+end
+
+local function makeBubble(body: BasePart, pawToward: Vector3?): BillboardGui
 	local bubble = Instance.new("BillboardGui")
 	bubble.Name = "WoofBubble"
-	bubble.Size = UDim2.fromOffset(84, 40)
-	bubble.StudsOffsetWorldSpace = Vector3.new(0, 2.2, 0)
+	bubble.Size = if pawToward then UDim2.fromOffset(46, 46) else UDim2.fromOffset(84, 40)
+	bubble.StudsOffsetWorldSpace = if pawToward
+		then pawToward * 4 + Vector3.new(0, 3, 0)
+		else Vector3.new(0, 2.2, 0)
 	bubble.AlwaysOnTop = true
 	bubble.MaxDistance = 250
 	local frame = Instance.new("Frame")
@@ -80,14 +104,19 @@ local function makeBubble(body: BasePart): BillboardGui
 	stroke.Color = Color3.fromHex("FF6B1A")
 	stroke.Thickness = 3
 	stroke.Parent = frame
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.Text = "Woof!"
-	label.Font = Enum.Font.FredokaOne
-	label.TextSize = 22
-	label.TextColor3 = BUBBLE_TEXT
-	label.Parent = frame
+	if pawToward then
+		corner.CornerRadius = UDim.new(0.5, 0)
+		addPaw(frame)
+	else
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(1, 1)
+		label.BackgroundTransparency = 1
+		label.Text = "Woof!"
+		label.Font = Enum.Font.FredokaOne
+		label.TextSize = 22
+		label.TextColor3 = BUBBLE_TEXT
+		label.Parent = frame
+	end
 	local scale = Instance.new("UIScale")
 	scale.Scale = 0.2
 	scale.Parent = frame
@@ -296,6 +325,7 @@ local function onPoint(payload: any)
 		return
 	end
 	local from = payload.from
+	local onCraft = false
 	if
 		dog:GetAttribute("Hidden") == true
 		and typeof(from) == "Instance"
@@ -303,6 +333,7 @@ local function onPoint(payload: any)
 		and from.PrimaryPart
 	then
 		body = from.PrimaryPart
+		onCraft = true
 	end
 	local serial = (active[dog] or 0) + 1
 	active[dog] = serial
@@ -328,7 +359,11 @@ local function onPoint(payload: any)
 			if old then
 				old:Destroy()
 			end
-			bubble = makeBubble(body)
+			local flat = Vector3.new(direction.X, 0, direction.Z)
+			bubble = makeBubble(
+				body,
+				if onCraft then (if flat.Magnitude > 0.01 then flat.Unit else Vector3.zero) else nil
+			)
 		end
 	end
 	local arrow: Model? = if ReplicatedStorage:GetAttribute("UseMapWaypoints") == true

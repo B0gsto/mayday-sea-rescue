@@ -11,10 +11,9 @@
 --   Pet_State  S->C  PetRules.view (pets, bond, treats, progress, remaining, active)
 --   Pet_Get    C->S  function -> the same view (first pull)
 --   Pet_Equip  C->S  function (id) -> (ok, reason); only when recovered
---   Pet_Treat  C->S  function (id) -> (ok, reason); feeds one fish treat to the pet with you
--- G48: one fish treat fills one bond pip; a full bond unlocks the code-built life vest. Treats
--- come from each daily crate (the StreakClaim attribute). Studio: ServerStorage.SanctuaryDev "add" / "ready" / "equip" / "view";
--- ServerStorage.PetDev "view" / "equip" / "treat" n.
+-- Petting and fish treats were removed (owner, 2026-10-24): old saves keep their treat count and
+-- bond pips in the flag, unused. Studio: ServerStorage.SanctuaryDev "add" / "ready" / "equip" /
+-- "view"; ServerStorage.PetDev "view" / "equip".
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -40,7 +39,6 @@ local PUSH_SECONDS = 10
 
 local stateRemote: RemoteEvent? = nil
 local lastEquip: { [Player]: number } = {}
-local lastTreat: { [Player]: number } = {}
 
 local function ensureEvent(folder: Instance, name: string): RemoteEvent
 	local existing = folder:FindFirstChild(name)
@@ -121,48 +119,6 @@ function PetService.GetView(player: Player): any
 	return if data then viewOf(stateOf(data)) else nil
 end
 
--- G48: a fish treat (Chandlery shelf or a crate) lands in the same flag.
-function PetService.AddTreats(player: Player, count: number): boolean
-	local data = DataService.Get(player)
-	if not data or count <= 0 then
-		return false
-	end
-	local state = PetRules.addTreats(stateOf(data), count)
-	return store(player, state)
-end
-
-function PetService.GiveTreat(player: Player, id: any): (boolean, string?)
-	local data = DataService.Get(player)
-	if not data then
-		return false, "Profile not loaded"
-	end
-	local petId = tonumber(id)
-	if not petId then
-		return false, "Bad request"
-	end
-	local now = os.clock()
-	if now - (lastTreat[player] or 0) < EQUIP_COOLDOWN then
-		return false, "Too fast"
-	end
-	lastTreat[player] = now
-	local nextState, ok, reason = PetRules.giveTreat(stateOf(data), petId)
-	if not ok then
-		return false, reason
-	end
-	if not store(player, nextState) then
-		return false, "Could not save"
-	end
-	local pet = PetRules.get(nextState, petId)
-	Telemetry.Custom(
-		player,
-		"PetTreated",
-		1,
-		if pet then pet.species else "?",
-		tostring(if pet then pet.bond else 0)
-	)
-	return true
-end
-
 function PetService.Equip(player: Player, id: any): (boolean, string?)
 	local data = DataService.Get(player)
 	if not data then
@@ -227,21 +183,12 @@ function PetService.DevReady(player: Player): boolean
 	})
 end
 
-local function watchCrates(player: Player)
-	player:GetAttributeChangedSignal("StreakClaim"):Connect(function()
-		if player:GetAttribute("StreakClaim") ~= nil then
-			PetService.AddTreats(player, 1) -- one fish treat per daily crate
-		end
-	end)
-end
-
 function PetService.Init()
 	local folder = Net.init()
 
 	stateRemote = ensureEvent(folder, "Pet_State")
 	local get = ensureFunction(folder, "Pet_Get")
 	local equip = ensureFunction(folder, "Pet_Equip")
-	local treat = ensureFunction(folder, "Pet_Treat")
 
 	get.OnServerInvoke = function(player: Player)
 		return PetService.GetView(player)
@@ -249,20 +196,12 @@ function PetService.Init()
 	equip.OnServerInvoke = function(player: Player, id: any)
 		return PetService.Equip(player, id)
 	end
-	treat.OnServerInvoke = function(player: Player, id: any)
-		return PetService.GiveTreat(player, id)
-	end
 
 	DataService.OnLoaded(function(player: Player, data: any)
 		push(player, stateOf(data))
 	end)
-	for _, player in Players:GetPlayers() do
-		watchCrates(player)
-	end
-	Players.PlayerAdded:Connect(watchCrates)
 	Players.PlayerRemoving:Connect(function(player: Player)
 		lastEquip[player] = nil
-		lastTreat[player] = nil
 	end)
 
 	if RunService:IsStudio() then
@@ -277,8 +216,6 @@ function PetService.Init()
 				return PetService.GetView(player)
 			elseif cmd == "equip" then
 				return PetService.Equip(player, a)
-			elseif cmd == "treat" then
-				return PetService.AddTreats(player, tonumber(a) or 1)
 			end
 			return nil
 		end

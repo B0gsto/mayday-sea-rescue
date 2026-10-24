@@ -1366,10 +1366,9 @@ function Phone.mount(statusRegion: Frame)
 				return pass ~= nil and player:GetAttribute("Pass_" .. pass) == true
 			end)
 			else nil
+		-- only opening Vehicles marks a pick seen: the next item after a buy in the app (Engine,
+		-- then Hull) dots again (real-client playtest: the dot never came back for the Hull)
 		affordKey = if pick then pick.key else nil
-		if open and current == "Vehicles" then
-			seenKey = affordKey -- on screen already: no dot for it
-		end
 		paintBadge()
 	end
 	local function onData(d: any)

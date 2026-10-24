@@ -9,7 +9,8 @@
 -- removed: the sanctuary only grows, and a full yard simply means the next animal is not taken
 -- in (nothing is lost for not playing).
 --
--- G48: a fish treat fills one bond pip (five pips). A full bond unlocks the code-built life vest.
+-- G48: bond pips (five) came from fish treats, removed 2026-10-24 with petting; saved pips and a
+-- full bond's code-built life vest stay.
 -- The trick triggers are pure too, so the client only picks the animation.
 --
 -- The species and the rare colour variant are rolled deterministically from the operation id,
@@ -243,49 +244,6 @@ end
 
 function PetRules.treats(state: State): number
 	return math.clamp(flagTime(state.treats), 0, PetRules.TREAT_MAX)
-end
-
--- A crate or a purchase adds fish treats; the pocket caps so the flag stays flat.
-function PetRules.addTreats(state: State, count: number): State
-	local nextState = state
-	nextState.treats =
-		math.clamp(PetRules.treats(state) + math.max(0, math.floor(count)), 0, PetRules.TREAT_MAX)
-	return nextState
-end
-
--- Feeds one fish treat to the pet you are with: one bond pip, and it counts as adopted.
-function PetRules.giveTreat(state: State, id: number): (State, boolean, string?)
-	local entry = PetRules.get(state, id)
-	if not entry then
-		return state, false, "Unknown pet"
-	end
-	if state.active ~= id then
-		return state, false, "Not with you"
-	end
-	if PetRules.treats(state) <= 0 then
-		return state, false, "No treats"
-	end
-	if (entry.bond or 0) >= PetRules.BOND_MAX then
-		return state, false, "Bond full"
-	end
-	local entries = {}
-	for _, each in state.entries do
-		if each.id == id then
-			local fed = table.clone(each)
-			fed.bond = math.min(PetRules.BOND_MAX, (each.bond or 0) + 1)
-			fed.adopted = true
-			table.insert(entries, fed)
-		else
-			table.insert(entries, each)
-		end
-	end
-	return {
-		nextId = state.nextId,
-		active = state.active,
-		entries = entries,
-		treats = PetRules.treats(state) - 1,
-	},
-		true
 end
 
 -- The cosmetic reward at a full bond (code-built by PetAccessory on the client).

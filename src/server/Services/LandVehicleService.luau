@@ -1166,6 +1166,7 @@ local function placeSigns()
 			p.HoldDuration = 0.3
 			p.MaxActivationDistance = 12
 			p.RequiresLineOfSight = false
+			p:SetAttribute("FootOnly", true)
 			p.Parent = post
 			p.Triggered:Connect(function(player)
 				local ok, reason = spawnVehicle(player, vehicleId, point.id, withTrailer)

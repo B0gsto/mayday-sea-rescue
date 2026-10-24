@@ -595,6 +595,26 @@ local function popOccluders(camera: Camera, char: Model)
 	end
 end
 
+-- A wall pop or a short chase arm can put the lens inside the avatar's head (the near plane shows
+-- its insides): fade the own body out as the camera closes in, hidden at 1.5 studs from the head.
+local bodyFaded = false
+local function fadeNearBody(char: Model, camPos: Vector3)
+	local head = char:FindFirstChild("Head")
+	local d = if head and head:IsA("BasePart")
+		then (head.Position - camPos).Magnitude
+		else math.huge
+	local t = math.clamp((3.5 - d) / 2, 0, 1)
+	if t <= 0 and not bodyFaded then
+		return
+	end
+	bodyFaded = t > 0
+	for _, x in char:GetDescendants() do
+		if x:IsA("BasePart") or x:IsA("Decal") then
+			(x :: any).LocalTransparencyModifier = t
+		end
+	end
+end
+
 local function update(dt: number)
 	local want = wantedMode()
 	if want ~= mode then
@@ -623,6 +643,7 @@ local function update(dt: number)
 		end
 		FirstPerson.foot(dt, hum, root)
 		popOccluders(camera, char)
+		fadeNearBody(char, camera.CFrame.Position)
 	elseif mode == "VehicleFP" and current then
 		local c = current
 		local look = gatherLook(dt, true, false)
@@ -643,14 +664,21 @@ local function update(dt: number)
 	elseif mode == "Chase" and current then
 		local c = current
 		local look = gatherLook(dt, false, true)
+		local craft = c.model or (c.seat.Parent :: any)
+		-- the own craft is not an occluder: its console snapped the arm in to the rider's head
+		local exclude = excludeList(c.model)
+		table.insert(exclude, craft)
 		Chase.update(dt, {
-			model = c.model or (c.seat.Parent :: any),
+			model = craft,
 			root = c.root,
 			topSpeed = if c.spec then c.spec.topSpeed else 60,
-			exclude = excludeList(c.model),
+			exclude = exclude,
 			waveHeight = waveHeight,
 			telemetry = telemetry(),
 		}, look)
+		if char then
+			fadeNearBody(char, camera.CFrame.Position)
+		end
 	end
 	-- the helm toggle stays bound while in a chase vehicle, also from the helm view
 	setHelmBinding(helmWanted(mode))

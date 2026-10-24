@@ -5,11 +5,10 @@
 -- active pet at a time. There is no yard (removed 2026-10-22): with no pet out, the first recovered
 -- one is adopted automatically (Pet_Equip), never from a list.
 --
--- G48: the following pet is a friend, not a prop. Hold its one world glyph to pet it (hearts, a
--- wiggle, its call); with a fish treat in the pocket the same glyph feeds it (bigger spin + hop,
--- one bond pip). It celebrates a finished rescue or an opened crate, greets the player on spawn,
--- naps with "Zz" when the player idles at the station, and sits on the boat bow facing forward.
--- A full bond (five pips) unlocks the code-built life vest.
+-- G48: the following pet is a friend, not a prop. It celebrates a finished rescue or an opened
+-- crate, greets the player on spawn, naps with "Zz" when the player idles at the station, and sits
+-- on the boat bow facing forward. A saved full bond still wears the code-built life vest. Petting,
+-- fish treats and the bond-heart meter were removed (owner, 2026-10-24).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,7 +25,6 @@ local Wildlife = require(Shared:WaitForChild("Config"):WaitForChild("Wildlife"))
 local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
-local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 
 type PetRow = {
 	id: number,
@@ -42,12 +40,7 @@ type PetRow = {
 	adopted: boolean,
 	accessory: string?,
 }
-type View = { now: number, treats: number, pets: { PetRow } }
-
-local PET_HEARTS = 5
-local HEART_ON = Color3.fromRGB(232, 86, 94)
-local HEART_OFF = Color3.fromRGB(72, 62, 62)
-local HEART_READY = Color3.fromRGB(255, 120, 128)
+type View = { now: number, pets: { PetRow } }
 
 local PetController = {}
 PetController.Priority = 72
@@ -57,12 +50,9 @@ local player = Players.LocalPlayer
 local stateRemote: RemoteEvent? = nil
 local getRemote: RemoteFunction? = nil
 local equipRemote: RemoteFunction? = nil
-local treatRemote: RemoteFunction? = nil
 
 local active: PetRow? = nil
 local activeModel: Model? = nil
-local activeHearts: { TextLabel } = {}
-local treats = 0
 local petCF: CFrame? = nil
 local petYaw = 0
 local hopT = 0
@@ -70,8 +60,6 @@ local clock = 0
 local adoptingId: number? = nil
 local nextVoice = 0
 
-local petSpot: Part? = nil
-local petPrompt: ProximityPrompt? = nil
 local trickName: string? = nil
 local trickStart = 0
 local trickUntil = 0
@@ -92,7 +80,6 @@ local VOICE: { [string]: string } = {
 	Turtle = "Pet_Turtle",
 }
 
-local PROMPT_RANGE = 7
 local STATION_RANGE = 70 -- studs from the sanctuary centre: "at the station"
 
 local function awaitChild(parent: Instance, name: string, class: string): Instance?
@@ -211,89 +198,10 @@ local function trickPose(): (number, number, number)
 	local p = math.clamp((clock - trickStart) / math.max(0.01, trickUntil - trickStart), 0, 1)
 	if name == "Celebrate" then
 		return math.pi * 4 * p, math.sin(p * math.pi) * 1.3, math.sin(clock * 20) * 0.08
-	elseif name == "Treat" then
-		return math.pi * 2 * p, math.sin(p * math.pi) * 1.2, math.sin(clock * 22) * 0.16
-	elseif name == "Pet" then
-		return 0, math.abs(math.sin(clock * 14)) * 0.18, math.sin(clock * 20) * 0.14
 	elseif name == "Greet" then
 		return 0, math.abs(math.sin(p * math.pi)) * 0.5, math.sin(clock * 16) * 0.08
 	end
 	return 0, 0, 0
-end
-
-local function refreshPrompt()
-	local prompt = petPrompt
-	if not prompt then
-		return
-	end
-	local pet = active
-	prompt.Enabled = pet ~= nil and activeModel ~= nil
-	if not pet then
-		return
-	end
-	prompt.ObjectText = pet.label
-	prompt.ActionText = if treats > 0
-			and (pet.bond or 0) < (pet.bondMax or PetRules.BOND_MAX)
-		then "Treat"
-		else "Pet"
-end
-
-local function petAction()
-	local pet = active
-	local model = activeModel
-	if not (pet and model) then
-		return
-	end
-	local feeding = treats > 0 and (pet.bond or 0) < (pet.bondMax or PetRules.BOND_MAX)
-	if feeding then
-		treats -= 1
-		startTrick("Treat", 1.5)
-		heartBurst(model, 6)
-		playVoice(pet.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
-		local remote = treatRemote
-		if remote then
-			task.spawn(function()
-				local ok, allowed = pcall(function()
-					return (remote :: RemoteFunction):InvokeServer(pet.id)
-				end)
-				if not ok or allowed ~= true then
-					treats += 1 -- rejected: the pocket did not lose it
-					refreshPrompt()
-				end
-			end)
-		end
-	else
-		startTrick("Pet", 1.0)
-		heartBurst(model, 3)
-		playVoice(pet.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
-		Telemetry.once("PetPetted") -- G64: the hold-to-pet action was used
-	end
-	refreshPrompt()
-end
-
-local function buildPrompt()
-	local spot = Instance.new("Part")
-	spot.Name = "PetSpot"
-	spot.Size = Vector3.new(1.2, 1.2, 1.2)
-	spot.Transparency = 1
-	spot.Anchored = true
-	spot.CanCollide = false
-	spot.CanQuery = false
-	spot.CanTouch = false
-	spot.CastShadow = false
-	spot.Parent = Workspace
-	local prompt = Instance.new("ProximityPrompt")
-	prompt.Name = "PetPrompt"
-	prompt.ActionText = "Pet"
-	prompt.ObjectText = ""
-	prompt.HoldDuration = 0.5
-	prompt.MaxActivationDistance = PROMPT_RANGE
-	prompt.RequiresLineOfSight = false
-	prompt.Enabled = false
-	prompt.Parent = spot
-	prompt.Triggered:Connect(petAction)
-	petSpot = spot
-	petPrompt = prompt
 end
 
 local function equip(id: number)
@@ -312,66 +220,10 @@ local function equip(id: number)
 	end)
 end
 
--- the five-heart bond meter over the active pet
-local function hearts(model: Model): { TextLabel }
-	local root = model.PrimaryPart
-	local out = {}
-	if not root then
-		return out
-	end
-	local billboard = Instance.new("BillboardGui")
-	billboard.Name = "PetHearts"
-	billboard.Size = UDim2.fromOffset(112, 24)
-	billboard.StudsOffset = Vector3.new(0, WildlifeRig.height(model) + 0.7, 0)
-	billboard.AlwaysOnTop = true
-	billboard.MaxDistance = 90
-	billboard.Parent = root
-	local row = Instance.new("Frame")
-	row.BackgroundTransparency = 1
-	row.Size = UDim2.fromScale(1, 1)
-	row.Parent = billboard
-	local layout = Instance.new("UIListLayout")
-	layout.FillDirection = Enum.FillDirection.Horizontal
-	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	layout.VerticalAlignment = Enum.VerticalAlignment.Center
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Padding = UDim.new(0, 2)
-	layout.Parent = row
-	for i = 1, PET_HEARTS do
-		local heart = Instance.new("TextLabel")
-		heart.Name = `Heart{i}`
-		heart.LayoutOrder = i
-		heart.Size = UDim2.fromOffset(20, 20)
-		heart.BackgroundTransparency = 1
-		heart.Font = Enum.Font.GothamBold
-		heart.TextSize = 18
-		heart.TextColor3 = HEART_OFF
-		heart.Text = "♥"
-		heart.Parent = row
-		table.insert(out, heart)
-	end
-	return out
-end
-
-local function setHearts(list: { TextLabel }, filled: number, full: boolean)
-	local count = math.clamp(math.floor(filled + 0.5), 0, PET_HEARTS)
-	for i, heart in list do
-		heart.TextColor3 = if full then HEART_READY elseif i <= count then HEART_ON else HEART_OFF
-	end
-end
-
-local function pipCount(ready: boolean, progress: number, bond: number): number
-	if ready then
-		return math.clamp(bond, 0, PET_HEARTS)
-	end
-	return math.ceil(math.clamp(progress, 0, 1) * PET_HEARTS)
-end
-
 local function applyView(next: View)
 	if type(next) ~= "table" or type(next.pets) ~= "table" then
 		return
 	end
-	treats = tonumber(next.treats) or 0
 	local during: PetRow? = nil
 	local recovered: PetRow? = nil
 	for _, row in next.pets do
@@ -395,7 +247,6 @@ local function applyView(next: View)
 			activeModel:Destroy()
 			activeModel = nil
 		end
-		activeHearts = {}
 		clearZz()
 		petCF = nil
 		trickName = nil
@@ -408,7 +259,6 @@ local function applyView(next: View)
 					PetAccessory.wear(model)
 				end
 				model.Parent = Workspace
-				activeHearts = hearts(model)
 				if adoptingId == during.id then
 					adoptingId = nil
 					playVoice(during.species, model:GetPivot().Position + Vector3.new(0, 2, 0))
@@ -429,13 +279,7 @@ local function applyView(next: View)
 		if during.accessory and activeModel:GetAttribute("PetAccessory") == nil then
 			PetAccessory.wear(activeModel)
 		end
-		setHearts(
-			activeHearts,
-			pipCount(during.ready, during.progress, during.bond),
-			during.accessory ~= nil
-		)
 	end
-	refreshPrompt()
 end
 
 local function vehicleSeat(humanoid: Humanoid): Model?
@@ -473,13 +317,6 @@ local function groundY(x: number, z: number): number
 	return if hit then hit.Position.Y else 0
 end
 
-local function heartsShown(model: Model, on: boolean)
-	local gui = model.PrimaryPart and model.PrimaryPart:FindFirstChild("PetHearts")
-	if gui and gui:IsA("BillboardGui") then
-		gui.Enabled = on -- the bond meter floating over a moving car read as clutter
-	end
-end
-
 local function stepBoat()
 	local boat = activeModel
 	if not (boat and active) then
@@ -489,10 +326,8 @@ local function stepBoat()
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	local vehicle = if humanoid then vehicleSeat(humanoid) else nil
 	if not vehicle then
-		heartsShown(boat, true)
 		return
 	end
-	heartsShown(boat, false)
 	-- land vehicles have no deck seat: the pet rides on the rear of the roof / load bed
 	if vehicle:GetAttribute("LandVehicle") == true then
 		local box, size = vehicle:GetBoundingBox()
@@ -651,18 +486,15 @@ function PetController.Init()
 	local event = awaitChild(net, "Pet_State", "RemoteEvent")
 	local get = awaitChild(net, "Pet_Get", "RemoteFunction")
 	local equipFn = awaitChild(net, "Pet_Equip", "RemoteFunction")
-	local treatFn = awaitChild(net, "Pet_Treat", "RemoteFunction")
 	stateRemote = if event then event :: RemoteEvent else nil
 	getRemote = if get then get :: RemoteFunction else nil
 	equipRemote = if equipFn then equipFn :: RemoteFunction else nil
-	treatRemote = if treatFn then treatFn :: RemoteFunction else nil
 	if stateRemote then
 		stateRemote.OnClientEvent:Connect(applyView)
 	end
 end
 
 function PetController.Start()
-	buildPrompt()
 	if getRemote then
 		task.spawn(function()
 			local ok, result = pcall(function()
@@ -693,14 +525,6 @@ function PetController.Start()
 			return
 		end
 		local model = activeModel
-		local prompt = petPrompt
-		local spot = petSpot
-		if prompt and spot then
-			spot.CFrame = CFrame.new(
-				model:GetPivot().Position + Vector3.new(0, WildlifeRig.height(model) + 0.8, 0)
-			)
-			refreshPrompt()
-		end
 		if clock >= nextVoice and not napping then
 			nextVoice = clock
 				+ math.random(AudioConfig.Mix.petVoiceMinGap, AudioConfig.Mix.petVoiceMaxGap)
