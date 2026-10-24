@@ -190,3 +190,57 @@ Top 5, three builders with disjoint files:
    and 2/3/4-storey mix seen from above, plus N4 farm; N2 road patches.
 4. Then WP-3 follow-up (P0 2): a visible terraced hillside behind the town (`layout.py`, `gen_terrain.py`), alone.
 5. Then WP-6: re-place the 5 broken viewpoints and run pass 4.
+
+## Pass 4 (2026-10-24)
+
+Source: `mayday-tour/build/tour/r4_sheet_1..4.png` (17:23, HEAD 81f6c36f), full shots in `build/smoke/`. Street level
+and the coast are now ship-quality; all six aerials are blank, so the from-above work cannot be judged.
+
+### Pass-3 top-5 verdicts
+
+| # | Verdict | Evidence |
+|---|---|---|
+| 1 Ocean (N1 seam, N5, N8) | PARTLY | ground/lookout seam FIXED (`haven_head_viewpoint`, `sandy_point`, `harbour_mouth`: one sea to the horizon, glints read well; bright teal is the user's call, P0 5 closed). Aerial seam and N8 haze unverifiable: see N9 |
+| 2 Coast (N3, arms, N6, N7) | PARTLY | N3 shards gone (`haven_head_track`, `west_cliff`); one boulder still floats in the sky in `skerry_isle`. N7 FIXED (`station_slipway` galvanised back). N6 PARTLY: gravel + kerb, but still a pale slab in `west_cliff`. Arms: not visible (no aerial) |
+| 3 Town (roofs, farm, N2) | PARTLY | roofs FIXED: `ridge_view_town` now reads as a varied town with dark slates and landmarks. N4 FIXED (`trevose_farm` house + barn + walled yard). N2 PARTLY: `chapel_hill` patch reads as a blue-grey tile |
+| 4 Terraced hillside | DROPPED | user rejected terraces |
+| 5 WP-6 viewpoints | PARTLY | `harbour_quay`, `town_crescent`, `hospital`, `trevose_farm` now useful; `sandy_point` still open sea; aerials blank |
+
+### New problems
+
+- **N9 P0 (sign-off) All six aerials are blank sky-blue** (`map_aerial_*`: moon and haze only, no island). Cause is
+  almost certainly the high-camera skirt re-added in 8b85be0f (`Horizon.setHigh` shows 140 2048-stud tiles to
+  +/-12288 above Y SEA+60). The removed comment said exactly this: tiles out at +/-4096 blanked the view, +/-2048 did
+  not. Players rarely get above ~150 studs (lookouts render fine), but the store/marketing aerials and this review need
+  them. Fix: cap the skirt at +/-2048 (`SKIRT_TILES` 2, or a fade ring instead), or show it only below Y 300; re-shoot
+  the six aerials. File: `src/client/Ocean/Horizon.luau`.
+- **N10 P1 Harbour Road is pure black** (`harbour_road_west`, `harbour_road_east`, `station_slipway` sample RGB 0,0,0;
+  Chapel Hill samples 52,57,63). The main road in front of the station reads as a hole, no texture. Identify the
+  surface in Studio (a dark overlay Part or a different road material on that stretch) and match Chapel Hill's tarmac.
+  Files: `src/server/World/Street.luau` (road build), else `Harbour.luau`.
+- **N11 P1 Floating boulder** (`skerry_isle`, top centre): not grounded. Same raycast-drop rule as N3.
+  File: `src/server/World/CoastArt*.luau`.
+- **N12 P2 Road patch reads blue** (`chapel_hill`): patch tint has a blue cast and a hard edge. Use the road's own
+  colour +/-4 RGB, no blue shift, or drop patches. File: `Street.luau` roadWear().
+- **N13 P2 Sand edges faceted** (`calm_bay_water`: straight sand blades into the water, plus a vertical tile seam in the
+  water). Smooth the terrain shoreline there; check the wave-grid tile edge. Files: `gen_terrain.py`, `PartGrid.luau`.
+- **N14 P2 Pale slabs on the moor**: `west_cliff` car park and the `high_road_moor` white splash under the road edge
+  still read as bright concrete. Darken to a grey-brown gravel (~120,112,98), feather the edge with grass.
+  File: `RoadsShore.luau`.
+- **N15 P2 Trevose barn roof navy blue** (`trevose_farm`): reads as blue plastic; use slate grey or grey-green
+  corrugated, and break the flat pale yard with a muck/mud patch and a trough. File: `Town.luau` farms().
+- **N16 P2 Town edge is a ruler line** (`ridge_view_town`): the south row is one straight line of white houses on a
+  flat shelf. Stagger the row, add hedged fields and tree clumps along the edge (no terraces).
+  Files: `TownLayout.luau`, `TownExtrasLayout.luau`.
+- **N17 P2 Granite wall with white blotches** (`harbour_road_east`, right): reads as snow or bird mess. Swap the
+  texture/material for plain warm granite. File: `TownBuildings.luau` or `Swaps.luau`.
+
+### Overall
+
+Publishable: **yes after N9** (players see a finished map; N9 only blocks aerial/marketing shots and confirming the
+aerial seam and harbour arms). Most visible polish next, three builders with disjoint files:
+1. **Builder A (Ocean: `Horizon.luau`, `PartGrid.luau`):** N9 skirt, then re-shoot aerials; N13 water seam.
+2. **Builder B (Coast: `CoastArt*.luau`, `RoadsShore.luau`, `gen_terrain.py`):** N11 boulder, N14 slabs, N13 sand.
+3. **Builder C (Town: `Street.luau`, `Town.luau`, `TownLayout.luau`, `TownExtrasLayout.luau`, `TownBuildings.luau`):**
+   N10 black Harbour Road first (most seen surface in the game), N12, N15, N16, N17.
+Then pass 5 on aerials only (arms asymmetry, town from above, seam, haze).
