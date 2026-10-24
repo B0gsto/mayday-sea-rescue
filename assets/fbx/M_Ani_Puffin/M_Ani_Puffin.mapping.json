@@ -1,0 +1,289 @@
+{
+ "asset": "M_Pet_Puffin",
+ "axes": "Roblox rig-local studs, front -Z unless noted, up +Y; FBX via rbxkit (roblox = (-bx, bz, by)); each FBX node origin = its part rest CFrame (CFrame.new(position) * CFrame.Angles(angles))",
+ "texture": "T_Puffin_Feathers_<ALB|NOR|RGH|MET>.png, 1024, one swatch atlas",
+ "parts": [
+  {
+   "node": "Body",
+   "part": "Body",
+   "index": 1,
+   "position": [
+    0,
+    1.05,
+    0
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    1.354,
+    1.62,
+    1.267
+   ]
+  },
+  {
+   "node": "Belly",
+   "part": "Belly",
+   "index": 2,
+   "position": [
+    0,
+    0.95,
+    -0.35
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    1.057,
+    1.2,
+    0.897
+   ]
+  },
+  {
+   "node": "Head",
+   "part": "Head",
+   "index": 3,
+   "position": [
+    0,
+    2.0,
+    -0.2
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.964,
+    0.98,
+    0.975
+   ]
+  },
+  {
+   "node": "Face",
+   "part": "Face",
+   "index": 4,
+   "position": [
+    0,
+    2.0,
+    -0.7
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.89,
+    0.76,
+    0.877
+   ]
+  },
+  {
+   "node": "Beak",
+   "part": "Beak",
+   "index": 5,
+   "position": [
+    0,
+    1.98,
+    -1.03
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.316,
+    0.604,
+    0.76
+   ]
+  },
+  {
+   "node": "EyeLeft",
+   "part": "Eye",
+   "index": 6,
+   "position": [
+    -0.34,
+    2.14,
+    -0.72
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.257,
+    0.255,
+    0.273
+   ]
+  },
+  {
+   "node": "EyeRight",
+   "part": "Eye",
+   "index": 7,
+   "position": [
+    0.34,
+    2.14,
+    -0.72
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.257,
+    0.255,
+    0.273
+   ]
+  },
+  {
+   "node": "GlintLeft",
+   "part": "Glint",
+   "index": 8,
+   "position": [
+    -0.3,
+    2.2,
+    -0.82
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.078,
+    0.09,
+    0.07
+   ]
+  },
+  {
+   "node": "GlintRight",
+   "part": "Glint",
+   "index": 9,
+   "position": [
+    0.3,
+    2.2,
+    -0.82
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.078,
+    0.09,
+    0.07
+   ]
+  },
+  {
+   "node": "WingLeft",
+   "part": "Wing",
+   "index": 10,
+   "position": [
+    -0.9,
+    1.05,
+    0.1
+   ],
+   "angles": [
+    0,
+    0,
+    0.15
+   ],
+   "mesh_size": [
+    0.253,
+    1.25,
+    0.8
+   ]
+  },
+  {
+   "node": "WingRight",
+   "part": "Wing",
+   "index": 11,
+   "position": [
+    0.9,
+    1.05,
+    0.1
+   ],
+   "angles": [
+    0,
+    0,
+    -0.15
+   ],
+   "mesh_size": [
+    0.253,
+    1.25,
+    0.8
+   ]
+  },
+  {
+   "node": "FootLeft",
+   "part": "Foot",
+   "index": 12,
+   "position": [
+    -0.38,
+    0.14,
+    -0.5
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.591,
+    0.399,
+    0.86
+   ]
+  },
+  {
+   "node": "FootRight",
+   "part": "Foot",
+   "index": 13,
+   "position": [
+    0.38,
+    0.14,
+    -0.5
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.591,
+    0.399,
+    0.86
+   ]
+  },
+  {
+   "node": "Tail",
+   "part": "Tail",
+   "index": 14,
+   "position": [
+    0,
+    0.9,
+    0.76
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    0.59,
+    0.245,
+    0.496
+   ]
+  }
+ ],
+ "source": "src/shared/Config/Wildlife.luau Species.Puffin.parts (index = position in that list)",
+ "rare": "the albino palette is not in this atlas (needs a second ALB or a tinted copy)"
+}

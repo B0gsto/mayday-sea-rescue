@@ -1,0 +1,51 @@
+{
+ "asset": "M_Prop_SeaChest",
+ "axes": "Roblox rig-local studs, front -Z unless noted, up +Y; FBX via rbxkit (roblox = (-bx, bz, by)); each FBX node origin = its part rest CFrame (CFrame.new(position) * CFrame.Angles(angles))",
+ "texture": "T_SeaChest_Wood_<ALB|NOR|RGH|MET>.png, 1024, one swatch atlas",
+ "parts": [
+  {
+   "node": "Base",
+   "part": "Base",
+   "index": 1,
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    6.49,
+    3.12,
+    3.815
+   ]
+  },
+  {
+   "node": "Lid",
+   "part": "Lid",
+   "index": 2,
+   "position": [
+    0.0,
+    3.1,
+    -1.8
+   ],
+   "angles": [
+    0,
+    0,
+    0
+   ],
+   "mesh_size": [
+    6.04,
+    0.97,
+    4.045
+   ]
+  }
+ ],
+ "source": "src/client/World/StreakCrate.luau (scale 1; welcome crate = scale the model 1.35)",
+ "front": "lock and hasp face Roblox +Z (as the code-built crate); the hinge is the back top edge",
+ "open": "Lid.CFrame = base * CFrame.new(hinge) * CFrame.Angles(-angle, 0, 0), angle up to 108 deg",
+ "lid_top_y": 3.65
+}

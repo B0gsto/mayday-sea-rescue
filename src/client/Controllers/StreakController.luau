@@ -200,6 +200,17 @@ function StreakController.Start()
 		end
 		apply(lastView)
 	end)
+	-- the sea chest mesh replicates after the first build (WildlifeArtService): rebuild the crate on it
+	task.spawn(function()
+		if
+			ReplicatedStorage:WaitForChild("WildlifeTemplates", 120)
+			and crate
+			and crate ~= bursting
+		then
+			clearCrate()
+			apply(lastView)
+		end
+	end)
 end
 
 return StreakController

@@ -1,10 +1,17 @@
 --!strict
--- StreakCrate: the wooden sea chest on the station porch (docs/15 hook H5), code-built Parts.
+-- StreakCrate: the wooden sea chest on the station porch (docs/15 hook H5): the M_Prop_SeaChest
+-- upload (Base + Lid, published in ReplicatedStorage.WildlifeTemplates by WildlifeArtService; the lid
+-- swings about ATT_LidHinge), else code-built Parts with rope handles and iron bands.
 -- Built locally by StreakController, so each player sees only their own crate and its opening.
--- Rope handles, iron bands, a 7-pip streak strip on the lid, a gold ribbon on a day-7 crate and
--- a bigger, rope-coiled body on a welcome-back crate. No text.
+-- A 7-pip streak strip on the lid, a gold ribbon on a day-7 crate and a bigger, rope-coiled body
+-- on a welcome-back crate. No text.
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+
+local AssetIds = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("AssetIds")
+)
 
 local WOOD = Color3.fromRGB(122, 84, 50)
 local WOOD_DARK = Color3.fromRGB(88, 58, 34)
@@ -60,18 +67,50 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 	local bodyY = h / 2
 	local lidY = h
 
-	local base = part(
-		model,
-		"Base",
-		Vector3.new(w, h, d),
-		at * CFrame.new(0, bodyY, 0),
-		WOOD,
-		Enum.Material.Wood
-	)
+	-- the uploaded chest when its template has replicated (it shares the code crate's footprint and hinge)
+	local folder = ReplicatedStorage:FindFirstChild("WildlifeTemplates")
+	local template = folder and folder:FindFirstChild("M_Prop_SeaChest")
+	local chest: Model? = nil
+	if
+		template
+		and template:IsA("Model")
+		and template:FindFirstChild("Base")
+		and template:FindFirstChild("Lid")
+	then
+		local c = template:Clone()
+		c:ScaleTo(scale)
+		c:PivotTo(at)
+		chest = c
+	end
+	local meshLid: BasePart? = nil
+	local base: BasePart
+	if chest then
+		for _, inst in chest:GetDescendants() do
+			if inst:IsA("BasePart") then
+				inst.Anchored = true
+				inst.CanCollide = false
+				inst.CanQuery = false
+				inst.CanTouch = false
+				inst.Parent = model
+			end
+		end
+		base = model:FindFirstChild("Base") :: BasePart
+		meshLid = model:FindFirstChild("Lid") :: BasePart
+		chest:Destroy()
+	else
+		base = part(
+			model,
+			"Base",
+			Vector3.new(w, h, d),
+			at * CFrame.new(0, bodyY, 0),
+			WOOD,
+			Enum.Material.Wood
+		)
+	end
 	model.PrimaryPart = base
 
 	-- iron bands down the two long faces
-	for _, z in { -d / 2 - 0.02, d / 2 + 0.02 } do
+	for _, z in (if chest then {} else { -d / 2 - 0.02, d / 2 + 0.02 }) :: { number } do
 		for _, x in { -w * 0.28, w * 0.28 } do
 			part(
 				model,
@@ -85,7 +124,7 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 	end
 
 	-- rope handles on both short sides
-	for _, x in { -w / 2 - 0.06, w / 2 + 0.06 } do
+	for _, x in (if chest then {} else { -w / 2 - 0.06, w / 2 + 0.06 }) :: { number } do
 		part(
 			model,
 			"RopeHandle",
@@ -109,8 +148,17 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 	end
 
 	-- lid, hinged at its back edge; every lid part rotates about the same hinge line
-	local hinge = at * CFrame.new(0, h, -d / 2)
-	local lidParts: { { part: Part, rel: CFrame } } = {}
+	local att = (AssetIds.Attachments :: any).M_Prop_SeaChest
+	local hingeAt = if chest
+			and att
+			and att.ATT_LidHinge
+		then att.ATT_LidHinge * scale
+		else Vector3.new(0, h, -d / 2)
+	local hinge = at * CFrame.new(hingeAt)
+	local lidParts: { { part: BasePart, rel: CFrame } } = {}
+	if meshLid then
+		table.insert(lidParts, { part = meshLid, rel = hinge:Inverse() * meshLid.CFrame })
+	end
 	local function lidPart(
 		name: string,
 		size: Vector3,
@@ -119,17 +167,19 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 		material: Enum.Material
 	): Part
 		local p = part(model, name, size, cf, color, material)
-		table.insert(lidParts, { part = p, rel = hinge:Inverse() * cf })
+		table.insert(lidParts, { part = p :: BasePart, rel = hinge:Inverse() * cf })
 		return p
 	end
 
-	lidPart(
-		"Lid",
-		Vector3.new(w + 0.4, 0.55 * scale, d + 0.35),
-		at * CFrame.new(0, lidY + 0.275 * scale, 0),
-		WOOD_DARK,
-		Enum.Material.Wood
-	)
+	if not chest then
+		lidPart(
+			"Lid",
+			Vector3.new(w + 0.4, 0.55 * scale, d + 0.35),
+			at * CFrame.new(0, lidY + 0.275 * scale, 0),
+			WOOD_DARK,
+			Enum.Material.Wood
+		)
+	end
 	-- the 7-pip streak strip on the lid (icons only)
 	for i = 1, 7 do
 		local x = (i - 3.5) * 0.68 * scale
@@ -162,7 +212,7 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 			model,
 			"FrontStrap",
 			Vector3.new(0.55 * scale, h, 0.05),
-			at * CFrame.new(0, bodyY, d / 2 + 0.03),
+			at * CFrame.new(0, bodyY, if chest then 1.95 * scale else d / 2 + 0.03), -- mesh front: z 1.92
 			GOLD,
 			Enum.Material.SmoothPlastic
 		)
@@ -183,14 +233,16 @@ function StreakCrate.build(at: CFrame, opts: Options): Crate
 		end
 	end
 
-	-- a lid handle on the front so the chest reads as openable
-	lidPart(
-		"LidHandle",
-		Vector3.new(1.3 * scale, 0.26, 0.3),
-		at * CFrame.new(0, lidY + 0.05, d / 2 + 0.02),
-		IRON,
-		Enum.Material.Metal
-	)
+	-- a lid handle on the front so the chest reads as openable (the mesh has its hasp)
+	if not chest then
+		lidPart(
+			"LidHandle",
+			Vector3.new(1.3 * scale, 0.26, 0.3),
+			at * CFrame.new(0, lidY + 0.05, d / 2 + 0.02),
+			IRON,
+			Enum.Material.Metal
+		)
+	end
 
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "StreakCratePrompt"

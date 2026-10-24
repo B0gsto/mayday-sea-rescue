@@ -56,6 +56,27 @@
    ]
   },
   {
+   "Name": "M_Ani_Gull",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Feathers",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://136887573609491",
+        "NormalMap": "rbxassetid://127622516332283",
+        "RoughnessMap": "rbxassetid://116814308625153"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
    "Name": "M_Ani_HerringGull",
    "ClassName": "Folder",
    "Children": [
@@ -70,6 +91,148 @@
         "ColorMap": "rbxassetid://73691308718130",
         "NormalMap": "rbxassetid://114620325465405",
         "RoughnessMap": "rbxassetid://83693991350200"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_Otter",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Coat",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://104169644783767",
+        "RoughnessMap": "rbxassetid://76401761381577"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_Otter_Rare",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Rare",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://128457485845000",
+        "RoughnessMap": "rbxassetid://129451492618903"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_Puffin",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Feathers",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://120572695760935",
+        "NormalMap": "rbxassetid://93120123241378",
+        "RoughnessMap": "rbxassetid://105569802650071"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_SealPup",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Coat",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://99490185929780",
+        "RoughnessMap": "rbxassetid://119616556744768"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_SealPup_Rare",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Rare",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://132198933017999",
+        "NormalMap": "rbxassetid://110229252854657",
+        "RoughnessMap": "rbxassetid://103378122820265"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_Turtle",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Coat",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://115740968917380",
+        "RoughnessMap": "rbxassetid://97881126578983"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Ani_Turtle_Rare",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Rare",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://82031967303476",
+        "RoughnessMap": "rbxassetid://80687348617225"
        }
       }
      ]
@@ -2306,6 +2469,28 @@
         "NormalMap": "rbxassetid://71253414441637",
         "RoughnessMap": "rbxassetid://135971620367742",
         "MetalnessMap": "rbxassetid://131230835504645"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "Name": "M_Prop_SeaChest",
+   "ClassName": "Folder",
+   "Children": [
+    {
+     "Name": "Wood",
+     "ClassName": "Folder",
+     "Children": [
+      {
+       "Name": "Dry",
+       "ClassName": "SurfaceAppearance",
+       "Properties": {
+        "ColorMap": "rbxassetid://127285123351390",
+        "NormalMap": "rbxassetid://87943631556973",
+        "RoughnessMap": "rbxassetid://137764212303379",
+        "MetalnessMap": "rbxassetid://80651752753959"
        }
       }
      ]

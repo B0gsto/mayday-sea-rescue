@@ -1,0 +1,36 @@
+{
+ "asset": "M_Prop_SeaChest",
+ "units": "studs",
+ "mapping": "roblox = (-bx, bz, by)",
+ "attachments": [
+  {
+   "name": "ATT_LidHinge",
+   "parent": null,
+   "blender": [
+    0.0,
+    -1.8,
+    3.1
+   ],
+   "roblox_from_origin": [
+    -0.0,
+    3.1,
+    -1.8
+   ],
+   "roblox_from_bbox_centre": [
+    -0.0,
+    1.265,
+    -1.8075
+   ],
+   "look": [
+    0.0,
+    -0.0,
+    -1.0
+   ],
+   "up": [
+    -0.0,
+    1.0,
+    0.0
+   ]
+  }
+ ]
+}
