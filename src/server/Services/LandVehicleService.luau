@@ -48,6 +48,8 @@ local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
 local Wading = require(CarFolder:WaitForChild("Wading"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
+local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
+
 type Spec = LandVehicleConfig.Spec
 type SpawnPoint = LandVehicleConfig.SpawnPoint
 
@@ -403,7 +405,11 @@ end
 
 local onSeatChanged: (Record) -> () -- set below
 
-local function despawn(record: Record)
+-- reason (analytics H7: Idle / Replaced / WrongMedium): logs VehicleDespawned
+local function despawn(record: Record, reason: string?)
+	if reason then
+		Telemetry.Custom(record.owner, "VehicleDespawned", 1, reason, record.spec.id, "Land")
+	end
 	records[record.model] = nil
 	if byPlayer[record.owner] == record then
 		byPlayer[record.owner] = nil
@@ -554,7 +560,7 @@ local function spawnVehicle(
 	lastSpawn[player] = now
 	local old = byPlayer[player]
 	if old then
-		despawn(old)
+		despawn(old, "Replaced")
 	end
 
 	local model = withArt(Builder.build(spec), spec, ArtLayout.assetFor(vehicleId))
@@ -621,6 +627,7 @@ local function spawnVehicle(
 	end)
 	sitDriver(player, seat)
 	spawnedEvent:Fire(player, model)
+	Telemetry.Vehicle(player, "Spawned", vehicleId, "Road") -- analytics H4
 	return true, model
 end
 
@@ -643,6 +650,7 @@ onSeatChanged = function(record: Record)
 		return
 	end
 	if driver then
+		Telemetry.Vehicle(driver, "Boarded", record.spec.id) -- analytics H5 (only the owner drives)
 		record.mode = "Driven"
 		setAnchored(record, false)
 		Physics.idle(record.sim)
@@ -735,6 +743,7 @@ end
 -- server-owned, then velocities zeroed and the driver (still seated) gets ownership back.
 local function resetTo(record: Record, cf: CFrame, reason: string)
 	warn(`[LandVehicleService] reset {record.model.Name}: {reason}`)
+	Telemetry.VehicleRecovered(record.owner, reason, record.spec.id) -- analytics H8
 	record.resetting = true
 	record.strikes = 0
 	record.recovery.lastAt = os.clock()
@@ -921,7 +930,7 @@ local function despawnMisplaced(record: Record)
 		end
 	end
 	VehicleRecovery.poof(record.root.Position, true)
-	despawn(record)
+	despawn(record, "WrongMedium")
 end
 
 local function setDepth(model: Model, depth: number)
@@ -987,6 +996,9 @@ local function check(record: Record, dt: number)
 		else record.spec.topSpeed
 	local limit = top * SPEED_TOLERANCE + SPEED_SLACK
 	local moved = flat(pos - record.lastGood.Position)
+	if speed > 12 then -- analytics H6: ~15 km/h, once per spawn
+		Telemetry.Vehicle(record.owner, "Underway", record.spec.id)
+	end
 	if pos.Y > MAX_Y or pos.Y < MIN_Y then
 		resetTo(record, record.lastGood, "out of bounds")
 	elseif Wading.step(record.wade, depth, record.spec.id, os.clock()) == "Flood" then
@@ -1016,7 +1028,7 @@ local function checkDespawn(record: Record)
 			> LandVehicleConfig.Despawn.distance
 	local limit = LandVehicleConfig.Despawn.emptySeconds * Crowding.scale(#Players:GetPlayers())
 	if far and os.clock() - record.emptySince > limit then
-		despawn(record)
+		despawn(record, "Idle")
 	elseif not far then
 		record.emptySince = os.clock()
 	end

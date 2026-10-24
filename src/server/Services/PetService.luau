@@ -109,6 +109,7 @@ function PetService.AddRescue(player: Player, speciesId: string, rare: boolean):
 	if not store(player, nextState) then
 		return nil
 	end
+	Telemetry.Companion(player, speciesId, "Adopted") -- analytics H10
 	return entry
 end
 
@@ -148,17 +149,18 @@ function PetService.Equip(player: Player, id: any): (boolean, string?)
 	if not store(player, nextState) then
 		return false, "Could not save"
 	end
+	-- analytics H11: the companion out before and now (no pet out = Bosun)
+	local from, to =
+		PetRules.get(state, state.active or PetRules.BOSUN), PetRules.get(nextState, petId)
+	local fromSpecies, toSpecies =
+		if from then from.species else "Bosun", if to then to.species else "Bosun"
+	Telemetry.Companion(player, toSpecies, "Chosen")
+	if fromSpecies ~= toSpecies then
+		Telemetry.Custom(player, "CompanionSwitch", 1, fromSpecies, toSpecies)
+	end
 	if petId == PetRules.BOSUN then
 		return true
 	end
-	local pet = PetRules.get(nextState, petId)
-	Telemetry.Custom(
-		player,
-		"PetAdopted",
-		1,
-		if pet then pet.species else "?",
-		if pet and pet.rare then "Rare" else "Common"
-	)
 	BadgeService.Count(player, "FirstPet")
 	return true
 end

@@ -36,6 +36,7 @@ local Builder = require(CarFolder:WaitForChild("Builder"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local LightBar = require(CarFolder:WaitForChild("LightBar"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Wading = require(CarFolder:WaitForChild("Wading"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local Hud = require(Shared:WaitForChild("Config"):WaitForChild("UiImages")).Hud
@@ -589,6 +590,12 @@ local function drive(dt: number)
 		towing = towing,
 		brakeOverride = if flooded then 1 else nil,
 	}, dt)
+	-- analytics H15: throttle held (not flooded, no handbrake) and the car does not move
+	Telemetry.stalled(
+		"Car",
+		math.abs(throttle) > 0.5 and not handbrake and sim.root.AssemblyLinearVelocity.Magnitude < 1,
+		dt
+	)
 	if notice then
 		local untilAt = driving:GetAttribute("FloodedUntil")
 		local left = if type(untilAt) == "number"

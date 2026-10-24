@@ -418,8 +418,13 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			objective, objectiveLabel = target, "Casualty"
 		end
 		local craft = ownCraft()
-		if craft and select(2, seatModel()) ~= "boat" then
-			objective, objectiveLabel = craft:GetPivot().Position, "Craft"
+		local bay = player:GetAttribute("BayCFrame")
+		if select(2, seatModel()) ~= "boat" then
+			if craft then
+				objective, objectiveLabel = craft:GetPivot().Position, "Craft"
+			elseif typeof(bay) == "CFrame" then -- no craft out (wrong-medium / idle despawn): the bay makes one
+				objective, objectiveLabel = bay.Position, "Craft"
+			end
 		end
 	end
 	local now = Workspace:GetServerTimeNow()
