@@ -314,7 +314,7 @@ local function sendToStation(player: Player)
 end
 
 -- The cold open ended for any reason: persist ColdOpenDone, radio the outcome (on anything but
--- a rescue the lifeboat has picked the casualty up) and hand the player over to the station.
+-- a rescue the lifeboat has picked the casualty up) and hand the player over where they are.
 -- Runs once per cold open; ColdOpenFlow never lets it start again.
 local function endColdOpen(player: Player, reason: string)
 	local e = coldOpenFlow[player]
@@ -332,6 +332,11 @@ local function endColdOpen(player: Player, reason: string)
 	if ok and typeof(v) == "Instance" and v:IsA("Model") then
 		v:SetAttribute("ColdOpenApproach", false)
 		v:SetAttribute("ColdOpenAutoThrottle", false)
+		-- docs/20 M13: every hand-over leaves the seat empty (the cold-open survivor never rides on)
+		local okR, left = try("VehicleService", "RemoveSurvivors", v)
+		for _, m in if okR and type(left) == "table" then left else {} do
+			m:Destroy()
+		end
 	end
 	local msg = ColdOpenFlow.radioFor(reason)
 	fire("Ops_Radio", player, { opId = opId or "", from = msg.from, text = msg.text })
@@ -340,14 +345,13 @@ local function endColdOpen(player: Player, reason: string)
 	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
 	player:SetAttribute("ColdOpenHandover", how)
 	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
-	if how ~= "Ride" then
-		try("VehicleService", "Stow", player) -- the abandoned jet ski waits at the bay, not at sea
-	end
-	if how == "Station" then
-		sendToStation(player)
-	elseif how == "Respawn" then
+	-- docs/20 M4/M5: the cold open ends on the delivery beat, never a teleport. Seated ("Ride") they
+	-- keep the jet ski; on foot ("Station") they stay where they are and the jet ski stays put too,
+	-- so the craft pin shows the way back. Only a death respawns them at the station.
+	if how == "Respawn" then
+		try("VehicleService", "Stow", player) -- nobody left to ride it: it waits at the bay
 		stationOnSpawn[player] = true
-	end -- "Ride": they keep the jet ski and stay seated; call 2 is offered there (docs/16 B2, K18)
+	end
 end
 
 local function everyone(op: any): { Player }
@@ -383,6 +387,14 @@ end
 local function vehicleOf(player: Player): Model?
 	local ok, v = try("VehicleService", "GetVehicle", player)
 	return if ok and typeof(v) == "Instance" and v:IsA("Model") then v else nil
+end
+
+-- docs/20 change 3: no pager while the player has a call, carries a survivor or is in the cold open.
+local function busy(player: Player): boolean
+	local boat = vehicleOf(player)
+	return stateOf(player).activeOpId ~= nil
+		or player:GetAttribute("ColdOpenActive") == true
+		or (boat ~= nil and (tonumber(boat:GetAttribute("SurvivorCount")) or 0) > 0)
 end
 
 -- Every step is the track owner's (a crewmate rides along); nobody left: an NPC crewmate takes it.
@@ -876,6 +888,15 @@ end
 
 ---------------------------------------------------------------- takeover
 
+-- An NPC boat starts taking a casualty: the crew's camera cuts there for 2 s (client RacerController).
+local function cutToPickup(op: any): (Vector3) -> ()
+	return function(at: Vector3)
+		for _, member in op.members do
+			member:SetAttribute("RacerTaking", at)
+		end
+	end
+end
+
 -- `raced`: the casualty the K15 racer already has alongside; it picks them up itself (op.raceDone).
 startTakeover = function(op: any, reason: string, raced: number?)
 	if op.takeover or op.state ~= "Active" then
@@ -919,7 +940,7 @@ startTakeover = function(op: any, reason: string, raced: number?)
 				return RescueService.VictimPosition(op.scene, i)
 			end, function()
 				return (RescueService.ReleaseVictim(op.scene, i))
-			end, one)
+			end, one, nil, cutToPickup(op))
 		end
 	end
 	if waiting == 0 then
@@ -941,6 +962,10 @@ local function closeOp(op: any)
 	pcall(SinkingScene.Cleanup, op.scene)
 	pcall(FireScene.Cleanup, op.scene)
 	pcall(RescueService.Cleanup, op.scene)
+	for _, p in op.members do
+		p:SetAttribute("RacerAt", nil)
+		p:SetAttribute("RacerTaking", nil)
+	end
 	if op == bigOp then
 		bigOp = nil
 		bigLastEnd = now()
@@ -1549,103 +1574,154 @@ local function activate(op: any, player: Player)
 	advance(op, op.tracks[1])
 	-- K15 (docs/16, RaceRules): from the player's 4th call an NPC RIB races them to the first
 	-- casualty; there first, it takes them and the call ends unpaid (a takeover). Never on the first
-	-- three calls, nor on the GRACE calls after a lost race, nor where either route is blocked. It
-	-- casts off after a head start that leaves the player FAIR of its time.
-	local vehicles = service("VehicleService")
+	-- three calls, nor on the GRACE calls after a lost race. docs/20 change 3: no clock yet; the race
+	-- starts once the player is seated and under way (raceTick).
 	local total = player:GetAttribute("OpsCompletedTotal") -- nil until a call counts: no race
 	local st = stateOf(player)
 	local grace = st.raceGrace or 0
 	st.raceGrace = math.max(grace - 1, 0)
-	local spot = op.scene.position -- the spawn point clearSpawn checked (the survivor is beside it)
-	local from, top, onFoot = raceStart(player)
 	if
-		vehicles
+		service("VehicleService")
 		and not op.isBig
 		and type(total) == "number"
 		and not Onboarding.failsafeCall(total)
 		and grace <= 0
-		and spot
-		and from
+		and op.scene.position
 	then
-		-- on foot the player casts off from the bays: their water route starts there. Afloat, a
-		-- route the pier or a headland cuts goes out past the bays (RaceRules.START) instead.
-		local water = if onFoot then RaceRules.START else from
-		local route = RaceRules.route(RaceRules.START, spot)
-		local playerLen = RaceRules.length(water, RaceRules.route(water, spot))
-		if not routeClear(water, spot) then
-			playerLen = CallLogic.flatDistance(water, RaceRules.START)
-				+ RaceRules.length(RaceRules.START, route)
-			if not waterLine(water, RaceRules.START) then
-				playerLen = math.huge
-			end
-		end
-		if playerLen == math.huge or not routeClear(RaceRules.START, spot) then
-			print(
-				`[Race] {op.id}: no race, no clear water route from {water} to {spot} (on foot {onFoot})`
-			)
+		op.racePending = true
+	end
+end
+
+-- The racer for `op`, once its owner is seated and moving faster than RaceRules.UNDERWAY: it
+-- appears ahead of them on their own water route, siren on, idles out the fair head start and
+-- races them to the first casualty. No clear water route or start ahead yet (by a quay, too close
+-- to the call): it asks again next tick, so a race never starts hidden.
+local function startRace(op: any)
+	local player: Player = op.owner
+	local vehicles = service("VehicleService")
+	local from, top, onFoot = raceStart(player)
+	local boat = vehicles and vehicles.GetVehicle(player)
+	local v = boat and boat.PrimaryPart and boat.PrimaryPart.AssemblyLinearVelocity
+	if onFoot or not from or not v or Vector3.new(v.X, 0, v.Z).Magnitude < RaceRules.UNDERWAY then
+		return
+	end
+	local spot: Vector3 = op.scene.position -- the spawn point clearSpawn checked
+	-- the player's water route: straight (through the harbour mouth), else out past the bays
+	local path = RaceRules.route(from, spot)
+	if not routeClear(from, spot) then
+		if not waterLine(from, RaceRules.START) then
 			return
 		end
-		local mine = RaceRules.playerSeconds(
-			playerLen,
-			top,
-			onFoot,
-			if onFoot then CallLogic.flatDistance(from, CallTypes.STATION) else 0
-		)
-		local racerSeconds = RaceRules.length(RaceRules.START, route) / RaceRules.SPEED
-		local delay = RaceRules.delay(mine, racerSeconds * RaceRules.SPEED)
-		op.race = { acceptedAt = now() }
-		print(
-			string.format(
-				"[Race] %s: racer casts off after %.1f s, arrives %.1f s; player est %.1f s",
-				op.id,
-				delay,
-				delay + racerSeconds,
-				mine
-			)
-		)
-		task.spawn(NpcPickup.run, vehicles, function()
-			return RescueService.VictimPosition(op.scene, 1)
-		end, function()
-			return (RescueService.ReleaseVictim(op.scene, 1))
-		end, function()
-			if op.raceDone then
-				op.raceDone()
+		path = { RaceRules.START }
+		for _, p in RaceRules.route(RaceRules.START, spot) do
+			table.insert(path, p)
+		end
+	end
+	local start: Vector3? = nil
+	for _, d in { RaceRules.AHEAD, RaceRules.AHEAD / 2 } do
+		local a = RaceRules.along(from, path, d)
+		local dir = RaceRules.along(from, path, d + 2) - a
+		if dir.Magnitude < 1 then
+			continue -- the call is closer than that: no room for a start ahead
+		end
+		dir = dir.Unit
+		for _, side in { 1, -1 } do
+			local p = a + Vector3.new(-dir.Z, 0, dir.X) * side * RaceRules.SIDE
+			if
+				RescueService.ClearWater(p, RescueService.CLEAR_SPAWN)
+				and waterLine(from, p)
+				and routeClear(p, spot)
+			then
+				start = p
+				break
 			end
-		end, {
-			delay = delay,
-			route = route,
-			claim = function(): boolean
-				local c = op.casualties[1]
-				print(
-					string.format(
-						"[Race] %s: racer alongside at %.1f s",
-						op.id,
-						now() - op.race.acceptedAt
-					)
+		end
+		if start then
+			break
+		end
+	end
+	if not start then
+		return
+	end
+	op.racePending = nil
+	local route = RaceRules.route(start, spot)
+	local racerLen = RaceRules.length(start, route)
+	local mine = RaceRules.playerSeconds(RaceRules.length(from, path), top, false)
+	local delay = RaceRules.delay(mine, racerLen)
+	op.race = { acceptedAt = now() }
+	print(
+		string.format(
+			"[Race] %s: under way; racer casts off after %.1f s, arrives %.1f s; player est %.1f s",
+			op.id,
+			delay,
+			delay + racerLen / RaceRules.SPEED,
+			mine
+		)
+	)
+	op.racer = NpcPickup.run(vehicles, function()
+		return RescueService.VictimPosition(op.scene, 1)
+	end, function()
+		return (RescueService.ReleaseVictim(op.scene, 1))
+	end, function()
+		if op.raceDone then
+			op.raceDone()
+		end
+	end, {
+		delay = delay,
+		start = start,
+		route = route,
+		claim = function(): boolean
+			local c = op.casualties[1]
+			print(
+				string.format(
+					"[Race] %s: racer alongside at %.1f s",
+					op.id,
+					now() - op.race.acceptedAt
 				)
-				if op.state ~= "Active" or op.takeover or not c or c.aboard or c.delivered then
+			)
+			if op.state ~= "Active" or op.takeover or not c or c.aboard or c.delivered then
+				return false
+			end
+			-- a crew boat already alongside got there first: the racer stands off (it is still
+			-- slowing to pick them up)
+			local at = RescueService.VictimPosition(op.scene, 1)
+			for _, member in op.members do
+				local mb = vehicles.GetVehicle(member)
+				if
+					at
+					and mb
+					and CallLogic.flatDistance(mb:GetPivot().Position, at)
+						<= RaceRules.ALONGSIDE
+				then
+					print(`[Race] {op.id}: player alongside first, racer stands off`)
 					return false
 				end
-				-- a crew boat already alongside got there first: the racer stands off (it is still
-				-- slowing to pick them up)
-				local at = RescueService.VictimPosition(op.scene, 1)
-				for _, member in op.members do
-					local boat = vehicles.GetVehicle(member)
-					if
-						at
-						and boat
-						and CallLogic.flatDistance(boat:GetPivot().Position, at)
-							<= RaceRules.ALONGSIDE
-					then
-						print(`[Race] {op.id}: player alongside first, racer stands off`)
-						return false
-					end
-				end
-				st.raceGrace = RaceRules.GRACE
-				startTakeover(op, "Race", 1)
-				return true
-			end,
-		})
+			end
+			stateOf(player).raceGrace = RaceRules.GRACE
+			startTakeover(op, "Race", 1)
+			return true
+		end,
+	}, cutToPickup(op))
+end
+
+-- Each tick: a pending race starts once its owner is under way; the crew's minimap follows the
+-- racer (RacerAt, a player attribute: the boat itself may not be streamed in).
+local function raceTick(op: any)
+	if op.state ~= "Active" then
+		return -- closeOp cleared the crew's RacerAt
+	end
+	if op.racePending and op.owner and not op.takeover then
+		startRace(op)
+	end
+	local racer: Model? = op.racer
+	local at = if racer and racer.Parent then racer:GetPivot().Position else nil
+	for _, member in op.members do
+		if member:GetAttribute("RacerAt") ~= at then
+			member:SetAttribute("RacerAt", at)
+		end
+	end
+	if not at then
+		op.racer = nil
 	end
 end
 
@@ -1698,7 +1774,7 @@ local function startBigOp()
 	pcall(SkyFlare.distress, op.position) -- the world cue: a red flare and the ferry's horn out at sea
 	-- the server-wide pager, never to a player still in the tutorial chain
 	for _, p in Players:GetPlayers() do
-		if bigCallReady(p) then
+		if bigCallReady(p) and not busy(p) then
 			Remotes.event("Ops_Offered"):FireClient(p, offerPayload(op))
 		end
 	end
@@ -2026,6 +2102,7 @@ local function tick()
 				finish(op, why)
 			else
 				tickOp(op, dt, t)
+				raceTick(op)
 			end
 		end
 	end
@@ -2050,6 +2127,8 @@ local function tick()
 			-- the server-wide call ended before this player joined it: free the pager
 			st.offerOpId = nil
 			st.nextOfferAt = t + OfferPacing.afterDecline(weatherState(), offerRushed())
+		elseif st.offerOpId and not st.activeOpId and busy(player) then
+			withdrawOffer(ops[st.offerOpId]) -- picked someone up meanwhile: the pin stays on home
 		end
 		if not st.activeOpId and not st.offerOpId and t >= st.nextOfferAt and player.Character then
 			local e = coldOpenEntry(player)
@@ -2065,7 +2144,7 @@ local function tick()
 				if t - (coldOpenBegunAt[player] or -math.huge) > COLD_OPEN_START_GRACE then
 					endColdOpen(player, "Lost")
 				end
-			elseif decision == "Offer" and not inWater(player) then
+			elseif decision == "Offer" and not inWater(player) and not busy(player) then
 				-- two idle minutes on the quay: the board nudges an easy call, not a random one
 				local onFoot, stationDistance = stationIdle(player)
 				local nudge = st.completed >= #Grading.Payout.Tutorial

@@ -17,7 +17,12 @@ RaceRules.WALK = 16 -- studs/s on foot (Humanoid WalkSpeed)
 RaceRules.MIN_DELAY = 8 -- s: the racer always idles at the bays this long, siren on -- tune
 RaceRules.ALONGSIDE = 30 -- studs: a player boat this close when the racer arrives was there first -- tune
 RaceRules.GRACE = 2 -- calls with no racer after losing one -- tune
-RaceRules.START = Vector3.new(-70, 0, 120) -- off the launch bays, in the basin
+RaceRules.START = Vector3.new(-70, 0, 120) -- off the launch bays, in the basin (fallback start)
+-- docs/20 change 3: no clock until the player is seated and under way; then the racer appears ahead
+-- of them on their own route (offset to one side), siren on, so they see it idle and leave.
+RaceRules.UNDERWAY = 12.5 -- studs/s (15 km/h): seated and this fast starts the race -- tune
+RaceRules.AHEAD = 90 -- studs along the player's route to the racer's start -- tune
+RaceRules.SIDE = 30 -- studs off that route, so it never blocks the player -- tune
 -- the gap between the breakwater heads (x -30..30, z 352..368): one waypoint each side of it
 RaceRules.INNER_MOUTH = Vector3.new(0, 0, 330)
 RaceRules.OUTER_MOUTH = Vector3.new(0, 0, 400)
@@ -46,6 +51,20 @@ function RaceRules.length(from: Vector3, route: { Vector3 }): number
 		at = p
 	end
 	return total
+end
+
+-- The point `d` studs along the route from `from` (clamped to its end), flat.
+function RaceRules.along(from: Vector3, route: { Vector3 }, d: number): Vector3
+	local at = Vector3.new(from.X, 0, from.Z)
+	for _, p in route do
+		local leg = Vector3.new(p.X, 0, p.Z) - at
+		if leg.Magnitude >= d then
+			return if leg.Magnitude > 0 then at + leg.Unit * d else at
+		end
+		d -= leg.Magnitude
+		at += leg
+	end
+	return at
 end
 
 -- Seconds a player needs: `distance` by water at CRUISE of `topSpeed` plus BOARD, and on foot the

@@ -107,10 +107,13 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 - `RescueService`: the scene (rigged swimmers, drift, waving, boarding, pad delivery); `PiwRescue` /
   `PiwWays` make a survivor answer the boat (`PIW_Rescue` C->S `arm` / `bump`).
 - NPC racer (K15): `server/Ops/NpcPickup.luau`, balance in `shared/Calls/RaceRules.luau` (Lune-tested).
-  From the player's 4th call an NPC RIB idles off the bays with its siren on, casts off after a head start
-  that leaves a straight-driving player (base craft) at most 70% of its time, runs below every base craft's
-  speed through the harbour mouth, and with a wake toward the first casualty; if it gets there first it
-  takes them and the call ends unpaid. No racer for 2 calls after a loss or where the water route is
+  From the player's 4th call, once they are seated and over 15 km/h (docs/20; no clock before), an NPC RIB
+  appears ahead of them on their route with its siren on, casts off after a head start that leaves a
+  straight-driving player at most 70% of its time, runs below every base craft's speed through the harbour
+  mouth toward the first casualty; if it gets there first it takes them and the call ends unpaid. Player
+  attributes: `RacerAt` (Vector3, the racer; client `RacerController` draws the red minimap blip) and
+  `RacerTaking` (Vector3, an NPC boat is taking the survivor: 2 s camera cut, then the "Too slow" debrief).
+  No offers while a player has a call, carries a survivor or is in the cold open. No racer for 2 calls after a loss or where the water route is
   blocked (call spots must be reachable from the bays: `clearSpawn`). Studio: `OpsDev` `start <kind>
   <zone>`, `victims`; the server prints `[Race]` start delay and both arrival times. A taken-over call is always picked up by an NPC boat (never a drowning).
 - Free-roam swimmers (K13): `AmbientRescueService` keeps up to 4 mission-less swimmers; one is always

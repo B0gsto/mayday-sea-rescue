@@ -4,12 +4,12 @@
 -- climbs aboard with the same climb as onto a player's boat (VehicleService.Climb), and the boat runs
 -- back out of sight and is removed. Wordless: the player just sees someone else do it.
 --
--- The race (docs/16 K15, shared/Calls/RaceRules): `race` puts the same boat off the bays at once,
--- siren on (the CosmeticSiren contract, Config/Cosmetics/Siren), idling there for `race.delay` s (the
--- player's fair head start), then it runs `race.route` (through the harbour mouth, never across the
--- breakwater) at RaceRules.SPEED with a wake (its hull velocity drives client Ocean/Wake). Alongside a
--- casualty still in the water it asks `race.claim()`; true (the call is lost to it) and it takes
--- them, otherwise it turns for home empty-handed.
+-- The race (docs/16 K15, shared/Calls/RaceRules): `race` puts the same boat at `race.start` (ahead of
+-- the player, in view: docs/20 change 3), siren on (the CosmeticSiren contract, Config/Cosmetics/Siren),
+-- idling there for `race.delay` s (the player's fair head start), then it runs `race.route` (through
+-- the harbour mouth, never across the breakwater) at RaceRules.SPEED with a wake (its hull velocity
+-- drives client Ocean/Wake). Alongside a casualty still in the water it asks `race.claim()`; true (the
+-- call is lost to it) and it takes them, otherwise it turns for home empty-handed.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -28,19 +28,21 @@ NpcPickup.STATION = Vector3.new(-95, 0, 18) -- Bay 1: "the station side"
 NpcPickup.MAX_SECONDS = 60
 NpcPickup.RACE_SECONDS = 240
 
--- route: waypoints from RaceRules.START, the last one the casualty's spot when the call was accepted
-export type Race = { claim: () -> boolean, delay: number, route: { Vector3 } }
+-- route: waypoints from `start`, the last one the casualty's spot when the race began
+export type Race = { claim: () -> boolean, delay: number, start: Vector3, route: { Vector3 } }
 
 -- Runs the pickup; onPicked fires once the boat has taken them away (or on any failure, so the caller
 -- never waits forever). `where` returns the casualty's live position (nil once they are out of the water);
--- `release` takes them off the call and returns their model.
+-- `release` takes them off the call and returns their model. `onTake` fires with the spot as they start
+-- to climb aboard (the crew's camera cuts there). Returns the boat (nil when none was built).
 function NpcPickup.run(
 	vehicleService: any,
 	where: () -> Vector3?,
 	release: () -> Model?,
 	onPicked: () -> (),
-	race: Race?
-)
+	race: Race?,
+	onTake: ((Vector3) -> ())?
+): Model?
 	local done = false
 	local function picked()
 		if not done then
@@ -52,12 +54,12 @@ function NpcPickup.run(
 	local ok, boat = pcall(vehicleService.BuildProp, NpcPickup.VEHICLE)
 	if not at or not ok or not boat then
 		picked()
-		return
+		return nil
 	end
 	local speed = if race then RaceRules.SPEED else NpcPickup.SPEED
 	local home = NpcPickup.STATION - at
 	home = if home.Magnitude > 1 then Vector3.new(home.X, 0, home.Z).Unit else Vector3.new(0, 0, -1)
-	local pos = if race then RaceRules.START else at + home * NpcPickup.START
+	local pos = if race then race.start else at + home * NpcPickup.START
 	local function place(look: Vector3)
 		boat:PivotTo(vehicleService.RestCFrame(boat, pos.X, pos.Z, look))
 	end
@@ -110,6 +112,9 @@ function NpcPickup.run(
 			end
 		end
 		local model = if race and not (reached and race.claim()) then nil else release()
+		if model and onTake then
+			onTake(pos)
+		end
 		if model and slot then
 			local _, size = model:GetBoundingBox()
 			local function seat(): CFrame
@@ -128,6 +133,7 @@ function NpcPickup.run(
 		boat:Destroy()
 		picked()
 	end)
+	return boat
 end
 
 return NpcPickup
