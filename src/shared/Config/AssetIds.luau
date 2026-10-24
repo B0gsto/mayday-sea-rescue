@@ -11,11 +11,16 @@ AssetIds.Models = {
 		LOD1 = "rbxassetid://93470598821132",
 		LOD2 = "rbxassetid://109194335034947",
 	},
+	M_Ani_Gull = { LOD0 = "rbxassetid://80543137024473" },
 	M_Ani_HerringGull = {
 		LOD0 = "rbxassetid://122048636911378",
 		LOD1 = "rbxassetid://86936030809064",
 		LOD2 = "rbxassetid://138363363748869",
 	},
+	M_Ani_Otter = { LOD0 = "rbxassetid://103808424336101" },
+	M_Ani_Puffin = { LOD0 = "rbxassetid://94213861782005" },
+	M_Ani_SealPup = { LOD0 = "rbxassetid://112624730317410" },
+	M_Ani_Turtle = { LOD0 = "rbxassetid://94334436811675" },
 	M_Bld_BoatyardShed = {
 		LOD0 = "rbxassetid://125807225318834",
 		LOD1 = "rbxassetid://133002905688494",
@@ -400,6 +405,7 @@ AssetIds.Models = {
 		LOD0 = "rbxassetid://127622749765145",
 		LOD1 = "rbxassetid://121645364088634",
 	},
+	M_Prop_SeaChest = { LOD0 = "rbxassetid://84375480737186" },
 	M_Road_Bench = {
 		LOD0 = "rbxassetid://134886513362854",
 		LOD1 = "rbxassetid://129481464875693",
@@ -855,12 +861,48 @@ AssetIds.Textures = {
 			Wet = { ALB = "rbxassetid://127303350598923", RGH = "rbxassetid://86447923243407" },
 		},
 	},
+	M_Ani_Gull = {
+		Feathers = {
+			ALB = "rbxassetid://136887573609491",
+			NOR = "rbxassetid://127622516332283",
+			RGH = "rbxassetid://116814308625153",
+		},
+	},
 	M_Ani_HerringGull = {
 		Feather = {
 			ALB = "rbxassetid://73691308718130",
 			NOR = "rbxassetid://114620325465405",
 			RGH = "rbxassetid://83693991350200",
 		},
+	},
+	M_Ani_Otter = {
+		Coat = { ALB = "rbxassetid://104169644783767", RGH = "rbxassetid://76401761381577" },
+	},
+	M_Ani_Otter_Rare = {
+		Rare = { ALB = "rbxassetid://128457485845000", RGH = "rbxassetid://129451492618903" },
+	},
+	M_Ani_Puffin = {
+		Feathers = {
+			ALB = "rbxassetid://120572695760935",
+			NOR = "rbxassetid://93120123241378",
+			RGH = "rbxassetid://105569802650071",
+		},
+	},
+	M_Ani_SealPup = {
+		Coat = { ALB = "rbxassetid://99490185929780", RGH = "rbxassetid://119616556744768" },
+	},
+	M_Ani_SealPup_Rare = {
+		Rare = {
+			ALB = "rbxassetid://132198933017999",
+			NOR = "rbxassetid://110229252854657",
+			RGH = "rbxassetid://103378122820265",
+		},
+	},
+	M_Ani_Turtle = {
+		Coat = { ALB = "rbxassetid://115740968917380", RGH = "rbxassetid://97881126578983" },
+	},
+	M_Ani_Turtle_Rare = {
+		Rare = { ALB = "rbxassetid://82031967303476", RGH = "rbxassetid://80687348617225" },
 	},
 	M_Bld_BoatyardShed = {
 		Clad = {
@@ -1506,6 +1548,14 @@ AssetIds.Textures = {
 			NOR = "rbxassetid://71253414441637",
 			RGH = "rbxassetid://135971620367742",
 			MET = "rbxassetid://131230835504645",
+		},
+	},
+	M_Prop_SeaChest = {
+		Wood = {
+			ALB = "rbxassetid://127285123351390",
+			NOR = "rbxassetid://87943631556973",
+			RGH = "rbxassetid://137764212303379",
+			MET = "rbxassetid://80651752753959",
 		},
 	},
 	M_Road_CornishHedge = {
@@ -2467,7 +2517,12 @@ AssetIds.Textures = {
 
 AssetIds.Attachments = {
 	M_Ani_GreySeal = {},
+	M_Ani_Gull = {},
 	M_Ani_HerringGull = {},
+	M_Ani_Otter = {},
+	M_Ani_Puffin = {},
+	M_Ani_SealPup = {},
+	M_Ani_Turtle = {},
 	M_Bld_BoatyardShed = {
 		ATT_RollerDoor = Vector3.new(-30.45, 0.18, -4.5),
 		ATT_HoistBay = Vector3.new(-48, 0.06, 0),
@@ -3036,6 +3091,9 @@ AssetIds.Attachments = {
 	},
 	M_Prop_Chandlery_Stock = {
 		ATT_Light_Till = Vector3.new(-18.1546, 4.1248, 3.12),
+	},
+	M_Prop_SeaChest = {
+		ATT_LidHinge = Vector3.new(0, 3.1, -1.8),
 	},
 	M_Road_Bench = {
 		ATT_Seat = Vector3.new(0, 1.35, -0.15),
