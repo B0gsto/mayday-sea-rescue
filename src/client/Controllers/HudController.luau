@@ -319,15 +319,55 @@ function HudController.Init()
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(onDataChanged)
 	Layout.onColdOpen(applyColdOpen)
 
-	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own.
-	ProximityPromptService.PromptShown:Connect(function(prompt)
+	-- The "Join crew" prompt is on every multi-seat boat; hide it on our own. FootOnly prompts (bay
+	-- Launch, car posts, Talk) hide locally while seated: "E Launch" rode along out of the bay.
+	local shown: { [ProximityPrompt]: boolean } = {}
+	local seatHidden: { [ProximityPrompt]: boolean } = {}
+	local function seated(): boolean
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		return hum ~= nil and hum.SeatPart ~= nil
+	end
+	local function hideIfSeated(prompt: ProximityPrompt)
+		if prompt:GetAttribute("FootOnly") == true and seated() then
+			prompt.Enabled = false
+			seatHidden[prompt] = true
+		end
+	end
+	ProximityPromptService.PromptShown:Connect(function(prompt: ProximityPrompt)
 		if
 			prompt.Name == "CrewJoinPrompt"
 			and prompt:GetAttribute("CrewOwner") == player.UserId
 		then
 			prompt.Enabled = false
 		end
+		shown[prompt] = true
+		hideIfSeated(prompt)
 	end)
+	ProximityPromptService.PromptHidden:Connect(function(prompt: ProximityPrompt)
+		shown[prompt] = nil
+	end)
+	local function watchSeat(char: Model)
+		local hum = char:WaitForChild("Humanoid", 10)
+		if not (hum and hum:IsA("Humanoid")) then
+			return
+		end
+		hum:GetPropertyChangedSignal("SeatPart"):Connect(function()
+			if hum.SeatPart then
+				for p in shown do
+					hideIfSeated(p)
+				end
+			else
+				for p in seatHidden do
+					p.Enabled = true
+				end
+				table.clear(seatHidden)
+			end
+		end)
+	end
+	player.CharacterAdded:Connect(watchSeat)
+	if player.Character then
+		task.spawn(watchSeat, player.Character)
+	end
 end
 
 function HudController.Start()

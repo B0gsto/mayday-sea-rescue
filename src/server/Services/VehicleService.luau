@@ -1204,6 +1204,7 @@ local function addPrompts()
 		prompt.HoldDuration = 0.3
 		prompt.MaxActivationDistance = 16
 		prompt.RequiresLineOfSight = false
+		prompt:SetAttribute("FootOnly", true) -- the HUD hides it while seated (driving away)
 		prompt.Parent = bay
 		prompt.Triggered:Connect(function(player)
 			local id = bayCraft(player, bay)

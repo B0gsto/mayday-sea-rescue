@@ -1,11 +1,11 @@
 --!strict
 -- Chase: the third-person spring-arm camera for the RIB, larger boats and cars.
 -- Reads the sea well: the frame stays level with the horizon while the hull pitches and rolls
--- in it, the focus leads the boat (look-ahead along its velocity), its height is low-passed so the
+-- in it, the focus leads the boat (look-ahead along its nose), its height is low-passed so the
 -- swell visibly lifts the hull, and the camera never dips under the wave surface. The arm is a
--- sphere cast from the focus (own hull and terrain included) that snaps in on a hit and eases
+-- sphere cast from the hull (own craft and characters excluded) that snaps in on a hit and eases
 -- back out. The player can orbit (right-drag, right stick, touch drag) and zoom; the arm swings
--- back behind the boat after a few seconds without input while under way.
+-- back behind the craft within about a second of steering, or a few seconds without input.
 local Workspace = game:GetService("Workspace")
 
 local CameraMath = require(script.Parent.CameraMath)
@@ -47,7 +47,12 @@ function Chase.enter(model: Model, root: BasePart)
 	local _, size = model:GetBoundingBox()
 	local length = math.max(size.X, size.Z)
 	local small = length < 20
-	if small then
+	if model:GetAttribute("LandVehicle") == true then
+		-- cars sit close like a driving game; their physics chassis runs long (a 16-stud pickup
+		-- has a 28-stud chassis, which put the camera 50 studs back)
+		baseDistance = math.clamp(length * 0.8, 14, 28)
+		focusHeight = math.clamp(size.Y * 0.6, 2.5, 8) + 1.5
+	elseif small then
 		baseDistance = math.clamp(length * 1.1 + 3, 14, 28)
 		focusHeight = math.clamp(size.Y * 0.55, 2.2, 4.2) + 0.9
 	else
@@ -90,11 +95,11 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	local vel = root.AssemblyLinearVelocity
 	local flatSpeed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 
-	-- heading: the hull's, low-passed so wave yaw doesn't swing the whole frame; cars have no
-	-- waves, so the camera stays tight behind them through a turn
+	-- heading: the hull's, with a short lag so a turn reads but the nose never leaves the frame
+	-- (0.35 s lost the view in hard A/D turns, real-client playtest); cars have no wave yaw
 	local land = ctx.model:GetAttribute("LandVehicle") == true
 	local hullHeading = CameraMath.heading(root.CFrame)
-	local headingLag = if state.fresh then 0 elseif land then 0.15 else 0.35
+	local headingLag = if state.fresh then 0 elseif land then 0.07 else 0.11
 	state.heading = CameraMath.dampAngle(state.heading, hullHeading, headingLag, dt)
 
 	-- orbit input, then the swing back behind the boat
@@ -105,13 +110,20 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 	end
 	state.yaw = CameraMath.wrap(state.yaw + lookDelta.X)
 	state.pitch = math.clamp(state.pitch - lookDelta.Y, math.rad(-5), math.rad(70))
-	if state.idle > 2.5 and flatSpeed > 5 then
+	-- steering swings the arm back behind the craft within about a second; idle under way, slower
+	local steering = math.abs(root.AssemblyAngularVelocity.Y) > 0.25
+	if state.idle > 0.3 and steering then
+		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.22, dt)
+		state.pitch = CameraMath.damp(state.pitch, restPitch, 0.3, dt)
+	elseif state.idle > 2.5 and flatSpeed > 5 then
 		state.yaw = CameraMath.dampAngle(state.yaw, 0, 0.9, dt)
 		state.pitch = CameraMath.damp(state.pitch, restPitch, 1.2, dt)
 	end
 
-	-- focus: above the deck, leading the boat, its height low-passed against the swell
-	local ahead = CameraMath.lookAhead(vel, 0.45, baseDistance * 0.45)
+	-- focus: above the deck, leading along the nose (a drifting hull's velocity swung it sideways),
+	-- its height low-passed against the swell
+	local nose = CameraMath.chaseOffset(state.heading, math.pi, 0, 1)
+	local ahead = nose * math.clamp(vel:Dot(nose) * 0.4, 0, baseDistance * 0.4)
 	state.focusY = if state.fresh
 		then root.Position.Y
 		else CameraMath.damp(state.focusY, root.Position.Y, 0.3, dt)
@@ -121,13 +133,22 @@ function Chase.update(dt: number, ctx: Ctx, lookDelta: Vector2): CFrame
 		then focusTarget
 		else CameraMath.damp(state.focus, focusTarget, 0.06, dt)
 	local focus = state.focus
+	castParams.FilterDescendantsInstances = ctx.exclude
+	-- the lead must not push the focus through a quay wall, or the arm cast starts inside it
+	local hull = Vector3.new(root.Position.X, state.focusY + focusHeight, root.Position.Z)
+	local lead = focus - hull
+	if lead.Magnitude > 0.5 then
+		local block = Workspace:Spherecast(hull, 0.8, lead, castParams)
+		if block then
+			focus = hull + lead.Unit * math.max(block.Distance - 0.6, 0)
+		end
+	end
 
 	-- the arm, pulled back a little more at speed
 	local desired = baseDistance
 		* state.zoom
 		* (1 + 0.15 * math.clamp(flatSpeed / math.max(ctx.topSpeed, 1), 0, 1))
 	local dir = CameraMath.chaseOffset(state.heading, state.yaw, state.pitch, 1)
-	castParams.FilterDescendantsInstances = ctx.exclude
 	local hit = Workspace:Spherecast(focus, 0.8, dir * desired, castParams)
 	local length = CameraMath.armDistance(desired, if hit then hit.Distance else nil, 0.6, 3)
 	state.arm = CameraMath.relaxArm(if state.fresh then length else state.arm, length, 0.4, dt)

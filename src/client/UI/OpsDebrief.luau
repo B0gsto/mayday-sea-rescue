@@ -247,17 +247,25 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 				HudTheme.Colors.gold,
 				math.max(tonumber(d.cash) or 0, 0)
 			)
-			local secs = math.floor(m.seconds + 0.5)
-			row(
-				right,
-				"Time",
-				40,
-				clockIcon(),
-				22,
-				HudTheme.Colors.text,
-				nil,
-				string.format("%d:%02d", secs // 60, secs % 60)
-			)
+			if m.stars > 0 then
+				local secs = math.floor(m.seconds + 0.5)
+				row(
+					right,
+					"Time",
+					40,
+					clockIcon(),
+					22,
+					HudTheme.Colors.text,
+					nil,
+					string.format("%d:%02d", secs // 60, secs % 60)
+				)
+			else
+				-- a lost call (another crew took it) has no time worth showing: a life ring, "next one"
+				local ring = Instance.new("Frame")
+				ring.BackgroundTransparency = 1
+				Glyph.draw("ring", ring, HudTheme.Colors.gold)
+				row(right, "Next", 40, ring, 22, HudTheme.Colors.text, nil, "Next one!")
+			end
 
 			toast.Position = CLOSED
 			toast.Visible = true

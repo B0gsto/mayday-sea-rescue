@@ -304,6 +304,7 @@ local function watch(m: Instance)
 		prompt.MaxActivationDistance = 9
 		prompt.RequiresLineOfSight = false
 		prompt.HoldDuration = 0
+		prompt:SetAttribute("FootOnly", true)
 		prompt.Triggered:Connect(function()
 			begin(m, tree)
 		end)

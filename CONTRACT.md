@@ -41,7 +41,7 @@ rank unlocks bigger boats.
 Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy`
 (UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `Land_Request` / `Land_Control`
 (LandVehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
-`Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip` / `Pet_Treat`, `Cosmetics_Equip` / `Cosmetics_Action` /
+`Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
 `_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
 
