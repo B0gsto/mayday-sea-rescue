@@ -709,8 +709,9 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	end
 	c.delivered = true
 	op.saved += 1
+	-- they climb off (a jet ski carries one: the next survivor needs the seat)
+	pcall(RescueService.RemoveVictim, op.scene, ci)
 	if op.isBig then
-		pcall(RescueService.RemoveVictim, op.scene, ci)
 		local pay = Grading.bigCasualtyPay()
 		if actor and actor.Parent then
 			try(
@@ -1202,7 +1203,7 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 		return
 	end
 	-- boarding and delivery are server-authoritative (stepBoarding checks the boat is close, slow and has
-	-- room; OnVictimsDelivered checks the pad): a client "done" here would pay out from anywhere. Studio's
+	-- room; stepHome and OnVictimsDelivered check it is home): a client "done" here would pay out from anywhere. Studio's
 	-- OpsAutoStub smoke test is the one exception.
 	local effect = inst.def.effect
 	if
@@ -1594,6 +1595,26 @@ end
 -- Cold open, the way in (docs/14 section 3): while the casualty holds on, the recovery step waits
 -- for land (no timeout); at a shore point (BoatColdOpen.landed) the shore party takes them over and
 -- the step completes with the client's kept result. No headway for 10 s: Aggie calls them in.
+-- A step the server itself saw done (boarded, landed): graded on its server metrics, acknowledged, completed.
+local function serverDone(
+	op: any,
+	track: Track,
+	inst: StepInst,
+	player: Player,
+	metrics: Types.Metrics
+)
+	local grade: Grade = Grading.stepGrade(inst.def, metrics, inst.def.serverMetrics) :: any
+	padDone[track] = { key = inst.key, grade = grade }
+	if inst.assignee then
+		fire(
+			"Ops_StepAck",
+			inst.assignee,
+			{ opId = op.id, stepKey = inst.key, accepted = true, grade = grade }
+		)
+	end
+	complete(op, track, inst, grade, player)
+end
+
 local coldOpenNudge: { [any]: any } = setmetatable({}, { __mode = "k" }) :: any
 local function coldOpenShore(op: any)
 	if not op.coldOpen then
@@ -1616,7 +1637,7 @@ local function coldOpenShore(op: any)
 			local shore = BoatColdOpen.nearestShore(cas)
 			pcall(RescueService.RemoveVictim, op.scene, ci)
 			try("NpcService", "ShoreHandover", shore.dry, shore.water)
-			onStepResult(player, op.id, inst.key, { metrics = {} })
+			serverDone(op, track, inst, player, { elapsed = now() - inst.startedAt })
 			continue
 		end
 		local n = coldOpenNudge[inst]
@@ -1648,7 +1669,7 @@ end
 
 local function stepBoarding(op: any, dt: number)
 	local ambient = service("AmbientRescueService")
-	if op.coldOpen or not op.scene or not ambient then
+	if not op.scene or not ambient then
 		return
 	end
 	local function may(player: Player, i: number): boolean
@@ -1682,18 +1703,8 @@ local function stepBoarding(op: any, dt: number)
 			end
 			c.claimedBy = track.id
 			if inst.def.effect == "board" then
-				local metrics: Types.Metrics = { elapsed = now() - inst.startedAt }
-				local grade: Grade =
-					Grading.stepGrade(inst.def, metrics, inst.def.serverMetrics) :: any
-				padDone[track] = { key = inst.key, grade = grade }
-				if inst.assignee then
-					fire(
-						"Ops_StepAck",
-						inst.assignee,
-						{ opId = op.id, stepKey = inst.key, accepted = true, grade = grade }
-					)
-				end
-				complete(op, track, inst, grade, player) -- the board effect plays the climb
+				-- the board effect plays the climb
+				serverDone(op, track, inst, player, { elapsed = now() - inst.startedAt })
 			else
 				-- one more while carrying: aboard now, landed with the rest
 				c.inWater = false
@@ -1704,6 +1715,51 @@ local function stepBoarding(op: any, dt: number)
 			end
 		end
 	)
+end
+
+-- Server-side transport: the client Mechanics/transport rule (home = a shore point at any speed, within
+-- PAD_RANGE of a drop-off pad slow or on foot), checked on the server's own view of the player.
+local PAD_RANGE = 60 -- studs, client Transport.PAD_RANGE
+local function isHome(pos: Vector3, slowOrOnFoot: boolean): boolean
+	local _, shore = BoatColdOpen.nearestShore(pos)
+	if shore <= BoatColdOpen.SHORE_RADIUS then
+		return true
+	end
+	local map = Workspace:FindFirstChild("Map")
+	local folder = map and map:FindFirstChild("DropOffs")
+	for _, pad in if folder and slowOrOnFoot then folder:GetChildren() else {} do
+		if pad:IsA("BasePart") and pad:GetAttribute("DropOff") ~= nil then
+			local d = (pad.Position - pos) * Vector3.new(1, 0, 1)
+			if d.Magnitude <= PAD_RANGE then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function stepHome(op: any)
+	for _, track in op.tracks do
+		local inst = track.current
+		local player = inst and inst.assignee
+		local char = player and player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local root = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+		if not (inst and inst.def.effect == "deliver" and not inst.npc and hum and root) then
+			continue
+		end
+		local ci = inst.casualtyIndex
+		if ci and op.casualties[ci].inWater then
+			continue -- fell off on the way: stepBoarding takes them back aboard first
+		end
+		local onFoot = hum.SeatPart == nil
+		if isHome(root.Position, onFoot or root.AssemblyLinearVelocity.Magnitude < 8) then
+			serverDone(op, track, inst, player, {
+				elapsed = now() - inst.startedAt,
+				conditionAtEnd = if ci then op.casualties[ci].condition else nil,
+			})
+		end
+	end
 end
 
 local function tickOp(op: any, dt: number, t: number)
@@ -1761,6 +1817,7 @@ local function tickOp(op: any, dt: number, t: number)
 		end
 	end
 	stepBoarding(op, dt)
+	stepHome(op)
 	for _, track in op.tracks do
 		local inst = track.current
 		if inst and op.state == "Active" then
