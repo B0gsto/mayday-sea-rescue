@@ -6,7 +6,9 @@ usage: python3 tools/studio/smoke.py <command> [args]
   open                 build (tools/build.sh) and open build/MaydaySeaRescue.rbxl as TestBench-<tag> (an old
                        window of that tag is closed first); the studio_id is kept in build/smoke/.sid
   play start|stop      start/stop the play test (waits for the mode), Studio brought to the front
-  lua <Server|Client|Edit> <file.luau | -> [--quiet]  run Luau, print its output
+  lua <Server|Client|Edit> <file.luau | -> [--quiet]  run Luau, print its output. Never require the
+                       PlayerModule / ControlModule from `lua Client`: it starts a second ControlModule
+                       that takes over the W/A/S/D actions, so the real one stops driving (ThrottleFloat 0)
   keys <key> <ms>      hold a key on the client (e.g. keys W 2000)
   console              save the console to build/smoke/console.txt; print error lines and the last 25 lines
   shot <name>          screen_capture to build/smoke/<name>.png, downscaled to 768 px

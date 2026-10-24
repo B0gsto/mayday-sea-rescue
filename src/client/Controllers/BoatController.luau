@@ -373,6 +373,12 @@ local function engageControls(seat: VehicleSeat)
 		local ok, cm = pcall(require :: any, cmod)
 		controlModule = if ok and type(cm) == "table" then cm else false
 	end
+	-- seat.Occupant lags a local exit (Space) by a few frames: never re-engage a seat we just left
+	local character = localPlayer.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not (humanoid and humanoid.SeatPart == seat) then
+		return
+	end
 	local cm = controlModule
 	local vc = cm and cm.vehicleController
 	if cm and not (vc and vc.enabled and vc.vehicleSeat == seat) then
