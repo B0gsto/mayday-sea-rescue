@@ -11,10 +11,11 @@
 --                     the TownLayout.LANDMARKS (hotel, customs house, market hall); gardens get outshuts, washing
 --                     lines and trees; the residential blocks a gravel back lane. TownLayout.uses blocks get a
 --                     churchyard (St Petroc's, the tallest tower), the town green, a car park and market, allotments,
---                     the board school grounds (USE_BUILDERS).
+--                     the board school grounds (USE_BUILDERS). The last street's outer row gets hedged back gardens
+--                     (rowGardens) and Town.Outskirts softens the grid's edge into the country (see outskirts()).
 -- Grid roads are axis-aligned, so Region3 repaints are exact. shortcut: a rotated town needs per-segment wedges.
 -- Every non-shop lot gets a walled front garden (frontGarden); "gap" lots are all garden.
--- Folder attributes: TownCottages, TownTerraces, TownSkipped, TownGardens, TownGaps.
+-- Folder attributes: TownCottages, TownTerraces, TownSkipped, TownGardens, TownGaps, TownOutskirts.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -22,6 +23,7 @@ local Workspace = game:GetService("Workspace")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local CottageRig = require(script.Parent:WaitForChild("CottageRig"))
 local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
+local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local Swaps = require(script.Parent:WaitForChild("Swaps"))
 local TownBuildings = require(script.Parent:WaitForChild("TownBuildings"))
 local TownLayout = require(script.Parent:WaitForChild("TownLayout"))
@@ -612,6 +614,41 @@ local function palm(m: Instance, at: Vector3, n: number)
 		)
 		leaf.CanCollide = false
 	end
+end
+
+-- an M_Bld_Cottage_0n asset at cf, stood at y: render set, CottageRig (lit windows, smoke), dark slate roof
+local function cottage(
+	parent: Instance,
+	asset: string,
+	render: string,
+	cf: CFrame,
+	n: number,
+	y: number
+): Model?
+	local model = AssetLoader.cloneStatic(asset, "LOD0", true)
+	if not model then
+		return nil
+	end
+	model.Name = `Cottage{n}`
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+	model:SetAttribute("Render", render)
+	-- perf: real PointLights on every third terrace, chimney smoke on every fourth (Neon panes all glow)
+	model:SetAttribute("RigLights", n % 3 == 0)
+	model:SetAttribute("RigSmoke", n % 4 == 0)
+	model:PivotTo(cf + Vector3.new(0, y - cf.Y, 0))
+	model.Parent = parent
+	local ok, err = pcall(CottageRig.apply, model)
+	if not ok then
+		warn(`[Town] cottage {n}: rig failed: {err}`)
+	end
+	-- the rig's slate greys read pale from above: the terraces' dark Delabole slates
+	local slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1]
+	for _, d in model:GetDescendants() do
+		if d:IsA("MeshPart") and string.find(d.Name, "_Roof_", 1, true) then
+			d.Color = slate
+		end
+	end
+	return model
 end
 
 -- `zf`: the garden's inner edge (local z: the house front, or the lot back for a gap); y: the house floor
@@ -1984,6 +2021,45 @@ local USE_BUILDERS: { [string]: (Instance, TownLayout.Rect, number) -> () } = {
 -- on the yard's north side facing into it, a granite barn under a grey-green corrugated roof on its east side, and a
 -- granite yard wall with a gate gap on the south. (The boatyard-shed mesh barn read as a giant white slab.)
 local BARN = { len = 40, wide = 22, h = 9, pitch = 0.45, roof = Color3.fromRGB(100, 108, 102) }
+-- a granite barn (spec len x wide x h) under a corrugated roof of two wedges (their ends close the gables), a timber
+-- door on its -Z side; `at` on the ground at its centre
+local function barn(parent: Instance, name: string, at: CFrame, b: typeof(BARN)): Model
+	local m = Instance.new("Model")
+	m.Name = name
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+	part(
+		m,
+		"Walls",
+		Vector3.new(b.len, b.h, b.wide),
+		at * CFrame.new(0, b.h / 2, 0),
+		STONE,
+		Enum.Material.Granite
+	)
+	local run = b.wide / 2 + 1
+	local rise = run * b.pitch
+	for _, sz in { -1, 1 } do
+		local w = Instance.new("WedgePart")
+		w.Name = "Roof"
+		w.Anchored = true
+		w.Size = Vector3.new(b.len + 1.6, rise, run)
+		w.CFrame = at
+			* CFrame.new(0, b.h + rise / 2, sz * run / 2)
+			* CFrame.Angles(0, if sz < 0 then 0 else math.pi, 0)
+		w.Color, w.Material = b.roof, Enum.Material.Metal
+		w.Parent = m
+	end
+	part(
+		m,
+		"Door",
+		Vector3.new(math.min(12, b.len / 3), b.h, 0.4),
+		at * CFrame.new(0, b.h / 2, -b.wide / 2 - 0.2),
+		SHED,
+		Enum.Material.Wood
+	)
+	m.Parent = parent
+	return m
+end
+
 local function farms(parent: Instance): number
 	local folder = Instance.new("Model")
 	folder.Name = "Farms"
@@ -2003,43 +2079,13 @@ local function farms(parent: Instance): number
 		else
 			warn(`[Town] {f.id} farmhouse: {res}`)
 		end
-		local barn = Instance.new("Model")
-		barn.Name = `{f.id}_Barn`
-		barn.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
 		-- barn X runs along the yard's Z; barn -Z faces into the yard
-		local at = yard
-			* CFrame.new(hx - BARN.wide / 2 - 4, 0, 4)
-			* CFrame.Angles(0, math.pi / 2, 0)
-		part(
-			barn,
-			"Walls",
-			Vector3.new(BARN.len, BARN.h, BARN.wide),
-			at * CFrame.new(0, BARN.h / 2, 0),
-			STONE,
-			Enum.Material.Granite
+		barn(
+			folder,
+			`{f.id}_Barn`,
+			yard * CFrame.new(hx - BARN.wide / 2 - 4, 0, 4) * CFrame.Angles(0, math.pi / 2, 0),
+			BARN
 		)
-		local run = BARN.wide / 2 + 1
-		local rise = run * BARN.pitch
-		for _, sz in { -1, 1 } do -- two corrugated slopes, their wedge ends close the gables
-			local w = Instance.new("WedgePart")
-			w.Name = "Roof"
-			w.Anchored = true
-			w.Size = Vector3.new(BARN.len + 1.6, rise, run)
-			w.CFrame = at
-				* CFrame.new(0, BARN.h + rise / 2, sz * run / 2)
-				* CFrame.Angles(0, if sz < 0 then 0 else math.pi, 0)
-			w.Color, w.Material = BARN.roof, Enum.Material.Metal
-			w.Parent = barn
-		end
-		part(
-			barn,
-			"Door",
-			Vector3.new(12, 9, 0.4),
-			at * CFrame.new(0, 4.5, -BARN.wide / 2 - 0.2),
-			SHED,
-			Enum.Material.Wood
-		)
-		barn.Parent = folder
 		n += 1
 		-- the yard wall, 1.4 thick and 3.4 high on the yard's edge, a 10-stud gate gap mid-south
 		local walls = Instance.new("Model")
@@ -2065,6 +2111,646 @@ local function farms(parent: Instance): number
 		walls.Parent = folder
 	end
 	return n
+end
+
+-- Outskirts: Port Haven's grid would end in a hard rectangle on its flat platform, so the town bleeds into the
+-- country round it: a ragged ribbon of bungalows, cottages and villas on the outer side of the edge streets
+-- (St4's north side, Av1's west side, Av7's east side), cottages, a Bethel chapel and a hill farm strung up
+-- TownLane (Chapel Hill), two smallholdings, a caravan park on the east side toward Haven Sands, and small irregular
+-- fields between them (ploughed / meadow / pasture terrain paint) inside Cornish hedges (the RoadsShore
+-- M_Road_CornishHedge kit, ground-following), with field gates, hedgerow trees and windbreaks. Nothing goes inside
+-- the grid, on a road, or near a gameplay point. Each house: front garden (frontGarden) and a hedged back garden.
+-- house kinds: cottage (M_Bld_Cottage_0n `v`, code-built house if the ground is not level), bungalow (1 storey),
+-- house (2 storeys), endon, chapel. look: the point the front faces. lane: { s, side (1 east), off } on TownLane.
+type OutHouse = {
+	kind: string,
+	w: number,
+	d: number?,
+	v: number?,
+	at: { number }?,
+	look: { number }?,
+	lane: { number }?,
+}
+local OUT_HOUSES: { OutHouse } = {
+	-- outlying cottages on the hill behind the town, facing down to it
+	{ kind = "house", w = 22, at = { -186, -664 }, look = { -186, -500 } },
+	{ kind = "house", w = 24, at = { 250, -722 }, look = { 250, -500 } },
+	{ kind = "house", w = 22, at = { -330, -684 }, look = { -330, -500 } },
+	-- Av1's west side and Av7's east side
+	{ kind = "bungalow", w = 24, at = { -577, -215 }, look = { -540, -215 } },
+	{ kind = "house", w = 20, at = { -578, -248 }, look = { -540, -248 } },
+	{ kind = "house", w = 22, at = { -578, -318 }, look = { -540, -318 } },
+	{ kind = "bungalow", w = 24, at = { -577, -432 }, look = { -540, -432 } },
+	{ kind = "bungalow", w = 24, at = { 597, -362 }, look = { 560, -362 } },
+	{ kind = "house", w = 22, at = { 598, -395 }, look = { 560, -395 } },
+	{ kind = "bungalow", w = 24, at = { 597, -462 }, look = { 560, -462 } },
+	{ kind = "bungalow", w = 26, at = { 597, -528 }, look = { 560, -528 } },
+	-- up Chapel Hill (TownLane), set back behind front gardens; the steep middle stretch is left to the fields
+	{ kind = "cottage", v = 4, w = 22, lane = { 52, 1, 25 } },
+	{ kind = "bungalow", w = 24, lane = { 80, -1, 25 } },
+	{ kind = "house", w = 22, lane = { 114, 1, 26 } },
+	{ kind = "house", w = 20, lane = { 236, -1, 26 } },
+	{ kind = "bungalow", w = 24, lane = { 272, 1, 25 } },
+	{ kind = "house", w = 24, lane = { 286, -1, 27 } },
+	{ kind = "endon", w = 16, d = 22, lane = { 300, 1, 28 } },
+	{ kind = "chapel", w = 24, d = 30, lane = { 324, -1, 30 } },
+	-- smallholdings
+	{ kind = "house", w = 24, at = { -672, -282 }, look = { -672, -200 } },
+	{ kind = "house", w = 22, at = { 652, -424 }, look = { 560, -424 } },
+}
+
+-- fields: corners { x, z } in order round, paint = the ground material (nil: leave the pasture), gate = the edge
+-- (k: corner k to k + 1) that gets a field gate
+local GROUND, MEADOW = Enum.Material.Ground, Enum.Material.LeafyGrass
+local OUT_FIELDS: { { corners: { { number } }, paint: Enum.Material?, gate: number? } } = {
+	-- north, behind St4's back gardens (the town's parts end at z -547)
+	{
+		corners = {
+			{ -592, -530 },
+			{ -528, -532 },
+			{ -526, -578 },
+			{ -432, -580 },
+			{ -424, -648 },
+			{ -592, -640 },
+		},
+		paint = GROUND,
+		gate = 1,
+	},
+	{ corners = { { -418, -582 }, { -268, -576 }, { -262, -646 }, { -412, -652 } }, gate = 1 },
+	{
+		corners = { { -252, -578 }, { -104, -584 }, { -100, -646 }, { -248, -650 } },
+		paint = MEADOW,
+		gate = 4,
+	},
+	{
+		corners = { { -92, -588 }, { -14, -585 }, { 24, -658 }, { -10, -700 }, { -90, -652 } },
+		paint = GROUND,
+		gate = 2,
+	},
+	{
+		corners = { { 22, -670 }, { 74, -728 }, { 98, -772 }, { 48, -806 }, { -8, -716 } },
+		gate = 1,
+	},
+	{
+		corners = { { 132, -592 }, { 304, -578 }, { 312, -650 }, { 224, -702 }, { 178, -648 } },
+		paint = GROUND,
+		gate = 2,
+	},
+	{ corners = { { 322, -580 }, { 456, -574 }, { 460, -644 }, { 324, -654 } }, gate = 4 },
+	{
+		corners = {
+			{ 468, -576 },
+			{ 536, -574 },
+			{ 542, -538 },
+			{ 592, -536 },
+			{ 596, -636 },
+			{ 470, -646 },
+		},
+		paint = MEADOW,
+		gate = 5,
+	},
+	-- west and east of the grid
+	{
+		corners = { { -612, -162 }, { -760, -168 }, { -765, -262 }, { -612, -258 } },
+		paint = GROUND,
+		gate = 4,
+	},
+	{
+		corners = { { -618, -372 }, { -768, -366 }, { -772, -462 }, { -620, -458 } },
+		paint = MEADOW,
+		gate = 4,
+	},
+	{ corners = { { -612, -470 }, { -770, -476 }, { -776, -575 }, { -608, -580 } }, gate = 4 },
+	{
+		corners = { { 614, -338 }, { 738, -334 }, { 736, -392 }, { 676, -396 } },
+		paint = MEADOW,
+		gate = 1,
+	},
+	{
+		corners = { { 612, -510 }, { 742, -506 }, { 746, -580 }, { 610, -588 } },
+		paint = GROUND,
+		gate = 1,
+	},
+}
+
+-- farm sheds { x, z, yaw degrees, len, wide }; farmyards painted Ground { x0, z0, x1, z1 }
+local OUT_BARNS = {
+	{ -360, -612, 4, 34, 16 },
+	{ 52, -745, 35, 34, 16 },
+	{ -725, -318, 90, 40, 22 },
+	{ -690, -352, 0, 26, 12 },
+	{ 708, -440, 90, 40, 22 },
+	{ 690, -492, 0, 26, 12 },
+	{ 420, -612, -6, 28, 14 },
+}
+local OUT_YARDS = { { -705, -340, -640, -300 }, { 640, -480, 690, -440 } }
+-- the caravan park beside Av7 toward Haven Sands: hedged rect { x0, z0, x1, z1 }, a gravel track in from Av7's
+-- footway at z `track`, rows of static caravans either side of it
+local CARAVANS =
+	{ rect = { 612, -322, 736, -174 }, track = -248, rows = { -200, -224, -272, -296 } }
+-- windbreaks { x0, z0, x1, z1, trees } (dark pines)
+local WINDBREAKS = {
+	{ 616, -330, 734, -330, 7 },
+	{ -778, -480, -780, -570, 5 },
+	{ 476, -652, 590, -644, 6 },
+	{ -760, -270, -760, -360, 4 },
+}
+-- copses on the slopes behind the town { x, z, trees, radius }
+local COPSES = {
+	{ -470, -700, 6, 26 },
+	{ -150, -722, 5, 22 },
+	{ 395, -700, 7, 28 },
+	{ 560, -690, 4, 18 },
+	{ -660, -620, 6, 24 },
+	{ 700, -620, 5, 22 },
+	{ -20, -780, 4, 18 },
+}
+local PINE = Color3.fromRGB(44, 64, 46)
+local CARAVAN_TRIM = {
+	Color3.fromRGB(64, 112, 150),
+	Color3.fromRGB(120, 132, 92),
+	Color3.fromRGB(150, 110, 70),
+	Color3.fromRGB(96, 98, 104),
+}
+
+local HEDGE_ASSET, HEDGE_LEN = "M_Road_CornishHedge", 15 -- the kit's module is 15 studs long (local X)
+
+-- Cornish hedge modules from a to b (XZ), each pitched to the ground at its two ends (as RoadsShore.hedgePiece);
+-- skip(k, n): leave module k of n out (a gate gap)
+local function hedgeLine(
+	m: Instance,
+	a: Vector3,
+	b: Vector3,
+	skip: ((number, number) -> boolean)?
+): number
+	local d = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
+	local len = d.Magnitude
+	if len < 4 then
+		return 0
+	end
+	local n = math.max(1, math.ceil(len / HEDGE_LEN))
+	local step, dir = len / n, d.Unit
+	local yaw = math.atan2(dir.Z, -dir.X) -- local -X along dir
+	local placed = 0
+	for k = 1, n do
+		if not (skip and skip(k, n)) then
+			local c = Vector3.new(a.X, 0, a.Z) + dir * (step * (k - 0.5))
+			local p0, p1 = c - dir * step / 2, c + dir * step / 2
+			local y0, y1 = ground(p0.X, p0.Z, 10), ground(p1.X, p1.Z, 10)
+			local piece = AssetLoader.cloneStatic(HEDGE_ASSET, "LOD0")
+			if piece then
+				-- local +X is -dir, so a positive roll lifts the p0 end
+				piece:PivotTo(
+					CFrame.new(c.X, (y0 + y1) / 2 + 0.02, c.Z)
+						* CFrame.Angles(0, yaw, 0)
+						* CFrame.Angles(0, 0, math.atan2(y0 - y1, step))
+				)
+				piece.Parent = m
+				placed += 1
+			end
+		end
+	end
+	return placed
+end
+
+-- a field gate (M_Road_FieldGate) standing in a hedge gap at c, along dir
+local function fieldGate(m: Instance, c: Vector3, dir: Vector3)
+	local g = AssetLoader.cloneStatic("M_Road_FieldGate", "LOD0")
+	if g then
+		g:PivotTo(
+			CFrame.new(c.X, ground(c.X, c.Z, 10) + 0.02, c.Z)
+				* CFrame.Angles(0, math.atan2(dir.Z, -dir.X), 0)
+		)
+		g.Parent = m
+	end
+end
+
+-- paint the terrain inside a polygon (XZ corners) with `mat`: 4-stud scanlines inset 4 from the edges, cut in
+-- 32-stud runs so each region follows the slope
+local PAINT_FROM = { Enum.Material.Grass, Enum.Material.LeafyGrass, Enum.Material.Ground }
+local function paintPolygon(corners: { Vector3 }, mat: Enum.Material)
+	local z0, z1 = math.huge, -math.huge
+	for _, c in corners do
+		z0, z1 = math.min(z0, c.Z), math.max(z1, c.Z)
+	end
+	for z = z0 + 4, z1 - 4, 4 do
+		local xs = {}
+		for i, a in corners do
+			local b = corners[i % #corners + 1]
+			if (a.Z <= z) ~= (b.Z <= z) then
+				table.insert(xs, a.X + (z - a.Z) / (b.Z - a.Z) * (b.X - a.X))
+			end
+		end
+		table.sort(xs)
+		for i = 1, #xs - 1, 2 do
+			local x, x1 = xs[i] + 4, xs[i + 1] - 4
+			while x < x1 do
+				local xe = math.min(x + 32, x1)
+				local gy = ground((x + xe) / 2, z, 10)
+				local region =
+					Region3.new(Vector3.new(x, gy - 10, z - 2), Vector3.new(xe, gy + 8, z + 2))
+						:ExpandToGrid(4)
+				for _, from in PAINT_FROM do
+					if from ~= mat then
+						Workspace.Terrain:ReplaceMaterial(region, 4, from, mat)
+					end
+				end
+				x = xe
+			end
+		end
+	end
+end
+
+-- a static caravan: long body on local X, a coloured band, window strip, pale roof, skirt, drawbar at -X, steps at -Z
+local function caravan(m: Instance, cf: CFrame, k: number)
+	local SP = Enum.Material.SmoothPlastic
+	part(
+		m,
+		"Body",
+		Vector3.new(24, 7, 9),
+		cf * CFrame.new(0, 4.6, 0),
+		Color3.fromRGB(232, 230, 220),
+		SP
+	)
+	part(
+		m,
+		"Roof",
+		Vector3.new(24.4, 0.5, 9.4),
+		cf * CFrame.new(0, 8.3, 0),
+		Color3.fromRGB(196, 196, 190),
+		SP
+	)
+	part(
+		m,
+		"Band",
+		Vector3.new(24.1, 0.9, 9.1),
+		cf * CFrame.new(0, 2.6, 0),
+		CARAVAN_TRIM[k % #CARAVAN_TRIM + 1],
+		SP
+	)
+	local glass = part(
+		m,
+		"Windows",
+		Vector3.new(18, 1.8, 9.1),
+		cf * CFrame.new(1, 5.6, 0),
+		Color3.fromRGB(40, 48, 56),
+		Enum.Material.Glass
+	)
+	glass.Reflectance = 0.15
+	part(
+		m,
+		"Skirt",
+		Vector3.new(23, 1.2, 8.4),
+		cf * CFrame.new(0, 0.6, 0),
+		Color3.fromRGB(110, 110, 106),
+		SP
+	)
+	part(
+		m,
+		"Drawbar",
+		Vector3.new(3, 0.5, 2),
+		cf * CFrame.new(-13.4, 1.2, 0),
+		Color3.fromRGB(70, 70, 72),
+		Enum.Material.Metal
+	)
+	part(
+		m,
+		"Steps",
+		Vector3.new(2.4, 1.2, 1.6),
+		cf * CFrame.new(4, 0.6, -5.2),
+		STONE,
+		Enum.Material.Granite
+	)
+end
+
+-- a timber shed with a felt gable roof on the ground at p, turned like `rot`
+local function gardenShed(m: Instance, p: Vector3, rot: CFrame)
+	local sc = CFrame.new(p.X, ground(p.X, p.Z, 10), p.Z) * rot
+	part(m, "Shed", Vector3.new(6, 5, 5), sc * CFrame.new(0, 2.5, 0), SHED, Enum.Material.Wood)
+	gable(m, sc, 6.6, 3, 1.4, 5, Color3.fromRGB(60, 64, 60))
+end
+
+-- a hedged plot behind a house, in frame `at` (local +Z away from the street): the back hedge at z1 across x0..x1,
+-- side hedges from z0 out to z1; a tree in every other one (k), a timber shed in every third
+local function backPlot(
+	m: Instance,
+	at: CFrame,
+	x0: number,
+	x1: number,
+	z0: number,
+	z1: number,
+	k: number
+)
+	local function w(x: number, z: number): Vector3
+		return at * Vector3.new(x, 0, z)
+	end
+	hedgeLine(m, w(x0, z0), w(x0, z1))
+	hedgeLine(m, w(x0, z1), w(x1, z1))
+	hedgeLine(m, w(x1, z1), w(x1, z0))
+	if k % 2 == 0 then
+		local p = w(x1 - (x1 - x0) * 0.22, z1 - 6)
+		tree(m, Vector3.new(p.X, ground(p.X, p.Z, 10), p.Z), 1 + (k % 3) * 0.15)
+	end
+	if k % 3 == 1 then
+		gardenShed(m, w(x0 + 5, z1 - 5), at.Rotation)
+	end
+end
+
+-- The row on the town's last street (St4's north side) backs straight onto the fields: hedged back gardens in runs
+-- of two or three houses at seeded depths (one run in five has none), the hedge between two runs as long as the
+-- deeper garden, trees and sheds in some. Returns the number of runs.
+local function rowGardens(parent: Instance, lots: { TownLayout.Lot }, zEdge: number): number
+	local row: { TownLayout.Lot } = {}
+	for _, lot in lots do
+		if lot.cf.Z < zEdge and lot.face.Z > 0.5 then
+			table.insert(row, lot)
+		end
+	end
+	table.sort(row, function(a, b)
+		return a.cf.X < b.cf.X
+	end)
+	local runs = {}
+	local i = 1
+	while i <= #row do
+		local j = i
+		local size = 2 + math.floor(TownLayout.hash(row[i].cf.X, 3.7) * 2)
+		while
+			j < #row
+			and j - i + 1 < size
+			and row[j + 1].cf.X - row[j + 1].w / 2 - (row[j].cf.X + row[j].w / 2) < 4
+		do
+			j += 1
+		end
+		local zb = math.huge -- the deepest house back (north = -Z)
+		for k = i, j do
+			zb = math.min(zb, row[k].cf.Z - row[k].depth / 2)
+		end
+		local hs = TownLayout.hash(row[i].cf.X, 9.1)
+		table.insert(runs, {
+			x0 = row[i].cf.X - row[i].w / 2,
+			x1 = row[j].cf.X + row[j].w / 2,
+			zb = zb,
+			g = if hs < 0.2 then 0 else 12 + hs * 22,
+			hs = hs,
+		})
+		i = j + 1
+	end
+	local m = Instance.new("Model")
+	m.Name = "RowGardens"
+	m.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+	m.Parent = parent
+	for k, r in runs do
+		local gm = Instance.new("Model")
+		gm.Name = `RowGarden{k}`
+		gm.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		gm.Parent = m
+		local prev, nxt = runs[k - 1], runs[k + 1]
+		local zb = r.zb
+		if r.g > 0 then
+			hedgeLine(gm, Vector3.new(r.x0, 0, zb - r.g), Vector3.new(r.x1, 0, zb - r.g))
+		end
+		-- the left boundary: shared with an adjacent run (as deep as the deeper of the two), else this run's own
+		if prev and r.x0 - prev.x1 < 4 then
+			local len = math.max(r.g, prev.g)
+			local x = (prev.x1 + r.x0) / 2
+			if len > 0 then
+				hedgeLine(
+					gm,
+					Vector3.new(x, 0, math.max(zb, prev.zb)),
+					Vector3.new(x, 0, math.min(zb - r.g, prev.zb - prev.g))
+				)
+			end
+		elseif r.g > 0 then
+			hedgeLine(gm, Vector3.new(r.x0, 0, zb), Vector3.new(r.x0, 0, zb - r.g))
+		end
+		if r.g > 0 and not (nxt and nxt.x0 - r.x1 < 4) then
+			hedgeLine(gm, Vector3.new(r.x1, 0, zb), Vector3.new(r.x1, 0, zb - r.g))
+		end
+		if r.g > 16 and r.hs > 0.35 then
+			local x, z = r.x1 - 7, zb - r.g + 7
+			tree(gm, Vector3.new(x, ground(x, z, 10), z), 1.1 + r.hs * 0.4)
+		end
+		if r.g > 16 and r.hs < 0.6 then
+			gardenShed(gm, Vector3.new(r.x0 + 6, 0, zb - r.g + 5), CFrame.Angles(0, math.pi, 0))
+		end
+	end
+	return #runs
+end
+
+local function outskirts(parent: Instance): number
+	local root = Instance.new("Model")
+	root.Name = "Outskirts"
+	root.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+	root.Parent = parent
+	local lane: { Vector3 } = {}
+	for _, r in WorldConfig.Roads do
+		if r.id == "TownLane" then
+			lane = r.points
+		end
+	end
+	local count = 0
+	local function v(c: { number }): Vector3
+		return Vector3.new(c[1], 0, c[2])
+	end
+	local houses = Instance.new("Model")
+	houses.Name = "Houses"
+	houses.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+	houses.Parent = root
+	for i, h in OUT_HOUSES do
+		local n = 900 + i * 7 -- seeds the terrace style / render / garden so neighbours differ
+		local d = h.d or (if h.kind == "cottage" then TownLayout.DEPTH else 14)
+		local c, look
+		if h.lane then
+			local s = StreetLayout.walk(lane, 1e6, h.lane[1], h.lane[1])[1]
+			if not s then
+				continue
+			end
+			c = StreetLayout.offset(s, h.lane[2], h.lane[3] + d / 2)
+			look = s.pos
+		else
+			c, look = v(h.at :: { number }), v(h.look :: { number })
+		end
+		local cf = CFrame.lookAt(Vector3.new(c.X, 0, c.Z), Vector3.new(look.X, 0, look.Z)) -- -Z: the front
+		local lo, hi = math.huge, -math.huge
+		for _, o in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 }, { 0, 0 } } do
+			local p = cf * Vector3.new(o[1] * h.w / 2, 0, o[2] * d / 2)
+			local gy = ground(p.X, p.Z, 10)
+			lo, hi = math.min(lo, gy), math.max(hi, gy)
+		end
+		if hi - lo > 8 then
+			warn(`[Town] outskirts house {i}: ground too steep ({hi - lo})`)
+			continue
+		end
+		local lot: any = {
+			cf = cf,
+			w = h.w,
+			depth = d,
+			floors = if h.kind == "bungalow" then 1 else 2,
+			corner = false,
+			shop = false,
+			front = if h.kind == "chapel" then 4 else 6,
+			kind = if h.kind == "endon" or h.kind == "chapel" then h.kind else nil,
+		}
+		local model: Instance? = nil
+		local asset = h.kind == "cottage" and hi - lo <= 1.5
+		if asset then
+			local id = string.format("M_Bld_Cottage_%02d", h.v :: number)
+			model = cottage(houses, id, TownLayout.RENDERS[i % #TownLayout.RENDERS + 1], cf, n, hi)
+		end
+		if not model then
+			asset = false
+			local ok, res = pcall(TownBuildings.terrace, houses, lot, n, lo, hi)
+			if not ok then
+				warn(`[Town] outskirts house {i}: {res}`)
+				continue
+			end
+			model = res
+		end
+		local m = model :: Instance
+		m.Name = `Out_{h.kind}{i}`
+		local doorX = if asset
+			then COTTAGE_DOOR[h.v :: number] or 0
+			elseif h.kind == "chapel" then 0
+			else -h.w / 4
+		frontGarden(m, lot, n, hi, doorX, -d / 2, i % 3 == 0)
+		if h.kind ~= "chapel" then
+			local at = CFrame.new(c.X, hi, c.Z) * cf.Rotation
+			backPlot(m, at, -h.w / 2 - 3, h.w / 2 + 3, d / 2, d / 2 + 22, i)
+		end
+		count += 1
+	end
+	local fields = Instance.new("Model")
+	fields.Name = "Fields"
+	fields.ModelStreamingMode = Enum.ModelStreamingMode.Nonatomic
+	fields.Parent = root
+	for i, f in OUT_FIELDS do
+		local m = Instance.new("Model")
+		m.Name = `Field{i}`
+		m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		m.Parent = fields
+		local cs: { Vector3 } = {}
+		for _, c in f.corners do
+			table.insert(cs, v(c))
+		end
+		local paint = f.paint
+		if paint then
+			local ok, err = pcall(function()
+				paintPolygon(cs, paint)
+			end)
+			if not ok then
+				warn(`[Town] outskirts field {i} paint: {err}`)
+			end
+		end
+		for k, a in cs do
+			local b = cs[k % #cs + 1]
+			if k == f.gate then
+				local nn = math.max(1, math.ceil((b - a).Magnitude / HEDGE_LEN))
+				local gap = math.ceil(nn / 2)
+				hedgeLine(m, a, b, function(j: number): boolean
+					return j == gap
+				end)
+				fieldGate(m, a + (b - a) * ((gap - 0.5) / nn), (b - a).Unit)
+			else
+				hedgeLine(m, a, b)
+			end
+			-- hedgerow trees: on every other corner, and now and then along the bank
+			local len = (b - a).Magnitude
+			for t = 3, len - 3, 40 do
+				if
+					(t == 3 and (i + k) % 2 == 0)
+					or (t > 3 and TownLayout.hash(a.X + t, a.Z + i) < 0.3)
+				then
+					local p = a + (b - a).Unit * t
+					tree(
+						m,
+						Vector3.new(p.X, ground(p.X, p.Z, 10), p.Z),
+						1.1 + TownLayout.hash(p.X, k) * 0.5
+					)
+				end
+			end
+		end
+		count += 1
+		task.wait()
+	end
+	for i, b in OUT_BARNS do
+		local gy = ground(b[1], b[2], 10)
+		local spec = {
+			len = b[4],
+			wide = b[5],
+			h = if b[5] > 16 then 9 else 7,
+			pitch = 0.4,
+			roof = BARN.roof,
+		}
+		barn(
+			root,
+			`OutBarn{i}`,
+			CFrame.new(b[1], gy, b[2]) * CFrame.Angles(0, math.rad(b[3]), 0),
+			spec
+		)
+		count += 1
+	end
+	for _, y in OUT_YARDS do
+		pcall(
+			paintPolygon,
+			{ v({ y[1], y[2] }), v({ y[3], y[2] }), v({ y[3], y[4] }), v({ y[1], y[4] }) },
+			GROUND
+		)
+	end
+	-- the caravan park: hedge with an entrance on the track, caravans with their doors to the track
+	local cp = Instance.new("Model")
+	cp.Name = "CaravanPark"
+	cp.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+	cp.Parent = root
+	local r = CARAVANS.rect
+	local corners = { v({ r[1], r[2] }), v({ r[3], r[2] }), v({ r[3], r[4] }), v({ r[1], r[4] }) }
+	for k, a in corners do
+		local b = corners[k % 4 + 1]
+		hedgeLine(cp, a, b, function(j: number, n: number): boolean
+			return k == 4 and math.abs(a.Z + (b.Z - a.Z) * (j - 0.5) / n - CARAVANS.track) < 9
+		end)
+	end
+	local ty = ground(600, CARAVANS.track, 10)
+	strip(
+		cp,
+		"Track",
+		Vector3.new(584, 0, CARAVANS.track),
+		Vector3.new(r[3] - 6, 0, CARAVANS.track),
+		9,
+		ty,
+		GRAVEL
+	)
+	for k, z in CARAVANS.rows do
+		for j = 0, 3 do
+			local x = r[1] + 18 + j * 30 + (if k % 2 == 0 then 6 else 0)
+			local yaw = if z < CARAVANS.track then math.pi else 0
+			caravan(cp, CFrame.new(x, ground(x, z, 10), z) * CFrame.Angles(0, yaw, 0), k * 4 + j)
+		end
+	end
+	count += 1
+	for i, wb in WINDBREAKS do
+		local m = Instance.new("Model")
+		m.Name = `Windbreak{i}`
+		m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		m.Parent = root
+		for k = 0, wb[5] - 1 do
+			local t = k / math.max(1, wb[5] - 1)
+			local x, z = wb[1] + (wb[3] - wb[1]) * t, wb[2] + (wb[4] - wb[2]) * t
+			tree(m, Vector3.new(x, ground(x, z, 10), z), 1.5 + TownLayout.hash(x, z) * 0.4, PINE)
+		end
+	end
+	for i, c in COPSES do
+		local m = Instance.new("Model")
+		m.Name = `Copse{i}`
+		m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
+		m.Parent = root
+		for k = 1, c[3] do
+			local a, d = k * 2.4 + i, c[4] * math.sqrt(TownLayout.hash(i, k))
+			local x, z = c[1] + math.cos(a) * d, c[2] + math.sin(a) * d
+			local crown = if k % 3 == 0 then YEW else nil
+			tree(m, Vector3.new(x, ground(x, z, 10), z), 1.4 + TownLayout.hash(k, i) * 0.7, crown)
+		end
+	end
+	return count
 end
 
 function Town.place(base: Instance)
@@ -2158,27 +2844,8 @@ function Town.place(base: Instance)
 				continue
 			end
 			local y = y0
-			local model = if y then AssetLoader.cloneStatic(lot.asset, "LOD0", true) else nil
+			local model = if y then cottage(folder, lot.asset, lot.render, lot.cf, n, y) else nil
 			if model then
-				model.Name = `Cottage{n}`
-				model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-				model:SetAttribute("Render", lot.render)
-				-- perf: real PointLights on every third terrace, chimney smoke on every fourth (Neon panes all glow)
-				model:SetAttribute("RigLights", n % 3 == 0)
-				model:SetAttribute("RigSmoke", n % 4 == 0)
-				model:PivotTo(lot.cf + Vector3.new(0, (y :: number) - lot.cf.Y, 0))
-				model.Parent = folder
-				local ok, err = pcall(CottageRig.apply, model)
-				if not ok then
-					warn(`[Town] {town.id} cottage {n}: rig failed: {err}`)
-				end
-				-- the rig's slate greys read pale from above: the terraces' dark Delabole slates
-				local slate = TownBuildings.SLATES[n % #TownBuildings.SLATES + 1]
-				for _, d in model:GetDescendants() do
-					if d:IsA("MeshPart") and string.find(d.Name, "_Roof_", 1, true) then
-						d.Color = slate
-					end
-				end
 				local v = tonumber(string.sub(lot.asset, -2)) :: number
 				frontGarden(model, lot, n, y :: number, COTTAGE_DOOR[v] or 0, -D / 2, big)
 				placed += 1
@@ -2194,6 +2861,11 @@ function Town.place(base: Instance)
 		gm.Parent = extras
 		for n, g in gardens do
 			garden(gm, n, g.rect, g.lot, ys[g.lot] or town.origin.Y)
+		end
+		local _, zs = TownLayout.lines(town :: any)
+		local rOk, rRes = pcall(rowGardens, extras, placedLots, zs[#zs])
+		if not rOk then
+			warn(`[Town] {town.id} row gardens: {rRes}`)
 		end
 		root:SetAttribute("TownGardens", #gardens)
 		root:SetAttribute("TownTerraces", terraces)
@@ -2219,6 +2891,11 @@ function Town.place(base: Instance)
 		end
 	end
 	root:SetAttribute("TownFarmBuildings", farms(root))
+	local oOk, oRes = pcall(outskirts, root)
+	if not oOk then
+		warn(`[Town] outskirts: {oRes}`)
+	end
+	root:SetAttribute("TownOutskirts", if oOk then oRes else 0)
 	root:SetAttribute("TownCottages", placed)
 	root:SetAttribute("TownSkipped", skipped)
 	print(

@@ -25,6 +25,7 @@ local warned = false
 export type FarPlane = {
 	parts: { BasePart },
 	offsets: { Vector3 },
+	cap: BasePart?, -- Parts mode: covers the hole for a high camera
 	meshes: { EditableMesh },
 	uvs: { { number } }, -- per strip: uv id, local x, local z (x3) per vertex, flattened
 	uvU: number,
@@ -83,9 +84,24 @@ function FarPlane.new(
 			table.insert(uvs, uv)
 		end
 	end
+	-- Parts mode: a flat cap over the hole, shown only for a high camera (setCap). From the air the Part grid's
+	-- wedge lattice read as a square field of white dots in the harbour basin (each wedge tiles the normal map).
+	local cap: BasePart? = nil
+	if withMesh == false then
+		local offset = Vector3.new(0, y, 0)
+		local part = FarPlane._strip(Vector3.new(2 * r, THICKNESS, 2 * r), offset, surface, false)
+		part.Name = "OceanFarCap"
+		part.LocalTransparencyModifier = 1
+		part.CFrame = CFrame.new(offset + Vector3.new(0, seaLevel, 0))
+		part.Parent = parent
+		table.insert(parts, part)
+		table.insert(offsets, offset)
+		cap = part
+	end
 	return {
 		parts = parts,
 		offsets = offsets,
+		cap = cap,
 		seaLevel = seaLevel,
 		meshes = meshes,
 		uvs = uvs,
@@ -204,6 +220,14 @@ function FarPlane.setSurface(plane: FarPlane, kind: string)
 		if part:IsA("MeshPart") then
 			OceanSurface.attach(part, kind)
 		end
+	end
+end
+
+-- Parts mode, high camera: the cap covers the hole (the caller hides the Part grid)
+function FarPlane.setCap(plane: FarPlane, on: boolean)
+	local cap = plane.cap
+	if cap then
+		cap.LocalTransparencyModifier = if on then 0 else 1
 	end
 end
 

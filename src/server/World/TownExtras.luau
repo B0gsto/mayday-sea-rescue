@@ -181,8 +181,8 @@ local function gulls(base: Instance, parent: Instance): number
 	return n
 end
 
--- washing lines up Chapel Hill: in the yards beside TownLane, parallel to the road, alternate sides
-local WASHING = { from = 40, to = 320, step = 46, off = 27, span = 12, high = 6.5 }
+-- washing lines up Chapel Hill: in the back gardens beside TownLane, parallel to the road, alternate sides
+local WASHING = { from = 40, to = 320, step = 46, off = 50, span = 12, high = 6.5 }
 local CLOTHES = {
 	{ size = Vector3.new(1.6, 1.9, 0.08), colour = Color3.fromRGB(236, 236, 228) }, -- shirt
 	{ size = Vector3.new(2.4, 1.5, 0.08), colour = Color3.fromRGB(70, 120, 180) }, -- towel

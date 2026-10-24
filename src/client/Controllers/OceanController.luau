@@ -121,6 +121,7 @@ local depthCheckAt = 0
 local surfaceKind = "Calm"
 local tint: Color3 = TINT_CALM
 local fallback: PartGrid.PartGrid? = nil
+local gridHidden = false -- the Part grid hidden for a high camera (FarPlane cap shown)
 local horizon: Horizon.Horizon? = nil
 local seabed: Seabed.Seabed? = nil
 local statsAt = 0
@@ -373,6 +374,7 @@ end
 local function buildFallback(parent: Instance)
 	local grid = PartGrid.new(parent, tier.fallbackCells, tier.fallbackCell)
 	fallback = grid
+	gridHidden = false
 	fadeStart, fadeEnd = grid.half * 0.6, grid.half -- tune
 	-- All Parts in the grid's material: a SurfaceAppearance far sea never matched it (map pass 3 N1).
 	far = FarPlane.new(parent, grid.half, SEA, surfaceKind, Horizon.INNER_HALF, false)
@@ -703,6 +705,18 @@ local function step(dt: number)
 			folder:SetAttribute("Mode", mode)
 		end
 	elseif fallback then
+		-- from the air (as the horizon skirt) the far plane's cap stands in for the wave grid: its wedge lattice
+		-- read as a square of white dots
+		local high = pos.Y > SEA + 60
+		if high ~= gridHidden then
+			gridHidden = high
+			for _, p in fallback.parts do
+				p.LocalTransparencyModifier = if high then 1 else 0
+			end
+			if far then
+				FarPlane.setCap(far, high)
+			end
+		end
 		PartGrid.update(fallback, centreX, centreZ, SEA, fallbackHeight, tint)
 		updateLook()
 	end
@@ -730,7 +744,9 @@ local function build()
 		end
 		print(`[Ocean] {mode} ocean, {tier.name} tier`)
 	until not rebuildQueued
-	RunService:BindToRenderStep(RENDER_STEP_NAME, Enum.RenderPriority.Camera.Value + 1, step)
+	-- after every camera writer (CameraController +1, PhotoMode +2, capture tour cams): at Camera + 1 a photo
+	-- camera left the wave patch behind at the player, a square of white dots in the harbour seen from the air
+	RunService:BindToRenderStep(RENDER_STEP_NAME, Enum.RenderPriority.Last.Value - 1, step)
 	building = false
 end
 
