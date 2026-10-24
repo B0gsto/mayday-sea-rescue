@@ -596,9 +596,9 @@ local function eelgrass(folder: Folder): number
 end
 
 -- The bake paints country verges and the West Cliff car park Pavement as gravel, but built-in Pavement draws white
--- herringbone pavers (docs/17 N6): repaint them Limestone (the bake's seabed gravel; Town.paint tints it) and kerb
--- the car park, leaving the Coast Road's mouth open. The car park also takes the road's asphalt end, so the road
--- stops at its kerb line.
+-- herringbone pavers (docs/17 N6): repaint them Ground, a grey-brown gravel under Town.paint's tint (Limestone read
+-- as a pale concrete slab, N14), and kerb the car park, leaving the Coast Road's mouth open. The car park also
+-- takes the road's asphalt end, so the road stops at its kerb line.
 local GRAVEL_ROADS = { "HighRoad", "CoastRoadWest" }
 local KERB = Color3.fromRGB(168, 162, 152)
 
@@ -616,7 +616,7 @@ local function gravel(folder: Folder): number
 				region:ExpandToGrid(4),
 				4,
 				Enum.Material.Pavement,
-				Enum.Material.Limestone
+				Enum.Material.Ground
 			)
 			n += 1
 			if n % 40 == 0 then
@@ -639,7 +639,7 @@ local function gravel(folder: Folder): number
 		Region3.new(c - Vector3.new(hx + 4, 20, hz + 4), c + Vector3.new(hx + 4, 20, hz + 4))
 			:ExpandToGrid(4)
 	for _, from in { Enum.Material.Pavement, Enum.Material.Asphalt, Enum.Material.Concrete } do
-		terrain:ReplaceMaterial(region, 4, from, Enum.Material.Limestone)
+		terrain:ReplaceMaterial(region, 4, from, Enum.Material.Ground)
 	end
 	-- granite kerb round the rectangle (yaw 0), 6-stud stones, a gap where the road comes in
 	local mouth, gap = road[#road], (WIDTHS.CoastRoadWest or 26) / 2 + 2

@@ -72,7 +72,7 @@ end
 -- Glacier / Ice = dune / wrack sand, Sandstone = wet sand) would show planks, bricks and ice, so naturalGround()
 -- repaints them island-wide.
 local TINT: { [string]: { number } } = {
-	Asphalt = { 62, 64, 68 },
+	Asphalt = { 138, 134, 126 }, -- the built-in texture is dark: 62,64,68 drew a black, textureless road (docs/17 N10)
 	Concrete = { 176, 174, 168 },
 	Pavement = { 150, 146, 136 },
 	Cobblestone = { 128, 122, 112 },
