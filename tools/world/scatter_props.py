@@ -441,7 +441,11 @@ def scatter_rocks(T, ex_all, reg, seed, space):
                 n = T.normal(x, z)
                 tx, tz = tilt_angles(n, 0.15 if "Ledge" in asset else 0.5, cap if "Ledge" in asset else 10.0)
             else:
-                y, b = T.height(x, z), rng.uniform(*DEBRIS[name][1]) if name in DEBRIS else rng.uniform(0.15, 0.30)
+                # lowest ground under the footprint: the voxel terrain smooths away sub-voxel spikes in the bake, and a
+                # boulder sat on one floated (docs/17 N11, skerry_isle)
+                h = 0.5 * r
+                y = min(T.height(x + dx, z + dz) for dx, dz in ((0, 0), (h, 0), (-h, 0), (0, h), (0, -h)))
+                b = rng.uniform(*DEBRIS[name][1]) if name in DEBRIS else rng.uniform(0.15, 0.30)
                 tx, tz = tilt_angles(T.normal(x, z), follow, cap)
             space.add(x, z, r)
             out.append(row(asset, x, y, z, yaw, tx, tz, s, b))
