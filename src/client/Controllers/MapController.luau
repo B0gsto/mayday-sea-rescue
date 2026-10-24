@@ -20,7 +20,8 @@
 --     ReplicatedStorage attribute UseMapWaypoints is true (MapService sets it on the server).
 --
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
---      GetObjective(): (Vector3?, string?), GetTargets(): { Vector3 }
+--      GetObjective(): (Vector3?, label?), the one goal: "Craft" | "Casualty" | "Drop-off" | "Mayday" | "Waypoint"
+--      GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -314,6 +315,17 @@ local function coldOpenHop(me: Vector3): Vector3
 	return hop
 end
 
+-- Your own boat in Workspace.Vehicles (VehicleService sets Owner = UserId).
+local function ownCraft(): Model?
+	local folder = Workspace:FindFirstChild("Vehicles")
+	for _, m in if folder then folder:GetChildren() else {} do
+		if m:IsA("Model") and m:GetAttribute("Owner") == player.UserId then
+			return m
+		end
+	end
+	return nil
+end
+
 -- Every blip this frame, plus the objective (where the route line goes).
 local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 	local S = MapConfig.Styles
@@ -335,9 +347,12 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			table.insert(list, b)
 		end
 	end
+	-- the one goal (docs/20 rule 1): the strip, the world pin and the route line all read it. Order:
+	-- off your craft -> your craft; nobody aboard -> the nearest survivor; anyone aboard -> home; no call -> the offer
 	objective, objectiveLabel = nil, nil
 	local s = OpsController and OpsController.GetState()
-	if s and s.opId and not closedOps[s.opId] then
+	local active = s ~= nil and s.opId ~= nil and not closedOps[s.opId]
+	if active then
 		local onBoard, target = false, nil :: Vector3?
 		for i, c in s.casualties or {} do
 			if typeof(c.position) == "Vector3" and not c.delivered and not c.takenOver then
@@ -401,12 +416,16 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			-- from the moment you take it (playtest: the distance vanished on accept)
 			objective, objectiveLabel = target, "Casualty"
 		end
+		local craft = ownCraft()
+		if craft and select(2, seatModel()) ~= "boat" then
+			objective, objectiveLabel = craft:GetPivot().Position, "Craft"
+		end
 	end
 	local now = Workspace:GetServerTimeNow()
 	for id, o in offers do
 		if o.expires < now or (s and s.opId == id) then
 			offers[id] = nil
-		else
+		elseif not active then -- an offer never takes the pin from your own call
 			table.insert(list, {
 				id = `Offer{id}`,
 				pos = o.position,
