@@ -30,6 +30,10 @@
 -- Shared.Dog.DogWear): a tint on the harness parts, and plain Parts in a "Wear" model welded to the Torso
 -- / Head (darkened while he is wet). A life jacket hides the harness. Model attributes DogId, DogName, Breed.
 --
+-- One companion (owner, 2026-10-24): while a rescued pet is out (player attribute CompanionPet,
+-- PetService) Bosun is home: hidden and still. The pet then does his job: on foot the sniff comes
+-- from the player and DogController draws it at the pet; the craft guide point is unchanged.
+--
 -- API (server): DogService.GetDog(player): Model?
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -546,6 +550,16 @@ local function step(dog: Dog, now: number)
 	if not character or not humanoid or not root then
 		return
 	end
+	if dog.player:GetAttribute("CompanionPet") ~= nil then
+		-- a pet is out: Bosun is home (hidden); he reappears beside the player when picked again
+		if not dog.hidden then
+			dog.hidden = true
+			dog.model:SetAttribute("Hidden", true)
+		end
+		dog.depth = 0
+		setMode(dog, "Wait")
+		return
+	end
 	-- In any vehicle he is hidden (DogController) and stays where he was; he reappears beside the
 	-- player when they get out (user, 2026-10-22: a dog standing on the car looked broken).
 	if vehicleOf(humanoid.SeatPart) then
@@ -596,10 +610,19 @@ local function step(dog: Dog, now: number)
 end
 
 local function sniff(dog: Dog, now: number)
-	if dog.hidden then
+	local origin = dog.body.Position
+	if dog.player:GetAttribute("CompanionPet") ~= nil then
+		-- the pet sniffs from the player's side (it lives on the client); not from a seat
+		local character = dog.player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+		if not humanoid or not root or vehicleOf(humanoid.SeatPart) then
+			return
+		end
+		origin = root.Position
+	elseif dog.hidden then
 		return
 	end
-	local origin = dog.body.Position
 	local best: Vector3? = nil
 	local bestDist = NOSE_RANGE
 	for _, position in victimPositions(dog.player) do

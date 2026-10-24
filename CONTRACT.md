@@ -173,10 +173,11 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
 
 ## Phone (all menus)
 
-`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Six
-apps (K9): Map, Vehicles, Store, Crew, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
+`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Seven
+apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
 bounce mean "something is affordable" and badge the Vehicles icon. `UI/VehiclesApp` (boats, jet skis,
-cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), Settings borrows
+cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
+recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
 `SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`.
 
 ## HUD and map

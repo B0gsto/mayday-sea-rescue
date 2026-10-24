@@ -9,6 +9,9 @@
 -- removed: the sanctuary only grows, and a full yard simply means the next animal is not taken
 -- in (nothing is lost for not playing).
 --
+-- One companion out at a time (owner, 2026-10-24): a = 0 means Bosun the dog is out; picking a pet
+-- sends him home and picking Bosun (PetRules.BOSUN) sends the pet back. Old saves load unchanged.
+--
 -- G48: bond pips (five) came from fish treats, removed 2026-10-24 with petting; saved pips and a
 -- full bond's code-built life vest stay.
 -- The trick triggers are pure too, so the client only picks the animation.
@@ -62,6 +65,7 @@ PetRules.BOND_MAX = 5
 PetRules.TREAT_MAX = 9
 PetRules.NAP_SECONDS = 30
 PetRules.ACCESSORY = "Vest"
+PetRules.BOSUN = 0 -- the companion id for Bosun (no pet out)
 
 local function speciesKnown(id: string): boolean
 	return Wildlife.Species[id] ~= nil
@@ -203,6 +207,9 @@ function PetRules.remaining(entry: Entry, now: number): number
 end
 
 function PetRules.canEquip(state: State, id: number, now: number): (boolean, string?)
+	if id == PetRules.BOSUN then
+		return true
+	end
 	local entry = PetRules.get(state, id)
 	if not entry then
 		return false, "Unknown pet"
@@ -213,8 +220,17 @@ function PetRules.canEquip(state: State, id: number, now: number): (boolean, str
 	return true
 end
 
--- Adopts one pet; the previous active pet goes back to the sanctuary.
+-- Adopts one pet (or Bosun, id BOSUN); the previous companion goes home.
 function PetRules.equip(state: State, id: number): (State, boolean)
+	if id == PetRules.BOSUN then
+		return {
+			nextId = state.nextId,
+			active = nil,
+			entries = state.entries,
+			treats = state.treats or 0,
+		},
+			true
+	end
 	if not PetRules.get(state, id) then
 		return state, false
 	end

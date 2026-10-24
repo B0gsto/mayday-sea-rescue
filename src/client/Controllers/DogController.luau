@@ -20,6 +20,8 @@
 -- K14: a guide point while he rides hidden on the craft (payload.from = the craft) barks and shows
 -- the arrow from the craft instead of his hidden body; a "Woof!" with no dog in sight read wrong,
 -- so the bubble there is a paw print on the craft's side toward the casualty.
+-- One companion (2026-10-24): while a rescued pet is out Bosun is home (Hidden) and the same point
+-- is drawn at the pet (PetController.companion): its own voice, the paw bubble and the arrow.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -30,6 +32,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local BosunMotion = require(Shared:WaitForChild("Dog"):WaitForChild("BosunMotion"))
 local Net = require(Shared:WaitForChild("Net"))
+local PetController = require(script.Parent:WaitForChild("PetController"))
 
 local DogController = {}
 
@@ -326,6 +329,10 @@ local function onPoint(payload: any)
 	end
 	local from = payload.from
 	local onCraft = false
+	local pet, species = PetController.companion()
+	local petBody = if Players.LocalPlayer:GetAttribute("CompanionPet") ~= nil and pet
+		then pet.PrimaryPart
+		else nil
 	if
 		dog:GetAttribute("Hidden") == true
 		and typeof(from) == "Instance"
@@ -334,13 +341,17 @@ local function onPoint(payload: any)
 	then
 		body = from.PrimaryPart
 		onCraft = true
+	elseif petBody then
+		body = petBody -- the pet out does Bosun's job
+	elseif dog:GetAttribute("Hidden") == true then
+		return
 	end
 	local serial = (active[dog] or 0) + 1
 	active[dog] = serial
 
 	track(dog)
 	local state = dogs[dog]
-	if state then
+	if state and not petBody then
 		state.pointAt = if typeof(payload.position) == "Vector3"
 			then payload.position
 			else body.Position + direction * 20
@@ -352,7 +363,11 @@ local function onPoint(payload: any)
 	local bubble: BillboardGui? = nil
 	if now - (lastBark[dog] or -math.huge) >= BARK_GAP then
 		lastBark[dog] = now
-		AudioController.play("Dog_Bark", body.Position, 1, rng:NextNumber(0.94, 1.06))
+		if petBody and species then
+			PetController.voice(species, body.Position)
+		else
+			AudioController.play("Dog_Bark", body.Position, 1, rng:NextNumber(0.94, 1.06))
+		end
 		local cam = Workspace.CurrentCamera
 		if not cam or (cam.CFrame.Position - body.Position).Magnitude > BUBBLE_NEAR then
 			local old = body:FindFirstChild("WoofBubble")
@@ -362,7 +377,9 @@ local function onPoint(payload: any)
 			local flat = Vector3.new(direction.X, 0, direction.Z)
 			bubble = makeBubble(
 				body,
-				if onCraft then (if flat.Magnitude > 0.01 then flat.Unit else Vector3.zero) else nil
+				if onCraft or petBody
+					then (if flat.Magnitude > 0.01 then flat.Unit else Vector3.zero)
+					else nil
 			)
 		end
 	end
