@@ -69,7 +69,7 @@ BadgeConfig.Badges = table.freeze({
 		count = 1,
 	},
 	SmoothRide = {
-		id = 0,
+		id = 1288197496135131,
 		name = "Smooth Ride",
 		description = "Bring survivors home with a smooth ride 10 times.",
 		icon = "A boat on a flat gold wake",
@@ -95,14 +95,14 @@ BadgeConfig.Badges = table.freeze({
 		rank = "Coxswain",
 	},
 	RankCaptain = {
-		id = 0,
+		id = 3988634187712861,
 		name = "Captain",
 		description = "Reach the rank of Captain.",
 		icon = "A captain's cap with a gold anchor",
 		rank = "Captain",
 	},
 	Rescue100 = {
-		id = 0,
+		id = 2256878015580327,
 		name = "Hundred Rescues",
 		description = "Finish 100 rescues.",
 		icon = "A life ring with 100 on it",
@@ -116,14 +116,14 @@ BadgeConfig.Badges = table.freeze({
 		count = 1,
 	},
 	AllWildlife = {
-		id = 0,
+		id = 3723954163251165,
 		name = "Sanctuary Five",
 		description = "Rescue all five wildlife species.",
 		icon = "Five animal silhouettes around a life ring",
 		count = 5,
 	},
 	FirstPet = {
-		id = 0,
+		id = 3649679878233996,
 		name = "First Pet",
 		description = "Adopt your first pet at the sanctuary.",
 		icon = "A paw print inside a heart",
