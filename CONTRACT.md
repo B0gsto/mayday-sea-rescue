@@ -182,7 +182,8 @@ apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicle
 bounce mean "something is affordable" and badge the Vehicles icon. `UI/VehiclesApp` (boats, jet skis,
 cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
 recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
-`SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`.
+`SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`. `UI/AlbumApp` is the sticker album
+(docs/21 §3; an eighth app on the grid).
 
 ## HUD and map
 
@@ -203,6 +204,11 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
 ## Other systems
 
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
+- Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
+  `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
+  (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
+  `Discovery_Found`, `Discovery_Get`), `DiscoveryController` (`IsRevealed(cell | islandId)`, `IsStamped`,
+  `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/AlbumApp` (phone Album).
 - Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
   `TalkController` zooms in and shows 1 to 3 numbered replies.
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`

@@ -57,6 +57,7 @@ local OPTIONAL = {
 	{ module = "VehiclesApp", name = "Vehicles", label = "Vehicles" },
 	{ module = "StoreApp", name = "Store", label = "Store" },
 	{ module = "PetsApp", name = "Pets", label = "Pets" },
+	{ module = "AlbumApp", name = "Album", label = "Album" },
 }
 local DOCK = { Map = 1, Vehicles = 2, Store = 3, Camera = 4 } -- the dock's 4, in order
 local RED = Color3.fromHex("FF3B30") -- iOS badge red
