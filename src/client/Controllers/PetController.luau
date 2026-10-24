@@ -2,8 +2,10 @@
 -- PetController: the client side of the animal sanctuary (docs/15 section 2, hook H4).
 -- Pulls the player's pets (Pet_State / Pet_Get) and, when one is adopted, makes it follow on land
 -- (offset behind the player + a ground raycast, a small hop/waddle) or ride on the boat's bow. One
--- active pet at a time. There is no yard (removed 2026-10-22): with no pet out, the first recovered
--- one is adopted automatically (Pet_Equip), never from a list.
+-- companion at a time (owner, 2026-10-24): Bosun or one pet. A newly recovered pet (never adopted)
+-- becomes the companion automatically (Pet_Equip); switching back lives on the phone (UI/PetsApp:
+-- PetController.view / choose / onChange, id 0 = Bosun). DogController draws the pet's guide
+-- point via PetController.companion / voice.
 --
 -- G48: the following pet is a friend, not a prop. It celebrates a finished rescue or an opened
 -- crate, greets the player on spawn, naps with "Zz" when the player idles at the station, and sits
@@ -59,6 +61,8 @@ local hopT = 0
 local clock = 0
 local adoptingId: number? = nil
 local nextVoice = 0
+local lastView: View? = nil
+local changedEvent = Instance.new("BindableEvent")
 
 local trickName: string? = nil
 local trickStart = 0
@@ -224,16 +228,18 @@ local function applyView(next: View)
 	if type(next) ~= "table" or type(next.pets) ~= "table" then
 		return
 	end
+	lastView = next
+	changedEvent:Fire()
 	local during: PetRow? = nil
 	local recovered: PetRow? = nil
 	for _, row in next.pets do
 		if row.active then
 			during = row
-		elseif row.ready and not recovered then
-			recovered = row
+		elseif row.ready and not row.adopted and not recovered then
+			recovered = row -- just recovered: the exciting moment, it comes out at once
 		end
 	end
-	if not during and recovered and adoptingId == nil then
+	if recovered and adoptingId == nil then
 		task.spawn(equip, recovered.id)
 	end
 	local previous = active
@@ -476,6 +482,30 @@ local function watchMoment(attribute: string, signal: string)
 			heartBurst(activeModel, 2)
 		end
 	end)
+end
+
+-- The phone's Pets app ---------------------------------------------------------------------------
+
+function PetController.view(): View?
+	return lastView
+end
+
+-- 0 = Bosun (PetRules.BOSUN), else a recovered pet's id
+function PetController.choose(id: number)
+	task.spawn(equip, id)
+end
+
+function PetController.onChange(fn: () -> ()): RBXScriptConnection
+	return changedEvent.Event:Connect(fn)
+end
+
+-- The pet out now (nil while Bosun is the companion), for DogController's guide point.
+function PetController.companion(): (Model?, string?)
+	return activeModel, if active then active.species else nil
+end
+
+function PetController.voice(species: string, at: Vector3)
+	playVoice(species, at)
 end
 
 function PetController.Init()

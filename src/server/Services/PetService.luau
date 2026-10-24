@@ -4,13 +4,15 @@
 -- The profile flag `pets` holds up to Wildlife.MaxPets animals, each with the species, whether it
 -- is the rare colour variant and the Unix time it was landed (PetRules owns the encoding). They
 -- recover for 10 real minutes even while the player is away; after that the client adopts one
--- (PetController: the first recovered one when no pet is out). One active pet at a time.
+-- (PetController: each newly recovered one). One companion out at a time (owner, 2026-10-24):
+-- Bosun by default (active nil); a pet out sends him home. The player attribute CompanionPet (the
+-- active pet id, nil = Bosun) tells DogService; the phone's Pets app switches (Pet_Equip 0 = Bosun).
 --
 -- SanctuaryService calls AddRescue when a WildlifeRescue operation finishes. Remotes (under
 -- ReplicatedStorage.Net; created here so shared/Net.luau needs no edit):
 --   Pet_State  S->C  PetRules.view (pets, bond, treats, progress, remaining, active)
 --   Pet_Get    C->S  function -> the same view (first pull)
---   Pet_Equip  C->S  function (id) -> (ok, reason); only when recovered
+--   Pet_Equip  C->S  function (id) -> (ok, reason); only when recovered; 0 = Bosun
 -- Petting and fish treats were removed (owner, 2026-10-24): old saves keep their treat count and
 -- bond pips in the flag, unused. Studio: ServerStorage.SanctuaryDev "add" / "ready" / "equip" /
 -- "view"; ServerStorage.PetDev "view" / "equip".
@@ -78,6 +80,7 @@ local function viewOf(state: PetRules.State): any
 end
 
 local function push(player: Player, state: PetRules.State)
+	player:SetAttribute("CompanionPet", state.active)
 	local remote = stateRemote
 	if remote and player.Parent then
 		remote:FireClient(player, viewOf(state))
@@ -144,6 +147,9 @@ function PetService.Equip(player: Player, id: any): (boolean, string?)
 	end
 	if not store(player, nextState) then
 		return false, "Could not save"
+	end
+	if petId == PetRules.BOSUN then
+		return true
 	end
 	local pet = PetRules.get(nextState, petId)
 	Telemetry.Custom(
