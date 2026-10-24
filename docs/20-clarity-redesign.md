@@ -142,3 +142,17 @@ with a fresh profile, using `build/ux/log.md` moments M1–M13 as the checklist.
 
 Not verified: camera orbit by right-drag (the test driver's right-drag did not turn the camera on foot
 either, so it may be the tool); the owner's "Too slow" failure was not reproduced in this session.
+
+### WP-C addendum (owner, 2026-10-24): crowding and wrong-medium despawn
+
+- Wrong medium: a boat that sits on land, or a car that sits in water, past the auto-recovery attempt (or with
+  nobody aboard) for ~6 s despawns with a splash/poof; the player lands on their feet and the craft pin
+  points to the bay (phone Spawn / bay Launch brings a new one). Occupied vehicles still try recovery first.
+- Crowding with a full server: one vehicle per player (already); empty vehicles left anywhere despawn sooner
+  when the server is busy (scale the idle timer by player count); spawns spread across all free bays and
+  slipways (and the new island docks) instead of stacking at one; NPC traffic and moored-boat density scale
+  down as players go up; player vehicles soft-collide with each other (no launches/flips from bumps) and
+  never spawn overlapping another vehicle.
+Acceptance: a boat dragged onto the quay and left there disappears within ~10 s; a car driven into the
+harbour and abandoned disappears; with 8 test players (Studio local server) the bays and roads stay usable
+and no spawn overlaps another vehicle.
