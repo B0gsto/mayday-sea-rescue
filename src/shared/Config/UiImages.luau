@@ -25,6 +25,7 @@ return {
 		Vehicles = "rbxassetid://140273799789221",
 		Store = "rbxassetid://138403733104125",
 		Pets = "rbxassetid://87898331265122",
+		Album = "rbxassetid://80999164138068",
 		Wallpaper = "rbxassetid://71603902912480", -- 1170x2532, assets/ui/phone_v2/wallpaper.png
 	},
 	-- Icons requested in docs/18-ui-art-requests.md. Empty until uploaded: the UI draws its glyph
@@ -62,5 +63,23 @@ return {
 		tap = "rbxassetid://127544457178491",
 		wave = "rbxassetid://78956573306618",
 		waves = "rbxassetid://113642256494966",
+	} :: { [string]: string },
+	-- album stickers (assets/ui/album): island stamps by island id, Bottle / View, rare critters by species
+	Stickers = {
+		SkerryIsle = "rbxassetid://79234382316384",
+		StElowensMount = "rbxassetid://132592157391535",
+		PuffinIsle = "rbxassetid://87680328740912",
+		Penwyn = "rbxassetid://104689252207258",
+		WreckReef = "rbxassetid://89209684718926",
+		TheArches = "rbxassetid://83402071804743",
+		GannetRock = "rbxassetid://113860834663369",
+		MermaidLagoon = "rbxassetid://83142034540217",
+		Bottle = "rbxassetid://78232456333007",
+		View = "rbxassetid://81771345531261",
+		SealPup = "rbxassetid://132804906695444",
+		Gull = "rbxassetid://80027175736095",
+		Puffin = "rbxassetid://95011471355027",
+		Otter = "rbxassetid://78618476254127",
+		Turtle = "rbxassetid://99122489390773",
 	} :: { [string]: string },
 }

@@ -5,14 +5,17 @@
 --                                                              (a grey silhouette until found)
 --   Sticker.slam(islandId, stickerId, page)   the on-screen thump: a stamp slams down, ink ring, shake,
 --                                             confetti, slap + sparkle; a found collectible pops smaller
--- shortcut: the icons are Frame-glyph placeholders; swap in UiImages.Stickers once docs/18's sticker art
--- is uploaded.
+-- Art: UiImages.Stickers (island stamps by island id, Bottle / View, critters by species); a sticker with no
+-- uploaded image falls back to the Frame-glyph drawing below.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Rules = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("DiscoveryRules"))
+local UiImages = require(
+	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("UiImages")
+)
 
 local Client = script.Parent.Parent
 local AudioController = require(Client:WaitForChild("Controllers"):WaitForChild("AudioController"))
@@ -146,6 +149,24 @@ function Sticker.draw(parent: Instance, islandId: string, stickerId: string, fou
 		return f
 	end
 	local stamp = s.kind == "Stamp"
+	local key = if stamp then islandId elseif s.kind == "Critter" then (s :: any).species else s.kind
+	local picture = key and UiImages.Stickers[key]
+	if picture and picture ~= "" then
+		local img = Instance.new("ImageLabel")
+		img.Name = "Face"
+		img.AnchorPoint = Vector2.new(0.5, 0.5)
+		img.Position = UDim2.fromScale(0.5, 0.5)
+		img.Size = UDim2.fromScale(1, 1)
+		img.BackgroundTransparency = 1
+		img.Image = picture
+		img.ScaleType = Enum.ScaleType.Fit
+		if not found then -- a dark silhouette until found
+			img.ImageColor3 = DARK
+			img.ImageTransparency = 0.25
+		end
+		img.Parent = f
+		return f
+	end
 	local face = Instance.new("Frame")
 	face.Name = "Face"
 	face.AnchorPoint = Vector2.new(0.5, 0.5)
