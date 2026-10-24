@@ -3,6 +3,9 @@
 -- lookout). Islands/init.luau calls place(base, island) with the WorldConfig.Islands row; terrain is baked already.
 local M = {}
 
-function M.place(_base: Instance, _island: any) end
+-- phase 2 (GitHub issue #1): bare terrain plus a "Coming soon" board until a builder dresses it
+function M.place(base: Instance, island: any)
+	require(script.Parent:WaitForChild("ComingSoon")).place(base, island)
+end
 
 return M

@@ -4741,6 +4741,15 @@
   "source": "assets/textures/M_Veh_RIB_Helm/T_RIBHelm_Console_RGH_Wet.png",
   "type": "Image"
  },
+ "Image:3a420d24e3cf824e86b4c6a378fb38e6ff9bcc0722a1f7891c20047bd75f7b0e": {
+  "assetId": "123799723191842",
+  "imageId": "123799723191842",
+  "moderation": "Reviewing",
+  "name": "sign_coming_soon",
+  "sha": "3a420d24e3cf824e86b4c6a378fb38e6ff9bcc0722a1f7891c20047bd75f7b0e",
+  "source": "assets/ui/signs/sign_coming_soon.png",
+  "type": "Image"
+ },
  "Image:3a4a304e123b1741ffb96b33b896f3a37021e0987f8ccb8d61142407a046f503": {
   "assetId": "71860494080566",
   "imageId": "71860494080566",
