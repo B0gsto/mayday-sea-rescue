@@ -2,7 +2,14 @@
 -- VehicleService (stream B): launches boats from the dock bays, one vehicle per player.
 --
 --   RequestVehicle (RemoteFunction, Net)  (vehicleId, docked?, near?) -> (ok, reasonOrVehicle); near = the
---                                        free bay nearest the player (phone Vehicles app) instead of theirs
+--                                        free bay, slipway or dock nearest the player (phone Vehicles app),
+--                                        always seated (docs/20 rule 7: docked is ignored)
+--   Seated launches (phone, bay Launch, Quick Launch) float the craft in open water off the bay, bow to
+--   sea, never overlapping another vehicle (launchCFrame); the seat is retried until it holds.
+--   Crowding (docs/20 WP-C addendum): player boats ghost through each other and through cars
+--   (collision group PlayerBoat; BoatController eases hulls apart); a boat beached past recovery, or
+--   empty on land for VehicleRecovery.MISPLACED_TIME, goes with a poof and its riders stand up beside
+--   it; idle timers shrink with the player count (Crowding.scale).
 --   Bay ProximityPrompts                 one "Launch" per bay (K3): the player's last-launched craft
 --                                        (data.flags.lastVehicle); switching craft is the phone's Vehicles app
 --   Returning players (K11)              profile has coldOpenDone: every spawn stands them on the pier at
@@ -28,6 +35,7 @@
 -- if it is missing or errors, every vehicle is allowed and the gear speed bonus is 1.
 
 local CollectionService = game:GetService("CollectionService")
+local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -37,6 +45,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local BayLaunch = require(Shared:WaitForChild("Boat"):WaitForChild("BayLaunch"))
 local Builder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
+local Crowding = require(Shared:WaitForChild("Crowding"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -116,6 +125,7 @@ local OPEN_WATER_RANGE = 150 -- studs searched for open water off a beach or sli
 local SEA_VIEW = 30 -- studs of open water ahead of a recovered hull -- tune
 local GLIDE_RANGE = 80 -- studs: further resets (out of bounds) snap instead of gliding
 local TOW_MIN_LENGTH = 12
+local BOAT_GROUP = "PlayerBoat" -- player craft ghost through each other and through cars
 local SCRIPTED_TOW_SLACK = 10 -- extra rope on scripted tows so latency never makes it bind
 
 local VehicleService = {}
@@ -460,9 +470,10 @@ local function onDriverChanged(record: Record)
 	updateTowOwnership(record)
 end
 
+-- Someone else's craft (docked, adrift or passing) sits on the bay.
 local function bayBusy(bay: BasePart, player: Player): boolean
 	for _, record in records do
-		if record.owner ~= player and record.mode == "Dock" then
+		if record.owner ~= player then
 			if flatDistance(record.root.Position, bay.Position) < DOCK_RADIUS then
 				return true
 			end
@@ -510,7 +521,13 @@ local function bayAllows(bay: BasePart, vehicleId: string): boolean
 		or (spec ~= nil and spec.base ~= nil and table.find(list, spec.base) ~= nil)
 end
 
--- The free bay nearest the player that takes this boat (the phone's spawn), nil: their own bay.
+-- Extra launch spots beside the bays (addendum: spread spawns): WorldConfig.Points of kind Launch
+-- (slipways) or Dock (island docks), as unparented bay-like parts in open water off the point, bow
+-- to sea. Found on first use (the terrain must be in); see launchSpots below.
+local spots: { BasePart }? = nil
+local launchSpots: () -> { BasePart } -- set below (needs the open-water search)
+
+-- The free bay or spot nearest the player that takes this boat (the phone's spawn), nil: their own bay.
 local function nearestFreeBay(player: Player, vehicleId: string): BasePart?
 	local character = player.Character
 	if not character then
@@ -518,7 +535,9 @@ local function nearestFreeBay(player: Player, vehicleId: string): BasePart?
 	end
 	local at = character:GetPivot().Position
 	local best, bestDist = nil, math.huge
-	for _, bay in bays do
+	local all = table.clone(bays)
+	table.move(launchSpots(), 1, #launchSpots(), #all + 1, all)
+	for _, bay in all do
 		local d = flatDistance(at, bay.Position)
 		if d < bestDist and bayAllows(bay, vehicleId) and not bayBusy(bay, player) then
 			best, bestDist = bay, d
@@ -564,9 +583,14 @@ local function sitDriver(player: Player, seat: VehicleSeat)
 		seat:Sit(humanoid)
 	end
 	place()
-	-- a character just taken off another seat can miss the first Sit: check and retry once
-	task.delay(0.5, function()
-		if seat.Parent and humanoid.Parent and humanoid.Health > 0 and seat.Occupant == nil then
+	-- a character just taken off another seat (or still streaming in) can miss a Sit: retry until it
+	-- holds (docs/20 rule 7: a spawn never leaves you standing on the deck)
+	task.spawn(function()
+		for _ = 1, 10 do
+			task.wait(0.4)
+			if not (seat.Parent and humanoid.Parent and humanoid.Health > 0) or seat.Occupant then
+				return
+			end
 			place()
 		end
 	end)
@@ -678,6 +702,7 @@ local function policyState(record: Record): RespawnPolicy.State
 			or pos.Y < MIN_Y
 			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200,
 		ownerDistance = if ownerPos then (ownerPos - pos).Magnitude else nil,
+		idleScale = Crowding.scale(#Players:GetPlayers()),
 	}
 end
 
@@ -823,6 +848,11 @@ local function createVehicle(
 	model:SetAttribute("SpeedMultiplier", speedBonus(player))
 	model:SetAttribute("EngineRunning", false)
 	model:PivotTo(Simulator.restCFrame(model, at.X, at.Z, at.LookVector))
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CollisionGroup = BOAT_GROUP
+		end
+	end
 	model.Parent = folder
 
 	local root = model.PrimaryPart :: BasePart
@@ -866,6 +896,9 @@ local function createVehicle(
 	return model, seat
 end
 
+-- Open water off `bay` for a seated launch, bow to sea (set below, after the open-water search).
+local launchCFrame: (bay: BasePart, spec: VehicleSpec, player: Player) -> CFrame?
+
 local function spawnVehicle(
 	player: Player,
 	vehicleId: string,
@@ -891,7 +924,9 @@ local function spawnVehicle(
 	if not bayAllows(at, vehicleId) then
 		return false, "BayNotAllowed"
 	end
-	if bayBusy(at, player) then
+	-- seated: afloat in open water off the bay, clear of every other vehicle (docs/20 rule 7)
+	local launchAt = if docked then nil else launchCFrame(at, spec, player)
+	if not launchAt and bayBusy(at, player) then
 		return false, "BayBusy"
 	end
 	local plan, _, why = planSpawn(player, spec, "Request")
@@ -907,7 +942,8 @@ local function spawnVehicle(
 	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
 	-- sat with its stern on the quay road)
 	local out = math.max(0, spec.hullSize.Z / 2 - at.Size.Z / 2)
-	local model, seat = createVehicle(player, spec, at.CFrame * CFrame.new(0, 0, -out), "Request")
+	local model, seat =
+		createVehicle(player, spec, launchAt or at.CFrame * CFrame.new(0, 0, -out), "Request")
 	if not docked then
 		sitDriver(player, seat)
 	end
@@ -1018,21 +1054,29 @@ end
 -- The nearest open water from `pos` that a `hull` (beam, depth, length) fits in and can drive out of:
 -- rings from BOAT_BACKOFF out, bearings nearest `away` first, and the heading (nearest `away`, back
 -- out the way it came rather than along the shore) with a clear SEA_VIEW stud run. Nil when none.
+-- `fromRing` 0 tries `pos` itself first; `free(at)` rejects spots another vehicle holds.
 local function nearestOpenWater(
 	pos: Vector3,
 	away: Vector3,
 	hull: Vector3,
 	depth: number,
-	params: RaycastParams
+	params: RaycastParams,
+	fromRing: number?,
+	free: ((Vector3) -> boolean)?
 ): (Vector3?, Vector3?)
 	local r, beam = math.max(hull.X, hull.Z) / 2 + 2, hull.X / 2 + 1
 	local dirs = bearings(away)
-	for ring = BOAT_BACKOFF, OPEN_WATER_RANGE, BOAT_BACKOFF do
-		for _, d in dirs do
+	for ring = fromRing or BOAT_BACKOFF, OPEN_WATER_RANGE, BOAT_BACKOFF do
+		for i, d in dirs do
+			if ring == 0 and i > 1 then
+				break -- ring 0 is the one spot
+			end
 			local at = Vector3.new(pos.X + d.X * ring, 0, pos.Z + d.Z * ring)
-			if openAt(at.X, at.Z, r, depth, params) then
+			if openAt(at.X, at.Z, r, depth, params) and (not free or free(at)) then
 				for _, f in dirs do
-					local clear = true
+					-- the stern clears the quay too (a RIB at Bay1 sat with its transom on the rail)
+					local stern = at - f * (hull.Z / 2 + 4)
+					local clear = openAt(stern.X, stern.Z, beam, depth, params)
 					for k = BOAT_BACKOFF, SEA_VIEW, BOAT_BACKOFF do
 						local ahead = at + f * k
 						if not openAt(ahead.X, ahead.Z, beam, depth, params) then
@@ -1049,6 +1093,82 @@ local function nearestOpenWater(
 	end
 	return nil, nil
 end
+
+-- No other vehicle (boat or car) within a hull's reach of `at`; the player's own craft don't count
+-- (a launch replaces them).
+local function spotFree(at: Vector3, hull: Vector3, player: Player): boolean
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	local land = Workspace:FindFirstChild("LandVehicles")
+	params.FilterDescendantsInstances = if land then { folder, land } else { folder }
+	local reach = math.max(hull.X, hull.Z) + 4
+	for _, part in
+		Workspace:GetPartBoundsInBox(
+			CFrame.new(at.X, 0, at.Z),
+			Vector3.new(reach, 12, reach),
+			params
+		)
+	do
+		local node: Instance = part -- up to the vehicle model (real models nest inside it)
+		while node.Parent and node.Parent ~= folder and node.Parent ~= land do
+			node = node.Parent
+		end
+		if node:GetAttribute("Owner") ~= player.UserId then
+			return false
+		end
+	end
+	return true
+end
+
+launchCFrame = function(bay: BasePart, spec: VehicleSpec, player: Player): CFrame?
+	local look = Vector3.new(bay.CFrame.LookVector.X, 0, bay.CFrame.LookVector.Z)
+	look = if look.Magnitude > 1e-3 then look.Unit else Vector3.zAxis
+	-- a hull longer than the bay starts slid seaward along it (its stern clears the quay)
+	local from = bay.Position + look * math.max(0, spec.hullSize.Z / 2 - bay.Size.Z / 2)
+	local at, face = nearestOpenWater(
+		from,
+		look,
+		spec.hullSize,
+		spec.hullSize.Y + 3,
+		solidParams(),
+		0,
+		function(p)
+			return spotFree(p, spec.hullSize, player)
+		end
+	)
+	return if at and face then CFrame.lookAt(at, at + face) else nil
+end
+
+launchSpots = function(): { BasePart }
+	if spots then
+		return spots
+	end
+	local found: { BasePart } = {}
+	local config = Shared:FindFirstChild("Config")
+	local module = config and config:FindFirstChild("WorldConfig")
+	local ok, world = pcall(require, module :: any)
+	local points = if ok and type(world) == "table" then world.Points else nil
+	local params = solidParams()
+	for _, p in (if type(points) == "table" then points else {}) do
+		if (p.kind == "Launch" or p.kind == "Dock") and typeof(p.position) == "Vector3" then
+			-- sized for the biggest hull; the sea is south (+Z) of the coast
+			local at, face =
+				nearestOpenWater(p.position, Vector3.zAxis, Vector3.new(12, 6, 40), 9, params)
+			if at and face then
+				local spot = Instance.new("Part")
+				spot.Name = p.id
+				spot.Size = Vector3.new(12, 1, 24)
+				spot.CFrame = CFrame.lookAt(at, at + face)
+				table.insert(found, spot)
+			end
+		end
+	end
+	print(`[VehicleService] {#found} extra launch spots (slipways, docks)`)
+	spots = found
+	return found
+end
+
+local despawnMisplaced: (record: Record) -> () -- set below (after standOnGround)
 
 -- Capsized, beached, sunk or pinned for long enough (VehicleRecovery). Returns whether the boat
 -- is in a good state (upright and afloat) for lastGood.
@@ -1070,6 +1190,23 @@ local function recoverBoat(record: Record, dt: number): boolean
 		grounded = height < AIR_HEIGHT or onLand,
 		off = driven and off, -- an empty hull on the beach waits for the wreck sweep
 	})
+	-- addendum: on land (or sunk) past recovery, or empty there, it goes; never with cargo aboard
+	local cargo = next(record.survivors) ~= nil
+		or record.tow ~= nil
+		or towTargets[record.model] ~= nil
+	if
+		not reason
+		and VehicleRecovery.misplaced(
+			record.recovery,
+			dt,
+			os.clock(),
+			off and not cargo,
+			isOccupied(record)
+		)
+	then
+		despawnMisplaced(record)
+		return false
+	end
 	if not reason then
 		return not off and up >= VehicleRecovery.UP_MIN
 	end
@@ -1100,7 +1237,7 @@ local function checkVehicle(record: Record, dt: number)
 			or Workspace:GetAttribute(BYPASS_ATTRIBUTE) == true
 		)
 	local fine = bypass or recoverBoat(record, dt)
-	if record.mode ~= "Driven" or record.resetting then
+	if records[record.model] ~= record or record.mode ~= "Driven" or record.resetting then
 		return
 	end
 	local root = record.root
@@ -1241,6 +1378,28 @@ local function standOnGround(character: Model, at: Vector3): Vector3
 	return (if hit then hit.Position else at) + Vector3.new(0, lift, 0)
 end
 
+-- A boat stranded on land: riders stand up beside it, a poof, gone. The player's bay Launch prompt
+-- shows again (no craft out) and BayCFrame still marks the bay for the craft pin.
+despawnMisplaced = function(record: Record)
+	local pos = record.root.Position
+	print(`[VehicleService] clearing {record.model.Name}: on land`)
+	for _, p in VehicleService.GetOccupants(record.model) do
+		local character = p.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if character and humanoid then
+			humanoid.Sit = false
+			local weld = humanoid.SeatPart and humanoid.SeatPart:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+			local feet = standOnGround(character, character:GetPivot().Position)
+			character:PivotTo(CFrame.new(feet) * character:GetPivot().Rotation)
+		end
+	end
+	VehicleRecovery.poof(pos, false)
+	despawnModel(record.model)
+end
+
 -- Docks the player's vehicle at their bay; despawns it when that is not possible.
 local function stowVehicle(player: Player): string
 	local record = byPlayer[player]
@@ -1327,7 +1486,8 @@ function VehicleService.Init()
 			return false, "BadRequest"
 		end
 		local bay = if near == true then nearestFreeBay(player, vehicleId) else nil
-		return spawnVehicle(player, vehicleId, bay, nil, docked == true)
+		-- the phone (near) always seats you afloat: docs/20 rule 7, never standing on a quay
+		return spawnVehicle(player, vehicleId, bay, nil, docked == true and near ~= true)
 	end
 
 	local quickRemote = Instance.new("RemoteFunction")
@@ -1358,6 +1518,24 @@ function VehicleService.Init()
 end
 
 function VehicleService.Start()
+	-- player boats collide like Default with everything (characters, casualties: every group is in
+	-- after Init) except each other and cars: they ghost, and BoatController eases them apart
+	pcall(PhysicsService.RegisterCollisionGroup, PhysicsService, BOAT_GROUP)
+	for _, g in PhysicsService:GetRegisteredCollisionGroups() do
+		PhysicsService:CollisionGroupSetCollidable(
+			BOAT_GROUP,
+			g.name,
+			PhysicsService:CollisionGroupsAreCollidable("Default", g.name)
+		)
+	end
+	PhysicsService:CollisionGroupSetCollidable(BOAT_GROUP, BOAT_GROUP, false)
+	pcall(
+		PhysicsService.CollisionGroupSetCollidable,
+		PhysicsService,
+		BOAT_GROUP,
+		"LandVehicle",
+		false
+	)
 	RunService.PreSimulation:Connect(simulateServerOwned)
 	local acc = 0
 	RunService.Heartbeat:Connect(function(dt)

@@ -20,6 +20,9 @@
 -- BallSocketConstraint (TowHitch -> Coupler) with its own raycast wheels.
 -- Recovery (VehicleRecovery): a car on its side or roof, wedged with the throttle held, or sunk
 -- into terrain glides (lift-and-settle) upright onto the nearest road, driver still seated.
+-- Crowding (docs/20 WP-C addendum): a car in flood-deep water past its recovery, or abandoned there
+-- for VehicleRecovery.MISPLACED_TIME, goes with a splash (riders stand on its last dry spot); the
+-- empty-car timer shrinks with the player count (Crowding.scale); spawns never overlap a vehicle.
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local PhysicsService = game:GetService("PhysicsService")
@@ -34,6 +37,7 @@ local Art = require(CarFolder:WaitForChild("Art"))
 local ArtLayout = require(CarFolder:WaitForChild("ArtLayout"))
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(CarFolder:WaitForChild("Builder"))
+local Crowding = require(Shared:WaitForChild("Crowding"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
 local RoadHeading = require(CarFolder:WaitForChild("RoadHeading"))
@@ -364,7 +368,13 @@ local function nearestPoint(player: Player, vehicleId: string, withTrailer: bool
 	return best
 end
 
-local function freeBay(point: SpawnPoint, player: Player): CFrame?
+local function freeBay(point: SpawnPoint, player: Player, spec: Spec): CFrame?
+	-- any vehicle but the player's own (it is replaced) in the car's footprint: boats too
+	local params = OverlapParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	local boats = Workspace:FindFirstChild("Vehicles")
+	params.FilterDescendantsInstances = if boats then { folder, boats } else { folder }
+	local box = Vector3.new(spec.width, spec.height, spec.length) * 3 + Vector3.new(2, 4, 2)
 	for i = 0, point.bays - 1 do
 		local cf = point.cframe * CFrame.new(point.step * i)
 		local busy = false
@@ -376,6 +386,13 @@ local function freeBay(point: SpawnPoint, player: Player): CFrame?
 				busy = true
 				break
 			end
+		end
+		for _, part in Workspace:GetPartBoundsInBox(cf, box, params) do
+			local node: Instance = part
+			while node.Parent and node.Parent ~= folder and node.Parent ~= boats do
+				node = node.Parent
+			end
+			busy = busy or node:GetAttribute("Owner") ~= player.UserId
 		end
 		if not busy then
 			return cf
@@ -530,7 +547,7 @@ local function spawnVehicle(
 	if not point or not pointAllows(point, vehicleId) or (towing and not point.trailers) then
 		return false, "NoSpawnPoint"
 	end
-	local bay = freeBay(point, player)
+	local bay = freeBay(point, player, spec)
 	if not bay then
 		return false, "BayBusy"
 	end
@@ -884,6 +901,29 @@ local function rescue(record: Record, from: Vector3)
 	resetTo(record, CFrame.lookAt(target, target + away), "too deep (engine flooded)")
 end
 
+-- In the sea for good: riders stand on its last dry spot, a splash, gone.
+local function despawnMisplaced(record: Record)
+	print(`[LandVehicleService] clearing {record.model.Name}: in the water`)
+	local ignore: { Instance } = characters()
+	table.insert(ignore, folder)
+	local dry = record.lastGood.Position
+	for _, d in record.model:GetDescendants() do
+		local humanoid = (d:IsA("Seat") or d:IsA("VehicleSeat")) and (d :: any).Occupant
+		local character = humanoid and humanoid.Parent
+		if humanoid and character and character:IsA("Model") then
+			humanoid.Sit = false
+			local weld = d:FindFirstChild("SeatWeld")
+			if weld then
+				weld:Destroy()
+			end
+			local y = groundY(dry, ignore) + humanoid.HipHeight + 2
+			character:PivotTo(CFrame.new(dry.X, y, dry.Z) * character:GetPivot().Rotation)
+		end
+	end
+	VehicleRecovery.poof(record.root.Position, true)
+	despawn(record)
+end
+
 local function setDepth(model: Model, depth: number)
 	local shown = math.max(0, math.floor(depth * 10 + 0.5) / 10)
 	if model:GetAttribute("WaterDepth") ~= shown then
@@ -907,12 +947,20 @@ local function check(record: Record, dt: number)
 	if record.resetting then
 		return
 	end
+	-- only a driver can be recovered (passengers stand up on the shore when it goes)
+	local aboard = record.mode == "Driven"
+	local deep = Wading.level(depth, record.spec.id) == "Flood"
+	if VehicleRecovery.misplaced(record.recovery, dt, os.clock(), deep, aboard) then
+		despawnMisplaced(record)
+		return
+	end
 	if record.wade.flooded then
-		-- stalled: wait out FLOOD_SECONDS (also if the driver got out), then restart or recover
+		-- stalled: wait out FLOOD_SECONDS, then restart or recover (an abandoned one is left to sink:
+		-- the misplaced timer clears it)
 		local action = Wading.step(record.wade, depth, record.spec.id, os.clock())
 		if action then
 			setFlooded(record, false)
-			if action == "Rescue" then
+			if action == "Rescue" and aboard then
 				rescue(record, pos)
 			end
 		end
@@ -966,7 +1014,8 @@ local function checkDespawn(record: Record)
 	local far = not character
 		or (character:GetPivot().Position - record.root.Position).Magnitude
 			> LandVehicleConfig.Despawn.distance
-	if far and os.clock() - record.emptySince > LandVehicleConfig.Despawn.emptySeconds then
+	local limit = LandVehicleConfig.Despawn.emptySeconds * Crowding.scale(#Players:GetPlayers())
+	if far and os.clock() - record.emptySince > limit then
 		despawn(record)
 	elseif not far then
 		record.emptySince = os.clock()

@@ -100,4 +100,16 @@ return function(t)
 		t.expect((P.mayRemove("Wrecked", state({ lastOccupiedAt = 0, ownerDistance = nil }), now)))
 			.toBe(false)
 	end)
+
+	t.test("a busy server clears idle craft sooner, docked ones too", function()
+		local idle = P.IDLE_DESPAWN
+		local adrift = state({ spawnedAt = 0, idleScale = 0.25 })
+		t.expect((P.mayRemove("Idle", adrift, idle * 0.25 + 1))).toBe(true)
+		t.expect((P.mayRemove("Idle", state({ spawnedAt = 0 }), idle * 0.25 + 1))).toBe(false)
+		local docked = state({ spawnedAt = 0, docked = true, idleScale = 0.5 })
+		t.expect((P.mayRemove("Idle", docked, idle * 0.5 + 1))).toBe(true)
+		t.expect((P.mayRemove("Idle", state({ spawnedAt = 0, docked = true }), 1e7))).toBe(false)
+		local old = state({ spawnedAt = 0, current = false, idleScale = 0.5 })
+		t.expect((P.mayRemove("Idle", old, P.SUPERSEDED_IDLE * 0.5 + 1))).toBe(true)
+	end)
 end
