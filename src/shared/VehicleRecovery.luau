@@ -7,6 +7,9 @@
 --   Sunk     the caller's "off" flag (in terrain, beached, under water) for OFF_TIME
 -- Airborne samples pause the flip and stuck timers (a legit jump or barrel roll never resets), and
 -- after a reset nothing fires for COOLDOWN seconds (no reset loops).
+-- Misplaced (docs/20 WP-C addendum): a boat on land or a car in deep water for MISPLACED_TIME goes
+-- (the caller despawns it with poof()): at once when nobody is aboard, else only once a recovery
+-- has already been tried during that spell and failed.
 local VehicleRecovery = {}
 
 VehicleRecovery.UP_MIN = math.cos(math.rad(65)) -- UpVector.Y under this counts as flipped -- tune
@@ -18,9 +21,10 @@ VehicleRecovery.OFF_TIME = 2.5 -- tune
 VehicleRecovery.COOLDOWN = 6 -- tune
 VehicleRecovery.GLIDE_TIME = 0.7 -- s of lift-and-settle -- tune
 VehicleRecovery.GLIDE_LIFT = 4 -- studs at the top of the arc -- tune
+VehicleRecovery.MISPLACED_TIME = 6 -- s on land (boat) / in deep water (car) before it goes -- tune
 
 export type Reason = "Flipped" | "Stuck" | "Sunk"
-export type State = { flip: number, stuck: number, off: number, lastAt: number? }
+export type State = { flip: number, stuck: number, off: number, wrong: number, lastAt: number? }
 export type Sample = {
 	up: number, -- root UpVector.Y
 	speed: number, -- studs/s
@@ -30,7 +34,24 @@ export type Sample = {
 }
 
 function VehicleRecovery.new(): State
-	return { flip = 0, stuck = 0, off = 0 }
+	return { flip = 0, stuck = 0, off = 0, wrong = 0 }
+end
+
+-- Advances the misplaced timer by dt; true when the vehicle should go now.
+function VehicleRecovery.misplaced(
+	s: State,
+	dt: number,
+	now: number,
+	wrong: boolean,
+	occupied: boolean
+): boolean
+	if not wrong then
+		s.wrong = 0
+		return false
+	end
+	s.wrong += dt
+	local tried = s.lastAt ~= nil and now - s.lastAt <= s.wrong -- a recovery ran during this spell
+	return s.wrong >= VehicleRecovery.MISPLACED_TIME and (not occupied or tried)
 end
 
 -- Advances the timers by dt; returns the reason once one runs out (then the timers restart).
@@ -83,6 +104,46 @@ function VehicleRecovery.glide(from: CFrame, to: CFrame, place: (CFrame) -> (), 
 		end
 		done()
 	end)
+end
+
+-- A splash (water) or dust poof (land) where a misplaced vehicle vanished; server-made, so everyone
+-- sees it.
+function VehicleRecovery.poof(position: Vector3, water: boolean)
+	local Clips = require(script.Parent:WaitForChild("Config"):WaitForChild("AudioConfig")).Clips
+	local part = Instance.new("Part")
+	part.Name = "VehiclePoof"
+	part.Anchored, part.CanCollide, part.CanQuery, part.CanTouch = true, false, false, false
+	part.Transparency = 1
+	part.Size = Vector3.one
+	part.Position = position
+	local e = Instance.new("ParticleEmitter")
+	e.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	e.Color = ColorSequence.new(
+		if water then Color3.fromRGB(225, 240, 250) else Color3.fromRGB(230, 222, 205)
+	)
+	e.Size =
+		NumberSequence.new({ NumberSequenceKeypoint.new(0, 3), NumberSequenceKeypoint.new(1, 10) })
+	e.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.15),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	e.Lifetime = NumberRange.new(0.9, 1.5)
+	e.Speed = NumberRange.new(10, 22)
+	e.SpreadAngle = Vector2.new(70, 70)
+	e.EmissionDirection = Enum.NormalId.Top
+	e.Acceleration = Vector3.new(0, if water then -30 else -4, 0)
+	e.Drag = 2
+	e.Enabled = false
+	e.Parent = part
+	local sound = Instance.new("Sound")
+	sound.SoundId = Clips.Splash_Entry.id
+	sound.Volume = Clips.Splash_Entry.volume
+	sound.RollOffMaxDistance = 250
+	sound.Parent = part
+	part.Parent = workspace
+	e:Emit(45)
+	sound:Play()
+	game:GetService("Debris"):AddItem(part, 3)
 end
 
 return VehicleRecovery

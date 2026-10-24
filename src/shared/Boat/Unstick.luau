@@ -1,11 +1,13 @@
 --!strict
--- Boat/Unstick: when a hull stays pinned against a quay or breakwater with the throttle open,
--- nudge it off after a few seconds (BoatController supplies the contact and the normal).
+-- Boat/Unstick: when a hull touches a wall (quay, breakwater, beach, another hull) at under 3 km/h
+-- with the throttle open, push it gently off (docs/20 WP-C: free in under 2 s). BoatController
+-- supplies the contact and the normal.
 local Unstick = {}
 
-Unstick.HOLD = 3 -- s pinned before the nudge -- tune
-Unstick.SPEED = 1 -- studs/s under which the hull counts as pinned -- tune
-Unstick.NUDGE = 4 -- studs/s pushed away from the contact -- tune
+Unstick.HOLD = 0.6 -- s pinned before the nudge -- tune
+Unstick.SPEED = 2.5 -- studs/s (3 km/h) under which the hull counts as pinned -- tune
+Unstick.NUDGE = 6 -- studs/s pushed away from the contact -- tune
+Unstick.TURN = 2.5 -- rad/s the bow swings off the wall with the nudge (about 35 degrees) -- tune
 
 export type State = { since: number? }
 

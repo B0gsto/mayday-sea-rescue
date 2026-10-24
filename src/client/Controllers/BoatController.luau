@@ -5,7 +5,8 @@
 --    network ownership, and every PreSimulation we run Boat/Simulator on it: per float point lift
 --    and damping (VectorForce), drag + thrust (DriveForce) and yaw steering (DriveTorque Torque).
 --    Throttle and steer come from VehicleSeat.ThrottleFloat / SteerFloat, which Roblox fills from
---    keyboard (WASD / arrows), gamepad and the mobile thumbstick alike. The boat's SpeedMultiplier
+--    keyboard (WASD / arrows), gamepad and the mobile thumbstick alike; steer goes through
+--    Boat/Helm (ramps to full in 0.4 s, less lock at speed). The boat's SpeedMultiplier
 --    attribute (the server sets it from ProgressionService.GetGearBonus "speed") scales thrust and
 --    top speed inside Simulator. A model tagged VehicleTowed with TowedBy = our UserId is ours to
 --    simulate too (no input), since the server gave us its ownership.
@@ -30,6 +31,10 @@
 -- 1c. Nav lights. Every NAV_INTERVAL each vehicle's lights follow NavLights.shouldBeOn (night or
 --    storm). Visual only, so each client decides for itself.
 --
+-- 1d. Crowding (docs/20 WP-C addendum). Player boats ghost through each other (server collision
+--    group PlayerBoat); the driven hull is eased apart from any other craft it overlaps
+--    (Crowding.apart), so bumps never launch or flip anyone.
+--
 -- 2. Remote hulls. Boats we do not simulate arrive by replication from their owner, who floats
 --    them on the same deterministic Waves field, so they already ride the waves; only latency and
 --    the ocean mesh's interpolation between grid vertices make them look a little high or low,
@@ -44,6 +49,7 @@ local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -51,6 +57,9 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Buoyancy = require(Shared:WaitForChild("Boat"):WaitForChild("Buoyancy"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
+local Crowding = require(Shared:WaitForChild("Crowding"))
+local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
+local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
@@ -73,6 +82,7 @@ local simulated: { [Model]: boolean } = {} -- models this client applied forces 
 local visualOffset: { [Model]: number } = {}
 local telemetry: Simulator.Telemetry? = nil
 local lastThrottle = 0 -- the throttle the driven hull got last step (after the cold-open helm)
+local helm = 0 -- the eased steer (Boat/Helm)
 local tiltTime = 0
 local navTimer = NAV_INTERVAL
 local launched: { [Model]: boolean } = setmetatable({}, { __mode = "k" }) :: any
@@ -134,8 +144,9 @@ local function snapRemote(model: Model, dt: number, now: number)
 	setVisualOffset(model, current)
 end
 
--- A hull pinned on a quay or breakwater: four short horizontal rays from the root find the
--- contact and return the normal pointing out of the wall.
+-- A hull touching a wall (quay, breakwater, beach, a moored boat): four short horizontal rays from
+-- the root, each just past the hull's side, find the contact and return the normal pointing out
+-- of it. People and casualties don't count.
 local function dockContact(model: Model): (boolean, Vector3?)
 	local root = model.PrimaryPart
 	if not root then
@@ -143,34 +154,35 @@ local function dockContact(model: Model): (boolean, Vector3?)
 	end
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { model }
+	local ignore: { Instance } = { model }
+	for _, p in Players:GetPlayers() do
+		if p.Character then
+			table.insert(ignore, p.Character)
+		end
+	end
+	local props = Workspace:FindFirstChild("CallProps")
+	if props then
+		table.insert(ignore, props)
+	end
+	params.FilterDescendantsInstances = ignore
+	params.IgnoreWater = true
+	params.RespectCanCollide = true
 	local size = root.Size
-	local reach = math.max(size.X, size.Z) * 0.5 + 2
 	local forward = Buoyancy.flatForward(root.CFrame.LookVector)
-	local dirs = {
-		forward,
-		-forward,
-		root.CFrame.RightVector,
-		-root.CFrame.RightVector,
-	}
-	for _, raw in dirs do
-		local dir = Vector3.new(raw.X, 0, raw.Z)
+	local right = root.CFrame.RightVector
+	for _, ray in
+		{
+			{ forward, size.Z },
+			{ -forward, size.Z },
+			{ right, size.X },
+			{ -right, size.X },
+		} :: { { any } }
+	do
+		local dir = Vector3.new(ray[1].X, 0, ray[1].Z)
 		if dir.Magnitude > 1e-3 then
 			dir = dir.Unit
-			local hit = Workspace:Raycast(root.Position, dir * reach, params)
-			local part = hit and hit.Instance
-			if part and part:IsA("BasePart") then
-				local node: Instance? = part
-				while node do
-					local name = node.Name
-					if
-						string.find(name, "Breakwater", 1, true)
-						or string.find(name, "Quay", 1, true)
-					then
-						return true, -dir
-					end
-					node = node.Parent
-				end
+			if Workspace:Raycast(root.Position, dir * (ray[2] * 0.5 + 2), params) then
+				return true, -dir
 			end
 		end
 	end
@@ -189,6 +201,14 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 			local root = model.PrimaryPart
 			if root then
 				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
+				-- swing the bow off the wall too (head-on: toward the side being steered, else right)
+				local side = normal:Dot(root.CFrame.RightVector)
+				local seat = seatOf(model)
+				if math.abs(side) < 0.2 and seat then
+					side = if seat.SteerFloat ~= 0 then seat.SteerFloat else 1 -- no steer: bear right
+				end
+				local turn = if side > 0 then -Unstick.TURN elseif side < 0 then Unstick.TURN else 0
+				root.AssemblyAngularVelocity += Vector3.new(0, turn, 0)
 			end
 		end
 	else
@@ -390,6 +410,32 @@ local function engageControls(seat: VehicleSeat)
 	end
 end
 
+-- Eases the driven hull out of any other craft it overlaps (they ghost: collision group PlayerBoat).
+local function softApart(model: Model)
+	local root = model.PrimaryPart
+	if not (root and vehicles) then
+		return
+	end
+	local mine = (root.Size.X + root.Size.Z) / 4
+	for _, other in vehicles:GetChildren() do
+		local o = if other:IsA("Model") and other ~= model then other.PrimaryPart else nil
+		if o then
+			local off = (root.Position - o.Position) * Vector3.new(1, 0, 1)
+			local want = Crowding.apart(off.Magnitude, mine + (o.Size.X + o.Size.Z) / 4)
+			if want > 0 then
+				local n = if off.Magnitude > 0.1 then off.Unit else root.CFrame.RightVector
+				local v = root.AssemblyLinearVelocity
+				local away = v:Dot(n)
+				if away < want then
+					root.AssemblyLinearVelocity = v + n * (want - away)
+				end
+			end
+		end
+	end
+end
+
+local updateCraftPins: () -> () -- section 4, below
+
 local function stopSimulating(model: Model)
 	simulated[model] = nil
 	if model.Parent then
@@ -406,6 +452,7 @@ local function step(dt: number)
 		driving:SetAttribute("ApproachMode", nil)
 		driving = nil
 		telemetry = nil
+		helm = 0
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
@@ -427,7 +474,18 @@ local function step(dt: number)
 					end
 					engageControls(seat)
 					local throttle = coldOpenThrottle(child, seat.ThrottleFloat, now)
-					telemetry = Simulator.step(child, throttle, seat.SteerFloat, now)
+					local id = child:GetAttribute("VehicleId")
+					local spec = if type(id) == "string" then VehicleConfig.get(id) else nil
+					local root = child.PrimaryPart
+					local speed = if root then root.AssemblyLinearVelocity.Magnitude else 0
+					helm = Helm.step(
+						helm,
+						seat.SteerFloat,
+						speed / (if spec then spec.topSpeed else 60),
+						dt
+					)
+					telemetry = Simulator.step(child, throttle, helm, now)
+					softApart(child)
 					lastThrottle = throttle
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
@@ -465,6 +523,7 @@ local function step(dt: number)
 		setApproachBinding(driving ~= nil)
 	end
 	updateNavLights(dt, now)
+	updateCraftPins()
 end
 
 -- Last Simulator telemetry of the driven hull (speed, contact, slam, trim, pitch, roll, planing).
@@ -492,9 +551,134 @@ function BoatController.Init()
 	end
 end
 
--- 3. Board (E / tap / X): a local prompt on the player's own craft while its helm is free. It
---    stands them on the seat, whose touch seats them server-side like walking onto it (VehicleService
---    checks the owner). Scenery boats get none: only Workspace.Vehicles craft owned by us.
+-- 3. Board (E / tap / X): a local prompt on the player's own craft while its helm is free, from up to
+--    BOARD_RANGE studs (docs/20 rule 6: one obvious action gets you back on). It stands them on the
+--    seat, whose touch seats them server-side like walking onto it (VehicleService checks the
+--    owner). Scenery boats get none: only Workspace.Vehicles craft owned by us.
+-- 4. Craft pin: while we're off our craft, an orange craft billboard (always on top) floats over it
+--    with a pip per survivor place (filled = aboard, all red = full). Bay "Launch" prompts hide while
+--    we have a craft out (docs/20 rule 6: no second boat by accident).
+local BOARD_RANGE = 30 -- studs
+local PIN_ORANGE = Color3.fromHex("D9682E") -- HudTheme.Colors.accent
+local PIN_FULL = Color3.fromHex("E04A3A")
+type CraftPin = { gui: BillboardGui, pips: { Frame }, count: number? }
+local craftPins: { [Model]: CraftPin } = {}
+
+local function buildCraftPin(model: Model, root: BasePart): CraftPin
+	local capacity = math.clamp(tonumber(model:GetAttribute("Capacity")) or 1, 1, 8)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "CraftPin"
+	gui.Size = UDim2.fromOffset(math.max(52, capacity * 14 + 12), 74)
+	gui.StudsOffsetWorldSpace = Vector3.new(0, root.Size.Y / 2 + 6, 0)
+	gui.AlwaysOnTop = true
+	gui.LightInfluence = 0
+	gui.MaxDistance = 3000
+	gui.ResetOnSpawn = false
+	gui.Enabled = false
+	local disc = Instance.new("Frame")
+	disc.Name = "Disc"
+	disc.AnchorPoint = Vector2.new(0.5, 0)
+	disc.Position = UDim2.fromScale(0.5, 0)
+	disc.Size = UDim2.fromOffset(46, 46)
+	disc.BackgroundColor3 = PIN_ORANGE
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0.5, 0)
+	corner.Parent = disc
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.new(1, 1, 1)
+	stroke.Thickness = 2.5
+	stroke.Parent = disc
+	local icon = Instance.new("Frame")
+	icon.BackgroundTransparency = 1
+	icon.AnchorPoint = Vector2.new(0.5, 0.5)
+	icon.Position = UDim2.fromScale(0.5, 0.5)
+	icon.Size = UDim2.fromScale(0.66, 0.66)
+	icon.Parent = disc
+	Glyph.draw("boat", icon, Color3.new(1, 1, 1))
+	disc.Parent = gui
+	local row = Instance.new("Frame")
+	row.Name = "Pips"
+	row.BackgroundTransparency = 1
+	row.AnchorPoint = Vector2.new(0.5, 1)
+	row.Position = UDim2.fromScale(0.5, 1)
+	row.Size = UDim2.new(1, 0, 0, 14)
+	local list = Instance.new("UIListLayout")
+	list.FillDirection = Enum.FillDirection.Horizontal
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	list.Padding = UDim.new(0, 4)
+	list.Parent = row
+	local pips = {}
+	for _ = 1, capacity do
+		local pip = Instance.new("Frame")
+		pip.Size = UDim2.fromOffset(10, 10)
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0.5, 0)
+		c.Parent = pip
+		local ps = Instance.new("UIStroke")
+		ps.Thickness = 2
+		ps.Parent = pip
+		pip.Parent = row
+		table.insert(pips, pip)
+	end
+	row.Parent = gui
+	gui.Adornee = root
+	gui.Parent = root
+	return { gui = gui, pips = pips }
+end
+
+local function paintPips(pin: CraftPin, count: number)
+	local full = count >= #pin.pips
+	for i, pip in pin.pips do
+		pip.BackgroundColor3 = if full then PIN_FULL else PIN_ORANGE
+		pip.BackgroundTransparency = if i <= count then 0 else 1
+		local stroke = pip:FindFirstChildOfClass("UIStroke")
+		if stroke then
+			stroke.Color = if full then PIN_FULL else Color3.new(1, 1, 1)
+		end
+	end
+	pin.count = count
+end
+
+local launchHidden: { [ProximityPrompt]: boolean } = {}
+
+local function hideLaunch(prompt: ProximityPrompt)
+	local bay = prompt.Parent
+	if
+		next(craftPins)
+		and prompt.Name == "Launch"
+		and bay
+		and bay:GetAttribute("LaunchBay") ~= nil
+		and prompt.Enabled
+	then
+		prompt.Enabled = false
+		launchHidden[prompt] = true
+	end
+end
+
+-- Every frame: the pin shows over each craft of ours we're not seated on; Launch follows "craft out".
+updateCraftPins = function()
+	local character = localPlayer.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	for model, pin in craftPins do
+		if not model.Parent then
+			craftPins[model] = nil
+		else
+			pin.gui.Enabled = not (seat and seat:IsDescendantOf(model))
+			local count = tonumber(model:GetAttribute("SurvivorCount")) or 0
+			if pin.count ~= count then
+				paintPips(pin, count)
+			end
+		end
+	end
+	if not next(craftPins) and next(launchHidden) then
+		for prompt in launchHidden do
+			prompt.Enabled = true
+		end
+		table.clear(launchHidden)
+	end
+end
+
 local function addBoardPrompt(model: Instance)
 	if not model:IsA("Model") or model:GetAttribute("Owner") ~= localPlayer.UserId then
 		return
@@ -508,9 +692,13 @@ local function addBoardPrompt(model: Instance)
 	prompt.Name = "Board"
 	prompt.ActionText = "Board"
 	prompt.HoldDuration = 0
-	prompt.MaxActivationDistance = 14
+	prompt.MaxActivationDistance = BOARD_RANGE
 	prompt.RequiresLineOfSight = false
 	prompt.Parent = seat
+	local root = model.PrimaryPart
+	if root then
+		craftPins[model] = buildCraftPin(model, root)
+	end
 	local function refresh()
 		prompt.Enabled = seat.Occupant == nil
 	end
@@ -544,6 +732,8 @@ function BoatController.Start()
 	else
 		warn("[BoatController] Workspace.Vehicles not found")
 	end
+	-- bay Launch hides while a craft of ours is out (HudController may re-enable it on a seat change)
+	ProximityPromptService.PromptShown:Connect(hideLaunch)
 	RunService.PreSimulation:Connect(step)
 end
 

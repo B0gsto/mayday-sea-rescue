@@ -17,6 +17,7 @@
 -- Workspace.Dressing.TownExtras attributes when done: TownExtrasBoats, TownExtrasShed, TownExtrasHoist,
 -- TownExtrasWashing; TownExtrasGulls once the bollards are in.
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -25,6 +26,7 @@ local Layout = require(script.Parent:WaitForChild("TownExtrasLayout"))
 local SharedSetsRig = require(script.Parent:WaitForChild("SharedSetsRig"))
 local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Crowding = require(Shared:WaitForChild("Crowding"))
 local SeamarkRules = require(Shared:WaitForChild("SeamarkRules"))
 local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 
@@ -108,6 +110,22 @@ local function place(
 	return true
 end
 
+-- docs/20 WP-C addendum: a busy server shows fewer small moored boats (Crowding.scale), so the
+-- harbour stays drivable with a full server; the first in the list stay longest.
+local function thin(boats: { Instance }, parent: Instance)
+	local function apply()
+		local keep = math.ceil(#boats * Crowding.scale(#Players:GetPlayers()))
+		for i, m in boats do
+			m.Parent = if i <= keep then parent else nil
+		end
+	end
+	Players.PlayerAdded:Connect(apply)
+	Players.PlayerRemoving:Connect(function()
+		task.delay(1, apply) -- the leaver still counts during the event
+	end)
+	apply()
+end
+
 local function placeBoats(parent: Instance): number
 	local sea = Workspace:GetAttribute("SeaLevel")
 	local seaY = if type(sea) == "number" then sea else WorldConfig.SeaLevel
@@ -121,16 +139,22 @@ local function placeBoats(parent: Instance): number
 	task.spawn(AssetLoader.getTemplate, CRABBER, "LOD0")
 	task.spawn(AssetLoader.getTemplate, TRAWLER, "LOD0")
 	local n = 0
-	for _, boat in Layout.mooredBoats(moorings, seaY) do
-		if place(BOAT, boat.cf, `{boat.id}Boat`, parent) then
+	local small: { Instance } = {}
+	local function placed(asset: string, cf: CFrame, name: string)
+		if place(asset, cf, name, parent) then
 			n += 1
+			if asset == BOAT then
+				table.insert(small, parent:FindFirstChild(name) :: Instance)
+			end
 		end
+	end
+	for _, boat in Layout.mooredBoats(moorings, seaY) do
+		placed(BOAT, boat.cf, `{boat.id}Boat`)
 	end
 	for _, boat in Layout.harbourBoats(seaY) do
-		if place(boat.asset, boat.cf, `{boat.id}Boat`, parent) then
-			n += 1
-		end
+		placed(boat.asset, boat.cf, `{boat.id}Boat`)
 	end
+	thin(small, parent)
 	return n
 end
 

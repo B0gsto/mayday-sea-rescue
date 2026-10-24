@@ -22,6 +22,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Comfort = require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Comfort"))
+local Crowding = require(Shared:WaitForChild("Crowding"))
 local NpcOutfits = require(Shared:WaitForChild("Config"):WaitForChild("NpcOutfits"))
 local Plan = require(Shared:WaitForChild("Ambient"):WaitForChild("AmbientPlan"))
 local RoadNet = require(Shared:WaitForChild("RoadNet"))
@@ -600,7 +601,10 @@ function AmbientController.Start()
 				end
 			end
 		end
-		local carCap = Plan.carCap(cap, laneStuds, share.cars)
+		-- docs/20 WP-C addendum: fewer NPC cars as players (and their cars) fill the roads
+		local carCap = math.floor(
+			Plan.carCap(cap, laneStuds, share.cars) * Crowding.scale(#Players:GetPlayers())
+		)
 		for k = #cars, 1, -1 do
 			if k > carCap or flatDist(cars[k].root.Position, c) > cap.radius + 60 then
 				release(table.remove(cars, k) :: Agent)

@@ -16,7 +16,8 @@
 --              aboard and nobody was within OCCUPIED_GRACE; otherwise the caller reuses it.
 --    Idle      the periodic sweep: unoccupied for IDLE_DESPAWN while adrift (a docked current
 --              vehicle waits at its bay for good), or SUPERSEDED_IDLE once it is no longer the
---              owner's current vehicle.
+--              owner's current vehicle. Both scale by idleScale (Crowding.scale: a busy server
+--              clears sooner), and then a docked current vehicle goes too (bays are scarce).
 --    Wrecked   sunk, out of bounds or flagged Wrecked, unoccupied past the grace and at least
 --              STUCK_DISTANCE from its owner (or the owner has no character).
 --    OwnerLeft the owner left the server: always.
@@ -40,6 +41,7 @@ export type State = {
 	current: boolean?, -- the owner's current vehicle (VehicleService.GetVehicle)
 	wrecked: boolean?, -- sunk, out of bounds or flagged Wrecked
 	ownerDistance: number?, -- studs to the owner's character (nil: no character)
+	idleScale: number?, -- Crowding.scale(players): 1 (default) solo, smaller on a busy server
 }
 
 -- Seconds since anyone was aboard (or since the spawn, when never ridden).
@@ -79,10 +81,11 @@ function RespawnPolicy.mayRemove(reason: Reason, state: State, now: number): (bo
 	if reason == "Scripted" then
 		return true, "Scripted"
 	elseif reason == "Idle" then
+		local scale = state.idleScale or 1
 		local limit = if state.current == false
-			then RespawnPolicy.SUPERSEDED_IDLE
-			elseif state.docked then math.huge
-			else RespawnPolicy.IDLE_DESPAWN
+			then RespawnPolicy.SUPERSEDED_IDLE * scale
+			elseif state.docked and scale >= 1 then math.huge
+			else RespawnPolicy.IDLE_DESPAWN * scale
 		if RespawnPolicy.idleFor(state, now) >= limit then
 			return true, "Idle"
 		end

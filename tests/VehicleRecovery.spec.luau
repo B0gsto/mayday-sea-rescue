@@ -51,4 +51,32 @@ return function(t)
 		t.expect(R.path(from, to, 1).UpVector.Y > 0.999).toBe(true)
 		t.expect(R.path(from, to, 0.5).Position.Y > 1 + R.GLIDE_LIFT - 0.01).toBe(true)
 	end)
+
+	t.test(
+		"misplaced: an empty vehicle goes after MISPLACED_TIME; leaving the wrong medium resets",
+		function()
+			local s = R.new()
+			local T = R.MISPLACED_TIME
+			t.expect(R.misplaced(s, T - 1, 10, true, false)).toBe(false)
+			t.expect(R.misplaced(s, 0.5, 11, false, false)).toBe(false) -- back afloat: the timer clears
+			t.expect(R.misplaced(s, T - 0.5, 20, true, false)).toBe(false)
+			t.expect(R.misplaced(s, 0.5, 21, true, false)).toBe(true)
+		end
+	)
+
+	t.test(
+		"misplaced: an occupied vehicle goes only after a recovery failed in this spell",
+		function()
+			local T = R.MISPLACED_TIME
+			local s = R.new()
+			t.expect(R.misplaced(s, T + 5, 100, true, true)).toBe(false) -- never tried: keep trying
+			local tried = R.new()
+			t.expect(R.misplaced(tried, 2.5, 10, true, true)).toBe(false)
+			tried.lastAt = 10 -- the recovery fired, and the glide left it where it was
+			t.expect(R.misplaced(tried, T - 2.5, 14, true, true)).toBe(true)
+			local old = R.new()
+			old.lastAt = 0 -- a recovery long before this spell does not count
+			t.expect(R.misplaced(old, T + 1, 50, true, true)).toBe(false)
+		end
+	)
 end

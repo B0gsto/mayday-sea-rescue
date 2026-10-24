@@ -68,7 +68,15 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   (scripted scenes only), signal `VehicleSpawned (player, model)`. Model attributes `VehicleId`, `Owner`,
   `Capacity`, `SurvivorCount`; hull attachments `SurvivorSlot1..n`, `PetSeat`, `TowHitch`, `BowPoint`.
 - Capacity is the depth: jet ski 1, RIB 3, lifeboat 8 (`VehicleConfig`). `Boat/Buoyancy`,
-  `Boat/Simulator`, `Boat/Unstick` are pure and tested in `tests/Boat*.spec.luau`.
+  `Boat/Simulator`, `Boat/Unstick`, `Boat/Helm` are pure and tested in `tests/Boat*.spec.luau`.
+- Seated launches (phone `RequestVehicle(id, _, true)`, bay Launch, Quick Launch) float the craft in open
+  water off the nearest free bay / WorldConfig `Launch` or `Dock` point, bow to sea, never overlapping a
+  vehicle. Off your craft: `[E] Board` from 30 studs and a `CraftPin` billboard (seat pips); bay Launch
+  hides locally while you have a craft out. With no craft, point the craft pin at `BayCFrame`.
+- Crowding (`src/shared/Crowding.luau`, `tests/Crowding.spec.luau`): player boats are collision group
+  `PlayerBoat` (ghost through each other and cars, BoatController eases them apart); idle-despawn
+  timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land / car
+  in deep water past recovery (or empty there 6 s) despawns with `VehicleRecovery.poof`.
 - Auto-recovery: `src/shared/VehicleRecovery.luau` (pure, `tests/VehicleRecovery.spec.luau`) puts a
   flipped, stuck or sunk vehicle back upright (timers + lift-and-settle path); VehicleService and
   LandVehicleService both run it.
