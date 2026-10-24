@@ -119,6 +119,31 @@ AssetLoader.PART_SETS = {
 		Undamaged = "Fittings",
 		Damage = "Fittings",
 	},
+	-- art/source/vehicles/M_Veh_HarbourGT|LighthouseCruiser|StormRunner/build.py build_set calls: parts whose set
+	-- is not in their name rendered plain grey (no SurfaceAppearance)
+	M_Veh_HarbourGT = { Glass = "Cab", Wheel = "Wheels" },
+	M_Veh_LighthouseCruiser = { Glass = "Cab", Wheel = "Wheels" },
+	M_Veh_StormRunner = { Deck = "Hull", Screen = "Interior", RollBar = "Rig", Rails = "Rig" },
+	-- art/source/vessels/M_Veh_Optimist/build.py SETS map
+	M_Veh_Optimist = {
+		Cabin = "Hull",
+		SamsonPost = "Fittings",
+		Outboard = "Fittings",
+		TrailingRope = "Fittings",
+	},
+	-- art/source/vehicles/M_Veh_Tidewalker/build.py build_set calls (only Flybridge/HullS matched by name before)
+	M_Veh_Tidewalker = {
+		HullP = "Hulls",
+		HullS = "Hulls",
+		Bridgedeck = "Hulls",
+		Cockpit = "Deck",
+		Saloon = "Cabin",
+		Roof = "Cabin",
+		Flybridge = "Fly",
+		Hardtop = "Fly",
+		Rails = "Fittings",
+		Running = "Fittings",
+	},
 	-- G76: art/source/characters/M_Ani_GreySeal (Body | Head parts, Coat | Face sets)
 	M_Ani_GreySeal = { Body = "Coat", Head = "Face" },
 	-- P2: a set that is not in the asset's Appearances folder but names a MaterialService variant (the B02 "Mat"
@@ -175,6 +200,20 @@ AssetLoader.PART_SETS = {
 		Hardware = "Details",
 	},
 } :: { [string]: { [string]: string } }
+-- art/source/roads/M_Road_ParkedCar_01/build.py build_set calls (the three cars share the part names)
+local PARKED_CAR = {
+	Detail = "Body",
+	Glass = "Body",
+	Interior = "Body",
+	WheelFL = "Wheels",
+	WheelFR = "Wheels",
+	WheelRL = "Wheels",
+	WheelRR = "Wheels",
+	Underbody = "Wheels",
+}
+for k = 1, 3 do
+	AssetLoader.PART_SETS[`M_Road_ParkedCar_0{k}`] = PARKED_CAR
+end
 
 local appearances = script.Parent:FindFirstChild("Appearances")
 local templates: Folder? = nil
