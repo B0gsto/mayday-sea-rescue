@@ -6,6 +6,7 @@
 --   Telemetry.once(name)                         once per session
 --   Telemetry.send(name, a?, b?, c?, d?)          every time (Device, InputDead)
 --   Telemetry.shop(step, app?, item?, currency?)  Shop funnel: PhoneOpened, AppOpened, ItemViewed, BuyTapped
+--   Telemetry.stalled(context, stalled, dt)       per frame: InputDead once per 3 s stall (Boat, Car)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
@@ -13,6 +14,7 @@ local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net")
 local Telemetry = {}
 
 local sent: { [string]: boolean } = {}
+local stalledFor: { [string]: number } = {}
 
 function Telemetry.send(name: string, a: string?, b: string?, c: string?, d: string?)
 	task.spawn(function()
@@ -33,6 +35,15 @@ function Telemetry.once(name: string)
 	end
 	sent[name] = true
 	Telemetry.send(name)
+end
+
+-- stalled = input held but nothing moves; sends InputDead once when that lasts 3 s.
+function Telemetry.stalled(context: string, stalled: boolean, dt: number)
+	local t = if stalled then (stalledFor[context] or 0) + dt else 0
+	stalledFor[context] = t
+	if t >= 3 and t - dt < 3 then
+		Telemetry.send("InputDead", context)
+	end
 end
 
 function Telemetry.shop(step: string, app: string?, item: string?, currency: string?)

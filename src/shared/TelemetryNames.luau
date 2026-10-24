@@ -26,8 +26,7 @@ TelemetryNames.Custom = table.freeze({
 	"ColdOpenEnded", -- why the cold open ended (Complete, Timer, Died, LeftCraft, ...)
 	"StormJoined", -- Great Storm / ordinary storm, Start / MidStorm
 	"DailyCrate", -- streak day, Daily / Welcome
-	"PetAdopted", -- legacy (PetService equip): species, Rare / Common; the Companion funnel replaces it
-	"CompanionSwitch", -- the companion changed on the phone: from species, to species
+	"CompanionSwitch", -- the companion changed on the phone: from species, to species (Bosun = the dog)
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown
@@ -36,10 +35,11 @@ TelemetryNames.Custom = table.freeze({
 	"BadgeAwarded", -- a Roblox badge was awarded: badge key
 	"StickerFound", -- an album sticker: island, slot (Stamp, Critter, View, Bottle, Secret), sticker
 	"AlbumPage", -- an island's album page completed: island
-	"VehicleDespawned", -- reason (Idle, WrongMedium, Replaced, Left), vehicle, medium
-	"VehicleRecovered", -- auto-recovery ran: reason (Flipped, Stuck, WrongMedium), vehicle
+	"VehicleDespawned", -- reason (Idle, Wrecked, WrongMedium, Replaced, Stowed), vehicle, Water / Land
+	"VehicleRecovered", -- auto-recovery ran: reason (Flipped, Stuck, Sunk, OutOfBounds, Flooded, Runaway), vehicle
 	"StuckReset", -- the player was reset out of a stuck spot: device, where (Foot, Boat, Car, Swim)
 	"InputDead", -- input held with no response (client-detected): device, where
+	"Race", -- the NPC racer (from call 4): Started / RacerWon, call kind
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
 } :: { string })

@@ -57,6 +57,7 @@ local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 
 type VehicleSpec = VehicleConfig.VehicleSpec
 type Mode = "Dock" | "Driven" | "Drift"
@@ -447,6 +448,7 @@ local function onDriverChanged(record: Record)
 		record.driver = player
 		if player == record.owner then
 			byPlayer[player] = record -- riding an older craft of theirs makes it current again
+			Telemetry.Vehicle(player, "Boarded", record.spec.id) -- analytics H5
 		end
 		record.model:SetAttribute("EngineRunning", true)
 		record.mode = "Driven"
@@ -643,10 +645,14 @@ local function watchSeats(model: Model)
 	end
 end
 
-local function despawnModel(model: Model)
+-- reason (analytics H7: Idle / Wrecked / Replaced / WrongMedium / Stowed): logs VehicleDespawned
+local function despawnModel(model: Model, reason: string?)
 	local record = records[model]
 	if not record then
 		return
+	end
+	if reason then
+		Telemetry.Custom(record.owner, "VehicleDespawned", 1, reason, record.spec.id, "Water")
 	end
 	VehicleService.DetachTow(model)
 	local tower = towTargets[model]
@@ -715,7 +721,7 @@ local function sweepVehicles()
 		local wrecked = RespawnPolicy.mayRemove("Wrecked", state, now)
 		if idle or wrecked then
 			print(`[VehicleService] clearing {model.Name}: {if idle then "idle" else "wrecked"}`)
-			despawnModel(model)
+			despawnModel(model, if idle then "Idle" else "Wrecked")
 		end
 	end
 end
@@ -800,7 +806,7 @@ local function clearOtherClasses(player: Player, spec: VehicleSpec, reason: Resp
 	local now = os.clock()
 	for id, record in table.clone(classes) do
 		if id ~= spec.id and RespawnPolicy.mayRemove(reason, policyState(record), now) then
-			despawnModel(record.model)
+			despawnModel(record.model, "Replaced")
 		end
 	end
 end
@@ -830,7 +836,7 @@ local function createVehicle(
 			end
 			humanoid.Sit = false
 		end
-		despawnModel(old.model)
+		despawnModel(old.model, "Replaced")
 	end
 
 	local mask = upgradeMask(player, spec.id)
@@ -904,7 +910,8 @@ local function spawnVehicle(
 	vehicleId: string,
 	bay: BasePart?,
 	quick: boolean?,
-	docked: boolean?
+	docked: boolean?,
+	where: string -- analytics H4: Phone / Quick / Bay
 ): (boolean, string | Model)
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
@@ -949,6 +956,7 @@ local function spawnVehicle(
 	end
 
 	spawnedEvent:Fire(player, model)
+	Telemetry.Vehicle(player, "Spawned", vehicleId, where) -- analytics H4
 	Net.event("VehicleSpawned"):FireAllClients(model, at.Name)
 	return true, model
 end
@@ -957,6 +965,7 @@ end
 -- lift-and-settle glide, anchored and server-owned, then RESET_HOLD before the helm gets it back.
 local function resetVehicle(record: Record, reason: string, target: CFrame?)
 	warn(`[VehicleService] reset {record.model.Name}: {reason}`)
+	Telemetry.VehicleRecovered(record.owner, reason, record.spec.id) -- analytics H8
 	record.resetting = true
 	record.strikes = 0
 	record.recovery.lastAt = os.clock()
@@ -1250,6 +1259,9 @@ local function checkVehicle(record: Record, dt: number)
 	local v = root.AssemblyLinearVelocity
 	local limit = speedLimit(record)
 	local speed = Vector2.new(v.X, v.Z).Magnitude
+	if record.driver == record.owner and speed > 12 then -- analytics H6: ~15 km/h, once per spawn
+		Telemetry.Vehicle(record.owner, "Underway", record.spec.id)
+	end
 	local moved = flatDistance(pos, record.lastGood.Position)
 	local outOfBounds = pos.Y > MAX_Y
 		or pos.Y < MIN_Y
@@ -1350,7 +1362,7 @@ local function addPrompts()
 			local id = bayCraft(player, bay)
 			local ok, reason: any = false, "NoCraft"
 			if id then
-				ok, reason = spawnVehicle(player, id, bay)
+				ok, reason = spawnVehicle(player, id, bay, nil, nil, "Bay")
 			end
 			if not ok then
 				warn(`[VehicleService] {player.Name} could not launch {id}: {reason}`)
@@ -1397,7 +1409,7 @@ despawnMisplaced = function(record: Record)
 		end
 	end
 	VehicleRecovery.poof(pos, false)
-	despawnModel(record.model)
+	despawnModel(record.model, "WrongMedium")
 end
 
 -- Docks the player's vehicle at their bay; despawns it when that is not possible.
@@ -1421,7 +1433,7 @@ local function stowVehicle(player: Player): string
 		record.model:SetAttribute("EngineRunning", false)
 		return `Docked:{bay.Name}`
 	end
-	despawnModel(record.model)
+	despawnModel(record.model, "Stowed")
 	return "Despawned"
 end
 
@@ -1445,7 +1457,7 @@ local function homeAtBay(player: Player, character: Model)
 	if not byPlayer[player] then
 		local id = bayCraft(player, bay)
 		if id then
-			spawnVehicle(player, id, bay, true, true)
+			spawnVehicle(player, id, bay, true, true, "Bay")
 		end
 	end
 	local pos = standOnGround(character, (bay.CFrame * BayLaunch.STAND).Position)
@@ -1487,7 +1499,7 @@ function VehicleService.Init()
 		end
 		local bay = if near == true then nearestFreeBay(player, vehicleId) else nil
 		-- the phone (near) always seats you afloat: docs/20 rule 7, never standing on a quay
-		return spawnVehicle(player, vehicleId, bay, nil, docked == true and near ~= true)
+		return spawnVehicle(player, vehicleId, bay, nil, docked == true and near ~= true, "Phone")
 	end
 
 	local quickRemote = Instance.new("RemoteFunction")
@@ -1634,6 +1646,7 @@ function VehicleService.SpawnSeated(
 	end
 	sitDriver(player, seat)
 	spawnedEvent:Fire(player, model)
+	Telemetry.Vehicle(player, "Spawned", vehicleId, "ColdOpen") -- analytics H4
 	Net.event("VehicleSpawned"):FireAllClients(model, "ColdOpen")
 	return model
 end
@@ -1678,12 +1691,12 @@ function VehicleService.QuickLaunch(player: Player, vehicleId: string): (boolean
 	if not allowed then
 		return false, why
 	end
-	return spawnVehicle(player, vehicleId, bayFor(player), true)
+	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
 end
 
 -- Dev board: launches the boat from the player's bay, seated (Quick Launch without the pass check).
 function VehicleService.DevLaunch(player: Player, vehicleId: string): (boolean, string | Model)
-	return spawnVehicle(player, vehicleId, bayFor(player), true)
+	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
 end
 
 -- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that
@@ -1697,7 +1710,7 @@ function VehicleService.RefreshUpgrades(player: Player, vehicleId: string)
 		if spec then
 			createVehicle(player, spec, record.root.CFrame, "Request")
 		else
-			despawnModel(record.model)
+			despawnModel(record.model, "Replaced")
 		end
 	end
 end

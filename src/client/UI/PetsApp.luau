@@ -17,6 +17,7 @@ local Glyph = require(script.Parent:WaitForChild("Glyph"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local PetController =
 	require(script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("PetController"))
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 
 local player = Players.LocalPlayer
 local C = HudTheme.Colors
@@ -127,6 +128,7 @@ local function text(parent: Instance, value: string): TextLabel
 end
 
 function PetsApp.mount(page: Frame): () -> ()
+	Telemetry.shop("AppOpened", "Pets") -- analytics H12
 	local conns: { RBXScriptConnection } = {}
 	local cards: { Card } = {}
 	local shape = ""

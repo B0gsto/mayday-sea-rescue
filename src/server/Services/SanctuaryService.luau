@@ -31,6 +31,7 @@ local WildlifeRig = require(Shared:WaitForChild("WildlifeRig"))
 local BadgeService = require(script.Parent.BadgeService)
 local OperationService = require(script.Parent.OperationService)
 local PetService = require(script.Parent.PetService)
+local Telemetry = require(script.Parent.TelemetryService)
 
 local SanctuaryService = {}
 SanctuaryService.Priority = 64
@@ -267,6 +268,7 @@ local function onFinished(player: Player)
 	end
 	BadgeService.Count(player, "FirstWildlife")
 	BadgeService.Once(player, "AllWildlife", best.species)
+	Telemetry.Companion(player, best.species, "Rescued") -- analytics H10
 	PetService.AddRescue(player, best.species, best.rare)
 end
 

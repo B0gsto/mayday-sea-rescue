@@ -15,6 +15,7 @@
 --   TelemetryService.Shop(player, step, app?, item?, currency?)        Shop funnel (session = the visit)
 --   TelemetryService.Vehicle(player, step, vehicleId, where?)          Vehicle funnel (Spawned = new)
 --   TelemetryService.Explore(player, islandId, step, stamps?)          Explore funnel (session = island)
+--   TelemetryService.VehicleRecovered(player, rawReason, vehicleId)   VehicleRecovered (reason mapped)
 --   TelemetryService.Companion(player, species, step)                  Companion funnel (session = species)
 --   TelemetryService.RobuxPrompt(player, kind, key, purchased)         a Robux prompt closed
 --   TelemetryService.Custom(player, name, value?, field1?, field2?, field3?)   one line at a site
@@ -283,6 +284,19 @@ function TelemetryService.Vehicle(player: Player, step: string, vehicleId: strin
 		vehicles[player] = HttpService:GenerateGUID(false)
 	end
 	TelemetryService.Step(player, "Vehicle", vehicles[player], step, vehicleId, where)
+end
+
+-- Auto-recovery ran (VehicleService / LandVehicleService reset). The raw reason never goes out: the
+-- speed check's carries numbers.
+function TelemetryService.VehicleRecovered(player: Player, reason: string, vehicleId: string)
+	local why = if reason == "Flipped"
+			or reason == "Stuck"
+			or reason == "Sunk"
+		then reason
+		elseif reason == "out of bounds" then "OutOfBounds"
+		elseif string.find(reason, "flooded", 1, true) then "Flooded"
+		else "Runaway"
+	TelemetryService.Custom(player, "VehicleRecovered", 1, why, vehicleId)
 end
 
 -- Explore funnel: Sighted -> Reached -> Stamped, one session per island. A stamp with the player's

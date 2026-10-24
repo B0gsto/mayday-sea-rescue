@@ -1303,7 +1303,12 @@ function OperationService.Notify(scene: any, player: Player, message: string)
 	end
 end
 
-function OperationService.OnVictimBoarded(_scene: any, _player: Player) end
+function OperationService.OnVictimBoarded(scene: any, player: Player)
+	local op = opOfScene(scene)
+	if op then
+		try("TelemetryService", "Call", player, op.id, "Boarded", op.kind) -- analytics H2 (+ FirstBoard)
+	end
+end
 
 function OperationService.OnVictimLost(scene: any)
 	local op = opOfScene(scene)
@@ -1502,6 +1507,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	st.offerOpId = op.id
 	local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
 	fire("Ops_Offered", player, offerPayload(op, tut))
+	try("TelemetryService", "Call", player, op.id, "Offered", op.kind) -- analytics H1
 	return op
 end
 
@@ -1596,13 +1602,22 @@ end
 -- appears ahead of them on their own water route, siren on, idles out the fair head start and
 -- races them to the first casualty. No clear water route or start ahead yet (by a quay, too close
 -- to the call): it asks again next tick, so a race never starts hidden.
+local function underway(player: Player): boolean
+	local vehicles = service("VehicleService")
+	local from, _, onFoot = raceStart(player)
+	local boat = vehicles and vehicles.GetVehicle(player)
+	local v = boat and boat.PrimaryPart and boat.PrimaryPart.AssemblyLinearVelocity
+	return not onFoot
+		and from ~= nil
+		and v ~= nil
+		and Vector3.new(v.X, 0, v.Z).Magnitude >= RaceRules.UNDERWAY
+end
+
 local function startRace(op: any)
 	local player: Player = op.owner
 	local vehicles = service("VehicleService")
-	local from, top, onFoot = raceStart(player)
-	local boat = vehicles and vehicles.GetVehicle(player)
-	local v = boat and boat.PrimaryPart and boat.PrimaryPart.AssemblyLinearVelocity
-	if onFoot or not from or not v or Vector3.new(v.X, 0, v.Z).Magnitude < RaceRules.UNDERWAY then
+	local from, top = raceStart(player)
+	if not (from and underway(player)) then
 		return
 	end
 	local spot: Vector3 = op.scene.position -- the spawn point clearSpawn checked
@@ -1649,6 +1664,7 @@ local function startRace(op: any)
 	local mine = RaceRules.playerSeconds(RaceRules.length(from, path), top, false)
 	local delay = RaceRules.delay(mine, racerLen)
 	op.race = { acceptedAt = now() }
+	try("TelemetryService", "Custom", player, "Race", 1, "Started", op.kind) -- analytics: racer start
 	print(
 		string.format(
 			"[Race] %s: under way; racer casts off after %.1f s, arrives %.1f s; player est %.1f s",
@@ -1698,6 +1714,7 @@ local function startRace(op: any)
 				end
 			end
 			stateOf(player).raceGrace = RaceRules.GRACE
+			try("TelemetryService", "Custom", player, "Race", 1, "RacerWon", op.kind) -- analytics: racer win
 			startTakeover(op, "Race", 1)
 			return true
 		end,
@@ -1709,6 +1726,10 @@ end
 local function raceTick(op: any)
 	if op.state ~= "Active" then
 		return -- closeOp cleared the crew's RacerAt
+	end
+	if op.owner and not op.seatedLogged and underway(op.owner) then
+		op.seatedLogged = true
+		try("TelemetryService", "Call", op.owner, op.id, "Seated", op.kind) -- analytics H3
 	end
 	if op.racePending and op.owner and not op.takeover then
 		startRace(op)
@@ -1776,6 +1797,7 @@ local function startBigOp()
 	for _, p in Players:GetPlayers() do
 		if bigCallReady(p) and not busy(p) then
 			Remotes.event("Ops_Offered"):FireClient(p, offerPayload(op))
+			try("TelemetryService", "Call", p, op.id, "Offered", op.kind) -- analytics H1
 		end
 	end
 	print(`[OperationService] big op {op.id}: Capsized Ferry with {count} casualties`)
@@ -2355,6 +2377,7 @@ function OperationService.OfferBigCall(player: Player): boolean
 	end
 	st.offerOpId = bigOp.id
 	Remotes.event("Ops_Offered"):FireClient(player, offerPayload(bigOp))
+	try("TelemetryService", "Call", player, bigOp.id, "Offered", bigOp.kind) -- analytics H1
 	return true
 end
 

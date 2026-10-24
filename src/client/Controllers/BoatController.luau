@@ -62,6 +62,7 @@ local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyp
 local Helm = require(Shared:WaitForChild("Boat"):WaitForChild("Helm"))
 local NavLights = require(Shared:WaitForChild("Boat"):WaitForChild("NavLights"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
+local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
 local Unstick = require(Shared:WaitForChild("Boat"):WaitForChild("Unstick"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
@@ -198,6 +199,7 @@ local function unstickBoat(model: Model, throttle: number, speed: number, dt: nu
 	if throttle > 0.05 and math.abs(speed) < Unstick.SPEED then
 		local wedged, normal = dockContact(model)
 		if Unstick.step(state, dt, wedged, speed, throttle) and normal then
+			Telemetry.send("StuckReset", "Boat") -- analytics H14: the wall push-off fired
 			local root = model.PrimaryPart
 			if root then
 				root.AssemblyLinearVelocity += normal * Unstick.NUDGE
@@ -490,6 +492,13 @@ local function step(dt: number)
 					nowSimulated[child] = true
 					checkCapsize(child, seat, dt)
 					unstickBoat(child, seat.ThrottleFloat, telemetry and telemetry.speed or 0, dt)
+					Telemetry.stalled( -- analytics H15 (not the cold open's auto-throttle)
+						"Boat",
+						math.abs(seat.ThrottleFloat) > 0.5
+							and speed < 1
+							and child:GetAttribute("ColdOpenAutoThrottle") ~= true,
+						dt
+					)
 				elseif isLocalTow(child) then
 					Simulator.step(child, 0, 0, now)
 					nowSimulated[child] = true

@@ -63,7 +63,11 @@ return function(t)
 			"FriendBonus",
 			"DailyCrate",
 			"PromptShown",
-			"PetAdopted",
+			"CompanionSwitch",
+			"VehicleDespawned",
+			"VehicleRecovered",
+			"StuckReset",
+			"Race",
 		}
 		for _, f in
 			Events.opEvents({

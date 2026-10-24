@@ -45,13 +45,13 @@ Ordered by the docs/16 §4 beats. Rebuilt before launch; after launch only appen
 |---|---|---|---|---|
 | 1 | Joined | `TelemetryService` PlayerAdded | live | sessions that start |
 | 2 | AtSea | `ColdOpenStarted` (OperationService.StartColdOpen) | live | does the cold open load? |
-| 3 | FirstBoard | `Call(..., "Boarded")`; fallback `ColdOpenStep("recovery")` | live (fallback); Phase 2 H2 | does the first survivor climb on? |
+| 3 | FirstBoard | `Call(..., "Boarded")`; fallback `ColdOpenStep("recovery")` | live | does the first survivor climb on? |
 | 4 | FirstDelivery | `OpFinished`, reason Complete, helped (the cold open) | live | **95% finish the first rescue** |
 | 5 | RewardSeen | client `OnboardingController` reward burst | live | is the payoff seen? |
 | 6 | Call2Accepted | active-op poll, first non-cold-open call | live | does call 2 start (< 2:00)? |
 | 7 | Call2Delivered | `OpFinished`, first station call delivered | live | does the loop land? |
 | 8 | Call3Delivered | `OpFinished`, `OpsCompleted` ≥ 3 | live | does it repeat untaught? |
-| 9 | PhoneOpened | first `Shop` step 1 or 2 (any phone app) | live via apps; Phase 2 H9 | does the red dot pull them in? |
+| 9 | PhoneOpened | first `Shop` step 1 or 2 (`Phone.setOpen`, any app) | live | does the red dot pull them in? |
 | 10 | FirstUpgrade | `UpgradeService` fit | live | first upgrade (≤ 6:00) |
 | 11 | FirstRank | `ProgressionService.RankChanged` | live | first rank (≤ 11:00) |
 | 12 | FirstVehicle | `ProgressionService` buy (Cash) | live | first new craft |
@@ -68,10 +68,10 @@ Fields are on every step; dashboard filters apply to step 1.
 
 | # | Step | Fields | Fires in | Status |
 |---|---|---|---|---|
-| 1 | Offered | kind, context | OperationService offer | Phase 2 H1 |
+| 1 | Offered | kind, context | OperationService offer | live |
 | 2 | Accepted | kind, context | active-op poll (assigned) | live |
-| 3 | Seated | kind, context | racer clock starts (seated, > 15 km/h, docs/20 WP-B) | Phase 2 H3 |
-| 4 | Boarded | kind, context | `OperationService.OnVictimBoarded` (first survivor) | Phase 2 H2 |
+| 3 | Seated | kind, context | owner seated afloat and under way (`raceTick`) | live |
+| 4 | Boarded | kind, context | `OperationService.OnVictimBoarded` (first survivor) | live |
 | 5 | Delivered | kind, context | `OpFinished` reason Complete | live |
 
 The outcome of every call is the `CallEnded` custom event: value = survivors saved, fields kind,
@@ -83,8 +83,8 @@ send `OpGrade` (0-3). Survivors per call = CallEnded value; Boarded counts the f
 
 | # | Step | Fields (app, item, currency) | Fires in | Status |
 |---|---|---|---|---|
-| 1 | PhoneOpened | last app, None, None | `Phone.setOpen(true)` | Phase 2 H9 |
-| 2 | AppOpened | Vehicles / Store / Pets / Explore | `VehiclesApp.mount`, `StoreApp.mount` | live (Pets/Explore: Phase 2 H12) |
+| 1 | PhoneOpened | last app, None, None | `Phone.setOpen(true)` | live |
+| 2 | AppOpened | Vehicles / Store / Pets / Explore | `VehiclesApp.mount`, `StoreApp.mount` | live (Pets live; Explore: discovery agent) |
 | 3 | ItemViewed | vehicle id (the first card shown); Store: None (a shelf tab) | `VehiclesApp` selectFor (once per mount), `StoreApp.showTab` | live |
 | 4 | BuyTapped | item, Cash / Robux | VehiclesApp Cash / Robux / upgrade / Quick Launch buttons, `StoreApp.buy` | live |
 | 5 | Bought | item, Cash / Robux | server: `ProgressionService` buy, `UpgradeService` fit, `RobuxPrompt` purchased | live |
@@ -99,13 +99,13 @@ keys (`VehicleConfig.Order`, `LandVehicleConfig.Order`, `VehicleUpgrades.Upgrade
 
 | # | Step | Fields | Fires in | Status |
 |---|---|---|---|---|
-| 1 | Spawned | vehicle, where (`Phone` / `Quick` / `Bay` / `ColdOpen` / `Island` / `Road`) | VehicleService / LandVehicleService spawn | Phase 2 H4 |
-| 2 | Boarded | vehicle | owner takes the driver seat | Phase 2 H5 |
-| 3 | Underway | vehicle | owner seated and > 15 km/h | Phase 2 H6 |
+| 1 | Spawned | vehicle, where (`Phone` / `Quick` / `Bay` / `ColdOpen` / `Island` / `Road`) | VehicleService / LandVehicleService spawn | live |
+| 2 | Boarded | vehicle | owner takes the driver seat | live |
+| 3 | Underway | vehicle | owner seated and > 15 km/h | live |
 
-Endings: `VehicleDespawned` (reason `Idle` / `Wrecked` / `WrongMedium` / `Replaced` / `OwnerLeft`,
-vehicle, medium `Water`/`Land`) and `VehicleRecovered` (reason `Flipped` / `Stuck` / `Sunk` /
-`OutOfBounds` / `Runaway`, vehicle). Phase 2 H7, H8.
+Endings: `VehicleDespawned` (reason `Idle` / `Wrecked` / `WrongMedium` / `Replaced` / `Stowed`,
+vehicle, medium `Water`/`Land` = the vehicle's) and `VehicleRecovered` (reason `Flipped` / `Stuck` / `Sunk` /
+`OutOfBounds` / `Flooded` / `Runaway`, vehicle). Live.
 
 ### 2.4 Explore (session = island id; docs/21)
 
@@ -123,12 +123,11 @@ vehicle, medium `Water`/`Land`) and `VehicleRecovered` (reason `Flipped` / `Stuc
 
 | # | Step | Fields | Fires in | Status |
 |---|---|---|---|---|
-| 1 | Rescued | species | the WildlifeRescue call delivered (SanctuaryService credit) | Phase 2 H10 |
-| 2 | Adopted | species | `PetService.AddRescue` | Phase 2 H10 |
-| 3 | Chosen | species (`Bosun` for the dog) | `PetService.Equip` / the phone's companion choice | Phase 2 H11 |
+| 1 | Rescued | species | the WildlifeRescue call delivered (SanctuaryService credit) | live |
+| 2 | Adopted | species | `PetService.AddRescue` | live |
+| 3 | Chosen | species (`Bosun` for the dog) | `PetService.Equip` (the phone's companion choice, Bosun included) | live |
 
-`CompanionSwitch` (from, to) on every change of the companion that is out. `PetAdopted` (legacy,
-PetService.Equip) stays until H11 replaces it.
+`CompanionSwitch` (from, to) on every change of the companion that is out (`PetAdopted` is gone).
 
 ## 3. Economy (`LogEconomyEvent`, currency `Cash`)
 
@@ -161,8 +160,8 @@ A new Cash grant that skips `extra.award`, or a new sink without `CashSpent`, wi
 | ColdOpenEnded | 1 | reason | OperationService endColdOpen | live |
 | StormJoined | 1 | Great/Storm, Start/MidStorm | weather watch | live |
 | DailyCrate | streak | Daily/Welcome, crate day | StreakService | live |
-| PetAdopted | 1 | species, Rare/Common | PetService.Equip | live (legacy) |
-| CompanionSwitch | 1 | from, to | companion choice | Phase 2 H11 |
+| CompanionSwitch | 1 | from, to | `PetService.Equip` | live |
+| Race | 1 | Started/RacerWon, kind | OperationService `startRace` / racer claim | live |
 | LiveEvent | 1 | event id | LiveOps poll | live |
 | FriendBonus | percent | friend count | FriendService attributes | live |
 | PromptShown | 1 | notify/favorite/invite | PlatformPromptService | live |
@@ -171,10 +170,10 @@ A new Cash grant that skips `extra.award`, or a new sink without `CashSpent`, wi
 | BadgeAwarded | 1 | badge key | BadgeService award | live |
 | StickerFound | 1 | island, slot, sticker | docs/21 album | Phase 2 H13 |
 | AlbumPage | 1 | island | docs/21 album | Phase 2 H13 |
-| VehicleDespawned | 1 | reason, vehicle, medium | VehicleService / LandVehicleService | Phase 2 H7 |
-| VehicleRecovered | 1 | reason, vehicle | VehicleService.resetVehicle | Phase 2 H8 |
-| StuckReset | 1 | device, where | client (any unstuck / push-off) | Phase 2 H14 |
-| InputDead | 1 | device, where | client controllers | Phase 2 H15 |
+| VehicleDespawned | 1 | reason, vehicle, medium | VehicleService / LandVehicleService | live |
+| VehicleRecovered | 1 | reason, vehicle | `TelemetryService.VehicleRecovered` (boat + car resets) | live |
+| StuckReset | 1 | device, where | BoatController wall push-off | live |
+| InputDead | 1 | device, where | Boat / CarController (`Telemetry.stalled`) | live |
 | SessionStart | days since first session | day bucket (D0, D1, D2-3, D4-7, D8-14, D15-30, D31+), gap (New, Same, 1d, 2-3d, 4-7d, 8d+), New/Returning | DataService.OnLoaded | live |
 | SessionEnd | seconds played | length bucket (<1m … 60m+), device (Touch/Gamepad/Keyboard/Console/VR/Unknown), day bucket | PlayerRemoving | live |
 
@@ -193,72 +192,46 @@ first load after this ships, or their `lastSessionDay`).
 - **Economy**: sources vs sinks; a growing balance means sinks are too weak.
 - **Explore**, **Companion**: per-island / per-species reach once docs/21 and the companion phone land.
 
-## 7. Phase 2 hooks (orchestrator: wire after the owning agents merge)
+## 7. Phase 2 hooks (wired 2026-10-24)
 
-Server files call `Telemetry = require(script.Parent.TelemetryService)` (or OperationService's
-`try("TelemetryService", ...)`). Client files call `require(<client>.Telemetry)`. Line numbers are from
-`b5601a59`; find the line by its context.
+Server files call `Telemetry = require(script.Parent.TelemetryService)` (OperationService: `try("TelemetryService", ...)`);
+client files call `require(<client>.Telemetry)`. Find each by its `analytics H<n>` comment.
 
-- [ ] **H1 Call Offered**: `src/server/Services/OperationService.luau` `offerTo` (~1479), after
-  `fire("Ops_Offered", player, offerPayload(op, tut))`:
-  `try("TelemetryService", "Call", player, op.id, "Offered", op.kind)`; same line after each
-  `Remotes.event("Ops_Offered"):FireClient(p|player, offerPayload(...))` (~1702 with `p, op`; ~2269 and
-  ~2278 with `player, bigOp`).
-- [ ] **H2 Call Boarded (+ onboarding FirstBoard)**: `OperationService.OnVictimBoarded` (~1281, empty
-  stub, called by `RescueService` ~1001 after a survivor is aboard): body
-  `local op = opOfScene(_scene) if op then try("TelemetryService", "Call", _player, op.id, "Boarded", op.kind) end`.
-- [ ] **H3 Call Seated**: where docs/20 WP-B starts the racer clock (today `op.race = { acceptedAt = now() }`,
-  OperationService ~1596; after WP-B the "seated and > 15 km/h" check):
-  `try("TelemetryService", "Call", player, op.id, "Seated", op.kind)`. A WP-B "drove away" ending should
-  `finish(op, "Abandoned")` (any non-Complete/Takeover/Timer reason maps to Abandoned).
-- [ ] **H4 Vehicle Spawned**: `src/server/Services/VehicleService.luau` `spawnVehicle` (~869), after the
-  craft is built and before returning success:
-  `Telemetry.Vehicle(player, "Spawned", vehicleId, if quick then "Quick" elseif docked then "Phone" else "Bay")`;
-  cold-open spawn path: `where = "ColdOpen"`; island docks: `"Island"`.
-  `LandVehicleService.luau` `spawnVehicle` (~510): `Telemetry.Vehicle(player, "Spawned", vehicleId, "Road")`.
-- [ ] **H5 Vehicle Boarded**: `VehicleService.onDriverChanged` (~426) inside `if player then`, when
-  `player == record.owner`: `Telemetry.Vehicle(player, "Boarded", record.spec.id)`. Same in
-  LandVehicleService's driver-seat handler.
-- [ ] **H6 Vehicle Underway**: `VehicleService.checkVehicle` (~1093) after `speed` is computed:
-  `if record.driver == record.owner and speed > 12 then Telemetry.Vehicle(record.owner, "Underway", record.spec.id) end`
-  (12 studs/s ≈ 15 km/h; repeats are dropped per spawn).
-- [ ] **H7 VehicleDespawned**: `VehicleService.sweepVehicles` (~685) before `despawnModel(model)`:
-  `Telemetry.Custom(record.owner, "VehicleDespawned", 1, if idle then "Idle" else "Wrecked", record.spec.id, "Water")`;
-  `clearOtherClasses` (~770) and `createVehicle` old craft (~808): reason `"Replaced"`; the docs/20
-  WP-C wrong-medium despawn: `"WrongMedium"` with medium `"Land"` (boat on land) / `"Water"` (car in
-  water); LandVehicleService `despawn` (~389) callers: `"Idle"` / `"Replaced"` / `"WrongMedium"`.
-- [ ] **H8 VehicleRecovered**: `VehicleService.resetVehicle` (~922) first line:
-  `Telemetry.Custom(record.owner, "VehicleRecovered", 1, if reason == "Flipped" or reason == "Stuck" or reason == "Sunk" then reason elseif reason == "out of bounds" then "OutOfBounds" else "Runaway", record.spec.id)`
-  (never pass the raw reason: it carries numbers).
-- [ ] **H9 Shop PhoneOpened**: `src/client/UI/Phone.luau` `Phone.setOpen` (~670) after `open = value`:
-  `if value then Telemetry.shop("PhoneOpened") end`.
-- [ ] **H10 Companion Rescued / Adopted**: `src/server/Services/SanctuaryService.luau` (~251) before
-  `PetService.AddRescue(player, best.species, best.rare)`:
-  `Telemetry.Companion(player, best.species, "Rescued")`; `src/server/Services/PetService.luau`
-  `AddRescue` (~96) before `return entry`: `Telemetry.Companion(player, speciesId, "Adopted")`.
-- [ ] **H11 Companion Chosen / Switch**: `PetService.Equip` (~148, where `PetAdopted` is logged now):
-  replace with `Telemetry.Companion(player, pet.species, "Chosen")` and
-  `Telemetry.Custom(player, "CompanionSwitch", 1, <previous species or "Bosun">, pet.species)`; the
-  phone's "send the pet home / take Bosun" path (DogService or the companion app):
-  `Telemetry.Companion(player, "Bosun", "Chosen")` + the same `CompanionSwitch`.
-- [ ] **H12 Shop AppOpened for new apps**: the Pets / companion app and the Explore (album) app
-  `mount`: `Telemetry.shop("AppOpened", "Pets")` / `Telemetry.shop("AppOpened", "Explore")`; a pet
-  or sticker item key must be added to `knownItems` in `TelemetryService.Init` before it is sent.
-- [ ] **H13 Explore**: the docs/21 discovery service (not written yet): fog cell with the island
-  cleared → `Telemetry.Explore(player, islandId, "Sighted")`; landing trigger →
-  `Telemetry.Explore(player, islandId, "Reached")`; stamp post →
-  `Telemetry.Explore(player, islandId, "Stamped", stampCount)`; sticker →
-  `Telemetry.Custom(player, "StickerFound", 1, islandId, slot, stickerId)`; page complete →
-  `Telemetry.Custom(player, "AlbumPage", 1, islandId)`; sticker Cash as
-  `ProgressionService.Award(player, cash, 0, "Sticker:" .. slot, true)` (economy SKU stays small).
-- [ ] **H14 StuckReset**: the docs/20 WP-C wall push-off (BoatController / CarController) and any
-  "unstuck" respawn: `Telemetry.send("StuckReset", "Boat" | "Car" | "Foot" | "Swim")` (client).
-- [ ] **H15 InputDead**: `src/client/Controllers/BoatController.luau` drive step (~325, `local throttle = input`):
-  when `math.abs(input) > 0.5` for 3 s while seated and `forwardSpeed < 1` (and not the cold-open
-  auto-throttle), `Telemetry.send("InputDead", "Boat")` once per stall; same in `CarController`
-  (`"Car"`) and the on-foot controller (`"Foot"`: move input held 3 s, root moved < 1 stud).
-- [ ] **H16 Cold open**: once docs/20 WP-D lands, keep `ColdOpenStarted` at the moment the player
-  is seated at sea (that is onboarding `AtSea`); `ColdOpenStep(player, "recovery")` becomes redundant
-  after H2 and can go.
+- [x] **H1 Call Offered**: `OperationService.luau` `offerTo`, the big-call pager in `startBigOp`, and
+  `OperationService.OfferBigCall` (each after its `Ops_Offered` fire). The cold open has no offer: it starts at Accepted.
+- [x] **H2 Call Boarded (+ onboarding FirstBoard)**: `OperationService.OnVictimBoarded` (RescueService calls it after a
+  survivor is aboard). `ColdOpenStep("recovery")` stays as the FirstBoard fallback (deduped).
+- [x] **H3 Call Seated**: `OperationService.luau` `raceTick` → `underway(owner)` (seated afloat, > `RaceRules.UNDERWAY`),
+  once per call for every call (not only racer calls); `startRace` uses the same `underway`. No WP-B "drove away"
+  ending exists; every non-Complete/Takeover/Timer reason is already `Abandoned` in `CallEnded`.
+- [x] **Race** (new custom event, NPC racer): `OperationService.luau` `startRace` (`Started`) and its `claim`
+  (`RacerWon`, before `startTakeover`); field 2 = call kind. Player-first races = Started − RacerWon.
+- [x] **H4 Vehicle Spawned**: `VehicleService.luau` `spawnVehicle` (new `where` arg: bay prompt and returning
+  player `Bay`, RequestVehicle `Phone`, QuickLaunch / DevLaunch `Quick`), `VehicleService.SpawnSeated` (`ColdOpen`),
+  `LandVehicleService.luau` `spawnVehicle` (`Road`). Island docks come through the phone (`Phone`).
+- [x] **H5 Vehicle Boarded**: `VehicleService.luau` `onDriverChanged` (owner), `LandVehicleService.luau` `onSeatChanged`.
+- [x] **H6 Vehicle Underway**: `VehicleService.luau` `checkVehicle`, `LandVehicleService.luau` `check` (> 12 studs/s).
+- [x] **H7 VehicleDespawned**: `despawnModel(model, reason)` / `despawn(record, reason)` log it; medium is the
+  vehicle's (`Water` boat, `Land` car). Boat: `sweepVehicles` `Idle`/`Wrecked`, `clearOtherClasses` and
+  `createVehicle` `Replaced`, `RefreshUpgrades` `Replaced`, `despawnMisplaced` `WrongMedium`, `stowVehicle` `Stowed`.
+  Car: `spawnVehicle` `Replaced`, `checkDespawn` `Idle`, `despawnMisplaced` `WrongMedium`. Owner-left despawns
+  are not logged (the player is gone).
+- [x] **H8 VehicleRecovered**: `TelemetryService.VehicleRecovered` maps the raw reason (`Flipped`/`Stuck`/`Sunk`/
+  `OutOfBounds`/`Flooded`/`Runaway`); called from `VehicleService.luau` `resetVehicle` and `LandVehicleService.luau` `resetTo`.
+- [x] **H9 Shop PhoneOpened**: `src/client/UI/Phone.luau` `Phone.setOpen`.
+- [x] **H10 Companion Rescued / Adopted**: `SanctuaryService.luau` credit (before `PetService.AddRescue`),
+  `PetService.AddRescue` (after the save).
+- [x] **H11 Companion Chosen / Switch**: `PetService.Equip` (Bosun = pet id 0 goes through the same path):
+  `Companion(..., "Chosen")` + `CompanionSwitch` (from, to; `Bosun` when no pet is out). `PetAdopted` removed.
+- [x] **H12 Shop AppOpened**: `src/client/UI/PetsApp.luau` `PetsApp.mount` (`Pets`). `Explore` belongs to the
+  discovery agent (AlbumApp).
+- [ ] **H13 Explore**: owned by the discovery agent (DiscoveryService / AlbumApp), not wired here.
+- [x] **H14 StuckReset**: `BoatController.luau` `unstickBoat` when the wall push-off fires (`Boat`). Cars have no
+  push-off (the server's `resetTo` logs `VehicleRecovered`); no on-foot unstuck exists.
+- [x] **H15 InputDead**: `Telemetry.stalled(context, stalled, dt)` (client, once per 3 s stall), called from
+  `BoatController.luau` `step` (throttle > 0.5, speed < 1, not the cold-open auto-throttle) and
+  `CarController.luau` `drive` (throttle > 0.5, no handbrake, not flooded, speed < 1). On foot is not wired.
+- [x] **H16 Cold open**: `ColdOpenStarted` already fires right after `SpawnColdOpen` seats the player (AtSea).
 
-16 hooks; none changes behaviour, each is one or two lines.
+Client values are checked on the server (`TelemetryService` `clientStep`): `InputDead` / `StuckReset` contexts
+against `Events.InputContexts`, Shop apps against `Events.ShopApps`, rate limited by `Events.allow`.

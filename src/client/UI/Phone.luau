@@ -40,6 +40,7 @@ local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
 local Rules = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("ProgressionRules"))
+local Telemetry = require(Client:WaitForChild("Telemetry"))
 local Viewmodel = require(Client:WaitForChild("Camera"):WaitForChild("Viewmodel"))
 
 local C = HudTheme.Colors
@@ -680,6 +681,9 @@ function Phone.setOpen(value: boolean)
 		return
 	end
 	open = value
+	if value then
+		Telemetry.shop("PhoneOpened") -- analytics H9
+	end
 	serial += 1
 	local s = serial
 	local reduced = Comfort.reducedMotion()
