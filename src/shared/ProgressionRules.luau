@@ -288,7 +288,7 @@ end
 local GEAR_LEVEL_PRICES = { 300, 1200, 4000 }
 local JETSKI_FIT_PRICE = 1500
 
--- Gear is gone: an Engine Tune owner gets the jet ski Engine upgrade (the same +8%) for level 1 and
+-- Gear is gone: an Engine Tune owner gets the jet ski Engine upgrade (the same +15%) for level 1 and
 -- every other level back in Cash; Strong Grip did nothing with auto_board, so all of it comes back.
 -- The jet ski holds one (docs/16 section 1): its old seat upgrade comes off and is paid back.
 -- Idempotent: a migrated profile has no gear and no jet ski seat bit.

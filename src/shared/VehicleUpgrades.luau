@@ -1,7 +1,7 @@
 --!strict
 -- VehicleUpgrades: the per-vehicle upgrades sold in the phone's Vehicles app (docs 03 section 4.1,
 -- docs/16 K8). Pure data and maths, Lune-tested (tests/VehicleUpgrades.spec.luau):
---   Engine  Tuned engine  -- +8% top speed
+--   Engine  Tuned engine  -- +15% top speed
 --   Hull    Storm hull    -- steadier in waves, turns better
 --   Fit     Extra seat    -- +1 aboard (RIB and lifeboat only)
 -- Prices are a share of the vehicle's price (25 / 50 / 100%); the free jet ski uses fixed prices.
@@ -24,7 +24,7 @@ VehicleUpgrades.MAX_MASK = 7 -- three bits
 VehicleUpgrades.SHORT = { JetSki = "Jet ski", RIB = "RIB", Lifeboat = "Lifeboat" }
 
 local BASE = {
-	{ id = "Engine", name = "Tuned engine", share = 0.25, fixed = 300, effect = "+8% top speed" },
+	{ id = "Engine", name = "Tuned engine", share = 0.25, fixed = 300, effect = "+15% top speed" },
 	{ id = "Hull", name = "Storm hull", share = 0.5, fixed = 800, effect = "Steady in waves" },
 	{ id = "Fit", name = "Extra seat", share = 1, fixed = 0, effect = "+1 aboard" },
 }
@@ -133,8 +133,8 @@ function VehicleUpgrades.apply(spec: any, rawMask: any): any
 	end
 	local out: any = table.clone(spec)
 	if VehicleUpgrades.has(mask, "Engine") then
-		out.topSpeed *= 1.08
-		out.accel *= 1.08
+		out.topSpeed *= 1.15
+		out.accel *= 1.15
 	end
 	if VehicleUpgrades.has(mask, "Hull") then
 		out.dampingRatio = math.min(0.9, out.dampingRatio + 0.12)

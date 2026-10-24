@@ -106,9 +106,13 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
   (`timescale`, `start`, `coldopen`, `status`); `python3 tools/studio/smoke.py ops`.
 - `RescueService`: the scene (rigged swimmers, drift, waving, boarding, pad delivery); `PiwRescue` /
   `PiwWays` make a survivor answer the boat (`PIW_Rescue` C->S `arm` / `bump`).
-- NPC racer (K15): `server/Ops/NpcPickup.luau`. From the player's 4th call an NPC RIB leaves the bays
-  with siren and wake toward the first casualty; if it gets there first it takes them and the call ends
-  unpaid. A taken-over call is always picked up by an NPC boat (never a drowning).
+- NPC racer (K15): `server/Ops/NpcPickup.luau`, balance in `shared/Calls/RaceRules.luau` (Lune-tested).
+  From the player's 4th call an NPC RIB idles off the bays with its siren on, casts off after a head start
+  that leaves a straight-driving player (base craft) at most 70% of its time, runs below every base craft's
+  speed through the harbour mouth, and with a wake toward the first casualty; if it gets there first it
+  takes them and the call ends unpaid. No racer for 2 calls after a loss or where the water route is
+  blocked (call spots must be reachable from the bays: `clearSpawn`). Studio: `OpsDev` `start <kind>
+  <zone>`, `victims`; the server prints `[Race]` start delay and both arrival times. A taken-over call is always picked up by an NPC boat (never a drowning).
 - Free-roam swimmers (K13): `AmbientRescueService` keeps up to 4 mission-less swimmers; one is always
   visible from the harbour mouth; boarded server-side with `Ops/Board`, paid on delivery.
 - Wildlife (K16): `SanctuaryService` dresses the WildlifeRescue survivor as an animal (`WildlifeRig`); it

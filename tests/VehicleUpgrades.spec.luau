@@ -87,8 +87,8 @@ return function(t)
 	t.test("fitted upgrades change the real handling numbers and the seat count", function()
 		local base = VehicleConfig.RIB
 		local engine = U.apply(base, U.bit("Engine"))
-		t.expect(engine.topSpeed).toBeCloseTo(base.topSpeed * 1.08, 1e-9)
-		t.expect(engine.accel).toBeCloseTo(base.accel * 1.08, 1e-9)
+		t.expect(engine.topSpeed).toBeCloseTo(base.topSpeed * 1.15, 1e-9)
+		t.expect(engine.accel).toBeCloseTo(base.accel * 1.15, 1e-9)
 		t.expect(engine.turnRate).toBe(base.turnRate)
 
 		local hull = U.apply(base, U.bit("Hull"))
