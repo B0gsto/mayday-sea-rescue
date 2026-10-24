@@ -163,6 +163,12 @@ local MapConfig = {
 			glyph = A11yPalette.symbol("Marker", "Crew"),
 			color = Color3.fromHex("5AC8FA"),
 		},
+		-- the NPC rescue boat racing you to the call (client RacerController -> SetBlips("Racer", ...))
+		Racer = {
+			label = "Rescue boat",
+			glyph = A11yPalette.symbol("Marker", "Racer"),
+			color = Color3.fromHex("E8332A"),
+		},
 		Storm = {
 			label = "Storm area",
 			glyph = A11yPalette.symbol("Marker", "Storm"),

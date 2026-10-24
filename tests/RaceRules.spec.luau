@@ -99,4 +99,15 @@ return function(t)
 			t.expect(U.apply(rib, U.bit("Engine")).topSpeed > ski.topSpeed).toBeTruthy()
 		end
 	)
+
+	t.test("along: walks the route legs and clamps at the end", function()
+		local route = { Vector3.new(0, 0, 100), Vector3.new(100, 0, 100) }
+		t.expect((R.along(Vector3.zero, route, 50) - Vector3.new(0, 0, 50)).Magnitude < 1e-3)
+			.toBeTruthy()
+		t.expect((R.along(Vector3.zero, route, 150) - Vector3.new(50, 0, 100)).Magnitude < 1e-3)
+			.toBeTruthy()
+		t.expect((R.along(Vector3.zero, route, 999) - Vector3.new(100, 0, 100)).Magnitude < 1e-3)
+			.toBeTruthy()
+		t.expect(R.UNDERWAY).toBe(12.5) -- 15 km/h at 3 / 3.6 studs/s per km/h
+	end)
 end

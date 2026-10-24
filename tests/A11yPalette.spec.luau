@@ -60,6 +60,7 @@ return function(t)
 				"Waypoint",
 				"Vehicle",
 				"Crew",
+				"Racer",
 				"Storm",
 				"SeamarkPort",
 				"SeamarkStarboard",

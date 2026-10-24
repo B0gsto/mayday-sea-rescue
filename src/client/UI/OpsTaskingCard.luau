@@ -1,6 +1,7 @@
 --!strict
 -- OpsTaskingCard: the call as a DSC pager (top right), wordless (docs/16 K2): a flashing alert
--- strip, the call-type icon (the PIW sprite, else a Glyph disc) and a pulsing accept button
+-- strip, the call-type icon (the PIW sprite, else a Glyph disc), how far away it is (docs/20) and a
+-- pulsing accept button
 -- (check sprite + device key chip: R / gamepad DPadUp; the check alone on touch). The world shows
 -- the way (flare, minimap blip, Bosun) and a chevron off the pager points at the call's world
 -- marker; driving at the call takes it too (OpsController).
@@ -51,7 +52,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	local body = HudTheme.image(
 		"TaskingPager",
 		Hud.Panel,
-		UDim2.fromOffset(120, 176),
+		UDim2.fromOffset(120, 196), -- 20 px taller for the distance
 		gui,
 		HudTheme.Slice.Panel,
 		0.45
@@ -101,6 +102,14 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 	icon.BackgroundTransparency = 1
 	icon.Parent = badge
 
+	-- how far: metres from you to the call, live (Waypoint.metres' format; Waypoint requires this module)
+	local far =
+		HudTheme.label("Distance", "", UDim2.new(1, 0, 0, 22), HudTheme.NumberFont, 20, body)
+	far.Position = UDim2.fromOffset(0, 90)
+	far.TextColor3 = HudTheme.Colors.text
+	far.TextStrokeColor3 = Color3.fromHex("06101C")
+	far.TextStrokeTransparency = 0.55
+
 	-- accept: the check sprite (>= 48 px touch target); the key chip at its right shoulder
 	local key = Instance.new("ImageButton")
 	key.Name = "Launch"
@@ -119,7 +128,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 
 	-- the way to the call (playtest 2: the pager did not read as "drive there"): a chevron round the
 	-- pager's rim, pointing at the world marker (UI/Waypoint's Mark) and nudging toward it
-	local HALF = Vector2.new(60, 88) -- the pager's half size
+	local HALF = Vector2.new(60, 98) -- the pager's half size
 	local way = Instance.new("Frame")
 	way.Name = "Way"
 	way.Position = UDim2.fromScale(0.5, 0.5)
@@ -231,6 +240,15 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 					way.Rotation = math.deg(a)
 					arrow.Position = UDim2.fromOffset(0, -(rim + 24 + 6 * math.sin(t * 6)))
 				end
+				local me = Players.LocalPlayer.Character
+				if me and typeof(data.position) == "Vector3" then
+					local m = ((me:GetPivot().Position - data.position) * Vector3.new(1, 0, 1)).Magnitude
+						/ 3
+					far.Text = if m >= 1000
+						then string.format("%.1f km", m / 1000)
+						else `{math.floor(m / 10 + 0.5) * 10} m`
+				end
+				far.Visible = me ~= nil and typeof(data.position) == "Vector3"
 				local left = (data.offerExpiresAt or math.huge) - workspace:GetServerTimeNow()
 				if left < -2 then
 					card.hide(data.opId)
