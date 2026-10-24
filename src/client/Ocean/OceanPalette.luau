@@ -5,8 +5,8 @@
 
 local OceanPalette = {}
 
-OceanPalette.DEEP_TEAL = Color3.fromHex("#24493C") -- Cornish green-teal, = the Clear preset's WaterColor
-OceanPalette.ABYSS_NAVY = Color3.fromHex("#1B3534") -- green-grey trough, not navy
+OceanPalette.DEEP_TEAL = Color3.fromHex("#1F6E6E") -- blue-teal, = the Clear preset's WaterColor
+OceanPalette.ABYSS_NAVY = Color3.fromHex("#123247") -- navy troughs: wave shading reads at a glance
 OceanPalette.FOAM = Color3.fromHex("#EAF7F5")
 
 -- Height (studs above sea level) that maps to full Foam / full Navy. Storm crests (sum of
