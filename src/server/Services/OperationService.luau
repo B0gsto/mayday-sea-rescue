@@ -1201,6 +1201,16 @@ local function onStepResult(player: Player, opId: any, key: any, raw: any)
 		failStep(op, track, inst, "Failed")
 		return
 	end
+	-- boarding and delivery are server-authoritative (stepBoarding checks the boat is close, slow and has
+	-- room; OnVictimsDelivered checks the pad): a client "done" here would pay out from anywhere. Studio's
+	-- OpsAutoStub smoke test is the one exception.
+	local effect = inst.def.effect
+	if
+		(effect == "board" or effect == "deliver")
+		and not (RunService:IsStudio() and player:GetAttribute("OpsAutoStub") == true)
+	then
+		return
+	end
 	local metrics = sanitize(raw.metrics)
 	serverMetrics(op, inst, metrics)
 	-- condition events the step allows, capped

@@ -70,7 +70,7 @@ local function award(player: Player, key: string): boolean
 		return false
 	end
 	mine[key] = true
-	local owned = false
+	local owned, errored = false, false
 	local okHas, has = pcall(Badges.UserHasBadgeAsync, Badges, player.UserId, b.id)
 	if okHas and has then
 		owned = true
@@ -78,10 +78,13 @@ local function award(player: Player, key: string): boolean
 		local ok, result = pcall(Badges.AwardBadge, Badges, player.UserId, b.id)
 		owned = ok and result == true
 		if not ok then
+			errored = true
 			warn(`[BadgeService] AwardBadge {key} ({b.id}) for {player.Name} failed: {result}`)
 		end
 	end
-	if busy[player] then
+	-- a failed call (e.g. the test universe: badge ids belong to the launch universe) stays busy for the
+	-- session, so it isn't retried on every rescue
+	if busy[player] and okHas and not errored then
 		busy[player][key] = nil
 	end
 	if owned and s and player.Parent then
