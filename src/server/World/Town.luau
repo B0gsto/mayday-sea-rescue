@@ -21,6 +21,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local CarPaint = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CarPaint"))
 local CottageRig = require(script.Parent:WaitForChild("CottageRig"))
 local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
 local StreetLayout = require(script.Parent:WaitForChild("StreetLayout"))
@@ -1591,8 +1592,10 @@ local function market(parent: Instance, r: TownLayout.Rect, y0: number)
 				Enum.Material.SmoothPlastic
 			)
 			if rnd(x, row) > 0.3 then
-				local car = AssetLoader.cloneStatic(CAR_IDS[(k + row) % #CAR_IDS + 1], "LOD0", true)
+				local id = CAR_IDS[(k + row) % #CAR_IDS + 1]
+				local car = AssetLoader.cloneStatic(id, "LOD0", true)
 				if car then
+					CarPaint.apply(car, id, k * 3 + row)
 					car:PivotTo(
 						CFrame.new(x + 4, y, bz)
 							* CFrame.Angles(0, if row == 1 then 0 else math.pi, 0)

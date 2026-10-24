@@ -375,6 +375,71 @@ function Harbour.padFrames(tide: number): { [string]: { cf: CFrame, size: Vector
 	}
 end
 
+-- docs/22: what marks a drop-off berth at 40 studs, on the pontoon beside its pad (the pad itself hides while map
+-- waypoints are on): a hazard-yellow band over the deck edge the length of the pad, an amber lamp post at each end.
+-- Built at tide 0 around the pad frame; the caller pivots it with the pad. side: from the pad toward its pontoon.
+local BERTH_SIDE = { DropOff_Dock = Vector3.xAxis, DropOff_Hospital = -Vector3.zAxis }
+local HAZARD_YELLOW = Color3.fromRGB(240, 188, 28)
+local LAMP_AMBER = Color3.fromRGB(255, 168, 40)
+function Harbour.berthMarks(name: string, frame: { cf: CFrame, size: Vector3 }): Model?
+	local side = BERTH_SIDE[name]
+	if not side then
+		return nil
+	end
+	local lengthwise = side:Cross(Vector3.yAxis)
+	local len = math.abs(frame.size:Dot(lengthwise))
+	local p = frame.cf.Position
+	local edge = Vector3.new(p.X, Harbour.SEA_Y + Harbour.FREEBOARD, p.Z)
+		+ side * (math.abs(frame.size:Dot(side)) / 2 + 0.6)
+	local m = Instance.new("Model")
+	m.Name = name .. "_Marks"
+	local function part(size: Vector3, pos: Vector3, color: Color3, material: Enum.Material): Part
+		local b = Instance.new("Part")
+		b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow =
+			true, false, false, false, false
+		b.Size = size
+		b.CFrame = CFrame.fromMatrix(pos, lengthwise, Vector3.yAxis)
+		b.Color = color
+		b.Material = material
+		b.Parent = m
+		return b
+	end
+	local inner = edge - side * 0.6
+	part(
+		Vector3.new(len, 0.1, 1.2),
+		inner + Vector3.yAxis * 0.05,
+		HAZARD_YELLOW,
+		Enum.Material.SmoothPlastic
+	)
+	part(
+		Vector3.new(len, 0.9, 0.1),
+		edge + side * 0.05 - Vector3.yAxis * 0.4,
+		HAZARD_YELLOW,
+		Enum.Material.SmoothPlastic
+	)
+	for _, k in { -0.5, 0.5 } do
+		local foot = inner + lengthwise * (len * k)
+		part(
+			Vector3.new(0.35, 3, 0.35),
+			foot + Vector3.yAxis * 1.5,
+			HAZARD_YELLOW,
+			Enum.Material.SmoothPlastic
+		)
+		local lamp = part(
+			Vector3.new(0.7, 0.7, 0.7),
+			foot + Vector3.yAxis * 3.3,
+			LAMP_AMBER,
+			Enum.Material.Neon
+		)
+		lamp.Shape = Enum.PartType.Ball
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = LAMP_AMBER, 10, 1.2
+		glow.Parent = lamp
+	end
+	m.WorldPivot = frame.cf
+	return m
+end
+
 -- Rock armour along a breakwater face: pieces scaled so the crest reaches CREST from the seabed below
 -- (`bed(x, z)` -> seabed Y), stepped by their scaled width with a 15 % overlap; shallow stretches are skipped.
 export type Run = { from: Vector3, to: Vector3, normal: Vector3, group: string }
@@ -1046,6 +1111,15 @@ function Harbour.apply(base: Instance): number
 		end
 		floatModels[f.name] = { gangway = g, pieces = list }
 	end
+	local marks: { [string]: Model } = {}
+	for name, frame in Harbour.padFrames(tide) do
+		local m = Harbour.berthMarks(name, frame)
+		if m then
+			m:PivotTo(frame.cf + Vector3.new(0, tide, 0))
+			m.Parent = groupModel(base, "Harbour_BerthMarks")
+			marks[name] = m
+		end
+	end
 	Workspace:GetAttributeChangedSignal("TideHeight"):Connect(function()
 		local t = (Workspace:GetAttribute("TideHeight") :: number?) or 0
 		for _, f in Harbour.floats(t) do
@@ -1067,6 +1141,9 @@ function Harbour.apply(base: Instance): number
 			local pad = pads and pads:FindFirstChild(name)
 			if pad and pad:IsA("BasePart") then
 				pad.CFrame = frame.cf + Vector3.new(0, t, 0)
+			end
+			if marks[name] then
+				marks[name]:PivotTo(frame.cf + Vector3.new(0, t, 0))
 			end
 		end
 	end)

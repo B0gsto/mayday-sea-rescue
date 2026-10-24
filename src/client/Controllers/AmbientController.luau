@@ -42,6 +42,7 @@ local ANIM = {
 	Walk = "rbxassetid://507777826",
 }
 local WALK_SPEED, CAR_SPEED = 6, 26 -- studs/s (tune)
+local WALKER_GAP = 6 -- studs between a new walker and anyone already out (docs/22: two spawned inside each other)
 local BRAKE = 14 -- studs/s^2: 26 studs/s stops in 24 studs, inside RoadNet.stopFor's 40 look-ahead
 local UTURN = 12 -- studs: a dead-end turn-round starts this far before the road end (stays on the road)
 -- the stock walk clip covers 6.4 studs/s at 1x for a HipHeight 2 rig (the default Animate script's walk rate)
@@ -565,6 +566,13 @@ function AmbientController.Start()
 					break
 				end
 				g = ground(Plan.sample(pavements[ri], s), 8)
+				-- never inside another person: walkers and static spots both count
+				for _, other in movers do
+					g = if g and flatDist(other.root.Position, g) > WALKER_GAP then g else nil
+				end
+				for _, other in statics do
+					g = if g and flatDist(other.root.Position, g) > WALKER_GAP then g else nil
+				end
 				if g then
 					break
 				end

@@ -38,6 +38,9 @@ SanctuaryService.Priority = 64
 local GOOD_GRADES = { Gold = true, Silver = true, Bronze = true }
 local POLL_SECONDS = 0.5
 local TRACK_LIFETIME = 600 -- s: forget an offer that never became an operation
+local SCENE_SCALE = 1.35 -- the call's animal, over the built rig
+local NET_COLOR = Color3.fromRGB(200, 222, 64) -- ghost-net green, bright against the teal sea
+local NET_FLOAT = Color3.fromRGB(255, 112, 32)
 
 type Tracked = {
 	species: string,
@@ -159,7 +162,22 @@ local function dressScene(opId: string, t: Tracked): boolean
 		return false
 	end
 	animal.Name = "Wildlife"
-	WildlifeRig.entangle(animal, species.verb)
+	-- docs/22: the call reads at 40 studs: a bright net with orange floats (named Entanglement, so they drop with
+	-- it once aboard) and a bigger animal
+	local net = WildlifeRig.entangle(animal, species.verb)
+	if net and species.verb == "Cut" then
+		net.Color, net.Transparency = NET_COLOR, 0
+		for i = 0, 2 do
+			local a = i * 2 * math.pi / 3
+			local offset = CFrame.new(math.cos(a) * 1.9, 0.25, math.sin(a) * 1.5)
+			local float =
+				WildlifeRig.attach(animal, "Entanglement", Vector3.one * 0.7, offset, NET_FLOAT)
+			if float then
+				float.Shape = Enum.PartType.Ball
+			end
+		end
+	end
+	WildlifeRig.scale(animal, SCENE_SCALE)
 	animal.Parent = victim
 	victim:SetAttribute("Wildlife", t.species)
 	victim:SetAttribute("WildlifeRare", t.rare)

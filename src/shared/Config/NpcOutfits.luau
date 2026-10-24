@@ -96,7 +96,6 @@ local ID = {
 	cargoBrown = 6984740059, -- layered pants "Cargo Pants - Brown" (Roblox)
 	sweatsGray = 7192664790, -- layered pants "Casual Sweats - Gray" (Roblox)
 	hoodedGray = 8516620262, -- layered jacket "Hooded Jacket - Gray" (Roblox)
-	zipHoodieTeal = 8648389231, -- layered jacket "Zip Hoodie - Teal" (Roblox)
 	parkaBrown = 8648397446, -- layered jacket "Parka - Brown" (Roblox)
 	denimJacket = 8516609675, -- layered jacket "Denim Jacket - Light Wash" (Roblox)
 	knitBeige = 6984769289, -- layered sweater "Knit Sweater - Beige" (Roblox)
@@ -303,9 +302,9 @@ NpcOutfits.Roles = {
 			scale = WOMAN,
 		}),
 		outfit({
-			name = "Passenger_Hoodie",
+			name = "Passenger_Breton", -- the teal zip hoodie read as a garish, blocky torso (docs/22)
 			layers = {
-				{ id = ID.zipHoodieTeal, kind = "Jacket" },
+				{ id = ID.teeStriped, kind = "TShirt" },
 				{ id = ID.cargoBrown, kind = "Pants" },
 			},
 			front = { ID.ferryLifejacket },

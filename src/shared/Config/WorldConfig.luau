@@ -827,7 +827,7 @@ local WorldConfig = {
 		{
 			id = "StationYard",
 			kind = "VehicleSpawn",
-			position = Vector3.new(-260, 4, -52),
+			position = Vector3.new(-262, 4, -35),
 		},
 		{
 			id = "HavenSandsAmbulance",

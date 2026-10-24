@@ -38,6 +38,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local CarPaint = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CarPaint"))
 local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local CottageLights = require(script.Parent:WaitForChild("CottageLights"))
 local StreetFurniture = require(script.Parent:WaitForChild("StreetFurniture"))
@@ -1197,6 +1198,7 @@ local function parkedCars(
 		end
 		n += 1
 		got.model.Name = `ParkedCar_{n}`
+		CarPaint.apply(got.model, asset, n)
 		table.insert(carsOk, { pos = got.pos, r = 8 })
 		table.insert(block, { pos = got.pos, r = 8 })
 		return true
