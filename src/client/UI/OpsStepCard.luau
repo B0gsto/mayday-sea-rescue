@@ -1,37 +1,27 @@
 --!strict
 -- OpsStepCard: the running operation as a slim objective strip (Layout "objective" region, top
--- left): a Glyph disc and one or two words (docs/16 K4). Every op runs radio_ack -> launch ->
--- auto_board -> transport (shared/Ops/Definitions/SimpleSteps), so there are three looks:
---   call icon + "Go"    answer and get aboard (tasking, launch)
+-- left): a Glyph disc, one word and the distance (docs/20 rule 1). It shows the world marker's goal
+-- (MapController.GetObjective, fed each frame by UI/Waypoint through goal()), so the two never disagree:
+--   boat + "Go"         get on your craft
 --   call icon + "1/3"   pick them up: survivors picked up / survivors in the call
 --   home + "Home"       bring them home
--- The call icon and colour are the world marker's (OpsTaskingCard.KIND), so both switch together.
--- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change. Under the
--- word, the distance to the objective (UI/Waypoint feeds distance()).
+-- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change.
 local TweenService = game:GetService("TweenService")
 
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
-local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 
 export type StepCard = {
 	update: (s: { [string]: any }) -> (),
 	hide: () -> (),
-	distance: (text: string?) -> (),
+	goal: (label: string?, glyph: string?, color: Color3?, distance: string?) -> (),
 }
 
 local RED = Color3.fromHex("E8332A")
-local GREEN = Color3.fromHex("2FA866")
 
--- step id -> glyph, disc colour, text ("count" = picked up / total; glyph "call" = the call's icon)
-local LOOK: { [string]: { glyph: string, color: Color3, text: string } } = {
-	tasking = { glyph = "call", color = RED, text = "Go" },
-	launch = { glyph = "call", color = RED, text = "Go" },
-	recovery = { glyph = "call", color = RED, text = "count" },
-	transport = { glyph = "home", color = GREEN, text = "Home" },
-}
--- the ferry's own step ids
-LOOK.relay, LOOK.pickup, LOOK.movement = LOOK.tasking, LOOK.recovery, LOOK.transport
+-- the goal's label (MapController.GetObjective) -> the one word ("count" = picked up / total)
+local WORD: { [string]: string } =
+	{ Craft = "Go", Casualty = "count", Vessel = "count", ["Drop-off"] = "Home" }
 local TAKEOVER = { glyph = "boat", color = RED, text = "Too slow" }
 
 -- Text-only twins for mechanic panels (Mechanics/PIW/Step headers).
@@ -131,52 +121,54 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 		end
 	end
 
+	local state: { [string]: any }? = nil -- the running op (nil once it ends)
+	local function show(glyph: string, color: Color3, text: string)
+		if not body.Visible then
+			body.Visible = true
+			popIn(body, 0.7)
+		end
+		if glyph ~= shown.glyph then
+			Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
+			popIn(disc, 1.35)
+		elseif text ~= shown.text then
+			popIn(disc, 1.2) -- someone climbed aboard
+		end
+		disc.BackgroundColor3 = color
+		word.Text = text
+		shown.glyph, shown.text = glyph, text
+	end
+	local function distance(text: string?)
+		local has = text ~= nil
+		if range.Visible ~= has then
+			range.Visible = has
+			-- the word moves up to make room
+			word.Size = UDim2.new(1, -(DISC + 26), if has then 0 else 1, if has then 38 else 0)
+		end
+		range.Text = text or ""
+	end
+
 	local card: StepCard
 	card = {
 		update = function(s: { [string]: any })
-			local mine: { [string]: any }? = nil
-			for _, c in s.current or {} do
-				if c.trackId == s.myTrack then
-					mine = c
-				end
+			state = s
+			if s.takeover then
+				show(TAKEOVER.glyph, TAKEOVER.color, TAKEOVER.text)
+				distance(nil)
 			end
-			local look = if s.takeover then TAKEOVER elseif mine then LOOK[mine.id] else nil
-			if not look then
-				return -- between steps (or an unknown step): keep the last look
-			end
-			local text = if look.text == "count" then count(s) else look.text
-			local kind = OpsTaskingCard.KIND[s.kind or ""]
-			local glyph, color = look.glyph, look.color
-			if glyph == "call" then
-				glyph, color =
-					if kind then kind.icon else "swimmer", if kind then kind.color else RED
-			end
-			if not body.Visible then
-				body.Visible = true
-				popIn(body, 0.7)
-			end
-			if glyph ~= shown.glyph then
-				Glyph.draw(glyph, icon, Color3.new(1, 1, 1))
-				disc.BackgroundColor3 = color
-				popIn(disc, 1.35)
-			elseif text ~= shown.text then
-				popIn(disc, 1.2) -- someone climbed aboard
-			end
-			word.Text = text
-			shown.glyph, shown.text = glyph, text
 		end,
 		hide = function()
+			state = nil
 			body.Visible = false
 			shown.glyph, shown.text = "", ""
 		end,
-		distance = function(text: string?)
-			local has = text ~= nil
-			if range.Visible ~= has then
-				range.Visible = has
-				-- the word moves up to make room
-				word.Size = UDim2.new(1, -(DISC + 26), if has then 0 else 1, if has then 38 else 0)
+		goal = function(label: string?, glyph: string?, color: Color3?, dist: string?)
+			local w = WORD[label or ""]
+			local s = state
+			if not (s and w and glyph and color) or s.takeover then
+				return -- no call, or between goals: keep the last look
 			end
-			range.Text = text or ""
+			show(glyph, color, if w == "count" then count(s) else w)
+			distance(dist)
 		end,
 	}
 	return card
