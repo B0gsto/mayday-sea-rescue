@@ -226,7 +226,8 @@ POINTS = [
     {"id": "StationSlipway", "kind": "Launch", "pos": (-165, 2, 30)},
     {"id": "HavenSandsSlipway", "kind": "Launch", "pos": (1015, None, 300)},
     {"id": "HavenSandsCarPark", "kind": "VehicleSpawn", "pos": (880, None, 115)},
-    {"id": "StationYard", "kind": "VehicleSpawn", "pos": (-260, 4, -52)},
+    # Harbour Road outside the yard, its sign post on the footway (z -52 is the yard's south fence: cars clipped it)
+    {"id": "StationYard", "kind": "VehicleSpawn", "pos": (-262, 4, -35)},
     {"id": "HavenSandsAmbulance", "kind": "Handover", "pos": (850, None, 95)},
     {"id": "HavenSandsTower", "kind": "LifeguardTower", "pos": (1010, None, 250)},
     {"id": "HavenSandsBeach", "kind": "Beach", "pos": (1000, None, 370)},

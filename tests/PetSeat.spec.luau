@@ -33,8 +33,8 @@ return function(t)
 
 	t.test("a land vehicle carries the pet on the rear of its roof", function()
 		local seat = PetSeat.landSeat(Vector3.new(6, 6, 16))
-		t.expect(seat.Position.Y).toBe(3) -- just above the bounding box
-		t.expect(seat.Position.Z).toBe(4) -- rear quarter
+		t.expect(seat.Position.Y).toBe(3 + PetSeat.LAND_LIFT) -- clear of the rack kit
+		t.expect(seat.Position.Z).toBeCloseTo(1.6, 1e-6) -- mid-roof, a little aft
 		t.expect(seat.Position.X).toBe(0)
 	end)
 

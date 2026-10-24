@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local CarPaint = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CarPaint"))
 
 local TrafficArtService = {}
 
@@ -25,7 +26,12 @@ function TrafficArtService.Start()
 			end
 			m.Name = asset
 			m:SetAttribute("Parts", parts)
-			m.Parent = folder
+			-- one template per paint: AmbientController picks a template by seed, so the traffic mixes colours
+			for k = 1, #(if string.find(asset, "_02", 1, true) then CarPaint.RED else CarPaint.LIGHT) do
+				local painted = if k == 1 then m else m:Clone()
+				CarPaint.apply(painted, asset, k - 1)
+				painted.Parent = folder
+			end
 		end
 	end
 	folder.Parent = ReplicatedStorage -- parented once complete

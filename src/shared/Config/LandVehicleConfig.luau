@@ -630,7 +630,7 @@ LandVehicleConfig.SpawnPoints = {
 		displayName = "Station yard",
 		-- TODO(WorldConfig): west of the station building, facing the gate onto Harbour Road
 		cframe = CFrame.lookAt(Vector3.new(-196, 4, -74), Vector3.new(-196, 4, 0)),
-		step = Vector3.new(-10, 0, 0),
+		step = Vector3.new(0, 0, 16), -- queued nose to tail down the lane: a sideways step ran into the yard fence
 		bays = 4,
 		vehicles = { "LifeguardPickup", "CoastguardResponse", "HarbourGT", "LighthouseCruiser" },
 		trailers = false,
@@ -638,8 +638,9 @@ LandVehicleConfig.SpawnPoints = {
 	{
 		id = "Boatyard",
 		displayName = "Boatyard",
-		-- TODO(WorldConfig): on the quay east of the dock, facing east toward Haven Sands slipway
-		cframe = CFrame.lookAt(Vector3.new(-20, 4, -8), Vector3.new(100, 4, -8)),
+		-- TODO(WorldConfig): Harbour Road by the Chandlery, facing east toward Haven Sands slipway (-20, -8 is under
+		-- the Harbourmaster: rigs spawned on its roof); the sign post lands on the footway
+		cframe = CFrame.lookAt(Vector3.new(-40, 4, -31), Vector3.new(100, 4, -31)),
 		step = Vector3.new(0, 0, 0),
 		bays = 1,
 		vehicles = { "CoastguardResponse" },

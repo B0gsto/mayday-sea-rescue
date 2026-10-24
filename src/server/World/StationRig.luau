@@ -36,7 +36,16 @@ local FLOOD = { brightness = 2.2, range = 48, angle = 75, tilt = 55 } -- tilt: d
 local WASH = { brightness = 0.9, range = 30, angle = 80, out = 0.3 } -- out: outward lean of the beam off the wall
 local SIGN = { brightness = 1.4, range = 14, angle = 60 }
 -- hall lifeboat on M_Veh_BoatTrailer_RIB (studs, trailer frame): keel on ATT_Cradle's bed height, bow at ATT_BowEye
-local HALL_BOAT = { cradleY = 2.905, bowZ = 6.2, shift = 2.5 }
+-- cradleY: the keel on the keel rollers (ATT_Cradle sits 0.45 above them, so the hull floated over the trailer)
+local HALL_BOAT = { cradleY = 2.455, bowZ = 6.2, shift = 2.5 }
+-- the hall's inside faces in ATT_BoatHall's frame (studs; -Z seaward to the bay door, M_Bld_Station Collision_*):
+-- side walls at x0 / x1, end walls at -z / +z, the bay door gap +-door, the back door gap backDoor, dado height
+local HALL =
+	{ x0 = -12.75, x1 = 12, z = 22.8, door = 9, backDoor = { 5.25, 8.25 }, dado = 3.9, lane = 5.5 }
+local HALL_FLOOR = Color3.fromRGB(92, 102, 106) -- painted concrete
+local HALL_WALL = Color3.fromRGB(232, 228, 214) -- painted block
+local HALL_BAND = Color3.fromRGB(30, 48, 86) -- navy
+local HALL_LINE = Color3.fromRGB(236, 190, 30)
 
 local active: { [Model]: () -> () } = {}
 
@@ -202,6 +211,84 @@ function StationRig.apply(shell: Model): () -> ()
 	-- as the boathouse (static display, collides; launches still go from the BoatDesk and the slipway)
 	local hall = marker(shell, "ATT_BoatHall")
 	if hall then
+		-- docs/22: a painted floor and a painted-block dado with a navy band over the hall's bare stone (Plaster and
+		-- SmoothPlastic: the MaterialService terrain remap leaves them alone), yellow lines either side of the boat
+		local frame = CFrame.lookAt(hall.WorldPosition, hall.WorldPosition + seaward)
+		local function panel(
+			name: string,
+			size: Vector3,
+			at: Vector3,
+			color: Color3,
+			material: Enum.Material
+		)
+			local p = Instance.new("Part")
+			p.Name = "Rig_Hall" .. name
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
+			p.Size = size
+			p.CFrame = frame * CFrame.new(at)
+			p.Color = color
+			p.Material = material
+			p:SetAttribute(RIG_ATTR, true)
+			p.Parent = shell.Parent
+			table.insert(created, p)
+		end
+		local H = HALL
+		local midX, w = (H.x0 + H.x1) / 2, H.x1 - H.x0
+		panel(
+			"Floor",
+			Vector3.new(w, 0.2, H.z * 2),
+			Vector3.new(midX, -0.05, 0),
+			HALL_FLOOR,
+			Enum.Material.Plaster
+		)
+		for _, x in { -H.lane, H.lane } do
+			panel(
+				"Line",
+				Vector3.new(0.3, 0.02, H.z * 2 - 2),
+				Vector3.new(x, 0.06, 0),
+				HALL_LINE,
+				Enum.Material.SmoothPlastic
+			)
+		end
+		-- wall runs (local X / Z spans) with the door gaps left open
+		local runs: { any } = {
+			{ x = H.x0, z0 = -H.z, z1 = H.z },
+			{ x = H.x1, z0 = -H.z, z1 = H.z },
+			{ z = -H.z, x0 = H.x0, x1 = -H.door },
+			{ z = -H.z, x0 = H.door, x1 = H.x1 },
+			{ z = H.z, x0 = H.x0, x1 = H.backDoor[1] },
+			{ z = H.z, x0 = H.backDoor[2], x1 = H.x1 },
+		}
+		local bands = {
+			{
+				name = "Dado",
+				y = 0,
+				h = H.dado,
+				color = HALL_WALL,
+				material = Enum.Material.Plaster,
+			},
+			{
+				name = "Band",
+				y = H.dado,
+				h = 0.35,
+				color = HALL_BAND,
+				material = Enum.Material.SmoothPlastic,
+			},
+		}
+		for _, r in runs do
+			for _, b in bands do
+				local y = b.y + b.h / 2
+				if r.x then
+					local inset = r.x - math.sign(r.x) * 0.15
+					local at = Vector3.new(inset, y, (r.z0 + r.z1) / 2)
+					panel(b.name, Vector3.new(0.2, b.h, r.z1 - r.z0), at, b.color, b.material)
+				else
+					local inset = r.z - math.sign(r.z) * 0.15
+					local at = Vector3.new((r.x0 + r.x1) / 2, y, inset)
+					panel(b.name, Vector3.new(r.x1 - r.x0, b.h, 0.2), at, b.color, b.material)
+				end
+			end
+		end
 		task.spawn(function()
 			local trailer = AssetLoader.cloneStatic("M_Veh_BoatTrailer_RIB", "LOD0")
 			local boat = AssetLoader.cloneStatic("M_Veh_RIB", "LOD0")
