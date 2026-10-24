@@ -5,7 +5,8 @@
 -- uint8 material indices on a `cell`-stud grid) and writes Workspace.Terrain with WriteVoxels, 64 x 64 voxel
 -- columns per call, as a shell (shellLand studs under land, shellSea under the seabed, extended down to the lowest
 -- neighbour so cliffs have no holes). No Terrain water anywhere.
--- ARGS.mode: "write" (ARGS.row0..row1 tile rows; row0 == 0 clears first), "arch" (ARGS.arch), "export"
+-- ARGS.mode: "write" (ARGS.row0..row1 tile rows of ARGS.window or the main grid; main row0 == 0 clears first),
+-- "arch" (ARGS.arch), "export"
 -- (ARGS.offset, ARGS.length: base64 slice of SerializationService:SerializeInstancesAsync({Terrain})), "probe".
 local ARGS = (ARGS :: any) or { mode = "probe" }
 
@@ -18,12 +19,12 @@ for i = 1, 64 do
 	LUT[string.byte(ALPHABET, i)] = i - 1
 end
 
-local function decode(prefix: string): buffer
-	local size = data:GetAttribute(prefix .. "Bytes")
+local function decode(src: Instance, prefix: string): buffer
+	local size = src:GetAttribute(prefix .. "Bytes")
 	local out = buffer.create(size)
 	local o = 0
-	for k = 1, data:GetAttribute(prefix .. "Count") do
-		local s = (data:FindFirstChild(prefix .. k) :: StringValue).Value
+	for k = 1, src:GetAttribute(prefix .. "Count") do
+		local s = (src:FindFirstChild(prefix .. k) :: StringValue).Value
 		for i = 1, #s, 4 do
 			local a, b, c, d = string.byte(s, i, i + 3)
 			local v = LUT[a] * 262144 + LUT[b] * 4096 + LUT[c] * 64 + LUT[d]
@@ -62,9 +63,12 @@ end
 
 if ARGS.mode == "write" then
 	assert(data, "no ServerStorage.__WorldTerrain (open the work place from make_work_place.luau)")
-	local hb, mb = decode("H"), decode("M")
-	local nx = data:GetAttribute("nx")
-	local ox, oz = data:GetAttribute("originX"), data:GetAttribute("originZ")
+	-- ARGS.window: an archipelago island window (docs/21), staged as a child Folder; nil = the main grid
+	local src = if ARGS.window then data:FindFirstChild(ARGS.window) else data
+	assert(src, `no staged window {ARGS.window}`)
+	local hb, mb = decode(src, "H"), decode(src, "M")
+	local nx, nz = src:GetAttribute("nx"), src:GetAttribute("nz")
+	local ox, oz = src:GetAttribute("originX"), src:GetAttribute("originZ")
 	local cell, scale = data:GetAttribute("cell"), data:GetAttribute("heightScale")
 	local shellLand, shellSea = data:GetAttribute("shellLand"), data:GetAttribute("shellSea")
 	local mats = {}
@@ -80,11 +84,11 @@ if ARGS.mode == "write" then
 		[M.Slate] = M.Slate,
 		[M.Mud] = M.Mud,
 	}
-	local NV = nx - 1 -- voxel columns per side
+	local NV, NVZ = nx - 1, nz - 1 -- voxel columns along x and z
 	local TILE = 64
 	local function colH(i: number, j: number): number
 		i = math.clamp(i, 0, NV - 1)
-		j = math.clamp(j, 0, NV - 1)
+		j = math.clamp(j, 0, NVZ - 1)
 		local b = (j * nx + i) * 2
 		local r = (j + 1) * nx * 2 + i * 2
 		return (
@@ -94,7 +98,7 @@ if ARGS.mode == "write" then
 			+ buffer.readi16(hb, r + 2)
 		) / (4 * scale)
 	end
-	if ARGS.row0 == 0 then
+	if ARGS.row0 == 0 and not ARGS.window then
 		Terrain:Clear()
 	end
 	local voxels = 0

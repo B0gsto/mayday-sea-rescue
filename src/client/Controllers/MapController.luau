@@ -139,15 +139,16 @@ local function button(name: string, parent: Instance, str: string, size: UDim2):
 end
 
 local function makeTiles(parent: Instance)
-	for r = 1, 2 do
-		for c = 1, 2 do
+	local n = #MapConfig.Tiles -- n x n tiles, row-major from the north-west
+	for r = 1, n do
+		for c = 1, n do
 			local t = Instance.new("ImageLabel")
 			t.Name = `Tile{r}{c}`
 			t.BackgroundTransparency = 1
 			t.BorderSizePixel = 0
 			t.Image = MapConfig.Tiles[r][c]
-			t.Size = UDim2.new(0.5, 1, 0.5, 1) -- 1 px overlap hides seams
-			t.Position = UDim2.fromScale((c - 1) * 0.5, (r - 1) * 0.5)
+			t.Size = UDim2.new(1 / n, 1, 1 / n, 1) -- 1 px overlap hides seams
+			t.Position = UDim2.fromScale((c - 1) / n, (r - 1) / n)
 			t.Parent = parent
 		end
 	end

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Render the Gale Isles top-down map (the GTA-style minimap / full map texture) from the terrain bake.
 
-usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 2048] [--preview PATH] [--labels]
+usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 4096] [--preview PATH] [--labels]
 
-Inputs (read only): map/generated/terrain.json + terrain_height.i16 + terrain_material.u8 (gen_terrain.py),
+Inputs (read only): map/generated/terrain.json + the main and island-window height / material grids (gen_terrain.py),
 src/shared/Config/WorldConfig.luau (road splines, car parks), the breakwater arms from src/server/World/Harbour.luau.
 
-World -> image (north up, the same frame as the bake: rows are +Z = south):
-    u = (x - originX) / extent,  v = (z - originZ) / extent,  extent = (nx - 1) * cell  (5120 studs)
-    pixel = (u * size, v * size)
+World -> image (north up, the same frame as the bake: rows are +Z = south), the whole archipelago canvas:
+    u = (x + 7168) / 14336,  v = (z + 7168) / 14336
+    pixel = (u * size, v * size); cut into 4 x 4 tiles <out>_r{row}c{col}.png
 The transform is printed and must match src/shared/Config/MapConfig.luau (Origin, Extent).
 
 Look: sea depth shading (shallow aqua to deep navy) with depth contours and a surf line, the seabed showing
@@ -29,7 +29,10 @@ def arg(name, default):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
 
 
-SIZE = int(arg("--size", "2048"))
+SIZE = int(arg("--size", "4096"))
+CANVAS = 7168  # tools/world/layout.py MAP_CANVAS: the map covers x, z in +-CANVAS
+FLOOR_Y = -165  # layout.SEABED_FLOOR_Y: the deep sea between the bake windows
+TILES = 4  # TILES x TILES images of SIZE / TILES px (MapConfig.Tiles)
 OUT = os.path.join(ROOT, arg("--out", "art/map/gale_isles_map.png"))
 
 MAT_RGB = {  # land colours by terrain material (Roblox-ish, slightly desaturated for a map)
@@ -150,20 +153,48 @@ def font(size, bold=True, italic=False):
     return ImageFont.load_default()
 
 
-def main():
-    meta, h, mat = load_terrain()
+def composite(meta, S):
+    """Every bake window (main + the docs/21 island windows) resampled onto the +-CANVAS map: heights bilinear,
+    materials nearest. Between windows the deep sea is the flat floor; window sea fades into it over ~800 studs
+    (abutting windows do not fade), so no window edge shows as a line."""
     names = meta["materials"]
-    ox, oz, cell = meta["originX"], meta["originZ"], meta["cell"]
-    extent = (meta["nx"] - 1) * cell
+    cell, stud = meta["cell"], 2 * CANVAS / S
+    H = np.full((S, S), FLOOR_Y, np.float32)
+    M = np.full((S, S), names.index("Salt"), np.uint8)
+    inside = np.zeros((S, S), np.uint8)
+    pc = -CANVAS + (np.arange(S) + 0.5) * stud  # pixel centres (x along columns, z along rows)
+    for g in [meta] + meta.get("windows", []):
+        nx, nz = g["nx"], g["nz"]
+        h = np.fromfile(os.path.join(GEN, g["height"]), "<i2").reshape(nz, nx) / meta["heightScale"]
+        m = np.fromfile(os.path.join(GEN, g["material"]), "u1").reshape(nz, nx)
+        u, v = (pc - g["originX"]) / cell, (pc - g["originZ"]) / cell
+        cols, rows = np.where((u >= 0) & (u <= nx - 1))[0], np.where((v >= 0) & (v <= nz - 1))[0]
+        u, v = u[cols], v[rows]
+        i, j = np.clip(u.astype(int), 0, nx - 2), np.clip(v.astype(int), 0, nz - 2)
+        fu, fv = (u - i)[None, :], (v - j)[:, None]
+        hh = (h[np.ix_(j, i)] * (1 - fu) * (1 - fv) + h[np.ix_(j, i + 1)] * fu * (1 - fv)
+              + h[np.ix_(j + 1, i)] * (1 - fu) * fv + h[np.ix_(j + 1, i + 1)] * fu * fv)
+        H[np.ix_(rows, cols)] = hh
+        M[np.ix_(rows, cols)] = m[np.ix_(np.round(v).astype(int), np.round(u).astype(int))]
+        inside[np.ix_(rows, cols)] = 255
+    blur = np.array(Image.fromarray(inside).filter(ImageFilter.GaussianBlur(400 / stud)), np.float32) / 255
+    w = np.clip(2 * blur - 1, 0, 1) * (inside > 0)
+    H = np.where(H < 0, FLOOR_Y + (H - FLOOR_Y) * w, H).astype(np.float32)
+    return H, M
+
+
+def main():
+    meta = json.load(open(os.path.join(GEN, "terrain.json")))
+    names = meta["materials"]
+    ox = oz = -CANVAS
+    extent = 2 * CANVAS
     S = SIZE
     px_per_stud = S / extent
 
     def to_px(x, z):
         return ((x - ox) / extent * S, (z - oz) / extent * S)
 
-    # resample to the output grid: heights bilinear, materials nearest
-    H = np.array(Image.fromarray(h).resize((S, S), Image.BILINEAR), np.float32)
-    M = np.array(Image.fromarray(mat).resize((S, S), Image.NEAREST))
+    H, M = composite(meta, S)
     land = H > 0.15
 
     # relief (GTA-like, muted): a multi-directional hillshade (key light from the north-west, softer
@@ -306,11 +337,11 @@ def main():
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     img.save(OUT, optimize=True)
-    # Roblox serves images at up to 1024 px, so the full map is also cut into 2 x 2 tiles of 1024 px
-    # (MapConfig.Tiles, row-major from the north-west) to keep 2.5 studs per pixel in game.
-    t = S // 2
-    for r in range(2):
-        for c in range(2):
+    # Roblox serves images at up to 1024 px, so the full map is also cut into TILES x TILES tiles of 1024 px
+    # (MapConfig.Tiles, row-major from the north-west) to keep 3.5 studs per pixel in game.
+    t = S // TILES
+    for r in range(TILES):
+        for c in range(TILES):
             img.crop((c * t, r * t, (c + 1) * t, (r + 1) * t)).save(OUT.replace(".png", f"_r{r}c{c}.png"), optimize=True)
     prev = arg("--preview", None)
     if prev:

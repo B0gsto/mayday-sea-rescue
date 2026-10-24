@@ -8,7 +8,7 @@ as before WP-3: GameConfig.Zones, CallTypes.SpawnZones fallbacks and fixed sites
 WildlifeController seal haul-outs, MapConfig blips, LandVehicleConfig's Haven Head spawn, layout.POINTS (vehicle
 spawns, handovers, the tower), the town platform (flat at Y 4), the harbour basin, every road centre line on land and
 the Haven Sands beach (sand behind the waterline, sea in front)."""
-import os, sys
+import json, math, os, sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -40,6 +40,74 @@ def at(x, z):
     return float(H[int(round((z + L.HALF_EXTENT) / L.CELL)), int(round((x + L.HALF_EXTENT) / L.CELL))])
 
 
+def check_islands(fails):
+    """docs/21 archipelago: windows disjoint and on the tile grid, every island's landmark / stamp / landing on land,
+    its dock in water a boat floats in (<= -4), every pad on land, the Mount window meeting the main bake at the
+    seam, the Mount causeway shallow all the way and the Door's channel open. Returns the number of points checked."""
+    meta = json.load(open(os.path.join(REPO, "map/generated/terrain.json")))
+    grids = {}
+    for w in meta.get("windows", []):
+        g = np.fromfile(os.path.join(REPO, "map/generated", w["height"]), "<i2").reshape(w["nz"], w["nx"]) / 8.0
+        grids[w["id"]] = (w["originX"], w["originZ"], g)
+    if sorted(grids) != sorted(i["id"] for i in L.ISLAND_WINDOWS):
+        fails.append(f"bake windows {sorted(grids)} do not match layout.ISLAND_WINDOWS (re-run gen_terrain.py)")
+        return 0
+    boxes = [("Main", (-L.HALF_EXTENT, -L.HALF_EXTENT, L.HALF_EXTENT, L.HALF_EXTENT))] \
+        + [(i["id"], i["window"]) for i in L.ISLAND_WINDOWS]
+    for k, (a, (ax0, az0, ax1, az1)) in enumerate(boxes):
+        if any(v % 256 for v in (ax0, az0, ax1, az1)):
+            fails.append(f"window {a} is off the 256-stud tile grid")
+        if max(abs(ax0), abs(az0), abs(ax1), abs(az1)) > L.MAP_CANVAS:
+            fails.append(f"window {a} leaves the map canvas")
+        for b, (bx0, bz0, bx1, bz1) in boxes[k + 1:]:
+            if ax0 < bx1 and bx0 < ax1 and az0 < bz1 and bz0 < az1:
+                fails.append(f"windows {a} and {b} overlap")
+
+    def y(isl, x, z):
+        if not isl["window"]:
+            return at(x, z)
+        ox, oz, g = grids[isl["id"]]
+        return float(g[int(round((z - oz) / L.CELL)), int(round((x - ox) / L.CELL))])
+
+    n = 0
+    for isl in L.ARCHIPELAGO:
+        for key in ("landmark", "stamp", "landing"):
+            if key == "landmark" and any(a["center"] == isl["landmark"] for a in L.ARCHES):
+                continue  # the Door stands over its own water channel (checked below)
+            n += 1
+            if y(isl, *isl[key]) <= 0.5:
+                fails.append(f"{isl['id']} {key} {isl[key]} should be land, bake Y {y(isl, *isl[key]):.1f}")
+        n += 1
+        if y(isl, *isl["dock"]) > -4:
+            fails.append(f"{isl['id']} dock {isl['dock']} needs water >= 4 studs deep, bake Y {y(isl, *isl['dock']):.1f}")
+        if isl["window"] and math.hypot(isl["center"][0], isl["center"][1]) + isl["radius"] > L.MAP_RADIUS:
+            fails.append(f"{isl['id']} reaches past MAP_RADIUS")
+        for px0, pz0, px1, pz1, _ in isl.get("pads", []):
+            n += 1
+            if min(y(isl, px, pz) for px in (px0, px1) for pz in (pz0, pz1)) <= 1:
+                fails.append(f"{isl['id']} pad ({px0}, {pz0}, {px1}, {pz1}) runs into the sea")
+    mount = next(i for i in L.ISLAND_WINDOWS if i["id"] == "StElowensMount")
+    ox, oz, g = grids[mount["id"]]
+    seam = g[-1, :] - H[0, int((ox + L.HALF_EXTENT) / L.CELL):int((ox + L.HALF_EXTENT) / L.CELL) + g.shape[1]]
+    cx = ox + L.CELL * np.arange(g.shape[1])
+    seam[np.abs(cx - L.CAUSEWAY["to"][0]) < 2 * L.CAUSEWAY["width"]] = 0  # the causeway spit steps up on purpose
+    if np.abs(seam).max() > 1:
+        fails.append(f"Mount window seam steps {np.abs(seam).max():.1f} studs from the main bake")
+    (ax, az), (bx, bz) = L.CAUSEWAY["from"], L.CAUSEWAY["to"]
+    for t in np.linspace(0, 1, 40):
+        x, z = ax + t * (bx - ax), az + t * (bz - az)
+        cy = at(x, z) if z >= -L.HALF_EXTENT else y(mount, x, z)
+        floor = -40 if z >= -L.HALF_EXTENT else -8  # main window: unchanged seabed under C4's walkway Parts
+        if cy < floor:
+            fails.append(f"causeway at ({x:.0f}, {z:.0f}) drops to Y {cy:.1f}")
+            break
+    arches = next(i for i in L.ISLAND_WINDOWS if i["id"] == "TheArches")
+    for a in L.ARCHES:
+        if y(arches, *a["center"]) > -4:
+            fails.append(f"arch {a['id']} channel is not open water: bake Y {y(arches, *a['center']):.1f}")
+    return n
+
+
 def main():
     fails = []
     for name, x, z, want in POINTS:
@@ -69,9 +137,10 @@ def main():
         bx, bz = x0 + t * (x1 - x0), z0 + t * (z1 - z0)
         if at(bx - 150 * nx, bz - 150 * nz) <= 0 or at(bx + 150 * nx, bz + 150 * nz) >= 0:
             fails.append(f"Haven Sands beach broken near ({bx:.0f}, {bz:.0f})")
+    n_isl = check_islands(fails)
     for f in fails:
         print("FAIL", f)
-    print(f"check_zones: {len(POINTS)} points, platform, basin, {len(L.ROADS)} roads, beach: "
+    print(f"check_zones: {len(POINTS)} points, platform, basin, {len(L.ROADS)} roads, beach, {n_isl} island points: "
           + ("OK" if not fails else f"{len(fails)} failures"))
     sys.exit(1 if fails else 0)
 

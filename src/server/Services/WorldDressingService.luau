@@ -574,6 +574,7 @@ function WorldDressingService.Start()
 			"SeabedLife",
 			"SkerryLight",
 			"StationYard",
+			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
 		}
 	do
 		local mod = script.Parent.Parent.World:FindFirstChild(name)

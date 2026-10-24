@@ -62,5 +62,84 @@
    "Glacier": 9963,
    "Ice": 1323
   }
- }
+ },
+ "windows": [
+  {
+   "id": "StElowensMount",
+   "originX": -768.0,
+   "originZ": -3840.0,
+   "nx": 321,
+   "nz": 321,
+   "height": "island_StElowensMount_height.i16",
+   "material": "island_StElowensMount_material.u8",
+   "maxY": 213.9,
+   "landFraction": 0.146
+  },
+  {
+   "id": "PuffinIsle",
+   "originX": -3328.0,
+   "originZ": 2816.0,
+   "nx": 385,
+   "nz": 321,
+   "height": "island_PuffinIsle_height.i16",
+   "material": "island_PuffinIsle_material.u8",
+   "maxY": 206.8,
+   "landFraction": 0.264
+  },
+  {
+   "id": "Penwyn",
+   "originX": -6144.0,
+   "originZ": -1536.0,
+   "nx": 641,
+   "nz": 641,
+   "height": "island_Penwyn_height.i16",
+   "material": "island_Penwyn_material.u8",
+   "maxY": 219.7,
+   "landFraction": 0.176
+  },
+  {
+   "id": "WreckReef",
+   "originX": -4864.0,
+   "originZ": 3328.0,
+   "nx": 385,
+   "nz": 449,
+   "height": "island_WreckReef_height.i16",
+   "material": "island_WreckReef_material.u8",
+   "maxY": 34.8,
+   "landFraction": 0.018
+  },
+  {
+   "id": "TheArches",
+   "originX": 4352.0,
+   "originZ": -1024.0,
+   "nx": 449,
+   "nz": 449,
+   "height": "island_TheArches_height.i16",
+   "material": "island_TheArches_material.u8",
+   "maxY": 144.6,
+   "landFraction": 0.071
+  },
+  {
+   "id": "GannetRock",
+   "originX": 2816.0,
+   "originZ": 2816.0,
+   "nx": 321,
+   "nz": 321,
+   "height": "island_GannetRock_height.i16",
+   "material": "island_GannetRock_material.u8",
+   "maxY": 89.3,
+   "landFraction": 0.017
+  },
+  {
+   "id": "MermaidLagoon",
+   "originX": -1024.0,
+   "originZ": 4352.0,
+   "nx": 641,
+   "nz": 641,
+   "height": "island_MermaidLagoon_height.i16",
+   "material": "island_MermaidLagoon_material.u8",
+   "maxY": 35.0,
+   "landFraction": 0.053
+  }
+ ]
 }

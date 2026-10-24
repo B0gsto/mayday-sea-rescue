@@ -101,12 +101,12 @@ def smoothstep(e0, e1, x):
 # ---------------------------------------------------------------- coast distance and kind weights
 
 
-def coast_field(X, Z):
+def coast_field(X, Z, islands=None):
     """Signed distance to the nearest island coast (+ on land), the coast-top height H and kind weights."""
     best_d = np.full(X.shape, -1e9)
     best_H = np.zeros(X.shape)
     best_w = np.zeros((len(L.KINDS),) + X.shape)
-    for poly in L.ISLANDS:
+    for poly in islands or L.ISLANDS:
         n = len(poly)
         dmin = np.full(X.shape, 1e18)
         H = np.zeros(X.shape)
@@ -514,6 +514,108 @@ def bake():
     return xs, h, mat, d
 
 
+def bake_island(isl, main_h):
+    """One archipelago window (layout.ARCHIPELAGO, docs/21 6.1): only the island's own polygons, with the main bake's
+    coast profiles plus gaussian peaks, flat pads, shoals (reef rock or lagoon sand) and the Mount causeway; the
+    seabed ramps to the deep floor at the window edge, or blends into the main bake where the window touches it.
+    Rough massing only: the per-island build modules (src/server/World/Islands) dress it. Returns (xs, zs, h, mat)."""
+    s = L.SEED
+    x0, z0, x1, z1 = isl["window"]
+    xs = np.arange(x0, x1 + 1, L.CELL, dtype=np.float64)
+    zs = np.arange(z0, z1 + 1, L.CELL, dtype=np.float64)
+    X, Z = np.meshgrid(xs, zs)  # rows are z
+    d, H, W = coast_field(X, Z, isl["polys"])
+    wc, wr, wb, wh, wm = W
+    amp = 34 * wc + 24 * wr + 5 * wb + 12 * wm
+    d = d + amp * fbm(X, Z, 220, s + 1) + 0.35 * amp * fbm(X, Z, 60, s + 2)
+    land = d >= 0
+    dl, ds = np.maximum(d, 0), np.maximum(-d, 0)
+
+    # land: the main bake's coast profiles on a smaller island rise, plus the island's hills
+    rise = lambda dd: (40 * (1 - np.exp(-dd / 400)) * (1 + 0.35 * fbm(X, Z, 500, s + 3))  # noqa: E731
+                       + 10 * fbm(X, Z, 200, s + 4) * smoothstep(0, 150, dd))
+    cliff_l = H * smoothstep(0, 14 + 0.2 * H, dl) * (0.92 + 0.16 * ridged(X, Z, 90, s + 5)) + rise(dl)
+    rocky_l = (H + 4) * smoothstep(0, 40 + 0.8 * H, dl) + rise(dl)
+    bw, dw = 50, 60
+    dune_t = np.clip((dl - bw) / dw, 0, 1)
+    dunes = (4 + 6 * (0.5 + 0.5 * fbm(X, Z, 70, s + 6))) * np.sin(np.pi * dune_t) ** 0.8 * (dl > bw)
+    beach_l = np.minimum(dl, bw) / 20 + dunes + 0.9 * rise(np.maximum(dl - bw - dw, 0)) + 1.5 * dune_t
+    harb_l = 4 + rise(np.maximum(dl - 120, 0))
+    mud_l = dl / 90 + 0.5 * rise(dl)
+    peaks = sum(ph * np.exp(-((X - px) ** 2 + (Z - pz) ** 2) / (2 * pr ** 2)) for px, pz, ph, pr in isl["peaks"])
+    h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + peaks * smoothstep(0, 80, dl)
+    h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s)
+
+    # sea: the main shelf, a little steeper (small islands drop off faster). The kind weights are blurred (~100
+    # studs) first: coast_field switches hard between polygons, which left step lines on the seabed between stacks
+    shelf = np.where(ds < 400, ds / 25, np.where(ds < 1000, 16 + (ds - 400) / 15, 56 + (ds - 1000) / 8))
+    sc, sr, sb, sh, sm = (box_blur(w, 12) for w in W)
+    dep = (sc * np.maximum(shelf, np.minimum(ds * 0.6, 45)) + sr * np.maximum(shelf, np.minimum(ds / 4, 25))
+           + sb * shelf + sh * np.maximum(shelf, np.minimum(10 + ds * 0.065, 70)) + sm * ds / 60)
+    dep = dep + 7 * fbm(X, Z, 420, s + 8) * smoothstep(80, 400, ds) + 2.5 * fbm(X, Z, 90, s + 9) * smoothstep(20, 200, ds)
+    h = np.where(land, h_land, -dep)
+
+    feat = np.zeros(X.shape, dtype=np.int8)  # 1 reef rock, 4 causeway sand (materials())
+    for cx, cz, rad, top, rock in isl.get("shoals", []):
+        r = np.hypot(X - cx, Z - cz) * (1 + 0.3 * fbm(X, Z, 120, s + 16))
+        m = smoothstep(rad, rad * 0.4, r)
+        if rock:
+            t = top - 22 * (1 - ridged(X, Z, 70, s + 11) * (0.6 + 0.4 * ridged(X, Z, 25, s + 12))) - 10 * (1 - m)
+        else:
+            t = top - 2.5 * (0.5 + 0.5 * fbm(X, Z, 60, s + 18)) - 6 * (1 - m)
+        up = (t > h) & (m > 0.02) & ~land
+        h = np.where(up, h + (t - h) * smoothstep(0, 0.5, m), h)
+        if rock:
+            feat[up & (m > 0.15)] = 1
+    for px0, pz0, px1, pz1, py in isl["pads"]:
+        inside = (X >= px0) & (X <= px1) & (Z >= pz0) & (Z <= pz1)
+        py = float(h[inside].mean()) if py is None else py
+        e = np.hypot(np.maximum(np.maximum(px0 - X, X - px1), 0), np.maximum(np.maximum(pz0 - Z, Z - pz1), 0))
+        h = h + (py - h) * smoothstep(160, 0, e) * (h > 0)
+    for cx, cz, rad, fy in isl.get("basins", []):
+        m = smoothstep(rad, rad * 0.5, np.hypot(X - cx, Z - cz)) * (h < 1)
+        h = h + (np.minimum(h, fy + 0.8 * fbm(X, Z, 40, s + 15)) - h) * m
+
+    # window edge: down to the deep floor, except a side on the main window's edge, which meets the main bake there
+    he = L.HALF_EXTENT
+    seam = None
+    if z1 == -he and x0 < he and x1 > -he:
+        seam, sd = main_h[0], z1 - Z
+    elif z0 == he and x0 < he and x1 > -he:
+        seam, sd = main_h[-1], Z - z0
+    assert not ((x1 == -he or x0 == he) and z0 < he and z1 > -he), "vertical seams with the main window: not handled"
+    sides = [X - x0, x1 - X] + [v for v, on in ((Z - z0, z0 == he), (z1 - Z, z1 == -he)) if not (on and seam is not None)]
+    h = h + (L.SEABED_FLOOR_Y - h) * smoothstep(260, 0, np.minimum.reduce(sides))
+    if seam is not None:
+        mx = np.clip(np.round((xs + he) / L.CELL).astype(int), 0, len(seam) - 1)
+        h = h + (seam[mx][None, :] - h) * smoothstep(200, 0, sd)
+
+    cw = L.CAUSEWAY  # the Mount causeway: a sand spit just under the sea (C4's walkway Parts sit on it)
+    (ax, az), (bx, bz) = cw["from"], cw["to"]
+    if x0 <= bx <= x1 and z0 <= bz <= z1:
+        cdx, cdz = bx - ax, bz - az
+        t = np.clip(((X - ax) * cdx + (Z - az) * cdz) / (cdx * cdx + cdz * cdz), 0, 1)
+        cd = np.hypot(X - (ax + t * cdx), Z - (az + t * cdz))
+        top = cw["topY"] - 14 * smoothstep(cw["width"] / 2, cw["width"] * 1.5, cd) - 0.6 * fbm(X, Z, 30, s + 19)
+        spit = (top > h) & (cd < cw["width"] * 1.5) & (h < 0)
+        h = np.where(spit, top, h)
+        feat[spit & (cd < cw["width"] / 2)] = 4
+    h = np.maximum(h, L.SEABED_FLOOR_Y)
+
+    mat = materials(X, Z, h, d, W, feat, np.full(X.shape, 1e9), np.zeros(X.shape, np.int8),
+                    np.where(land, gully, 0), np.where(land, outc, 0))
+    # biome accents: guano / chalk streaks on the cliffs, dark wet rock on the reef
+    rockish = (mat == MI["Rock"]) | (mat == MI["Basalt"])
+    # streaks only (ShellGravel is pale: wider cover read as a sand dune from the sea in Studio)
+    streak = fbm(X * 3, Z, 40, s + 900, 3) > {"chalk": 0.3, "guano": 0.25}.get(isl["biome"], 9)
+    mat = np.where((h > 6) & rockish & streak, MI["Limestone"], mat)
+    if isl["biome"] == "guano":  # a dark granite stack, not a turf hump: the whole top is bare rock
+        mat = np.where((h > 6) & ~rockish & (mat != MI["Limestone"]), MI["Rock"], mat)
+    if isl["biome"] == "reef":
+        mat = np.where((h > 0) & rockish, MI["Basalt"], mat)
+    return xs, zs, h, mat.astype(np.uint8)
+
+
 def box_blur(a, r):
     """Mean over a (2r+1)^2 window (edge-clamped), via summed-area tables."""
     k = 2 * r + 1
@@ -899,9 +1001,24 @@ def fmt(n):
     return str(int(n)) if n == int(n) else str(n)
 
 
-def write_worldconfig(h):
+def write_worldconfig(h, wins):
     def y_at(x, z):
         return round(float(sample(h, x, z)), 1)
+
+    def island_y(isl, x, z):  # bake height at (x, z) from the island's window (the main bake for Skerry)
+        if not isl["window"]:
+            return y_at(x, z)
+        wx, wz, wh = wins[isl["id"]]
+        u = np.clip((x - wx[0]) / L.CELL, 0, len(wx) - 1.001)
+        v = np.clip((z - wz[0]) / L.CELL, 0, len(wz) - 1.001)
+        i, j = int(u), int(v)
+        fu, fv = u - i, v - j
+        return round(float(wh[j, i] * (1 - fu) * (1 - fv) + wh[j, i + 1] * fu * (1 - fv) + wh[j + 1, i] * (1 - fu) * fv
+                           + wh[j + 1, i + 1] * fu * fv), 1)
+
+    def ipos(isl, key):
+        x, z = isl[key]
+        return Vec(x, max(island_y(isl, x, z), 0), z)
 
     def pos(p):
         x, y, z = p
@@ -917,9 +1034,22 @@ def write_worldconfig(h):
             road["town"] = r["town"]
         roads.append(road)
     cfg = {
-        "MapRadius": L.MVP_RADIUS,
+        "MapRadius": L.MAP_RADIUS,
         "SeaLevel": 0,
-        "Terrain": {"cell": L.CELL, "halfExtent": L.HALF_EXTENT, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED},
+        "Terrain": {"cell": L.CELL, "halfExtent": L.HALF_EXTENT, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED,
+                    "windows": [{"id": i["id"], "min": Vec(i["window"][0], L.SEABED_FLOOR_Y, i["window"][1]),
+                                 "max": Vec(i["window"][2], 0, i["window"][3])} for i in L.ISLAND_WINDOWS]},
+        # docs/21: one row per explorable island (Great Gale is the home island). landmark / stamp / landing sit on
+        # the bake surface; dock at sea level (a boat's stop, B3's DropOff dock); radius = the island's zone
+        "Islands": [{"id": i["id"], "name": i["name"], "center": Vec(i["center"][0], 0, i["center"][1]),
+                     "radius": i["radius"], "landmark": ipos(i, "landmark"), "stamp": ipos(i, "stamp"),
+                     "landing": ipos(i, "landing"), "dock": Vec(i["dock"][0], 0, i["dock"][1]),
+                     "pads": [{"min": Vec(p[0], 0, p[1]), "max": Vec(p[2], 0, p[3]),
+                               "y": island_y(i, (p[0] + p[2]) / 2, (p[1] + p[3]) / 2)} for p in i.get("pads", [])]}
+                    for i in L.ARCHIPELAGO],
+        "Causeway": {"from": Vec(L.CAUSEWAY["from"][0], L.CAUSEWAY["topY"], L.CAUSEWAY["from"][1]),
+                     "to": Vec(L.CAUSEWAY["to"][0], L.CAUSEWAY["topY"], L.CAUSEWAY["to"][1]),
+                     "width": L.CAUSEWAY["width"]},
         "Roads": roads,
         "Towns": [{"id": t["id"], "name": t["name"], "origin": pos((t["origin"][0], None, t["origin"][1])),
                    "width": t["width"], "footway": t["footway"], "avenues": [a for a, _ in t["avenues"]],
@@ -988,15 +1118,30 @@ def main():
     hq.tofile(os.path.join(out, "terrain_height.i16"))
     mat.astype(np.uint8).tofile(os.path.join(out, "terrain_material.u8"))
     counts = {MATERIALS[i]: int(c) for i, c in enumerate(np.bincount(mat.ravel(), minlength=len(MATERIALS))) if c}
+    # archipelago windows (docs/21 6.1): one small grid per island next to the main one, same format
+    windows, wins = [], {}
+    for isl in L.ISLAND_WINDOWS:
+        wx, wz, wh, wm = bake_island(isl, h)
+        name = f"island_{isl['id']}"
+        np.clip(np.round(wh * 8), -32768, 32767).astype("<i2").tofile(os.path.join(out, name + "_height.i16"))
+        wm.tofile(os.path.join(out, name + "_material.u8"))
+        windows.append({"id": isl["id"], "originX": float(wx[0]), "originZ": float(wz[0]), "nx": int(len(wx)),
+                        "nz": int(len(wz)), "height": name + "_height.i16", "material": name + "_material.u8",
+                        "maxY": round(float(wh.max()), 1), "landFraction": round(float((wh > 0).mean()), 3)})
+        wins[isl["id"]] = (wx, wz, wh)
+        if "--preview" in sys.argv:
+            preview(wh, wm, sys.argv[sys.argv.index("--preview") + 1].replace(".png", f"_{isl['id']}.png"))
+        print(f"baked {isl['id']} {len(wx)}x{len(wz)}, Y {wh.min():.1f}..{wh.max():.1f}, land {windows[-1]['landFraction']}")
     meta = {"generator": "tools/world/gen_terrain.py", "seed": L.SEED, "cell": L.CELL, "originX": float(xs[0]),
             "originZ": float(xs[0]), "nx": int(len(xs)), "nz": int(len(xs)), "heightScale": 8,
             "height": "terrain_height.i16", "material": "terrain_material.u8", "materials": MATERIALS,
             "shellLand": 40, "shellSea": 20,
             "stats": {"minY": round(float(h.min()), 1), "maxY": round(float(h.max()), 1),
-                      "landFraction": round(float((h > 0).mean()), 3), "cells": counts}}
+                      "landFraction": round(float((h > 0).mean()), 3), "cells": counts},
+            "windows": windows}
     with open(os.path.join(out, "terrain.json"), "w") as f:
         json.dump(meta, f, indent=1)
-    wc = write_worldconfig(h)
+    wc = write_worldconfig(h, wins)
     if "--preview" in sys.argv:
         preview(h, mat, sys.argv[sys.argv.index("--preview") + 1])
     print(f"baked {len(xs)}x{len(xs)} @ {L.CELL} studs, Y {h.min():.1f}..{h.max():.1f}, land {meta['stats']['landFraction']}")

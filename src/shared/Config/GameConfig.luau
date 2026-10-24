@@ -19,7 +19,7 @@ local GameConfig = {
 	SeaLevel = 0,
 	OceanFloorY = -40,
 	LandTopY = 4, -- quay and town ground height
-	MapRadius = 2500, -- playable radius from the origin (matches WorldConfig.MapRadius) -- tune
+	MapRadius = 7000, -- playable radius from the origin (matches WorldConfig.MapRadius; docs/21 archipelago) -- tune
 	LaunchBayCount = 4, -- Bay1..Bay4 on the station dock
 
 	-- Ordered from most specific to least.
@@ -46,6 +46,14 @@ local GameConfig = {
 			center = Vector3.new(0, 0, 190),
 			radius = 300, -- tune
 			shelter = 0.8, -- docs 02 section 8: small waves even in a storm -- tune
+			priority = 1,
+		},
+		{
+			id = "MermaidLagoon", -- docs/21: the ring of isles shelters the lagoon (WorldConfig.Islands)
+			displayName = "Mermaid Lagoon",
+			center = Vector3.new(300, 0, 5600),
+			radius = 600, -- tune
+			shelter = 0.8, -- tune
 			priority = 1,
 		},
 	} :: { Zone },
