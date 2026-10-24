@@ -207,8 +207,9 @@ cars: Spawn, Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), 
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),
-  `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once(name)`
-  over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken (First Shot badge), PetPetted).
+  `TelemetryService` (the only `AnalyticsService` caller), client `src/client/Telemetry.luau` (`once`,
+  `send`, `shop` over `Telemetry_Client`: RewardSeen, PhotoModeOpen, PhotoTaken, Device, Shop, InputDead,
+  StuckReset; values checked server-side). Spec and Phase 2 hook list: `docs/research/analytics.md`.
 - Settings: `SettingsRules` (pure), `Camera/Comfort` (saved in `flags.cameraSettings`), `SettingsPanel`,
   `A11yPalette` (colour-blind palette and glyphs).
 - Re-engagement: `PlatformPrompts` + `PlatformPromptService`; `NotifyDue` + `NotifyService`.

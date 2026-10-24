@@ -42,6 +42,7 @@ local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
+local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
 
 type PlayerData = Rules.PlayerData
 export type Kind = "Products" | "GamePasses"
@@ -402,8 +403,21 @@ function MonetizationService.Start()
 	MarketplaceService.PromptGamePassPurchaseFinished:Connect(
 		function(player: Player, passId: number, purchased: boolean)
 			local key = index.passKeyById[passId]
+			if key then
+				Telemetry.RobuxPrompt(player, "GamePasses", key, purchased)
+			end
 			if purchased and key and player.Parent then
 				grantPass(player, key, true)
+			end
+		end
+	)
+	-- analytics only: the grant stays in ProcessReceipt
+	MarketplaceService.PromptProductPurchaseFinished:Connect(
+		function(userId: number, productId: number, purchased: boolean)
+			local player = Players:GetPlayerByUserId(userId)
+			local key = index.productKeyById[productId]
+			if player and key then
+				Telemetry.RobuxPrompt(player, "Products", key, purchased)
 			end
 		end
 	)

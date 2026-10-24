@@ -31,8 +31,40 @@ return function(t)
 		t.expect(Names.valid()).toBe(true)
 	end)
 
+	t.test("the recurring funnels fit Roblox's caps and have unique steps", function()
+		local count = 1 -- onboarding
+		for name, steps in Names.Funnels do
+			count += 1
+			t.expect(#name <= Names.MAX_EVENT_NAME).toBe(true)
+			t.expect(#steps > 0 and #steps <= Names.MAX_STEPS).toBe(true)
+			local seen = {}
+			for i, step in steps do
+				t.expect(seen[step]).toBe(nil)
+				seen[step] = true
+				t.expect(Events.stepOf(steps, step)).toBe(i)
+			end
+		end
+		t.expect(count <= Names.MAX_FUNNELS).toBe(true)
+		t.expect(Names.Funnels.Shop[5]).toBe("Bought") -- the server-only step (client sends 1..4)
+	end)
+
 	t.test("every custom event Events can produce is on the list", function()
-		local names = { "OpGrade", "OpFailed", "ColdOpenEnded", "StormJoined" }
+		local names = {
+			"OpGrade",
+			"ColdOpenEnded",
+			"StormJoined",
+			"RobuxPrompt",
+			"SessionStart",
+			"SessionEnd",
+			"InputDead",
+			"BadgeAwarded",
+			"PhotoMode",
+			"LiveEvent",
+			"FriendBonus",
+			"DailyCrate",
+			"PromptShown",
+			"PetAdopted",
+		}
 		for _, f in
 			Events.opEvents({
 				kind = "PersonInWater",

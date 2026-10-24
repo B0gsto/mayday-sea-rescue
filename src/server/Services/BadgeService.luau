@@ -29,6 +29,7 @@ local BadgeService = {}
 BadgeService.Priority = 60
 
 local DataService: any = nil
+local Telemetry: any = nil -- required in Init: TelemetryService requires this module
 local busy: { [Player]: { [string]: boolean } } = {}
 local rankIds: { string } = {}
 
@@ -90,6 +91,7 @@ local function award(player: Player, key: string): boolean
 	if owned and s and player.Parent then
 		s.badgesAwarded[key] = true
 		dirty(player)
+		Telemetry.Custom(player, "BadgeAwarded", 1, key)
 	end
 	return owned
 end
@@ -177,6 +179,7 @@ function BadgeService.Init()
 		table.insert(rankIds, r.id)
 	end
 	DataService = require(script.Parent:WaitForChild("DataService")) :: any
+	Telemetry = (require :: any)(script.Parent:WaitForChild("TelemetryService"))
 	Players.PlayerAdded:Connect(onPlayer)
 	Players.PlayerRemoving:Connect(function(p)
 		busy[p] = nil
