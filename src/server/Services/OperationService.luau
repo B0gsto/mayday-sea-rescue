@@ -314,7 +314,7 @@ local function sendToStation(player: Player)
 end
 
 -- The cold open ended for any reason: persist ColdOpenDone, radio the outcome (on anything but
--- a rescue the lifeboat has picked the casualty up) and hand the player over to the station.
+-- a rescue the lifeboat has picked the casualty up) and hand the player over where they are.
 -- Runs once per cold open; ColdOpenFlow never lets it start again.
 local function endColdOpen(player: Player, reason: string)
 	local e = coldOpenFlow[player]
@@ -345,14 +345,13 @@ local function endColdOpen(player: Player, reason: string)
 	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
 	player:SetAttribute("ColdOpenHandover", how)
 	player:SetAttribute("ColdOpenEnded", reason) -- Studio tests
-	if how ~= "Ride" then
-		try("VehicleService", "Stow", player) -- the abandoned jet ski waits at the bay, not at sea
-	end
-	if how == "Station" then
-		sendToStation(player)
-	elseif how == "Respawn" then
+	-- docs/20 M4/M5: the cold open ends on the delivery beat, never a teleport. Seated ("Ride") they
+	-- keep the jet ski; on foot ("Station") they stay where they are and the jet ski stays put too,
+	-- so the craft pin shows the way back. Only a death respawns them at the station.
+	if how == "Respawn" then
+		try("VehicleService", "Stow", player) -- nobody left to ride it: it waits at the bay
 		stationOnSpawn[player] = true
-	end -- "Ride": they keep the jet ski and stay seated; call 2 is offered there (docs/16 B2, K18)
+	end
 end
 
 local function everyone(op: any): { Player }
