@@ -3,7 +3,9 @@
 -- APIs" security setting off, memory budget, old client). A lattice of shared vertices on the wave
 -- surface, each cell drawn as two triangles of two WedgeParts each, so neighbours share their edges
 -- exactly (no gaps or steps). Wedges wear the OceanWater MaterialVariant (the ocean normal map and
--- glossy roughness; template WaterVariant.model.json, cloned into MaterialService on first use).
+-- glossy roughness; template WaterVariant.model.json, cloned into MaterialService on first use). Its
+-- MaterialPattern is Organic: each wedge maps the texture in its own frame, and the Regular tiling showed
+-- as repeating chevrons that changed direction at every triangle edge.
 -- Allocates CFrames per update (fallback only; at most 12 x 12 cells = 576 wedges).
 
 local MaterialService = game:GetService("MaterialService")
@@ -136,9 +138,12 @@ function PartGrid.update(
 				local b = OceanPalette.bucketFor(mean - seaLevel)
 				if b ~= bucket[t] then
 					bucket[t] = b
+					-- Gentle: each triangle is one flat colour, so strong shading read as diamond facets and
+					-- diagonal bands across the sea (playtest r16-r51). The waves read from facet lighting. -- tune
 					local colour = tint:Lerp(
 						colours[b],
-						math.min(math.abs(b - OceanPalette.SEA_BUCKET) * 2 / OceanPalette.HALF, 1)
+						math.min(math.abs(b - OceanPalette.SEA_BUCKET) / OceanPalette.HALF, 1)
+							* 0.35
 					)
 					parts[n + k * 2].Color = colour
 					parts[n + k * 2 + 1].Color = colour
