@@ -9,7 +9,7 @@
 --     upper storeys, granite quoins; blinds and lit rooms seeded per lot. Roofs: dark Delabole slate, seeded pitch,
 --     hipped on corners and now and then, stacks 1 or 2 at seeded heights. lot.kind: "endon" (gable-end-on
 --     cottage), "chapel" (granite, tall round-headed windows), "garage" (single storey, roller door), "pub".
---   TownBuildings.landmark(parent, lm, y) -> Model   TownLayout.LANDMARKS: Hotel, CustomsHouse, MarketHall.
+--   TownBuildings.landmark(parent, lm, y) -> Model   TownLayout.LANDMARKS: Hotel, CustomsHouse, MarketHall, School.
 -- Night: "_GlassLit_" parts (lit rooms, shop windows) + ATT_Lamp_Window / ATT_Smoke markers go through CottageRig
 -- (Neon at night; RigLights / RigSmoke on a subset as for the cottages).
 -- Materials avoid the MaterialService overrides (Slate -> KelpRock, WoodPlanks -> TurfOlive, Brick -> TurfWorn,
@@ -845,7 +845,7 @@ function TownBuildings.terrace(
 		else "gable"
 	local s = spec({
 		w = lot.w,
-		d = TownLayout.DEPTH,
+		d = lot.depth or TownLayout.DEPTH,
 		floors = floors,
 		ground = if kind == "chapel"
 			then 15
@@ -951,6 +951,7 @@ local function pyramid(
 		p.Parent = m
 	end
 end
+TownBuildings.pyramid = pyramid -- also the green's bandstand roof (Town)
 
 local function clock(m: Model, at: CFrame, r: number)
 	local face = part(
@@ -1147,6 +1148,58 @@ function TownBuildings.landmark(
 		)
 		sign(board, "CUSTOMS", Color3.fromRGB(40, 44, 52), Enum.Font.Garamond)
 		flag(m, tc * CFrame.new(0, top + 7.6, 0), 9, Color3.fromRGB(26, 40, 96))
+	elseif lm.kind == "School" then -- board school: granite, tall windows, steep slate roof, bell-cote, name board
+		local s = spec({
+			w = w,
+			d = d,
+			floors = lm.floors,
+			ground = 12,
+			upper = 10,
+			drop = drop,
+			wall = GRANITE,
+			wallMat = M.Granite,
+			baseMat = M.Granite,
+			slate = TownBuildings.SLATES[5],
+			bay = 9,
+			corner = true,
+			chimney = 1,
+			sill = GRANITE,
+			lintels = true,
+			quoins = true,
+			pitch = 0.9,
+		})
+		local eave = shell(m, at, s)
+		frontDoor(m, at, 0, d, 3)
+		local board = part(
+			m,
+			"NameBoard",
+			Vector3.new(12, 2, 0.4),
+			at * CFrame.new(0, 12.6, -d / 2 - 0.3),
+			Color3.fromRGB(30, 52, 40),
+			M.Wood
+		)
+		sign(board, "SCHOOL", Color3.fromRGB(236, 226, 190), Enum.Font.Garamond)
+		-- bell-cote astride the ridge at the west end: granite box, open arch, bell, slate cap
+		local bc = at * CFrame.new(-w / 2 + 8, eave + (d / 2 + 0.6) * s.pitch - 1.5, 0)
+		part(m, "BellCote", Vector3.new(3.4, 6, 3.4), bc * CFrame.new(0, 3, 0), GRANITE, M.Granite)
+		part(
+			m,
+			"BellArch",
+			Vector3.new(3.6, 2.6, 1.6),
+			bc * CFrame.new(0, 4, 0),
+			Color3.fromRGB(28, 28, 30),
+			M.Wood
+		)
+		part(
+			m,
+			"Bell",
+			Vector3.new(1.2, 1.2, 1.2),
+			bc * CFrame.new(0, 4.2, 0),
+			Color3.fromRGB(176, 140, 60),
+			M.Metal
+		).Shape =
+			Enum.PartType.Ball
+		pyramid(m, bc * CFrame.new(0, 6, 0), 4.2, 3, TownBuildings.SLATES[2], M.RoofShingles)
 	else -- MarketHall: granite arcade, rendered upper hall, clock turret with a copper cupola
 		local s = spec({
 			w = w,

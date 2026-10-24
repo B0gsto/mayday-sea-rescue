@@ -12,6 +12,8 @@
 --   TownLayout.blocks(town)       -> { Rect }    block interiors between the carriageways
 --   TownLayout.gardens(town, lots, extra?) -> { {rect, lot} }  back gardens behind the lots
 --   TownLayout.LANDMARKS[town.id] -> { {kind, rect, face, floors} }  code-built landmarks; their rects keep lots out
+--   TownLayout.uses(town)         -> { {kind, rect} }  whole blocks of another use (USES: churchyard, green, ...)
+-- Code-built terrace lots vary in `depth` (12 / 16 / 20, runs along a row): ragged back walls.
 -- Height: lots with `floors` are code-built terraces (TownBuildings): central Fore Street 4 storeys, its edges 3,
 -- the other terrace rows a seeded 2 / 3 / 4 each, and within a row runs of 2-4 houses step a storey up or down; the
 -- rest (outer avenues, Church Street's north side) stay M_Bld_Cottage_0n. `corner`: the end lots of a street row
@@ -45,6 +47,7 @@ export type Lot = {
 	corner: boolean,
 	kind: string?,
 	front: number,
+	depth: number, -- front to back (TownLayout.DEPTH for cottages)
 }
 export type Landmark = { kind: string, rect: Rect, face: Vector3, floors: number }
 
@@ -70,18 +73,54 @@ TownLayout.LANDMARKS = {
 			face = Vector3.new(0, 0, 1),
 			floors = 2,
 		},
+		{ -- the School block's (USES) north side, its front on the playground
+			kind = "School",
+			rect = { 52, -463, 140, -439 },
+			face = Vector3.new(0, 0, 1),
+			floors = 2,
+		},
 	},
 } :: { [string]: { Landmark } }
 
 -- extra rects no lot takes (not buildings): Port Haven's TownLane climbs north-east from Bodmin Road's x 20 end
 TownLayout.CLEAR = { PortHaven = { { 0, -550, 80, -500 } } } :: { [string]: { Rect } }
 
--- landmark rects and the CLEAR rects (both keep lots and gardens out)
+-- whole blocks given over to another use (Town.luau blockUse builds them): i = the avenue gap (west avenue i), j =
+-- the street gap (south line j), as TownLayout.blocks. They break the grid of terrace rings seen from above.
+TownLayout.USES = {
+	PortHaven = {
+		{ kind = "Market", i = 6, j = 2 }, -- Tregenna car park and market stalls on Fore Street
+		{ kind = "Churchyard", i = 3, j = 3 }, -- St Petroc's: tall west tower, yews, gravestones
+		{ kind = "Green", i = 5, j = 3 }, -- the town green: diagonal paths, bandstand, war memorial
+		{ kind = "Allotments", i = 2, j = 4 },
+		{ kind = "School", i = 4, j = 4 }, -- board school and playground
+	},
+} :: { [string]: { { kind: string, i: number, j: number } } }
+
+-- the USES blocks: rect = the block inside its pavements (lots and gardens stay out)
+function TownLayout.uses(town: Town): { { kind: string, rect: Rect } }
+	local xs, zs = TownLayout.lines(town)
+	local b = town.width / 2 + town.footway
+	local out = {}
+	local list: { { kind: string, i: number, j: number } } = TownLayout.USES[town.id] or {}
+	for _, u in list do
+		table.insert(out, {
+			kind = u.kind,
+			rect = { xs[u.i] + b, zs[u.j + 1] + b, xs[u.i + 1] - b, zs[u.j] - b },
+		})
+	end
+	return out
+end
+
+-- landmark, CLEAR and USES rects (all keep lots and gardens out)
 local function landmarkRects(town: Town): { Rect }
 	local out: { Rect } = table.clone(TownLayout.CLEAR[town.id] or {})
 	local lms: { Landmark } = TownLayout.LANDMARKS[town.id] or {}
 	for _, l in lms do
 		table.insert(out, l.rect)
+	end
+	for _, u in TownLayout.uses(town) do
+		table.insert(out, u.rect)
 	end
 	return out
 end
@@ -195,7 +234,7 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 		local toward = if axis == "x" then face.Z else face.X
 		local key = line * 3 + toward * 41 -- the row's identity: the two sides of a street differ
 		local rowStep = if mix then ({ -1, 0, 0, 1 })[math.floor(hash(key, a) * 4) + 1] else 0
-		local step, runLeft, prevKind = 0, 0, false
+		local step, runLeft, prevKind, deep = 0, 0, false, TownLayout.DEPTH
 		for idx, w in ws do
 			seq += 1
 			local pair = VARIANTS[w]
@@ -206,6 +245,7 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 				local h = hash(along, key)
 				runLeft = 2 + math.floor(h * 3)
 				step = if h < 0.3 then -1 elseif h > 0.75 then 1 else 0
+				deep = ({ 12, 16, 16, 20 })[math.floor(hash(key, along * 0.53) * 4) + 1] -- ragged back walls
 			end
 			runLeft -= 1
 			local shop = shops(along)
@@ -222,13 +262,17 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 				shop = shop and kind == "pub"
 			end
 			prevKind = kind ~= nil
+			local fl = floors(along)
+			-- code-built terraces vary in depth (cottage meshes are D); never the two end lots, which back onto the
+			-- avenue rows
+			local dl = if fl and kind ~= "gap" and idx > 2 and idx < #ws - 1 then deep else D
 			local fr = if shop then 0 else F
-			local across = line - toward * (back + fr + D / 2)
+			local across = line - toward * (back + fr + dl / 2)
 			local pos = if axis == "x"
 				then Vector3.new(along, town.origin.Y, across)
 				else Vector3.new(across, town.origin.Y, along)
 			local hx, hz =
-				if axis == "x" then w / 2 else D / 2, if axis == "x" then D / 2 else w / 2
+				if axis == "x" then w / 2 else dl / 2, if axis == "x" then dl / 2 else w / 2
 			local rect = { pos.X - hx, pos.Z - hz, pos.X + hx, pos.Z + hz }
 			local free = true
 			for _, k in keep do
@@ -236,7 +280,6 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 					free = false
 				end
 			end
-			local fl = floors(along)
 			if fl then
 				fl = math.clamp(fl + rowStep + step, if shop then 3 else 2, 4)
 			end
@@ -254,6 +297,7 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 					corner = isCorner,
 					kind = kind,
 					front = fr,
+					depth = dl,
 				})
 			end
 		end
@@ -337,10 +381,12 @@ function TownLayout.lots(town: Town, extra: { Rect }?, south: { number }?): { Lo
 	return out
 end
 
--- back gardens: BACKYARD studs behind each lot, then out to GARDEN where that stays clear (avenue rows); inside its
--- block, clear of every lot, keep rect and garden already given (corners and the narrow middles lose theirs).
+-- back gardens: BACKYARD studs behind each lot (more behind a shallow house), then out to the longest of LONG that
+-- stays clear; inside its block, clear of every lot, keep rect and garden already given (corners and the narrow
+-- middles lose theirs).
 -- -> { { rect, lot } }
 TownLayout.GARDEN = 15
+TownLayout.LONG = { 44, 34, 25, TownLayout.GARDEN } -- second-pass garden lengths, longest first
 TownLayout.BACKYARD = 7 -- back-to-back street rows: 7 + 7 leaves the 6-stud gravel back lane (Town.paint)
 function TownLayout.gardens(
 	town: Town,
@@ -383,19 +429,27 @@ function TownLayout.gardens(
 		return true
 	end
 	local out = {}
+	-- a shallower house gets that much more garden: every garden ends on the same back line
+	local function slack(l: Lot): number
+		return TownLayout.DEPTH - (l.depth or TownLayout.DEPTH)
+	end
 	for _, l in lots do
-		local g = behind(l, TownLayout.BACKYARD)
+		local g = behind(l, TownLayout.BACKYARD + slack(l))
 		if fits(g) then
 			table.insert(taken, g)
 			table.insert(out, { rect = g, lot = l })
 		end
 	end
-	for _, o in out do -- second pass: lengthen where the long garden stays clear
-		local g = behind(o.lot, TownLayout.GARDEN)
-		if fits(g, o.rect) then
-			table.remove(taken, table.find(taken, o.rect))
-			table.insert(taken, g)
-			o.rect = g
+	-- second pass: lengthen where a long garden stays clear (the open courts behind the avenue rows fill up)
+	for _, o in out do
+		for _, len in TownLayout.LONG do
+			local g = behind(o.lot, len + slack(o.lot))
+			if fits(g, o.rect) then
+				table.remove(taken, table.find(taken, o.rect))
+				table.insert(taken, g)
+				o.rect = g
+				break
+			end
 		end
 	end
 	return out
