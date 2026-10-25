@@ -1,322 +1,230 @@
-# 03 · Progression
+# 03 · Progression and economy
 
-> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
-
-This file owns every progression number: payouts, rank thresholds, prices in Cash, and the pacing model. Names come from [`01-game-canon.md`](01-game-canon.md), mechanics from [`02-core-loop-and-mechanics.md`](02-core-loop-and-mechanics.md), and operations, grading and certification content from [`09-rescue-operations.md`](09-rescue-operations.md). Every number marked **(tune)** is a first guess for playtests; nothing here is a Roblox benchmark.
+Last rewrite: 2026-10-25. This file owns the numbers: pay, ranks, prices, quests, streaks, the Album and pacing.
+How it plays is `docs/02-core-loop-and-mechanics.md`; Robux prices are `docs/04-monetization.md`; the canonical
+design is `docs/00-design.md`. Numbers marked **tune** are playtest targets, not promises.
 
 ## 1. Principles
 
-1. **Reputation is earned by playing, and can be sped up.** Operations, exercises, challenges and big calls give it. Robux can multiply or add it inside fixed caps (2x Reputation, Rep Boosts, Sea Time Credit, Fast-Track; [document 04](04-monetization.md), section 4.4). Cash packs and 2x Cash never add Rep. The free pacing below is the floor and never counts on paid Rep.
-2. **Rank and certification open doors, Cash buys the key.** A rank (plus, for some, a certification) unlocks the right to buy a vehicle or relight a lighthouse. Cash pays for it. Paid Rep can bring a rank sooner, but the certification must still be passed, and Signature Vehicles bought for Robux are drivable only at the same rank and certification ([document 04](04-monetization.md), section 3.4).
-3. **Skill is earned, never bought.** Grades, certifications and Pro mode come only from how a player performs. Gear upgrades change what a player can do (range, speed, capacity), never how a step is graded: grade bands are measured against the kit in use (for example, tow tension is graded as a share of the line's own rating), so a better rope does not make a careless tow Gold.
-4. **Always one next thing.** At every point the HUD shows the next unlock, how far away it is (in Rep, Cash or certification steps) and where in the world to get it ("at the boatyard", "at the Chandlery"); tapping it sets a waypoint. There is no shop button: everything is bought in person ([document 02](02-core-loop-and-mechanics.md), section 13).
-5. **Early unlocks are fast, late ones are slow.** First rank in about 10 minutes, an unlock every 10 to 15 minutes for the first 2 hours, the helicopter in week 1, Admiral in about six weeks, then endless Service Stars. The model assumes 25-minute sessions, two a day (section 10).
-6. **No streak resets, no losses.** A takeover never costs Cash, Rep or a certification. Missing a day never resets anything.
+1. **Rep is earned, never sold.** Calls and quests are the only Rep sources. No boost, pass or pack grants Rep.
+2. **Cash is time.** Cash comes from play; packs and boosts sell time. They never sell a grade or a rank.
+3. **One ladder.** Eight ranks, one dock ladder, five craft, one island. No certifications, skill trees, gear
+   scores or branching classes.
+4. **Every rank changes the game.** A new craft, a dock level, a building or a reach step. A rank that changes
+   nothing is a bug.
+5. **Free players reach the whole ladder.** Every rank, island, building, call and free craft is earnable. The
+   four premium boats are Robux alternatives; they do not add reach, grade or a new call.
+6. **A session pays.** Twenty minutes should buy something visible: a rank, a RIB, a dock level or a quest chain
+   step. The first session must end with more island than it started with.
+7. **No punishment.** No Cash is taken away on failure, no dropped rank, no decay, no energy, no lives.
+8. **The sea is the content.** The economy exists to send the player out again, not to keep them in a menu.
 
-## 2. Payouts
+## 2. Call pay
 
-Base payout per operation, before the operation's weight ([document 02](02-core-loop-and-mechanics.md), section 3), grade and bonuses. Operations are longer than the old one-button calls (about 4 to 7 minutes instead of about 3), so base pay is about 2.2 times the old per-call values and the **hourly** rates in section 2.1 stay where they were. That keeps the whole pacing model (section 10) intact.
+A call pays Cash and Rep through one formula:
 
-| Zone | Base Cash (tune) | Base Rep (tune) | Opens at |
-|---|---|---|---|
-| Calm Bay (and harbor mouth storm operations) | 550 | 135 | Recruit |
-| The Skerries [L] | 900 | 200 | Lifeguard (Harbor Light) |
-| Open Sea [L] | 1,500 | 280 | Coxswain (Gannet Rock Light) |
-| Storm Front [L] | 2,400 | 390 | Captain (Tempest Point Light) |
-| Iceberg North [P1] | 3,300 | 500 | Commodore (Northlight) |
+```
+Cash = 250 × kind weight × grade × crew × distance
+Rep  =  60 × kind weight × grade × crew × distance
+```
 
-Zones are areas on the map ([document 10](10-world-and-map.md), section 1.2): beach and cliff operations at Long Strand, Gull Cove, Kittiwake Cliffs and the Saltings pay at the Skerries rate.
+- **Base:** 250 Cash / 60 Rep at your cove, Silver, solo.
+- **Kind weight:** how hard or dramatic the call is.
+- **Grade:** Gold 1.25 (under 60% of the timer), Silver 1.0 (under 85%), Bronze 0.75.
+- **Crew:** +10% per extra member, capped at +30% for four.
+- **Distance:** from the player's berth; ×1 inside 1,500 studs, then +1 per 1,500, capped at ×4. The multiplier
+  applies to Cash **and** Rep. Delivery at the hub or another island pays the round trip sailed, never more.
+- **Tutorial:** call 1 pays 500/150; calls 2–5 pay 300/80 each, flat, regardless of grade.
+- **Fail-safe:** timer run out (or a crew member with no role action) pays 10% of the Cash, no Rep.
+- **Big call:** each survivor delivered pays 60% of the zone base (150/36 at the base rate); every helper gets a
+  completion bonus of 5× base Cash and 3× base Rep, scaled by the share of survivors they saved.
 
-**Final payout** = base x operation weight x grade (Gold 1.25, Silver 1.0, Bronze 0.75) x storm (1.5 for operations tasked in the Storm phase; 2 for Cash in a Great Storm; paid storms boost Cash only, Rep stays at the normal rate) x crew bonus (1.0 to 1.3, human crew only) x Pro mode (Rep x1.2, tune) x 2x Cash pass or Cash Boost (Cash only) x 2x Reputation pass x Rep Boost (2x) x Crew Rep Boost (+50%) (Rep only; [document 04](04-monetization.md), section 4.4).
+| Kind | Weight | Why |
+|---|---:|---|
+| Wildlife rescue | 0.8 | Short, gentle, close. |
+| Rip current | 0.9 | One person, but a long timer and a swim. |
+| Swimmer | 1.0 | The baseline call. |
+| Drifting craft | 1.1 | Two people, a bigger pick-up. |
+| Sinking vessel | 1.2 | Three people, far out, a sinking clock. |
+| Diver at a wreck | 1.4 | Submarine only; a deep, technical pick-up. |
+| Vessel fire | 1.5 | Two people, smoke, the most dramatic. |
+| Capsized ferry | share | Big call; pays by survivor and completion, not weight. |
 
-Other payout rules (tune):
-
-- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash each and 200 then 160 Rep (op 2 was 160: the first rank lands at ~10 min, `tests/NewPlayerPace.spec.luau`).
-- **Exercises** ([document 09](09-rescue-operations.md), section 9.2) pay 200 Cash and 50 Rep the first time each is passed, nothing on repeats.
-- **Crew members** are paid only if they completed a step on the operation ([document 02](02-core-loop-and-mechanics.md), section 7); otherwise they get the 10% share.
-- **By the Book** [L] (flew or drove the full expanding square or sector search): +10% Rep.
-- **Big calls.** Each casualty pays 0.3x the big call's zone base to the player who hands it over. Every player who completed a step on the big call, including ride-along seats in the Coastguard helicopter, gets a completion bonus of 2.5x the zone base in Cash and 1.5x in Rep, scaled by the share of casualties saved before the big call's own timer ran out ([document 02](02-core-loop-and-mechanics.md), section 3.1). The On Scene Coordinator gets +20% on the completion bonus (tune).
-- **Takeover** (condition reached Critical or the operation cap passed, [document 09](09-rescue-operations.md), section 2.5): each completed step pays half its share of the operation's payout (its weight over the total weight), Cash and Rep; no completion share.
-- **Assisting a takeover** (standing by for the helicopter) pays like a Silver step.
-
-### 2.1 Earning rates
-
-An operation cycle is about 6.5 minutes: about 45 s out and 45 s back ([document 02](02-core-loop-and-mechanics.md), section 4.1), 3 to 4 minutes of on-scene steps, and about a minute for the debrief, kit and launch. Further zones have longer scenes. Rates assume an average weight of about 1.1, Silver grades, Assist mode, and storms for about a fifth of operations (x1.5 pay then, so about x1.1 overall). Measured in playtests, then tuned.
-
-| Zone | Operations per hour (tune) | Cash per hour (tune) | Rep per hour (tune) | Per 25-min session (Cash / Rep) |
-|---|---|---|---|---|
-| Calm Bay | 9 | ~6,000 | ~1,450 | ~2,500 / ~600 |
-| The Skerries [L] | 8 | ~8,700 | ~1,950 | ~3,600 / ~810 |
-| Open Sea [L] | 7 | ~12,700 | ~2,350 | ~5,300 / ~980 |
-| Storm Front [L] | 6 | ~17,300 | ~2,850 | ~7,200 / ~1,190 |
-| Iceberg North [P1] | 5.5 | ~21,800 | ~3,350 | ~9,100 / ~1,400 |
-
-A player can always take operations in any zone they have opened. Higher zones pay more but need better vehicles and more certifications to finish well. Gold-grade players earn up to about 25% more and Pro players about 20% more Rep; the pacing model below does not count on either.
+A typical far call at Silver, solo, distance ×4 is about **1,100 Cash / 250 Rep** in 4–5 minutes. That is the
+number the pacing targets below assume.
 
 ## 3. Ranks
 
-| # | Rank | Total Rep (tune) | Certification needed | Main unlocks | Scope |
-|---|---|---|---|---|---|
-| 1 | **Recruit** | 0 | None | Jet ski (free), lifeguard 4x4 (free), Bosun, Calm Bay and harbor mouth operations, radio | [MVP] |
-| 2 | **Lifeguard** | 400 | Helm | Harbor Light relit, crew joining; Skerries operations, binoculars and the beach ATV [L] | [MVP] |
-| 3 | **Rescue Swimmer** | 900 | Rescue Swimmer (which needs Casualty Care) | RIB (buy), gear level 3; Skerry Light mission, wildlife operations and the response vehicle with boat trailer [L] | [MVP] |
-| 4 | **Coxswain** | 3,000 | Coxswain | Lifeboat (buy), the Long Strand launch tractor, Gannet Rock Light mission, Open Sea, gear level 4; hovercraft [P1] | [L] |
-| 5 | **Rescue Pilot** | 9,000 | Pilot (which needs Winch Operator) | Rescue helicopter (buy), free helipad on your bay, winch operations, gear level 5 | [L] |
-| 6 | **Captain** | 22,000 | None new | Tempest Point Light mission, Storm Front, Captain's cap; patrol cutter [P1] | [L] |
-| 7 | **Commodore** | 55,000 | None new | Commodore liveries (Cash), radio title; Northlight mission and Iceberg North [P1] | [L] |
-| 8 | **Admiral** | 150,000 | All six | Admiral gold livery for every vehicle, Admiral's coat, name on the station honor board, Bosun's gold medal | [L] |
-| 9+ | **Service Stars** | Every +30,000 after Admiral | | One cosmetic per star (below) | [L] |
+Rep only. No rank is bought, boosted or granted by a pass; a Robux craft or dock level can be used without the
+rank, but the rank itself still comes from rescues.
 
-**Service Stars** are endless prestige levels. Every 30,000 Rep after Admiral (about a week at two sessions a day) (tune) adds a star to the nameplate and pays one cosmetic from a rotating list: a horn, a siren tone, a wake trail, a light bar colour, a Bosun bandana, a livery stripe. After the list runs out, stars pay alternate colours of the same items. Stars never pay stats, and rank gates never sit behind them.
+| Rank | Total Rep | Main unlocks |
+|---|---:|---|
+| **Recruit** | 0 | Jet ski, Bosun, calls in your cove. |
+| **Lifeguard** | 400 | RIB, player crew joining, dock Lv2. |
+| **Rescue Swimmer** | 900 | Dock Lv3 (boathouse, boat board, paint booth). |
+| **Coxswain** | 3,000 | Lifeboat, submarine, sub pen, dock Lv4, top call reach. |
+| **Rescue Pilot** | 9,000 | Rescue helicopter, hangar, dock Lv5, beacon, harbourmaster. |
+| **Captain** | 22,000 | The captain's title; no new craft. The long climb. |
+| **Commodore** | 55,000 | Commodore livery for the fleet. |
+| **Admiral** | 150,000 | Gold livery, Admiral's coat, place on the honour board. |
 
-If a player reaches a rank's Rep before passing its certification, the Rep keeps counting and the HUD shows the certification as the next thing ("Pass Rescue Swimmer to be promoted"); the promotion happens the moment both are done. Crew roles are open to everyone from the start as **trainees** beside a certified crewmate ([document 09](09-rescue-operations.md), section 4.3), so a Recruit can ride along as Medic in a friend's RIB or take a trainee winch seat in the Coastguard helicopter on a big call. Rank and certifications only limit which roles a player can lead and which vehicles they can own and drive.
+- **Captain is the quiet rank.** Its old zone and storm unlocks are retired; its value is the title and the
+  distance to Commodore. If a future build gives Captain a cosmetic, it must not be a stat.
+- **Admiral is the end of the ladder,** not the end of the game. Service Stars continue the count.
+- **Service Stars:** one per 30,000 Rep past Admiral, endless. A star is a title and a small profile badge; no
+  stat, no craft, no island piece.
 
-Each rank-up plays a short ceremony at the station (skippable): Chief Aggie pins the badge, Bosun barks, and the player's nameplate updates for the whole server.
+## 4. Reach
 
-### 3.1 Certifications
+The rank caps how far a call can be offered. This is the main pacing brake: a fast boat does not skip the ladder.
 
-Certifications are the realistic half of progression: real crews are assessed for each role. Their content (exercises, live requirements, what each gates) is in [document 09](09-rescue-operations.md), section 11; their place on the ladder is here. Reputation stays the rank currency. Certifications are never sold, never expire and are never lost.
+| Rank | Free craft available | Call reach |
+|---|---|---:|
+| Recruit | Jet ski | 2,000 studs |
+| Lifeguard | RIB | 3,500 studs |
+| Rescue Swimmer | RIB | 3,500 studs |
+| Coxswain | Lifeboat, submarine | 5,500 studs |
+| Rescue Pilot | Helicopter | 5,500 studs |
+| Captain–Admiral | All | 5,500 studs |
 
-| Certification | Exercise + live requirement (tune) | Expected at (section 10) | Gates | Scope |
-|---|---|---|---|---|
-| **Helm** | Boat handling + 2 operations with the approach or alongside step at Silver or better | ~0:13 (end of the tutorial chain) | Lifeguard rank; leading the Helm seat in the RIB and up; buying the RIB | [MVP] |
-| **Casualty Care** | Casualty care + 2 operations with survey and treatment at Silver or better | ~0:20 | Leading the Medic seat; oxygen, CPR and triage as lead; AED [L] | [MVP] |
-| **Rescue Swimmer** | Swim test + 1 swimmer recovery at Silver or better; needs Casualty Care. Air-pocket endorsement: hull and dive drill + one ferry hull-team step | ~0:27; endorsement at the first ferry call | Rescue Swimmer rank; entering the water from boats; Winchman as lead; air-pocket dive | [MVP] |
-| **Coxswain** | Tow and command exercises + lead 3 operations as Helm at Silver or better overall, including one tow and one storm operation; needs Helm and Casualty Care | ~1:10 | Coxswain rank; lifeboat; On Scene Coordinator; search patterns | [L] |
-| **Winch Operator** | Winch exercise + 3 helicopter lifts at Silver or better (one double lift, one stretcher); ride-along lifts count | Days 2 to 4 (storm big calls) | Leading the Winch Operator seat in player helicopters | [L] (ride-along trainee seat [MVP]) |
-| **Pilot** | Flight school + 2 winch operations flown with the hover at Silver or better; needs Coxswain rank and Winch Operator | Day 4 (~2.7 hours) | Rescue Pilot rank; flying the helicopter | [L] |
-| **Rescue Diver** | Dive school (buddy check, ascent, line signals) + 2 dive tasks at Silver or better; needs Rescue Swimmer and Coxswain rank | Week 1 | Scuba to about 30 m; the Rescue Diver role (air-pocket dives as lead, propeller and hull work, entangled wildlife) ([document 10](10-world-and-map.md), section 4.5) | [P1] |
+- Calls 1–2 spawn in the player's cove. From call 3 they use the distance tiers: 500–2,000, 2,000–3,500 and
+  3,500–5,500 studs from the berth.
+- A Robux craft does not raise reach. It inherits the reach of the best free craft the rank has unlocked.
+- The outer islands sit inside the top band; the map edge beyond 5,500 is for free exploration, not paid calls.
 
-Each certification is a Roblox badge (section 8) and a small badge on the nameplate. The HUD's "next thing" counts certification steps ("Casualty Care: 1 of 2 operations").
+## 5. Craft and island prices
 
-## 4. Vehicle ladder
+### 5.1 Craft
 
-Boats are bought and collected at the **boatyard** on the waterfront (and the jet ski and RIB are also on show in the station boathouse); land vehicles and the helicopter are bought at the station garage and helipad. A bought vehicle is delivered to the player's bay ([document 10](10-world-and-map.md), section 2.4).
+| Craft | Cash | Rank | Also needs |
+|---|---:|---|---|
+| Jet ski | 0 | Recruit | — |
+| RIB | 2,500 | Lifeguard | — |
+| Lifeboat | 12,000 | Coxswain | — |
+| Submarine | 40,000 | Coxswain | Sub pen (20,000) |
+| Rescue helicopter | 75,000 | Rescue Pilot | Hangar (25,000) |
 
-| Vehicle | Unlock rank | Cash price (tune) | Seats (crew + casualties) | Scope |
-|---|---|---|---|---|
-| Jet ski | Recruit | Free (first vehicle) | 1 + 1 | [MVP] |
-| RIB inflatable | Rescue Swimmer (and Helm) | 4,000 | 3 + 2 | [MVP] |
-| Rescue board | Recruit | Free | 1 + 1 | [L] |
-| Lifeboat | Coxswain (and the Coxswain certification) | 12,000 | 4 + 8 | [L] |
-| Rescue helicopter | Rescue Pilot (and Pilot) | 75,000 | 4 + 4 | [L] |
-| Hovercraft | Coxswain | 30,000 | 4 + 6 | [P1] |
-| Patrol cutter | Captain | 150,000 | 4 + 20 (plus up to 4 other players as passengers) | [P1] |
+The Robux paths are in `docs/04-monetization.md`. A paid craft handles like its free counterpart and does not
+raise reach.
 
-The station loaner RIB (tutorial operation 2, with an NPC Helm instructor) is free for one operation only.
+### 5.2 Dock levels and buildings
 
-**Land vehicles** are free station pool vehicles, gated by rank only, so they never compete with boats for Cash ([document 10](10-world-and-map.md), section 3). Their liveries are Cash cosmetics like any other.
+| Build | Cash | Rank | Adds / unlocks |
+|---|---:|---|---|
+| Dock Lv2 | 2,500 | Lifeguard | Pontoon, lamps, flag, rescue board; second berth. |
+| Dock Lv3 | 10,000 | Rescue Swimmer | Boathouse, boat board, paint booth; choose craft at dock. |
+| Dock Lv4 | 30,000 | Coxswain | Lookout tower, slipway crane; no relaunch cooldown, lifeboat berth. |
+| Dock Lv5 | 100,000 | Rescue Pilot | Station front, beacon, trophy hall; harbourmaster. |
+| Sub pen | 20,000 | Coxswain | Sub pen, sub board; submarine at dock. Needs dock Lv1. |
+| Hangar | 25,000 | Rescue Pilot | Helipad, hangar, hangar board; helicopter at dock. Needs dock Lv3. |
+| Lighthouse | 0 | — | Keeper Ives' three-day lamp chain; a spare-lot building. Never sold. |
 
-| Land vehicle | Unlock | Seats | Scope |
-|---|---|---|---|
-| Lifeguard 4x4 pickup | Recruit | 5 | [MVP] |
-| Beach ATV | Lifeguard | 1 + beach sled | [L] |
-| Coastguard response vehicle and boat trailer | Rescue Swimmer (and Helm) | 5 | [L] |
-| Lifeboat launch tractor (Long Strand) | Coxswain | 1 | [L] |
-| Ambulance (volunteer shift) | Rescue Swimmer and Casualty Care | 2 + 1 casualty | [P1] (NPC only at [L]) |
+- Lv2 and the RIB both arrive at Lifeguard. That is deliberate: the player chooses whether the first 2,500 Cash
+  goes to the island or the boat.
+- The dock is the biggest Cash sink and the clearest flex. Every level is visible from the water.
+- The lighthouse is the only quest-chain building at launch. Blueprints are never sold.
+- **Crew wages** (in progress, WP-15) are a late-game daily Cash sink, small enough that they never block a call.
 
-### 4.1 Vehicle upgrades
+## 6. Quests, streaks and the Album
 
-Upgrades are fitted at the boatyard (boats) or the station garage (land vehicles), by walking up to the vehicle on its stand. Each vehicle has three upgrade levels. Prices are a share of the vehicle's price; the free vehicles (jet ski, rescue board) use fixed prices.
+### 6.1 Quests
 
-| Level | Cost (tune) | Effect |
+Thirteen quests, six givers, one a day per giver. Pay is flat; distance does not multiply it.
+
+| Quest kind | Cash | Rep | Notes |
+|---|---:|---:|---|
+| Find | 1,500 | 250 | Pick it up on an outer island and bring it back. |
+| Deliver | 1,500 | 250 | Carry it from the camp to a drop spot. |
+| Salvage | 2,500 | 400 | Submarine; a wreck on the seabed. |
+| Rescue | 1,000 | 200 | Plus the call's own pay. |
+| Lamp chain finale | 2,000 | 400 | Unlocks the lighthouse blueprint. |
+
+- A quest is roughly 1.5 calls of travel; a rescue quest also pays the call.
+- No quest gates a rank, craft or call. The lighthouse is the only mechanical reward, and it is cosmetic.
+- The chain is three days because it is one quest per giver per day, not because it is a wall.
+
+### 6.2 Streak
+
+| Day | Cash |
+|---:|---:|
+| 1 | 100 |
+| 2 | 150 |
+| 3 | 225 |
+| 4 | 325 |
+| 5 | 450 |
+| 6 | 600 |
+| 7 | 900 + a cosmetic |
+
+- One missed day is free (a calm day). A longer break drops the streak back three days, never to zero.
+- Away more than three days: the next crate is a welcome-back crate, +500 Cash, once.
+- The crate is once per UTC day. No purchase extends it, protects it or sells a second claim.
+- The day-7 cosmetic is the only random item in the streak; it is cosmetic and duplicate-protected.
+
+### 6.3 Album
+
+| Find | Cash |
+|---|---:|
+| Island stamp | 150 |
+| Message in a bottle | 75 |
+| Viewpoint | 75 |
+| Critter | 75 |
+| Wreck | 150 |
+| Page completion | 300 |
+
+- One hub page and seven outer-island pages.
+- Fog lifts as the player walks the hub. Album finds are in the world, not in a paid chest.
+- The Album is the exploration record. It pays Cash once per find; it is not a repeatable grind.
+
+### 6.4 Friends and crew
+
+- **Player crew:** +10% Cash per extra crew member, capped at +30% for four. The bonus appears on the payout card.
+- **Friends:** +10% Cash per friend on the server, capped at +30%. No Rep bonus.
+- **Big call:** the completion bonus is shared by every helper; the survivor share goes to the deliverer.
+- Crew and friend bonuses stack with distance and grade; each is capped separately.
+
+## 7. Earning rates and pacing
+
+At steady far-call play, a solo player earns about **15,000–17,000 Cash and 3,500 Rep per hour**. Short phone
+sessions, exploration and quests earn less; a good group earns a little more. These are the targets the pacing
+sim watches.
+
+| Target | Time | Why |
+|---|---:|---|
+| Lifeguard (400 Rep) | 0:13 | First rank inside the first session. |
+| RIB (2,500 Cash) | 0:18 | The first bought boat; a visible upgrade. |
+| Dock Lv2 (2,500 Cash) | 0:20 | The first island change, competing with the RIB. |
+| Rescue Swimmer (900 Rep) | 0:30 | The paint booth and dock Lv3 come into view. |
+| Coxswain (3,000 Rep) | 0:55 | Lifeboat, submarine and top reach. |
+| Rescue Pilot (9,000 Rep) | 2:22 | Helicopter and the Lv5 island. |
+| Commodore (55,000 Rep) | about 13.6 hours (day 16) | The long-term goal. |
+| Admiral (150,000 Rep) | about 36 hours (about six weeks) | The end of the ladder. |
+
+- **First session:** Lifeguard, the RIB or dock Lv2, one quest, the first Album stamp. End with more island.
+- **First week:** Coxswain, the submarine, dock Lv3–4, most of the lamp chain.
+- **Long tail:** Commodore, Admiral, Service Stars, the trophy hall, the gold beacon.
+- No energy, lives, daily caps on calls or paid Rep. A player can rescue all evening if they want to.
+- A 6-player server does not split pay. Bonuses are added, not carved out of someone else's reward.
+
+## 8. Where Cash goes
+
+| Sink | When | Why |
 |---|---|---|
-| 1. Tuned engine | 25% of price (free vehicles: 300) | +8% top speed |
-| 2. Storm hull | 50% of price (free vehicles: 800) | Better stability in waves; jet ski, RIB and hovercraft capsize less |
-| 3. Extra seat | 100% of price (free vehicles: 1,500) | +1 casualty seat |
+| RIB, lifeboat, submarine, helicopter | Early to late | The main mobility ladder. |
+| Dock Lv2–5 | Early to late | The main visible growth and flex. |
+| Sub pen, hangar | Mid to late | Unlocks the two specialist craft. |
+| Crew wages (in progress) | Late | A small recurring sink for a living station. |
+| Cosmetics (Cash liveries) | Late | Commodore and Admiral rewards. |
 
-**Liveries** are Cash cosmetics (2,000 to 50,000, tune) and a long-term Cash sink. Some liveries and vehicle cosmetics (horns, sirens, wake trails, light bars) are Robux-only or Service Star rewards ([document 04](04-monetization.md)). Paint never changes stats.
+Cash is never traded, gifted or converted to Rep. There is no player market, no auction and no Cash drop.
 
-## 5. Gear upgrades
+## 9. Guardrails
 
-Gear is personal and works on every vehicle. It is bought and upgraded at the **Port Haven Chandlery** counter by picking up the real item from its shelf. Each item has five levels. Gear improves numbers (range, speed, capacity) but never widens a grade band (principle 3): a step's Gold criteria are always measured against the kit in use. The MVP has three items (Fins, Radio direction finder, Tow rope) at levels 1 to 3.
-
-| Level | Cash cost (tune) | Rank needed |
-|---|---|---|
-| 1 | 300 | Recruit |
-| 2 | 1,200 | Recruit |
-| 3 | 4,000 | Rescue Swimmer |
-| 4 | 12,000 | Coxswain |
-| 5 | 30,000 | Rescue Pilot |
-
-| Gear | What it improves (per level, tune) | Scope |
-|---|---|---|
-| **Throw bag and rescue tube** | Throw range 12 to 24 studs, longer line | [L] |
-| **Fins** | Swim speed +8% | [MVP] |
-| **Binoculars** | Time to mark a casualty 1.0 s down to 0.4 s; more zoom | [L] |
-| **Radio direction finder** | Bearing cone ±30° down to ±8° | [MVP] |
-| **Fire pump nozzle** | Spray rate +12%, longer reach | [L] |
-| **Medic kit** | Casualty recovery rate while treated +10% per level; level 3 adds the stretcher | [L] |
-| **Hoist winch** | Winch speed +12% | [L] |
-| **Tow rope** | Line rating +10% (tension is graded as a share of the rating, so grades do not change) | [MVP] |
-| **Searchlight** | Range and beam width | [L] |
-| **Drysuit** | Needed for Iceberg North; each level lets the player swim longer in cold water | [P1] |
-
-## 6. Station upgrades (your bay)
-
-Every player has their own bay at Port Haven Station: a berth, a locker, a kennel and a trophy wall. Upgrades are personal and show on the bay for others to see. They are bought at the bay itself, on the board by each upgrade's spot.
-
-| Upgrade | Levels and Cash cost (tune) | Effect | Scope |
-|---|---|---|---|
-| **Radio Room** | 2,000 / 8,000 / 25,000 / 60,000 / 120,000 | Shows 1 to 3 tasking offers at once, adds the POB and operation type to each offer, makes the tasking's datum more reliable (search area up to 40% smaller) | [L] |
-| **Slipway** | 5,000 / 30,000 / 100,000 | Shorter launch cooldown per level, none at level 3. Level 3 also lets you launch from the Skerry Isle and Gannet Rock outposts (delivering there is free for everyone) | [L] |
-| **Kennel** | 3,000 / 15,000 / 50,000 | Bosun's nose range 80 to 140 studs (Pro: 40 to 70), faster swim, level 3 lets him carry a line to a second swimmer | [L] |
-| **Med Bay** | 10,000 / 40,000 | Hand over at your own bay (an ambulance waits there) instead of the hospital pontoon at full pay; level 2 adds +5% Cash on operations with a casualty | [L] |
-| **Crew Mess** | 10,000 / 40,000 | Crews that launch from your bay get +5% per level on top of the crew bonus | [L] |
-| **Lookout Tower** | 15,000 / 60,000 | Distress flares in your zones show at +25% and +50% range | [L] |
-| **Helipad** | Free at Rescue Pilot | Needed to keep the helicopter | [L] |
-| **Trophy wall** | Free | Shows badges, ranks and big-call trophies | [L] |
-
-## 7. Lighthouses and zone unlocks
-
-Each lighthouse is a short story mission run by Tobias Wick (3 to 6 minutes). The player needs the rank, then starts the mission from the radio. Once relit, the light shines for that player in every server, and its zone opens.
-
-| Lighthouse | Zone | Rank needed | Mission | Scope |
-|---|---|---|---|---|
-| Harbor Light | Calm Bay (already open); opens the Skerries [L] | Lifeguard | Ferry Tobias to the pier light, light the lamp. Doubles as the Lifeguard ceremony. | [MVP] |
-| Skerry Light | The Skerries (open since Lifeguard); adds wildlife and cliff operations | Rescue Swimmer | Find three lens pieces around Skerry Isle using the radio bearing. | [L] |
-| Gannet Rock Light | Open Sea | Coxswain | Run the lamp's spare battery out through a fog bank, then guide the ferry home. | [L] |
-| Tempest Point Light | Storm Front | Captain | Relight during a storm. Starts only in the storm phase (or a summoned storm). | [L] |
-| Northlight | Iceberg North | Commodore | Break through ice by hovercraft or cutter. | [P1] |
-
-## 8. Badges
-
-Roblox badges, awarded once each. Players see them on their trophy wall.
-
-| Badge | How to get it | Scope |
-|---|---|---|
-| First Rescue | Finish operation 1 | [MVP] |
-| Good Boy | Bosun finds a casualty first | [L] |
-| One certification badge each | Pass each certification (6) | [MVP] Helm, Casualty Care, Rescue Swimmer; [L] the rest |
-| Downwind | 10 approaches at Gold | [MVP] |
-| Gentle Hands | Hand over 5 very cold casualties in the Stable band | [L] |
-| Clean Handover | 10 ATMIST handovers with every card right | [L] |
-| Scene Commander | Command a Capsized Ferry as On Scene Coordinator with all persons accounted for | [L] |
-| Pro Crew | Finish an operation at Gold in Pro mode | [L] |
-| Tow Truck | Finish a tow without snapping the line | [MVP] |
-| Fire's Out | Put out a boat fire | [L] |
-| Storm Chaser | Finish an operation tasked during a storm | [MVP] |
-| One rank badge each | Reach each rank, Lifeguard to Admiral (7 badges) | [MVP] Lifeguard and Rescue Swimmer, [L] the rest |
-| One lighthouse badge each | Relight each lighthouse (4, then 5) | [L] |
-| Full Crew | Finish an operation with four human crew | [L] |
-| By the Book | Follow a full search pattern | [L] |
-| Steady Hands | A winch operation with the hook earthed every time and no pauses | [L] |
-| Ferry Hero | Rescue a casualty in a Capsized Ferry big call | [MVP] |
-| Cruise Control | Rescue a casualty in a Cruise Ship Aground big call | [P1] |
-| Along for the Ride | Work the winch from the Coastguard helicopter's ride-along seat | [MVP if the spike is ready, else L] |
-| First Star | Earn a Service Star | [L] |
-| Air Pocket | Lead a trapped passenger out of the air pocket | [MVP] |
-| Gold Standard | 25 Gold grades | [L] |
-| Hundred Saves | 100 people rescued | [L] |
-| Thousand Saves | 1,000 people rescued | [L] |
-| Every Craft | Own every vehicle in the game (five at launch, seven from [P1]) | [L] |
-| Just a Little Stuck | Rescue Barnaby 10 times | [L] |
-| First Wreck | Find the *Morwenna* in Calm Bay | [MVP] |
-| Wreck Hunter | Find every wreck in the logbook | [L] |
-| Keeper's Tales | Complete every lighthouse history | [L] |
-| Seal Code | Log grey seals, dolphins and a basking shark from a respectful distance | [L] |
-| Every Cove | Find every hidden cove and cave | [L] |
-| Shutterbug | Log 10 sightings in photo mode | [L] |
-| Island Explorer | Complete the whole logbook | [L] |
-| The Long Storm | Take part in the Season 1 finale | [P1] |
-
-### 8.1 Exploration rewards
-
-Exploration ([document 10](10-world-and-map.md), section 5) pays **no Reputation**, so the pacing model in section 10 is unchanged by it. Rewards are one-time (tune):
-
-| Find | Reward |
-|---|---|
-| A discovery (point of interest, viewpoint, cove, rock pool, wildlife sighting) | 100 Cash and a logbook entry |
-| A wreck | 250 Cash and its story page |
-| A lighthouse history | 150 Cash (the relight itself is the story mission, section 7) |
-| A completed logbook page (all wrecks, all wildlife, all coves and so on) | 1,000 to 2,500 Cash and a cosmetic: a wreck-hunter mask pattern, a seal plush for the bay, a lighthouse model for the trophy wall, an explorer's jacket |
-
-All launch discoveries together pay about 15,000 Cash (tune), about two and a half hours of Calm Bay operations, once. Exploring never pays per minute, so it cannot be farmed.
-
-## 9. Daily and weekly challenges
-
-Nell's challenge board at the bait shop [L]. Rewards scale with the player's highest open zone ("zone base" below), so they stay useful at every rank.
-
-**Daily: 3 challenges** from a pool, refreshed at 00:00 UTC. Each pays 1.4x zone base Cash and 0.9x zone base Rep (tune; halved from the old per-call multipliers because the base doubled). Finishing all three adds a Bosun treat (a short dog emote) and 1,000 Cash. Examples: "Rescue 3 people in the water", "Finish 2 operations in a storm", "Get 5 Gold steps", "Do an operation as Medic", "Tow a boat without the line going red".
-
-**Weekly: 5 challenges**, refreshed Monday 00:00 UTC. Each pays 4.5x zone base Cash and 2.3x zone base Rep (tune). Finishing all five gives a weekly stamp; four stamps unlock that month's livery. Examples: "Take part in 3 big calls", "Finish 6 operations with a crew", "Relight a lighthouse, reach a new rank or pass a certification", "Rescue 20 people".
-
-Unfinished challenges simply expire. Nothing carries a penalty.
-
-### 9.1 Leaderboards [L]
-
-Station boards and an in-game panel show weekly and all-time **people rescued**, **storm rescues** and **crew rescues** (a crew's combined saves), per server and global. Boards count rescues only, never Cash, Rep or Robux spent, and reset weekly so new players can place. The storm summary board ([document 02](02-core-loop-and-mechanics.md), section 8) feeds the server board.
-
-## 10. Pacing model
-
-Rough targets for a player who plays the game's way: takes operations in Assist mode with Silver grades, does dailies, and joins crews sometimes. The model uses **25-minute sessions, two a day** (tune), one daily set per day, and one weekly set by day 7. "Hours" means active playtime on operations; time spent exploring is extra and earns no Rep. Built from the rates in section 2.1. All [L] unless tagged.
-
-**First two hours: an unlock every 10 to 15 minutes.**
-
-| Time | Session | Unlock | Paid with |
-|---|---|---|---|
-| 0:03 | 1 | First rescue (the cold open, about 90 seconds); the jet ski and Bosun are yours | Free |
-| 0:13 | 1 | Helm certification, then Lifeguard: Harbor Light relit, crew joining, the Skerries | Exercise + tutorial chain, 400 Rep |
-| 0:15 | 1 | First storm, beginner operation at the harbor mouth (or a ferry ride-along) | (storm clock) |
-| 0:18 | 1 | First gear level | 300 Cash |
-| 0:20 | 1 | Casualty Care certification: oxygen and CPR as lead | Exercise + 2 operations |
-| 0:27 | 1 | Rescue Swimmer certification and rank: RIB unlocked, about 1,000 Cash away at session end | Exercise + 1 operation, 900 Rep |
-| 0:30 | 2 | RIB bought | 4,000 Cash |
-| 0:40 | 2 | Skerry Light relit; wildlife operations | Mission |
-| 0:50 | 2 | First daily set (Bosun treat); a gear item to level 2 | Challenges, 1,200 Cash |
-| 1:05 | 3 | RIB Tuned engine | 1,000 Cash |
-| 1:10 | 3 | Coxswain certification | Exercises + 3 led operations |
-| 1:15 | 3 | Coxswain: lifeboat unlocked, Gannet Rock mission | 3,000 Rep |
-| 1:25 | 4 | Gannet Rock Light relit; Open Sea and its outpost open | Mission |
-| 1:35 | 4 | Lifeboat bought | 12,000 Cash |
-| 1:40 | 4 | Second daily set | Challenges |
-| 1:55 | 5 | Jet ski Storm hull or a second gear item to level 2 | 800 to 1,200 Cash |
-| 2:05 | 5 | Third daily set; lifeboat Tuned engine | Challenges, 3,000 Cash |
-
-**MVP** (Calm Bay only, no dailies): first rescue under 0:03, Helm and Lifeguard at about 0:13, Casualty Care at about 0:20, Rescue Swimmer (certification and rank) at about 0:30, RIB bought at about 0:38 (tune). The MVP playtest checks the first 40 minutes only.
-
-| When | Rank and Rep | Owns | World |
-|---|---|---|---|
-| **Session 1** (25 min) | Rescue Swimmer (~900 Rep) | Jet ski, Bosun, one gear item at level 1, Helm, Casualty Care and Rescue Swimmer certifications; RIB unlocked, almost affordable (~3,000 of 4,000 Cash) | Harbor Light relit, the Skerries open, one storm rescue at the harbor mouth |
-| **First 2 hours** (5 sessions, days 1 to 3) | Coxswain (~6,000 Rep), Coxswain certification | RIB with Tuned engine, lifeboat, three gear items at level 1 to 2 | Skerry Light and Gannet Rock Light relit, Open Sea open; three daily sets done |
-| **Week 1** (14 sessions, about 6 hours) | Rescue Pilot (day 4, with Winch Operator and Pilot certifications), close to Captain (~21,500 Rep) | RIB fully upgraded, lifeboat with two upgrades, a rescue helicopter (around day 5 or 6), five gear items at level 3, Radio Room 2, Kennel 1, jet ski fully upgraded | Open Sea is home, Tempest Point is next |
-| **Month 1** (60 sessions, about 25 hours) | Commodore (~115,000 Rep) | Helicopter and lifeboat fully upgraded, most gear at 4 to 5, most station upgrades, first liveries | All four lighthouses lit |
-| **Admiral** | 150,000 Rep | Everything in the launch build | About day 39 (~32 hours), roughly six weeks at two sessions a day. Service Stars after that, about one a week. |
-
-### 10.1 How the numbers were built
-
-- **Session 1:** tutorial chain (three operations, ~13 minutes) gives ~510 Rep and ~1,700 Cash. Three exercises (~6 minutes, first pass) give 150 Rep and 600 Cash. The remaining ~6 minutes in the Skerries and the harbor mouth storm (~1,950 Rep/h, ~8,700 Cash/h) give ~200 Rep and ~900 Cash. Total ~820 to 900 Rep and ~3,200 Cash, minus 300 for the first gear level; Rescue Swimmer lands at about 0:27 (tune; it may slip into session 2 for slower players, which the watch list tracks).
-- **Sessions 2 to 5:** the Skerries to Coxswain (~1:15), Gannet Rock mission, then Open Sea, plus three daily sets (the Skerries day 1, Open Sea days 2 and 3: about 540 to 760 Rep and 4,800 to 7,300 Cash each) gives ~6,300 Rep and ~39,000 Cash earned. Spent by 2 hours: RIB 4,000, RIB engine 1,000, lifeboat 12,000, gear ~3,300.
-- **Sessions 6 to 14:** 3.75 hours of Open Sea (~8,800 Rep, ~47,600 Cash), four more daily sets (~3,100 Rep, ~29,200 Cash) and one weekly set (~3,250 Rep, ~35,000 Cash). Week 1 total: **~21,500 Rep and ~151,000 Cash**.
-- **Week 1 spending:** RIB with all upgrades 11,000; lifeboat with two upgrades 21,000; helicopter 75,000; five gear items to level 3 27,500; Radio Room 1 and 2 10,000; Kennel 1 3,000; jet ski upgrades 2,600. Total **~150,000**, so the Owns column fits what was earned. Rescue Pilot arrives on day 4 (~2.7 hours); the Cash for the helicopter on day 5 or 6.
-- **Month 1:** Captain on day 8, then Storm Front (~2,850 Rep/h) for ~19 hours, plus 23 daily sets and three weekly sets, gives ~115,000 Rep (Commodore around day 16). Storm Front Cash (~745,000 in weeks 2 to 4) goes into helicopter upgrades, gear levels 4 and 5 and station upgrades, which together cost more than that.
-- **After month 1:** about 4,100 Rep a day (two Storm Front sessions plus dailies and weeklies), so Admiral around day 39 and a Service Star about every 7 days.
-
-### 10.2 Watch list for tuning
-
-- **First rescue in under 2 minutes** (the cold open) for at least 90% of new players, and **first rank in under 15 minutes** for at least 80% (tune).
-- **Operation length.** Standard operations should land at 4 to 7 minutes. If one runs long, cut a step's length (section 10 of [document 09](09-rescue-operations.md)) before raising its pay.
-- **Paid Rep.** Track how fast 2x Reputation and Rep Boost owners reach Admiral. If paying players run out of content, add Service Star rewards and content updates; never raise the free Rep thresholds to slow non-payers.
-- **Certification friction.** If more than 30% of players reach a rank's Rep without its certification, make the certification's exercise easier or let more operation types count; never lower the procedure bar.
-- **Unlock cadence.** No gap over 20 minutes in the first 2 hours. If a gap opens, move a price or threshold before raising payouts.
-- **The hook in session 1.** At least 80% of new players finish a storm operation (harbor mouth or ride-along) in their first session (tune).
-- **Helicopter in week 1** is the big retention promise. If it slips past 8 hours of play, cut its price before raising payouts.
-- **Late-game Cash** piles up at Storm Front rates. Liveries, vehicle upgrades and [P2] station decoration must soak it up, or Cash loses meaning for Captains and above.
-- **2x Cash pass effect.** A 2x Cash owner reaches the helicopter's Cash price by about session 7 (~3 hours), about when they reach Rescue Pilot (~2.7 hours). Rank stays the gate, by design.
-
-**New Cash and Rep sources (G34).** `tests/Pacing.spec.luau` replays section 10 with the real config and rules. The only number changes are the station pot caps and the early Season Logbook tiers:
-
-| Source | Tuned number | Why |
-|---|---|---|
-| Station crew idle ([document 15](15-retention-and-new-players.md), H6) | Pot caps **1 / 1.5 / 2 / 2.5 h** (was 4 / 6 / 8 / 12 h) at the same 1,000 to 3,600 Cash/h | Two daily collections made level 3 pay about four times a day's active Cash; now about one times, and level 0 about 1,000 a session |
-| Season Logbook tier Cash ([document 15](15-retention-and-new-players.md), H8) | Tiers 2 to 8 pay **150 to 450** (was 250 to 900) | Early tiers arrive every few minutes and bought the lifeboat about 20 minutes early |
-| Streak crates, challenges, stock prices, friend bonus, Great Storm Rep x2, album sets | Unchanged | Measured effect stays inside the bands below |
-
-| Unlock | Before the new sources | Now | Target |
-|---|---|---|---|
-| RIB | 0:35 | 0:35 | ~0:30 |
-| Lifeboat | 1:32 | 1:15 | ~1:35 |
-| Rescue Pilot / helicopter | 3:20 / 5:00 | 2:55 / 4:10 | ~2:42 / week 1 |
-| Admiral | 30:25 | 29:10 | ~32 h |
-
-The spec asserts: first rescue under 3 minutes, first rank 10 to 16 minutes, RIB 24 to 38, lifeboat 60 to 100, Rescue Pilot 140 to 220, helicopter 170 minutes to 8 hours, Admiral 25 to 38 hours, and no modeled unlock gap over 30 minutes before the lifeboat.
+- Every payout is server-authoritative. The client shows a preview; the server pays.
+- A call pays once. A delivered survivor cannot be paid again; a failed call cannot be re-completed.
+- Rep has no multiplier from Robux, events or passes.
+- Cash packs, boosts and day passes are capped by their own rules in `docs/04-monetization.md`.
+- The pacing sim in `tests/` is the alarm for a broken economy; when a number here changes, the sim changes with
+  it.
+- The old item table in `docs/23-dock-and-core-loop.md §i` still lists the car garage, seaplane and Port Haven
+  drop-off; those are history, not current numbers.
