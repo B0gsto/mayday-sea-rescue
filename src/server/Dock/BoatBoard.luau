@@ -60,7 +60,6 @@ type Def = {
 	from: Vector3,
 	hook: number?,
 	ground: boolean?, -- rests on a floor (bounding box on the target), not afloat
-	pivot: boolean?, -- spawn at the copy's resting pivot (its own height over the floor: the heli's skids)
 	launch: (Player, string, CFrame?) -> (boolean, any),
 }
 
@@ -230,7 +229,7 @@ local function play(board: Board, berth: BasePart, player: Player, id: string)
 	)
 	tween:Play()
 	tween.Completed:Wait()
-	local ok, why = def.launch(player, id, if def.pivot and target and dummy then rest else target)
+	local ok, why = def.launch(player, id, target) -- the heli: Craft.heliLaunch hovers it over the pad
 	if not ok then
 		warn(`[BoatBoard] {player.Name} could not launch {id}: {why}`)
 	end
@@ -484,7 +483,6 @@ function BoatBoard.start(launch: Launch)
 			targets = B.Hangar.targets,
 			from = Vector3.new(0, 0, 10),
 			ground = true,
-			pivot = true,
 			launch = water,
 		},
 		{

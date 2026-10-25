@@ -77,6 +77,16 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   `badgeCounters.Rescue100`. `DockController` (client): the next level as a blue ghost on your own plot only, a
   `Build` prompt and the price card (Cash / Robux). Lv 4 skips VehicleService's relaunch cooldown. Studio:
   `ServerStorage.DockDev:Invoke("level", n)`.
+- Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Garage / Hangar / SubPen (Cash + rank or Robux
+  products `DockGarage` / `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
+  Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
+  (prompt spot, board rack, spawn targets). The 16 garage bays stand along Penhallow Road's west kerb
+  (`Marina.garage(i)`, doors onto the road); hangar + helipad on the boathouse roof, sub pen east of the jetty.
+  `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; ghosts in `DockController`.
+  `server/Dock/BoatBoard` builds every board (boat, garage, hangar, sub) from one def list: cars spawn parked
+  in the bay (`LandVehicleService.Spawn(player, id, nil, false, at)`), the heli on the pad and the sub in the pen
+  (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. Studio:
+  `DockDev:Invoke("building", key | "all")`.
 - `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
   (phone, Quick Launch, berth `Launch` prompt, the cold open via `BerthLaunch`). Spawns are serialized per berth
   (`Marina.lock`). Each berth has one owner-only `Launch` prompt that spawns the player's last-launched craft
@@ -226,7 +236,7 @@ says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voi
 `src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Seven
 apps (K9): Map, Vehicles, Store, Crew, Pets, Camera, Settings; dock Map, Vehicles, Store, Camera. The red dot and
 bounce mean "something is affordable" and badge the Vehicles icon. `UI/VehiclesApp` (phone: Boat to me + the
-cars until the dock garage, WP-10; the boat board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
+Boat to me only since WP-10b; a dock board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
 recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
 `SettingsPanel`, Map opens `MapController`, Camera opens `PhotoMode`. `UI/AlbumApp` is the sticker album
 (docs/21 §3; an eighth app on the grid).
