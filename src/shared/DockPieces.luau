@@ -1,11 +1,13 @@
 --!strict
--- DockPieces (docs/23 d.2, WP-4): the placeholder Parts each dock level adds, in the berth frame
--- (Marina.berth: -Z = out to sea, the deck at z 27.5..52.5, top y 3; the craft at x -7..7; the jetty
--- finger at x 10..18). DockService builds them on the plot (everyone sees them); DockController builds
--- the next level again as the owner's local ghost. Named hooks: parts "Flag" take the owner's colour,
--- TextLabels "Count" show the rescue count, TextLabels "Owner" the owner's name. The WP-10b buildings
--- (DockPieces.building) sit in the berth frame. Materials stay off the MaterialService remap (no Slate,
--- WoodPlanks, Brick, Concrete).
+-- DockPieces (docs/23 d.2, WP-4; WP-19b): the placeholder Parts each dock level adds, around the berth frame
+-- (Marina.berth: the island's boat berth at sea level, -Z = out of the cove, the craft at x -7..7, the jetty
+-- finger at x -17..-9, the jetty at x -27..-17). Each piece stands on its island lot (Marina.LOTS, berth
+-- frame): Lv 2 pontoon (beside the berth), lamps, rescue board on the quay; Lv 3 boathouse (its lot) + paint
+-- booth arches over the berth; Lv 4 lookout tower (the beach tower lot) + slipway crane on the quay; Lv 5 the
+-- station (its lot): lit front, roof beacon, trophy hall wall. Buildings: helipad + hangar on their lots, the
+-- sub pen over the sub berth. DockService builds them (everyone sees them); DockController builds the next
+-- one again as the owner's local ghost. Named hooks: parts "Flag" take the owner's colour, TextLabels "Count"
+-- show the rescue count. Materials stay off the MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
 
@@ -25,8 +27,11 @@ local NAVY = Color3.fromRGB(30, 44, 66)
 local GOLD = Color3.fromRGB(222, 178, 60)
 
 local M = Enum.Material
-local TOP = 3
-local HALL_X, HALL_Z = -1.6, 41 -- the trophy hall: the boathouse's east wall face, its middle
+local TOP = Marina.DECK_TOP
+local LOT = Marina.LOTS
+-- the station (Lv 5): half width, half depth, height; the trophy hall is on its front wall, left of the door
+local ST = { hw = 26, hd = 15, h = 16 }
+local HALL = LOT.Station.cf * CFrame.new(-15.5, 0, -ST.hd - 0.5) -- -Z = out of the wall
 
 local function part(
 	parent: Instance,
@@ -78,7 +83,7 @@ local function pole(
 	return part(
 		parent,
 		"Pole",
-		Vector3.new(h, 0.35, 0.35),
+		Vector3.new(h, 0.4, 0.4),
 		b * CFrame.new(x, y0 + h / 2, z) * CFrame.Angles(0, 0, math.pi / 2),
 		color,
 		M.Metal,
@@ -87,19 +92,19 @@ local function pole(
 end
 
 local function lamp(parent: Instance, b: CFrame, x: number, z: number, y0: number)
-	pole(parent, b, x, z, y0, 7, GREY)
+	pole(parent, b, x, z, y0, 10, GREY)
 	local bulb = part(
 		parent,
 		"Lamp",
-		Vector3.new(1, 1, 1),
-		b * CFrame.new(x, y0 + 7.3, z),
+		Vector3.new(1.3, 1.3, 1.3),
+		b * CFrame.new(x, y0 + 10.4, z),
 		WARM,
 		M.Neon,
 		Enum.PartType.Ball
 	)
 	local light = Instance.new("PointLight")
 	light.Color = WARM
-	light.Range = 18
+	light.Range = 24
 	light.Brightness = 1.2
 	light.Parent = bulb
 end
@@ -109,36 +114,40 @@ local function flag(parent: Instance, b: CFrame, x: number, z: number, y0: numbe
 	local f = part(
 		parent,
 		"Flag",
-		Vector3.new(0.15, 3, 5),
-		b * CFrame.new(x, y0 + h - 1.6, z + 2.6),
+		Vector3.new(0.15, 4, 6.5),
+		b * CFrame.new(x, y0 + h - 2.1, z + 3.4),
 		WHITE,
 		M.Fabric
 	)
 	f.CanCollide = false
 end
 
--- Lv 2: pontoon (the second berth), lamp posts, a tall flag, the rescue-count board
+-- Lv 2: pontoon (the second berth, past the craft from the jetty), lamps down the jetty and the pontoon, a
+-- tall flag, the rescue-count board on the quay
 local function level2(m: Model, b: CFrame)
-	part(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(-16, 1.6, 2), WHITE, M.SmoothPlastic)
+	part(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(16, 1.6, 2), WHITE, M.SmoothPlastic)
 	for z = -18, 22, 10 do
-		part(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(-16, 0.6, z), GREY, M.Metal)
-		part(m, "Cleat", Vector3.new(0.5, 0.4, 1.4), b * CFrame.new(-13.4, 2.2, z), GREY, M.Metal)
+		part(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(16, 0.6, z), GREY, M.Metal)
+		part(m, "Cleat", Vector3.new(0.5, 0.4, 1.4), b * CFrame.new(13.4, 2.2, z), GREY, M.Metal)
 	end
-	lamp(m, b, 17.4, -18, TOP)
-	lamp(m, b, 17.4, 4, TOP)
-	lamp(m, b, -18.5, -18, 2)
-	lamp(m, b, -18.5, 4, 2)
-	flag(m, b, -16, -22, 2, 18)
+	lamp(m, b, 18.5, -18, 2)
+	lamp(m, b, 18.5, 4, 2)
+	for _, z in { -4, 20, 45 } do
+		lamp(m, b, -26.4, z, TOP)
+		lamp(m, b, -17.6, z, TOP)
+	end
+	flag(m, b, 16, -22, 2, 24)
 
-	-- rescue board on the deck, facing the sea: a life ring and one big number
-	local at = b * CFrame.new(22, TOP + 4.2, 34)
-	for _, dx in { -3.2, 3.2 } do
-		part(m, "BoardPost", Vector3.new(0.5, 6.4, 0.5), at * CFrame.new(dx, -1, 0.4), DARK, M.Wood)
+	-- rescue board on the quay west of the jetty, facing the cove: a life ring and one big number
+	local W, H = 12, 7
+	local at = b * Marina.ISLAND * CFrame.new(-24, 7, -26)
+	for _, dx in { -W / 2 + 0.6, W / 2 - 0.6 } do
+		part(m, "BoardPost", Vector3.new(0.6, 9, 0.6), at * CFrame.new(dx, -2.5, 0.5), DARK, M.Wood)
 	end
 	local board = part(
 		m,
 		"RescueBoard",
-		Vector3.new(7.6, 4.4, 0.4),
+		Vector3.new(W, H, 0.5),
 		at,
 		Color3.fromRGB(28, 44, 66),
 		M.SmoothPlastic
@@ -146,14 +155,14 @@ local function level2(m: Model, b: CFrame)
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 40
+	gui.PixelsPerStud = 30
 	gui.LightInfluence = 0.2
 	gui.Parent = board
 	local ring = Instance.new("Frame")
 	ring.Name = "Ring"
 	ring.AnchorPoint = Vector2.new(0, 0.5)
 	ring.Position = UDim2.fromScale(0.06, 0.5)
-	ring.Size = UDim2.fromScale(0.27, 0.27 * 7.6 / 4.4)
+	ring.Size = UDim2.fromScale(0.27, 0.27 * W / H)
 	ring.BackgroundTransparency = 1
 	ring.Parent = gui
 	local corner = Instance.new("UICorner")
@@ -161,7 +170,7 @@ local function level2(m: Model, b: CFrame)
 	corner.Parent = ring
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = ORANGE
-	stroke.Thickness = 16
+	stroke.Thickness = 18
 	stroke.Parent = ring
 	local count = Instance.new("TextLabel")
 	count.Name = "Count"
@@ -176,7 +185,7 @@ local function level2(m: Model, b: CFrame)
 end
 
 -- Lv 3 paint booth (DockConfig.PAINT_BOOTH): two gantry arches over the berth's inshore half, posts on the
--- pontoon and the jetty, spray heads and a light under each beam, a swatch board over the jetty
+-- jetty finger and the pontoon, spray heads and a light under each beam, a swatch board over the finger
 local SWATCHES = {
 	Color3.fromRGB(214, 86, 20),
 	Color3.fromRGB(201, 162, 74),
@@ -193,7 +202,7 @@ local function paintBooth(m: Model, b: CFrame)
 	local booth = Instance.new("Model")
 	booth.Name = "PaintBooth"
 	booth.Parent = m
-	local xw, xe, y0, y1 = -13.6, 10.4, 2, TOP + 13
+	local xw, xe, y0, y1 = -10.4, 13.6, 2, TOP + 13
 	for _, z in { 8, 22 } do
 		for _, x in { xw, xe } do
 			part(
@@ -235,12 +244,12 @@ local function paintBooth(m: Model, b: CFrame)
 				false
 		end
 	end
-	-- the swatch board: up over the jetty edge between the arches (clear above heads), facing the booth
+	-- the swatch board: up over the finger edge between the arches (clear above heads), facing the booth
 	local board = part(
 		booth,
 		"SwatchBoard",
 		Vector3.new(0.25, 3.6, 12),
-		b * CFrame.new(xe - 0.1, TOP + 9, 15),
+		b * CFrame.new(xw + 0.1, TOP + 9, 15),
 		GREY,
 		M.SmoothPlastic
 	)
@@ -251,7 +260,7 @@ local function paintBooth(m: Model, b: CFrame)
 			booth,
 			"Swatch",
 			Vector3.new(0.1, 1.2, 1.9),
-			b * CFrame.new(xe - 0.3, TOP + 9.8 - rowN * 1.6, 10.2 + col * 2.4),
+			b * CFrame.new(xw + 0.3, TOP + 9.8 - rowN * 1.6, 10.2 + col * 2.4),
 			c,
 			M.SmoothPlastic
 		).CanCollide =
@@ -259,65 +268,50 @@ local function paintBooth(m: Model, b: CFrame)
 	end
 end
 
--- Lv 3: boathouse on the deck's west side, the roll-up door facing the water, a clear marked floor
--- spot for the boat board (DockConfig.BOARD_SLOT) at the back wall
+-- Lv 3: the boathouse on its lot, the roll-up door facing the cove, a clear marked floor spot for the boat
+-- board (DockConfig.BOARD_SLOT) by the back wall; the paint booth over the berth
 local function level3(m: Model, b: CFrame)
-	local x0, x1, z0, z1, h = -20, -2, 30, 52, 11
-	local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
-	local y = TOP + h / 2
-	part(m, "Wall", Vector3.new(0.6, h, z1 - z0), b * CFrame.new(x0, y, cz), WHITE, M.Wood)
-	part(m, "Wall", Vector3.new(0.6, h, z1 - z0), b * CFrame.new(x1, y, cz), WHITE, M.Wood)
-	part(m, "Wall", Vector3.new(x1 - x0, h, 0.6), b * CFrame.new(cx, y, z1), WHITE, M.Wood)
+	local L = b * LOT.Boathouse.cf -- -Z = the doors
+	local hw, hd, h = 15, 18, 14
+	local y = h / 2
+	part(m, "Floor", Vector3.new(hw * 2, 0.2, hd * 2), L * CFrame.new(0, 0.1, 0), WOOD, M.Wood)
+	part(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(-hw, y, 0), WHITE, M.Wood)
+	part(m, "Wall", Vector3.new(0.8, h, hd * 2), L * CFrame.new(hw, y, 0), WHITE, M.Wood)
+	part(m, "Wall", Vector3.new(hw * 2, h, 0.8), L * CFrame.new(0, y, hd), WHITE, M.Wood)
 	-- front: two pillars, the header and the half-rolled door
-	part(m, "Wall", Vector3.new(3, h, 0.6), b * CFrame.new(x0 + 1.5, y, z0), WHITE, M.Wood)
-	part(m, "Wall", Vector3.new(3, h, 0.6), b * CFrame.new(x1 - 1.5, y, z0), WHITE, M.Wood)
-	part(
-		m,
-		"Header",
-		Vector3.new(x1 - x0, 3, 0.6),
-		b * CFrame.new(cx, TOP + h - 1.5, z0),
-		WHITE,
-		M.Wood
-	)
-	local doorW = x1 - x0 - 6
-	part(
-		m,
-		"Door",
-		Vector3.new(doorW, 3, 0.3),
-		b * CFrame.new(cx, TOP + h - 4.5, z0 + 0.1),
-		RED,
-		M.Metal
-	)
+	part(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(-hw + 2.5, y, -hd), WHITE, M.Wood)
+	part(m, "Wall", Vector3.new(5, h, 0.8), L * CFrame.new(hw - 2.5, y, -hd), WHITE, M.Wood)
+	part(m, "Header", Vector3.new(hw * 2, 4, 0.8), L * CFrame.new(0, h - 2, -hd), WHITE, M.Wood)
+	local doorW = hw * 2 - 10
+	part(m, "Door", Vector3.new(doorW, 4, 0.4), L * CFrame.new(0, h - 6, -hd + 0.1), RED, M.Metal)
 	part(
 		m,
 		"DoorRoll",
-		Vector3.new(doorW, 1.4, 1.4),
-		b * CFrame.new(cx, TOP + h - 2.6, z0 - 0.9),
+		Vector3.new(doorW, 1.8, 1.8),
+		L * CFrame.new(0, h - 3.4, -hd - 1.1),
 		RED,
 		M.Metal,
 		Enum.PartType.Cylinder
 	)
-	-- gabled roof, ridge along z
-	local run, rise = (x1 - x0) / 2 + 0.6, 3.6
+	-- gabled roof, ridge along the depth
+	local run, rise = hw + 0.8, 5
 	local angle = math.atan2(rise, run)
 	local len = math.sqrt(run * run + rise * rise)
 	for _, side in { -1, 1 } do
 		part(
 			m,
 			"Roof",
-			Vector3.new(len + 0.4, 0.5, z1 - z0 + 1.6),
-			b
-				* CFrame.new(cx + side * run / 2, TOP + h + rise / 2, cz)
-				* CFrame.Angles(0, 0, -side * angle),
+			Vector3.new(len + 0.4, 0.6, hd * 2 + 2),
+			L * CFrame.new(side * run / 2, h + rise / 2, 0) * CFrame.Angles(0, 0, -side * angle),
 			RED,
 			M.SmoothPlastic
 		)
-		for _, z in { z0, z1 } do
+		for _, z in { -hd, hd } do
 			wedge(
 				m,
-				Vector3.new(0.6, rise, run - 0.6),
-				b
-					* CFrame.new(cx + side * (run - 0.6) / 2, TOP + h + rise / 2, z)
+				Vector3.new(0.8, rise, run - 0.8),
+				L
+					* CFrame.new(side * (run - 0.8) / 2, h + rise / 2, z)
 					* CFrame.Angles(0, -side * math.pi / 2, 0), -- the wedge is tall at local +Z: toward the ridge
 				WHITE
 			)
@@ -336,7 +330,7 @@ local function level3(m: Model, b: CFrame)
 			slot,
 			"Line",
 			Vector3.new(e[3], 0.06, e[4]),
-			c * CFrame.new(e[1], 0.03, e[2]),
+			c * CFrame.new(e[1], 0.23, e[2]),
 			YELLOW,
 			M.SmoothPlastic
 		)
@@ -345,47 +339,40 @@ local function level3(m: Model, b: CFrame)
 	paintBooth(m, b)
 end
 
--- Lv 4: lookout tower at the deck's east end, slipway crane over the berth
+-- Lv 4: the lookout tower on the beach tower lot (a ladder up its open side), a slipway crane on the quay
+-- swinging over the berth
 local function level4(m: Model, b: CFrame)
-	local tx, tz, legH = 24, 47, 14
-	for _, d in { { -2.5, -2.5 }, { 2.5, -2.5 }, { -2.5, 2.5 }, { 2.5, 2.5 } } do
+	local T = b * LOT.LifeguardTower.cf
+	local legH, s = 20, 4
+	for _, d in { { -s, -s }, { s, -s }, { -s, s }, { s, s } } do
 		part(
 			m,
 			"Leg",
-			Vector3.new(0.6, legH, 0.6),
-			b * CFrame.new(tx + d[1], TOP + legH / 2, tz + d[2]),
+			Vector3.new(0.8, legH, 0.8),
+			T * CFrame.new(d[1], legH / 2, d[2]),
 			STEEL,
 			M.Metal
 		)
 	end
-	for _, yy in { 5, 10 } do
-		part(
-			m,
-			"Brace",
-			Vector3.new(5.6, 0.3, 0.3),
-			b * CFrame.new(tx, TOP + yy, tz - 2.5),
-			STEEL,
-			M.Metal
-		)
-		part(
-			m,
-			"Brace",
-			Vector3.new(5.6, 0.3, 0.3),
-			b * CFrame.new(tx, TOP + yy, tz + 2.5),
-			STEEL,
-			M.Metal
-		)
+	for _, yy in { 7, 14 } do
+		for _, z in { -s, s } do
+			part(
+				m,
+				"Brace",
+				Vector3.new(s * 2 + 0.6, 0.4, 0.4),
+				T * CFrame.new(0, yy, z),
+				STEEL,
+				M.Metal
+			)
+		end
 	end
-	local floorY = TOP + legH
-	part(m, "Platform", Vector3.new(7, 0.6, 7), b * CFrame.new(tx, floorY + 0.3, tz), WOOD, M.Wood)
-	for _, w in
-		{ { 0, -3.2, 6.4, 0.2 }, { 0, 3.2, 6.4, 0.2 }, { -3.2, 0, 0.2, 6.4 }, { 3.2, 0, 0.2, 6.4 } }
-	do
+	part(m, "Platform", Vector3.new(10, 0.8, 10), T * CFrame.new(0, legH + 0.4, 0), WOOD, M.Wood)
+	for _, w in { { 0, -4.8, 9.6, 0.2 }, { -4.8, 0, 0.2, 9.6 }, { 4.8, 0, 0.2, 9.6 } } do
 		local g = part(
 			m,
 			"Window",
-			Vector3.new(w[3], 3, w[4]),
-			b * CFrame.new(tx + w[1], floorY + 2.1, tz + w[2]),
+			Vector3.new(w[3], 3.6, w[4]),
+			T * CFrame.new(w[1], legH + 2.6, w[2]),
 			Color3.fromRGB(150, 200, 230),
 			M.Glass
 		)
@@ -394,77 +381,144 @@ local function level4(m: Model, b: CFrame)
 	part(
 		m,
 		"TowerRoof",
-		Vector3.new(7.6, 0.6, 7.6),
-		b * CFrame.new(tx, floorY + 3.9, tz),
+		Vector3.new(11, 0.8, 11),
+		T * CFrame.new(0, legH + 5, 0),
 		RED,
 		M.SmoothPlastic
 	)
-	-- crane: mast on the deck edge, boom out over the berth, cable and hook
-	local cx, cz, mastH = 4, 32, 16
-	part(m, "CraneBase", Vector3.new(3, 1, 3), b * CFrame.new(cx, TOP + 0.5, cz), GREY, M.Metal)
+	local ladder = Instance.new("TrussPart")
+	ladder.Name = "Ladder"
+	ladder.Size = Vector3.new(2, legH, 2)
+	ladder.CFrame = T * CFrame.new(0, legH / 2, s + 1.5)
+	ladder.Color = GREY
+	ladder.Material = M.Metal
+	ladder.Anchored = true
+	ladder.Parent = m
+
+	-- crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
+	local mastH = 24
+	local base = b * CFrame.new(16, TOP, 66)
+	part(m, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY, M.Metal)
 	part(
 		m,
 		"Mast",
-		Vector3.new(1.2, mastH, 1.2),
-		b * CFrame.new(cx, TOP + mastH / 2, cz),
+		Vector3.new(1.6, mastH, 1.6),
+		base * CFrame.new(0, mastH / 2, 0),
 		YELLOW,
 		M.Metal
 	)
-	local boomY = TOP + mastH - 0.5
-	part(m, "Boom", Vector3.new(1, 1, 28), b * CFrame.new(cx, boomY, cz - 9), YELLOW, M.Metal)
+	local top = (base * CFrame.new(0, mastH - 0.5, 0)).Position
+	local tip = (b * CFrame.new(0, TOP + mastH - 0.5, 30)).Position
+	local dir = (tip - top).Unit
+	part(
+		m,
+		"Boom",
+		Vector3.new(1.2, 1.2, (tip - top).Magnitude + 6),
+		CFrame.lookAt((top + tip) / 2 - dir * 3, tip),
+		YELLOW,
+		M.Metal
+	)
 	part(
 		m,
 		"Counterweight",
-		Vector3.new(2.4, 2, 2.4),
-		b * CFrame.new(cx, boomY - 1, cz + 4),
+		Vector3.new(3, 2.4, 3),
+		CFrame.lookAt(top - dir * 5, tip) - Vector3.new(0, 1.5, 0),
 		GREY,
 		M.Metal
 	)
 	part(
 		m,
 		"Cable",
-		Vector3.new(0.15, 7, 0.15),
-		b * CFrame.new(cx, boomY - 4, cz - 22),
+		Vector3.new(0.15, 9, 0.15),
+		CFrame.new(tip - Vector3.new(0, 4.5, 0)),
 		GREY,
 		M.Metal
 	).CanCollide =
 		false
-	part(m, "Hook", Vector3.new(0.8, 1, 0.8), b * CFrame.new(cx, boomY - 8, cz - 22), RED, M.Metal)
+	part(m, "Hook", Vector3.new(1, 1.2, 1), CFrame.new(tip - Vector3.new(0, 9.5, 0)), RED, M.Metal)
 end
 
--- Lv 5: lit station front on the boathouse, a beacon on the tower, light strips along the jetty
+-- Lv 5: the station on its lot (door toward the bridge and the spawn): a lit front with neon stripes and
+-- floodlights, a beacon on the roof, the trophy hall board on the front wall (DockPieces.trophies fills it),
+-- light strips down the jetty
 local function level5(m: Model, b: CFrame)
-	local cx, z0 = -11, 29.4
+	local S = b * LOT.Station.cf -- -Z = the front
+	local hw, hd, h = ST.hw, ST.hd, ST.h
+	local door = 5
+	part(
+		m,
+		"Floor",
+		Vector3.new(hw * 2, 0.2, hd * 2),
+		S * CFrame.new(0, 0.1, 0),
+		GREY,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"Wall",
+		Vector3.new(hw * 2, h, 0.8),
+		S * CFrame.new(0, h / 2, hd),
+		WHITE,
+		M.SmoothPlastic
+	)
+	for _, x in { -hw, hw } do
+		part(
+			m,
+			"Wall",
+			Vector3.new(0.8, h, hd * 2),
+			S * CFrame.new(x, h / 2, 0),
+			WHITE,
+			M.SmoothPlastic
+		)
+	end
+	for _, side in { -1, 1 } do
+		part(
+			m,
+			"StationFront",
+			Vector3.new(hw - door, h, 0.8),
+			S * CFrame.new(side * (hw + door) / 2, h / 2, -hd),
+			WHITE,
+			M.SmoothPlastic
+		)
+	end
 	part(
 		m,
 		"StationFront",
-		Vector3.new(18.6, 2.4, 0.4),
-		b * CFrame.new(cx, TOP + 12, z0),
+		Vector3.new(door * 2, h - 9, 0.8),
+		S * CFrame.new(0, 9 + (h - 9) / 2, -hd),
 		WHITE,
 		M.SmoothPlastic
 	)
 	part(
 		m,
+		"Roof",
+		Vector3.new(hw * 2 + 1.5, 0.8, hd * 2 + 1.5),
+		S * CFrame.new(0, h + 0.4, 0),
+		NAVY,
+		M.SmoothPlastic
+	)
+	part(
+		m,
 		"Stripe",
-		Vector3.new(18.6, 0.5, 0.45),
-		b * CFrame.new(cx, TOP + 10.6, z0),
+		Vector3.new(hw * 2, 0.8, 0.3),
+		S * CFrame.new(0, h - 2.5, -hd - 0.5),
 		ORANGE,
 		M.Neon
 	)
 	part(
 		m,
 		"Stripe",
-		Vector3.new(18.6, 0.3, 0.45),
-		b * CFrame.new(cx, TOP + 13.3, z0),
+		Vector3.new(hw * 2, 0.4, 0.3),
+		S * CFrame.new(0, h - 1.2, -hd - 0.5),
 		Color3.fromRGB(40, 90, 200),
 		M.Neon
 	)
-	for _, x in { -18, -4 } do
+	for _, x in { -hw + 2, -door - 1.5, door + 1.5, hw - 2 } do
 		local flood = part(
 			m,
 			"Floodlight",
-			Vector3.new(1.2, 0.8, 0.8),
-			b * CFrame.new(x, TOP + 9.6, z0 - 0.4) * CFrame.Angles(math.rad(-35), 0, 0),
+			Vector3.new(1.4, 1, 1),
+			S * CFrame.new(x, h - 5, -hd - 0.9) * CFrame.Angles(math.rad(-35), 0, 0),
 			WARM,
 			M.Neon
 		)
@@ -476,42 +530,45 @@ local function level5(m: Model, b: CFrame)
 		spot.Color = WARM
 		spot.Parent = flood
 	end
-	for _, x in { 10.1, 17.9 } do
+	-- light strips down both edges of the jetty
+	local jetty = LOT.Jetty
+	for _, dx in { -jetty.size.X / 2 + 0.1, jetty.size.X / 2 - 0.1 } do
 		part(
 			m,
 			"JettyLight",
-			Vector3.new(0.2, 0.15, 47),
-			b * CFrame.new(x, TOP + 0.05, 3.75),
+			Vector3.new(0.2, 0.15, jetty.size.Y),
+			b * jetty.cf * CFrame.new(dx, 0.05, 0),
 			WARM,
 			M.Neon
 		).CanCollide =
 			false
 	end
-	-- the trophy hall on the boathouse's jetty-side wall: a navy backboard, a shelf (DockPieces.trophies fills it)
+	-- the trophy hall: a navy backboard and a shelf on the front wall, left of the door
 	part(
 		m,
 		"TrophyBoard",
-		Vector3.new(0.2, 6, 20),
-		b * CFrame.new(HALL_X - 0.15, TOP + 5, HALL_Z),
+		Vector3.new(20, 6, 0.2),
+		b * HALL * CFrame.new(0, 5, 0),
 		NAVY,
 		M.SmoothPlastic
 	)
 	part(
 		m,
 		"TrophyShelf",
-		Vector3.new(1.4, 0.3, 20),
-		b * CFrame.new(HALL_X + 0.6, TOP + 2.6, HALL_Z),
+		Vector3.new(20, 0.3, 1.4),
+		b * HALL * CFrame.new(0, 2.6, -0.7),
 		DARK,
 		M.Wood
 	)
-	-- beacon on the lookout tower roof (Lv 4): a lens, a wide light, a beam into the sky
-	local top = b * CFrame.new(24, TOP + 14 + 4.2, 47)
-	part(m, "BeaconBase", Vector3.new(1.6, 0.6, 1.6), top * CFrame.new(0, 0.3, 0), GREY, M.Metal)
+	-- beacon on the roof: a mast, a lens, a wide light, a beam into the sky
+	local top = S * CFrame.new(hw - 6, h + 0.8, hd - 6)
+	part(m, "BeaconMast", Vector3.new(1, 8, 1), top * CFrame.new(0, 4, 0), GREY, M.Metal)
+	part(m, "BeaconBase", Vector3.new(2.4, 0.8, 2.4), top * CFrame.new(0, 8.4, 0), GREY, M.Metal)
 	local lens = part(
 		m,
 		"Beacon",
-		Vector3.new(1.4, 1.4, 1.4),
-		top * CFrame.new(0, 1.3, 0),
+		Vector3.new(2.2, 2.2, 2.2),
+		top * CFrame.new(0, 9.9, 0),
 		Color3.fromRGB(255, 70, 50),
 		M.Neon,
 		Enum.PartType.Ball
@@ -528,7 +585,7 @@ local function level5(m: Model, b: CFrame)
 	a1.Parent = lens
 	local beam = Instance.new("Beam")
 	beam.Attachment0, beam.Attachment1 = a0, a1
-	beam.Width0, beam.Width1 = 2.5, 7
+	beam.Width0, beam.Width1 = 3, 8
 	beam.FaceCamera = true
 	beam.LightEmission = 1
 	beam.Color = ColorSequence.new(Color3.fromRGB(255, 140, 100))
@@ -538,145 +595,107 @@ end
 
 local LEVELS = { [2] = level2, [3] = level3, [4] = level4, [5] = level5 }
 
--- WP-10b buildings ------------------------------------------------------------------------------
+-- WP-10b buildings (WP-19b: on their own lots) ------------------------------------------------------
 
--- the helipad's top, on posts over the Lv 3 boathouse ridge and clear over the Lv 4 crane's boom (top y 19)
-local PAD_Y = TOP + 18
--- the helicopter's spot: the plot's centre line (Marina.PLOT_X), so its 41-stud rotor stays on the plot
-local HELI = CFrame.new((Marina.PLOT_X[1] + Marina.PLOT_X[2]) / 2, PAD_Y, 38)
-local PEN = { x0 = 19.6, x1 = 28.4, z0 = -21, z1 = 1, top = 14 } -- the sub pen gantry, east of the jetty
+local HELI = LOT.Helipad.cf * CFrame.new(0, 0.6, 0) -- the helicopter's spot: the pad centre
+local PEN = { hx = 8, hz = 20, top = 16 } -- the sub pen gantry round the sub berth (Marina.SUB frame)
+local PEN_JETTY = LOT.Jetty.cf.X - LOT.Jetty.size.X / 2 - Marina.SUB.X -- the jetty's edge, sub berth frame
 
--- In each building's frame: `buildAt` = the ghost's Build prompt, `board` = the vehicle board's rack (models
--- along its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the
--- gantry height the sub hangs from.
+-- In the berth frame: `buildAt` = the ghost's Build prompt, `board` = the vehicle board's rack (models along
+-- its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the gantry
+-- height the sub hangs from.
 DockPieces.Buildings = {
 	Hangar = {
-		buildAt = CFrame.new(1, TOP + 2.5, 34),
-		board = CFrame.new(-11, PAD_Y, 50.4),
+		buildAt = LOT.Helipad.cf * CFrame.new(0, 2.5, 0),
+		board = LOT.Hangar.cf * CFrame.new(0, 0.2, 9),
 		targets = { RescueHelicopter = HELI } :: { [string]: CFrame },
 	},
 	SubPen = {
-		buildAt = CFrame.new(14, TOP + 2.5, -10),
-		board = CFrame.new(16.5, TOP, -12) * CFrame.Angles(0, -math.pi / 2, 0),
-		targets = { Submarine = CFrame.new((PEN.x0 + PEN.x1) / 2, 0, (PEN.z0 + PEN.z1) / 2) } :: { [string]: CFrame },
+		buildAt = Marina.SUB * CFrame.new(PEN_JETTY - 3, TOP + 2.5, 0),
+		board = Marina.SUB * CFrame.new(PEN_JETTY - 6, TOP, 0) * CFrame.Angles(0, math.pi / 2, 0),
+		targets = { Submarine = Marina.SUB } :: { [string]: CFrame },
 		hook = PEN.top - 0.5,
 	},
 }
 
--- the helipad on posts over the boathouse roof and the deck east of it (an H, an edge line and lights), a
--- small hangar shelter at its back and a ladder up its east side
+-- the helipad on its lot (an H, an edge line and lights) and the hangar on its lot, open toward the pad
 local function hangar(m: Model, b: CFrame)
-	local x0, x1, z0, z1 = -20.5, 12.5, 29.5, 52.5
-	local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
-	for _, x in { x0 + 1, x1 - 1 } do
-		local y0 = if x < -2 then TOP + 11 else TOP -- on the boathouse wall, or the deck
-		for _, z in { z0 + 1, z1 - 1 } do
-			part(
-				m,
-				"Post",
-				Vector3.new(0.8, PAD_Y - y0, 0.8),
-				b * CFrame.new(x, (PAD_Y + y0) / 2, z),
-				GREY,
-				M.Metal
-			)
-		end
-	end
-	part(
-		m,
-		"Pad",
-		Vector3.new(x1 - x0, 0.6, z1 - z0),
-		b * CFrame.new(cx, PAD_Y - 0.3, cz),
-		GREY,
-		M.SmoothPlastic
-	)
-	local hx, hz = HELI.X, HELI.Z
-	for _, e in { { 0, -8, 15, 0.4 }, { 0, 8, 15, 0.4 }, { -7.5, 0, 0.4, 16 }, { 7.5, 0, 0.4, 16 } } do
+	local P = b * LOT.Helipad.cf
+	part(m, "Pad", Vector3.new(36, 0.6, 36), P * CFrame.new(0, 0.3, 0), GREY, M.SmoothPlastic)
+	for _, e in { { 0, -14, 28, 0.5 }, { 0, 14, 28, 0.5 }, { -14, 0, 0.5, 28 }, { 14, 0, 0.5, 28 } } do
 		part(
 			m,
 			"PadLine",
 			Vector3.new(e[3], 0.06, e[4]),
-			b * CFrame.new(hx + e[1], PAD_Y + 0.03, hz + e[2]),
+			P * CFrame.new(e[1], 0.63, e[2]),
 			YELLOW,
 			M.SmoothPlastic
 		).CanCollide =
 			false
 	end
-	for _, e in { { -2.4, 0, 1.2, 7 }, { 2.4, 0, 1.2, 7 }, { 0, 0, 4.8, 1.2 } } do
+	for _, e in { { -3.6, 0, 1.8, 10.5 }, { 3.6, 0, 1.8, 10.5 }, { 0, 0, 7.2, 1.8 } } do
 		part(
 			m,
 			"H",
 			Vector3.new(e[3], 0.08, e[4]),
-			b * CFrame.new(hx + e[1], PAD_Y + 0.04, hz + e[2]),
+			P * CFrame.new(e[1], 0.64, e[2]),
 			WHITE,
 			M.SmoothPlastic
 		).CanCollide =
 			false
 	end
-	for _, x in { x0 + 0.4, cx, x1 - 0.4 } do
-		for _, z in { z0 + 0.4, hz, 46 } do
-			if x ~= cx or z ~= hz then -- (cx, hz): under the H's edge line
-				local bulb = part(
+	for _, x in { -17.6, 0, 17.6 } do
+		for _, z in { -17.6, 0, 17.6 } do
+			if x ~= 0 or z ~= 0 then
+				part(
 					m,
 					"PadLight",
-					Vector3.new(0.5, 0.5, 0.5),
-					b * CFrame.new(x, PAD_Y + 0.25, z),
+					Vector3.new(0.7, 0.7, 0.7),
+					P * CFrame.new(x, 0.85, z),
 					Color3.fromRGB(90, 255, 120),
 					M.Neon,
 					Enum.PartType.Ball
-				)
-				bulb.CanCollide = false
+				).CanCollide =
+					false
 			end
 		end
 	end
-	-- the hangar shelter: back wall, two side walls, a red roof
-	local sz0, sh = 46.5, 7
+	local H = b * LOT.Hangar.cf -- -Z = the open front, toward the pad
+	local hw, hd, h = 17, 14, 14
 	part(
 		m,
-		"Wall",
-		Vector3.new(x1 - x0, sh, 0.4),
-		b * CFrame.new(cx, PAD_Y + sh / 2, z1 - 0.2),
-		WHITE,
-		M.Wood
+		"Floor",
+		Vector3.new(hw * 2, 0.2, hd * 2),
+		H * CFrame.new(0, 0.1, 0),
+		GREY,
+		M.SmoothPlastic
 	)
-	for _, x in { x0 + 0.2, x1 - 0.2 } do
-		part(
-			m,
-			"Wall",
-			Vector3.new(0.4, sh, z1 - sz0),
-			b * CFrame.new(x, PAD_Y + sh / 2, (sz0 + z1) / 2),
-			WHITE,
-			M.Wood
-		)
+	part(m, "Wall", Vector3.new(hw * 2, h, 0.8), H * CFrame.new(0, h / 2, hd), WHITE, M.Wood)
+	for _, x in { -hw, hw } do
+		part(m, "Wall", Vector3.new(0.8, h, hd * 2), H * CFrame.new(x, h / 2, 0), WHITE, M.Wood)
 	end
+	part(m, "Header", Vector3.new(hw * 2, 3, 0.8), H * CFrame.new(0, h - 1.5, -hd), WHITE, M.Wood)
 	part(
 		m,
 		"HangarRoof",
-		Vector3.new(x1 - x0 + 0.4, 0.5, z1 - sz0 + 1),
-		b * CFrame.new(cx, PAD_Y + sh + 0.25, (sz0 + z1) / 2 - 0.5),
+		Vector3.new(hw * 2 + 1.5, 0.8, hd * 2 + 1.5),
+		H * CFrame.new(0, h + 0.4, 0),
 		RED,
 		M.SmoothPlastic
 	)
-	local ladder = Instance.new("TrussPart")
-	ladder.Name = "Ladder"
-	ladder.Size = Vector3.new(2, PAD_Y - TOP, 2)
-	ladder.CFrame = b * CFrame.new(x1 + 1, (PAD_Y + TOP) / 2, 36)
-	ladder.Color = GREY
-	ladder.Material = M.Metal
-	ladder.Anchored = true
-	ladder.Parent = m
 end
 
--- the sub pen: a steel gantry over a moon-pool collar in the water east of the jetty
+-- the sub pen: a steel gantry over a moon-pool collar round the sub berth, a plank from the jetty
 local function subPen(m: Model, b: CFrame)
-	local p = PEN
-	local cx, cz = (p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2
-	for _, x in { p.x0, p.x1 } do
-		for _, z in { p.z0, p.z1 } do
+	local P = b * Marina.SUB
+	local hx, hz, top = PEN.hx, PEN.hz, PEN.top
+	for _, x in { -hx, hx } do
+		for _, z in { -hz, hz } do
 			part(
 				m,
 				"Leg",
-				Vector3.new(0.8, p.top + 6, 0.8),
-				b * CFrame.new(x, (p.top - 6) / 2, z),
+				Vector3.new(0.8, top + 6, 0.8),
+				P * CFrame.new(x, (top - 6) / 2, z),
 				GREY,
 				M.Metal
 			)
@@ -684,47 +703,33 @@ local function subPen(m: Model, b: CFrame)
 		part(
 			m,
 			"Beam",
-			Vector3.new(0.8, 0.8, p.z1 - p.z0 + 0.8),
-			b * CFrame.new(x, p.top, cz),
+			Vector3.new(0.8, 0.8, hz * 2 + 0.8),
+			P * CFrame.new(x, top, 0),
 			YELLOW,
 			M.Metal
 		)
 	end
-	for _, z in { p.z0, p.z1 } do
-		part(
-			m,
-			"Beam",
-			Vector3.new(p.x1 - p.x0, 0.8, 0.8),
-			b * CFrame.new(cx, p.top, z),
-			YELLOW,
-			M.Metal
-		)
+	for _, z in { -hz, hz } do
+		part(m, "Beam", Vector3.new(hx * 2, 0.8, 0.8), P * CFrame.new(0, top, z), YELLOW, M.Metal)
 	end
-	part(
-		m,
-		"Trolley",
-		Vector3.new(p.x1 - p.x0, 1, 1.4),
-		b * CFrame.new(cx, p.top + 0.1, cz),
-		GREY,
-		M.Metal
-	)
+	part(m, "Trolley", Vector3.new(hx * 2, 1, 1.6), P * CFrame.new(0, top + 0.1, 0), GREY, M.Metal)
 	-- the floating collar round the pool, at the waterline
-	for _, x in { p.x0 + 0.6, p.x1 - 0.6 } do
+	for _, x in { -hx + 0.6, hx - 0.6 } do
 		part(
 			m,
 			"Collar",
-			Vector3.new(1, 1, p.z1 - p.z0),
-			b * CFrame.new(x, 0.3, cz),
+			Vector3.new(1, 1, hz * 2),
+			P * CFrame.new(x, 0.3, 0),
 			ORANGE,
 			M.SmoothPlastic
 		)
 	end
-	for _, z in { p.z0 + 0.5, p.z1 - 0.5 } do
+	for _, z in { -hz + 0.5, hz - 0.5 } do
 		part(
 			m,
 			"Collar",
-			Vector3.new(p.x1 - p.x0 - 2.2, 1, 1),
-			b * CFrame.new(cx, 0.3, z),
+			Vector3.new(hx * 2 - 2.2, 1, 1),
+			P * CFrame.new(0, 0.3, z),
 			ORANGE,
 			M.SmoothPlastic
 		)
@@ -733,8 +738,8 @@ local function subPen(m: Model, b: CFrame)
 	part(
 		m,
 		"Plank",
-		Vector3.new(p.x0 - 18 + 0.6, 0.4, 3),
-		b * CFrame.new((18 + p.x0 + 0.6) / 2, TOP - 0.2, -10),
+		Vector3.new(PEN_JETTY - hx + 0.6, 0.4, 3),
+		P * CFrame.new((PEN_JETTY + hx - 0.6) / 2, TOP - 0.2, -8),
 		WOOD,
 		M.Wood
 	)
@@ -742,7 +747,7 @@ end
 
 local BUILDINGS = { Hangar = hangar, SubPen = subPen }
 
--- The pieces of building `key` (DockConfig.Buildings) around its frame `cf`, as a Model named `key`.
+-- The pieces of building `key` (DockConfig.Buildings) around the berth frame `cf`, as a Model named `key`.
 function DockPieces.building(key: string, cf: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = key
@@ -753,7 +758,7 @@ function DockPieces.building(key: string, cf: CFrame): Model
 	return m
 end
 
--- a 1-3 word name on a small plate, facing the jetty (+X)
+-- a 1-3 word name on a small plate, its face toward -Z
 local function plate(
 	parent: Instance,
 	name: string,
@@ -762,8 +767,7 @@ local function plate(
 	color: Color3,
 	text: string
 )
-	local p =
-		part(parent, name, size, cf * CFrame.Angles(0, -math.pi / 2, 0), color, M.SmoothPlastic)
+	local p = part(parent, name, size, cf, color, M.SmoothPlastic)
 	p.CanCollide = false
 	local gui = Instance.new("SurfaceGui")
 	gui.Face = Enum.NormalId.Front
@@ -789,14 +793,14 @@ function DockPieces.trophies(
 ): Model
 	local m = Instance.new("Model")
 	m.Name = "Trophies"
-	local x = HALL_X + 0.6
+	local hall = b * HALL
 	for i, name in cups do
-		local z = HALL_Z - 9 + (i - 1) * 2.25
+		local x = -9 + (i - 1) * 2.25
 		part(
 			m,
 			"CupBase",
 			Vector3.new(0.9, 0.4, 0.9),
-			b * CFrame.new(x, TOP + 2.95, z),
+			hall * CFrame.new(x, 2.95, -0.7),
 			DARK,
 			M.Wood
 		)
@@ -804,7 +808,7 @@ function DockPieces.trophies(
 			m,
 			"CupStem",
 			Vector3.new(0.7, 0.3, 0.3),
-			b * CFrame.new(x, TOP + 3.5, z) * CFrame.Angles(0, 0, math.pi / 2),
+			hall * CFrame.new(x, 3.5, -0.7) * CFrame.Angles(0, 0, math.pi / 2),
 			GOLD,
 			M.Metal,
 			Enum.PartType.Cylinder
@@ -813,27 +817,20 @@ function DockPieces.trophies(
 			m,
 			"Cup",
 			Vector3.new(1.1, 1.1, 1.1),
-			b * CFrame.new(x, TOP + 4.25, z),
+			hall * CFrame.new(x, 4.25, -0.7),
 			GOLD,
 			M.Metal,
 			Enum.PartType.Ball
 		)
-		plate(
-			m,
-			"CupName",
-			Vector3.new(2, 0.5, 0.05),
-			b * CFrame.new(HALL_X + 1.32, TOP + 2.6, z),
-			NAVY,
-			name
-		)
+		plate(m, "CupName", Vector3.new(2, 0.5, 0.05), hall * CFrame.new(x, 2.6, -1.42), NAVY, name)
 	end
 	for i, p in plaques do
-		local z = HALL_Z - 8.75 + (i - 1) * 2.5
+		local x = -8.75 + (i - 1) * 2.5
 		part(
 			m,
 			"PlaqueRim",
-			Vector3.new(0.1, 1.9, 2.3),
-			b * CFrame.new(HALL_X - 0.02, TOP + 6.6, z),
+			Vector3.new(2.3, 1.9, 0.1),
+			hall * CFrame.new(x, 6.6, -0.15),
 			GOLD,
 			M.Metal
 		)
@@ -841,7 +838,7 @@ function DockPieces.trophies(
 			m,
 			"Plaque",
 			Vector3.new(2.1, 1.7, 0.1),
-			b * CFrame.new(HALL_X + 0.03, TOP + 6.6, z),
+			hall * CFrame.new(x, 6.6, -0.22),
 			p.colour,
 			p.name
 		)

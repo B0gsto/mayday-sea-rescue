@@ -1,20 +1,22 @@
 --!strict
--- DockService (docs/23 WP-1): the marina and your own dock. Builds the 16 plots (shared/Marina) as placeholder
--- Parts in Workspace.Marina, gives each joining player the lowest free plot and frees it on leave. Lv 1 is a bare
--- jetty, a name board and a flag in the player's colour; an empty plot is just the jetty. The dock level lives
--- in the profile (data.dockLevel, default 1) so later levels rebuild on whichever plot the player gets.
--- VehicleService launches at the plot's Berth part (BayLaunch frame) and stands the player on the jetty.
+-- DockService (docs/23 WP-1; WP-19b): your island is your plot. Builds the six player islands' docks
+-- (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining player the
+-- lowest free island and frees it on leave. Every island has a bare jetty down its cove; Lv 1 adds the owner's
+-- name arch and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
+-- (data.dockLevel, default 1) so later levels rebuild on whichever island the player gets. VehicleService
+-- launches at the island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
 -- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
 -- sees them. Bought with Cash + rank (Dock_Upgrade) or Robux (MonetizationConfig DockLevel<n>, skips both);
 -- the new pieces rise into place (the build beat). The owner's ghost of the next level is DockController's.
 --
--- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetLevel(player) -> number, Berths() -> { BasePart }.
+-- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
+-- GetLevel(player) -> number, Berths() -> { BasePart }.
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
 -- DockLevel (built level, DockController's ghost reads it).
 -- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
 -- "Owned" | "Data" | "Busy").
--- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on the Lv 3+ boathouse roof and
--- the sub pen beside the berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
+-- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on their island lots and the
+-- sub pen over the cove's sub berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
 -- rank, products DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
 -- gives them a building ("all": every one); ("trophies") every rescue milestone and island stamp.
@@ -22,8 +24,7 @@
 -- (built). Player attributes DockHangar / DockSubPen (owned; DockController's ghosts).
 -- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
 -- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name board and a tall gold
--- flag; picked on join / leave / a level change, and a joining Harbour Master gets the head plot when it is free
--- (nobody else's dock ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
+-- beacon on their island; picked on join / leave / a level change (nobody's island ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
 -- plaque per island stamp (DiscoveryRules), rebuilt from the profile every few seconds when it changes.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -55,9 +56,10 @@ local GOLD = Color3.fromRGB(222, 178, 60)
 
 type Plot = {
 	model: Model,
+	frame: CFrame, -- the berth frame (Marina.berth, sea level)
 	berth: Part,
-	label: TextLabel,
-	gui: SurfaceGui,
+	sign: Model, -- name arch + flag, parented only while owned
+	labels: { TextLabel },
 	board: Part,
 	flag: Part,
 	levels: Model?, -- Lv 2..built pieces
@@ -66,7 +68,7 @@ type Plot = {
 	counts: { TextLabel },
 	trophies: Model?,
 	trophyKey: string,
-	master: Model?, -- the Harbour Master's tall flag
+	master: Model?, -- the Harbour Master's gold beacon
 }
 
 local plots: { Plot } = {}
@@ -112,84 +114,90 @@ local function buildPlot(folder: Instance, i: number): Plot
 	local top = Marina.DECK_TOP
 	local model = Instance.new("Model")
 	model.Name = `Plot{i}`
-	local center = (Marina.PLOT_X[1] + Marina.PLOT_X[2]) / 2
-	part(
-		model,
-		"Deck",
-		Vector3.new(Marina.PLOT_X[2] - Marina.PLOT_X[1], 1, Marina.DECK),
-		b * CFrame.new(center, top - 0.5, Marina.BERTH / 2 + Marina.DECK / 2),
-		WOOD,
-		Enum.Material.Wood
-	)
-	local j = Marina.JETTY
-	local z1 = Marina.BERTH / 2
+	-- the jetty down the cove (its lot, run on to the quay wall) and the finger beside the berth
+	local jetty = Marina.LOTS.Jetty
+	local jcf = b * jetty.cf
+	local len = jetty.size.Y + 4
 	part(
 		model,
 		"Jetty",
-		Vector3.new(j.x1 - j.x0, 1, z1 - j.out),
-		b * CFrame.new((j.x0 + j.x1) / 2, top - 0.5, (z1 + j.out) / 2),
+		Vector3.new(jetty.size.X, 1, len),
+		jcf * CFrame.new(0, -0.5, 2),
 		WOOD,
 		Enum.Material.Wood
 	)
-	for _, at in
-		{
-			Vector3.new(j.x0 + 0.6, 0, j.out + 1),
-			Vector3.new(j.x1 - 0.6, 0, j.out + 1),
-			Vector3.new(j.x0 + 0.6, 0, 8),
-			Vector3.new(j.x1 - 0.6, 0, 8),
-		}
-	do
-		post(model, b * CFrame.new(at), top + 0.8, -8)
+	for z = -jetty.size.Y / 2 + 1, jetty.size.Y / 2 - 6, 12 do
+		for _, x in { -jetty.size.X / 2 + 0.6, jetty.size.X / 2 - 0.6 } do
+			post(model, jcf * CFrame.new(x, 0, z), top + 0.8, -10)
+		end
+	end
+	local j = Marina.JETTY
+	part(
+		model,
+		"Finger",
+		Vector3.new(j.x1 - j.x0, 1, j.z1 - j.out),
+		b * CFrame.new((j.x0 + j.x1) / 2, top - 0.5, (j.z1 + j.out) / 2),
+		WOOD,
+		Enum.Material.Wood
+	)
+	for _, z in { j.out + 1, (j.out + j.z1) / 2 } do
+		post(model, b * CFrame.new(j.x1 - 0.6, 0, z), top + 0.8, -10)
 	end
 
-	-- name board on the deck edge, facing the water (Front = local -Z = out to sea)
-	local boardAt = b * CFrame.new(center, top + 3.2, z1 + 1)
-	for _, dx in { -4.6, 4.6 } do
+	-- the owner's sign (only while the island has an owner): a name arch over the jetty's quay end, facing
+	-- the cove, and a flag beside it
+	local sign = Instance.new("Model")
+	sign.Name = "Sign"
+	local isle = b * Marina.ISLAND
+	local arch = isle * CFrame.new(0, 0, -28.5)
+	for _, dx in { -7, 7 } do
 		part(
-			model,
+			sign,
 			"BoardPost",
-			Vector3.new(0.4, 4.4, 0.4),
-			boardAt * CFrame.new(dx, -1, 0.3),
+			Vector3.new(0.8, 12, 0.8),
+			arch * CFrame.new(dx, 6, 0),
 			DARK_WOOD,
 			Enum.Material.Wood
 		)
 	end
 	local board = part(
-		model,
+		sign,
 		"NameBoard",
-		Vector3.new(10, 2.4, 0.3),
-		boardAt,
+		Vector3.new(16, 3.6, 0.4),
+		arch * CFrame.new(0, 10.4, 0),
 		BOARD,
 		Enum.Material.SmoothPlastic
 	)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Front
-	gui.PixelsPerStud = 40
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.Parent = board
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromScale(1, 1)
-	label.BackgroundTransparency = 1
-	label.TextScaled = true
-	label.Font = Enum.Font.GothamBold
-	label.TextColor3 = Color3.fromRGB(30, 38, 52)
-	label.Parent = gui
-
-	-- flag: a pole at the deck's jetty corner, the cloth in the owner's colour
-	local poleAt = b * CFrame.new(Marina.PLOT_X[2] - 3, top, z1 + 3)
+	local labels = {}
+	for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
+		local gui = Instance.new("SurfaceGui")
+		gui.Face = face
+		gui.PixelsPerStud = 30
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.Parent = board
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(1, 1)
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.Font = Enum.Font.GothamBold
+		label.TextColor3 = Color3.fromRGB(30, 38, 52)
+		label.Parent = gui
+		table.insert(labels, label)
+	end
+	local poleAt = isle * CFrame.new(-12, 0, -27)
 	part(
-		model,
+		sign,
 		"FlagPole",
-		Vector3.new(0.4, 14, 0.4),
-		poleAt * CFrame.new(0, 7, 0),
+		Vector3.new(0.5, 24, 0.5),
+		poleAt * CFrame.new(0, 12, 0),
 		Color3.fromRGB(200, 200, 205),
 		Enum.Material.Metal
 	)
 	local flag = part(
-		model,
+		sign,
 		"Flag",
-		Vector3.new(0.15, 2.6, 4.2),
-		poleAt * CFrame.new(0, 12.6, -2.3),
+		Vector3.new(0.15, 4, 6.5),
+		poleAt * CFrame.new(0, 21.8, -3.5),
 		BOARD,
 		Enum.Material.Fabric
 	)
@@ -214,9 +222,10 @@ local function buildPlot(folder: Instance, i: number): Plot
 	model.Parent = folder
 	return {
 		model = model,
+		frame = b,
 		berth = berth,
-		label = label,
-		gui = gui,
+		sign = sign,
+		labels = labels,
 		board = board,
 		flag = flag,
 		built = 1,
@@ -262,7 +271,7 @@ local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
 		levels.Name = "Levels"
 		levels.Parent = plot.model
 		plot.levels = levels
-		local m = DockPieces.build(n, plot.berth.CFrame - Vector3.new(0, 0.2, 0))
+		local m = DockPieces.build(n, plot.frame)
 		for _, d in m:GetDescendants() do
 			if d.Name == "Flag" and d:IsA("BasePart") and owner then
 				d.Color = Marina.flagColor(owner.UserId)
@@ -293,8 +302,7 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			and level >= DockConfig.Buildings[key].needs
 		local have = plot.buildings[key]
 		if want and not have and owner then
-			local frame = plot.berth.CFrame - Vector3.new(0, 0.2, 0)
-			local m = DockPieces.building(key, frame)
+			local m = DockPieces.building(key, plot.frame)
 			for _, d in m:GetDescendants() do
 				if d.Name == "Flag" and d:IsA("BasePart") then
 					d.Color = Marina.flagColor(owner.UserId)
@@ -351,13 +359,13 @@ local function syncTrophies(plot: Plot, owner: Player?)
 		plot.trophies = nil
 	end
 	if #cups + #plaques > 0 then
-		local m = DockPieces.trophies(plot.berth.CFrame - Vector3.new(0, 0.2, 0), cups, plaques)
+		local m = DockPieces.trophies(plot.frame, cups, plaques)
 		m.Parent = plot.model
 		plot.trophies = m
 	end
 end
 
--- The Harbour Master's plot: a gold name board and a tall gold flag at the deck's back corner.
+-- The Harbour Master's island: a gold name board and a tall gold beacon beside the jetty arch.
 local function setMaster(plot: Plot, on: boolean)
 	plot.board.Color = if on then GOLD else BOARD
 	plot.board.Material = if on then Enum.Material.Metal else Enum.Material.SmoothPlastic
@@ -365,39 +373,43 @@ local function setMaster(plot: Plot, on: boolean)
 	if on and not plot.master then
 		local m = Instance.new("Model")
 		m.Name = "HarbourMaster"
-		local at = plot.berth.CFrame
-			* CFrame.new(
-				Marina.PLOT_X[2] - 1.5,
-				Marina.DECK_TOP - 0.2,
-				Marina.BERTH / 2 + Marina.DECK - 1.5
-			)
+		local at = plot.frame * Marina.ISLAND * CFrame.new(12, 0, -27)
 		local pole = part(
 			m,
 			"Pole",
-			Vector3.new(30, 0.6, 0.6),
-			at * CFrame.new(0, 15, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			Vector3.new(34, 0.9, 0.9),
+			at * CFrame.new(0, 17, 0) * CFrame.Angles(0, 0, math.pi / 2),
 			GOLD,
 			Enum.Material.Metal
 		)
 		pole.Shape = Enum.PartType.Cylinder
-		local top = part(
+		local lens = part(
 			m,
-			"Finial",
-			Vector3.new(1.4, 1.4, 1.4),
-			at * CFrame.new(0, 30.5, 0),
+			"Beacon",
+			Vector3.new(3, 3, 3),
+			at * CFrame.new(0, 35.5, 0),
 			GOLD,
 			Enum.Material.Neon
 		)
-		top.Shape = Enum.PartType.Ball
-		part(
-			m,
-			"MasterFlag",
-			Vector3.new(0.15, 4, 7),
-			at * CFrame.new(0, 27.6, -3.7),
-			GOLD,
-			Enum.Material.Fabric
-		).CanCollide =
-			false
+		lens.Shape = Enum.PartType.Ball
+		local glow = Instance.new("PointLight")
+		glow.Color = GOLD
+		glow.Range = 60
+		glow.Brightness = 4
+		glow.Parent = lens
+		local a0 = Instance.new("Attachment")
+		a0.Parent = lens
+		local a1 = Instance.new("Attachment")
+		a1.Position = Vector3.new(0, 260, 0)
+		a1.Parent = lens
+		local beam = Instance.new("Beam")
+		beam.Attachment0, beam.Attachment1 = a0, a1
+		beam.Width0, beam.Width1 = 4, 10
+		beam.FaceCamera = true
+		beam.LightEmission = 1
+		beam.Color = ColorSequence.new(GOLD)
+		beam.Transparency = NumberSequence.new(0.6, 1)
+		beam.Parent = lens
 		m.Parent = plot.model
 		plot.master = m
 	elseif not on and plot.master then
@@ -406,8 +418,8 @@ local function setMaster(plot: Plot, on: boolean)
 	end
 end
 
--- Everyone with a plot and a loaded profile (plus `extra`), in plot order, as Harbour Master candidates.
-local function candidates(extra: Player?): { Marina.Candidate }
+-- Everyone with a plot and a loaded profile, in plot order, as Harbour Master candidates.
+local function candidates(): { Marina.Candidate }
 	local list: { Marina.Candidate } = {}
 	local function add(p: Player)
 		local data: any = DataService.Get(p)
@@ -422,9 +434,6 @@ local function candidates(extra: Player?): { Marina.Candidate }
 		if owners[i] then
 			add(owners[i])
 		end
-	end
-	if extra then
-		add(extra)
 	end
 	return list
 end
@@ -441,13 +450,13 @@ local function crown()
 	end
 end
 
--- Lv 1 for the owner, or the plain jetty when empty.
+-- Lv 1 for the owner (the sign), or the bare jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
-	plot.label.Text = if owner then owner.DisplayName else ""
-	plot.gui.Enabled = owner ~= nil
-	plot.board.Transparency = if owner then 0 else 1
-	plot.flag.Transparency = if owner then 0 else 1
+	for _, label in plot.labels do
+		label.Text = if owner then owner.DisplayName else ""
+	end
+	plot.sign.Parent = if owner then plot.model else nil
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
 	else
@@ -528,12 +537,9 @@ local function claim(player: Player)
 	if byPlayer[player] or player.Parent ~= Players or not plots[1] then -- no plots before Init
 		return
 	end
-	-- a joining Harbour Master takes the head plot when it is free
-	local head = DataService.Get(player) ~= nil
-		and Marina.harbourMaster(candidates(player), master) == player
-	local i = Marina.assign(owners, head)
+	local i = Marina.assign(owners)
 	if not i then
-		warn(`[DockService] no free plot for {player.Name}`) -- shortcut: 16 plots = server size; a 17th player has no dock
+		warn(`[DockService] no free island for {player.Name}`) -- shortcut: 6 islands = server size; a 7th player has no dock
 		return
 	end
 	owners[i], byPlayer[player] = player, i
@@ -558,25 +564,6 @@ end
 function DockService.Init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Marina"
-	local spineLen = Marina.spineEndZ() - Marina.ROOT_Z
-	part(
-		folder,
-		"Spine",
-		Vector3.new(Marina.SPINE_W, 1, spineLen),
-		CFrame.new(Marina.SPINE_X, Marina.DECK_TOP - 0.5, Marina.ROOT_Z + spineLen / 2),
-		WOOD,
-		Enum.Material.Wood
-	)
-	-- the boardwalk along the beach to the west breakwater root (the walk into town)
-	local x0, x1 = Marina.SPINE_X - Marina.SPINE_W / 2, -326
-	part(
-		folder,
-		"Boardwalk",
-		Vector3.new(x1 - x0, 1, 8),
-		CFrame.new((x0 + x1) / 2, Marina.DECK_TOP + 0.5, 12),
-		WOOD,
-		Enum.Material.Wood
-	)
 	for i = 1, Marina.COUNT do
 		plots[i] = buildPlot(folder, i)
 		dress(plots[i], nil)
@@ -701,6 +688,12 @@ function DockService.GetBerth(player: Player): BasePart?
 	local i = byPlayer[player]
 	local plot = i and plots[i]
 	return if plot then plot.berth else nil
+end
+
+-- Where the player spawns and respawns: their island's spawn (VehicleService stands them there), nil without one.
+function DockService.GetSpawn(player: Player): CFrame?
+	local i = byPlayer[player]
+	return if i then Marina.spawn(i) else nil
 end
 
 function DockService.GetLevel(player: Player): number

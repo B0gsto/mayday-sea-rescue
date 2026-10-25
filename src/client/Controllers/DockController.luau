@@ -1,11 +1,11 @@
 --!strict
 -- DockController (docs/23 c.3, WP-4): the next dock level as a ghost on your own plot, only you see it:
--- translucent blue pieces (shared/DockPieces) with wireframe edges and a scaffold. Walking up to it shows
--- a "Build" prompt (E / gamepad X / tap) that opens a small price card: the level icon, a Cash button
+-- translucent blue pieces (shared/DockPieces) with wireframe edges. The Build prompt stands at the
+-- blueprint table spot on the jetty (WP-19b): it shows a "Build" prompt (E / gamepad X / tap) that opens a small price card: the level icon, a Cash button
 -- (coin + amount; lock + rank badge when the rank is too low, greyed when Cash is short) and a Robux
 -- button (Roblox's live price; greyed while the product has no id). B / the X button / walking off closes.
 -- The WP-10b buildings (helipad + hangar, sub pen) get their own ghosts the same way while unowned
--- (the hangar once the Lv 3 boathouse stands); their card shows the building's word instead of the number.
+-- (the hangar from dock Lv 3); their card shows the building's word instead of the number.
 -- Reads player attributes DockPlot, BayCFrame, DockLevel, DockHangar / DockSubPen (DockService)
 -- and the PlayerDataChanged snapshot.
 -- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own Lv 3+ booth (DockConfig.PAINT_BOOTH)
@@ -20,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
+local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
@@ -305,8 +306,8 @@ local function open(level: Item)
 	AudioController.play("UI_Click")
 end
 
--- translucent blue pieces, wire edges, a scaffold around them, and the Build prompt at `promptAt` (nil: on
--- the deck, as near the pieces' middle as the deck allows)
+-- translucent blue pieces with wire edges (WP-19b: no scaffold box, a level spans several lots), the Build prompt at `promptAt` (nil: the
+-- blueprint table spot on the jetty)
 local function makeGhost(level: Item, m: Model, b: CFrame, promptAt: CFrame?): Model
 	m.Name = "DockGhost"
 	for _, d in m:GetDescendants() do
@@ -325,31 +326,11 @@ local function makeGhost(level: Item, m: Model, b: CFrame, promptAt: CFrame?): M
 			d:Destroy()
 		end
 	end
-	local box, size = m:GetBoundingBox()
-	local function rod(name: string, s: Vector3, cf: CFrame)
-		local p = Instance.new("Part")
-		p.Name = name
-		p.Size, p.CFrame, p.Color = s, cf, GHOST
-		p.Material = Enum.Material.Neon
-		p.Transparency = 0.6
-		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow =
-			true, false, false, false, false
-		p.Parent = m
-	end
-	local hx, hy, hz = size.X / 2, size.Y / 2, size.Z / 2
-	for _, sx in { -1, 1 } do
-		for _, sz in { -1, 1 } do
-			rod("Scaffold", Vector3.new(0.25, size.Y, 0.25), box * CFrame.new(sx * hx, 0, sz * hz))
-		end
-		rod("Scaffold", Vector3.new(0.25, 0.25, size.Z), box * CFrame.new(sx * hx, hy, 0))
-		rod("Scaffold", Vector3.new(size.X, 0.25, 0.25), box * CFrame.new(0, hy, sx * hz))
-	end
-
-	local p = b:PointToObjectSpace(box.Position)
 	local at = Instance.new("Part")
 	at.Name = "BuildAt"
 	at.Size = Vector3.new(1, 1, 1)
-	at.CFrame = promptAt or b * CFrame.new(math.clamp(p.X, -19, 27), 5.5, math.clamp(p.Z, 30, 50))
+	-- WP-19b: a level's pieces spread over the island, so its prompt stands at the blueprint table spot
+	at.CFrame = promptAt or b * Marina.LOTS.BlueprintTable.cf * CFrame.new(0, 2.5, 0)
 	at.Transparency = 1
 	at.Anchored, at.CanCollide, at.CanQuery, at.CanTouch = true, false, false, false
 	at.Parent = m

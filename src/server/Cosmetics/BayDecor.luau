@@ -15,13 +15,13 @@ local DataService = require(Services:WaitForChild("DataService"))
 local DockService = require(Services:WaitForChild("DockService"))
 
 local NAME = "BayDecor"
--- G38: one tidy row along the jetty's water edge (Marina.JETTY x 10..18), 2.5 studs apart, max 8, between
--- the returning player's spot and the deck. The pieces face the berth; nothing is stacked.
+-- G38: one tidy row along the jetty finger's water edge (Marina.JETTY x -17..-9), 2.5 studs apart, max 8,
+-- between the returning player's spot and the quay. The pieces face the berth; nothing is stacked.
 local SLOTS = {}
 for i = 1, 8 do
-	table.insert(SLOTS, Vector3.new(11, 0, 8 + (i - 1) * 2.5))
+	table.insert(SLOTS, Vector3.new(-10.5, 0, 8 + (i - 1) * 2.5))
 end
-local FACE_WATER = CFrame.Angles(0, math.pi / 2, 0)
+local FACE_WATER = CFrame.Angles(0, -math.pi / 2, 0)
 local FALLBACK = CFrame.new(-104, 3, 30)
 local WOOD = Color3.fromRGB(112, 84, 58)
 local IRON = Color3.fromRGB(54, 58, 62)

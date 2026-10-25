@@ -1,58 +1,48 @@
 --!strict
--- Marina (docs/23 d.1, WP-1): the 16 player plots, one per player. Pure (tests/Marina.spec.luau).
--- Port Haven's basin has no free 400-stud shoreline (pier, slipways, pontoons, moorings), so the marina sits
--- on the beach just west of the west breakwater: a pontoon spine runs out to sea (+Z) from the beach at
--- x SPINE_X, odd plots east of it (bow +X), even plots west (bow -X), 8 per row, each WIDTH along the spine.
--- A plot = a shore strip (DECK, the deck beside the spine) + a water berth (BERTH) in front of it.
--- Berth frame (what VehicleService and BayLaunch read): LookVector = out to sea, local +X = the jetty finger
--- beside the craft, local +Z = the deck / spine end. The plot spans local x -21..29.
+-- Marina (docs/23 (k), WP-19b): the six player islands are the plots, one per player (server size 6). Pure
+-- (tests/Marina.spec.luau). Plot i = HubLayout.Islands[i] (Plot1..Plot6): its boat berth in the cove, its lots.
+-- Berth frame (what VehicleService, BayLaunch and DockPieces read): the island's boat berth at sea level,
+-- LookVector = out of the cove, local -X = the jetty (the finger beside the craft), local +Z = the quay.
+-- Every island is the same shape turned round the hub, so a lot sits at the same place in its berth frame:
+-- Marina.LOTS[name] = { cf = the lot's CFrame in the berth frame (on the plateau), size = Vector2 }.
+local HubLayout = require(script.Parent:WaitForChild("Config"):WaitForChild("HubLayout"))
+
 local Marina = {}
 
-Marina.COUNT = 16 -- server size (docs/01)
-Marina.SPINE_X = -500
-Marina.SPINE_W = 8
-Marina.ROOT_Z = 4 -- the spine starts on the beach
-Marina.Z0 = 80 -- first plots' shore-side edge (the rocks west of the spine end at z ~74)
-Marina.WIDTH = 50 -- along the spine
-Marina.DECK = 25 -- shore strip, spine to the berth
-Marina.BERTH = 55 -- water, deck edge out (a lifeboat is 52 long)
-Marina.DECK_TOP = 3
-Marina.JETTY = { x0 = 10, x1 = 18, out = -20 } -- berth frame: the finger the player stands on (BayLaunch.STAND)
-Marina.PLOT_X = { -21, 29 } -- berth frame: the plot's sides
+Marina.COUNT = #HubLayout.Islands -- server size (docs/23 (k))
+Marina.BERTH = 55 -- the berth's length (a lifeboat is 52 long)
+Marina.DECK_TOP = HubLayout.PlateauY -- the jetty and the quay
+Marina.JETTY = { x0 = -17, x1 = -9, out = -20, z1 = 30 } -- berth frame: the finger the player stands on (BayLaunch.STAND)
 
-local OFFSET = (Marina.PLOT_X[1] + Marina.PLOT_X[2]) / 2 -- berth centre sits this far from the plot centre
+local ISLE = HubLayout.Islands[1]
+local B0 = ISLE.berths.Boat
+Marina.LOTS = {} :: { [string]: { cf: CFrame, size: Vector2 } }
+for name, lot in ISLE.lots do
+	Marina.LOTS[name] = { cf = B0:ToObjectSpace(lot.cframe), size = lot.size }
+end
+Marina.SUB = B0:ToObjectSpace(ISLE.berths.Sub) -- the sub berth (in the sub pen), at sea level
+Marina.ISLAND = B0:ToObjectSpace(ISLE.frame) -- the island's centre on the plateau, LookVector = out from the hub
 
 -- The berth CFrame of plot i (1..COUNT), at sea level.
 function Marina.berth(i: number): CFrame
-	local k = (i - 1) // 2
-	local side = if i % 2 == 1 then 1 else -1
-	local look = Vector3.new(side, 0, 0)
-	local x = Marina.SPINE_X + side * (Marina.SPINE_W / 2 + Marina.DECK + Marina.BERTH / 2)
-	local right = look:Cross(Vector3.yAxis)
-	local pos = Vector3.new(x, 0, Marina.Z0 + Marina.WIDTH * (k + 0.5)) - right * OFFSET
-	return CFrame.lookAt(pos, pos + look)
+	return HubLayout.Islands[i].berths.Boat
 end
 
--- The far end of the spine (past the last pair of plots).
-function Marina.spineEndZ(): number
-	return Marina.Z0 + Marina.WIDTH * math.ceil(Marina.COUNT / 2)
+-- Where plot i's owner spawns and respawns (on their island, off the bridge, facing the station).
+function Marina.spawn(i: number): CFrame
+	return HubLayout.Islands[i].spawn
 end
 
-Marina.HEAD = 1 -- the marina head plot, by the beach: the Harbour Master's (docs/23 d.1)
 Marina.MASTER_LEVEL = 5 -- dock level that makes a player eligible (DockConfig Lv 5 "HarbourMaster")
 
--- The lowest free plot (taken[i] truthy = in use), nil when all are taken. The head plot goes to `head`
--- (the joining Harbour Master) when free, to anyone else only when nothing else is free.
-function Marina.assign(taken: { [number]: any }, head: boolean?): number?
-	if head and not taken[Marina.HEAD] then
-		return Marina.HEAD
-	end
+-- The lowest free plot (taken[i] truthy = in use), nil when all are taken.
+function Marina.assign(taken: { [number]: any }): number?
 	for i = 1, Marina.COUNT do
-		if i ~= Marina.HEAD and not taken[i] then
+		if not taken[i] then
 			return i
 		end
 	end
-	return if taken[Marina.HEAD] then nil else Marina.HEAD
+	return nil
 end
 
 -- The Harbour Master: the highest rank among the Lv 5 docks; a tie keeps `current`, else the first listed.

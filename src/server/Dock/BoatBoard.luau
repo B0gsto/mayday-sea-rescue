@@ -3,7 +3,7 @@
 -- scale models (ReplicatedStorage.VehiclePreviews, shrunk) built while its plot has an owner (berth attribute
 -- Owner, DockService) and, for a building's board, while the berth's building attribute is true:
 --   Boat board    every VehicleConfig.Order craft no building claims; the crane over the berth
---   Hangar board  RescueHelicopter (onto the helipad), in the roof shelter
+--   Hangar board  RescueHelicopter (onto the helipad), in the hangar
 --   Sub board     Submarine, on the jetty beside the sub pen; lowered into the pen on the gantry hook
 -- Each model's pad carries two owner-only prompts:
 --   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, nobody seated (boats, aircraft,
@@ -36,7 +36,7 @@ local SHELF_H = 2.6
 -- Lv 3+: the boat board stands in the boathouse (DockConfig.BOARD_SLOT, 17 studs between its walls): rows of
 -- ROW_N, each STEP higher and further back
 local ROW_N, ROW_SLOT, STEP_UP, STEP_BACK = 4, 4, 1.8, 1.4
-local CRANE = Vector3.new(17, 0, -12) -- the boat crane post, on the jetty's outer edge (berth frame)
+local CRANE = Vector3.new(-13, 0, -12) -- the boat crane post, on the jetty finger (berth frame)
 local JIB_Y = 24
 local AFLOAT = 1.5 -- a lowered craft's pivot over the water at the end of the beat
 local DROP_TIME = 1.4
@@ -272,7 +272,7 @@ local function crane(rack: Model, b: CFrame)
 	part(
 		rack,
 		"CraneJib",
-		Vector3.new(CRANE.X + 1.5, 1, 1),
+		Vector3.new(math.abs(CRANE.X) + 1.5, 1, 1),
 		b * CFrame.new(CRANE.X / 2, JIB_Y, CRANE.Z),
 		STEEL,
 		Enum.Material.Metal
@@ -460,7 +460,7 @@ function BoatBoard.start(launch: Launch)
 		{
 			name = "BoatBoard",
 			vehicles = boats(),
-			rack = CFrame.new(4, Marina.DECK_TOP, 46), -- the shore end of the deck, facing the water
+			rack = CFrame.new(4, Marina.DECK_TOP, 69), -- on the quay at the cove's head, facing the berth
 			targets = {},
 			from = Vector3.new(0, 14.5, 0),
 			hook = JIB_Y,
