@@ -334,10 +334,15 @@ local function open(model: Model)
 	AudioController.play("UI_Click")
 end
 
--- the owner's local prompt: Hire on a seeker, Fire on a hired crew member
+-- the owner's local prompt: Hire on a seeker, Fire on a hired crew member (a ProximityPrompt
+-- lives on a BasePart, so it goes on the root, not the model)
 local function attachPrompt(model: Model, hired: boolean)
-	if model:FindFirstChild("CrewPrompt") then
+	if model:FindFirstChild("CrewPrompt", true) then
 		return
+	end
+	local root = model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Head")
+	if not root or not root:IsA("BasePart") then
+		return -- the next scan picks it up
 	end
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "CrewPrompt"
@@ -345,7 +350,7 @@ local function attachPrompt(model: Model, hired: boolean)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 10
 	prompt.RequiresLineOfSight = false
-	prompt.Parent = model
+	prompt.Parent = root
 	prompt.Triggered:Connect(function()
 		open(model)
 	end)
@@ -360,7 +365,7 @@ local function ensureTag(model: Model)
 	attachBillboard(model)
 	if model:GetAttribute("CrewOwner") == player.UserId then
 		local hired = model:GetAttribute("CrewHired") == true
-		local prompt = model:FindFirstChild("CrewPrompt")
+		local prompt = model:FindFirstChild("CrewPrompt", true)
 		if prompt and prompt:IsA("ProximityPrompt") then
 			prompt.ActionText = if hired then "Fire" else "Hire"
 		else
@@ -368,6 +373,8 @@ local function ensureTag(model: Model)
 		end
 	end
 end
+
+local watched: { [Model]: true } = setmetatable({}, { __mode = "k" }) :: any -- model -> tagged
 
 local function scan()
 	local f = Workspace:FindFirstChild("CrewHire")
@@ -377,6 +384,15 @@ local function scan()
 	for _, model in f:GetDescendants() do
 		if model:IsA("Model") and model:GetAttribute("CrewRole") ~= nil then
 			ensureTag(model)
+			if not watched[model] then
+				watched[model] = true
+				-- owner / hired attributes can land after the model itself
+				model.AttributeChanged:Connect(function(name)
+					if name == "CrewOwner" or name == "CrewHired" then
+						ensureTag(model)
+					end
+				end)
+			end
 		end
 	end
 end

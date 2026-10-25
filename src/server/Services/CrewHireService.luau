@@ -51,9 +51,10 @@ local function ground(at: Vector3): Vector3
 	return if hit then hit.Position else at
 end
 
--- Feet CFrame at `at` on the ground, facing `toward` (level). Same as NpcService.
-local function stand(at: Vector3, toward: Vector3): CFrame
-	local p = ground(at)
+-- Feet CFrame at `at`, facing `toward` (level). Same as NpcService; a floorY picks an indoor
+-- floor instead of the raycast (which would land on the roof of the station or boathouse).
+local function stand(at: Vector3, toward: Vector3, floorY: number?): CFrame
+	local p = if floorY then Vector3.new(at.X, floorY, at.Z) else ground(at)
 	local look = Vector3.new(toward.X, p.Y, toward.Z)
 	if (look - p).Magnitude < 0.1 then
 		return CFrame.new(p)
@@ -69,8 +70,9 @@ end
 local function crewSpot(b: CFrame, role: string): CFrame
 	if role == "Mechanic" then
 		-- in the boathouse, by the wall, facing the doors (the cove)
-		local spot = b * Marina.LOTS.Boathouse.cf * CFrame.new(2, 0, 12)
-		return stand(spot.Position, (b * Marina.LOTS.Boathouse.cf).Position)
+		local L = b * Marina.LOTS.Boathouse.cf
+		local spot = L * CFrame.new(2, 0, 12)
+		return stand(spot.Position, spot.Position - L.LookVector * 10, L.Position.Y + 0.2)
 	elseif role == "Lifeguard" then
 		-- at the beach tower lot, facing out to sea (away from the hub)
 		local isle = b * Marina.ISLAND
@@ -79,7 +81,8 @@ local function crewSpot(b: CFrame, role: string): CFrame
 	end
 	-- Dispatcher: seated just inside the station, facing the door
 	local s = stationFrame(b)
-	return stand((s * CFrame.new(-6, 0, -(ST.hd - 3))).Position, s.Position)
+	local spot = s * CFrame.new(-6, 0, -(ST.hd - 3))
+	return stand(spot.Position, spot.Position - s.LookVector * 10, s.Position.Y + 0.2)
 end
 
 -- The line outside the station front, one row centred on the door.
@@ -109,7 +112,7 @@ local function spawnNpc(
 	at: CFrame
 ): Model?
 	local seat = (role == "Dispatcher" and hired) or nil
-	local model, _ = NpcFactory.spawn("Crew", {
+	local model, height = NpcFactory.spawn("Crew", {
 		name = `{(if hired then "Crew" else "Seeker")}_{player.UserId}_{role}`,
 		pose = if seat then "Sit" else "Idle",
 		seed = player.UserId * 31 + (table.find(CrewHire.Order, role) or 1) * 7 + if hired
@@ -123,6 +126,7 @@ local function spawnNpc(
 		return nil
 	end
 	tagModel(model, player, role)
+	model:SetAttribute("CrewHeight", height) -- root centre above the feet, for the hire walk
 	model:SetAttribute("CrewStars", stars)
 	if hired then
 		model:SetAttribute("CrewHired", true)
@@ -186,6 +190,9 @@ local function playPose(model: Model, pose: string)
 	end
 	local anim = Instance.new("Animation")
 	anim.AnimationId = id
+	for _, track in (animator :: Animator):GetPlayingAnimationTracks() do
+		track:Stop(0.2) -- the walk-in idle stops, the seat pose takes over
+	end
 	pcall(function()
 		local track = (animator :: Animator):LoadAnimation(anim)
 		track.Looped = true
@@ -207,11 +214,12 @@ local function walkTo(model: Model, spot: CFrame, pose: string?)
 		model:PivotTo(spot)
 		return
 	end
-	local offset = model:GetPivot():Inverse() * root.CFrame
+	local height = model:GetAttribute("CrewHeight")
+	local target = spot * CFrame.new(0, if type(height) == "number" then height else 3, 0)
 	local tween = TweenService:Create(
 		root,
 		TweenInfo.new(WALK_SECONDS, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-		{ CFrame = spot * offset }
+		{ CFrame = target }
 	)
 	if pose then
 		tween.Completed:Connect(function()
