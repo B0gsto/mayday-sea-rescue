@@ -68,10 +68,10 @@ PLANT_BUDGET = {
              "WestCoast": 170, "SkerryIsle": 60},  # T7: +400 clumps (Terrain.Decoration off, see README T7)
     "gorse": {"Inland": 260, "HavenHead": 160, "CoastRoad": 70, "WestCoast": 120, "SkerryIsle": 50, "EastCliffs": 60, "Town": 150},
     "heather": {"HavenHead": 120, "WestCoast": 100, "SkerryIsle": 50, "EastCliffs": 60, "Inland": 60, "Town": 130},
-    "thrift": {"HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
+    "thrift": {"Inland": 300, "HavenHead": 150, "WestCoast": 110, "SkerryIsle": 80, "EastCliffs": 50, "Town": 30},
     "bracken": {"Inland": 90, "CoastRoad": 60, "Town": 130, "WestCoast": 40, "HavenHead": 20},
     "hawthorn": {"CoastRoad": 12, "Town": 8, "HavenHead": 6, "WestCoast": 8, "Inland": 60},
-    "strand": {"HavenSands": 760, "CoastRoad": 160, "WestCoast": 120, "HavenHead": 60, "Town": 160},
+    "strand": {"Inland": 600, "HavenSands": 760, "CoastRoad": 160, "WestCoast": 120, "HavenHead": 60, "Town": 160},
 }
 # kind: (assets with weights, cluster sigma studs, mean members per cluster, spacing factor)
 PLANT_KIND = {
@@ -95,8 +95,7 @@ SLIPWAY_MARGIN = 12
 CARPARK_MARGIN = 10
 POINT_RADIUS = 30
 POI_RADIUS = 25
-STATION_BOX = (-380, 240, -320, 60)  # station compound + Chandlery (+40, -20) + yard, minX maxX minZ maxZ
-HARBOUR_BOX = (L.HARBOUR["minX"] - 40, L.HARBOUR["maxX"] + 40, -60, L.HARBOUR["maxZ"] + 40)  # basin + quay + arms
+PLATEAU_IN = 20  # docs/23 (j) rule 1: unbuilt plots are bare land; scatter only on the rims (studs from the coast)
 
 
 def smooth(e0, e1, x):
@@ -136,7 +135,7 @@ class Terrain:
         self.hollow = G.box_blur(h, 6) - h
         # coast distance + kind weights at 8-stud resolution (same perturbation as the bake), nearest-upsampled
         Xc, Zc = self.X[::2, ::2], self.Z[::2, ::2]
-        d, H, W = G.coast_field(Xc, Zc)
+        d, H, W = G.coast_field(Xc, Zc, L.HUB_WINDOW["polys"])
         s = L.SEED
         wc, wr, wb, wh, wm = W
         amp = 34 * wc + 24 * wr + 5 * wb + 12 * wm
@@ -177,28 +176,10 @@ class Terrain:
         return n / np.linalg.norm(n)
 
     def edges(self, seed):
-        """Distance-outside rasters for the roads (and the slipway) and the car parks."""
-        X, Z = self.X, self.Z
-        self.road_edge = np.full(X.shape, 1e9)  # asphalt roads + tracks
-        self.slip_edge = np.full(X.shape, 1e9)
-        for road in L.ROADS:
-            pts = G.catmull(road["points"], 4)
-            hw = road["width"] / 2
-            r = int(math.ceil((hw + 200) / self.cell)) + 1
-            target = self.slip_edge if road["surface"] == "Concrete" else self.road_edge
-            for px, pz in pts:
-                j0, i0 = self.idx(px, pz)
-                sl = (slice(max(j0 - r, 0), j0 + r + 1), slice(max(i0 - r, 0), i0 + r + 1))
-                np.minimum(target[sl], np.hypot(X[sl] - px, Z[sl] - pz) - hw, out=target[sl])
-        self.park_edge = np.full(X.shape, 1e9)
-        for cp in L.CAR_PARKS + L.FARMS:
-            cx, cz = cp["center"]
-            sx, sz = cp["size"]
-            a = math.radians(cp["yaw"])
-            lx = (X - cx) * math.cos(a) + (Z - cz) * math.sin(a)
-            lz = -(X - cx) * math.sin(a) + (Z - cz) * math.cos(a)
-            e = np.hypot(np.maximum(np.abs(lx) - sx / 2, 0), np.maximum(np.abs(lz) - sz / 2, 0))
-            self.park_edge = np.minimum(self.park_edge, e)
+        """Distance-outside rasters for roads, slipways and car parks: none since the town cut (docs/23 (k))."""
+        self.road_edge = np.full(self.X.shape, 1e9)
+        self.slip_edge = np.full(self.X.shape, 1e9)
+        self.park_edge = np.full(self.X.shape, 1e9)
 
 
 # ---------------------------------------------------------------- masks: exclusions, regions, eligibility
@@ -210,49 +191,21 @@ def in_box(X, Z, box):
 
 
 def exclusions(T):
-    """(excl_all, excl_turf): cells where nothing may go; turf additionally may use the town platform's rim."""
+    """(excl_all, excl_turf): cells where nothing may go: the POIs and the plateaus (lots, bridges, paths)."""
     X, Z = T.X, T.Z
-    ex = (T.slip_edge < SLIPWAY_MARGIN) | (T.park_edge < CARPARK_MARGIN)
-    ex |= in_box(X, Z, HARBOUR_BOX) | in_box(X, Z, STATION_BOX)
-    cv = L.HARBOUR_COVE
-    ex |= in_box(X, Z, (cv["minX"] - 10, cv["maxX"] + 30, cv["topZ"] - 10, cv["toeZ"] + 80))
-    for p in L.POINTS:
-        ex |= np.hypot(X - p["pos"][0], Z - p["pos"][2]) < POINT_RADIUS
+    ex = (T.d > PLATEAU_IN) & (T.h > 2)
     for p in L.POIS:
         ex |= np.hypot(X - p["pos"][0], Z - p["pos"][2]) < POI_RADIUS
-    wb = T.W[2]
-    beach_sand = (wb > 0.5) & (T.d < L.BEACH_WIDTH + 8) & (T.d > -40)  # the sand strip used by beach rescues
-    ex |= beach_sand
-    paving = np.isin(T.mat, [T.MI[n] for n in ("Asphalt", "Cobblestone", "Concrete", "Pavement")])
-    tp0 = L.TOWN_PLATFORM
-    # T5: the verge debris stage may use the road verge itself (not the asphalt, the platform or anything else excluded)
-    T.ex_verge = ex | np.isin(T.mat, [T.MI[n] for n in ("Asphalt", "Cobblestone", "Concrete")]) \
-        | in_box(X, Z, (tp0["minX"], tp0["maxX"], tp0["minZ"], tp0["maxZ"]))
-    ex |= paving | (T.road_edge < ROAD_VERGE)
-    tp = L.TOWN_PLATFORM
-    platform = in_box(X, Z, (tp["minX"], tp["maxX"], tp["minZ"], tp["maxZ"]))
-    rim = platform & ~in_box(X, Z, (tp["minX"] + 20, tp["maxX"] - 20, tp["minZ"] + 20, tp["maxZ"] - 20))
-    ex_turf = ex | (platform & ~rim)
-    ex_all = ex | platform
-    # T7: strand debris may use the upper half of the beach-rescue sand strip (tiny, non-colliding, flat)
-    T.cove_back = in_box(X, Z, (cv["minX"] + 6, cv["maxX"] - 6, cv["topZ"] - 6, cv["topZ"] + 60))  # Harbour Cove upper beach
-    T.ex_strand = ex_all & ~(((beach_sand & (T.d > 0.5 * L.BEACH_WIDTH)) | T.cove_back) & ~paving
-                             & (T.road_edge >= ROAD_VERGE))
-    return ex_all, ex_turf
+    T.ex_verge = T.ex_strand = ex
+    T.cove_back = np.zeros(X.shape, dtype=bool)
+    return ex, ex
 
 
 def regions(T):
     X, Z, d = T.X, T.Z, T.d
     reg = np.full(X.shape, REGIONS.index("Inland"), dtype=np.int8)
     put = lambda m, name: np.copyto(reg, np.int8(REGIONS.index(name)), where=m)  # noqa: E731
-    # lowest priority first, later overrides
-    put(X > 2100, "EastCliffs")
-    put((X < -820) & (d < 450), "WestCoast")
-    put(T.road_edge < 150, "CoastRoad")
-    put(in_box(X, Z, (1380, 2400, 1450, 2100)), "SkerryIsle")
-    put(in_box(X, Z, (1420, 2100, 380, 1200)), "HavenHead")
-    put(in_box(X, Z, (540, 1420, -60, 760)), "HavenSands")
-    put(in_box(X, Z, (-820, 640, -620, 120)), "Town")
+    # one region since the hub cut (the old ones were Great Gale's); reefs keep theirs
     for rf in L.REEFS:
         cx, cz = rf["center"]
         put((np.hypot(X - cx, Z - cz) < rf["radius"] * 1.15) & (T.h < 0), "Reefs")
@@ -289,27 +242,11 @@ def plant_weights(T, seed):
         * mw({"Grass": 0.8, "Snow": 0.8, "WoodPlanks": 0.8, "LeafyGrass": 1.0, "Ground": 0.6, "Brick": 0.8}) * (0.2 + 0.8 * patch(80, 6))
     w["hawthorn"] = dry * (h > 6) * (dl > 30) * smooth(0.18, 0.32, slope) * smooth(0.75, 0.55, slope) \
         * mw({"Grass": 1.0, "Snow": 1.0, "WoodPlanks": 1.0, "LeafyGrass": 0.8})
-    # T6: the harbour hillside's field patchwork (gen_terrain.hill_relief): gorse along the hedge banks, heather in the
-    # heath fields, bracken in the bracken fields and on the bank feet
-    # T8: gen_terrain's inland farmland mask too (fields + hedges across the island)
-    hill = np.maximum(G.harbour_hill(X, Z), smooth(60, 180, dl) * smooth(230, 170, h)
-                      * smooth(14, 40, np.hypot(np.maximum(np.maximum(L.TOWN_PLATFORM["minX"] - X, X - L.TOWN_PLATFORM["maxX"]), 0),
-                                                np.maximum(np.maximum(L.TOWN_PLATFORM["minZ"] - Z, Z - L.TOWN_PLATFORM["maxZ"]), 0)))) * dry * (slope < 0.7)
-    edge, cid = G.field_cells(X, Z, L.SEED)
-    hedge = smooth(5.0, 1.2, edge)
-    heath, brack = ((cid >= G.FIELD_STRAW) & (cid < G.FIELD_HEATH)), (cid >= G.FIELD_HEATH)
-    leafy = mw({"LeafyGrass": 1.0, "Grass": 0.5, "Snow": 0.6, "WoodPlanks": 0.5, "Brick": 0.6, "Ground": 0.4})
-    w["gorse"] = w["gorse"] + hill * leafy * (1.2 * hedge + 0.25 * heath) * (0.3 + 0.7 * patch(60, 7))
-    w["heather"] = w["heather"] + hill * leafy * (1.0 * heath + 0.15 * hedge) * (0.3 + 0.7 * patch(40, 8))
-    w["bracken"] = w["bracken"] + hill * leafy * (1.0 * brack + 0.5 * smooth(9.0, 4.0, edge) * (1 - hedge)) \
-        * (0.3 + 0.7 * patch(45, 9))
-    w["hawthorn"] = w["hawthorn"] + 0.6 * hill * hedge * (0.2 + 0.8 * patch(90, 11))  # T8: wind-bent hedge thorns
     # T7: strand-line debris on the wrack / shingle / upper dry sand of beaches and cove backs and at the dune toe
     strand_m = mw({"Ice": 1.0, "CrackedLava": 0.7, "Sand": 0.6, "Glacier": 0.35, "Sandstone": 0.25})
     w["strand"] = ((h > 0.6) & (h < 9) & (slope < 0.35) & ((wb > 0.5) | (T.near_shore & (wc + wr > 0.5)) | T.cove_back)) \
         * strand_m * (0.15 + 0.85 * patch(18, 10)) * (1.0 + 2.5 * smooth(bw - 75, bw - 50, dl) * smooth(bw + 16, bw + 4, dl))  # upper beach / dune toe
-    mvp = np.hypot(X, Z) <= L.MVP_RADIUS
-    return {k: (v * mvp).astype(np.float64) for k, v in w.items()}
+    return {k: v.astype(np.float64) for k, v in w.items()}
 
 
 # ---------------------------------------------------------------- placement helpers
@@ -709,7 +646,7 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
                         x, z = cx, cz
                     else:
                         x, z = cx + rng.normal(0, sigma), cz + rng.normal(0, sigma)
-                    if x * x + z * z > L.MVP_RADIUS ** 2:
+                    if x * x + z * z > L.HALF_EXTENT ** 2:
                         continue
                     j, i = T.idx(x, z)
                     wcell = m[j, i]
@@ -738,7 +675,7 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
 ROCK_MIN_STUDS = 4.5  # scaled rocks smaller than this (largest dimension) add triangles, not shape: dropped
 SEEN_EDGE = 36  # studs either side of a road, track, slipway or car park
 SEEN_RADIUS = 220  # studs round the station, the land points and the viewpoints
-STATION = (-165, 30)
+STATION = (0, 0)  # the hub
 UNSEEN_KEEP = 0.35  # share of plants kept away from where the player walks / looks
 ALWAYS_KEEP = ("M_Veg_Hawthorn_01", "M_Veg_Hawthorn_02", "M_Veg_Gorse_02")  # silhouettes read from afar
 
@@ -747,12 +684,10 @@ def seen_mask_at(T, x, z):
     j, i = T.idx(x, z)
     if min(T.road_edge[j, i], T.slip_edge[j, i], T.park_edge[j, i]) < SEEN_EDGE:
         return True
-    if float(G.harbour_hill(np.array([[x]]), np.array([[z]]))[0, 0]) > 0.3:  # T6: the hillside over the harbour town
-        return True
     wb = T.W[2][j, i]
     if wb > 0.5 and T.d[j, i] < L.BEACH_WIDTH + L.DUNE_WIDTH + 40:  # beaches and the dune front
         return True
-    spots = [STATION] + [(p["pos"][0], p["pos"][2]) for p in L.POINTS]
+    spots = [STATION]
     spots += [(p["pos"][0], p["pos"][2]) for p in L.POIS if p["kind"] in ("Viewpoint", "RockPool")]
     return any((x - sx) ** 2 + (z - sz) ** 2 < SEEN_RADIUS ** 2 for sx, sz in spots)
 
@@ -774,33 +709,6 @@ def thin(T, rocks, rmeta, plants, pmeta, seed):
     print(f"thin: rocks {len(rocks)} -> {len(kr)}, plants {len(plants)} -> {len(kp)} ({sum(flags)} seen)")
     plants2 = [plants[i] + [f] for i, f in zip(kp, flags)]
     return [rocks[i] for i in kr], [rmeta[i] for i in kr], plants2, [pmeta[i] for i in kp]
-
-
-def treeline(T, seed):
-    """WP-3: a broken shelter belt of big wind-bent hawthorns along the TOWN_HILL treeY contour behind Port Haven, on
-    the town's skyline. Rows carry seen = 1."""
-    th, tp = L.TOWN_HILL, L.TOWN_PLATFORM
-    above = th["treeY"] + SURFACE_BIAS
-    rng = np.random.default_rng([seed, 31])
-    out = []
-    for x in np.arange(tp["minX"] + 40, tp["maxX"] - 39, 14.0):
-        x = float(x + rng.uniform(-4, 4))
-        if G.fbm(np.array([x]), np.array([0.0]), 90, seed + 32)[0] < -0.2:  # gaps between the clumps
-            continue
-        z = next((z for z in np.arange(tp["minZ"] - 20, tp["minZ"] - th["depth"], -4.0) if T.height(x, z) > above), None)
-        if z is None:
-            continue
-        z = float(z) - 6 + rng.uniform(-3, 3)
-        j, i = T.idx(x, z)
-        if T.road_edge[j, i] < 12:
-            continue
-        asset = ("M_Veg_Hawthorn_01", "M_Veg_Hawthorn_02")[int(rng.integers(2))]
-        out.append(row(asset, x, T.height(x, z), z, WIND_YAW + rng.uniform(-10, 10), 0, 0, rng.uniform(2.0, 2.8),
-                       0.05) + [1])
-    return out
-
-
-# ---------------------------------------------------------------- preview
 
 
 def preview(T, rocks, plants, path):
@@ -844,8 +752,6 @@ def main():
     plants = plants[:PLANT_CAP]
     pmeta = pmeta[:PLANT_CAP]
     rocks, rmeta, plants, pmeta = thin(T, rocks, rmeta, plants, pmeta, seed)
-    trees = treeline(T, seed)
-    plants, pmeta = plants + trees, pmeta + ["Town"] * len(trees)
     by_asset, by_region = {}, {}
     for r in rocks + plants:
         by_asset[ASSETS[r[0] - 1]] = by_asset.get(ASSETS[r[0] - 1], 0) + 1

@@ -274,6 +274,12 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
 
 ## Other systems
 
+- Hub and six islands (docs/23 (k), WP-18): `src/shared/Config/HubLayout.luau` (pure, `tests/HubLayout.spec.luau`
+  checks it against the bake), built from the generated `WorldConfig.Hub`: `Hub` (center, frame, spawn, lots HQ /
+  CallBoard / ShopCounter, dropOff), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
+  lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
+  CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
+  suspension bridges from it (WorldDressingService I2 list).
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`

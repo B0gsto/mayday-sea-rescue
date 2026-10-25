@@ -2,6 +2,18 @@
 
 Bakes the Gale Isles terrain (docs/10-world-and-map.md) and merges it into `build/MaydaySeaRescue.rbxl`.
 
+**Hub ring (docs/23 (k), WP-18; supersedes the Great Gale passes below).** Great Gale, Port Haven, the town ground,
+roads, farms, St Elowen's Mount and its causeway are gone. The main window is now x, z in +-1,280
+(`layout.HUB_WINDOW`, baked by `bake_island()` like every island): the hub island (radius 200) at the centre and six
+player islands (`Plot1..6`, radius 160) 900 studs out at bearings 0, 60 .. 300, each a flat `plateau` at Y 4 (= the
+quay height) with a 25-stud beach / rocky rim and a `notch` in its outward face (hub: the harbour, 80 wide, facing
+south; islands: the berth cove, 90 wide), dredged to Y -30 with a channel straight out; `edgeRamp` 160 keeps the
+outer rims dry. `WorldConfig.Hub` carries the geometry; `src/shared/Config/HubLayout.luau` lays out lots, berths,
+spawns and the bridges (`src/server/World/Bridges.luau`) from it, and `tests/HubLayout.spec.luau` checks them against
+the bake. Skerry Isle has its own window now (1,024..2,560 x 1,280..2,304, the Skerries reefs as shoals); the other
+outer windows are unchanged. `check_zones.py` checks the plateaus, notches and outer islands; `scatter_props.py`
+dresses only the rims (rocks, sea pinks, strand debris: unbuilt plots stay bare, docs/23 (j) rule 1).
+
 | Step | Command | Output |
 |---|---|---|
 | 1. Bake (deterministic, seeded) | `python3 tools/world/gen_terrain.py [--preview build/world/terrain_preview.png]` | `map/generated/terrain.json`, `terrain_height.i16` (int16 LE, Y x 8), `terrain_material.u8`; `src/shared/Config/WorldConfig.luau` (generated, then run `stylua` on it) |

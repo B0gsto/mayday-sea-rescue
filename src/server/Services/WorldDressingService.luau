@@ -561,6 +561,7 @@ function WorldDressingService.Start()
 			"SkerryLight",
 			"StationYard",
 			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
+			"Bridges", -- docs/23 (k): the hub -> player island suspension bridges
 		}
 	do
 		local mod = script.Parent.Parent.World:FindFirstChild(name)

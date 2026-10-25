@@ -53,7 +53,7 @@ task.wait(0.5) -- a same-frame restore never reaches the texture-pack job
 for i, d in batch do d.ColorMap = saved[i] end
 return #list
 '''
-# the town platform (Y 4) under Harbour Road west of the Chandlery: solid voxels, else the cars spawn in the sea
+# the hub plateau (Y 4, docs/23 (k)) north-west of the HQ: solid voxels, else the terrain did not load
 TOWN_PROBE = '''
 local m = workspace.Terrain:ReadVoxels(Region3.new(Vector3.new(-104, -8, -64), Vector3.new(-96, 4, -56)), 4)
 local solid = 0
