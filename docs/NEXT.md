@@ -53,6 +53,8 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 
 ## 2b. Queued next (owner, 2026-10-25 night)
 
+Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
+
 - **WP-27 ring layout** (docs/23 (p)), right after WP-24 plates merge: remove the middle island; 6 plates in a tight
   ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at a quest pontoon with its own quest tablet; move hub call sites; flyover
   centre; map refresh. Then WP-26 workers, then WP-25 art pass.

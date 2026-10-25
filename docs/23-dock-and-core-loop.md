@@ -436,3 +436,37 @@ Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), *
 **Work package.** WP-27 ring layout (after WP-24 plates land): generator removes the hub terrain; HubLayout →
 ring positions; neighbour bridges; delete hub camps/HQ/fog/stickers code; quest NPC boats to your jetty; move
 hub-based call sites; loading-flyover centre; map image refresh.
+
+## (q) No ranks: a linear unlock tree (owner, 2026-10-25 night)
+
+Owner: "remove all of the recruit and rank stuff ... look at it linearly: if the player did not unlock X he cannot
+build Y, clearly stated in the UI ... we can scale that." This wins over every rank/Rep rule elsewhere.
+
+- **Removed:** ranks (Recruit → Admiral), Reputation, rank-ups and the rank ceremony, the rank bar/badge, rank
+  gates, rank-based badges and leaderboards (badges/leaderboards switch to people rescued), dock levels 2–5 as a
+  ladder (their pieces become separate tree buildings). Saved profile keys stay (unused).
+- **Unlock tree (data-driven, so it scales):** every buildable item lists its prerequisites (`needs = {...}`) in one
+  config; adding content = adding a row. First tree (tune):
+  ```
+  Jetty (start)
+  ├─ Pontoon (2nd berth) ── Lookout tower ── Helipad ── Hangar → Helicopter
+  │                              └─ Rescue boathouse (Rescuers)
+  ├─ Workshop (Builders) ─┬─ Boathouse → RIB, boat board, paint booth
+  │                       │     ├─ Lifeboat slip → Lifeboat
+  │                       │     └─ Crane ── Sub pen → Submarine
+  │                       └─ Boat yard (Mechanics)
+  ├─ Fish shed (Gatherers)
+  └─ Station (needs Boathouse + Lookout) ── Clinic (Medics), trophy hall
+  Decor: needs Jetty only
+  ```
+- **UI:** a locked card shows a padlock + the missing prerequisite's icon and name ("Needs: Crane"); tapping it
+  focuses that item's blueprint. In-world blueprints of locked items are greyed with a chain icon. Max ~4 steps deep.
+- **Craft unlock through their building** (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ← Hangar);
+  Robux boats need the Boathouse. **Call reach** = the best craft you can launch.
+- **Robux skips the Cash, never the order** (replaces rule c.4's "skips rank"): an item can be bought with Robux once
+  its prerequisites exist.
+- Economy: re-tune the pacing sim on the tree (Cash only), keep free players reaching everything.
+
+**Work package.** WP-28 (after the current batch lands, before WP-27 ring): remove ranks/Rep; unlock tree config +
+rules + specs; tablet cards and blueprints show prerequisites; craft/building gates; call reach; badges/leaderboard
+to rescues; pacing re-tune; docs (00, 02, 03, 04) updated.

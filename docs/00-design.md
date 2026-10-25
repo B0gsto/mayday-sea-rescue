@@ -69,14 +69,15 @@ far your calls go.
 
 ## 6. Progression and economy
 
-Ranks: Recruit → Lifeguard → Rescue Swimmer → Coxswain → Rescue Pilot → Captain → Commodore → Admiral (Rep from
-calls and quests). Cash from calls, quests, the daily chest and streaks; spent on craft, island buildings, crew
-wages, cosmetics, and island decorations/expansions on the build tablet (the late-game Cash sink, planned). Free players reach everything (docs/03 pacing; checked by the pacing sim in `tests/`). Prices and
-the economy check: docs/23 (i).
+No ranks and no Reputation. Progress is a **linear unlock tree** on your island: each building lists what it needs
+("Needs: Crane"), craft unlock through their building (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ←
+Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily chest,
+streaks) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
+(pacing sim in `tests/`). The tree is data-driven so new content is a new row. (In progress, WP-28; docs/23 (q).)
 
 ## 7. Money (Robux)
 
-Robux can buy anything a player lacks Cash or rank for (never skill: grades and promotions stay earned). Passes:
+Robux can skip the Cash for anything whose prerequisites you already have, never the order of the tree (and never skill). Passes:
 2x Cash, VIP, Quick Launch, Starter Kit, Robux boats and craft, cosmetics; products: Cash packs, boosts, Storm
 Summons, dock levels and buildings, day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
 No pressure, no timers on offers, the player opens every prompt. Details: docs/04.
