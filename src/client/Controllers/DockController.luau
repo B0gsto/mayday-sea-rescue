@@ -56,7 +56,7 @@ local DockController = {}
 local LIST_W = 440 -- the right-hand list, du
 local CARD_BUY_H = 168 -- a card with its buy buttons
 local CARD_H = 104 -- owned / not for sale yet
-local STRIP_H = 132 -- the focus strip
+local STRIP_H = 160 -- the focus strip: name, a two-line desc, the badge row
 local OUTLINE = Color3.fromRGB(255, 214, 60)
 local PAPER = Color3.fromRGB(38, 102, 190) -- blueprint blue
 local PAPER_PPS = 20 -- SurfaceGui pixels per stud on the paper
@@ -251,25 +251,30 @@ local function drawGlyph(parent: GuiObject, item: DockBlueprints.Item, line: num
 	end
 end
 
+-- Why an item is not for sale (or that it is owned): an icon (Kit name or asset id) and a 1-3 word label. A
+-- reason with `item` names a prerequisite: its chip draws that item and tapping it focuses that item, so a
+-- "Needs: <building>" tree (docs/23 (q)) only has to fill this in.
+type Reason = { icon: string, text: string, item: DockBlueprints.Item? }
+
 -- What an item's card and strip show: owned / for sale (Cash and Robux buttons) / why it is locked.
 type Status = {
 	owned: boolean,
 	forSale: boolean, -- not owned, the dock level allows it, not a quest reward
-	rankLock: boolean, -- for sale with Robux only (Robux skips the rank, docs/23 (c) rule 4)
+	cashLock: boolean, -- for sale with Robux only (the rank gate; Robux skips it, docs/23 (c) rule 4)
 	cash: number,
 	productId: number, -- 0: no Robux product
 	robux: number,
-	badge: string?, -- "Owned", a rank, "Dock Lv N", "Quest"
+	reason: Reason?,
 }
 
 local function statusOf(item: DockBlueprints.Item): Status
 	local entry = entryOf(item)
 	local owned = ownedOf(item)
-	local levelLock = if item.kind == "Level"
-		then (item.key :: number) > currentLevel() + 1
-		elseif item.kind == "Building" then currentLevel()
-			< DockConfig.Buildings[item.key :: string].needs
-		else false
+	local needLevel = if item.kind == "Level"
+		then (item.key :: number) - 1
+		elseif item.kind == "Building" then DockConfig.Buildings[item.key :: string].needs
+		else 1
+	local levelLock = currentLevel() < needLevel
 	local rankLock = item.kind ~= "Decor"
 		and item.kind ~= "Blueprint"
 		and entry ~= nil
@@ -277,26 +282,31 @@ local function statusOf(item: DockBlueprints.Item): Status
 	local forSale = not owned and not levelLock and DockBlueprints.buyable(item)
 	local product = entry and entry.product and MonetizationConfig.Products[entry.product]
 	local id = if product then product.id else 0
-	local badge: string? = nil
+	local reason: Reason? = nil
 	if owned then
-		badge = "Owned"
+		reason = { icon = UiImages.VehicleArt.Check, text = "Owned" }
 	elseif item.kind == "Blueprint" then
-		badge = "Quest"
+		reason = { icon = "quests", text = "Quest" }
 	elseif levelLock then
-		badge = if item.kind == "Level"
-			then `Dock Lv {(item.key :: number) - 1}`
-			else `Dock Lv {DockConfig.Buildings[item.key :: string].needs}`
+		reason = {
+			icon = "lock",
+			text = `Level {needLevel}`,
+			item = { kind = "Level", key = needLevel },
+		}
 	elseif rankLock then
-		badge = ProgressionConfig.Ranks[DockConfig.rankIndex(entry.rank)].displayName
+		reason = {
+			icon = "rank",
+			text = ProgressionConfig.Ranks[DockConfig.rankIndex(entry.rank)].displayName,
+		}
 	end
 	return {
 		owned = owned,
 		forSale = forSale,
-		rankLock = rankLock,
+		cashLock = rankLock,
 		cash = if entry and type(entry.cash) == "number" then entry.cash else 0,
 		productId = id,
 		robux = livePrice[id] or (entry and entry.robux) or 0,
-		badge = badge,
+		reason = reason,
 	}
 end
 
@@ -333,7 +343,7 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	local cashButton = PriceButtonUI.new(row, {
 		price = st.cash,
 		currency = "Cash",
-		state = if st.rankLock or st.cash > (snapshot.cash or 0) then "disabled" else "buy",
+		state = if st.cashLock or st.cash > (snapshot.cash or 0) then "disabled" else "buy",
 		onActivate = function()
 			cashBuy(item)
 		end,
@@ -369,40 +379,6 @@ local function buyButtons(parent: GuiObject, item: DockBlueprints.Item, st: Stat
 	end
 end
 
--- The state badge: a tick + Owned, or a padlock + what it waits for. Its own row, never over the title.
-local function badgeRow(parent: GuiObject, st: Status): Frame?
-	local text = st.badge
-	if not text then
-		return nil
-	end
-	local row = Instance.new("Frame")
-	row.Name = "Badge"
-	row.BackgroundTransparency = 1
-	row.Parent = parent
-	local list = Style.list(row, true, 6)
-	list.VerticalAlignment = Enum.VerticalAlignment.Center
-	local mark = Instance.new("Frame")
-	mark.BackgroundTransparency = 1
-	mark.Size = UDim2.fromOffset(26, 26)
-	mark.Parent = row
-	if st.owned then
-		local tick = Instance.new("ImageLabel")
-		tick.BackgroundTransparency = 1
-		tick.Image = UiImages.VehicleArt.Check
-		tick.Size = UDim2.fromScale(1, 1)
-		tick.Parent = mark
-	else
-		Style.icon(mark, "lock")
-	end
-	local label = Style.label(row, text, Theme.Text.small)
-	label.TextWrapped = false
-	label.TextTruncate = Enum.TextTruncate.AtEnd
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Size = UDim2.new(1, -32, 1, 0)
-	label.LayoutOrder = 1
-	return row
-end
-
 local function colorOf(item: DockBlueprints.Item): string
 	if item.kind == "Level" then
 		return "blue"
@@ -433,6 +409,49 @@ local function artWell(parent: GuiObject, item: DockBlueprints.Item, side: numbe
 end
 
 local focusItem: (DockBlueprints.Item) -> ()
+
+-- The state badge on its own row (never over the title): the reason's icon and label. A prerequisite reason
+-- is a chip with that item's drawing; tapping it focuses the prerequisite.
+local function badgeRow(parent: GuiObject, st: Status): GuiObject?
+	local reason = st.reason
+	if not reason then
+		return nil
+	end
+	local need = reason.item
+	local row: GuiObject = if need then Style.button(parent, UDim2.new()) else Instance.new("Frame")
+	row.Name = "Badge"
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+	local list = Style.list(row, true, 6)
+	list.VerticalAlignment = Enum.VerticalAlignment.Center
+	local mark = Instance.new("Frame")
+	mark.BackgroundTransparency = 1
+	mark.Size = UDim2.fromOffset(26, 26)
+	mark.Parent = row
+	if need then
+		drawGlyph(mark, need)
+	elseif string.find(reason.icon, "://", 1, true) then
+		local img = Instance.new("ImageLabel")
+		img.BackgroundTransparency = 1
+		img.Image = reason.icon
+		img.Size = UDim2.fromScale(1, 1)
+		img.Parent = mark
+	else
+		Style.icon(mark, reason.icon)
+	end
+	local label = Style.label(row, reason.text, Theme.Text.small)
+	label.TextWrapped = false
+	label.TextTruncate = Enum.TextTruncate.AtEnd
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Size = UDim2.new(1, -32, 1, 0)
+	label.LayoutOrder = 1
+	if need and row:IsA("GuiButton") then
+		Style.press(row, function()
+			focusItem(need)
+		end, S.cornerSmall)
+	end
+	return row
+end
 
 local function refreshCards()
 	local content = cardsContent
@@ -509,14 +528,15 @@ local function refreshStrip()
 		return
 	end
 	local st = statusOf(item)
-	local well = artWell(content, item, STRIP_H - 30)
-	well.Position = UDim2.fromOffset(0, 0)
-	local buyW = if st.forSale then (if st.productId ~= 0 then 380 else 190) else 0
+	local well = artWell(content, item, 96)
+	well.AnchorPoint = Vector2.new(0, 0.5)
+	well.Position = UDim2.fromScale(0, 0.5)
+	local buyW = if st.forSale then (if st.productId ~= 0 then 350 else 175) else 0
 	local words = Instance.new("Frame")
 	words.Name = "Words"
 	words.BackgroundTransparency = 1
-	words.Position = UDim2.fromOffset(STRIP_H - 16, 0)
-	words.Size = UDim2.new(1, -(STRIP_H - 16) - buyW - 12, 1, 0)
+	words.Position = UDim2.fromOffset(112, 0)
+	words.Size = UDim2.new(1, -112 - buyW - 12, 1, 0)
 	words.Parent = content
 	local name = Style.label(words, DockBlueprints.label(item), Theme.Text.heading)
 	name.Size = UDim2.new(1, 0, 0, 36)
@@ -541,7 +561,6 @@ local function refreshStrip()
 	if badge then
 		badge.Position = UDim2.new(0, 0, 1, -28)
 		badge.Size = UDim2.new(1, 0, 0, 28)
-		line.Size = UDim2.new(1, 0, 0, 30)
 	end
 end
 
@@ -594,6 +613,7 @@ local function makePaper(item: DockBlueprints.Item, frame: CFrame, parent: Insta
 	art.AnchorPoint = Vector2.new(0.5, 0.5)
 	art.Position = UDim2.fromScale(0.5, 0.5)
 	art.Size = UDim2.fromOffset(side, side)
+	art.Rotation = 90 -- a Top-face SurfaceGui's up is the paper's -X; this turns the drawing upright from the build camera
 	art.Parent = gui
 	drawGlyph(art, item, math.max(0.25 * PAPER_PPS, side / 30))
 	p.Parent = parent
@@ -658,6 +678,28 @@ local function unfocus()
 	islandView(0.6)
 end
 
+-- Build mode is a full-screen view: the world HUD (minimap, map, waypoints, ops, dev button) steps aside so
+-- the strip and the papers read; the main Hud (Cash) stays.
+-- shortcut: keyed by ScreenGui name; switch to a HUD hide API if the HUD gets one.
+local HUD_KEEP = { Hud = true, BuildTablet = true, Freecam = true, ProximityPrompts = true }
+local hiddenGuis: { ScreenGui } = {}
+
+local function hideHud(on: boolean)
+	if on then
+		for _, g in playerGui:GetChildren() do
+			if g:IsA("ScreenGui") and g.Enabled and not HUD_KEEP[g.Name] then
+				g.Enabled = false
+				table.insert(hiddenGuis, g)
+			end
+		end
+	else
+		for _, g in hiddenGuis do
+			g.Enabled = true
+		end
+		hiddenGuis = {}
+	end
+end
+
 local function closeBuild()
 	if not displayed then
 		return
@@ -667,6 +709,7 @@ local function closeBuild()
 	clearOutline()
 	clearPapers()
 	refreshStrip()
+	hideHud(false)
 	if ui then
 		ui.Enabled = false
 	end
@@ -798,6 +841,7 @@ local function openBuild()
 	ui = ui or buildUI()
 	local screen = ui :: ScreenGui
 	screen.Enabled = true
+	hideHud(true)
 	local p = listPanel :: PanelUI.Panel
 	Style.pop(p.root, true)
 	local tabBar = tabs
