@@ -5,7 +5,7 @@
 --     heading-up (the bow while seated, else the camera), a north marker on the rim, zoom from speed (close on foot,
 --     wide at speed in a boat),
 --     blips (the operation's casualty / vessel pulsing, the drop-off when transporting, offers,
---     the station, Chandlery, quay desk, car park, your vehicles, other crew, storm areas, your
+--     the station, quay desk, your vehicles, other crew, storm areas, your
 --     waypoint) with objective blips clamped to the rim, a dotted line to the current objective (its
 --     distance lives on UI/Waypoint's marker and the strip, one readout: playtest 2). Tap / click it to open the full map.
 --   * Full map (M, gamepad View/Select, the MAP button): pan (drag / left stick), zoom (wheel,
@@ -241,16 +241,6 @@ local function seatModel(): (Model?, string)
 	while model and model.Parent and model.Parent:IsA("Model") do
 		model = model.Parent :: Model
 	end
-	local landFolder = Workspace:FindFirstChild("LandVehicles")
-	if
-		model
-		and (
-			model:GetAttribute("LandVehicle") ~= nil
-			or (landFolder and model:IsDescendantOf(landFolder))
-		)
-	then
-		return model, "car"
-	end
 	return model, "boat"
 end
 
@@ -474,7 +464,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			{ id = "Home", pos = home.Position, style = S.Home, clamp = true, size = 20 }
 		)
 	end
-	for _, folderName in { "Vehicles", "LandVehicles" } do
+	for _, folderName in { "Vehicles" } do
 		local folder = Workspace:FindFirstChild(folderName)
 		for _, m in if folder then folder:GetChildren() else {} do
 			if m:IsA("Model") and m:GetAttribute("Owner") == player.UserId and m ~= myVehicle then

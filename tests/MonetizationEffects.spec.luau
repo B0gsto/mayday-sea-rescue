@@ -150,16 +150,23 @@ return function(t)
 				DockLevel3 = true,
 				DockLevel4 = true,
 				DockLevel5 = true,
-				DockGarage = true, -- DockService grants dock buildings (docs/23 WP-10b)
 				DockHangar = true,
 				DockSubPen = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}
+		-- cut 2026-10-25 (pre-hub-cut): the cars and the car garage stay recorded but are never sold
+		local cut = {
+			DockGarage = true,
+			BeachATVPass = true,
+			CoastguardResponsePass = true,
+			HarbourGTPass = true,
+			LighthouseCruiserPass = true,
+		}
 		for kind, items in { Products = Config.Products, GamePasses = Config.GamePasses } do
 			for key, item in items do
-				t.expect(`{kind}.{key}={item.ready == true}`)
-					.toBe(`{kind}.{key}={ready[kind][key] == true or item.vehicle ~= nil}`) -- vehicle passes: ProgressionRules.vehiclePass
+				local want = not cut[key] and (ready[kind][key] == true or item.vehicle ~= nil) -- vehicle passes: ProgressionRules.vehiclePass
+				t.expect(`{kind}.{key}={item.ready == true}`).toBe(`{kind}.{key}={want}`)
 				t.expect(item.id >= 0 and item.id % 1 == 0).toBe(true) -- 0 = off; RP-M4 (deploy.py) writes the real ids
 			end
 		end

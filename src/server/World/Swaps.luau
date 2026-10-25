@@ -63,90 +63,7 @@ local function slipwayWalls(boxes: { { number } }): { { number } }
 	return boxes
 end
 
--- H3 cottages M_Bld_Cottage_01..06 (art/source/buildings/M_Bld_Cottage_Kit/variants.py): each replaces the greybox
--- Map.PortHaven.Houses.House<n> (map/Build.luau buildHouse, spots[n]) on its footprint, pivot at the greybox base
--- (footprint centre at ground) yawed 180 degrees: the asset's front (Blender -Y) and the greybox door face +Z, the
--- harbour and Harbour Road (z -30); the backs (moss on the north slope) face the hill. Exterior-only (no entry):
--- the uploads' single-mesh hulls stay off and simple boxes from kit.py's _COL recipe collide instead.
-local COTTAGE_D = 16 / 3 -- depth (m), all six
-local COTTAGE_SKIRT = 0.4 -- granite skirt below the pivot (sloping ground)
-
-local function cottage(
-	n: number,
-	at: Vector3,
-	width: number, -- X frontage (m) = greybox X studs / 3
-	eaves: number, -- m
-	doors: { number }, -- door centres along X (Blender m; ATT_Door X studs = -x * 3)
-	porch: boolean?
-): Swap
-	local d = COTTAGE_D / 2
-	local p = if porch then 1.0 else 0.0
-	local m = 2 / 3 -- pad margin round the plinth (2 studs), more in front for the steps / porch
-	local boxes = {
-		{ -width / 2, -d, -COTTAGE_SKIRT, width / 2, d, eaves }, -- walls up to the eaves
-	}
-	for _, x in doors do
-		table.insert(boxes, { x - 0.6, -d - 0.32 - p, 0, x + 0.6, -d, 0.12 }) -- door step
-	end
-	if porch then
-		local x = doors[1]
-		table.insert(boxes, { x - 0.76, -d - 1.0, 0, x - 0.54, -d, 2.3 }) -- porch cheeks
-		table.insert(boxes, { x + 0.54, -d - 1.0, 0, x + 0.76, -d, 2.3 })
-		table.insert(boxes, { x - 0.9, -d - 1.15, 2.3, x + 0.9, -d, 2.9 }) -- porch roof
-	end
-	return {
-		greybox = { "PortHaven", "Houses", `House{n}` },
-		pivot = CFrame.new(at) * CFrame.Angles(0, math.pi, 0),
-		shell = { string.format("M_Bld_Cottage_%02d", n) },
-		-- the town terrain voxels read above LandTopY (the greyboxes stand in it): sit the plinth on the terrain
-		-- under the footprint; the skirt covers up to 0.4 m of fall across it
-		ground = 8,
-		-- the town ground reads 4 or 6 studs from voxel to voxel (the height field is exactly LandTopY, a voxel
-		-- boundary): level a terrain pad to the plinth so no edge floats (House4's west half read 4)
-		pad = { -width / 2 - m, -d - 0.32 - p - m, width / 2 + m, d + m },
-		rig = "CottageRig", -- GlassLit panes, door lantern + room lights at night, chimney smoke in cold weather
-		collide = false,
-		colliders = boxes,
-	}
-end
-
 local Swaps: { [string]: Swap } = {
-	-- H2 Port Haven Chandlery (art/source/buildings/M_Bld_Chandlery_Ext/layout.py: pivot at the greybox centre,
-	-- yawed 180 degrees so the shopfront faces Harbour Road, +Z; the greybox counter maps to ATT_Counter)
-	Chandlery = {
-		greybox = { "PortHaven", "Chandlery" },
-		pivot = CFrame.new(-44, LAND, -60) * CFrame.Angles(0, math.pi, 0),
-		shell = { "M_Bld_Chandlery_Ext" },
-		interior = { "M_Bld_Chandlery_Int", "M_Prop_Chandlery", "M_Prop_Chandlery_Stock" },
-		door = {
-			asset = "M_Bld_Chandlery_Ext",
-			parts = { "M_Bld_Chandlery_Ext_Door_LOD0", "M_Bld_Chandlery_Ext_DoorGlass_LOD0" },
-			hinge = "ATT_DoorHinge",
-			trigger = "ATT_Door",
-			angle = 95, -- opens inward (layout.DOOR: hinge at x -8.0, +Blender Z = +Y here)
-		},
-		rig = "ChandleryRig",
-		-- walkable collision from layout.py (Blender frame metres: X frontage, -Y front, Z up): shell walls
-		-- with the door gap (DOOR x -8.0..-6.8, 2.3 m), floors, the loft with its stairwell, counter, gondola,
-		-- chart table; the stair as a ramp. The uploads' hulls are single meshes, so they stay off.
-		collide = false,
-		colliders = {
-			{ -10, -6, -0.4, 10, 6, 0.15 }, -- ground floor
-			{ -10, -6, 0, -8.0, -5.45, 6 }, -- front wall west of the door
-			{ -8.0, -6, 2.45, -6.8, -5.45, 6 }, -- over the door
-			{ -6.8, -6, 0, 10, -5.45, 6 }, -- front wall + bay glazing
-			{ -10, 5.45, 0, 10, 6, 6 }, -- back wall
-			{ -10, -6, 0, -9.45, 6, 6 }, -- west gable
-			{ 9.45, -6, 0, 10, 6, 6 }, -- east gable
-			{ -9.45, -5.45, 3.05, 8.3, 5.45, 3.35 }, -- loft floor (west of the stairwell)
-			{ 8.3, -5.45, 3.05, 9.45, -1.4, 3.35 }, -- loft landing (front of the stairwell)
-			{ 0.7, 0.6, 0.15, 7.3, 1.25, 1.15 }, -- counter
-			{ -6.0, -1.5, 0.15, -1.6, -0.3, 1.55 }, -- gondola
-			{ -3.2, 3.6, 0.15, -1.4, 4.6, 1.0 }, -- chart table
-			{ -10, -6, 6, 10, 6, 6.3 }, -- ceiling cap (keeps the camera out of the roof void)
-		},
-		ramps = { { 8.3, 9.45, 4.9, 0.15, -1.4, 3.35 } },
-	},
 	-- H1 lifeboat station (art/source/buildings/M_Bld_Station/build.py: the greybox Station x -140..-80,
 	-- z -90..-40, pivot at its centre yawed 180 degrees so the gables face the sea, +Z). The greybox has no
 	-- PromptAnchor markers (the BoatDesk kiosk on the quay is its own model), so no prompts move.
@@ -233,13 +150,6 @@ local Swaps: { [string]: Swap } = {
 		shell = { "M_Bld_Harbourmaster" },
 		rig = "SharedSetsRig", -- shared Station Granite / Chandlery Slate / BldTrim sets
 	},
-	-- H3 cottages (greybox spots and sizes from map/Build.luau buildHouse: 18 + (n % 3) * 4 wide, 12 + (n % 2) * 6 eaves)
-	House1 = cottage(1, Vector3.new(-150, LAND, -192), 22 / 3, 6, { 0.0 }),
-	House2 = cottage(2, Vector3.new(-60, LAND, -192), 26 / 3, 4, { -3.0, 1.4 }),
-	House3 = cottage(3, Vector3.new(90, LAND, -192), 6, 6, { -1.6 }),
-	House4 = cottage(4, Vector3.new(130, LAND, -192), 22 / 3, 4, { 0.0 }, true),
-	House5 = cottage(5, Vector3.new(260, LAND, -192), 26 / 3, 6, { -0.72, 0.72 }),
-	House6 = cottage(6, Vector3.new(310, LAND, -192), 6, 4, { -1.5 }),
 }
 
 return Swaps

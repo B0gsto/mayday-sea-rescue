@@ -31,13 +31,6 @@ return function(t)
 		t.expect(PetSeat.builderPoint("Kayak", slots)).toBeNil()
 	end)
 
-	t.test("a land vehicle carries the pet on the rear of its roof", function()
-		local seat = PetSeat.landSeat(Vector3.new(6, 6, 16))
-		t.expect(seat.Position.Y).toBe(3 + PetSeat.LAND_LIFT) -- clear of the rack kit
-		t.expect(seat.Position.Z).toBeCloseTo(1.6, 1e-6) -- mid-roof, a little aft
-		t.expect(seat.Position.X).toBe(0)
-	end)
-
 	t.test("the client prefers the built seat, then a fallback anchor", function()
 		local name, offset, yaw = PetSeat.choose("RIB", function(anchor)
 			return anchor == "PetSeat"

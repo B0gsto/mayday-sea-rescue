@@ -8,13 +8,11 @@
 -- SmoothPlastic when dark; the client turns lit ones Neon). Lamp attributes: LampIndex, LampColor,
 -- Side (1 left / 2 right), Invert, Steady. One PointLight per half ("Light1" / "Light2" attachments,
 -- Side attribute; a beacon has one with Side 0). All parts massless, non-colliding, welded to the
--- visual hull ("Body") or the car's stock "LightBarBase".
+-- visual hull ("Body").
 --   RIB      option bar over the asset's modelled bar on the A-frame; Stock = one blue LED beacon
 --   JetSki   option = a small beacon on top of the stern mast; Stock = nothing
---   Car      option bar replaces the stock bar (stock Beacon parts hidden, their PointLights removed
---            and restored on Stock); Stock = LandVehicleConfig's own bar, untouched
 -- Vehicle attribute LightsOn: boats toggle it with the Cosmetics_Action "LightBar_Toggle" (driver
--- only); cars mirror their LandVehicleService "LightBar" attribute (key K, operation-gated there).
+-- only).
 -- The client (src/client/Cosmetics/LightBars) animates the flash, synced to SirenPattern / SirenTone.
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -229,47 +227,6 @@ local function buildBeacon(
 	a.Parent = lampPart
 end
 
--- Hide (or restore) a car's stock bar so the cosmetic one replaces it. CarController keeps driving
--- the stock Beacon parts' Material/Color, but they stay invisible and have no light while hidden.
-local function hideStock(model: Model, hide: boolean)
-	for _, part in model:GetDescendants() do
-		if
-			not (part:IsA("BasePart") and (part.Name == "Beacon" or part.Name == "LightBarBase"))
-		then
-			continue
-		end
-		if part:FindFirstAncestor(NAME) then
-			continue
-		end
-		if hide then
-			if part:GetAttribute("CosStockTransparency") == nil then
-				part:SetAttribute("CosStockTransparency", part.Transparency)
-			end
-			part.Transparency = 1
-			for _, l in part:GetChildren() do
-				if l:IsA("PointLight") then
-					l:Destroy()
-				end
-			end
-		else
-			local t = part:GetAttribute("CosStockTransparency")
-			if type(t) == "number" then
-				part.Transparency = t
-				part:SetAttribute("CosStockTransparency", nil)
-			end
-			local color = part:GetAttribute("LampColor")
-			if part.Name == "Beacon" and not part:FindFirstChildOfClass("PointLight") then
-				local light = Instance.new("PointLight")
-				light.Color = if typeof(color) == "Color3" then color else Color3.new(1, 1, 1)
-				light.Range = 16
-				light.Brightness = 4
-				light.Enabled = false
-				light.Parent = part
-			end
-		end
-	end
-end
-
 local function apply(model: Model, kind: string?, optionId: string)
 	if not model.Parent then
 		return
@@ -290,28 +247,7 @@ local function apply(model: Model, kind: string?, optionId: string)
 	container:SetAttribute("Pattern", option.pattern or "Alternate")
 	local mounts = Config.mounts
 	local built = false
-	if kind == "Car" then
-		local base = model:FindFirstChild("LightBarBase", true)
-		hideStock(model, not stock)
-		if not stock and base and base:IsA("BasePart") then
-			local h = mounts.carBarHeight
-			local cf = base.CFrame * CFrame.new(0, base.Size.Y / 2 + h / 2, 0)
-			buildBar(container, base, cf, Vector3.new(base.Size.X, h, base.Size.Z), option, 18)
-			-- mounting feet in place of the hidden stock base
-			for _, sx in { -1, 1 } do
-				newPart(
-					container,
-					base,
-					"Foot",
-					Vector3.new(0.16, base.Size.Y, base.Size.Z * 0.6),
-					base.CFrame * CFrame.new(sx * base.Size.X * 0.36, 0, 0),
-					ALU,
-					Enum.Material.Metal
-				)
-			end
-			built = true
-		end
-	elseif kind == "JetSki" then
+	if kind == "JetSki" then
 		if not stock then
 			local anchor = (model:FindFirstChild("Body") :: BasePart?) or root
 			local m = mounts.JetSki
@@ -348,18 +284,11 @@ local function refresh(player: Player, model: Model)
 	apply(model, service.KindOf(model), service.Equipped(player, "LightBar"))
 end
 
-local function track(player: Player, model: Model, kind: string?)
+local function track(player: Player, model: Model)
 	if not owners[model] then
 		model.Destroying:Connect(function()
 			owners[model] = nil
 		end)
-		if kind == "Car" then
-			-- cars: the stock key (K) and LandVehicleService's tasking rule drive LightBar; mirror it
-			model:SetAttribute("LightsOn", model:GetAttribute("LightBar") == true)
-			model:GetAttributeChangedSignal("LightBar"):Connect(function()
-				model:SetAttribute("LightsOn", model:GetAttribute("LightBar") == true)
-			end)
-		end
 	end
 	owners[model] = player
 	refresh(player, model)
@@ -375,8 +304,8 @@ end
 function LightBars.Init(cosmeticsService: any)
 	service = cosmeticsService
 	service.OnAction("LightBar_Toggle", function(player: Player)
-		local model, kind = service.VehicleOf(player)
-		if not model or kind == "Car" or not driverOf(player, model) then
+		local model = service.VehicleOf(player)
+		if not model or not driverOf(player, model) then
 			return
 		end
 		if not model:FindFirstChild(NAME) then
@@ -387,16 +316,16 @@ function LightBars.Init(cosmeticsService: any)
 end
 
 function LightBars.Start()
-	service.VehicleSpawned:Connect(function(player: Player, model: Model, kind: string?)
-		task.defer(track, player, model, kind)
+	service.VehicleSpawned:Connect(function(player: Player, model: Model)
+		task.defer(track, player, model)
 	end)
 	-- the effective choice is the player's Cos_LightBar attribute (CosmeticsService mirrors it)
 	local attr = service.Cosmetics.attribute("LightBar")
 	local function watch(player: Player)
 		player:GetAttributeChangedSignal(attr):Connect(function()
-			local current, kind = service.VehicleOf(player)
+			local current = service.VehicleOf(player)
 			if current and not owners[current] then
-				track(player, current, kind)
+				track(player, current)
 			end
 			for model, owner in owners do
 				if owner == player then
@@ -404,9 +333,9 @@ function LightBars.Start()
 				end
 			end
 		end)
-		local model, kind = service.VehicleOf(player)
+		local model = service.VehicleOf(player)
 		if model then
-			track(player, model, kind)
+			track(player, model)
 		end
 	end
 	local Players = game:GetService("Players")

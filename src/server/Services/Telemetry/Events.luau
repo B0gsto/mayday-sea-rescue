@@ -64,7 +64,7 @@ Events.ColdOpenSteps = {
 -- the dashboard's field cardinality.
 Events.Devices = { Touch = true, Gamepad = true, Keyboard = true, Console = true, VR = true }
 Events.ShopApps = { Vehicles = true, Store = true, Pets = true, Explore = true }
-Events.InputContexts = { Foot = true, Boat = true, Car = true, Swim = true, Phone = true }
+Events.InputContexts = { Foot = true, Boat = true, Swim = true, Phone = true }
 
 local GRADE_VALUE: { [string]: number } =
 	{ Gold = 3, Silver = 2, Bronze = 1, Fail = 0, Takeover = 0 }

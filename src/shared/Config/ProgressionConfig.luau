@@ -13,7 +13,6 @@ export type Rank = {
 export type VehicleUnlock = {
 	rankIndex: number, -- rank needed to own and drive it
 	price: number, -- Cash to buy once the rank is reached (0 = free)
-	land: boolean?, -- true for the land fleet (LandVehicleService); boat UIs must skip these
 	passOnly: boolean?, -- Robux only: owned through its MonetizationConfig.GamePasses `vehicle` pass, never Cash
 }
 
@@ -84,25 +83,12 @@ ProgressionConfig.Vehicles = {
 	RescueHelicopter = { rankIndex = 5, price = 75000 }, -- tune
 	Seaplane = { rankIndex = 5, price = 60000 }, -- tune
 	Submarine = { rankIndex = 4, price = 40000 }, -- tune
-	-- docs 10 section 3: land vehicles are free station pool vehicles gated by rank. The Ambulance
-	-- is an NPC handover point until [P1], so it is not listed (not player-drivable).
-	LifeguardPickup = { rankIndex = 1, price = 0, land = true },
-	BeachATV = { rankIndex = 2, price = 0, land = true },
-	CoastguardResponse = { rankIndex = 3, price = 0, land = true },
 	-- Premium fleet (2026-10-21, user): Robux only, any rank, through the vehicle's Game Pass.
 	StormRunner = { rankIndex = 1, price = 0, passOnly = true },
 	Tidewalker = { rankIndex = 1, price = 0, passOnly = true },
 	RiptideX = { rankIndex = 1, price = 0, passOnly = true },
 	GildedGull = { rankIndex = 1, price = 0, passOnly = true },
-	HarbourGT = { rankIndex = 1, price = 0, land = true, passOnly = true },
-	LighthouseCruiser = { rankIndex = 1, price = 0, land = true, passOnly = true },
 } :: { [string]: VehicleUnlock }
-
--- True when the id is a land vehicle (never offered as a boat launch).
-function ProgressionConfig.isLandVehicle(vehicleId: string): boolean
-	local unlock = ProgressionConfig.Vehicles[vehicleId]
-	return unlock ~= nil and unlock.land == true
-end
 
 -- docs 03 section 2: Cash x1.5 in storms, x2 in a Great Storm; Rep is never multiplied.
 ProgressionConfig.StormCashMultiplier = 1.5

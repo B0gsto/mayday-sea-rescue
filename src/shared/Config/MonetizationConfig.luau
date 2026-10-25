@@ -34,7 +34,7 @@ export type Item = {
 	stormTier: string?, -- Storm Summons: "Storm" or "GreatStorm" (docs/04 section 5)
 	dayPassFor: string?, -- day passes: the GamePasses key whose effect this product lends
 	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
-	vehicle: string?, -- vehicle passes: the VehicleConfig / LandVehicleConfig id it owns (any rank)
+	vehicle: string?, -- vehicle passes: the VehicleConfig id it owns (any rank)
 	dockLevel: number?, -- dock levels (DockConfig): builds your dock to this level; sold at the dock only
 	dockBuilding: string?, -- dock buildings (DockConfig.Buildings key); sold at the dock only
 }
@@ -188,7 +188,7 @@ local MonetizationConfig = {
 			description = "Builds your garage now, no Cash or rank needed: pick a car at its board and drive it out.",
 			price = 75,
 			order = 35,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			dockBuilding = "Garage",
 		},
 		DockHangar = {
@@ -345,7 +345,7 @@ local MonetizationConfig = {
 			description = "The Beach ATV quad bike for the sand. Yours at any rank.",
 			price = 25,
 			order = 16,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "BeachATV",
 		},
 		CoastguardResponsePass = {
@@ -354,7 +354,7 @@ local MonetizationConfig = {
 			description = "The Coastguard Response 4x4 with blue lights and a boat trailer. Yours at any rank.",
 			price = 49,
 			order = 17,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "CoastguardResponse",
 		},
 		StormRunnerPass = {
@@ -399,7 +399,7 @@ local MonetizationConfig = {
 			description = "Harbour GT sports coupe: the fastest car on the island. Robux only.",
 			price = 179,
 			order = 22,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "HarbourGT",
 		},
 		LighthouseCruiserPass = {
@@ -408,7 +408,7 @@ local MonetizationConfig = {
 			description = "Lighthouse Cruiser luxury SUV: 7 seats, quick and comfortable. Robux only.",
 			price = 149,
 			order = 23,
-			ready = true,
+			ready = false, -- cut 2026-10-25 (pre-hub-cut)
 			vehicle = "LighthouseCruiser",
 		},
 		-- docs/23 (h): the hangar and sub pen craft, any rank. deploy.py creates them (id 0 until then).

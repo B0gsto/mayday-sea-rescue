@@ -59,8 +59,7 @@ local MapConfig = {
 	-- Minimap view radius (studs from the player to the rim), eased toward the target.
 	Zoom = {
 		foot = 140,
-		car = { slow = 220, fast = 520, fastSpeed = 90 }, -- studs/s
-		boat = { slow = 260, fast = 760, fastSpeed = 110 },
+		boat = { slow = 260, fast = 760, fastSpeed = 110 }, -- studs/s
 		easeSeconds = 0.8,
 	},
 	FullMap = { minRadius = 180, maxRadius = 7000, startRadius = 900 },
@@ -94,18 +93,6 @@ local MapConfig = {
 		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
 		{ text = "Gannet Rock outpost >", x = 2150, z = 2440, kind = "water" },
 		{ text = "< Tempest Point Light", x = -2150, z = 600, kind = "place" },
-		{ text = "Harbour Road", x = -460, z = -30, kind = "street" },
-		{ text = "Fore Street", x = -300, z = -160, kind = "street" },
-		{ text = "Church Street", x = -300, z = -270, kind = "street" },
-		{ text = "Trelawney Road", x = -300, z = -380, kind = "street" },
-		{ text = "Bodmin Road", x = -300, z = -490, kind = "street" },
-		{ text = "Penhallow Road", x = -540, z = -520, kind = "street" },
-		{ text = "Quay Lane", x = -380, z = -520, kind = "street" },
-		{ text = "Station Hill", x = -220, z = -520, kind = "street" },
-		{ text = "Chapel Hill", x = 20, z = -560, kind = "street" },
-		{ text = "Hospital Lane", x = 200, z = -520, kind = "street" },
-		{ text = "Eastgate Hill", x = 380, z = -520, kind = "street" },
-		{ text = "Tregenna Hill", x = 560, z = -520, kind = "street" },
 	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
 	-- Fixed places (positions from map/Build.luau and WorldConfig).
@@ -119,14 +106,6 @@ local MapConfig = {
 			legend = true,
 		},
 		{
-			id = "Chandlery",
-			label = "Port Haven Chandlery (gear)",
-			glyph = "$",
-			color = Color3.fromHex("FFC872"),
-			position = Vector3.new(-44, 4, -60),
-			legend = true,
-		},
-		{
 			id = "Hospital",
 			label = "Cottage Hospital",
 			glyph = "H",
@@ -134,14 +113,6 @@ local MapConfig = {
 			position = Vector3.new(130, 4, -120),
 			legend = true,
 			minimap = false,
-		},
-		{
-			id = "HavenSandsCarPark",
-			label = "Haven Sands car park",
-			glyph = "P",
-			color = Color3.fromHex("2F7DE1"),
-			position = Vector3.new(880, 14.7, 115),
-			legend = true,
 		},
 		{
 			id = "HavenSandsTower",
@@ -268,13 +239,13 @@ function MapConfig.clampToRim(x: number, y: number, r: number): (number, number,
 	return x / m * r, y / m * r, true
 end
 
--- Minimap view radius for a speed (studs/s) and mode ("foot" | "car" | "boat").
+-- Minimap view radius for a speed (studs/s) and mode ("foot" | "boat").
 function MapConfig.zoomFor(mode: string, speed: number): number
 	local z = MapConfig.Zoom
 	if mode == "foot" then
 		return z.foot
 	end
-	local spec = if mode == "car" then z.car else z.boat
+	local spec = z.boat
 	local t = math.clamp(speed / spec.fastSpeed, 0, 1)
 	t = t * t * (3 - 2 * t)
 	return spec.slow + (spec.fast - spec.slow) * t

@@ -1,6 +1,6 @@
 --!strict
 -- Liveries (RP-M5 E1, server cosmetic feature; auto-loaded by CosmeticsService): repaints every
--- vehicle a player spawns (RIB, jet ski, pickup, response car, beach ATV) in their equipped
+-- vehicle a player spawns (RIB, jet ski, the bigger boats) in their equipped
 -- "Livery" option (src/shared/Config/Cosmetics/Livery.luau), and repaints them again when the
 -- choice changes. "Standard" restores the stock paint. No new uploads:
 --   * uploaded MeshParts (LiveryPaint.MESH_RULES): the stock SurfaceAppearances (dry and wet) are
@@ -9,10 +9,8 @@
 --     ColorMap) with AlphaMode TintMask and Color = the livery colour (verified in Studio: Overlay
 --     without a ColorMap renders white, TintMask renders the Color). The AssetLoader wet swap (SurfaceVariants /
 --     WetState) keeps working because the same names are used; wet uses LiveryPaint.wet(colour).
---   * greybox Parts with a "Paint" attribute (Car/Builder, Boat/Builder): Color is set; the stock
---     colour is kept in the attribute "LiveryStockColor". Metallic liveries add a faint
---     clear-coat Reflectance on cars.
--- The trailer and the ambulance keep their service paint (LiveryPaint.SKIP_VEHICLES).
+--   * greybox Parts with a "Paint" attribute (Boat/Builder): Color is set; the stock
+--     colour is kept in the attribute "LiveryStockColor".
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -22,7 +20,6 @@ local LiveryPaint = require(Shared:WaitForChild("LiveryPaint"))
 local LiveryPattern = require(Shared:WaitForChild("LiveryPattern"))
 
 local SLOT = "Livery"
-local METALLIC_REFLECTANCE = 0.06
 local TRIM_NAME = "CosmeticLiveryTrim"
 
 local Liveries = {}
@@ -197,7 +194,7 @@ local function trim(model: Model, option: any, hull: BasePart?, tubes: BasePart?
 	trimModel.Parent = model
 end
 
-local function paintPart(part: BasePart, color: Color3?, metallic: boolean, isCar: boolean)
+local function paintPart(part: BasePart, color: Color3?)
 	local stockColor = part:GetAttribute("LiveryStockColor")
 	if not color then
 		if typeof(stockColor) == "Color3" then
@@ -213,19 +210,12 @@ local function paintPart(part: BasePart, color: Color3?, metallic: boolean, isCa
 		part:SetAttribute("LiveryStockReflectance", part.Reflectance)
 	end
 	part.Color = color
-	local base = (part:GetAttribute("LiveryStockReflectance") :: number?) or 0
-	part.Reflectance = if metallic and isCar then math.max(base, METALLIC_REFLECTANCE) else base
 end
 
 -- Repaints one vehicle model in a livery option id (unknown or "Standard" = stock).
 function Liveries.apply(model: Model, id: string?)
-	if LiveryPaint.SKIP_VEHICLES[model:GetAttribute("VehicleId") :: any] then
-		return
-	end
 	local option = if id then Cosmetics.option(SLOT, id) else nil
 	local painting = LiveryPaint.paints(option)
-	local metallic = painting and option ~= nil and option.metallic == true
-	local isCar = model:GetAttribute("LandVehicle") ~= nil
 	local primary: BasePart? = nil
 	local secondary: BasePart? = nil
 	local tubes: BasePart? = nil
@@ -256,23 +246,14 @@ function Liveries.apply(model: Model, id: string?)
 		end
 		local role = LiveryPaint.attrRole(d:GetAttribute("Paint"))
 		if role then
-			paintPart(
-				d,
-				if painting then LiveryPaint.colorFor(option, role :: any) else nil,
-				metallic,
-				isCar
-			)
+			paintPart(d, if painting then LiveryPaint.colorFor(option, role :: any) else nil)
 		end
 	end
 	model:SetAttribute("Livery", if painting then id else nil)
-	-- the trim is for the boats: car bodies have their own shaped panels, and a bbox band would
-	-- float off the doors. The galvanised trailer / ambulance never get here (SKIP_VEHICLES).
-	if not isCar then
-		-- the RIB's primary is the tube pair: its hull / deck trim goes on the GRP hull below.
-		-- The jet ski's primary is the whole hull, and its secondary sled sits under the water.
-		local hullAnchor = if tubes then (secondary or primary) else primary
-		trim(model, if painting then option else nil, hullAnchor, tubes)
-	end
+	-- the RIB's primary is the tube pair: its hull / deck trim goes on the GRP hull below.
+	-- The jet ski's primary is the whole hull, and its secondary sled sits under the water.
+	local hullAnchor = if tubes then (secondary or primary) else primary
+	trim(model, if painting then option else nil, hullAnchor, tubes)
 end
 
 local function track(player: Player, model: Model)

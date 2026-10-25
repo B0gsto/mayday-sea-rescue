@@ -63,22 +63,6 @@ function AudioMix.engineLayers(rpm: number, throttle: number): EngineLayers
 	}
 end
 
--- Car engine from the drivetrain: rpm, idle and redline in rev/min, drive = throttle 0..1.
--- Returns the idle and load layer volumes and the pitch shared by both.
-function AudioMix.carEngine(
-	rpm: number,
-	idleRpm: number,
-	redlineRpm: number,
-	drive: number
-): (number, number, number)
-	local span = math.max(redlineRpm - idleRpm, 1)
-	local r = clamp01((rpm - idleRpm) / span)
-	local idle, load = AudioMix.crossfade(clamp01(r * 1.6 + 0.6 * clamp01(drive) - 0.1))
-	local pitch = lerp(0.85, 1.75, r)
-	local level = 0.75 + 0.25 * clamp01(drive)
-	return idle * level, load * level, pitch
-end
-
 export type WindLayers = { light: number, strong: number, gale: number }
 
 -- Wind layers from the storm intensity (0..1) and the apparent wind from the player's own speed

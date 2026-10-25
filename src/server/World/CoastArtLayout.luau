@@ -119,4 +119,35 @@ function CoastArtLayout.excluded(x: number, z: number, pad: number?): boolean
 	return false
 end
 
+-- Deterministic even disk scatter (golden-angle spiral with a little jitter from a fixed seed).
+function CoastArtLayout.scatter(
+	center: Vector3,
+	radius: number,
+	count: number,
+	seed: number,
+	inner: number?
+): { Vector3 }
+	local lo = inner or 0
+	local state = seed % 2147483647
+	if state <= 0 then
+		state += 2147483646
+	end
+	local function rand(): number
+		state = (state * 16807) % 2147483647
+		return (state - 1) / 2147483646
+	end
+	local out: { Vector3 } = {}
+	local golden = math.pi * (3 - math.sqrt(5))
+	for i = 1, count do
+		local t = (i - 0.5) / count
+		local r = math.min(radius, lo + (radius - lo) * math.sqrt(t) * (0.9 + rand() * 0.1))
+		local a = i * golden + (rand() - 0.5) * 0.35
+		table.insert(
+			out,
+			Vector3.new(center.X + math.cos(a) * r, center.Y, center.Z + math.sin(a) * r)
+		)
+	end
+	return out
+end
+
 return CoastArtLayout

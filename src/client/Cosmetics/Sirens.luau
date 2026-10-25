@@ -1,7 +1,6 @@
 --!strict
 -- Sirens (RP-M5 Siren Pack, client). Binds the "Siren" toggle while the local player drives with a
--- Siren Pack tone equipped: keyboard G everywhere, gamepad DPadDown on boats and jet skis (on cars
--- DPadDown is low range; the car's Blues button, K / DPadRight, sounds the pack tone there), and a
+-- Siren Pack tone equipped: keyboard G everywhere, gamepad DPadDown, and a
 -- tap button on touch. The server sets the vehicle's SirenTone / SirenPattern / SirenBy attributes
 -- and tags it "CosmeticSiren" (contract in Config/Cosmetics/Siren.luau); this follows the tag (so
 -- vehicles streaming in are picked up) and plays the tone as a looped 3D Sound on the vehicle (SFX group, LoopRegion on the steady part, RollOffMaxDistance = the tone's range).
@@ -114,22 +113,7 @@ function Sirens.Start(ctx: any)
 				gamepad = Enum.KeyCode.DPadDown,
 				callback = fire,
 				visible = function(): boolean
-					local _, kind = ctx.currentVehicle()
-					return kind ~= "Car" and VehicleSounds.playable(equippedOption())
-				end,
-			})
-		)
-		-- cars: G only (gamepad uses the car's Blues button)
-		table.insert(
-			unbinds,
-			ctx.bindVehicleAction({
-				name = "SirenCar",
-				label = label(),
-				key = Enum.KeyCode.G,
-				callback = fire,
-				visible = function(): boolean
-					local _, kind = ctx.currentVehicle()
-					return kind == "Car" and VehicleSounds.playable(equippedOption())
+					return VehicleSounds.playable(equippedOption())
 				end,
 			})
 		)

@@ -97,7 +97,7 @@ return function(t)
 		t.expect(reason({ isDriver = false })).toBe("not_driver")
 		t.expect(reason({ kind = "Ferry" })).toBe("bad_kind")
 		t.expect(reason({ kind = "JetSki" })).toBe("")
-		t.expect(reason({ kind = "Car" })).toBe("")
+		t.expect(reason({ kind = "Car" })).toBe("bad_kind")
 		t.expect(reason({ option = find(Horn, "Standard") })).toBe("no_pack_option")
 		t.expect(reason({ owns = owns({}) })).toBe("not_owned")
 		t.expect(reason({ readyAt = 12 })).toBe("cooldown")
@@ -139,7 +139,7 @@ return function(t)
 		local base = {
 			hasVehicle = true,
 			isDriver = true,
-			kind = "Car",
+			kind = "Boat",
 			option = find(Siren, "Yelp"),
 			owns = owns({ SirenPack = true }),
 			onTasking = true,

@@ -4,9 +4,9 @@
 -- a "Build" prompt (E / gamepad X / tap) that opens a small price card: the level icon, a Cash button
 -- (coin + amount; lock + rank badge when the rank is too low, greyed when Cash is short) and a Robux
 -- button (Roblox's live price; greyed while the product has no id). B / the X button / walking off closes.
--- The WP-10b buildings (garage, helipad + hangar, sub pen) get their own ghosts the same way while unowned
+-- The WP-10b buildings (helipad + hangar, sub pen) get their own ghosts the same way while unowned
 -- (the hangar once the Lv 3 boathouse stands); their card shows the building's word instead of the number.
--- Reads player attributes DockPlot, BayCFrame, DockLevel, DockGarage / DockHangar / DockSubPen (DockService)
+-- Reads player attributes DockPlot, BayCFrame, DockLevel, DockHangar / DockSubPen (DockService)
 -- and the PlayerDataChanged snapshot.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
@@ -29,7 +29,6 @@ local CashBurst = require(UI:WaitForChild("CashBurst"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
-local Marina = require(Shared:WaitForChild("Marina"))
 
 local DockController = {}
 
@@ -43,7 +42,7 @@ local snapshot: { [string]: any } = {}
 local ghosts: { Model } = {}
 local ghostKey = ""
 local shownCount: number? = nil -- level + buildings owned, for the build beat
-local WORDS = { Garage = "Garage", Hangar = "Helipad", SubPen = "Sub pen" }
+local WORDS = { Hangar = "Helipad", SubPen = "Sub pen" }
 
 type Item = number | string -- a dock level, or a DockConfig.Buildings key
 local livePrice: { [number]: number } = {}
@@ -405,9 +404,8 @@ local function refresh()
 	end
 	for _, name in DockConfig.BUILDINGS do
 		if not table.find(owned, name) and level >= DockConfig.Buildings[name].needs then
-			local frame = if name == "Garage" then Marina.garage(plot) else berth
-			local m = DockPieces.building(name, frame)
-			table.insert(ghosts, makeGhost(name, m, b, frame * DockPieces.Buildings[name].buildAt))
+			local m = DockPieces.building(name, berth)
+			table.insert(ghosts, makeGhost(name, m, b, berth * DockPieces.Buildings[name].buildAt))
 		end
 	end
 	for _, g in ghosts do

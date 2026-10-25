@@ -1,7 +1,6 @@
--- CottageRig (H3 cottages, I1a): the pure light / smoke rules and the House1..6 swap entries.
+-- CottageRig (H3 cottages, I1a): the pure light / smoke rules.
 return function(t)
 	local CottageLights = t.load("src/server/World/CottageLights.luau")
-	local Swaps = t.load("src/server/World/Swaps.luau")
 
 	t.test("part names: GlassLit glows, Glass is glass, the rest is left alone", function()
 		t.expect(CottageLights.kind("M_Bld_Cottage_GlassLit_01_LOD0")).toBe("glow")
@@ -38,37 +37,5 @@ return function(t)
 		t.expect(#kept).toBe(2)
 		t.expect(kept[1]).toBe(1)
 		t.expect(kept[2]).toBe(4)
-	end)
-
-	t.test("House1..6 swap in place of the greybox, facing +Z, with box colliders", function()
-		local spots = {
-			Vector3.new(-150, 4, -192),
-			Vector3.new(-60, 4, -192),
-			Vector3.new(90, 4, -192),
-			Vector3.new(130, 4, -192),
-			Vector3.new(260, 4, -192),
-			Vector3.new(310, 4, -192),
-		}
-		for n = 1, 6 do
-			local s = Swaps[`House{n}`]
-			t.expect(s ~= nil).toBe(true)
-			t.expect(s.greybox[3]).toBe(`House{n}`)
-			t.expect(s.shell[1]).toBe(string.format("M_Bld_Cottage_%02d", n))
-			t.expect(s.rig).toBe("CottageRig")
-			t.expect(s.collide).toBe(false)
-			t.expect((s.pivot.Position - spots[n]).Magnitude).toBeCloseTo(0, 1e-6)
-			-- the asset front (-Z) faces the street (+Z)
-			t.expect(s.pivot.LookVector.Z).toBeCloseTo(1, 1e-6)
-			-- the wall box matches the greybox footprint: (18 + (n % 3) * 4) x 16 studs, eaves 12 + (n % 2) * 6
-			local b = (s.colliders :: any)[1]
-			t.expect((b[4] - b[1]) * 3).toBeCloseTo(18 + (n % 3) * 4, 1e-6)
-			t.expect((b[5] - b[2]) * 3).toBeCloseTo(16, 1e-6)
-			t.expect(b[6] * 3).toBeCloseTo(12 + (n % 2) * 6, 1e-6)
-			t.expect(b[3]).toBeCloseTo(-0.4, 1e-9)
-		end
-		-- the pairs have two door steps, House4 its slate porch
-		t.expect(#(Swaps.House2.colliders :: any)).toBe(3)
-		t.expect(#(Swaps.House5.colliders :: any)).toBe(3)
-		t.expect(#(Swaps.House4.colliders :: any)).toBe(5)
 	end)
 end

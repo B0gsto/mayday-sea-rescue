@@ -6,7 +6,7 @@
 --   SirenTone: Wail, Yelp, HiLo, Phaser). Only changed properties are written; no instances are made
 --   per frame. Each bar has at most two short-range PointLights.
 --   Toggle: "Lights", key L / DPadLeft (touch button) while driving a boat or jet ski with a bar; it
---   sets vehicle attribute LightsOn on the server. Cars keep their own K / DPadRight toggle.
+--   sets vehicle attribute LightsOn on the server.
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -172,8 +172,8 @@ function LightBars.Start(ctx: any)
 			ctx.fire("LightBar_Toggle")
 		end,
 		visible = function(): boolean
-			local model, kind = ctx.currentVehicle()
-			return model ~= nil and kind ~= "Car" and model:FindFirstChild(TAG) ~= nil
+			local model = ctx.currentVehicle()
+			return model ~= nil and model:FindFirstChild(TAG) ~= nil
 		end,
 	})
 end

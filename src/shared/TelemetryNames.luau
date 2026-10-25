@@ -37,7 +37,7 @@ TelemetryNames.Custom = table.freeze({
 	"AlbumPage", -- an island's album page completed: island
 	"VehicleDespawned", -- reason (Idle, Wrecked, WrongMedium, Replaced, Stowed), vehicle, Water / Land
 	"VehicleRecovered", -- auto-recovery ran: reason (Flipped, Stuck, Sunk, OutOfBounds, Flooded, Runaway), vehicle
-	"StuckReset", -- the player was reset out of a stuck spot: device, where (Foot, Boat, Car, Swim)
+	"StuckReset", -- the player was reset out of a stuck spot: device, where (Foot, Boat, Swim)
 	"InputDead", -- input held with no response (client-detected): device, where
 	"Race", -- the NPC racer (from call 4): Started / RacerWon, call kind
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning

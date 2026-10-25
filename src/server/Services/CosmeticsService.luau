@@ -26,9 +26,9 @@
 --   CosmeticsService.Broadcast(name, ...)                  every client
 --   CosmeticsService.FireNear(position, radius, name, ...) clients whose character is in range
 --   CosmeticsService.FireClient(player, name, ...)
---   CosmeticsService.VehicleOf(player): (Model?, kind?)    kind "Boat" | "JetSki" | "Car"; the vehicle
---       the player is seated in, else the one they own (VehicleService / LandVehicleService)
---   CosmeticsService.KindOf(model): string?                "Boat" | "JetSki" | "Car" | nil
+--   CosmeticsService.VehicleOf(player): (Model?, kind?)    kind "Boat" | "JetSki"; the vehicle
+--       the player is seated in, else the one they own (VehicleService)
+--   CosmeticsService.KindOf(model): string?                "Boat" | "JetSki" | nil
 --   CosmeticsService.VehicleSpawned: signal (player, model, kind) boats, jet skis and cars
 --   CosmeticsService.Cosmetics                             the shared registry
 local Players = game:GetService("Players")
@@ -242,9 +242,6 @@ function CosmeticsService.KindOf(model: Instance?): string?
 	if not model or not model:IsA("Model") then
 		return nil
 	end
-	if model:GetAttribute("LandVehicle") ~= nil or model:HasTag("LandVehicle") then
-		return "Car"
-	end
 	local id = model:GetAttribute("VehicleId")
 	if VehicleConfig.isJetSki(id) then
 		return "JetSki"
@@ -273,7 +270,7 @@ function CosmeticsService.VehicleOf(player: Player): (Model?, string?)
 	if seated then
 		return seated, CosmeticsService.KindOf(seated)
 	end
-	for _, name in { "VehicleService", "LandVehicleService" } do
+	for _, name in { "VehicleService" } do
 		local service = sibling(name)
 		if service and service.GetVehicle then
 			local ok, model = pcall(service.GetVehicle, player)
@@ -286,7 +283,7 @@ function CosmeticsService.VehicleOf(player: Player): (Model?, string?)
 end
 
 local function hookVehicleSignals()
-	for _, name in { "VehicleService", "LandVehicleService" } do
+	for _, name in { "VehicleService" } do
 		local service = sibling(name)
 		local signal = service and service.VehicleSpawned
 		if signal then

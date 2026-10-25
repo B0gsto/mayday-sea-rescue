@@ -471,7 +471,7 @@ return function(t)
 	end)
 
 	t.test("helicopter in week 1", function()
-		between(solo, "Rank 5 Rescue Pilot", 140, 280)
+		between(solo, "Rank 5 Rescue Pilot", 130, 280) -- 2026-10-25: 137 once the car garage stopped costing 5000
 		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the docs/23 hangar)
 		between(solo, "Helicopter bought", 170, 8 * 60)
 	end)
@@ -530,7 +530,7 @@ return function(t)
 	t.test("docs/23: a free player reaches every dock level, building and craft", function()
 		-- a dock piece never comes before the RIB, and the last (dock Lv 5) is a long goal, not a wall
 		t.expect(minutes(solo, "Dock Lv 2") >= minutes(solo, "RIB bought")).toBe(true)
-		for _, label in { "Dock Lv 3", "Dock Lv 4", "Garage built", "Hangar built", "SubPen built" } do
+		for _, label in { "Dock Lv 3", "Dock Lv 4", "Hangar built", "SubPen built" } do
 			t.expect(minutes(solo, label) <= 20 * 60).toBe(true)
 		end
 		for _, label in { "Submarine bought", "Seaplane bought", "Dock Lv 5" } do

@@ -539,10 +539,6 @@ end
 
 function WorldDressingService.Start()
 	local base = root()
-	local Street = require(script.Parent.Parent.World:WaitForChild("Street")) :: any -- I1b-3 streets, Harbour Light
-	for key, spec in Street.swaps do
-		Swaps[key] = spec
-	end
 	for key, spec in Swaps do
 		local ok, err = pcall(swap, key, spec)
 		if not ok or err ~= true then
@@ -557,19 +553,9 @@ function WorldDressingService.Start()
 	if seamarks then
 		task.spawn((require :: any)(seamarks).place, base)
 	end
-	-- the cities (WorldConfig.Towns): road / pavement terrain first, so Street's junction fill and kerbs see it
-	local Town = require(script.Parent.Parent.World:WaitForChild("Town")) :: any
-	local tOk, tErr = pcall(Town.paint)
-	if not tOk then
-		warn(`[WorldDressing] town paint failed: {tErr}`)
-	end
-	task.spawn(Street.start)
 	-- I2 ship batches: each owns one module in World/ with place(base); absent modules are skipped
 	for _, name in
 		{
-			"Town",
-			"TownExtras",
-			"RoadsShore",
 			"CoastArt",
 			"SeabedLife",
 			"SkerryLight",

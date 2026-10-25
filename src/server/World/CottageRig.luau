@@ -1,6 +1,6 @@
 --!strict
--- CottageRig: the H3 cottages' (M_Bld_Cottage_01..06, swapped for Map.PortHaven.Houses.House1..6 by
--- WorldDressingService, src/server/World/Swaps.luau) glass, night lights and chimney smoke:
+-- CottageRig: the H3 cottages' (M_Bld_Cottage_01..06, placed on the islands: Penwyn, Gannet Rock) glass, night
+-- lights and chimney smoke:
 --   * Glass (M_Bld_Cottage_Glass_NN_LODk): Material Glass, Transparency 0.35, so the room backplate behind shows;
 --   * GlassLit (M_Bld_Cottage_GlassLit_NN_LODk: lit panes + lantern cores): Transparency 1 by day, warm Neon at
 --     night or in a storm;
@@ -8,7 +8,7 @@
 --     (ATT_Lamp_Window_NN), on with the glow;
 --   * a subtle smoke ParticleEmitter per chimney stack (the first ATT_Smoke_NN pot of each stack) in cold
 --     weather (anything but a clear day) or a storm, drifting with the wind.
--- Shell attributes RigLights / RigSmoke = false skip the PointLights / the smoke (Town sets them on most terraces).
+-- Shell attributes RigLights / RigSmoke = false skip the PointLights / the smoke (Penwyn sets them on most terraces).
 -- Rules in CottageLights (pure). Re-evaluated on Weather.changed, Lighting WeatherBase, ClockTime and
 -- GeographicLatitude changes; no per-frame loop. New attachments go on the PrimaryPart (world-aligned), so apply()
 -- works before or after the caller positions the model.
@@ -20,9 +20,9 @@ local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local CottageLights = require(script.Parent:WaitForChild("CottageLights"))
 local SharedSetsRig = require(script.Parent:WaitForChild("SharedSetsRig"))
+local StationRig = require(script.Parent:WaitForChild("StationRig"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local CottageRig = {}
@@ -225,7 +225,7 @@ function CottageRig.apply(shell: Model): () -> ()
 	local lit: boolean? = nil
 	local smoking: boolean? = nil
 	local function refresh()
-		local preset = ChandleryRig.preset()
+		local preset = StationRig.preset()
 		local on = CottageLights.lightsOn(preset)
 		if on ~= lit then
 			lit = on

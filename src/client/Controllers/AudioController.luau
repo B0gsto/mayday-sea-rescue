@@ -21,8 +21,7 @@
 -- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
 -- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
 -- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
--- a soft click on every HUD button, and two music cues (operation underway, debrief). The car
--- engine, horn and tyres are in CarController; rain loop and thunder in WeatherController; squelch
+-- a soft click on every HUD button, and two music cues (operation underway, debrief). Rain loop and thunder in WeatherController; squelch
 -- and static in RadioController (ids from VoiceManifest.Sfx); the swim splash and strokes in
 -- SwimController; Bosun's bark in DogController.
 

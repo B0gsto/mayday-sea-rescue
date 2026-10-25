@@ -833,19 +833,9 @@ function PhotoMode.mount()
 	build()
 	connectInput()
 	RunService:BindToRenderStep("MaydayPhotoMode", Enum.RenderPriority.Camera.Value + 2, step)
-	ContextActionService:BindAction("PhotoModeToggle", function(_, state, input)
+	ContextActionService:BindAction("PhotoModeToggle", function(_, state)
 		if state ~= Enum.UserInputState.Begin then
 			return Enum.ContextActionResult.Pass
-		end
-		if not open and input.KeyCode == Enum.KeyCode.ButtonR2 then
-			-- RT is the car's throttle: only an on-foot RT opens the lens
-			local char = player.Character
-			local hum = char and char:FindFirstChildOfClass("Humanoid")
-			local seat = hum and hum.SeatPart
-			local model = seat and seat:FindFirstAncestorOfClass("Model")
-			if model and model:GetAttribute("LandVehicle") == true then
-				return Enum.ContextActionResult.Pass
-			end
 		end
 		PhotoMode.toggle()
 		return Enum.ContextActionResult.Sink

@@ -60,7 +60,7 @@ return function(t)
 
 	t.test("every list the panel shows has ids", function()
 		t.expect(#DevConfig.SpotOrder > 10).toBe(true)
-		t.expect(table.find(DevConfig.Vehicles, "LifeguardPickup") ~= nil).toBe(true)
+		t.expect(table.find(DevConfig.Vehicles, "RIB") ~= nil).toBe(true)
 		t.expect(table.find(DevConfig.Ops, "CapsizedFerry") ~= nil).toBe(true)
 		t.expect(table.find(DevConfig.Ops, "ColdOpen") ~= nil).toBe(true)
 		t.expect(table.find(DevConfig.Events, "GoldenHour") ~= nil).toBe(true)

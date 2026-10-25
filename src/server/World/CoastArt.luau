@@ -21,7 +21,6 @@ local AssetIds = require(
 ) :: any
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Layout = require(script.Parent:WaitForChild("CoastArtLayout"))
-local RoadsShoreLayout = require(script.Parent:WaitForChild("RoadsShoreLayout"))
 local WorldConfig = require(
 	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("WorldConfig")
 )
@@ -237,9 +236,7 @@ local function kelp(folder: Folder): number
 			warn(`[CoastArt] no kelp bed {spec.bed}`)
 			continue
 		end
-		for _, p in
-			RoadsShoreLayout.scatter(bed.center, bed.radius, spec.count, spec.seed, spec.inner)
-		do
+		for _, p in Layout.scatter(bed.center, bed.radius, spec.count, spec.seed, spec.inner) do
 			if Layout.excluded(p.X, p.Z, 10) then
 				continue
 			end
@@ -274,9 +271,7 @@ local function bottleField(folder: Folder): number
 	local spec = Layout.BottleField
 	local sea = seaLevel()
 	local n = 0
-	for i, p in
-		RoadsShoreLayout.scatter(Vector3.new(spec.x, 0, spec.z), spec.radius, spec.count, spec.seed)
-	do
+	for i, p in Layout.scatter(Vector3.new(spec.x, 0, spec.z), spec.radius, spec.count, spec.seed) do
 		if Layout.inHarbourChannel(p.X, p.Z) or Layout.excluded(p.X, p.Z) then
 			continue
 		end

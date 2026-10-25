@@ -22,13 +22,11 @@ local DevConfig = require(Config:WaitForChild("DevConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
-local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local CosmeticsService = require(script.Parent.CosmeticsService)
 local DataService = require(script.Parent.DataService)
 local DogService = require(script.Parent.DogService)
-local LandVehicleService = require(script.Parent.LandVehicleService)
 local LiveOpsService = require(script.Parent.LiveOpsService)
 local MonetizationService = require(script.Parent.MonetizationService)
 local OperationService = require(script.Parent.OperationService)
@@ -258,12 +256,8 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		vehicle = function(_, target, a)
 			local p = target :: Player
 			local id = a[2] :: string
-			if VehicleConfig.get(id) then
-				-- launched from the player's bay (spawning at the player put boats on the street)
-				local ok, result = VehicleService.DevLaunch(p, id)
-				return ok, if ok then id else tostring(result)
-			end
-			local ok, result = LandVehicleService.Spawn(p, id)
+			-- launched from the player's bay (spawning at the player put boats on the street)
+			local ok, result = VehicleService.DevLaunch(p, id)
 			return ok, if ok then id else tostring(result)
 		end,
 		pet = function(_, target, a)

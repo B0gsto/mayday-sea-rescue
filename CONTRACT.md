@@ -42,8 +42,7 @@ survivor still in the water (grey while your craft is full) and `BoatController`
 | `BuyGear` | C->S fn | ProgressionService: buys a vehicle (`vehicleId`); the name is historical |
 
 Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy`
-(UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `Land_Request` / `Land_Control`
-(LandVehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
+(UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
 `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
 `_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
@@ -77,15 +76,14 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   `badgeCounters.Rescue100`. `DockController` (client): the next level as a blue ghost on your own plot only, a
   `Build` prompt and the price card (Cash / Robux). Lv 4 skips VehicleService's relaunch cooldown. Studio:
   `ServerStorage.DockDev:Invoke("level", n)`.
-- Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Garage / Hangar / SubPen (Cash + rank or Robux
-  products `DockGarage` / `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
+- Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Hangar / SubPen (Cash + rank or Robux
+  products `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
   Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
-  (prompt spot, board rack, spawn targets). The 16 garage bays stand along Penhallow Road's west kerb
-  (`Marina.garage(i)`, doors onto the road); hangar + helipad on the boathouse roof, sub pen east of the jetty.
+  (prompt spot, board rack, spawn targets). Hangar + helipad on the boathouse roof, sub pen east of the jetty.
   `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; ghosts in `DockController`.
-  `server/Dock/BoatBoard` builds every board (boat, garage, hangar, sub) from one def list: cars spawn parked
-  in the bay (`LandVehicleService.Spawn(player, id, nil, false, at)`), the heli on the pad and the sub in the pen
-  (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. Studio:
+  `server/Dock/BoatBoard` builds every board (boat, hangar, sub) from one def list: the heli on the pad and the
+  sub in the pen (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. The car garage
+  (`DockGarage`, data key `Garage`) was cut 2026-10-25: product kept with `ready = false`. Studio:
   `DockDev:Invoke("building", key | "all")`.
 - `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
   (phone, Quick Launch, berth `Launch` prompt, the cold open via `BerthLaunch`). Spawns are serialized per berth
@@ -116,18 +114,17 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   `AmbientRescueService.StepBoarding` and `auto_board`. A local `Airborne` model attribute (Heli/Plane
   controllers) blocks stepping out mid-air (VehicleExitController, OpsController).
 - Crowding (`src/shared/Crowding.luau`, `tests/Crowding.spec.luau`): player boats are collision group
-  `PlayerBoat` (ghost through each other and cars, BoatController eases them apart); idle-despawn
-  timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land / car
-  in deep water past recovery (or empty there 6 s) despawns with `VehicleRecovery.poof`.
+  `PlayerBoat` (ghost through each other, BoatController eases them apart); idle-despawn
+  timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land
+  past recovery (or empty there 6 s) despawns with `VehicleRecovery.poof`.
 - Auto-recovery: `src/shared/VehicleRecovery.luau` (pure, `tests/VehicleRecovery.spec.luau`) puts a
-  flipped, stuck or sunk vehicle back upright (timers + lift-and-settle path); VehicleService and
-  LandVehicleService both run it.
+  flipped, stuck or sunk vehicle back upright (timers + lift-and-settle path); VehicleService runs it.
 - Upgrades: `src/shared/VehicleUpgrades.luau` (pure: Engine = speed, Hull = steady in waves, Fit = +1
   aboard on RIB and lifeboat), fitted by `UpgradeService` (`Upgrade_Buy`), saved as a bitmask in
   `data.vehicleUpgrades`.
-- Land vehicles (`src/shared/Car/*`, `LandVehicleConfig`, `LandVehicleService`, `CarController`): pure
-  chassis/tyre/drivetrain sims; `Land_Request (vehicleId, pointId?, withTrailer?)`, `Land_Control (action,
-  value)`; trailer slipway launch calls `VehicleService.SpawnSeated`.
+- Cut 2026-10-25 (docs/23 k, restorable from tag `pre-hub-cut`): cars and land vehicles, the car garage, roads,
+  streets, traffic, the town (Port Haven buildings, cottages, chandlery, ambient town crowd). Their Robux passes
+  stay in `MonetizationConfig` with `ready = false`.
 
 ## Operations (simple rescue)
 
@@ -289,8 +286,9 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
 - Re-engagement: `PlatformPrompts` + `PlatformPromptService`; `NotifyDue` + `NotifyService`.
 - Swimming: `SwimController` with `src/shared/Explore/Snorkel.luau` (surface float, face-down look).
 - Photo mode: `PhotoMath` + `UI/PhotoMode`. Audio: `AudioConfig`, `AudioController`, `VoiceTTS`.
-- World: `WorldService`, `server/World/*` (dressing, swaps, rigs), `map/Build.luau` (greybox),
-  `TerrainOnly`, `RoadNet`, traffic and ambient wildlife services.
+- World: `WorldService`, `server/World/*` (dressing, swaps, rigs; `TownBuildings` / `CottageRig` /
+  `StreetFurniture` now only dress the islands), `map/Build.luau` (greybox), `TerrainOnly`, ambient wildlife
+  services. `StreetController` turns the lighthouse beams and waves the beach flag.
 
 ## Dev board
 

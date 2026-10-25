@@ -79,14 +79,6 @@ function PetSeat.builderPoint(vehicleId: string, slots: { Vector3 }): Vector3?
 	return if slot then slot + seat.offset else nil
 end
 
--- No land vehicle ships a PetSeat: the pet rides mid-roof, a little above the hull's bounding box,
--- clear of the roof-rack kit (docs/22: at the rear quarter it was lost among the rack's boards and cases).
--- Returns the offset in the box's frame.
-PetSeat.LAND_LIFT = 0.5 -- studs over the box top
-function PetSeat.landSeat(size: Vector3): CFrame
-	return CFrame.new(0, size.Y * 0.5 + PetSeat.LAND_LIFT, size.Z * 0.1)
-end
-
 -- Picks the anchor and local offset for the client. A craft with a built PetSeat uses it; an
 -- older or unknown hull falls back to a known attachment (bow when it has nothing else).
 function PetSeat.choose(vehicleId: string, has: ((string) -> boolean)?): (string, Vector3, number)

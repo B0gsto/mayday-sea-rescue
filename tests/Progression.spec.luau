@@ -87,8 +87,6 @@ return function(t)
 				"Tidewalker",
 				"RiptideX",
 				"GildedGull",
-				"HarbourGT",
-				"LighthouseCruiser",
 			}
 		do
 			t.expect(Rules.vehiclePass(id) ~= nil).toBe(true)

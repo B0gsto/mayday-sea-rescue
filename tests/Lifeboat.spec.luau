@@ -85,6 +85,5 @@ return function(t)
 		local unlock = Progression.Vehicles.Lifeboat
 		t.expect(unlock.rankIndex).toBe(4)
 		t.expect(unlock.price).toBe(12000)
-		t.expect(Progression.isLandVehicle("Lifeboat")).toBe(false)
 	end)
 end

@@ -19,7 +19,7 @@
 --   "no_vehicle" "not_driver" "bad_kind" "no_pack_option" "not_owned" "cooldown" "no_tasking"
 local VehicleSounds = {}
 
-VehicleSounds.KINDS = { Boat = true, JetSki = true, Car = true } :: { [string]: boolean }
+VehicleSounds.KINDS = { Boat = true, JetSki = true } :: { [string]: boolean }
 VehicleSounds.PATTERNS = { "Wail", "Yelp", "HiLo", "Phaser" }
 VehicleSounds.MIN_HORN_COOLDOWN = 2 -- s
 VehicleSounds.RANGE_MIN = 60 -- studs

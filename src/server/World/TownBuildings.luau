@@ -1,6 +1,6 @@
 --!strict
--- TownBuildings: the code-built town buildings (no art yet; swap for assets when a terrace kit lands).
---   TownBuildings.terrace(parent, lot, n, lo, hi) -> Model   a TownLayout lot with `floors`: rendered terrace
+-- TownBuildings: the code-built terrace houses of Penwyn's village (no art yet; swap for assets when a terrace kit lands).
+--   TownBuildings.terrace(parent, lot, n, lo, hi) -> Model   a Lot with `floors`: rendered terrace
 --     house, recessed 2-over-2 sash windows on both faces (through-parts: one glass column per bay, one sill /
 --     lintel per window and one head / meeting rail per storey serve front and back; the white core behind is the
 --     sash frame), string course, cornice, slate roof with ridge, granite stack with pots, dormers on some tall
@@ -9,7 +9,6 @@
 --     upper storeys, granite quoins; blinds and lit rooms seeded per lot. Roofs: dark Delabole slate, seeded pitch,
 --     hipped on corners and now and then, stacks 1 or 2 at seeded heights. lot.kind: "endon" (gable-end-on
 --     cottage), "chapel" (granite, tall round-headed windows), "garage" (single storey, roller door), "pub".
---   TownBuildings.landmark(parent, lm, y) -> Model   TownLayout.LANDMARKS: Hotel, CustomsHouse, MarketHall, School.
 -- Night: "_GlassLit_" parts (lit rooms, shop windows) + ATT_Lamp_Window / ATT_Smoke markers go through CottageRig
 -- (Neon at night; RigLights / RigSmoke on a subset as for the cottages).
 -- Materials avoid the MaterialService overrides (Slate -> KelpRock, WoodPlanks -> TurfOlive, Brick -> TurfWorn,
@@ -18,9 +17,20 @@
 -- only the core collides; trim casts no shadow; Atomic + StreamingMesh LOD (imposters past the streaming radius).
 
 local CottageRig = require(script.Parent:WaitForChild("CottageRig"))
-local TownLayout = require(script.Parent:WaitForChild("TownLayout"))
 
 local TownBuildings = {}
+
+-- a house lot (Penwyn builds these); depth defaults to the cottage depth
+export type Lot = {
+	cf: CFrame,
+	w: number,
+	depth: number?,
+	kind: string?,
+	floors: number?,
+	corner: boolean,
+	shop: boolean,
+}
+local DEPTH = 16
 
 local M = Enum.Material
 local GRANITE = Color3.fromRGB(150, 146, 138)
@@ -814,13 +824,7 @@ local function chapelFront(m: Model, at: CFrame, w: number, d: number, eave: num
 end
 
 -- the ground Y range a footprint stands on: the caller samples; lo = lowest, hi = highest
-function TownBuildings.terrace(
-	parent: Instance,
-	lot: TownLayout.Lot,
-	n: number,
-	lo: number,
-	hi: number
-): Model
+function TownBuildings.terrace(parent: Instance, lot: Lot, n: number, lo: number, hi: number): Model
 	local m = Instance.new("Model")
 	m.Name = `Terrace{n}`
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
@@ -845,7 +849,7 @@ function TownBuildings.terrace(
 		else "gable"
 	local s = spec({
 		w = lot.w,
-		d = lot.depth or TownLayout.DEPTH,
+		d = lot.depth or DEPTH,
 		floors = floors,
 		ground = if kind == "chapel"
 			then 15
@@ -923,347 +927,6 @@ function TownBuildings.terrace(
 	-- perf: real PointLights on every third house, smoke on every fourth (the Neon panes all glow), as the cottages
 	m:SetAttribute("RigLights", n % 3 == 0)
 	m:SetAttribute("RigSmoke", n % 4 == 0)
-	m.Parent = parent
-	CottageRig.apply(m)
-	return m
-end
-
--- a pyramid cap (4 corner wedges) of side `a`, height `h`, base centre `at`
-local function pyramid(
-	m: Model,
-	at: CFrame,
-	a: number,
-	h: number,
-	color: Color3,
-	mat: Enum.Material
-)
-	for i = 0, 3 do
-		local p = Instance.new("CornerWedgePart")
-		p.Name = "Spire"
-		p.Anchored = true
-		p.Size = Vector3.new(a / 2, h, a / 2)
-		-- a corner wedge's apex is above its (+X, -Z) corner: turn each quarter so the apexes meet at the centre
-		p.CFrame = at * CFrame.Angles(0, i * math.pi / 2, 0) * CFrame.new(-a / 4, h / 2, a / 4)
-		p.Color = color
-		p.Material = mat
-		p.CanCollide = false
-		p.CanQuery = false
-		p.Parent = m
-	end
-end
-TownBuildings.pyramid = pyramid -- also the green's bandstand roof (Town)
-
-local function clock(m: Model, at: CFrame, r: number)
-	local face = part(
-		m,
-		"ClockFace",
-		Vector3.new(0.3, r * 2, r * 2),
-		at * CFrame.Angles(0, math.pi / 2, 0),
-		WHITE,
-		M.SmoothPlastic
-	)
-	face.Shape = Enum.PartType.Cylinder
-	local black = Color3.fromRGB(24, 24, 26)
-	part(
-		m,
-		"HourHand",
-		Vector3.new(0.3, r * 0.55, 0.1),
-		at
-			* CFrame.new(0, 0, -0.2)
-			* CFrame.Angles(0, 0, math.rad(-60))
-			* CFrame.new(0, r * 0.27, 0),
-		black,
-		M.Metal
-	)
-	part(
-		m,
-		"MinuteHand",
-		Vector3.new(0.2, r * 0.85, 0.1),
-		at * CFrame.new(0, 0, -0.25) * CFrame.new(0, r * 0.42, 0),
-		black,
-		M.Metal
-	)
-end
-
-local function flag(m: Model, base: CFrame, h: number, color: Color3)
-	part(m, "Flagpole", Vector3.new(0.3, h, 0.3), base * CFrame.new(0, h / 2, 0), WHITE, M.Metal)
-	part(m, "Flag", Vector3.new(5, 3, 0.1), base * CFrame.new(2.6, h - 1.8, 0), color, M.Fabric)
-end
-
-function TownBuildings.landmark(
-	parent: Instance,
-	lm: TownLayout.Landmark,
-	lo: number,
-	hi: number
-): Model
-	local r = lm.rect
-	local m = Instance.new("Model")
-	m.Name = lm.kind
-	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
-	local f = lm.face
-	local alongX = f.X == 0
-	local w, d =
-		if alongX then r[3] - r[1] else r[4] - r[2], if alongX then r[4] - r[2] else r[3] - r[1]
-	local at = CFrame.new((r[1] + r[3]) / 2, hi, (r[2] + r[4]) / 2)
-		* CFrame.Angles(0, math.atan2(-f.X, -f.Z), 0)
-	local drop = hi - lo + 1
-	if lm.kind == "Hotel" then
-		local s = spec({
-			w = w,
-			d = d,
-			floors = lm.floors,
-			ground = 11,
-			upper = 9,
-			drop = drop,
-			wall = Color3.fromRGB(236, 228, 210),
-			base = GRANITE,
-			baseMat = M.Granite,
-			slate = TownBuildings.SLATES[2],
-			corner = true,
-			chimney = -1,
-		})
-		local eave = shell(m, at, s)
-		-- portico on the entrance, name board on the roof, a domed corner turret over Eastgate Hill
-		for _, x in { -5, 5 } do
-			local c = part(
-				m,
-				"Column",
-				Vector3.new(10, 1.6, 1.6),
-				at * CFrame.new(x, 5, -d / 2 - 5) * CFrame.Angles(0, 0, math.rad(90)),
-				WHITE,
-				M.Plaster
-			)
-			c.Shape = Enum.PartType.Cylinder
-		end
-		part(
-			m,
-			"Portico",
-			Vector3.new(14, 1.2, 7),
-			at * CFrame.new(0, 10.6, -d / 2 - 3),
-			WHITE,
-			M.Plaster
-		)
-		part(
-			m,
-			"HotelDoor",
-			Vector3.new(5, 8, 0.3),
-			at * CFrame.new(0, 4, -d / 2 - 0.2),
-			Color3.fromRGB(60, 34, 22),
-			M.Wood
-		)
-		local board = part(
-			m,
-			"NameBoard",
-			Vector3.new(26, 4, 0.6),
-			at * CFrame.new(0, eave + 2.6, -d / 2 + 2),
-			Color3.fromRGB(28, 40, 64),
-			M.Wood
-		)
-		sign(board, "HARBOUR HOTEL", Color3.fromRGB(236, 206, 130), Enum.Font.Garamond)
-		local tc = at * CFrame.new(w / 2 - 3, 0, -d / 2 + 3)
-		local tower = part(
-			m,
-			"Turret",
-			Vector3.new(eave + 6 + drop, 11, 11),
-			tc * CFrame.new(0, (eave + 6 - drop) / 2, 0) * CFrame.Angles(0, 0, math.rad(90)),
-			s.wall,
-			M.Plaster
-		)
-		tower.Shape = Enum.PartType.Cylinder
-		part(
-			m,
-			"TurretCornice",
-			Vector3.new(1, 12.4, 12.4),
-			tc * CFrame.new(0, eave + 6, 0) * CFrame.Angles(0, 0, math.rad(90)),
-			WHITE,
-			M.Plaster
-		).Shape =
-			Enum.PartType.Cylinder
-		part(
-			m,
-			"Dome",
-			Vector3.new(11, 11, 11),
-			tc * CFrame.new(0, eave + 6.5, 0),
-			Color3.fromRGB(96, 138, 120),
-			M.Metal
-		).Shape =
-			Enum.PartType.Ball
-		flag(m, tc * CFrame.new(0, eave + 11.5, 0), 8, Color3.fromRGB(28, 40, 64))
-	elseif lm.kind == "CustomsHouse" then
-		local s = spec({
-			w = w,
-			d = d,
-			floors = lm.floors,
-			upper = 9,
-			drop = drop,
-			wall = GRANITE,
-			wallMat = M.Granite,
-			baseMat = M.Granite, -- a Plaster ground storey read as a flat grey block under the granite
-			trim = Color3.fromRGB(226, 222, 212),
-			slate = TownBuildings.SLATES[4],
-			bay = 8,
-			corner = true,
-			chimney = 0,
-			sill = GRANITE,
-			lintels = true,
-		})
-		local eave = shell(m, at, s)
-		-- central clock and flag tower, proud of the front
-		local T, top = 12, eave + 16
-		local tc = at * CFrame.new(0, 0, -d / 2 - 1)
-		part(
-			m,
-			"Tower",
-			Vector3.new(T, top + drop, T),
-			tc * CFrame.new(0, (top - drop) / 2, 0),
-			GRANITE,
-			M.Granite
-		).CanCollide =
-			true
-		part(
-			m,
-			"TowerCornice",
-			Vector3.new(T + 1.2, 1.2, T + 1.2),
-			tc * CFrame.new(0, top, 0),
-			s.trim,
-			M.Plaster
-		)
-		pyramid(m, tc * CFrame.new(0, top + 0.6, 0), T, 7, TownBuildings.SLATES[2], M.RoofShingles)
-		clock(m, tc * CFrame.new(0, top - 5, -T / 2 - 0.2), 2.8)
-		part(
-			m,
-			"Arch",
-			Vector3.new(6, 9, 0.3),
-			tc * CFrame.new(0, 4.5, -T / 2 - 0.1),
-			Color3.fromRGB(40, 56, 80),
-			M.Wood
-		)
-		local board = part(
-			m,
-			"NameBoard",
-			Vector3.new(10, 1.8, 0.4),
-			tc * CFrame.new(0, 11, -T / 2 - 0.2),
-			s.trim,
-			M.Plaster
-		)
-		sign(board, "CUSTOMS", Color3.fromRGB(40, 44, 52), Enum.Font.Garamond)
-		flag(m, tc * CFrame.new(0, top + 7.6, 0), 9, Color3.fromRGB(26, 40, 96))
-	elseif lm.kind == "School" then -- board school: granite, tall windows, steep slate roof, bell-cote, name board
-		local s = spec({
-			w = w,
-			d = d,
-			floors = lm.floors,
-			ground = 12,
-			upper = 10,
-			drop = drop,
-			wall = GRANITE,
-			wallMat = M.Granite,
-			baseMat = M.Granite,
-			slate = TownBuildings.SLATES[5],
-			bay = 9,
-			corner = true,
-			chimney = 1,
-			sill = GRANITE,
-			lintels = true,
-			quoins = true,
-			pitch = 0.9,
-		})
-		local eave = shell(m, at, s)
-		frontDoor(m, at, 0, d, 3)
-		local board = part(
-			m,
-			"NameBoard",
-			Vector3.new(12, 2, 0.4),
-			at * CFrame.new(0, 12.6, -d / 2 - 0.3),
-			Color3.fromRGB(30, 52, 40),
-			M.Wood
-		)
-		sign(board, "SCHOOL", Color3.fromRGB(236, 226, 190), Enum.Font.Garamond)
-		-- bell-cote astride the ridge at the west end: granite box, open arch, bell, slate cap
-		local bc = at * CFrame.new(-w / 2 + 8, eave + (d / 2 + 0.6) * s.pitch - 1.5, 0)
-		part(m, "BellCote", Vector3.new(3.4, 6, 3.4), bc * CFrame.new(0, 3, 0), GRANITE, M.Granite)
-		part(
-			m,
-			"BellArch",
-			Vector3.new(3.6, 2.6, 1.6),
-			bc * CFrame.new(0, 4, 0),
-			Color3.fromRGB(28, 28, 30),
-			M.Wood
-		)
-		part(
-			m,
-			"Bell",
-			Vector3.new(1.2, 1.2, 1.2),
-			bc * CFrame.new(0, 4.2, 0),
-			Color3.fromRGB(176, 140, 60),
-			M.Metal
-		).Shape =
-			Enum.PartType.Ball
-		pyramid(m, bc * CFrame.new(0, 6, 0), 4.2, 3, TownBuildings.SLATES[2], M.RoofShingles)
-	else -- MarketHall: granite arcade, rendered upper hall, clock turret with a copper cupola
-		local s = spec({
-			w = w,
-			d = d,
-			floors = lm.floors,
-			ground = 9,
-			upper = 9,
-			drop = drop,
-			wall = Color3.fromRGB(230, 222, 200),
-			base = GRANITE,
-			baseMat = M.Granite,
-			slate = TownBuildings.SLATES[3],
-			corner = true,
-			chimney = 0,
-			arcade = true,
-			sill = GRANITE,
-			lintels = true,
-			quoins = true,
-		})
-		local eave = shell(m, at, s)
-		-- the shop wall at the back of the arcade: rendered, two panelled doors and two shop windows
-		local gTop = s.ground + 2.2
-		part(
-			m,
-			"ArcadeWall",
-			Vector3.new(w - 3, gTop, 0.6),
-			at * CFrame.new(0, gTop / 2, 0),
-			s.wall,
-			M.Plaster
-		)
-		for k, x in { -w / 3, -w / 8, w / 8, w / 3 } do
-			local door = k == 2 or k == 3
-			part(
-				m,
-				if door then "ArcadeDoor" else "ArcadeGlass",
-				if door then Vector3.new(3.4, 7.4, 0.3) else Vector3.new(5, 4.6, 0.3),
-				at * CFrame.new(x, if door then 3.7 else 4.6, -0.35),
-				if door then DOORS[k] else GLASS,
-				if door then M.Wood else M.Glass
-			)
-		end
-		local ridge = eave + (d / 2 + 0.6) * 0.62
-		local tc = at * CFrame.new(0, ridge - 2, 0)
-		part(m, "Turret", Vector3.new(6, 8, 6), tc * CFrame.new(0, 4, 0), WHITE, M.Plaster)
-		clock(m, tc * CFrame.new(0, 5, -3.2), 2.2)
-		clock(m, tc * CFrame.new(0, 5, 3.2) * CFrame.Angles(0, math.pi, 0), 2.2)
-		part(
-			m,
-			"Cupola",
-			Vector3.new(6, 6, 6),
-			tc * CFrame.new(0, 8, 0),
-			Color3.fromRGB(96, 138, 120),
-			M.Metal
-		).Shape =
-			Enum.PartType.Ball
-		part(
-			m,
-			"Vane",
-			Vector3.new(0.25, 4, 0.25),
-			tc * CFrame.new(0, 12.5, 0),
-			Color3.fromRGB(200, 160, 60),
-			M.Metal
-		)
-	end
 	m.Parent = parent
 	CottageRig.apply(m)
 	return m
