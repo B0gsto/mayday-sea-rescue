@@ -31,7 +31,7 @@ DockConfig.Levels = {
 		rank = "RescueSwimmer",
 		robux = 99,
 		product = "DockLevel3",
-		adds = { "Boathouse", "BoatBoard" },
+		adds = { "Boathouse", "BoatBoard", "PaintBooth" },
 		unlocks = { "ChooseAtDock" },
 	},
 	[4] = {
@@ -47,7 +47,7 @@ DockConfig.Levels = {
 		rank = "RescuePilot",
 		robux = 399,
 		product = "DockLevel5",
-		adds = { "StationFront", "Beacon" },
+		adds = { "StationFront", "Beacon", "TrophyHall" },
 		unlocks = { "TrophyHall", "HarbourMaster" },
 	},
 } :: { [number]: Level }
@@ -146,6 +146,10 @@ end
 -- BOARD_SIZE x BOARD_SIZE floor area centred here.
 DockConfig.BOARD_SLOT = CFrame.new(-11, 3, 48.5)
 DockConfig.BOARD_SIZE = 6
+
+-- The Lv 3 paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
+-- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.
+DockConfig.PAINT_BOOTH = { cf = CFrame.new(-1.5, 6, 15), size = Vector3.new(23, 20, 26) }
 
 function DockConfig.rankIndex(rankId: string): number
 	for i, r in ProgressionConfig.Ranks do

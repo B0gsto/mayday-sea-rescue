@@ -21,8 +21,12 @@ local ORANGE = Color3.fromRGB(240, 120, 40)
 local YELLOW = Color3.fromRGB(242, 190, 40)
 local WARM = Color3.fromRGB(255, 214, 150)
 
+local NAVY = Color3.fromRGB(30, 44, 66)
+local GOLD = Color3.fromRGB(222, 178, 60)
+
 local M = Enum.Material
 local TOP = 3
+local HALL_X, HALL_Z = -1.6, 41 -- the trophy hall: the boathouse's east wall face, its middle
 
 local function part(
 	parent: Instance,
@@ -171,6 +175,90 @@ local function level2(m: Model, b: CFrame)
 	count.Parent = gui
 end
 
+-- Lv 3 paint booth (DockConfig.PAINT_BOOTH): two gantry arches over the berth's inshore half, posts on the
+-- pontoon and the jetty, spray heads and a light under each beam, a swatch board over the jetty
+local SWATCHES = {
+	Color3.fromRGB(214, 86, 20),
+	Color3.fromRGB(201, 162, 74),
+	Color3.fromRGB(79, 98, 117),
+	Color3.fromRGB(40, 150, 142),
+	Color3.fromRGB(30, 60, 88),
+	Color3.fromRGB(236, 233, 224),
+	Color3.fromRGB(140, 60, 150),
+	Color3.fromRGB(60, 140, 70),
+	Color3.fromRGB(36, 38, 42),
+	Color3.fromRGB(226, 85, 122),
+}
+local function paintBooth(m: Model, b: CFrame)
+	local booth = Instance.new("Model")
+	booth.Name = "PaintBooth"
+	booth.Parent = m
+	local xw, xe, y0, y1 = -13.6, 10.4, 2, TOP + 13
+	for _, z in { 8, 22 } do
+		for _, x in { xw, xe } do
+			part(
+				booth,
+				"BoothPost",
+				Vector3.new(0.8, y1 - y0, 0.8),
+				b * CFrame.new(x, (y0 + y1) / 2, z),
+				WHITE,
+				M.Metal
+			)
+		end
+		local beam = part(
+			booth,
+			"BoothBeam",
+			Vector3.new(xe - xw + 0.8, 0.8, 0.8),
+			b * CFrame.new((xw + xe) / 2, y1, z),
+			ORANGE,
+			M.Metal
+		)
+		beam.CanCollide = false
+		local strip = part(
+			booth,
+			"BoothLight",
+			Vector3.new(xe - xw - 2, 0.15, 0.4),
+			b * CFrame.new((xw + xe) / 2, y1 - 0.5, z),
+			WHITE,
+			M.Neon
+		)
+		strip.CanCollide = false
+		for x = xw + 4, xe - 3, 5 do
+			part(
+				booth,
+				"SprayHead",
+				Vector3.new(0.6, 0.6, 0.6),
+				b * CFrame.new(x, y1 - 0.9, z),
+				GREY,
+				M.Metal
+			).CanCollide =
+				false
+		end
+	end
+	-- the swatch board: up over the jetty edge between the arches (clear above heads), facing the booth
+	local board = part(
+		booth,
+		"SwatchBoard",
+		Vector3.new(0.25, 3.6, 12),
+		b * CFrame.new(xe - 0.1, TOP + 9, 15),
+		GREY,
+		M.SmoothPlastic
+	)
+	board.CanCollide = false
+	for i, c in SWATCHES do
+		local col, rowN = (i - 1) % 5, (i - 1) // 5
+		part(
+			booth,
+			"Swatch",
+			Vector3.new(0.1, 1.2, 1.9),
+			b * CFrame.new(xe - 0.3, TOP + 9.8 - rowN * 1.6, 10.2 + col * 2.4),
+			c,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+end
+
 -- Lv 3: boathouse on the deck's west side, the roll-up door facing the water, a clear marked floor
 -- spot for the boat board (DockConfig.BOARD_SLOT) at the back wall
 local function level3(m: Model, b: CFrame)
@@ -254,6 +342,7 @@ local function level3(m: Model, b: CFrame)
 		)
 		line.CanCollide = false
 	end
+	paintBooth(m, b)
 end
 
 -- Lv 4: lookout tower at the deck's east end, slipway crane over the berth
@@ -398,6 +487,23 @@ local function level5(m: Model, b: CFrame)
 		).CanCollide =
 			false
 	end
+	-- the trophy hall on the boathouse's jetty-side wall: a navy backboard, a shelf (DockPieces.trophies fills it)
+	part(
+		m,
+		"TrophyBoard",
+		Vector3.new(0.2, 6, 20),
+		b * CFrame.new(HALL_X - 0.15, TOP + 5, HALL_Z),
+		NAVY,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"TrophyShelf",
+		Vector3.new(1.4, 0.3, 20),
+		b * CFrame.new(HALL_X + 0.6, TOP + 2.6, HALL_Z),
+		DARK,
+		M.Wood
+	)
 	-- beacon on the lookout tower roof (Lv 4): a lens, a wide light, a beam into the sky
 	local top = b * CFrame.new(24, TOP + 14 + 4.2, 47)
 	part(m, "BeaconBase", Vector3.new(1.6, 0.6, 1.6), top * CFrame.new(0, 0.3, 0), GREY, M.Metal)
@@ -748,6 +854,107 @@ function DockPieces.building(key: string, cf: CFrame): Model
 	local fn = BUILDINGS[key]
 	if fn then
 		fn(m, cf)
+	end
+	return m
+end
+
+-- a 1-3 word name on a small plate, facing the jetty (+X)
+local function plate(
+	parent: Instance,
+	name: string,
+	size: Vector3,
+	cf: CFrame,
+	color: Color3,
+	text: string
+)
+	local p =
+		part(parent, name, size, cf * CFrame.Angles(0, -math.pi / 2, 0), color, M.SmoothPlastic)
+	p.CanCollide = false
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.PixelsPerStud = 50
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.Parent = p
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.TextColor3 = Color3.fromRGB(250, 246, 236)
+	label.Text = text
+	label.Parent = gui
+end
+
+-- The Lv 5 trophy hall's contents (docs/23 d.2) around the berth CFrame b: a gold cup per name in `cups`
+-- (rescue milestones) on the shelf, a plaque per island stamp above it. A Model "Trophies" (not parented).
+function DockPieces.trophies(
+	b: CFrame,
+	cups: { string },
+	plaques: { { name: string, colour: Color3 } }
+): Model
+	local m = Instance.new("Model")
+	m.Name = "Trophies"
+	local x = HALL_X + 0.6
+	for i, name in cups do
+		local z = HALL_Z - 9 + (i - 1) * 2.25
+		part(
+			m,
+			"CupBase",
+			Vector3.new(0.9, 0.4, 0.9),
+			b * CFrame.new(x, TOP + 2.95, z),
+			DARK,
+			M.Wood
+		)
+		part(
+			m,
+			"CupStem",
+			Vector3.new(0.7, 0.3, 0.3),
+			b * CFrame.new(x, TOP + 3.5, z) * CFrame.Angles(0, 0, math.pi / 2),
+			GOLD,
+			M.Metal,
+			Enum.PartType.Cylinder
+		)
+		part(
+			m,
+			"Cup",
+			Vector3.new(1.1, 1.1, 1.1),
+			b * CFrame.new(x, TOP + 4.25, z),
+			GOLD,
+			M.Metal,
+			Enum.PartType.Ball
+		)
+		plate(
+			m,
+			"CupName",
+			Vector3.new(2, 0.5, 0.05),
+			b * CFrame.new(HALL_X + 1.32, TOP + 2.6, z),
+			NAVY,
+			name
+		)
+	end
+	for i, p in plaques do
+		local z = HALL_Z - 8.75 + (i - 1) * 2.5
+		part(
+			m,
+			"PlaqueRim",
+			Vector3.new(0.1, 1.9, 2.3),
+			b * CFrame.new(HALL_X - 0.02, TOP + 6.6, z),
+			GOLD,
+			M.Metal
+		)
+		plate(
+			m,
+			"Plaque",
+			Vector3.new(2.1, 1.7, 0.1),
+			b * CFrame.new(HALL_X + 0.03, TOP + 6.6, z),
+			p.colour,
+			p.name
+		)
+	end
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanCollide = false
+		end
 	end
 	return m
 end

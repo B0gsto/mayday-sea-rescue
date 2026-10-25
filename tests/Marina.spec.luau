@@ -75,14 +75,38 @@ return function(t)
 		end
 	)
 
-	t.test("assign gives the lowest free plot, nil when full", function()
-		t.expect(M.assign({})).toBe(1)
-		t.expect(M.assign({ [1] = true, [2] = true, [4] = true })).toBe(3)
-		local full = {}
-		for i = 1, M.COUNT do
-			full[i] = true
+	t.test(
+		"assign gives the lowest free plot, the head only to the Harbour Master, nil when full",
+		function()
+			t.expect(M.assign({})).toBe(2)
+			t.expect(M.assign({}, true)).toBe(M.HEAD)
+			t.expect(M.assign({ [1] = true }, true)).toBe(2) -- the head is held: never move its owner
+			t.expect(M.assign({ [1] = true, [2] = true, [4] = true })).toBe(3)
+			local others = {}
+			for i = 2, M.COUNT do
+				others[i] = true
+			end
+			t.expect(M.assign(others)).toBe(M.HEAD) -- a full server hands out the head too
+			local full = {}
+			for i = 1, M.COUNT do
+				full[i] = true
+			end
+			t.expect(M.assign(full)).toBeNil()
 		end
-		t.expect(M.assign(full)).toBeNil()
+	)
+
+	t.test("Harbour Master: highest rank among Lv 5 docks, ties keep the holder", function()
+		t.expect(M.harbourMaster({})).toBeNil()
+		t.expect(M.harbourMaster({ { key = "a", rank = 9, level = 4 } })).toBeNil()
+		local list = {
+			{ key = "a", rank = 3, level = 5 },
+			{ key = "b", rank = 5, level = 5 },
+			{ key = "c", rank = 7, level = 4 }, -- outranks, but not eligible
+			{ key = "d", rank = 5, level = 5 },
+		}
+		t.expect(M.harbourMaster(list)).toBe("b")
+		t.expect(M.harbourMaster(list, "d")).toBe("d")
+		t.expect(M.harbourMaster(list, "a")).toBe("b")
 	end)
 
 	t.test("the spawn lock lets one spawn per berth through until released", function()

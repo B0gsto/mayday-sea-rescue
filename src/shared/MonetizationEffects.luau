@@ -91,6 +91,12 @@ function Effects.dayPassEnds(shop: Shop?, passKey: string): number
 	return if shop then num(shop["day" .. passKey]) * 3600 else 0
 end
 
+-- A pass counts while owned or while its day pass runs (the server's OwnsPass and the client's attributes
+-- "Pass_<Key>" / "DayPass_<Key>" both read this). dayPassEnds: unix end second (nil / 0 = none).
+function Effects.passActive(owned: boolean, dayPassEnds: number?, now: number): boolean
+	return owned or num(dayPassEnds) > now
+end
+
 -- Adds hours of real time from now, or from the current end when one is running; returns the new end.
 -- shortcut: saved as a whole hour (the flag limit is 1e6), so the end rounds up and a buyer gets up to
 -- an hour extra; store seconds if the flag rules ever allow bigger numbers.

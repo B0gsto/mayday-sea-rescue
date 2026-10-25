@@ -135,6 +135,13 @@ return function(t)
 		t.expect(Effects.boatToMeWait(true, 100, 101)).toBe(0)
 	end)
 
+	t.test("a pass counts while owned or while its day pass runs", function()
+		t.expect(Effects.passActive(true, nil, 100)).toBe(true)
+		t.expect(Effects.passActive(false, nil, 100)).toBe(false)
+		t.expect(Effects.passActive(false, 200, 100)).toBe(true)
+		t.expect(Effects.passActive(false, 100, 100)).toBe(false)
+	end)
+
 	t.test("only items with a built effect are ready; cosmetics wait for their art", function()
 		local ready = {
 			Products = {

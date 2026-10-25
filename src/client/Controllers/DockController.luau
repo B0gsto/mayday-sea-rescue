@@ -8,6 +8,9 @@
 -- (the hangar once the Lv 3 boathouse stands); their card shows the building's word instead of the number.
 -- Reads player attributes DockPlot, BayCFrame, DockLevel, DockGarage / DockHangar / DockSubPen (DockService)
 -- and the PlayerDataChanged snapshot.
+-- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own Lv 3+ booth (DockConfig.PAINT_BOOTH)
+-- opens the paint card: a swatch strip and the existing cosmetic pickers for Livery and Decal (the same rows
+-- as the phone's Settings). Leaving the booth or B / the X button closes it until the next visit.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,6 +29,7 @@ local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CashBurst = require(UI:WaitForChild("CashBurst"))
+local CosmeticPicker = require(UI:WaitForChild("CosmeticPicker"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
@@ -415,8 +419,118 @@ local function refresh()
 	end
 end
 
+type Booth = { gui: ScreenGui, pickers: { CosmeticPicker.Picker } }
+local booth: Booth? = nil
+local inBooth = false
+local boothModal: InputGlyph.Modal
+
+local function closeBooth()
+	if booth then
+		booth.gui.Enabled = false
+	end
+	boothModal.close()
+end
+
+local BOOTH_SWATCHES = {
+	Color3.fromRGB(214, 86, 20),
+	Color3.fromRGB(201, 162, 74),
+	Color3.fromRGB(40, 150, 142),
+	Color3.fromRGB(79, 98, 117),
+	Color3.fromRGB(226, 85, 122),
+}
+
+local function buildBooth(): Booth
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "PaintBoothCard"
+	gui.ResetOnSpawn = false
+	gui.DisplayOrder = 30
+	gui.Enabled = false
+	gui.Parent = playerGui
+	local panel = HudTheme.panel("Card", UDim2.fromOffset(360, 168), gui)
+	panel.AnchorPoint = Vector2.new(0.5, 1)
+	panel.Position = UDim2.new(0.5, 0, 1, -110)
+	panel.BackgroundTransparency = HudTheme.PromptTransparency
+	HudTheme.padding(panel, 14)
+	HudTheme.skin(panel)
+	-- the header is the paint itself: a strip of swatches
+	local strip = Instance.new("Frame")
+	strip.Name = "Swatches"
+	strip.Size = UDim2.new(1, -44, 0, 26)
+	strip.BackgroundTransparency = 1
+	strip.Parent = panel
+	local layout = Instance.new("UIListLayout")
+	layout.FillDirection = Enum.FillDirection.Horizontal
+	layout.Padding = UDim.new(0, 6)
+	layout.Parent = strip
+	for _, c in BOOTH_SWATCHES do
+		local sw = Instance.new("Frame")
+		sw.Size = UDim2.fromOffset(34, 26)
+		sw.BackgroundColor3 = c
+		sw.BorderSizePixel = 0
+		HudTheme.corner(sw, 6)
+		sw.Parent = strip
+	end
+	local closeButton = HudTheme.button("Close", "X", UDim2.fromOffset(34, 34), panel)
+	closeButton.AnchorPoint = Vector2.new(1, 0)
+	closeButton.Position = UDim2.fromScale(1, 0)
+	closeButton.BackgroundColor3 = C.panelLight
+	closeButton.Activated:Connect(closeBooth)
+	local rows = Instance.new("Frame")
+	rows.Name = "Rows"
+	rows.Position = UDim2.fromOffset(0, 42)
+	rows.Size = UDim2.new(1, 0, 1, -42)
+	rows.BackgroundTransparency = 1
+	rows.Parent = panel
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 8)
+	list.SortOrder = Enum.SortOrder.LayoutOrder
+	list.Parent = rows
+	return {
+		gui = gui,
+		pickers = {
+			CosmeticPicker.new(rows, "Livery", { layoutOrder = 1 }),
+			CosmeticPicker.new(rows, "Decal", { layoutOrder = 2 }),
+		},
+	}
+end
+
+local function openBooth()
+	booth = booth or buildBooth()
+	local b = booth :: Booth
+	for _, picker in b.pickers do
+		picker.refresh()
+	end
+	b.gui.Enabled = true
+	boothModal.open(b.pickers[1].first)
+	AudioController.play("UI_Click")
+end
+
+-- seated (driving or aboard) with the seat inside your own booth
+local function boothCheck()
+	local level, b = player:GetAttribute("DockLevel"), player:GetAttribute("BayCFrame")
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local seat = humanoid and humanoid.SeatPart
+	local now = false
+	if seat and type(level) == "number" and level >= 3 and typeof(b) == "CFrame" then
+		local zone = DockConfig.PAINT_BOOTH
+		local d = ((b :: CFrame) * zone.cf):PointToObjectSpace(seat.Position)
+		local h = zone.size / 2
+		now = math.abs(d.X) <= h.X and math.abs(d.Y) <= h.Y and math.abs(d.Z) <= h.Z
+	end
+	if now ~= inBooth then
+		inBooth = now
+		if now then
+			openBooth()
+		else
+			closeBooth()
+		end
+	end
+end
+
 function DockController.Init()
 	modal = InputGlyph.modal("DockCard", close)
+	boothModal = InputGlyph.modal("PaintBooth", closeBooth)
 end
 
 function DockController.Start()
@@ -442,6 +556,12 @@ function DockController.Start()
 		player:GetAttributeChangedSignal("Dock" .. key):Connect(refresh)
 	end
 	refresh()
+	task.spawn(function()
+		while true do
+			boothCheck()
+			task.wait(0.25)
+		end
+	end)
 end
 
 return DockController

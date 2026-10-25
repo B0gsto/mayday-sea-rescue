@@ -212,8 +212,11 @@ end
 
 function MonetizationService.OwnsPass(player: Player, key: string): boolean
 	local owned = ownedPasses[player]
-	return owned ~= nil and owned[key] == true
-		or Effects.dayPassEnds(shopOf(DataService.Get(player)), key) > os.time()
+	return Effects.passActive(
+		owned ~= nil and owned[key] == true,
+		Effects.dayPassEnds(shopOf(DataService.Get(player)), key),
+		os.time()
+	)
 end
 
 local function publishDayPasses(player: Player, data: PlayerData)
