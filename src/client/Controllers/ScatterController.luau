@@ -400,8 +400,6 @@ function ScatterController.Start()
 	end
 	add(props.rocks or {}, true, 0)
 	add(props.plants or {}, false, 100000)
-	-- docs/23 (l): the hub forest's trees ride the rock LOD distances and are never thinned (a forest, not filler)
-	add(props.trees or {}, true, 200000)
 	local cellKind: { [Cell]: string } = {}
 	for key, c in byKey do
 		cellKind[c] = string.sub(key, 1, 1)

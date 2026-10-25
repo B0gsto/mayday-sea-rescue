@@ -1,6 +1,6 @@
--- HubLayout (docs/23 (k), WP-18, WP-24): the ring geometry, every lot on its island's Lego plate (built from Parts
+-- HubLayout (docs/23 (p), WP-24, WP-27): the ring geometry, every lot on its island's Lego plate (built from Parts
 -- by src/server/World/IslandPlates.luau, a U cut-out over the berth cove) and clear of the others, deep water round
--- the plate and in the cove with a clear route out, bridges landing on the plate's back edge and arched high enough.
+-- the plate and in the cove with a clear route out, the quest pontoon, neighbour bridges high enough for boats.
 return function(t)
 	local L = t.load("src/shared/Config/HubLayout.luau")
 	local fs = t.lune("fs")
@@ -39,56 +39,76 @@ return function(t)
 	local WATER = { SubPen = true, Jetty = true, BlueprintTable = true }
 	local PLATE = L.IslandPlate
 
-	t.test("six islands 1,100 studs out, 60 degrees apart, one bridge each", function()
-		t.expect(#L.Islands).toBe(6)
-		t.expect(#L.Bridges).toBe(6)
-		for i, isl in L.Islands do
-			t.expect(isl.id).toBe(`Plot{i}`)
-			t.expect((isl.center - L.Hub.center).Magnitude).toBeCloseTo(1100, 1)
-			local nxt = L.Islands[i % 6 + 1]
-			t.expect(math.deg(math.acos(isl.facing:Dot(nxt.facing)))).toBeCloseTo(60, 1e-3)
-			t.expect(L.byId[isl.id]).toBe(isl)
-			t.expect(isl.bridge.island).toBe(isl.id)
-		end
-	end)
-
 	t.test(
-		"hub lots and spawn stand on flat ground; the drop-off and the jetty are in its harbour",
+		"six islands in a tight ring round an open lagoon, 60 degrees apart, 80 studs apart",
 		function()
-			for name, lot in L.Hub.lots do
-				for _, c in corners(lot) do
-					if name == "Jetty" then
-						t.expect(ground(c) < -4).toBe(true)
-						continue
-					end
-					if math.abs(ground(c) - L.PlateauY) > 2.5 then
-						error(`hub {name} corner over ground Y {ground(c)}`)
+			t.expect(#L.Islands).toBe(6)
+			t.expect(#L.Bridges).toBe(6)
+			t.expect(ground(L.Center) < -30).toBe(true) -- no island in the middle
+			for i, isl in L.Islands do
+				t.expect(isl.id).toBe(`Plot{i}`)
+				t.expect((isl.center - L.Center).Magnitude).toBeCloseTo(L.Ring, 1)
+				local nxt = L.Islands[i % 6 + 1]
+				t.expect(math.deg(math.acos(isl.facing:Dot(nxt.facing)))).toBeCloseTo(60, 1e-3)
+				t.expect(L.byId[isl.id]).toBe(isl)
+				-- the nearest corners of neighbouring plates: ~80 studs of water
+				local gap = math.huge
+				for _, c in
+					{
+						{ PLATE.edge, -(PLATE.edge - PLATE.chamfer) },
+						{ PLATE.edge - PLATE.chamfer, -PLATE.edge },
+					}
+				do
+					for _, sx in { -1, 1 } do
+						local p = (isl.frame * CFrame.new(sx * c[1], 0, -c[2])).Position
+						for _, d in
+							{
+								{ PLATE.edge, -(PLATE.edge - PLATE.chamfer) },
+								{ PLATE.edge - PLATE.chamfer, -PLATE.edge },
+							}
+						do
+							for _, dx in { -1, 1 } do
+								local q = (nxt.frame * CFrame.new(dx * d[1], 0, -d[2])).Position
+								gap = math.min(gap, (p - q).Magnitude)
+							end
+						end
 					end
 				end
+				t.expect(gap > 70 and gap < 95).toBe(true)
 			end
-			t.expect(math.abs(ground(L.Hub.spawn.Position) - L.PlateauY) < 2.5).toBe(true)
-			t.expect(ground(L.Hub.dropOff) < -8).toBe(true)
 		end
 	)
 
-	t.test("the forest's clearings: flat where baked, 4-6 quest camps, hidden spots", function()
-		local kinds = {}
-		for id, c in L.Hub.clearings do
-			kinds[c.kind] = (kinds[c.kind] or 0) + 1
-			for _, o in { Vector3.zero, Vector3.new(0.6, 0, 0), Vector3.new(0, 0, -0.6) } do
-				local y = ground(c.center + o * c.radius)
-				if math.abs(y - c.center.Y) > 1.5 then
-					error(`clearing {id} ground Y {y}, not {c.center.Y}`)
+	t.test(
+		"the quest pontoon reaches out to sea; its boats moor in deep water clear of the berth's way out",
+		function()
+			for _, isl in L.Islands do
+				local q = isl.quest
+				local len = L.QUEST_PONTOON.Y
+				local root = q.pontoon * CFrame.new(0, 0, len / 2 - 2)
+				local l = isl.frame:PointToObjectSpace(
+					Vector3.new(root.Position.X, PLATE.topY, root.Position.Z)
+				)
+				t.expect(L.plateContains(l.X, -l.Z) == false).toBe(true) -- off the plate, right at its edge
+				t.expect(math.abs(-l.Z - PLATE.edge) < 4).toBe(true)
+				t.expect(q.pontoon.LookVector:Dot(isl.facing) > 0.99).toBe(true)
+				t.expect(#q.slots).toBe(3)
+				for _, s in q.slots do
+					t.expect(s.Position.Y).toBe(0)
+					t.expect(s.LookVector:Dot(isl.facing) < -0.99).toBe(true) -- bow to the plate
+					t.expect(ground(s.Position) < -8).toBe(true)
+					local sl = isl.frame:PointToObjectSpace(
+						Vector3.new(s.Position.X, PLATE.topY, s.Position.Z)
+					)
+					t.expect(L.plateContains(sl.X, -sl.Z - 7) == false).toBe(true) -- the bow is off the plate
+					local berth = isl.frame:PointToObjectSpace(isl.berths.Boat.Position)
+					t.expect(math.abs(sl.X - berth.X) > 40).toBe(true) -- clear of the berth's run out
 				end
+				local tab = isl.lots.QuestTablet.cframe.Position
+				t.expect((tab - q.pontoon.Position).Magnitude < 40).toBe(true)
 			end
 		end
-		t.expect(kinds.bridge).toBe(6)
-		t.expect(#L.Hub.questSpots >= 4 and #L.Hub.questSpots <= 6).toBe(true)
-		t.expect((kinds.hidden or 0) >= 1).toBe(true)
-		for _, q in L.Hub.questSpots do
-			t.expect(L.Hub.clearings[q.id].kind).toBe("quest")
-		end
-	end)
+	)
 
 	t.test(
 		"island lots: on the plate (or in its cove water), apart, the helipad's rotor circle clear",
@@ -226,27 +246,39 @@ return function(t)
 	end)
 
 	t.test(
-		"bridges: hub end on the plateau, island end on the plate's back edge, towers on land, arched high over the water",
+		"bridges: a full ring of neighbours, both ends on the plates, a gentle climb, boats pass under",
 		function()
-			for _, br in L.Bridges do
-				local isl = L.byId[br.island]
-				t.expect(math.abs(ground(br.from) - L.PlateauY) < 2.5).toBe(true)
-				t.expect(L.onPlate(isl, br.to.X, br.to.Z)).toBe(true)
-				t.expect(br.to.Y).toBe(PLATE.topY)
-				local l = isl.frame:PointToObjectSpace(br.to)
-				t.expect(l.Z).toBeCloseTo(PLATE.edge, 1e-3) -- the deck ends exactly on the outer back edge
-				t.expect(L.deckY(br, 0)).toBeCloseTo(L.PlateauY, 1e-6)
-				t.expect(L.deckY(br, 1)).toBeCloseTo(PLATE.topY, 1e-6)
-				t.expect(ground(br.towers[1]) > 0).toBe(true) -- the hub tower stands on the hub
-				t.expect(L.onPlate(isl, br.towers[2].X, br.towers[2].Z)).toBe(true) -- the island tower on the plate
-				t.expect(L.deckY(br, 0.5) - 1.2 >= 35).toBe(true) -- underside at the arch top
-				local steep = 0
+			for i, br in L.Bridges do
+				local a, b = L.byId[br.a], L.byId[br.b]
+				t.expect(a.index).toBe(i)
+				t.expect(b.index).toBe(i % 6 + 1)
+				t.expect(L.onPlate(a, br.from.X, br.from.Z)).toBe(true)
+				t.expect(L.onPlate(b, br.to.X, br.to.Z)).toBe(true)
+				t.expect(L.deckY(br, 0)).toBeCloseTo(PLATE.topY, 1e-3)
+				t.expect(L.deckY(br, 1)).toBeCloseTo(PLATE.topY, 1e-3)
+				t.expect(L.deckY(br, 0.5) - 1.2 >= 19).toBe(true) -- underside at the crest
+				local steep, water = 0, 0
 				for k = 0, 200 do
 					local p = L.deckAt(br, k / 200)
-					local flat = Vector3.new(p.X - isl.center.X, 0, p.Z - isl.center.Z).Magnitude
-					-- navigable water: the open span, clear of the bridge's own low approach over the plate
-					if ground(p) < -4 and flat > L.IslandRadius + 80 and p.Y - 1.2 < 18 then
-						error(`{br.id} only {p.Y - 1.2} studs over water at t = {k / 200}`)
+					local onA, onB = L.onPlate(a, p.X, p.Z), L.onPlate(b, p.X, p.Z)
+					if not (onA or onB) then
+						water += 1
+						if ground(p) > -20 then
+							error(`{br.id} crosses shallow water at t = {k / 200}`)
+						end
+					end
+					for _, isl in { a, b } do -- never over a lot
+						for name, lot in isl.lots do
+							local o = lot.cframe:PointToObjectSpace(
+								Vector3.new(p.X, lot.cframe.Position.Y, p.Z)
+							)
+							if
+								math.abs(o.X) < lot.size.X / 2 + br.width / 2
+								and math.abs(o.Z) < lot.size.Y / 2 + br.width / 2
+							then
+								error(`{br.id} runs over {isl.id} {name}`)
+							end
+						end
 					end
 					if k > 0 then
 						local q = L.deckAt(br, (k - 1) / 200)
@@ -254,8 +286,11 @@ return function(t)
 						steep = math.max(steep, math.deg(math.atan(math.abs(p.Y - q.Y) / run)))
 					end
 				end
-				t.expect(steep < 13).toBe(true) -- a gentle walk
-				t.expect(br.cableLowY > br.apexY + 4).toBe(true) -- cables clear walkers' heads
+				t.expect(steep <= 12).toBe(true) -- a gentle walk
+				local span = water / 200 * (br.to - br.from).Magnitude
+				if span < 70 or span > 110 then
+					error(`{br.id} spans {span} studs of water`)
+				end
 			end
 		end
 	)

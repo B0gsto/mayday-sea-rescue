@@ -20,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioConfig = require(Shared:WaitForChild("Config"):WaitForChild("AudioConfig"))
+local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local PetAccessory = require(Shared:WaitForChild("PetAccessory"))
 local PetRules = require(Shared:WaitForChild("PetRules"))
 local PetSeat = require(Shared:WaitForChild("PetSeat"))
@@ -84,7 +85,7 @@ local VOICE: { [string]: string } = {
 	Turtle = "Pet_Turtle",
 }
 
-local STATION_RANGE = 70 -- studs from the sanctuary centre: "at the station"
+local STATION_RANGE = 70 -- studs from your island's station lot: "at the station"
 
 local function awaitChild(parent: Instance, name: string, class: string): Instance?
 	local child = parent:WaitForChild(name, 30)
@@ -442,7 +443,10 @@ local function stepIdle(dt: number)
 	else
 		idleSeconds += dt
 	end
-	local atStation = (root.Position - Wildlife.Sanctuary.position).Magnitude <= STATION_RANGE
+	local plot = player:GetAttribute("DockPlot")
+	local isle = if type(plot) == "number" then HubLayout.Islands[plot] else nil
+	local atStation = isle ~= nil
+		and (root.Position - isle.lots.Station.cframe.Position).Magnitude <= STATION_RANGE
 	local busy = trickName ~= nil and clock < trickUntil
 	local due = PetRules.napDue(idleSeconds, atStation)
 		and vehicleSeat(humanoid) == nil

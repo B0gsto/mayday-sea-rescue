@@ -31,12 +31,9 @@ local function pads(): { BasePart }
 	return out
 end
 
--- Home: at a shore point (where the first mission lands its casualty) or in your berth's drop-off zone: the
--- server's rule, OperationService isHome.
+-- Home: your own berth's drop-off zone only (docs/23 (p)): the server's rule, OperationService isHome.
 function Transport.isHome(p: Vector3): boolean
-	local _, shore = BoatColdOpen.nearestShore(p)
-	return shore <= BoatColdOpen.SHORE_RADIUS
-		or BoatColdOpen.atDropOff(p, Players.LocalPlayer:GetAttribute("BayCFrame"))
+	return BoatColdOpen.atDropOff(p, Players.LocalPlayer:GetAttribute("BayCFrame"))
 end
 
 -- The ambulance at the hospital pontoon, else the station.

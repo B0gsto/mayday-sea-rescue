@@ -1,8 +1,8 @@
 --!strict
 -- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash, Rep
--- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board
--- at the hub's rescuer monument (docs/23 (l): a varnished, signwritten board on two posts beside the statue, lit
--- by a brass picture lamp; no HUD panel).
+-- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board on
+-- every island by its spawn (docs/23 (p): a varnished, signwritten board on two posts, lit by a brass picture
+-- lamp; all six show the same rows; no HUD panel).
 --
 -- Credit: every helper of a finished operation gets its saved count (Shared.LeaderboardRules.credit).
 -- Increments are batched per player and written every BadgeConfig.Leaderboard.flushSeconds, on leave and at
@@ -171,7 +171,7 @@ local function nameOf(userId: number): string?
 	return nil
 end
 
----------------------------------------------------------------- the monument board
+---------------------------------------------------------------- the island boards
 
 local W, H, T = 13.8, 8.4, 0.12 -- studs: 4.6 x 2.8 m (readable from the third-person camera), board thickness
 local PPS = 50 -- SurfaceGui pixels per stud: the text layout below fills the panel at this density
@@ -184,8 +184,8 @@ local CREAM = Color3.fromRGB(232, 222, 198) -- painted names
 local BRASS = Color3.fromRGB(176, 140, 72)
 local SERIF = "rbxasset://fonts/families/Merriweather.json"
 
-local valueLabels: { [string]: { { name: TextLabel, value: TextLabel } } } = {}
-local footer: TextLabel? = nil
+local valueLabels: { [string]: { { { name: TextLabel, value: TextLabel } } } } = {} -- per key, one per board
+local footers: { TextLabel } = {}
 
 local function part(
 	parent: Instance,
@@ -287,7 +287,8 @@ local function buildGui(panel: Part)
 			value.Position = UDim2.new(1, -60, 0, y)
 			table.insert(cells, { name = name, value = value })
 		end
-		valueLabels[board.key] = cells
+		valueLabels[board.key] = valueLabels[board.key] or {}
+		table.insert(valueLabels[board.key], cells)
 		if i < cols then
 			local div = Instance.new("Frame")
 			div.BorderSizePixel = 0
@@ -302,7 +303,7 @@ local function buildGui(panel: Part)
 	foot.Size = UDim2.new(1, 0, 0, 18)
 	foot.Position = UDim2.new(0, 0, 1, -18)
 	foot.TextTransparency = 0.15
-	footer = foot
+	table.insert(footers, foot)
 end
 
 -- face: the board centre, LookVector out of its front, up = +Y
@@ -418,8 +419,8 @@ end
 
 local function show(key: string, entries: { Entry })
 	shown[key] = entries
-	local cells = valueLabels[key]
-	if not cells then
+	local boards = valueLabels[key]
+	if not boards then
 		return
 	end
 	local rowNames: { [number]: string } = {}
@@ -430,14 +431,16 @@ local function show(key: string, entries: { Entry })
 		end
 	end
 	for i, row in LeaderboardRules.rows(entries, rowNames, CFG.rows) do
-		cells[i].name.Text = row.name
-		cells[i].value.Text = row.value
+		for _, cells in boards do
+			cells[i].name.Text = row.name
+			cells[i].value.Text = row.value
+		end
 	end
 end
 
 local function paintFooter()
-	if footer then
-		local reset = LeaderboardRules.resetText(os.time())
+	local reset = LeaderboardRules.resetText(os.time())
+	for _, footer in footers do
 		footer.Text = if storesOk
 			then `Weekly boards reset Mondays, 00:00 UTC   ·   {reset}`
 			else `This station's tally   ·   {reset}`
@@ -453,10 +456,25 @@ local function refresh()
 end
 
 local function placeBoard()
-	-- on the monument's board posts (map/Build.luau buildHub): 5 studs right of the lot centre, 2.5 behind
-	local lot = HubLayout.Hub.lots.Monument.cframe
-	local board = buildBoard(lot * CFrame.new(5, 1.5 + H / 2, 2.5 - 0.6))
-	board.Parent = Workspace
+	-- one per island, beside the spawn (HubLayout: 22 studs to its left, the face turned toward it), on two posts
+	for _, isl in HubLayout.Islands do
+		local face = isl.frame
+			* CFrame.new(-22, 1.5 + H / 2, 72)
+			* CFrame.Angles(0, -math.pi / 2, 0)
+		local board = buildBoard(face)
+		board.Name = `RescueBoard{isl.index}`
+		for _, side in { -1, 1 } do
+			part(
+				board,
+				"Post",
+				Vector3.new(0.8, H + 1.9, 0.8),
+				face * CFrame.new(side * (W / 2 + 0.4), -0.55, -T / 2),
+				Color3.fromRGB(242, 243, 242),
+				Enum.Material.SmoothPlastic
+			)
+		end
+		board.Parent = Workspace
+	end
 	for key, entries in shown do
 		show(key, entries)
 	end

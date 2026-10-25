@@ -437,6 +437,14 @@ Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), *
 ring positions; neighbour bridges; delete hub camps/HQ/fog/stickers code; quest NPC boats to your jetty; move
 hub-based call sites; loading-flyover centre; map image refresh.
 
+**Done (WP-27).** Island centres 470 studs from the centre (at 380 the 320-stud plates overlap); nearest plate
+corners 80 apart, ~93 studs of water under each bridge. Bridges cross each bisector 400 out, 182 long, 11.3 deg
+ramps from 45 studs onto each plate to a rounded crest (deck ~20.6, underside ~19.4). The main bake window is a sand
+seabed (~Y -37). Quest pontoon off each island's front-left wing (3 mooring slots), quest tablet beside it; givers sail
+in from 400 out. Rip moved to Puffin Isle's north-east beach, the ferry to open sea 1,000 south of the centre. Home
+counts only at your own berth. Leaderboard: a board beside every island's spawn. Chief Aggie and the station crew
+removed (no island needs them).
+
 ## (q) No ranks: a linear unlock tree (owner, 2026-10-25 night)
 
 Owner: "remove all of the recruit and rank stuff ... look at it linearly: if the player did not unlock X he cannot

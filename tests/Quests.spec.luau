@@ -1,5 +1,6 @@
--- Quests (docs/23 (l), WP-21b): the data is sound, rotation is daily and never repeats until the pool cycles,
--- the chain runs in order, the save flag round-trips, the talk trees pass Dialogue.check.
+-- Quests (docs/23 (l) + (p), WP-21b / WP-27): the quest pontoons' moorings are clear, the data is sound, rotation is
+-- daily and never repeats until the pool cycles, the chain runs in order, the save flag round-trips, the talk trees
+-- pass Dialogue.check.
 return function(t)
 	local Data = t.require("Quests/Data")
 	local Rules = t.require("Quests/Rules")
@@ -17,9 +18,26 @@ return function(t)
 		return n
 	end
 
-	t.test("six givers, one per quest camp; every quest is sound", function()
+	t.test("every island has a quest pontoon with three clear moorings", function()
+		t.expect(#HubLayout.Islands).toBe(6)
+		for _, isl in HubLayout.Islands do
+			local P, slots = isl.quest.pontoon, isl.quest.slots
+			t.expect(#slots).toBe(3)
+			for k, slot in slots do
+				local s = P:PointToObjectSpace(slot.Position)
+				-- beside the deck, along its length, bow toward the plate (against the facing)
+				t.expect(math.abs(s.X) > HubLayout.QUEST_PONTOON.X / 2 + 2.5).toBe(true)
+				t.expect(math.abs(s.Z) <= HubLayout.QUEST_PONTOON.Y / 2).toBe(true)
+				t.expect(slot.LookVector:Dot(isl.facing) < -0.99).toBe(true)
+				for j = k + 1, #slots do
+					t.expect((slots[j].Position - slot.Position).Magnitude >= 12).toBe(true) -- 12-long boats
+				end
+			end
+		end
+	end)
+
+	t.test("six givers; every quest is sound", function()
 		t.expect(#Data.Npcs).toBe(6)
-		t.expect(#HubLayout.Hub.questSpots >= #Data.Npcs).toBe(true)
 		t.expect(#Data.Quests >= 12).toBe(true)
 		local kinds = {}
 		for _, q in Data.Quests do

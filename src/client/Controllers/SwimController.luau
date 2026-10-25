@@ -267,7 +267,7 @@ local function step(dt: number)
 	local vy = Snorkel.verticalVelocity(eyeY, surfaceY, look.Y)
 	-- the rip off Haven Sands (docs/09 section 8.4): stroke plus the current, so swimming
 	-- straight back against it barely moves and going across it leaves the channel
-	local flow = RipCurrent.velocityAt(RipCurrent.HubBeach, Vector3.new(pos.X, 0, pos.Z))
+	local flow = RipCurrent.velocityAt(RipCurrent.Beach, Vector3.new(pos.X, 0, pos.Z))
 	-- mass changes after entry (VehicleService makes a rider massless and restores it once off the
 	-- seat): a force sized at entry could not hold the swimmer up and they sank to the seabed
 	lv.MaxForce = root.AssemblyMass * (Workspace.Gravity + 80)

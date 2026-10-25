@@ -2,8 +2,9 @@
 -- TalkController: walk up to a town NPC (Workspace.Npcs child named in Shared/Dialogue.TREES), press Talk
 -- (ProximityPrompt: E / X / tap) and the camera eases into an over-the-shoulder shot of them, they turn to
 -- face you, and their line shows with up to three numbered replies (keys 1-3, tap, gamepad D-pad + A).
--- Quest givers (Quests/Data, QuestService) get their tree from Quests/Rules.talk at the moment you talk; a reply
--- with an `action` goes to the server (Quest_Talk). B, Esc, the close button or walking away ends it and the camera eases back. Not during an operation,
+-- Quest givers (Quests/Data, QuestService) moored at your own island get their tree from Quests/Rules.talk at the
+-- moment you talk; a reply with an `action` goes to the server (Quest_Talk). At someone else's island (rig attribute
+-- QuestIsland ~= your DockPlot) or sailing off they only say their idle line. B, Esc, the close button or walking away ends it and the camera eases back. Not during an operation,
 -- a cinematic or in a seat. The camera moves are Camera/Cinematic shots (CameraController owns the camera).
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
@@ -84,7 +85,14 @@ end
 
 -- the model's tree: a town NPC's fixed one, or a quest giver's from the player's quest attributes
 local function treeOf(m: Model): Dialogue.Tree?
-	if QuestData.npcById[m.Name] then
+	if not QuestData.npcById[m.Name] then
+		return Dialogue.TREES[m.Name]
+	elseif
+		m:GetAttribute("QuestIsland") ~= player:GetAttribute("DockPlot")
+		or m:GetAttribute("Leaving")
+	then
+		return QuestRules.talk(m.Name, nil, nil, nil) -- not my giver: the idle line, no actions
+	else
 		return QuestRules.talk(
 			m.Name,
 			player:GetAttribute("QuestId") :: string?,
@@ -92,7 +100,6 @@ local function treeOf(m: Model): Dialogue.Tree?
 			player:GetAttribute(`QuestOffer_{m.Name}`) :: string?
 		)
 	end
-	return Dialogue.TREES[m.Name]
 end
 
 show = function(id: string?)

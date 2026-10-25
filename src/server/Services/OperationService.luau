@@ -282,12 +282,12 @@ local function coldOpenRiderStatus(player: Player): (boolean, boolean)
 			and seat:IsDescendantOf(boat)
 end
 
--- Where this player's calls count from: their berth (BayCFrame), else the hub drop-off (docs/23 (k)).
+-- Where this player's calls count from: their berth (BayCFrame), else Plot1's (CallLogic.homeOf).
 local function homeOf(player: Player): Vector3
 	return CallLogic.homeOf(player:GetAttribute("BayCFrame"))
 end
 
--- On foot at their island's spawn (HubLayout; the hub's while they have no berth), facing its station.
+-- On foot at their island's spawn (HubLayout; Plot1's while they have no berth), facing its station.
 -- A player seated in anything is left alone.
 local function sendToStation(player: Player)
 	local character = player.Character
@@ -295,7 +295,7 @@ local function sendToStation(player: Player)
 	if not character or not humanoid or humanoid.SeatPart or humanoid.Health <= 0 then
 		return
 	end
-	local home, spawn = homeOf(player), HubLayout.Hub.spawn
+	local home, spawn = homeOf(player), HubLayout.Islands[1].spawn
 	for _, island in HubLayout.Islands do
 		if CallLogic.flatDistance(island.center, home) <= HubLayout.IslandRadius then
 			spawn = island.spawn
@@ -520,7 +520,7 @@ local function newOp(
 	zone: string,
 	position: Vector3,
 	victims: number?, -- survivors in the water (default: the scene kind's count)
-	home: Vector3? -- the owner's berth (homeOf); the hub drop-off for the server-wide call
+	home: Vector3? -- the owner's berth (homeOf); Plot1's for the server-wide call
 ): any
 	nextId += 1
 	local def = assert(Operations.get(kind), kind)
@@ -699,7 +699,7 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	end
 	c.delivered = true
 	op.saved += 1
-	-- landed away from the owner's berth (the hub, another island): pay for the trip sailed, not the trip home
+	-- landed away from the owner's berth: pay for the trip sailed, not the trip home
 	local root = actor and actor.Character and actor.Character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") and not op.isBig then
 		op.weight = math.min(
@@ -1306,7 +1306,7 @@ local function waterLine(a: Vector3, b: Vector3): boolean
 end
 
 -- A call spot is open water; within ROUTE_CHECK of `home` also on a straight sea line from just past its cove
--- mouth (never behind an island, the hub or a bridge pier). Farther out (an outer island past the hub) the
+-- mouth (never behind an island or a bridge pier). Farther out (an outer island) the
 -- trip is a voyage round things anyway, and the zone stays at its island.
 local COVE_MOUTH = 120 -- studs straight out from the berth: past the cove (HubLayout island radius 160)
 local ROUTE_CHECK = 1000
@@ -1612,7 +1612,10 @@ local function coldOpenShore(op: any)
 		end
 		local cas = v.floater.cf.Position
 		inst.timeoutAt = math.max(inst.timeoutAt, now() + 30)
-		if BoatColdOpen.landed(mode, cas) then
+		if
+			BoatColdOpen.landed(mode, cas)
+			and BoatColdOpen.atDropOff(cas, player:GetAttribute("BayCFrame")) -- your own island only
+		then
 			local shore = BoatColdOpen.nearestShore(cas)
 			pcall(RescueService.RemoveVictim, op.scene, ci)
 			try("NpcService", "ShoreHandover", shore.dry, shore.water)
@@ -1689,12 +1692,10 @@ local function stepBoarding(op: any, dt: number)
 	end)
 end
 
--- Server-side transport: the client Mechanics/transport rule (home = a shore point, or the drop-off zone round
--- the player's own berth (BayCFrame, docs/23 e.2), at any speed or on foot), checked on the server's own view.
+-- Server-side transport: the client Mechanics/transport rule (home = the drop-off zone round the player's own
+-- berth only (BayCFrame, docs/23 (p)), at any speed or on foot), checked on the server's own view.
 local function isHome(player: Player, pos: Vector3): boolean
-	local _, shore = BoatColdOpen.nearestShore(pos)
-	return shore <= BoatColdOpen.SHORE_RADIUS
-		or BoatColdOpen.atDropOff(pos, player:GetAttribute("BayCFrame"))
+	return BoatColdOpen.atDropOff(pos, player:GetAttribute("BayCFrame"))
 end
 
 local function stepHome(op: any)
@@ -1971,7 +1972,7 @@ function OperationService.StartColdOpen(
 		withdrawOffer(ops[st.offerOpId])
 	end
 	-- docs/23 (k): at your own berth, bow out of the cove (no two new players share a spawn); the casualty is
-	-- dead ahead just off the cove and the berth (a ColdOpen.SHORE point) is home. Fallback: the hub harbour.
+	-- dead ahead just off the cove and the berth (a ColdOpen.SHORE point) is home. Fallback: Plot1's berth.
 	local okBerth, berth = try("VehicleService", "BerthLaunch", player, "JetSki")
 	local at = BoatColdOpen.SPAWN
 	local cf = spawnCFrame

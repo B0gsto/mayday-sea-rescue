@@ -219,7 +219,7 @@ return function(t)
 	end)
 
 	t.test("the first mission ends at a drop-off: held and at a shore point, not before", function()
-		local hub = ColdOpen.SHORE[1].water
+		local hub = ColdOpen.SHORE[1].water -- Plot1's berth
 		t.expect(ColdOpen.landed("held", hub + Vector3.new(5, 3, 10))).toBe(true)
 		t.expect(ColdOpen.landed("swim", hub)).toBe(false) -- not holding on
 		t.expect(ColdOpen.landed("held", Vector3.new(0, 0, 420))).toBe(false) -- still out at sea
@@ -248,8 +248,8 @@ return function(t)
 					t.expect(ColdOpen.nearestShore(cas).id).toBe(island.id)
 				end
 			end
-			-- no berth: the hub harbour, facing out, home behind
-			t.expect(ColdOpen.nearestShore(ColdOpen.SPAWN).id).toBe("Hub")
+			-- no berth: Plot1's berth, facing out, home behind
+			t.expect(ColdOpen.nearestShore(ColdOpen.SPAWN).id).toBe("Plot1")
 		end
 	)
 

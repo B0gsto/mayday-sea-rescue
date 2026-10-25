@@ -13,11 +13,8 @@
 --     or X, clears it), close with M, Esc, Backspace, B or the panel's X. Zoom / Me / Clear sit bottom
 --     left and a small collapsible legend (tap its header, or gamepad Y) bottom right. Place names
 --     (MapConfig.Places) are live labels at a fixed screen size; one that would touch a control or a
---     name drawn before it is skipped. Fog (DiscoveryConfig) covers the unexplored map, with the hub's
---     finer grid drawn in a clipped copy so the forest stays hidden until walked.
+--     name drawn before it is skipped. Fog (DiscoveryConfig) covers the unexplored map.
 --   * Hidden while LocalPlayer attribute CinematicPlaying is true.
---   * Drop-off pads (Workspace.Map.DropOffs) are hidden locally (LocalTransparencyModifier) while
---     ReplicatedStorage attribute UseMapWaypoints is true (MapService sets it on the server).
 --
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
 --      GetObjective(): (Vector3?, label?), the one goal: "Craft" | "Casualty" | "Drop-off" | "Quest" | "Mayday" |
@@ -33,11 +30,9 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DiscoveryConfig = require(Shared:WaitForChild("Config"):WaitForChild("DiscoveryConfig"))
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local MapConfig = require(Shared:WaitForChild("Config"):WaitForChild("MapConfig"))
 local UiImages = require(Shared:WaitForChild("Config"):WaitForChild("UiImages"))
 local Weather = require(Shared:WaitForChild("Weather"))
-local WorldConfig = require(Shared:WaitForChild("Config"):WaitForChild("WorldConfig"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local Kit = UI:WaitForChild("Kit")
 local DiscoveryController = require(script.Parent:WaitForChild("DiscoveryController"))
@@ -84,13 +79,8 @@ local RING = 1.08 -- bezel size / minimap square
 local MAP_HALF = 0.395 -- map canvas radius / square side (just past the bezel hole, RING * 0.72 / 2)
 local S = Theme.Size
 
--- the map fog grids (DiscoveryConfig): coarse over the whole map, fine inside the hub
+-- the map fog grid (DiscoveryConfig)
 local FOG = DiscoveryConfig.Fog
-local HUB = FOG.Hub
-local HUB_HALF = math.ceil((WorldConfig.Hub.radius + HUB.radius + HUB.cell) / HUB.cell) * HUB.cell
-local HUB_COUNT = math.floor(2 * HUB_HALF / HUB.cell)
-local HUB_X0 = WorldConfig.Hub.center.X - HUB_HALF
-local HUB_Z0 = WorldConfig.Hub.center.Z - HUB_HALF
 local FOG_COLOR = Color3.fromRGB(7, 18, 34)
 
 -- ---------------------------------------------------------------- small UI helpers
@@ -287,25 +277,10 @@ local function stormAreas(): { { center: Vector3, radius: number } }
 	return MapConfig.StormAreas
 end
 
--- The hub drop-off plus your own berth (BayCFrame): the nearest wins (docs/23 (k)).
-local function dropOffs(): { [string]: Vector3 }
-	local out = { Hub = HubLayout.Hub.dropOff }
+-- The drop-off is your own berth (BayCFrame, docs/23 (k)); nil until the server hands you one.
+local function myBerth(): Vector3?
 	local bay = player:GetAttribute("BayCFrame")
-	if typeof(bay) == "CFrame" then
-		out.MyDock = bay.Position
-	end
-	return out
-end
-
-local function nearestDropOff(from: Vector3): Vector3
-	local best, bd = HubLayout.Hub.dropOff, math.huge
-	for _, p in dropOffs() do
-		local d = (p - from).Magnitude
-		if d < bd then
-			best, bd = p, d
-		end
-	end
-	return best
+	return if typeof(bay) == "CFrame" then bay.Position else nil
 end
 
 -- Your own boat in Workspace.Vehicles (VehicleService sets Owner = UserId).
@@ -384,14 +359,13 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			})
 			target = target or s.position
 		end
-		if onBoard then -- the cold open too: its home is your berth (ColdOpen.SHORE)
-			for name, p in dropOffs() do
-				table.insert(
-					list,
-					{ id = `Drop{name}`, pos = p, style = St.DropOff, clamp = true, size = 24 }
-				)
-			end
-			objective, objectiveLabel = nearestDropOff(me), "Drop-off"
+		local berth = myBerth()
+		if onBoard and berth then -- the cold open too: its home is your berth (ColdOpen.SHORE)
+			table.insert(
+				list,
+				{ id = "DropMyDock", pos = berth, style = St.DropOff, clamp = true, size = 24 }
+			)
+			objective, objectiveLabel = berth, "Drop-off"
 		elseif target then
 			-- from the moment you take it (playtest: the distance vanished on accept)
 			objective, objectiveLabel = target, "Casualty"
@@ -776,18 +750,7 @@ local function buildFullMap()
 	makeTiles(img)
 	full.img = img
 
-	-- fog: coarse cells over the whole map; inside the hub a clipped copy of the map shows the fine grid
-	local fog = frame("Fog", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
-	full.fog = fog
-	local hubClip = frame("HubClip", canvas, {
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		ZIndex = 4,
-	})
-	local hubMap = frame("HubMap", hubClip, { ZIndex = 1 })
-	makeTiles(hubMap)
-	local hubFog = frame("HubFog", hubClip, { Size = UDim2.fromScale(1, 1), ZIndex = 2 })
-	full.hubClip, full.hubMap, full.hubFog = hubClip, hubMap, hubFog
+	full.fog = frame("Fog", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 3 })
 
 	full.areas = frame("Areas", canvas, { Size = UDim2.fromScale(1, 1), ZIndex = 5 })
 	local hit = Instance.new("TextButton")
@@ -1014,7 +977,7 @@ local function rebuildRuns(
 end
 
 local function refreshFog()
-	if not full.fog or not full.hubFog then
+	if not full.fog then
 		return
 	end
 	full.fogRuns = rebuildRuns(
@@ -1025,8 +988,6 @@ local function refreshFog()
 		FOG.count,
 		DiscoveryController.IsRevealed
 	)
-	full.hubRuns =
-		rebuildRuns(full.hubFog, 0, 0, HUB.cell, HUB_COUNT, DiscoveryController.IsHubRevealed)
 end
 
 local function placeFog(scale: number, size: Vector2, c: Vector2)
@@ -1034,23 +995,6 @@ local function placeFog(scale: number, size: Vector2, c: Vector2)
 		local f = r.f
 		f.Position =
 			UDim2.fromOffset(size.X / 2 + (r.x - c.X) * scale, size.Y / 2 + (r.z - c.Y) * scale)
-		f.Size = UDim2.fromOffset(r.w * scale + 1, r.h * scale + 1)
-	end
-	local clip = full.hubClip :: Frame
-	local hubPx = HUB_COUNT * HUB.cell * scale
-	clip.Position =
-		UDim2.fromOffset(size.X / 2 + (HUB_X0 - c.X) * scale, size.Y / 2 + (HUB_Z0 - c.Y) * scale)
-	clip.Size = UDim2.fromOffset(hubPx, hubPx)
-	local mapPx = MapConfig.Extent * scale
-	local hm = full.hubMap :: Frame
-	hm.Size = UDim2.fromOffset(mapPx, mapPx)
-	hm.Position = UDim2.fromOffset(
-		(MapConfig.Origin.X - HUB_X0) * scale,
-		(MapConfig.Origin.Y - HUB_Z0) * scale
-	)
-	for _, r in full.hubRuns or {} do
-		local f = r.f
-		f.Position = UDim2.fromOffset((r.x - HUB_X0) * scale, (r.z - HUB_Z0) * scale)
 		f.Size = UDim2.fromOffset(r.w * scale + 1, r.h * scale + 1)
 	end
 end
@@ -1489,17 +1433,6 @@ end
 
 -- ---------------------------------------------------------------- lifecycle
 
-local function hidePads()
-	local use = ReplicatedStorage:GetAttribute("UseMapWaypoints") == true
-	local map = Workspace:FindFirstChild("Map")
-	local folder = map and map:FindFirstChild("DropOffs")
-	for _, p in if folder then folder:GetDescendants() else {} do
-		if p:IsA("BasePart") then
-			p.LocalTransparencyModifier = if use then 1 else 0
-		end
-	end
-end
-
 function MapController.Init()
 	local ok, ops = pcall(require, script.Parent:WaitForChild("OpsController") :: any)
 	if ok then
@@ -1582,15 +1515,6 @@ function MapController.Start()
 	end
 	player:GetAttributeChangedSignal("CinematicPlaying"):Connect(cinematic)
 	cinematic()
-	ReplicatedStorage:GetAttributeChangedSignal("UseMapWaypoints"):Connect(hidePads)
-	task.spawn(function()
-		local map = Workspace:WaitForChild("Map", 30)
-		local folder = map and map:WaitForChild("DropOffs", 30)
-		if folder then
-			folder.DescendantAdded:Connect(hidePads)
-		end
-		hidePads()
-	end)
 	RunService.RenderStepped:Connect(function(dt: number)
 		if not gui.Enabled then
 			return

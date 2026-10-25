@@ -15,7 +15,6 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
-local ForestTrees = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("ForestTrees"))
 local Swaps = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("Swaps"))
 
 local WorldDressingService = {}
@@ -522,18 +521,16 @@ local function scatterAll()
 	end
 	local props = (require :: any)(data)
 	local t0 = os.clock()
-	ForestTrees.define(AssetLoader) -- docs/23 (l): the hub forest's placeholder tree templates
 	local used: { [number]: boolean } = {}
-	for _, group in { props.rocks or {}, props.plants or {}, props.trees or {} } do
+	for _, group in { props.rocks or {}, props.plants or {} } do
 		for _, row in group do
 			used[row[1]] = true
 		end
 	end
 	local n = publishTemplates(props.assets, used)
 	local parts = hulls(props.rocks or {}, props.assets, "Rocks")
-		+ hulls(props.trees or {}, props.assets, "Trees")
 	print(
-		`[WorldDressing] {n} scatter assets x 3 LODs published; {#(props.rocks or {})} rock + {#(props.trees or {})} tree hulls ({parts} parts), {#(props.plants or {})} plants drawn by the client, in {math.floor(
+		`[WorldDressing] {n} scatter assets x 3 LODs published; {#(props.rocks or {})} rock hulls ({parts} parts), {#(props.plants or {})} plants drawn by the client, in {math.floor(
 			(os.clock() - t0) * 10
 		) / 10} s`
 	)
@@ -559,7 +556,7 @@ function WorldDressingService.Start()
 			"SeabedLife",
 			"SkerryLight",
 			"Islands", -- docs/21 archipelago: World/Islands/<Id>.luau, one per island
-			"Bridges", -- docs/23 (k): the hub -> player island suspension bridges
+			"Bridges", -- docs/23 (p): the ring of neighbour bridges between the player islands
 			"IslandPlates", -- WP-24: the six player islands are flat Lego baseplates, not terrain
 		}
 	do

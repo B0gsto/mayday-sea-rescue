@@ -1,22 +1,14 @@
 --!strict
--- NpcService: the people standing about the world. For now Chief Aggie (Agnes Brightwater, the
--- retired coxswain) on the hub quay head by the drop-off, and two lifeboat crew either side of the berth.
+-- NpcService: owns Workspace.Npcs (the quest givers, NpcFactory characters, live there too) and the cold open's
+-- shore party. Chief Aggie and the station crew stood on the hub quay; they went with the hub (docs/23 (p)).
 -- Each is a Roblox R15 character from NpcFactory (docs/12 section 2.9), the block greybox when the
 -- build fails. Scenery only: anchored, non-colliding, under Workspace.Npcs.
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
-local HubLayout = require(
-	ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("HubLayout")
-)
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
 
 local NpcService = {}
 NpcService.Priority = 120
-
-local QUAY_BACK = 6 -- studs back from the quay edge (the coping and the berth bollards)
-local AGGIE_BACK = 4 -- Aggie a step behind the crew line
-local CREW_ASIDE = 7 -- studs either side of the berth centre
 
 local folder: Folder? = nil
 
@@ -36,32 +28,6 @@ local function stand(at: Vector3, toward: Vector3): CFrame
 		return CFrame.new(p)
 	end
 	return CFrame.lookAt(p, look)
-end
-
-local function spawnStation()
-	-- the hub quay head (HubLayout), everyone facing the harbour
-	local hub = HubLayout.Hub
-	local top = (hub.frame * CFrame.new(0, 0, -(HubLayout.Notch.hub.head - QUAY_BACK))).Position
-	local flat = hub.frame.LookVector
-	local side = hub.frame.RightVector
-	local downRamp = top + flat * 10
-	NpcFactory.spawn("Aggie", {
-		name = "ChiefAggie",
-		pose = "Idle",
-		seed = 1,
-		cframe = stand(top - flat * AGGIE_BACK, downRamp),
-		parent = folder :: Instance?,
-	})
-	for i, s in { -1, 1 } do
-		local at = top + side * s * CREW_ASIDE
-		NpcFactory.spawn("Crew", {
-			name = `StationCrew{i}`,
-			pose = "Idle",
-			seed = i - 1,
-			cframe = stand(at, downRamp),
-			parent = folder :: Instance?,
-		})
-	end
 end
 
 -- The end of the cold open (docs/14 section 3) --------------------------------------------------
@@ -118,8 +84,6 @@ function NpcService.Init()
 	folder = f
 end
 
-function NpcService.Start()
-	spawnStation()
-end
+function NpcService.Start() end
 
 return NpcService

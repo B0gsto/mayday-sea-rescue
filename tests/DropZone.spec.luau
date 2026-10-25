@@ -30,9 +30,13 @@ return function(t)
 		end
 	)
 
-	t.test("only your berth: the old hub quay is no drop-off (docs/23 (p))", function()
-		t.expect(ColdOpen.atDropOff(HubLayout.Hub.dropOff, HubLayout.Islands[1].berths.Boat))
-			.toBe(false)
+	t.test("only your berth: the lagoon is no drop-off (docs/23 (p))", function()
+		t.expect(
+			ColdOpen.atDropOff(
+				HubLayout.Center * Vector3.new(1, 0, 1),
+				HubLayout.Islands[1].berths.Boat
+			)
+		).toBe(false)
 		t.expect(ColdOpen.dropOff(nil)).toBe(nil)
 	end)
 end

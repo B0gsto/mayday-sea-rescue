@@ -15,7 +15,6 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Net = require(Shared:WaitForChild("Net"))
 local Onboarding = require(Shared:WaitForChild("Onboarding"))
 
@@ -77,10 +76,10 @@ local function victimPoint(): Vector3?
 	return opPosition
 end
 
--- The tutorial calls' drop-off: your berth, just behind the cove they spawn off (docs/23 (k)); else the hub's.
+-- The tutorial calls' drop-off: your berth, just behind the cove they spawn off (docs/23 (k)).
 local function padPoint(): Vector3?
 	local bay = player:GetAttribute("BayCFrame")
-	return if typeof(bay) == "CFrame" then bay.Position else HubLayout.Hub.dropOff
+	return if typeof(bay) == "CFrame" then bay.Position else nil
 end
 
 -- Inside a tutorial call (SimpleSteps ids): your craft while on foot, the survivor, then the drop-off.

@@ -82,7 +82,7 @@ local function edges(parent: Instance, isl: HubLayout.Island)
 	local back, left, right, wingL, wingR =
 		P.rects[4], P.rects[5], P.rects[6], P.rects[7], P.rects[8]
 	local skirts = {
-		{ back[1], back[2], -e - TRIM_W, back[3] }, -- back edge (the bridge side)
+		{ back[1], back[2], -e - TRIM_W, back[3] }, -- back edge (the lagoon side)
 		{ -e - TRIM_W, left[1], left[3], left[4] }, -- left edge
 		{ right[2], e + TRIM_W, right[3], right[4] }, -- right edge
 		{ wingL[1], wingL[2], wingL[4], e + TRIM_W }, -- fwd-left wing (beside the notch mouth)

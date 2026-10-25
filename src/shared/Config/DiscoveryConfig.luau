@@ -30,10 +30,8 @@ local DiscoveryConfig = {
 	Cash = { Stamp = 150, Bottle = 75, View = 75, Critter = 75, Wreck = 150, Page = 300 } :: {
 		[string]: number,
 	},
-	-- the fog grid the map draws (docs/21 §3): square cells over the map canvas, cleared near the player.
-	-- docs/23 (l): inside the hub island the map uses a finer grid (Hub) with a smaller reveal radius, so
-	-- the forest stays fogged until walked (DiscoveryRules saves it as the "foghub" flag).
-	Fog = { origin = -7168, cell = 256, count = 56, radius = 400, Hub = { cell = 32, radius = 40 } },
+	-- the fog grid the map draws (docs/21 §3): square cells over the map canvas, cleared near the player
+	Fog = { origin = -7168, cell = 256, count = 56, radius = 400 },
 	Pages = {} :: { [string]: Page },
 }
 
@@ -152,15 +150,6 @@ DiscoveryConfig.Pages = {
 				offset = v(-30, -30),
 				species = "Turtle",
 			},
-		},
-	},
-	-- docs/23 (l): the hub forest's hidden spots (WorldConfig.Hub.clearings), no trail leads to either
-	Hub = {
-		colour = Color3.fromHex("4E7A3A"),
-		icon = "castle",
-		stickers = {
-			{ id = "Ruin", kind = "View", from = "Ruin", offset = v(4, 3) }, -- the hilltop ruin's view
-			{ id = "Wreck", kind = "Bottle", from = "Wreck", offset = v(-6, 5) }, -- by the overgrown wreck
 		},
 	},
 }

@@ -3,23 +3,30 @@
 return function(t)
 	local R = t.load("src/shared/RipCurrent.luau")
 
-	local F = R.HubBeach
+	local F = R.Beach
 	local DT = 1 / 30
 
-	t.test("the field runs off the hub beach, out to sea and clear of the bridges", function()
-		local HubLayout = t.load("src/shared/Config/HubLayout.luau")
-		local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
-		t.expect(F.origin.Y).toBe(0)
-		t.expect(F.direction.Y).toBe(0)
-		t.expect(F.origin.Magnitude > HubLayout.HubRadius).toBeTruthy() -- the hub centre is the origin
-		t.expect(F.origin.Unit:Dot(F.direction.Unit)).toBeCloseTo(1, 1e-6)
-		for d = 40, F.length, 20 do -- the channel past the surf is open water (CallLogic.isWater: off every bridge)
-			t.expect(CallLogic.isWater(R.point(F, d, 0), "Open")).toBeTruthy()
+	t.test(
+		"the field runs off Puffin Isle's beach, straight out to sea, far from the ring",
+		function()
+			local WorldConfig = t.load("src/shared/Config/WorldConfig.luau")
+			local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+			local puffin
+			for _, isl in WorldConfig.Islands do
+				if isl.id == "PuffinIsle" then
+					puffin = isl
+				end
+			end
+			t.expect(F.origin.Y).toBe(0)
+			t.expect(F.direction.Y).toBe(0)
+			local off = F.origin - puffin.center
+			t.expect(Vector3.new(off.X, 0, off.Z).Unit:Dot(F.direction.Unit)).toBeCloseTo(1, 1e-4)
+			t.expect((F.origin - HubLayout.Center).Magnitude > HubLayout.Ring + 1000).toBeTruthy()
+			t.expect(F.strength > 4 and F.strength < 12).toBeTruthy()
+			t.expect(F.width > 20 and F.length > F.width).toBeTruthy()
+			t.expect(R.point(F, 0, 0)).toBe(F.origin)
 		end
-		t.expect(F.strength > 4 and F.strength < 12).toBeTruthy()
-		t.expect(F.width > 20 and F.length > F.width).toBeTruthy()
-		t.expect(R.point(F, 0, 0)).toBe(F.origin)
-	end)
+	)
 
 	t.test("zero outside the channel, strongest on the centre line", function()
 		-- behind the shore end, past the sea end, and outside the band
