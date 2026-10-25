@@ -2,33 +2,33 @@
 -- DockService (docs/23 WP-1; WP-19b): your island is your plot. Builds the six player islands' docks
 -- (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining player the
 -- lowest free island and frees it on leave. Every island has a bare jetty down its cove; Lv 1 adds the owner's
--- name arch and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
+-- Lego name sign and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
 -- (data.dockLevel, default 1) so later levels rebuild on whichever island the player gets. VehicleService
 -- launches at the island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
 -- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
 -- sees them. Bought with Cash + rank (Dock_Upgrade) or Robux (MonetizationConfig DockLevel<n>, skips both);
 -- a buy plays the Lego build beat: the pieces exist here in their final state, the Dock_Build event lets
--- every client drop them in (shared/BuildSeq), and two builder NPCs stand by the jetty table (WP-14c).
--- The blueprint table on the jetty holds one paper sheet per available upgrade (docs/23 (j) rule 4):
--- the next level, each DockConfig building the level qualifies for, and each unearned quest blueprint
--- (DockBlueprints), locked ones greyed with a padlock; the owner's DockController puts the prompts on
--- and opens the price card.
+-- every client drop them in (shared/BuildSeq), and two builder NPCs stand by the build station (WP-14d).
+-- The build station by the spawn (docs/23 (j) rule 4) carries the tablet whose prompt opens the owner's
+-- top-down build mode (DockController). Its catalog is DockBlueprints.catalog: levels, buildings, quest
+-- blueprints and the Cash-only Decorations on the spare lots.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
 -- GetLevel(player) -> number, Berths() -> { BasePart }, Refresh(player) (rebuild from the profile).
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
--- DockLevel (built level, DockController's sheets and build beat read it).
--- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
--- "Owned" | "Data" | "Busy").
+-- DockLevel (built level, DockController's build mode reads it), Dock<key> / Decor<key> (owned).
+-- Remote: Dock_Upgrade C->S function (level | building/decor key) -> ok, reason ("Level" | "Rank" |
+-- "Cash" | "Owned" | "Data" | "Busy").
 -- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on their island lots and the
 -- sub pen over the cove's sub berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
 -- rank, products DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
--- gives them a building ("all": every one); ("trophies") every rescue milestone and island stamp.
+-- gives them a building ("all": every one); ("decor", key) gives them a decoration ("all": every one);
+-- ("trophies") every rescue milestone and island stamp.
 -- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
--- (built). Player attributes DockHangar / DockSubPen (owned; the blueprint sheets).
+-- (built). Player attributes DockHangar / DockSubPen / Decor<key> (owned; the build tablet).
 -- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
--- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name board and a tall gold
+-- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name sign and a tall gold
 -- beacon on their island; picked on join / leave / a level change (nobody's island ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
 -- plaque per island stamp (DiscoveryRules), rebuilt from the profile every few seconds when it changes.
 local Players = game:GetService("Players")
@@ -41,7 +41,6 @@ local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeCon
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
-local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
@@ -66,9 +65,11 @@ type Plot = {
 	model: Model,
 	frame: CFrame, -- the berth frame (Marina.berth, sea level)
 	berth: Part,
-	sign: Model, -- name arch + flag, parented only while owned
+	sign: Model, -- name sign + flag, parented only while owned
 	labels: { TextLabel },
-	board: Part,
+	board: Part, -- the sign's face brick (the owner's flag colour, gold for the Harbour Master)
+	trim: { Part }, -- its frame bricks, posts and bases, a darker shade of the face
+	studs: { Part }, -- the stud row along its top edge, the face colour
 	flag: Part,
 	levels: Model?, -- Lv 2..built pieces
 	built: number,
@@ -77,8 +78,8 @@ type Plot = {
 	trophies: Model?,
 	trophyKey: string,
 	master: Model?, -- the Harbour Master's gold beacon
-	blueprintTable: Model?, -- the jetty trestle table (WP-14c), while owned
-	blueprints: Model?, -- its paper sheets, one per available upgrade
+	buildStation: Model?, -- the tablet station by the spawn (WP-14d), while owned
+	decorations: Model?, -- the owner's bought decorations
 }
 
 local plots: { Plot } = {}
@@ -119,6 +120,90 @@ local function post(parent: Instance, cf: CFrame, top: number, bottom: number)
 	p.Shape = Enum.PartType.Cylinder
 end
 
+-- The sign's frame, posts and bases: the face colour, darker (only SmoothPlastic: it is a Lego brick).
+local function signTrim(c: Color3): Color3
+	return Color3.new(c.R * 0.62, c.G * 0.62, c.B * 0.62)
+end
+
+-- A Lego name sign: a chunky brick face (18 x 4.4 studs, readable from the water and the bridge) with a
+-- darker brick frame, square brick posts on 2x brick bases and a stud row along the top. The two
+-- SurfaceGui labels are white FredokaOne with a black stroke, TextScaled with a size cap so any
+-- DisplayName fits inside the frame with padding.
+local function nameSign(
+	sign: Model,
+	arch: CFrame,
+	faceColor: Color3
+): (Part, { TextLabel }, { Part }, { Part })
+	local trim: { Part } = {}
+	local studs: { Part } = {}
+	local function brick(
+		name: string,
+		size: Vector3,
+		cf: CFrame,
+		color: Color3,
+		accent: boolean?
+	): Part
+		local p = part(sign, name, size, arch * cf, color, Enum.Material.SmoothPlastic)
+		table.insert(if accent then studs else trim, p)
+		return p
+	end
+	local dark = signTrim(faceColor)
+	for _, dx in { -10.4, 10.4 } do
+		brick("SignBase", Vector3.new(3.2, 0.8, 3.2), CFrame.new(dx, 0.4, 0), dark)
+		brick("SignPost", Vector3.new(1.6, 5.7, 1.6), CFrame.new(dx, 3.65, 0), dark)
+	end
+	for _, dy in { -2.5, 2.5 } do
+		brick("SignFrame", Vector3.new(19.2, 0.6, 1), CFrame.new(0, 9.3 + dy, 0), dark)
+	end
+	for _, dx in { -9.3, 9.3 } do
+		brick("SignFrame", Vector3.new(0.6, 5.6, 1), CFrame.new(dx, 9.3, 0), dark)
+	end
+	for _, dx in { -6, 0, 6 } do
+		local stud = brick(
+			"SignStud",
+			Vector3.new(0.5, 1, 1),
+			CFrame.new(dx, 12.35, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			faceColor,
+			true
+		)
+		stud.Shape = Enum.PartType.Cylinder
+	end
+	local board = part(
+		sign,
+		"NameBoard",
+		Vector3.new(18, 4.4, 0.8),
+		arch * CFrame.new(0, 9.3, 0),
+		faceColor,
+		Enum.Material.SmoothPlastic
+	)
+	local labels = {}
+	for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
+		local gui = Instance.new("SurfaceGui")
+		gui.Face = face
+		gui.PixelsPerStud = 30
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.Parent = board
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(0.93, 0.84)
+		label.Position = UDim2.fromScale(0.035, 0.08)
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.Font = Enum.Font.FredokaOne
+		label.TextColor3 = Color3.new(1, 1, 1)
+		label.Parent = gui
+		local fit = Instance.new("UITextSizeConstraint")
+		fit.MaxTextSize = 100
+		fit.MinTextSize = 8
+		fit.Parent = label
+		local stroke = Instance.new("UIStroke")
+		stroke.Thickness = 5
+		stroke.Color = Color3.new(0, 0, 0)
+		stroke.Parent = label
+		table.insert(labels, label)
+	end
+	return board, labels, trim, studs
+end
+
 local function buildPlot(folder: Instance, i: number): Plot
 	local b = Marina.berth(i)
 	local top = Marina.DECK_TOP
@@ -154,46 +239,13 @@ local function buildPlot(folder: Instance, i: number): Plot
 		post(model, b * CFrame.new(j.x1 - 0.6, 0, z), top + 0.8, -10)
 	end
 
-	-- the owner's sign (only while the island has an owner): a name arch over the jetty's quay end, facing
-	-- the cove, and a flag beside it
+	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
+	-- facing the cove, and a flag beside it
 	local sign = Instance.new("Model")
 	sign.Name = "Sign"
 	local isle = b * Marina.ISLAND
 	local arch = isle * CFrame.new(0, 0, -28.5)
-	for _, dx in { -7, 7 } do
-		part(
-			sign,
-			"BoardPost",
-			Vector3.new(0.8, 12, 0.8),
-			arch * CFrame.new(dx, 6, 0),
-			DARK_WOOD,
-			Enum.Material.Wood
-		)
-	end
-	local board = part(
-		sign,
-		"NameBoard",
-		Vector3.new(16, 3.6, 0.4),
-		arch * CFrame.new(0, 10.4, 0),
-		BOARD,
-		Enum.Material.SmoothPlastic
-	)
-	local labels = {}
-	for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
-		local gui = Instance.new("SurfaceGui")
-		gui.Face = face
-		gui.PixelsPerStud = 30
-		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-		gui.Parent = board
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.fromScale(1, 1)
-		label.BackgroundTransparency = 1
-		label.TextScaled = true
-		label.Font = Enum.Font.GothamBold
-		label.TextColor3 = Color3.fromRGB(30, 38, 52)
-		label.Parent = gui
-		table.insert(labels, label)
-	end
+	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
 	local poleAt = isle * CFrame.new(-12, 0, -27)
 	part(
 		sign,
@@ -238,6 +290,8 @@ local function buildPlot(folder: Instance, i: number): Plot
 		sign = sign,
 		labels = labels,
 		board = board,
+		trim = trim,
+		studs = studs,
 		flag = flag,
 		built = 1,
 		counts = {},
@@ -333,43 +387,43 @@ local function tableOf(v: any): { [string]: any }
 	return if type(v) == "table" then v else {}
 end
 
--- The paper sheets on the owner's blueprint table (WP-14c): one per available upgrade, greyed with a
--- padlock when the rank is too low (or the quest blueprint is still to be earned). Rebuilt whenever the
--- level or buildings change. Only sold upgrades get DockItem, so DockController puts no prompt on a
--- quest blueprint (there is nothing to price).
-local function syncBlueprints(plot: Plot, owner: Player?)
-	if plot.blueprints then
-		plot.blueprints:Destroy()
-		plot.blueprints = nil
-	end
+-- The owner's decorations (WP-14d) stand on their spare lots; beat: new ones play the build animation.
+local function syncDecor(plot: Plot, owner: Player?, beat: boolean)
 	local data: any = owner and DataService.Get(owner)
-	if not (owner and data) then
-		return
+	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	local holder = plot.decorations
+	if owner and not holder then
+		local made = Instance.new("Model")
+		made.Name = "Decorations"
+		made.Parent = plot.model
+		plot.decorations = made
+		holder = made
 	end
-	local items = DockBlueprints.available(data.dockLevel or 1, tableOf(data.dockBuildings))
-	if #items == 0 then
-		return
-	end
-	local rank = ProgressionRules.rankIndex(data)
-	local m = Instance.new("Model")
-	m.Name = "Blueprints"
-	local at = plot.frame * Marina.LOTS.BlueprintTable.cf
-	for k, item in items do
-		local sheet = DockPieces.blueprintSheet(
-			item,
-			DockBlueprints.label(item),
-			DockBlueprints.locked(item, rank)
-		)
-		local x = (k - (#items + 1) / 2) * 1.5
-		sheet:PivotTo(at * CFrame.new(x, DockPieces.BLUEPRINT_TABLE_H + 0.25, 0.35))
-		if DockBlueprints.buyable(item) then
-			sheet:SetAttribute("DockItem", item.key)
+	for _, key in DockConfig.DECOR do
+		local want = owner ~= nil and owned[key] == true
+		local have = holder and holder:FindFirstChild(key)
+		if want and not have and holder and owner then
+			local m = DockPieces.decoration(key, plot.frame)
+			for _, d in m:GetDescendants() do
+				if d.Name == "Flag" and d:IsA("BasePart") then
+					d.Color = Marina.flagColor(owner.UserId)
+				end
+			end
+			m.Parent = holder
+			if beat then
+				announceBuild(plot, "Decorations", key)
+			end
+		elseif have and not want then
+			have:Destroy()
 		end
-		sheet:SetAttribute("Label", DockBlueprints.label(item))
-		sheet.Parent = m
+		if owner then
+			owner:SetAttribute("Decor" .. key, owned[key] == true)
+		end
 	end
-	m.Parent = plot.model
-	plot.blueprints = m
+	if not owner and plot.decorations then
+		plot.decorations:Destroy()
+		plot.decorations = nil
+	end
 end
 
 -- The Crew rigs already wear the rescue helmet; swap it for a chunky yellow builder's hard hat (WP-14c).
@@ -402,12 +456,12 @@ local function hardHat(model: Model)
 	cap("HardHatBrim", Vector3.new(1.7, 0.12, 0.5), CFrame.new(0, head.Size.Y / 2 + 0.02, -0.85))
 end
 
--- Two builder NPCs (R15 crew, hard hats, NpcFactory's building) by the table while the beat plays, gone after.
+-- Two builder NPCs (R15 crew, hard hats, NpcFactory's building) by the station while the beat plays, gone after.
 local function spawnBuilders(plot: Plot)
-	local at = plot.frame * Marina.LOTS.BlueprintTable.cf
+	local at = DockConfig.stationSpot(plot.frame)
 	for side = -1, 1, 2 do
 		task.spawn(function()
-			local feet = at * CFrame.new(side * 3.4, 0, -2.2)
+			local feet = at * CFrame.new(side * 5.5, 0, -7.2)
 			local m = NpcFactory.spawn("Crew", {
 				seed = math.random(1, 1_000_000),
 				pose = "Idle",
@@ -457,10 +511,17 @@ local function syncTrophies(plot: Plot, owner: Player?)
 	end
 end
 
--- The Harbour Master's island: a gold name board and a tall gold beacon beside the jetty arch.
+-- The Harbour Master's island: the name sign turns gold and a tall gold beacon stands beside the jetty.
 local function setMaster(plot: Plot, on: boolean)
-	plot.board.Color = if on then GOLD else BOARD
-	plot.board.Material = if on then Enum.Material.Metal else Enum.Material.SmoothPlastic
+	local owner = owners[plot.index]
+	local face = if on then GOLD elseif owner then Marina.flagColor(owner.UserId) else BOARD
+	plot.board.Color = face
+	for _, p in plot.trim do
+		p.Color = signTrim(face)
+	end
+	for _, p in plot.studs do
+		p.Color = face
+	end
 	plot.berth:SetAttribute("HarbourMaster", if on then true else nil)
 	if on and not plot.master then
 		local m = Instance.new("Model")
@@ -530,7 +591,7 @@ local function candidates(): { Marina.Candidate }
 	return list
 end
 
--- Re-pick the Harbour Master (join, leave, level change); only the flag and the board change hands.
+-- Re-pick the Harbour Master (join, leave, level change); only the sign's colours change hands.
 local function crown()
 	local pick = Marina.harbourMaster(candidates(), master)
 	if pick == master then
@@ -542,7 +603,7 @@ local function crown()
 	end
 end
 
--- Lv 1 for the owner (the sign and the blueprint table), or the bare jetty when empty.
+-- Lv 1 for the owner (the sign and the build station), or the bare jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
 	for _, label in plot.labels do
@@ -551,21 +612,22 @@ local function dress(plot: Plot, owner: Player?)
 	plot.sign.Parent = if owner then plot.model else nil
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
-		if not plot.blueprintTable then
-			local t = DockPieces.blueprintTable(plot.frame)
-			t.Parent = plot.model
-			plot.blueprintTable = t
+		setMaster(plot, master == owner)
+		if not plot.buildStation then
+			local st = DockPieces.buildStation(plot.frame)
+			st.Parent = plot.model
+			plot.buildStation = st
 		end
-		syncBlueprints(plot, owner)
+		syncDecor(plot, owner, false)
 	else
 		sync(plot, nil, 1, false)
 		syncBuildings(plot, nil, false)
+		syncDecor(plot, nil, false)
 		syncTrophies(plot, nil)
-		syncBlueprints(plot, nil)
 		setMaster(plot, false)
-		if plot.blueprintTable then
-			plot.blueprintTable:Destroy()
-			plot.blueprintTable = nil
+		if plot.buildStation then
+			plot.buildStation:Destroy()
+			plot.buildStation = nil
 		end
 	end
 end
@@ -577,7 +639,7 @@ local function show(player: Player, beat: boolean)
 	if i and data then
 		sync(plots[i], player, data.dockLevel or 1, beat)
 		syncBuildings(plots[i], player, beat)
-		syncBlueprints(plots[i], player)
+		syncDecor(plots[i], player, beat)
 		if beat then
 			spawnBuilders(plots[i])
 		end
@@ -610,7 +672,26 @@ local function buyBuilding(player: Player, data: any, key: string): (boolean, st
 	return true, "ok"
 end
 
--- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products), or of a building.
+-- Cash-only purchase of a decoration (WP-14d); no rank gate, no Robux product.
+local function buyDecor(player: Player, data: any, key: string): (boolean, string)
+	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	local ok, reason, price =
+		DockConfig.canBuyDecor(key, data.dockBuildings[key] == true, data.cash)
+	if not ok or not price then
+		return false, reason or "Owned"
+	end
+	data.cash -= price
+	data.dockBuildings[key] = true
+	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
+	DataService.MarkDirty(player)
+	ProgressionService.Refresh(player)
+	show(player, true)
+	task.spawn(DataService.Save, player, false)
+	return true, "ok"
+end
+
+-- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products), of a building,
+-- or Cash-only decor.
 local function buy(player: Player, level: any): (boolean, string)
 	local data: any = DataService.Get(player)
 	if not data then
@@ -619,11 +700,16 @@ local function buy(player: Player, level: any): (boolean, string)
 	if busy[player] then
 		return false, "Busy"
 	end
-	if type(level) == "string" and DockConfig.Buildings[level] then
-		return buyBuilding(player, data, level)
+	if type(level) == "string" then
+		if DockConfig.Buildings[level] then
+			return buyBuilding(player, data, level)
+		elseif DockConfig.Decorations[level] then
+			return buyDecor(player, data, level)
+		end
+		return false, "Level"
 	end
 	if type(level) ~= "number" then
-		return false, "Busy"
+		return false, "Level"
 	end
 	local ok, reason, price =
 		DockConfig.canBuy(data.dockLevel or 1, level, data.cash, ProgressionRules.rankIndex(data))
@@ -759,6 +845,18 @@ function DockService.Init()
 				DataService.MarkDirty(player)
 				show(player, true)
 				return true
+			elseif cmd == "decor" and data then
+				data.dockBuildings = if type(data.dockBuildings) == "table"
+					then data.dockBuildings
+					else {}
+				for _, key in DockConfig.DECOR do
+					if n == key or n == "all" then
+						data.dockBuildings[key] = true
+					end
+				end
+				DataService.MarkDirty(player)
+				show(player, true)
+				return true
 			end
 			return nil
 		end
@@ -773,7 +871,7 @@ function DockService.Start()
 		if i then
 			sync(plots[i], player, data.dockLevel or 1, false)
 			syncBuildings(plots[i], player, false)
-			syncBlueprints(plots[i], player)
+			syncDecor(plots[i], player, false)
 			crown() -- GetBerth may have claimed before the profile loaded
 		end
 	end)

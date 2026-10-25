@@ -20,9 +20,8 @@ export type GradeBand = {
 --   "retry"    restart the step (up to MaxAttempts, then "npc")
 --   "npc"      an NPC crewmate finishes it (Silver at most, no credit to the player)
 --   "skip"     the step scores Fail (0 points) and the operation moves on
---   "takeover" the Coastguard takes over the operation (docs 09 section 2.5)
 --   "continue" the step completes Bronze (never worse; passage and transport always get there)
-export type OnFail = "retry" | "npc" | "skip" | "takeover" | "continue"
+export type OnFail = "retry" | "npc" | "skip" | "continue"
 
 export type StepDef = {
 	id: string, -- unique inside the operation
@@ -48,14 +47,13 @@ export type OperationDef = {
 	id: string, -- "PersonInWater" | "CapsizedFerry" | ...
 	displayName: string,
 	weight: number, -- payout weight (docs 02 section 3)
-	capSeconds: number, -- takeover when the operation runs past this (docs 09 section 2.5)
+	capSeconds: number, -- past this the call still pays, graded Bronze (docs/00 section 3)
 	isBig: boolean,
 	casualtyKind: "Person" | "Vessel",
 	steps: { StepDef },
 	-- casualty state -> chance; the server rolls one per casualty
 	states: { [string]: number },
 	lifejacketChance: number,
-	takeoverAsset: string, -- who takes over
 	-- greybox scene to spawn in RescueService (legacy call kinds)
 	sceneKinds: { string },
 }
@@ -73,7 +71,7 @@ export type CasualtyState = {
 	treated: boolean,
 	towed: boolean, -- vessels: the tow is established, the drift clock stops
 	delivered: boolean,
-	aboard: boolean?, -- picked up by a crew's boat (the board effect): safe, no takeover
+	aboard: boolean?, -- picked up by a crew's boat (the board effect): safe from the slow grade
 	takenOver: boolean,
 	wrongHandled: boolean, -- the one-off wrong-handling cost was applied
 	tag: string?, -- triage: "Red" | "Yellow" | "Green"

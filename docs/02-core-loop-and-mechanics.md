@@ -1,264 +1,264 @@
 # 02 · Core loop and mechanics
 
-> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
+Last rewrite: 2026-10-25. This file owns how the game plays: the loop, calls, pick-up, craft, building, quests,
+the hub and the interface. `docs/00-design.md` is canon; if this file disagrees, 00 wins. Pay, rank and pacing
+numbers are in `docs/03-progression.md`; Robux items in `docs/04-monetization.md`.
 
-> Where this chapter and [16 · Launch polish plan](archive/16-launch-polish-plan.md) disagree, docs/00-design.md is the current source of truth (2026-10-23: many systems below were cut for launch).
-
-How Mayday plays, from the first second to the daily habit. Names and rules come from [`01-game-canon.md`](01-game-canon.md). Progression numbers (payouts, prices, thresholds, calls per hour) live in [`03-progression.md`](03-progression.md); this file only uses relative values such as "x1.5", plus the map scale and vehicle speeds in section 4.1, which it owns. Tech lives in [`06-tools-and-pipeline.md`](06-tools-and-pipeline.md). The rescue operations themselves (steps, radio, crew roles on scene, grading, certifications, kit) live in [`09-rescue-operations.md`](archive/09-rescue-operations.md); this file links into it. The world layout (the island, roads, beaches, seabed, discoverables, free exploration) lives in [`10-world-and-map.md`](10-world-and-map.md), which works its travel times from the speeds here. MVP scope is in [`01-game-canon.md`](01-game-canon.md), section 9.1. Numbers marked **(tune)** are first guesses.
-
-## 1. Core loop
-
-The core loop is the **operation**: a real rescue played step by step ([document 09](archive/09-rescue-operations.md)). Everything else (vehicles, gear, ranks, certifications, the storm) exists to make the next operation possible, harder or better.
+## 1. The loop
 
 ```mermaid
 flowchart LR
-    A[Tasking from<br/>Gale Isles Coastguard] --> B[Kit and launch<br/>from your bay]
-    B --> C[Passage and search<br/>datum, drift, lookout]
-    C --> D[On scene steps<br/>approach, recovery,<br/>survey, treatment<br/>or assess, rig, tow]
-    D --> E[Transport and<br/>handover]
-    E --> F[Debrief<br/>step grades, Cash, Rep]
-    F --> G[Certifications,<br/>vehicles, gear, station]
-    G --> H[Rank up, relight<br/>a lighthouse]
-    H --> I[Harder operations<br/>in harder zones]
-    I --> A
-    S((Storm every ~15 min)) -.tasking burst,<br/>big call, x1.5 pay.-> A
+  A[Your island] --> B[A call]
+  B --> C[Sail out]
+  C --> D[Pick up]
+  D --> E[Bring them home]
+  E --> F[Cash + Rep]
+  F --> G[Build your island]
+  G --> H[Farther calls, bigger craft]
+  H --> B
 ```
 
-XP and Reputation are the same number. The UI calls it Reputation; "XP" appears only in the debrief as "+135 Rep".
+The loop is one sentence: **your island → a call → sail out → pick up → bring them home → build → farther calls.**
+Every system either feeds a step or makes the island worth returning to.
 
-## 2. The first two minutes: the cold open
+- The island is the home base and the tycoon. It is where Cash becomes visible.
+- The call is the action. It starts with a pager card, a flare, a pin and a beep, and ends with a survivor
+  stepping off at a berth.
+- The return trip is the quiet part: the sea, the bridges, the outer islands, the next call waiting.
+- Progress is horizontal and vertical: farther calls and bigger craft (reach), plus a taller island (dock levels).
 
-The research says discovery punishes players who leave in the first 60 and 180 seconds ([`research/store-page-and-monetization.md`](archive/research/store-page-and-monetization.md), section 5, https://create.roblox.com/docs/discovery). So: no menus, no text walls, no drill and no cinematic first. The first frame is already a rescue: the new player spawns in first person, riding a moving jet ski just outside the Harbour Mouth off Sandy Point, and Gale Isles Coastguard tasks them to a Person in the Water. They rescue the casualty in about 90 seconds with Assist on and a forgiving condition meter. Nothing is for sale anywhere in sight.
+## 2. The first session
 
-Only then comes the **arrival**: a short third-person cinematic (section 12) as they ride into Port Haven at golden hour, past the Harbor Light, while Chief Aggie walks down the slipway. Control returns in first person on the slipway for the handover and the first debrief, and the open world opens. The second-by-second script and the softened rules are in [document 09](archive/09-rescue-operations.md), section 9.1. The old throw-bag drill is now an optional exercise on the station board ([document 09](archive/09-rescue-operations.md), section 9.2).
+| Time | What happens | Why |
+|---|---|---|
+| 0:00 | Spawn at the hub visitor jetty. Bosun is beside you. The pager beeps within three seconds. | The game starts with a job, not a tutorial menu. |
+| 0:00–1:30 | First call: one swimmer just off your cove. Drive the jet ski through the orange ring; the swimmer climbs aboard; "+1". | The core verb is taught by doing it once. |
+| 1:30 | Drop off at your berth or the hub quay. Cash and Rep counters tick up. | The reward is immediate and visible. |
+| 2:00–13:00 | Four more tutorial calls: a drifting dinghy, two survivors, a swimmer, a wildlife rescue. First rank at about 13 minutes. | A short, escalating chain; the second survivor shows that seats matter. |
+| 5:00–15:00 | First dock level and the first quest pin. The island starts to change. | The tycoon hook lands before the first session ends. |
+| 15:00 | The RIB is close. Calls move out of the cove; the map opens up. | A clear reason to come back tomorrow. |
 
-Rules for the first session (tune): the first three operations are a fixed tutorial chain, each adding one new kind of step (operation 1 is the cold open; operation 2 is Barnaby's tow with the station's loaner RIB and an NPC crew, which also introduces the chase camera; operation 3 adds the full survey and a swimmer recovery as a trainee); nothing with a Robux price is shown until three operations are done, and the Chandlery's priced shelves stay curtained until then ([document 04](04-monetization.md), section 1.1); if a storm is active on join, the cold open happens inside the sheltered harbor where waves stay small. A returning player skips the cold open and spawns at their bay. The storm clock is per server, so the first storm reaches a new player within about 15 minutes, inside a 25-minute session, with a short storm-rolling-in cinematic the first time (section 12). When it hits, the Coastguard tasks the player to a beginner storm operation at the **harbor mouth**: full storm waves, a short ride from the station, a small search area and a casualty who starts in the Stable band. If the Capsized Ferry rolls, players below Rescue Pilot are also offered a ride-along seat in the Coastguard helicopter (section 3.1). Every first session should end with a storm rescue. After the tutorial chain the player is **On watch** by default and can switch to **Off duty** to explore with no taskings ([document 10](10-world-and-map.md), section 5.1).
+There is no cold open, no cutscene and no dialogue box before the first call. The first call cannot be missed: it
+is in the cove, the weather is calm, and the ring is visible from the jetty.
 
-## 3. Operations
+## 3. Calls
 
-Every rescue is an operation from [document 09](archive/09-rescue-operations.md): a chain of graded steps, a casualty **condition meter** instead of a countdown, and a debrief. Each operation type has a **zone** list and a **payout weight** that multiplies the zone's base payout ([document 03](03-progression.md), section 2).
+A call is one rescue job. The pager shows a card; a flare and a pin mark it in the world; the same card stays on
+the HUD until the job ends. The card shows the kind, the distance, the survivors, and a Cash/Rep preview.
 
-**Grades.** Each step is graded Gold, Silver or Bronze and the step grades make the operation grade ([document 09](archive/09-rescue-operations.md), section 2.4). Gold pays x1.25, Silver x1.0, Bronze x0.75 (tune). Care and technique count far more than speed.
+### 3.1 Kinds
 
-**Fail state for every operation:** the casualty's condition reaches Critical (or a standard operation passes its 12-minute cap, tune), and the harbour patrol or the Coastguard helicopter takes over. The casualty is always safe. The player keeps the steps already done at half pay and gets no completion share ([document 09](archive/09-rescue-operations.md), section 2.5; [document 03](03-progression.md), section 2). Nothing else is lost.
-
-| Operation | Variants (older call names) | Zones | Weight (tune) | Steps | Scope |
-|---|---|---|---|---|---|
-| **Person in the Water** | Swimmer in a rip, tired swimmer far out, panicking, very cold, not responding; harbor mouth storm version | All | x1.0 | [09 §5](archive/09-rescue-operations.md#5-operation-1-person-in-the-water-mvp) | [MVP] |
-| **Person in the Water: two casualties** | Drifting Craft (parent and child off a paddleboard or kayak) | Calm Bay, the Skerries | x1.2 | [09 §5](archive/09-rescue-operations.md#5-operation-1-person-in-the-water-mvp) | [L] |
-| **Person in the Water: overboard** | Person Overboard from a ferry or trawler: no flare, search pattern needed | Open Sea, Storm Front | x1.4 | [09 §5.2](archive/09-rescue-operations.md#52-search) | [L] |
-| **Disabled Vessel** | Engine failure, out of fuel, fouled propeller, aground on a sandbar (Barnaby) | All | x1.2 | [09 §6](archive/09-rescue-operations.md#6-operation-2-disabled-vessel-mvp) | [MVP] |
-| **Capsized Ferry** (big call) | *Gale Queen* turned turtle in a storm | Harbor approaches | Big-call pay (section 3.1) | [09 §7](archive/09-rescue-operations.md#7-operation-3-capsized-ferry-mvp-co-op-big-call-storms-only) | [MVP] |
-| **Sinking Vessel** | Sinking Yacht (Vance's yacht in the finale) | Open Sea, Storm Front | x1.6 | [09 §8.1](archive/09-rescue-operations.md#81-sinking-vessel-l) | [L] |
-| **Vessel Fire** | Boat Fire | All but Calm Bay | x1.5 | [09 §8.2](archive/09-rescue-operations.md#82-vessel-fire-l) | [L] |
-| **Helicopter winch** | Injured on Deck, hoist from a deck or the water | Open Sea, Storm Front | x1.7 | [09 §8.3](archive/09-rescue-operations.md#83-helicopter-winch-operations-l) | [L] |
-| **Rip-current beach rescue** | Swimmer in Trouble at the beach tower | Calm Bay, the Skerries | x0.9 | [09 §8.4](archive/09-rescue-operations.md#84-rip-current-beach-rescue-l) | [L] |
-| **Cliff casualty** | Stranded on the Rocks | The Skerries, Storm Front | x1.6 | [09 §8.5](archive/09-rescue-operations.md#85-cliff-casualty-l) | [L] |
-| **Medical evacuation from a ship** | Seasick or injured passenger on a tour boat, trawler crew ill | Open Sea, Iceberg North | x1.7 | [09 §8.6](archive/09-rescue-operations.md#86-medical-evacuation-from-a-ship-p1) | [P1] (the tour-boat version [L]) |
-| **Lost in the Fog** | Disabled Vessel or Person in the Water in a fog bank: radio bearing and sound only | Open Sea | x1.5 | [09 §6](archive/09-rescue-operations.md#6-operation-2-disabled-vessel-mvp) | [L] |
-| **Wildlife Rescue** | A seal or seabird tangled in a net: approach, swimmer cuts the net with the knife, no handover leg | The Skerries, Iceberg North | x0.8 | Short: tasking, approach, swimmer, release | [L] |
-| **Odd Job** (Hazel's calls) | Cat on a buoy, a lost beach ball: short, gentle, low stakes | Calm Bay | x0.5 | Short: tasking, approach, recovery | [L] |
-| **Ice Trapped** | Trawler stuck in floes: hovercraft or cutter breaks a path, then a Disabled Vessel tow | Iceberg North | x2.0 | [09 §6](archive/09-rescue-operations.md#6-operation-2-disabled-vessel-mvp) | [P1] |
-
-### 3.1 Big calls (storm only)
-
-Big calls appear only during storms, one at a time per server, tasked to everyone by a MAYDAY RELAY. They are built for 6 to 16 players across several vehicles, with one player as On Scene Coordinator ([document 09](archive/09-rescue-operations.md), section 7).
-
-- **Own timer.** A big call spawns at storm start and runs its own timer of 8 to 10 minutes by size (tune), so it keeps going through Clearing and into Calm. The storm's waves and rain stay over the big call's site until it ends. When the timer runs out, NPC lifeboats and *Rescue Gale One* take whoever is left.
-- **Casualties scale with the server.** Each big call has a base casualty count and always spawns at least one casualty per player on the server (tune), so a full server never runs out of people to save.
-- **Everyone who helped is paid.** The player who hands over a casualty gets the per-casualty pay. The completion bonus goes to every player who completed at least one step on the big call: recovered, triaged, knocked on the hull, tended a dive line, coned or ran the winch, drove a boat that carried a casualty, or commanded the scene ([document 03](03-progression.md), section 2).
-- **Coastguard helicopter ride-along.** On every big call the NPC-flown *Rescue Gale One* lifts off with two trainee seats for players below Rescue Pilot: **Winch Operator** (cons the pilot and runs the winch) and **Winchman** (goes down on the wire). The NPC pilot flies by script and follows the Winch Operator's conning calls with a short lag. Riders earn the same pay as any other helper, and their lifts count toward the Winch Operator certification. In the MVP this needs the helicopter tech spike; otherwise it arrives at [L]. (tune: seat count, rank cap)
-
-| Big call | Base casualties (min 1 per player) | How it plays | Chance per storm (tune) | Scope |
+| Call | What the player sees | Survivors | Timer | Spawns |
 |---|---|---|---|---|
-| **Capsized Ferry** (*Gale Queen*) | 12 + 2 in an air pocket | Scene command, triage tags, liferaft and water pick-ups, hull knocking, an air-pocket dive on a line, helicopter lifts, POB accounting ([document 09](archive/09-rescue-operations.md), section 7) | 60% at MVP and launch, 35% once Trawler on the Rocks lands | [MVP] |
-| **Trawler on the Rocks** | 6 | Waves break over the deck. Winch only (09 §8.3), plus an engine-room fire (09 §8.2). | 30% | [L] |
-| **Cruise Ship Aground** (*MS Splendora*) | 30 | A huge ship on a rocky reef, listing. Deck lifts by winch, lifeboats towed in the water, a casualty clearing station on the beach. | 10% | [P1] |
-| **Lighthouse Keeper** | 1 | Tobias stuck at a lighthouse in the storm. Story operation only. | Story | [L] |
+| **Swimmer in Trouble** | A person waving in open water | 1 | 2:30 | Your cove, open water, harbour mouth |
+| **Drifting Craft** | A dinghy drifting with people aboard | 2 (tutorial: 1) | 3:00 | Your cove, open water, harbour mouth |
+| **Rip Current** | A swimmer pulled out from the hub beach | 1 | 10:00 | Hub beach channel |
+| **Sinking Vessel** | A boat low in the water; people in the sea | 3 | 8:00 | Offshore, far sea, deep sea |
+| **Vessel Fire** | Smoke and orange light; the crew is already off | 2 | 8:00 | Offshore, far sea, deep sea |
+| **Wildlife Rescue** | A seal pup or seabird tangled in line | 1 | 7:00 | Your cove, open water |
+| **Diver at a Wreck** | A diver trapped beside a seabed wreck | 1 | 10:00 (13:00 at an island) | Dive sites, submarine only |
+| **Capsized Ferry** (big call) | A ferry on its side, several people in the water | 4+, at least one per player | 7:00 | 300 studs off the hub harbour mouth |
 
-If no big call rolls, the storm still has its burst of standard taskings. At launch a player sees a big call in about 2 of every 3 storms, and about 3 of every 4 once Cruise Ship Aground lands in [P1] (tune).
+- The timer starts when the call is offered, not when the player arrives. The card counts down; a late call can
+  fail. A call with a survivor already aboard gets 90 seconds of grace to deliver.
+- **No accept button.** Steer for the flare. The call is yours once it is offered; nobody else can take it.
+- Calls 1–2 spawn in the player's own cove. From call 3 they use open-water distance tiers: 500–2,000,
+  2,000–3,500 and 3,500–5,500 studs from the player's berth. The tier is capped by rank, not by a Robux craft.
+- The first offer comes 3 seconds after the player is free; later offers about 9 seconds after the last one ends.
+  A free-roam swimmer between calls keeps the sea alive.
+- Big calls are public and server-wide. Every helper is credited at drop-off; the player who delivers a survivor
+  gets the survivor share, and everyone aboard shares the completion bonus. The ferry timer is its own 7 minutes.
 
-## 4. Vehicle handling feel
+### 3.2 The call card
 
-All water vehicles ride one wave height function: a few summed sine waves, cheap to evaluate and exact at any point. The visible ocean mesh is drawn from the same function, so what the player sees is what the hull feels ([document 06](06-tools-and-pipeline.md), section 3.1). Storms raise the amplitude. Handling aims for realistic weight and momentum (boats carry way, pivot from their stern, slam off crests, drift with the wind when in neutral) with phone-friendly input: auto-throttle on phone if the stick is pushed fully, and no fuel. Precise slow-speed handling matters most, because approaches, station-keeping and towing are where operations are graded ([document 09](archive/09-rescue-operations.md)).
+The card is a small bright panel, not a phone. It shows:
 
-| Vehicle | Feel | Seats | Strengths | Weaknesses | Scope |
-|---|---|---|---|---|---|
-| **Rescue board** | Paddle. Slow, stable, almost impossible to tip. | 1 + casualty + Bosun | Shallows, beaches, surf rescues | Very slow, no tow, no fire pump | [L] |
-| **Jet ski** | The first vehicle, free. Zippy, bouncy, hops wave crests, slides on turns. | 1 + casualty on the rescue sled (Bosun rides the footwell) | Fastest in calm water, fun; tows small craft (paddleboards, kayaks, *The Optimist*) at half speed (tune) | Flips in storm waves if hit side-on; 1 casualty only | [MVP] |
-| **RIB inflatable** | Planes at speed, punches through chop, quick to stop. | 3 + 2 casualties | All-rounder, tow light boats, small fire pump ([L]) | Bounces hard in big swell | [MVP] |
-| **Lifeboat** | Heavy and steady. Self-righting, never capsizes. Slower to turn. | 4 + 8 casualties | Storm-proof, strong tow, med bay seat | Slow, cannot enter reef shallows | [L] |
-| **Hovercraft** | Floats over water, sand, reef and ice. Slides and drifts like on ice. | 4 + 6 casualties | Crosses shallows and sandbars, beach landings | Pushed sideways by wind, weak in big waves | [P1] |
-| **Rescue helicopter** | Hover-first. Stick moves, auto-altitude holds 30 studs over the waves. Gusts shake it in storms. | 4 crew (Pilot, Winch Operator, Winchman, Medic) + 4 casualties | Ignores waves, fastest across zones, hoist, widest spotting | Must hover to rescue; gusts push it off the hoist ring | [L] (MVP: tech spike only) |
-| **Patrol cutter** | Big ship. Slow to speed up and turn, rock steady. | 4 crew roles + up to 4 other players as passengers + 20 casualties | Fire monitor, deck crane, med bay, launches a small RIB from the stern, helicopter can land on deck | Slow, cannot go inshore | [P1] |
+- a big kind icon (swimmer, boat, flame, paw, diver, ferry);
+- the call name in one to three words;
+- distance and a direction arrow;
+- survivor pips (filled = aboard);
+- a Cash/Rep preview at Silver, solo.
 
-### 4.1 Map scale and travel budget
+The card has no Accept or Decline. It fades to a compact strip once the player is moving, and returns when a
+survivor is picked up.
 
-Every operation's passage should take about **45 seconds out and 45 seconds back** with the vehicle a zone is meant for (tune). Taskings spawn only where that holds, measured from the nearest open dock (or, for beach and cliff operations, the nearest car park or rescue point). Distances are from the Port Haven slipway; all numbers (tune). The rings are measured at sea: the main island, Great Gale, fills their northern half, so on the map each zone is an area ([document 10](10-world-and-map.md), section 1.2).
+### 3.3 Failure
 
-| Zone | Ring (studs from the station) | Nearest delivery dock | Intended vehicle |
+When the timer runs out, the harbour patrol takes over. The player keeps 10% of the call's Cash, earns no Rep,
+and the call clears. There is no lost survivor, no penalty pile and no retry button. The next call comes normally.
+A late delivery is a Bronze at worst; a call only fails when the player never reaches it.
+
+## 4. Pick-up and delivery
+
+### 4.1 The ring
+
+- An orange ring, 12 studs across, marks each survivor (12 studs from the hull centre).
+- Inside the ring the craft eases its throttle to 7 studs/s and holds boarding speed. It never adds throttle.
+- The survivor is taken when the craft is within 10 studs of the hull side, slower than 10 studs/s, and within
+  22 degrees of level. This is deliberately forgiving on a phone.
+- The survivor swims to the hull and climbs aboard in view. A "+1" and a chime confirm it. The seat pips fill.
+- A full craft leaves the remaining survivors in the water with their rings. The player can come back or call a
+  bigger craft.
+
+### 4.2 Seats
+
+| Craft | Seats | Survivors it can carry |
+|---|---|---|
+| Jet ski | 1 | 1 |
+| RIB | 3 | 3 |
+| Lifeboat | 4 | 8 |
+| Rescue helicopter | 2 | 2 (winch) |
+| Submarine | 2 | 2 |
+| Storm Runner | 3 | 3 |
+| Tidewalker | 6 | 6 |
+
+The seat pips are the only capacity UI. No weight, no fuel, no damage. A survivor occupies one seat regardless of
+kind.
+
+### 4.3 Helicopter and submarine
+
+- **Helicopter:** hover over the ring; the winch lowers and lifts each survivor in turn. Two seats, two winch
+  slots. It cannot land on water, but it can drop off at a berth or the hub quay.
+- **Submarine:** dive at a wreck, follow the ring on the seabed, and pick the diver up with the same ring rule.
+  Two seats. It surfaces at a berth to drop off. It is the only craft that can take a diver call.
+
+### 4.4 Drop-off
+
+Drop off at **your own berth** or the **hub quay**; whichever is nearer counts. Hand-over is automatic inside the
+drop zone. Cash and Rep are paid on the spot, with a short card: grade, base, distance, crew bonus, total. The
+drop-off is also where the next call can be offered.
+
+## 5. Craft
+
+| Craft | How you get it | Top speed | Notes |
 |---|---|---|---|
-| Calm Bay (harbor mouth at about 900) | 0 to 1,500 | Port Haven station or hospital | Jet ski |
-| Skerries | 1,500 to 3,500 | Skerry Isle outpost (about 2,500) | Jet ski, RIB |
-| Open Sea | 3,500 to 6,000 | Gannet Rock outpost (about 5,000) | RIB, lifeboat |
-| Storm Front | 6,000 to 7,000 | Gannet Rock outpost | Lifeboat, helicopter |
-| Iceberg North [P1] | A northern sector, 6,000 to 9,000 | Northlight dock | Hovercraft, cutter |
+| **Jet ski** | Free, from the start | 69 studs/s | One seat; the tutorial craft. |
+| **RIB** | 2,500 Cash at Lifeguard | 62 studs/s | Three seats; the first real rescue boat. |
+| **Lifeboat** | 12,000 Cash at Coxswain | 46 studs/s | Four seats, eight survivors; long-range rescue boat. |
+| **Rescue helicopter** | 75,000 Cash at Rescue Pilot + hangar | 90 studs/s | Two seats, winch; flies over everything. |
+| **Submarine** | 40,000 Cash at Coxswain + sub pen | 40 surfaced / 22 dived | Two seats; the only diver rescue. |
+| **Storm Runner** | Robux boat | Premium powerboat | Three seats. |
+| **Tidewalker** | Robux boat | Luxury catamaran | Six seats. |
+| **Riptide X** | Robux boat | Sport jet ski | One seat. |
+| **Gilded Gull** | Robux boat | Gold luxe jet ski | One seat. |
 
-**Map radius:** about 7,500 studs (2.5 km) at launch, 9,000 with Iceberg North; the MVP map is the main island's south coast, Calm Bay and the harbour mouth, about 2,500 (tune). Drives from the station stay under about 2 minutes, and under 1:30 to any beach ([document 10](10-world-and-map.md), section 1.3). The Skerry Isle and Gannet Rock outposts are **free handover points** for everyone once their zone is open (an ambulance boat takes casualties on to the hospital, at full pay). Launching from an outpost is what the Slipway upgrade and Quick Launch add ([document 03](03-progression.md), section 6).
+- **Choose at the boat board** in the boathouse (or the jetty before it is built). The chosen craft is the one
+  "Boat to me" brings.
+- **Boat to me** brings the chosen craft to the player's position in 60 seconds. Quick Launch removes the wait.
+  It is on the left column and on the boat board.
+- **Handling is one model.** All boats use the same steering, throttle, brake and planing rules; the numbers above
+  are top speed, not a handling tier. Paid craft do not get a better grade, a longer timer or a farther call.
+- **No fuel, no repairs, no upgrades.** A craft is always ready. The only cooldown is "Boat to me".
+- Craft are third-person only; the chase camera follows the hull, the winch or the dive. There is no cockpit view.
 
-| Vehicle | Top speed, studs/s (tune) | Cruise in waves (about 75%) | 45 s covers about |
-|---|---|---|---|
-| Rescue board | 20 | 15 | 700 |
-| Jet ski | 70 | 52 | 2,350 |
-| RIB inflatable | 60 | 45 | 2,000 |
-| Lifeboat | 45 | 36 (keeps it in storms) | 1,600 |
-| Hovercraft [P1] | 55 | 40 | 1,800 |
-| Rescue helicopter | 110 | 110 (ignores waves) | 5,000 |
-| Patrol cutter [P1] | 40 | 35 | 1,600 |
+## 6. Your island
 
-Land vehicles (section 4.3): lifeguard 4x4 top 75 studs/s, coastguard response vehicle 70 (50 towing a trailer), ambulance 75, beach ATV 45, launch tractor 10.
+### 6.1 The plot
 
-Storm waves cut boat cruise speed by about 20% (lifeboat 5%) (tune). The server rejects speeds above a vehicle's top speed plus upgrades ([document 06](06-tools-and-pipeline.md), section 3.2). Operations per hour per zone follow from this budget and live in [document 03](03-progression.md), section 2.1.
+A flat Lego baseplate with a berth notch for the boat and the sub. The jetty is the first thing on it. The plot is
+visible from the water and from the hub; everything the player builds stands on it.
 
-**Capsize rules.** Only the jet ski, RIB and hovercraft can capsize, and only in storm waves when hit side-on. The player floats in a lifejacket and Bosun paddles over. To right it, the player swims to the righting side of the jet ski or hovercraft and pulls as a wave lifts it (a timing step), and on the RIB the crew fires the self-righting airbag on the frame, as real inshore lifeboats do (verify: RNLI Atlantic-class self-righting). Casualties stay safe holding the hull lines, with a condition cost. No damage, no repair bill.
+### 6.2 Building
 
-**Collisions.** Hitting rocks gives a bump, a splash and a scrape sound, and costs the current step's grade a little (and a little condition for a cold casualty aboard). Vehicles never break.
+- The build station is a Lego builder's yard with a tablet on a stand. Using it moves the camera to a top-down
+  view of the island. A bar of cards shows what can be built at each lot: Cash and rank, or Robux.
+- Choosing a lot pulses a flat outline on the plate. There is no 3D ghost of the finished building.
+- Buying plays the **Lego build**: bricks drop in from bottom to top with a bounce and a snap, builders standing
+  by. The build is the reward animation.
+- Tablet build mode is in progress (WP-14d). Until it ships, dock upgrades are bought at the dock lot and the lot
+  builds in view.
+- What can be built: dock levels 2–5, helipad + hangar, sub pen, quest-chain buildings (the lighthouse), and spare
+  lots for later.
 
-In the MVP, Bosun does not swim: after a capsize he floats beside the player in his vest and barks encouragement.
+### 6.3 Dock levels
 
-### 4.2 Gravity and scale
-
-[Document 05](05-art-direction.md) sets the world scale at **1 m = 3 studs**. Roblox's default gravity (196.2 studs/s²) is about 6.7 g at that scale, which makes boats slam down off crests too fast, spray fall like gravel and a hovering helicopter feel stiff. **Decision:** set `workspace.Gravity` to about **29.4 studs/s²** (9.81 m/s² x 3) for realistic boat, spray, rope and helicopter motion (tune; verify the feel in a greybox spike before building handling on it).
-
-Side effects to handle in the same spike:
-
-- **Character jumping.** At default jump settings a character would jump about 14 m. Set the jump height to a real step-up of about 1.5 studs (0.5 m) and keep climbing onto boats and pontoons as an animated climb, not a jump (tune).
-- **Walking speed.** The default 16 studs/s is about 5.3 m/s, a jog. Walk near 4 to 5 studs/s and run near 12 studs/s on decks and slipways (tune).
-- **Falls and ropes.** Things fall more slowly and look heavier, which suits heaving lines, tow lines and the winch hook, but every physics-driven rope, buoyancy and suspension value tuned at default gravity must be retuned. Wave-following casualties and NPC boats are scripted, not physics, so they are unaffected ([CONTRACT](../CONTRACT.md)).
-
-### 4.3 Land vehicles
-
-Cars, the ATV and the launch tractor get players to beaches, cliff tops and slipways ([document 10](10-world-and-map.md), section 3, owns their roles, unlocks and spawn points). They use an in-house raycast chassis tuned at the gravity in section 4.2, with grip per surface (asphalt, gravel, sand, mud, grass, wet variants). Like boats, they never break, never hit pedestrians and pass through other players' vehicles (section 10). Speeds (tune; 1 m = 3 studs):
-
-| Vehicle | Top speed, studs/s (km/h) | Typical cruise, studs/s | Scope |
-|---|---|---|---|
-| Lifeguard 4x4 pickup | 75 (90) | Town 25, coast road 55, single track 40, gravel 30, soft sand 20 | [MVP] |
-| Coastguard response vehicle | 70 (84); 50 (60) towing a trailer | As the 4x4, slower on tracks with a trailer | [L] |
-| Ambulance (NPC; player [P1]) | 75 (90) | As the 4x4 on roads | [L] |
-| Beach ATV | 45 (54) | Hard sand 40, soft sand 35; beaches, tracks and car parks only | [L] |
-| Lifeboat launch tractor | 10 (12) (verify against the real launch tractor) | Beach and surf only | [L] |
-
-## 5. Search mechanics
-
-Searching is a step in every operation. The full design (datum and drift, the search start point, cues such as arm waves, whistles, strobes and flares, keeping eyes on, the expanding square and sector search from Coxswain rank, night searches) is in [document 09](archive/09-rescue-operations.md), section 5.2. Two tools here sit across all operations:
-
-| Tool | How it works | Who has it |
+| Level | Adds | Unlocks |
 |---|---|---|
-| **Radio bearing** | A needle on the HUD compass points toward a casualty's VHF within an error cone (starts at ±30°, shrinks with gear). The cone narrows as the player gets closer. | Casualties with a radio (boats, ferries, trawlers) |
-| **Bosun's nose** | Inside 80 studs (40 in Pro mode) Bosun stands up, points and barks toward a casualty. In water he swims toward them ([L]). | All operations |
+| **1** | Jetty, berth notch | Jet ski, free. |
+| **2** | Pontoon, lamp posts, flag, rescue board | Second berth. |
+| **3** | Boathouse, boat board, paint booth | Choose a craft at the dock. |
+| **4** | Lookout tower, slipway crane | No relaunch cooldown; lifeboat berth. |
+| **5** | Station front, beacon, trophy hall | Harbourmaster; the gold beacon if top-ranked. |
 
-From [L] the Radio Room upgrade shortens the tasking's error ([document 03](03-progression.md), section 6), so the datum is more reliable. The MVP already has drift: casualties move with the current and boats with the wind.
+Prices and rank requirements are in `docs/03-progression.md`; the Robux version is in `docs/04-monetization.md`.
 
-## 6. Rescue steps
+### 6.4 Crew (in progress, WP-15)
 
-The old one-button mini-tasks are gone. Every on-scene action is a graded step with a real procedure and a skill mechanic: approach, throw bag, swimmer and panic handling, horizontal lift, parbuckle, primary survey, treatment and CPR, transport comfort, ATMIST handover, assessment, heaving line, rigging, tension, alongside tow, triage, hull knocking, the air-pocket dive, conning and winching, fire and pump work. See [document 09](archive/09-rescue-operations.md), sections 5 to 8, with the shared controls in section 2.7.
+Job seekers line up outside the station. A new group arrives every 20 minutes. Hire a mechanic, a lifeguard or a
+dispatcher for a small boost and a daily wage. The crew lives on the island and is visible at the station. This is
+the late-game Cash sink; it does not gate calls or ranks.
 
-The casualty **condition meter** ([document 09](archive/09-rescue-operations.md), section 2.2) replaces the old comfort meter and the call timer. It is in the MVP.
+### 6.5 Flex
 
-## 7. Co-op crew roles
+Everything is visible to the server: the dock, the hangar, the lighthouse, the trophy hall. The top-ranked Lv5
+player's island carries a gold beacon seen across the harbour at night. The hub's rescuer monument names the
+week's top rescuer. Flex is the point of building; it is never sold as a stat.
 
-A crew is up to four players who share a vehicle and an operation. A player creates a crew from the radio panel or by walking up to another player's vehicle and pressing **Join crew**. Roles are picked from a wheel when joining and can be swapped whenever the boat is safe.
+## 7. Quests and the Album
 
-The roles (Helm, Navigator/Radio, Crew/Swimmer, Medic, and the helicopter's Winch Operator, Winchman and Pilot), which steps each one owns, the **NPC crew** who fill empty seats (about 40% slower, Silver at most), and the **trainee** rule that lets an uncertified player take any role beside a certified crewmate are in [document 09](archive/09-rescue-operations.md), section 4. Certifications are in section 11 there.
+### 7.1 Quests
 
-**Crew payout.** Every crew member gets the full operation payout plus a crew bonus of +10% per extra human member, up to +30% for four (tune). NPC crew add no bonus. Nobody's share shrinks when a friend joins. Being aboard is not enough: a crew member is paid only if they completed at least one **step** on the operation and were in the crew for at least 30% of it (tune). A crew member with no step gets the 10% share only.
+- Six givers at six hub camps. Each offers one quest a day.
+- Kinds: **find** (pick an item up on an outer island), **deliver** (carry it from the camp to a drop spot),
+  **salvage** (submarine, from a wreck), **rescue** (a call in a named zone, then bring the survivor home).
+- A completed quest returns to the giver. The reward is Cash and Rep; the lamp chain also unlocks the lighthouse
+  blueprint.
+- Pins appear in the world and on the map. The Quests panel lists the pins, not a story.
+- Talk zooms the camera and shows a short voiced line plus numbered replies. This is the only choice UI in
+  gameplay.
+- A quest never gates a rank, a call or a craft. The player can ignore all six givers and still reach Admiral.
 
-**Solo balance target.** A solo player with NPC crew clears an operation in about 125% of the time a full human crew takes, and can reach Gold by doing the key steps personally (tune). Solo can do every operation; on a big call, the air-pocket dive needs a human or NPC tender on the line, which NPC units provide.
+### 7.2 Album and fog
 
-## 8. Storm event
+- The Album has a page for the hub and one for each outer island: Skerry, Puffin Isle, Gannet Rock, Wreck Reef,
+  the Arches, Mermaid Lagoon, Penwyn.
+- Walking the hub lifts fog from the map. Finding a stamp, bottle, viewpoint or critter fills a page slot; a wreck
+  and a page are rarer finds.
+- Filling a page pays Cash. The Album is the exploration record, not a battle pass.
+- Quest items, stickers and Album finds are all in the world. There is no gacha in exploration.
 
-A server-wide event on a fixed cycle. Everyone on the server sees the same storm at the same time.
+## 8. The hub and friends
 
-| Phase | Length (tune) | What happens |
-|---|---|---|
-| **Calm** | ~10 min (full cycle 15 min) | Standard taskings. The storm clock counts down on the HUD. |
-| **Warning** | 60 s | Radio: "Storm warning, all stations." Clouds roll in, wind picks up, the station siren sounds. Players head out or swap to a storm-ready vehicle. |
-| **Storm** | 3 min | Waves x2.5 height, heavy rain, lightning (visual and sound only, never hits players), gusts push helicopters. Tasking rate x3. Operations tasked in this phase pay x1.5 and keep storm sea state at their scene until the handover. A big call may spawn (with its own 8 to 10 minute timer, section 3.1). |
-| **Clearing** | 60 s | Sun breaks through over Port Haven, the sea starts to settle. Storm operations still running stay at x1.5 until the handover. A summary board shows the server's storm rescues and names the top three crews. |
+- The hub is the social room: the call board, the shop counter, the harbourmaster's shack, the campfire stage,
+  the rescuer monument, the visitor jetty and the six quest camps.
+- Six players per server, one island each. Bridges connect the hub to every island, so a player can walk to a
+  friend's dock and step aboard.
+- Crew: up to four players ride together. Each extra crew member adds 10% Cash to a call, capped at 30%. The crew
+  panel shows who is aboard. Crew hiring (NPC staff) is separate from a player crew.
+- Friends on the same server earn +10% Cash each, capped at +30%. The bonus is shown on the payout card.
+- There is no PvP, no ramming damage and no stealing a call. Soft collisions only push.
 
-Calm Bay inside the harbor wall gets only light rain and small waves during a storm, so new players are never punished. The **harbor mouth** gets full storm waves and its own beginner storm operations (Person in the Water with a casualty who starts Stable and a small search area, Calm Bay pay with the storm bonus) (tune). This is where a Recruit has their first storm rescue. In the MVP the harbor mouth is the storm. The time of day does not change during a storm; only clouds, light and weather do ([document 05](05-art-direction.md), section 6).
+## 9. Interface and camera
 
-**Storm Summon** ([document 04](04-monetization.md)) adds an extra storm on demand. Summoned storms follow the same phases and can never overlap a natural storm. In a summoned storm the bonus applies to Cash only, never Reputation: x1.5 Cash for Call the Storm, x2 Cash for the Great Storm (4-minute Storm phase).
+- **Left column:** seven big square icon buttons: Shop, Quests, Album, Companion, Crew, Settings, Boat to me.
+  Each opens a centred panel. The map is on M. The build tablet is its own top-down mode.
+- **HUD:** Cash, Rep and rank at the top; the call card at the side; seat pips on the craft; a small quest pin
+  compass. Icons and one to three words; no paragraphs.
+- **No phone, no radio, no first-person cockpit.** The pager card and the flare are the call; the left column is
+  the menu.
+- **Camera:** third-person chase by default; a wider orbit on the helicopter; a top-down view for the tablet; a
+  zoom-in for NPC talk. The camera never enters a cockpit.
+- **Input:** every action on keyboard, touch and gamepad. Big touch targets; no hover-only actions. The build
+  tablet supports tap and drag.
+- **Choice UI:** none in gameplay, except NPC numbered replies, the build tablet and in-world counters/boards.
 
-## 9. Session loops
+## 10. Map, scale and travel
 
-An operation is now the unit of play: about 4 to 7 minutes from tasking to handover, plus about a minute to read the debrief, restock kit and accept the next tasking ([document 09](archive/09-rescue-operations.md), section 10). All timings (tune).
+- Hub about 800 studs across; six islands on a ring about 1,100 studs out; bridges between.
+- Map radius about 7,000 studs. The playable call band is 500–5,500 studs from the player's berth.
+- A jet-ski trip to a near call is about 45 seconds at cruise; a far call with a lifeboat or helicopter is a
+  couple of minutes. Travel is the game, not a loading screen.
+- No cars, roads, trains or teleport pads. The bridges are for walking and for the view; the boats are for work.
+- The outer islands are landmarks, not shops: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid
+  Lagoon, Penwyn. Wrecks sit on the seabed below several of them.
 
-| Loop | What a player does | Hook to the next loop |
-|---|---|---|
-| **5 to 7 minutes (one operation)** | Tasking, the steps, a handover and a debrief with step grades and one tip. | The weak step to do better next time, a certification step "1 of 2", the storm clock. |
-| **25 minutes (one session)** | One to two storm cycles: about four operations, at least one of them in a storm (often the Capsized Ferry), an exercise or certification step, a walk to the Chandlery, the boatyard or the bay to spend Cash (section 13). In the first two hours, an unlock every 10 to 15 minutes ([document 03](03-progression.md), section 10). | Next storm in a few minutes; a rank, certification or vehicle "almost there" on the HUD. |
-| **Daily** | Three daily challenges from Nell's board, a daily login gift (Cash and a Bosun treat), two or three storms with friends. | Weekly challenges, the next certification, the next vehicle, the season finale count. |
-| **Weekly** | Weekly challenges, a new rank, certification or vehicle, a lighthouse relit. Updates add operations and liveries. | Season arc and the next zone. |
+## 11. Anti-grief
 
-There are no streaks that reset. A missed day never costs a player anything.
-
-Between operations the world is open: players drive the coast, snorkel the wrecks, fill the logbook and take photos, Off duty or On watch ([document 10](10-world-and-map.md), section 5). Exploring pays Cash, cosmetics and badges, never Reputation, so the pacing above does not depend on it.
-
-## 10. Anti-grief rules
-
-The sea is the opponent, never other players.
-
-1. **No PvP.** No weapons, no damage, no way to knock a player off a vehicle.
-2. **Soft vehicle collisions.** Vehicles of different crews pass through each other with a gentle splash (collision groups). Nobody can ram, block or push another player's boat.
-3. **Tasking claims.** The first crew to accept a tasking owns the operation. Other players can see it but cannot recover its casualties, unless the owner invites them into the crew. An unclaimed or abandoned operation (owner more than 600 studs away for 45 s, tune) is released to everyone.
-4. **No stealing handovers.** A casualty belongs to the crew that recovered them until the handover.
-5. **Big calls are shared.** Anyone can rescue any casualty in a big call, and the On Scene Coordinator assigns tasks but cannot block anyone. Whoever hands over a casualty gets its pay, and everyone who helped gets the completion bonus, so there is nothing to fight over.
-6. **One vehicle per player** on the water, plus one land vehicle. Empty vehicles despawn after 60 s (tune). The station slipway gives each bay its own launch lane, so no queue.
-7. **Crew kicks.** The vehicle owner can remove a crew member, who is moved to the nearest dock, keeping any payout earned so far.
-8. **No griefing with Bosun.** Dogs pass through players and vehicles and cannot block a slipway or dock.
-9. **Helicopter downwash** is visual only. It never pushes players or boats.
-10. **AFK farming.** Payouts need completed steps. An idle player stops getting taskings after 5 minutes and is moved to the station after 15 (tune). Off-duty players get no taskings by choice, and a player who is moving is exploring, not idle ([document 10](10-world-and-map.md), section 5.1).
-11. **Chat.** Roblox filtered chat plus the radio wheel ([document 09](archive/09-rescue-operations.md), section 3.3), which also carries crew lines ("On my way", "Need the winch", "Thanks, crew") so players can coordinate without typing.
-12. **Storm Summon limits.** Summons queue, never stack, and never start within 2 minutes of a natural storm, so nobody can make the server permanently stormy.
-
-## 11. Camera
-
-First person is the game's point of view: the player sees a rescue through their own eyes and their own gloved hands. Art for the hands and the close-up vehicle detail is in [document 05](05-art-direction.md), section 8.5; the tech (`CameraController` and its modules) is in [document 06](06-tools-and-pipeline.md), section 3.6.
-
-| Situation | Camera | Notes |
-|---|---|---|
-| **On foot** (station, town, beaches, swimming, snorkelling, on scene aboard any vessel) | First person, **locked** | No zoom-out, no shoulder camera. Swimming and duck dives stay first person. |
-| **Jet ski** | First person, **locked** | Hands on the bars, the console and mirrors in view. The rescue sled is checked with a glance back (hold Look Back or swipe). |
-| **RIB, lifeboat, cutter, hovercraft** | Third-person **chase camera** (default) or an optional **helm view** | The helm view is first person at the wheel or tiller with the console in front. Leaving the helm to work on deck (crew, swimmer, medic steps) is always first person. |
-| **Cars** (4x4, ATV, response vehicle, ambulance, tractor) | Chase camera (default) or an optional **cab view** | The ATV, being ridden like the jet ski, still offers the chase camera, because it carries a casualty on a towed sled behind it (tune). |
-| **Helicopter** [L] | Chase camera or cockpit view; the Winch Operator's door is first person | |
-| **Cinematics** | Third person, film-style (section 12) | Never during a step. |
-| **Photo mode** [L] | Free camera ([document 10](10-world-and-map.md), section 5.4) | |
-
-**Hands.** Every rescue action is shown with the player's hands in first person: throw (the bag swings back and out), haul (hand over hand on the line), grab (a lifejacket strap or a wrist), radio (the handset or the chest-mounted radio comes up), CPR (interlocked hands, [document 09](archive/09-rescue-operations.md), section 5.6), knock (a fist on a capsized hull). Choice cards (survey, kit, ATMIST) appear beside the hands, not over them. In chase-camera vehicles a step that needs the hands switches to first person for that step and back after it.
-
-**Comfort options** (settings menu, all free, none affect grades):
-
-| Option | Default (tune) | Range |
-|---|---|---|
-| **Horizon stabilisation** | On: the view's roll follows the boat at 30% of its real roll | 0% (locked horizon) to 100% (full boat roll) |
-| **Field of view** | 80° | 70° to 100° |
-| **Head-bob** | Medium | Off, low, medium, full |
-| **Camera shake** (waves, engine, storm, helicopter downwash) | Medium | Off, low, medium, full |
-
-## 12. Cinematics
-
-Cinematics are allowed when they mark a moment, never as a wall in front of play. They are shot third-person and film-style (real lenses, slow dollies, a few cuts), last about 8 to 25 seconds (tune), never run during an operation step, and are skippable (hold to skip) from the second time a player sees them. Each one hands control back in the same first-person or chase view the player left.
-
-| Cinematic | When | Length (tune) | Scope |
-|---|---|---|---|
-| **Arrival** | Right after the cold open's recovery: riding into Port Haven at golden hour, past the Harbor Light, Chief Aggie walking down the slipway, the ambulance waiting | About 20 s | [MVP] |
-| **The storm rolling in** | The storm warning (section 8): clouds stacking over Tempest Point, the Harbor Light coming on, boats pitching at their moorings | About 10 s, played to everyone ashore; players at sea or on a step get a radio call instead | [MVP] |
-| **Slipway launch** | Launching the lifeboat (and the RIB from the boathouse): doors open, the boat runs down the slip and hits the water | About 8 s; the first launch of each vehicle, then on request | [MVP] RIB; [L] lifeboat |
-| **Rank-up** | A promotion: Aggie pins the badge on the slipway, the crew room claps, Bosun barks | About 12 s | [MVP] |
-| **Lighthouse relit** | A lighthouse mission's end: the lens turns and the beam sweeps the sea | About 15 s | [MVP] Harbor Light; [L] the rest |
-
-## 13. Shopping in the world
-
-There is **no shop button on the HUD**. Everything that costs Cash or Robux is bought by walking up to the real thing in the world: gear, uniforms, cosmetics and passes at the **Port Haven Chandlery** on the quay next to the station; vehicles at the station (bay and garage) or the **boatyard**; the Storm Summon at the **harbourmaster's office**. The HUD's "next thing" line ([document 03](03-progression.md), section 1) says where to go ("RIB: Rescue Swimmer, 2,400 Cash, at the boatyard"), and tapping it sets a waypoint. Where every product is offered, and the rules that keep mobile players from long walks, are in [document 04](04-monetization.md), section 1.1; the buildings are on the map in [document 10](10-world-and-map.md), section 2.4.
+1. **No PvP.** No weapons, no ramming damage, no sinking another player's boat.
+2. **Soft collisions.** Boats and players push apart; they never trap or launch.
+3. **A call belongs to its player.** The flare and ring are theirs; another player cannot claim or steal it.
+4. **Shared big calls.** The ferry is the exception: everyone can help, and every helper is credited by share.
+5. **Dock and island are personal.** Visitors can walk and look; they cannot build, buy or move anything.
+6. **One craft each.** "Boat to me" brings only the owner's craft; no towing or stealing.
+7. **No downwash grief.** Helicopter rotor wash pushes water and props, not players over edges.
+8. **Leave and return.** A disconnected player's call ends safely; the island and progress persist.

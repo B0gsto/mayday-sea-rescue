@@ -16,8 +16,8 @@ export type Fields = { [string]: string }
 export type Custom = { name: string, value: number, fields: Fields }
 export type OpFacts = {
 	kind: string,
-	grade: string?, -- "Gold" | "Silver" | "Bronze" | "Fail" | "Takeover"
-	reason: string, -- "Complete" | "Timer" | "Takeover" | cold-open endings
+	grade: string?, -- "Gold" | "Silver" | "Bronze" | "Fail"
+	reason: string, -- "Complete" | "Timer" | cold-open endings
 	helped: boolean, -- this player did a step
 	coldOpen: boolean,
 	storm: boolean,
@@ -66,8 +66,7 @@ Events.Devices = { Touch = true, Gamepad = true, Keyboard = true, Console = true
 Events.ShopApps = { Vehicles = true, Store = true, Pets = true, Explore = true }
 Events.InputContexts = { Foot = true, Boat = true, Swim = true, Phone = true }
 
-local GRADE_VALUE: { [string]: number } =
-	{ Gold = 3, Silver = 2, Bronze = 1, Fail = 0, Takeover = 0 }
+local GRADE_VALUE: { [string]: number } = { Gold = 3, Silver = 2, Bronze = 1, Fail = 0 }
 
 function Events.funnelStep(name: string): FunnelStep?
 	for _, s in Events.Funnel do
@@ -249,13 +248,11 @@ function Events.callContext(coldOpen: boolean, big: boolean, storm: boolean): st
 	return "Calm"
 end
 
--- OperationService finish reason -> the call's result: Delivered, TooSlow (a takeover),
--- Timer, or Abandoned (died, left the craft, drove away, ...).
+-- OperationService finish reason -> the call's result: Delivered, Timer (the big call's cap), or
+-- Abandoned (died, left the craft, drove away, ...).
 function Events.callResult(reason: string): string
 	if reason == "Complete" then
 		return "Delivered"
-	elseif reason == "Takeover" then
-		return "TooSlow"
 	elseif reason == "Timer" then
 		return "Timer"
 	end

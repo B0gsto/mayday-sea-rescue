@@ -133,6 +133,9 @@ return function(t)
 		t.expect(Effects.boatToMeWait(false, 100, 110)).toBe(cd - 10)
 		t.expect(Effects.boatToMeWait(false, 100, 100 + cd + 1)).toBe(0)
 		t.expect(Effects.boatToMeWait(true, 100, 101)).toBe(0)
+		-- a hired Mechanic passes the shortened wait (x0.7 = 42 s); almost all of it still to run
+		t.expect(Effects.boatToMeWait(false, 100, 110, 42)).toBe(32)
+		t.expect(Effects.boatToMeWait(false, 100, 100 + 42, 42)).toBe(0)
 	end)
 
 	t.test("a pass counts while owned or while its day pass runs", function()

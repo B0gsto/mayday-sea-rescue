@@ -98,6 +98,16 @@ return function(t)
 		end
 	end)
 
+	t.test("dock decor keys survive the save migration, junk keys drop", function()
+		local d = Rules.migrate({
+			dockBuildings = { FlowerBed = true, Lighthouse = true, SubPen = true, Junk = true },
+		})
+		t.expect(d.dockBuildings.FlowerBed).toBe(true)
+		t.expect(d.dockBuildings.Lighthouse).toBe(true)
+		t.expect(d.dockBuildings.SubPen).toBe(true)
+		t.expect(d.dockBuildings.Junk).toBeNil()
+	end)
+
 	t.test("a fresh profile starts with the docs 03 starting Cash", function()
 		-- docs 03: the cold open pays the first Cash, so a new profile starts at 0
 		t.expect(Config.StartingCash).toBe(0)

@@ -4,7 +4,7 @@
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
 -- World frame (WorldConfig, docs/23 (k)): sea level Y = 0, the hub island at the origin (its harbour opens south,
--- +Z), six player islands 900 out (HubLayout), the outer islands beyond. Calls count from the player's berth.
+-- +Z), six player islands 1,100 out (HubLayout), the outer islands beyond. Calls count from the player's berth.
 
 export type Interaction = {
 	kind: "Pull",

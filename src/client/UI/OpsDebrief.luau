@@ -27,7 +27,6 @@ local SHOW_FOR = 5 -- s on screen
 local STAR = 34
 local MASTERY = 28
 local DIM = Color3.fromHex("3A4650")
-local TOO_SLOW = Color3.fromHex("FF5A4F") -- a takeover's red, lifted for dark glass
 
 local OpsDebrief = {}
 
@@ -260,12 +259,6 @@ function OpsDebrief.new(parent: GuiObject): Debrief
 					nil,
 					string.format("%d:%02d", secs // 60, secs % 60)
 				)
-			elseif d.takeover then
-				-- docs/20 change 3: the NPC boat you just saw take them, and why
-				local boat = Instance.new("Frame")
-				boat.BackgroundTransparency = 1
-				Glyph.draw("boat", boat, TOO_SLOW)
-				row(right, "TooSlow", 40, boat, 22, TOO_SLOW, nil, "Too slow")
 			else
 				-- a lost call with no time worth showing: a life ring, "next one"
 				local ring = Instance.new("Frame")

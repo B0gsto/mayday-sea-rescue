@@ -1,224 +1,179 @@
 # 01 · Game canon
 
-> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
-
-This chapter was the single source of truth for the old design. The current source of truth is [`00-design.md`](00-design.md); where this chapter disagrees with it, 00 wins.
-
-Numbers marked **(tune)** are starting values we expect to move after playtests. [Document 02](02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [document 09](archive/09-rescue-operations.md) owns the rescue operations (steps, radio, grading, certifications, kit), [document 03](03-progression.md) owns progression numbers, [document 04](04-monetization.md) owns prices and [document 06](06-tools-and-pipeline.md) owns tech; where they differ from an anchor here, they win and this file is updated.
+Last rewrite: 2026-10-25. This file is the canon for names, tone, world and characters. `docs/00-design.md` is
+the source of truth; if this file disagrees, 00 wins. Mechanics: `docs/02-core-loop-and-mechanics.md`. Numbers:
+`docs/03-progression.md`. Prices: `docs/04-monetization.md`. Store: `docs/07-store-page-thumbnails-and-trailer.md`. Retention: `docs/15-retention-and-new-players.md`. The
+history that got here is `docs/23-dock-and-core-loop.md`.
 
 ## 1. Identity
 
 | | |
 |---|---|
-| **Working title** | Mayday: Sea Rescue |
-| **Pitch** | Firefighting Sim, but on the ocean, with storms, and every rescue done the way real lifeboat crews do it. |
-| **Fantasy** | Be the hero who saves people at sea. |
-| **Platform** | Roblox (phone first, then PC, tablet, console) |
-| **Genre** | Realistic rescue simulator: multi-step co-op rescue operations and a shared weather event |
-| **Players per server** | 16 (tune) |
-| **Audience** | Core 8 to 15, secondary 16+. Many play on phones. |
-| **Content rating target** | The lowest maturity label the questionnaire allows (expected Minimal or Mild). No gore, no death shown. |
-| **Session target** | 25 minutes (tune): one to two storm cycles. Every first session sees a storm. |
+| **Name** | Mayday: Sea Rescue |
+| **Pitch** | Grow your own rescue island. Answer mayday calls. Bring everyone home. |
+| **Fantasy** | A kid runs a small coastguard station: fast boats, a big sea, people who need help. |
+| **Platform** | Roblox, phone first. Keyboard, touch and gamepad. |
+| **Genre** | Rescue adventure + island tycoon. Stylised, chunky, Lego for new things. |
+| **Players** | 6 per server, each with one island. |
+| **Audience** | 8–15, many on phones. Reading-light, warm, never grim. |
+| **Session** | 20–30 minutes; one call chain, a rank, a build, a quest. |
+| **Rating** | Roblox All Ages. No blood, no gambling, no paid skill. |
 
-### 1.1 Why this game, why now
+## 2. Pillars
 
-- **Firefighting Sim** (Blackbox Express) shows the "answer the call, drive the vehicle, save people, rank up" loop is hot right now: a fast-rising rescue sim (34.8K peak CCU, Oct 2026), 19,225 live, 92% likes (https://rblxstat.com/games/10767634248, seen 2026-10-17). Its place ID looks older than 2025, so we treat its creation date as unknown; the visit count is flagged unverified in [`research/reference-games.md`](archive/research/reference-games.md).
-- **No polished sea rescue game exists.** The coast guard, lifeguard and sea rescue niche is 8 to 10 small roleplay, MilSim and sim titles. None was verified above a few thousand CCU ([`research/reference-games.md`](archive/research/reference-games.md), section 4).
-- **The name is clear.** No Roblox game titled "Mayday" was found. "Coast Guard" and "Sea Rescue" are taken, so we avoid them as the lead word.
+1. **Your island grows.** Every rescue pays for something you can see from the water: a pontoon, a boathouse, a
+   hangar, a beacon. This is the tycoon spine.
+2. **The rescue reads at a glance.** Flare, ring, seat pips, "+1". No paragraph explains a call, and no menu
+   chooses an action. The player drives, pulls up, and the survivor climbs aboard.
+3. **The sea is worth exploring.** Seven outer islands, wrecks below, fog that lifts as you walk the hub, quest
+   camps, stickers, a lighthouse at the end of a chain.
+4. **Friends make it louder.** Six islands in one harbour, bridges to walk, a crew to ride with, a big call that
+   the whole server answers.
+5. **Show, don't tell.** Icons and one to three words. NPCs talk; nothing else does.
+6. **Fair and warm.** Every rank, island, building, call and free craft is earnable. Calls never steal from each
+   other. Nobody is hurt; a late call fails safe.
 
-## 2. Design pillars
-
-Every feature serves at least one pillar. A feature that serves none is cut.
-
-1. **Every rescue is a real operation.** A rescue is a chain of real search-and-rescue steps (tasking, search, approach, recovery, casualty care, handover), and every step is a skill: steering, timing, positioning, choosing gear, reading the casualty. Never "go there, push a button, go there". Decisions have consequences, every step is graded, and the debrief says what to do better ([document 09](archive/09-rescue-operations.md)).
-2. **Mega realistic, never grim.** The sea, the boats, the kit, the radio and the procedures look and behave like the real thing ([document 05](05-art-direction.md) for the look). Failure shows as a casualty's condition dropping and another unit taking over, never as injury or death.
-3. **Every operation is a hero moment.** It ends with a casualty handed over safe and someone saying thank you. A new player finishes their first rescue inside 3 minutes of joining; a standard operation takes about 4 to 7 minutes (tune).
-4. **The sea is the opponent.** Wind, waves, tide, fog and storms make rescues hard. Other players never do. There is no PvP and no way to hurt another player's run.
-5. **Better together, fine alone.** Crew roles (Helm, Navigator/Radio, Crew/Swimmer, Medic, later Winch Operator and Pilot) make co-op operations faster and better graded. NPC crew fill empty seats, slower and less precise, so a solo player can do every operation.
-6. **Light the way home.** Progress is visible in the world: the station comes back to life, lighthouses relight one by one, certificates show on the nameplate, and the player's boats and helicopter sit in their bay.
+Every feature serves at least one pillar. If it serves none, it is not in the game.
 
 ## 3. What Mayday is not
 
-- Not a roleplay game with no goals. It has calls, payouts, ranks and a clear next step at all times.
-- Not a MilSim. No military ranks to apply for, no group required. Training exercises exist but are short, optional and solo-friendly.
-- Not grim. Realistic does not mean scary: nobody drowns, nobody is hurt on screen, nothing frightens a young child.
-- Not an arcade fetch quest. No "hold E to rescue": every rescue is played step by step.
-- Not pay-to-win. Robux buys speed (capped Reputation and Cash) and looks, never skill: every promotion still needs its certification, and nothing paid changes a grade ([document 04](04-monetization.md), section 1).
-- Not a gambling game. The only random items are cosmetic Sea Chests, with odds shown before purchase and a Cash-bought chest for everyone ([document 04](04-monetization.md), section 4.5).
+- Not a town or role-play game. The hub is a wild forest with six camps, not a high street. There are no houses
+  to decorate, no jobs behind counters, no cars.
+- Not a military simulator. Ranks are rescue grades, not command. Nobody carries a weapon.
+- Not grim. There is no blood, drowning, burning or panic. "Fire" is smoke and orange light; the crew is out.
+- Not a menu game. Gameplay actions happen in the world. Menus belong to the left-button panels and the build
+  tablet. NPC talk is the numbered-reply exception.
+- Not pay-to-win. Money buys time, looks and server fun, never a better grade or promotion.
+- Not a gambling product. Sea Chests, when they ship, are cosmetics only with odds shown.
+- Not a photoreal game. The coastguard world is bright, readable and toy-like. New builds are Lego; finished
+  models keep the look they were made in.
 
-## 4. Setting: Port Haven and the Gale Isles
+## 4. The world
 
-**The Gale Isles** are a chain of green, rocky islands in a cold North Atlantic sea, drawn as realistically as Roblox allows ([document 05](05-art-direction.md)). The weather turns fast. Fishermen, ferries, tourists, surfers and the occasional cruise ship all share the water.
+| Place | What it is |
+|---|---|
+| **The hub** | A wild forest island, about 800 studs across, that the coastguard has only just reached. Rough trails, frontier camps, a lookout-hut HQ with the call board, a market stall that serves as the shop counter, the harbourmaster's shack, a campfire stage, the rescuer monument, a visitor jetty and a drop-off quay. Terrain. |
+| **Six player islands** | One per player, on a ring about 1,100 studs out. A flat Lego baseplate (green stud plate, berth notch for a boat and a sub). Unclaimed plates are bare, with a jetty. |
+| **Six suspension bridges** | Hub to each island. Walkable. High enough for every boat and the helicopter to pass under. No roads, no cars. |
+| **The outer ring** | Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon and Penwyn. Beaches, rocks and shallows for free-roam rescues; wrecks on the seabed; open water beyond. |
+| **The map** | Radius about 7,000 studs. Calls stay inside the reach of your rank, so the edge is for exploring, not for commuting. |
 
-The isles are **one big open map at real scale** (about 5 km across at launch): the main island, **Great Gale**, with Port Haven on its south coast, a coast road to beaches, cliffs and lighthouse headlands, outlying islands reached only by boat or helicopter, and a real seabed of reefs, kelp forests and wrecks to explore. Players drive to the beach and back to the station, launch boats from slipways, and roam freely between operations. The layout, land vehicles, seabed and exploration are in [document 10](10-world-and-map.md).
-
-**Port Haven** is the main town: a crescent harbor, painted houses up the hill, a fish market, a bait shop, a ferry pier, a fuel dock and boatyard, the harbourmaster's office, the Cottage Hospital, and at the end of the harbor wall, the old **Port Haven Coast Guard Station** with its slipway and vehicle yard. Next door to the station on the quay is the **Port Haven Chandlery**, the marine outfitter where players buy gear, uniforms and cosmetics; there is no shop button, only shops ([document 04](04-monetization.md), section 1.1). The Coast Road leaves town east to **Haven Sands** beach and west to **Long Strand** and **Tempest Point**.
-
-**The Long Storm.** Years ago a storm sat over the isles for a whole season. The station was damaged, its crews moved away, and one by one the lighthouses went dark. Without the station, the town has made do with Vance Sterling's private salvage boats, which charge a fortune and arrive late.
-
-**The player's arrival.** The game opens on the day Chief Aggie Brightwater reopens the station with one recruit (the player), one jet ski and one very large dog. The player runs one quick drill with the Chief and answers the first Mayday before the paint is dry.
-
-### 4.1 Zones
-
-| Zone | Lighthouse | Feel | Main hazards | Scope |
-|---|---|---|---|---|
-| **Calm Bay** | Harbor Light | Sheltered harbor, beaches, sandbars, swimmers and paddleboards | Rip currents, sandbars | [MVP] |
-| **The Skerries** | Skerry Light on Skerry Isle | Cold, rocky skerries and kelp beds, sea caves, grey seals, dive and kayak tours. Opens at Lifeguard. | Rocky ledges just under the surface (hull scrapes), kelp that fouls propellers, tide races in tight channels | [L] |
-| **Open Sea** | Gannet Rock Light | Deep blue swell, fishing trawlers, ferry lanes, fog banks | Big swell, fog, long distances | [L] |
-| **Storm Front** | Tempest Point Light | Dark water, sea cliffs, permanent rough weather, wrecks | Huge waves, gusts, lightning, cliffs | [L] |
-| **Iceberg North** | Northlight | Pale water, ice floes, research station, seals | Ice, cold (needs drysuit), drifting bergs | [P1] |
-
-Zones are rings outward from Port Haven, measured at sea (map scale in [document 02](02-core-loop-and-mechanics.md), section 4.1); the main island fills their northern half, so on the map each zone is an area ([document 10](10-world-and-map.md), section 1.2). Beyond the Skerries lie two outer islands, **Puffin Isle** and **Gannet Rock**, reachable only by boat or helicopter [L]. Calm Bay sits inside the harbor wall and stays sheltered even during storms, so a new player's first call is never in a storm. The **harbor mouth**, the gap in the harbor wall a short ride from the station, is the exception: it takes full storm waves and gets beginner storm calls, so a player sees the hook (a real storm rescue) in their first session without leaving the harbor. Skerry Isle and Gannet Rock have **outposts** with free delivery docks, so long trips stay short.
+The sea is calm by default. The only storm is one a player calls with a Storm Summon (a paid server event,
+`docs/04-monetization.md`); natural storm cycles are retired. Weather effects for that event are in progress.
 
 ## 5. Characters
 
-### 5.1 The station
+### Bosun
 
-| Character | Role | Personality |
-|---|---|---|
-| **Chief Agnes "Aggie" Brightwater** | Station chief. Runs training exercises, signs off certifications, gives rank promotions, story beats and debrief tips. | Retired lifeboat coxswain who came back to reopen the station. Warm, dry, never flustered. Always holding a mug of cocoa. Catchphrase: "Kettle's on. Go get them." |
-| **Bosun** | The player's Newfoundland rescue dog. Every player gets one free on their first call. | Huge, fluffy, brave, slightly clumsy on land and graceful in water. Barks toward victims, swims a line out to swimmers, shakes water over everyone at the dock. Players can rename him. |
-| **Gale Isles Coastguard** | The coordination centre (invented) that tasks every rescue over the radio: MAYDAY and PAN-PAN taskings, situation reports, the helicopter *Rescue Gale One*, stand-downs. | Calm, precise, unhurried voice. Never jokes during a tasking; says "good work" at the stand-down. |
-| **Tobias Wick** | Old lighthouse keeper. Runs each lighthouse relight mission. | Forgetful, kind, talks to the lamps by name. Knows every rock in the isles. |
+A brown and white rescue dog. Bosun wears a life ring, rides on the jet ski and the RIB, and is the default
+companion. The companion slot can hold Bosun or one pet; Bosun is the face of the game.
 
-Newfoundlands are a real water-rescue breed, which lets Bosun do real jobs (towing a swimmer by a rope, finding people by scent and sound) without breaking the tone.
+### The six quest givers
 
-### 5.2 The rival and the comic regular
-
-| Character | Role | Personality |
-|---|---|---|
-| **Vance Sterling** | Friendly rival. Owner of Sterling Salvage & Yacht Co. Wants the station land for a luxury marina. | Gold jet ski, white suit, big smile. Turns up at rescues to take photos and claim credit. Never mean, just vain. In the season finale he finally needs rescuing himself and changes his mind about the station. |
-| **Barnaby Puddleford** | Comic recurring caller. Fisherman with a small, unlucky boat called *The Optimist*. | Gets stuck on a sandbar, runs out of fuel, hooks a buoy, drifts out asleep. Always cheerful: "Just a little stuck again, Chief!" His calls are the game's light relief and its gentlest teaching calls. |
-
-### 5.3 Townsfolk who call in
-
-| Character | Where | What they bring |
-|---|---|---|
-| **Dr. Priya Osei** | Port Haven Cottage Hospital | The hospital delivery point. Gives medic tips and thanks the crew by name. |
-| **Nell Tackle** | Bait shop on the pier | A 12-year-old who runs the challenge board (daily and weekly challenges). Big fan of Bosun. |
-| **Hazel Crumb** | Ferry ticket booth | Radio gossip. Calls in the odd non-emergency (a cat on a buoy, a lost beach ball) that pays small and is pure charm. |
-| **Captain Lou Marlow** | Ferry *Gale Queen* | The ferry captain. Centre of the capsized ferry big call. |
-| **Skerries Dive Shop (the Tran twins)** | The Skerries | Dive and kayak tour calls, wildlife calls (a seal in a net). |
-| **Skipper Ingrid Hale** | Trawler *Northern Dawn* | Open Sea and Iceberg North calls. Calm, precise radio voice. |
-
-Voice lines are text plus short radio "crackle" sounds by default. Optional recorded voice lines for the Coastguard, Chief Aggie and the player's radio replies are [L] ([document 09](archive/09-rescue-operations.md), section 3.5).
-
-## 6. Season 1 arc: "Relight the Gales"
-
-A light story told through Chief Aggie's radio, Tobias's lighthouse missions and Vance's interruptions. Each chapter is one lighthouse. Story never blocks play: a player can skip any cutscene, and the story missions are just special calls.
-
-| Chapter | Beat | Unlocks | Scope |
+| Name | Camp role | Voice / cast | What they ask for |
 |---|---|---|---|
-| **0. Reopening Day** | The cold open: the first MAYDAY from Gale Isles Coastguard and the first rescue from a moving jet ski off Sandy Point, then the ride into Port Haven at golden hour, Chief Aggie on the slipway, Bosun joins. The throw-bag drill is an optional exercise afterward. | Calm Bay calls | [MVP] |
-| **1. Harbor Light** | Tobias needs a ride to the pier light. Relighting it is the player's Lifeguard promotion. | Crew joining; Skerries calls [L] | [MVP] |
-| **2. Skerry Light** | The Skerry light's lens is in pieces around Skerry Isle. Find and carry them back. Vance tries to sell the lens back to the town. | Reef wildlife and rock calls | [L] |
-| **3. Gannet Rock Light** | A fog bank has swallowed the shipping lane. Relight the light in the fog so the ferry can find its way home. | Open Sea | [L] |
-| **4. Tempest Point Light** | The tallest light, last to go dark. Relight it during a storm with a full crew (or Bosun, solo). | Storm Front | [L] |
-| **Finale: The Long Storm Returns** | A scheduled, all-servers event. The biggest storm the isles have seen, a cruise ship aground, the ferry capsized, and Vance's yacht sinking. Every server works together toward one shared rescue count. | Season badge, a permanent finale livery for everyone who joins | [P1] |
-| **5. Northlight** | Season 2 opener. Tobias's sister keeps a light in the ice. | Iceberg North | [P1] |
+| **Old Maud** | Passenger | Hazel | Her dog Biscuit, then a lost satchel. |
+| **Tam** | Boater | Patrol | A crate for the Gannet Rock keeper, then Penwyn's post. |
+| **Captain Rook** | Boater | Barnaby | A ship's bell and a sea chest, both below, both need the submarine. |
+| **Nell** | Passenger | Parent | Two swimmers overdue at Wreck Reef and the Arches; both are calls. |
+| **Keeper Ives** | Boater | Informant | Glass, oil and a lens for the old lamp; the chain ends in a lighthouse blueprint. |
+| **Pip** | Passenger | Teen | A kite from Mermaid Lagoon and lunch for Dad on Skerry. |
 
-**Server-wide progress.** The finale shows a "Port Haven Rescues" total across all servers on the station board. This is a shared goal, never a race between players.
+Each has a camp on the hub, a pin, and one quest a day. They speak in short voiced lines and numbered replies;
+the player never picks a dialogue tree.
 
-## 7. Tone rules
+### The player
 
-1. **Nobody dies, nobody is shown hurt.** Casualties can be cold, very cold (hypothermic), exhausted, panicking, seasick, bumped or not responding, shown through realistic body language and a condition meter. There is no blood, no injury close-up, no drowning animation, no bodies. CPR is shown from a calm, high camera with a rhythm bar, and always ends with the casualty breathing or paramedics taking over.
-2. **The fail-safe always saves them.** If a casualty's condition reaches Critical, the harbour patrol or the Coastguard helicopter takes over and the casualty is safe. The player keeps the steps already earned (at a reduced rate), never loses the person, and the radio says something kind ("*Rescue Gale One* has them. Good work holding on.").
-3. **The player never dies either.** A capsized or swamped vehicle leaves the player bobbing in a life jacket with Bosun paddling over. They can right the boat or tap "Back to Station".
-4. **Warm and a little funny.** Thank-you lines, Barnaby's mishaps, Bosun shaking himself dry, Vance's photo poses. Jokes are gentle and never at a victim's expense.
-5. **Heroic, not military.** Ranks are rescue service ranks. No weapons anywhere in the game.
-6. **Storms are exciting, not scary.** Big waves and lightning, bright rain-lit colours, rousing music. No horror sounds, no darkness that hides everything.
-7. **Real rescue craft, done the real way.** Approach from downwind, throw the bag beyond the casualty, keep a cold casualty flat, give an ATMIST handover, take the strain gently on a tow. Physics and numbers are simplified; procedure never is. Anything not yet checked against an official source is marked "(verify)" in [document 09](archive/09-rescue-operations.md). Players should come away knowing real sea safety (wear a lifejacket, float to live, wave both arms, call the Coastguard).
-8. **Plain words on screen.** Short labels a nine-year-old can read. Icons first, text second.
+A new coastguard recruit, dropped at the hub visitor jetty with a jet ski and a bare island. No family, no
+backstory, no voice. The rank ladder is the character arc.
+
+## 6. Quests and story
+
+Thirteen quests, six givers, one a day per giver. The kinds are **find** (pick it up on an outer island), **deliver**
+(carry it from the camp to a drop spot), **salvage** (submarine, from a wreck) and **rescue** (a call in a named
+zone, then bring the survivor home). Each returns to the giver.
+
+- One chain matters: **Keeper Ives** asks for glass, then oil, then the lens (three days). The last quest unlocks
+  the **lighthouse blueprint** for the player's island.
+- Everything else is a warm errand with a joke. No quest gates a rank, a craft or a call.
+- Quest pins are in the world and on the map. The quest panel is a list of pins, not a story bible.
+- No cutscenes. Talk zooms the camera in, plays a short voiced line, and shows numbered replies.
+- The story never blocks play. A player can ignore every NPC and still reach Admiral.
+
+## 7. Tone
+
+1. **Nobody dies or is hurt.** People are stranded, tired, cold or late. The rescue is the fun; the danger is
+   never shown in detail.
+2. **A late call fails safe.** "Too slow" costs most of the pay, not the survivor and not the player's Cash stack.
+3. **The player never loses progress.** No dropped rank, no lost craft, no stolen call.
+4. **Warm and funny.** Bosun steals a sandwich. Pip's dad forgot his lunch. Captain Rook is dramatic about a bell.
+5. **Heroic, not military.** "Coastguard" means rescue, not authority. No guns, no sirens as weapons.
+6. **Real signals, simplified.** Mayday, flares, life rings and channel 16 language can appear as flavour; the
+   mechanics stay ring-and-pick-up.
+7. **Readable first.** A phone player must understand a call in one look. Big icons, one to three words.
+8. **Lego for new things.** New buildings and props are chunky bricks with studs and bright colours. Boats,
+   characters and the hub keep their finished look.
+9. **One game for everyone.** The same calls, rules and island for a free player and a paying one. Third person
+   only; no first-person cockpit.
 
 ## 8. Signature features
 
-| Feature | Why it matters | Scope |
+| Feature | What the player feels | Status |
 |---|---|---|
-| Realistic multi-step rescue operations | The core: every rescue is a chain of real procedure steps, each a skill, graded and debriefed ([document 09](archive/09-rescue-operations.md)). | [MVP] Person in the Water, Disabled Vessel, Capsized Ferry; [L] sinking, fire, winch, beach, cliff; [P1] medevac |
-| A real radio | MAYDAY and PAN-PAN taskings from Gale Isles Coastguard, answered on a quick-reply radio wheel: acknowledgement, ETA, POB, sitreps, handover. | [MVP] wheel; [L] optional voice lines |
-| Certifications | Helm, Casualty Care, Rescue Swimmer, Coxswain, Winch Operator, Pilot: earned in exercises and operations, gating roles and vehicles. | [MVP] first three; [L] the rest |
-| Mayday radio calls with a real search | The "find them" moment is what a fire game cannot do. Flares, radio bearings and Bosun's nose make searching a skill. | [MVP] datum and drift, lookout, flares and strobes, bearing, Bosun points; [L] binoculars, expanding square |
-| Server-wide storm every ~15 min (tune) | A shared clock everyone feels at once, with a burst of calls and rare big calls. Full storm waves at the harbor mouth put it in every first session. | [MVP] storm and harbor mouth, [L] big calls |
-| Bosun the Newfoundland | A companion players love and screenshot. Helps solo players feel like a crew. | [MVP] follower who barks and points, [L] swims and tows |
-| Crew roles with NPC fill-in | Intentional co-play, which Roblox discovery rewards (see [`research/store-page-and-monetization.md`](archive/research/store-page-and-monetization.md), section 5). | [MVP] Helm, Navigator/Radio, Crew/Swimmer, Medic with NPC fill-in; ride-along Winch Operator and Winchman; [L] Pilot |
-| Rescue helicopter with hoist | The headline vehicle and the hero shot for the store page. | [MVP] tech spike only, [L] |
-| Station helicopter ride-along | On big calls, low-rank players can take a seat in the NPC-flown Coastguard helicopter as trainee Winch Operator or Winchman, so the hero vehicle shows up long before they can own it. | [MVP] on the Capsized Ferry if the helicopter spike is ready, else [L] |
-| Lighthouses relit island by island | Visible, permanent progress on the map. | [MVP] Harbor Light, [L] four |
-| An open world to explore | A real-scale island and seabed: drive the coast road to the beach and back, snorkel wrecks, spot seals and basking sharks, fill a logbook, go On watch or Off duty ([document 10](10-world-and-map.md)). | [MVP] the south coast, Haven Sands, Calm Bay and three seabed finds; [L] the full island, the Skerries and two outer islands |
-| Land vehicles | Lifeguard 4x4, beach ATV, coastguard response vehicle with a boat trailer, ambulance, lifeboat launch tractor, each with a real job in operations ([document 10](10-world-and-map.md), section 3). | [MVP] the 4x4; [L] the rest |
-| Storm Summon (paid, server-wide) | A social "admin abuse" style event the whole server enjoys. | [L] |
-| First-person rescues | On foot and on the jet ski the camera is locked in first person, with the player's own gloved hands doing every rescue action (throw, haul, grab, radio, CPR, knock). The RIB, larger boats and cars use a third-person chase camera with an optional helm or cab view ([document 02](02-core-loop-and-mechanics.md), section 11). | [MVP] foot, jet ski, RIB and 4x4 cameras, comfort options; [L] cockpit views for the lifeboat and helicopter |
-| A cold open, then cinematics | A new player's first second is already a rescue: riding a moving jet ski at the harbor mouth toward a Person in the Water. Only after it does a short third-person film-style cinematic bring them into Port Haven. Short, skippable cinematics also mark slipway launches, the storm rolling in and rank-ups ([document 02](02-core-loop-and-mechanics.md), sections 2 and 12). | [MVP] cold open, arrival and storm cinematics; [L] the rest |
-| An in-world store | No shop button on the HUD. Gear, uniforms, cosmetics and passes are bought by walking into the Port Haven Chandlery and handling the real items; vehicles are bought and collected at the station or the boatyard ([document 04](04-monetization.md), section 1.1). | [MVP] the Chandlery with Cash gear; [L] Robux items in it |
+| Hub forest + six Lego islands + bridges | A harbour that is theirs, with friends next door | Live |
+| Mayday calls (pager, flare, ring) | A clear, exciting job anywhere on the water | Live |
+| Simple pick-up, helicopter winch, submarine dive | The rescue itself is the toy | Live |
+| Dock levels, hangar, sub pen, lighthouse | The island visibly grows | Live |
+| Ranks Recruit to Admiral | A long, legible ladder | Live |
+| Quests from six islanders | A reason to walk the hub and sail the ring | Live |
+| Album, fog and stickers | Exploration that remembers | Live |
+| Daily streak crate | A gentle reason to come back | Live |
+| Crew hiring | A living station | In progress (WP-15) |
+| Tablet build mode | Lego building, not a menu | In progress (WP-14d) |
+| New phone-free UI | The Roblox simulator look | In progress (WP-23) |
 
-## 9. Scope tags
+## 9. Retired design
 
-Used in every design document.
+These were part of the old game. They are not canon, not planned, and must not appear in new docs, store art or
+copy. The old build is preserved at git tag `pre-hub-cut`.
 
-| Tag | Meaning | Contents in short |
-|---|---|---|
-| **[MVP]** | The vertical slice we playtest first. | See section 9.1. |
-| **[L]** | Public launch. | Everything deferred from the MVP (section 9.1), plus the full main island, the Skerries and two outer islands (Puffin Isle, Gannet Rock), all land vehicles, the exploration logbook and photo mode, Open Sea and Storm Front, rescue board, lifeboat, player helicopter and the Pilot role, sinking, fire, winch, rip-current and cliff operations, Coxswain, Winch Operator and Pilot certifications, Trawler on the Rocks, all eight ranks and Service Stars, badges, daily and weekly challenges, leaderboards, game passes, Storm Summon. |
-| **[P1]** | First post-launch update (about 4 to 6 weeks after launch). | Iceberg North and North Quay, tides, the Rescue Diver certification and scuba, medical evacuation from a ship, night searches, patrol cutter, hovercraft, Cruise Ship Aground big call, Season 1 finale event, drysuit, night calls with searchlights, more liveries. |
-| **[P2]** | Later. | Station decoration, dog tricks, a second island town, seasonal events. |
-
-### 9.1 MVP scope
-
-The MVP proves one thing: a first session of real, step-by-step rescue operations that ends with a storm rescue and a reason to come back. Three operations, built deep rather than many built shallow ([document 09](archive/09-rescue-operations.md)). Anything not on the keep list waits for [L] unless tagged otherwise.
-
-| Keep in the MVP | Defer |
+| Retired | Replaced by |
 |---|---|
-| Port Haven and the main island's south coast (Harbour Road and the Coast Road to Haven Sands beach), Calm Bay, with a storm-exposed harbor mouth | The Skerries and the Skerry Light lens hunt [L]; the rest of the island, the outer islands and the other land vehicles [L] |
-| The lifeguard 4x4; a Terrain seabed with three points of interest, snorkelling and duck dives; On watch and Off duty ([document 10](10-world-and-map.md), section 7) | Photo mode, freediving and the full logbook [L]; tides and scuba [P1] |
-| Jet ski with rescue sled (first vehicle, free) and RIB | Sinking, fire, winch, rip-current and cliff operations [L]; medevac from a ship [P1] |
-| **Person in the Water**: tasking, datum and drift search, downwind approach, throw bag, swimmer, horizontal lift, panicking casualty, DR ABCDE survey, treatment, CPR (gated), transport, ATMIST handover | Expanding square and sector search patterns [L] |
-| **Disabled Vessel**: assessment, heaving line, tow line and bridle, tension and snatch loads, alongside tow, berthing | The two-casualty Drifting Craft variant and Person Overboard from a ferry [L] |
-| **Capsized Ferry** storm big call (co-op): scene command, triage tags, hull knocking, air-pocket dive, multi-boat coordination; NPC-flown helicopter ride-along if the spike is ready | Trawler on the Rocks [L], Cruise Ship Aground [P1] |
-| Radio wheel with Gale Isles Coastguard taskings, ETA, POB and handover | Optional voice lines [L] |
-| Crew roles Helm, Navigator/Radio, Crew/Swimmer, Medic, with NPC crew filling empty seats | Player-flown helicopter and the Pilot role [L] |
-| Per-step grading and the debrief screen; Assist and Pro settings | AED, oxygen variants beyond one mask [L] |
-| The cold open (a Person in the Water from a moving jet ski in the first second) and the arrival cinematic; the Reopening Day drill as an optional exercise; the Helm, Casualty Care and Rescue Swimmer exercises and certifications | Coxswain, Winch Operator and Pilot certifications [L] |
-| A real storm: full cycle, big waves at the harbor mouth, rain, tasking burst | Radio Room, Kennel and the other station upgrades [L] |
-| Bosun as a follower who barks and points | Most badges [L]; Bosun swimming or towing [L] |
-| Three ranks: Recruit, Lifeguard, Rescue Swimmer | Binoculars [L] |
-| Two or three gear items | Patrol cutter, hovercraft [P1] |
-| Mesh ocean only (no Terrain water) | |
-| First person on foot and on the jet ski with visible hands; the chase camera and helm view on the RIB and 4x4; comfort options | Lifeboat and helicopter cockpit views [L] |
-| The Port Haven Chandlery and the boatyard as walk-in stores (Cash gear and vehicles) | Robux items on the Chandlery shelves and the harbourmaster's Storm Summon desk [L] |
-| Helicopter as a tech spike, flown only by NPC on the ferry call | |
-
-Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progression.md); mechanics are in [document 02](02-core-loop-and-mechanics.md).
+| Port Haven town, shops, houses, town square | Wild forest hub with six frontier camps |
+| Cars, roads, garage, vehicle upgrades | Boats, bridges and walking |
+| Phone, phone apps, phone shop | Left column of icon buttons and centred panels |
+| Dispatch radio and voice chatter | Pager card, flare, pin and beep |
+| Care steps, CPR, vitals, medical gear | Ring pick-up; survivors climb aboard |
+| Certifications, gear tree, skill points | Rank plus Cash; paid craft skip the wait, not skill |
+| First-person cockpit and photoreal art | Third-person chase camera; stylised Lego for new things |
+| Seaplane, land calls, mainland | Outer islands, wrecks and open sea |
+| NPC racer, race courses, time trials | Free-roam calls, big ferry call |
+| Operations, tasking cards, debriefs, cold open | One call at a time, ring, drop-off |
+| Natural storms, storm seasons, storm zones | Calm sea; Storm Summon event (in progress) |
+| Port Haven lighthouse relight zones | Keeper Ives chain unlocks a lighthouse on your island |
+| Animal sanctuary, pet adoptions, rotating stock | Wildlife calls; Bosun or one pet companion |
+| Challenges, daily/weekly contracts, rerolls | Quests, streak crate, Album |
+| Leaderboards, trophies, badges as a ladder | Rescuer monument, trophy hall, badges as flavour |
+| Season pass, Season Logbook, seasonal events | Base game plus quests and Service Stars |
+| Private servers, gifting, ads, subscriptions | Not part of the design |
+| Paid Rep, 2x Rep, Sea Time, Fast-Track | Cash and cosmetics only; Rep is earned |
+| Signature vehicles, vehicle tiers, gear stats | One handling model; paid boats are alternatives |
 
 ## 10. Glossary
 
 | Term | Meaning |
 |---|---|
-| **Operation** | One rescue, played as a chain of real procedure steps from tasking to handover ([document 09](archive/09-rescue-operations.md)). Older text says "call"; it means the same. |
-| **Step** | One part of an operation (search, approach, recovery, survey...), each a skill with its own grade. |
-| **Tasking** | The radio message from Gale Isles Coastguard that starts an operation. |
-| **Big call** | A rare storm-only operation with many casualties, built for several crews (the Capsized Ferry). |
-| **Bay** | The player's own berth and locker at the station, where their vehicles and upgrades live. |
-| **Casualty** | A person being rescued. |
-| **Condition** | A casualty's 0 to 100 meter (Stable, Concern, Serious, Critical). Critical brings in another unit to take over. |
-| **Certification** | A role qualification (Helm, Casualty Care, Rescue Swimmer, Coxswain, Winch Operator, Pilot), earned in exercises and operations, never sold. |
-| **Exercise** | A short training drill with Chief Aggie and the manikin, the first half of a certification. |
-| **Assist / Pro** | Operation setting: Assist shows overlays and hints; Pro shows only real cues and pays more Rep. |
-| **Datum** | The last known position of a casualty, the start of a search. |
-| **POB** | Persons on board, reported on the radio. |
-| **ATMIST** | The handover report: Age, Time, Mechanism, Injuries, Signs, Treatment. |
-| **OSC** | On Scene Coordinator, the player who commands a big call. |
-| **Debrief** | The screen after an operation: step grades, condition graph, Rep and one tip. |
-| **Cash** | Soft currency. Earned from operations, spent on vehicles, gear and station upgrades. Can be bought in packs. |
-| **Reputation** | Rank XP. Earned by playing; can be sped up with Robux inside fixed caps ([document 04](04-monetization.md), section 4.4). |
-| **Service Star** | An endless prestige level after Admiral. Each one pays a cosmetic. |
-| **Harbor mouth** | The gap in the harbor wall. Sheltered in calm weather, full storm waves in a storm, with beginner storm calls. |
-| **Outpost** | A small dock at Skerry Isle or Gannet Rock. Free handover point for nearby operations. |
-| **Great Gale** | The main island of the Gale Isles, with Port Haven on its south coast. |
-| **On watch / Off duty** | The radio switch: On watch receives tasking offers (accept or decline freely); Off duty explores with no taskings. |
-| **Logbook** | The record of everything a player has discovered: wrecks, wildlife, coves, viewpoints, lighthouse histories. |
-| **Ride-along** | A trainee seat (Winch Operator or Winchman) in the NPC-flown Coastguard helicopter on a big call, offered to players below Rescue Pilot. |
-| **Grade** | Gold, Silver or Bronze for each step and for the whole operation, based mostly on care and technique, a little on speed. |
-| **Crew** | Up to four players sharing a vehicle and a call. |
-| **Cold open** | A new player's first operation: they spawn already riding a jet ski toward a Person in the Water, before any menu, drill or cinematic. |
-| **Chandlery** | The Port Haven Chandlery, the marine outfitter next to the station: the walk-in store for gear, uniforms, cosmetics and passes. |
-| **Cinematic** | A short third-person, film-style shot sequence (arrival, slipway launch, storm, rank-up), skippable after the first view. |
+| **Call** | One rescue job: pager, flare, ring, survivors, drop-off. |
+| **Survivor** | A person, animal or diver in a call. Counts as one seat. |
+| **Big call** | The capsized ferry. Public, server-wide, four or more survivors. |
+| **Berth** | The boat notch on a player island. Drop-off point. |
+| **Hub quay** | The shared drop-off on the hub. |
+| **Reach** | The farthest call your rank can be offered, 2,000–5,500 studs. |
+| **Grade** | Gold, Silver or Bronze from time taken. Multiplies pay. |
+| **Rep** | Rescue reputation. Rank currency. Never sold. |
+| **Cash** | Soft currency. Craft, buildings, crew wages, cosmetics. |
+| **Dock level** | The main island upgrade, Lv1–Lv5. |
+| **Crew** | Up to four players riding together for a pay bonus. |
+| **Service Star** | Endless post-Admiral level, every 30,000 Rep. |
+| **Blueprints** | Quest-chain buildings: the lighthouse. |
+| **Storm Summon** | A paid, player-started storm event. In progress. |

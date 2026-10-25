@@ -1,26 +1,29 @@
-# Store text (RP-SP3, launch 1.0)
+# Store text
 
-Lists only what is in the 1.0 build (docs/07 §7 rule). Re-check before RP-L1 if the scope changes.
+Lists only what is live in the current build. Canon: `docs/00-design.md`. Store rules:
+`docs/07-store-page-thumbnails-and-trailer.md`. Re-check before every publish if the scope changes.
 
 **Title:** Mayday: Sea Rescue
 
-**Genre:** Simulation (deploy arg; the Creator Hub genre is set by the user, U-4)
+**Genre:** Adventure / Simulation (the Creator Hub genre is set by the user)
 
-**Server size:** 16 (docs/02, tune 12 to 16)
+**Server size:** 6 (docs/00, docs/02)
 
 ## Description
 
 ```
-Mayday! Race out, pull up close and survivors climb aboard. Bring them home to your own island!
+Answer mayday calls and build your own rescue island.
 
-- Jet ski (1 survivor), RIB (3) or the All-Weather Lifeboat (8): bigger boat, bigger rescue
-- Swimmers, rip currents, sinking boats, boats on fire, cliff falls and animals caught in nets
-- Free seal pups, puffins, otters, turtles and gulls, then adopt them as pets
-- Bosun the dog rides with you and points the way
-- Earn Cash and Rep, rank up from Recruit to Admiral and unlock new boats
-- Crew up with friends and rescue together
+Race out by jet ski, RIB, lifeboat, helicopter or submarine. Pull survivors aboard, bring them home, and spend your pay on a bigger dock, a hangar, a sub pen and a lighthouse.
 
-Hold steady in the waves and be quick, or another boat gets there first!
+- Six brick-built islands to make your own, joined by bridges
+- Calls get farther as you rank up from Recruit to Admiral
+- Quests from six islanders, with a new one each day
+- Bosun the rescue dog rides with you
+- Crew up with friends and answer the big ferry call together
+- Free to play: every rank, island and free boat is earnable
+
+6 players per server.
 ```
 
 ## Social links

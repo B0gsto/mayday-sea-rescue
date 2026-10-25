@@ -10,7 +10,7 @@
 --   Ops_StepStart   S->C  play a mechanic: the StepContext (CONTRACT.md "Operations v2")
 --   Ops_StepResult  C->S  (opId, stepKey, StepResult) a mechanic finished
 --   Ops_StepAck     S->C  { opId, stepKey, accepted, grade?, reason? }
---   Ops_Debrief     S->C  the debrief { opId, kind, title, grade, takeover?, steps, condition, cash, rep, tip }
+--   Ops_Debrief     S->C  the debrief { opId, kind, title, grade, steps, condition, cash, rep, tip }
 --   Ops_Closed      S->C  { opId, reason } offer withdrawn or operation closed
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

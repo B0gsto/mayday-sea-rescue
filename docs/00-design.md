@@ -57,8 +57,10 @@ each other's islands). 6 players per server.
 
 Jet ski (free, 1 seat) → RIB (Lifeguard) → Lifeboat (Coxswain) → Rescue helicopter (Rescue Pilot, hangar) and
 Submarine (Coxswain, sub pen). Robux boats: Storm Runner, Tidewalker, Riptide X, Gilded Gull. Choose a craft at the
-boat board in your boathouse; "Boat to me" brings yours to you (60 s cooldown; Quick Launch removes it). Craft
-handle the same whether earned or bought.
+boat board in your boathouse; "Boat to me" brings yours to you (60 s cooldown; a hired Mechanic cuts it to 42 s;
+Quick Launch removes it). A free craft bought early with Robux (RIB, Lifeboat passes) handles the same as the earned
+one. The Robux-only boats are their own, faster boats: speed is sold, skill never is, and your rank still caps how
+far your calls go.
 
 ## 6. Progression and economy
 

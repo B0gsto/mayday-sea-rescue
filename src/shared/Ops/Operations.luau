@@ -72,14 +72,8 @@ function Operations.totalWeight(steps: { StepDef }): number
 	return w
 end
 
--- Can this call fail (an NPC takes the casualty, no pay)? Never the cold open or a new player's
--- first station calls (Onboarding.failsafeCall): there the survivor simply waits (2026-10-21).
-function Operations.canFail(coldOpen: boolean, firstCalls: boolean): boolean
-	return not (coldOpen or firstCalls)
-end
-
--- The casualties a takeover is about: not yet picked up. Aboard a crew's boat (the board effect sets
--- `aboard`) they are rescued; the ride home is only graded.
+-- The casualties a slow grade is about: not yet picked up. Aboard a crew's boat (the board effect
+-- sets `aboard`) they are rescued; the ride home is only graded.
 function Operations.atRisk(casualties: { any }): { any }
 	local out = {}
 	for _, c in casualties do

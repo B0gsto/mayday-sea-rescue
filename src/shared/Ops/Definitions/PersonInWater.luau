@@ -2,7 +2,7 @@
 -- Operation 1: Person in the Water (docs/09-rescue-operations.md section 5.1, docs/16 K1). Data only.
 -- Absorbs the old Swimmer and DriftingCraft calls as scenes: a swimmer, or a dinghy drifting with
 -- one or two aboard. The plan is SimpleSteps. Running out of time (condition Critical or the cap)
--- is the fail: zero pay and an NPC boat picks them up instead.
+-- still pays: the call is graded Bronze.
 local SimpleSteps = require(script.Parent.SimpleSteps)
 local Types = require(script.Parent.Parent.Types)
 
@@ -15,7 +15,6 @@ local def: Types.OperationDef = {
 	casualtyKind = "Person",
 	states = { Alert = 0.4, Panicking = 0.2, Exhausted = 0.2, VeryCold = 0.15, Unresponsive = 0.05 },
 	lifejacketChance = 0.6,
-	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Swimmer", "DriftingCraft" },
 	steps = SimpleSteps("Answer the call quickly; every second counts in the water."),
 }

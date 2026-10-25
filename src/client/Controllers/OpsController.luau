@@ -313,7 +313,7 @@ function OpsController.Init()
 		if pending and pending.opId == s.opId then
 			pending = nil
 		end
-		-- the server moved on (takeover, NPC took it, another unit): drop the running mechanic
+		-- the server moved on (NPC took it, another unit): drop the running mechanic
 		local r = running
 		if r and r.opId == s.opId then
 			local still = false

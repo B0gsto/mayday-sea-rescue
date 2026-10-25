@@ -55,7 +55,7 @@ return function(answerTip: string): { Types.StepDef }
 			allowedEvents = { bump = 2 }, -- ran into them
 			weight = 2,
 			timeoutSec = 300,
-			onFail = "takeover", -- an NPC boat picks them up (never on the first missions)
+			onFail = "continue", -- slow is Bronze, never a fail (docs/00 section 3)
 			npcAllowed = false,
 			effect = "board",
 			tip = "Come in slow and hold her steady beside them: they climb on by themselves.",
