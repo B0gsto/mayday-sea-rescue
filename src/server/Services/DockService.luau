@@ -551,13 +551,12 @@ function DockService.Start()
 			syncBuildings(plots[i], player, false)
 		end
 	end)
-	-- the rescue boards show each owner's real rescue count (BadgeService's Rescue100 counter)
+	-- the rescue boards show each owner's real rescue count (survivors delivered, RescueService)
 	task.spawn(function()
 		while true do
 			for i, owner in owners do
 				local data: any = DataService.Get(owner)
-				local counters = data and data.badgeCounters
-				local n = tostring(if type(counters) == "table" then counters.Rescue100 or 0 else 0)
+				local n = tostring(data and data.totalRescues or 0)
 				for _, label in plots[i].counts do
 					label.Text = n
 				end

@@ -45,6 +45,7 @@ local AssetLoader: any = (function()
 	return if ok then m else nil
 end)()
 local AssetIds = require(Shared:WaitForChild("Config"):WaitForChild("AssetIds"))
+local DataService = require(script.Parent.DataService)
 local FerryRig = require(Shared:WaitForChild("Ferry"):WaitForChild("FerryRig"))
 local HullKnock = require(Shared:WaitForChild("Ferry"):WaitForChild("HullKnock"))
 local Wake = require(Shared:WaitForChild("Boat"):WaitForChild("Wake"))
@@ -1361,7 +1362,15 @@ local function climbOff(v: any, from: Vector3)
 	model:Destroy()
 end
 
-local function unloadVictims(vehicle: Model, victims: { any })
+-- patrol: Cleanup's harbour-patrol pick-up, not a delivery (no rescue counted)
+local function unloadVictims(vehicle: Model, victims: { any }, patrol: boolean?)
+	-- every delivery off a craft (pads, home / shore via RemoveVictim, free roam) lands here: the dock board's count
+	local driver = if patrol then nil else driverOf(vehicle)
+	local data: any = driver and DataService.Get(driver)
+	if data then
+		data.totalRescues += #victims
+		DataService.MarkDirty(driver :: Player)
+	end
 	local svc = service("VehicleService")
 	if svc and type(svc.RemoveSurvivors) == "function" then
 		local ok, removed = pcall(svc.RemoveSurvivors, vehicle)
@@ -1566,7 +1575,7 @@ function RescueService.Cleanup(call: any)
 		end
 	end
 	for carrier, list in aboard do
-		unloadVictims(carrier, list)
+		unloadVictims(carrier, list, true)
 	end
 	for _, prop in call.props or {} do
 		unregister(prop.floater)

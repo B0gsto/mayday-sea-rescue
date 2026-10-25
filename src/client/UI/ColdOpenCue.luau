@@ -1,7 +1,7 @@
 --!strict
 -- ColdOpenCue: the cold open's world cues (docs/14 F-3, RP-UX2), local only. While the player
--- rides the cold-open jet ski, the casualty (CallProps "Victim" of ColdOpenOpId) gets a thin
--- orange ring on the water, a pulse ring spreading from it, orange smoke and splashes (and the
+-- rides the cold-open jet ski, the casualty (CallProps "Victim" of ColdOpenOpId) gets a pulse ring
+-- spreading on the water (the steady orange ring is PickupRingController's), orange smoke and splashes (and the
 -- casualty waves: CasualtyController), so the goal reads from the world with no text to read. If the player makes no headway
 -- for 10 s (shared/Boat/ColdOpen.nudge) a red flare pops over them. All of it goes once the
 -- casualty holds on (PiwMode "held") or climbs aboard, or the cold open ends.
@@ -24,11 +24,10 @@ local PyroController =
 
 local ColdOpenCue = {}
 
-local RED = Color3.fromRGB(235, 60, 50) -- someone in trouble (docs/20 rule 9: one colour, one meaning)
 local GREEN = Color3.fromRGB(90, 225, 120) -- home
 local PULSE = 1.6 -- s per ring
 local RING_MAX = 40 -- studs across at the end of a pulse (26 read too small at range: playtest)
-local MARK = 10 -- studs across the steady ring round the casualty
+local MARK = 10 -- studs across where the pulse starts
 
 -- The marker lies on the water, not on the casualty's root (which can sit a stud under it).
 local function waterY(p: Vector3): number
@@ -135,7 +134,6 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 	local folder: Folder? = nil
 	local victim: Model? = nil
 	local splashes: ParticleEmitter? = nil
-	local mark: Ring? = nil
 	local pulse: Ring? = nil
 	local nudge = ColdOpen.newNudge(os.clock())
 	local lastBurst = 0
@@ -145,7 +143,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		if folder then
 			folder:Destroy()
 		end
-		folder, victim, splashes, mark, pulse = nil, nil, nil, nil, nil
+		folder, victim, splashes, pulse = nil, nil, nil, nil
 	end
 
 	local function build(m: Model)
@@ -156,7 +154,6 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		f.Name = "ColdOpenCue"
 		f.Parent = Workspace
 		folder = f
-		mark = ring("Mark", RED, f)
 		pulse = ring("Pulse", Color3.fromRGB(255, 110, 90), f)
 		local a = Instance.new("Attachment")
 		a.Name = "ColdOpenCue"
@@ -191,8 +188,7 @@ function ColdOpenCue.start(onHeld: ((held: boolean) -> ())?, opIdOf: (() -> stri
 		local t = os.clock()
 		local base = Vector3.new(root.Position.X, waterY(root.Position) + 0.08, root.Position.Z)
 		local k = (t % PULSE) / PULSE
-		if mark and pulse then
-			setRing(mark, base, MARK, 0.15)
+		if pulse then
 			setRing(pulse, base, MARK + k * (RING_MAX - MARK), 0.3 + 0.7 * k)
 		end
 		-- a splash burst every 0.8 s (the waving arms are the call for help)

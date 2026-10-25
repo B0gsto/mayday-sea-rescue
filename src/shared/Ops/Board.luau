@@ -16,8 +16,10 @@ Board.KNOCK_RANK = 3 -- a ram knocks them back only from this rank (RankIndex) u
 -- eases its throttle so it is down to ASSIST_SPEED by the ring and holds it inside, under STEADY_SPEED.
 Board.RING = 12 -- studs, radius from the survivor to the hull centre -- tune
 Board.ASSIST_SPEED = 7 -- studs/s inside the ring -- tune
-Board.ASSIST_SPAN = 6 -- studs/s over the allowed speed for full brake
-Board.ASSIST_BRAKE_SHARE = 0.6 -- of the craft's brakeDecel counted on when slowing for the ring
+-- 0.4 / 2: a jet ski at full throttle reaches the ring edge at <= 8 studs/s even with the hull half airborne
+-- (0.6 / 6 arrived at ~12: the brake loses grip on the chop, tests/AutoBoard.spec's sim)
+Board.ASSIST_SPAN = 2 -- studs/s over the allowed speed for full brake
+Board.ASSIST_BRAKE_SHARE = 0.4 -- of the craft's brakeDecel counted on when slowing for the ring
 
 -- May they climb aboard now?
 function Board.ready(gap: number, speed: number, tiltDeg: number, room: boolean): boolean
