@@ -123,6 +123,11 @@ local MapConfig = {
 			glyph = A11yPalette.symbol("Marker", "Vehicle"),
 			color = Color3.fromHex("F4F1EA"),
 		},
+		Quest = {
+			label = "Your quest",
+			glyph = A11yPalette.symbol("Marker", "Quest"),
+			color = Color3.fromHex("FFC428"),
+		},
 		Home = {
 			label = "Your dock",
 			glyph = A11yPalette.symbol("Marker", "Home"),

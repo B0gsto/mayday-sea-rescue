@@ -259,6 +259,8 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `src/shared/HudLayout.luau` (pure) places the regions per device.
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
+  The one objective pin (`GetObjective`, docs/20 rule 1): your accepted call, then your quest (`QuestTarget`),
+  then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 
 ## Monetization and cosmetics
 
@@ -294,6 +296,18 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/AlbumApp` (phone Album).
 - Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
   `TalkController` zooms in and shows 1 to 3 numbered replies.
+- Quests (docs/23 (l), WP-21b): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
+  rescue, Keeper Ives' 3-step lamp chain) and `Quests/Rules.luau` (pure, `tests/Quests.spec.luau`: one active quest,
+  stages go -> back, one offer per giver per day from a day seed, a giver's pool cycles once all are done, save flag
+  `quest`, `talk(npc, active, stage, offer)` -> a Dialogue tree whose replies carry `action`). `QuestService` stands
+  the givers at `HubLayout.Hub.questSpots` (NpcFactory R15, a small camp each), runs pick-up / drop / sub-salvage by
+  proximity and the rescue quest's call (`OperationService.OfferCall(player, "PersonInWater", { zone })`, done on
+  `OperationCompleted` with a survivor saved), pays flat Cash + Rep on hand-in and adds the chain's blueprint to
+  `data.dockBuildings` (`DockConfig.Blueprints`, built by `DockService.Refresh`). Remote `Quest_Talk` C->S
+  `(npcId, "accept" | "handIn" | "drop")`. Player attributes `QuestId`, `QuestStage`, `QuestTarget`,
+  `QuestOffer_<npcId>`. `QuestController` draws the "!" / "?" over givers; `TalkController` builds a giver's tree
+  from `Quests/Rules.talk`. No radio: every quest line is the giver's, in person. Studio:
+  `ServerStorage.QuestDev:Invoke("accept", npcId | "tp" | "reach" | "hand" | "chain" | "reset")`.
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),

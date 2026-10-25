@@ -2,7 +2,7 @@
 -- Glyph: small vector icons drawn from rounded Frames (no emoji, no image assets), for HUD cards,
 -- SurfaceGui tags and billboards. Every glyph fills a square parent in scale units.
 --   Glyph.draw(kind, parent, colour)  kind: "swimmer" | "boat" | "cross" | "ring" | "check"
---                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock"
+--                                     | "speed" | "seat" | "coin" | "home" | "flare" | "clock" | "quest"
 --   Glyph.bar(parent, size, pos, rotation, colour)  one pill (scale units), the building block
 local Glyph = {}
 
@@ -109,6 +109,12 @@ local function clock(p: Instance, c: Color3)
 	bar(p, Vector2.new(0.2, 0.08), Vector2.new(0.59, 0.5), 0, c)
 end
 
+-- a quest: "!" (the giver's glyph)
+local function quest(p: Instance, c: Color3)
+	bar(p, Vector2.new(0.18, 0.5), Vector2.new(0.5, 0.38), 0, c)
+	bar(p, Vector2.new(0.18, 0.18), Vector2.new(0.5, 0.84), 0, c)
+end
+
 local DRAW: { [string]: (Instance, Color3) -> () } = {
 	swimmer = swimmer,
 	boat = boat,
@@ -121,6 +127,7 @@ local DRAW: { [string]: (Instance, Color3) -> () } = {
 	home = home,
 	flare = flare,
 	clock = clock,
+	quest = quest,
 }
 
 function Glyph.draw(kind: string, parent: Instance, colour: Color3)

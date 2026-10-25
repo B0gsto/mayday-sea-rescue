@@ -16,7 +16,7 @@ export type PlayerData = {
 	totalRescues: number,
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- your dock at the marina, 1..5 (docs/23 d.2; DockService)
-	dockBuildings: { [string]: boolean }, -- bought dock buildings: Garage, Hangar, SubPen (docs/23 h; DockService)
+	dockBuildings: { [string]: boolean }, -- Garage, Hangar, SubPen (docs/23 h), quest blueprint Lighthouse
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
@@ -350,7 +350,7 @@ function Rules.migrate(raw: any): PlayerData
 	data.coldOpenDone = raw.coldOpenDone == true
 	data.dockLevel = math.clamp(math.floor(num(raw.dockLevel, 1)), 1, 5)
 	if type(raw.dockBuildings) == "table" then
-		for _, key in { "Garage", "Hangar", "SubPen" } do
+		for _, key in { "Garage", "Hangar", "SubPen", "Lighthouse" } do
 			if raw.dockBuildings[key] == true then
 				data.dockBuildings[key] = true
 			end

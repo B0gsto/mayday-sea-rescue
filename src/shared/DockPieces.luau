@@ -745,7 +745,57 @@ local function subPen(m: Model, b: CFrame)
 	)
 end
 
-local BUILDINGS = { Hangar = hangar, SubPen = subPen }
+-- the quest blueprint lighthouse (DockConfig.Blueprints) on its spare lot: a red and white tower, a gallery and a
+-- lit lantern room
+local function lighthouse(m: Model, b: CFrame)
+	local L = b * LOT[DockConfig.Blueprints.Lighthouse.lot].cf
+	local up = CFrame.Angles(0, 0, math.pi / 2) -- a cylinder's axis is its X
+	part(m, "Base", Vector3.new(14, 2, 14), L * CFrame.new(0, 1, 0), GREY, M.SmoothPlastic)
+	for i = 0, 5 do
+		local d = 9 - i * 0.6
+		part(
+			m,
+			"Tower",
+			Vector3.new(4, d, d),
+			L * CFrame.new(0, 4 + i * 4, 0) * up,
+			if i % 2 == 0 then WHITE else RED,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	part(
+		m,
+		"Gallery",
+		Vector3.new(1, 9, 9),
+		L * CFrame.new(0, 26.5, 0) * up,
+		GREY,
+		M.Metal,
+		Enum.PartType.Cylinder
+	)
+	local lantern = part(
+		m,
+		"Lantern",
+		Vector3.new(4, 4.5, 4.5),
+		L * CFrame.new(0, 29, 0) * up,
+		WARM,
+		M.Neon,
+		Enum.PartType.Cylinder
+	)
+	local light = Instance.new("PointLight")
+	light.Color, light.Range, light.Brightness = WARM, 30, 2
+	light.Parent = lantern
+	part(
+		m,
+		"Cap",
+		Vector3.new(1, 6, 6),
+		L * CFrame.new(0, 31.6, 0) * up,
+		RED,
+		M.SmoothPlastic,
+		Enum.PartType.Cylinder
+	)
+end
+
+local BUILDINGS = { Hangar = hangar, SubPen = subPen, Lighthouse = lighthouse }
 
 -- The pieces of building `key` (DockConfig.Buildings) around the berth frame `cf`, as a Model named `key`.
 function DockPieces.building(key: string, cf: CFrame): Model

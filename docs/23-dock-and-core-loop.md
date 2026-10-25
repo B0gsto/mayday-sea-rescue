@@ -312,6 +312,14 @@ but small outposts". Approved direction:
 **Work packages.** WP-21a hub terrain + forest + outposts (after WP-19a/19c land). WP-21b quest system + first
 quests (after 21a).
 
+**WP-21b as built (2026-10-25).** Six givers at the quest camps: Old Maud (lost things), Tam (cargo), Captain Rook
+(salvage, needs the sub), Nell (special rescues), Keeper Ives (the lamp chain), Pip (odd jobs); 13 quests in
+`Quests/Data`. Pay is flat: find / deliver 1,500 Cash + 250 Rep (a trip out and back, ~1.5 calls), salvage 2,500 +
+400, a rescue quest 1,000 + 200 on top of the call's own pay, the chain's last step 2,000 + 400 + the Lighthouse
+blueprint (rises on your island's Spare1 lot). Each giver offers one quest a day, so the chain takes three days.
+Pin rule: your accepted call > your quest > a call offer > your own waypoint. Shortcuts: the rescue quest's survivor
+is the usual swimmer (named only in the giver's line); carried things ride on your back as placeholder Parts.
+
 **Order update (owner, 2026-10-25):** publish speed first. (1) `tools/studio/publish_studio.py` re-triggers only the
 texture packs that failed, not all ~455 (~28 min of the publish today). (2) WP-16 asset diet right after WP-21a
 (fewer unique PBR textures, unused asset ids out). Then WP-21b quests, WP-14c blueprint table, WP-15 crew.
