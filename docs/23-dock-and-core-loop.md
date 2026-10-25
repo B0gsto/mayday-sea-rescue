@@ -133,3 +133,27 @@ sign-off at the end, then publish to the test place.
 2. Lifebuoy throw as the skill move, or ring only?
 3. Robux prices in d.2 are first guesses at the docs/04 §2.1 launch level; confirm before the products are
    created.
+
+## (h) The "Later" items (owner, 2026-10-25: "implement also the Later items")
+
+Same rules: placeholder Parts first, one visible building per unlock on your plot's shore strip, Cash + rank or
+Robux, choose the vehicle at an in-world board inside the building (scale models, lit = owned), simple rescue.
+
+| Building | Vehicles | Their job in the loop | Rank (Cash) / Robux (tune) |
+|---|---|---|---|
+| **Car garage** | Existing land vehicles (LifeguardPickup, BeachATV, CoastguardResponse, HarbourGT, LighthouseCruiser) | Reach land calls and island interiors by road (St Elowen's causeway) | Lifeguard (5,000) / 99 |
+| **Hangar + helipad** | Rescue helicopter (new), seaplane (new) | Helicopter: hovers, reaches cliffs and land calls; hover steady inside the ring and the winch lifts the survivor (same hold-steady rule as boats), seats 2. Seaplane: fastest to far islands, lands on water inside the ring to pick up, seats 4 | Rescue Pilot (75,000 heli / 60,000 seaplane) / 299 each, hangar 199 |
+| **Sub pen** | Submarine (new) | Dives under the mesh ocean to the seabed (`Ocean/Seabed`, `Underwater`); new call: a diver stuck at a wreck (Skerry seaplane wreck, *Gannet Star*, Wreck Reef) inside a ring on the seabed; plus wreck exploration with stickers | Coxswain (40,000) / 249, pen 149 |
+
+**Land calls** (e.3, implemented as recommended): Stranded on a beach by the tide, stuck on a cliff ledge, lost on
+an island. The pin leads to a beach marker; beach the craft (or drive the car / fly the helicopter), reach them on
+foot inside the ring, they follow you, board, home.
+
+### Work packages
+
+- **WP-6 · Helicopter** and **WP-7 · Seaplane** and **WP-8 · Submarine**: flight / dive model as a pure shared
+  module with Lune specs + a client controller (keyboard, touch, gamepad), following the boat and car patterns.
+  Can start now (no dock or VehicleService edits); integration into VehicleService / VehicleConfig comes in WP-10.
+- **WP-9 · Land calls**: after WP-3 lands (same call files).
+- **WP-10 · Dock buildings**: car garage, hangar + helipad, sub pen on the plot, in-world vehicle boards, wiring
+  the new vehicles into VehicleService/VehicleConfig/ProgressionConfig, prices. After WP-1, WP-4 and WP-6..8.
