@@ -8,6 +8,7 @@ local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local UnlockTree = require(script.Parent.UnlockTree)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
+local WorkerRules = require(script.Parent.WorkerRules)
 
 export type PlayerData = {
 	version: number,
@@ -20,8 +21,9 @@ export type PlayerData = {
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- retired dock level 1..5 (WP-28): kept as saved; migrate maps it onto the tree
 	dockBuildings: { [string]: boolean }, -- the unlock tree (DockConfig.Buildings), blueprints and decor
-	-- Hired crew roles (docs/23 (j), WP-15; CrewHireService), max one per role.
-	crew: { [string]: boolean },
+	-- Rescued people working on your island (docs/23 (o), WP-26; WorkerRules, WorkerService), at most WorkerRules.CAP.
+	workers: { WorkerRules.Worker },
+	lastSeen: number?, -- os.time of the last save (DataService): offline worker earnings count from here
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
@@ -131,7 +133,7 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	data.cash = if type(snap.cash) == "number" then snap.cash else 0
 	data.coldOpenDone = snap.coldOpenDone == true
 	data.totalRescues = if type(snap.totalRescues) == "number" then snap.totalRescues else 0
-	for _, key in { "vehicles", "vehicleUpgrades", "crew", "dockBuildings" } do
+	for _, key in { "vehicles", "vehicleUpgrades", "workers", "dockBuildings" } do
 		if type(snap[key]) == "table" then
 			(data :: any)[key] = table.clone(snap[key])
 		end
@@ -176,7 +178,7 @@ function Rules.defaultData(): PlayerData
 		coldOpenDone = false,
 		dockLevel = 1,
 		dockBuildings = {},
-		crew = {},
+		workers = {},
 		flags = {},
 		cosmetics = {},
 	}
@@ -254,6 +256,8 @@ local function payBackRetired(raw: { [string]: any }, data: PlayerData)
 	data.vehicleUpgrades.JetSki = (if jet > 0 then jet else nil) :: any
 end
 
+local CREW_REFUND = { Mechanic = 12000, Lifeguard = 9000, Dispatcher = 15000 } -- WP-15 hire prices
+
 -- Fills missing fields and upgrades old versions. Accepts anything (corrupt saves included).
 Rules.MAX_FLAGS = MAX_FLAGS
 
@@ -301,13 +305,17 @@ function Rules.migrate(raw: any): PlayerData
 		end
 	end
 	UnlockTree.migrate(data.dockLevel, data.dockBuildings) -- WP-28: old dock levels -> tree items
+	-- WP-26: the hired crew (WP-15) is gone; what it cost comes back once (saves no longer carry `crew`)
 	if type(raw.crew) == "table" then
 		for role, hired in raw.crew do
-			if type(role) == "string" and #role <= 24 and hired == true then
-				data.crew[role] = true
+			if hired == true then
+				data.cash += CREW_REFUND[role] or 0
 			end
 		end
 	end
+	data.workers = WorkerRules.clean(raw.workers)
+	local seen = num(raw.lastSeen, 0)
+	data.lastSeen = if seen > 0 then seen else nil
 	if type(raw.flags) == "table" then
 		local n = 0
 		for name, value in raw.flags do
@@ -354,7 +362,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		dockBuildings = table.clone(data.dockBuildings),
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
-		crew = table.clone(data.crew),
+		workers = table.clone(data.workers),
 		coldOpenDone = data.coldOpenDone,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 	}

@@ -31,7 +31,6 @@ local Remotes = require(OpsFolder:WaitForChild("Remotes"))
 local Types = require(OpsFolder:WaitForChild("Types"))
 
 local BoatColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
-local CrewHireService = require(script.Parent:WaitForChild("CrewHireService")) :: any
 local RescueService = require(script.Parent:WaitForChild("RescueService") :: ModuleScript) :: any
 -- the cold open's per-player lifecycle: runs at most once, never restarts by itself
 local ColdOpenFlow = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpenFlow"))
@@ -863,13 +862,11 @@ local function closeOp(op: any)
 			st.activeOpId = nil
 			st.offerOpId = nil
 			-- the cold open leaves room for Chief Aggie's walk-up and welcome before the next call
-			-- (a hired Dispatcher, WP-15, brings every offer 20% sooner)
 			st.nextOfferAt = now()
 				+ (
 					if op.coldOpen
 						then BoatColdOpen.NEXT_CALL_DELAY
 						else OfferPacing.afterOp(op.isBig, weatherState(), offerRushed())
-							* CrewHireService.OfferFactor(p)
 				)
 		end
 	end
@@ -943,10 +940,12 @@ finish = function(op: any, reason: string)
 			reward = Grading.shareWithoutStep(op.weight)
 			paidAs = "Op:Share"
 		end
-		if reward.cash > 0 then
-			local ok = try("ProgressionService", "Award", p, reward.cash, paidAs)
+		-- Medics at work on your island pay a share more (WP-26, WorkerService sets the attribute)
+		local cash = reward.cash * (1 + (tonumber(p:GetAttribute("WorkerPayBonus")) or 0))
+		if cash > 0 then
+			local ok = try("ProgressionService", "Award", p, cash, paidAs)
 			if not ok then
-				warn(`[OperationService] could not award {p.Name} {reward.cash} Cash`)
+				warn(`[OperationService] could not award {p.Name} {cash} Cash`)
 			end
 		end
 		if op.coldOpen then
@@ -974,7 +973,7 @@ finish = function(op: any, reason: string)
 			condition = op.history,
 			saved = op.saved,
 			total = #op.casualties,
-			cash = math.floor(reward.cash * mult + 0.5),
+			cash = math.floor(cash * mult + 0.5),
 			tip = tip,
 			me = p.UserId,
 		})
@@ -1387,9 +1386,7 @@ local function withdrawOffer(op: any)
 		local st = playerState[p]
 		if st and st.offerOpId == op.id then
 			st.offerOpId = nil
-			st.nextOfferAt = t
-				+ OfferPacing.afterDecline(weatherState(), offerRushed())
-					* CrewHireService.OfferFactor(p)
+			st.nextOfferAt = t + OfferPacing.afterDecline(weatherState(), offerRushed())
 		end
 	end
 	if not op.isBig then
@@ -1842,9 +1839,7 @@ local function tick()
 		if st.offerOpId and not ops[st.offerOpId] then
 			-- the server-wide call ended before this player joined it: free the pager
 			st.offerOpId = nil
-			st.nextOfferAt = t
-				+ OfferPacing.afterDecline(weatherState(), offerRushed())
-					* CrewHireService.OfferFactor(player)
+			st.nextOfferAt = t + OfferPacing.afterDecline(weatherState(), offerRushed())
 		elseif st.offerOpId and not st.activeOpId and busy(player) then
 			withdrawOffer(ops[st.offerOpId]) -- picked someone up meanwhile: the pin stays on home
 		end

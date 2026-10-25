@@ -1,17 +1,16 @@
 --!strict
--- Crew panel: the four party seats, with the leader ringed, then your hired crew (WP-15: one tile
--- per role, lit when hired; hiring itself happens at your dock's station, in the world). Invite
--- opens Roblox's own invite sheet; Leave is the same remote the boat prompt uses. The server echoes
--- both changes. Hired crew: the CrewHired models in Workspace.CrewHire.<your UserId>.
+-- Crew panel: the four party seats, with the leader ringed, then your workers (WP-26: the people you
+-- rescued, by category, from the PlayerDataChanged snapshot; they work in the world, nothing to pick here).
+-- Invite opens Roblox's own invite sheet; Leave is the same remote the boat prompt uses. The server
+-- echoes both changes.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SocialService = game:GetService("SocialService")
-local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local CrewHire = require(Shared:WaitForChild("Crew"):WaitForChild("CrewHire"))
-local Glyph = require(script.Parent.Parent:WaitForChild("Glyph"))
 local Net = require(Shared:WaitForChild("Net"))
+local WorkerBadge = require(script.Parent.Parent:WaitForChild("WorkerBadge"))
+local WorkerRules = require(Shared:WaitForChild("WorkerRules"))
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
 local Panel = require(Kit:WaitForChild("Panel"))
@@ -20,19 +19,6 @@ local Theme = require(Kit:WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
 local Crew = {}
-
-local function hiredRoles(): { [string]: boolean }
-	local out = {}
-	local root = Workspace:FindFirstChild("CrewHire")
-	local mine = root and root:FindFirstChild(tostring(player.UserId))
-	for _, m in if mine then mine:GetChildren() else {} do
-		local role = m:GetAttribute("CrewRole")
-		if m:GetAttribute("CrewHired") == true and type(role) == "string" then
-			out[role] = true
-		end
-	end
-	return out
-end
 
 local function crewName(id: number): string
 	local member = Players:GetPlayerByUserId(id)
@@ -48,6 +34,8 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 	})
 	local ids: { number } = {}
 	local leader = 0
+	local workers: { WorkerRules.Worker } = {}
+	local owned: { [string]: boolean } = {}
 	local refresh: () -> ()
 
 	local function paint()
@@ -111,45 +99,69 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 			role.TextWrapped = false
 		end
 
-		-- hired crew: a lit tile per hired role, a dark one with a padlock otherwise
-		local hired = hiredRoles()
-		local staff = Instance.new("Frame")
-		staff.Name = "Hired"
-		staff.LayoutOrder = 1
-		staff.BackgroundTransparency = 1
-		staff.Size = UDim2.new(1, 0, 0, 150)
-		staff.Parent = panel.body
-		local srow = Style.list(staff, true, 14)
-		srow.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		for i, roleId in CrewHire.Order do
-			local on = hired[roleId] == true
-			local tile = Instance.new("Frame")
-			tile.Name = roleId
-			tile.LayoutOrder = i
-			tile.BackgroundTransparency = 1
-			tile.Size = UDim2.fromOffset(170, 150)
-			tile.Parent = staff
-			local _, face = Style.block(tile, Style.grad(if on then "orange" else "locked"))
+		-- your workers (WP-26): one row per category, its icon and how many work / are rescued, then a chip
+		-- per person (stars + name), lit while they work at the building, grey while they wait on the jetty
+		local place = WorkerRules.assign(workers, owned)
+		for c, category in WorkerRules.CATEGORIES do
+			local row = Instance.new("Frame")
+			row.Name = category
+			row.LayoutOrder = c
+			row.BackgroundTransparency = 1
+			row.Size = UDim2.fromScale(1, 0)
+			row.AutomaticSize = Enum.AutomaticSize.Y
+			row.Parent = panel.body
+			local chips = Instance.new("UIGridLayout")
+			chips.CellSize = UDim2.fromOffset(104, 112)
+			chips.CellPadding = UDim2.fromOffset(8, 8)
+			chips.SortOrder = Enum.SortOrder.LayoutOrder
+			chips.Parent = row
+			local head = Instance.new("Frame")
+			head.BackgroundTransparency = 1
+			head.Parent = row
+			local _, hFace = Style.block(head, Style.grad(WorkerBadge.GRAD[category]))
 			local icon = Instance.new("Frame")
 			icon.BackgroundTransparency = 1
 			icon.AnchorPoint = Vector2.new(0.5, 0)
 			icon.Position = UDim2.fromScale(0.5, 0.08)
-			icon.Size = UDim2.fromOffset(70, 70)
-			icon.Parent = face
-			if on then
-				Glyph.draw(CrewHire.Roles[roleId].glyph, icon, Color3.new(1, 1, 1))
-			else
-				Style.icon(icon, "lock")
+			icon.Size = UDim2.fromOffset(56, 56)
+			icon.Parent = hFace
+			WorkerBadge.icon(icon, category)
+			local working, total = 0, 0
+			for i, w in workers do
+				if w.category == category then
+					total += 1
+					working += if place[i] then 1 else 0
+				end
 			end
-			local name = Style.label(face, roleId, Theme.Text.small)
-			name.Position = UDim2.new(0, 6, 1, -50)
-			name.Size = UDim2.new(1, -12, 0, 34)
-			name.TextWrapped = false
-			name.TextScaled = true
+			local count = Style.label(hFace, `{working}/{total}`, Theme.Text.small)
+			count.Position = UDim2.new(0, 4, 1, -40)
+			count.Size = UDim2.new(1, -8, 0, 30)
+			for i, w in workers do
+				if w.category ~= category then
+					continue
+				end
+				local chip = Instance.new("Frame")
+				chip.Name = w.name
+				chip.LayoutOrder = (4 - w.rarity) * 100 + i -- best first
+				chip.BackgroundTransparency = 1
+				chip.Parent = row
+				local _, face = Style.block(
+					chip,
+					Style.grad(if place[i] then WorkerBadge.GRAD[category] else "disabled")
+				)
+				local stars = WorkerBadge.stars(face, w.rarity, 28)
+				stars.AnchorPoint = Vector2.new(0.5, 0)
+				stars.Position = UDim2.fromScale(0.5, 0.1)
+				local name = Style.label(face, w.name, Theme.Text.small)
+				name.Position = UDim2.new(0, 4, 1, -44)
+				name.Size = UDim2.new(1, -8, 0, 30)
+				name.TextWrapped = false
+				name.TextScaled = true
+			end
 		end
 
 		local buttons = Instance.new("Frame")
-		buttons.LayoutOrder = 2
+		buttons.LayoutOrder = 10
 		buttons.BackgroundTransparency = 1
 		buttons.Size = UDim2.new(1, 0, 0, 80)
 		buttons.Parent = panel.body
@@ -197,6 +209,25 @@ function Crew.new(canvas: Frame, onClose: () -> ())
 	Net.event("CrewLeave").OnClientEvent:Connect(function()
 		ids, leader = {}, 0
 		refresh()
+	end)
+	local function onData(raw: any)
+		if type(raw) == "table" and type(raw.workers) == "table" then
+			workers = WorkerRules.clean(raw.workers)
+			owned = if type(raw.dockBuildings) == "table" then raw.dockBuildings else {}
+			refresh()
+		end
+	end
+	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
+	task.spawn(function()
+		local remote = Net.init():WaitForChild("Progression_GetData", 10)
+		if remote and remote:IsA("RemoteFunction") then
+			local ok, raw = pcall(function()
+				return remote:InvokeServer()
+			end)
+			if ok then
+				onData(raw)
+			end
+		end
 	end)
 	paint()
 

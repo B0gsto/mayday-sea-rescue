@@ -13,6 +13,7 @@ return function(t)
 	local FriendBonus = t.load("src/shared/FriendBonus.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
 	local UnlockTree = t.load("src/shared/UnlockTree.luau")
+	local WorkerRules = t.load("src/shared/WorkerRules.luau")
 
 	local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
@@ -25,25 +26,26 @@ return function(t)
 		table.insert(HOMES, CallLogic.homeOf(island.berths.Boat))
 	end
 
-	-- The free player's walk through the tree (docs/23 (q)): the boathouse and RIB first, the lifeboat, the
-	-- helicopter's branch, then the rest. Every prerequisite comes before its item (planNext asserts it).
+	-- The free player's walk through the tree (docs/23 (q)): the boathouse and RIB first, the fish shed (its
+	-- Gatherers earn while you play, WP-26), the lifeboat, the rescue boathouse, the helicopter's branch, then
+	-- the rest. Every prerequisite comes before its item (planNext asserts it).
 	local PLAN = {
 		"Workshop",
 		"Boathouse",
 		"RIB",
 		"Pontoon",
+		"FishShed",
 		"LifeboatSlip",
 		"Lifeboat",
 		"LookoutTower",
+		"RescueBoathouse",
 		"Helipad",
 		"Hangar",
 		"RescueHelicopter",
-		"FishShed",
 		"BoatYard",
 		"Crane",
 		"SubPen",
 		"Submarine",
-		"RescueBoathouse",
 		"Station",
 		"TrophyHall",
 		"Clinic",
@@ -89,6 +91,25 @@ return function(t)
 		local built = data.dockBuildings -- the island's buildings (the unlock tree, docs/23 (q))
 		local upgrades = { JetSki = 0, RIB = 0, Lifeboat = 0 }
 		local totalOps = 0
+		-- WP-26: every person delivered home becomes a worker (the roll on a counter seed); `legacy` has none.
+		-- Rescuer boats' occasional extra worker is left out (the cap is reached within hours anyway).
+		local rolls = 0
+		local function fx()
+			return WorkerRules.effects(WorkerRules.units(data.workers, built))
+		end
+		local function recruit(people: number)
+			for _ = 1, if legacy then 0 else people do
+				rolls += 1
+				local category, rarity, name = WorkerRules.roll(rolls * 7919)
+				WorkerRules.admit(
+					data.workers,
+					{ category = category, rarity = rarity, name = name }
+				)
+				if #data.workers == WorkerRules.CAP then
+					mark("Workers full")
+				end
+			end
+		end
 
 		local function isGreat(_now: number): boolean
 			return false -- the hourly Great Storm clock was cut (always sunny)
@@ -101,7 +122,8 @@ return function(t)
 			while PLAN[planIndex] do
 				local key = PLAN[planIndex]
 				if DockConfig.Buildings[key] then
-					local ok, reason, price = UnlockTree.canBuy(key, built, data.cash)
+					local ok, reason, price =
+						UnlockTree.canBuy(key, built, data.cash, fx().buildDiscount)
 					assert(reason ~= "Needs", `PLAN buys {key} before its prerequisites`)
 					if not ok or not price then
 						return
@@ -172,7 +194,7 @@ return function(t)
 
 		-- the next real call (docs/23 e.2): its pay weight x distancePay and minutes
 		local perCraft = {}
-		local function nextCall(storm: boolean): (number, number)
+		local function nextCall(storm: boolean): (number, number, number)
 			local ids = { "JetSki" }
 			for id in owned do
 				table.insert(ids, id)
@@ -191,6 +213,7 @@ return function(t)
 			local distance = CallLogic.flatDistance(at, home)
 			-- the reach comes from every owned craft; the player takes whichever owned boat is quickest
 			local seconds, best = math.huge, "JetSki"
+			local speed = fx().craftSpeed
 			for _, id in { "JetSki", "RIB", "Lifeboat" } do
 				if id == "JetSki" or owned[id] then
 					local craft = VehicleConfig[id]
@@ -198,7 +221,10 @@ return function(t)
 						math.ceil((choice.victims or spec.victims) / craft.survivorCapacity)
 					local s = CALL_S
 						+ trips
-							* (TRIP_S + 2 * CallLogic.travelSeconds(distance, craft.topSpeed))
+							* (TRIP_S + 2 * CallLogic.travelSeconds(
+								distance,
+								craft.topSpeed * speed
+							))
 					if s < seconds then
 						seconds, best = s, id
 					end
@@ -210,10 +236,18 @@ return function(t)
 			row.calls += 1
 			row.minutes += seconds / 60
 			row.pay += pay
-			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay, seconds / 60
+			return Operations.Defs[Operations.FromCallKind[choice.kind]].weight * pay,
+				seconds / 60,
+				choice.victims or spec.victims
 		end
 
-		local function runOperation(minutes: number, planned: number, now: number, weight: number?)
+		local function runOperation(
+			minutes: number,
+			planned: number,
+			now: number,
+			weight: number?,
+			people: number
+		)
 			local completeAt = now + minutes * 60
 			playMin += minutes
 			local scale = if minutes < planned - 1e-6 then minutes / planned else 1
@@ -222,7 +256,15 @@ return function(t)
 			local reward = if weight
 				then Grading.payout(weight, "Silver", 1, nil)
 				else Grading.Payout.Tutorial[totalOps + 1]
-			award(reward.cash * scale, storm, great)
+			local f = fx()
+			-- Gatherers and the Rescuers' boat earn through the op's minutes (flat Cash, no multipliers)
+			data.cash += math.floor(
+				(f.gatherPerMin + f.rescuePerTrip * 60 / WorkerRules.RESCUE_PERIOD) * minutes
+			)
+			award(reward.cash * scale * (1 + f.payBonus), storm, great)
+			if scale == 1 then
+				recruit(people)
+			end
 
 			totalOps += 1
 			opIndex += 1
@@ -232,6 +274,7 @@ return function(t)
 		end
 
 		local sessions = {}
+		local lastEnd: number? = nil
 		for d = 1, 80 do
 			for s = 1, 2 do
 				if playMin >= MAX_PLAY_MIN then
@@ -244,14 +287,17 @@ return function(t)
 				local now = START_UTC + (d - 1) * 86400 + startMinute * 60
 
 				local remaining = SESSION_MIN
+				if lastEnd and not legacy then
+					data.cash += WorkerRules.offlinePay(fx(), now - lastEnd) -- collected on join
+				end
 				local cashAtStart = data.cash
 				while remaining > 0.01 do
-					local planned, weight = TUTORIAL_MIN[totalOps + 1], nil
+					local planned, weight, people = TUTORIAL_MIN[totalOps + 1], nil, 1
 					if not planned then
-						weight, planned = nextCall(opIndex % 5 == 4)
+						weight, planned, people = nextCall(opIndex % 5 == 4)
 					end
 					local minutes = math.min(planned, remaining)
-					runOperation(minutes, planned, now, weight)
+					runOperation(minutes, planned, now, weight, people)
 					now += minutes * 60
 					remaining -= minutes
 				end
@@ -265,6 +311,7 @@ return function(t)
 						end
 					end
 				end
+				lastEnd = now
 				table.insert(sessions, {
 					at = playMin,
 					day = d,
@@ -286,6 +333,7 @@ return function(t)
 			totalOps = totalOps,
 			playMin = playMin,
 			perCraft = perCraft,
+			workers = #data.workers,
 		}
 	end
 
@@ -318,10 +366,11 @@ return function(t)
 		end
 		print(
 			string.format(
-				"  end: %.1f h, cash %d, ops %d",
+				"  end: %.1f h, cash %d, ops %d, workers %d",
 				result.playMin / 60,
 				result.cash,
-				result.totalOps
+				result.totalOps,
+				result.workers
 			)
 		)
 		for _, id in { "JetSki", "RIB", "Lifeboat" } do

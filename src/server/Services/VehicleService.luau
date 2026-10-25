@@ -62,7 +62,6 @@ local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
 local Craft = require(script.Parent:WaitForChild("Vehicle"):WaitForChild("Craft"))
-local CrewHireService = require(script.Parent:WaitForChild("CrewHireService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DockService = require(script.Parent:WaitForChild("DockService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
@@ -197,13 +196,9 @@ local function canUse(player: Player, vehicleId: string): boolean
 	return result == true
 end
 
+-- Mechanics at work on your island (WP-26, WorkerService sets the attribute)
 local function speedBonus(player: Player): number
-	local p = getProgression()
-	if not p or type(p.GetGearBonus) ~= "function" then
-		return 1
-	end
-	local ok, result = pcall(p.GetGearBonus, player, "speed")
-	return if ok and type(result) == "number" then math.clamp(result, 1, 3) else 1
+	return math.clamp(tonumber(player:GetAttribute("WorkerCraftSpeed")) or 1, 1, 3)
 end
 
 -- Fitted boatyard upgrades (docs 03 section 4.1), read from the profile push.
@@ -1566,7 +1561,7 @@ function VehicleService.Init()
 	)
 		if near == true then
 			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you. Free calls
-			-- wait out a cooldown (player attribute BoatToMeAt, server time, x0.7 with a hired Mechanic);
+			-- wait out a cooldown (player attribute BoatToMeAt, server time, shorter with Mechanics at work, WP-26);
 			-- Quick Launch skips it
 			local now = Workspace:GetServerTimeNow()
 			local last = player:GetAttribute("BoatToMeAt")
@@ -1576,7 +1571,7 @@ function VehicleService.Init()
 					if type(last) == "number" then last else nil,
 					now,
 					MonetizationEffects.BOAT_TO_ME_COOLDOWN
-						* CrewHireService.MechanicCooldown(player)
+						* (tonumber(player:GetAttribute("WorkerBoatScale")) or 1)
 				) > 0
 			then
 				return false, "Cooldown"
