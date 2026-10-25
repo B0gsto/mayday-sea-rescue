@@ -8,7 +8,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "RipCurrent",
 	displayName = "Rip Current",
-	radioLine = "Haven Rescue, Gale Isles Coastguard. Swimmer caught in a rip current off the hub beach, request you launch.",
 	weight = 0.9, -- docs/02 section 3
 	capSeconds = 600,
 	isBig = false,
@@ -23,9 +22,7 @@ local def: Types.OperationDef = {
 	lifejacketChance = 0.35,
 	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "RipCurrent" },
-	steps = SimpleSteps(
-		"Answer the Coastguard quickly; the rip keeps taking them out while you talk."
-	),
+	steps = SimpleSteps("Answer the call quickly; the rip keeps taking them out."),
 }
 
 return def

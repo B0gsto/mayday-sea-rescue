@@ -1,5 +1,5 @@
 -- NewPlayerPace: the first 10 minutes (docs/16 section 4), walked headlessly. A fresh profile does
--- the cold open, stays seated, takes the tutorial calls CallLogic picks (radio_ack -> launch ->
+-- the cold open, stays seated, takes the tutorial calls CallLogic picks (answer -> launch ->
 -- auto_board -> transport) with the real payouts, buys the jet ski Engine upgrade at the first
 -- free moment after call 2 (B5) and ranks up on Rep alone (B7). The clock: the cold open as
 -- measured (docs/research/playtest-first-20-min.md Round 4), the next-call delay and capacities

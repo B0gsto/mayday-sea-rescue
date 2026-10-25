@@ -8,7 +8,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "Diver",
 	displayName = "Diver at a Wreck",
-	radioLine = "Haven Rescue, Gale Isles Coastguard. Diver trapped at a wreck, one casualty. Over.",
 	weight = 1.4, -- tune
 	capSeconds = 780, -- CallTypes Diver timer 600 x the islands' 1.3; the sub runs 40 surfaced (was 14)
 	isBig = false,
@@ -17,7 +16,7 @@ local def: Types.OperationDef = {
 	lifejacketChance = 0,
 	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Diver" },
-	steps = SimpleSteps("Answer the Coastguard quickly; their air will not wait."),
+	steps = SimpleSteps("Answer the call quickly; their air will not wait."),
 }
 
 return def

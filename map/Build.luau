@@ -551,7 +551,7 @@ end
 -- buildings. The hub frame looks out of the harbour (+Z): (right, fwd) are HubLayout's, world x = -right. The bake
 -- renders every clearing at its config height (tools/world/layout.py RENDER_BIAS), so parts sit on lot Y directly.
 --   Hub.HubSpawn       the newcomer spawn on the Landing, facing the lookout hut
---   Hub.Lookout        the HQ: a coastguard lookout hut and tower on a timber deck, the radio inside (tag StationRadio)
+--   Hub.Lookout        the HQ: a coastguard lookout hut and tower on a timber deck
 --   Hub.CallBoard      noticeboard with the call icon (tag CallBoard)
 --   Hub.ShopCounter    the market stall; its counter prompt (tag ShopCounter) opens the phone Store
 --   Hub.Quay           the timber landing stage at the harbour head, bollards, the green drop-off band
@@ -593,8 +593,7 @@ local function buildHub(map: Instance, H: any, ui: any)
 	end
 	local TIMBER, PLANK, DARK = rgb(126, 92, 60), rgb(150, 114, 74), rgb(84, 64, 46)
 	local CANVAS, OLIVE, BRICKRED = rgb(214, 200, 168), rgb(118, 120, 82), rgb(160, 92, 60)
-	local STONE, NAVY, ORANGE, IRON =
-		rgb(128, 124, 116), rgb(30, 48, 86), rgb(255, 107, 26), rgb(40, 42, 46)
+	local STONE, NAVY, ORANGE = rgb(128, 124, 116), rgb(30, 48, 86), rgb(255, 107, 26)
 	local CYL, BALL = { Shape = Enum.PartType.Cylinder }, { Shape = Enum.PartType.Ball }
 	local UP = CFrame.Angles(0, 0, math.pi / 2) -- a Cylinder's axis (X) turned upright
 	local ghost = { CanCollide = false, CanQuery = false, CastShadow = false }
@@ -728,7 +727,7 @@ local function buildHub(map: Instance, H: any, ui: any)
 	spawn.Material = M.Wood
 	spawn.Parent = hub
 
-	-- the HQ: a lookout hut on a timber deck, the radio on a desk inside, a lookout tower with a ladder beside it
+	-- the HQ: a lookout hut on a timber deck, a lookout tower with a ladder beside it
 	local hq = H.Hub.lots.HQ.cframe
 	local look = folder(hub, "Lookout", "Model")
 	deck(look, hq, 24, 20, 1)
@@ -784,41 +783,6 @@ local function buildHub(map: Instance, H: any, ui: any)
 		ORANGE,
 		M.SmoothPlastic,
 		CYL
-	)
-	block(
-		look,
-		"RadioDesk",
-		Vector3.new(6, 2.8, 2.4),
-		hut * CFrame.new(0, 1.4, HD / 2 - 1.6),
-		PLANK,
-		M.Wood
-	)
-	local radio = block(
-		look,
-		"Radio",
-		Vector3.new(2.4, 1.3, 1.4),
-		hut * CFrame.new(-0.6, 3.45, HD / 2 - 1.6),
-		IRON,
-		M.Metal
-	)
-	radio:AddTag("StationRadio")
-	block(
-		look,
-		"RadioDial",
-		Vector3.new(1.6, 0.5, 0.1),
-		hut * CFrame.new(-0.6, 3.5, HD / 2 - 2.35),
-		rgb(90, 255, 140),
-		M.Neon,
-		ghost
-	)
-	block(
-		look,
-		"RadioMast",
-		Vector3.new(0.12, 2.4, 0.12),
-		hut * CFrame.new(0.4, 5, HD / 2 - 1.2),
-		IRON,
-		M.Metal,
-		ghost
 	)
 	lantern(look, hut * CFrame.new(-HW / 2 - 1.6, 0, -HD / 2 - 1), true)
 	local tower = hq * CFrame.new(7, 1, 3)

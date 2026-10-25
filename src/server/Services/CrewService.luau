@@ -4,7 +4,7 @@
 --
 -- Joining: walk up to another player's multi-seat boat and press "Join crew" (a ProximityPrompt
 -- on the hull, which also seats you in a free passenger seat), or fire CrewJoin with
--- { targetUserId = number } (e.g. the radio panel). CrewLeave (no payload) leaves.
+-- { targetUserId = number }. CrewLeave (no payload) leaves.
 -- The server echoes changes: CrewJoin:FireClient(member, { leader = userId, members = { userId } })
 -- and CrewLeave:FireClient(player) when a player is no longer in a crew.
 --

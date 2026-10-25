@@ -144,7 +144,7 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 
 | Step | Mechanic (`src/client/Mechanics/`) | What happens |
 |---|---|---|
-| `tasking` | `radio_ack` | the call is answered (auto-accepted when seated and heading to it, or R / tap) |
+| `tasking` | `answer` | the call is answered (auto-accepted when seated and heading to it, or R / tap) |
 | `launch` | `launch` | get aboard your craft (a `RequestVehicle` from anywhere) |
 | `recovery` | `auto_board` | drive up close and steady: survivors climb aboard if there is room (`effect = "board"`) |
 | `transport` | `transport` | bring them to a drop-off pad (`effect = "deliver"`) |
@@ -190,20 +190,20 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 
 | Remote | Dir | Payload |
 |---|---|---|
-| `Ops_Offered` | S->C | `{ opId, kind, title, radioLine, zoneName, position, isBig, offerExpiresAt, cash, rep }` |
+| `Ops_Offered` | S->C | `{ opId, kind, title, zoneName, position, isBig, offerExpiresAt, cash, rep }` |
 | `Ops_Accept` | C->S | `(opId)` |
 | `Ops_State` | S->C | the operation snapshot for this player |
 | `Ops_StepStart` | S->C | the mechanic `ctx` (`operation`, `step`, `casualty`, `vehicle`, `attempt`, `scene`) |
 | `Ops_StepResult` | C->S | `(opId, stepKey, { metrics, events?, failed?, stub? })` |
 | `Ops_StepAck` | S->C | `{ opId, stepKey, accepted, grade?, reason? }` |
-| `Ops_Radio` | S->C | `{ opId, from, text }` |
 | `Ops_Debrief` | S->C | `{ opId, kind, grade, stepGrade, reason, takeover?, steps, condition, saved, total, cash, rep, tip, me }` (drawn as stars, Cash and mastery icons, K5) |
-| `Ops_Closed` | S->C | `{ opId, reason, message?, silent? }` |
+| `Ops_Closed` | S->C | `{ opId, reason }` |
 
 Client: `OpsController` plays one mechanic per step (`{ start(ctx, finish) -> cleanup? }`, fallback
 `Mechanics/Default`); UI in `UI/OpsHud`, `OpsTaskingCard` (pager icon), `OpsStepCard` (icon + at most 2
-words, K4), `OpsDebrief`. Radio subtitles: `src/client/UI/RadioSubtitle.luau` (pure, ≤ 6 words, the voice
-says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voiced by `VoiceTTS`.
+words, K4), `OpsDebrief`; `OpsController` mounts `OpsHud`. No dispatch radio (owner, 2026-10-25): a new call is the
+pager card, its flare and pin, and a pager beep. Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast` (TalkController,
+casualty shouts in CasualtyController).
 
 ## First 10 minutes (docs/16 section 4)
 
@@ -278,8 +278,7 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
   CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
   suspension bridges from it (WorldDressingService I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
-  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut with the radio (tag
-  `StationRadio`), CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
+  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut, CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
   the phone Store via HudController, Quay, Jetty, Harbourmaster, Campfire, Monument (LeaderboardService hangs the
   rescue board there; the album StampPost), QuestCamps (tag `QuestCamp`, attribute `QuestSpot`), the hidden Ruin and
   Wreck (album page `Hub`)) and the only drop-off pad `Map.DropOffs.DropOff_Dock` (`DropOff = "Dock"`) at

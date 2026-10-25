@@ -13,7 +13,7 @@ return function(answerTip: string): { Types.StepDef }
 			label = "Answer",
 			realTerm = "Tasking",
 			role = "Navigator",
-			mechanicId = "radio_ack",
+			mechanicId = "answer",
 			gradeBands = {
 				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
 			},

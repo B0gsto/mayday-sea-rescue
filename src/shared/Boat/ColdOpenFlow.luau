@@ -24,7 +24,6 @@ export type Decision = "Start" | "Offer" | "Wait" | "Abandon"
 export type Handover = "Ride" | "Station" | "Respawn"
 
 ColdOpenFlow.LEAVE_GRACE = 15 -- s off the cold-open jet ski before the run counts as abandoned -- tune
-ColdOpenFlow.LIFEBOAT = "Lifeboat 17-01"
 
 function ColdOpenFlow.new(): Entry
 	return { phase = "NotStarted" }
@@ -108,21 +107,6 @@ end
 
 function ColdOpenFlow.rescued(reason: string): boolean
 	return reason == "Complete"
-end
-
--- The closing radio call, a few words (docs/14 F-3): on anything but a rescue the lifeboat has
--- the casualty, and the player is sent home either way.
-function ColdOpenFlow.radioFor(reason: string): { from: string, text: string }
-	if ColdOpenFlow.rescued(reason) then
-		return {
-			from = "Gale Isles Coastguard",
-			text = "Casualty safe. Good work!",
-		}
-	end
-	return {
-		from = ColdOpenFlow.LIFEBOAT,
-		text = "We have them. Head home.",
-	}
 end
 
 function ColdOpenFlow.handover(alive: boolean, onCraft: boolean): Handover

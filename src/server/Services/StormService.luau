@@ -31,7 +31,6 @@ local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
-local OpsRemotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local WeatherMath = require(Shared:WaitForChild("WeatherMath"))
 
@@ -164,16 +163,6 @@ function StormService.ForceCalm()
 	end
 end
 
-local function radioAll(from: string, text: string)
-	OpsRemotes.event("Ops_Radio"):FireAllClients({ opId = "", from = from, text = text })
-end
-
-local function radioTo(player: Player, from: string, text: string)
-	if player.Parent then
-		OpsRemotes.event("Ops_Radio"):FireClient(player, { opId = "", from = from, text = text })
-	end
-end
-
 local function shopOf(player: Player): { [string]: any }?
 	local data = DataService.Get(player)
 	if not data then
@@ -254,13 +243,6 @@ local function startSummon(entry: Summon, pushNatural: boolean)
 	isGreat = great
 	current = entry
 	enter("Warning", now)
-	local what = if great then "A Great Storm" else "A storm"
-	radioAll(
-		"Gale Isles Coastguard",
-		if name ~= ""
-			then `{what} has been called in by {name}. All stations, storm warning for the Gale Isles.`
-			else `{what} has been called in. All stations, storm warning for the Gale Isles.`
-	)
 end
 
 -- A new player's cold open holds a new storm back (OperationService.ColdOpenHoldsWeather).
@@ -348,20 +330,7 @@ end
 
 local function afterTicket(tier: string)
 	return function(player: Player, _receipt: any, _fresh: boolean)
-		local ok, reason = StormService.QueueSummon(player, tier)
-		if ok then
-			radioTo(
-				player,
-				"Haven Harbourmaster",
-				`Your storm is in the queue ({#queue} of {Effects.Summon.QueueMax}). The whole server will hear it called in.`
-			)
-		elseif reason == "QueueFull" then
-			radioTo(
-				player,
-				"Haven Harbourmaster",
-				"Storm queue full. Your Storm Ticket is saved: use it at my desk when the queue has room, in any server."
-			)
-		end
+		StormService.QueueSummon(player, tier) -- queue full: the ticket stays saved
 	end
 end
 

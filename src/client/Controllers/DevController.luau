@@ -427,7 +427,7 @@ local function onGrant(payload: any)
 	})
 	board = b
 	fill(b)
-	-- the DEV HUD button: right of the minimap (under it on touch), clear of the radio strip (HudLayout). Studio only:
+	-- the DEV HUD button: right of the minimap (under it on touch), clear of the top strip (HudLayout). Studio only:
 	-- on a live server an allowed dev opens the board with F8 and players never see a DEV badge
 	local hud = Instance.new("ScreenGui")
 	hud.Name = "DevBoardButton"

@@ -1,12 +1,9 @@
 -- VoiceCast: every cast member has a valid TTS preset, speakers resolve, text is cleaned and chunked.
 return function(t)
 	local VoiceCast = t.load("src/client/UI/VoiceCast.luau")
-	local Lines = t.load("src/client/UI/RadioLines.luau")
 
-	t.test("every lines.csv voice has a preset in range", function()
-		for _, cast in Lines.Voices do
-			local v = VoiceCast.Cast[cast]
-			t.expect(`{cast}: {v ~= nil}`).toBe(`{cast}: true`)
+	t.test("every cast member has a preset in range", function()
+		for _, v in VoiceCast.Cast do
 			t.expect(math.abs(v.pitch) <= 12 and v.speed >= 0.5 and v.speed <= 2).toBe(true)
 			t.expect(tonumber(v.voice) ~= nil).toBe(true)
 		end
@@ -14,11 +11,10 @@ return function(t)
 
 	t.test("speaker names map to the cast", function()
 		t.expect(VoiceCast.castFor("Chief Aggie · Port Haven", "X")).toBe("AGGIE")
-		t.expect(VoiceCast.castFor("Gale Isles Coastguard", "X")).toBe("CG_DAY")
+		t.expect(VoiceCast.castFor("Gale Isles Coastguard", "X")).toBe("X")
 		t.expect(VoiceCast.castFor("Haven Harbour", "X")).toBe("PATROL")
 		t.expect(VoiceCast.castFor("Crew", "X")).toBe("CREW_FINN")
 		t.expect(VoiceCast.castFor("Dee", "X")).toBe("CREW_DEE")
-		t.expect(VoiceCast.castFor("You pull once:", "X")).toBe("PLAYER_M")
 		t.expect(VoiceCast.castFor("LOU", "X")).toBe("LOU")
 		t.expect(VoiceCast.castFor("Deeside", "X")).toBe("X")
 	end)
@@ -27,8 +23,6 @@ return function(t)
 		t.expect(VoiceCast.spoken("[Faint tapping, somewhere aft]")).toBe(nil)
 		t.expect(VoiceCast.spoken('Mara: "Stay close."')).toBe("Stay close.")
 		t.expect(VoiceCast.spoken('[One pull: "All OK?"]')).toBe(nil)
-		t.expect(VoiceCast.spoken("Securite, securite.")).toBe("say-cure-ee-tay, say-cure-ee-tay.")
-		t.expect(VoiceCast.spoken("Pan-pan, pan-pan.")).toBe("pahn-pahn, pahn-pahn.")
 	end)
 
 	t.test("chunks stay under the TTS limit and keep every word", function()

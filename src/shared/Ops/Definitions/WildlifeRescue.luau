@@ -9,7 +9,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "WildlifeRescue",
 	displayName = "Wildlife Rescue",
-	radioLine = "Wildlife in trouble off the harbour, request a rescue.",
 	weight = 0.8, -- a light call (docs/02 section 3: x0.8) -- tune
 	capSeconds = 420,
 	isBig = false,
@@ -18,7 +17,7 @@ local def: Types.OperationDef = {
 	lifejacketChance = 0,
 	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Swimmer" },
-	steps = SimpleSteps("Answer the Coastguard quickly; the animal is tangled and tiring."),
+	steps = SimpleSteps("Answer the call quickly; the animal is tangled and tiring."),
 }
 
 return def

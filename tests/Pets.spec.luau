@@ -126,11 +126,9 @@ return function(t)
 		t.expect(b).toBe(d)
 	end)
 
-	t.test("the rare colour variants have their own names and calls", function()
+	t.test("the rare colour variants have their own names", function()
 		t.expect(Wildlife.label("Puffin", true)).toBe("Albino Puffin")
 		t.expect(Wildlife.label("Gull", false)).toBe("Gull")
-		t.expect(Wildlife.callLine("SealPup", true))
-			.toBe("Golden seal pup tangled in a net near the harbour.")
 		for _, id in Wildlife.SpeciesOrder do
 			local spec = Wildlife.Species[id]
 			t.expect(spec.rareLabel ~= spec.label).toBe(true)

@@ -9,7 +9,7 @@
 --   while towing (bound later, so it wins the ContextActionService stack).
 -- * Playback for every vehicle in Workspace.Vehicles with a `RadioTrack` attribute (server-kept,
 --   src/shared/ShantyRadio format): one 3D Sound on the vehicle's PrimaryPart, Music category
---   (AudioController.group("Music") = the RadioDuck group, so VHF radio lines duck it), a short
+--   (AudioController.group("Music")), a short
 --   InverseTapered roll-off so it is only heard near the boat, started at the shared server-time
 --   offset. Ducked further under the operation music cue. Other players' radios are skipped when
 --   the local player muted radios (Settings).

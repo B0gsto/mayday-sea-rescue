@@ -1,6 +1,6 @@
 --!strict
 -- AvatarCosmetics (pure, RP-M5 E2): the rules behind the Captain's Locker / Storm Chaser outfits,
--- the whistle emote and the VIP Crew Card status (gold nameplate, radio tag, roof deck access).
+-- the whistle emote and the VIP Crew Card status (gold nameplate, roof deck access).
 -- No Roblox services: Lune-tested in tests/AvatarCosmetics.spec.luau. Used by
 -- src/server/Cosmetics/Outfits.luau and src/client/Cosmetics/*.
 --
@@ -10,7 +10,6 @@
 --       cap's hat swapped in. Options without clothing fields (the free defaults) keep `base`.
 --   AvatarCosmetics.same(a, b) -> boolean            two looks are identical (skip re-applying)
 --   AvatarCosmetics.gold(badgeId) -> boolean         the Badge slot shows the gold nameplate / tag
---   AvatarCosmetics.radioTag(badgeId) -> string?     "VIP" for the gold badge, else nil
 --   AvatarCosmetics.whistleReady(lastAt?, now) -> boolean     per-player cooldown
 --   AvatarCosmetics.WHISTLE                                   tuning constants
 
@@ -81,10 +80,6 @@ end
 
 function AvatarCosmetics.gold(badgeId: string?): boolean
 	return badgeId == "Gold"
-end
-
-function AvatarCosmetics.radioTag(badgeId: string?): string?
-	return if AvatarCosmetics.gold(badgeId) then "VIP" else nil
 end
 
 function AvatarCosmetics.whistleReady(lastAt: number?, now: number): boolean
