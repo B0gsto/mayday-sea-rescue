@@ -13,7 +13,11 @@ return function(t)
 
 	t.test("panels keep their design size on desktop and fit inside phones", function()
 		local want = Theme.Size.panel
-		t.expect(Theme.panelSize(Vector2.new(1280, 720), 1, want)).toEqual(want)
+		-- desktop: about half the screen wide (the map opts out with `wide`)
+		t.expect(Theme.panelSize(Vector2.new(1280, 720), 1, want)).toEqual(Vector2.new(640, want.Y))
+		t.expect(Theme.panelSize(Vector2.new(1280, 720), 1, want, true)).toEqual(want)
+		local hd = Theme.panelSize(Vector2.new(1920, 1080), 1.5, Vector2.new(900, 560))
+		t.expect(hd.X * 1.5 / 1920).toBeCloseTo(0.5, 0.02)
 		for _, vp in { Vector2.new(390, 844), Vector2.new(844, 390) } do
 			local s = Theme.scaleFor(vp)
 			local px = Theme.panelSize(vp, s, want) * s

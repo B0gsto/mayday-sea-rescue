@@ -1044,7 +1044,7 @@ local function buildHub(map: Instance, H: any, ui: any)
 		scf * CFrame.new(0, 7, sd / 2 - 1),
 		COLORS.white
 	)
-	decal(sign, ui.Phone.Store, Enum.NormalId.Front)
+	decal(sign, ui.Signs.Shop, Enum.NormalId.Front)
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "ShopPrompt"
 	prompt.ActionText = "Shop"

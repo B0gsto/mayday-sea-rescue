@@ -75,7 +75,7 @@ end
 
 function Companion.new(canvas: Frame, onClose: () -> ())
 	local panel = Panel.new(canvas, {
-		title = "Companion",
+		title = "Pet",
 		icon = "companion",
 		size = Vector2.new(720, 560),
 		onClose = onClose,
@@ -119,7 +119,7 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body
 		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.fromOffset(310, 190)
+		grid.CellSize = UDim2.fromOffset(290, 190)
 		grid.CellPadding = UDim2.fromOffset(12, 12)
 		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
@@ -139,7 +139,7 @@ function Companion.new(canvas: Frame, onClose: () -> ())
 			)
 		end
 		for order, e in entries do
-			local card = Style.button(host, UDim2.fromOffset(310, 190))
+			local card = Style.button(host, UDim2.fromOffset(290, 190))
 			card.Name = "Companion_" .. e.id
 			card.LayoutOrder = order
 			local _, face =

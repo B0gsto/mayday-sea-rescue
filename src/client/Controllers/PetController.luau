@@ -3,7 +3,7 @@
 -- Pulls the player's pets (Pet_State / Pet_Get) and, when one is adopted, makes it follow on land
 -- (offset behind the player + a ground raycast, a small hop/waddle) or ride on the boat's bow. One
 -- companion at a time (owner, 2026-10-24): Bosun or one pet. A newly recovered pet (never adopted)
--- becomes the companion automatically (Pet_Equip); switching back lives on the phone (UI/PetsApp:
+-- becomes the companion automatically (Pet_Equip); switching back lives in the Pet panel (UI/Panels/Companion:
 -- PetController.view / choose / onChange, id 0 = Bosun). DogController draws the pet's guide
 -- point via PetController.companion / voice.
 --

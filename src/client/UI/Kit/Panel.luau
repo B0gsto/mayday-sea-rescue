@@ -16,6 +16,7 @@ export type Props = {
 	color: string?, -- title bar accent (default "title")
 	size: Vector2?, -- design size in du (default Theme.Size.panel)
 	tabs: boolean?, -- reserve a Tabs row (p.top)
+	wide: boolean?, -- keep the design width on desktop (default: about half the screen)
 	onClose: (() -> ())?,
 }
 export type Panel = {
@@ -156,11 +157,26 @@ function Panel.new(canvas: Instance, props: Props): Panel
 	local xl = Style.label(xFace, "X", Theme.Text.title)
 	xl.TextScaled = false
 
+	-- du around the list: the bar's lower half, inner offset + padding, list padding, lip, tabs row
+	local chrome = S.titleBar * 0.5
+		+ 6
+		+ S.pad * 2
+		+ 12
+		+ 8
+		+ (if props.tabs then S.tab + 10 else 0)
 	local function fit()
 		local vp, scale = Style.metrics(root)
-		local sz = Theme.panelSize(vp, scale, want)
-		root.Size = UDim2.fromOffset(sz.X, sz.Y)
+		local sz = Theme.panelSize(vp, scale, want, props.wide)
+		local h = sz.Y
+		-- portrait: shrink to the content (no dead space under a short list)
+		local ratio = if root.Size.Y.Offset > 0 then root.AbsoluteSize.Y / root.Size.Y.Offset else 0
+		if vp.Y > vp.X and not props.wide and ratio > 0 then
+			local content = math.ceil(list.AbsoluteContentSize.Y / ratio + chrome)
+			h = math.clamp(content, math.min(260, h), h)
+		end
+		root.Size = UDim2.fromOffset(sz.X, h)
 	end
+	list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(fit)
 
 	local function close()
 		dim.Visible = false

@@ -15,7 +15,6 @@ local Workspace = game:GetService("Workspace")
 local Glyph = require(script.Parent.Glyph)
 local HudTheme = require(script.Parent.HudTheme)
 local Layout = require(script.Parent.Layout)
-local Menu = require(script.Parent.Menu)
 local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 
 local Waypoint = {}
@@ -187,7 +186,7 @@ function Waypoint.start(
 		end
 		local glyph, color = style(label :: string)
 		onGoal(label, glyph, color, Waypoint.metres(flat))
-		if hidden or map.IsOpen() or Menu.isAnyPanelOpen() then
+		if hidden or map.IsOpen() or player:GetAttribute("MenuOpen") == true then
 			mark.Visible = false
 			return
 		end

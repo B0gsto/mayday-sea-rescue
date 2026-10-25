@@ -1,5 +1,6 @@
--- HudLayout (G51): the touch HUD keeps the minimap and objective off the thumbstick and jump
--- zones, with no overlaps, on a 16:9 phone, a 19.5:9 phone with notch insets and a 4:3 tablet.
+-- HudLayout (G51, WP-23c): the touch HUD keeps the minimap and objective off the thumbstick and
+-- jump zones, with no overlaps, on a 16:9 phone, a 19.5:9 phone with notch insets and a 4:3 tablet;
+-- the left menu strip stays narrow and every other left-hand region sits right of it.
 return function(t)
 	local HudLayout = t.load("src/shared/HudLayout.luau")
 
@@ -27,9 +28,7 @@ return function(t)
 		"right",
 		"minimap",
 		"wallet",
-		"goal",
-		"phone",
-		"subtitle",
+		"menu",
 	}
 
 	local function box(rect)
@@ -53,8 +52,11 @@ return function(t)
 				local x, y, x2, y2 = box(mt.rects[name])
 				t.expect(x >= -1e-6 and y >= -1e-6).toBe(true)
 				t.expect(x2 <= u.X + 1e-6 and y2 <= u.Y + 1e-6).toBe(true)
-				-- bottom-left thumbstick (40% x 45%) and bottom-right jump (30% x 35%) stay clear
-				t.expect(x < 0.4 * u.X and y2 > 0.55 * u.Y).toBe(false)
+				-- bottom-left thumbstick (40% x 45%) and bottom-right jump (30% x 35%) stay clear;
+				-- only the narrow menu strip on the very left edge may reach into the stick zone
+				if name ~= "menu" then
+					t.expect(x < 0.4 * u.X and y2 > 0.55 * u.Y).toBe(false)
+				end
 				t.expect(x2 > 0.7 * u.X and y2 > 0.65 * u.Y).toBe(false)
 			end
 			for i = 1, #HUD do
@@ -62,21 +64,30 @@ return function(t)
 					t.expect(overlaps(mt.rects[HUD[i]], mt.rects[HUD[j]])).toBe(false)
 				end
 			end
-			-- the minimap is the requested ~130 px square, the phone button at least 64 px
+			-- the minimap is the requested ~130 px square; menu icons >= 43 px, the strip < 20% wide
 			t.expect(mt.rects.minimap.size.X * mt.scale).toBeCloseTo(130, 1)
-			t.expect(mt.rects.phone.size.X * mt.scale >= 64).toBe(true)
+			t.expect(mt.menu.icon * mt.scale >= 43).toBe(true)
+			t.expect(mt.menu.rows * mt.menu.cols >= HudLayout.MENU_COUNT).toBe(true)
+			local _, _, mx2 = box(mt.rects.menu)
+			t.expect(mx2 <= 0.2 * u.X).toBe(true)
+			t.expect(mt.noticeWidth >= HudLayout.NOTICE_MIN_WIDTH).toBe(true)
 		end)
 	end
 
-	t.test("the touch phone button and wallet sit right of the minimap", function()
-		for _, s in SCREENS do
-			local mt = HudLayout.compute(s.screen, s.insets, "Touch")
-			local mini, phone, wallet = mt.rects.minimap, mt.rects.phone, mt.rects.wallet
-			t.expect(phone.pos.X).toBe(mini.pos.X + mini.size.X + HudLayout.GAP)
-			t.expect(phone.pos.Y).toBe(mini.pos.Y)
-			t.expect(wallet.pos.X).toBe(phone.pos.X)
+	t.test(
+		"touch: the minimap sits right of the menu, objective and wallet right of the minimap",
+		function()
+			for _, s in SCREENS do
+				local mt = HudLayout.compute(s.screen, s.insets, "Touch")
+				local m, g = HudLayout.MARGIN, HudLayout.GAP
+				local menu, mini = mt.rects.menu, mt.rects.minimap
+				t.expect(menu.pos).toEqual(Vector2.new(m, m))
+				t.expect(mini.pos.X).toBe(m + menu.size.X + g)
+				t.expect(mt.rects.objective.pos.X).toBe(mini.pos.X + mini.size.X + g)
+				t.expect(mt.rects.wallet.pos.X).toBe(mt.rects.objective.pos.X)
+			end
 		end
-	end)
+	)
 
 	local DESKTOP = { Vector2.new(1920, 1080), Vector2.new(1366, 768), Vector2.new(1280, 720) }
 	local NO_INSETS = { top = 0, bottom = 0, left = 0, right = 0 }
@@ -92,39 +103,45 @@ return function(t)
 		t.expect(HudLayout.compute(Vector2.new(640, 360), NO_INSETS, "Keyboard").scale).toBe(0.7)
 	end)
 
-	t.test("desktop pins the phone top left, the wallet beside it, the card top right", function()
-		for _, screen in DESKTOP do
-			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
-			t.expect(mt.touch).toBe(false)
-			local m, g = HudLayout.MARGIN, HudLayout.GAP
-			local phone, wallet, right = mt.rects.phone, mt.rects.wallet, mt.rects.right
-			t.expect(phone.pos).toEqual(Vector2.new(m, m))
-			t.expect(wallet.pos).toEqual(Vector2.new(m + phone.size.X + g, m))
-			t.expect(phone.size.Y).toBe(wallet.size.Y)
-			t.expect(right.anchor).toEqual(Vector2.new(1, 0))
-			t.expect(right.pos).toEqual(Vector2.new(mt.usable.X - m, m))
-			local mini = mt.rects.minimap
-			t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
-			t.expect(mini.pos).toEqual(Vector2.new(m, mt.usable.Y - m))
+	t.test(
+		"desktop: menu strip on the left edge, wallet and minimap beside it, card top right",
+		function()
+			for _, screen in DESKTOP do
+				local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
+				t.expect(mt.touch).toBe(false)
+				local m, g = HudLayout.MARGIN, HudLayout.GAP
+				local menu, wallet, right = mt.rects.menu, mt.rects.wallet, mt.rects.right
+				local left = m + menu.size.X + g
+				t.expect(menu.anchor).toEqual(Vector2.new(0, 0.5))
+				t.expect(menu.pos).toEqual(Vector2.new(m, mt.usable.Y / 2))
+				t.expect(menu.size.Y <= mt.usable.Y - 2 * m).toBe(true)
+				t.expect(wallet.pos).toEqual(Vector2.new(left, m))
+				t.expect(right.anchor).toEqual(Vector2.new(1, 0))
+				t.expect(right.pos).toEqual(Vector2.new(mt.usable.X - m, m))
+				local mini = mt.rects.minimap
+				t.expect(mini.anchor).toEqual(Vector2.new(0, 1))
+				t.expect(mini.pos).toEqual(Vector2.new(left, mt.usable.Y - m))
+			end
 		end
-	end)
+	)
 
 	-- the minimap's objective pill ("Mayday 100 m") sits above the square on desktop
 	t.test("desktop left column clears the minimap pill, no overlaps", function()
-		local LEFT =
-			{ "phone", "wallet", "objective", "minimap", "right", "notice", "goal", "subtitle" }
+		local LEFT = { "menu", "wallet", "objective", "minimap", "right", "notice", "gauges" }
 		for _, screen in DESKTOP do
 			local mt = HudLayout.compute(screen, NO_INSETS, "Keyboard")
 			local _, _, _, oy2 = box(mt.rects.objective)
 			local _, my = box(mt.rects.minimap)
 			t.expect(oy2 + HudLayout.GAP <= my - HudLayout.PILL_HEIGHT + 1e-6).toBe(true)
-			-- the radio strip stays in the top quarter, clear of the craft in the chase camera
-			local _, _, _, ry2 = box(mt.rects.subtitle)
-			t.expect(ry2 <= mt.usable.Y * 0.25).toBe(true)
+			t.expect(mt.noticeWidth >= 200).toBe(true)
 			for i = 1, #LEFT do
 				for j = i + 1, #LEFT do
 					t.expect(overlaps(mt.rects[LEFT[i]], mt.rects[LEFT[j]])).toBe(false)
 				end
+			end
+			-- the prompt (mechanic panels) clears the minimap, the gauges and the menu
+			for _, name in { "minimap", "gauges", "menu" } do
+				t.expect(overlaps(mt.rects.prompt, mt.rects[name])).toBe(false)
 			end
 		end
 	end)

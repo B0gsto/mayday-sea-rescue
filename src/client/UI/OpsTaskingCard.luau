@@ -20,7 +20,6 @@ local Hud = require(
 local HudTheme = require(script.Parent.HudTheme)
 local InputGlyph = require(script.Parent.InputGlyph)
 local Layout = require(script.Parent.Layout)
-local Menu = require(script.Parent.Menu)
 
 export type Card = {
 	show: (data: { [string]: any }, onAccept: (opId: string) -> ()) -> (),
@@ -192,7 +191,7 @@ function OpsTaskingCard.new(gui: GuiBase2d): Card
 			conn = RunService.Heartbeat:Connect(function(dt)
 				t += dt
 				-- a panel covers the HUD: hide the pager and free R for the panel's own keys
-				local shown = not Menu.isAnyPanelOpen()
+				local shown = Players.LocalPlayer:GetAttribute("MenuOpen") ~= true
 				if shown ~= body.Visible then
 					body.Visible = shown
 					if shown then

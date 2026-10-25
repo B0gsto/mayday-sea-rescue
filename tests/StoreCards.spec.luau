@@ -106,9 +106,9 @@ return function(t)
 		t.expect(Shelves.mayPrompt(c, ref, ctx({ stormQueue = 2 }))).toBe(false)
 	end)
 
-	t.test("the phone Store splits passes, day passes and items, in order", function()
+	t.test("the Shop splits passes, packs, boosts and day passes, in order", function()
 		local seen = {}
-		for _, tab in { "Passes", "DayPasses", "Items" } do
+		for _, tab in { "Passes", "Packs", "Boosts", "DayPasses" } do
 			local last = -math.huge
 			for _, ref in Shelves.storeItems(Config, tab, true) do
 				local item = Config[ref.kind][ref.key]
@@ -116,6 +116,10 @@ return function(t)
 				last = item.order
 				t.expect(item.dayPassFor ~= nil).toBe(tab == "DayPasses")
 				t.expect(ref.kind == "GamePasses").toBe(tab == "Passes")
+				if ref.kind == "Products" and tab ~= "DayPasses" then
+					t.expect(item.cashMinutes ~= nil).toBe(tab == "Packs")
+				end
+				t.expect(seen[`{ref.kind}/{ref.key}`]).toBe(nil) -- every item on one tab only
 				seen[`{ref.kind}/{ref.key}`] = true
 			end
 		end
@@ -133,7 +137,7 @@ return function(t)
 
 	t.test("the live Store sells every launch id (no in-world shelf needed)", function()
 		local listed = {}
-		for _, tab in { "Passes", "DayPasses", "Items" } do
+		for _, tab in { "Passes", "Packs", "Boosts", "DayPasses" } do
 			for _, ref in Shelves.storeItems(Config, tab, false) do
 				listed[`{ref.kind}/{ref.key}`] = true
 			end

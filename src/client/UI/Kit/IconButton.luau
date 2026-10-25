@@ -12,6 +12,7 @@ export type Props = {
 	label: string,
 	color: string?,
 	size: number?, -- square side in du (default Theme.Size.icon)
+	labelRow: number?, -- label row height in du (default Theme.Size.iconLabel); text = row - 4
 	onActivate: (() -> ())?,
 }
 export type IconButton = {
@@ -23,7 +24,8 @@ local IconButton = {}
 
 function IconButton.new(parent: Instance?, props: Props): IconButton
 	local side = props.size or S.icon
-	local root = Style.button(parent, UDim2.fromOffset(side, side + S.iconLabel))
+	local row = props.labelRow or S.iconLabel
+	local root = Style.button(parent, UDim2.fromOffset(side, side + row))
 	root.Name = "IconButton_" .. props.icon
 
 	local tile = Instance.new("Frame")
@@ -40,12 +42,17 @@ function IconButton.new(parent: Instance?, props: Props): IconButton
 	art.Parent = face
 	Style.icon(art, props.icon)
 
-	local label = Style.label(root, props.label, Theme.Text.small)
+	local label = Style.label(root, props.label, math.max(row - 4, Theme.Text.small))
 	label.Name = "Label"
 	label.TextWrapped = false
 	label.AnchorPoint = Vector2.new(0.5, 1)
 	label.Position = UDim2.new(0.5, 0, 1, 2)
-	label.Size = UDim2.new(1, 24, 0, S.iconLabel)
+	label.Size = UDim2.new(1, 24, 0, row)
+	-- a long word shrinks to its cell instead of running into the next column
+	label.TextScaled = true
+	local cap = Instance.new("UITextSizeConstraint")
+	cap.MaxTextSize = math.max(row - 4, Theme.Text.small)
+	cap.Parent = label
 
 	local badge = Instance.new("Frame")
 	badge.Name = "Badge"

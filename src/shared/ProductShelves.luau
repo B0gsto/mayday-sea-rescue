@@ -69,18 +69,22 @@ function ProductShelves.listed(item: any, studio: boolean): boolean
 	return item.ready ~= false or studio
 end
 
--- The kit Shop's tabs (UI/Panels/Shop): game passes, day passes (Products with dayPassFor), the other
--- products; each in config order, listed by the shelf rule.
+-- The kit Shop's tabs (UI/Panels/Shop): "Passes" (game passes), "Packs" (Cash packs: Products with
+-- cashMinutes), "Boosts" (the other products), "DayPasses" (Products with dayPassFor); "Items" is
+-- Packs + Boosts. Each in config order, listed by the shelf rule.
 function ProductShelves.storeItems(config: any, tab: string, studio: boolean): { ItemRef }
 	local out: { ItemRef } = {}
 	local kind: Kind = if tab == "Passes" then "GamePasses" else "Products"
 	for key, item in (config and config[kind]) or {} do
 		local day = type(item) == "table" and item.dayPassFor ~= nil
+		local pack = type(item) == "table" and item.cashMinutes ~= nil
 		if
 			ProductShelves.listed(item, studio)
-			and item.dockLevel == nil -- dock levels and buildings sell at the blueprint table (docs/23 (j))
+			and item.dockLevel == nil -- dock levels and buildings sell at the build tablet (docs/23 (j))
 			and item.dockBuilding == nil
 			and (kind == "GamePasses" or day == (tab == "DayPasses"))
+			and (tab ~= "Packs" or pack)
+			and (tab ~= "Boosts" or not pack)
 		then
 			table.insert(out, { kind = kind, key = key })
 		end

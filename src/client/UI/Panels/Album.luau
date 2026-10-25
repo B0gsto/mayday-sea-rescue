@@ -117,7 +117,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		host.AutomaticSize = Enum.AutomaticSize.Y
 		host.Parent = panel.body
 		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.fromOffset(224, 220)
+		grid.CellSize = UDim2.fromOffset(188, 210)
 		grid.CellPadding = UDim2.fromOffset(14, 14)
 		grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
@@ -125,7 +125,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 		for order, page in Rules.Pages do
 			local found, total = Rules.count(state, page.id)
 			local complete = fullPage(state, page.id)
-			local card = Style.button(host, UDim2.fromOffset(224, 220))
+			local card = Style.button(host, UDim2.fromOffset(188, 210))
 			card.Name = "Page_" .. page.id
 			card.LayoutOrder = order
 			local _, face = Style.block(card, Style.grad(if complete then "yellow" else "blue"))
@@ -133,7 +133,7 @@ function Album.new(canvas: Frame, onClose: () -> ())
 			art.BackgroundTransparency = 1
 			art.AnchorPoint = Vector2.new(0.5, 0)
 			art.Position = UDim2.fromScale(0.5, 0.05)
-			art.Size = UDim2.fromOffset(150, 150)
+			art.Size = UDim2.fromOffset(128, 128)
 			art.Parent = face
 			Sticker.draw(art, page.id, "Stamp", Rules.has(state, page.id, 4))
 			local name = Style.label(face, page.name, Theme.Text.small)

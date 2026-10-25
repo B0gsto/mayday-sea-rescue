@@ -62,11 +62,7 @@ function Quests.new(canvas: Frame, onClose: () -> ())
 			ask.Size = UDim2.new(1, -180, 0, 50)
 			ask.TextXAlignment = Enum.TextXAlignment.Left
 			ask.TextTruncate = Enum.TextTruncate.AtEnd
-			local reward = Style.label(
-				face,
-				`+{Theme.short(active.cash)}  +{Theme.short(active.rep)} Rep`,
-				Theme.Text.small
-			)
+			local reward = Style.label(face, `+{Theme.short(active.cash)} Cash`, Theme.Text.small)
 			reward.Name = "Reward"
 			reward.AnchorPoint = Vector2.new(1, 0.5)
 			reward.Position = UDim2.new(1, -18, 0.5, 0)

@@ -1,7 +1,8 @@
 --!strict
--- Shop panel: the kit Store. Passes / Day passes / Items from ProductShelves, live Roblox prices,
--- owned ticks, day-pass clocks, and the same prompt gating as the world shelves.
-local ContextActionService = game:GetService("ContextActionService")
+-- Shop panel: the kit Store. Tabs Passes / Packs / Boosts / Day passes (ProductShelves.storeItems)
+-- as kit Cards with live Roblox prices, owned ticks, day-pass clocks, and ProductShelves' prompt
+-- gating (the same purchase flow the phone Store had). Gamepad: L1 / R1 step the tabs.
+local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,31 +17,24 @@ local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local Telemetry = require(script.Parent.Parent.Parent:WaitForChild("Telemetry"))
 
 local Kit = script.Parent.Parent:WaitForChild("Kit")
+local Card = require(Kit:WaitForChild("Card"))
 local Panel = require(Kit:WaitForChild("Panel"))
-local PriceButton = require(Kit:WaitForChild("PriceButton"))
-local Style = require(Kit:WaitForChild("Style"))
-local Theme = require(Kit:WaitForChild("Theme"))
+local Tabs = require(Kit:WaitForChild("Tabs"))
 
 local config: any = MonetizationConfig
 local player = Players.LocalPlayer
-local studio = RunService.IsStudio()
+local studio = RunService:IsStudio()
 local PENDING_TIMEOUT = 30
 local CATALOGUE_TTL = 20
 local TABS = {
-	{ id = "Passes", name = "Passes", color = "orange" },
-	{ id = "DayPasses", name = "Day pass", color = "blue" },
-	{ id = "Items", name = "Items", color = "purple" },
+	{ id = "Passes", name = "Passes", icon = "vip", color = "purple" },
+	{ id = "Packs", name = "Packs", icon = "cash", color = "yellow" },
+	{ id = "Boosts", name = "Boosts", icon = "boost", color = "orange" },
+	{ id = "DayPasses", name = "Day", icon = "daily", color = "blue" },
 }
 
 type Ref = ProductShelves.ItemRef
-type Card = {
-	ref: Ref,
-	row: Frame,
-	art: Frame,
-	icon: ImageLabel,
-	line: TextLabel,
-	price: PriceButton.PriceButton,
-}
+type Row = { ref: Ref, card: Card.Card, icon: ImageLabel }
 
 local Shop = {}
 
@@ -67,10 +61,8 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		onClose = onClose,
 	})
 
-	local tabButtons: { ImageButton } = {}
-	local tabHolders: { Frame } = {}
 	local tab = 1
-	local cards: { Card } = {}
+	local cards: { Row } = {}
 	local catalogue: { [string]: { [string]: any } } = {}
 	local catalogueAt = -math.huge
 	local fetching = false
@@ -80,30 +72,6 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 	local pendingKey: string? = nil
 	local pendingAt = 0
 	local setTab: (number) -> ()
-
-	local tabRow = Instance.new("Frame")
-	tabRow.Name = "ShopTabs"
-	tabRow.BackgroundTransparency = 1
-	tabRow.Size = UDim2.fromScale(1, 1)
-	tabRow.Parent = panel.top
-	local list = Style.list(tabRow, true, 10)
-	list.VerticalAlignment = Enum.VerticalAlignment.Bottom
-	for i, t in TABS do
-		local b = Style.button(tabRow, UDim2.new(1 / #TABS, -8, 0, Theme.Size.tab - 6))
-		b.Name = "Tab_" .. t.id
-		b.LayoutOrder = i
-		local holder = Style.block(b, Style.grad("blue"), {
-			lip = 5,
-			radius = Theme.Size.cornerSmall,
-		})
-		local label = Style.label(holder, t.name, Theme.Text.body)
-		label.TextWrapped = false
-		Style.press(b, function()
-			setTab(i)
-		end, Theme.Size.cornerSmall)
-		tabButtons[i] = b
-		tabHolders[i] = holder
-	end
 
 	local function keyOf(ref: Ref): string
 		return `{ref.kind}/{ref.key}`
@@ -229,121 +197,74 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		end
 	end
 
-	local function newCard(ref: Ref, order: number, color: string): Card
+	local function newCard(ref: Ref, order: number, color: string): Row
 		local item = itemOf(ref)
-		local row = Instance.new("Frame")
-		row.Name = ref.key
-		row.LayoutOrder = order
-		row.Size = UDim2.new(1, 0, 0, 124)
-		row.BackgroundTransparency = 1
-		row.Parent = panel.body
-		local _, face = Style.block(row, Style.grad(color))
-
-		local art = Instance.new("Frame")
-		art.Name = "Art"
-		art.BackgroundColor3 = Color3.new(1, 1, 1)
-		art.BackgroundTransparency = 0.58
-		art.AnchorPoint = Vector2.new(0, 0.5)
-		art.Position = UDim2.new(0, 12, 0.5, 0)
-		art.Size = UDim2.fromOffset(88, 88)
-		Style.corner(art, Theme.Size.cornerSmall)
-		art.Parent = face
-		local glyph = Instance.new("Frame")
-		glyph.BackgroundTransparency = 1
-		glyph.Size = UDim2.fromScale(0.78, 0.78)
-		glyph.AnchorPoint = Vector2.new(0.5, 0.5)
-		glyph.Position = UDim2.fromScale(0.5, 0.5)
-		glyph.Parent = art
-		Style.icon(glyph, glyphFor(item))
-		local icon = Instance.new("ImageLabel")
-		icon.Name = "Icon"
-		icon.BackgroundTransparency = 1
-		icon.Size = UDim2.fromScale(1, 1)
-		icon.Visible = false
-		icon.Parent = art
-
-		local words = Instance.new("Frame")
-		words.Name = "Words"
-		words.BackgroundTransparency = 1
-		words.Position = UDim2.fromOffset(114, 10)
-		words.Size = UDim2.new(1, -300, 1, -20)
-		words.Parent = face
-		local title = Style.label(words, item.name, Theme.Text.heading)
-		title.Name = "Title"
-		title.TextXAlignment = Enum.TextXAlignment.Left
-		title.TextWrapped = false
-		title.TextTruncate = Enum.TextTruncate.AtEnd
-		title.Size = UDim2.new(1, 0, 0, 40)
-		local line = Style.label(words, "", Theme.Text.small)
-		line.Name = "Line"
-		line.TextXAlignment = Enum.TextXAlignment.Left
-		line.TextTruncate = Enum.TextTruncate.AtEnd
-		line.Position = UDim2.fromOffset(0, 44)
-		line.Size = UDim2.new(1, 0, 0, 32)
-
-		local price = PriceButton.new(face, {
+		local card = Card.new(panel.body, {
+			art = glyphFor(item),
+			title = item.name,
+			line = "",
+			color = color,
 			price = 0,
 			currency = "Robux",
-			onActivate = function()
+			onBuy = function()
 				buy(ref)
 			end,
 		})
-		price.root.AnchorPoint = Vector2.new(1, 0.5)
-		price.root.Position = UDim2.new(1, -12, 0.5, 0)
-		local check = Instance.new("Frame")
-		check.Name = "Owned"
-		check.BackgroundTransparency = 1
-		check.AnchorPoint = Vector2.new(1, 1)
-		check.Position = UDim2.new(1, -16, 1, -10)
-		check.Size = UDim2.fromOffset(28, 28)
-		check.Visible = false
-		check.Parent = face
-		Style.icon(check, "daily")
-
-		return { ref = ref, row = row, art = art, icon = icon, line = line, price = price }
+		card.root.Name = ref.key
+		card.root.LayoutOrder = order
+		local icon = Instance.new("ImageLabel") -- the product's own Roblox icon over the glyph
+		icon.Name = "ProductIcon"
+		icon.BackgroundTransparency = 1
+		icon.Size = UDim2.fromScale(1, 1)
+		icon.ZIndex = 2
+		icon.Visible = false
+		icon.Parent = card.art
+		return { ref = ref, card = card, icon = icon }
 	end
 
 	paint = function()
-		for _, card in cards do
-			local item = itemOf(card.ref)
+		for _, row in cards do
+			local item = itemOf(row.ref)
 			local id = if type(item.id) == "number" then item.id else 0
-			fetchInfo(card.ref)
-			local ctx = contextFor(card.ref)
-			local state = ProductShelves.cardState(config, card.ref, ctx)
+			fetchInfo(row.ref)
+			local ctx = contextFor(row.ref)
+			local state = ProductShelves.cardState(config, row.ref, ctx)
 			local owned = state.status == "owned" or passOwnedFor(item)
-			card.row.Visible = state.status ~= "hidden" and state.status ~= "comingSoon"
-			card.icon.Image = icons[id] or ""
-			card.icon.Visible = icons[id] ~= nil
+			local price = row.card.price
+			row.card.root.Visible = state.status ~= "hidden" and state.status ~= "comingSoon"
+			row.icon.Image = icons[id] or ""
+			row.icon.Visible = icons[id] ~= nil
 			local left = dayLeft(item)
 			if owned then
-				card.price.setState("owned")
-				card.price.setText(if left > 0 then clock(left) else nil)
+				price.setState("owned")
+				price.setText(if left > 0 then clock(left) else nil)
 			elseif state.canBuy and ctx.price then
-				card.price.setState("buy")
-				card.price.setText(nil)
-				card.price.setPrice(ctx.price)
+				price.setState("buy")
+				price.setText(nil)
+				price.setPrice(ctx.price)
 			else
-				card.price.setState("disabled")
-				card.price.setText(state.buyText)
+				price.setState("disabled")
+				price.setText(state.buyText)
 			end
 			local cash = ProductShelves.packCash(item, numberAttr("CashPerMinute"))
-			card.line.Text = if left > 0
-				then `Active · {clock(left)}`
-				elseif cash then `+{ProductShelves.formatNumber(cash)} Cash`
-				elseif ctx.pending then "Opening Roblox…"
-				else ""
+			row.card.setLine(
+				if left > 0
+					then `Active · {clock(left)}`
+					elseif cash then `+{ProductShelves.formatNumber(cash)} Cash`
+					elseif ctx.pending then "Opening Roblox…"
+					else nil
+			)
 		end
 	end
 
+	local tabs = Tabs.new(panel.top, TABS :: any, function(i: number)
+		setTab(i)
+	end)
+
 	setTab = function(i: number)
 		tab = math.clamp(i, 1, #TABS)
-		for n, holder in tabHolders do
-			Style.recolor(holder, Style.grad(if n == tab then "yellow" else "blue"))
-			tabButtons[n].Size =
-				UDim2.new(1 / #TABS, -8, 0, if n == tab then Theme.Size.tab else Theme.Size.tab - 8)
-		end
-		for _, card in cards do
-			card.row:Destroy()
+		for _, row in cards do
+			row.card.root:Destroy()
 		end
 		table.clear(cards)
 		local t = TABS[tab]
@@ -355,32 +276,9 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		paint()
 		Telemetry.shop("ItemViewed", "Store", nil, "Robux")
 		if UserInputService.GamepadEnabled and panel.isOpen() and cards[1] then
-			pcall(function()
-				game:GetService("GuiService").SelectedObject = cards[1].price.root
-			end)
+			GuiService.SelectedObject = cards[1].card.price.root
 		end
 	end
-
-	local function stepTabs(input: InputObject)
-		if not panel.isOpen() then
-			return
-		end
-		local step = if input.KeyCode == Enum.KeyCode.ButtonL2 then -1 else 1
-		setTab((tab - 1 + step) % #TABS + 1)
-	end
-	ContextActionService:BindActionAtPriority("Shop_Tabs", function(_, state, input)
-		if state ~= Enum.UserInputState.Begin then
-			return Enum.ContextActionResult.Pass
-		end
-		if input.KeyCode == Enum.KeyCode.ButtonL2 or input.KeyCode == Enum.KeyCode.ButtonR2 then
-			if not panel.isOpen() then
-				return Enum.ContextActionResult.Pass
-			end
-			stepTabs(input)
-			return Enum.ContextActionResult.Sink
-		end
-		return Enum.ContextActionResult.Pass
-	end, false, Enum.ContextActionPriority.High.Value, Enum.KeyCode.ButtonL2, Enum.KeyCode.ButtonR2)
 
 	local function purchaseFinished()
 		pendingKey = nil
@@ -419,18 +317,13 @@ function Shop.new(canvas: Frame, onClose: () -> ())
 		end
 	end)
 
-	setTab(1)
+	tabs.select(1)
 
 	return {
 		open = function()
 			panel.open()
 			setTab(tab)
 			Telemetry.shop("AppOpened", "Store")
-			if UserInputService.GamepadEnabled and cards[1] then
-				pcall(function()
-					game:GetService("GuiService").SelectedObject = cards[1].price.root
-				end)
-			end
 		end,
 		close = panel.close,
 		isOpen = panel.isOpen,

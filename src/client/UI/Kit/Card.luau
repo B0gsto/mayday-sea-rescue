@@ -4,7 +4,7 @@
 -- (grey card, padlock over the art, price greyed).
 --   local c = Card.new(parent, { art = "vip", title = "VIP", line = "Double cash forever",
 --       color = "purple", price = 399, currency = "Robux", onBuy = fn })
---   c.setState("owned")   c.root: Frame, full width x Theme.Size.card
+--   c.setState("owned")  c.setLine("Active 2h")   c.root: Frame, full width x Theme.Size.card
 local PriceButton = require(script.Parent:WaitForChild("PriceButton"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
@@ -24,8 +24,10 @@ export type Props = {
 }
 export type Card = {
 	root: Frame,
+	art: Frame, -- the art well (overlay a product image on it)
 	price: PriceButton.PriceButton,
 	setState: (State) -> (),
+	setLine: (string?) -> (),
 }
 
 local Card = {}
@@ -81,12 +83,17 @@ function Card.new(parent: Instance?, props: Props): Card
 	title.TextXAlignment = Enum.TextXAlignment.Left
 	title.TextWrapped = false
 	title.TextTruncate = Enum.TextTruncate.AtEnd
-	if props.line then
-		local line = Style.label(words, props.line, Theme.Text.small)
-		line.Size = UDim2.new(1, 0, 0, 26)
-		line.TextXAlignment = Enum.TextXAlignment.Left
-		line.TextTruncate = Enum.TextTruncate.AtEnd
-		line.LayoutOrder = 1
+	-- the 2-5 word line: a size up from small with the full-weight outline, readable on every gradient
+	local line = Style.label(words, props.line or "", Theme.Text.small + 2)
+	line.Name = "Line"
+	line.Size = UDim2.new(1, 0, 0, 28)
+	line.TextXAlignment = Enum.TextXAlignment.Left
+	line.TextTruncate = Enum.TextTruncate.AtEnd
+	line.LayoutOrder = 1
+	line.Visible = props.line ~= nil
+	local ls = line:FindFirstChildOfClass("UIStroke")
+	if ls then
+		ls.Thickness = Theme.Size.textStroke
 	end
 
 	local pb = PriceButton.new(
@@ -106,7 +113,16 @@ function Card.new(parent: Instance?, props: Props): Card
 	end
 	setState(props.state or "buy")
 	root.Parent = parent
-	return { root = root, price = pb, setState = setState }
+	return {
+		root = root,
+		art = well,
+		price = pb,
+		setState = setState,
+		setLine = function(text: string?)
+			line.Text = text or ""
+			line.Visible = text ~= nil and text ~= ""
+		end,
+	}
 end
 
 return Card

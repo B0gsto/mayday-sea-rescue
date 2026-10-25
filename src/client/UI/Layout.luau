@@ -3,21 +3,21 @@
 -- is pure and lives in Shared/HudLayout (tests/HudLayout.spec.luau); this module turns it into
 -- live ScreenGui containers.
 --
--- Desktop / gamepad (assets/ui/hud/mockup.png):
+-- Desktop / gamepad:
 --
 --   +------------------------------------------------------------------+
---   | phone              notice (toasts, call-outs)           mission  |
---   | wallet                                                  card     |
---   | objective          prompt (mechanic panels,             column   |
---   | (step card)        interaction cards)                   (pager,  |
---   |  [obj pill]                                             monitor) |
---   |  minimap           subtitle                             gauges   |
+--   | menu  wallet          notice (toasts, call-outs)        mission  |
+--   | menu  objective                                         card     |
+--   | menu  (step card)     prompt (mechanic panels,          column   |
+--   | menu                  interaction cards)                (pager,  |
+--   | menu  minimap                                           monitor) |
+--   |       [obj pill]                                        gauges   |
 --   +------------------------------------------------------------------+
 --
--- Touch: the minimap is 130 px at the top left (tap it for the full map), the phone button and
--- the objective strip right of it, the wallet (Cash and rank) under the phone and the notice
--- band beside the wallet, so the bottom-left thumbstick zone stays empty. The mission card
--- column stops above the bottom-right jump / action buttons.
+-- Touch: the menu strip (UI/Menu, 2 icon columns) on the left edge, the 130 px minimap right of
+-- it (tap it for the full map), the objective strip right of that, the wallet (Cash and rank)
+-- under the objective and the notice band beside the wallet. The mission card column stops above
+-- the bottom-right jump / action buttons.
 --
 -- Regions are transparent container Frames in "design units" (du): the usable area (the
 -- ScreenGui with CoreUISafeInsets: below the Roblox top bar and inside notches / home bar)
@@ -36,8 +36,8 @@
 -- Layout.onPromptBusy(fn) calls fn(busy) now and on every change (polled every 0.25 s).
 --
 -- Phone check (844x390 landscape, notched insets, scale 0.7): the minimap and the wallet
--- end above the thumbstick zone at 55% of the safe height and the card column ends above the
--- jump zone at 65% (tests/HudLayout.spec.luau).
+-- end above the thumbstick zone at 55% of the safe height (only the narrow menu strip reaches
+-- into it) and the card column ends above the jump zone at 65% (tests/HudLayout.spec.luau).
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -120,6 +120,12 @@ end
 
 local function metricsNow(gui: ScreenGui?): Metrics
 	local px = if gui then gui.AbsoluteSize else Vector2.zero
+	-- Studio only: Workspace attribute HudViewport (Vector2 px) lays the HUD out for that screen in the
+	-- top-left corner (a phone-sized preview on a desktop window)
+	local forced = RunService:IsStudio() and Workspace:GetAttribute("HudViewport")
+	if typeof(forced) == "Vector2" then
+		px = forced
+	end
 	if px.X >= 1 and px.Y >= 1 then
 		return HudLayout.compute(px, ZERO_INSETS, device())
 	end
@@ -169,6 +175,9 @@ function Layout.prepare(gui: ScreenGui): ScreenGui
 	end)
 	if RunService:IsStudio() then
 		Workspace:GetAttributeChangedSignal("HudDevice"):Connect(function()
+			refresh(gui)
+		end)
+		Workspace:GetAttributeChangedSignal("HudViewport"):Connect(function()
 			refresh(gui)
 		end)
 	end

@@ -1,16 +1,12 @@
 --!strict
 -- PriceButton: the big green buy button. Robux glyph (Roblox's built-in) or the Cash icon + the
--- number. States: "buy" (green, pressable), "disabled" (grey: can't afford), "owned" ("Owned").
+-- number. States: "buy" (green, pressable), "disabled" (grey: can't afford), "owned" (blue, gold
+-- tick, "Owned").
 --   local b = PriceButton.new(parent, { price = 399, currency = "Robux", onActivate = fn })
 --   b.setState("owned") / b.setPrice(n)   b.root is the ImageButton (size Theme.Size.price)
+local Glyph = require(script.Parent.Parent:WaitForChild("Glyph"))
 local Style = require(script.Parent:WaitForChild("Style"))
 local Theme = require(script.Parent:WaitForChild("Theme"))
-local UiImages = require(
-	game:GetService("ReplicatedStorage")
-		:WaitForChild("Shared")
-		:WaitForChild("Config")
-		:WaitForChild("UiImages")
-)
 
 local S = Theme.Size
 
@@ -50,12 +46,23 @@ local function glyph(parent: Instance, currency: string): GuiObject
 	else
 		Style.icon(box, "cash")
 	end
-	local check = Instance.new("ImageLabel")
+	-- owned: a gold disc with a white tick (drawn, so it reads gold on any art)
+	local check = Instance.new("Frame")
 	check.Name = "Check"
-	check.BackgroundTransparency = 1
-	check.Image = UiImages.VehicleArt.Check
-	check.Size = UDim2.fromScale(1, 1)
+	check.BackgroundColor3 = Color3.fromHex("FFC928")
+	check.AnchorPoint = Vector2.new(0.5, 0.5)
+	check.Position = UDim2.fromScale(0.5, 0.5)
+	check.Size = UDim2.fromScale(0.9, 0.9)
 	check.Visible = false
+	Style.corner(check, 99)
+	Style.stroke(check, 3, true)
+	local tick = Instance.new("Frame")
+	tick.BackgroundTransparency = 1
+	tick.AnchorPoint = Vector2.new(0.5, 0.5)
+	tick.Position = UDim2.fromScale(0.5, 0.52)
+	tick.Size = UDim2.fromScale(0.62, 0.62)
+	tick.Parent = check
+	Glyph.draw("check", tick, Color3.new(1, 1, 1))
 	check.Parent = box
 	box.Parent = parent
 	return box
@@ -83,9 +90,14 @@ function PriceButton.new(parent: Instance?, props: Props): PriceButton
 	local state: State = props.state or "buy"
 	local override: string? = nil
 	local function paint()
-		Style.recolor(holder, Style.grad(if state == "buy" then "buy" else "disabled"))
+		Style.recolor(
+			holder,
+			Style.grad(
+				if state == "buy" then "buy" elseif state == "owned" then "owned" else "disabled"
+			)
+		)
 		root.Active = state == "buy"
-		-- owned: grey + a tick, so it never reads as a buy button
+		-- owned: blue + a gold tick (never grey like "can't afford", never green like buy)
 		for _, c in g:GetChildren() do
 			if c:IsA("GuiObject") then
 				c.Visible = (c.Name == "Check") == (state == "owned")

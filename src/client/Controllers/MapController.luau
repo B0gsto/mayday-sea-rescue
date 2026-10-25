@@ -724,10 +724,9 @@ local function kitButton(
 	size: UDim2,
 	grad: string,
 	onActivate: (() -> ())?
-): TextButton
-	local b = Style.button(parent, size) :: any
+): ImageButton
+	local b = Style.button(parent, size)
 	b.Name = name
-	b.Text = ""
 	local _, face = Style.block(b, Style.grad(grad), { radius = S.cornerSmall, lip = 4 })
 	local l = Style.label(face, str, Theme.Text.small, true)
 	l.TextWrapped = false
@@ -745,6 +744,7 @@ local function buildFullMap()
 		title = "Map",
 		icon = "map",
 		size = Vector2.new(1160, 640),
+		wide = true, -- the map keeps its size (kit panels cap at half the desktop width)
 		onClose = function()
 			if isOpen then
 				MapController.Close()
@@ -1045,8 +1045,8 @@ local function placeFog(scale: number, size: Vector2, c: Vector2)
 	local hm = full.hubMap :: Frame
 	hm.Size = UDim2.fromOffset(mapPx, mapPx)
 	hm.Position = UDim2.fromOffset(
-		(HUB_X0 - MapConfig.Origin.X) * scale,
-		(HUB_Z0 - MapConfig.Origin.Y) * scale
+		(MapConfig.Origin.X - HUB_X0) * scale,
+		(MapConfig.Origin.Y - HUB_Z0) * scale
 	)
 	for _, r in full.hubRuns or {} do
 		local f = r.f

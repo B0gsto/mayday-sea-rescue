@@ -36,6 +36,7 @@ Theme.Grad = {
 	red = g("FF8A7A", "E2333A"),
 	teal = g("8FF5E2", "1DB59B"),
 	ink = g("3A3F55", "1A1D2B"), -- dark pills (counters, number badges)
+	tabOff = g("4C7DBF", "22457E"), -- unselected tabs: darker than the cards so the yellow one pops
 }
 
 Theme.Colors = {
@@ -119,7 +120,7 @@ Theme.Text = {
 
 -- Subtle stud texture on title bars and price buttons (owner, 2026-10-25). Off = flat.
 Theme.STUDS = true
-Theme.STUD_TRANSPARENCY = 0.68
+Theme.STUD_TRANSPARENCY = 0.56
 
 local REF = Vector2.new(1280, 720)
 Theme.MIN_SCALE = 0.7
@@ -131,14 +132,17 @@ function Theme.scaleFor(viewport: Vector2): number
 	return math.clamp(s, Theme.MIN_SCALE, Theme.MAX_SCALE)
 end
 
--- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport; on a portrait
--- screen it grows to 80% of the height (no dead space under a short panel).
-function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2): Vector2
-	local h = if viewport.Y > viewport.X then math.max(want.Y, viewport.Y * 0.8 / scale) else want.Y
-	return Vector2.new(
-		math.floor(math.min(want.X, viewport.X * 0.92 / scale)),
-		math.floor(math.min(h, viewport.Y * 0.86 / scale))
-	)
+-- A centred panel's du size: its design size, shrunk to 92% x 86% of the viewport. Desktop
+-- (scale >= 0.95, landscape) caps the width at half the screen unless `wide` (the map). Portrait
+-- returns the most it may grow to (80% of the height); Kit/Panel shrinks it to its content.
+function Theme.panelSize(viewport: Vector2, scale: number, want: Vector2, wide: boolean?): Vector2
+	local portrait = viewport.Y > viewport.X
+	local h = if portrait then math.max(want.Y, viewport.Y * 0.8 / scale) else want.Y
+	local w = math.min(want.X, viewport.X * 0.92 / scale)
+	if scale >= 0.95 and not portrait and not wide then
+		w = math.min(w, math.max(viewport.X * 0.5 / scale, 600))
+	end
+	return Vector2.new(math.floor(w), math.floor(math.min(h, viewport.Y * 0.86 / scale)))
 end
 
 -- Columns for the left icon-button bar: as many rows as fit in 86% of the height (at least 1).

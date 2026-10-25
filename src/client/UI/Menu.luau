@@ -1,6 +1,13 @@
 --!strict
--- Menu: the kit left button bar and the six windows (Shop, Quests, Album, Companion, Crew,
--- Settings), plus the separate Boat-to-me call on the right. Mounted once by HudController.
+-- Menu (docs/23 (m), WP-23c): the left button column and its kit panels. Mounted once by HudController.
+--   Column (HudLayout "menu" region, 2 icon columns): Shop, Quests, Album, Pet, Crew, Settings, Map
+--   and Boat (Boat to me: the server's cooldown rule with the hired Mechanic's shorter wait, drawn as
+--   a ring of ticks; Quick Launch shows the bolt and skips it). Each opens a centred kit Panel; Map
+--   opens the full map (MapController, also M).
+--   Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column (D-pad moves, A presses),
+--   B closes the open panel or leaves the column.
+--   LocalPlayer attribute MenuOpen mirrors "a panel is up" (Waypoint and the pager hide under it).
+--   Menu.open(name) / Menu.close() / Menu.toggle(name) / Menu.openBoat(vehicleId) / Menu.isOpen()
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -10,65 +17,66 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local CrewHire = require(Shared:WaitForChild("Crew"):WaitForChild("CrewHire"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
 local QuestData = require(Shared:WaitForChild("Quests"):WaitForChild("Data"))
-local Telemetry = require(script.Parent.Parent:WaitForChild("Telemetry"))
+local Client = script.Parent.Parent
+local MapController = require(Client:WaitForChild("Controllers"):WaitForChild("MapController"))
+local Telemetry = require(Client:WaitForChild("Telemetry"))
 
-local Layout = require(script.Parent:WaitForChild("Layout"))
-local Kit = script.Parent:WaitForChild("Kit")
-local Album = require(script.Parent:WaitForChild("Panels"):WaitForChild("Album"))
-local BoatCard = require(script.Parent:WaitForChild("BoatCard"))
-local Companion = require(script.Parent:WaitForChild("Panels"):WaitForChild("Companion"))
-local Crew = require(script.Parent:WaitForChild("Panels"):WaitForChild("Crew"))
+local UI = script.Parent
+local Kit = UI:WaitForChild("Kit")
+local Panels = UI:WaitForChild("Panels")
+local Album = require(Panels:WaitForChild("Album"))
+local BoatCard = require(UI:WaitForChild("BoatCard"))
+local Companion = require(Panels:WaitForChild("Companion"))
+local Crew = require(Panels:WaitForChild("Crew"))
 local IconButton = require(Kit:WaitForChild("IconButton"))
-local Quests = require(script.Parent:WaitForChild("Panels"):WaitForChild("Quests"))
-local SettingsPanel = require(script.Parent:WaitForChild("SettingsPanel"))
-local Shop = require(script.Parent:WaitForChild("Panels"):WaitForChild("Shop"))
+local Layout = require(UI:WaitForChild("Layout"))
+local Quests = require(Panels:WaitForChild("Quests"))
+local SettingsPanel = require(UI:WaitForChild("SettingsPanel"))
+local Shop = require(Panels:WaitForChild("Shop"))
 local Style = require(Kit:WaitForChild("Style"))
-local Theme = require(Kit:WaitForChild("Theme"))
 
 local player = Players.LocalPlayer
-local S = Theme.Size
-local BUTTONS = {
+local GOLD = Color3.fromHex("FFD84A")
+local BUTTONS = { -- HudLayout.MENU_COUNT
 	{ name = "Shop", label = "Shop", icon = "shop", color = "yellow" },
 	{ name = "Quests", label = "Quests", icon = "quests", color = "orange" },
 	{ name = "Album", label = "Album", icon = "album", color = "pink" },
-	{ name = "Companion", label = "Buddy", icon = "companion", color = "purple" },
+	{ name = "Companion", label = "Pet", icon = "companion", color = "purple" },
 	{ name = "Crew", label = "Crew", icon = "crew", color = "teal" },
 	{ name = "Settings", label = "Settings", icon = "settings", color = "blue" },
+	{ name = "Map", label = "Map", icon = "map", color = "green" },
+	{ name = "Boat", label = "Boat", icon = "boat_to_me", color = "red" },
 }
 
 local Menu = {}
 
-local gui: ScreenGui? = nil
-local canvas: Frame? = nil
 local bar: Frame? = nil
-local boat: IconButton.IconButton? = nil
 local panels: { [string]: any } = {}
 local buttons: { [string]: IconButton.IconButton } = {}
 local current: string? = nil
 local mounted = false
 
-local function chrome(on: boolean)
-	if bar then
-		bar.Visible = on
-	end
-	if boat then
-		boat.root.Visible = on
-	end
+local function shown(): boolean
+	return not Layout.coldOpen() and player:GetAttribute("CinematicPlaying") ~= true
 end
 
-local function focusPanel(name: string)
+local function chrome()
+	if bar then
+		bar.Visible = shown() and current == nil
+	end
+	player:SetAttribute("MenuOpen", current ~= nil)
+end
+
+local function focusFirst(root: Instance)
 	if not UserInputService.GamepadEnabled then
 		return
 	end
-	local p = panels[name]
-	if not p then
-		return
-	end
-	for _, d in p.root:GetDescendants() do
-		if d:IsA("GuiButton") and d.Selectable and d.Visible and d.Active ~= false then
+	for _, d in root:GetDescendants() do
+		if d:IsA("GuiButton") and d.Selectable and d.Visible then
 			GuiService.SelectedObject = d
 			return
 		end
@@ -79,15 +87,10 @@ function Menu.isOpen(): boolean
 	return current ~= nil
 end
 
-function Menu.isAnyPanelOpen(): boolean
-	return current ~= nil
-end
-
+-- a panel closed itself (its X): forget it and bring the column back
 local function noteClosed()
 	current = nil
-	if not Layout.coldOpen() and player:GetAttribute("CinematicPlaying") ~= true then
-		chrome(true)
-	end
+	chrome()
 end
 
 function Menu.close()
@@ -100,45 +103,30 @@ function Menu.close()
 	if p then
 		p.close()
 	end
-	noteClosed()
+	chrome()
 end
 
 function Menu.open(name: string)
-	if not mounted then
-		return
-	end
-	if Layout.coldOpen() or player:GetAttribute("CinematicPlaying") == true then
-		return
-	end
 	local p = panels[name]
-	if not p then
+	if not (mounted and p and shown()) then
 		return
 	end
 	if current == name then
-		Menu.close()
 		return
+	end
+	if MapController.IsOpen() then
+		MapController.Close()
 	end
 	if current then
 		local old = panels[current]
 		current = nil
-		if old then
-			old.close()
-		end
+		old.close()
 	end
 	current = name
-	chrome(false)
+	chrome()
 	p.open()
-	Telemetry.shop("PhoneOpened")
-	task.defer(focusPanel, name)
-end
-
-function Menu.openBoat(id: string)
-	local card = panels.Boat
-	if not card then
-		return
-	end
-	card.setId(id)
-	Menu.open("Boat")
+	Telemetry.shop("PhoneOpened") -- the funnel's legacy step name: "a menu panel opened"
+	task.defer(focusFirst, p.root)
 end
 
 function Menu.toggle(name: string)
@@ -149,7 +137,15 @@ function Menu.toggle(name: string)
 	end
 end
 
-local function quick(): boolean
+function Menu.openBoat(id: string)
+	local card = panels.Boat
+	if card then
+		card.setId(id)
+		Menu.open("Boat")
+	end
+end
+
+local function quick(): boolean -- the pass or its day pass (the server's rule)
 	local ends = player:GetAttribute("DayPass_QuickLaunch")
 	return MonetizationEffects.passActive(
 		player:GetAttribute("Pass_QuickLaunch") == true,
@@ -158,70 +154,94 @@ local function quick(): boolean
 	)
 end
 
-local function buildBoat(parent: Frame)
-	local b: IconButton.IconButton
-	local sending = false
-	b = IconButton.new(parent, {
-		icon = "boat_to_me",
-		label = "Boat",
-		color = "green",
-		onActivate = function()
-			if sending or b.root.Active == false then
-				return
-			end
-			sending = true
-			b.root.Active = false
-			local text = b.root:FindFirstChild("Label")
-			if text and text:IsA("TextLabel") then
-				text.Text = "…"
-			end
-			task.spawn(function()
-				local ok, done, result = pcall(function()
-					return Net.func("RequestVehicle"):InvokeServer(nil, false, true)
-				end)
-				sending = false
-				if ok and done then
-					return
-				end
-				local why = if ok and type(result) == "string" then result else "Try again"
-				if text and text:IsA("TextLabel") then
-					text.Text = if why == "Cooldown" then "Wait" else "Try again"
-				end
-				task.delay(1.6, function()
-					if text and text:IsA("TextLabel") then
-						text.Text = "Boat"
-					end
-				end)
-			end)
-		end,
-	})
-	b.root.Name = "BoatToMe"
-	b.root.AnchorPoint = Vector2.new(1, 0.5)
-	b.root.Position = UDim2.new(1, -S.margin, 0.5, 0)
-	boat = b
+-- Seconds left and the full wait: VehicleService's RequestVehicle(near) rule, Mechanic included.
+local function boatWait(): (number, number)
+	local cooldown = MonetizationEffects.BOAT_TO_ME_COOLDOWN
+		* CrewHire.boatToMeScale({ Mechanic = player:GetAttribute("CrewMechanic") == true })
+	local last = player:GetAttribute("BoatToMeAt")
+	local left = MonetizationEffects.boatToMeWait(
+		quick(),
+		if type(last) == "number" then last else nil,
+		Workspace:GetServerTimeNow(),
+		cooldown
+	)
+	return left, cooldown
+end
 
+-- The Boat button's extras: a ring of ticks round the tile that fills back up over the cooldown
+-- (the tile greys while it waits), a gold bolt with Quick Launch. Press: your craft comes to you.
+local function dressBoat(b: IconButton.IconButton)
+	local tile = b.root:FindFirstChild("Tile") :: Frame
+	local face = tile:FindFirstChild("Face", true) :: Frame
+	local holder = tile:FindFirstChild("Block") :: Frame
+	local ticks: { Frame } = {}
+	for i = 1, 24 do
+		local a = (i - 0.5) / 24 * 2 * math.pi
+		local t = Instance.new("Frame")
+		t.Name = "CooldownTick"
+		t.AnchorPoint = Vector2.new(0.5, 0.5)
+		t.Position = UDim2.fromScale(0.5 + 0.43 * math.sin(a), 0.5 - 0.43 * math.cos(a))
+		t.Size = UDim2.fromScale(0.09, 0.09)
+		t.BackgroundColor3 = GOLD
+		t.ZIndex = 3
+		Style.corner(t, 99)
+		Style.stroke(t, 1.5, true)
+		t.Parent = face
+		ticks[i] = t
+	end
+	local bolt = Instance.new("TextLabel")
+	bolt.Name = "Bolt"
+	bolt.BackgroundTransparency = 1
+	bolt.Text = "⚡"
+	bolt.TextScaled = true
+	bolt.TextColor3 = GOLD
+	bolt.AnchorPoint = Vector2.new(1, 0)
+	bolt.Position = UDim2.new(1, 6, 0, -8)
+	bolt.Size = UDim2.fromScale(0.42, 0.42)
+	bolt.ZIndex = 4
+	Style.stroke(bolt, 2.5)
+	bolt.Parent = tile
+	local label = b.root:FindFirstChild("Label") :: TextLabel
+	local waiting: boolean? = nil
+	local sending = false
+	local flash = 0
 	local function paint()
-		if sending then
-			return
+		local left, cooldown = boatWait()
+		local wait = left > 0
+		if wait ~= waiting then
+			waiting = wait
+			Style.recolor(holder, Style.grad(if wait then "disabled" else "red"))
 		end
-		local last = player:GetAttribute("BoatToMeAt")
-		local now = Workspace:GetServerTimeNow()
-		local cooldown = MonetizationEffects.BOAT_TO_ME_COOLDOWN
-		local left = if quick()
-			then 0
-			else math.max(0, (if type(last) == "number" then last else 0) + cooldown - now)
-		b.root.Active = left <= 0
-		local text = b.root:FindFirstChild("Label")
-		if text and text:IsA("TextLabel") and text.Text ~= "Try again" then
-			text.Text = if left > 0 then `{math.ceil(left)}s` else "Boat"
+		local lit = math.floor((1 - left / cooldown) * #ticks)
+		for i, t in ticks do
+			t.Visible = wait and i <= lit
+		end
+		bolt.Visible = quick()
+		if os.clock() > flash then
+			label.Text = if sending then "…" elseif wait then `{math.ceil(left)}s` else "Boat"
 		end
 	end
-	paint()
 	RunService.Heartbeat:Connect(function()
-		if b.root.Visible then
+		if b.root.Visible and b.root:IsDescendantOf(game) then
 			paint()
 		end
 	end)
+	return function()
+		if sending or boatWait() > 0 then
+			return
+		end
+		sending = true
+		task.spawn(function()
+			local ok, done, why = pcall(function()
+				return Net.func("RequestVehicle"):InvokeServer(nil, false, true)
+			end)
+			sending = false
+			if not (ok and done) then
+				label.Text = if ok and why == "Cooldown" then "Wait" else "Try again"
+				flash = os.clock() + 1.6
+			end
+		end)
+	end
 end
 
 local function questBadge()
@@ -237,6 +257,64 @@ local function questBadge()
 	end
 end
 
+-- (Re)build the column for the device's grid (HudLayout menu metrics).
+local function buildBar(region: Frame)
+	if bar then
+		bar:Destroy()
+	end
+	local mm = Layout.current().menu
+	local b = Instance.new("Frame")
+	b.Name = "ButtonBar"
+	b.BackgroundTransparency = 1
+	b.Size = UDim2.fromScale(1, 1)
+	b.Parent = region
+	bar = b
+	local grid = Instance.new("UIGridLayout")
+	grid.FillDirection = Enum.FillDirection.Vertical
+	grid.FillDirectionMaxCells = mm.rows
+	grid.CellSize = UDim2.fromOffset(mm.icon, mm.icon + mm.label)
+	grid.CellPadding = UDim2.fromOffset(mm.colGap, mm.gap)
+	grid.SortOrder = Enum.SortOrder.LayoutOrder
+	grid.Parent = b
+	for i, info in BUTTONS do
+		local onPress: () -> ()
+		local btn = IconButton.new(b, {
+			icon = info.icon,
+			label = info.label,
+			color = info.color,
+			size = mm.icon,
+			labelRow = mm.label,
+			onActivate = function()
+				onPress()
+			end,
+		})
+		btn.root.Name = "Menu_" .. info.name
+		-- the label may use the column gap, no more (a long word shrinks instead of touching the next)
+		local label = btn.root:FindFirstChild("Label") :: TextLabel
+		label.Size = UDim2.new(1, mm.colGap - 2, 0, mm.label)
+		btn.root.LayoutOrder = i
+		buttons[info.name] = btn
+		if info.name == "Boat" then
+			onPress = dressBoat(btn)
+		elseif info.name == "Map" then
+			onPress = function()
+				Menu.close()
+				if MapController.IsOpen() then
+					MapController.Close()
+				else
+					MapController.Open()
+				end
+			end
+		else
+			onPress = function()
+				Menu.toggle(info.name)
+			end
+		end
+	end
+	questBadge()
+	chrome()
+end
+
 function Menu.mount()
 	if mounted then
 		return
@@ -244,64 +322,20 @@ function Menu.mount()
 	mounted = true
 	SettingsPanel.mount()
 
-	local playerGui = player:WaitForChild("PlayerGui")
 	local g = Instance.new("ScreenGui")
 	g.Name = "Menu"
 	g.ResetOnSpawn = false
 	g.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	g.DisplayOrder = 30
 	Layout.prepare(g)
-	gui = g
-	g.Parent = playerGui
-	local c = Style.canvas(g)
-	canvas = c
+	g.Parent = player:WaitForChild("PlayerGui")
+	local region = Layout.region(g, "menu")
+	buildBar(region)
+	Layout.onMetrics(function()
+		buildBar(region)
+	end)
 
-	local b = Instance.new("Frame")
-	b.Name = "ButtonBar"
-	b.BackgroundTransparency = 1
-	b.AnchorPoint = Vector2.new(0, 0.5)
-	b.Position = UDim2.new(0, S.margin, 0.5, 0)
-	b.Parent = c
-	bar = b
-	local grid = Instance.new("UIGridLayout")
-	grid.Name = "Grid"
-	grid.FillDirection = Enum.FillDirection.Vertical
-	grid.CellSize = UDim2.fromOffset(S.icon, S.icon + S.iconLabel)
-	grid.CellPadding = UDim2.fromOffset(S.iconGap, S.iconGap)
-	grid.SortOrder = Enum.SortOrder.LayoutOrder
-	grid.Parent = b
-
-	for i, info in BUTTONS do
-		local btn = IconButton.new(b, {
-			icon = info.icon,
-			label = info.label,
-			color = info.color,
-			onActivate = function()
-				Menu.toggle(info.name)
-			end,
-		})
-		btn.root.LayoutOrder = i
-		buttons[info.name] = btn
-	end
-
-	local function fitBar()
-		local vp, scale = Style.metrics(b)
-		local rows =
-			math.max(1, math.floor(vp.Y * 0.86 / scale / (S.icon + S.iconLabel + S.iconGap)))
-		local cols = math.ceil(#BUTTONS / rows)
-		grid.FillDirectionMaxCells = rows
-		grid.CellSize = UDim2.fromOffset(S.icon, S.icon + S.iconLabel)
-		b.Size = UDim2.fromOffset(
-			cols * S.icon + (cols - 1) * S.iconGap,
-			math.min(rows, #BUTTONS) * (S.icon + S.iconLabel)
-				+ (math.min(rows, #BUTTONS) - 1) * S.iconGap
-		)
-	end
-	fitBar()
-	c:GetAttributeChangedSignal("KitScale"):Connect(fitBar)
-
-	buildBoat(c)
-
+	local c = Style.canvas(g) -- the panels, in kit units over the safe area
 	panels = {
 		Boat = BoatCard.new(c, noteClosed),
 		Shop = Shop.new(c, noteClosed),
@@ -312,27 +346,37 @@ function Menu.mount()
 		Settings = SettingsPanel.newPanel(c, noteClosed),
 	}
 
-	local function visible()
-		return not Layout.coldOpen() and player:GetAttribute("CinematicPlaying") ~= true
-	end
-	local function applyVisible()
-		if not visible() then
+	local function applyShown()
+		if not shown() then
 			Menu.close()
 		end
-		chrome(visible() and current == nil)
+		chrome()
 	end
-	Layout.onColdOpen(function()
-		applyVisible()
+	Layout.onColdOpen(applyShown)
+	player:GetAttributeChangedSignal("CinematicPlaying"):Connect(applyShown)
+	player:GetAttributeChangedSignal("MapOpen"):Connect(function()
+		if player:GetAttribute("MapOpen") == true then
+			Menu.close() -- M over an open panel: the map wins
+		end
 	end)
-	player:GetAttributeChangedSignal("CinematicPlaying"):Connect(applyVisible)
-	applyVisible()
-
-	questBadge()
 	player.AttributeChanged:Connect(function(name)
 		if string.sub(name, 1, 10) == "QuestOffer" then
 			questBadge()
 		end
 	end)
+
+	if RunService:IsStudio() then -- smoke driver: Workspace attribute MenuPanel = a panel name or "Boat:<id>" ("" closes)
+		Workspace:GetAttributeChangedSignal("MenuPanel"):Connect(function()
+			local name = Workspace:GetAttribute("MenuPanel")
+			if type(name) == "string" and string.sub(name, 1, 5) == "Boat:" then
+				Menu.openBoat(string.sub(name, 6))
+			elseif type(name) == "string" and panels[name] then
+				Menu.open(name)
+			else
+				Menu.close()
+			end
+		end)
+	end
 
 	ContextActionService:BindActionAtPriority(
 		"Menu_Keys",
@@ -340,40 +384,41 @@ function Menu.mount()
 			if state ~= Enum.UserInputState.Begin or UserInputService:GetFocusedTextBox() then
 				return Enum.ContextActionResult.Pass
 			end
-			if input.KeyCode == Enum.KeyCode.ButtonB then
+			local key = input.KeyCode
+			if key == Enum.KeyCode.ButtonB then
 				if current then
 					Menu.close()
 					return Enum.ContextActionResult.Sink
 				end
+				local sel = GuiService.SelectedObject
+				if bar and sel and sel:IsDescendantOf(bar) then
+					GuiService.SelectedObject = nil
+					return Enum.ContextActionResult.Sink
+				end
 				return Enum.ContextActionResult.Pass
 			end
-			if not visible() then
+			if not shown() or MapController.IsOpen() and key ~= Enum.KeyCode.P then
 				return Enum.ContextActionResult.Pass
 			end
-			if input.KeyCode == Enum.KeyCode.P then
+			if key == Enum.KeyCode.P then
 				Menu.toggle("Shop")
-				return Enum.ContextActionResult.Sink
-			end
-			if input.KeyCode == Enum.KeyCode.ButtonStart then
+			elseif key == Enum.KeyCode.ButtonStart then
 				Menu.toggle("Settings")
-				return Enum.ContextActionResult.Sink
+			elseif key == Enum.KeyCode.DPadLeft then
+				if current or not bar or GuiService.SelectedObject then
+					return Enum.ContextActionResult.Pass -- D-pad already moves the selection
+				end
+				focusFirst(bar)
 			end
-			return Enum.ContextActionResult.Pass
+			return Enum.ContextActionResult.Sink
 		end,
 		false,
 		Enum.ContextActionPriority.High.Value + 10,
 		Enum.KeyCode.P,
 		Enum.KeyCode.ButtonStart,
-		Enum.KeyCode.ButtonB
+		Enum.KeyCode.ButtonB,
+		Enum.KeyCode.DPadLeft
 	)
-end
-
-function Menu.gui(): ScreenGui?
-	return gui
-end
-
-function Menu.canvas(): Frame?
-	return canvas
 end
 
 return Menu

@@ -32,7 +32,7 @@ CrewHire.Roles = {
 } :: { [string]: Role }
 
 -- docs/23 (j): small effects, never replacing play.
-CrewHire.MechanicCooldown = 0.7 -- Boat to me cooldown x0.7 (VehicleService, VehiclesApp)
+CrewHire.MechanicCooldown = 0.7 -- Boat to me cooldown x0.7 (VehicleService, UI/Menu)
 CrewHire.DispatchFactor = 0.8 -- call offers 20% sooner (OperationService)
 CrewHire.LifeguardSwimmers = 1 -- one extra free-roam swimmer near the owner's island
 

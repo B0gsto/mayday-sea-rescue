@@ -1,5 +1,6 @@
 --!strict
--- Tabs: a row of chunky pill tabs (icon + 1 word); the selected one is yellow and raised.
+-- Tabs: a row of chunky pill tabs (icon + 1 word); the selected one is yellow and raised, the
+-- others dark blue.
 -- Gamepad: shoulder buttons step the tabs while `root` is visible.
 --   local t = Tabs.new(panel.top, { { name = "Boats", icon = "shop" }, ... }, function(i) end)
 --   t.select(2)  t.selected()
@@ -32,7 +33,7 @@ function Tabs.new(parent: Instance, tabs: { Tab }, onSelect: ((number) -> ())?):
 	local function paint()
 		for i, it in items do
 			local on = i == current
-			Style.recolor(it.holder, Style.grad(if on then "yellow" else "blue"))
+			Style.recolor(it.holder, Style.grad(if on then "yellow" else "tabOff"))
 			it.root.Size =
 				UDim2.new(1 / #tabs, -10 + 10 / #tabs, 0, if on then S.tab else S.tab - 6)
 		end
@@ -49,7 +50,7 @@ function Tabs.new(parent: Instance, tabs: { Tab }, onSelect: ((number) -> ())?):
 		local b = Style.button(root, UDim2.new())
 		b.Name = "Tab_" .. tab.name
 		b.LayoutOrder = i
-		local holder, face = Style.block(b, Theme.Grad.blue, { lip = 5, radius = S.cornerSmall })
+		local holder, face = Style.block(b, Theme.Grad.tabOff, { lip = 5, radius = S.cornerSmall })
 		local row = Instance.new("Frame")
 		row.BackgroundTransparency = 1
 		row.Size = UDim2.fromScale(1, 1)

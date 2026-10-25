@@ -104,7 +104,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   (`Marina.lock`). Each berth has one owner-only `Launch` prompt that spawns the player's last-launched craft
   (`data.flags.lastVehicle`, K3); switching craft is the boat board (`server/Dock/BoatBoard` + client
   `BoatBoardController`, docs/23 WP-5: a rack of scale models on each owned plot, tag `BoatBoard`; owned →
-  crane beat + `DockLaunch` docked at the berth, locked → the phone card via `Phone.openApp(name, mount)`). Every spawn stands the player on
+  crane beat + `DockLaunch` docked at the berth, locked → the kit Boat card via `Menu.openBoat(id)`). Every spawn stands the player on
   their jetty; a returning player (`coldOpenDone`) also gets that craft docked beside them (K11). API: `GetBay`
   (the berth), `BerthLaunch(player, vehicleId) -> CFrame?`, `GetVehicle`, `GetDriver`,
   `GetOccupants`, `AddSurvivor(model, survivor) -> boolean` (false when full), `RemoveSurvivors`, `Climb`,
@@ -247,19 +247,20 @@ casualty shouts in CasualtyController).
 - Daily crate (K12): `StreakService` + `StreakRules` / `StreakConfig`; the crate and its day-pip sign are
   client-built at the player's bay (`World/StreakCrate`, `World/StreakSign`).
 
-## Phone (all menus)
+## Menu (all menus, WP-23c: no phone)
 
-`src/client/UI/Phone.luau`: a portrait iPhone (P, gamepad L1, or the phone button left of the HUD). Six
-apps (K9): Map, Vehicles, Store, Crew, Pets, Settings; dock Map, Vehicles, Store, Settings. The red dot is
-off since buys moved to the dock boards (WP-11a). `UI/VehiclesApp` (phone: Boat to me + the
-Boat to me only since WP-10b; a dock board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
-recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
-`SettingsPanel`, Map opens `MapController`. `UI/AlbumApp` is the sticker album
-(docs/archive/21-explore-world-plan.md §3; a seventh app on the grid).
+`src/client/UI/Menu.luau`: the left column of kit icon buttons (HudLayout region `menu`): Shop, Quests,
+Album, Pet, Crew, Settings, Map, Boat (Boat to me: `RequestVehicle(nil, false, true)`, the server's cooldown
+via `MonetizationEffects.boatToMeWait` x `CrewHire.boatToMeScale`, Quick Launch bolt). Each opens a kit Panel
+(`UI/Kit/`): `UI/Panels/Shop` (tabs Passes / Packs / Boosts / Day from `ProductShelves.storeItems`),
+`Panels/Quests`, `Panels/Album` (sticker pages), `Panels/Companion` (Bosun or one pet; `Pet_Equip`),
+`Panels/Crew` (party seats + hired crew), `SettingsPanel.newPanel`; dock boards open `UI/BoatCard` via
+`Menu.openBoat(id)`. Keys: P Shop, gamepad Start Settings, D-pad Left focuses the column, B closes.
+Player attribute `MenuOpen` while a panel is up.
 
 ## HUD and map
 
-- HUD (K10): wallet, rank bar, goal chip, objective strip, subtitle, minimap, phone button.
+- HUD (K10): menu column, wallet, rank bar, objective strip, minimap (no radio strip, no goal chip).
   `src/shared/HudLayout.luau` (pure) places the regions per device.
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
@@ -302,7 +303,7 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
   `Discovery_Found`, `Discovery_Get`), `DiscoveryController` (`IsRevealed(cell | islandId)`, `IsStamped`,
-  `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/AlbumApp` (phone Album).
+  `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/Panels/Album`. The full map draws the fog (coarse cells + the hub's fine cells).
 - Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
   `TalkController` zooms in and shows 1 to 3 numbered replies.
 - Quests (docs/23 (l), WP-21b): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
