@@ -1,6 +1,6 @@
--- DockBlueprints (docs/23 (j), WP-14c): the blueprint table shows the next level, every building the
--- plot's level qualifies for, and the quest blueprints not earned yet; owned ones drop off; the rank
--- (or the quest) gates the padlock, and only levels / buildings are for sale.
+-- DockBlueprints (docs/23 (j), WP-14d): the build tablet shows every level, building, quest blueprint and
+-- decor; `available` still lists what Lv 1 can buy now; owned ones drop off that list; the rank (or the
+-- quest) gates the padlock, and only levels / buildings / decor are for sale.
 return function(t)
 	local D = t.load("src/shared/DockBlueprints.luau")
 	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
@@ -41,16 +41,27 @@ return function(t)
 		t.expect(#D.available(2, { SubPen = true })).toBe(2)
 	end)
 
-	t.test("sheets carry 1-3 word labels", function()
+	t.test("catalog lists every level, building, blueprint and decoration", function()
+		local items = D.catalog()
+		t.expect(#items).toBe(DockConfig.MAX - 1 + #DockConfig.BUILDINGS + 1 + #DockConfig.DECOR)
+		t.expect(items[1].kind).toBe("Level")
+		t.expect(items[1].key).toBe(2)
+		t.expect(items[#items].kind).toBe("Decor")
+		t.expect(items[#items].key).toBe(DockConfig.DECOR[#DockConfig.DECOR])
+	end)
+
+	t.test("cards carry 1-3 word labels", function()
 		t.expect(D.label({ kind = "Level", key = 3 })).toBe("Level 3")
 		t.expect(D.label({ kind = "Building", key = "Hangar" })).toBe("Helipad")
 		t.expect(D.label({ kind = "Building", key = "SubPen" })).toBe("Sub pen")
 		t.expect(D.label({ kind = "Blueprint", key = "Lighthouse" })).toBe("Lighthouse")
+		t.expect(D.label({ kind = "Decor", key = "PicnicTable" })).toBe("Picnic table")
 	end)
 
-	t.test("only levels and buildings are sold; a blueprint is a quest reward", function()
+	t.test("levels, buildings and decor are sold; a blueprint is a quest reward", function()
 		t.expect(D.buyable({ kind = "Level", key = 2 })).toBe(true)
 		t.expect(D.buyable({ kind = "Building", key = "Hangar" })).toBe(true)
+		t.expect(D.buyable({ kind = "Decor", key = "FlowerBed" })).toBe(true)
 		t.expect(D.buyable({ kind = "Blueprint", key = "Lighthouse" })).toBe(false)
 	end)
 
@@ -67,5 +78,6 @@ return function(t)
 			D.locked({ kind = "Blueprint", key = "Lighthouse" }, DockConfig.rankIndex("Admiral"))
 		)
 			.toBe(true)
+		t.expect(D.locked({ kind = "Decor", key = "Statue" }, 1)).toBe(false)
 	end)
 end

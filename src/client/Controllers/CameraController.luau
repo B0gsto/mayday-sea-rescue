@@ -10,6 +10,7 @@
 --   CameraController.Comfort     (Camera/Comfort: get/set settings)
 --   CameraController.PlayCinematic(shots, opts?) -> handle  (Camera/Cinematic.play)
 --   CameraController.Shake(amount 0..1)
+--   CameraController.SetOverride(cf, fov?) / ClearOverride()  a Scriptable camera (the build tablet)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -40,6 +41,8 @@ local freshSpawn = true -- the first Foot entry after a spawn pulls the zoom out
 
 local player = Players.LocalPlayer
 local mode: Mode = "None"
+local override: CFrame? = nil
+local overrideFov: number? = nil
 local current: {
 	seat: BasePart,
 	model: Model?,
@@ -315,6 +318,20 @@ local function telemetry(): any
 end
 
 local function update(dt: number)
+	local camera = Workspace.CurrentCamera
+	if override then
+		if mode ~= "None" then
+			exitMode(mode)
+			mode = "None"
+			player:SetAttribute("CameraMode", mode)
+		end
+		camera.CameraType = Enum.CameraType.Scriptable
+		camera.CFrame = override
+		if overrideFov then
+			camera.FieldOfView = overrideFov
+		end
+		return
+	end
 	local want = wantedMode()
 	if want ~= mode then
 		exitMode(mode)
@@ -322,7 +339,6 @@ local function update(dt: number)
 		enterMode(mode)
 		player:SetAttribute("CameraMode", mode) -- play tests read it
 	end
-	local camera = Workspace.CurrentCamera
 	local char, hum, root = character()
 	if mode == "Cinematic" then
 		Cinematic.update(dt)
@@ -445,6 +461,18 @@ end
 
 function CameraController.Shake(amount: number)
 	Chase.addTrauma(amount)
+end
+
+-- Scriptable override (DockController's build mode): set every frame while it lasts. Clearing it lets the
+-- normal mode (Foot / Chase) take the camera back on the next render step.
+function CameraController.SetOverride(cf: CFrame, fov: number?)
+	override = cf
+	overrideFov = fov
+end
+
+function CameraController.ClearOverride()
+	override = nil
+	overrideFov = nil
 end
 
 function CameraController.Init()

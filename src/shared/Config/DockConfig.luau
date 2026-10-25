@@ -55,7 +55,7 @@ DockConfig.Levels = {
 
 -- docs/23 h (WP-10b): buildings bought apart from the level, same two prices. `needs` = the lowest dock level
 -- that may buy it (each stands on its own island lot, WP-19b). `vehicles` = its board's craft, in order.
-export type Building = Level & { needs: number, vehicles: { string } }
+export type Building = Level & { needs: number, vehicles: { string }, lot: string }
 
 DockConfig.BUILDINGS = { "Hangar", "SubPen" } -- the car Garage was cut 2026-10-25 (pre-hub-cut)
 
@@ -69,6 +69,7 @@ DockConfig.Buildings = {
 		unlocks = { "AircraftAtDock" },
 		needs = 3,
 		vehicles = { "RescueHelicopter" },
+		lot = "Hangar",
 	},
 	SubPen = {
 		cash = 20000,
@@ -79,6 +80,7 @@ DockConfig.Buildings = {
 		unlocks = { "SubAtDock" },
 		needs = 1,
 		vehicles = { "Submarine" },
+		lot = "SubPen",
 	},
 } :: { [string]: Building }
 
@@ -87,6 +89,77 @@ DockConfig.Buildings = {
 DockConfig.Blueprints = {
 	Lighthouse = { lot = "Spare1" }, -- Keeper Ives' lamp chain (Quests/Data Lamp3)
 } :: { [string]: { lot: string } }
+
+-- Decorations (WP-14d): Cash-only Lego set pieces on the free lots by the spawn. Bought from the build
+-- tablet's Decor tab and kept in data.dockBuildings like buildings, so the save migration accepts them.
+export type Decor = {
+	name: string,
+	cash: number,
+	icon: string, -- UiImages.Kit key
+	color: string, -- Theme.Grad accent for the build card
+	lot: string, -- Marina.LOTS key
+	offset: Vector2, -- studs from the lot centre, x / z
+	size: Vector2, -- footprint in studs (x / z)
+}
+
+DockConfig.DECOR = { "FlowerBed", "PicnicTable", "LampRow", "FlagPole", "Statue", "Fountain" }
+
+DockConfig.Decorations = {
+	FlowerBed = {
+		name = "Flower bed",
+		cash = 2000,
+		icon = "gift",
+		color = "pink",
+		lot = "Spare2",
+		offset = Vector2.new(-10, 0),
+		size = Vector2.new(8, 8),
+	},
+	PicnicTable = {
+		name = "Picnic table",
+		cash = 5000,
+		icon = "daily",
+		color = "green",
+		lot = "Spare2",
+		offset = Vector2.new(0, 0),
+		size = Vector2.new(8, 8),
+	},
+	LampRow = {
+		name = "Lamp row",
+		cash = 9000,
+		icon = "boost",
+		color = "yellow",
+		lot = "Spare2",
+		offset = Vector2.new(10, 0),
+		size = Vector2.new(9, 6),
+	},
+	FlagPole = {
+		name = "Flag pole",
+		cash = 15000,
+		icon = "rank",
+		color = "blue",
+		lot = "Spare3",
+		offset = Vector2.new(9, -8),
+		size = Vector2.new(7, 7),
+	},
+	Statue = {
+		name = "Statue",
+		cash = 25000,
+		icon = "vip",
+		color = "orange",
+		lot = "Spare3",
+		offset = Vector2.new(9, 0),
+		size = Vector2.new(7, 7),
+	},
+	Fountain = {
+		name = "Fountain",
+		cash = 40000,
+		icon = "lifebuoy",
+		color = "teal",
+		lot = "Spare3",
+		offset = Vector2.new(9, 8),
+		size = Vector2.new(7, 7),
+	},
+} :: { [string]: Decor }
 
 -- Can a player buy building `key` with Cash? -> ok, reason ("Owned" | "Level" | "Rank" | "Cash"), price.
 function DockConfig.canBuyBuilding(
@@ -138,9 +211,44 @@ end
 DockConfig.BOARD_SLOT = Marina.LOTS.Boathouse.cf * CFrame.new(0, 0, 14)
 DockConfig.BOARD_SIZE = 6
 
+-- The build station (WP-14d) stands on the free Spare3 lot by the spawn, clear of the decor spots.
+DockConfig.BUILD_STATION =
+	{ lot = "Spare3", offset = Vector2.new(-11, 0), size = Vector2.new(16, 12) }
+
 -- The Lv 3 paint booth (docs/23 d.3), in the berth frame: the gantry over the berth's inshore half. A craft
 -- seated inside this box opens its owner's paint card (DockController). The docked spot (z <= 0) stays out.
 DockConfig.PAINT_BOOTH = { cf = CFrame.new(1.5, 6, 15), size = Vector3.new(23, 20, 26) }
+
+-- World spot of a decoration in the berth frame (`frame` = marina berth frame).
+function DockConfig.decorSpot(key: string, frame: CFrame): CFrame?
+	local d = DockConfig.Decorations[key]
+	if not d then
+		return nil
+	end
+	return frame * Marina.LOTS[d.lot].cf * CFrame.new(d.offset.X, 0, d.offset.Y)
+end
+
+-- World spot of the build station in the berth frame.
+function DockConfig.stationSpot(frame: CFrame): CFrame
+	local st = DockConfig.BUILD_STATION
+	return frame * Marina.LOTS[st.lot].cf * CFrame.new(st.offset.X, 0, st.offset.Y)
+end
+
+-- Can a player buy decoration `key` with Cash? -> ok, reason ("Owned" | "Cash"), price.
+function DockConfig.canBuyDecor(
+	key: string,
+	owned: boolean,
+	cash: number
+): (boolean, string?, number?)
+	local d = DockConfig.Decorations[key]
+	if not d or owned then
+		return false, "Owned", nil
+	end
+	if cash < d.cash then
+		return false, "Cash", d.cash
+	end
+	return true, nil, d.cash
+end
 
 function DockConfig.rankIndex(rankId: string): number
 	for i, r in ProgressionConfig.Ranks do

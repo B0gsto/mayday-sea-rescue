@@ -2,6 +2,7 @@
 -- ProgressionRules: the pure progression math (rank from Rep, storm multipliers, purchase checks,
 -- save-data defaults and migration). No services, safe to load in Lune (tests/Progression.spec.luau,
 -- tests/Ranks.spec.luau). Server services and HUD both use it so they agree.
+local DockConfig = require(script.Parent.Config.DockConfig)
 local MonetizationConfig = require(script.Parent.Config.MonetizationConfig)
 local ProgressionConfig = require(script.Parent.Config.ProgressionConfig)
 local VehicleUpgrades = require(script.Parent.VehicleUpgrades)
@@ -16,7 +17,7 @@ export type PlayerData = {
 	totalRescues: number,
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- your dock at the marina, 1..5 (docs/23 d.2; DockService)
-	dockBuildings: { [string]: boolean }, -- Garage, Hangar, SubPen (docs/23 h), quest blueprint Lighthouse
+	dockBuildings: { [string]: boolean }, -- DockConfig buildings, blueprints (Lighthouse) and decor
 	-- Hired crew roles (docs/23 (j), WP-15; CrewHireService), max one per role.
 	crew: { [string]: boolean },
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
@@ -356,8 +357,16 @@ function Rules.migrate(raw: any): PlayerData
 	data.coldOpenDone = raw.coldOpenDone == true
 	data.dockLevel = math.clamp(math.floor(num(raw.dockLevel, 1)), 1, 5)
 	if type(raw.dockBuildings) == "table" then
-		for _, key in { "Garage", "Hangar", "SubPen", "Lighthouse" } do
-			if raw.dockBuildings[key] == true then
+		for key, owned in raw.dockBuildings do
+			if
+				type(key) == "string"
+				and owned == true
+				and (
+					DockConfig.Buildings[key] ~= nil
+					or DockConfig.Blueprints[key] ~= nil
+					or DockConfig.Decorations[key] ~= nil
+				)
+			then
 				data.dockBuildings[key] = true
 			end
 		end

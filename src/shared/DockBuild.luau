@@ -1,0 +1,63 @@
+--!strict
+-- DockBuild (docs/23 (j) rule 4, WP-14d): the pure math behind the build tablet's top-down camera and the
+-- spot each card outlines. Client-side only, no services (tests/DockBuild.spec.luau). `camera` frames the
+-- whole island from the bridge side, tilted down, so the lots read like a build plate; `spot` maps an item
+-- to its lot CFrame (berth frame) and footprint. The outline itself is drawn by DockController.
+local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Marina = require(script.Parent:WaitForChild("Marina"))
+
+local DockBuild = {}
+
+DockBuild.ISLAND_RADIUS = 172 -- the plateau (160) plus a little beach, from HubLayout.IslandRadius
+DockBuild.PITCH = math.rad(58) -- down from horizontal: high enough to read the lots, low enough to see fronts
+DockBuild.FOV = 45 -- camera FieldOfView
+DockBuild.MARGIN = 1.12 -- breathing room round the island
+DockBuild.MAX_DISTANCE = 1600
+
+-- Outline footprints that differ from their lot (the jetty is a long finger; the tower lot is tight).
+local LEVEL_SPOT = {
+	[2] = { lot = "Jetty", size = Vector2.new(10, 44) },
+	[3] = { lot = "Boathouse", size = Vector2.new(34, 40) },
+	[4] = { lot = "LifeguardTower", size = Vector2.new(10, 10) },
+	[5] = { lot = "Station", size = Vector2.new(60, 44) },
+} :: { [number]: { lot: string, size: Vector2 } }
+
+-- Camera distance that fits `radius` in both axes for the given viewport aspect and FOV.
+function DockBuild.distance(radius: number, aspect: number, fov: number?): number
+	local vf = math.tan(math.rad(fov or DockBuild.FOV) / 2)
+	local hf = vf * math.max(aspect, 0.3)
+	return math.min(radius * DockBuild.MARGIN / math.min(vf, hf), DockBuild.MAX_DISTANCE)
+end
+
+-- The build-mode camera CFrame in the berth frame. `aim` (world) pulls the look target toward a selected
+-- item's spot; without it the island centre is framed. The camera sits inland of the island (the bridge
+-- side), looking out over the lots to the sea.
+function DockBuild.camera(frame: CFrame, radius: number, aspect: number, aim: Vector3?): CFrame
+	local d = DockBuild.distance(radius, aspect)
+	local centre = (frame * Marina.ISLAND).Position
+	local look = if aim then centre:Lerp(aim, 0.35) else centre
+	local pos = centre
+		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
+		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
+	return CFrame.lookAt(pos, look)
+end
+
+-- Where an item would stand, in the berth frame, and the footprint to outline -> CFrame, Vector2.
+function DockBuild.spot(item: any): (CFrame, Vector2)
+	if item.kind == "Level" then
+		local s = LEVEL_SPOT[item.key] or LEVEL_SPOT[2]
+		return Marina.LOTS[s.lot].cf, s.size
+	elseif item.kind == "Building" then
+		local b = DockConfig.Buildings[item.key]
+		return Marina.LOTS[b.lot].cf, Marina.LOTS[b.lot].size
+	elseif item.kind == "Blueprint" then
+		local bp = DockConfig.Blueprints[item.key]
+		return Marina.LOTS[bp.lot].cf, Marina.LOTS[bp.lot].size
+	elseif item.kind == "Decor" then
+		local d = DockConfig.Decorations[item.key]
+		return DockConfig.decorSpot(item.key, CFrame.identity) or CFrame.identity, d.size
+	end
+	return CFrame.identity, Vector2.new(8, 8)
+end
+
+return DockBuild
