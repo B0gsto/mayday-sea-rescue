@@ -11,7 +11,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "CapsizedFerry",
 	displayName = "Capsized Ferry",
-	radioLine = "MAYDAY RELAY, all stations: the Gale Queen has capsized off the harbour mouth.",
 	weight = 1.0, -- big calls pay by share (docs 03 section 2)
 	capSeconds = 540, -- its own 8 to 10 minute timer (tune)
 	isBig = true,
@@ -26,7 +25,7 @@ local def: Types.OperationDef = {
 			label = "Answer",
 			realTerm = "MAYDAY RELAY",
 			role = "Navigator",
-			mechanicId = "radio_ack",
+			mechanicId = "answer",
 			gradeBands = {
 				{ metric = "elapsed", gold = 15, silver = 25, bronze = 40 },
 			},
@@ -35,7 +34,7 @@ local def: Types.OperationDef = {
 			timeoutSec = 45,
 			onFail = "npc",
 			npcSeconds = 8,
-			tip = "Acknowledge the relay at once, then keep the channel quiet.",
+			tip = "Answer the relay at once.",
 		},
 		{
 			id = "pickup",

@@ -17,7 +17,7 @@
 --   CrewJoin           C->S  join a crew / invite accept (S->C echoes crew changes)
 --   CrewLeave          C->S  leave the crew (S->C echoes)
 --   PlayerDataChanged  S->C  the player's progression snapshot (cash, rep, rank, vehicles)
---   StormChanged       S->C  one-shot cue when the storm phase changes (siren, radio line). The
+--   StormChanged       S->C  one-shot cue when the storm phase changes (siren). The
 --                            continuous storm state is NOT sent by remote: it lives in attributes on
 --                            ReplicatedStorage.Weather (State, StateStartTime, Intensity,
 --                            WindDirection, StormId), so late joiners read it without catch-up.

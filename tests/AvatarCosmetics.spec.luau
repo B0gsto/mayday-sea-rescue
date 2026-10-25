@@ -66,12 +66,10 @@ return function(t)
 		end
 	end)
 
-	t.test("gold badge and radio tag", function()
+	t.test("gold badge", function()
 		t.expect(AC.gold("Gold")).toBe(true)
 		t.expect(AC.gold("Off")).toBe(false)
 		t.expect(AC.gold(nil)).toBe(false)
-		t.expect(AC.radioTag("Gold")).toBe("VIP")
-		t.expect(AC.radioTag("Off")).toBeNil()
 	end)
 
 	t.test("whistle cooldown", function()

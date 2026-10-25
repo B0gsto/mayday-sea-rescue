@@ -1,7 +1,7 @@
 --!strict
 -- SettingsPanel: the settings menu (docs 13 RP-S1). Camera comfort (FOV, shake, look sensitivity,
 -- speed FOV), a "Seasick-safe" preset, a graphics override (ocean and scatter detail), volumes (master,
--- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, and
+-- effects, voices, music), NPC voices on/off, muting other players' horns / sirens / radios, and
 -- "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
 -- Layout: the stock iOS Settings look, a dark grouped list in one ScrollingFrame (icon tile,
@@ -12,7 +12,7 @@
 -- Values live in Camera/Comfort (saved on the profile; keys and rules in shared/SettingsRules).
 --
 -- Audio: sets the AudioConfig SoundGroup tree (SoundService.Master > Music, SFX, Ambience, Radio >
--- Voice) to the slider values; "Voice" (voiced radio clips) is muted while voice is off. Sounds
+-- Voice) to the slider values; "Radio" is the NPC voice level and "Voice" is muted while voice is off. Sounds
 -- join a group through Sound.SoundGroup (SettingsPanel.soundGroup(name) finds or makes it).
 --
 --   SettingsPanel.mount()   HudController calls this once
@@ -807,9 +807,9 @@ local function build()
 	local audio = section(s, "Audio")
 	slider(audio, "volMaster", "note", Tint.red, "Master", 0.05, pct)
 	slider(audio, "volSfx", "sparkle", Tint.orange, "Effects", 0.05, pct)
-	slider(audio, "volRadio", "wave", Tint.teal, "Radio", 0.05, pct)
+	slider(audio, "volRadio", "wave", Tint.teal, "Voices", 0.05, pct)
 	slider(audio, "volMusic", "notes", Tint.pink, "Music", 0.05, pct)
-	toggle(audio, "voice", "bubble", Tint.purple, "Voices")
+	toggle(audio, "voice", "bubble", Tint.purple, "Voices on")
 	toggle(audio, "muteHorns", "horn", Tint.grey, "Mute horns")
 	toggle(audio, "muteSirens", "burst", Tint.red, "Mute sirens")
 	toggle(audio, "muteRadios", "no", Tint.grey, "Mute radios")

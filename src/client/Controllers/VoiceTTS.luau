@@ -1,16 +1,13 @@
 --!strict
--- VoiceTTS: speaks our own fixed lines with Roblox AudioTextToSpeech (docs/11 section 6) until the
--- ElevenLabs banks ship. RadioController plays VoiceManifest clips first and only falls back here.
--- Never pass player-typed text. Cast presets: UI/VoiceCast.
+-- VoiceTTS: NPC voices (people you talk to in person, casualties calling out) with Roblox
+-- AudioTextToSpeech (docs/11 section 6). Never pass player-typed text. Cast presets: UI/VoiceCast.
 --
 --   VoiceTTS.say(text, castId, opts?) -> boolean   yields while speaking; false = not voiced (voice
 --                                                  off, throttled, failed): the caller's subtitle carries it
 --   VoiceTTS.speak(text, castId, opts?)            the same without yielding
---   VoiceTTS.prefetch(text, castId)                generate ahead (the radio queue does this)
 --   VoiceTTS.stop(channel)                         cut what that channel is saying
---   VoiceTTS.enabled() -> boolean                  settings: "Radio voices" (Master.Radio.Voice) on
---   opts = { into: Instance?   an audio node to feed (the radio FX chain); default 2D at Master x Radio
---            at: Instance?     a model or part: 3D from it (AudioEmitter, heard by a camera listener)
+--   VoiceTTS.enabled() -> boolean                  settings: "Voices" (Master.Radio.Voice) on
+--   opts = { at: Instance?     a model or part: 3D from it (AudioEmitter, heard by a camera listener)
 --            channel: string?  a new line on a channel cuts the old one (default the castId)
 --            cancelled: (() -> boolean)? }
 local Players = game:GetService("Players")
@@ -120,12 +117,9 @@ local function mixLevel(): number
 		* (if type(extra) == "number" then math.clamp(extra, 0, 2) else 1)
 end
 
-local function resolve(text: string, castId: string): ({ string }, string)
-	if castId == "PLAYER_M" and player:GetAttribute("RadioVoice") == "F" then
-		castId = "PLAYER_F"
-	end
+local function resolve(text: string): { string }
 	local line = VoiceCast.spoken(text)
-	return if line then VoiceCast.chunks(line) else {}, castId
+	return if line then VoiceCast.chunks(line) else {}
 end
 
 -- One generated clip, cached by voice and text. nil when throttled or failed.
@@ -147,7 +141,7 @@ local function load(text: string, castId: string): AudioTextToSpeech?
 		return nil
 	end
 	table.insert(stamps, now)
-	local cast = VoiceCast.Cast[castId] or VoiceCast.Cast.CG_DAY
+	local cast = VoiceCast.Cast[castId] or VoiceCast.Cast.AGGIE
 	local tts = Instance.new("AudioTextToSpeech")
 	tts.Text = text
 	tts.VoiceId = cast.voice
@@ -184,18 +178,6 @@ local function load(text: string, castId: string): AudioTextToSpeech?
 	return tts
 end
 
-function VoiceTTS.prefetch(text: string, castId: string)
-	if not VoiceTTS.enabled() then
-		return
-	end
-	local pieces, cast = resolve(text, castId)
-	task.spawn(function()
-		for _, piece in pieces do
-			load(piece, cast)
-		end
-	end)
-end
-
 function VoiceTTS.stop(channel: string)
 	owner[channel] = nil
 	local p = playing[channel]
@@ -209,7 +191,7 @@ function VoiceTTS.say(text: string, castId: string, opts: { [string]: any }?): b
 	if not VoiceTTS.enabled() then
 		return false
 	end
-	local pieces, cast = resolve(text, castId)
+	local pieces, cast = resolve(text), castId
 	if #pieces == 0 then
 		return false
 	end
@@ -219,7 +201,7 @@ function VoiceTTS.say(text: string, castId: string, opts: { [string]: any }?): b
 	owner[channel] = token
 	local _, fader = graph()
 	fader.Volume = mixLevel()
-	local target: Instance = o.into or fader
+	local target: Instance = fader
 	if o.at then
 		local e = emitterOn(o.at)
 		if e then

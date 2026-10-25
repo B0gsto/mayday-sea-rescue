@@ -875,10 +875,6 @@ local function vehicleRoot(vehicle: Model): BasePart?
 	return vehicle.PrimaryPart or vehicle:FindFirstChildWhichIsA("BasePart", true)
 end
 
-local function notify(call: any, player: Player, message: string)
-	operations().Notify(call, player, message)
-end
-
 -- Unanchors and welds a victim into one assembly so it can ride a boat.
 local function prepareCarry(victim: any)
 	unregister(victim.floater)
@@ -944,12 +940,10 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 	end
 	local Ops = operations()
 	if not forced and not Ops.CanAct(call, player) then
-		notify(call, player, "That's another crew's call.")
 		return
 	end
 	local vehicle = vehicleOf(player)
 	if not vehicle then
-		notify(call, player, "Bring a boat alongside to pull them aboard.")
 		return
 	end
 	if
@@ -957,7 +951,6 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 		and CallLogic.flatDistance(vehicle:GetPivot().Position, victim.root.Position)
 			> call.spec.interaction.vehicleRange
 	then
-		notify(call, player, "Bring your boat closer.")
 		return
 	end
 	prepareCarry(victim)
@@ -968,8 +961,7 @@ onPull = function(victim: any, player: Player, forced: boolean?)
 		if ok then
 			added = result == true
 			if not added then
-				restoreFloat(victim)
-				notify(call, player, "Your boat is full. Deliver your survivors first.")
+				restoreFloat(victim) -- full shows on the craft's seat pips
 				return
 			end
 		else

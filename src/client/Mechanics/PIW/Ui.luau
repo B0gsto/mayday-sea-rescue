@@ -12,8 +12,6 @@ local UserInputService = game:GetService("UserInputService")
 
 local HudTheme = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local Layout = require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("Layout"))
-local RadioFormat =
-	require(script.Parent.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioFormat"))
 
 local Ui = {}
 Ui.Theme = HudTheme
@@ -98,7 +96,7 @@ function Ui.screen(bag: Bag, name: string): ScreenGui
 	return gui
 end
 
--- The Layout "prompt" region (centre low, above the radio subtitles) of a mechanic screen, as a
+-- The Layout "prompt" region (centre low, above the subtitles) of a mechanic screen, as a
 -- bottom-up stack so a step panel and a recovery panel never sit on top of each other.
 local function promptStack(gui: ScreenGui): Frame
 	local region = Layout.region(gui, "prompt")
@@ -261,6 +259,22 @@ function Ui.hint(
 	return row, l
 end
 
+-- at most `max` words (a trailing "…" when cut); a leading speaker tag before a quote is not counted
+local function capLine(text: string, max: number): string
+	local who, said = string.match(text, '^([^":]+:)%s+(".*)$')
+	local out, n = {}, 0
+	for w in string.gmatch(said or text, "%S+") do
+		n += 1
+		if n > max then
+			out = { (string.gsub(table.concat(out, " "), "[%.,;:]+$", "")) .. "…" }
+			break
+		end
+		out[n] = w
+	end
+	local capped = table.concat(out, " ")
+	return if who then who .. " " .. capped else capped
+end
+
 -- A crew call-out line ("Five metres... three... neutral!") near the top of the screen.
 function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 	local l = Instance.new("TextLabel")
@@ -280,7 +294,7 @@ function Ui.callout(bag: Bag, gui: ScreenGui): (string, number?) -> ()
 	return function(text: string, seconds: number?)
 		n += 1
 		local mine = n
-		l.Text = RadioFormat.capLine(text, 6) -- subtitles stay at six words, like the radio
+		l.Text = capLine(text, 6) -- subtitles stay at six words
 		task.delay(seconds or 2.5, function()
 			if n == mine and l.Parent then
 				l.Text = ""

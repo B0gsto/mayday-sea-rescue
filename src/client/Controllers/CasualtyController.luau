@@ -20,7 +20,6 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
-local RadioLines = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("RadioLines"))
 local VoiceTTS = require(script.Parent.VoiceTTS)
 
 local CasualtyController = {}
@@ -48,21 +47,23 @@ type Rig = {
 
 local rigs: { [Model]: Rig } = {}
 local SHOUT_RANGE = 200 -- studs from the camera
--- lines.csv suffixes (CSM_/CSF_ CASUALTY_*) by what the casualty is doing
+-- what the casualty shouts, by what they are doing (lines.csv CSM_/CSF_ CASUALTY_*)
 local SHOUTS: { [string]: { string } } = {
-	Wave = { "HELP", "HELP_2", "PAX_HERE" },
-	Panic = { "PANIC", "GRAB", "HELP_2" },
-	Tired = { "TIRED", "COLD" },
-	Aboard = { "THANKS", "COUGH_OK", "FLAGS" },
+	Wave = { "Help! Over here!", "Help! Please!", "Over here! We're over here!" },
+	Panic = { "I'm going to go under! Help!", "Don't let go of me!", "Help! Please!" },
+	Tired = { "Can't. I can't keep going.", "So cold. I'm so cold." },
+	Aboard = {
+		"Thank you. Really. Thank you.",
+		"Swallowed half the bay. I'm all right.",
+		"I'm never swimming past the flags again.",
+	},
 }
 local nextShout = 0
 
 -- a casualty keeps one voice: the random phase picks it
 local function shoutLine(r: Rig, kind: string): (string, string)
 	local pool = SHOUTS[kind]
-	local pre = if r.phase < 10 then "CSF" else "CSM"
-	local text = RadioLines.text(`{pre}_CASUALTY_{pool[math.random(#pool)]}`) or "Help!"
-	return text, if pre == "CSF" then "CASUALTY_F" else "CASUALTY_M"
+	return pool[math.random(#pool)], if r.phase < 10 then "CASUALTY_F" else "CASUALTY_M"
 end
 
 -- the rig sits inside the server's Victim model, which carries OnVehicle and Stamina

@@ -31,7 +31,7 @@ local DEFAULTS = {
 	volSfx = 0.9,
 	volRadio = 1,
 	volMusic = 0.6,
-	voice = true, -- voiced radio clips (subtitles always show)
+	voice = true, -- NPC voices
 	-- other players' cosmetic sounds (RP-M5, CosmeticsController ctx.muted)
 	muteHorns = false,
 	muteSirens = false,
@@ -137,7 +137,7 @@ local function unit(v: any): number
 end
 
 -- SoundGroup volumes for the nested mix (AudioConfig categories: Master holds Music, SFX,
--- Ambience and Radio; Voice, the voiced radio clips, sits under Radio). Each group carries its own
+-- Ambience and Radio (the NPC voice level, slider "Voices"); Voice, the on/off, sits under Radio). Each group carries its own
 -- slider value; nesting multiplies them (an effect plays at Master x SFX). Ambience follows SFX.
 function SettingsRules.mix(values: { [string]: any }): { [string]: number }
 	return {

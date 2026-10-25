@@ -2,7 +2,7 @@
 -- OpsController: the client side of operations v2 (CONTRACT.md "Operations v2").
 -- Discovers step mechanics in src/client/Mechanics/<mechanicId>.luau (Mechanics/Default when one is
 -- missing), plays the one the server starts for this player (Ops_StepStart), and submits its
--- result (Ops_StepResult). The HUD (UI/OpsHud, mounted by RadioController) draws everything from
+-- result (Ops_StepResult). The HUD (UI/OpsHud, mounted here) draws everything from
 -- the signals below.
 --
 -- Taking a call (docs/16 K2): the pager's key or tap accepts, and so does driving at it: seated
@@ -10,7 +10,7 @@
 -- AUTO_HOLD s (shared/Calls/CallLogic.headingToward). Big calls (join) take the key only.
 --
 -- API for other controllers:
---   OpsController.OnOffer / OnState / OnDebrief / OnRadio / OnClosed : { Connect(self, fn) }
+--   OpsController.OnOffer / OnState / OnDebrief / OnClosed : { Connect(self, fn) }
 --   OpsController.Accept(opId)            accept a tasking (big call: join)
 --   OpsController.GetState(): snapshot?   the last Ops_State
 --   OpsController.GetMechanic(mechanicId) the module that would play it (Default if missing)
@@ -22,6 +22,7 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AudioController = require(script.Parent:WaitForChild("AudioController"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
+local OpsHud = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("OpsHud"))
 local Remotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 
@@ -61,7 +62,6 @@ end
 OpsController.OnOffer = signal()
 OpsController.OnState = signal()
 OpsController.OnDebrief = signal()
-OpsController.OnRadio = signal()
 OpsController.OnClosed = signal()
 
 local player = Players.LocalPlayer
@@ -288,13 +288,14 @@ function OpsController.Init()
 	mechanicsFolder = script.Parent.Parent:WaitForChild("Mechanics", 10)
 	RunService.Heartbeat:Connect(watchCourse)
 	watchCinematics(player:WaitForChild("PlayerGui"))
-	-- the rip off Haven Sands (docs/09 section 8.4): its channel shows near the beach, and a rip
-	-- tasking speaks its radio line (Mechanics/Rip/View; required through any so its require of
-	-- RadioController does not type as a cycle through this controller)
+	-- the rip off Haven Sands (docs/09 section 8.4): its channel shows near the beach
+	-- (Mechanics/Rip/View; required through any so it does not type as a cycle through this controller)
 	local RipView = (require :: any)(
 		script.Parent.Parent:WaitForChild("Mechanics"):WaitForChild("Rip"):WaitForChild("View")
 	)
 	RipView.start()
+	-- the HUD listens before the first offer can arrive
+	OpsHud.mount(player:WaitForChild("PlayerGui"), OpsController)
 
 	Remotes.event("Ops_Offered").OnClientEvent:Connect(function(data)
 		OpsController.OnOffer:Fire(data)
@@ -330,9 +331,6 @@ function OpsController.Init()
 		if not ack.accepted then
 			warn(`[OpsController] step {ack.stepKey} not accepted: {ack.reason}`)
 		end
-	end)
-	Remotes.event("Ops_Radio").OnClientEvent:Connect(function(r)
-		OpsController.OnRadio:Fire(r)
 	end)
 	Remotes.event("Ops_Debrief").OnClientEvent:Connect(function(d)
 		cancelRunning()

@@ -7,7 +7,7 @@
 -- lying on it as flat slabs. Client-local: the flow is the pure field (shared/RipCurrent), the same
 -- current the server drifts casualties with and SwimController swims in. OpsController calls
 -- start() once (the channel shows itself when the player is near) and sync(state) on every
--- operation snapshot (a rip tasking speaks its radio line, once per operation).
+-- operation snapshot (it finds the body-boarder's board).
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -17,7 +17,6 @@ local Workspace = game:GetService("Workspace")
 local Client = script.Parent.Parent.Parent
 local Flipbooks =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Fx"):WaitForChild("Flipbooks"))
-local Radio = require(Client:WaitForChild("Controllers"):WaitForChild("RadioController"))
 local RipCurrent = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("RipCurrent"))
 
 local View = {}
@@ -47,7 +46,6 @@ local band: { Band } = {}
 local surf: { Surf } = {}
 local board: Part? = nil
 local boardFor: Model? = nil -- the body-boarder's victim model (drawn while attached)
-local tasked: string? = nil -- the rip operation whose tasking line has been spoken
 
 local ocean: any = nil
 local swellAcc = 0
@@ -298,27 +296,13 @@ local function victimOf(opId: string): Model?
 	return nil
 end
 
--- A rip tasking (OpsController's state hook): speak the Coastguard line once per operation,
--- and watch for the body-boarder's board.
+-- A rip tasking (OpsController's state hook): watch for the body-boarder's board.
 function View.sync(state: { [string]: any }?)
 	if not (state and state.kind == "RipCurrent" and type(state.opId) == "string") then
 		return
 	end
 	local victim = victimOf(state.opId)
 	boardFor = if victim and victim:GetAttribute("RipBoard") == true then victim else nil
-	if tasked == state.opId then
-		return
-	end
-	tasked = state.opId
-	local cas = state.casualties and state.casualties[1]
-	Radio.say("tasking_rip", {
-		optype = "PIW1",
-		direction = "OFF",
-		place = "HAVEN_SANDS",
-		casDesc = if boardFor then "PADDLEBOARDER" else "ADULT_SWIMMER",
-		casKit = if boardFor then "CLINGING" elseif cas and cas.lifejacket then "LJ" else "NO_LJ",
-		casState = "CAUGHT_RIP",
-	})
 end
 
 local function hookOcean()

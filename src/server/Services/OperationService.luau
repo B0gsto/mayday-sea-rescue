@@ -1,8 +1,8 @@
 --!strict
 -- OperationService: rescue operations v2 (docs/09-rescue-operations.md, CONTRACT.md "Operations v2").
--- The one source of truth for the radio and rescues. It offers operations (the first-call chain,
+-- The one source of truth for calls and rescues. It offers operations (the first-call chain,
 -- the storm rate, the Capsized Ferry at storm start), runs each operation's step state machine
--- (every op: radio_ack -> launch -> auto_board -> transport, docs/16 K1; the track owner does every
+-- (every op: answer -> launch -> auto_board -> transport, docs/16 K1; the track owner does every
 -- step, an NPC crewmate only fills in when they leave), validates the step results clients submit
 -- (the server recomputes the grade from metrics), ticks every casualty's condition meter, runs the
 -- takeover at Critical, and pays through ProgressionService.Award.
@@ -308,15 +308,14 @@ local function sendToStation(player: Player)
 	character:PivotTo(spawn + Vector3.new(0, 3, 0))
 end
 
--- The cold open ended for any reason: persist ColdOpenDone, radio the outcome (on anything but
--- a rescue the lifeboat has picked the casualty up) and hand the player over where they are.
+-- The cold open ended for any reason: persist ColdOpenDone (on anything but a rescue the lifeboat
+-- has picked the casualty up) and hand the player over where they are.
 -- Runs once per cold open; ColdOpenFlow never lets it start again.
 local function endColdOpen(player: Player, reason: string)
 	local e = coldOpenFlow[player]
 	if not e then
 		return
 	end
-	local opId = e.opId
 	if not ColdOpenFlow.finish(e, reason) then
 		return
 	end
@@ -333,8 +332,6 @@ local function endColdOpen(player: Player, reason: string)
 			m:Destroy()
 		end
 	end
-	local msg = ColdOpenFlow.radioFor(reason)
-	fire("Ops_Radio", player, { opId = opId or "", from = msg.from, text = msg.text })
 	local alive, onCraft = coldOpenRiderStatus(player)
 	local how = ColdOpenFlow.handover(alive, onCraft)
 	-- Handover first: OnboardingController reads it when ColdOpenEnded fires
@@ -364,17 +361,6 @@ local function everyone(op: any): { Player }
 		end
 	end
 	return out
-end
-
-local function radio(op: any, from: string, text: string, only: Player?)
-	local data = { opId = op.id, from = from, text = text }
-	if only then
-		fire("Ops_Radio", only, data)
-		return
-	end
-	for _, p in everyone(op) do
-		fire("Ops_Radio", p, data)
-	end
 end
 
 ---------------------------------------------------------------- crew
@@ -793,7 +779,6 @@ local function failStep(op: any, track: Track, inst: StepInst, why: string)
 		inst.npc = true
 		inst.assignee = nil
 		inst.npcDoneAt = now() + scaled((def.npcSeconds or 10) * Types.Rules.NpcSlowdown * 0.5)
-		radio(op, "Crew", `I'll take the {string.lower(def.realTerm)}.`)
 		broadcast(op)
 		return
 	elseif action == "takeover" then
@@ -886,11 +871,6 @@ startTakeover = function(op: any, reason: string)
 			c.takenOver = true
 		end
 	end
-	radio(
-		op,
-		"Gale Isles Coastguard",
-		`Haven Rescue, Gale Isles Coastguard. {op.def.takeoverAsset} will take over.`
-	)
 	-- the op ends, unpaid; the NPC boat pickup was cut with the racer (WP-20, 2026-10-25)
 	finish(op, "Takeover")
 end
@@ -1234,13 +1214,6 @@ end
 
 function OperationService.RecordAction(_scene: any, _player: Player) end
 
-function OperationService.Notify(scene: any, player: Player, message: string)
-	local op = opOfScene(scene)
-	if op then
-		radio(op, "Crew", message, player)
-	end
-end
-
 function OperationService.OnVictimBoarded(scene: any, player: Player)
 	local op = opOfScene(scene)
 	if op then
@@ -1256,7 +1229,6 @@ function OperationService.OnVictimLost(scene: any)
 				op.casualties[i].inWater = true
 			end
 		end
-		radio(op, "Crew", "Casualty back in the water!")
 	end
 end
 
@@ -1312,7 +1284,6 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 		opId = op.id,
 		kind = op.kind,
 		title = op.def.displayName,
-		radioLine = op.radioLine or op.def.radioLine,
 		zoneName = op.zoneName,
 		position = op.position,
 		isBig = op.isBig,
@@ -1440,7 +1411,7 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 		try("SanctuaryService", "DressOffer", op, player)
 	end
 	if kind == "RipCurrent" then
-		RipFlow.Task(op) -- the variant (swimmer / body-boarder): the radio line
+		RipFlow.Task(op) -- the variant (swimmer / body-boarder)
 	end
 	table.insert(op.offeredTo, player)
 	st.offerOpId = op.id
@@ -1453,7 +1424,7 @@ end
 local function withdrawOffer(op: any)
 	local t = now()
 	for _, p in op.offeredTo do
-		fire("Ops_Closed", p, { opId = op.id, reason = "Withdrawn", silent = true })
+		fire("Ops_Closed", p, { opId = op.id, reason = "Withdrawn" })
 		local st = playerState[p]
 		if st and st.offerOpId == op.id then
 			st.offerOpId = nil
@@ -1522,7 +1493,6 @@ local function activate(op: any, player: Player)
 		pcall(FireScene.Spawn, op.scene)
 	end
 	newTrack(op, player, members)
-	radio(op, "Gale Isles Coastguard", op.radioLine or op.def.radioLine)
 	advance(op, op.tracks[1])
 end
 
@@ -1652,7 +1622,6 @@ local function serverDone(
 	complete(op, track, inst, grade, player)
 end
 
-local coldOpenNudge: { [any]: any } = setmetatable({}, { __mode = "k" }) :: any
 local function coldOpenShore(op: any)
 	if not op.coldOpen then
 		return
@@ -1675,16 +1644,6 @@ local function coldOpenShore(op: any)
 			pcall(RescueService.RemoveVictim, op.scene, ci)
 			try("NpcService", "ShoreHandover", shore.dry, shore.water)
 			serverDone(op, track, inst, player, { elapsed = now() - inst.startedAt })
-			continue
-		end
-		local n = coldOpenNudge[inst]
-		if not n then
-			n = BoatColdOpen.newNudge(now())
-			coldOpenNudge[inst] = n
-		end
-		local _, d = BoatColdOpen.nearestShore(cas)
-		if BoatColdOpen.nudge(n, now(), d) then
-			radio(op, BoatColdOpen.SHORE_RADIO.from, BoatColdOpen.SHORE_RADIO.text)
 		end
 	end
 end
@@ -1841,7 +1800,6 @@ local function tickOp(op: any, dt: number, t: number)
 		for _, c in op.casualties do
 			if Condition.isCritical(c) then
 				c.takenOver = true
-				radio(op, "Rescue Gale One", "Rescue Gale One has the casualty. Carry on.")
 			end
 		end
 		if elapsed > op.def.capSeconds then
@@ -2040,7 +1998,7 @@ end
 ---------------------------------------------------------------- cold open (first session)
 
 -- The cold open (design change, 2026-10): a new player spawns already seated on a moving jet ski
--- at their berth (VehicleService.BerthLaunch) with a Person in the Water operation already tasked (the radio ack is
+-- at their berth (VehicleService.BerthLaunch) with a Person in the Water operation already tasked (the answer is
 -- auto-done) and rescues the casualty within about 90 s; the station and onboarding come after.
 -- Plan (shared/Boat/ColdOpen.PLAN): tasking (auto, Gold) -> recovery -> transport; Assist on; condition drift x0.5.
 OperationService.ColdOpenPlan = BoatColdOpen.PLAN
@@ -2118,8 +2076,7 @@ function OperationService.StartColdOpen(
 	end
 	RescueService.SpawnCall(op.scene)
 	local track = newTrack(op, player, { player })
-	-- the radio ack is auto-done: record it as the player's (Gold) and go straight to the next step
-	radio(op, "Gale Isles Coastguard", BoatColdOpen.RADIO)
+	-- the answer is auto-done: record it as the player's (Gold) and go straight to the next step
 	track.index = 1
 	local tasking = track.plan[1]
 	if tasking and tasking.id == "tasking" then
@@ -2143,7 +2100,7 @@ function OperationService.StartColdOpen(
 	return op.id
 end
 
--- Offer a call to `player` without accepting it: the radio card appears and the player accepts as
+-- Offer a call to `player` without accepting it: the call card appears and the player accepts as
 -- usual.
 function OperationService.OfferCall(player: Player, kind: string?, opts: any?): string?
 	local st = stateOf(player)

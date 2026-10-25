@@ -9,7 +9,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "SinkingVessel",
 	displayName = "Sinking Vessel",
-	radioLine = "MAYDAY from the fishing boat Morwenna's Pride: taking water fast off the harbour, three aboard.",
 	weight = 1.2,
 	capSeconds = 480,
 	isBig = false,

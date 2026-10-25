@@ -1,7 +1,8 @@
 --!strict
 -- OpsHud: wires the operation UI to OpsController's signals (CONTRACT.md "Operations v2"):
 -- the tasking pager (OnOffer), the objective strip (OnState), the debrief toast (OnDebrief) and
--- closures (OnClosed). Mounted by RadioController.
+-- closures (OnClosed). Mounted by OpsController.
+-- A new call shows as the pager card, its flare and pin, and a pager beep; no voice.
 -- Placement (UI/Layout): the strip in the "objective" region (top left), the pager in the "right"
 -- column, the debrief a toast in the "notice" band. In the cold open both are hidden: the world
 -- marker (UI/Waypoint) is the one objective readout. A new player (Layout.newPlayer) gets no
@@ -19,6 +20,7 @@ local OpsStepCard = require(script.Parent.OpsStepCard)
 local OpsTaskingCard = require(script.Parent.OpsTaskingCard)
 local Waypoint = require(script.Parent.Waypoint)
 local Controllers = script.Parent.Parent:WaitForChild("Controllers")
+local AudioController = require(Controllers:WaitForChild("AudioController"))
 local MapController = require(Controllers:WaitForChild("MapController"))
 local PyroController = require(Controllers:WaitForChild("PyroController"))
 
@@ -29,13 +31,7 @@ local FLARE_EVERY = 25 -- s: a parachute flare burns ~40 s, so one is always in 
 -- first station calls: the casualty keeps the cold open's world cues while you go and get them
 local FIND_STEPS = { recovery = true, pickup = true }
 
-local DEBRIEF_LINE: { [string]: string } = {
-	Gold = "AGG_DEBRIEF_GOLD",
-	Silver = "AGG_DEBRIEF_SILVER",
-	Bronze = "AGG_DEBRIEF_BRONZE",
-}
-
-function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
+function OpsHud.mount(playerGui: Instance, ops: any)
 	local player = Players.LocalPlayer
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "OpsHud"
@@ -110,7 +106,7 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 		if activeOp and data.opId ~= activeOp then
 			return
 		end
-		-- a re-broadcast of the same offer refreshes the card only, no second radio call
+		-- a re-broadcast of the same offer refreshes the card only, no second beep
 		local fresh = data.opId == nil or data.opId ~= lastOfferId
 		lastOfferId = data.opId
 		-- a new player sees only their own call: no relay / big-call alert on top of it
@@ -131,15 +127,7 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 		if typeof(data.position) == "Vector3" then
 			flareOver(data.opId, data.position)
 		end
-		if data.isBig then
-			radio.sayText(
-				"Gale Isles Coastguard",
-				tostring(data.radioLine or ""),
-				{ priority = radio.Priorities.Distress }
-			)
-		else
-			radio.say("offer")
-		end
+		AudioController.play("UI_Success", nil, 1, 1.2) -- the pager beep
 	end)
 
 	ops.OnState:Connect(function(s: { [string]: any })
@@ -174,13 +162,6 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 				end
 			end
 			debrief.show(d, if fresh then NEW_PLAYER_DEBRIEF else nil)
-			local id = if d.takeover then "AGG_DEBRIEF_TAKEOVER" else DEBRIEF_LINE[d.grade]
-			if id then
-				radio.play(
-					id,
-					{ priority = radio.Priorities.Advice, from = "Chief Aggie · Port Haven" }
-				)
-			end
 		end)
 	end)
 
@@ -191,9 +172,6 @@ function OpsHud.mount(playerGui: Instance, ops: any, radio: any)
 			activeOp = nil
 			step.hide()
 			setFind(nil)
-		end
-		if c.message and not c.silent then
-			radio.sayText("Gale Isles Coastguard", tostring(c.message))
 		end
 	end)
 end

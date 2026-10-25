@@ -17,7 +17,7 @@
 --    on screen at spawn and well inside HANDOVER_DISTANCE (so the auto-throttle hands over at
 --    once and an idling jet creeps on toward them). PLAN skips the graded approach: the recovery
 --    step (docs/14 section 3 ways: drag, throw, or stop and they swim to you) runs from the
---    first second. The radio says a few words; the world (client UI/ColdOpenCue) does the rest,
+--    first second. The world (client UI/ColdOpenCue) shows the way,
 --    and pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
 local Buoyancy = require(script.Parent.Buoyancy)
 local HubLayout = require(script.Parent.Parent.Config.HubLayout)
@@ -126,7 +126,6 @@ ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 ColdOpen.SPAWN = HubLayout.Hub.dropOff
 ColdOpen.SPAWN_FACING = HubLayout.Hub.frame.LookVector
 ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
-ColdOpen.RADIO = "Person in the water. Dead ahead!"
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
 ColdOpen.NUDGE_NEAR = 45 -- studs: close enough that the casualty comes (PiwWays.COME_RANGE)
@@ -174,7 +173,6 @@ for _, island in HubLayout.Islands do
 	})
 end
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
-ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in
 ColdOpen.NEXT_CALL_DELAY = 15 -- s after the cold open before call 2: the reward burst and debrief, still seated (docs/16 B2) -- tune
 
 -- The nearest shore point to `pos` (flat) and its distance.
