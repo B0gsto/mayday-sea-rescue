@@ -291,6 +291,10 @@ but small outposts". Approved direction:
 
 - **Bigger hub, ~800 studs across** (was 400); the 6 player islands move out (900 → ~1,100) so the bridges stay
   long. Check the ocean covers the whole view from a player camera (no square water edge).
+- **Feels unexplored** (owner): a wild, overgrown island the coastguard has only just landed on. Rough trails,
+  not paved paths; the outposts are frontier camps (canvas, crates, rope, lanterns), not a settled town; deeper
+  forest with old ruins, a cave, a waterfall or overgrown wreck to stumble on; the map fog covers the forest
+  until you walk it, and hidden spots give discovery stickers.
 - **A forest, not a town.** Dense trees with paths; clearings hold **small outposts**: a coastguard lookout hut
   with the radio + call board (the HQ), a market stall (shop counter), a harbourmaster's shack (Storm Summon), a
   campfire ring/stage (live-ops events), a rescuer monument in a clearing (this week's top rescuer), a visitor
