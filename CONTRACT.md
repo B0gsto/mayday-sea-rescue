@@ -244,7 +244,6 @@ casualty shouts in CasualtyController).
 - `ProgressionService`: `Award(player, cash, rep, reason, flat?)` (storm, pass, friend and crew
   multipliers on Cash), `GetData`, `CanUseVehicle`, `OwnsVehiclePass`, `SetFlag`, `RecordTraining(player,
   grade)`, `Refresh`, `RankChanged`. Studio: `ServerStorage.ProgressionDev`.
-- Next goal (K6): `src/shared/NextGoal.luau`: the next rank or the next vehicle, nearest first.
 - Affordable (B5/B6): `src/shared/Affordable.luau` (pure, `tests/Affordable.spec.luau`): `cheapest(snapshot,
   passOwned)` is the cheapest unowned vehicle or upgrade the player can buy now; the Vehicles app's
   pulsing card reads it.
