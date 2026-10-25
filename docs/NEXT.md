@@ -53,6 +53,9 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 
 ## 2b. Queued next (owner, 2026-10-25 night)
 
+- **WP-26 rescued people become workers** (docs/23 (o)): 5 categories, rarity, worker buildings at the tablet,
+  effects, capped offline earnings, remove the crew lineup. Before the art pass.
+
 - **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
   EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
   "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),

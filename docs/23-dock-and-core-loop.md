@@ -380,3 +380,31 @@ Lego-like animations when built." And: "do not redesign the assets that we alrea
   pulse (a flat outline on the ground, never a 3D preview); buying plays the Lego build from above. Exit returns the
   camera. Replaces the paper-blueprint table (WP-14d, after WP-14c and the UI kit).
 - **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
+
+## (o) Rescued people become your workers (owner, 2026-10-25 night)
+
+Owner: "You have your own island. You rescue people that help. There are categories — builders, gatherers,
+rescuers and so on — and you build a mini empire on your island." Decisions: **4–5 categories at launch** (more
+as updates), **Cash is the only currency**, **small capped offline earnings**, **the crew lineup (WP-15) is
+replaced** by rescued workers. This reverses the earlier "rescued survivors don't become crew" rule.
+
+- **On pick-up** each survivor shows a category icon and a rarity (common / rare / legendary stars) over their head.
+  Delivered to your island, they walk to the matching building and work there, visibly. No management menus:
+  assignment is automatic (best workers fill the building's slots; extras idle at a "bunkhouse").
+- **Launch categories (one building + one clear effect each, tune):**
+  | Category | Building | Effect |
+  |---|---|---|
+  | Builder | Workshop | builds cost less Cash and finish faster |
+  | Gatherer | Fish & salvage shed | passive Cash per minute |
+  | Rescuer | Rescue boathouse | NPC boats bring in small rescues near your island (Cash + occasional new worker) |
+  | Mechanic | Boat yard | faster craft, shorter "Boat to me" cooldown |
+  | Medic | Clinic | bigger call payouts (survivors arrive healthier) |
+- Each building has worker slots that grow with its level (built at the tablet). Rarity multiplies a worker's effect.
+- **Offline**: Gatherers and Rescuers earn a small capped amount while you're away (tune: up to 2 h at a reduced
+  rate), collected with a coin burst when you return.
+- Robux: no paid randomness; worker rarity only comes from rescues. Possible later: a paid slot expansion.
+- Flex: your island fills with named people you saved; legendaries glow.
+
+**Work packages.** WP-26 workers (after the current batch lands): survivor category + rarity roll, delivery →
+worker spawn and walk-to-building, 5 buildings in DockConfig/tablet, effects, offline earnings, remove the crew
+lineup, pacing/economy check. Then WP-25 art pass covers the worker buildings too.

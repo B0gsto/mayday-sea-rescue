@@ -48,8 +48,10 @@ each other's islands). 6 players per server.
   in progress, WP-14d.)
 - What you build: dock levels 2–5 (pontoon + lamps + rescue board, boathouse + boat board + paint booth, lookout
   tower + crane, station + beacon + trophy hall), helipad + hangar, sub pen, quest-chain buildings, spare lots.
-- **Crew (late game):** job seekers line up outside your station; a new group every 20 minutes; hire a mechanic,
-  lifeguard or dispatcher for small boosts and a daily wage (unlocks at dock Lv5 + Coxswain).
+- **Your people:** survivors you rescue get a category (Builder, Gatherer, Rescuer, Mechanic, Medic) and a rarity;
+  delivered home they walk to the matching building on your island and work there (cheaper builds, passive Cash,
+  NPC rescues, faster craft, bigger payouts). Small capped offline earnings. (In progress, WP-26; replaces the crew
+  lineup.)
 - **Flex:** everything is visible to the server; the top-ranked Lv5 player's island gets a gold beacon.
 - **New things are Lego-style** (chunky bricks, bright colours, studs). Existing finished models keep their look.
 
