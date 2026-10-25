@@ -19,13 +19,14 @@ local MAX_PART = 2048
 local OVERLAP = 4 -- studs the plane tucks under the flat outer edge of the ring -- tune
 local DROP = 0.15 -- top surface sits this far below sea level to avoid z-fighting -- tune
 local THICKNESS = 1
+local CORNER_DROP = 1.35 -- corner tiles sit at the horizon skirt depth, under the bands
 
 local warned = false
 
 export type FarPlane = {
 	parts: { BasePart },
 	offsets: { Vector3 },
-	cap: BasePart?, -- Parts mode: covers the hole for a high camera
+	caps: { BasePart }, -- Parts mode: the four corner tiles shown instead of the strips for a high camera
 	meshes: { EditableMesh },
 	uvs: { { number } }, -- per strip: uv id, local x, local z (x3) per vertex, flattened
 	uvU: number,
@@ -71,37 +72,46 @@ function FarPlane.new(
 	local meshes: { EditableMesh } = {}
 	local uvs: { { number } } = {}
 	local useMesh = withMesh ~= false
-	for n, entry in layout do
-		local part, em, uv = FarPlane._strip(entry.size, entry.offset, surface, useMesh)
+	local function add(name: string, size: Vector3, offset: Vector3): BasePart
+		local part, em, uv = FarPlane._strip(size, offset, surface, useMesh)
 		useMesh = em ~= nil
-		part.Name = `OceanFar{n}`
-		part.CFrame = CFrame.new(entry.offset + Vector3.new(0, seaLevel, 0))
-		part.Parent = parent
-		parts[n] = part
-		offsets[n] = entry.offset
-		if em then
-			table.insert(meshes, em)
-			table.insert(uvs, uv)
-		end
-	end
-	-- Parts mode: a flat cap over the hole, shown only for a high camera (setCap). From the air the Part grid's
-	-- wedge lattice read as a square field of white dots in the harbour basin (each wedge tiles the normal map).
-	local cap: BasePart? = nil
-	if withMesh == false then
-		local offset = Vector3.new(0, y, 0)
-		local part = FarPlane._strip(Vector3.new(2 * r, THICKNESS, 2 * r), offset, surface, false)
-		part.Name = "OceanFarCap"
-		part.LocalTransparencyModifier = 1
+		part.Name = name
 		part.CFrame = CFrame.new(offset + Vector3.new(0, seaLevel, 0))
 		part.Parent = parent
 		table.insert(parts, part)
 		table.insert(offsets, offset)
-		cap = part
+		if em then
+			table.insert(meshes, em)
+			table.insert(uvs, uv)
+		end
+		return part
+	end
+	for n, entry in layout do
+		add(`OceanFar{n}`, entry.size, entry.offset)
+	end
+	-- Parts mode, high camera (setCap): four MAX_PART tiles meeting under the camera replace the strips and the
+	-- Part grid. At reduced graphics quality (phones, Automatic) the engine culls every part whose nearest point is
+	-- past its draw distance, so from the air the horizon bands (nearest 700+ studs away) vanished into a square
+	-- edge with sky behind; these tiles' nearest point is straight down, so they draw out to +-MAX_PART whenever
+	-- anything below draws. That quality level also lights a big glossy quad at its corners only: a strip corner
+	-- next to the sun glint washed the whole strip white. These tiles' corners stay far from the glint (it lies
+	-- ~0.7 x camera height sunward, the shared corner is under the camera).
+	local caps: { BasePart } = {}
+	if withMesh == false then
+		for i = -1, 1, 2 do
+			for j = -1, 1, 2 do
+				local offset = Vector3.new(i * MAX_PART / 2, -CORNER_DROP, j * MAX_PART / 2)
+				local part =
+					add("OceanFarCorner", Vector3.new(MAX_PART, THICKNESS, MAX_PART), offset)
+				part.LocalTransparencyModifier = 1
+				table.insert(caps, part)
+			end
+		end
 	end
 	return {
 		parts = parts,
 		offsets = offsets,
-		cap = cap,
+		caps = caps,
 		seaLevel = seaLevel,
 		meshes = meshes,
 		uvs = uvs,
@@ -223,11 +233,14 @@ function FarPlane.setSurface(plane: FarPlane, kind: string)
 	end
 end
 
--- Parts mode, high camera: the cap covers the hole (the caller hides the Part grid)
+-- Parts mode, high camera: the corner tiles instead of the strips (the caller hides the Part grid)
 function FarPlane.setCap(plane: FarPlane, on: boolean)
-	local cap = plane.cap
-	if cap then
-		cap.LocalTransparencyModifier = if on then 0 else 1
+	if #plane.caps == 0 then
+		return
+	end
+	for _, part in plane.parts do
+		local cap = table.find(plane.caps, part) ~= nil
+		part.LocalTransparencyModifier = if cap == on then 0 else 1
 	end
 end
 
