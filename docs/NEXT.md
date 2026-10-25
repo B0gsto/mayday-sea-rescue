@@ -40,7 +40,7 @@ Merged since (not yet seen in Studio): WP-14c blueprint table + `BuildSeq` Lego 
 4. **Icons**: redo `boat_to_me`, `settings`, `crew` in `marketing/ui/icons/` with Gemini (Antigravity
    `gemini-3.8-flash-high`; its image quota ran out today), then upload and update `UiImages.Kit`.
 5. **Map image refresh** after WP-24 (`tools/world/make_map_image.py`, upload changed tiles, `MapConfig.Tiles`).
-6. **Code sweep**: comments, strings and names still mentioning Port Haven, the phone, the radio, the town, cars
+6. **CONTRACT.md refresh** after 23c/23d (it still lists the phone and other removed modules), then a **code sweep**: comments, strings and names still mentioning Port Haven, the phone, the radio, the town, cars
    (after 23c/23d so it doesn't collide).
 7. **Real-client Opus playtest** of everything since v40 (none was done): a full first session, quests (salvage and
    rescue never tested end to end), dock levels, heli/sub, and **two players spawning boats at once**.

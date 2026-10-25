@@ -44,11 +44,12 @@ each other's islands). 6 players per server.
 - **Build station:** a Lego builder's yard with a **tablet** on a stand. Using it moves the camera to a top-down
   view of your island; a bar of cards shows what you can build (Cash + rank, or Robux); the chosen lot pulses as a
   flat outline (never a 3D preview); buying plays a **Lego build**: bricks drop in bottom to top with a bounce and
-  a snap, builders standing by. (Tablet build mode: in progress, WP-14d.)
+  a snap, builders standing by. (Today a blueprint table on the jetty does this; the tablet build mode replaces it,
+  in progress, WP-14d.)
 - What you build: dock levels 2–5 (pontoon + lamps + rescue board, boathouse + boat board + paint booth, lookout
   tower + crane, station + beacon + trophy hall), helipad + hangar, sub pen, quest-chain buildings, spare lots.
 - **Crew (late game):** job seekers line up outside your station; a new group every 20 minutes; hire a mechanic,
-  lifeguard or dispatcher for small boosts and a daily wage (in progress, WP-15).
+  lifeguard or dispatcher for small boosts and a daily wage (unlocks at dock Lv5 + Coxswain).
 - **Flex:** everything is visible to the server; the top-ranked Lv5 player's island gets a gold beacon.
 - **New things are Lego-style** (chunky bricks, bright colours, studs). Existing finished models keep their look.
 
