@@ -181,6 +181,11 @@ local MapConfig = {
 			glyph = A11yPalette.symbol("Marker", "Vehicle"),
 			color = Color3.fromHex("F4F1EA"),
 		},
+		Home = {
+			label = "Your dock",
+			glyph = A11yPalette.symbol("Marker", "Home"),
+			color = Color3.fromHex("FF9F0A"),
+		},
 		Crew = {
 			label = "Crew",
 			glyph = A11yPalette.symbol("Marker", "Crew"),

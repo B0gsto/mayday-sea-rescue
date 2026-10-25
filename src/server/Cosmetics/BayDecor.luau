@@ -1,6 +1,6 @@
 --!strict
 -- BayDecor (server cosmetic feature, G28): every owned bay decoration is placed at a fixed slot
--- beside the player's launch bay (the station dock). Decor keys come from CosmeticLoadout.decor
+-- on the player's own jetty at the marina (DockService berth frame, docs/23 d.2). Decor keys come from CosmeticLoadout.decor
 -- (stock decor_*); parts are code-built, anchored and non-colliding.
 -- Rebuilt when the earned flags change ("CosOwned"), removed on leave.
 local Players = game:GetService("Players")
@@ -12,13 +12,14 @@ local CosmeticLoadout = require(Shared:WaitForChild("CosmeticLoadout"))
 
 local Services = script.Parent.Parent:WaitForChild("Services")
 local DataService = require(Services:WaitForChild("DataService"))
+local DockService = require(Services:WaitForChild("DockService"))
 
 local NAME = "BayDecor"
--- G38: one tidy row along the bay's east (quay) edge, 2.5 studs apart, max 8. The pieces face the
--- water; nothing is stacked and nothing spills into the neighbouring bay.
+-- G38: one tidy row along the jetty's water edge (Marina.JETTY x 10..18), 2.5 studs apart, max 8, between
+-- the returning player's spot and the deck. The pieces face the berth; nothing is stacked.
 local SLOTS = {}
 for i = 1, 8 do
-	table.insert(SLOTS, Vector3.new(8.9, 0, (i - 4.5) * 2.5))
+	table.insert(SLOTS, Vector3.new(11, 0, 8 + (i - 1) * 2.5))
 end
 local FACE_WATER = CFrame.Angles(0, math.pi / 2, 0)
 local FALLBACK = CFrame.new(-104, 3, 30)
@@ -31,43 +32,7 @@ local BRASS = Color3.fromRGB(226, 186, 96)
 local BayDecor = {}
 BayDecor.Priority = 80
 
-local bays: { BasePart } = {}
-local assigned: { [Player]: number } = {}
-local used: { [number]: Player } = {}
 local models: { [Player]: Model } = {}
-
-local function findBays()
-	local map = Workspace:FindFirstChild("Map")
-	if not map then
-		return
-	end
-	for _, d in map:GetDescendants() do
-		if d:IsA("BasePart") and d:GetAttribute("LaunchBay") then
-			table.insert(bays, d)
-		end
-	end
-	table.sort(bays, function(a, b)
-		return (tonumber(a:GetAttribute("BayIndex")) or 0)
-			< (tonumber(b:GetAttribute("BayIndex")) or 0)
-	end)
-end
-
-local function bayIndexFor(player: Player): number
-	local held = assigned[player]
-	if held then
-		return held
-	end
-	for i = 1, #bays do
-		if not used[i] then
-			used[i] = player
-			assigned[player] = i
-			return i
-		end
-	end
-	local index = (player.UserId % math.max(#bays, 1)) + 1
-	assigned[player] = index
-	return index
-end
 
 local function part(
 	parent: Instance,
@@ -292,7 +257,7 @@ local function shelf(model: Model, at: CFrame)
 		Vector3.new(2.2, 0.16, 0.85),
 		at * CFrame.new(0, 2.05, 0),
 		Color3.fromRGB(168, 142, 108),
-		Enum.Material.WoodPlanks
+		Enum.Material.Wood
 	)
 	part(
 		model,
@@ -390,7 +355,7 @@ local function build(player: Player)
 	if #keys == 0 then
 		return
 	end
-	local bay = bays[bayIndexFor(player)] or nil
+	local bay = DockService.GetBerth(player)
 	local origin = if bay then bay.CFrame else FALLBACK
 	local model = Instance.new("Model")
 	model.Name = NAME
@@ -411,7 +376,7 @@ local function build(player: Player)
 				Vector3.new(2.2, 0.12, 2.2),
 				at * CFrame.new(0, 0.06, 0),
 				WOOD,
-				Enum.Material.WoodPlanks
+				Enum.Material.Wood
 			)
 			make(model, at * CFrame.new(0, 0.14, 0))
 		end
@@ -424,21 +389,13 @@ end
 function BayDecor.Init() end
 
 function BayDecor.Start()
-	findBays()
 	DataService.OnLoaded(function(player: Player)
 		build(player)
 		player:GetAttributeChangedSignal("CosOwned"):Connect(function()
 			build(player)
 		end)
 	end)
-	Players.PlayerRemoving:Connect(function(player: Player)
-		remove(player)
-		local index = assigned[player]
-		if index and used[index] == player then
-			used[index] = nil
-		end
-		assigned[player] = nil
-	end)
+	Players.PlayerRemoving:Connect(remove)
 end
 
 return BayDecor

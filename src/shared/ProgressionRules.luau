@@ -15,6 +15,7 @@ export type PlayerData = {
 	vehicleUpgrades: { [string]: number },
 	totalRescues: number,
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
+	dockLevel: number, -- your dock at the marina, 1..5 (docs/23 d.2; DockService)
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
@@ -237,6 +238,7 @@ function Rules.defaultData(): PlayerData
 		vehicleUpgrades = {},
 		totalRescues = 0,
 		coldOpenDone = false,
+		dockLevel = 1,
 		flags = {},
 		cosmetics = {},
 	}
@@ -344,6 +346,7 @@ function Rules.migrate(raw: any): PlayerData
 	end
 	payBackRetired(raw, data)
 	data.coldOpenDone = raw.coldOpenDone == true
+	data.dockLevel = math.clamp(math.floor(num(raw.dockLevel, 1)), 1, 5)
 	if type(raw.flags) == "table" then
 		local n = 0
 		for name, value in raw.flags do
