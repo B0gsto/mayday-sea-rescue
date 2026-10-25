@@ -16,7 +16,6 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 | WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
 | WP-23c delete the phone, left button column + kit panels, map fog overlay, kit polish | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
-| WP-14d build tablet + top-down build mode + Cash decor tab | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
@@ -28,7 +27,7 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 
 ## 2. Queued (in order)
 
-1. **WP-14d build tablet**: replace the blueprint table with a tablet on a stand at a Lego build station near the
+1. ~~**WP-14d build tablet**~~ merged 2026-10-25 (build station on Spare3, top-down build mode, Build/Decor tabs, 6 Cash decorations; not yet seen in Studio). Was: replace the blueprint table with a tablet on a stand at a Lego build station near the
    island spawn. Using it tweens the camera to a top-down view of your island; a bottom bar of UI-kit cards lists
    buildable things (Cash + rank / R$ / padlock); picking one pulses its empty lot as a flat outline (never a 3D
    preview); buying plays the BuildSeq Lego build; exit returns the camera. Needs 14c + the kit. docs/23 (n).
