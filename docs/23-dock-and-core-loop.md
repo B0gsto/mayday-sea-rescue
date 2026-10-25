@@ -276,8 +276,9 @@ docs/10 / docs/21 where they place Great Gale, Port Haven and the town.
 roads, streets, traffic, the town (Port Haven buildings, cottages, chandlery, town NPCs and extras), Great Gale's
 terrain. Kept: the station rig (re-homed on the hub), boats, helicopter, submarine, rescues, phone, dock/plot code.
 
-**Next cut review:** a one-page keep/cut list of every remaining mechanic with its code size (owner marks it).
-Candidates named so far: the seaplane (overlaps the helicopter), land calls (need big land).
+**Second cut (owner, 2026-10-25, from the mechanics inventory):** seaplane, land + cliff calls, NPC racer,
+first-person camera + viewmodel, photo mode, rare rescue variants/dressing (~5,400 lines; WP-20). Kept on purpose:
+rip current call, pets + wildlife sanctuary.
 
 **Work packages.** WP-17 tag + cut cars and town. WP-18 new map: hub, 6 islands, bridges, outer islands (terrain
 generator + bake + layout data). WP-19 plots → islands (dock code, server size 6, calls/drop-off from your island).
