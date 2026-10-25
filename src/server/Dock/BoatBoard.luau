@@ -3,7 +3,7 @@
 -- scale models (ReplicatedStorage.VehiclePreviews, shrunk) built while its plot has an owner (berth attribute
 -- Owner, DockService) and, for a building's board, while the berth's building attribute is true:
 --   Boat board    every VehicleConfig.Order craft no building claims; the crane over the berth
---   Hangar board  RescueHelicopter (onto the helipad) and Seaplane (into the berth), in the roof shelter
+--   Hangar board  RescueHelicopter (onto the helipad), in the roof shelter
 --   Sub board     Submarine, on the jetty beside the sub pen; lowered into the pen on the gantry hook
 -- Each model's pad carries two owner-only prompts:
 --   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, nobody seated (boats, aircraft,
@@ -124,10 +124,6 @@ local function silhouette(id: string): Model?
 			return (require :: any)(Shared:WaitForChild("Heli"):WaitForChild("Builder")).build(id)
 		elseif id == "Submarine" then
 			return (require :: any)(Shared:WaitForChild("Sub"):WaitForChild("Builder")).build(id)
-		elseif id == "Seaplane" then
-			local plane = Shared:WaitForChild("Plane")
-			local spec = (require :: any)(plane:WaitForChild("Flight")).get(id)
-			return (require :: any)(plane:WaitForChild("Builder")).build(spec)
 		end
 		return nil
 	end)

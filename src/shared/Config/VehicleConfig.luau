@@ -15,17 +15,14 @@ local KG = 1 / 37 -- RMU per kg
 
 local HeliFlight = require(script.Parent.Parent.Heli.Flight)
 local HeliWinch = require(script.Parent.Parent.Heli.Winch)
-local PlaneFlight = require(script.Parent.Parent.Plane.Flight)
 local SubDive = require(script.Parent.Parent.Sub.Dive)
 
-export type CameraMode = "FirstPerson" | "Chase"
+export type CameraMode = "Chase"
 
 export type VehicleSpec = {
 	id: string,
 	displayName: string,
-	-- FirstPerson: locked first person from DriverSeat.EyePoint (a craft with no chase view);
-	-- Chase: third-person chase camera, with an optional helm view at EyePoint. A camera stream
-	-- implements both (CONTRACT: not built by stream B).
+	-- Chase: the third-person chase camera (CameraController; the only mode since WP-20).
 	cameraMode: CameraMode,
 	eyePoint: Vector3, -- driver's eye, offset from the DriverSeat centre (studs)
 	topSpeed: number, -- studs/s
@@ -63,9 +60,8 @@ export type VehicleSpec = {
 	-- its own id) and the uploaded AssetIds model the spawner clones (nil = the base's art, or greybox).
 	base: string?,
 	model: string?,
-	-- docs/23 (h): not a boat. Heli and Sub fly / dive on their own rigs (Heli/Flight, Sub/Rig); a Plane
-	-- floats on the boat rig when parked and flies on Plane/Flight. Nil = a boat.
-	craft: ("Heli" | "Plane" | "Sub")?,
+	-- docs/23 (h): not a boat. Heli and Sub fly / dive on their own rigs (Heli/Flight, Sub/Rig). Nil = a boat.
+	craft: ("Heli" | "Sub")?,
 }
 
 local VehicleConfig = {}
@@ -305,9 +301,8 @@ VehicleConfig.GildedGull = variant("JetSki", {
 })
 
 -- docs/23 (h), WP-10a: the hangar and sub pen craft. Handling lives in their own modules (Heli/Flight,
--- Plane/Flight, Sub/Dive); these rows carry what VehicleService, the camera and the phone read. The boat
--- fields come from the lifeboat and only matter to a parked seaplane floating on Boat/Simulator.
-local function craft(kind: "Heli" | "Plane" | "Sub", over: { [string]: any }): VehicleSpec
+-- Sub/Dive); these rows carry what VehicleService, the camera and the phone read.
+local function craft(kind: "Heli" | "Sub", over: { [string]: any }): VehicleSpec
 	local spec = table.clone(VehicleConfig.Lifeboat) :: any
 	for k, v in over do
 		spec[k] = v
@@ -334,21 +329,6 @@ VehicleConfig.RescueHelicopter = craft("Heli", {
 	floatPoints = {},
 })
 
--- Cessna 208 amphibian class floatplane (Plane/Flight.SPECS.Seaplane): its floats ride the boat rig.
-local plane = PlaneFlight.SPECS.Seaplane
-VehicleConfig.Seaplane = craft("Plane", {
-	id = plane.id,
-	displayName = plane.displayName,
-	eyePoint = plane.eyePoint,
-	topSpeed = plane.topSpeed,
-	seats = plane.seats,
-	survivorCapacity = plane.survivorCapacity,
-	hullSize = plane.hullSize,
-	massHint = plane.massHint,
-	draft = plane.draft,
-	floatPoints = plane.floatPoints,
-})
-
 -- Two-seat rescue submersible (Sub/Builder): floats like a slow boat, dives to the seabed.
 VehicleConfig.Submarine = craft("Sub", {
 	id = "Submarine",
@@ -367,7 +347,7 @@ VehicleConfig.Submarine = craft("Sub", {
 VehicleConfig.Order =
 	{ "JetSki", "RiptideX", "GildedGull", "RIB", "StormRunner", "Tidewalker", "Lifeboat" }
 -- The docs/23 (h) craft (hangar, sub pen): bought and launched at their dock building (WP-10b).
-VehicleConfig.CraftOrder = { "RescueHelicopter", "Seaplane", "Submarine" }
+VehicleConfig.CraftOrder = { "RescueHelicopter", "Submarine" }
 
 function VehicleConfig.get(id: string): VehicleSpec?
 	local spec = (VehicleConfig :: any)[id]

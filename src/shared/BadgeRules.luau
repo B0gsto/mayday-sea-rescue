@@ -11,7 +11,6 @@
 
 local BadgeConfig = require(script.Parent.Config.BadgeConfig)
 local Grading = require(script.Parent.Ops.Grading)
-local RescueVariants = require(script.Parent.Config.RescueVariants)
 
 export type StepRecord = { id: string, grade: string?, userId: number? }
 
@@ -19,7 +18,6 @@ export type StepRecord = { id: string, grade: string?, userId: number? }
 export type OpSnapshot = {
 	kind: string,
 	isBig: boolean?,
-	variant: string?,
 	grade: string?,
 	reason: string?,
 	saved: number?,
@@ -65,13 +63,6 @@ function BadgeRules.opProgress(
 	end
 	if snap.isBig and snap.kind == "CapsizedFerry" and (snap.saved or 0) > 0 then
 		out.FerryHero = 1
-	end
-	local variant = RescueVariants.ById(snap.variant)
-	if variant and variant.rarity == "Legendary" then
-		out.LegendaryRescue = 1
-	end
-	if snap.variant == "GoldenGull" then
-		out.GoldenGull = 1
 	end
 	return out
 end

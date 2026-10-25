@@ -25,7 +25,7 @@
 --   TelemetryService.OpFinished(player, op, reason)                    op: OperationService's live op table
 --   TelemetryService.Recent -> { string }                              last events (Studio: ServerStorage.TelemetryDev)
 -- Client (Telemetry_Client, rate limited, every value checked against a fixed set): RewardSeen,
--- PhotoModeOpen, PhotoTaken, Device(type), Shop(step, app, item?, currency?), InputDead(context),
+-- Device(type), Shop(step, app, item?, currency?), InputDead(context),
 -- StuckReset(context).
 local AnalyticsService = game:GetService("AnalyticsService")
 local HttpService = game:GetService("HttpService")
@@ -38,12 +38,10 @@ local Config = Shared:WaitForChild("Config")
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
-local RescueVariants = require(Config:WaitForChild("RescueVariants"))
 local TelemetryNames = require(Shared:WaitForChild("TelemetryNames"))
 local VehicleConfig = require(Config:WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
-local BadgeService = require(script.Parent:WaitForChild("BadgeService"))
 local Events = require(script.Parent:WaitForChild("Telemetry"):WaitForChild("Events"))
 
 local TelemetryService = {}
@@ -344,14 +342,6 @@ function TelemetryService.ColdOpenEnded(player: Player, reason: string)
 	end
 end
 
-local function rarityOf(variant: any): string
-	if type(variant) ~= "string" or variant == "" then
-		return "None"
-	end
-	local def = RescueVariants.ById(variant)
-	return if def then def.rarity else "None"
-end
-
 function TelemetryService.OpFinished(player: Player, op: any, reason: string)
 	local facts: Events.OpFacts = {
 		kind = tostring(op.kind),
@@ -361,7 +351,7 @@ function TelemetryService.OpFinished(player: Player, op: any, reason: string)
 		coldOpen = op.coldOpen == true,
 		storm = op.storm == true,
 		big = op.isBig == true,
-		rarity = rarityOf(op.variant),
+		rarity = if op.wildlifeRare == true then "Rare" else "None", -- the sanctuary's rare palette
 		saved = if type(op.saved) == "number" then op.saved else 0,
 	}
 	for _, event in Events.opEvents(facts) do
@@ -538,12 +528,6 @@ end
 local function clientStep(player: Player, name: string, a: any, b: any, c: any, d: any)
 	if name == "RewardSeen" then
 		TelemetryService.Funnel(player, "RewardSeen")
-	elseif name == "PhotoModeOpen" then
-		if Events.first(trackerOf(player), "PhotoMode") then
-			custom(player, Events.custom("PhotoMode"))
-		end
-	elseif name == "PhotoTaken" then
-		BadgeService.Count(player, "PhotoFirst")
 	elseif name == "Device" then
 		local session = sessions[player]
 		if session and Events.Devices[a] then

@@ -1,7 +1,6 @@
 --!strict
--- SettingsPanel: the settings menu (docs 13 RP-S1). Camera comfort (horizon stabilisation, FOV,
--- head bob, shake, G-force lean, look sensitivity, speed FOV, motion blur, lens spray), a
--- "Seasick-safe" preset, a graphics override (ocean and scatter detail), volumes (master,
+-- SettingsPanel: the settings menu (docs 13 RP-S1). Camera comfort (FOV, shake, look sensitivity,
+-- speed FOV), a "Seasick-safe" preset, a graphics override (ocean and scatter detail), volumes (master,
 -- effects, radio, music), radio voices on/off, muting other players' horns / sirens / radios, and
 -- "Owned items": a CosmeticPicker per cosmetic slot the player owns (RP-M5).
 --
@@ -147,7 +146,7 @@ local LINE = 52 -- du: one-line row (icon, label, control on the right)
 local TALL = 104 -- du: label line + a full-width slider or segmented control under it
 local INSET = 54 -- du: label x (12 margin + 30 tile + 12 gap); separators start here
 -- Row icons drawn from Frames (symbol characters may not exist in Roblox fonts). Unknown keys
--- draw as text, so plain letters ("G", "A") stay letters.
+-- draw as text, so plain letters ("A") stay letters.
 local V2 = Vector2.new
 local WHITE = Color3.new(1, 1, 1)
 local function bar(p: Instance, w: number, h: number, x: number, y: number, r: number?): Frame
@@ -166,18 +165,6 @@ local function circle(p: Instance, d: number, x: number, y: number)
 	st.Thickness = 2
 	st.Parent = c
 	return c
-end
-local function arrows(p: Instance, rot: number)
-	local f = Instance.new("Frame")
-	f.Size = UDim2.fromScale(1, 1)
-	f.BackgroundTransparency = 1
-	f.Rotation = rot
-	f.Parent = p
-	bar(f, 0.7, 0.1, 0.5, 0.5)
-	for _, sx in { -1, 1 } do
-		bar(f, 0.26, 0.1, 0.5 + sx * 0.27, 0.42, sx * 40)
-		bar(f, 0.26, 0.1, 0.5 + sx * 0.27, 0.58, -sx * 40)
-	end
 end
 local function note(p: Instance, x: number)
 	bar(p, 0.24, 0.2, x - 0.08, 0.72)
@@ -201,12 +188,6 @@ local SHAPES: { [string]: (Frame) -> () } = {
 		bar(p, 0.26, 0.1, 0.2, 0.3, 60) -- the arrowhead on the rim
 		bar(p, 0.26, 0.1, 0.32, 0.18, -20)
 	end,
-	horizon = function(p)
-		arrows(p, 0)
-	end,
-	bob = function(p)
-		arrows(p, 90)
-	end,
 	fov = function(p)
 		bar(p, 0.62, 0.1, 0.36, 0.5, -28)
 		bar(p, 0.62, 0.1, 0.36, 0.5, 28)
@@ -219,16 +200,6 @@ local SHAPES: { [string]: (Frame) -> () } = {
 	end,
 	speed = function(p)
 		Glyph.draw("speed", p, WHITE)
-	end,
-	blur = function(p)
-		bar(p, 0.7, 0.1, 0.5, 0.3)
-		bar(p, 0.5, 0.1, 0.6, 0.5)
-		bar(p, 0.3, 0.1, 0.7, 0.7)
-	end,
-	drops = function(p)
-		bar(p, 0.18, 0.18, 0.5, 0.3)
-		bar(p, 0.18, 0.18, 0.3, 0.66)
-		bar(p, 0.18, 0.18, 0.7, 0.66)
 	end,
 	half = function(p)
 		circle(p, 0.66, 0.5, 0.5)
@@ -804,19 +775,14 @@ local function build()
 		local on = SettingsRules.isPreset(Comfort.all() :: any, SettingsRules.SEASICK)
 		seasick.Text = if on then "✓" else ""
 	end)
-	slider(comfort, "horizonStab", "horizon", Tint.blue, "Horizon lock", 0.05, pct)
 	slider(comfort, "fov", "fov", Tint.indigo, "Field of view", 5, function(v)
 		return `{math.round(v)}°`
 	end)
-	slider(comfort, "headBob", "bob", Tint.orange, "Head bob", 0.05, pct)
 	slider(comfort, "shake", "shake", Tint.red, "Shake", 0.05, pct)
-	slider(comfort, "gLean", "G", Tint.purple, "G-lean", 0.05, pct)
 	slider(comfort, "sensitivity", "plus", Tint.teal, "Sensitivity", 0.1, function(v)
 		return string.format("%.1fx", v)
 	end)
 	toggle(comfort, "speedFov", "speed", Tint.orange, "Speed FOV")
-	toggle(comfort, "motionBlur", "blur", Tint.indigo, "Motion blur")
-	toggle(comfort, "lensSpray", "drops", Tint.blue, "Lens spray")
 
 	local access = section(s, "Accessibility")
 	segmented(access, "colourAssist", "half", Tint.pink, "Colour assist", {

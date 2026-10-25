@@ -30,7 +30,6 @@ TelemetryNames.Custom = table.freeze({
 	"LiveEvent", -- a LiveOps event was live while the player was in the server
 	"FriendBonus", -- friends in the server and the Cash percent they add
 	"PromptShown", -- notify / favorite / invite prompt was shown
-	"PhotoMode", -- photo mode was opened (once per session)
 	"RobuxPrompt", -- a Robux prompt: Products / GamePasses, key, Shown / Purchased / Cancelled
 	"BadgeAwarded", -- a Roblox badge was awarded: badge key
 	"StickerFound", -- an album sticker: island, slot (Stamp, Critter, View, Bottle, Secret), sticker
@@ -39,7 +38,6 @@ TelemetryNames.Custom = table.freeze({
 	"VehicleRecovered", -- auto-recovery ran: reason (Flipped, Stuck, Sunk, OutOfBounds, Flooded, Runaway), vehicle
 	"StuckReset", -- the player was reset out of a stuck spot: device, where (Foot, Boat, Swim)
 	"InputDead", -- input held with no response (client-detected): device, where
-	"Race", -- the NPC racer (from call 4): Started / RacerWon, call kind
 	"SessionStart", -- value = days since the first session: day bucket, gap bucket, New / Returning
 	"SessionEnd", -- value = seconds played: length bucket, device, day bucket
 } :: { string })

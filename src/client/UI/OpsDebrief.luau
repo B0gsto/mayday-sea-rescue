@@ -27,7 +27,7 @@ local SHOW_FOR = 5 -- s on screen
 local STAR = 34
 local MASTERY = 28
 local DIM = Color3.fromHex("3A4650")
-local TOO_SLOW = Color3.fromHex("FF5A4F") -- the racer's red (MapConfig.Styles.Racer), lifted for dark glass
+local TOO_SLOW = Color3.fromHex("FF5A4F") -- a takeover's red, lifted for dark glass
 
 local OpsDebrief = {}
 

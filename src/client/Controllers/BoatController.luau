@@ -117,13 +117,6 @@ local function isLocalDriver(model: Model): boolean
 	return occupant ~= nil and occupant.Parent == localPlayer.Character
 end
 
--- A manned seaplane flies in PlaneController (docs/23 h).
-local function flownPlane(model: Model): boolean
-	local spec = VehicleConfig.get(model:GetAttribute("VehicleId") :: any)
-	local seat = seatOf(model)
-	return spec ~= nil and spec.craft == "Plane" and seat ~= nil and seat.Occupant ~= nil
-end
-
 local function isLocalTow(model: Model): boolean
 	return model:GetAttribute("TowedBy") == localPlayer.UserId
 end
@@ -466,13 +459,11 @@ local function step(dt: number)
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
-			-- helis fly in HeliController, SubController drives subs, PlaneController flies a manned
-			-- seaplane (an empty one floats here like any hull)
+			-- helis fly in HeliController, SubController drives subs
 			if
 				child:IsA("Model")
 				and not child:HasTag("Heli")
 				and child:GetAttribute("Sub") ~= true
-				and not flownPlane(child)
 			then
 				if isLocalDriver(child) then
 					driving = child
@@ -556,7 +547,7 @@ local function step(dt: number)
 end
 
 -- Last Simulator telemetry of the driven hull (speed, contact, slam, trim, pitch, roll, planing).
--- The seaplane and the submarine read seat.ThrottleFloat / SteerFloat too (PlaneController, SubController).
+-- The submarine reads seat.ThrottleFloat / SteerFloat too (SubController).
 BoatController.EngageControls = engageControls
 
 function BoatController.GetTelemetry(): Simulator.Telemetry?

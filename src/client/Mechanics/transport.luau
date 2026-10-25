@@ -109,7 +109,6 @@ function Transport.start(
 			local slam = World.slam()
 			if slam > Transport.HARD_SLAM then
 				slams += 1
-				Ui.hands("brace")
 			end
 			local h = World.hull(World.vehicle(ctx))
 			local char = Players.LocalPlayer.Character

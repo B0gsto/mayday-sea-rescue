@@ -67,7 +67,7 @@ DockConfig.Buildings = {
 		adds = { "Helipad", "Hangar", "HangarBoard" },
 		unlocks = { "AircraftAtDock" },
 		needs = 3,
-		vehicles = { "RescueHelicopter", "Seaplane" },
+		vehicles = { "RescueHelicopter" },
 	},
 	SubPen = {
 		cash = 20000,

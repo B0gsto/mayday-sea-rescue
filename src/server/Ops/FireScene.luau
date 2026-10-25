@@ -14,18 +14,11 @@ local FireScene = {}
 
 FireScene.GROW_SECONDS = 180 -- the fire reaches full size this long after the call starts -- tune
 
--- rescue variant -> textured hull (existing meshes); the meshes carry their own look, so RescueDressing's Part extras
--- (sized for the old 6 x 14 block cruiser) are not added
-local HULLS = {
-	default = "M_Veh_Tidewalker", -- motor cruiser
-	CharterBoat = "M_Veh_MooredBoat_02", -- the crabber as a charter fishing boat
-}
-local DRAFT = { M_Veh_Tidewalker = 1.6, M_Veh_MooredBoat_02 = 0 } -- pivot depth below the sea surface
-local FIRE_AT = { -- the fire's seat in the hull's pivot space (forward is -Z: the aft deck is +Z)
-	M_Veh_Tidewalker = CFrame.new(0, 8, 12), -- the cockpit sole among the sofas
-	M_Veh_MooredBoat_02 = CFrame.new(0, 4.5, 9),
-}
-AssetLoader.preload({ HULLS.default, HULLS.CharterBoat })
+local HULL = "M_Veh_Tidewalker" -- the motor cruiser (an existing textured mesh)
+local DRAFT = 1.6 -- pivot depth below the sea surface
+-- the fire's seat in the hull's pivot space (forward is -Z: the aft deck is +Z): the cockpit sole among the sofas
+local FIRE_AT = CFrame.new(0, 8, 12)
+AssetLoader.preload({ HULL })
 
 local function wind(): number
 	local folder = ReplicatedStorage:FindFirstChild("Weather")
@@ -90,7 +83,7 @@ function FireScene.Spawn(scene: any)
 	scene.fire = model
 	-- the first load yields (LoadAsset); the call starts without waiting for it
 	task.spawn(function()
-		local asset = HULLS[scene.variant] or HULLS.default
+		local asset = HULL
 		local hull = AssetLoader.cloneStatic(asset, "LOD0", false)
 		if scene.fire ~= model then
 			if hull then
@@ -104,7 +97,7 @@ function FireScene.Spawn(scene: any)
 		end
 		hull.Parent = model
 		-- at anchor, listing a little, low in the water (the pivot is the keel)
-		local base = CFrame.new(scene.position.X, -DRAFT[asset], scene.position.Z)
+		local base = CFrame.new(scene.position.X, -DRAFT, scene.position.Z)
 			* CFrame.Angles(0, math.rad(25), math.rad(6))
 		hull:PivotTo(base)
 		-- the fire sits on the aft deck; an invisible anchor carries it (the mesh's own primary part is off-centre)
@@ -113,7 +106,7 @@ function FireScene.Spawn(scene: any)
 		root.Anchored, root.CanCollide, root.CanQuery, root.CanTouch = true, false, false, false
 		root.Transparency = 1
 		root.Size = Vector3.one
-		root.CFrame = base * FIRE_AT[asset]
+		root.CFrame = base * FIRE_AT
 		root.Parent = model
 		model.PrimaryPart = root
 		local stern = Instance.new("Attachment")

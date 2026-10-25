@@ -58,7 +58,6 @@ return function(t)
 			"SessionEnd",
 			"InputDead",
 			"BadgeAwarded",
-			"PhotoMode",
 			"LiveEvent",
 			"FriendBonus",
 			"DailyCrate",
@@ -67,7 +66,6 @@ return function(t)
 			"VehicleDespawned",
 			"VehicleRecovered",
 			"StuckReset",
-			"Race",
 		}
 		for _, f in
 			Events.opEvents({
