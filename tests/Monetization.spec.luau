@@ -56,6 +56,7 @@ return function(t)
 			DockGarage = 75, -- docs/23 h (WP-10b), prices docs/23 (i)
 			DockHangar = 199,
 			DockSubPen = 149,
+			CrewHire = 99, -- docs/23 (j) WP-15, proposed
 		},
 	}
 

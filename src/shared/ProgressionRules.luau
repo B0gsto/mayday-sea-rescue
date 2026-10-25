@@ -17,6 +17,8 @@ export type PlayerData = {
 	coldOpenDone: boolean, -- the first-session cold open has been played (OperationService)
 	dockLevel: number, -- your dock at the marina, 1..5 (docs/23 d.2; DockService)
 	dockBuildings: { [string]: boolean }, -- bought dock buildings: Garage, Hangar, SubPen (docs/23 h; DockService)
+	-- Hired crew roles (docs/23 (j), WP-15; CrewHireService), max one per role.
+	crew: { [string]: boolean },
 	-- Small persisted flags and settings (ProgressionService.SetFlag). A value is a boolean, a
 	-- number, a short string or a flat table of those (for example `cameraSettings`).
 	flags: { [string]: any },
@@ -202,6 +204,9 @@ function Rules.fromSnapshot(snap: { [string]: any }): PlayerData
 	if type(snap.vehicleUpgrades) == "table" then
 		data.vehicleUpgrades = table.clone(snap.vehicleUpgrades)
 	end
+	if type(snap.crew) == "table" then
+		data.crew = table.clone(snap.crew)
+	end
 	return data
 end
 
@@ -241,6 +246,7 @@ function Rules.defaultData(): PlayerData
 		coldOpenDone = false,
 		dockLevel = 1,
 		dockBuildings = {},
+		crew = {},
 		flags = {},
 		cosmetics = {},
 	}
@@ -356,6 +362,13 @@ function Rules.migrate(raw: any): PlayerData
 			end
 		end
 	end
+	if type(raw.crew) == "table" then
+		for role, hired in raw.crew do
+			if type(role) == "string" and #role <= 24 and hired == true then
+				data.crew[role] = true
+			end
+		end
+	end
 	if type(raw.flags) == "table" then
 		local n = 0
 		for name, value in raw.flags do
@@ -412,6 +425,7 @@ function Rules.snapshot(data: PlayerData): { [string]: any }
 		starProgress = starProgress,
 		vehicles = table.clone(data.vehicles),
 		vehicleUpgrades = table.clone(data.vehicleUpgrades),
+		crew = table.clone(data.crew),
 		coldOpenDone = data.coldOpenDone,
 		flags = Rules.migrate({ flags = data.flags }).flags, -- a deep, clean copy
 	}
