@@ -25,49 +25,49 @@ ProgressionConfig.Ranks = {
 		id = "Recruit",
 		displayName = "Recruit",
 		rep = 0,
-		unlocks = { "Jet Ski", "Bosun", "Calm Bay calls" },
+		unlocks = { "Jet Ski", "Bosun", "Cove calls" },
 	},
 	{
 		id = "Lifeguard",
 		displayName = "Lifeguard",
 		rep = 400, -- tune
-		unlocks = { "RIB", "Crew joining" },
+		unlocks = { "RIB", "Crew joining", "Dock Lv2", "Farther calls" },
 	},
 	{
 		id = "RescueSwimmer",
 		displayName = "Rescue Swimmer",
 		rep = 900, -- tune
-		unlocks = { "Coastguard 4x4" },
+		unlocks = { "Dock Lv3", "Boathouse", "Paint booth" },
 	},
 	{
 		id = "Coxswain",
 		displayName = "Coxswain",
 		rep = 3000, -- tune
-		unlocks = { "Lifeboat", "Open Sea" },
+		unlocks = { "Lifeboat", "Submarine", "Sub pen", "Dock Lv4", "Crew hire", "Top call reach" },
 	},
 	{
 		id = "RescuePilot",
 		displayName = "Rescue Pilot",
 		rep = 9000, -- tune
-		unlocks = { "Helicopter", "Helipad", "Winch work" },
+		unlocks = { "Helicopter", "Hangar", "Dock Lv5" },
 	},
 	{
 		id = "Captain",
 		displayName = "Captain",
 		rep = 22000, -- tune
-		unlocks = { "Storm Front", "Tempest Point", "Captain's cap" },
+		unlocks = { "Captain's title" },
 	},
 	{
 		id = "Commodore",
 		displayName = "Commodore",
 		rep = 55000, -- tune
-		unlocks = { "Iceberg North", "Commodore livery" },
+		unlocks = { "Commodore livery" },
 	},
 	{
 		id = "Admiral",
 		displayName = "Admiral",
 		rep = 150000, -- tune
-		unlocks = { "Gold livery", "Admiral's coat", "Honor board" },
+		unlocks = { "Gold livery", "Admiral's coat", "Honour board" },
 	},
 } :: { Rank }
 

@@ -203,6 +203,9 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    the hub, the drop-off is your berth or the hub. Sim (playing all six islands): Lifeguard 0:13, RIB 0:18, Coxswain
    0:55, Rescue Pilot 2:22, Commodore 13.6 h, Admiral 36 h; jet ski x2.1 at 4.2 min/call, RIB x2.4 at 5.1 min (was
    x1.6 at 3.4: longer trips, same pay per minute). Within a few % of before: distance numbers unchanged.
+7. Re-checked 2026-10-25 after the old-design cleanup: the sim buys no car garage or seaplane (both cut in WP-17 /
+   WP-20), so the timeline is unchanged: Lifeguard 0:13, RIB 0:18, Coxswain 0:55, Rescue Pilot 2:22, Commodore
+   13.7 h, Admiral 36.4 h.
 
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
 

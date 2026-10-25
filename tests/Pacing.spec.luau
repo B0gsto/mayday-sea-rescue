@@ -479,7 +479,7 @@ return function(t)
 	end)
 
 	t.test("helicopter in week 1", function()
-		between(solo, "Rank 5 Rescue Pilot", 130, 280) -- 2026-10-25: 137 once the car garage stopped costing 5000
+		between(solo, "Rank 5 Rescue Pilot", 130, 280) -- 2026-10-25: 142 in the current sim
 		-- docs 03 section 10.2: past 8 hours, cut its price (the bill includes the docs/23 hangar)
 		between(solo, "Helicopter bought", 170, 8 * 60)
 	end)
@@ -503,7 +503,7 @@ return function(t)
 	end)
 
 	t.test("vehicle upgrades land when docs 03 section 10 expects", function()
-		between(solo, "RIB Tuned engine", 55, 100) -- after dock Lv 2 and the garage (docs/23)
+		between(solo, "RIB Tuned engine", 55, 100) -- after dock Lv 2 (docs/23)
 		between(solo, "Jet ski Storm hull", 100, 160)
 		between(solo, "Lifeboat Tuned engine", 115, 170)
 	end)

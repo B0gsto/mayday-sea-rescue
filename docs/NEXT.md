@@ -41,11 +41,9 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 4. **Icons**: redo `boat_to_me`, `settings`, `crew` in `marketing/ui/icons/` with Gemini (Antigravity
    `gemini-3.8-flash-high`; its image quota ran out today), then upload and update `UiImages.Kit`.
 5. **Map image refresh** after WP-24 (`tools/world/make_map_image.py`, upload changed tiles, `MapConfig.Tiles`).
-6. **Stale data from the old design** (found by the docs rewrite): `ProgressionConfig` rank `unlocks` still list
-   retired things (Coastguard 4x4, Open Sea, Storm Front, Tempest Point, Iceberg North) — replace with current
-   unlocks (craft, dock levels, buildings); `tests/Pacing.spec.luau` still models the car garage and seaplane
-   purchases — drop them and re-check pacing; `CallTypes` comments say islands at 900 studs (now 1,100). The
-   **launch place** needs server size 6 too (set on the test place via the Open Cloud places API, `serverSize`).
+6. **Launch place server size**: set it to 6 on the test place via the Open Cloud places API (`serverSize`).
+   (The old-design stale data was fixed 2026-10-25: rank `unlocks` name current craft/dock/crew, `CallTypes` says
+   islands at 1,100 studs, and the pacing sim already had no garage/seaplane purchases; numbers in docs/23 (i)(7).)
 7. **CONTRACT.md refresh** after 23c/23d (it still lists the phone and other removed modules), then a **code sweep**: comments, strings and names still mentioning Port Haven, the phone, the radio, the town, cars
    (after 23c/23d so it doesn't collide).
 8. **Real-client Opus playtest** of everything since v40 (none was done): a full first session, quests (salvage and

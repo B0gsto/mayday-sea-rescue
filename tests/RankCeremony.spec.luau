@@ -19,12 +19,22 @@ return function(t)
 	t.test("unlock icons come from the rank's config rows", function()
 		t.expect(Ceremony.unlockKind("Jet Ski")).toBe("boat")
 		t.expect(Ceremony.unlockKind("Lifeboat")).toBe("boat")
-		t.expect(Ceremony.unlockKind("Captain's cap")).toBe("gear")
+		t.expect(Ceremony.unlockKind("Submarine")).toBe("boat")
+		t.expect(Ceremony.unlockKind("Captain's title")).toBe("gear")
 		t.expect(Ceremony.unlockKind("Gold livery")).toBe("gear")
-		t.expect(Ceremony.unlockKind("Open Sea")).toBe("mission")
+		t.expect(Ceremony.unlockKind("Cove calls")).toBe("mission")
+		t.expect(Ceremony.unlockKind("Top call reach")).toBe("mission")
+		t.expect(Ceremony.unlockKind("Dock Lv2")).toBe("medal")
 		t.expect(Ceremony.unlockKind("Helm")).toBe("medal")
 		t.expect(Ceremony.unlockIcons(1)).toEqual({ "boat", "medal", "mission" })
-		t.expect(Ceremony.unlockIcons(4)).toEqual({ "boat", "mission" })
+		t.expect(Ceremony.unlockIcons(4)).toEqual({
+			"boat",
+			"boat",
+			"medal",
+			"medal",
+			"medal",
+			"mission",
+		})
 	end)
 
 	t.test("a fast boat skips the camera orbit", function()

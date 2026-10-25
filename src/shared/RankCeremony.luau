@@ -41,30 +41,29 @@ function RankCeremony.rankIndex(rankIndex: number): number
 	return math.clamp(rankIndex, 1, #ProgressionConfig.Ranks)
 end
 
--- "Jet Ski" -> boat, "Captain's cap" -> gear, "Open Sea" -> mission, anything else -> medal.
+-- "Jet Ski" -> boat, "Commodore livery" -> gear, "Cove calls" -> mission, a dock piece or building -> medal.
 function RankCeremony.unlockKind(text: string): string
 	local t = string.lower(text)
 	if
-		t:find("4x4")
-		or t:find("boat")
+		t:find("boat")
 		or t:find("helicopter")
 		or t:find("rib")
 		or t:find("jet")
 		or t:find("ski")
+		or t:find("submarine")
 		or t:find("helipad")
 	then
 		return "boat"
-	elseif t:find("gear") or t:find("livery") or t:find("coat") or t:find("cap") then
-		return "gear"
 	elseif
-		t:find("sea")
-		or t:find("storm")
-		or t:find("point")
-		or t:find("north")
-		or t:find("winch")
-		or t:find("front")
-		or t:find("bay")
+		t:find("gear")
+		or t:find("livery")
+		or t:find("coat")
+		or t:find("cap")
+		or t:find("title")
+		or t:find("paint")
 	then
+		return "gear"
+	elseif t:find("call") or t:find("cove") or t:find("reach") then
 		return "mission"
 	end
 	return "medal"
