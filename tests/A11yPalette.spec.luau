@@ -67,6 +67,7 @@ return function(t)
 				"SeamarkCardinal",
 				"SeamarkSafe",
 				"SeamarkDanger",
+				"Quest",
 			}
 		do
 			local symbol = Pal.symbol("Marker", name)

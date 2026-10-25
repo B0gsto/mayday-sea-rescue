@@ -82,6 +82,12 @@ DockConfig.Buildings = {
 	},
 } :: { [string]: Building }
 
+-- Blueprints (docs/23 (j) "Exploration feeds the plot", WP-21b): cosmetic buildings a quest chain unlocks (never
+-- sold). Owned ones are data.dockBuildings[key]; DockService raises them on their island lot (Marina.LOTS[lot]).
+DockConfig.Blueprints = {
+	Lighthouse = { lot = "Spare1" }, -- Keeper Ives' lamp chain (Quests/Data Lamp3)
+} :: { [string]: { lot: string } }
+
 -- Can a player buy building `key` with Cash? -> ok, reason ("Owned" | "Level" | "Rank" | "Cash"), price.
 function DockConfig.canBuyBuilding(
 	key: string,

@@ -2,7 +2,8 @@
 -- TalkController: walk up to a town NPC (Workspace.Npcs child named in Shared/Dialogue.TREES), press Talk
 -- (ProximityPrompt: E / X / tap) and the camera eases into an over-the-shoulder shot of them, they turn to
 -- face you, and their line shows with up to three numbered replies (keys 1-3, tap, gamepad D-pad + A).
--- B, Esc, the close button or walking away ends it and the camera eases back. Not during an operation,
+-- Quest givers (Quests/Data, QuestService) get their tree from Quests/Rules.talk at the moment you talk; a reply
+-- with an `action` goes to the server (Quest_Talk). B, Esc, the close button or walking away ends it and the camera eases back. Not during an operation,
 -- a cinematic or in a seat. The camera moves are Camera/Cinematic shots (CameraController owns the camera).
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
@@ -12,6 +13,10 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Dialogue = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Dialogue"))
+local QuestData =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
+local QuestRules =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Rules"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
@@ -63,6 +68,33 @@ end
 local finish: () -> ()
 local show: (id: string?) -> ()
 
+-- reply `i` of the shown node: a quest action goes to the server, then the next node (nil ends it)
+local function pick(t: Talk, i: number)
+	local node = Dialogue.node(t.tree, t.node)
+	local option = node and node.options[i]
+	if option and option.action then
+		local remote = ReplicatedStorage:FindFirstChild("Net")
+		remote = remote and remote:FindFirstChild("Quest_Talk")
+		if remote and remote:IsA("RemoteEvent") then
+			remote:FireServer(t.model.Name, option.action)
+		end
+	end
+	show(Dialogue.choose(t.tree, t.node, i))
+end
+
+-- the model's tree: a town NPC's fixed one, or a quest giver's from the player's quest attributes
+local function treeOf(m: Model): Dialogue.Tree?
+	if QuestData.npcById[m.Name] then
+		return QuestRules.talk(
+			m.Name,
+			player:GetAttribute("QuestId") :: string?,
+			player:GetAttribute("QuestStage") :: string?,
+			player:GetAttribute(`QuestOffer_{m.Name}`) :: string?
+		)
+	end
+	return Dialogue.TREES[m.Name]
+end
+
 show = function(id: string?)
 	local t = talking
 	local node = t and id and Dialogue.node(t.tree, id)
@@ -75,7 +107,7 @@ show = function(id: string?)
 	lineLabel.MaxVisibleGraphemes = 0
 	VoiceTTS.speak(
 		node.line,
-		VoiceCast.castFor(t.tree.name, "AGGIE"),
+		t.tree.cast or VoiceCast.castFor(t.tree.name, "AGGIE"),
 		{ at = t.model, channel = "talk" }
 	)
 	typing = 0
@@ -93,7 +125,7 @@ show = function(id: string?)
 		HudTheme.padding(b, 12)
 		b.Activated:Connect(function()
 			if talking == t then
-				show(Dialogue.choose(t.tree, id, i))
+				pick(t, i)
 			end
 		end)
 		first = first or b
@@ -112,7 +144,7 @@ local function onKey(
 	end
 	local i = table.find(KEYS, input.KeyCode)
 	if i and list:FindFirstChild(`Reply{i}`) then
-		show(Dialogue.choose(t.tree, t.node, i)) -- same as a click on that reply
+		pick(t, i) -- same as a click on that reply
 	end
 	return Enum.ContextActionResult.Sink -- keep 1-3 off the backpack hotbar while talking
 end
@@ -282,8 +314,8 @@ local function build()
 end
 
 local function watch(m: Instance)
-	local tree = Dialogue.TREES[m.Name]
-	if not (tree and m:IsA("Model")) then
+	local tree = if m:IsA("Model") then treeOf(m) else nil
+	if not tree then
 		return
 	end
 	-- the root streams in late (cold open at sea) and is rebuilt after a stream-out: attach on every arrival
@@ -306,7 +338,10 @@ local function watch(m: Instance)
 		prompt.HoldDuration = 0
 		prompt:SetAttribute("FootOnly", true)
 		prompt.Triggered:Connect(function()
-			begin(m, tree)
+			local now = treeOf(m :: Model) -- a quest giver's tree changes with your quest
+			if now then
+				begin(m :: Model, now)
+			end
 		end)
 		prompt.Parent = root
 		prompts[prompt] = true

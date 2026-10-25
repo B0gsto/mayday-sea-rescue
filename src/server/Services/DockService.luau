@@ -10,7 +10,7 @@
 -- the new pieces rise into place (the build beat). The owner's ghost of the next level is DockController's.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
--- GetLevel(player) -> number, Berths() -> { BasePart }.
+-- GetLevel(player) -> number, Berths() -> { BasePart }, Refresh(player) (rebuild from the profile).
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
 -- DockLevel (built level, DockController's ghost reads it).
 -- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
@@ -291,15 +291,20 @@ local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
 	end
 end
 
+-- bought buildings, then quest blueprints (DockConfig.Blueprints, WP-21b)
+local BUILT = table.clone(DockConfig.BUILDINGS)
+for key in DockConfig.Blueprints do
+	table.insert(BUILT, key)
+end
+
 -- The owner's bought buildings stand on the plot (the helipad only on a Lv 3+ boathouse); beat: new ones rise.
 local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	local data: any = owner and DataService.Get(owner)
 	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
 	local level = if data then data.dockLevel or 1 else 1
-	for _, key in DockConfig.BUILDINGS do
-		local want = owner ~= nil
-			and owned[key] == true
-			and level >= DockConfig.Buildings[key].needs
+	for _, key in BUILT do
+		local b = DockConfig.Buildings[key]
+		local want = owner ~= nil and owned[key] == true and level >= (if b then b.needs else 1)
 		local have = plot.buildings[key]
 		if want and not have and owner then
 			local m = DockPieces.building(key, plot.frame)
@@ -677,6 +682,11 @@ function DockService.Start()
 			task.wait(3)
 		end
 	end)
+end
+
+-- Rebuild the player's plot from the profile, new pieces rising in (QuestService after a blueprint unlock).
+function DockService.Refresh(player: Player)
+	show(player, true)
 end
 
 function DockService.GetPlot(player: Player): number?
