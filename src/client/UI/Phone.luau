@@ -17,10 +17,8 @@
 --                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
 -- at home they close it.
--- Gamepad Start opens the Settings app. Red dot (docs/16 B5/B6): when Cash covers something new
--- (shared/Affordable: the cheapest vehicle or upgrade for sale), the phone button gets a red dot and
--- a bounce and the Vehicles icon a badge; opening Vehicles clears it until a different item is the
--- cheapest one affordable.
+-- Gamepad Start opens the Settings app. The "something affordable" red dot is off since buys moved to the
+-- dock boards (WP-11a); Phone.setBadge stays for the next thing worth a dot.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
 --                               "phone" region, HudLayout)
 --   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name, mount?)  (mount: a page with no icon)
@@ -34,13 +32,11 @@ local UserInputService = game:GetService("UserInputService")
 
 local Client = script.Parent.Parent
 local Controllers = Client:WaitForChild("Controllers")
-local Affordable = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Affordable"))
 local Comfort = require(Client:WaitForChild("Camera"):WaitForChild("Comfort"))
 local HudTheme = require(script.Parent:WaitForChild("HudTheme"))
 local InputGlyph = require(script.Parent:WaitForChild("InputGlyph"))
 local Layout = require(script.Parent:WaitForChild("Layout"))
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))
-local Rules = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("ProgressionRules"))
 local Telemetry = require(Client:WaitForChild("Telemetry"))
 local Viewmodel = require(Client:WaitForChild("Camera"):WaitForChild("Viewmodel"))
 
@@ -109,9 +105,6 @@ local clockLabel: TextLabel
 local widgetTime: TextLabel
 local widgetDate: TextLabel
 local badge: Frame
-local appBadge: Frame? = nil -- the dot on the Vehicles icon
-local affordKey: string? = nil -- the cheapest affordable item now (Affordable.Pick.key)
-local seenKey: string? = nil -- ... when Vehicles was last opened
 local zoomFrom = Vector2.new(0.5, 0.5) -- the open app's icon, as a share of the screen
 local bounce: (() -> ())? = nil
 local tiles: { Tile } = {}
@@ -578,11 +571,6 @@ local function appList(): { App }
 	return list
 end
 
--- red dot: something new is affordable (Vehicles opened since clears it)
-local function paintBadge()
-	Phone.setBadge(affordKey ~= nil and affordKey ~= seenKey)
-end
-
 -- `mount` opens a page that has no icon (the boat board's buy card, docs/23 d.3)
 function Phone.openApp(name: string, mount: Mount?)
 	local app: App? = if mount then { name = name, label = name, mount = mount } else byName[name]
@@ -608,10 +596,6 @@ function Phone.openApp(name: string, mount: Mount?)
 	end
 	if home.Visible then
 		zoomFrom = iconPoint(name)
-	end
-	if name == "Vehicles" then
-		seenKey = affordKey -- seen: the dot waits for the next new thing
-		paintBadge()
 	end
 	current = name
 	zoomSerial += 1
@@ -647,13 +631,11 @@ function Phone.openApp(name: string, mount: Mount?)
 	end)
 end
 
--- the red dot (and one bounce as it appears) on the phone button, and the Vehicles icon's badge
+-- the red dot (and one bounce as it appears) on the phone button; nothing sets it since buys moved to the dock
+-- boards (WP-11a)
 function Phone.setBadge(on: boolean)
 	if not badge then
 		return
-	end
-	if appBadge then
-		appBadge.Visible = on
 	end
 	local was = badge.Visible
 	badge.Visible = on
@@ -785,14 +767,6 @@ local function makeTile(app: App, order: number, parent: Instance, withLabel: bo
 	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = icon
-	if app.name == "Vehicles" then -- the iOS badge: something new to buy
-		local dot = box(icon, RED, 0.9, 0.1, 0, 0, 99)
-		dot.Name = "Badge"
-		dot.Size = UDim2.fromOffset(20, 20)
-		dot.ZIndex = 3
-		dot.Visible = false
-		appBadge = dot
-	end
 
 	local label: TextLabel?, shadow: TextLabel? = nil, nil
 	if withLabel then
@@ -1365,44 +1339,6 @@ function Phone.mount(statusRegion: Frame)
 			leader = tonumber(payload.leader) or 0
 			if drawCrew then
 				drawCrew()
-			end
-		end
-	end)
-	-- the red dot follows Cash against the cheapest vehicle or upgrade for sale
-	local snapshot: { [string]: any }? = nil
-	local function afford()
-		local snap = snapshot
-		local pick = if snap
-			then Affordable.cheapest(snap, function(vehicleId: string): boolean
-				local pass = Rules.vehiclePass(vehicleId)
-				return pass ~= nil and player:GetAttribute("Pass_" .. pass) == true
-			end)
-			else nil
-		-- only opening Vehicles marks a pick seen: the next item after a buy in the app (Engine,
-		-- then Hull) dots again (real-client playtest: the dot never came back for the Hull)
-		affordKey = if pick then pick.key else nil
-		paintBadge()
-	end
-	local function onData(d: any)
-		if type(d) == "table" then
-			snapshot = d
-			afford()
-		end
-	end
-	Net.event("PlayerDataChanged").OnClientEvent:Connect(onData)
-	player.AttributeChanged:Connect(function(attr: string)
-		if string.sub(attr, 1, 5) == "Pass_" then
-			afford()
-		end
-	end)
-	task.spawn(function()
-		local getData = Net.init():WaitForChild("Progression_GetData", 30)
-		if getData and getData:IsA("RemoteFunction") and not snapshot then
-			local ok, d = pcall(function()
-				return getData:InvokeServer()
-			end)
-			if ok and not snapshot then
-				onData(d)
 			end
 		end
 	end)

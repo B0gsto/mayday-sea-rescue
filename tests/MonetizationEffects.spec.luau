@@ -127,6 +127,14 @@ return function(t)
 		t.expect(select(2, Effects.quickLaunchAllowed(true, false))).toBe("ColdOpen")
 	end)
 
+	t.test("Boat to me waits out its cooldown unless you own Quick Launch", function()
+		local cd = Effects.BOAT_TO_ME_COOLDOWN
+		t.expect(Effects.boatToMeWait(false, nil, 100)).toBe(0)
+		t.expect(Effects.boatToMeWait(false, 100, 110)).toBe(cd - 10)
+		t.expect(Effects.boatToMeWait(false, 100, 100 + cd + 1)).toBe(0)
+		t.expect(Effects.boatToMeWait(true, 100, 101)).toBe(0)
+	end)
+
 	t.test("only items with a built effect are ready; cosmetics wait for their art", function()
 		local ready = {
 			Products = {

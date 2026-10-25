@@ -436,7 +436,10 @@ local LEVELS = { [2] = level2, [3] = level3, [4] = level4, [5] = level5 }
 
 local G = Marina.GARAGE
 local GARAGE_H = 10 -- the CoastguardResponse's light bar clears the door
-local PAD_Y = TOP + 11 + 4.6 -- the helipad's top, on posts over the Lv 3 boathouse ridge
+-- the helipad's top, on posts over the Lv 3 boathouse ridge and clear over the Lv 4 crane's boom (top y 19)
+local PAD_Y = TOP + 18
+-- the helicopter's spot: the plot's centre line (Marina.PLOT_X), so its 41-stud rotor stays on the plot
+local HELI = CFrame.new((Marina.PLOT_X[1] + Marina.PLOT_X[2]) / 2, PAD_Y, 38)
 local PEN = { x0 = 19.6, x1 = 28.4, z0 = -21, z1 = 1, top = 14 } -- the sub pen gantry, east of the jetty
 
 -- In each building's frame: `buildAt` = the ghost's Build prompt, `board` = the vehicle board's rack (models
@@ -451,7 +454,7 @@ DockPieces.Buildings = {
 	Hangar = {
 		buildAt = CFrame.new(1, TOP + 2.5, 34),
 		board = CFrame.new(-11, PAD_Y, 50.4),
-		targets = { RescueHelicopter = CFrame.new(-11, PAD_Y, 38) } :: { [string]: CFrame },
+		targets = { RescueHelicopter = HELI } :: { [string]: CFrame },
 	},
 	SubPen = {
 		buildAt = CFrame.new(14, TOP + 2.5, -10),
@@ -559,18 +562,19 @@ local function garage(m: Model, g: CFrame)
 	light.Parent = strip
 end
 
--- the helipad on posts over the boathouse roof (an H, an edge line and lights), a small hangar shelter at its
--- back and a ladder up the boathouse's open side
+-- the helipad on posts over the boathouse roof and the deck east of it (an H, an edge line and lights), a
+-- small hangar shelter at its back and a ladder up its east side
 local function hangar(m: Model, b: CFrame)
-	local x0, x1, z0, z1 = -20.5, -1.5, 29.5, 52.5
+	local x0, x1, z0, z1 = -20.5, 12.5, 29.5, 52.5
 	local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
 	for _, x in { x0 + 1, x1 - 1 } do
+		local y0 = if x < -2 then TOP + 11 else TOP -- on the boathouse wall, or the deck
 		for _, z in { z0 + 1, z1 - 1 } do
 			part(
 				m,
 				"Post",
-				Vector3.new(0.8, PAD_Y - TOP - 11, 0.8),
-				b * CFrame.new(x, (PAD_Y + TOP + 11) / 2, z),
+				Vector3.new(0.8, PAD_Y - y0, 0.8),
+				b * CFrame.new(x, (PAD_Y + y0) / 2, z),
 				GREY,
 				M.Metal
 			)
@@ -584,13 +588,13 @@ local function hangar(m: Model, b: CFrame)
 		GREY,
 		M.SmoothPlastic
 	)
-	local hz = 38
+	local hx, hz = HELI.X, HELI.Z
 	for _, e in { { 0, -8, 15, 0.4 }, { 0, 8, 15, 0.4 }, { -7.5, 0, 0.4, 16 }, { 7.5, 0, 0.4, 16 } } do
 		part(
 			m,
 			"PadLine",
 			Vector3.new(e[3], 0.06, e[4]),
-			b * CFrame.new(cx + e[1], PAD_Y + 0.03, hz + e[2]),
+			b * CFrame.new(hx + e[1], PAD_Y + 0.03, hz + e[2]),
 			YELLOW,
 			M.SmoothPlastic
 		).CanCollide =
@@ -601,7 +605,7 @@ local function hangar(m: Model, b: CFrame)
 			m,
 			"H",
 			Vector3.new(e[3], 0.08, e[4]),
-			b * CFrame.new(cx + e[1], PAD_Y + 0.04, hz + e[2]),
+			b * CFrame.new(hx + e[1], PAD_Y + 0.04, hz + e[2]),
 			WHITE,
 			M.SmoothPlastic
 		).CanCollide =
@@ -609,7 +613,7 @@ local function hangar(m: Model, b: CFrame)
 	end
 	for _, x in { x0 + 0.4, cx, x1 - 0.4 } do
 		for _, z in { z0 + 0.4, hz, 46 } do
-			if x ~= cx or z ~= hz then
+			if x ~= cx or z ~= hz then -- (cx, hz): under the H's edge line
 				local bulb = part(
 					m,
 					"PadLight",

@@ -15,7 +15,8 @@
 -- until it stops, then parks). Model attributes: VehicleId, Owner, LandVehicle, CameraMode
 -- ("Chase"), CockpitView, Headlights, LightBar, Siren, Horn, CanLaunch, Towing, ExtraMassKg,
 -- WaterDepth (studs over the tyres, 0.1 steps), Flooded, FloodedUntil (server time; Car/Wading).
--- Spawns face along the nearest WorldConfig road, away from the water (Car/RoadHeading).
+-- Spawns face along the nearest WorldConfig road, away from the water (Car/RoadHeading). A Land_Request
+-- with no point from a player who owns a dock garage parks the car in their garage bay instead.
 -- A towing car holds an ObjectValue "Trailer"; the trailer is a separate model on a
 -- BallSocketConstraint (TowHitch -> Coupler) with its own raycast wheels.
 -- Recovery (VehicleRecovery): a car on its side or roof, wedged with the throttle held, or sunk
@@ -38,7 +39,9 @@ local ArtLayout = require(CarFolder:WaitForChild("ArtLayout"))
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
 local Builder = require(CarFolder:WaitForChild("Builder"))
 local Crowding = require(Shared:WaitForChild("Crowding"))
+local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
+local Marina = require(Shared:WaitForChild("Marina"))
 local Physics = require(CarFolder:WaitForChild("Physics"))
 local RoadHeading = require(CarFolder:WaitForChild("RoadHeading"))
 local Trailer = require(CarFolder:WaitForChild("Trailer"))
@@ -1297,7 +1300,17 @@ function LandVehicleService.Init()
 			return false, "BadRequest"
 		end
 		local point = if type(pointId) == "string" and #pointId <= 40 then pointId else nil
-		local ok, result = spawnVehicle(player, vehicleId, point, withTrailer == true)
+		-- no spawn point asked (the phone card): your dock garage's bay when you own one (WP-11a)
+		local plot, bay =
+			player:GetAttribute("DockPlot"), DockPieces.Buildings.Garage.targets[vehicleId]
+		local at = if not point
+				and withTrailer ~= true
+				and player:GetAttribute("DockGarage") == true
+				and type(plot) == "number"
+				and bay
+			then Marina.garage(plot) * bay
+			else nil
+		local ok, result = spawnVehicle(player, vehicleId, point, withTrailer == true, at)
 		return ok, result
 	end
 	control.OnServerEvent:Connect(onControl)
