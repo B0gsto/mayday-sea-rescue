@@ -46,14 +46,16 @@ before touching.
 8. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
 
-## 3. Open decisions / known issues
+## 3. Decisions (owner, 2026-10-25: "go with your recommendation")
 
-- Quest chain (Lighthouse) takes 3 real days (one quest per NPC per day): proposed to unlock the next chain step
-  immediately — not yet confirmed by the owner.
-- Robux: crew hire product (id 0, ready=false) and any new building products need prices confirmed, then
-  `deploy.py ... --steps monetize --only <keys>` (the `--only` flag lives uncommitted in
-  `~/RobloxProjects/tools/deploy.py`, a TameATitan-repo file shared with another thread). Launch universe has none
-  of today's 10 products yet.
-- "Too slow" call failure kept (owner may want it gone).
-- Late-game Cash sink is thin (~280k unspent at Admiral; crew wages help).
-- Paid Sea Chests (RNG cosmetics) planned, not built (re-answer the maturity questionnaire when they ship).
+- **Quest chains**: the next chain step unlocks right after the previous one (daily rotation stays for normal
+  quests). Queued, small.
+- **"Too slow" removed**: calls never fail; a slow rescue gets bronze and less pay. Queued, small.
+- **Late-game Cash sink**: island decorations and expansions (extra lots) bought with Cash on the build tablet;
+  add with/after WP-14d. Crew wages also help.
+- **Sea Chests**: after the first public launch (docs/04 design; re-answer the maturity questionnaire that day).
+- **Crew hire Robux price**: propose one when WP-15 lands (above the Cash-pack rate, like dock items), then create
+  with `deploy.py ... --steps monetize --only <keys>`.
+- **`deploy.py --only`**: stays uncommitted in `~/RobloxProjects/tools/deploy.py` (TameATitan repo, another thread
+  has edits in the same file); that thread commits it. Re-add it locally if it disappears.
+- Launch universe has none of today's 10 products yet.

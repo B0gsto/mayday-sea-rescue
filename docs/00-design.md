@@ -31,9 +31,11 @@ each other's islands). 6 players per server.
 - **Pick-up is simple:** an orange ring on the water marks each survivor; inside it your craft eases to boarding
   speed by itself; they swim over and climb aboard in view, "+1". Full craft shows on its seat pips. Helicopter
   winches from a hover; submarine picks up divers on the seabed.
-- **Drop-off:** your own berth or the hub quay, nearest wins. A late call can fail ("Too slow"), nobody steals it.
+- **Drop-off:** your own berth or the hub quay, nearest wins. Calls never fail: a slow rescue just earns a lower
+  grade (bronze) and less pay.
 - **Quests:** 6 NPCs at the hub camps (talk = camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
-  special rescue, and chains that unlock a unique building for your island (e.g. a lighthouse). One a day per NPC.
+  special rescue, and chains that unlock a unique building for your island (e.g. a lighthouse). One new quest a
+  day per NPC; a chain's next step unlocks as soon as the previous one is done.
 - **Free-roam swimmers** between the islands for anyone sailing around.
 
 ## 4. Your island (the tycoon)
@@ -61,14 +63,14 @@ handle the same whether earned or bought.
 
 Ranks: Recruit → Lifeguard → Rescue Swimmer → Coxswain → Rescue Pilot → Captain → Commodore → Admiral (Rep from
 calls and quests). Cash from calls, quests, the daily chest and streaks; spent on craft, island buildings, crew
-wages, cosmetics. Free players reach everything (docs/03 pacing; checked by the pacing sim in `tests/`). Prices and
+wages, cosmetics, and island decorations/expansions on the build tablet (the late-game Cash sink, planned). Free players reach everything (docs/03 pacing; checked by the pacing sim in `tests/`). Prices and
 the economy check: docs/23 (i).
 
 ## 7. Money (Robux)
 
 Robux can buy anything a player lacks Cash or rank for (never skill: grades and promotions stay earned). Passes:
 2x Cash, VIP, Quick Launch, Starter Kit, Robux boats and craft, cosmetics; products: Cash packs, boosts, Storm
-Summons, dock levels and buildings, day passes. Paid random Sea Chests are planned (cosmetics only, odds shown).
+Summons, dock levels and buildings, day passes. Paid random Sea Chests come after the first public launch (cosmetics only, odds shown, pity, one Cash chest).
 No pressure, no timers on offers, the player opens every prompt. Details: docs/04.
 
 ## 8. UI and feel
