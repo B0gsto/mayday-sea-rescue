@@ -16,6 +16,8 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 | WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
 | Quest chains unlock immediately + calls never fail ("Too slow" removed) | a `t3/...` branch (see `git worktree list`) | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
+| WP-23c delete the phone, left button column + kit panels, map fog overlay, kit polish | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
+| WP-14d build tablet + top-down build mode + Cash decor tab | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
