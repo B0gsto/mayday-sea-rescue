@@ -48,7 +48,7 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
 
-Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu (WP-23c), build mode v2 (WP-14e), loading flyover, 80-stud drop-off zone, Lego baseplate islands (WP-24, merged after v44). In flight: WP-28 no ranks + unlock tree; WP-27 ring layout + quest pontoon/tablet (both Opus).
+Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu (WP-23c), build mode v2 (WP-14e), loading flyover, 80-stud drop-off zone, Lego baseplate islands (WP-24, merged after v44). Merged 2026-10-26: WP-27 ring layout (plates 470 studs out, ring bridges, quest pontoon + quest tablet with sail-in givers, rip moved to Puffin Isle, ferry 1,000 S, own-berth-only home; open: chain giver arrives twice, moored boats don't bob, debrief showed +0 twice, unused Aggie/crew dialogue). In flight: WP-28 no ranks + unlock tree (Opus).
 
 ## 2b. Queued next (owner, 2026-10-25 night)
 
