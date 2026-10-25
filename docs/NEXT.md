@@ -41,11 +41,16 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 4. **Icons**: redo `boat_to_me`, `settings`, `crew` in `marketing/ui/icons/` with Gemini (Antigravity
    `gemini-3.8-flash-high`; its image quota ran out today), then upload and update `UiImages.Kit`.
 5. **Map image refresh** after WP-24 (`tools/world/make_map_image.py`, upload changed tiles, `MapConfig.Tiles`).
-6. **CONTRACT.md refresh** after 23c/23d (it still lists the phone and other removed modules), then a **code sweep**: comments, strings and names still mentioning Port Haven, the phone, the radio, the town, cars
+6. **Stale data from the old design** (found by the docs rewrite): `ProgressionConfig` rank `unlocks` still list
+   retired things (Coastguard 4x4, Open Sea, Storm Front, Tempest Point, Iceberg North) — replace with current
+   unlocks (craft, dock levels, buildings); `tests/Pacing.spec.luau` still models the car garage and seaplane
+   purchases — drop them and re-check pacing; `CallTypes` comments say islands at 900 studs (now 1,100). The
+   **launch place** needs server size 6 too (set on the test place via the Open Cloud places API, `serverSize`).
+7. **CONTRACT.md refresh** after 23c/23d (it still lists the phone and other removed modules), then a **code sweep**: comments, strings and names still mentioning Port Haven, the phone, the radio, the town, cars
    (after 23c/23d so it doesn't collide).
-7. **Real-client Opus playtest** of everything since v40 (none was done): a full first session, quests (salvage and
+8. **Real-client Opus playtest** of everything since v40 (none was done): a full first session, quests (salvage and
    rescue never tested end to end), dock levels, heli/sub, and **two players spawning boats at once**.
-8. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
+9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
 
 ## 3. Decisions (owner, 2026-10-25: "go with your recommendation")
