@@ -95,13 +95,12 @@ return function(t)
 		t.expect(D.canBuyBuilding("SubPen", false, 1, 20000, D.rankIndex("Coxswain"))).toBe(true)
 	end)
 
-	t.test("the boat board slot sits on the deck, inside the plot", function()
-		local p = D.BOARD_SLOT.Position
+	t.test("the boat board slot sits on the boathouse lot, at quay height", function()
+		local lot = Marina.LOTS.Boathouse
+		local p = lot.cf:PointToObjectSpace(D.BOARD_SLOT.Position)
 		local half = D.BOARD_SIZE / 2
-		t.expect(p.Y).toBe(Marina.DECK_TOP)
-		t.expect(p.X - half >= Marina.PLOT_X[1]).toBe(true)
-		t.expect(p.X + half <= Marina.PLOT_X[2]).toBe(true)
-		t.expect(p.Z - half >= Marina.BERTH / 2).toBe(true)
-		t.expect(p.Z + half <= Marina.BERTH / 2 + Marina.DECK).toBe(true)
+		t.expect(math.abs(D.BOARD_SLOT.Y - Marina.DECK_TOP) < 1e-3).toBe(true)
+		t.expect(math.abs(p.X) + half <= lot.size.X / 2).toBe(true)
+		t.expect(math.abs(p.Z) + half <= lot.size.Y / 2).toBe(true)
 	end)
 end

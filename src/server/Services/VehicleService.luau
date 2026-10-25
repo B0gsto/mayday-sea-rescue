@@ -907,8 +907,8 @@ local function createVehicle(
 	return model, seat
 end
 
--- docs/23 d.2: from Lv 2 a second craft moors along the pontoon's east side (DockPieces level2, x -13).
-local PONTOON_EDGE = -12.5
+-- docs/23 d.2: from Lv 2 a second craft moors along the pontoon's inner side (DockPieces level2, x 13).
+local PONTOON_EDGE = 12.5
 
 -- Where a docked `spec` goes at berth `at`, and the craft kept out beside it: the berth, or (Lv 2+, the
 -- kept craft in the berth) along the pontoon. When neither is clear of it, the kept one goes instead.
@@ -921,7 +921,7 @@ local function dockSpot(player: Player, spec: VehicleSpec, at: BasePart): (CFram
 	if not keep then
 		return main, nil
 	end
-	local second = at.CFrame * CFrame.new(PONTOON_EDGE + spec.hullSize.X / 2, 0, -out)
+	local second = at.CFrame * CFrame.new(PONTOON_EDGE - spec.hullSize.X / 2, 0, -out)
 	for _, spot in { main, second } do
 		local d = spot:PointToObjectSpace(keep.root.Position)
 		if
@@ -1504,7 +1504,7 @@ function VehicleService.Stow(player: Player): string
 	return stowVehicle(player)
 end
 
--- K11 / docs/23: every spawn stands the player on their jetty; a returning player (coldOpenDone) also gets
+-- K11 / docs/23: every spawn stands the player on their island (WP-19b: its spawn); a returning player (coldOpenDone) also gets
 -- their craft docked beside them, the daily crate (StreakController) on the path. A new player's cold open
 -- seats them at the berth (SpawnColdOpen); someone already seated is left alone.
 local function homeAtBay(player: Player, character: Model)
@@ -1525,8 +1525,16 @@ local function homeAtBay(player: Player, character: Model)
 			spawnVehicle(player, id, bay, true, true, "Bay")
 		end
 	end
-	local pos = standOnGround(character, (bay.CFrame * BayLaunch.STAND).Position)
-	character:PivotTo(CFrame.lookAt(pos, Vector3.new(bay.Position.X, pos.Y, bay.Position.Z)))
+	-- WP-19b: on their island's spawn, facing the way it faces (the station); else beside the berth
+	local home = DockService.GetSpawn(player)
+	local pos = standOnGround(
+		character,
+		if home then home.Position else (bay.CFrame * BayLaunch.STAND).Position
+	)
+	local face = if home
+		then pos + home.LookVector
+		else Vector3.new(bay.Position.X, pos.Y, bay.Position.Z)
+	character:PivotTo(CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z)))
 end
 
 local function watchReturning(player: Player)
