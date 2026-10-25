@@ -350,4 +350,9 @@ Lego-like animations when built." And: "do not redesign the assets that we alrea
 - **Building on your island** plays a Lego build: pieces drop in brick by brick, bottom to top, with a small bounce
   and a snap sound, builders standing by, a dust puff at the end (WP-14c).
 - The UI kit can carry a subtle stud texture on title bars and price buttons (docs/23 (m)).
+- **Player islands are plain Lego baseplates** (owner: "do not use the land on the player's islands, I want a simple
+  plain Lego island, a simple 2D land"): flat green stud plates with a berth notch, no terrain, no scatter (WP-24).
+  The hub forest and outer islands stay terrain.
+- **Build station:** the blueprint table sits in a small Lego builder's yard near your island spawn (open roof,
+  tools, a little crane): the tycoon "build here" spot, with a table instead of pads (follow-up to WP-14c).
 - **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
