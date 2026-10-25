@@ -143,7 +143,7 @@ local MonetizationConfig = {
 			dayPassFor = "QuickLaunch",
 			dayPassHours = 24,
 		},
-		-- docs/23 WP-4: one per dock level (DockConfig), sold at the ghost on your dock, granted by DockService.
+		-- docs/23 WP-4: one per dock level (DockConfig), sold at the blueprint table on your island, granted by DockService.
 		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs; rank skip costs extra).
 		DockLevel2 = {
 			id = 3722223190,
@@ -181,7 +181,7 @@ local MonetizationConfig = {
 			ready = true,
 			dockLevel = 5,
 		},
-		-- docs/23 h (WP-10b): the dock buildings (DockConfig.Buildings), sold at their ghost, granted by DockService.
+		-- docs/23 h (WP-10b): the dock buildings (DockConfig.Buildings), sold at their blueprint sheet, granted by DockService.
 		DockGarage = {
 			id = 3722223237,
 			name = "Car Garage",
