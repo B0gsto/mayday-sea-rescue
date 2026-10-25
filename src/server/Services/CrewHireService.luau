@@ -7,7 +7,7 @@
 -- removes one. The daily wage is taken off data.cash when the profile loads (each session
 -- starts), never below 0. Hired crew tween to their spot and idle there: Mechanic in the
 -- boathouse, Lifeguard at the beach tower, Dispatcher seated in the station. The effects are
--- one-liners in VehicleService (relaunch cooldown x0.7), AmbientRescueService (+1 swimmer) and
+-- one-liners in VehicleService (Boat to me cooldown x0.7), AmbientRescueService (+1 swimmer) and
 -- OperationService (offers x0.8). Everything is in-server only; nothing runs offline.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -320,6 +320,7 @@ local function sync(player: Player)
 	if not data then
 		return
 	end
+	player:SetAttribute("CrewMechanic", data.crew.Mechanic == true) -- the client's Boat to me ring
 	if not CrewHire.unlocked(data.dockLevel, ProgressionRules.rankIndex(data)) then
 		clearState(player)
 		return

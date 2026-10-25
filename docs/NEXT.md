@@ -23,7 +23,7 @@ Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b7
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
 before touching.
 
-Merged since (not yet seen in Studio): WP-14c blueprint table + `BuildSeq` Lego build; WP-15 crew lineup (gate dock Lv5 + Coxswain; Mechanic/Lifeguard/Dispatcher 12k/9k/15k Cash, wages 400/300/500 per session). Follow-up: the Mechanic's effect (relaunch cooldown −30%) does nothing at Lv4+ — change it to cut the "Boat to me" cooldown instead. `check.sh` failed once then passed 3× (possible flaky test).
+Merged since (not yet seen in Studio): WP-14c blueprint table + `BuildSeq` Lego build; WP-15 crew lineup (gate dock Lv5 + Coxswain; Mechanic/Lifeguard/Dispatcher 12k/9k/15k Cash, wages 400/300/500 per session). Mechanic effect fixed: the "Boat to me" cooldown is −30% (60 s → 42 s), on the server and the client ring. `check.sh` failed once then passed 3× (possible flaky test).
 
 ## 2. Queued (in order)
 

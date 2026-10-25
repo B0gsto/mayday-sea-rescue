@@ -236,7 +236,7 @@ move onto your plot and work there visibly.
 
 | Crew | Seen doing | Effect (small, never replaces playing) |
 |---|---|---|
-| Mechanic | Working on a boat in the boathouse | Faster relaunch, repairs |
+| Mechanic | Working on a boat in the boathouse | "Boat to me" cooldown −30% (60 s → 42 s), repairs |
 | Lifeguard | In a tower on your beach | Brings in small ambient rescues near your plot: a little Cash while you play |
 | Dispatcher | At the radio in the station | One extra call offer / better calls |
 | Coxswain | Takes your second boat out | Joins big calls as an NPC helper |

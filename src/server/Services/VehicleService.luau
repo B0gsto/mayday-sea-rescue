@@ -958,8 +958,8 @@ local function spawnLocked(
 		not quick
 		and DockService.GetLevel(player) < 4
 		and lastSpawn[player]
-		and now - lastSpawn[player] < SPAWN_COOLDOWN * CrewHireService.MechanicCooldown(player)
-	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2); a Mechanic shortens it (WP-15)
+		and now - lastSpawn[player] < SPAWN_COOLDOWN
+	then -- Lv 4 dock: no relaunch cooldown (docs/23 d.2)
 		return false, "Cooldown"
 	end
 	if not canUse(player, vehicleId) then
@@ -1566,14 +1566,17 @@ function VehicleService.Init()
 	)
 		if near == true then
 			-- Boat to me (docs/23 c.5): the phone no longer chooses a craft; yours comes to you. Free calls
-			-- wait out a cooldown (player attribute BoatToMeAt, server time); Quick Launch skips it
+			-- wait out a cooldown (player attribute BoatToMeAt, server time, x0.7 with a hired Mechanic);
+			-- Quick Launch skips it
 			local now = Workspace:GetServerTimeNow()
 			local last = player:GetAttribute("BoatToMeAt")
 			if
 				MonetizationEffects.boatToMeWait(
 					ownsQuickLaunch(player),
 					if type(last) == "number" then last else nil,
-					now
+					now,
+					MonetizationEffects.BOAT_TO_ME_COOLDOWN
+						* CrewHireService.MechanicCooldown(player)
 				) > 0
 			then
 				return false, "Cooldown"

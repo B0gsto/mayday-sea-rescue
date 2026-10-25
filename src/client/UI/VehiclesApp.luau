@@ -36,6 +36,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local Affordable = require(Shared:WaitForChild("Affordable"))
 local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
+local CrewHire = require(Shared:WaitForChild("Crew"):WaitForChild("CrewHire"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -1209,12 +1210,19 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 		end
 		local function paintCooldown()
 			local last = player:GetAttribute("BoatToMeAt")
+			local cooldown = MonetizationEffects.BOAT_TO_ME_COOLDOWN
+				* (
+					if player:GetAttribute("CrewMechanic") == true
+						then CrewHire.MechanicCooldown
+						else 1
+				)
 			local left = MonetizationEffects.boatToMeWait(
 				ownsQuick(),
 				if type(last) == "number" then last else nil,
-				Workspace:GetServerTimeNow()
+				Workspace:GetServerTimeNow(),
+				cooldown
 			)
-			local lit = math.floor((1 - left / MonetizationEffects.BOAT_TO_ME_COOLDOWN) * #ticks)
+			local lit = math.floor((1 - left / cooldown) * #ticks)
 			for i, t in ticks do
 				t.Visible = left > 0 and i <= lit
 			end

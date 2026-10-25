@@ -297,8 +297,8 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   groups, seeded lineup, Cash price / daily wage, dock Lv 5 + Coxswain gate, effect knobs) and
   `CrewHireService` (R15 seekers via `NpcFactory` outside your station, `Crew_Hire` / `Crew_Fire`, `data.crew`,
   wage at session start; `CrewHireController` billboards, Hire / Fire card, next-group clock). Hooks:
-  VehicleService relaunch, AmbientRescueService +1 swimmer, OperationService offer factor. Robux product
-  `CrewHire` (`id = 0`, `ready = false`).
+  VehicleService Boat to me cooldown, AmbientRescueService +1 swimmer, OperationService offer factor. Robux
+  product `CrewHire` (`id = 0`, `ready = false`).
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
