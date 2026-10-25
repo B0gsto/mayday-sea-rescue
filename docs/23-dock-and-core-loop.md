@@ -340,3 +340,14 @@ buttons, coloured square icon buttons with a label underneath). This wins over t
 
 **Work packages.** WP-23a icons (Antigravity). WP-23b UI kit + style-guide screen + art-director critique (≤3
 rounds). WP-23c delete the phone, left button bar + panels. WP-23d restyle every remaining screen on the kit.
+
+## (n) Lego style for new things (owner, 2026-10-25)
+
+Owner: "Do the blocky Lego stuff for things that we have not built yet. I want when building the base/dock to have
+Lego-like animations when built." And: "do not redesign the assets that we already have."
+- **New** buildings, outposts and props are made in a blocky, Lego-like style (chunky bricks, bright colours, studs
+  on big flat tops, modest part counts). Existing finished models and art keep their look.
+- **Building on your island** plays a Lego build: pieces drop in brick by brick, bottom to top, with a small bounce
+  and a snap sound, builders standing by, a dust puff at the end (WP-14c).
+- The UI kit can carry a subtle stud texture on title bars and price buttons (docs/23 (m)).
+- **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.
