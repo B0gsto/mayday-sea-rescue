@@ -2074,6 +2074,15 @@
   "source": "assets/ui/phone_v2/payrise.png",
   "type": "Image"
  },
+ "Image:198427d99e5955b6f0fa7443da168ad6f8b9339e95c85daec98f22a5fb3bf427": {
+  "assetId": "124561251642705",
+  "imageId": "124561251642705",
+  "moderation": "Reviewing",
+  "name": "UI_Kit_settings_v2",
+  "sha": "198427d99e5955b6f0fa7443da168ad6f8b9339e95c85daec98f22a5fb3bf427",
+  "source": "marketing/ui/icons/settings.png",
+  "type": "Image"
+ },
  "Image:19befc6061e0ea4de5a07d8999d09df35f15d27c9454d31d976d66074bcd222c": {
   "assetId": "90688931638855",
   "imageId": "90688931638855",
@@ -12492,6 +12501,15 @@
   "source": "assets/textures/M_Sea_AdmiraltyAnchor/T_AdmiraltyAnchor_Iron_NOR.png",
   "type": "Image"
  },
+ "Image:9b0d7fe28c396290187c8bda6f8784c9acf75c766c7ce3a76c66a7613a3c498b": {
+  "assetId": "126497151202647",
+  "imageId": "126497151202647",
+  "moderation": "Reviewing",
+  "name": "UI_Kit_boat_to_me_v2",
+  "sha": "9b0d7fe28c396290187c8bda6f8784c9acf75c766c7ce3a76c66a7613a3c498b",
+  "source": "marketing/ui/icons/boat_to_me.png",
+  "type": "Image"
+ },
  "Image:9b1ee4574f319cfbdef291163f5e283814d9cd39ed1cafe5caf89e6ba3b9599d": {
   "assetId": "108987158998866",
   "imageId": "108987158998866",
@@ -18874,6 +18892,15 @@
   "name": "gale_isles_map_r0c2",
   "sha": "f14846bdc6708f7f1ed7b33b36e08e259f268da5ea059ddd7ed44705a31517da",
   "source": "art/map/v2/gale_isles_map_r0c2.png",
+  "type": "Image"
+ },
+ "Image:f14f105caee556e1a58b79010947ec68826cb6d2c650c03a4cf463052d0b0424": {
+  "assetId": "83085542846827",
+  "imageId": "83085542846827",
+  "moderation": "Reviewing",
+  "name": "UI_Kit_crew_v2",
+  "sha": "f14f105caee556e1a58b79010947ec68826cb6d2c650c03a4cf463052d0b0424",
+  "source": "marketing/ui/icons/crew.png",
   "type": "Image"
  },
  "Image:f19b5787e435ac2e61f4e37f95d68822fa002bdd1697e2135d399ae21bde5453": {
