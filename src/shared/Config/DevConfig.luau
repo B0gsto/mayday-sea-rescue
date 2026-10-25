@@ -90,7 +90,8 @@ local function concat(...: { string }): { string }
 	return out
 end
 
-DevConfig.Vehicles = table.freeze(concat(VehicleConfig.Order, LandVehicleConfig.Order))
+DevConfig.Vehicles =
+	table.freeze(concat(VehicleConfig.Order, VehicleConfig.CraftOrder, LandVehicleConfig.Order))
 DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), { "ColdOpen" }))
 DevConfig.Events = LiveOps.Order
 DevConfig.Species = table.freeze(table.clone(Wildlife.SpeciesOrder))

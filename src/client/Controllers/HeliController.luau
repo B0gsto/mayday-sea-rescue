@@ -31,6 +31,7 @@ local TAG = "Heli"
 local ROTOR_SPEED = math.pi * 2 * 5 -- rad/s at full spool (visual; any faster strobes)
 local SPOOL_TIME = 2 -- s from still to full
 local RAY_DEPTH = 600 -- studs
+local AIRBORNE_GAP = 4 -- studs over the floor (ground, or the sea's hover height) that count as mid-air
 
 -- action -> keys; Up and Down also get a touch button
 local AXES: { [string]: { Enum.KeyCode } } = {
@@ -129,10 +130,11 @@ local function setFlying(root: BasePart, on: boolean)
 	end
 end
 
--- shortcut: on leaving the seat the constraints switch off and an airborne heli drops; WP-10 adds
--- an auto-land (or the server keeps hovering it down) when that matters.
+-- On leaving the seat the constraints switch off here; the server takes the empty heli over and
+-- lands it (VehicleService).
 local function stopFlying()
 	local model = flying :: Model
+	model:SetAttribute("Airborne", nil)
 	if model.PrimaryPart then
 		setFlying(model.PrimaryPart, false)
 	end
@@ -173,6 +175,9 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 	local s = state :: Flight.State
 	local move = moveVector()
 	local now = Workspace:GetServerTimeNow()
+	local floor = floorY(model, root, spec, now)
+	-- local only (like the seaplane's): no stepping out mid-air (VehicleExitController, OpsController)
+	model:SetAttribute("Airborne", root.Position.Y > floor + AIRBORNE_GAP)
 	Flight.step(
 		s,
 		{
@@ -183,7 +188,7 @@ local function fly(model: Model, spec: Flight.Spec, dt: number)
 		},
 		spec,
 		root.Position.Y,
-		floorY(model, root, spec, now),
+		floor,
 		Flight.wind(Weather.getWindDirection(), Weather.getIntensity(now)),
 		dt
 	)

@@ -12,6 +12,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local BoatController = require(script.Parent.BoatController)
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Rig =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Sub"):WaitForChild("Rig"))
@@ -93,6 +94,7 @@ local function step(dt: number)
 		local ok, h = pcall(ocean.GetVisualHeight, root.Position.X, root.Position.Z)
 		sea = if ok and type(h) == "number" then h else nil
 	end
+	BoatController.EngageControls(seat) -- the default vehicle controls drive the seat's throttle
 	local dive = (if held[RISE] then 1 else 0) - (if held[DIVE] then 1 else 0)
 	Rig.step(model, seat.ThrottleFloat, seat.SteerFloat, dive, dt, sea)
 end

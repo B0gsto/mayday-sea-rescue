@@ -41,6 +41,10 @@ local function onExit(
 	if not (humanoid and humanoid.SeatPart) then
 		return Enum.ContextActionResult.Pass
 	end
+	local craft = humanoid.SeatPart.Parent
+	if craft and craft:GetAttribute("Airborne") == true then
+		return Enum.ContextActionResult.Sink -- flying heli / seaplane (local attribute): land first
+	end
 	humanoid.Sit = false
 	humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	return Enum.ContextActionResult.Sink
