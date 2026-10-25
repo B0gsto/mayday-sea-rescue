@@ -51,6 +51,15 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
 
+## 2b. Queued next (owner, 2026-10-25 night)
+
+- **WP-25 island art pass** (after WP-24 plates and WP-14e build mode v2 merge): the island/dock must look good at
+  EVERY stage (Lv1 bare plate → Lv5 + hangar + sub pen + decor). Owner screenshot issues: the name-sign arch reads
+  "the other way around" (make it read correctly from the jetty/boat approach and from land: text on both faces),
+  two blank navy boards (boat-board backboard, rescue board) with no content, an over-bright cyan tablet screen,
+  muddy terrain textures (gone with the plates). Opus builder renders each stage (contact sheet) → short-lived Opus
+  art-director critique → fix, max 3 rounds. Lego style for new pieces; don't redesign existing finished models.
+
 ## 3. Decisions (owner, 2026-10-25: "go with your recommendation")
 
 - **Quest chains**: the next chain step unlocks right after the previous one. Done.
