@@ -85,6 +85,13 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   sub in the pen (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. The car garage
   (`DockGarage`, data key `Garage`) was cut 2026-10-25: product kept with `ready = false`. Studio:
   `DockDev:Invoke("building", key | "all")`.
+- Dock WP-13: plots are claimed when the profile loads (`GetBerth` claims earlier; nil before Init). Harbour
+  Master = `Marina.harbourMaster` (highest rank among Lv 5 docks, ties keep the holder) on join / leave / level
+  change: gold name board + tall gold flag, berth attribute `HarbourMaster`; a joining one gets the head plot
+  (`Marina.HEAD`) if free, nobody else moves. Lv 5 trophy hall on the boathouse's jetty wall: `BadgeRules.trophies`
+  cups + island-stamp plaques (`DockPieces.trophies`). Lv 3 paint booth (`DockConfig.PAINT_BOOTH`): seated in it
+  on your own plot → `DockController` paint card (CosmeticPicker Livery + Decal). `MonetizationEffects.passActive`
+  = pass or day pass (server `OwnsPass` and the client's Boat to me ring).
 - `VehicleService` (boats and jet skis): one vehicle per player, always launched at the player's own berth
   (phone, Quick Launch, berth `Launch` prompt, the cold open via `BerthLaunch`). Spawns are serialized per berth
   (`Marina.lock`). Each berth has one owner-only `Launch` prompt that spawns the player's last-launched craft

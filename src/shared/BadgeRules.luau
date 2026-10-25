@@ -8,6 +8,7 @@
 --   BadgeRules.once(counters, key, token) -> { [string]: number }           increments that count a token once
 --   BadgeRules.rankBadges(rankIndex, rankIds) -> { badgeKey }               rank badges at or below a rank
 --   BadgeRules.completed(snap) -> boolean                                   the op finished (not failed/taken over)
+--   BadgeRules.trophies(counters, awarded) -> { badgeKey }                  rescue milestones reached (dock trophy hall)
 
 local BadgeConfig = require(script.Parent.Config.BadgeConfig)
 local Grading = require(script.Parent.Ops.Grading)
@@ -112,6 +113,33 @@ function BadgeRules.once(
 		return {}
 	end
 	return { [seen] = 1, [key] = 1 }
+end
+
+-- The dock trophy hall (docs/23 d.2): the rescue milestones a profile reached, in badge order. Read from the
+-- counters too, so a badge whose id is still 0 (never awarded) gets its trophy.
+local TROPHIES = {
+	FirstRescue = true,
+	SmoothRide = true,
+	FirstWildlife = true,
+	AllWildlife = true,
+	EveryCall = true,
+	Rescue100 = true,
+	FerryHero = true,
+	LegendaryRescue = true,
+	GoldenGull = true,
+}
+function BadgeRules.trophies(
+	counters: { [string]: number },
+	awarded: { [string]: boolean }
+): { string }
+	local out: { string } = {}
+	for _, key in BadgeConfig.Order do
+		local b = BadgeConfig.Badges[key]
+		if TROPHIES[key] and (awarded[key] == true or (counters[key] or 0) >= (b.count or 1)) then
+			table.insert(out, key)
+		end
+	end
+	return out
 end
 
 -- rankIds: ProgressionConfig rank ids in order (index 1 = Recruit). Every rank badge at or below rankIndex.

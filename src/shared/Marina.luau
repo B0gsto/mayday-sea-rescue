@@ -38,14 +38,36 @@ function Marina.spineEndZ(): number
 	return Marina.Z0 + Marina.WIDTH * math.ceil(Marina.COUNT / 2)
 end
 
--- The lowest free plot (taken[i] truthy = in use), nil when all are taken.
-function Marina.assign(taken: { [number]: any }): number?
+Marina.HEAD = 1 -- the marina head plot, by the beach: the Harbour Master's (docs/23 d.1)
+Marina.MASTER_LEVEL = 5 -- dock level that makes a player eligible (DockConfig Lv 5 "HarbourMaster")
+
+-- The lowest free plot (taken[i] truthy = in use), nil when all are taken. The head plot goes to `head`
+-- (the joining Harbour Master) when free, to anyone else only when nothing else is free.
+function Marina.assign(taken: { [number]: any }, head: boolean?): number?
+	if head and not taken[Marina.HEAD] then
+		return Marina.HEAD
+	end
 	for i = 1, Marina.COUNT do
-		if not taken[i] then
+		if i ~= Marina.HEAD and not taken[i] then
 			return i
 		end
 	end
-	return nil
+	return if taken[Marina.HEAD] then nil else Marina.HEAD
+end
+
+-- The Harbour Master: the highest rank among the Lv 5 docks; a tie keeps `current`, else the first listed.
+export type Candidate = { key: any, rank: number, level: number }
+function Marina.harbourMaster(candidates: { Candidate }, current: any?): any?
+	local best: Candidate? = nil
+	for _, c in candidates do
+		if
+			c.level >= Marina.MASTER_LEVEL
+			and (not best or c.rank > best.rank or (c.rank == best.rank and c.key == current))
+		then
+			best = c
+		end
+	end
+	return if best then best.key else nil
 end
 
 -- Per-berth spawn lock (docs/23 c.1): true and taken when free; false while another spawn holds it.

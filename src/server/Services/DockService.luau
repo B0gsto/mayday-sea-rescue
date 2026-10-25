@@ -17,9 +17,14 @@
 -- the sub pen beside the berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
 -- rank, products DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
--- gives them a building ("all": every one).
+-- gives them a building ("all": every one); ("trophies") every rescue milestone and island stamp.
 -- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
 -- (built). Player attributes DockHangar / DockSubPen (owned; DockController's ghosts).
+-- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
+-- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name board and a tall gold
+-- flag; picked on join / leave / a level change, and a joining Harbour Master gets the head plot when it is free
+-- (nobody else's dock ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
+-- plaque per island stamp (DiscoveryRules), rebuilt from the profile every few seconds when it changes.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -27,7 +32,10 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
+local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
@@ -43,6 +51,7 @@ DockService.Priority = 40 -- before VehicleService (50): the berths exist when i
 local WOOD = Color3.fromRGB(122, 92, 62)
 local DARK_WOOD = Color3.fromRGB(84, 62, 44)
 local BOARD = Color3.fromRGB(236, 230, 214)
+local GOLD = Color3.fromRGB(222, 178, 60)
 
 type Plot = {
 	model: Model,
@@ -55,11 +64,15 @@ type Plot = {
 	built: number,
 	buildings: { [string]: Model },
 	counts: { TextLabel },
+	trophies: Model?,
+	trophyKey: string,
+	master: Model?, -- the Harbour Master's tall flag
 }
 
 local plots: { Plot } = {}
 local owners: { [number]: Player } = {}
 local byPlayer: { [Player]: number } = {}
+local master: Player? = nil
 
 local function part(
 	parent: Instance,
@@ -209,6 +222,7 @@ local function buildPlot(folder: Instance, i: number): Plot
 		built = 1,
 		counts = {},
 		buildings = {},
+		trophyKey = "",
 	}
 end
 
@@ -304,6 +318,129 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	end
 end
 
+local function tableOf(v: any): { [string]: any }
+	return if type(v) == "table" then v else {}
+end
+
+-- The Lv 5 trophy hall's cups and plaques, rebuilt only when the owner's list changed.
+local function syncTrophies(plot: Plot, owner: Player?)
+	local data: any = owner and DataService.Get(owner)
+	local cups, plaques = {}, {}
+	if data and (data.dockLevel or 1) >= 5 then
+		for _, key in BadgeRules.trophies(tableOf(data.badgeCounters), tableOf(data.badgesAwarded)) do
+			table.insert(cups, BadgeConfig.Badges[key].name)
+		end
+		local state = DiscoveryRules.decode(tableOf(data.flags).isles)
+		for _, page in DiscoveryRules.Pages do
+			if DiscoveryRules.has(state, page.id, 4) then -- bit 4: the island stamp
+				table.insert(plaques, { name = page.name, colour = page.colour })
+			end
+		end
+	end
+	local names = {}
+	for _, p in plaques do
+		table.insert(names, p.name)
+	end
+	local key = if data then `{table.concat(cups, ",")}|{table.concat(names, ",")}` else ""
+	if key == plot.trophyKey then
+		return
+	end
+	plot.trophyKey = key
+	if plot.trophies then
+		plot.trophies:Destroy()
+		plot.trophies = nil
+	end
+	if #cups + #plaques > 0 then
+		local m = DockPieces.trophies(plot.berth.CFrame - Vector3.new(0, 0.2, 0), cups, plaques)
+		m.Parent = plot.model
+		plot.trophies = m
+	end
+end
+
+-- The Harbour Master's plot: a gold name board and a tall gold flag at the deck's back corner.
+local function setMaster(plot: Plot, on: boolean)
+	plot.board.Color = if on then GOLD else BOARD
+	plot.board.Material = if on then Enum.Material.Metal else Enum.Material.SmoothPlastic
+	plot.berth:SetAttribute("HarbourMaster", if on then true else nil)
+	if on and not plot.master then
+		local m = Instance.new("Model")
+		m.Name = "HarbourMaster"
+		local at = plot.berth.CFrame
+			* CFrame.new(
+				Marina.PLOT_X[2] - 1.5,
+				Marina.DECK_TOP - 0.2,
+				Marina.BERTH / 2 + Marina.DECK - 1.5
+			)
+		local pole = part(
+			m,
+			"Pole",
+			Vector3.new(30, 0.6, 0.6),
+			at * CFrame.new(0, 15, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			GOLD,
+			Enum.Material.Metal
+		)
+		pole.Shape = Enum.PartType.Cylinder
+		local top = part(
+			m,
+			"Finial",
+			Vector3.new(1.4, 1.4, 1.4),
+			at * CFrame.new(0, 30.5, 0),
+			GOLD,
+			Enum.Material.Neon
+		)
+		top.Shape = Enum.PartType.Ball
+		part(
+			m,
+			"MasterFlag",
+			Vector3.new(0.15, 4, 7),
+			at * CFrame.new(0, 27.6, -3.7),
+			GOLD,
+			Enum.Material.Fabric
+		).CanCollide =
+			false
+		m.Parent = plot.model
+		plot.master = m
+	elseif not on and plot.master then
+		plot.master:Destroy()
+		plot.master = nil
+	end
+end
+
+-- Everyone with a plot and a loaded profile (plus `extra`), in plot order, as Harbour Master candidates.
+local function candidates(extra: Player?): { Marina.Candidate }
+	local list: { Marina.Candidate } = {}
+	local function add(p: Player)
+		local data: any = DataService.Get(p)
+		if data then
+			table.insert(
+				list,
+				{ key = p, rank = ProgressionRules.rankIndex(data), level = data.dockLevel or 1 }
+			)
+		end
+	end
+	for i = 1, Marina.COUNT do
+		if owners[i] then
+			add(owners[i])
+		end
+	end
+	if extra then
+		add(extra)
+	end
+	return list
+end
+
+-- Re-pick the Harbour Master (join, leave, level change); only the flag and the board change hands.
+local function crown()
+	local pick = Marina.harbourMaster(candidates(), master)
+	if pick == master then
+		return
+	end
+	master = pick
+	for i, plot in plots do
+		setMaster(plot, master ~= nil and owners[i] == master)
+	end
+end
+
 -- Lv 1 for the owner, or the plain jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
@@ -316,6 +453,8 @@ local function dress(plot: Plot, owner: Player?)
 	else
 		sync(plot, nil, 1, false)
 		syncBuildings(plot, nil, false)
+		syncTrophies(plot, nil)
+		setMaster(plot, false)
 	end
 end
 
@@ -326,6 +465,7 @@ local function show(player: Player, beat: boolean)
 	if i and data then
 		sync(plots[i], player, data.dockLevel or 1, beat)
 		syncBuildings(plots[i], player, beat)
+		crown()
 	end
 end
 
@@ -385,10 +525,13 @@ local function buy(player: Player, level: any): (boolean, string)
 end
 
 local function claim(player: Player)
-	if byPlayer[player] or player.Parent ~= Players then
+	if byPlayer[player] or player.Parent ~= Players or not plots[1] then -- no plots before Init
 		return
 	end
-	local i = Marina.assign(owners)
+	-- a joining Harbour Master takes the head plot when it is free
+	local head = DataService.Get(player) ~= nil
+		and Marina.harbourMaster(candidates(player), master) == player
+	local i = Marina.assign(owners, head)
 	if not i then
 		warn(`[DockService] no free plot for {player.Name}`) -- shortcut: 16 plots = server size; a 17th player has no dock
 		return
@@ -397,13 +540,18 @@ local function claim(player: Player)
 	dress(plots[i], player)
 	player:SetAttribute("DockPlot", i)
 	player:SetAttribute("BayCFrame", plots[i].berth.CFrame)
+	crown()
 end
 
 local function release(player: Player)
 	local i = byPlayer[player]
 	if i then
 		owners[i], byPlayer[player] = nil, nil
+		if master == player then
+			master = nil
+		end
 		dress(plots[i], nil)
+		crown()
 	end
 end
 
@@ -435,10 +583,7 @@ function DockService.Init()
 	end
 	folder.Parent = Workspace
 
-	Players.PlayerAdded:Connect(claim)
-	for _, player in Players:GetPlayers() do
-		claim(player)
-	end
+	-- plots are claimed when the profile loads (Start), so the Harbour Master's rank is known
 	Players.PlayerRemoving:Connect(function(player)
 		release(player)
 		busy[player] = nil
@@ -489,6 +634,19 @@ function DockService.Init()
 				DataService.MarkDirty(player)
 				show(player, true)
 				return data.dockLevel
+			elseif cmd == "trophies" and data then
+				data.badgeCounters = tableOf(data.badgeCounters)
+				for _, key in BadgeConfig.Order do
+					data.badgeCounters[key] = math.max(data.badgeCounters[key] or 0, 100)
+				end
+				data.flags = tableOf(data.flags)
+				local isles = tableOf(data.flags.isles)
+				for _, page in DiscoveryRules.Pages do
+					isles[page.id] = bit32.bor(isles[page.id] or 0, 7)
+				end
+				data.flags.isles = isles
+				DataService.MarkDirty(player)
+				return true
 			elseif cmd == "building" and data then
 				data.dockBuildings = if type(data.dockBuildings) == "table"
 					then data.dockBuildings
@@ -510,11 +668,12 @@ end
 
 function DockService.Start()
 	DataService.OnLoaded(function(player: Player, data: any)
-		claim(player) -- the profile can load before our PlayerAdded handler runs
+		claim(player)
 		local i = byPlayer[player]
 		if i then
 			sync(plots[i], player, data.dockLevel or 1, false)
 			syncBuildings(plots[i], player, false)
+			crown() -- GetBerth may have claimed before the profile loaded
 		end
 	end)
 	-- the rescue boards show each owner's real rescue count (survivors delivered, RescueService)
@@ -526,6 +685,7 @@ function DockService.Start()
 				for _, label in plots[i].counts do
 					label.Text = n
 				end
+				syncTrophies(plots[i], owner)
 			end
 			task.wait(3)
 		end
@@ -537,9 +697,10 @@ function DockService.GetPlot(player: Player): number?
 end
 
 function DockService.GetBerth(player: Player): BasePart?
-	claim(player) -- callers may run before our PlayerAdded handler (BayDecor on profile load)
+	claim(player) -- callers may run before the profile loads; nil before Init built the plots
 	local i = byPlayer[player]
-	return if i then plots[i].berth else nil
+	local plot = i and plots[i]
+	return if plot then plot.berth else nil
 end
 
 function DockService.GetLevel(player: Player): number

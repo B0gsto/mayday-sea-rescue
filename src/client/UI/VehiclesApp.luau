@@ -142,8 +142,13 @@ type Tab = {
 
 local VehiclesApp = {}
 
-local function ownsQuick(): boolean
-	return player:GetAttribute("Pass_" .. QUICK) == true
+local function ownsQuick(): boolean -- the pass or its day pass (the server's rule)
+	local ends = player:GetAttribute("DayPass_" .. QUICK)
+	return MonetizationEffects.passActive(
+		player:GetAttribute("Pass_" .. QUICK) == true,
+		if type(ends) == "number" then ends else nil,
+		Workspace:GetServerTimeNow()
+	)
 end
 
 local function ownsPass(entry: Entry): boolean

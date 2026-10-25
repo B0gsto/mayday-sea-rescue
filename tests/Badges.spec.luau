@@ -184,4 +184,14 @@ return function(t)
 		t.expect(BadgeRules.rankBadges(2, ids)).toEqual({ "RankLifeguard" })
 		t.expect(BadgeRules.rankBadges(3, ids)).toEqual({ "RankLifeguard", "RankRescueSwimmer" })
 	end)
+
+	t.test("trophies: rescue milestones reached, by counter or award, in badge order", function()
+		t.expect(#BadgeRules.trophies({}, {})).toBe(0)
+		t.expect(BadgeRules.trophies({ Rescue100 = 99, FirstRescue = 1, Streak7 = 7 }, {}))
+			.toEqual({ "FirstRescue" })
+		t.expect(
+			BadgeRules.trophies({ Rescue100 = 100 }, { GoldenGull = true, RankAdmiral = true })
+		)
+			.toEqual({ "Rescue100", "GoldenGull" })
+	end)
 end
