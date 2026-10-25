@@ -199,3 +199,43 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    trip sailed, station → scene → Sands, never more (`CallLogic.deliveredPay`): a Skerry call landed there was x1.70,
    now ~x1.41. The submarine runs 40 surfaced / 22 submerged (was 14), so the Diver timer is 600 s (x1.3 = 13 min).
    Free-player sim unchanged (ranks as above).
+
+## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
+
+Owner, after seeing the blue wireframe ghost on the dock: "I don't want anything holographic or 'what could it be'.
+I want a bigger plot per user with land, not just a dock, so it can evolve to fully new stuff. And at some point
+to be able to hire people." Decisions: **8 players per server, big plots; buy upgrades at a blueprint table;
+plots on a reshaped coast next to Port Haven.** This section wins over d.1, d.3 "Upgrade" and rule c.3.
+
+**Rules.**
+1. No holograms, wireframes or translucent previews of anything not yet built. Unbuilt land is just land (grass,
+   sand, a few solid builder's pegs at most).
+2. Each player owns a waterfront plot: about 150 x 200 studs, roughly 2/3 land and 1/3 private water with the
+   berth. Plots sit side by side on one stretch of coast next to Port Haven, each with road access, a fence/hedge
+   line and an owner sign. 8 plots (server size 8; was 16).
+3. You start with the bare jetty and a jet ski on an empty plot. Everything else gets built on your land.
+4. Upgrades are bought at the **blueprint table**: a real table (first a trestle table on the jetty, later inside
+   the station) with paper blueprints, one per available upgrade: a drawing of the building + Cash / rank / R$.
+   Pick one: builder NPCs walk onto your land and put it up (short scaffold-and-rise beat, solid parts, ~5 s).
+   Locked blueprints are greyed with a padlock and a rank badge.
+5. The plot is laid out to grow: station building, boathouse + paint booth, car garage with its own driveway,
+   helipad + hangar on land, sub pen in the berth, crew quarters, and spare lots for future buildings.
+
+**Crew (next phase, designed now so the plot has room).** Hire NPC crew at the station (a crew board in the
+station, same blueprint-table pattern): each hire appears and works visibly on your plot.
+
+| Crew | Seen doing | Effect (small, never replaces playing) |
+|---|---|---|
+| Mechanic | Working on a boat in the boathouse | Faster relaunch, repairs |
+| Lifeguard | In a tower on your beach | Brings in small ambient rescues near your plot: a little Cash while you play |
+| Dispatcher | At the radio in the station | One extra call offer / better calls |
+| Coxswain | Takes your second boat out | Joins big calls as an NPC helper |
+| Pilot | By the helipad | Same for the helicopter |
+
+Hires cost Cash (+ rank), with a daily wage taken from earnings so it stays a Cash sink for the late game (docs/23
+(i): late players sit on ~280k unspent). Robux can hire too. Only while you're in the server; nothing idle offline.
+
+**Work packages.** WP-14a terrain + plot layout (8 plots on the reshaped coast, `tools/world` + map bake, layout
+data). WP-14b move the dock code onto the big plots (Marina/DockService/DockPieces/buildings/boards, server size
+8). WP-14c blueprint table + builder beat, ghost removed. WP-15 crew. 14a first; 14b and 14c after it and after
+WP-13 lands.
