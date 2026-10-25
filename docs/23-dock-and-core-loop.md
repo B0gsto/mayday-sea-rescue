@@ -199,6 +199,10 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
    trip sailed, station → scene → Sands, never more (`CallLogic.deliveredPay`): a Skerry call landed there was x1.70,
    now ~x1.41. The submarine runs 40 surfaced / 22 submerged (was 14), so the Diver timer is 600 s (x1.3 = 13 min).
    Free-player sim unchanged (ranks as above).
+6. Hub map (WP-19c, 2026-10-25): distance counts from your island berth, calls from call 3 sit 1,200+ studs from
+   the hub, the drop-off is your berth or the hub. Sim (playing all six islands): Lifeguard 0:13, RIB 0:18, Coxswain
+   0:55, Rescue Pilot 2:22, Commodore 13.6 h, Admiral 36 h; jet ski x2.1 at 4.2 min/call, RIB x2.4 at 5.1 min (was
+   x1.6 at 3.4: longer trips, same pay per minute). Within a few % of before: distance numbers unchanged.
 
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
 

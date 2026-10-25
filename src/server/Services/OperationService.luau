@@ -1363,14 +1363,17 @@ local function waterLine(a: Vector3, b: Vector3): boolean
 	return Workspace:Raycast(from, Vector3.new(b.X, 1, b.Z) - from, routeParams) == nil
 end
 
--- A call spot is open water on a straight sea line from just past `home`'s cove mouth (never behind an
--- island, the hub or a bridge pier).
+-- A call spot is open water; within ROUTE_CHECK of `home` also on a straight sea line from just past its cove
+-- mouth (never behind an island, the hub or a bridge pier). Farther out (an outer island past the hub) the
+-- trip is a voyage round things anyway, and the zone stays at its island.
 local COVE_MOUTH = 120 -- studs straight out from the berth: past the cove (HubLayout island radius 160)
+local ROUTE_CHECK = 1000
 local function clearSpawnFrom(home: Vector3): (Vector3) -> boolean
 	local d = Vector3.new(home.X, 0, home.Z) - CallTypes.STATION
 	local mouth = home + (if d.Magnitude > 1 then d.Unit else Vector3.zAxis) * COVE_MOUTH
 	return function(p: Vector3): boolean
-		return RescueService.ClearWater(p, RescueService.CLEAR_SPAWN) and waterLine(mouth, p)
+		return RescueService.ClearWater(p, RescueService.CLEAR_SPAWN)
+			and (CallLogic.flatDistance(home, p) > ROUTE_CHECK or waterLine(mouth, p))
 	end
 end
 

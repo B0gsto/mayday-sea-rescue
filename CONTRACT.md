@@ -164,6 +164,11 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
   complete the page; `DiscoveryConfig.Range.Wreck`).
 - Shared data: `Ops/Types`, `Operations` (registry, `plan`), `Condition` (0-100 meter; survivors tire),
   `Grading` (step and op grades, `payout`), `Board` (pure auto_board rule: close, slow, level, room).
+- Call positions (docs/23 (k), WP-19c): calls count from the owner's berth (`CallLogic.homeOf(BayCFrame)`, the
+  hub drop-off without one). Calls 1-2 (`Near`, `CalmBay`) spawn 150-300 studs straight out of that cove; later
+  calls in the outer ring (1,200+ from the hub: open-sea rings round the berth by reach, every outer island
+  whose centre is in reach). Home = the berth or the hub drop-off, whichever is nearer (`ColdOpen.SHORE` = the
+  hub + every island berth); a call landed away from the berth pays for the trip sailed (`deliveredPay`).
 - `OperationService` (server): offers and pacing (`Calls/CallLogic`, `Calls/OfferPacing`), tracks, the
   condition tick and takeover, pay at the debrief. The Capsized Ferry big call runs on its own clock
   (`OfferPacing.nextBigCallAt`, calm weather; paged only to players past the tutorial chain, with a

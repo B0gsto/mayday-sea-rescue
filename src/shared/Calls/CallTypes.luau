@@ -360,15 +360,15 @@ for _, island in WorldConfig.Islands do
 	}
 end
 
--- Dive sites (docs/23 (h)), Studio-sampled 2026-10-25 (terrain raycasts, build/wp10c): the mail seaplane
+-- Dive sites (docs/23 (h)), Studio-sampled 2026-10-25 (terrain raycasts; the seaplane re-sampled on the hub map, WP-19c): the mail seaplane
 -- is the CoastArt wreck (WorldConfig POI MailSeaplane); the SS Gannet Star (docs/10) and the Wreck Reef
 -- hulk are placeholder hulls (server/Ops/DiverRescue). Every diver is over 25 studs down.
 CallTypes.DiveSites = {
 	{
 		id = "MailSeaplane",
 		island = "SkerryIsle",
-		wreck = Vector3.new(1300, -40.8, 1200),
-		at = Vector3.new(1300, -39.8, 1222),
+		wreck = Vector3.new(1300, -34.8, 1500),
+		at = Vector3.new(1322, -35, 1500),
 		hull = false,
 		yaw = -35,
 	},
