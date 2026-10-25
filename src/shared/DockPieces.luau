@@ -1,11 +1,12 @@
 --!strict
--- DockPieces (docs/23 d.2, WP-4; WP-19b): the placeholder Parts each dock level adds, around the berth frame
--- (Marina.berth: the island's boat berth at sea level, -Z = out of the cove, the craft at x -7..7, the jetty
--- finger at x -17..-9, the jetty at x -27..-17). Each piece stands on its island lot (Marina.LOTS, berth
--- frame): Lv 2 pontoon (beside the berth), lamps, rescue board on the quay; Lv 3 boathouse (its lot) + paint
--- booth arches over the berth; Lv 4 lookout tower (the beach tower lot) + slipway crane on the quay; Lv 5 the
--- station (its lot): lit front, roof beacon, trophy hall wall. Buildings: helipad + hangar on their lots, the
--- sub pen over the sub berth. DockService builds them (everyone sees them); a buy plays the Lego build
+-- DockPieces (docs/23 d.2, WP-4; WP-19b; the unlock tree, WP-28): the placeholder Parts of every island building
+-- (DockConfig.Buildings), around the berth frame (Marina.berth: the island's boat berth at sea level, -Z = out of
+-- the cove, the craft at x -7..7, the jetty finger at x -17..-9, the jetty at x -27..-17). Each stands on its
+-- island lot (Marina.LOTS, berth frame): the pontoon (beside the berth), lamps, rescue board on the quay; the
+-- boathouse (its lot) + paint booth arches over the berth; the lookout tower (the beach tower lot); the slipway
+-- crane on the quay; the station (its lot): lit front, roof beacon; the trophy hall wall on its front; the
+-- helipad and hangar on their lots; the sub pen over the sub berth; the worker buildings and the lifeboat slip
+-- as plain Lego huts on their DockConfig spot. DockService builds them (everyone sees them); a buy plays the Lego build
 -- beat (shared/BuildSeq) client-side. The build station (docs/23 (j) rule 4, WP-14d) stands on the Spare3
 -- lot by the spawn, and the Cash-only decorations on the Spare2 / Spare3 spare lots. Named hooks: parts
 -- "Flag" take the owner's colour, TextLabels "Count" show the rescue count. Materials stay off the
@@ -28,11 +29,20 @@ local WARM = Color3.fromRGB(255, 214, 150)
 
 local NAVY = Color3.fromRGB(30, 44, 66)
 local GOLD = Color3.fromRGB(222, 178, 60)
+-- Lego brick colours (the build station, decor, the WP-28 huts)
+local BRICK_RED = Color3.fromRGB(224, 56, 40)
+local BRICK_YELLOW = Color3.fromRGB(250, 208, 40)
+local BRICK_BLUE = Color3.fromRGB(40, 96, 208)
+local BRICK_GREEN = Color3.fromRGB(80, 190, 90)
+local BRICK_WHITE = Color3.fromRGB(242, 240, 232)
+local BRICK_CYAN = Color3.fromRGB(60, 220, 255)
+local BRICK_PINK = Color3.fromRGB(250, 120, 190)
+local BRICK_ORANGE = Color3.fromRGB(250, 140, 30)
 
 local M = Enum.Material
 local TOP = Marina.DECK_TOP
 local LOT = Marina.LOTS
--- the station (Lv 5): half width, half depth, height; the trophy hall is on its front wall, left of the door
+-- the station: half width, half depth, height; the trophy hall is on its front wall, left of the door
 local ST = { hw = 26, hd = 15, h = 16 }
 local HALL = LOT.Station.cf * CFrame.new(-15.5, 0, -ST.hd - 0.5) -- -Z = out of the wall
 
@@ -125,9 +135,9 @@ local function flag(parent: Instance, b: CFrame, x: number, z: number, y0: numbe
 	f.CanCollide = false
 end
 
--- Lv 2: pontoon (the second berth, past the craft from the jetty), lamps down the jetty and the pontoon, a
+-- the pontoon (the second berth, past the craft from the jetty), lamps down the jetty and the pontoon, a
 -- tall flag, the rescue-count board on the quay
-local function level2(m: Model, b: CFrame)
+local function pontoon(m: Model, b: CFrame)
 	part(m, "Pontoon", Vector3.new(6, 0.8, 50), b * CFrame.new(16, 1.6, 2), WHITE, M.SmoothPlastic)
 	for z = -18, 22, 10 do
 		part(m, "Float", Vector3.new(5, 1.4, 4), b * CFrame.new(16, 0.6, z), GREY, M.Metal)
@@ -187,7 +197,7 @@ local function level2(m: Model, b: CFrame)
 	count.Parent = gui
 end
 
--- Lv 3 paint booth (DockConfig.PAINT_BOOTH): two gantry arches over the berth's inshore half, posts on the
+-- the boathouse's paint booth (DockConfig.PAINT_BOOTH): two gantry arches over the berth's inshore half, posts on the
 -- jetty finger and the pontoon, spray heads and a light under each beam, a swatch board over the finger
 local SWATCHES = {
 	Color3.fromRGB(214, 86, 20),
@@ -271,9 +281,9 @@ local function paintBooth(m: Model, b: CFrame)
 	end
 end
 
--- Lv 3: the boathouse on its lot, the roll-up door facing the cove, a clear marked floor spot for the boat
+-- the boathouse on its lot, the roll-up door facing the cove, a clear marked floor spot for the boat
 -- board (DockConfig.BOARD_SLOT) by the back wall; the paint booth over the berth
-local function level3(m: Model, b: CFrame)
+local function boathouse(m: Model, b: CFrame)
 	local L = b * LOT.Boathouse.cf -- -Z = the doors
 	local hw, hd, h = 15, 18, 14
 	local y = h / 2
@@ -342,9 +352,8 @@ local function level3(m: Model, b: CFrame)
 	paintBooth(m, b)
 end
 
--- Lv 4: the lookout tower on the beach tower lot (a ladder up its open side), a slipway crane on the quay
--- swinging over the berth
-local function level4(m: Model, b: CFrame)
+-- the lookout tower on the beach tower lot (a ladder up its open side)
+local function lookout(m: Model, b: CFrame)
 	local T = b * LOT.LifeguardTower.cf
 	local legH, s = 20, 4
 	for _, d in { { -s, -s }, { s, -s }, { -s, s }, { s, s } } do
@@ -397,8 +406,10 @@ local function level4(m: Model, b: CFrame)
 	ladder.Material = M.Metal
 	ladder.Anchored = true
 	ladder.Parent = m
+end
 
-	-- crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
+-- the slipway crane: mast on the quay starboard of the berth, the boom out over the berth's inshore end
+local function slipCrane(m: Model, b: CFrame)
 	local mastH = 24
 	local base = b * CFrame.new(16, TOP, 66)
 	part(m, "CraneBase", Vector3.new(4, 1.2, 4), base * CFrame.new(0, 0.6, 0), GREY, M.Metal)
@@ -441,10 +452,9 @@ local function level4(m: Model, b: CFrame)
 	part(m, "Hook", Vector3.new(1, 1.2, 1), CFrame.new(tip - Vector3.new(0, 9.5, 0)), RED, M.Metal)
 end
 
--- Lv 5: the station on its lot (door toward the bridge and the spawn): a lit front with neon stripes and
--- floodlights, a beacon on the roof, the trophy hall board on the front wall (DockPieces.trophies fills it),
--- light strips down the jetty
-local function level5(m: Model, b: CFrame)
+-- the station on its lot (door toward the bridge and the spawn): a lit front with neon stripes and
+-- floodlights, a beacon on the roof, light strips down the jetty
+local function station(m: Model, b: CFrame)
 	local S = b * LOT.Station.cf -- -Z = the front
 	local hw, hd, h = ST.hw, ST.hd, ST.h
 	local door = 5
@@ -546,23 +556,6 @@ local function level5(m: Model, b: CFrame)
 		).CanCollide =
 			false
 	end
-	-- the trophy hall: a navy backboard and a shelf on the front wall, left of the door
-	part(
-		m,
-		"TrophyBoard",
-		Vector3.new(20, 6, 0.2),
-		b * HALL * CFrame.new(0, 5, 0),
-		NAVY,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"TrophyShelf",
-		Vector3.new(20, 0.3, 1.4),
-		b * HALL * CFrame.new(0, 2.6, -0.7),
-		DARK,
-		M.Wood
-	)
 	-- beacon on the roof: a mast, a lens, a wide light, a beam into the sky
 	local top = S * CFrame.new(hw - 6, h + 0.8, hd - 6)
 	part(m, "BeaconMast", Vector3.new(1, 8, 1), top * CFrame.new(0, 4, 0), GREY, M.Metal)
@@ -596,7 +589,26 @@ local function level5(m: Model, b: CFrame)
 	beam.Parent = lens
 end
 
-local LEVELS = { [2] = level2, [3] = level3, [4] = level4, [5] = level5 }
+-- the trophy hall: a navy backboard and a shelf on the station's front wall, left of the door
+-- (DockPieces.trophies fills it)
+local function trophyHall(m: Model, b: CFrame)
+	part(
+		m,
+		"TrophyBoard",
+		Vector3.new(20, 6, 0.2),
+		b * HALL * CFrame.new(0, 5, 0),
+		NAVY,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"TrophyShelf",
+		Vector3.new(20, 0.3, 1.4),
+		b * HALL * CFrame.new(0, 2.6, -0.7),
+		DARK,
+		M.Wood
+	)
+end
 
 -- WP-10b buildings (WP-19b: on their own lots) ------------------------------------------------------
 
@@ -619,8 +631,8 @@ DockPieces.Buildings = {
 	},
 }
 
--- the helipad on its lot (an H, an edge line and lights) and the hangar on its lot, open toward the pad
-local function hangar(m: Model, b: CFrame)
+-- the helipad on its lot (an H, an edge line and lights)
+local function helipad(m: Model, b: CFrame)
 	local P = b * LOT.Helipad.cf
 	part(m, "Pad", Vector3.new(36, 0.6, 36), P * CFrame.new(0, 0.3, 0), GREY, M.SmoothPlastic)
 	for _, e in { { 0, -14, 28, 0.5 }, { 0, 14, 28, 0.5 }, { -14, 0, 0.5, 28 }, { 14, 0, 0.5, 28 } } do
@@ -661,6 +673,10 @@ local function hangar(m: Model, b: CFrame)
 			end
 		end
 	end
+end
+
+-- the hangar on its lot, open toward the pad
+local function hangar(m: Model, b: CFrame)
 	local H = b * LOT.Hangar.cf -- -Z = the open front, toward the pad
 	local hw, hd, h = 17, 14, 14
 	part(
@@ -796,19 +812,6 @@ local function lighthouse(m: Model, b: CFrame)
 	)
 end
 
-local BUILDINGS = { Hangar = hangar, SubPen = subPen, Lighthouse = lighthouse }
-
--- The pieces of building `key` (DockConfig.Buildings) around the berth frame `cf`, as a Model named `key`.
-function DockPieces.building(key: string, cf: CFrame): Model
-	local m = Instance.new("Model")
-	m.Name = key
-	local fn = BUILDINGS[key]
-	if fn then
-		fn(m, cf)
-	end
-	return m
-end
-
 -- a 1-3 word name on a small plate, its face toward -Z
 local function plate(
 	parent: Instance,
@@ -835,7 +838,109 @@ local function plate(
 	label.Parent = gui
 end
 
--- The Lv 5 trophy hall's contents (docs/23 d.2) around the berth CFrame b: a gold cup per name in `cups`
+-- WP-28 placeholders (docs/23 (q)): worker buildings and the lifeboat slip as plain Lego huts on their spot
+-- (DockConfig.Buildings `spot`, `size`, `color`): a grey base plate, walls in the building's colour with a
+-- dark doorway on the -Z side, a white roof slab with a stud row, a sign brick with the building's name.
+-- WP-26 adds the workers; WP-25 the real art.
+local function hut(m: Model, b: CFrame, key: string)
+	local def = DockConfig.Buildings[key]
+	local at = b * def.spot
+	local w, d = def.size.X, def.size.Y
+	local h = 9
+	local wall = def.color or BRICK_YELLOW
+	part(
+		m,
+		"Base",
+		Vector3.new(w + 2, 0.8, d + 2),
+		at * CFrame.new(0, 0.4, 0),
+		GREY,
+		M.SmoothPlastic
+	)
+	local function block(name: string, size: Vector3, cf: CFrame, color: Color3)
+		part(m, name, size, at * cf, color, M.SmoothPlastic)
+	end
+	block("Wall", Vector3.new(w, h, 1), CFrame.new(0, 0.8 + h / 2, d / 2 - 0.5), wall)
+	block("Wall", Vector3.new(1, h, d), CFrame.new(-w / 2 + 0.5, 0.8 + h / 2, 0), wall)
+	block("Wall", Vector3.new(1, h, d), CFrame.new(w / 2 - 0.5, 0.8 + h / 2, 0), wall)
+	local door = math.min(6, w / 3)
+	local side = (w - door) / 2
+	for s = -1, 1, 2 do
+		block(
+			"Wall",
+			Vector3.new(side, h, 1),
+			CFrame.new(s * (door / 2 + side / 2), 0.8 + h / 2, -d / 2 + 0.5),
+			wall
+		)
+	end
+	block("Lintel", Vector3.new(door, 2, 1), CFrame.new(0, 0.8 + h - 1, -d / 2 + 0.5), wall)
+	block("Roof", Vector3.new(w + 2, 1.2, d + 2), CFrame.new(0, 0.8 + h + 0.6, 0), BRICK_WHITE)
+	for x = -w / 2 + 2, w / 2 - 2, 4 do
+		part(
+			m,
+			"Stud",
+			Vector3.new(0.6, 1.2, 1.2),
+			at * CFrame.new(x, 0.8 + h + 1.5, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			BRICK_WHITE,
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	plate(
+		m,
+		"Sign",
+		Vector3.new(math.min(w - 2, 12), 2, 0.4),
+		at * CFrame.new(0, 0.8 + h + 2.4, -d / 2 - 0.2),
+		NAVY,
+		def.name
+	)
+end
+
+-- the lifeboat slip: a hut over a ramp running down toward the water (+ the WP-28 placeholder hut)
+local function lifeboatSlip(m: Model, b: CFrame)
+	hut(m, b, "LifeboatSlip")
+	local def = DockConfig.Buildings.LifeboatSlip
+	local at = b * def.spot
+	for i = 0, 3 do
+		part(
+			m,
+			"Ramp",
+			Vector3.new(def.size.X - 4, 0.6, 4),
+			at * CFrame.new(0, 0.5 - i * 0.6, -def.size.Y / 2 - 2 - i * 4),
+			WOOD,
+			M.Wood
+		)
+	end
+end
+
+local BUILDINGS = {
+	Pontoon = pontoon,
+	Boathouse = boathouse,
+	LookoutTower = lookout,
+	Crane = slipCrane,
+	Station = station,
+	TrophyHall = trophyHall,
+	Helipad = helipad,
+	Hangar = hangar,
+	SubPen = subPen,
+	LifeboatSlip = lifeboatSlip,
+	Lighthouse = lighthouse,
+} :: { [string]: (Model, CFrame) -> () }
+
+-- The pieces of building `key` (DockConfig.Buildings, Blueprints) around the berth frame `cf`, as a Model
+-- named `key`. A worker building with no builder of its own is a plain Lego hut.
+function DockPieces.building(key: string, cf: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = key
+	local fn = BUILDINGS[key]
+	if fn then
+		fn(m, cf)
+	elseif DockConfig.Buildings[key] then
+		hut(m, cf, key)
+	end
+	return m
+end
+
+-- The trophy hall's contents (docs/23 d.2) around the berth CFrame b: a gold cup per name in `cups`
 -- (rescue milestones) on the shelf, a plaque per island stamp above it. A Model "Trophies" (not parented).
 function DockPieces.trophies(
 	b: CFrame,
@@ -902,28 +1007,9 @@ function DockPieces.trophies(
 	return m
 end
 
--- The pieces dock level n adds, as a Model "Lv<n>" around the berth CFrame b (not parented).
-function DockPieces.build(n: number, b: CFrame): Model
-	local m = Instance.new("Model")
-	m.Name = `Lv{n}`
-	local fn = LEVELS[n]
-	if fn then
-		fn(m, b)
-	end
-	return m
-end
-
 -- WP-14d (docs/23 (j) rule 4): the build station. Bright Lego bricks, a toolbox, a mini crane and the
 -- tablet whose SurfaceGui opens the build mode (DockController binds its ProximityPrompt). The tablet's
 -- Front face (its screen) looks toward the island spawn; its part is named "Tablet".
-local BRICK_RED = Color3.fromRGB(224, 56, 40)
-local BRICK_YELLOW = Color3.fromRGB(250, 208, 40)
-local BRICK_BLUE = Color3.fromRGB(40, 96, 208)
-local BRICK_GREEN = Color3.fromRGB(80, 190, 90)
-local BRICK_WHITE = Color3.fromRGB(242, 240, 232)
-local BRICK_CYAN = Color3.fromRGB(60, 220, 255)
-local BRICK_PINK = Color3.fromRGB(250, 120, 190)
-local BRICK_ORANGE = Color3.fromRGB(250, 140, 30)
 
 local function brickStuds(
 	parent: Instance,

@@ -1,6 +1,6 @@
 --!strict
--- Counter: the money / rank pill (bottom left in the references). A green (cash) or purple
--- (rank) studded pill, a big icon hanging over its left end, the number outlined in white.
+-- Counter: the money pill (bottom left in the references). A green studded pill, a big icon
+-- hanging over its left end, the number outlined in white.
 --   local c = Counter.new(parent, { kind = "cash", value = 1250 })   c.set(1500) (counts up)
 --   c.root: Frame, Theme.Size.counter
 local Style = require(script.Parent:WaitForChild("Style"))
@@ -8,7 +8,7 @@ local Theme = require(script.Parent:WaitForChild("Theme"))
 
 local S = Theme.Size
 
-export type Props = { kind: ("cash" | "rank")?, value: number }
+export type Props = { kind: "cash"?, value: number }
 export type Counter = { root: Frame, set: (number) -> () }
 
 local Counter = {}
@@ -25,8 +25,8 @@ function Counter.new(parent: Instance?, props: Props): Counter
 	pill.Position = UDim2.fromOffset(S.counter.Y * 0.5, 0)
 	pill.Size = UDim2.new(1, -S.counter.Y * 0.5, 1, 0)
 	pill.Parent = root
-	local grad = if kind == "cash" then Style.grad("green") else Style.grad("purple")
-	local _, face = Style.block(pill, grad, { radius = S.counter.Y / 2, lip = 5, studs = true })
+	local _, face =
+		Style.block(pill, Style.grad("green"), { radius = S.counter.Y / 2, lip = 5, studs = true })
 
 	local num = Style.label(face, "", Theme.Text.title - 6)
 	num.TextXAlignment = Enum.TextXAlignment.Left

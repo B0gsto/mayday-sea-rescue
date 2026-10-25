@@ -1,22 +1,20 @@
 --!strict
--- ProgressionService: Cash, Rep, rank and vehicle ownership on top of DataService.
+-- ProgressionService: Cash and vehicle ownership on top of DataService (no ranks, no Rep: docs/23 (q)).
 --
 -- API (server, see CONTRACT.md):
---   ProgressionService.Award(player, cash, rep, reason, flat?)   applies the storm and paid Cash multipliers
---     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; Rep is never multiplied);
---     flat = true skips every multiplier (Great Storm Rep x2 and friends included) for passive rewards;
---     the snapshot carries rankUp and, past Admiral, starUp (Service Stars, docs 03 section 3)
+--   ProgressionService.Award(player, cash, reason, flat?)   applies the storm and paid Cash multipliers
+--     (2x Cash, Cash Boost, Crew Boost: Monetization/CashEffects, RP-M2; friends; Golden Hour);
+--     flat = true skips every multiplier for passive rewards
 --   ProgressionService.Refresh(player, extra?)  re-push the snapshot (after a purchase grant)
---   ProgressionService.GetData(player) -> { cash, rep, rank, rankIndex, vehicles, ... }?
+--   ProgressionService.GetData(player) -> { cash, totalRescues, dockBuildings, vehicles, ... }?
 --   ProgressionService.CanUseVehicle(player, vehicleId) -> boolean (and a reason; Cash-owned OR pass-owned)
 --   ProgressionService.OwnsVehiclePass(player, vehicleId) -> boolean
 --   ProgressionService.SetFlag(player, name, value) -> boolean   persisted flag or setting
 --     ("coldOpenDone" is the profile's cold-open flag; anything else lands in data.flags)
---   ProgressionService.RankChanged  BindableEvent.Event (player, newRankIndex, oldRankIndex)
 --   ProgressionService.RecordTraining(player, grade) -> nil
 --     counts a finished, graded operation (flags.opsCompleted, the OpsCompletedTotal attribute)
 -- Remotes: BuyGear (Net, function: itemId = vehicle id -> ok, reason; the name is historical),
---   PlayerDataChanged (Net, S->C full snapshot plus optional rankUp / award fields),
+--   PlayerDataChanged (Net, S->C full snapshot plus an optional award field),
 --   Progression_GetData (own RemoteFunction under ReplicatedStorage.Net: pull the snapshot).
 --   Camera_SaveSettings (own RemoteEvent under ReplicatedStorage.Net, C->S: the camera stream's
 --     comfort settings table, sanitised, stored as flags.cameraSettings; rate limited).
@@ -37,9 +35,6 @@ local Telemetry = require(script.Parent:WaitForChild("TelemetryService")) -- RP-
 
 local ProgressionService = {}
 ProgressionService.Priority = 30
-
-local rankChanged = Instance.new("BindableEvent")
-ProgressionService.RankChanged = rankChanged.Event
 
 local lastBuy: { [Player]: number } = {}
 local BUY_COOLDOWN = 0.25
@@ -70,10 +65,10 @@ local function weatherState(): (string, boolean)
 	return if type(state) == "string" then state else "Calm", isGreat
 end
 
--- LiveOps (G60): GoldenHour adds a x2 Cash and Rep multiplier to live awards only (flat stays
+-- LiveOps (G60): GoldenHour adds a x2 Cash multiplier to live awards only (flat stays
 -- flat). Lazy: LiveOpsService loads after this service.
 local liveOpsModule: any = nil
-local function liveOpsMultipliers(): (number, number)
+local function liveOpsCash(): number
 	if liveOpsModule == nil then
 		local module = script.Parent:FindFirstChild("LiveOpsService")
 		if module then
@@ -82,13 +77,13 @@ local function liveOpsMultipliers(): (number, number)
 		end
 	end
 	if not liveOpsModule then
-		return 1, 1
+		return 1
 	end
 	local ok, multipliers = pcall(liveOpsModule.Multipliers)
 	if not ok or type(multipliers) ~= "table" then
-		return 1, 1
+		return 1
 	end
-	return tonumber(multipliers.cash) or 1, tonumber(multipliers.rep) or 1
+	return tonumber(multipliers.cash) or 1
 end
 
 local function updateLeaderstats(player: Player, data: Rules.PlayerData)
@@ -99,24 +94,22 @@ local function updateLeaderstats(player: Player, data: Rules.PlayerData)
 		local cash = Instance.new("IntValue")
 		cash.Name = "Cash"
 		cash.Parent = folder
-		local rank = Instance.new("StringValue")
-		rank.Name = "Rank"
-		rank.Parent = folder
+		local rescued = Instance.new("IntValue")
+		rescued.Name = "Rescued"
+		rescued.Parent = folder
 		folder.Parent = player
 		stats = folder
 	end
 	assert(stats, "unreachable")
 	local cash = stats:FindFirstChild("Cash") :: IntValue?
-	local rank = stats:FindFirstChild("Rank") :: StringValue?
+	local rescued = stats:FindFirstChild("Rescued") :: IntValue?
 	if cash then
 		cash.Value = data.cash
 	end
-	local rankIndex = Rules.rankIndex(data)
-	if rank then
-		rank.Value = ProgressionConfig.Ranks[rankIndex].displayName
+	if rescued then
+		rescued.Value = data.totalRescues
 	end
-	player:SetAttribute("RankIndex", rankIndex)
-	player:SetAttribute("ServiceStars", Rules.serviceStars(data))
+	player:SetAttribute("Rescued", data.totalRescues) -- BadgeService's people-rescued badges
 end
 
 local function push(player: Player, data: Rules.PlayerData, extra: { [string]: any }?)
@@ -131,51 +124,23 @@ local function push(player: Player, data: Rules.PlayerData, extra: { [string]: a
 	Telemetry.CashFlow(player, extra, data.cash) -- every Cash source travels as extra.award
 end
 
-function ProgressionService.Award(
-	player: Player,
-	cash: number,
-	rep: number,
-	reason: string,
-	flat: boolean?
-)
+function ProgressionService.Award(player: Player, cash: number, reason: string, flat: boolean?)
 	local data = DataService.Get(player)
 	if not data then
 		warn(`[ProgressionService] Award to {player.Name} before data loaded ({reason}); dropped`)
 		return
 	end
-	local state, isGreat, paid, repMult = nil, false, 1, 1
+	local state, isGreat, paid = nil, false, 1
 	if not flat then
 		state, isGreat = weatherState()
 		paid = CashEffects.multiplier(player) -- Cash only (docs/04 sections 3 and 4.2)
 		paid *= FriendBonus.multiplier(FriendService.Count(player)) -- +10% per friend in server, cap +30% (docs/15 H9)
-		local liveCash, liveRep = liveOpsMultipliers() -- GoldenHour (G60), capped at x2
-		paid *= liveCash
-		repMult *= liveRep
+		paid *= liveOpsCash() -- GoldenHour (G60), capped at x2
 	end
-	local finalCash, finalRep, mult =
-		Rules.applyAward(cash, rep, state, isGreat, paid, repMult, flat)
-	local oldRank = Rules.rankIndex(data)
-	local oldStars = Rules.serviceStars(data)
+	local finalCash, mult = Rules.applyAward(cash, state, isGreat, paid, flat)
 	data.cash += finalCash
-	data.rep += finalRep
-	local newRank = Rules.rankIndex(data)
-	local newStars = Rules.serviceStars(data)
 	DataService.MarkDirty(player)
-	local extra: { [string]: any } = {
-		award = { cash = finalCash, rep = finalRep, multiplier = mult, reason = reason },
-	}
-	if newRank > oldRank then
-		local rankDef = ProgressionConfig.Ranks[newRank]
-		extra.rankUp =
-			{ rankIndex = newRank, rank = rankDef.displayName, unlocks = rankDef.unlocks }
-	end
-	if newStars > oldStars then
-		extra.starUp = { stars = newStars }
-	end
-	push(player, data, extra)
-	if newRank ~= oldRank then
-		rankChanged:Fire(player, newRank, oldRank)
-	end
+	push(player, data, { award = { cash = finalCash, multiplier = mult, reason = reason } })
 end
 
 -- A finished operation (OperationService calls it once per player at the debrief): a graded one
@@ -292,22 +257,17 @@ end
 
 function ProgressionService.Init()
 	if game:GetService("RunService"):IsStudio() then
-		-- Studio dev hook for play tests: ServerStorage.ProgressionDev:Invoke("award", cash, rep)
+		-- Studio dev hook for play tests: ServerStorage.ProgressionDev:Invoke("award", cash)
 		-- or ("data") (execute_luau's own require gets a separate module instance).
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "ProgressionDev"
-		dev.OnInvoke = function(cmd: string, cash: any, rep: any): any
+		dev.OnInvoke = function(cmd: string, cash: any): any
 			local p = Players:GetPlayers()[1]
 			if not p then
 				return nil
 			end
 			if cmd == "award" then
-				ProgressionService.Award(
-					p,
-					tonumber(cash) or 0,
-					tonumber(rep) or 0,
-					"Studio dev grant"
-				)
+				ProgressionService.Award(p, tonumber(cash) or 0, "Studio dev grant")
 			end
 			return ProgressionService.GetData(p)
 		end

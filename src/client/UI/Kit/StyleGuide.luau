@@ -90,11 +90,10 @@ local function counters(canvas: Frame)
 	box.BackgroundTransparency = 1
 	box.AnchorPoint = Vector2.new(0, 1)
 	box.Position = UDim2.new(0, S.margin + 10, 1, -S.margin)
-	box.Size = UDim2.fromOffset(S.counter.X, S.counter.Y * 2 + 10)
+	box.Size = UDim2.fromOffset(S.counter.X, S.counter.Y)
 	local l = Style.list(box, false, 10)
 	l.VerticalAlignment = Enum.VerticalAlignment.Bottom
-	Counter.new(box, { kind = "rank", value = 12 })
-	Counter.new(box, { kind = "cash", value = 12450 }).root.LayoutOrder = 1
+	Counter.new(box, { kind = "cash", value = 12450 })
 	box.Parent = canvas
 end
 
@@ -127,7 +126,7 @@ local function shop(canvas: Frame)
 	Card.new(p.body, {
 		art = "build",
 		title = "Gold Dock",
-		line = "Rank 20",
+		line = "Needs: Crane",
 		color = "orange",
 		price = 25000,
 		currency = "Cash",

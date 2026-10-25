@@ -17,20 +17,17 @@ Grading.OpThresholds = table.freeze({ Gold = 2.5, Silver = 1.7 }) -- weighted av
 
 Grading.Payout = table.freeze({
 	BaseCash = 550, -- Calm Bay (docs 03 section 2)
-	BaseRep = 135,
 	GradeMult = table.freeze({ Gold = 1.25, Silver = 1.0, Bronze = 0.75, Fail = 0.5 }),
 	CrewBonusPerMember = 0.1, -- human crew only, 1.0 to 1.3
 	CrewBonusMax = 0.3,
 	ShareWithoutStep = 0.1, -- crew on the op who completed no step: 10% Cash
 	Tutorial = table.freeze({
-		table.freeze({ cash = 500, rep = 150 }),
-		-- 200, not 160: keeps the first rank-up near 10 min (tests/NewPlayerPace.spec.luau)
-		table.freeze({ cash = 600, rep = 200 }),
-		table.freeze({ cash = 600, rep = 160 }),
+		table.freeze({ cash = 500 }),
+		table.freeze({ cash = 600 }),
+		table.freeze({ cash = 600 }),
 	}),
 	BigCasualtyShare = 0.3, -- x zone base, to the player who hands the casualty over
 	BigBonusCash = 2.5, -- completion bonus x zone base, scaled by share saved
-	BigBonusRep = 1.5,
 })
 
 local NPC_CAP: Grade = Types.Rules.NpcGradeCap :: any
@@ -153,7 +150,7 @@ function Grading.crewMultiplier(humanCrew: number): number
 	return 1 + math.min(extra * P.CrewBonusPerMember, P.CrewBonusMax)
 end
 
-export type Reward = { cash: number, rep: number }
+export type Reward = { cash: number }
 
 local function round(x: number): number
 	return math.floor(x + 0.5)
@@ -171,17 +168,16 @@ function Grading.payout(
 	local crew = Grading.crewMultiplier(humanCrew or 1)
 	local tut = if tutorialIndex then P.Tutorial[tutorialIndex + 1] else nil
 	if tut then
-		return { cash = round(tut.cash * crew), rep = round(tut.rep * crew) }
+		return { cash = round(tut.cash * crew) }
 	end
 	local m = opWeight * P.GradeMult[grade] * crew
-	return { cash = round(P.BaseCash * m), rep = round(P.BaseRep * m) }
+	return { cash = round(P.BaseCash * m) }
 end
 
--- Crew member on the operation who completed no step: 10% Cash, no Rep.
+-- Crew member on the operation who completed no step: 10% Cash.
 function Grading.shareWithoutStep(opWeight: number): Reward
 	return {
 		cash = round(Grading.Payout.BaseCash * opWeight * Grading.Payout.ShareWithoutStep),
-		rep = 0,
 	}
 end
 
@@ -190,7 +186,6 @@ function Grading.bigCasualtyPay(): Reward
 	local P = Grading.Payout
 	return {
 		cash = round(P.BaseCash * P.BigCasualtyShare),
-		rep = round(P.BaseRep * P.BigCasualtyShare),
 	}
 end
 
@@ -200,7 +195,6 @@ function Grading.bigCompletionBonus(saved: number, total: number): Reward
 	local share = if total > 0 then math.clamp(saved / total, 0, 1) else 0
 	return {
 		cash = round(P.BaseCash * P.BigBonusCash * share),
-		rep = round(P.BaseRep * P.BigBonusRep * share),
 	}
 end
 

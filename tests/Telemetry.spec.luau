@@ -37,7 +37,7 @@ return function(t)
 		t.expect(Events.funnelStep("Call2Accepted").step).toBe(6)
 		t.expect(Events.funnelStep("PhoneOpened").step).toBe(9)
 		t.expect(Events.funnelStep("FirstUpgrade").step).toBe(10)
-		t.expect(Events.funnelStep("FirstRank").step).toBe(11)
+		t.expect(Events.funnelStep("FirstBuilding").step).toBe(11)
 		t.expect(Events.funnelStep("Day2Return").step).toBe(#Events.Funnel)
 		t.expect(Events.funnelStep("FirstDailyCrate")).toBe(nil) -- a custom event, not in order
 		-- every cold open step id maps onto an onboarding step

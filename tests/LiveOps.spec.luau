@@ -65,19 +65,17 @@ return function(t)
 		t.expect(L.countdown(state, NOW + 5000)).toBeNil()
 	end)
 
-	t.test("GoldenHour doubles Cash and Rep; CalmSeas pays nothing extra", function()
+	t.test("GoldenHour doubles Cash; CalmSeas pays nothing extra", function()
 		local gold = L.fromMessage(message("GoldenHour", NOW, 3600))
 		local m = L.multipliers(gold, NOW + 10)
 		t.expect(m.cash).toBe(2)
-		t.expect(m.rep).toBe(2)
 
 		local calm = L.multipliers(L.fromMessage(message("CalmSeas", NOW, 3600)), NOW + 10)
 		t.expect(calm.cash).toBe(1)
-		t.expect(calm.rep).toBe(1)
 
 		-- pending or over: nothing applies yet, and the caps hold
 		t.expect(L.multipliers(gold, NOW - 1).cash).toBe(1)
-		t.expect(L.multipliers(gold, NOW + 3600).rep).toBe(1)
+		t.expect(L.multipliers(gold, NOW + 3600).cash).toBe(1)
 		t.expect(L.multipliers(gold, NOW).cash <= L.MaxCash).toBe(true)
 	end)
 

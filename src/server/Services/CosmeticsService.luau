@@ -91,7 +91,7 @@ end
 
 local function earnedOf(player: Player): { [string]: boolean }
 	local data = DataService.Get(player) :: any
-	return if data then CosmeticLoadout.owned(data.flags, data.rep) else {}
+	return if data then CosmeticLoadout.owned(data.flags, data.totalRescues) else {}
 end
 
 local function ownsFor(player: Player): Cosmetics.Owns

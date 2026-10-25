@@ -1,6 +1,6 @@
 --!strict
 -- Affordable: the cheapest thing the player can buy with Cash right now (docs/16 B5/B6, K9): an
--- unowned vehicle they have the rank for, or an upgrade on a vehicle they own. The phone's red dot
+-- unowned vehicle whose building stands, or an upgrade on a vehicle they own. The phone's red dot
 -- and the Vehicles app's pulsing card read it. Pure and Lune-tested (tests/Affordable.spec.luau).
 --   Affordable.cheapest(snapshot, passOwned) -> Pick?   snapshot: a PlayerDataChanged snapshot;
 --                                                        passOwned(vehicleId): its vehicle pass is owned
@@ -35,14 +35,7 @@ function Affordable.cheapest(
 		local owned = Rules.ownsVehicle(d, vehicleId, pass)
 		local mask = VehicleUpgrades.mask(d.vehicleUpgrades[vehicleId])
 		for _, upgrade in VehicleUpgrades.Vehicles[vehicleId] do
-			local ok = VehicleUpgrades.canBuy(
-				vehicleId,
-				upgrade.id,
-				mask,
-				d.cash,
-				Rules.rankIndex(d),
-				owned
-			)
+			local ok = VehicleUpgrades.canBuy(vehicleId, upgrade.id, mask, d.cash, owned)
 			if ok then
 				offer(vehicleId, upgrade.id, upgrade.price)
 			end

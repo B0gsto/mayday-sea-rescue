@@ -1,5 +1,5 @@
 --!strict
--- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash, Rep
+-- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash
 -- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board on
 -- every island by its spawn (docs/23 (p): a varnished, signwritten board on two posts, lit by a brass picture
 -- lamp; all six show the same rows; no HUD panel).

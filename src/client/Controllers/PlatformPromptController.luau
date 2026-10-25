@@ -3,7 +3,7 @@
 -- mid-rescue. The timing policy and the asked timestamps live on the server (PlatformPromptService,
 -- Shared/PlatformPrompts); this controller only watches the triggers the game already publishes:
 --   StreakClaim    player attribute, set when a daily crate opens -> notification opt-in
---   rankUp         PlayerDataChanged extra -> favourite, once the promotion beat has ended
+--   dockBuildings  PlayerDataChanged: a new island building -> favourite, once its Lego build beat has ended
 --   CrewOpDone     player attribute, set after a first rescue with 2+ crew -> invite
 -- Every platform call is pcall-guarded and platform eligibility is checked before asking, so a
 -- device that cannot show a prompt (young account, no invite sheet, Studio) just stays quiet.
@@ -12,7 +12,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Net = require(Shared:WaitForChild("Net"))
-local RankCeremony = require(Shared:WaitForChild("RankCeremony"))
 
 local PlatformPromptController = {}
 PlatformPromptController.Priority = 96
@@ -135,10 +134,17 @@ function PlatformPromptController.Request(kind: string)
 	end)
 end
 
-local function afterRankCeremony()
-	-- The promotion beat is fixed-length (skippable to its end), so wait it out then offer.
-	task.wait(RankCeremony.seconds("rank") + 0.5)
-	PlatformPromptController.Request("favorite")
+local BUILD_BEAT = 7 -- s: DockService's builders watch for 6 s
+local builtCount: number? = nil
+
+local function countOf(owned: any): number
+	local n = 0
+	if type(owned) == "table" then
+		for _ in owned do
+			n += 1
+		end
+	end
+	return n
 end
 
 function PlatformPromptController.Init()
@@ -155,9 +161,14 @@ function PlatformPromptController.Init()
 		end
 	end)
 	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
-		if type(data) == "table" and type(data.rankUp) == "table" then
-			task.spawn(afterRankCeremony)
+		if type(data) ~= "table" then
+			return
 		end
+		local n = countOf(data.dockBuildings)
+		if builtCount and n > builtCount then
+			task.delay(BUILD_BEAT, PlatformPromptController.Request, "favorite")
+		end
+		builtCount = n
 	end)
 end
 

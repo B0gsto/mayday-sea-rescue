@@ -1,6 +1,6 @@
 --!strict
 -- CallTypes: pure data for every call kind and spawn zone. No services; safe to load in Lune.
--- Payout numbers: docs 03 section 2 (Calm Bay base 250 Cash / 60 Rep, weights from docs 02
+-- Payout numbers: docs 03 section 2 (Calm Bay base 250 Cash, weights from docs 02
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
 -- World frame (WorldConfig, docs/23 (p)): sea level Y = 0, an open lagoon at the origin ringed by the six player
@@ -72,23 +72,21 @@ CallTypes.CRUISE_FACTOR = 0.5
 
 CallTypes.Payout = {
 	BaseCash = 250, -- Calm Bay (and harbour mouth storm calls), docs 03 section 2
-	BaseRep = 60,
 	Grade = { Gold = 1.25, Silver = 1.0, Bronze = 0.75 },
 	GoldUnder = 0.6, -- finished in under 60% of the timer
 	SilverUnder = 0.85, -- the "late" warning point; after it, Bronze -- tune
 	CrewBonusPerMember = 0.1, -- +10% per extra member
 	CrewBonusMax = 0.3, -- up to +30% for four
-	FailSafeShare = 0.1, -- timer ran out (or a crew member with no role action): 10% Cash, no Rep
+	FailSafeShare = 0.1, -- timer ran out (or a crew member with no role action): 10% Cash
 	Tutorial = {
-		{ cash = 500, rep = 150 }, -- call 1
-		{ cash = 300, rep = 80 }, -- calls 2 to 5
-		{ cash = 300, rep = 80 },
-		{ cash = 300, rep = 80 },
-		{ cash = 300, rep = 80 },
+		{ cash = 500 }, -- call 1
+		{ cash = 300 }, -- calls 2 to 5
+		{ cash = 300 },
+		{ cash = 300 },
+		{ cash = 300 },
 	},
 	BigVictimShare = 0.6, -- per victim, to the player who delivers it (x zone base)
 	BigBonusCash = 5, -- completion bonus to every helper (x zone base), scaled by share saved
-	BigBonusRep = 3,
 }
 
 CallTypes.Scheduler = {
@@ -219,18 +217,18 @@ CallTypes.TutorialChain = {
 
 -- Distance tiers (docs/23 e.2): how far out (studs from their berth) a player's best craft takes calls.
 -- Keyed by craft, not top speed: the RIB and lifeboat are slower than the jet ski but are the bigger
--- earned craft. Capped by rank (CallLogic.craftReach): a Robux craft goes no farther than the free craft
--- the player's rank has unlocked. No other craft: the jet ski. -- tune
+-- earned craft. Reach = the best craft you can launch (CallLogic.craftReach, docs/23 (q)); the Robux boats
+-- sit on the RIB's tier (they need the same boathouse), so Robux never skips the tree. No other craft: the jet ski. -- tune
 CallTypes.CraftReach = {
 	JetSki = 2000,
 	RIB = 3500,
 	Lifeboat = 5500,
-	Submarine = 5500, -- the lifeboat's tier (both Coxswain)
-	RescueHelicopter = 5500, -- top tier (Rescue Pilot)
-	StormRunner = 5500,
-	Tidewalker = 5500,
-	RiptideX = 5500,
-	GildedGull = 5500,
+	Submarine = 5500, -- the lifeboat's tier
+	RescueHelicopter = 5500, -- top tier
+	StormRunner = 3500,
+	Tidewalker = 3500,
+	RiptideX = 3500,
+	GildedGull = 3500,
 } :: { [string]: number }
 CallTypes.BASE_REACH = 2000
 

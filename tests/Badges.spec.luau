@@ -2,7 +2,6 @@
 return function(t)
 	local BadgeConfig = t.require("Config/BadgeConfig")
 	local BadgeRules = t.require("BadgeRules")
-	local ProgressionConfig = t.require("Config/ProgressionConfig")
 	local Wildlife = t.load("src/shared/Config/Wildlife.luau")
 
 	local ME, OTHER = 101, 202
@@ -40,17 +39,16 @@ return function(t)
 		t.expect(BadgeConfig.enabled("Nope")).toBe(false)
 	end)
 
-	t.test("rank badges name real ProgressionConfig ranks", function()
-		local ids = {}
-		for _, r in ProgressionConfig.Ranks do
-			ids[r.id] = true
-		end
+	t.test("rescued badges (the old rank keys) rise with the people rescued", function()
+		local last = 0
 		for _, key in BadgeConfig.Order do
-			local rank = BadgeConfig.Badges[key].rank
-			if rank then
-				t.expect(ids[rank]).toBe(true)
+			local at = BadgeConfig.Badges[key].rescued
+			if at then
+				t.expect(at > last).toBe(true)
+				last = at
 			end
 		end
+		t.expect(last).toBe(2000)
 	end)
 
 	t.test(
@@ -140,7 +138,7 @@ return function(t)
 		t.expect(BadgeRules.completed(snap({ grade = "Fail" }))).toBe(false)
 	end)
 
-	t.test("new badges are well formed and Admiral is a rank", function()
+	t.test("new badges are well formed and the top rescued badge is 2,000", function()
 		for _, key in
 			{
 				"SmoothRide",
@@ -163,17 +161,13 @@ return function(t)
 			t.expect(b).toBeTruthy()
 			t.expect(#(b :: any).icon > 0).toBe(true)
 		end
-		t.expect(BadgeConfig.Badges.RankAdmiral.rank).toBe("Admiral")
+		t.expect(BadgeConfig.Badges.RankAdmiral.rescued).toBe(2000)
 	end)
 
-	t.test("rank badges at or below the current rank", function()
-		local ids = {}
-		for _, r in ProgressionConfig.Ranks do
-			table.insert(ids, r.id)
-		end
-		t.expect(#BadgeRules.rankBadges(1, ids)).toBe(0)
-		t.expect(BadgeRules.rankBadges(2, ids)).toEqual({ "RankLifeguard" })
-		t.expect(BadgeRules.rankBadges(3, ids)).toEqual({ "RankLifeguard", "RankRescueSwimmer" })
+	t.test("rescued badges reached at a people-rescued total", function()
+		t.expect(#BadgeRules.rescuedBadges(9)).toBe(0)
+		t.expect(BadgeRules.rescuedBadges(10)).toEqual({ "RankLifeguard" })
+		t.expect(BadgeRules.rescuedBadges(60)).toEqual({ "RankLifeguard", "RankRescueSwimmer" })
 	end)
 
 	t.test("trophies: rescue milestones reached, by counter or award, in badge order", function()

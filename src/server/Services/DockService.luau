@@ -1,36 +1,31 @@
 --!strict
--- DockService (docs/23 WP-1; WP-19b): your island is your plot. Builds the six player islands' docks
--- (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining player the
--- lowest free island and frees it on leave. Every island has a bare jetty down its cove; Lv 1 adds the owner's
--- Lego name sign and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
--- (data.dockLevel, default 1) so later levels rebuild on whichever island the player gets. VehicleService
--- launches at the island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
--- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
--- sees them. Bought with Cash + rank (Dock_Upgrade) or Robux (MonetizationConfig DockLevel<n>, skips both);
--- a buy plays the Lego build beat: the pieces exist here in their final state, the Dock_Build event lets
--- every client drop them in (shared/BuildSeq), and two builder NPCs stand by the build station (WP-14d).
--- The build station by the spawn (docs/23 (j) rule 4) carries the tablet whose prompt opens the owner's
--- top-down build mode (DockController). Its catalog is DockBlueprints.catalog: levels, buildings, quest
--- blueprints and the Cash-only Decorations on the spare lots.
+-- DockService (docs/23 WP-1; WP-19b; the unlock tree, WP-28): your island is your plot. Builds the six player
+-- islands' docks (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining
+-- player the lowest free island and frees it on leave. Every island has a bare jetty down its cove; an owner
+-- adds their Lego name sign and flag; an unclaimed island is just land and the jetty. What you built lives in
+-- the profile (data.dockBuildings) so it rebuilds on whichever island you get. VehicleService launches at the
+-- island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
+-- The unlock tree (docs/23 (q), DockConfig.Buildings + shared/UnlockTree): each building stands on its spot once
+-- owned; it is bought with Cash once its prerequisites stand (Dock_Upgrade) or with its Robux product (skips
+-- the Cash, never the prerequisites: the grant refuses until they stand, so the receipt waits). A buy plays the
+-- Lego build beat: the pieces exist here in their final state, the Dock_Build event lets every client drop
+-- them in (shared/BuildSeq), and two builder NPCs stand by the build station (WP-14d). The build station by
+-- the spawn carries the tablet whose prompt opens the owner's top-down build mode (DockController); its
+-- catalog is DockBlueprints.catalog: tree buildings, quest blueprints and the Cash-only Decorations.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
--- GetLevel(player) -> number, Berths() -> { BasePart }, Refresh(player) (rebuild from the profile).
+-- Owns(player, key) -> boolean (a DockConfig building), Berths() -> { BasePart }, Refresh(player) (rebuild).
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
--- DockLevel (built level, DockController's build mode reads it), Dock<key> / Decor<key> (owned).
--- Remote: Dock_Upgrade C->S function (level | building/decor key) -> ok, reason ("Level" | "Rank" |
--- "Cash" | "Owned" | "Data" | "Busy").
--- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on their island lots and the
--- sub pen over the cove's sub berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
--- rank, products DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
--- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
--- gives them a building ("all": every one); ("decor", key) gives them a decoration ("all": every one);
--- ("trophies") every rescue milestone and island stamp.
--- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
--- (built). Player attributes DockHangar / DockSubPen / Decor<key> (owned; the build tablet).
--- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
--- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name sign and a tall gold
--- beacon on their island; picked on join / leave / a level change (nobody's island ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
--- plaque per island stamp (DiscoveryRules), rebuilt from the profile every few seconds when it changes.
+-- Dock<key> / Decor<key> (owned; the build tablet). Berth attributes: LaunchBay = true, PlotIndex, Owner
+-- (UserId, nil when empty), <key> = true per building standing (BoatBoard reads Boathouse / Hangar / SubPen).
+-- Remote: Dock_Upgrade C->S function (building / decor key) -> ok, reason ("Needs" | "Cash" | "Owned" |
+-- "Data" | "Busy" | "Unknown"). Vehicle boards are server/Dock/BoatBoard's.
+-- Studio: ServerStorage.DockDev:Invoke("building", key) gives the first player a building ("all": every one);
+-- ("decor", key) a decoration ("all": every one); ("trophies") every rescue milestone and island stamp.
+-- Harbour Master (docs/23 d.1, Marina.harbourMaster): the most people rescued among islands with a Station gets
+-- a gold name sign and a tall gold beacon; picked on join / leave / a build (nobody's island ever moves). The
+-- trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a plaque per island stamp (DiscoveryRules),
+-- rebuilt from the profile every few seconds when it changes.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -47,9 +42,9 @@ local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
-local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
+local UnlockTree = require(Shared:WaitForChild("UnlockTree"))
 
 local DockService = {}
 DockService.Priority = 40 -- before VehicleService (50): the berths exist when it starts
@@ -71,8 +66,6 @@ type Plot = {
 	trim: { Part }, -- its frame bricks, posts and bases, a darker shade of the face
 	studs: { Part }, -- the stud row along its top edge, the face colour
 	flag: Part,
-	levels: Model?, -- Lv 2..built pieces
-	built: number,
 	buildings: { [string]: Model },
 	counts: { TextLabel },
 	trophies: Model?,
@@ -293,7 +286,6 @@ local function buildPlot(folder: Instance, i: number): Plot
 		trim = trim,
 		studs = studs,
 		flag = flag,
-		built = 1,
 		counts = {},
 		buildings = {},
 		trophyKey = "",
@@ -310,53 +302,21 @@ local function announceBuild(plot: Plot, parentName: string?, modelName: string)
 	end
 end
 
--- Build the plot's level pieces up to `level` (beat = the new ones play the build animation); a lower
--- level starts over.
-local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
-	if level < plot.built and plot.levels then
-		plot.levels:Destroy()
-		plot.levels, plot.built, plot.counts = nil, 1, {}
-	end
-	for n = plot.built + 1, math.min(level, DockConfig.MAX) do
-		local levels = plot.levels or Instance.new("Model")
-		levels.Name = "Levels"
-		levels.Parent = plot.model
-		plot.levels = levels
-		local m = DockPieces.build(n, plot.frame)
-		for _, d in m:GetDescendants() do
-			if d.Name == "Flag" and d:IsA("BasePart") and owner then
-				d.Color = Marina.flagColor(owner.UserId)
-			elseif d.Name == "Count" and d:IsA("TextLabel") then
-				table.insert(plot.counts, d)
-			end
-		end
-		m.Parent = levels
-		if beat then
-			announceBuild(plot, "Levels", `Lv{n}`)
-		end
-		plot.built = n
-	end
-	plot.model:SetAttribute("DockLevel", level)
-	if owner then
-		owner:SetAttribute("DockLevel", level)
-	end
-end
-
 -- bought buildings, then quest blueprints (DockConfig.Blueprints, WP-21b)
 local BUILT = table.clone(DockConfig.BUILDINGS)
 for key in DockConfig.Blueprints do
 	table.insert(BUILT, key)
 end
 
--- The owner's bought buildings stand on the plot (the helipad only on a Lv 3+ boathouse); beat: new
--- ones play the build animation.
+-- The owner's bought buildings stand on the plot; beat: new ones play the build animation.
 local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	local data: any = owner and DataService.Get(owner)
 	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
-	local level = if data then data.dockLevel or 1 else 1
+	if not owner then
+		plot.counts = {}
+	end
 	for _, key in BUILT do
-		local b = DockConfig.Buildings[key]
-		local want = owner ~= nil and owned[key] == true and level >= (if b then b.needs else 1)
+		local want = owner ~= nil and owned[key] == true
 		local have = plot.buildings[key]
 		if want and not have and owner then
 			local m = DockPieces.building(key, plot.frame)
@@ -365,6 +325,8 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 					d.Color = Marina.flagColor(owner.UserId)
 				elseif d.Name == "Owner" and d:IsA("TextLabel") then
 					d.Text = owner.DisplayName
+				elseif d.Name == "Count" and d:IsA("TextLabel") then
+					table.insert(plot.counts, d) -- the pontoon's rescue board
 				end
 			end
 			m.Parent = plot.model
@@ -476,11 +438,11 @@ local function spawnBuilders(plot: Plot)
 	end
 end
 
--- The Lv 5 trophy hall's cups and plaques, rebuilt only when the owner's list changed.
+-- The trophy hall's cups and plaques, rebuilt only when the owner's list changed.
 local function syncTrophies(plot: Plot, owner: Player?)
 	local data: any = owner and DataService.Get(owner)
 	local cups, plaques = {}, {}
-	if data and (data.dockLevel or 1) >= 5 then
+	if data and tableOf(data.dockBuildings).TrophyHall == true then
 		for _, key in BadgeRules.trophies(tableOf(data.badgeCounters), tableOf(data.badgesAwarded)) do
 			table.insert(cups, BadgeConfig.Badges[key].name)
 		end
@@ -577,10 +539,11 @@ local function candidates(): { Marina.Candidate }
 	local function add(p: Player)
 		local data: any = DataService.Get(p)
 		if data then
-			table.insert(
-				list,
-				{ key = p, rank = ProgressionRules.rankIndex(data), level = data.dockLevel or 1 }
-			)
+			table.insert(list, {
+				key = p,
+				rescued = data.totalRescues,
+				station = tableOf(data.dockBuildings).Station == true,
+			})
 		end
 	end
 	for i = 1, Marina.COUNT do
@@ -591,7 +554,7 @@ local function candidates(): { Marina.Candidate }
 	return list
 end
 
--- Re-pick the Harbour Master (join, leave, level change); only the sign's colours change hands.
+-- Re-pick the Harbour Master (join, leave, a build); only the sign's colours change hands.
 local function crown()
 	local pick = Marina.harbourMaster(candidates(), master)
 	if pick == master then
@@ -603,7 +566,7 @@ local function crown()
 	end
 end
 
--- Lv 1 for the owner (the sign and the build station), or the bare jetty when empty.
+-- The owner's sign and build station, or the bare jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
 	for _, label in plot.labels do
@@ -620,7 +583,6 @@ local function dress(plot: Plot, owner: Player?)
 		end
 		syncDecor(plot, owner, false)
 	else
-		sync(plot, nil, 1, false)
 		syncBuildings(plot, nil, false)
 		syncDecor(plot, nil, false)
 		syncTrophies(plot, nil)
@@ -632,12 +594,11 @@ local function dress(plot: Plot, owner: Player?)
 	end
 end
 
--- The player's built level now matches the profile (beat: the build animation + builders play).
+-- The player's island now matches the profile (beat: the build animation + builders play).
 local function show(player: Player, beat: boolean)
 	local i = byPlayer[player]
 	local data: any = DataService.Get(player)
 	if i and data then
-		sync(plots[i], player, data.dockLevel or 1, beat)
 		syncBuildings(plots[i], player, beat)
 		syncDecor(plots[i], player, beat)
 		if beat then
@@ -649,22 +610,17 @@ end
 
 local busy: { [Player]: boolean } = {}
 
--- Cash + rank purchase of building `key` (Robux goes through its Dock<key> product).
+-- Cash purchase of tree building `key` once its prerequisites stand (Robux goes through its product).
 local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
 	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
-	local ok, reason, price = DockConfig.canBuyBuilding(
-		key,
-		data.dockBuildings[key] == true,
-		data.dockLevel or 1,
-		data.cash,
-		ProgressionRules.rankIndex(data)
-	)
+	local ok, reason, price = UnlockTree.canBuy(key, data.dockBuildings, data.cash)
 	if not ok or not price then
 		return false, reason or "Owned"
 	end
 	data.cash -= price
 	data.dockBuildings[key] = true
 	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
+	Telemetry.Funnel(player, "FirstBuilding") -- the first island building (WP-28: replaces FirstRank)
 	DataService.MarkDirty(player)
 	ProgressionService.Refresh(player)
 	show(player, true)
@@ -672,7 +628,7 @@ local function buyBuilding(player: Player, data: any, key: string): (boolean, st
 	return true, "ok"
 end
 
--- Cash-only purchase of a decoration (WP-14d); no rank gate, no Robux product.
+-- Cash-only purchase of a decoration (WP-14d); needs only the jetty, no Robux product.
 local function buyDecor(player: Player, data: any, key: string): (boolean, string)
 	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
 	local ok, reason, price =
@@ -690,9 +646,8 @@ local function buyDecor(player: Player, data: any, key: string): (boolean, strin
 	return true, "ok"
 end
 
--- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products), of a building,
--- or Cash-only decor.
-local function buy(player: Player, level: any): (boolean, string)
+-- A Cash purchase: a tree building or a decoration.
+local function buy(player: Player, key: any): (boolean, string)
 	local data: any = DataService.Get(player)
 	if not data then
 		return false, "Data"
@@ -700,30 +655,12 @@ local function buy(player: Player, level: any): (boolean, string)
 	if busy[player] then
 		return false, "Busy"
 	end
-	if type(level) == "string" then
-		if DockConfig.Buildings[level] then
-			return buyBuilding(player, data, level)
-		elseif DockConfig.Decorations[level] then
-			return buyDecor(player, data, level)
-		end
-		return false, "Level"
+	if type(key) == "string" and DockConfig.Buildings[key] then
+		return buyBuilding(player, data, key)
+	elseif type(key) == "string" and DockConfig.Decorations[key] then
+		return buyDecor(player, data, key)
 	end
-	if type(level) ~= "number" then
-		return false, "Level"
-	end
-	local ok, reason, price =
-		DockConfig.canBuy(data.dockLevel or 1, level, data.cash, ProgressionRules.rankIndex(data))
-	if not ok or not price then
-		return false, reason or "Level"
-	end
-	data.cash -= price
-	data.dockLevel = level
-	Telemetry.CashSpent(player, price, data.cash, "Dock", `Lv{level}`)
-	DataService.MarkDirty(player)
-	ProgressionService.Refresh(player)
-	show(player, true)
-	task.spawn(DataService.Save, player, false)
-	return true, "ok"
+	return false, "Unknown"
 end
 
 local function claim(player: Player)
@@ -763,7 +700,7 @@ function DockService.Init()
 	end
 	folder.Parent = Workspace
 
-	-- plots are claimed when the profile loads (Start), so the Harbour Master's rank is known
+	-- plots are claimed when the profile loads (Start), so the Harbour Master's count is known
 	Players.PlayerRemoving:Connect(function(player)
 		release(player)
 		busy[player] = nil
@@ -772,8 +709,8 @@ function DockService.Init()
 	local folderNet = Net.init()
 	local remote = Instance.new("RemoteFunction")
 	remote.Name = "Dock_Upgrade"
-	remote.OnServerInvoke = function(player: Player, level: any): (boolean, string)
-		local ok, reason = buy(player, level)
+	remote.OnServerInvoke = function(player: Player, key: any): (boolean, string)
+		local ok, reason = buy(player, key)
 		busy[player] = true -- one purchase per second
 		task.delay(1, function()
 			busy[player] = nil
@@ -788,39 +725,34 @@ function DockService.Init()
 	buildEvent.Parent = folderNet
 	buildRemote = buildEvent
 
-	-- Robux skips Cash and rank; the grant only raises the level, so a retried receipt is harmless
-	for n, lv in DockConfig.Levels do
-		MonetizationService.OnProduct(lv.product, function(_player, data: any)
-			data.dockLevel = math.max(data.dockLevel or 1, n)
-			return true
-		end, function(player)
-			show(player, true)
-		end)
-	end
+	-- Robux skips the Cash, never the order: the grant refuses (the receipt waits) until the prerequisites
+	-- stand; a retried receipt for an owned building is harmless
 	for key, b in DockConfig.Buildings do
-		MonetizationService.OnProduct(b.product, function(_player, data: any)
-			data.dockBuildings = if type(data.dockBuildings) == "table"
-				then data.dockBuildings
-				else {}
-			data.dockBuildings[key] = true
-			return true
-		end, function(player)
-			show(player, true)
-		end)
+		if b.product then
+			MonetizationService.OnProduct(b.product, function(_player, data: any)
+				data.dockBuildings = if type(data.dockBuildings) == "table"
+					then data.dockBuildings
+					else {}
+				if data.dockBuildings[key] then
+					return true
+				end
+				if not UnlockTree.canRobux(key, data.dockBuildings) then
+					return false
+				end
+				data.dockBuildings[key] = true
+				return true
+			end, function(player)
+				show(player, true)
+			end)
+		end
 	end
-
 	if RunService:IsStudio() then
 		local dev = Instance.new("BindableFunction")
 		dev.Name = "DockDev"
 		dev.OnInvoke = function(cmd: string, n: any): any
 			local player = Players:GetPlayers()[1]
 			local data: any = player and DataService.Get(player)
-			if cmd == "level" and data then
-				data.dockLevel = math.clamp(tonumber(n) or 1, 1, DockConfig.MAX)
-				DataService.MarkDirty(player)
-				show(player, true)
-				return data.dockLevel
-			elseif cmd == "trophies" and data then
+			if cmd == "trophies" and data then
 				data.badgeCounters = tableOf(data.badgeCounters)
 				for _, key in BadgeConfig.Order do
 					data.badgeCounters[key] = math.max(data.badgeCounters[key] or 0, 100)
@@ -865,11 +797,10 @@ function DockService.Init()
 end
 
 function DockService.Start()
-	DataService.OnLoaded(function(player: Player, data: any)
+	DataService.OnLoaded(function(player: Player)
 		claim(player)
 		local i = byPlayer[player]
 		if i then
-			sync(plots[i], player, data.dockLevel or 1, false)
 			syncBuildings(plots[i], player, false)
 			syncDecor(plots[i], player, false)
 			crown() -- GetBerth may have claimed before the profile loaded
@@ -913,9 +844,11 @@ function DockService.GetSpawn(player: Player): CFrame?
 	return if i then Marina.spawn(i) else nil
 end
 
-function DockService.GetLevel(player: Player): number
+-- Does the player own island building `key` (DockConfig.Buildings)? VehicleService: the pontoon's second
+-- berth, the crane's no-wait relaunch.
+function DockService.Owns(player: Player, key: string): boolean
 	local data: any = DataService.Get(player)
-	return if data and type(data.dockLevel) == "number" then data.dockLevel else 1
+	return data ~= nil and type(data.dockBuildings) == "table" and data.dockBuildings[key] == true
 end
 
 function DockService.Berths(): { BasePart }

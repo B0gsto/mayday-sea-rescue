@@ -3,7 +3,7 @@
 --   2x Cash pass, Cash Boost, Crew Boost   multiplier(player) -> Cash multiplier for Award
 --   Cash packs (4)                          Cash of the top open zone's rate, once per receipt
 --   Starter Kit pass                        3,000 Cash once per account (flag shop.starterKit)
--- Pure math: src/shared/MonetizationEffects.luau. Nothing here touches Reputation (docs/04 §1, §7).
+-- Pure math: src/shared/MonetizationEffects.luau. Cash only (docs/04 §1, §7).
 --
 -- Player attributes (read by the product cards, RP-M3): CashPerMinute, CashPacksToday,
 -- CashBoostLeft, CrewBoostLeft (seconds), CrewBoostActive (someone in the crew has one running).
@@ -79,10 +79,7 @@ end
 local function publish(player: Player, data: Rules.PlayerData)
 	local shop = data.flags.shop
 	local today = Effects.dayOf(os.time())
-	player:SetAttribute(
-		"CashPerMinute",
-		Effects.cashPerMinute(MonetizationConfig.CashPackZones, Rules.rankIndex(data))
-	)
+	player:SetAttribute("CashPerMinute", Effects.cashPerMinute(MonetizationConfig.CashPackZones))
 	player:SetAttribute(
 		"CashPacksToday",
 		Effects.packsToday(if type(shop) == "table" then shop else nil, today)
@@ -95,10 +92,7 @@ end
 local function registerPack(key: string)
 	local item = MonetizationConfig.Products[key]
 	MonetizationService.OnProduct(key, function(_player, data, receipt)
-		local cash = Effects.packCash(
-			item,
-			Effects.cashPerMinute(MonetizationConfig.CashPackZones, Rules.rankIndex(data))
-		)
+		local cash = Effects.packCash(item, Effects.cashPerMinute(MonetizationConfig.CashPackZones))
 		if cash <= 0 then
 			return false -- no rate to pay from: Roblox retries rather than taking Robux for nothing
 		end
@@ -112,7 +106,7 @@ local function registerPack(key: string)
 			publish(player, data)
 			local cash = tonumber(receipt.MaydayCash) or 0
 			refresh(player, {
-				award = { cash = cash, rep = 0, multiplier = 1, reason = `Purchase:{key}` },
+				award = { cash = cash, multiplier = 1, reason = `Purchase:{key}` },
 			})
 		end
 	end)
@@ -154,10 +148,7 @@ local function payStarterKit(player: Player)
 	data.cash += cash
 	DataService.MarkDirty(player)
 	task.spawn(DataService.Save, player, false)
-	refresh(
-		player,
-		{ award = { cash = cash, rep = 0, multiplier = 1, reason = "Purchase:StarterKit" } }
-	)
+	refresh(player, { award = { cash = cash, multiplier = 1, reason = "Purchase:StarterKit" } })
 end
 
 function CashEffects.init(refreshFn: Refresh)

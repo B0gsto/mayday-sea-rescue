@@ -1,5 +1,5 @@
 -- PlatformPrompts: when Roblox's own re-engagement prompts may be offered (docs/15 fair rules):
--- after the first crate / rank-up / crew op, never on an op, never in the first 3 minutes, never
+-- after the first crate / island building / crew op, never on an op, never in the first 3 minutes, never
 -- twice in 10 minutes, and a declined notification opt-in comes back after a week at most.
 return function(t)
 	local Rules = t.load("src/shared/PlatformPrompts.luau")

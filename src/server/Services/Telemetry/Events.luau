@@ -50,7 +50,7 @@ Events.Funnel = {
 	{ step = 8, name = "Call3Delivered" },
 	{ step = 9, name = "PhoneOpened" }, -- the first kit panel opened (legacy funnel name)
 	{ step = 10, name = "FirstUpgrade" }, -- the first vehicle upgrade bought with Cash
-	{ step = 11, name = "FirstRank" },
+	{ step = 11, name = "FirstBuilding" },
 	{ step = 12, name = "FirstVehicle" }, -- the first vehicle bought with Cash
 	{ step = 13, name = "Day2Return" }, -- first session on a later UTC day
 } :: { FunnelStep }

@@ -23,6 +23,7 @@ export type CardContext = {
 	cashPerMinute: number?,
 	stormQueue: number?,
 	pending: boolean?, -- a purchase prompt is already open
+	needs: string?, -- the island building a vehicle pass still needs (its name): Robux never skips the order
 }
 
 export type CardState = {
@@ -33,6 +34,7 @@ export type CardState = {
 		| "limit"
 		| "loading"
 		| "unavailable"
+		| "locked"
 		| "buy",
 	canBuy: boolean,
 	buyText: string,
@@ -80,8 +82,7 @@ function ProductShelves.storeItems(config: any, tab: string, studio: boolean): {
 		local pack = type(item) == "table" and item.cashMinutes ~= nil
 		if
 			ProductShelves.listed(item, studio)
-			and item.dockLevel == nil -- dock levels and buildings sell at the build tablet (docs/23 (j))
-			and item.dockBuilding == nil
+			and item.dockBuilding == nil -- island buildings sell at the build tablet (docs/23 (q))
 			and (kind == "GamePasses" or day == (tab == "DayPasses"))
 			and (tab ~= "Packs" or pack)
 			and (tab ~= "Boosts" or not pack)
@@ -152,6 +153,9 @@ function ProductShelves.cardState(config: any, ref: ItemRef, ctx: CardContext): 
 		if today >= limit then
 			return state("limit", "Daily limit", `{limit} Cash packs a day. More tomorrow.`)
 		end
+	end
+	if ctx.needs then
+		return state("locked", `Needs: {ctx.needs}`) -- docs/23 (q)
 	end
 	if ctx.pending then
 		return state("loading", "Opening...", note)

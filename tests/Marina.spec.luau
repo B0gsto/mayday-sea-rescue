@@ -58,20 +58,22 @@ return function(t)
 		t.expect(M.assign(full)).toBeNil()
 	end)
 
-	t.test("Harbour Master: highest rank among Lv 5 docks, ties keep the holder", function()
-		t.expect(M.harbourMaster({})).toBeNil()
-		t.expect(M.harbourMaster({ { key = "a", rank = 9, level = 4 } })).toBeNil()
-		local list = {
-			{ key = "a", rank = 3, level = 5 },
-			{ key = "b", rank = 5, level = 5 },
-			{ key = "c", rank = 7, level = 4 }, -- outranks, but not eligible
-			{ key = "d", rank = 5, level = 5 },
-		}
-		t.expect(M.harbourMaster(list)).toBe("b")
-		t.expect(M.harbourMaster(list, "d")).toBe("d")
-		t.expect(M.harbourMaster(list, "a")).toBe("b")
-	end)
-
+	t.test(
+		"Harbour Master: most people rescued among islands with a Station, ties keep the holder",
+		function()
+			t.expect(M.harbourMaster({})).toBeNil()
+			t.expect(M.harbourMaster({ { key = "a", rescued = 900, station = false } })).toBeNil()
+			local list = {
+				{ key = "a", rescued = 30, station = true },
+				{ key = "b", rescued = 50, station = true },
+				{ key = "c", rescued = 70, station = false }, -- more, but no station
+				{ key = "d", rescued = 50, station = true },
+			}
+			t.expect(M.harbourMaster(list)).toBe("b")
+			t.expect(M.harbourMaster(list, "d")).toBe("d")
+			t.expect(M.harbourMaster(list, "a")).toBe("b")
+		end
+	)
 	t.test("the spawn lock lets one spawn per berth through until released", function()
 		local locks = {}
 		t.expect(M.lock(locks, "berth1")).toBe(true)

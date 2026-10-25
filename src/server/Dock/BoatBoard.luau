@@ -33,7 +33,7 @@ local BoatBoard = {}
 local SLOT = 4.4 -- studs between models
 local MODEL_LEN = 3.6 -- a scale model's longest side
 local SHELF_H = 2.6
--- Lv 3+: the boat board stands in the boathouse (DockConfig.BOARD_SLOT, 17 studs between its walls): rows of
+-- With the boathouse: the boat board stands in it (DockConfig.BOARD_SLOT, 17 studs between its walls): rows of
 -- ROW_N, each STEP higher and further back
 local ROW_N, ROW_SLOT, STEP_UP, STEP_BACK = 4, 4, 1.8, 1.4
 local CRANE = Vector3.new(-13, 0, -12) -- the boat crane post, on the jetty finger (berth frame)
@@ -60,7 +60,7 @@ type Def = {
 	from: Vector3,
 	hook: number?,
 	ground: boolean?, -- rests on a floor (bounding box on the target), not afloat
-	boathouse: boolean?, -- moves into the boathouse at dock Lv 3 (the boat board)
+	boathouse: boolean?, -- moves into the boathouse once it stands (the boat board)
 	launch: (Player, string, CFrame?) -> (boolean, any),
 }
 
@@ -186,7 +186,7 @@ local function play(board: Board, berth: BasePart, player: Player, id: string)
 	local offset = def.targets[id]
 	local target = if offset then frame * offset else nil
 	if not target then
-		-- the berth or the Lv 2 pontoon spot; the hulls this launch replaces go first, so the copy never
+		-- the berth or the pontoon spot; the hulls this launch replaces go first, so the copy never
 		-- comes down on them (required here: VehicleService requires this module)
 		target = (require(Services:WaitForChild("VehicleService")) :: any).DockSpot(player, id)
 		if not target then
@@ -296,8 +296,7 @@ local function build(def: Def, berth: BasePart)
 
 	-- the rack: shelves on legs (stepped rows in the boathouse) with a navy backboard
 	local order = def.vehicles
-	local level = (berth.Parent :: Instance):GetAttribute("DockLevel")
-	local inside = def.boathouse == true and type(level) == "number" and level >= 3
+	local inside = def.boathouse == true and berth:GetAttribute("Boathouse") == true
 	local perRow = if inside then ROW_N else #order
 	local step = if inside then ROW_SLOT else SLOT
 	local rows = math.ceil(#order / perRow)
@@ -470,7 +469,7 @@ function BoatBoard.start(launch: Launch)
 		{
 			name = "HangarBoard",
 			building = "Hangar",
-			vehicles = DockConfig.Buildings.Hangar.vehicles,
+			vehicles = DockConfig.Buildings.Hangar.vehicles :: { string },
 			rack = B.Hangar.board,
 			targets = B.Hangar.targets,
 			from = Vector3.new(0, 0, 10),
@@ -480,7 +479,7 @@ function BoatBoard.start(launch: Launch)
 		{
 			name = "SubBoard",
 			building = "SubPen",
-			vehicles = DockConfig.Buildings.SubPen.vehicles,
+			vehicles = DockConfig.Buildings.SubPen.vehicles :: { string },
 			rack = B.SubPen.board,
 			targets = B.SubPen.targets,
 			from = Vector3.new(0, 8, 0),
@@ -499,7 +498,7 @@ function BoatBoard.start(launch: Launch)
 				berth:GetAttributeChangedSignal(def.building):Connect(resync)
 			end
 			if def.boathouse then
-				(berth.Parent :: Instance):GetAttributeChangedSignal("DockLevel"):Connect(resync)
+				berth:GetAttributeChangedSignal("Boathouse"):Connect(resync)
 			end
 			resync()
 		end

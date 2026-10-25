@@ -2,7 +2,7 @@
 -- DevController: the client half of the dev board (DevService). Inert until the server sends
 -- Dev_Grant (only to allowed players). Then: the DEV HUD button (right of the phone button; under
 -- the minimap on touch), F8, chat "/dev" or gamepad L1 + R1 + Select toggles the panel (UI/DevBoard).
--- Cutscenes replay here for the dev only (Camera/Cinematic shot lists, the rank-up beat). Fly, noclip, walk speed and
+-- Cutscenes replay here for the dev only (Camera/Cinematic shot lists). Fly, noclip, walk speed and
 -- click-teleport aim run here (the character is client-owned); everything else is a Dev_Action
 -- the server re-checks.
 local ContextActionService = game:GetService("ContextActionService")
@@ -15,7 +15,6 @@ local Workspace = game:GetService("Workspace")
 local CameraController = require(script.Parent:WaitForChild("CameraController"))
 local Cinematic =
 	require(script.Parent.Parent:WaitForChild("Camera"):WaitForChild("Cinematic")) :: any
-local RankCeremonyController = require(script.Parent:WaitForChild("RankCeremonyController"))
 local UI = script.Parent.Parent:WaitForChild("UI")
 local DevBoard = require(UI:WaitForChild("DevBoard"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
@@ -300,10 +299,6 @@ local function fill(b: DevBoard.Board)
 	cut("🛟 Cold open", Cinematic.Lists.coldOpen)
 	cut("🚤 Launch", Cinematic.Lists.launch)
 	cut("🌩 Storm", Cinematic.Lists.storm)
-	DevBoard.button(g, "🎖 Rank up", function()
-		b.setVisible(false)
-		RankCeremonyController.Replay(player:GetAttribute("RankIndex") or 2)
-	end)
 	DevBoard.button(g, "⏹ Stop", function()
 		Cinematic.stop()
 	end)
@@ -338,19 +333,16 @@ local function fill(b: DevBoard.Board)
 	g = DevBoard.section(page, "Give (target)")
 	for _, n in { 1000, 10000, 100000 } do
 		DevBoard.button(g, `💰 +{n} Cash`, function()
-			call("award", { tgt(), n, 0 })
-		end)
-		DevBoard.button(g, `⭐ +{n} Rep`, function()
-			call("award", { tgt(), 0, n })
+			call("award", { tgt(), n })
 		end)
 	end
 	DevBoard.button(g, "🔓 Unlock all", function()
 		call("unlockAll", { tgt() })
 	end)
-	g = DevBoard.section(page, "Rank (target)")
-	for i = 1, lists.RankCount do
-		DevBoard.button(g, `🎖 Rank {i}`, function()
-			call("rank", { tgt(), i })
+	g = DevBoard.section(page, "Build (target)")
+	for _, key in lists.Buildings do
+		DevBoard.button(g, `🧱 {key}`, function()
+			call("build", { tgt(), key })
 		end)
 	end
 	g = DevBoard.section(page, "Passes, test owned (target)")

@@ -16,7 +16,7 @@
 --   VehicleSpawned     S->C  a vehicle was launched from a bay (vehicle model, bay name)
 --   CrewJoin           C->S  join a crew / invite accept (S->C echoes crew changes)
 --   CrewLeave          C->S  leave the crew (S->C echoes)
---   PlayerDataChanged  S->C  the player's progression snapshot (cash, rep, rank, vehicles)
+--   PlayerDataChanged  S->C  the player's progression snapshot (cash, people rescued, island buildings, vehicles)
 --   StormChanged       S->C  one-shot cue when the storm phase changes (siren). The
 --                            continuous storm state is NOT sent by remote: it lives in attributes on
 --                            ReplicatedStorage.Weather (State, StateStartTime, Intensity,

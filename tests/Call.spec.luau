@@ -123,12 +123,10 @@ return function(t)
 		t.expect(CallLogic.grade(95, 100)).toBe("Bronze")
 		local silver = CallLogic.reward("Swimmer", 70, 100, 1, nil)
 		t.expect(silver.cash).toBe(250)
-		t.expect(silver.rep).toBe(60)
 		t.expect(CallLogic.reward("Diver", 10, 100, 1, nil).cash)
 			.toBe(math.floor(250 * 1.4 * 1.25 + 0.5))
 		local first = CallLogic.reward("Swimmer", 90, 100, 1, 0)
 		t.expect(first.cash).toBe(500)
-		t.expect(first.rep).toBe(150)
 		t.expect(CallLogic.reward("Swimmer", 90, 100, 1, 2).cash).toBe(300)
 		t.expect(CallLogic.failSafeCash("Swimmer")).toBe(25)
 	end)
@@ -145,9 +143,7 @@ return function(t)
 		t.expect(CallLogic.bigCallVictimCount(4)).toBe(4)
 		t.expect(CallLogic.bigCallVictimCount(9)).toBe(9)
 		t.expect(CallLogic.bigCallVictimCount(0, 2)).toBe(4)
-		local cash, rep = CallLogic.bigCompletionBonus(3, 6)
-		t.expect(cash).toBe(625)
-		t.expect(rep).toBe(90)
+		t.expect(CallLogic.bigCompletionBonus(3, 6)).toBe(625)
 		local vc = CallLogic.bigVictimPay()
 		t.expect(vc).toBe(150)
 		local pts = CallLogic.scatterPoints(Vector3.new(60, 0, 500), 9, 14, 34, "Open", makeRng(9))
@@ -207,14 +203,10 @@ return function(t)
 		t.expect(CallLogic.craftReach({})).toBe(2000)
 		t.expect(CallLogic.craftReach({ "JetSki", "RIB" })).toBe(3500)
 		t.expect(CallLogic.craftReach({ "RIB", "Lifeboat" })).toBe(5500)
-		t.expect(CallLogic.craftReach({ "RiptideX" })).toBe(5500)
-		-- capped by rank: a Robux boat buys speed, not the far (high-pay) calls
-		t.expect(CallLogic.craftReach({ "RiptideX" }, 1)).toBe(2000) -- Recruit
-		t.expect(CallLogic.craftReach({ "RiptideX" }, 2)).toBe(3500) -- Lifeguard: the RIB's tier
-		t.expect(CallLogic.craftReach({ "RiptideX" }, 4)).toBe(5500) -- Coxswain: the lifeboat's
-		t.expect(CallLogic.craftReach({ "Submarine" }, 4)).toBe(5500)
-		t.expect(CallLogic.craftReach({ "RescueHelicopter" }, 3)).toBe(3500)
-		t.expect(CallLogic.craftReach({ "JetSki" }, 5)).toBe(2000) -- the cap never adds reach
+		-- a Robux boat sits on the RIB's tier (it needs the same boathouse): speed, not the far calls
+		t.expect(CallLogic.craftReach({ "RiptideX" })).toBe(3500)
+		t.expect(CallLogic.craftReach({ "Submarine" })).toBe(5500)
+		t.expect(CallLogic.craftReach({ "RescueHelicopter" })).toBe(5500)
 		local plot1 = homes[3] -- Plot2, the south-east island: Skerry Isle is the near outer island
 		local function zones(reach: number, home: Vector3): { [string]: boolean }
 			local seen, rng = {}, makeRng(9)

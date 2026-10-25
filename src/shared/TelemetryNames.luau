@@ -56,7 +56,7 @@ TelemetryNames.Funnel = table.freeze({
 	"Call3Delivered",
 	"PhoneOpened",
 	"FirstUpgrade",
-	"FirstRank",
+	"FirstBuilding",
 	"FirstVehicle",
 	"Day2Return",
 } :: { string })

@@ -254,13 +254,12 @@ local function apply(player: Player, l: Live, events: { Rules.Event })
 		ProgressionService.Award(
 			player,
 			DiscoveryConfig.Cash[s.kind] or 0,
-			0,
 			`Sticker:{s.kind}`,
 			true
 		)
 		if e.page then
 			Telemetry.Custom(player, "AlbumPage", 1, e.island)
-			ProgressionService.Award(player, DiscoveryConfig.Cash.Page, 0, "Sticker:Page", true)
+			ProgressionService.Award(player, DiscoveryConfig.Cash.Page, "Sticker:Page", true)
 		end
 		if foundRemote then
 			foundRemote:FireClient(

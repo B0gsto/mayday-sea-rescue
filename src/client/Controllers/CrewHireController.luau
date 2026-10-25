@@ -38,7 +38,6 @@ local ROLE_COLORS = {
 	Dispatcher = Color3.fromRGB(96, 168, 240),
 }
 
-local snapshot: { [string]: any } = {}
 local modal: InputGlyph.Modal
 local openModel: Model? = nil
 
@@ -452,9 +451,7 @@ local function buildClock()
 end
 
 local function unlocked(): boolean
-	local level = player:GetAttribute("DockLevel")
-	local rank = snapshot.rankIndex or 1
-	return type(level) == "number" and CrewHire.unlocked(level, rank)
+	return player:GetAttribute("DockStation") == true
 end
 
 local function refreshClock()
@@ -479,23 +476,8 @@ function CrewHireController.Init()
 end
 
 function CrewHireController.Start()
-	Net.event("PlayerDataChanged").OnClientEvent:Connect(function(data: any)
-		if type(data) == "table" then
-			snapshot = data
-			refreshClock()
-		end
-	end)
-	task.spawn(function()
-		local getData = Net.init():WaitForChild("Progression_GetData", 30) :: RemoteFunction?
-		local ok, data = pcall(function()
-			return getData and getData:InvokeServer()
-		end)
-		if ok and type(data) == "table" then
-			snapshot = data
-			refreshClock()
-		end
-	end)
-	player:GetAttributeChangedSignal("DockLevel"):Connect(refreshClock)
+	refreshClock()
+	player:GetAttributeChangedSignal("DockStation"):Connect(refreshClock)
 	player:GetAttributeChangedSignal("BayCFrame"):Connect(function()
 		if clock then
 			clock.part:Destroy()

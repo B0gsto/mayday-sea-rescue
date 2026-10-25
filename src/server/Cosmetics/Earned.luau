@@ -1,7 +1,7 @@
 --!strict
 -- Earned (server cosmetic feature, G28): makes the earned-but-data-only rewards show.
 -- Stock trims, season rewards and the monthly livery live in profile flags
--- (data.flags.stock / season / monthlyLivery), the monthly liveries also come with the rank.
+-- (data.flags.stock / season / monthlyLivery), the monthly liveries also come with 500 people rescued.
 -- CosmeticLoadout turns those into the `earn` keys the cosmetic options use; this feature:
 --   * mirrors them to the player attribute "CosOwned" (client pickers read it) through
 --     CosmeticsService.Refresh;
@@ -34,7 +34,7 @@ end
 
 local function show(player: Player): CosmeticLoadout.Loadout?
 	local data = dataOf(player)
-	return if data then CosmeticLoadout.show(data.flags, data.rep) else nil
+	return if data then CosmeticLoadout.show(data.flags, data.totalRescues) else nil
 end
 
 local function sameOwned(a: { [string]: boolean }, b: { [string]: boolean }): boolean

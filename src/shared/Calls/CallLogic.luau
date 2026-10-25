@@ -4,11 +4,10 @@
 local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
 local HubLayout = require(script.Parent.Parent.Config.HubLayout)
-local ProgressionConfig = require(script.Parent.Parent.Config.ProgressionConfig)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 export type Rng = () -> number -- uniform in [0, 1)
-export type Reward = { cash: number, rep: number, grade: string }
+export type Reward = { cash: number, grade: string }
 
 local CallLogic = {}
 
@@ -214,14 +213,12 @@ function CallLogic.reward(
 	if tut then
 		return {
 			cash = math.floor(tut.cash * crew + 0.5),
-			rep = math.floor(tut.rep * crew + 0.5),
 			grade = g,
 		}
 	end
 	local m = spec.weight * P.Grade[g] * crew
 	return {
 		cash = math.floor(P.BaseCash * m + 0.5),
-		rep = math.floor(P.BaseRep * m + 0.5),
 		grade = g,
 	}
 end
@@ -232,7 +229,6 @@ function CallLogic.previewReward(kind: string, tutorialIndex: number?): Reward
 	if spec and spec.isBig then
 		return {
 			cash = math.floor(P.BaseCash * P.BigBonusCash),
-			rep = math.floor(P.BaseRep * P.BigBonusRep),
 			grade = "Silver",
 		}
 	end
@@ -253,16 +249,14 @@ function CallLogic.bigCallVictimCount(playerCount: number, base: number?): numbe
 end
 
 -- Big call: pay for each victim delivered, to the deliverer.
-function CallLogic.bigVictimPay(): (number, number)
-	return math.floor(P.BaseCash * P.BigVictimShare + 0.5),
-		math.floor(P.BaseRep * P.BigVictimShare + 0.5)
+function CallLogic.bigVictimPay(): number
+	return math.floor(P.BaseCash * P.BigVictimShare + 0.5)
 end
 
 -- Big call: completion bonus for every helper, scaled by the share saved before the timer.
-function CallLogic.bigCompletionBonus(saved: number, total: number): (number, number)
+function CallLogic.bigCompletionBonus(saved: number, total: number): number
 	local share = if total > 0 then math.clamp(saved / total, 0, 1) else 0
-	return math.floor(P.BaseCash * P.BigBonusCash * share + 0.5),
-		math.floor(P.BaseRep * P.BigBonusRep * share + 0.5)
+	return math.floor(P.BaseCash * P.BigBonusCash * share + 0.5)
 end
 
 -- Seconds until the next offer for a free player. Storm triples the call rate.
@@ -278,20 +272,13 @@ end
 
 export type KindChoice = { kind: string, zone: string, victims: number? }
 
--- How far out a player's calls go: the best CallTypes.CraftReach among the craft ids they own, capped (unless
--- rankIndex is nil) at the best tier of the free craft that rank unlocks: Robux buys a craft and its speed,
--- not the Rep of farther calls (docs/23 (i)).
-function CallLogic.craftReach(owned: { string }, rankIndex: number?): number
-	local reach, cap = CallTypes.BASE_REACH, CallTypes.BASE_REACH
+-- How far out a player's calls go (docs/23 (q)): the best CallTypes.CraftReach among the craft they can launch.
+function CallLogic.craftReach(owned: { string }): number
+	local reach = CallTypes.BASE_REACH
 	for _, id in owned do
 		reach = math.max(reach, CallTypes.CraftReach[id] or 0)
 	end
-	for id, v in ProgressionConfig.Vehicles do
-		if not v.passOnly and v.rankIndex <= (rankIndex or math.huge) then
-			cap = math.max(cap, CallTypes.CraftReach[id] or 0)
-		end
-	end
-	return math.min(reach, cap)
+	return reach
 end
 
 -- A distance-tier zone (docs/23 e.2), uniform over every zone the reach covers from `home` (the pool widens):

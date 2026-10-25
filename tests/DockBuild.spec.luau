@@ -102,8 +102,8 @@ return function(t)
 				t.expect(math.abs(size.X * size.Y - raw.X * raw.Y) < 1e-3).toBe(true)
 			end
 			-- the boathouse lot is turned 90 degrees: its footprint swaps
-			local _, raw = B.spot({ kind = "Level", key = 3 })
-			local _, size = B.paper({ kind = "Level", key = 3 }, frame)
+			local _, raw = B.spot({ kind = "Building", key = "Boathouse" })
+			local _, size = B.paper({ kind = "Building", key = "Boathouse" }, frame)
 			t.expect(size.X).toBe(raw.Y)
 		end
 	)

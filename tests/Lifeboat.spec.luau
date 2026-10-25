@@ -80,10 +80,10 @@ return function(t)
 		t.expect(boat.leanFactor < Config.RIB.leanFactor).toBeTruthy()
 	end)
 
-	t.test("the lifeboat is rank-gated", function()
-		-- the lifeboat is rank-gated data: Coxswain, 12,000 Cash
+	t.test("the lifeboat needs its slip", function()
+		-- the unlock tree (docs/23 (q)): the lifeboat slip, then 12,000 Cash
 		local unlock = Progression.Vehicles.Lifeboat
-		t.expect(unlock.rankIndex).toBe(4)
+		t.expect(unlock.needs).toBe("LifeboatSlip")
 		t.expect(unlock.price).toBe(12000)
 	end)
 end

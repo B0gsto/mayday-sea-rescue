@@ -1,12 +1,14 @@
 -- NewPlayerPace: the first 10 minutes (docs/16 section 4), walked headlessly. A fresh profile does
 -- the cold open, stays seated, takes the tutorial calls CallLogic picks (answer -> launch ->
 -- auto_board -> transport) with the real payouts, buys the jet ski Engine upgrade at the first
--- free moment after call 2 (B5) and ranks up on Rep alone (B7). The clock: the cold open as
+-- free moment after call 2 (B5) and can afford its first island building (the unlock tree's cheapest
+-- root, docs/23 (q); was the first rank-up, B7). The clock: the cold open as
 -- measured (docs/research/playtest-first-20-min.md Round 4), the next-call delay and capacities
 -- from config, and per trip the docs/02 travel budget out and back (CallTypes.TRAVEL_SECONDS,
 -- about 4x the real Calm Bay distance at jet-ski cruise). Prints the milestone minutes.
 return function(t)
 	local ProgressionConfig = t.load("src/shared/Config/ProgressionConfig.luau")
+	local DockConfig = t.load("src/shared/Config/DockConfig.luau")
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
 	local Rules = t.load("src/shared/ProgressionRules.luau")
 	local VehicleUpgrades = t.load("src/shared/VehicleUpgrades.luau")
@@ -25,6 +27,12 @@ return function(t)
 	local BUY_MIN = 1 -- open the phone, Vehicles, buy the Engine
 	local ENGINE = (VehicleUpgrades.entry("JetSki", "Engine") :: any).price
 	local SEATS = VehicleConfig.JetSki.survivorCapacity
+	local FIRST_BUILD = math.huge -- the cheapest building that needs only the jetty
+	for _, b in DockConfig.Buildings do
+		if #b.needs == 0 then
+			FIRST_BUILD = math.min(FIRST_BUILD, b.cash)
+		end
+	end
 
 	local function run(slow: number)
 		local data = Rules.defaultData()
@@ -39,16 +47,14 @@ return function(t)
 				table.insert(events, label)
 			end
 		end
-		local function award(cash: number, rep: number)
-			local c, r = Rules.applyAward(cash, rep, "Calm", false)
-			data.cash += c
-			data.rep += r
+		local function award(cash: number)
+			data.cash += (Rules.applyAward(cash, "Calm", false))
 			table.insert(cashAt, { at = now, cash = data.cash })
 			if data.cash >= ENGINE then
 				mark("upgrade affordable")
 			end
-			if Rules.rankIndex(data) >= 2 then
-				mark("first rank-up")
+			if seen["upgrade bought"] and data.cash >= FIRST_BUILD then
+				mark("first build affordable")
 			end
 		end
 		local function pay(kind: string)
@@ -56,7 +62,7 @@ return function(t)
 			local tut = if completed < #Grading.Payout.Tutorial then completed else nil
 			local reward = Grading.payout(def.weight, "Silver", 1, tut)
 			completed += 1
-			award(reward.cash, reward.rep)
+			award(reward.cash)
 		end
 
 		now = COLD_OPEN
@@ -76,7 +82,7 @@ return function(t)
 				now += BUY_MIN * slow
 				local streak = StreakRules.claim(StreakRules.newState(), 1792800000)
 				if streak then
-					award(streak.cash, 0) -- the daily crate on the way
+					award(streak.cash) -- the daily crate on the way
 				end
 				data.cash -= ENGINE
 				mark("upgrade bought")
@@ -138,12 +144,15 @@ return function(t)
 		end
 	end)
 
-	t.test("first rank-up on Rep alone by 11:00 (B7)", function()
-		for _, s in scenarios do
-			local at = s.r.at["first rank-up"]
-			t.expect(at ~= nil and at <= 11).toBe(true)
+	t.test(
+		"the first island building is affordable by 11:00 (was the first rank-up, B7)",
+		function()
+			for _, s in scenarios do
+				local at = s.r.at["first build affordable"]
+				t.expect(at ~= nil and at <= 11).toBe(true)
+			end
 		end
-	end)
+	)
 
 	t.test("the RIB is in sight at 10 minutes", function()
 		t.expect(main.rib >= 0.2).toBe(true)

@@ -712,14 +712,7 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	if op.isBig then
 		local pay = Grading.bigCasualtyPay()
 		if actor and actor.Parent then
-			try(
-				"ProgressionService",
-				"Award",
-				actor,
-				pay.cash,
-				pay.rep,
-				"Op:CapsizedFerry:Casualty"
-			)
+			try("ProgressionService", "Award", actor, pay.cash, "Op:CapsizedFerry:Casualty")
 		end
 	end
 end
@@ -950,12 +943,10 @@ finish = function(op: any, reason: string)
 			reward = Grading.shareWithoutStep(op.weight)
 			paidAs = "Op:Share"
 		end
-		if reward.cash > 0 or reward.rep > 0 then
-			local ok = try("ProgressionService", "Award", p, reward.cash, reward.rep, paidAs)
+		if reward.cash > 0 then
+			local ok = try("ProgressionService", "Award", p, reward.cash, paidAs)
 			if not ok then
-				warn(
-					`[OperationService] could not award {p.Name} {reward.cash} Cash / {reward.rep} Rep`
-				)
+				warn(`[OperationService] could not award {p.Name} {reward.cash} Cash`)
 			end
 		end
 		if op.coldOpen then
@@ -984,7 +975,6 @@ finish = function(op: any, reason: string)
 			saved = op.saved,
 			total = #op.casualties,
 			cash = math.floor(reward.cash * mult + 0.5),
-			rep = reward.rep,
 			tip = tip,
 			me = p.UserId,
 		})
@@ -1260,7 +1250,6 @@ local function offerPayload(op: any, tutorialIndex: number?): { [string]: any }
 		isBig = op.isBig,
 		offerExpiresAt = op.offerExpiresAt,
 		cash = preview.cash,
-		rep = preview.rep,
 	}
 end
 
@@ -1328,8 +1317,7 @@ local function callReach(player: Player): number
 			table.insert(owned, id)
 		end
 	end
-	local rank = player:GetAttribute("RankIndex") -- server-set (ProgressionService)
-	return CallLogic.craftReach(owned, if type(rank) == "number" then rank else 1)
+	return CallLogic.craftReach(owned)
 end
 
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).

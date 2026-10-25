@@ -1,7 +1,7 @@
 --!strict
 -- PlatformPrompts: pure policy for Roblox's own re-engagement prompts (docs/15 hooks, fair rules).
 -- Three prompts, at good moments only: notifications after a daily crate, favourite after the first
--- rank-up, invite after the first crew rescue. Never on an operation, never in the first 3 minutes
+-- island building, invite after the first crew rescue. Never on an operation, never in the first 3 minutes
 -- of a session, never two prompts within 10 minutes. Asked timestamps live in the profile
 -- (data.flags.platformPrompts) so a decline is respected across sessions.
 local PlatformPrompts = {}

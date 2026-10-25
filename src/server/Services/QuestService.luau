@@ -8,7 +8,7 @@
 --   or from your tablet. find: the item waits on its island; walk into it and it rides on your back. salvage: the
 --   same from the sub at a wreck. deliver: you carry it from the pontoon; walk it to the flag. rescue: a call is offered at the zone
 --   (OperationService.OfferCall), done when its survivor is delivered (OperationCompleted). Then back to the
---   giver ("?") to hand in: Cash + Rep (flat), and the chain's last step adds its blueprint to your island.
+--   giver ("?") to hand in: Cash (flat), and the chain's last step adds its blueprint to your island.
 -- Player attributes (QuestController / MapController / TalkController read them): QuestId, QuestStage
 -- ("go" | "back"), QuestTarget (Vector3: the thing, then the giver), QuestOffer_<npcId> (today's offer).
 -- Studio: ServerStorage.QuestDev:Invoke("accept", npcId: ties its boat up, puts you beside it) | ("tablet": to your
@@ -354,7 +354,7 @@ local function handIn(player: Player)
 	if not quest then
 		return
 	end
-	ProgressionService.Award(player, quest.cash, quest.rep, `Quest:{quest.id}`, true)
+	ProgressionService.Award(player, quest.cash, `Quest:{quest.id}`, true)
 	local boat = QuestPontoons.Giver(DockService.GetPlot(player), quest.npc)
 	if boat then
 		QuestPontoons.Leave(boat) -- the next giver sails in (reconcile); a chain's next step brings them back

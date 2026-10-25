@@ -44,9 +44,9 @@ return function(t)
 			{ "clock", { 25 } },
 			{ "clock", { 2 } }, -- night is off
 			{ "clock", { 0 / 0 } },
-			{ "award", { 7, -1, 0 } },
-			{ "award", { 7, math.huge, 0 } },
-			{ "rank", { 7, 0 } },
+			{ "award", { 7, -1 } },
+			{ "award", { 7, math.huge } },
+			{ "build", { 7, "Castle" } },
 			{ "god", { "true" } },
 			{ "tpSpot", { "Narnia" } },
 			{ "tpPos", { { 1, 2, 3 } } },

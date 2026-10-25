@@ -10,13 +10,12 @@ return function(t)
 		t.expect(AutoBoard.ready(5, 3, AutoBoard.STEADY_TILT + 5, true)).toBe(false) -- big waves
 	end)
 
-	t.test("only a fast run on top of them is a bump, and only from KNOCK_RANK up", function()
-		local r = AutoBoard.KNOCK_RANK
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, r)).toBe(true)
-		t.expect(AutoBoard.rammed(2, 3, r)).toBe(false)
-		t.expect(AutoBoard.rammed(AutoBoard.CONTACT + 3, AutoBoard.RAM_SPEED + 5, r)).toBe(false)
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, r - 1)).toBe(false) -- a new player
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, nil)).toBe(false) -- rank not loaded yet
+	t.test("only a fast run on top of them is a bump, and only for a boathouse owner", function()
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, true)).toBe(true)
+		t.expect(AutoBoard.rammed(2, 3, true)).toBe(false)
+		t.expect(AutoBoard.rammed(AutoBoard.CONTACT + 3, AutoBoard.RAM_SPEED + 5, true)).toBe(false)
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, false)).toBe(false) -- a new player
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, nil)).toBe(false) -- not loaded yet
 	end)
 
 	t.test("pick-up ring: a craft at full throttle is eased to a boarding speed", function()

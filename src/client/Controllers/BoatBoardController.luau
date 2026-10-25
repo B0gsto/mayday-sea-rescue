@@ -2,7 +2,8 @@
 -- BoatBoardController (docs/23 d.3, WP-5): the client half of the vehicle boards (server/Dock/BoatBoard: the
 -- boat board and the hangar and sub pen boards, all tagged BoatBoard).
 -- On your own rack, owned models stay lit with Launch (the server's crane does the rest); locked ones go
--- dark with a padlock, a Cash chip (coin + price, or the rank's colour + name) and an R$ chip, and their
+-- dark with a padlock, a Cash chip (coin + price, or the building it still needs: its drawing + name, docs/23
+-- (q)) and an R$ chip (greyed until that building stands: Robux never skips the order), and their
 -- prompt reads Buy. Buy and Upgrade open the kit Boat card for that craft (UI/BoatCard), with the
 -- Cash / Robux buttons and upgrade tiles. Other players' racks: prompts off.
 local CollectionService = game:GetService("CollectionService")
@@ -13,15 +14,16 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
+local DockConfig = require(Config:WaitForChild("DockConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
-local RankCeremony = require(Shared:WaitForChild("RankCeremony"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 local UiImages = require(Config:WaitForChild("UiImages"))
 
 local UI = script.Parent.Parent:WaitForChild("UI")
+local BuildGlyph = require(UI:WaitForChild("BuildGlyph"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local Menu = require(UI:WaitForChild("Menu"))
@@ -164,17 +166,12 @@ local function paintTag(gui: BillboardGui, id: string)
 	cash.Visible = unlock ~= nil and not unlock.passOnly
 	cashIcon:ClearAllChildren()
 	Instance.new("UIAspectRatioConstraint").Parent = cashIcon
-	if unlock and snap and Rules.vehicleLock(Rules.fromSnapshot(snap), id) then
-		-- the rank it needs: the rank's colour disc and its name
-		local disc = Glyph.bar(
-			cashIcon,
-			Vector2.one,
-			Vector2.new(0.5, 0.5),
-			0,
-			RankCeremony.colour(unlock.rankIndex)
-		)
-		disc.Name = "Rank"
-		cashText.Text = ProgressionConfig.Ranks[unlock.rankIndex].displayName
+	local need = if snap then Rules.vehicleLock(Rules.fromSnapshot(snap), id) else nil
+	if need then
+		-- the building it needs: its Lego drawing and its name
+		cash.Visible = true
+		BuildGlyph(cashIcon, { kind = "Building", key = need })
+		cashText.Text = DockConfig.Buildings[need].name
 	elseif unlock then
 		local coin = Instance.new("ImageLabel")
 		coin.Size = UDim2.fromScale(1, 1)
@@ -187,7 +184,7 @@ local function paintTag(gui: BillboardGui, id: string)
 	local robux = chips:FindFirstChild("Robux") :: Frame
 	local pid = passId(id)
 	robux.Visible = Rules.vehiclePass(id) ~= nil
-	robux.BackgroundColor3 = if pid > 0 then Color3.fromHex("2F9E5B") else C.locked
+	robux.BackgroundColor3 = if pid > 0 and not need then Color3.fromHex("2F9E5B") else C.locked
 	local r = price(pid)
 	local rText = robux:FindFirstChild("Text") :: TextLabel
 	rText.Text = if r

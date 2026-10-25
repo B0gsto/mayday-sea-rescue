@@ -139,7 +139,7 @@ local function open(player: Player): any
 		tostring(claim.day)
 	)
 	local reason = if claim.welcome then "Streak:Welcome" else `Streak:Day{claim.streak}`
-	ProgressionService.Award(player, claim.cash, 0, reason, true)
+	ProgressionService.Award(player, claim.cash, reason, true)
 	-- Group members get a flat +10% on the crate (G68); never multiplied, never a second crate.
 	local groupBonus = 0
 	local groupState = GroupRewardService.State(player)
@@ -151,7 +151,7 @@ local function open(player: Player): any
 			SocialConfig.GroupId
 		)
 		if groupBonus > 0 then
-			ProgressionService.Award(player, groupBonus, 0, "Group:Crew", true)
+			ProgressionService.Award(player, groupBonus, "Group:Crew", true)
 		end
 	end
 	local after = ProgressionService.GetData(player)

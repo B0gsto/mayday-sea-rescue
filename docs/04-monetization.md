@@ -1,6 +1,6 @@
 # 04 · Monetization
 
-Last rewrite: 2026-10-25. This file owns what is sold, where, and why it is fair. Cash pacing and rank numbers are
+Last rewrite: 2026-10-25. This file owns what is sold, where, and why it is fair. Cash pacing and the unlock tree are
 in `docs/03-progression.md`; the loop is `docs/02-core-loop-and-mechanics.md`; the canon is `docs/00-design.md`.
 All prices are Robux and **tune** until the live listing says otherwise.
 
@@ -8,11 +8,13 @@ All prices are Robux and **tune** until the live listing says otherwise.
 
 Mayday sells **time, looks and shared fun**, never skill.
 
-- A purchase can save a wait, build a dock, own a boat or change a colour. It cannot buy a better grade, a
-  promotion, a farther call or a survivor.
-- Every rank, island, building, call and free craft is earnable. The four premium boats are Robux alternatives;
-  they do not add reach, grade or a new call.
-- Rep is never sold. A Cash pack, boost, pass or day pass grants zero Rep.
+- A purchase can save a wait, build a building, own a boat or change a colour. It cannot buy a better grade, a
+  farther call or a survivor.
+- No ranks (docs/23 (q)). **Robux skips the Cash, never the order:** a building or craft can be bought with Robux
+  only once its prerequisites stand (the buy button is greyed with "Needs: X" until then; the server grant checks
+  it too).
+- Every building, call and free craft is earnable with Cash. The four premium boats are Robux alternatives on the
+  RIB's reach; they need the boathouse.
 - The player opens every prompt. There are no pop-ups, no countdowns, no "buy before you lose it" offers and no
   offers during a call.
 - No paid random at launch. Sea Chests are planned, cosmetics only, with odds shown.
@@ -27,15 +29,15 @@ Mayday sells **time, looks and shared fun**, never skill.
 | **Quick Launch** (pass) | Removes the Boat to me wait; launches owned craft | 49 |
 | **Starter Kit** (pass) | 3,000 Cash once; livery and Bosun bandana later | 25 |
 | **VIP Crew Card** (pass, in progress) | Gold nameplate and gold livery | 299 |
-| **RIB / Lifeboat / Submarine / Helicopter** (passes) | Own the craft at any rank | 49 / 129 / 249 / 399 |
+| **RIB / Lifeboat / Submarine / Helicopter** (passes) | Own the craft once its building stands | 49 / 129 / 249 / 399 |
 | **Storm Runner / Tidewalker / Riptide X / Gilded Gull** (passes) | Premium boats, Robux only | 199 / 249 / 129 / 199 |
 | **Cosmetics** (passes, in progress) | Bosun, friends, liveries, outfits, horns, sirens, lights, wakes | 79–249 |
-| **Cash packs** | Minutes of Cash; no Rep | 10 / 25 / 75 / 149 |
+| **Cash packs** | Minutes of Cash | 10 / 25 / 75 / 149 |
 | **Cash Boost** | 2x Cash for 30 minutes of play | 15 |
 | **Crew Boost** | +50% Cash for you and your crew, 20 minutes | 15 |
 | **Day 2x Cash / Day Quick Launch** | A pass effect for 24 real hours | 15 / 10 |
-| **Dock Lv2–5** | Builds the level now, no Cash or rank | 49 / 99 / 199 / 399 |
-| **Hangar / Sub pen** | Builds the building now, no Cash or rank | 199 / 149 |
+| **Pontoon / Boathouse / Lookout / Station** | Builds it now, no Cash (prerequisites first) | 49 / 99 / 79 / 199 |
+| **Hangar / Sub pen** | Builds it now, no Cash (prerequisites first) | 199 / 149 |
 | **Storm Summons** (in progress) | A server-wide storm; weather is currently always sunny | 49 / 149 |
 | **Sea Chests** (planned) | Cosmetic-only random chest, odds shown | — |
 
@@ -45,16 +47,17 @@ Mayday sells **time, looks and shared fun**, never skill.
 |---|---|
 | **Shop** (left column) | Passes, Cash packs, boosts, day passes, cosmetics. |
 | **Market stall** (hub) | The shop counter; same catalogue, in-world. |
-| **The build station / tablet** (your island) | Dock levels, hangar, sub pen, spare lots. |
+| **The build station / tablet** (your island) | Island buildings (Robux button once the prerequisites stand). |
 | **The boat board** (boathouse) | Choosing an owned craft; pass-owned craft appear here. |
 | **The harbourmaster's shack** (hub) | Storm Summons, when storms ship. |
-| **The paint booth** (dock Lv3) | Liveries and vehicle cosmetics. |
+| **The paint booth** (boathouse) | Liveries and vehicle cosmetics. |
 
 - A purchase card shows the exact effect, the exact price from `MarketplaceService`, and the owned state. No
   hard-coded prices in the UI.
-- Dock levels and buildings skip Cash and rank, but **do not grant Rep or a rank promotion**. A Lv5 dock at
-  Recruit is possible; the rank's reach and crew join are not.
-- Craft passes own the craft at any rank; the boat board is where it is chosen. Reach remains capped by rank.
+- Buildings skip the Cash, never their prerequisites. Workers' buildings, the crane, the helipad and decor are Cash
+  only for now (no product yet).
+- Craft passes own the craft; the Shop and the boat board grey the button with "Needs: X" until its building
+  stands. A pass bought elsewhere (the website) still launches. Reach = the best craft you can launch.
 
 ## 4. Passes
 
@@ -62,7 +65,7 @@ Mayday sells **time, looks and shared fun**, never skill.
 
 | Pass | Price | Effect | Fairness |
 |---|---:|---|---|
-| **2x Cash** | 75 | 2x Cash from every rescue. | No Rep. Does not stack with Cash Boost; the higher applies. |
+| **2x Cash** | 75 | 2x Cash from every rescue. | Does not stack with Cash Boost; the higher applies. |
 | **Quick Launch** | 49 | No Boat to me wait; launch an owned craft straight into the seat. | Never changes survivors, timers or grades. |
 | **Starter Kit** | 25 | 3,000 Cash once; Station Orange livery and a Bosun bandana in a later update. | The Cash is about 12 minutes of play, not a shortcut up the ladder. |
 | **VIP Crew Card** (in progress) | 299 | Gold nameplate, gold livery for every vehicle. | Cosmetic only. No extra seats, pay or reach. |
@@ -73,7 +76,7 @@ Mayday sells **time, looks and shared fun**, never skill.
 |---|---:|---|---|
 | **RIB** | 49 | RIB, 3 seats | Same handling as the earned RIB; no extra reach. |
 | **Lifeboat** | 129 | Lifeboat, 4 seats / 8 survivors | Same handling; no extra reach. |
-| **Submarine** | 249 | Submarine, 2 seats | The only diver craft; reach stays rank-capped. |
+| **Submarine** | 249 | Submarine, 2 seats | The only diver craft; needs the sub pen. |
 | **Rescue Helicopter** | 399 | Helicopter, 2 seats, winch | No hangar needed to use it; the hangar is still the island flex. |
 
 ### 4.3 Premium boats
@@ -116,9 +119,9 @@ is required to read a call.
 | **Station Budget** | 75 | 16,500 (2.5 h) | +10% | 5 per account per day |
 | **Harbor Fund** | 149 | 50,400 (7 h) | +20% | 5 per account per day |
 
-- Packs pay Cash only, never Rep. The card shows the exact Cash before purchase.
-- The launch rate is the Calm-water rate (6,000 Cash/hour). As the player's rank opens farther water, packs scale
-  with that tier. At launch the pack rate is below the play rate; retune any tier that would make a pack faster
+- Packs pay Cash only. The card shows the exact Cash before purchase.
+- The launch rate is the Calm-water rate (6,000 Cash/hour). Packs pay the best live zone's rate (only Calm water at
+  launch). At launch the pack rate is below the play rate; retune any tier that would make a pack faster
   than playing.
 - The daily limit is five pack purchases per account, shared across the four packs.
 - Cash packs are the only direct Cash purchase; the Starter Kit includes a one-time Cash grant. There is no Cash
@@ -134,23 +137,23 @@ is required to read a call.
 | **Day Quick Launch** | 10 | The Quick Launch effect | 24 real hours; buying again adds a day. |
 
 - Cash Boost and the 2x Cash pass do not stack; the higher multiplier applies.
-- Crew Boost benefits the whole crew. It never applies to Rep.
+- Crew Boost benefits the whole crew.
 - A day pass is a rental, clearly labelled. No Day VIP until the VIP pass itself is ready.
 - Boosts never apply to quests, Album finds, the streak crate or Cash packs.
 
-### 5.3 Dock levels and buildings
+### 5.3 Island buildings
 
-| Item | Price | Builds | Rank/Cash skipped |
+| Item (product key) | Price | Builds | Needs first |
 |---|---:|---|---|
-| **Dock Level 2** | 49 | Pontoon, lamps, flag, rescue board | Yes; still no Rep. |
-| **Dock Level 3** | 99 | Boathouse, boat board, paint booth | Yes. |
-| **Dock Level 4** | 199 | Lookout tower, slipway crane | Yes. |
-| **Dock Level 5** | 399 | Station front, beacon, trophy hall | Yes; the Lv5 flex at any rank. |
-| **Helipad and Hangar** | 199 | Helipad, hangar, hangar board | Needs dock Lv3; skips Cash and rank. |
-| **Sub Pen** | 149 | Sub pen, sub board | Needs dock Lv1; skips Cash and rank. |
+| **Pontoon** (`DockLevel2`) | 49 | Pontoon, lamps, flag, rescue board | — |
+| **Boathouse** (`DockLevel3`) | 99 | Boathouse, boat board, paint booth | Workshop |
+| **Lookout Tower** (`DockLevel4`) | 79 | Lookout tower | Pontoon |
+| **Station** (`DockLevel5`) | 199 | Station front, beacon | Boathouse, Lookout tower |
+| **Hangar** (`DockHangar`) | 199 | Hangar, hangar board | Helipad |
+| **Sub Pen** (`DockSubPen`) | 149 | Sub pen, sub board | Crane |
 
-Robux dock levels are live. They are the clearest "skip the wait" purchase and the one the player can show off
-immediately. They do not change the rank ladder.
+The product keys and ids are the old dock levels' (WP-28); the Creator Hub names and prices need a sync. Every
+price is at least the Cash packs' price for that Cash (docs/23 (i)).
 
 ### 5.4 Storm Summons (in progress)
 
@@ -161,27 +164,26 @@ immediately. They do not change the rank ladder.
 
 - Weather is currently always sunny (`StormService.ALWAYS_SUNNY`), so these are **not live**. When they ship:
   - the storm is server-wide and everyone can join the rescues;
-  - storm calls pay 1.5x Cash (Great Storm 2x Cash); Rep is unchanged;
+  - storm calls pay 1.5x Cash (Great Storm 2x Cash);
   - the buyer is credited; one storm at a time; purchases join a queue.
 - No natural storm cycle. A storm exists only because a player called one. This replaces the retired storm season.
 
 ### 5.5 Sea Chests (planned)
 
-- Cosmetic only. No Cash, no Rep, no craft, no reach.
+- Cosmetic only. No Cash, no craft, no reach.
 - Odds and duplicate handling are shown before purchase.
 - No keys, no timed offers, no "chest only" power.
 
 ## 6. Fairness rules
 
-1. **Never sell skill.** Grades, timers, survivor counts, call reach and rank promotions are earned.
-2. **Never sell Rep.** No 2x Rep, Rep pack, Sea Time, Fast-Track or "rank skip" product exists.
-3. **Paid rank gates are skips, not promotions.** A Robux dock or craft can be used early; the rank itself still
-   needs Rep.
+1. **Never sell skill.** Grades, timers, survivor counts and call reach are earned.
+2. **Never sell the order.** Robux skips the Cash of a building or craft whose prerequisites stand, nothing more.
+3. **No ranks.** There is nothing to promote and nothing to skip but Cash (docs/23 (q)).
 4. **Packs are a convenience, not a better hourly rate.** Retune any tier where a pack would out-earn play.
 5. **No pressure.** No countdown, no pop-up, no offer during a call, no offer on the call card.
 6. **Random is cosmetic.** Sea Chests are the only random purchase, and they are planned, odds-shown and
    cosmetic-only.
-7. **A free player can be top of the server.** The rank ladder, the beacon and the rescuer monument are open to
+7. **A free player can be top of the server.** The whole tree, the beacon and the rescuer monument are open to
    everyone; only looks and time are sold.
 8. **State the number.** Every multiplier is written on the card: 2x, +50%, +10%, 24 hours.
 
@@ -200,7 +202,7 @@ immediately. They do not change the rank ladder.
 
 ## 8. What is not sold
 
-- Rep, ranks, grades, call reach, survivor counts, faster timers, better RNG.
+- Grades, call reach, survivor counts, faster timers, better RNG, a skip of the unlock order.
 - Certifications, gear, upgrades, fuel, repairs, crew skill, challenge rerolls.
 - 2x Rep, Rep Boost, Sea Time, Fast-Track, Signature vehicles, Season Logbook.
 - Cars, ATVs, seaplanes, the garage or any retired vehicle.
@@ -209,7 +211,7 @@ immediately. They do not change the rank ladder.
 
 ## 9. Price ceiling and review
 
-- No item costs more than 399 Robux. The top of the ladder is the helicopter, the Lv5 dock and VIP; each is a
+- No item costs more than 399 Robux. The top of the ladder is the helicopter and VIP; each is a
   clear, visible thing, not a stat.
 - Prices are reviewed with the pacing sim and the live conversion data. A price change updates this file, the
   config and the store card together.

@@ -26,6 +26,7 @@ local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 
 local CosmeticsService = require(script.Parent.CosmeticsService)
 local DataService = require(script.Parent.DataService)
+local DockService = require(script.Parent.DockService)
 local DogService = require(script.Parent.DogService)
 local LiveOpsService = require(script.Parent.LiveOpsService)
 local MonetizationService = require(script.Parent.MonetizationService)
@@ -311,13 +312,18 @@ local handlers: { [string]: (dev: Player, target: Player?, args: { any }) -> (bo
 		award = function(_, target, a)
 			return edit(target :: Player, function(data)
 				data.cash += math.floor(a[2])
-				data.rep += math.floor(a[3])
 			end)
 		end,
-		rank = function(_, target, a)
-			return edit(target :: Player, function(data)
-				data.rep = ProgressionConfig.Ranks[math.floor(a[2])].rep
+		build = function(_, target, a)
+			local ok, msg = edit(target :: Player, function(data)
+				for _, key in DevConfig.Buildings do
+					if key ~= "All" and (a[2] == "All" or a[2] == key) then
+						data.dockBuildings[key] = true
+					end
+				end
 			end)
+			DockService.Refresh(target :: Player)
+			return ok, msg
 		end,
 		unlockAll = function(_, target)
 			return unlockAll(target :: Player)

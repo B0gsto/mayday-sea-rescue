@@ -6,7 +6,7 @@
 --   BadgeRules.apply(counters, increments) -> { badgeKey }                  bumps counters, returns badges whose
 --                                                                           threshold was reached (now or before)
 --   BadgeRules.once(counters, key, token) -> { [string]: number }           increments that count a token once
---   BadgeRules.rankBadges(rankIndex, rankIds) -> { badgeKey }               rank badges at or below a rank
+--   BadgeRules.rescuedBadges(total) -> { badgeKey }                         rescued badges reached at `total` people
 --   BadgeRules.completed(snap) -> boolean                                   the op finished (not failed/taken over)
 --   BadgeRules.trophies(counters, awarded) -> { badgeKey }                  rescue milestones reached (dock trophy hall)
 
@@ -133,16 +133,13 @@ function BadgeRules.trophies(
 	return out
 end
 
--- rankIds: ProgressionConfig rank ids in order (index 1 = Recruit). Every rank badge at or below rankIndex.
-function BadgeRules.rankBadges(rankIndex: number, rankIds: { string }): { string }
+-- Every rescued badge whose people-rescued milestone `total` (data.totalRescues) has reached.
+function BadgeRules.rescuedBadges(total: number): { string }
 	local due: { string } = {}
 	for _, key in BadgeConfig.Order do
-		local b = BadgeConfig.Badges[key]
-		if b.rank then
-			local at = table.find(rankIds, b.rank)
-			if at and rankIndex >= at then
-				table.insert(due, key)
-			end
+		local at = BadgeConfig.Badges[key].rescued
+		if at and total >= at then
+			table.insert(due, key)
 		end
 	end
 	return due

@@ -61,6 +61,12 @@ then launch place (server size 6, products created there). In parallel now: ocea
 
 Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
 
+- **WP-28 done (awaiting merge)**: ranks/Rep gone; tree in `DockConfig.Buildings`, rules `shared/UnlockTree`;
+  old dock levels migrate. Follow-ups: sync the renamed dock products (DockLevel2..5 = Pontoon / Boathouse / Lookout
+  / Station, new prices) and rename the 5 rank badges in Creator Hub (now 10/50/200/500/2,000 rescued); Robux
+  products for the Cash-only buildings (workshop, crane, helipad, workers) if wanted; worker-building spots need a
+  look after the WP-24/27 plates.
+
 - ~~**WP-27 ring layout**~~ done on branch `worktree-agent-ab2f6537443b69f26` (awaiting merge; docs/23 (p) "Done"):
   hub removed, ring at 470, neighbour bridges, quest pontoon + tablet + boats, rip/ferry moved, own-berth home, map
   tiles re-uploaded (moderation "Reviewing"). Open: the cold-open arrival cinematic was hub-only (deleted), pet nap

@@ -3,7 +3,7 @@
 -- owner's station (an R15 line via NpcFactory, everyone sees them) and are replaced by a new
 -- group every 20 minutes (CrewHire.groupIndex on os.time). The client (CrewHireController)
 -- draws the role glyph + skill stars billboard, the Hire / Close card and the clock above the
--- station door. Hiring goes through Crew_Hire (Cash + the dock Lv 5 / Coxswain gate); Crew_Fire
+-- station door. Hiring goes through Crew_Hire (Cash + the Station built); Crew_Fire
 -- removes one. The daily wage is taken off data.cash when the profile loads (each session
 -- starts), never below 0. Hired crew tween to their spot and idle there: Mechanic in the
 -- boathouse, Lifeguard at the beach tower, Dispatcher seated in the station. The effects are
@@ -234,7 +234,7 @@ local function hire(player: Player, role: string): (boolean, string)
 	if not data then
 		return false, "Loading"
 	end
-	if not CrewHire.unlocked(data.dockLevel, ProgressionRules.rankIndex(data)) then
+	if not CrewHire.unlocked(data.dockBuildings) then
 		return false, "Locked"
 	end
 	local st = states[player]
@@ -313,7 +313,7 @@ local function clearState(player: Player)
 	end
 end
 
--- The 5-second heartbeat: unlocks on dock level 5 + rank, rotates the line every 20 minutes,
+-- The 5-second heartbeat: unlocks with the Station, rotates the line every 20 minutes,
 -- and keeps the hired crew in the world while the owner is in the server.
 local function sync(player: Player)
 	local data = DataService.Get(player)
@@ -321,7 +321,7 @@ local function sync(player: Player)
 		return
 	end
 	player:SetAttribute("CrewMechanic", data.crew.Mechanic == true) -- the client's Boat to me ring
-	if not CrewHire.unlocked(data.dockLevel, ProgressionRules.rankIndex(data)) then
+	if not CrewHire.unlocked(data.dockBuildings) then
 		clearState(player)
 		return
 	end

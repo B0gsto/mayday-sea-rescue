@@ -1,4 +1,4 @@
--- docs/23 (h), WP-10a: the hangar and sub pen craft are registered (config, ranks, Robux) and each boards
+-- docs/23 (h), WP-10a: the hangar and sub pen craft are registered (config, their building, Robux) and each boards
 -- people by its own rule (Ops/CraftBoard).
 return function(t)
 	local VehicleConfig = t.load("src/shared/Config/VehicleConfig.luau")
@@ -7,17 +7,17 @@ return function(t)
 	local CraftBoard = t.load("src/shared/Ops/CraftBoard.luau")
 	local Board = t.load("src/shared/Ops/Board.luau")
 
-	t.test("registered with rank, Cash and a Robux pass", function()
+	t.test("registered with their building, Cash and a Robux pass", function()
 		local want = {
-			RescueHelicopter = { kind = "Heli", rank = 5, price = 75000 },
-			Submarine = { kind = "Sub", rank = 4, price = 40000 },
+			RescueHelicopter = { kind = "Heli", needs = "Hangar", price = 55000 },
+			Submarine = { kind = "Sub", needs = "SubPen", price = 40000 },
 		}
 		for _, id in VehicleConfig.CraftOrder do
 			local spec = VehicleConfig.get(id)
 			t.expect(spec.craft).toBe(want[id].kind)
 			t.expect(table.find(VehicleConfig.Order, id)).toBeNil() -- not a boat launch
 			local unlock = ProgressionConfig.Vehicles[id]
-			t.expect(unlock.rankIndex).toBe(want[id].rank)
+			t.expect(unlock.needs).toBe(want[id].needs)
 			t.expect(unlock.price).toBe(want[id].price)
 			t.expect(Rules.vehiclePass(id) ~= nil).toBe(true)
 		end
