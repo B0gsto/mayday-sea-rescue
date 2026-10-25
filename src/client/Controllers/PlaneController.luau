@@ -19,6 +19,7 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BoatController = require(script.Parent.BoatController)
 local Flight = require(Shared:WaitForChild("Plane"):WaitForChild("Flight"))
 local Glyph = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("Glyph"))
 local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
@@ -186,6 +187,7 @@ local function step(dt: number)
 	local s = state :: Flight.State
 	local spec = Flight.get(m:GetAttribute("VehicleId")) :: Flight.Spec
 	local seat = pilotSeat(m) :: VehicleSeat
+	BoatController.EngageControls(seat) -- the default vehicle controls drive the seat's throttle
 	local root = m.PrimaryPart :: BasePart
 	local v, a = movers(m)
 	if not (v and a) then

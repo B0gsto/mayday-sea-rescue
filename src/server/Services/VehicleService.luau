@@ -61,6 +61,7 @@ local VehicleRecovery = require(Shared:WaitForChild("VehicleRecovery"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
 local Weather = require(Shared:WaitForChild("Weather"))
 
+local Craft = require(script.Parent:WaitForChild("Vehicle"):WaitForChild("Craft"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DockService = require(script.Parent:WaitForChild("DockService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
@@ -456,6 +457,7 @@ local function onDriverChanged(record: Record)
 			Telemetry.Vehicle(player, "Boarded", record.spec.id) -- analytics H5
 		end
 		record.model:SetAttribute("EngineRunning", true)
+		Craft.clear(record.model)
 		record.mode = "Driven"
 		record.root.Anchored = false
 		setOwner(record.root, player)
@@ -468,7 +470,11 @@ local function onDriverChanged(record: Record)
 			record.model:SetAttribute("EngineRunning", false)
 			record.model:SetAttribute("KillCordPulledAt", Workspace:GetServerTimeNow())
 		end
-		if nearestBay(record.root.Position, DOCK_RADIUS) and not towTargets[record.model] then
+		if
+			record.spec.craft ~= "Heli" -- an empty heli lands itself (Craft.idle)
+			and nearestBay(record.root.Position, DOCK_RADIUS)
+			and not towTargets[record.model]
+		then
 			dock(record)
 		else
 			drift(record)
@@ -662,7 +668,7 @@ local function policyState(record: Record): RespawnPolicy.State
 		docked = record.mode == "Dock",
 		current = byPlayer[record.owner] == record,
 		wrecked = record.model:GetAttribute("Wrecked") == true
-			or pos.Y < MIN_Y
+			or (record.spec.craft == nil and pos.Y < MIN_Y)
 			or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200,
 		ownerDistance = if ownerPos then (ownerPos - pos).Magnitude else nil,
 		idleScale = Crowding.scale(#Players:GetPlayers()),
@@ -798,7 +804,7 @@ local function createVehicle(
 
 	local mask = upgradeMask(player, spec.id)
 	local fitted = VehicleUpgrades.apply(spec, mask)
-	local model = Builder.build(fitted, visuals)
+	local model = if spec.craft then Craft.build(fitted) else Builder.build(fitted, visuals)
 	model:SetAttribute("VehicleUpgrades", mask)
 	dressUpgrades(model, fitted, mask)
 	if visuals then
@@ -810,7 +816,9 @@ local function createVehicle(
 	model:SetAttribute("Owner", player.UserId)
 	model:SetAttribute("SpeedMultiplier", speedBonus(player))
 	model:SetAttribute("EngineRunning", false)
-	model:PivotTo(Simulator.restCFrame(model, at.X, at.Z, at.LookVector))
+	model:PivotTo(if spec.craft == "Heli"
+		then Craft.heliLaunch(model, at) -- hovering just over the berth (a helipad: WP-10b)
+		else Simulator.restCFrame(model, at.X, at.Z, at.LookVector))
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.CollisionGroup = BOAT_GROUP
@@ -898,7 +906,7 @@ local function spawnLocked(
 		return false, "BayNotAllowed"
 	end
 	-- seated: afloat in open water off the bay, clear of every other vehicle (docs/20 rule 7)
-	local launchAt = if docked
+	local launchAt = if docked or spec.craft == "Heli"
 		then nil
 		else (near and nearLaunch(spec, player)) or launchCFrame(at, spec, player)
 	if not launchAt and not target and bayBusy(at, player) then
@@ -971,7 +979,9 @@ local function resetVehicle(record: Record, reason: string, target: CFrame?)
 	local root = record.root
 	setOwner(root, nil)
 	local good = target or record.lastGood
-	local to = Simulator.restCFrame(record.model, good.X, good.Z, good.LookVector)
+	local to = if record.spec.craft
+		then good -- flying or diving craft keep their height
+		else Simulator.restCFrame(record.model, good.X, good.Z, good.LookVector)
 	local function settle()
 		record.model:PivotTo(to)
 		if record.mode ~= "Dock" then
@@ -1237,7 +1247,7 @@ local function checkVehicle(record: Record, dt: number)
 			record.model:GetAttribute(BYPASS_ATTRIBUTE) == true
 			or Workspace:GetAttribute(BYPASS_ATTRIBUTE) == true
 		)
-	local fine = bypass or recoverBoat(record, dt)
+	local fine = bypass or record.spec.craft ~= nil or recoverBoat(record, dt) -- boats only
 	if records[record.model] ~= record or record.mode ~= "Driven" or record.resetting then
 		return
 	end
@@ -1255,8 +1265,7 @@ local function checkVehicle(record: Record, dt: number)
 		Telemetry.Vehicle(record.owner, "Underway", record.spec.id)
 	end
 	local moved = flatDistance(pos, record.lastGood.Position)
-	local outOfBounds = pos.Y > MAX_Y
-		or pos.Y < MIN_Y
+	local outOfBounds = (record.spec.craft == nil and (pos.Y > MAX_Y or pos.Y < MIN_Y))
 		or Vector2.new(pos.X, pos.Z).Magnitude > GameConfig.MapRadius + 200
 	if outOfBounds then
 		resetVehicle(record, "out of bounds")
@@ -1279,13 +1288,15 @@ local function towerDriven(model: Model): boolean
 	return tower ~= nil and tower.driver ~= nil
 end
 
-local function simulateServerOwned()
+local function simulateServerOwned(dt: number)
 	local now = Workspace:GetServerTimeNow()
 	for model, record in records do
 		if not model.Parent then
 			records[model] = nil
 		elseif (record.mode == "Drift" and not towerDriven(model)) or record.resetting then
-			Simulator.step(model, 0, 0, now)
+			if not Craft.idle(model, record.spec, dt) then
+				Simulator.step(model, 0, 0, now)
+			end
 		end
 	end
 	for target, tower in towTargets do
@@ -1310,7 +1321,9 @@ local function publishPreviews()
 		previews.Name = "VehiclePreviews"
 		previews.Parent = ReplicatedStorage
 	end
-	for _, id in VehicleConfig.Order do
+	local ids = table.clone(VehicleConfig.Order)
+	table.move(VehicleConfig.CraftOrder, 1, #VehicleConfig.CraftOrder, #ids + 1, ids) -- + the hangar craft
+	for _, id in ids do
 		local ok, model = pcall(VehicleService.BuildProp, id)
 		if ok and model then
 			model.Name = id
@@ -1399,7 +1412,12 @@ local function stowVehicle(player: Player): string
 	end
 	VehicleService.DetachTow(record.model)
 	local bay = bayFor(player)
-	if bay and bayAllows(bay, record.spec.id) and not bayBusy(bay, player) then
+	if
+		bay
+		and record.spec.craft ~= "Heli"
+		and bayAllows(bay, record.spec.id)
+		and not bayBusy(bay, player)
+	then
 		record.model:PivotTo(
 			Simulator.restCFrame(
 				record.model,
@@ -1795,7 +1813,7 @@ function VehicleService.BuildProp(vehicleId: string): Model?
 	if not spec then
 		return nil
 	end
-	local model = Builder.build(spec, visualsFor(spec))
+	local model = if spec.craft then Craft.build(spec) else Builder.build(spec, visualsFor(spec))
 	for _, d in model:GetDescendants() do
 		if d:IsA("BasePart") then
 			d.Anchored = true

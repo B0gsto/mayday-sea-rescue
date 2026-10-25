@@ -411,6 +411,34 @@ local MonetizationConfig = {
 			ready = true,
 			vehicle = "LighthouseCruiser",
 		},
+		-- docs/23 (h): the hangar and sub pen craft, any rank. deploy.py creates them (id 0 until then).
+		RescueHelicopterPass = {
+			id = 0,
+			name = "Rescue Helicopter",
+			description = "The Rescue Helicopter: hover over anyone, sea or cliff, and winch them up. Yours at any rank.",
+			price = 299,
+			order = 24,
+			ready = true,
+			vehicle = "RescueHelicopter",
+		},
+		SeaplanePass = {
+			id = 0,
+			name = "Seaplane",
+			description = "The Seaplane: the fastest way to far islands, lands on the water for 4 survivors. Yours at any rank.",
+			price = 299,
+			order = 25,
+			ready = true,
+			vehicle = "Seaplane",
+		},
+		SubmarinePass = {
+			id = 0,
+			name = "Submarine",
+			description = "The Submarine: dive to the seabed and the wrecks, bring divers home. Yours at any rank.",
+			price = 249,
+			order = 26,
+			ready = true,
+			vehicle = "Submarine",
+		},
 	} :: { [string]: Item },
 
 	-- docs/04 section 4.1: five Cash pack purchases per account per day (tune). Enforced by the shelf (RP-M3).

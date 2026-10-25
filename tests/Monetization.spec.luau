@@ -32,6 +32,10 @@ return function(t)
 			GildedGullPass = 199,
 			HarbourGTPass = 179,
 			LighthouseCruiserPass = 149,
+			-- docs/23 (h) craft
+			RescueHelicopterPass = 299,
+			SeaplanePass = 299,
+			SubmarinePass = 249,
 		},
 		Products = {
 			SmallBonus = 10,

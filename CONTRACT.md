@@ -95,6 +95,13 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   your current or last craft to the open water nearest you first) float the craft in open water off the player's berth, bow to sea, never overlapping a vehicle. Off your craft: `[E] Board` from 30
   studs and a `CraftPin` billboard (seat pips); berth Launch hides locally while you have a craft out and on
   other players' berths. With no craft, point the craft pin at `BayCFrame`.
+- Hangar and sub pen craft (docs/23 h): `VehicleConfig.CraftOrder` (RescueHelicopter, Seaplane, Submarine;
+  `spec.craft` = Heli / Plane / Sub; `VehicleConfig.Order` stays boats only). Built and idled by
+  `Services/Vehicle/Craft` (an empty heli auto-lands to its hover floor, an empty sub holds depth, a parked
+  seaplane floats on the boat rig); a heli launches hovering over the berth. Who boards which craft:
+  `Ops/CraftBoard.ready` (heli winch, seaplane only on the water, sub ring; boats `Board.ready`), used by
+  `AmbientRescueService.StepBoarding` and `auto_board`. A local `Airborne` model attribute (Heli/Plane
+  controllers) blocks stepping out mid-air (VehicleExitController, OpsController).
 - Crowding (`src/shared/Crowding.luau`, `tests/Crowding.spec.luau`): player boats are collision group
   `PlayerBoat` (ghost through each other and cars, BoatController eases them apart); idle-despawn
   timers, NPC traffic and small moored boats scale by `Crowding.scale(players)`; a boat on land / car

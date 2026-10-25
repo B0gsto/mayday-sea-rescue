@@ -13,14 +13,17 @@
 -- it, elapsed); events: bump.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
 local Step = require(script.Parent.PIW.Step)
 local Ui = require(script.Parent.PIW.Ui)
 local Units = require(script.Parent.PIW.Units)
 local World = require(script.Parent.PIW.World)
 
-local Board =
-	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops"):WaitForChild("Board"))
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
+local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
+local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
 local AutoBoard = {}
 
@@ -94,7 +97,19 @@ function AutoBoard.start(
 		end
 		ring.Enabled = room and gap <= Board.REACH * 2
 		ring.OutlineColor = if held > 0 then GREEN else WHITE
-		if Board.ready(gap, speed, tilt, room) then
+		local at = h.position
+		if
+			CraftBoard.ready( -- the server's rule (AmbientRescueService): heli winch, seaplane on the water
+				craft and craft:GetAttribute("VehicleId"),
+				at,
+				h.beam / 2,
+				cas,
+				speed,
+				tilt,
+				room,
+				Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow())
+			)
+		then
 			held += dt
 			if held >= Board.HOLD then
 				Ui.hands("reach_casualty")

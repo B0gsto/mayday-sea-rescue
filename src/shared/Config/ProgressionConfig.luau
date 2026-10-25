@@ -79,9 +79,11 @@ ProgressionConfig.ServiceStarStep = 30000
 ProgressionConfig.Vehicles = {
 	JetSki = { rankIndex = 1, price = 0 },
 	RIB = { rankIndex = 2, price = 2500 }, -- tune: affordable ~15 to 20 min in (docs/16 B4)
-	-- docs 03 section 4: data only until the hull and the helicopter exist (no rows in VehicleConfig).
 	Lifeboat = { rankIndex = 4, price = 12000 }, -- tune
+	-- docs/23 (h): the hangar and sub pen craft; each also has a Robux pass (any rank, docs/23 rule 4).
 	RescueHelicopter = { rankIndex = 5, price = 75000 }, -- tune
+	Seaplane = { rankIndex = 5, price = 60000 }, -- tune
+	Submarine = { rankIndex = 4, price = 40000 }, -- tune
 	-- docs 10 section 3: land vehicles are free station pool vehicles gated by rank. The Ambulance
 	-- is an NPC handover point until [P1], so it is not listed (not player-drivable).
 	LifeguardPickup = { rankIndex = 1, price = 0, land = true },
