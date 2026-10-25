@@ -6,7 +6,6 @@ docs/12 section 1). Run by hand after every upload batch, from the repo root or 
 
 Writes
   src/shared/Config/AssetIds.luau          Models[<asset>][LOD0|LOD1|LOD2] = "rbxassetid://N",
-                                           Textures[<asset>][<set>] = {ALB, NOR, RGH, MET, Wet = {...}},
                                            Attachments[<asset>][ATT_*] = Vector3 (studs, from the authored
                                            pivot, from assets/fbx/<asset>/<asset>.attachments.json)
   src/server/Assets/Appearances.model.json a Folder per asset, a Folder per texture set, holding the
@@ -37,9 +36,35 @@ MAPS = {"ALB": "ColorMap", "NOR": "NormalMap", "RGH": "RoughnessMap", "MET": "Me
 # The default, Overlay, shows the part Color through alpha 0, so the G1 plant cards rendered flat white.
 ALPHA_TRANSPARENCY = ("M_Veg_",)
 # Single texture sets that are alpha cards inside an otherwise opaque asset: (asset, set).
-ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Road_Ribbon", "Markings"), ("M_Bld_Cottage_Kit", "Grime"), ("M_Sea_Morwenna", "Kelp"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Veh_GaleQueen", "Decals")}  # Morwenna kelp cards (S1a); anchor sand bed alpha rim (POL2); Bosun fur cards (DogService); station H3 grime decals; cottage H3b grime decals
+ALPHA_TRANSPARENCY_SETS = {("M_Chr_Bosun", "Fur"), ("M_Bld_Station", "Grime"), ("M_Hbr_PropAtlas", "Rope"), ("M_Bld_Cottage_Kit", "Grime"), ("M_Sea_Morwenna", "Kelp"), ("M_Sea_AdmiraltyAnchor", "Sand"), ("M_Veh_GaleQueen", "Decals")}  # Morwenna kelp cards (S1a); anchor sand bed alpha rim (POL2); Bosun fur cards (DogService); station H3 grime decals; cottage H3b grime decals
 FX_RE = re.compile(r"^assets/textures/FX/(FX_\w+)\.png$")  # FX1 / FX2 flipbooks and foam maps (docs/12 2.11)
 TEX_RE = re.compile(r"^assets/textures/(M_\w+?)/T_\w+?_([A-Za-z][A-Za-z0-9]*(?:_\d+)?)_(ALB|NOR|RGH|MET)(_Wet)?\.png$")
+
+# WP-16 asset diet (docs/23 (j)): assets nothing in src/ or map/ loads (cut cars, town, kits, spikes; scan before
+# adding one back) are left out of both outputs; their uploads stay in the manifest
+DROP = {
+    "M_Bld_BoatyardShed", "M_Bld_Chandlery_Ext", "M_Bld_Chandlery_Int", "M_Bld_Cottage_01", "M_Bld_Cottage_03",
+    "M_Bld_Cottage_04", "M_Bld_Cottage_05", "M_Bld_Cottage_06", "M_Bld_HarbourLight", "M_Bld_Harbourmaster",
+    "M_Bld_Hospital", "M_Bld_LifeguardTower", "M_Bld_Slipway", "M_Bld_Station", "M_Chr_Casualty_Swimmer",
+    "M_Chr_Casualty_Swimmer_Rig", "M_Chr_HumanBase_F", "M_Chr_HumanBase_M", "M_Hbr_Bollard_03", "M_Hbr_Cleat_01",
+    "M_Hbr_Cleat_02", "M_Hbr_Fender_Ball", "M_Hbr_Fender_Cyl_01", "M_Hbr_Fender_Cyl_02", "M_Hbr_Fender_Cyl_03",
+    "M_Hbr_Pontoon", "M_Hbr_Pontoon_Corner", "M_Hbr_Pontoon_Finger", "M_Hbr_Pontoon_Gangway",
+    "M_Hbr_Pontoon_Straight12", "M_Hbr_Pontoon_Straight6", "M_Hbr_QuayKit_Armour", "M_Hbr_QuayKit_Corner",
+    "M_Hbr_QuayKit_Steps", "M_Hbr_Rope_Chain", "M_Hbr_Rope_Flaked", "M_Hbr_TravelHoist", "M_Kit_Atlas",
+    "M_Kit_Bridle", "M_Kit_ChartTablet", "M_Kit_FirstAidBag", "M_Kit_HandFlare", "M_Kit_HeavingLine",
+    "M_Kit_Lifebuoy", "M_Kit_LineKnife", "M_Kit_OxygenBag", "M_Kit_ParaFlare", "M_Kit_RescueTube",
+    "M_Kit_StretcherBasket", "M_Kit_Strobe", "M_Kit_ThermalBlanket", "M_Kit_ThermalBlanketDraped", "M_Kit_ThrowBag",
+    "M_Kit_ThrowLine", "M_Kit_TriageTags", "M_Kit_VHFHandset", "M_Prop_Chandlery", "M_Prop_Chandlery_Stock",
+    "M_Road_Bench", "M_Road_Bin", "M_Road_Bollard", "M_Road_CornishHedge", "M_Road_CrashBarrier",
+    "M_Road_DryStoneWall", "M_Road_FieldGate", "M_Road_ParkedCar_01", "M_Road_ParkedCar_02", "M_Road_ParkedCar_03",
+    "M_Road_Ribbon", "M_Road_Sign_Kit", "M_Road_StreetLamp", "M_Rock_Cliff_06", "M_Rock_Cliff_07", "M_Rock_Cliff_08",
+    "M_Rock_IslandProxy_Kit", "M_Rock_Ledge_04", "M_Rock_NeedlesEye", "M_Sea_BottleField", "M_Sea_LostPot",
+    "M_Sea_MooringBlock", "M_Spike1_RefBox", "M_Spike1_ScaleCube", "M_Spike1_Tentacle20", "M_Spike1_Tentacle40",
+    "M_Spike1_TexPlane", "M_Spike1_Tris09990", "M_Spike1_Tris19990", "M_Spike1_Tris20500", "M_Spike1_Tris21500",
+    "M_Spike1_Tris30000", "M_Veg_Eelgrass_Kit", "M_Veg_Wrack_Kit", "M_Veh_ATV", "M_Veh_Ambulance",
+    "M_Veh_BoatTrailer_JetSki", "M_Veh_BoatTrailer_RIB", "M_Veh_Coastguard4x4", "M_Veh_HarbourGT", "M_Veh_Kayak",
+    "M_Veh_LifeguardPickup", "M_Veh_LighthouseCruiser", "M_Veh_Optimist", "M_Veh_Paddleboard",
+}
 
 RIG_SETS = ("Atlas",)  # texture sets a rigged (single skinned MeshPart) asset keeps
 
@@ -102,13 +127,14 @@ def main():
                 lod = s[1] if s else "LOD0"
             if base.endswith("_RigRaw"):  # a rigged re-upload (new version) of an asset's LOD0
                 base = base[: -len("Raw")]
-            models.setdefault(base, {})[lod] = e["assetId"]
+            if base not in DROP:
+                models.setdefault(base, {})[lod] = e["assetId"]
         elif kind == "Image":
             f = FX_RE.match(src)
             if f and e.get("imageId"):
                 fx[f[1]] = e["imageId"]
             r = TEX_RE.match(src)
-            if r and e.get("imageId"):
+            if r and e.get("imageId") and r[1] not in DROP:
                 s = textures.setdefault(r[1], {}).setdefault(r[2], {})
                 (s.setdefault("Wet", {}) if r[4] else s)[r[3]] = e["imageId"]
 
@@ -137,7 +163,7 @@ def main():
     out = [
         "--!strict",
         "-- GENERATED by tools/gen_asset_ids.py from assets/manifest.json. Do not edit; re-run the tool.",
-        "-- Models[asset][LOD] and Textures[asset][set][map] are asset URIs; Attachments[asset][ATT_*] are",
+        "-- Models[asset][LOD] are asset URIs; Attachments[asset][ATT_*] are",
         "-- positions in studs from the asset's authored pivot (Blender origin, upright, forward -Z).",
         "",
         "local AssetIds = {}",
@@ -147,16 +173,8 @@ def main():
     for base in sorted(models):
         lods = ", ".join(f"{k} = {uri(v)}" for k, v in sorted(models[base].items()))
         out.append(f"\t{base} = {{ {lods} }},")
-    out += ["} :: { [string]: { [string]: string } }", "", "AssetIds.Textures = {"]
-    for asset in sorted(textures):
-        out.append(f"\t{asset} = {{")
-        for name, s in sorted(textures[asset].items()):
-            maps = [f"{k} = {uri(s[k])}" for k in MAPS if k in s]
-            if s.get("Wet"):
-                maps.append("Wet = { " + ", ".join(f"{k} = {uri(s['Wet'][k])}" for k in MAPS if k in s["Wet"]) + " }")
-            out.append(f"\t\t{name} = {{ " + ", ".join(maps) + " },")
-        out.append("\t},")
-    out += ["} :: { [string]: { [string]: any } }", "", "AssetIds.Attachments = {"]
+    # no Textures table (WP-16): nothing reads it, AssetLoader clones the maps from Appearances.model.json
+    out += ["} :: { [string]: { [string]: string } }", "", "AssetIds.Attachments = {"]
     for asset in sorted(attachments):
         out.append(f"\t{asset} = {{")
         for name, p in attachments[asset].items():

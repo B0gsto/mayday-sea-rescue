@@ -1,7 +1,7 @@
 """B02: after upload.sh, write the Rojo MaterialService, the material manifest, the licence list and the batch status.
 
 python3 art/source/materials/wire.py
-  src/materials/MaterialService.model.json   MaterialVariants (dry + <Name>_Wet); no Terrain slot overrides (see below)
+  src/materials/MaterialService.model.json   MaterialVariants that show (PART_VARIANTS, own-base names); no Terrain slot overrides (see below)
   assets/materials/manifest.csv               one row per map: variant, map, file, asset id, source, licence
   assets/materials/LICENCES.md                every CC0 source with author and URL
   art/status/B02.csv                          batch status rows (docs/12 1.3)
@@ -17,6 +17,11 @@ MATERIAL_ENUM = {"Sand": 1296, "Sandstone": 912, "Salt": 1392, "Limestone": 820,
                  "Basalt": 788, "Grass": 1280, "LeafyGrass": 1284, "Mud": 1344, "Ground": 1360, "Pavement": 836,
                  "Asphalt": 1376, "Cobblestone": 880, "Concrete": 816, "Granite": 832, "Plastic": 256,
                  "Snow": 1328, "WoodPlanks": 528, "Brick": 848, "Glacier": 1552, "Ice": 1536}
+# WP-16: each variant is one Studio texture pack per publish, so the place gets only the ones that show: those a Part
+# names (AssetLoader.PART_SETS "Mat" sets) and those named like their own base material (the engine applies those with
+# no slot override: Mud on the terrain; Studio A/B 2026-10-25, Granite on a Rock base alone greyed the island cove, so
+# it stays out). The _Wet twins are never applied. Roads are cut (WP-17).
+PART_VARIANTS = {"Cobbles"}
 PATTERN_ENUM = {"Regular": 0, "Organic": 1}
 LICENCE = "CC0 1.0 (https://polyhaven.com/license)"
 TODAY = datetime.date.today().isoformat()
@@ -98,11 +103,10 @@ def main():
 
     model = {"ClassName": "MaterialService",
              "Properties": dict({"Use2022Materials": True, "Attributes": {"Attributes": {"WetSuffix": {"String": "_Wet"}, "Batch": {"String": "B02"}}}}),
-             "Children": children}
+             "Children": [c for c in children if c["Name"] in PART_VARIANTS
+                          or MATERIAL_ENUM.get(c["Name"]) == c["Properties"]["BaseMaterial"]["Enum"]]}
     os.makedirs(os.path.join(GAME, "src/materials"), exist_ok=True)
     json.dump(model, open(os.path.join(GAME, "src/materials/MaterialService.model.json"), "w"), indent=1)
-    sys.path.insert(0, os.path.join(GAME, "art/source/roads"))
-    __import__("wire_roads").main()  # I1b-3: the R1a road variants + terrain road slots
 
     os.makedirs(os.path.join(GAME, "assets/materials"), exist_ok=True)
     with open(os.path.join(GAME, "assets/materials/manifest.csv"), "w", newline="") as f:

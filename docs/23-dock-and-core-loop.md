@@ -256,6 +256,15 @@ merge near-duplicate PBR surfaces (455 texture packs now; they hit the upload ra
 measure client memory and load time on a phone before/after. 14a first; 14b and 14c after it and after
 WP-13 lands.
 
+**WP-16 done (2026-10-25), owner rule "do not redesign the assets we already have":** only unloaded or cut assets left.
+
+| Measure (Studio, same build/play steps) | Before | After |
+|---|---|---|
+| AssetIds.luau asset ids (103 unused/cut assets out; unread Textures table out) | 1,478 | 259 |
+| PBR texture-pack surfaces (publish_studio.py rule) / unique map sets | 455 / 453 | 195 / 195 |
+| build/MaydaySeaRescue.rbxl (no terrain) | 5,467,244 B | 5,411,066 B |
+| Client texture MB, hub spawn / own island (Studio total MB: noise, ±60) | 180 / 180 | 165 / 170 |
+
 ## (k) The hub and six islands (owner, 2026-10-25: "love the plan, do it")
 
 Owner: "development is going slowly cause there is bloat ... and too many mechanics. Remove the cars and city for
