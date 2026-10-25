@@ -458,7 +458,7 @@ local function step(dt: number)
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
-			if child:IsA("Model") then
+			if child:IsA("Model") and not child:HasTag("Heli") then -- helis fly in HeliController
 				if isLocalDriver(child) then
 					driving = child
 					local seat = seatOf(child) :: VehicleSeat
