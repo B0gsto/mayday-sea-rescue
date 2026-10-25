@@ -38,6 +38,29 @@ return {
 		Tough = "rbxassetid://115278891400408",
 		Check = "rbxassetid://101458713833337",
 	},
+	-- UI Kit (docs/23 (m), UI/Kit): Antigravity icons (assets/ui/kit, from marketing/ui/icons) keyed by
+	-- file stem, plus Studs: the subtle stud tile on title bars and price buttons.
+	Kit = {
+		Studs = "rbxassetid://108987158998866",
+		album = "rbxassetid://117602974111890",
+		boat_to_me = "rbxassetid://72873404937057",
+		boost = "rbxassetid://89719184224286",
+		build = "rbxassetid://85748124089400",
+		cash = "rbxassetid://96161188991448",
+		close = "rbxassetid://117801141592310",
+		companion = "rbxassetid://82752596877543",
+		crew = "rbxassetid://95808184673407",
+		daily = "rbxassetid://79958924558323",
+		gift = "rbxassetid://72702946079049",
+		lifebuoy = "rbxassetid://76945613397404",
+		lock = "rbxassetid://135893459775435",
+		map = "rbxassetid://111196679015076",
+		quests = "rbxassetid://123511018979555",
+		rank = "rbxassetid://82021247159806",
+		settings = "rbxassetid://83062960203156",
+		shop = "rbxassetid://133652722448118",
+		vip = "rbxassetid://89629681853633",
+	} :: { [string]: string },
 	-- SettingsPanel row glyphs, keyed like its SHAPES (assets/ui/settings/<key>.png)
 	SettingsArt = {
 		blur = "rbxassetid://116677182644896",
