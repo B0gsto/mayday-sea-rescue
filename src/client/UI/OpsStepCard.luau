@@ -5,7 +5,7 @@
 --   boat + "Go"         get on your craft
 --   call icon + "1/3"   pick them up: survivors picked up / survivors in the call
 --   home + "Home"       bring them home
--- An NPC takeover turns the disc red with the NPC boat. The icon pops on every change.
+-- The icon pops on every change.
 local TweenService = game:GetService("TweenService")
 
 local Glyph = require(script.Parent.Glyph)
@@ -17,12 +17,9 @@ export type StepCard = {
 	goal: (label: string?, glyph: string?, color: Color3?, distance: string?) -> (),
 }
 
-local RED = Color3.fromHex("E8332A")
-
 -- the goal's label (MapController.GetObjective) -> the one word ("count" = picked up / total)
 local WORD: { [string]: string } =
 	{ Craft = "Go", Casualty = "count", Vessel = "count", ["Drop-off"] = "Home" }
-local TAKEOVER = { glyph = "boat", color = RED, text = "Too slow" }
 
 -- Text-only twins for mechanic panels (Mechanics/PIW/Step headers).
 local ICON_TEXT: { [string]: string } = {
@@ -151,10 +148,6 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 	card = {
 		update = function(s: { [string]: any })
 			state = s
-			if s.takeover then
-				show(TAKEOVER.glyph, TAKEOVER.color, TAKEOVER.text)
-				distance(nil)
-			end
 		end,
 		hide = function()
 			state = nil
@@ -164,7 +157,7 @@ function OpsStepCard.new(gui: GuiBase2d): StepCard
 		goal = function(label: string?, glyph: string?, color: Color3?, dist: string?)
 			local w = WORD[label or ""]
 			local s = state
-			if not (s and w and glyph and color) or s.takeover then
+			if not (s and w and glyph and color) then
 				return -- no call, or between goals: keep the last look
 			end
 			show(glyph, color, if w == "count" then count(s) else w)

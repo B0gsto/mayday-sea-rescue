@@ -177,23 +177,6 @@ function Grading.payout(
 	return { cash = round(P.BaseCash * m), rep = round(P.BaseRep * m) }
 end
 
--- Takeover payout (2026-10-21, user: "do not give the player points/cash for failing"): nothing for
--- a casualty someone else picked up. On a call with several casualties only the ones the player
--- brought home pay, each its share of a Bronze payout.
-function Grading.takeoverPayout(
-	opWeight: number,
-	saved: number,
-	total: number,
-	humanCrew: number?
-): Reward
-	if saved <= 0 or total <= 0 then
-		return { cash = 0, rep = 0 }
-	end
-	local full = Grading.payout(opWeight, "Bronze", humanCrew)
-	local share = math.min(saved / total, 1)
-	return { cash = round(full.cash * share), rep = round(full.rep * share) }
-end
-
 -- Crew member on the operation who completed no step: 10% Cash, no Rep.
 function Grading.shareWithoutStep(opWeight: number): Reward
 	return {

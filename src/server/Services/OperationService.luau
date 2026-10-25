@@ -4,8 +4,8 @@
 -- the storm rate, the Capsized Ferry at storm start), runs each operation's step state machine
 -- (every op: answer -> launch -> auto_board -> transport, docs/16 K1; the track owner does every
 -- step, an NPC crewmate only fills in when they leave), validates the step results clients submit
--- (the server recomputes the grade from metrics), ticks every casualty's condition meter, runs the
--- takeover at Critical, and pays through ProgressionService.Award.
+-- (the server recomputes the grade from metrics), ticks every casualty's condition meter, grades a
+-- slow call Bronze (it never fails), and pays through ProgressionService.Award.
 --
 -- The physical scene (victims, NPC boats, bobbing, deliveries at the pads) is RescueService; this
 -- service hands it an `op.scene` table and reacts to its hooks (OnVictimsDelivered, ...).
@@ -481,7 +481,6 @@ local function snapshot(op: any, player: Player): { [string]: any }
 		startedAt = op.acceptedAt,
 		capAt = op.acceptedAt + op.def.capSeconds,
 		storm = op.storm,
-		takeover = op.takeover,
 		myTrack = if track then track.id else nil,
 		plan = plan,
 		results = done,
@@ -553,7 +552,7 @@ local function newOp(
 		history = {} :: { { t: number, c: { number } } },
 		lastSample = 0,
 		saved = 0,
-		takeover = nil :: { reason: string, at: number }?,
+		slow = false, -- a casualty went Critical or the cap passed: the call grades Bronze
 		grade = nil :: string?,
 		scene = {
 			id = id,
@@ -613,7 +612,6 @@ end
 
 local advance: (op: any, track: Track) -> ()
 local finish: (op: any, reason: string) -> ()
-local startTakeover: (op: any, reason: string) -> ()
 
 local function scaled(seconds: number): number
 	return seconds * (if RunService:IsStudio() then OperationService.DevTimeScale else 1)
@@ -781,13 +779,6 @@ local function failStep(op: any, track: Track, inst: StepInst, why: string)
 		inst.npcDoneAt = now() + scaled((def.npcSeconds or 10) * Types.Rules.NpcSlowdown * 0.5)
 		broadcast(op)
 		return
-	elseif action == "takeover" then
-		if Operations.canFail(op.coldOpen == true, onboardingCall(op.owner)) then
-			startTakeover(op, "StepFailed")
-		else
-			beginStep(op, track, def, inst.attempt) -- the first missions cannot fail: try again
-		end
-		return
 	elseif action == "continue" then
 		complete(op, track, inst, "Bronze", inst.assignee)
 		return
@@ -834,7 +825,7 @@ advance = function(op: any, track: Track)
 				track.casualtyIndex = claimCasualty(op, track)
 			end
 			local ci = track.casualtyIndex
-			if ci == nil or op.casualties[ci].takenOver then
+			if ci == nil then
 				-- nothing (left) to pick up: skip the rest of this per-casualty run
 				track.casualtyIndex = nil
 				while track.plan[track.index + 1] and track.plan[track.index + 1].perCasualty do
@@ -857,22 +848,6 @@ advance = function(op: any, track: Track)
 		end
 	end
 	finish(op, "Complete")
-end
-
----------------------------------------------------------------- takeover
-
-startTakeover = function(op: any, reason: string)
-	if op.takeover or op.state ~= "Active" then
-		return
-	end
-	op.takeover = { reason = reason, at = now() - op.acceptedAt }
-	for _, c in op.casualties do
-		if not c.delivered then
-			c.takenOver = true
-		end
-	end
-	-- the op ends, unpaid; the NPC boat pickup was cut with the racer (WP-20, 2026-10-25)
-	finish(op, "Takeover")
 end
 
 ---------------------------------------------------------------- finishing and pay
@@ -928,7 +903,7 @@ finish = function(op: any, reason: string)
 		table.insert(scored, { grade = r.grade, weight = r.weight })
 	end
 	local grade: Grade = Grading.operationGrade(scored) :: any
-	op.grade = if op.takeover then "Takeover" else grade
+	op.grade = if op.slow then Grading.worse(grade, "Bronze") else grade
 	local people = everyone(op)
 	local humans = 0
 	for _, p in people do
@@ -961,21 +936,15 @@ finish = function(op: any, reason: string)
 			if op.isBig then
 				reward = Grading.bigCompletionBonus(op.saved, #op.casualties)
 				paidAs = "Op:CapsizedFerry"
-			elseif op.takeover then
-				-- 2026-10-21: no pay for failing; only casualties brought home pay
-				reward = Grading.takeoverPayout(op.weight, op.saved, #op.casualties, humans)
-				paidAs = `Op:{op.kind}:Takeover`
 			else
 				local tut = if st.completed < #Grading.Payout.Tutorial then st.completed else nil
-				reward = Grading.payout(op.weight, grade, humans, tut)
+				reward = Grading.payout(op.weight, op.grade, humans, tut)
 				paidAs = `Op:{op.kind}`
 			end
 			st.completed += 1
 			p:SetAttribute("OpsCompleted", st.completed)
 		else
-			reward = if op.takeover
-				then { cash = 0, rep = 0 }
-				else Grading.shareWithoutStep(op.weight)
+			reward = Grading.shareWithoutStep(op.weight)
 			paidAs = "Op:Share"
 		end
 		if reward.cash > 0 or reward.rep > 0 then
@@ -994,8 +963,8 @@ finish = function(op: any, reason: string)
 				boat:SetAttribute("ColdOpenAutoThrottle", false)
 			end
 		end
-		-- the saved count of finished operations (ProgressionService); takeovers never count
-		if op.helpers[p] and not op.takeover then
+		-- the saved count of finished operations (ProgressionService)
+		if op.helpers[p] then
 			try("ProgressionService", "RecordTraining", p, grade)
 		end
 		p:SetAttribute("OpsLastGrade", op.grade)
@@ -1007,7 +976,6 @@ finish = function(op: any, reason: string)
 			grade = op.grade,
 			stepGrade = grade,
 			reason = reason,
-			takeover = op.takeover,
 			steps = timeline,
 			condition = op.history,
 			saved = op.saved,
@@ -1794,44 +1762,28 @@ local function tickOp(op: any, dt: number, t: number)
 		end
 		table.insert(op.history, { t = math.floor(t - op.acceptedAt), c = values })
 	end
-	-- takeover: a casualty at Critical, or the cap (big call: the cap ends it, Criticals are lifted)
+	-- a call never fails (docs/00 section 3): a casualty at Critical or the cap only grades it Bronze
 	local elapsed = t - op.acceptedAt
 	if op.isBig then
 		for _, c in op.casualties do
 			if Condition.isCritical(c) then
-				c.takenOver = true
+				op.slow = true
 			end
 		end
 		if elapsed > op.def.capSeconds then
+			op.slow = true
 			finish(op, "Timer")
 			return
 		end
-	elseif not op.takeover then
-		-- the cold open and the first three station calls cannot fail (docs/15 section 3, 2026-10-21):
-		-- no cap, no Critical takeover, the survivor waits. Picked-up casualties are safe.
-		local yes, why = false, nil
-		if Operations.canFail(op.coldOpen == true, onboardingCall(op.owner)) then
-			yes, why = Condition.shouldTakeover(
-				Operations.atRisk(op.casualties),
-				elapsed,
-				op.def.capSeconds
-			)
-		end
-		if yes then
-			startTakeover(op, why or "Critical")
-		end
+	elseif Condition.overdue(Operations.atRisk(op.casualties), elapsed, op.def.capSeconds) then
+		op.slow = true
 	end
 	stepBoarding(op, dt)
 	stepHome(op)
 	for _, track in op.tracks do
 		local inst = track.current
 		if inst and op.state == "Active" then
-			-- a big-call casualty lifted by the helicopter mid-run: drop it
-			if op.isBig and inst.casualtyIndex and op.casualties[inst.casualtyIndex].takenOver then
-				track.current = nil
-				track.casualtyIndex = nil
-				advance(op, track)
-			elseif inst.npc then
+			if inst.npc then
 				if t >= inst.npcDoneAt then
 					npcFinish(op, track, inst)
 				end
@@ -1846,7 +1798,7 @@ local function tickOp(op: any, dt: number, t: number)
 	if op.state == "Active" and op.isBig then
 		local open = false
 		for _, c in op.casualties do
-			open = open or not (c.delivered or c.takenOver)
+			open = open or not c.delivered
 		end
 		local allDone = true
 		for _, tr in op.tracks do
@@ -2285,15 +2237,6 @@ function OperationService.Init()
 			elseif cmd == "victims" then
 				local p = Players:GetPlayers()[1]
 				return if p then OperationService.GetVictimPositions(p) else {}
-			elseif cmd == "takeover" then
-				-- force the fail path on the running call (Studio test of the NPC pickup)
-				for _, op in ops do
-					if op.state == "Active" and not op.isBig then
-						startTakeover(op, "Dev")
-						return op.id
-					end
-				end
-				return nil
 			elseif cmd == "coldopen" then
 				local p = Players:GetPlayers()[1]
 				return if p then OperationService.StartColdOpen(p, nil, true) else nil

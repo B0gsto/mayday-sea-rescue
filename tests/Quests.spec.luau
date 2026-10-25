@@ -106,17 +106,27 @@ return function(t)
 		t.expect(seen.Keeper and seen.Post).toBe(true)
 	end)
 
-	t.test("the chain runs in order and its last step names the blueprint", function()
-		local s = Rules.new()
-		for i, id in { "Lamp1", "Lamp2", "Lamp3" } do
-			local q = Rules.offer(s, "QuestIves", 20000 + i)
-			t.expect(q and q.id).toBe(id)
-			Rules.accept(s, q :: any)
-			Rules.reached(s)
-			Rules.complete(s, 20000 + i)
+	t.test(
+		"the chain runs in order, next step at once, and its last step names the blueprint",
+		function()
+			local s = Rules.new()
+			local day = 20000
+			for _, id in { "Lamp1", "Lamp2", "Lamp3" } do
+				local q = Rules.offer(s, "QuestIves", day)
+				t.expect(q and q.id).toBe(id)
+				Rules.accept(s, q :: any)
+				if id == "Lamp2" then
+					Rules.drop(s) -- the unlocked step is offered again the same day
+					t.expect((Rules.offer(s, "QuestIves", day) :: any).id).toBe(id)
+					Rules.accept(s, q :: any)
+				end
+				Rules.reached(s)
+				Rules.complete(s, day)
+			end
+			t.expect(Rules.offer(s, "QuestIves", day)).toBeNil() -- the pool restarts next day
+			t.expect(Data.byId.Lamp3.blueprint).toBe("Lighthouse")
 		end
-		t.expect(Data.byId.Lamp3.blueprint).toBe("Lighthouse")
-	end)
+	)
 
 	t.test("salvage needs the submarine", function()
 		local s = Rules.new()

@@ -20,7 +20,6 @@ local def: Types.OperationDef = {
 		Unresponsive = 0.03,
 	},
 	lifejacketChance = 0.35,
-	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "RipCurrent" },
 	steps = SimpleSteps("Answer the call quickly; the rip keeps taking them out."),
 }
