@@ -224,8 +224,11 @@ played with friends (ride in each other's craft, crew up on big calls, visit and
 5. The plot is laid out to grow: station building, boathouse + paint booth, car garage with its own driveway,
    helipad + hangar on land, sub pen in the berth, crew quarters, and spare lots for future buildings.
 
-**Crew (next phase, designed now so the plot has room).** Hire NPC crew at the station (a crew board in the
-station, same blueprint-table pattern): each hire appears and works visibly on your plot.
+**Crew (late game; designed now so the plot has room).** Unlocks late (tune: station built + a high rank).
+Job seekers **line up outside your station** as real NPCs, each showing a role glyph and skill stars over their
+head. Walk up to one to see their card (role, stars, hire price, daily wage) and hire them. The line is replaced
+by a new group **every 20 minutes** (a small clock glyph on the station door shows the next arrival). Hired crew
+move onto your plot and work there visibly.
 
 | Crew | Seen doing | Effect (small, never replaces playing) |
 |---|---|---|
@@ -237,6 +240,10 @@ station, same blueprint-table pattern): each hire appears and works visibly on y
 
 Hires cost Cash (+ rank), with a daily wage taken from earnings so it stays a Cash sink for the late game (docs/23
 (i): late players sit on ~280k unspent). Robux can hire too. Only while you're in the server; nothing idle offline.
+
+**Exploration feeds the plot** (after crew): discovering places adds blueprints to the table (e.g. Gannet Rock
+lighthouse → a small lighthouse for your plot, the Arches → a stone arch gate); wreck salvage found by the sub
+(anchor, ship's bell, figurehead) goes on display on your plot; your plot is where friends meet and set off.
 
 **Work packages.** WP-14a terrain + plot layout (8 plots on the reshaped coast, `tools/world` + map bake, layout
 data). WP-14b move the dock code onto the big plots (Marina/DockService/DockPieces/buildings/boards, server size
