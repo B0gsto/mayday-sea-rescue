@@ -19,6 +19,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 | WP-15 late-game crew lineup (`src/shared/Crew`, `CrewHireService`) | `t3/late-game-crew-lineup` | `~/.t3/worktrees/MaydaySeaRescue/t3-f445b038` | DeepSeek Flash |
 | WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite to the new design (01–08, 10, 12, 13, 15, 18, 19, README, store text; archive 09/11/14/16/17/20/21/22/research → `docs/archive/`) | `t3/redesign-current-docs` and `t3/rewrite-current-design-docs` | `t3-239eb32d`, `t3-d7464e33` | DeepSeek Flash |
+| Quest chains unlock immediately + calls never fail ("Too slow" removed) | a `t3/...` branch (see `git worktree list`) | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
