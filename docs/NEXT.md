@@ -15,7 +15,6 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 |---|---|---|---|
 | WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
-| Quest chains unlock immediately + calls never fail ("Too slow" removed) | a `t3/...` branch (see `git worktree list`) | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 | WP-23c delete the phone, left button column + kit panels, map fog overlay, kit polish | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 | WP-14d build tablet + top-down build mode + Cash decor tab | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
@@ -51,9 +50,8 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 
 ## 3. Decisions (owner, 2026-10-25: "go with your recommendation")
 
-- **Quest chains**: the next chain step unlocks right after the previous one (daily rotation stays for normal
-  quests). Queued, small.
-- **"Too slow" removed**: calls never fail; a slow rescue gets bronze and less pay. Queued, small.
+- **Quest chains**: the next chain step unlocks right after the previous one. Done.
+- **"Too slow" removed**: calls never fail; a slow rescue gets bronze and less pay. Done.
 - **Late-game Cash sink**: island decorations and expansions (extra lots) bought with Cash on the build tablet;
   add with/after WP-14d. Crew wages also help.
 - **Sea Chests**: after the first public launch (docs/04 design; re-answer the maturity questionnaire that day).
