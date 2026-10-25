@@ -11,6 +11,8 @@ local OpsFolder = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
 local LandFollow = require(OpsFolder:WaitForChild("LandFollow"))
 local NpcFactory = require(script.Parent.Parent:WaitForChild("Npc"):WaitForChild("NpcFactory"))
+local Winch =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Heli"):WaitForChild("Winch"))
 
 local LandRescue = {}
 
@@ -193,7 +195,7 @@ local function craftOf(player: Player): Model?
 	local node: Instance? = hum and hum.SeatPart
 	while node do
 		if node:IsA("Model") and node:GetAttribute("VehicleId") ~= nil then
-			-- shortcut: boats and jet skis only; a car has no survivor seats (VehicleService.AddSurvivor)
+			-- shortcut: Workspace.Vehicles craft only; a car has no survivor seats (VehicleService.AddSurvivor)
 			return if node:GetAttribute("LandVehicle") == nil then node else nil
 		end
 		node = node.Parent
@@ -250,6 +252,22 @@ function LandRescue.Step(op: any, dt: number, board: (Player, Vector3) -> boolea
 			continue
 		end
 		local craft = craftOf(player)
+		-- docs/23 (h): a helicopter hovering (or landed) low and steady near them winches them up, no walk
+		if craft and craft:HasTag("Heli") and craft.PrimaryPart then
+			local c = craft.PrimaryPart
+			local v = c.AssemblyLinearVelocity
+			if
+				Vector2.new(c.Position.X - pos.X, c.Position.Z - pos.Z).Magnitude
+					<= LandFollow.BOARD_RANGE
+				and c.Position.Y - pos.Y <= Winch.MAX_HEIGHT
+				and Vector2.new(v.X, v.Z).Magnitude <= Board.STEADY_SPEED
+				and Board.hasRoom(craft)
+				and board(player, pos)
+			then
+				LandRescue.Cleanup(op)
+				return
+			end
+		end
 		local action = LandFollow.step(
 			sc.follow,
 			dt,

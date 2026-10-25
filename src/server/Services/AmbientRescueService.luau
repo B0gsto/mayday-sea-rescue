@@ -10,12 +10,15 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Board = require(Shared:WaitForChild("Ops"):WaitForChild("Board"))
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
+local CraftBoard = require(Shared:WaitForChild("Ops"):WaitForChild("CraftBoard"))
 local GameConfig = require(Shared:WaitForChild("Config"):WaitForChild("GameConfig"))
+local Simulator = require(Shared:WaitForChild("Boat"):WaitForChild("Simulator"))
 
 local ProgressionService = require(script.Parent.ProgressionService) :: any
 local RescueService = require(script.Parent.RescueService) :: any
@@ -237,16 +240,21 @@ function AmbientRescueService.StepBoarding(
 		end
 		local ready: Boat? = nil
 		for _, b in boats do
-			local gap = math.max(
-				0,
-				CallLogic.flatDistance(b.root.Position, victim.root.Position) - b.root.Size.X / 2
-			)
+			local at = b.root.Position
 			local vel = b.root.AssemblyLinearVelocity
 			local speed = Vector3.new(vel.X, 0, vel.Z).Magnitude
 			local tilt = math.deg(math.acos(math.clamp(b.root.CFrame.UpVector.Y, -1, 1)))
 			if
-				Board.ready(gap, speed, tilt, Board.hasRoom(b.vehicle))
-				and (may == nil or may(b.player, i))
+				CraftBoard.ready( -- boats close and steady; heli winch, seaplane on the water, sub ring
+					b.vehicle:GetAttribute("VehicleId"),
+					at,
+					b.root.Size.X / 2,
+					victim.root.Position,
+					speed,
+					tilt,
+					Board.hasRoom(b.vehicle),
+					Simulator.waterHeight(at.X, at.Z, Workspace:GetServerTimeNow())
+				) and (may == nil or may(b.player, i))
 			then
 				ready = b
 				break
