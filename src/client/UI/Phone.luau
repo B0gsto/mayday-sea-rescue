@@ -12,6 +12,7 @@
 --   Settings             the existing SettingsPanel: its frame is borrowed onto the phone screen
 --   Crew                 the crew's faces (leader ringed in brass), Invite and Leave
 --   Vehicles, Store, Pets sibling modules UI/VehiclesApp, UI/StoreApp, UI/PetsApp (OPTIONAL): each
+--                        (Vehicles is Boat to me + the cars since docs/23 c.5: boats are chosen at the dock)
 --                        `mount(page: Frame, close: () -> ()) -> (() -> ())?` (the cleanup). A
 --                        missing or broken module just leaves its icon out.
 -- Back: the chevron, the home indicator, gamepad B, Backspace or Escape (via the Roblox menu opening);
@@ -22,7 +23,7 @@
 -- cheapest one affordable.
 --   Phone.mount(statusRegion)   HudController calls this once (the button goes in the Hud's
 --                               "phone" region, HudLayout)
---   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name)
+--   Phone.setOpen(open) / Phone.isOpen() / Phone.openApp(name, mount?)  (mount: a page with no icon)
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -582,8 +583,9 @@ local function paintBadge()
 	Phone.setBadge(affordKey ~= nil and affordKey ~= seenKey)
 end
 
-function Phone.openApp(name: string)
-	local app = byName[name]
+-- `mount` opens a page that has no icon (the boat board's buy card, docs/23 d.3)
+function Phone.openApp(name: string, mount: Mount?)
+	local app: App? = if mount then { name = name, label = name, mount = mount } else byName[name]
 	if not app then
 		return
 	end
@@ -618,8 +620,7 @@ function Phone.openApp(name: string)
 	appPage.Visible = true
 	backButton.Visible = true
 	clockLabel.Visible = false
-	local mount = app.mount :: Mount
-	local ok, undo = pcall(mount, content, showHome)
+	local ok, undo = pcall(app.mount :: Mount, content, showHome)
 	if ok and type(undo) == "function" then
 		cleanup = undo
 	elseif not ok then

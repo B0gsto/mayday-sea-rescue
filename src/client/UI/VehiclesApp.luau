@@ -1,6 +1,10 @@
 --!strict
--- VehiclesApp: the phone's vehicle page (portrait). A segmented control on top (Boats, Jet Skis, Cars),
--- each a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
+-- VehiclesApp: the phone's vehicle page (portrait). Since docs/23 c.5 the boats are chosen and bought at
+-- the dock's boat board, so the phone page is one big Boat to me (RequestVehicle(nil, false, true): your
+-- current or last craft comes to the open water nearest you, seated) over the cars' carousel (shortcut:
+-- car spawning stays on the phone until the dock's garage exists, docs/23 WP-10). The boat board opens one
+-- card through Phone.openApp(_, mount) with `only` = that craft (buy, upgrades, Spawn = docked at the berth).
+-- Cards: a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
 -- model (the server's ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a
 -- live one of that kind; else the shared builder's greybox), the name (gold for the Robux-only premium
 -- fleet), three stat bars (speed, people aboard, toughness; fitted upgrades lengthen them), the boat's
@@ -10,17 +14,16 @@
 -- Opens on the cheapest thing Cash covers (shared/Affordable), else the craft you have out, else the
 -- biggest one you own. That upgrade tile or Cash button pulses gold; a buy throws coins and sparks
 -- and the stat bar grows (docs/16 B5).
--- Mouse / touch: round arrows and swipe; keyboard: Left / Right or Q / E vehicles, Up / Down tabs; gamepad: L2 / R2
--- vehicles, Y tabs, A on the selected button.
+-- Mouse / touch: round arrows and swipe; keyboard: Left / Right or Q / E vehicles; gamepad: L2 / R2
+-- vehicles, A on the selected button.
 --   Buy with Cash   BuyGear(vehicleId)                   (ProgressionService: rank + Cash)
 --   Buy with Robux  PromptGamePassPurchase(pass id)      (MonetizationService grants Pass_<Key>; the
 --                   server's CanUseVehicle reads it: Cash-owned OR pass-owned)
 --   Fit upgrade     Upgrade_Buy(vehicleId, upgradeId)    (UpgradeService)
---   Spawn a boat    RequestVehicle(vehicleId, true, true) docked at the free bay nearest you; Quick
---                   Launch owners: Vehicle_QuickLaunch(vehicleId), seated at once (a bolt on Spawn).
+--   Spawn a boat    (the board's card) RequestVehicle(vehicleId, true): docked at your berth
 --   Spawn a car     CarController.Request(vehicleId)     (Land_Request: the nearest road spawn point)
 -- Spawning closes the phone and FootTrail walks you to it. Data: PlayerDataChanged snapshots.
---   VehiclesApp.mount(page: Frame) -> cleanup
+--   VehiclesApp.mount(page: Frame, close?, only: string?) -> cleanup
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -85,7 +88,7 @@ local SHORT: { [string]: string } = {
 }
 local QUICK = "QuickLaunch" -- the pass
 local ACTION_PAGE = "VehiclesApp_Page"
-local ACTION_TAB = "VehiclesApp_Tab"
+local BOAT_TO_ME_H = 72
 local KG_PER_RMU = 37 -- VehicleConfig massHint units
 
 type Entry = {
@@ -409,12 +412,18 @@ local function visibleBounds(model: Model): (Vector3, Vector3)
 	return (lo + hi) / 2, hi - lo
 end
 
-function VehiclesApp.mount(page: Frame): () -> ()
+function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () -> ()
 	Telemetry.shop("AppOpened", "Vehicles")
 	local all = entries()
 	local fills = statFills(all)
+	local shown: { Entry } = {}
+	for _, e in all do
+		if if only then e.id == only else e.land then
+			table.insert(shown, e)
+		end
+	end
 	local tabs: { Tab } = {}
-	local activeTab = 1
+	local activeTab = if shown[1] then shown[1].tab else 3
 	local conns: { RBXScriptConnection } = {}
 	local snapshot: { [string]: any }? = nil
 	local prices: { [number]: number | false } = {} -- pass id -> Robux (false: lookup failed)
@@ -435,9 +444,16 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	for i, def in TABS do
 		tabNames[i] = def.name
 	end
-	local _, tabButtons, setSegment = HudTheme.segmented(root, tabNames, TAB_H, function(i: number)
-		setTab(i)
-	end)
+	local segments, tabButtons, setSegment = HudTheme.segmented(
+		root,
+		tabNames,
+		TAB_H,
+		function(i: number)
+			setTab(i)
+		end
+	)
+	segments.Visible = false -- one kind per page now: the board's one craft, or the phone's cars
+	local top = if only then 0 else BOAT_TO_ME_H + 10
 
 	local function data(): Rules.PlayerData?
 		return if snapshot then Rules.fromSnapshot(snapshot) else nil
@@ -523,7 +539,6 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		elseif usable then
 			card.mainLabel.Text = "Spawn"
 			card.main.BackgroundColor3 = C.accent
-			card.mainBolt.Visible = ownsQuick() and not entry.land
 		else
 			card.mainLabel.Text = "Soon"
 			card.main.BackgroundColor3 = C.locked
@@ -769,7 +784,6 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		if not (d and Rules.canUseVehicle(d, id, ownsPass(card.entry))) then
 			return
 		end
-		local quickUsed = false
 		call(card, card.main, function()
 			if card.entry.land then
 				local cars = require(
@@ -777,17 +791,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 				) :: any
 				return cars.Request(id)
 			end
-			if ownsQuick() then
-				local net = ReplicatedStorage:FindFirstChild("Net")
-				local quick = net and net:FindFirstChild("Vehicle_QuickLaunch")
-				if quick and quick:IsA("RemoteFunction") then
-					quickUsed = true
-					return quick:InvokeServer(id)
-				end
-			end
-			return Net.func("RequestVehicle"):InvokeServer(id, true, true)
+			return Net.func("RequestVehicle"):InvokeServer(id, true) -- the board's card: docked at your berth
 		end, function(result: any)
-			spawned(result, quickUsed) -- Quick Launch seats you: no footprints
+			spawned(result)
 		end)
 	end
 
@@ -1212,6 +1218,46 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		return card
 	end
 
+	-- the phone page's one boat action: your craft comes to the water nearest you (docs/23 c.5)
+	if not only then
+		local go = button(root, "BoatToMe", C.accent)
+		go.Size = UDim2.new(1, 0, 0, BOAT_TO_ME_H)
+		list(go, true, 10)
+		drawIcon("boat", square(go, "Icon", 40), C.text)
+		local text = label(go, "Label", 24, C.text)
+		text.Text = "Boat to me"
+		text.LayoutOrder = 1
+		text.AutomaticSize = Enum.AutomaticSize.X
+		text.Size = UDim2.fromOffset(0, BOAT_TO_ME_H)
+		local sending = false
+		go.Activated:Connect(function()
+			if sending then
+				return
+			end
+			sending = true
+			task.spawn(function()
+				local ok, done, result = pcall(function()
+					return Net.func("RequestVehicle"):InvokeServer(nil, false, true)
+				end)
+				sending = false
+				if not alive then
+					return
+				end
+				if ok and done then
+					pop(go)
+					spawned(result, true) -- seated: no footprints
+					return
+				end
+				local why = if ok then result else "NotReady"
+				text.Text = if type(why) == "string" and SHORT[why] then SHORT[why] else "Try again"
+				shake(go)
+				task.delay(1.6, function()
+					text.Text = "Boat to me"
+				end)
+			end)
+		end)
+	end
+
 	local viewed = false
 	local function selectFor(card: Card?)
 		if card and not viewed then
@@ -1229,6 +1275,9 @@ function VehiclesApp.mount(page: Frame): () -> ()
 
 	local function current(): Card?
 		local tab = tabs[activeTab]
+		if not tab then
+			return nil -- the page opens on its last tab (cars), still being built
+		end
 		for _, card in tab.cards do
 			if card.frame == tab.pages.CurrentPage then
 				return card
@@ -1253,8 +1302,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	for i, def in TABS do
 		local strip = Instance.new("Frame")
 		strip.Name = `Cards_{def.name}`
-		strip.Position = UDim2.fromOffset(0, TAB_H + 10)
-		strip.Size = UDim2.new(1, 0, 1, -TAB_H - 10 - 20)
+		strip.Position = UDim2.fromOffset(0, top)
+		strip.Size = UDim2.new(1, 0, 1, -top - 20)
 		strip.BackgroundTransparency = 1
 		strip.ClipsDescendants = true
 		strip.Visible = false
@@ -1276,7 +1325,7 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		tabs[i] = tab
 
 		local mine: { Entry } = {}
-		for _, e in all do
+		for _, e in shown do
 			if e.tab == i then
 				table.insert(mine, e)
 			end
@@ -1405,22 +1454,6 @@ function VehiclesApp.mount(page: Frame): () -> ()
 		Enum.KeyCode.Q,
 		Enum.KeyCode.E
 	)
-	ContextActionService:BindActionAtPriority(
-		ACTION_TAB,
-		function(_, state, input): Enum.ContextActionResult
-			if state ~= Enum.UserInputState.Begin or not page.Visible then
-				return Enum.ContextActionResult.Pass
-			end
-			local step = if input.KeyCode == Enum.KeyCode.Up then -1 else 1
-			setTab((activeTab - 1 + step) % #tabs + 1)
-			return Enum.ContextActionResult.Sink
-		end,
-		false,
-		Enum.ContextActionPriority.High.Value,
-		Enum.KeyCode.Up,
-		Enum.KeyCode.Down,
-		Enum.KeyCode.ButtonY
-	)
 
 	-- open on the cheapest buy Cash covers, else the craft you have out, else the biggest you own
 	local function land()
@@ -1435,8 +1468,8 @@ function VehiclesApp.mount(page: Frame): () -> ()
 			end
 		end
 		if not target and d then
-			for _, e in all do
-				if not e.land and Rules.canUseVehicle(d, e.id, ownsPass(e)) then
+			for _, e in shown do
+				if Rules.canUseVehicle(d, e.id, ownsPass(e)) then
 					target = e.id
 				end
 			end
@@ -1499,7 +1532,6 @@ function VehiclesApp.mount(page: Frame): () -> ()
 	return function()
 		alive = false
 		ContextActionService:UnbindAction(ACTION_PAGE)
-		ContextActionService:UnbindAction(ACTION_TAB)
 		for _, c in conns do
 			c:Disconnect()
 		end
