@@ -43,6 +43,7 @@ local KIND: { [string]: { icon: string, color: Color3 } } = {
 	VesselFire = { icon = "flare", color = RED },
 	CliffCasualty = { icon = "cross", color = RED },
 	Stranded = { icon = "cross", color = RED },
+	Diver = { icon = "cross", color = RED },
 	WildlifeRescue = { icon = "ring", color = AMBER },
 }
 

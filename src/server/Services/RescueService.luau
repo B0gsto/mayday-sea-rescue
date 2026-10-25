@@ -78,6 +78,7 @@ type Floater = {
 	cf: CFrame,
 	active: boolean,
 	model: Model?, -- owning model, resolved lazily from parts[1]
+	fixedY: number?, -- a diver on the seabed (call.dive): held at this height, not on the waves
 }
 
 local floaters: { Floater } = {}
@@ -411,6 +412,9 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		end
 	end
 	model:SetAttribute("Rigged", rig ~= nil)
+	if call.dive and not parent then
+		f.fixedY = pos.Y + 5.5 -- feet just off the seabed (the rig hangs 4.55 under f.cf)
+	end
 	if type(call.privateTo) == "table" then
 		-- a mission casualty: only its crew sees it until aboard (PrivateCasualtyController hides it)
 		local ids = {}
@@ -1031,7 +1035,7 @@ local function stepFloaters(now: number)
 			local h = heightAt(Vector3.new(f.x, 0, f.z), now)
 			local roll = math.sin(now * 1.3 + f.phase) * f.sway
 			local pitch = math.sin(now * 0.9 + f.phase * 1.7) * f.sway
-			f.cf = CFrame.new(f.x, h + f.depth, f.z)
+			f.cf = CFrame.new(f.x, f.fixedY or h + f.depth, f.z)
 				* CFrame.Angles(0, f.yaw, 0)
 				* f.tilt
 				* CFrame.Angles(pitch, 0, roll)

@@ -49,4 +49,16 @@ return function(t)
 		t.expect(ready("RIB", Vector3.new(3 + Board.REACH - 1, 0, 0))).toBe(true)
 		t.expect(ready("RIB", Vector3.new(3 + Board.REACH + 1, 0, 0))).toBe(false)
 	end)
+
+	t.test("a diver on the seabed: only the sub", function()
+		local diver = Vector3.new(0, -36, 0)
+		local function deep(id, at)
+			return CraftBoard.ready(id, at, 3, diver, 0, 0, true, 0)
+		end
+		t.expect(deep("Submarine", Vector3.new(4, -34, 0))).toBe(true)
+		t.expect(deep("Submarine", Vector3.new(4, 0, 0))).toBe(false) -- floating above: out of the ring
+		t.expect(deep("RIB", Vector3.new(3, 0, 0))).toBe(false)
+		t.expect(deep("RescueHelicopter", Vector3.new(2, 4, 0))).toBe(false)
+		t.expect(deep("Seaplane", Vector3.new(4, 0.5, 0))).toBe(false)
+	end)
 end

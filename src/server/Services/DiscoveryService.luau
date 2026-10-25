@@ -210,8 +210,8 @@ local function placeProps()
 	for _, page in Rules.Pages do
 		points[page.id] = {}
 		for _, s in page.stickers do
-			if s.kind == "Stamp" then
-				continue -- the post is the island module's; the spot is WorldConfig's stamp point
+			if s.kind == "Stamp" or s.kind == "Wreck" then
+				continue -- the post is the island module's, the wreck is on the seabed (DiverRescue): no prop
 			end
 			local at = settle(s.point, folder)
 			points[page.id][s.id] = at

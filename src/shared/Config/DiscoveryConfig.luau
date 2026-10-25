@@ -25,9 +25,11 @@ local DiscoveryConfig = {
 	-- seen from the sea: within the island radius plus this
 	SightRange = 600,
 	-- pick-up reach per kind (studs, 3D from the character root)
-	Range = { Stamp = 12, Bottle = 8, View = 9, Critter = 24 } :: { [string]: number },
+	Range = { Stamp = 12, Bottle = 8, View = 9, Critter = 24, Wreck = 30 } :: { [string]: number },
 	-- one-time Cash per sticker kind, and the completed-page bonus
-	Cash = { Stamp = 150, Bottle = 75, View = 75, Critter = 75, Page = 300 } :: { [string]: number },
+	Cash = { Stamp = 150, Bottle = 75, View = 75, Critter = 75, Wreck = 150, Page = 300 } :: {
+		[string]: number,
+	},
 	-- the fog grid the map draws (docs/21 §3): square cells over the map canvas, cleared near the player
 	Fog = { origin = -7168, cell = 256, count = 56, radius = 400 },
 	Pages = {} :: { [string]: Page },

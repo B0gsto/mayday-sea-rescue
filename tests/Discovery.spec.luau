@@ -53,23 +53,51 @@ return function(t)
 			t.expect(Rules.stamps(s)).toBe(1)
 			local _, again = Rules.scan(s, skerry.island.stamp, true)
 			t.expect(#again).toBe(0)
-			local last = nil
+			local pages = 0
 			for _, sticker in skerry.stickers do
 				local found
 				s, found = Rules.scan(s, sticker.point, true)
 				for _, e in found do
-					if e.step == "Sticker" then
-						last = e
+					if e.step == "Sticker" and e.page then
+						pages += 1
 					end
 				end
 			end
 			t.expect(Rules.complete(s, "SkerryIsle")).toBe(true)
-			t.expect(last.page).toBe(true)
+			t.expect(pages).toBe(1) -- the page bonus once, never again for the bonus wreck
 			local n, total = Rules.count(s, "SkerryIsle")
 			t.expect(n).toBe(total)
 			t.expect(Rules.cosmetics(s)["isle:SkerryIsle"]).toBe(true)
 		end
 	)
+
+	t.test("the wreck stickers are bonus: the page completes without them", function()
+		local CallTypes = t.require("Calls/CallTypes")
+		for _, site in CallTypes.DiveSites do
+			local page = Rules.ById[site.island]
+			local wreck = page.stickers[#page.stickers]
+			t.expect(wreck.kind).toBe("Wreck")
+			t.expect(wreck.bonus).toBe(true)
+			local s = {}
+			for _, sticker in page.stickers do
+				if not sticker.bonus then
+					s = Rules.scan(s, sticker.point, true)
+				end
+			end
+			t.expect(Rules.complete(s, site.island)).toBe(true)
+			-- found from the sub, deep down beside it
+			local _, ev = Rules.scan(s, site.wreck + Vector3.new(0, 12, 20), false)
+			local found = {}
+			for _, e in ev do
+				if e.step == "Sticker" then
+					table.insert(found, e)
+				end
+			end
+			t.expect(#found).toBe(1)
+			t.expect(found[1].sticker.id).toBe("Wreck")
+			t.expect(found[1].page).toBe(false)
+		end
+	end)
 
 	t.test("a sticker just out of reach is not granted", function()
 		local bottle = skerry.stickers[2]

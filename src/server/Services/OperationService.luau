@@ -42,6 +42,7 @@ local Onboarding = require(Shared:WaitForChild("Onboarding"))
 -- The scenes around the survivors (spectacle only, docs/16 K1): the rip's variant and current,
 local RipFlow = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("RipFlow"))
 -- the listing fishing boat, the burning cruiser.
+local DiverRescue = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("DiverRescue"))
 local FireScene = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("FireScene"))
 local LandRescue = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("LandRescue"))
 local NpcPickup = require(script.Parent.Parent:WaitForChild("Ops"):WaitForChild("NpcPickup"))
@@ -966,6 +967,7 @@ local function closeOp(op: any)
 	pcall(SinkingScene.Cleanup, op.scene)
 	pcall(FireScene.Cleanup, op.scene)
 	pcall(LandRescue.Cleanup, op)
+	pcall(DiverRescue.Cleanup, op)
 	pcall(RescueService.Cleanup, op.scene)
 	for _, p in op.members do
 		p:SetAttribute("RacerAt", nil)
@@ -1486,7 +1488,14 @@ end
 -- forcedKind: an operation id, or "EasyCall" (the idle nudge: a swimmer close in, in calm water).
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
-	local choice = CallLogic.chooseCall(st.completed, weatherState(), nil, callReach(player))
+	local okSub, sub = try("ProgressionService", "CanUseVehicle", player, "Submarine")
+	local choice = CallLogic.chooseCall(
+		st.completed,
+		weatherState(),
+		nil,
+		callReach(player),
+		okSub and sub == true
+	)
 	local kind = Operations.FromCallKind[choice.kind]
 	local sceneKind, zone, victims = choice.kind, choice.zone, choice.victims
 	if forcedKind == "EasyCall" then
@@ -1508,15 +1517,23 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local site = if CallTypes.Kinds[sceneKind].land
 		then CallLogic.landSite(nil, nil, opts and opts.zone or zone) -- Studio: an island or a site id
 		else nil
-	zone = if site then site.island else zone
+	-- docs/23 (h): a diver's pin is the sea surface over their wreck
+	local dive = if CallTypes.Kinds[sceneKind].dive
+		then CallLogic.diveSite(nil, nil, opts and opts.zone or zone) -- Studio: an island or a site id
+		else nil
+	zone = if site then site.island elseif dive then dive.island else zone
 	local op = newOp(
 		kind,
 		sceneKind,
 		zone,
-		if site then site.beach else CallLogic.pickSpawnPoint(zone, nil, clearSpawn),
+		if site
+			then site.beach
+			elseif dive then Vector3.new(dive.at.X, 0, dive.at.Z)
+			else CallLogic.pickSpawnPoint(zone, nil, clearSpawn),
 		victims
 	)
 	op.land = site
+	op.dive = dive
 	if kind == "WildlifeRescue" then
 		try("SanctuaryService", "DressOffer", op, player)
 	end
@@ -1597,6 +1614,11 @@ local function activate(op: any, player: Player)
 	end
 	if op.land then
 		LandRescue.Spawn(op) -- the casualty spawns in RescueService once they reach a craft (landBoard)
+	elseif op.dive then
+		op.scene.position = op.dive.at -- on the seabed: only the sub boards them (Ops/CraftBoard)
+		op.scene.dive = op.dive
+		RescueService.SpawnCall(op.scene)
+		DiverRescue.Spawn(op)
 	else
 		RescueService.SpawnCall(op.scene)
 	end
@@ -1622,6 +1644,7 @@ local function activate(op: any, player: Player)
 		service("VehicleService")
 		and not op.isBig
 		and not op.land -- no NPC boat can reach someone ashore
+		and not op.dive -- nor someone on the seabed
 		and type(total) == "number"
 		and not Onboarding.failsafeCall(total)
 		and grace <= 0
@@ -2619,6 +2642,7 @@ end
 function OperationService.Start()
 	lastWeatherState = weatherState()
 	bigLastEnd = now()
+	task.spawn(DiverRescue.BuildWrecks) -- the placeholder hulls at the dive sites
 	local vs = service("VehicleService")
 	if vs and type(vs.SpawnColdOpen) == "function" then
 		OperationService.ColdOpenAuto = true

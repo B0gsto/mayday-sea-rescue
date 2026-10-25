@@ -12,6 +12,8 @@ local Winch = require(script.Parent.Parent.Heli.Winch)
 
 local CraftBoard = {}
 
+CraftBoard.DEEP = 15 -- studs under the sea: a diver (CallTypes.DiveSites are 25+ down) no boat, heli or plane reaches
+
 -- "Heli" | "Plane" | "Sub", or nil for a boat (or anything unknown).
 function CraftBoard.kind(vehicleId: any): string?
 	local spec = if type(vehicleId) == "string" then VehicleConfig.get(vehicleId) else nil
@@ -34,7 +36,9 @@ function CraftBoard.ready(
 	local flat = Vector2.new(d.X, d.Z).Magnitude
 	local gap = math.max(0, flat - halfBeam)
 	local kind = CraftBoard.kind(vehicleId)
-	if kind == "Heli" then
+	if kind ~= "Sub" and target.Y < waterY - CraftBoard.DEEP then
+		return false -- a diver down on the seabed: only the submarine reaches them
+	elseif kind == "Heli" then
 		return Winch.ready(flat, -d.Y, speed, tilt, room)
 	elseif kind == "Plane" then
 		local spec = PlaneFlight.get(vehicleId) :: PlaneFlight.Spec

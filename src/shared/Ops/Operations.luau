@@ -17,6 +17,7 @@ Operations.Defs = table.freeze({
 	VesselFire = require(script.Parent.Definitions.VesselFire),
 	WildlifeRescue = require(script.Parent.Definitions.WildlifeRescue),
 	Stranded = require(script.Parent.Definitions.Stranded),
+	Diver = require(script.Parent.Definitions.Diver),
 } :: { [string]: OperationDef })
 
 -- The old call kinds (CallLogic.chooseCall, RescueService scenes) -> operation id.
@@ -30,6 +31,7 @@ Operations.FromCallKind = table.freeze({
 	VesselFire = "VesselFire",
 	WildlifeRescue = "WildlifeRescue",
 	Stranded = "Stranded",
+	Diver = "Diver",
 } :: { [string]: string })
 
 function Operations.get(id: string): OperationDef?
