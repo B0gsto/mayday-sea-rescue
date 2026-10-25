@@ -6,7 +6,8 @@
 -- WorldConfig.Islands stamp point; the post itself is built by the island module), and the collectibles
 -- of DiscoveryConfig (bottles, telescope viewpoints, rare animals). Each sticker pays its one-time Cash
 -- (flat, reason "Sticker:<kind>"), a completed page pays DiscoveryConfig.Cash.Page. Once a second it clears
--- the fog cells around the player. Profile flags "isles" and "fog" (DiscoveryRules encodings).
+-- the fog cells around the player. Profile flags "isles", "fog" and "foghub" (the hub's fine grid,
+-- docs/23 (l); DiscoveryRules encodings).
 --
 -- It places the placeholder collectibles in Workspace.Discovery (one Model per sticker, attributes Island
 -- and Sticker); the client hides the ones a player has found. Remotes (under ReplicatedStorage.Net,
@@ -37,7 +38,7 @@ DiscoveryService.Priority = 67
 local TICK = 0.25
 local FOG_TICKS = 4
 
-type Live = { state: Rules.State, fog: buffer }
+type Live = { state: Rules.State, fog: buffer, hubFog: buffer }
 
 local live: { [Player]: Live } = {}
 local points: { [string]: { [string]: Vector3 } } = {}
@@ -45,7 +46,11 @@ local stateRemote: RemoteEvent? = nil
 local foundRemote: RemoteEvent? = nil
 
 local function payload(l: Live): any
-	return { isles = Rules.encode(l.state), fog = Rules.encodeFog(l.fog) }
+	return {
+		isles = Rules.encode(l.state),
+		fog = Rules.encodeFog(l.fog),
+		hub = Rules.encodeHubFog(l.hubFog),
+	}
 end
 
 local function liveOf(player: Player): Live?
@@ -57,7 +62,11 @@ local function liveOf(player: Player): Live?
 	if not data then
 		return nil
 	end
-	l = { state = Rules.decode(data.flags.isles), fog = Rules.decodeFog(data.flags.fog) }
+	l = {
+		state = Rules.decode(data.flags.isles),
+		fog = Rules.decodeFog(data.flags.fog),
+		hubFog = Rules.decodeHubFog(data.flags.foghub), -- old profiles: missing flag = a fresh all-fogged grid
+	}
 	live[player] = l
 	return l
 end
@@ -287,7 +296,7 @@ local function scanPlayer(player: Player, fogTick: boolean): nil
 	end
 	local pos = root.Position
 	local nextState, events = Rules.scan(l.state, pos, onFoot(character, root), points)
-	local fogChanged = fogTick and Rules.reveal(l.fog, pos)
+	local fogChanged = fogTick and Rules.reveal(l.fog, pos, l.hubFog)
 	if #events > 0 then
 		l.state = nextState
 		ProgressionService.SetFlag(player, "isles", Rules.encode(nextState))
@@ -295,6 +304,7 @@ local function scanPlayer(player: Player, fogTick: boolean): nil
 	end
 	if fogChanged then
 		ProgressionService.SetFlag(player, "fog", Rules.encodeFog(l.fog))
+		ProgressionService.SetFlag(player, "foghub", Rules.encodeHubFog(l.hubFog))
 	end
 	if #events > 0 or fogChanged then
 		push(player, l)
@@ -345,8 +355,10 @@ function DiscoveryService.Init()
 			if cmd == "reset" then
 				l.state = {}
 				l.fog = Rules.newFog()
+				l.hubFog = Rules.newHubFog()
 				ProgressionService.SetFlag(player, "isles", nil)
 				ProgressionService.SetFlag(player, "fog", nil)
+				ProgressionService.SetFlag(player, "foghub", nil)
 				push(player, l)
 			end
 			return payload(l)

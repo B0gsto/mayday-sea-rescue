@@ -952,7 +952,9 @@
    "gale_isles_map_v3_r0c0",
    "gale_isles_map_v3_r0c1",
    "gale_isles_map_v3_r0c2",
-   "gale_isles_map_v3_r0c3"
+   "gale_isles_map_v3_r0c3",
+   "gale_isles_map_r0c1",
+   "gale_isles_map_r0c2"
   ],
   "assetId": "95526658035291",
   "imageId": "95526658035291",
@@ -3920,6 +3922,15 @@
   "source": "assets/textures/M_Road_ParkedCar_03/T_ParkedCar03_Wheels_MET.png",
   "type": "Image"
  },
+ "Image:307502fc338e6a674f47436b2a680f2362a410db687d09f87381def0b40fe615": {
+  "assetId": "70720791673889",
+  "imageId": "70720791673889",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c2",
+  "sha": "307502fc338e6a674f47436b2a680f2362a410db687d09f87381def0b40fe615",
+  "source": "art/map/v2/gale_isles_map_r1c2.png",
+  "type": "Image"
+ },
  "Image:3083323751ac89bd4d01c567335f4c29cd4b41a8a28b3d32718944c1e4b5131a": {
   "assetId": "128612913664050",
   "imageId": "128612913664050",
@@ -3999,6 +4010,15 @@
   "name": "T_Kit_Foil_ALB_Wet",
   "sha": "311d7e6a4145c3a1712fd875a33ecf4cfdf28d65a69dab7eeeb219a3acd89098",
   "source": "assets/textures/M_Kit_Atlas/T_Kit_Foil_ALB_Wet.png",
+  "type": "Image"
+ },
+ "Image:311e348fa06752e1f2816a304ff5175b39adc6e919ee6af3a6e8ceadc2e02807": {
+  "assetId": "110253475621165",
+  "imageId": "110253475621165",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r1c1",
+  "sha": "311e348fa06752e1f2816a304ff5175b39adc6e919ee6af3a6e8ceadc2e02807",
+  "source": "art/map/v2/gale_isles_map_r1c1.png",
   "type": "Image"
  },
  "Image:312fee4fbafecab6a6b016b7cb456f0a32e97a3602ed348565166330e8d66ce7": {
@@ -6890,6 +6910,9 @@
   "type": "Image"
  },
  "Image:551b2bc29a771f8d1ad59f7b614cb3a5085a551dda0bc9c471d957c8e908cb2f": {
+  "aliases": [
+   "gale_isles_map_r3c1"
+  ],
   "assetId": "108691236646560",
   "imageId": "108691236646560",
   "moderation": "Reviewing",
@@ -7379,6 +7402,9 @@
   "type": "Image"
  },
  "Image:5b9fad78245c6c25718f2cb1d15a234fdd628f523962fbea956f2ec9c83787d0": {
+  "aliases": [
+   "gale_isles_map_r2c0"
+  ],
   "assetId": "81980404591265",
   "imageId": "81980404591265",
   "moderation": "Reviewing",
@@ -8099,6 +8125,15 @@
   "name": "T_Seal_Face_NOR",
   "sha": "65d0b8fd630b50a368759718c9b96b9c74e2917579fcd57a091deb85f217509e",
   "source": "assets/textures/M_Ani_GreySeal/T_Seal_Face_NOR.png",
+  "type": "Image"
+ },
+ "Image:65f17343f72765fd7d3365f2c5f671db7f08b163a5379c892c2d81bade0d5517": {
+  "assetId": "95196954911349",
+  "imageId": "95196954911349",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c2",
+  "sha": "65f17343f72765fd7d3365f2c5f671db7f08b163a5379c892c2d81bade0d5517",
+  "source": "art/map/v2/gale_isles_map_r2c2.png",
   "type": "Image"
  },
  "Image:661915c07e5e99da8267ea8cac07b8423cecc03b683ddf853f8e68c8bfa596ad": {
@@ -10619,6 +10654,9 @@
   "type": "Image"
  },
  "Image:85b42a6a004eed72e7da4b4dfee7c25f744fe913a5b24f76841c29d578d9b136": {
+  "aliases": [
+   "gale_isles_map_r1c0"
+  ],
   "assetId": "75289648010182",
   "imageId": "75289648010182",
   "moderation": "Reviewing",
@@ -13054,6 +13092,15 @@
   "source": "assets/textures/M_Veh_RIB/T_RIB_Hull_NOR.png",
   "type": "Image"
  },
+ "Image:a4fbcdc33fe6d99c431738011d35626474c7efff616837585ba52c50c6c4fc53": {
+  "assetId": "111469955975911",
+  "imageId": "111469955975911",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_r2c1",
+  "sha": "a4fbcdc33fe6d99c431738011d35626474c7efff616837585ba52c50c6c4fc53",
+  "source": "art/map/v2/gale_isles_map_r2c1.png",
+  "type": "Image"
+ },
  "Image:a51480ed07f2e63a872bad6c4843055caf900cb7c2956554e3df4a718be72a04": {
   "assetId": "94574254290377",
   "imageId": "94574254290377",
@@ -13946,6 +13993,9 @@
   "type": "Image"
  },
  "Image:b09e0d1b5f4822cb2b898187b938ef913265f66b7edebf876026aab252f522fa": {
+  "aliases": [
+   "gale_isles_map_r3c2"
+  ],
   "assetId": "73085595369325",
   "imageId": "73085595369325",
   "moderation": "Reviewing",
@@ -14963,6 +15013,9 @@
   "type": "Image"
  },
  "Image:c0e9dbda405cba9923eb1c56c6a65935c9889e5da9555471d2807f6cba3e1693": {
+  "aliases": [
+   "gale_isles_map_r2c3"
+  ],
   "assetId": "105398316841725",
   "imageId": "105398316841725",
   "moderation": "Reviewing",
