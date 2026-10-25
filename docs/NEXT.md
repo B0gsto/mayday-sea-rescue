@@ -54,7 +54,7 @@ When merging WP-23c: the mechanic fix put the shortened cooldown into the old ph
 ## 2b. Queued next (owner, 2026-10-25 night)
 
 - **WP-27 ring layout** (docs/23 (p)), right after WP-24 plates merge: remove the middle island; 6 plates in a tight
-  ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at your jetty; move hub call sites; flyover
+  ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at a quest pontoon with its own quest tablet; move hub call sites; flyover
   centre; map refresh. Then WP-26 workers, then WP-25 art pass.
 
 - **WP-26 rescued people become workers** (docs/23 (o)): 5 categories, rarity, worker buildings at the tablet,

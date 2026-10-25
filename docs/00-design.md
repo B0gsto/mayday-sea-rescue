@@ -35,7 +35,8 @@ each other's islands). 6 players per server.
   winches from a hover; submarine picks up divers on the seabed.
 - **Drop-off:** your own berth (a generous zone around your jetty). Calls never fail: a slow rescue just earns a lower
   grade (bronze) and less pay.
-- **Quests:** quest NPCs sail up to your jetty in a small boat with a "!" (talk = camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
+- **Quests:** quest-giver NPCs sail in on small boats and moor at your island's quest pontoon with a "!"; a quest
+  tablet beside it lists offers and your active quest (or talk to the NPC: camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
   special rescue, and chains that unlock a unique building for your island (e.g. a lighthouse). One new quest a
   day per NPC; a chain's next step unlocks as soon as the previous one is done.
 - **Free-roam swimmers** between the islands for anyone sailing around.

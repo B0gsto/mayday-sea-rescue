@@ -422,9 +422,13 @@ Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), *
 - **Gone with the hub:** the forest island, its camps, HQ hut, market stall, harbourmaster's shack, campfire stage,
   monument, visitor jetty, hidden ruin/wreck stickers and the fine forest fog. Shop = the left-button Shop panel;
   calls = the pager card; drop-off = your own berth (the generous zone); newcomers spawn on their own island.
-- **Quests come to you:** every so often a quest NPC sails up in a small boat and moors at your jetty with a "!"
-  over their head; talk (zoom + numbered replies), accept, and they wait there until you hand in. Same quest kinds,
-  daily rotation and chains as before.
+- **Quests come to you, with their own tablet** (owner: "a separate tablet like with quests, and visually there
+  are boats that come in at that pontoon"): each island has a small **quest pontoon** (separate from your berth) and
+  a **quest tablet** on a stand beside it. Quest-giver NPCs visibly sail in on small boats and moor at the pontoon
+  ("!" over them); the tablet lists the quests on offer and your active one (UI-kit cards, same style as the build
+  tablet: tap a quest to focus its giver/boat, accept, hand in). You can also talk to the moored NPC directly (zoom +
+  numbered replies). When a quest is handed in the boat sails off and a new one arrives on the daily rotation.
+  Same quest kinds and chains as before.
 - **Rescue scenes that sat at the hub** (rip current beach, ferry spot off the hub harbour) move to the outer
   islands / open sea. The loading flyover circles the ring centre.
 - Leaderboard: a small board on each island's jetty, or the left-button panel (builder's choice; no centre).
