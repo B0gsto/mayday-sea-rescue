@@ -30,8 +30,10 @@ local DiscoveryConfig = {
 	Cash = { Stamp = 150, Bottle = 75, View = 75, Critter = 75, Wreck = 150, Page = 300 } :: {
 		[string]: number,
 	},
-	-- the fog grid the map draws (docs/21 §3): square cells over the map canvas, cleared near the player
-	Fog = { origin = -7168, cell = 256, count = 56, radius = 400 },
+	-- the fog grid the map draws (docs/21 §3): square cells over the map canvas, cleared near the player.
+	-- docs/23 (l): inside the hub island the map uses a finer grid (Hub) with a smaller reveal radius, so
+	-- the forest stays fogged until walked (DiscoveryRules saves it as the "foghub" flag).
+	Fog = { origin = -7168, cell = 256, count = 56, radius = 400, Hub = { cell = 32, radius = 40 } },
 	Pages = {} :: { [string]: Page },
 }
 
