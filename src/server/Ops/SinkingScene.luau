@@ -15,13 +15,8 @@ SinkingScene.LIST_START = math.rad(6)
 SinkingScene.LIST_MAX = math.rad(20)
 SinkingScene.SETTLE_MAX = 4.5 -- studs the hull drops by the end
 
--- rescue variant -> textured hull (existing moored-boat meshes, pivot on the waterline); the meshes carry their own gear,
--- so RescueDressing's Part extras (sized for the old 24 x 52 block hull) are not added
-local HULLS = {
-	default = "M_Veh_MooredBoat_03", -- trawler
-	Tugboat = "M_Veh_MooredBoat_02", -- the crabber reads as the stubbier workboat
-}
-AssetLoader.preload({ HULLS.default, HULLS.Tugboat })
+local HULL = "M_Veh_MooredBoat_03" -- the trawler (an existing moored-boat mesh, pivot on the waterline)
+AssetLoader.preload({ HULL })
 
 type Rec = { folder: Folder, conn: RBXScriptConnection? }
 
@@ -68,7 +63,7 @@ function SinkingScene.Spawn(scene: any)
 	folder:SetAttribute("OpId", scene.opId)
 	-- the first load yields (LoadAsset); the call starts without waiting for it
 	task.spawn(function()
-		local asset = HULLS[scene.variant] or HULLS.default
+		local asset = HULL
 		local model = AssetLoader.cloneStatic(asset, "LOD0", false)
 		if live[scene] ~= rec then
 			if model then

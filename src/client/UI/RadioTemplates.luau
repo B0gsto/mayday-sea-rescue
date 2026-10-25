@@ -158,23 +158,6 @@ local T: { [string]: Template } = {
 		priority = P.Reply,
 		tokens = { "SHORT_{cs}", "'Animal safe. Good work. Out.'" },
 	},
-	-- cliff casualty (docs/09 section 8.5): the crew's sighting and the recovery acknowledgement
-	cliff_sighted = {
-		voice = "CG",
-		priority = P.Reply,
-		tokens = {
-			"SHORT_{cs}",
-			"'Casualty sighted on the ledge. On the line, over.'",
-		},
-	},
-	cliff_recovered = {
-		voice = "CG",
-		priority = P.Reply,
-		tokens = {
-			"SHORT_{cs}",
-			"'Casualty recovered. Handing over to the ambulance, out.'",
-		},
-	},
 	-- rip-current beach rescue (docs/09 section 8.4): the tasking (voiced from the fragments)
 	-- and the beach handover
 	tasking_rip = {

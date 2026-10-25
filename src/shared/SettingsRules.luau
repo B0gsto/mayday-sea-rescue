@@ -11,7 +11,7 @@
 --   mix(values)                   SoundGroup volumes (Master, SFX, Ambience, Radio, Music, Voice)
 --
 -- Everything is saved in the profile's flags.cameraSettings table (ProgressionRules keeps up to
--- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 23).
+-- 64 fields there, together with the cinematic "seen_<id>" flags; this model uses 18).
 
 local SettingsRules = {}
 
@@ -19,14 +19,9 @@ export type Quality = "Auto" | "High" | "Medium" | "Low"
 
 local DEFAULTS = {
 	-- comfort (camera)
-	horizonStab = 0.65, -- 0 hull locked .. 1 horizon locked (vehicle first person)
 	fov = 75, -- base field of view, degrees
-	headBob = 0.6, -- 0 off .. 1 full (on foot)
-	motionBlur = false, -- off by default
 	shake = 0.6, -- camera shake intensity 0..1
 	speedFov = true, -- the FOV kick at speed
-	gLean = 0.8, -- 0..1 head lean in turns and under acceleration
-	lensSpray = true, -- spray drops on the lens (jet ski)
 	sensitivity = 1, -- look sensitivity multiplier
 	-- graphics override ("Auto" follows the Roblox graphics quality slider)
 	oceanQuality = "Auto",
@@ -50,11 +45,8 @@ local DEFAULTS = {
 SettingsRules.Defaults = table.freeze(table.clone(DEFAULTS))
 
 SettingsRules.Ranges = table.freeze({
-	horizonStab = { 0, 1 },
 	fov = { 60, 95 },
-	headBob = { 0, 1 },
 	shake = { 0, 1 },
-	gLean = { 0, 1 },
 	sensitivity = { 0.2, 3 },
 	volMaster = { 0, 1 },
 	volSfx = { 0, 1 },
@@ -69,28 +61,19 @@ SettingsRules.Choices = table.freeze({
 	colourAssist = { "Off", "Deuteranopia", "Protanopia", "Tritanopia" },
 } :: { [string]: { string } })
 
--- Seasick-safe: a level horizon, no bob, little shake, no FOV kick, a calm head and a wider view
+-- Seasick-safe: little shake, no FOV kick and a wider view
 -- (a wider FOV lowers the visual-vestibular mismatch). Other keys are left alone.
 SettingsRules.SEASICK = table.freeze({
-	horizonStab = 1,
 	fov = 85,
-	headBob = 0,
 	shake = 0.15,
 	speedFov = false,
-	gLean = 0.2,
-	motionBlur = false,
 } :: { [string]: any })
 
 -- The comfort keys "Reset comfort" restores (graphics and audio are left alone).
 SettingsRules.COMFORT_KEYS = table.freeze({
-	"horizonStab",
 	"fov",
-	"headBob",
-	"motionBlur",
 	"shake",
 	"speedFov",
-	"gLean",
-	"lensSpray",
 	"sensitivity",
 })
 

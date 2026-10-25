@@ -43,7 +43,6 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		Vehicle = "V",
 		Home = "⌂",
 		Crew = "C",
-		Racer = "✚",
 		Storm = "◉",
 		SeamarkPort = "◀",
 		SeamarkStarboard = "▶",

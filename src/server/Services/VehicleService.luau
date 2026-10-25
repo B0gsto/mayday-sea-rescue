@@ -98,8 +98,7 @@ local SWEEP_INTERVAL = 5 -- seconds between idle / wreck sweeps (RespawnPolicy)
 -- vehicle whose first model fails to load is built as the greybox.
 local VISUAL_ASSETS: { [string]: { string } } = {
 	RIB = { "M_Veh_RIB", "M_Veh_RIB_Helm" },
-	-- the close-up (first-person) set is built in hidden; the rider's client shows it (FirstPerson)
-	JetSki = { "M_Veh_JetSki", "M_Veh_JetSki_CloseUp" },
+	JetSki = { "M_Veh_JetSki" },
 }
 -- Wet look (SurfaceAppearance _Wet, attribute Wet on the model): rain/storm at or over this
 -- intensity, spray while running at planing speed, or a SprayHit attribute set by any system;
@@ -1903,7 +1902,7 @@ function VehicleService.Climb(survivorModel: Model, hull: BasePart, target: () -
 	end
 end
 
--- An NPC boat for the takeover pickup (Ops/NpcPickup): the same build as a player's craft, every
+-- A prop copy of a craft (VehiclePreviews): the same build as a player's craft, every
 -- part anchored, seats disabled, owned by nobody (not in Workspace.Vehicles, never simulated).
 function VehicleService.BuildProp(vehicleId: string): Model?
 	local spec = VehicleConfig.get(vehicleId)

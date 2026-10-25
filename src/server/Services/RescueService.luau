@@ -21,7 +21,6 @@ local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes")
 local CasualtyRig = require(Shared:WaitForChild("Casualty"):WaitForChild("CasualtyRig"))
 local ColdOpen = require(Shared:WaitForChild("Boat"):WaitForChild("ColdOpen"))
 local PiwRescue = require(script.Parent.Parent.Ops.PiwRescue)
-local RescueDressing = require(script.Parent.Parent.Ops.RescueDressing)
 local RipCurrent = require(Shared:WaitForChild("RipCurrent"))
 local CasualtyAsset: any = (function()
 	local ok, m = pcall(require, script.Parent.Parent.Assets.CasualtyAsset)
@@ -372,7 +371,7 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 	root.Transparency = 1
 	addPart(f, root, CFrame.identity)
 	model.PrimaryPart = root
-	local creature = RescueDressing.isCreature(call.variant)
+	local creature = call.wildlifeSpecies ~= nil -- the sanctuary's animal replaces the person (SanctuaryService)
 	local rig: Model? = nil
 	if not creature then
 		if parent then
@@ -425,14 +424,6 @@ local function spawnVictim(call: any, pos: Vector3, parent: Floater?, parentOffs
 		model:SetAttribute("PrivateTo", Board.privateList(ids))
 	end
 	model.Parent = mapFolder
-	-- the rare-call look (docs/15 H2): outfit colours, a kayak, a dog made of Parts, the golden gull. A
-	-- vessel look dresses the hull (SinkingScene, FireScene), never the people in the water.
-	RescueDressing.apply(model, if RescueDressing.isBoat(call.variant) then nil else call.variant, {
-		floater = f,
-		mount = function(mountPart: BasePart, offset: CFrame)
-			addPart(f, mountPart, offset)
-		end,
-	})
 	-- a casualty in the water never blocks the boat that comes for them (the R15 torso collides
 	-- by default and the floater is anchored: a held swimmer at the hull pinned the jet ski).
 	-- The Humanoid turns torso CanCollide back on and the R15 rig loads later, so the collision
@@ -1478,30 +1469,6 @@ function RescueService.BoardVictim(call: any, index: number, player: Player): bo
 	return false
 end
 
--- A takeover (OperationService): the casualty still in the water leaves the call and is handed to
--- the caller (an NPC boat, Ops/NpcPickup) with its model, which the caller removes. nil when they
--- are not in the water.
-function RescueService.ReleaseVictim(call: any, index: number): (Model?, Instance?)
-	local victim = call.victims and call.victims[index]
-	if not victim or victim.state ~= "Water" then
-		return nil, nil
-	end
-	victim.state = "Released" -- the NPC boat owns the model now (Cleanup leaves it)
-	victim.model:SetAttribute("PrivateTo", nil)
-	if victim.prompt then
-		victim.prompt:Destroy()
-		victim.prompt = nil
-	end
-	prepareCarry(victim)
-	for _, d in victim.model:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.Anchored = true
-		end
-	end
-	victimsByModel[victim.model] = nil
-	return victim.model, victim.rig
-end
-
 -- Stamina (0..1, the condition meter) on the casualty model, for CasualtyController's tiring visual.
 function RescueService.SetStamina(call: any, index: number, stamina: number)
 	local victim = call.victims and call.victims[index]
@@ -1572,7 +1539,7 @@ function RescueService.Cleanup(call: any)
 			local list = aboard[v.carrier] or {}
 			aboard[v.carrier] = list
 			table.insert(list, v)
-		elseif v.state ~= "Delivered" and v.state ~= "Released" then
+		elseif v.state ~= "Delivered" then
 			unregister(v.floater)
 			victimsByModel[v.model] = nil
 			v.model:Destroy()

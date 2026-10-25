@@ -22,7 +22,7 @@ export type OpFacts = {
 	coldOpen: boolean,
 	storm: boolean,
 	big: boolean,
-	rarity: string?, -- the call variant's rarity (Common..Legendary)
+	rarity: string?, -- "Rare" for the sanctuary's rare palette, else "None"
 	saved: number?, -- survivors delivered on this call
 }
 export type Tracker = { [string]: boolean }
@@ -249,7 +249,7 @@ function Events.callContext(coldOpen: boolean, big: boolean, storm: boolean): st
 	return "Calm"
 end
 
--- OperationService finish reason -> the call's result: Delivered, TooSlow (the NPC boat took them),
+-- OperationService finish reason -> the call's result: Delivered, TooSlow (a takeover),
 -- Timer, or Abandoned (died, left the craft, drove away, ...).
 function Events.callResult(reason: string): string
 	if reason == "Complete" then

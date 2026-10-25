@@ -11,8 +11,7 @@
 -- Option fields (free-form, read by AvatarCosmetics.plan):
 --   layers   layered clothing { id, kind } (kind = Enum.AccessoryType name); replaces the avatar's
 --            own layered clothing when the option has any
---   shirt / pants   classic Shirt / Pants ids (0 clears them; nil keeps the player's own, which
---            also keeps their first-person self view dressed: FirstPerson hides accessories)
+--   shirt / pants   classic Shirt / Pants ids (0 clears them; nil keeps the player's own)
 --   hat      rigid hat accessory id (Cap slot); replaces the avatar's own hats
 -- The default options ("Station", "None") leave the player's own avatar untouched (the normal
 -- crew look: there is no imposed player uniform; docs 02 section 7, no RP roles yet).

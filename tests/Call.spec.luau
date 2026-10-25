@@ -85,7 +85,7 @@ return function(t)
 		local silver = CallLogic.reward("Swimmer", 70, 100, 1, nil)
 		t.expect(silver.cash).toBe(250)
 		t.expect(silver.rep).toBe(60)
-		t.expect(CallLogic.reward("Cliff", 10, 100, 1, nil).cash)
+		t.expect(CallLogic.reward("Diver", 10, 100, 1, nil).cash)
 			.toBe(math.floor(250 * 1.4 * 1.25 + 0.5))
 		local first = CallLogic.reward("Swimmer", 90, 100, 1, 0)
 		t.expect(first.cash).toBe(500)
@@ -173,7 +173,6 @@ return function(t)
 		t.expect(CallLogic.craftReach({ "RiptideX" }, 4)).toBe(5500) -- Coxswain: the lifeboat's
 		t.expect(CallLogic.craftReach({ "Submarine" }, 4)).toBe(5500)
 		t.expect(CallLogic.craftReach({ "RescueHelicopter" }, 3)).toBe(3500)
-		t.expect(CallLogic.craftReach({ "Seaplane" }, 5)).toBe(5500)
 		t.expect(CallLogic.craftReach({ "JetSki" }, 5)).toBe(2000) -- the cap never adds reach
 		local function zones(reach: number): { [string]: boolean }
 			local seen, rng = {}, makeRng(9)

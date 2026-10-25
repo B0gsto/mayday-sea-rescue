@@ -81,7 +81,6 @@ ProgressionConfig.Vehicles = {
 	Lifeboat = { rankIndex = 4, price = 12000 }, -- tune
 	-- docs/23 (h): the hangar and sub pen craft; each also has a Robux pass (any rank, docs/23 rule 4).
 	RescueHelicopter = { rankIndex = 5, price = 75000 }, -- tune
-	Seaplane = { rankIndex = 5, price = 60000 }, -- tune
 	Submarine = { rankIndex = 4, price = 40000 }, -- tune
 	-- Premium fleet (2026-10-21, user): Robux only, any rank, through the vehicle's Game Pass.
 	StormRunner = { rankIndex = 1, price = 0, passOnly = true },

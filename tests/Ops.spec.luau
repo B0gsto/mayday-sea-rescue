@@ -150,7 +150,7 @@ return function(t)
 		-- push-to-talk: graded on elapsed alone, half weight
 		t.expect(Grading.resolveStep(tasking, { elapsed = 3 })).toBe("Gold")
 		t.expect(tasking.weight).toBe(0.5)
-		local recovery = Operations.get("CliffCasualty").steps[3]
+		local recovery = Operations.get("RipCurrent").steps[3]
 		t.expect(recovery.id).toBe("recovery")
 		-- stub: graded on server metrics only (elapsed)
 		t.expect(Grading.resolveStep(recovery, { elapsed = 5 }, { stub = true })).toBe("Silver")

@@ -22,7 +22,7 @@
 -- Colour scheme: rescue orange with white; the RIB has a charcoal hull and orange tubes.
 --
 -- Real models: Builder.build(spec, visuals) with the uploaded models (RIB: M_Veh_RIB +
--- M_Veh_RIB_Helm; jet ski: M_Veh_JetSki + the rider-only first-person set M_Veh_JetSki_CloseUp, see
+-- M_Veh_RIB_Helm; jet ski: M_Veh_JetSki, see
 -- buildJetSkiAsset), cloned by the server's AssetLoader at their authored pivot, keeps the same
 -- invisible physics (HullRoot, mass, float points, forces) and an invisible Body, welds every visual
 -- part to Body and puts the seats, lights and attachments at the model's ATT_* points
@@ -516,17 +516,10 @@ end
 -- The jet ski asset's authored pivot in HullRoot space: ATT_Float1..6 (y 0.05) sit on the
 -- greybox floatPoints (y -1.05), e.g. ATT_Float3 (-1.4, 0.05, -2.3213) = floatPoints[3] (-1.4, -1.05, 0).
 Builder.JETSKI_ORIGIN = Vector3.new(0, -1.1, 2.3213)
--- First-person rest pitch at the rider's seated eye (frame_offset.json eye_pitch_deg): looks down
--- over the bars, display and kill cord. EyePoint attribute EyePitch (degrees), read by FirstPerson.
-Builder.JETSKI_EYE_PITCH = -30
 local NAV_RANGE = 3.5 -- studs: a small glow on the housing, not a pool of colour on deck and water
 local NAV_BRIGHTNESS = 1
 
--- Real jet ski: M_Veh_JetSki (seen by everyone) plus M_Veh_JetSki_CloseUp, the first-person set
--- (bars, grips, throttle, kill cord, mirrors, display, VHF). The close-up set is built hidden
--- (Transparency 1, attribute RiderOnly, each part's authored Transparency in RiderTransparency);
--- the rider's client shows it locally and hides the base model's Bars (attribute HideForRider,
--- LocalTransparencyModifier) so the two sets of bars don't double up (FirstPerson.setRider).
+-- Real jet ski: M_Veh_JetSki.
 local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 	local ctx = newCtx(spec, Vector3.new(1, 1, 1), Vector3.zero, ORANGE)
 	local origin = Builder.JETSKI_ORIGIN
@@ -536,25 +529,6 @@ local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 		return if p then p + origin else fallback
 	end
 	weldVisuals(ctx, visuals, origin)
-	for _, visual in visuals do
-		local closeUp = string.find(visual.Name, "CloseUp", 1, true) ~= nil
-		if closeUp then
-			visual.Name = "CloseUp"
-			visual:SetAttribute("RiderOnly", true)
-		end
-		for _, d in visual:GetDescendants() do
-			if not d:IsA("BasePart") then
-				continue
-			end
-			if closeUp then
-				d:SetAttribute("RiderTransparency", d.Transparency)
-				d.Transparency = 1
-				d.CastShadow = false
-			elseif string.find(d.Name, "_Bars_", 1, true) or string.match(d.Name, "_Bars$") then
-				d:SetAttribute("HideForRider", true)
-			end
-		end
-	end
 	local function hidden(part: BasePart)
 		part.Transparency = 1
 		part.CastShadow = false
@@ -578,7 +552,7 @@ local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 		light.Brightness = NAV_BRIGHTNESS
 	end
 	-- gameplay attachments on the hull: the kill cord clip and the display (TODO: live speed on
-	-- the display, e.g. a SurfaceGui on the CloseUp Display part fed from the hull speed)
+	-- the display, e.g. a SurfaceGui fed from the hull speed)
 	attach(ctx.root, "KillCord", at("ATT_KillCord", Vector3.new(-0.2, 2.3, -1.2)))
 	attach(ctx.root, "Display", at("ATT_Display", Vector3.new(0, 2.2, -1.66)))
 	local model = finish(
@@ -590,14 +564,13 @@ local function buildJetSkiAsset(spec: VehicleSpec, visuals: { Model }): Model
 	)
 	-- the casualty lies prone along the rear deck, head to the rider: sitting up they blocked half the chase
 	-- view (r2 art review, playtest 3). The outline-only hi-vis keeps the prone body reading as a person.
-	-- VehicleService/NpcPickup stack the body up the slot's Y axis, which now points forward.
+	-- VehicleService stacks the body up the slot's Y axis, which now points forward.
 	local slot = ctx.root:FindFirstChild("SurvivorSlot1") :: Attachment
 	slot.CFrame = CFrame.new(slot.Position + Vector3.new(0, 0.6, 0))
 		* CFrame.Angles(-math.pi / 2, 0, 0)
 	-- the rider's seated eye (ATT_EyePoint), relative to the seat
 	local eye = driver:FindFirstChild("EyePoint") :: Attachment
 	eye.Position = at("ATT_EyePoint", seatPos + spec.eyePoint) - seatPos
-	eye:SetAttribute("EyePitch", Builder.JETSKI_EYE_PITCH)
 	model:SetAttribute("Visual", visuals[1].Name)
 	return model
 end

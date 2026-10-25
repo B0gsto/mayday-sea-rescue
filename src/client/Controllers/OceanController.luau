@@ -744,7 +744,7 @@ local function build()
 		end
 		print(`[Ocean] {mode} ocean, {tier.name} tier`)
 	until not rebuildQueued
-	-- after every camera writer (CameraController +1, PhotoMode +2, capture tour cams): at Camera + 1 a photo
+	-- after every camera writer (CameraController +1, capture tour cams): at Camera + 1 a photo
 	-- camera left the wave patch behind at the player, a square of white dots in the harbour seen from the air
 	RunService:BindToRenderStep(RENDER_STEP_NAME, Enum.RenderPriority.Last.Value - 1, step)
 	building = false

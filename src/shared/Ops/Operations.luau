@@ -11,12 +11,10 @@ local Operations = {}
 Operations.Defs = table.freeze({
 	PersonInWater = require(script.Parent.Definitions.PersonInWater),
 	CapsizedFerry = require(script.Parent.Definitions.CapsizedFerry),
-	CliffCasualty = require(script.Parent.Definitions.CliffCasualty),
 	RipCurrent = require(script.Parent.Definitions.RipCurrent),
 	SinkingVessel = require(script.Parent.Definitions.SinkingVessel),
 	VesselFire = require(script.Parent.Definitions.VesselFire),
 	WildlifeRescue = require(script.Parent.Definitions.WildlifeRescue),
-	Stranded = require(script.Parent.Definitions.Stranded),
 	Diver = require(script.Parent.Definitions.Diver),
 } :: { [string]: OperationDef })
 
@@ -25,12 +23,10 @@ Operations.FromCallKind = table.freeze({
 	Swimmer = "PersonInWater",
 	DriftingCraft = "PersonInWater",
 	CapsizedFerry = "CapsizedFerry",
-	Cliff = "CliffCasualty",
 	RipCurrent = "RipCurrent",
 	Sinking = "SinkingVessel",
 	VesselFire = "VesselFire",
 	WildlifeRescue = "WildlifeRescue",
-	Stranded = "Stranded",
 	Diver = "Diver",
 } :: { [string]: string })
 
