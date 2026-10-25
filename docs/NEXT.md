@@ -13,10 +13,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 | Work | Branch | Worktree | Builder |
 |---|---|---|---|
-| WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
-| WP-23c delete the phone, left button column + kit panels, map fog overlay, kit polish (done, awaiting merge) | `t3/replace-phone-kit-panels` | `t3-a9ab975a` | Opus |
-| Loading screen + top-down circling flyover onto your island (Chad Tycoon style; ref video `~/RobloxProjects/chad-loading-transition/`) | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
@@ -50,6 +47,8 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
    rescue never tested end to end), dock levels, heli/sub, and **two players spawning boats at once**.
 9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
+
+Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu (WP-23c), build mode v2 (WP-14e), loading flyover, 80-stud drop-off zone, Lego baseplate islands (WP-24, merged after v44). In flight: WP-28 no ranks + unlock tree; WP-27 ring layout + quest pontoon/tablet (both Opus).
 
 ## 2b. Queued next (owner, 2026-10-25 night)
 
