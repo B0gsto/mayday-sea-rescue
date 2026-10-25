@@ -408,3 +408,27 @@ replaced** by rescued workers. This reverses the earlier "rescued survivors don'
 **Work packages.** WP-26 workers (after the current batch lands): survivor category + rarity roll, delivery →
 worker spawn and walk-to-building, 5 buildings in DockConfig/tablet, effects, offline earnings, remove the crew
 lineup, pacing/economy check. Then WP-25 art pass covers the worker buildings too.
+
+## (p) No middle island: a tight ring of six islands (owner, 2026-10-25 night)
+
+Owner: "remove the inner island and have the islands closer to each other so the flex element is there."
+Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), **bridges between neighbours**,
+**~80 stud gaps**. This wins over (k) and (l) on the hub.
+
+- **Layout:** the 6 Lego-plate islands (~300 across) sit in a ring ~380 studs from the centre, ~80 studs of water
+  between neighbours; the centre is an open lagoon (no island, no calls in it). Each island's berth notch faces
+  outward to the sea. Short walkable bridges join each island to its two neighbours (a full ring), high enough for
+  boats to pass under between islands.
+- **Gone with the hub:** the forest island, its camps, HQ hut, market stall, harbourmaster's shack, campfire stage,
+  monument, visitor jetty, hidden ruin/wreck stickers and the fine forest fog. Shop = the left-button Shop panel;
+  calls = the pager card; drop-off = your own berth (the generous zone); newcomers spawn on their own island.
+- **Quests come to you:** every so often a quest NPC sails up in a small boat and moors at your jetty with a "!"
+  over their head; talk (zoom + numbered replies), accept, and they wait there until you hand in. Same quest kinds,
+  daily rotation and chains as before.
+- **Rescue scenes that sat at the hub** (rip current beach, ferry spot off the hub harbour) move to the outer
+  islands / open sea. The loading flyover circles the ring centre.
+- Leaderboard: a small board on each island's jetty, or the left-button panel (builder's choice; no centre).
+
+**Work package.** WP-27 ring layout (after WP-24 plates land): generator removes the hub terrain; HubLayout →
+ring positions; neighbour bridges; delete hub camps/HQ/fog/stickers code; quest NPC boats to your jetty; move
+hub-based call sites; loading-flyover centre; map image refresh.

@@ -15,10 +15,12 @@ each other's islands). 6 players per server.
 
 | Place | What it is |
 |---|---|
-| **Hub island** (centre, ~800 studs) | A wild forest the coastguard has only just landed on: rough trails, frontier camps (lookout-hut HQ with the call board, market stall = shop counter, harbourmaster's shack, campfire stage, rescuer monument, visitor jetty), 6 quest-NPC camps, hidden spots (ruin, overgrown wreck) with stickers; map fog lifts as you walk. Newcomer spawn and a drop-off quay. Terrain. |
-| **6 player islands** (ring, ~1,100 studs out) | One per player. A flat **Lego baseplate** (green stud plate, berth notch for boat and sub), no terrain. Your plot: everything you build stands here. Unclaimed ones are bare plates with a jetty. |
-| **6 suspension bridges** | Walkable, hub to each island, high enough for every boat and the helicopter to pass under. No cars. |
-| **Outer ring** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
+| **6 player islands** in a tight ring (~380 studs from the centre, ~80 studs of water between neighbours) | One per player. A flat **Lego baseplate** (green stud plate, berth notch facing the open sea), no terrain. Your plot: everything you build stands here, and your neighbours' empires are right next to it. Unclaimed ones are bare plates with a jetty. You spawn on your own island. |
+| **Ring bridges** | Short walkable bridges join each island to its two neighbours; boats pass under. No cars. |
+| **Centre lagoon** | Open water inside the ring; no island. |
+| **Outer sea** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
+
+(Layout change in progress, WP-27: the old middle forest island is being removed; docs/23 (p).)
 
 ## 3. The loop
 
@@ -31,9 +33,9 @@ each other's islands). 6 players per server.
 - **Pick-up is simple:** an orange ring on the water marks each survivor; inside it your craft eases to boarding
   speed by itself; they swim over and climb aboard in view, "+1". Full craft shows on its seat pips. Helicopter
   winches from a hover; submarine picks up divers on the seabed.
-- **Drop-off:** your own berth or the hub quay, nearest wins. Calls never fail: a slow rescue just earns a lower
+- **Drop-off:** your own berth (a generous zone around your jetty). Calls never fail: a slow rescue just earns a lower
   grade (bronze) and less pay.
-- **Quests:** 6 NPCs at the hub camps (talk = camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
+- **Quests:** quest NPCs sail up to your jetty in a small boat with a "!" (talk = camera zoom + numbered replies, voiced). Find, deliver, salvage (sub),
   special rescue, and chains that unlock a unique building for your island (e.g. a lighthouse). One new quest a
   day per NPC; a chain's next step unlocks as soon as the previous one is done.
 - **Free-roam swimmers** between the islands for anyone sailing around.
