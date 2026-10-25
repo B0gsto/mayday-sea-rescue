@@ -207,6 +207,9 @@ I want a bigger plot per user with land, not just a dock, so it can evolve to fu
 to be able to hire people." Decisions: **8 players per server, big plots; buy upgrades at a blueprint table;
 plots on a reshaped coast next to Port Haven.** This section wins over d.1, d.3 "Upgrade" and rule c.3.
 
+**Pillars (owner):** tycoon-like (your plot grows), exploration and adventure (islands, wrecks, land calls),
+played with friends (ride in each other's craft, crew up on big calls, visit and show off plots).
+
 **Rules.**
 1. No holograms, wireframes or translucent previews of anything not yet built. Unbuilt land is just land (grass,
    sand, a few solid builder's pegs at most).
