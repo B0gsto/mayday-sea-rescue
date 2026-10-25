@@ -3,7 +3,9 @@
 -- Tested by tests/Call.spec.luau.
 local CallTypes = require(script.Parent.CallTypes)
 local GameConfig = require(script.Parent.Parent.Config.GameConfig)
+local HubLayout = require(script.Parent.Parent.Config.HubLayout)
 local ProgressionConfig = require(script.Parent.Parent.Config.ProgressionConfig)
+local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 export type Rng = () -> number -- uniform in [0, 1)
 export type Reward = { cash: number, rep: number, grade: string }
@@ -23,34 +25,63 @@ function CallLogic.travelSeconds(distance: number, topSpeed: number): number
 	return distance / math.max(topSpeed * CallTypes.CRUISE_FACTOR, 1e-3)
 end
 
--- Is this point open water in the given area (not land, the dock or the breakwater)?
+-- Where a player's calls count from (docs/23 (k)): their berth (player attribute BayCFrame), else the hub drop-off.
+-- At sea level.
+function CallLogic.homeOf(bay: any): Vector3
+	local p: Vector3 = if typeof(bay) == "CFrame"
+		then bay.Position
+		elseif typeof(bay) == "Vector3" then bay
+		else HubLayout.Hub.dropOff
+	return Vector3.new(p.X, 0, p.Z)
+end
+
+-- Straight out of a home's cove: the flat unit from the hub to it (every cove opens away from the hub).
+local function outOf(home: Vector3): Vector3
+	local d = Vector3.new(home.X - CallTypes.STATION.X, 0, home.Z - CallTypes.STATION.Z)
+	return if d.Magnitude > 1 then d.Unit else Vector3.zAxis
+end
+
+-- Open water 1,500 studs out from the hub on the home's bearing: past its cove, short of the outer islands.
+function CallLogic.homeFallback(home: Vector3): Vector3
+	return CallTypes.STATION + outOf(home) * 1500
+end
+
+-- Flat distance from p to the segment a-b.
+local function segmentDistance(p: Vector3, a: Vector3, b: Vector3): number
+	local ab = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
+	local ap = Vector3.new(p.X - a.X, 0, p.Z - a.Z)
+	local t = math.clamp(ap:Dot(ab) / math.max(ab:Dot(ab), 1e-6), 0, 1)
+	return (ap - ab * t).Magnitude
+end
+
+-- Is this point open water (pure map data: off the hub, the six islands and the outer islands, clear of the
+-- bridges, inside the map)? area "Outer" also keeps Areas.OuterMin from the hub. The server adds its raycasts.
 function CallLogic.isWater(pos: Vector3, area: string): boolean
 	local A = CallTypes.Areas
-	if area == "Inside" then
-		local box = A.Inside
-		if pos.X < box.minX or pos.X > box.maxX or pos.Z < box.minZ or pos.Z > box.maxZ then
-			return false
-		end
-		local k = A.DockKeepOut
-		if pos.X >= k.minX and pos.X <= k.maxX and pos.Z <= k.maxZ then
-			return false
-		end
-		local e = box.elbow
-		local kneeZ, headX =
-			if pos.X < 0 then e.kneeW else e.kneeE, if pos.X < 0 then e.headW else e.headE
-		local dx, dz = headX - e.x, e.far - kneeZ
-		local len = math.sqrt(dx * dx + dz * dz)
-		-- distance from the dog-leg's centreline toward the basin (its normal (-dz, dx) points inward)
-		if ((math.abs(pos.X) - e.x) * -dz + (pos.Z - kneeZ) * dx) / len < e.clear then
-			return false
-		end
-		-- the breakwater box has corners outside the sheltered zone circles: keep calls sheltered
-		return CallLogic.zoneIdAt(pos) ~= "OpenSea"
-	end
-	if pos.Z < A.OutsideMinZ then
+	local fromHub = flatDistance(pos, CallTypes.STATION)
+	if
+		fromHub < HubLayout.HubRadius + A.Shore
+		or fromHub > GameConfig.MapRadius - A.MapMargin
+		or (area == "Outer" and fromHub < A.OuterMin)
+	then
 		return false
 	end
-	return math.sqrt(pos.X * pos.X + pos.Z * pos.Z) <= GameConfig.MapRadius - A.MapMargin
+	for _, island in HubLayout.Islands do
+		if flatDistance(pos, island.center) < HubLayout.IslandRadius + A.Shore then
+			return false
+		end
+	end
+	for _, bridge in HubLayout.Bridges do
+		if segmentDistance(pos, bridge.from, bridge.to) < A.BridgeClear then
+			return false
+		end
+	end
+	for _, island in WorldConfig.Islands do
+		if flatDistance(pos, island.center) < island.radius then
+			return false
+		end
+	end
+	return true
 end
 
 -- A random point in a ring around `center` (uniform by area), at sea level.
@@ -60,25 +91,41 @@ function CallLogic.ringPoint(center: Vector3, minR: number, maxR: number, rng: R
 	return Vector3.new(center.X + math.cos(angle) * r, 0, center.Z + math.sin(angle) * r)
 end
 
--- A spawn point for a call in a SpawnZone: in the zone's ring and in open water. clear: the server's
--- world check (RescueService.ClearWater: no moored boat or quay alongside).
+-- A spawn point for a call in a SpawnZone: in the zone's ring (cove zones: the cone out of `home`'s cove;
+-- fromHome zones: round `home`) and in open water. home: CallLogic.homeOf(BayCFrame). clear: the server's
+-- world check (RescueService.ClearWater and a clear sea line from the cove).
 function CallLogic.pickSpawnPoint(
 	zoneId: string,
 	rng: Rng?,
-	clear: ((Vector3) -> boolean)?
+	clear: ((Vector3) -> boolean)?,
+	home: Vector3?
 ): Vector3
 	local zone = CallTypes.SpawnZones[zoneId]
 	assert(zone, `unknown spawn zone {zoneId}`)
 	local roll: Rng = rng or (math.random :: any)
+	local h = home or CallLogic.homeOf(nil)
+	local out = outOf(h)
 	for _ = 1, 60 do
-		local p = CallLogic.ringPoint(zone.center, zone.minRadius, zone.maxRadius, roll)
+		local p
+		if zone.cove then
+			local a = (roll() * 2 - 1) * math.rad(CallTypes.COVE_HALF_ANGLE)
+			local r = zone.minRadius + roll() * (zone.maxRadius - zone.minRadius)
+			local c, s = math.cos(a), math.sin(a)
+			p = Vector3.new(h.X + (out.X * c - out.Z * s) * r, 0, h.Z + (out.X * s + out.Z * c) * r)
+		else
+			p = CallLogic.ringPoint(
+				if zone.fromHome then h else zone.center,
+				zone.minRadius,
+				zone.maxRadius,
+				roll
+			)
+		end
 		if CallLogic.isWater(p, zone.area) and (clear == nil or clear(p)) then
 			return p
 		end
 	end
-	return zone.fallback
+	return zone.fallback or CallLogic.homeFallback(h)
 end
-
 -- `count` points scattered around a centre in open water (big-call victims around the ferry).
 function CallLogic.scatterPoints(
 	center: Vector3,
@@ -246,12 +293,17 @@ function CallLogic.craftReach(owned: { string }, rankIndex: number?): number
 	return math.min(reach, cap)
 end
 
--- A distance-tier zone (docs/23 e.2), uniform over every zone the reach covers (the pool widens).
-function CallLogic.distanceZone(reach: number?, rng: Rng?): string
+-- A distance-tier zone (docs/23 e.2), uniform over every zone the reach covers from `home` (the pool widens):
+-- the open-sea rings up to the reach, and every outer island whose centre is within it.
+function CallLogic.distanceZone(reach: number?, rng: Rng?, home: Vector3?): string
 	local roll: Rng = rng or (math.random :: any)
+	local r, h = reach or CallTypes.BASE_REACH, home or CallLogic.homeOf(nil)
 	local pool = {}
 	for id, zone in CallTypes.SpawnZones do
-		if zone.reach and zone.reach <= (reach or CallTypes.BASE_REACH) then
+		if
+			(zone.reach and zone.reach <= r)
+			or (zone.island and flatDistance(h, zone.center) <= r)
+		then
 			table.insert(pool, id)
 		end
 	end
@@ -259,16 +311,20 @@ function CallLogic.distanceZone(reach: number?, rng: Rng?): string
 	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
 end
 
--- A dive site whose island is within `reach` (nil: any) and, if given, on island `where`
+-- A wreck dive site (docs/23 (h)) within `reach` of `home` (nil: any) and, if given, on island `where`
 -- (or with that site id). nil when none fits.
-local function pickSite(sites: { any }, reach: number?, rng: Rng?, where: string?): any?
+function CallLogic.diveSite(
+	reach: number?,
+	rng: Rng?,
+	where: string?,
+	home: Vector3?
+): CallTypes.DiveSite?
 	local roll: Rng = rng or (math.random :: any)
+	local h = home or CallLogic.homeOf(nil)
 	local pool = {}
-	for _, site in sites do
-		local r = CallTypes.IslandReach[site.island]
+	for _, site in CallTypes.DiveSites do
 		if
-			r
-			and r <= (reach or math.huge)
+			flatDistance(h, site.at) <= (reach or math.huge)
 			and (where == nil or where == site.island or where == site.id)
 		then
 			table.insert(pool, site)
@@ -277,28 +333,25 @@ local function pickSite(sites: { any }, reach: number?, rng: Rng?, where: string
 	return pool[math.floor(roll() * #pool) + 1]
 end
 
--- A wreck dive site (docs/23 (h)).
-function CallLogic.diveSite(reach: number?, rng: Rng?, where: string?): CallTypes.DiveSite?
-	return pickSite(CallTypes.DiveSites, reach, rng, where)
-end
-
--- Pay multiplier for a call this far (flat studs) from the station: 1 close in, rising with distance.
+-- Pay multiplier for a call this far (flat studs) from your berth: 1 close in, rising with distance.
 function CallLogic.distancePay(distance: number): number
 	local D = CallTypes.Distance
 	return math.clamp(distance / D.PayPerStuds, 1, D.PayMax)
 end
 
--- Pay multiplier for a call at `scene` landed at `at`: distancePay from the station, but landed away from
--- Port Haven (Haven Sands) it pays for half the round trip sailed (station -> scene -> `at`), never more.
-function CallLogic.deliveredPay(scene: Vector3, at: Vector3): number
-	local out = flatDistance(scene, CallTypes.STATION)
-	if flatDistance(at, CallTypes.STATION) <= CallTypes.PORT_HAVEN_RADIUS then
+-- Pay multiplier for a call at `scene` landed at `at`: distancePay from `home` (your berth), but landed
+-- elsewhere (the hub drop-off, another island) it pays for half the round trip sailed (home -> scene -> `at`),
+-- never more.
+function CallLogic.deliveredPay(scene: Vector3, at: Vector3, home: Vector3?): number
+	local h = home or CallLogic.homeOf(nil)
+	local out = flatDistance(scene, h)
+	if flatDistance(at, h) <= CallTypes.HOME_RADIUS then
 		return CallLogic.distancePay(out)
 	end
 	return CallLogic.distancePay(math.min(out, (out + flatDistance(scene, at)) / 2))
 end
 
--- Where to take a survivor: the nearest of the drop-off points (the player's own dock, harbour pads).
+-- Where to take a survivor: the nearest of the drop-off points (your berth, the hub drop-off).
 function CallLogic.nearestDropOff(from: Vector3, points: { Vector3 }): Vector3?
 	local best: Vector3?, bestD = nil, math.huge
 	for _, p in points do
@@ -311,17 +364,18 @@ function CallLogic.nearestDropOff(from: Vector3, points: { Vector3 }): Vector3?
 end
 
 -- Choose the next call for a player. completed = calls finished this session; reach = craftReach; sub =
--- they own the submarine (a diver at a wreck now and then, from call DIVER_FROM_CALL on).
+-- they own the submarine (a diver at a wreck now and then, from call DIVER_FROM_CALL on); home = homeOf.
 function CallLogic.chooseCall(
 	completed: number,
 	weatherState: string?,
 	rng: Rng?,
 	reach: number?,
-	sub: boolean?
+	sub: boolean?,
+	home: Vector3?
 ): KindChoice
 	local roll: Rng = rng or (math.random :: any)
 	if sub and completed + 1 >= CallTypes.DIVER_FROM_CALL and roll() < CallTypes.DIVER_CHANCE then
-		local site = CallLogic.diveSite(reach or CallTypes.BASE_REACH, roll)
+		local site = CallLogic.diveSite(reach or CallTypes.BASE_REACH, roll, nil, home)
 		if site then
 			return { kind = "Diver", zone = site.island }
 		end
@@ -330,7 +384,7 @@ function CallLogic.chooseCall(
 	if tut then
 		return {
 			kind = tut.kind,
-			zone = tut.zone or CallLogic.distanceZone(reach, roll),
+			zone = tut.zone or CallLogic.distanceZone(reach, roll, home),
 			victims = tut.victims,
 		}
 	end
@@ -348,15 +402,15 @@ function CallLogic.chooseCall(
 		end
 	end
 	local spec = CallTypes.Kinds[kind]
-	-- one-place scenes (the rip, the sinking boat; a fire is never in Calm Bay)
+	-- one-place scenes (the rip off the hub beach)
 	if #spec.zones == 1 then
 		return { kind = kind, zone = spec.zones[1] }
 	end
-	-- storm: beginner storm calls at the harbour mouth (docs 02 section 8)
+	-- storm: beginner storm calls just off your cove (docs 02 section 8)
 	if weatherState == "Storm" and table.find(spec.zones, "HarbourMouth") and roll() < 0.6 then
 		return { kind = kind, zone = "HarbourMouth" }
 	end
-	return { kind = kind, zone = CallLogic.distanceZone(reach, roll) }
+	return { kind = kind, zone = CallLogic.distanceZone(reach, roll, home) }
 end
 
 -- Is a world position over a flat drop-off pad (XZ inside the pad's footprint plus a margin)?

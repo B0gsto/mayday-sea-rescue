@@ -3,8 +3,8 @@
 -- Payout numbers: docs 03 section 2 (Calm Bay base 250 Cash / 60 Rep, weights from docs 02
 -- section 3, tutorial chain, fail-safe 10%, big-call shares). Numbers without a doc source: -- tune.
 --
--- World frame (GameConfig): sea level Y = 0, Port Haven north (-Z), harbour opens south (+Z).
--- The station's launch bays sit at about (-95, 0, 50) on the east side of the dock.
+-- World frame (WorldConfig, docs/23 (k)): sea level Y = 0, the hub island at the origin (its harbour opens south,
+-- +Z), six player islands 900 out (HubLayout), the outer islands beyond. Calls count from the player's berth.
 
 export type Interaction = {
 	kind: "Pull",
@@ -41,13 +41,16 @@ export type DiveSite = {
 export type SpawnZone = {
 	id: string,
 	displayName: string,
-	center: Vector3, -- ring centre
+	center: Vector3, -- ring centre (cove / fromHome zones: the player's berth instead)
 	minRadius: number,
 	maxRadius: number,
-	area: "Inside" | "Outside", -- Inside = Calm Bay behind the breakwater, Outside = beyond it
+	area: "Open" | "Outer", -- Open = any open water, Outer = also Areas.OuterMin from the hub (CallLogic.isWater)
 	timerMultiplier: number, -- longer timers for storm beginner calls (docs 02 section 8)
-	fallback: Vector3, -- used if random picks keep landing on land or walls
+	fallback: Vector3?, -- fixed sites; nil: CallLogic.homeFallback (open water out past your island)
 	reach: number?, -- distance-tier zones (docs/23 e.2): offered once the player's craft reach is at least this
+	cove: boolean?, -- a cone straight out of your island's cove (CallLogic.pickSpawnPoint)
+	fromHome: boolean?, -- a ring round your berth
+	island: boolean?, -- an outer island's ring: offered when its centre is within reach of your berth
 }
 
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
@@ -130,7 +133,7 @@ CallTypes.Kinds = {
 	RipCurrent = {
 		id = "RipCurrent",
 		displayName = "Rip Current",
-		radioLine = "Swimmer caught in a rip current off Haven Sands, one casualty.",
+		radioLine = "Swimmer caught in a rip current off the hub beach, one casualty.",
 		weight = 0.9, -- docs/02 section 3
 		timer = 600,
 		victims = 1,
@@ -147,7 +150,7 @@ CallTypes.Kinds = {
 		timer = 480,
 		victims = 3,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = { "SinkingSite" },
+		zones = { "Offshore", "FarSea", "DeepSea" }, -- a distance tier (CallLogic.chooseCall)
 		dropOffs = { "Dock", "Hospital" },
 		isBig = false,
 	},
@@ -159,7 +162,7 @@ CallTypes.Kinds = {
 		timer = 480,
 		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = { "Outer" },
+		zones = { "Offshore", "FarSea", "DeepSea" },
 		dropOffs = { "Dock", "Hospital" },
 		isBig = false,
 	},
@@ -225,7 +228,7 @@ CallTypes.TutorialChain = {
 	{ kind = "WildlifeRescue" },
 } :: { { kind: string, zone: string?, victims: number? } }
 
--- Distance tiers (docs/23 e.2): how far out (studs from the station) a player's best craft takes calls.
+-- Distance tiers (docs/23 e.2): how far out (studs from their berth) a player's best craft takes calls.
 -- Keyed by craft, not top speed: the RIB and lifeboat are slower than the jet ski but are the bigger
 -- earned craft. Capped by rank (CallLogic.craftReach): a Robux craft goes no farther than the free craft
 -- the player's rank has unlocked. No other craft: the jet ski. -- tune
@@ -245,139 +248,109 @@ CallTypes.BASE_REACH = 2000
 -- Pay x (distance / PayPerStuds), clamped to 1..PayMax (CallLogic.distancePay). x1 inside ~1,500 studs (the harbour
 -- approaches), then about pays for the extra travel (docs/23 (i), tests/Pacing.spec.luau). -- tune
 CallTypes.Distance = { PayPerStuds = 1500, PayMax = 4 }
--- Drop-offs within this of the station are Port Haven (pads, marina docks, station slip); a call landed beyond
--- it (Haven Sands slipway, ~1,100 out) pays for the trip sailed (CallLogic.deliveredPay). -- tune
-CallTypes.PORT_HAVEN_RADIUS = 800
-
--- Island call zones: a ring of open water just off each island (WorldConfig.Islands), offered from this
--- reach (must be a ring's reach: its fallback). Not St Elowen's Mount or The Arches: Great Gale blocks
--- every straight sea line from the harbour mouth (Studio-sampled 2026-10-25).
-CallTypes.IslandReach = {
-	SkerryIsle = 2000,
-	PuffinIsle = 3500,
-	GannetRock = 5500,
-	Penwyn = 5500,
-	WreckReef = 5500,
-	MermaidLagoon = 5500,
-} :: { [string]: number }
-
-local OUTER_MAX = CallTypes.TRAVEL_SECONDS * 75 * CallTypes.CRUISE_FACTOR -- JetSki topSpeed 75
+-- A call landed farther than this from your berth (the hub drop-off, another island) pays for the trip sailed
+-- from your berth (CallLogic.deliveredPay). -- tune
+CallTypes.HOME_RADIUS = 150
+-- Tutorial calls spawn in a cone this many degrees either side of straight out of your cove (hub -> berth).
+CallTypes.COVE_HALF_ANGLE = 35
 
 CallTypes.SpawnZones = {
-	-- First call: a short hop from the bays, inside the breakwater.
+	-- Calls 1-2 (docs/23 (k)): open water just off your own island's cove (studs from your berth, in the
+	-- COVE_HALF_ANGLE cone), never behind the island or under a bridge.
 	Near = {
 		id = "Near",
-		displayName = "Calm Bay",
+		displayName = "Your Cove",
 		center = CallTypes.STATION,
-		minRadius = 110,
+		minRadius = 150,
 		maxRadius = 220,
-		area = "Inside",
+		area = "Open",
 		timerMultiplier = 1.2,
-		fallback = Vector3.new(40, 0, 180),
+		cove = true,
 	},
 	CalmBay = {
 		id = "CalmBay",
-		displayName = "Calm Bay",
+		displayName = "Your Cove",
 		center = CallTypes.STATION,
-		minRadius = 160,
-		maxRadius = 420,
-		area = "Inside",
+		minRadius = 180,
+		maxRadius = 300,
+		area = "Open",
 		timerMultiplier = 1,
-		fallback = Vector3.new(150, 0, 260),
+		cove = true,
 	},
-	-- Beyond the breakwater, sized by the 45 s jet ski budget (about 840 to 1690 studs out).
+	-- Storm beginner calls just past your cove: full storm waves, a short ride.
+	HarbourMouth = {
+		id = "HarbourMouth",
+		displayName = "Cove Mouth",
+		center = CallTypes.STATION,
+		minRadius = 300,
+		maxRadius = 450,
+		area = "Outer",
+		timerMultiplier = 1.4,
+		cove = true,
+	},
+	-- The open water between the six islands and the outer islands (free-roam swimmers).
 	Outer = {
 		id = "Outer",
 		displayName = "Open Water",
 		center = CallTypes.STATION,
-		minRadius = OUTER_MAX * 0.5,
-		maxRadius = OUTER_MAX,
-		area = "Outside",
+		minRadius = 1200,
+		maxRadius = 1900,
+		area = "Outer",
 		timerMultiplier = 1.3,
-		fallback = Vector3.new(0, 0, 1100),
 	},
-	-- Storm beginner calls just outside the gap: full storm waves, a short ride.
-	HarbourMouth = {
-		id = "HarbourMouth",
-		displayName = "Harbour Mouth",
-		center = Vector3.new(0, 0, 420),
-		minRadius = 0,
-		maxRadius = 30,
-		area = "Outside",
-		timerMultiplier = 1.4,
-		fallback = Vector3.new(0, 0, 420),
-	},
+	-- The big call, off the hub's harbour mouth (it opens south, between the Plot2 and Plot3 bridges).
 	FerrySite = {
 		id = "FerrySite",
 		displayName = "Harbour Mouth",
 		center = Vector3.new(60, 0, 500),
 		minRadius = 0,
 		maxRadius = 0,
-		area = "Outside",
+		area = "Open",
 		timerMultiplier = 1,
 		fallback = Vector3.new(60, 0, 500),
 	},
-	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off Haven Sands.
-	-- The casualty starts about 120 studs down the rip and is carried seaward (shared/RipCurrent):
-	-- origin + direction * 120, in the water off the Haven Sands waterline.
+	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off the hub's north-east beach
+	-- (shared/RipCurrent.HavenSands); the casualty starts 120 studs down the rip: origin + direction * 120.
 	HavenSandsRip = {
 		id = "HavenSandsRip",
-		displayName = "Haven Sands",
-		center = Vector3.new(888, 0, 426),
+		displayName = "Hub Beach",
+		center = Vector3.new(282, 0, -163),
 		minRadius = 0,
 		maxRadius = 0,
-		area = "Outside",
+		area = "Open",
 		timerMultiplier = 1,
-		fallback = Vector3.new(888, 0, 426),
-	},
-	-- Sinking vessel (docs/09 section 8.1): fixed open water in Calm Bay, a short run from the bays.
-	SinkingSite = {
-		id = "SinkingSite",
-		displayName = "Calm Bay",
-		center = Vector3.new(150, 0, 260),
-		minRadius = 0,
-		maxRadius = 0,
-		area = "Inside",
-		timerMultiplier = 1,
-		fallback = Vector3.new(150, 0, 260),
+		fallback = Vector3.new(282, 0, -163),
 	},
 } :: { [string]: SpawnZone }
 
--- Open-sea rings around the station, one per tier (the backup when an island's near side is blocked).
+-- Open-sea rings round your berth, one per tier (CraftReach), kept Areas.OuterMin from the hub.
 local RINGS: { [string]: { number } } =
-	{ Offshore = { 600, 2000 }, FarSea = { 2000, 3500 }, DeepSea = { 3500, 5500 } }
-local ringFallback: { [number]: Vector3 } = {}
+	{ Offshore = { 500, 2000 }, FarSea = { 2000, 3500 }, DeepSea = { 3500, 5500 } }
 for id, ring in RINGS do
-	local minR, maxR = ring[1], ring[2]
-	ringFallback[maxR] = CallTypes.STATION + Vector3.new(0, 0, (minR + maxR) / 2) -- due south: open sea
 	CallTypes.SpawnZones[id] = {
 		id = id,
 		displayName = "Open Water",
 		center = CallTypes.STATION,
-		minRadius = minR,
-		maxRadius = maxR,
-		area = "Outside",
+		minRadius = ring[1],
+		maxRadius = ring[2],
+		area = "Outer",
 		timerMultiplier = 1.3,
-		fallback = ringFallback[maxR],
-		reach = maxR,
+		reach = ring[2],
+		fromHome = true,
 	}
 end
--- only islands that exist in the map data get a zone
+-- Every outer island (WorldConfig.Islands): a ring of open water just off it.
 for _, island in WorldConfig.Islands do
-	local reach = CallTypes.IslandReach[island.id]
-	if reach then
-		CallTypes.SpawnZones[island.id] = {
-			id = island.id,
-			displayName = island.name,
-			center = island.center,
-			minRadius = island.radius + 60,
-			maxRadius = island.radius + 400,
-			area = "Outside",
-			timerMultiplier = 1.3,
-			fallback = ringFallback[reach], -- its tier's open sea (Studio-checked routable)
-			reach = reach,
-		}
-	end
+	CallTypes.SpawnZones[island.id] = {
+		id = island.id,
+		displayName = island.name,
+		center = island.center,
+		minRadius = island.radius + 60,
+		maxRadius = island.radius + 400,
+		area = "Outer",
+		timerMultiplier = 1.3,
+		island = true,
+	}
 end
 
 -- Dive sites (docs/23 (h)), Studio-sampled 2026-10-25 (terrain raycasts, build/wp10c): the mail seaplane
@@ -413,28 +386,11 @@ for _, site in CallTypes.DiveSites do
 	table.insert(CallTypes.Kinds.Diver.zones, site.island)
 end
 
--- Water areas (studs) used to reject spawn points on land, the dock or the breakwater.
+-- Open water on the new map (CallLogic.isWater; the server adds its terrain / route raycasts on top).
 CallTypes.Areas = {
-	-- elbow: each breakwater dog-legs from its knee (x +-320, z kneeW / kneeE) to its head (x +-headW / headE, z 360)
-	-- (Harbour.BREAKWATER, west and east differ); points within `clear` studs of that leg's centreline, or seaward
-	-- of it, are not inside
-	Inside = {
-		minX = -290,
-		maxX = 290,
-		minZ = 30,
-		maxZ = 340,
-		elbow = {
-			x = 320,
-			far = 360,
-			clear = 20,
-			kneeW = 334,
-			headW = 294,
-			kneeE = 196,
-			headE = 164,
-		},
-	},
-	DockKeepOut = { minX = -145, maxX = -75, maxZ = 125 }, -- dock, bays and drop-off pad
-	OutsideMinZ = 392, -- breakwater heads end at z = 368
+	Shore = 40, -- studs off the hub's and the player islands' rims (HubLayout radii)
+	BridgeClear = 37, -- studs from a bridge's centre line: half its deck + 30 (its towers stand on the rims)
+	OuterMin = 1200, -- "Outer" area: this far from the hub, past the six islands
 	MapMargin = 120, -- stay this far inside GameConfig.MapRadius
 }
 

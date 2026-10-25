@@ -20,6 +20,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local CallLogic = require(Shared:WaitForChild("Calls"):WaitForChild("CallLogic"))
 local CallTypes = require(Shared:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local OfferPacing = require(Shared:WaitForChild("Calls"):WaitForChild("OfferPacing"))
+local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Weather = require(Shared:WaitForChild("Weather"))
 local OpsFolder = Shared:WaitForChild("Ops")
 local Board = require(OpsFolder:WaitForChild("Board"))
@@ -280,32 +281,31 @@ local function coldOpenRiderStatus(player: Player): (boolean, boolean)
 			and seat:IsDescendantOf(boat)
 end
 
--- On foot at the top of the station slipway (Map.Slipways.StationSlipway, its local -Z end is at
--- the quay), or by the station when the map has none. A player seated in anything is left alone.
+-- Where this player's calls count from: their berth (BayCFrame), else the hub drop-off (docs/23 (k)).
+local function homeOf(player: Player): Vector3
+	return CallLogic.homeOf(player:GetAttribute("BayCFrame"))
+end
+
+-- On foot at their island's spawn (HubLayout; the hub's while they have no berth), facing its station.
+-- A player seated in anything is left alone.
 local function sendToStation(player: Player)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	if not character or not humanoid or humanoid.SeatPart or humanoid.Health <= 0 then
 		return
 	end
-	local map = Workspace:FindFirstChild("Map")
-	local slips = map and map:FindFirstChild("Slipways")
-	local ramp = slips and slips:FindFirstChild("StationSlipway")
-	local pos = CallTypes.STATION + Vector3.new(0, 6, 0)
-	if ramp and ramp:IsA("BasePart") then
-		local half = ramp.Size / 2
-		pos = (ramp.CFrame * CFrame.new(0, half.Y + 4, -half.Z + 10)).Position
-	end
-	local face = CallTypes.STATION
-	if (face - pos).Magnitude < 1 then
-		face = pos + Vector3.new(0, 0, -1)
+	local home, spawn = homeOf(player), HubLayout.Hub.spawn
+	for _, island in HubLayout.Islands do
+		if CallLogic.flatDistance(island.center, home) <= HubLayout.IslandRadius then
+			spawn = island.spawn
+		end
 	end
 	local root = character.PrimaryPart
 	if root then
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
 	end
-	character:PivotTo(CFrame.lookAt(pos, Vector3.new(face.X, pos.Y, face.Z)))
+	character:PivotTo(spawn + Vector3.new(0, 3, 0))
 end
 
 -- The cold open ended for any reason: persist ColdOpenDone, radio the outcome (on anything but
@@ -533,19 +533,21 @@ local function newOp(
 	sceneKind: string,
 	zone: string,
 	position: Vector3,
-	victims: number? -- survivors in the water (default: the scene kind's count)
+	victims: number?, -- survivors in the water (default: the scene kind's count)
+	home: Vector3? -- the owner's berth (homeOf); the hub drop-off for the server-wide call
 ): any
 	nextId += 1
 	local def = assert(Operations.get(kind), kind)
 	local spec = assert(CallTypes.Kinds[sceneKind], sceneKind)
 	local id = `O{nextId}`
+	local from = home or CallLogic.homeOf(nil)
 	local op = {
 		id = id,
 		kind = kind,
 		def = def,
-		-- pay weight: farther calls pay more (docs/23 e.2)
-		weight = def.weight
-			* CallLogic.distancePay(CallLogic.flatDistance(position, CallTypes.STATION)),
+		-- pay weight: farther calls pay more (docs/23 e.2), counted from the owner's berth
+		weight = def.weight * CallLogic.distancePay(CallLogic.flatDistance(position, from)),
+		home = from,
 		isBig = def.isBig,
 		zone = zone,
 		zoneId = CallLogic.zoneIdAt(position),
@@ -712,11 +714,13 @@ local function deliverCasualty(op: any, ci: number, actor: Player?)
 	end
 	c.delivered = true
 	op.saved += 1
-	-- landed away from Port Haven (Haven Sands): pay for the trip sailed, not the far call's trip home
+	-- landed away from the owner's berth (the hub, another island): pay for the trip sailed, not the trip home
 	local root = actor and actor.Character and actor.Character:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") and not op.isBig then
-		op.weight =
-			math.min(op.weight, op.def.weight * CallLogic.deliveredPay(op.position, root.Position))
+		op.weight = math.min(
+			op.weight,
+			op.def.weight * CallLogic.deliveredPay(op.position, root.Position, op.home)
+		)
 	end
 	-- they climb off (a jet ski carries one: the next survivor needs the seat)
 	pcall(RescueService.RemoveVictim, op.scene, ci)
@@ -1359,32 +1363,15 @@ local function waterLine(a: Vector3, b: Vector3): boolean
 	return Workspace:Raycast(from, Vector3.new(b.X, 1, b.Z) - from, routeParams) == nil
 end
 
--- The bays, and the gap between the breakwater heads (x -30..30, z 352..368): one waypoint each side.
-local BAYS = Vector3.new(-70, 0, 120)
-local INNER_MOUTH, OUTER_MOUTH = Vector3.new(0, 0, 330), Vector3.new(0, 0, 400)
-local function inside(p: Vector3): boolean -- the basin: its arms at x +-320, heads at z 368
-	return p.Z < 368 and math.abs(p.X) < 328
-end
-
--- The water route from `from` to `to` (through the harbour mouth when it crosses the breakwater) is clear.
-local function routeClear(from: Vector3, to: Vector3): boolean
-	local route: { Vector3 } = if inside(from) == inside(to)
-		then { to }
-		elseif inside(from) then { INNER_MOUTH, OUTER_MOUTH, to }
-		else { OUTER_MOUTH, INNER_MOUTH, to }
-	local at = from
-	for _, p in route do
-		if not waterLine(at, p) then
-			return false
-		end
-		at = p
+-- A call spot is open water on a straight sea line from just past `home`'s cove mouth (never behind an
+-- island, the hub or a bridge pier).
+local COVE_MOUTH = 120 -- studs straight out from the berth: past the cove (HubLayout island radius 160)
+local function clearSpawnFrom(home: Vector3): (Vector3) -> boolean
+	local d = Vector3.new(home.X, 0, home.Z) - CallTypes.STATION
+	local mouth = home + (if d.Magnitude > 1 then d.Unit else Vector3.zAxis) * COVE_MOUTH
+	return function(p: Vector3): boolean
+		return RescueService.ClearWater(p, RescueService.CLEAR_SPAWN) and waterLine(mouth, p)
 	end
-	return true
-end
-
--- a call spot is open water reachable by boat from the bays (never behind a breakwater or a headland)
-local function clearSpawn(p: Vector3): boolean
-	return RescueService.ClearWater(p, RescueService.CLEAR_SPAWN) and routeClear(BAYS, p)
 end
 
 -- docs/23 e.2: how far out this player's calls go, from the best craft they can launch.
@@ -1404,12 +1391,14 @@ end
 local function offerTo(player: Player, forcedKind: string?, opts: any?)
 	local st = stateOf(player)
 	local okSub, sub = try("ProgressionService", "CanUseVehicle", player, "Submarine")
+	local home = homeOf(player)
 	local choice = CallLogic.chooseCall(
 		st.completed,
 		weatherState(),
 		nil,
 		callReach(player),
-		okSub and sub == true
+		okSub and sub == true,
+		home
 	)
 	local kind = Operations.FromCallKind[choice.kind]
 	local sceneKind, zone, victims = choice.kind, choice.zone, choice.victims
@@ -1439,8 +1428,9 @@ local function offerTo(player: Player, forcedKind: string?, opts: any?)
 		zone,
 		if dive
 			then Vector3.new(dive.at.X, 0, dive.at.Z)
-			else CallLogic.pickSpawnPoint(zone, nil, clearSpawn),
-		victims
+			else CallLogic.pickSpawnPoint(zone, nil, clearSpawnFrom(home), home),
+		victims,
+		home
 	)
 	op.dive = dive
 	if kind == "WildlifeRescue" then
@@ -1597,7 +1587,7 @@ local function startBigOp()
 		count,
 		CallTypes.BigCall.FerryVictimMinRadius,
 		CallTypes.BigCall.FerryVictimMaxRadius,
-		"Outside"
+		"Open"
 	)
 	RescueService.SpawnCall(op.scene, positions)
 	pcall(SkyFlare.distress, op.position) -- the world cue: a red flare and the ferry's horn out at sea
@@ -2047,7 +2037,7 @@ end
 ---------------------------------------------------------------- cold open (first session)
 
 -- The cold open (design change, 2026-10): a new player spawns already seated on a moving jet ski
--- in Calm Bay (ColdOpen.SPAWN) with a Person in the Water operation already tasked (the radio ack is
+-- at their berth (VehicleService.BerthLaunch) with a Person in the Water operation already tasked (the radio ack is
 -- auto-done) and rescues the casualty within about 90 s; the station and onboarding come after.
 -- Plan (shared/Boat/ColdOpen.PLAN): tasking (auto, Gold) -> recovery -> transport; Assist on; condition drift x0.5.
 OperationService.ColdOpenPlan = BoatColdOpen.PLAN
@@ -2081,13 +2071,13 @@ function OperationService.StartColdOpen(
 	if st.offerOpId and ops[st.offerOpId] then
 		withdrawOffer(ops[st.offerOpId])
 	end
-	local at, home = BoatColdOpen.SPAWN, BoatColdOpen.SHORE[1].water
-	-- docs/23: at your own berth, bow to sea (no two new players share a spawn); the casualty is dead ahead and
-	-- the marina beach (ColdOpen.SHORE Marina) is home. Fallback: Calm Bay, facing the station slipway.
+	-- docs/23 (k): at your own berth, bow out of the cove (no two new players share a spawn); the casualty is
+	-- dead ahead just off the cove and the berth (a ColdOpen.SHORE point) is home. Fallback: the hub harbour.
 	local okBerth, berth = try("VehicleService", "BerthLaunch", player, "JetSki")
+	local at = BoatColdOpen.SPAWN
 	local cf = spawnCFrame
 		or (if okBerth and typeof(berth) == "CFrame" then berth else nil)
-		or CFrame.lookAt(at, Vector3.new(home.X, at.Y, home.Z))
+		or CFrame.lookAt(at, at + BoatColdOpen.SPAWN_FACING)
 	-- CONTRACT: VehicleService.SpawnColdOpen(player, cframe): Model? spawns a jet ski at `cframe`,
 	-- seats the player and gives it some forward speed (stream B). Called through pcall.
 	local okSpawn, spawnErr = try("VehicleService", "SpawnColdOpen", player, cf)
@@ -2098,7 +2088,7 @@ function OperationService.StartColdOpen(
 	local ahead = cf.LookVector * Vector3.new(1, 0, 1)
 	ahead = if ahead.Magnitude > 1e-3 then ahead.Unit else Vector3.new(0, 0, 1)
 	local pos = cf.Position * Vector3.new(1, 0, 1) + ahead * rng:NextNumber(d[1], d[2])
-	local op = newOp("PersonInWater", "Swimmer", "CalmBay", pos)
+	local op = newOp("PersonInWater", "Swimmer", "CalmBay", pos, nil, homeOf(player))
 	op.coldOpen = true
 	op.storm = false -- a storm already running when the cold open starts is not this op's weather
 	flow.opId = op.id

@@ -20,6 +20,7 @@
 --    first second. The radio says a few words; the world (client UI/ColdOpenCue) does the rest,
 --    and pops a flare when the player makes no headway for NUDGE_AFTER seconds (nudge).
 local Buoyancy = require(script.Parent.Buoyancy)
+local HubLayout = require(script.Parent.Parent.Config.HubLayout)
 
 local KNOT = 1.543 -- studs/s
 
@@ -117,13 +118,14 @@ end
 
 -- 4. Cold open setup (read by OperationService.StartColdOpen) and its world cues.
 -- 2026-10-21: recovery is auto_board (close and steady, they climb on the sled), then the ride home
--- (transport): at the slipway they climb off and wave
+-- (transport): at the berth they climb off and wave
 ColdOpen.PLAN = { "tasking", "recovery", "transport" }
--- Spawn inside the breakwater, facing the station slipway (SHORE[1]): the casualty is dead ahead on
--- the straight, clear run home (Studio raycast checked; outside the Harbour Mouth the breakwater sat
--- across the line home), so the drop-off distance only falls going straight on.
-ColdOpen.SPAWN = Vector3.new(-140, 0, 200)
-ColdOpen.DISTANCE = { 50, 60 } -- studs dead ahead: just outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
+-- The jet ski starts at your berth, bow out of the cove (VehicleService.BerthLaunch), the casualty dead ahead
+-- just off the cove mouth; home is the berth behind you (SHORE). With no berth: the hub drop-off (SHORE[1]),
+-- facing out of the hub harbour (south, +Z).
+ColdOpen.SPAWN = HubLayout.Hub.dropOff
+ColdOpen.SPAWN_FACING = Vector3.zAxis
+ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
 ColdOpen.RADIO = "Person in the water. Dead ahead!"
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)
 ColdOpen.NUDGE_PROGRESS = 6 -- studs closer that count as headway
@@ -149,26 +151,28 @@ function ColdOpen.nudge(n: Nudge, now: number, distance: number): boolean
 	return false
 end
 
--- 5. The first mission ends on land (docs/14 section 3). The recovery only completes once the
---    casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the station
---    slipway (Map.Slipways.StationSlipway, waterline about z 30) or the Haven Sands slipway
---    (WorldConfig.Slipways.SandsSlipway). `water` is the drop-off in open water just past the ramp
---    toe (station: the ramp runs to z ~75, Studio raycast; at the waterline the craft ran up the rails
---    and stranded). `dry` is where the shore party takes them over. `via`:
---    open-water turns the minimap route may go through (ColdOpen.nextHop) where the moored boats or
---    the Dock jetty block the straight line (west of the jetty, its tip, east of it; Studio raycast checked).
+-- 5. The first mission ends at a drop-off (docs/14 section 3, docs/23 (k)). The recovery only completes once
+--    the casualty holds on (PiwMode "held") and is within SHORE_RADIUS of a shore point: the hub drop-off in its
+--    harbour, or an island's berth (HubLayout; the cold open starts at yours). Every call's delivery counts
+--    there at any speed too. `water` is the drop-off, `dry` the quay at the head of the harbour / cove where the
+--    shore party takes them over. `via`: open-water turns the minimap route may go through (ColdOpen.nextHop)
+--    when something blocks the straight line (none on the new map: coves open straight out to sea).
 export type Shore = { id: string, water: Vector3, dry: Vector3, via: { Vector3 }? }
+local function quay(frame: CFrame, fwd: number): Vector3
+	local p = (frame * CFrame.new(0, 0, -fwd)).Position
+	return Vector3.new(p.X, 0, p.Z)
+end
 ColdOpen.SHORE = {
-	{
-		id = "Station",
-		water = Vector3.new(-165, 0, 85),
-		dry = Vector3.new(-171, 0, 18),
-		via = { Vector3.new(-165, 0, 120), Vector3.new(-112, 0, 130), Vector3.new(-80, 0, 120) },
-	},
-	{ id = "Sands", water = Vector3.new(1000, 0, 282), dry = Vector3.new(970, 0, 250) },
-	-- docs/23: the marina beach by the spine root (shared/Marina), home for a cold open that starts at your berth
-	{ id = "Marina", water = Vector3.new(-460, 0, 45), dry = Vector3.new(-460, 0, 10) },
+	{ id = "Hub", water = HubLayout.Hub.dropOff, dry = quay(HubLayout.Hub.frame, 90) },
 } :: { Shore }
+for _, island in HubLayout.Islands do
+	local berth = island.berths.Boat.Position
+	table.insert(ColdOpen.SHORE, {
+		id = island.id,
+		water = Vector3.new(berth.X, 0, berth.Z),
+		dry = quay(island.frame, 20),
+	})
+end
 ColdOpen.SHORE_RADIUS = 40 -- studs, flat, casualty to the shore point (28 left a jet ski stalled on the slip short of it) -- tune
 ColdOpen.SHORE_RADIO = { from = "Chief Aggie", text = "Over here!" } -- slow on the way in
 ColdOpen.NEXT_CALL_DELAY = 15 -- s after the cold open before call 2: the reward burst and debrief, still seated (docs/16 B2) -- tune
