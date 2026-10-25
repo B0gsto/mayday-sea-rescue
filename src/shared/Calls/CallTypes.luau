@@ -58,8 +58,8 @@ local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
--- Where the radio dispatches from: the launch bays (map/Build.luau Bay1..Bay4).
-CallTypes.STATION = Vector3.new(-95, 0, 50)
+-- Where the radio dispatches from: the hub island's centre (docs/23 (k); HubLayout.Hub.center at sea level).
+CallTypes.STATION = Vector3.new(0, 0, 0)
 
 -- Travel budget (docs 02 section 4.1): about 45 s out with the zone's intended vehicle (jet ski).
 -- Cruise is below top speed: waves, turns and the trip out through the harbour mouth. -- tune

@@ -34,7 +34,7 @@ class PropsSchema(unittest.TestCase):
 
     def test_cliff_faces(self):
         faces = [r for r in self.doc["rocks"] if r[9] == 1 and "_Cliff_" in self.doc["assets"][r[0] - 1]]
-        self.assertGreater(len(faces), 40)
+        # the hub ring has no cliffs (docs/23 (k)): faces, where any, stay in bounds
         for r in faces:
             name = self.doc["assets"][r[0] - 1]
             self.assertGreaterEqual(r[7], S.CLIFF_SCALE[0] - 0.01)
@@ -43,9 +43,6 @@ class PropsSchema(unittest.TestCase):
             self.assertGreater(math.hypot(r[1] - S.COLD_OPEN[0], r[3] - S.COLD_OPEN[1]), S.COLD_OPEN[2])
         landmarks = {self.doc["assets"][r[0] - 1].split("_")[2] for r in self.doc["rocks"] if r[9] == 1}
         self.assertLessEqual(landmarks, {"Cliff", "Ledge"})
-        cl = self.doc["stats"]["cliffs"]
-        for region in S.CLIFF_REGIONS:
-            self.assertGreater(cl.get(region, {}).get("face", 0), 0, region)
 
 
 class MaxFilter(unittest.TestCase):

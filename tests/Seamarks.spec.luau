@@ -122,9 +122,14 @@ return function(t)
 		t.expect(mark("SkerriesNorth").z < skN.Z).toBe(true) -- north is -Z
 		t.expect(mark("SkerriesWest").x < skN.X).toBe(true)
 		t.expect(mark("SkerriesEast").x > skN.X).toBe(true)
-		t.expect(mark("HavenHeadLedge").z > reefs.HavenHeadReef.Z).toBe(true)
-		local bar = WorldConfig.Beaches[1].bar
-		t.expect(mark("BarWest").x < bar.from.X).toBe(true)
+		local wreck
+		for _, p in WorldConfig.POIs do
+			if p.id == "Morwenna" then
+				wreck = p.position
+			end
+		end
+		t.expect(mark("MorwennaSouth").z > wreck.Z).toBe(true)
+		t.expect(mark("MorwennaWest").x < wreck.X).toBe(true)
 		local e = reefs.SkerriesReefE
 		local gull = mark("GullStone")
 		t.expect(math.sqrt((gull.x - e.X) ^ 2 + (gull.z - e.Z) ^ 2) < 120).toBe(true)
@@ -134,12 +139,17 @@ return function(t)
 		local fs = t.lune("fs")
 		local meta = t.lune("serde")
 			.decode("json", fs.readFile(`{t.gameDir}/map/generated/terrain.json`))
-		local raw = fs.readFile(`{t.gameDir}/map/generated/{meta.height}`)
+		-- the main grid or the island window holding (x, z)
 		local function terrainY(x: number, z: number): number
-			local ix = math.floor((x - meta.originX) / meta.cell + 0.5)
-			local iz = math.floor((z - meta.originZ) / meta.cell + 0.5)
-			local v = string.unpack("<i2", raw, (iz * meta.nx + ix) * 2 + 1)
-			return v / meta.heightScale
+			for _, g in { meta, table.unpack(meta.windows) } do
+				local ix = math.floor((x - g.originX) / meta.cell + 0.5)
+				local iz = math.floor((z - g.originZ) / meta.cell + 0.5)
+				if ix >= 0 and ix < g.nx and iz >= 0 and iz < g.nz then
+					local raw = fs.readFile(`{t.gameDir}/map/generated/{g.height}`)
+					return string.unpack("<i2", raw, (iz * g.nx + ix) * 2 + 1) / meta.heightScale
+				end
+			end
+			return meta.stats.minY -- deep sea, no voxels
 		end
 		for _, m in R.Marks do
 			local need = if CHAR[m.asset] then -7 else -6 -- pillar tail 2.05 m, ball riser 1.85 m (dims.md)

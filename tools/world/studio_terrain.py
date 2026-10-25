@@ -6,10 +6,10 @@ usage: python3 tools/world/studio_terrain.py [--no-close] [--export-only]
 1. Lune stages map/generated/* into a copy of build/MaydaySeaRescue.rbxl (build/world/TerrainWork.rbxl).
 2. tools/studio-open.py opens it as TestBench-MaydayTerrain (a scratch window; never another project's window).
 3. Under the machine-wide Studio lock: execute_luau runs tools/world/write_terrain.luau in batches of tile rows
-   (WriteVoxels), adds the Needle's Eye rock arch, then exports Terrain through SerializationService and writes the
+   (WriteVoxels), adds the rock arches (layout.ARCHES), then exports Terrain through SerializationService and writes the
    bytes to map/terrain/Terrain.rbxm.
 4. Closes the TestBench window (Don't Save) unless --no-close."""
-import base64, json, math, os, subprocess, sys, time
+import base64, json, os, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -36,11 +36,6 @@ def write(run):
     `run(args)` executes write_terrain.luau with ARGS in the Edit datamodel; also used by tools/studio/publish_studio.py."""
     meta = json.load(open(os.path.join(REPO, "map/generated/terrain.json")))
     rows = (meta["nx"] - 1) // 64
-    (gx0, gz0), (gx1, gz1) = L.GULLY["from"], L.GULLY["to"]
-    glen = math.hypot(gx1 - gx0, gz1 - gz0)
-    poi = next(p for p in L.POIS if p["id"] == "GullyArch")
-    arch = {"x": poi["pos"][0], "y": L.GULLY["floorY"] + 2, "z": poi["pos"][2], "ax": -(gz1 - gz0) / glen,
-            "az": (gx1 - gx0) / glen, "radius": L.GULLY["halfWidth"] + 8, "thick": 7}
     step = 4
     for r0 in range(0, rows, step):
         print(run({"mode": "write", "row0": r0, "row1": min(rows, r0 + step)})[:200], flush=True)
@@ -49,7 +44,6 @@ def write(run):
         for r0 in range(0, wrows, step):
             print(w["id"], run({"mode": "write", "window": w["id"], "row0": r0, "row1": min(wrows, r0 + step)})[:200],
                   flush=True)
-    print(run({"mode": "arch", "arch": arch}))
     for a in L.ARCHES:
         print(run({"mode": "arch", "arch": {"x": a["center"][0], "y": a["y"], "z": a["center"][1], "ax": a["across"][0],
                                             "az": a["across"][1], "radius": a["radius"], "thick": a["thick"]}}))

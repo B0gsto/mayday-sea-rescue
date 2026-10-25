@@ -165,24 +165,24 @@ local marks: { Mark } = {
 		light = "Fl G 5s",
 		map = "SeamarkStarboard",
 	},
-	-- the Bar (Haven Sands sandbar, 1 m): its west end, clear water to the west toward the channel
+	-- the Morwenna wreck (WorldConfig.POIs, off the ring east of the hub): clear water to its west
 	{
-		id = "BarWest",
+		id = "MorwennaWest",
 		asset = "M_Hbr_NavMark_West",
-		name = "Bar West",
-		x = 610,
-		z = 430,
+		name = "Morwenna West",
+		x = 1000,
+		z = -640,
 		yaw = 60,
 		light = "Q(9) W 15s",
 		map = "SeamarkCardinal",
 	},
-	-- Haven Head ledges (2 m patches at 1640..1760, 1080..1100): pass south of them
+	-- and to its south
 	{
-		id = "HavenHeadLedge",
+		id = "MorwennaSouth",
 		asset = "M_Hbr_NavMark_South",
-		name = "Haven Head Ledge",
-		x = 1700,
-		z = 1200,
+		name = "Morwenna South",
+		x = 1100,
+		z = -540,
 		yaw = 320,
 		light = "Q(6)+LFl W 15s",
 		map = "SeamarkCardinal",
