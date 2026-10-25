@@ -4,7 +4,8 @@
 -- your own island), in Workspace.QuestPontoons.Island<i>. And the quest boats: a giver (NpcFactory R15, in
 -- Workspace.Npcs, named by npc id) stands in a small Lego boat that sails in from out at sea to a free mooring slot
 -- (quest.slots), and sails off again (turn, out to sea, gone). QuestService decides who comes; this module moves them.
--- Rig attributes: QuestIsland (island index), Moored (true once tied up), Leaving (true while sailing off).
+-- Rig attributes: QuestIsland (island index), Moored (true once tied up), Leaving (true while sailing off). The boat
+-- (Workspace.QuestBoats.QuestBoat) has Giver (npc id), QuestIsland and Moored; QuestController bobs moored ones.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -229,6 +230,9 @@ local function run(b: Boat, dur: number, path: (number) -> CFrame, done: () -> (
 end
 
 local function setRig(b: Boat, name: string, value: any)
+	if name == "Moored" then
+		b.model:SetAttribute(name, value)
+	end
 	if b.rig then
 		b.rig:SetAttribute(name, value)
 	end
@@ -318,6 +322,8 @@ function QuestPontoons.Arrive(i: number, npc: Data.Npc): Boat?
 		gone = false,
 	}
 	fleet[slot] = b
+	b.model:SetAttribute("Giver", npc.id)
+	b.model:SetAttribute("QuestIsland", i)
 	run(b, IN_TIME, function(a: number): CFrame
 		if a < 0.85 then
 			local u = a / 0.85

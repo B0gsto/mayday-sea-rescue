@@ -3,21 +3,29 @@
 -- pontoon (Workspace.Npcs rigs with QuestIsland = your DockPlot, not Leaving), local to you: a gold "!" when they have
 -- a quest for you today and you have none, a "?" over your quest's giver when it is ready to hand in. Reads
 -- QuestService's player attributes (QuestOffer_<npcId>, QuestId, QuestStage). Also puts the "Quests" prompt on your
--- own island's QuestTablet (Workspace.QuestPontoons.Island<plot>), which opens UI/QuestTablet.
+-- own island's QuestTablet (Workspace.QuestPontoons.Island<plot>), which opens UI/QuestTablet. And moored quest boats
+-- (Workspace.QuestBoats, Moored) bob and sway on the shared wave field with their giver, locally (the server leaves
+-- them still at the slot).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local HudTheme = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("HudTheme"))
 local QuestData =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Quests"):WaitForChild("Data"))
 local QuestTablet = require(script.Parent.Parent:WaitForChild("UI"):WaitForChild("QuestTablet"))
+local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local QuestController = {}
 
 local player = Players.LocalPlayer
 local GOLD = Color3.fromRGB(255, 196, 40)
 local boards: { [Model]: BillboardGui } = {} -- several islands can each have a rig for the same giver
+local BOB_RANGE = 400 -- studs from the camera a moored boat bobs
+local SWAY = 0.7 -- share of the wave slope the hull follows
+type Bob = { base: CFrame, rig: Model?, rel: CFrame }
+local bobs: { [Model]: Bob } = {} -- moored boat -> its still (server) pivot and its giver
 
 local function glyphFor(m: Model): string?
 	if
@@ -90,6 +98,66 @@ local function attach(m: Instance)
 	end)
 end
 
+-- keeps `bobs` in step with the moored boats; one that unties goes back to its still pivot (the server sails it)
+local function sweepBoats(npcs: Instance)
+	for boat, b in bobs do
+		if boat.Parent == nil or boat:GetAttribute("Moored") ~= true then
+			boat:PivotTo(b.base)
+			local rig = b.rig
+			if rig and rig.Parent then
+				rig:PivotTo(b.base * b.rel)
+			end
+			bobs[boat] = nil
+		end
+	end
+	local folder = Workspace:FindFirstChild("QuestBoats")
+	for _, boat in if folder then folder:GetChildren() else {} do
+		if boat:IsA("Model") and boat:GetAttribute("Moored") == true then
+			local b = bobs[boat]
+			if not b then
+				b = { base = boat:GetPivot(), rig = nil, rel = CFrame.identity }
+				bobs[boat] = b
+			end
+			local bb = b :: Bob
+			if not (bb.rig and bb.rig.Parent) then
+				bb.rig = nil
+				for _, m in npcs:GetChildren() do
+					if
+						m:IsA("Model")
+						and m.Name == boat:GetAttribute("Giver")
+						and m:GetAttribute("QuestIsland") == boat:GetAttribute("QuestIsland")
+						and m:GetAttribute("Moored") == true
+					then
+						bb.rig, bb.rel = m, bb.base:ToObjectSpace(m:GetPivot())
+					end
+				end
+			end
+		end
+	end
+end
+
+local function bob()
+	local cam = Workspace.CurrentCamera
+	local eye = if cam then cam.CFrame.Position else Vector3.zero
+	for boat, b in bobs do
+		local base = b.base
+		local p = base.Position
+		if (p - eye).Magnitude < BOB_RANGE then
+			local h = Weather.heightAt(p)
+			local bow = Weather.heightAt(p + base.LookVector * 4)
+			local beam = Weather.heightAt(p + base.RightVector * 2.5)
+			local cf = base
+				* CFrame.new(0, h - p.Y, 0)
+				* CFrame.Angles(math.atan2(bow - h, 4) * SWAY, 0, math.atan2(beam - h, 2.5) * SWAY)
+			boat:PivotTo(cf)
+			local rig = b.rig
+			if rig and rig.Parent then
+				rig:PivotTo(cf * b.rel)
+			end
+		end
+	end
+end
+
 -- the "Quests" prompt on my own island's tablet only (streams in late; a moved plot drops the old one)
 local function tabletPrompt()
 	local plot = player:GetAttribute("DockPlot")
@@ -134,9 +202,11 @@ function QuestController.Start()
 			end
 			refresh()
 			tabletPrompt()
+			sweepBoats(npcs)
 			task.wait(1)
 		end
 	end)
+	RunService.Heartbeat:Connect(bob)
 end
 
 return QuestController

@@ -4,10 +4,10 @@
 -- cards: name, the ask, the reward on the art). Tapping a card eases the camera onto that giver's boat; its button
 -- accepts an offer, hands in a quest that is "back" or drops one still "go" (Quest_Talk, the same as talking to
 -- them; greyed until the boat is tied up). Escape / B / the red X closes and eases the camera back.
-local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local QuestData =
@@ -218,7 +218,6 @@ function QuestTablet.close()
 	opened = false
 	Style.pop(panel.root, false)
 	modal.close()
-	ContextActionService:UnbindAction("QuestTabletExit")
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	local s = saved
 	if hum and s then
@@ -255,6 +254,12 @@ local function build(): ScreenGui
 	panel.root.AnchorPoint = Vector2.new(1, 0.5)
 	panel.root.Position = UDim2.new(1, -S.margin, 0.5, 0)
 	modal = InputGlyph.modal("QuestTablet", QuestTablet.close)
+	-- Escape closes; ContextActionService never sees it, so read it here (as DockController does)
+	UserInputService.InputBegan:Connect(function(input: InputObject)
+		if input.KeyCode == Enum.KeyCode.Escape then
+			QuestTablet.close()
+		end
+	end)
 	return g
 end
 
@@ -270,13 +275,6 @@ function QuestTablet.open(part: BasePart)
 	hum.WalkSpeed, hum.JumpPower, hum.JumpHeight = 0, 0, 0
 	Style.pop(panel.root, true)
 	rebuild()
-	ContextActionService:BindActionAtPriority("QuestTabletExit", function(_, state)
-		if state == Enum.UserInputState.Begin then
-			QuestTablet.close()
-			return Enum.ContextActionResult.Sink
-		end
-		return Enum.ContextActionResult.Pass
-	end, false, Enum.ContextActionPriority.High.Value + 6, Enum.KeyCode.Escape)
 	AudioController.play("UI_Click")
 	task.spawn(function()
 		while opened do

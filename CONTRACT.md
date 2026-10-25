@@ -319,8 +319,8 @@ Player attribute `MenuOpen` while a panel is up.
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
   `Discovery_Found`, `Discovery_Get`), `DiscoveryController` (`IsRevealed(cell | islandId)`, `IsStamped`,
   `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/Panels/Album`. The full map draws the fog (coarse cells).
-- Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
-  `TalkController` zooms in and shows 1 to 3 numbered replies.
+- Talk: `src/shared/Dialogue.luau` (tree types, `check` / `choose`; the only trees are the quest givers' from
+  `Quests/Rules.talk`); `TalkController` zooms in and shows 1 to 3 numbered replies.
 - Quests (docs/23 (l) + (p), WP-21b / WP-27): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
   rescue, Keeper Ives' 3-step lamp chain) and `Quests/Rules.luau` (pure, `tests/Quests.spec.luau`: one active quest,
   stages go -> back, one offer per giver per day from a day seed, a giver's pool cycles once all are done, save flag
