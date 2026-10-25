@@ -90,13 +90,13 @@ return function(t)
 	end)
 
 	t.test("the effect knobs", function()
-		t.expect(C.MechanicCooldown).toBeCloseTo(0.7, 1e-6) -- relaunch -30%
+		t.expect(C.MechanicCooldown).toBeCloseTo(0.7, 1e-6) -- Boat to me (60 s) -30% = 42 s
 		t.expect(C.DispatchFactor).toBeCloseTo(0.8, 1e-6) -- offers 20% sooner
 		t.expect(C.LifeguardSwimmers).toBe(1)
 
-		t.expect(C.cooldownScale({})).toBe(1)
-		t.expect(C.cooldownScale({ Mechanic = true })).toBe(C.MechanicCooldown)
-		t.expect(C.cooldownScale({ Lifeguard = true })).toBe(1) -- only its own role
+		t.expect(C.boatToMeScale({})).toBe(1)
+		t.expect(C.boatToMeScale({ Mechanic = true })).toBe(C.MechanicCooldown)
+		t.expect(C.boatToMeScale({ Lifeguard = true })).toBe(1) -- only its own role
 
 		t.expect(C.offerFactor({})).toBe(1)
 		t.expect(C.offerFactor({ Dispatcher = true })).toBe(C.DispatchFactor)

@@ -32,7 +32,7 @@ CrewHire.Roles = {
 } :: { [string]: Role }
 
 -- docs/23 (j): small effects, never replacing play.
-CrewHire.MechanicCooldown = 0.7 -- relaunch cooldown x0.7 (VehicleService)
+CrewHire.MechanicCooldown = 0.7 -- Boat to me cooldown x0.7 (VehicleService, VehiclesApp)
 CrewHire.DispatchFactor = 0.8 -- call offers 20% sooner (OperationService)
 CrewHire.LifeguardSwimmers = 1 -- one extra free-roam swimmer near the owner's island
 
@@ -122,7 +122,7 @@ function CrewHire.dailyWage(hired: { [string]: boolean }): number
 end
 
 -- The three effect knobs, from the hired set (CrewHireService passes data.crew).
-function CrewHire.cooldownScale(hired: { [string]: boolean }): number
+function CrewHire.boatToMeScale(hired: { [string]: boolean }): number
 	return if hired.Mechanic then CrewHire.MechanicCooldown else 1
 end
 
