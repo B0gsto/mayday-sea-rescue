@@ -334,17 +334,6 @@ local function stepBoat()
 	if not vehicle then
 		return
 	end
-	-- land vehicles have no deck seat: the pet rides on the rear of the roof / load bed
-	if vehicle:GetAttribute("LandVehicle") == true then
-		local box, size = vehicle:GetBoundingBox()
-		local base = box * PetSeat.landSeat(size)
-		petCF = base
-		petYaw = yawOf(box)
-		local spin, lift, roll = trickPose()
-		local cf = base * CFrame.new(0, lift, 0) * CFrame.Angles(0, spin, roll)
-		WildlifeRig.setCFrame(boat, cf)
-		return
-	end
 	-- the recursive anchor lookup walks the whole hull: once per boarding, not per frame
 	if seatVehicle ~= vehicle then
 		seatVehicle = vehicle

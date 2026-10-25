@@ -1,8 +1,7 @@
 --!strict
--- Cosmetics slot "LightBar" (RP-M5 stream B). LED emergency light bar colour sets for the RIB, the
--- cars (replacing the stock bar) and the jet ski (a small mast-top beacon). Pass: LightBars.
--- The free default "Stock" keeps each vehicle's own lighting: the cars' stock bar (LandVehicleConfig
--- lightBar / lightBarColors), a single blue LED beacon on the RIB's A-frame (as on a real RNLI or
+-- Cosmetics slot "LightBar" (RP-M5 stream B). LED emergency light bar colour sets for the RIB and
+-- the jet ski (a small mast-top beacon). Pass: LightBars.
+-- The free default "Stock" keeps each vehicle's own lighting: a single blue LED beacon on the RIB's A-frame (as on a real RNLI or
 -- coastguard RIB), nothing on the jet ski.
 --
 -- Option fields (read by server/Cosmetics/LightBars and the pure shared/LightBarFlash):
@@ -90,8 +89,7 @@ local options: { Option } = {
 -- the A-frame radar platform (art/source/vehicles/M_Veh_RIB/build.py: 2.0 x 0.18 x 0.2 at blender
 -- (0, AF_BASE - 0.56, AF_TOP + 0.29), plus Boat/Builder.RIB_ORIGIN); the cosmetic bar encloses it.
 -- The stock beacon sits over the modelled blue beacon dome (ATT_Beacon + RIB_ORIGIN). Jet ski: on top
--- of the stern mast's all-round white light (ATT_NavMasthead + JETSKI_ORIGIN, raised). Cars mount on
--- the stock "LightBarBase" part instead (its own width).
+-- of the stern mast's all-round white light (ATT_NavMasthead + JETSKI_ORIGIN, raised).
 local mounts = {
 	RIB = {
 		bar = CFrame.new(0, 6.38, 9.59),
@@ -103,7 +101,6 @@ local mounts = {
 		beacon = CFrame.new(0, 2.74, 4.85),
 		beaconSize = Vector3.new(0.24, 0.42, 0.24),
 	},
-	carBarHeight = 0.33, -- studs (0.11 m), lens body above the stock base
 }
 
 return {

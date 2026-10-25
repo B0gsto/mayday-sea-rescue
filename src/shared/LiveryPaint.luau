@@ -32,20 +32,6 @@ LiveryPaint.MESH_RULES = {
 		Decals = { set = "Hull", role = "stripe" },
 		Sled = { set = "Sled", role = "secondary" },
 	},
-	-- land fleet (I2b): the uploaded bodies replace the greybox Paint parts
-	M_Veh_LifeguardPickup = {
-		Body = { set = "Body", role = "primary" },
-		BodyDetail = { set = "Body", role = "secondary" },
-	},
-	M_Veh_Coastguard4x4 = {
-		Body = { set = "Body", role = "primary" },
-		BodyDetail = { set = "Body", role = "secondary" },
-	},
-	M_Veh_ATV = {
-		Body = { set = "Body", role = "primary" },
-		BodyDetail = { set = "Body", role = "secondary" },
-		Fenders = { set = "Body", role = "primary" },
-	},
 } :: { [string]: { [string]: MeshRule } }
 
 -- longest first so M_Veh_JetSki_CloseUp is never read as M_Veh_JetSki + "CloseUp"
@@ -64,12 +50,6 @@ LiveryPaint.ATTR_ROLES = {
 	Stripe1 = "stripe",
 	Stripe2 = "stripe2",
 } :: { [string]: Role }
-
--- vehicles that keep their service paint (VehicleId): the galvanised trailer and the ambulance
-LiveryPaint.SKIP_VEHICLES = {
-	BoatTrailer = true,
-	Ambulance = true,
-} :: { [string]: boolean }
 
 -- Wet paint is darker (docs/05 section 3.3: wet drops albedo value by about 20 to 30 %).
 LiveryPaint.WET_FACTOR = 0.76

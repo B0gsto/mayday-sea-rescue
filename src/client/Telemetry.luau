@@ -6,7 +6,7 @@
 --   Telemetry.once(name)                         once per session
 --   Telemetry.send(name, a?, b?, c?, d?)          every time (Device, InputDead)
 --   Telemetry.shop(step, app?, item?, currency?)  Shop funnel: PhoneOpened, AppOpened, ItemViewed, BuyTapped
---   Telemetry.stalled(context, stalled, dt)       per frame: InputDead once per 3 s stall (Boat, Car)
+--   Telemetry.stalled(context, stalled, dt)       per frame: InputDead once per 3 s stall (Boat)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Net = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"))

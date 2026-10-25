@@ -4,7 +4,6 @@
 -- against isAllowed and validate; the client only uses the lists to draw the panel.
 local Config = script.Parent
 local GameConfig = require(Config.GameConfig)
-local LandVehicleConfig = require(Config.LandVehicleConfig)
 local LiveOps = require(Config.Parent.LiveOps)
 local MapConfig = require(Config.MapConfig)
 local MonetizationConfig = require(Config.MonetizationConfig)
@@ -90,8 +89,7 @@ local function concat(...: { string }): { string }
 	return out
 end
 
-DevConfig.Vehicles =
-	table.freeze(concat(VehicleConfig.Order, VehicleConfig.CraftOrder, LandVehicleConfig.Order))
+DevConfig.Vehicles = table.freeze(concat(VehicleConfig.Order, VehicleConfig.CraftOrder))
 DevConfig.Ops = table.freeze(concat(keys(Operations.Defs), { "ColdOpen" }))
 DevConfig.Events = LiveOps.Order
 DevConfig.Species = table.freeze(table.clone(Wildlife.SpeciesOrder))

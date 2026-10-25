@@ -1,5 +1,5 @@
 --!strict
--- DockConfig (docs/23 d.2, WP-4): dock levels 2..5, and the WP-10b buildings (garage, hangar, sub pen). Each has two prices: Cash + rank, or Robux (the
+-- DockConfig (docs/23 d.2, WP-4): dock levels 2..5, and the WP-10b buildings (hangar, sub pen). Each has two prices: Cash + rank, or Robux (the
 -- MonetizationConfig product `product`, which skips both). Pure (tests/DockConfig.spec.luau).
 -- Piece geometry lives in shared/DockPieces; DockService builds it, DockController draws the ghost.
 local ProgressionConfig = require(script.Parent.ProgressionConfig)
@@ -56,25 +56,9 @@ DockConfig.Levels = {
 -- it stands on (the helipad sits on the Lv 3 boathouse roof). `vehicles` = its board's craft, in order.
 export type Building = Level & { needs: number, vehicles: { string } }
 
-DockConfig.BUILDINGS = { "Garage", "Hangar", "SubPen" }
+DockConfig.BUILDINGS = { "Hangar", "SubPen" } -- the car Garage was cut 2026-10-25 (pre-hub-cut)
 
 DockConfig.Buildings = {
-	Garage = {
-		cash = 5000,
-		rank = "Lifeguard",
-		robux = 75,
-		product = "DockGarage",
-		adds = { "Garage", "GarageBoard" },
-		unlocks = { "CarsAtDock" },
-		needs = 1,
-		vehicles = {
-			"LifeguardPickup",
-			"BeachATV",
-			"CoastguardResponse",
-			"HarbourGT",
-			"LighthouseCruiser",
-		},
-	},
 	Hangar = {
 		cash = 25000,
 		rank = "RescuePilot",

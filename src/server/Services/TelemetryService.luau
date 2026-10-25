@@ -35,7 +35,6 @@ local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
-local LandVehicleConfig = require(Config:WaitForChild("LandVehicleConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProgressionConfig = require(Config:WaitForChild("ProgressionConfig"))
@@ -286,7 +285,7 @@ function TelemetryService.Vehicle(player: Player, step: string, vehicleId: strin
 	TelemetryService.Step(player, "Vehicle", vehicles[player], step, vehicleId, where)
 end
 
--- Auto-recovery ran (VehicleService / LandVehicleService reset). The raw reason never goes out: the
+-- Auto-recovery ran (VehicleService reset). The raw reason never goes out: the
 -- speed check's carries numbers.
 function TelemetryService.VehicleRecovered(player: Player, reason: string, vehicleId: string)
 	local why = if reason == "Flipped"
@@ -590,7 +589,6 @@ end
 
 function TelemetryService.Init()
 	addKnown(VehicleConfig.Order)
-	addKnown(LandVehicleConfig.Order)
 	addKnown(VehicleUpgrades.UpgradeOrder)
 	for _, group in { MonetizationConfig.Products, MonetizationConfig.GamePasses } do
 		for key in group :: { [string]: any } do

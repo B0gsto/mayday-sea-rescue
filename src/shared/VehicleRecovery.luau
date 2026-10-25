@@ -1,7 +1,7 @@
 --!strict
 -- VehicleRecovery: when a player vehicle (car, boat, jet ski) is "weird" the server puts it back
 -- upright. Pure timers (Lune-tested in tests/VehicleRecovery.spec.luau) plus the lift-and-settle
--- path both LandVehicleService and VehicleService glide the model along.
+-- path VehicleService glides the model along.
 --   Flipped  on its side or roof (up vector past ~65 degrees) for FLIP_TIME while touching down
 --   Stuck    the driver holds throttle but the vehicle barely moves for STUCK_TIME while touching down
 --   Sunk     the caller's "off" flag (in terrain, beached, under water) for OFF_TIME

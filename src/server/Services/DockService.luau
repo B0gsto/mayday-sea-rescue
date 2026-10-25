@@ -13,14 +13,13 @@
 -- DockLevel (built level, DockController's ghost reads it).
 -- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
 -- "Owned" | "Data" | "Busy").
--- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the car garage (one of the 16 bays along Penhallow
--- Road, Marina.garage), the helipad + hangar on the Lv 3+ boathouse roof and the sub pen beside the berth.
--- Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash + rank, products DockGarage /
--- DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
+-- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on the Lv 3+ boathouse roof and
+-- the sub pen beside the berth. Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash +
+-- rank, products DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
 -- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
 -- gives them a building ("all": every one).
--- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Garage / Hangar / SubPen
--- (built). Player attributes DockGarage / DockHangar / DockSubPen (owned; DockController's ghosts).
+-- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
+-- (built). Player attributes DockHangar / DockSubPen (owned; DockController's ghosts).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -280,9 +279,7 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			and level >= DockConfig.Buildings[key].needs
 		local have = plot.buildings[key]
 		if want and not have and owner then
-			local frame = if key == "Garage"
-				then Marina.garage(plot.berth:GetAttribute("PlotIndex") :: number)
-				else plot.berth.CFrame - Vector3.new(0, 0.2, 0)
+			local frame = plot.berth.CFrame - Vector3.new(0, 0.2, 0)
 			local m = DockPieces.building(key, frame)
 			for _, d in m:GetDescendants() do
 				if d.Name == "Flag" and d:IsA("BasePart") then
@@ -410,36 +407,6 @@ local function release(player: Player)
 	end
 end
 
--- The garage row's 16 lots along Penhallow Road (the garages stand on them once bought): the hedge and post
--- dressing in the footprint goes; each lot's slab runs 2 studs past the door onto the footway so a car
--- rolls straight out (no terrain carving: 4-stud voxels left a trench at the door).
-local function garageLots(folder: Instance)
-	local g = Marina.GARAGE
-	local first, last = Marina.garage(1), Marina.garage(Marina.COUNT)
-	local centre = first:Lerp(last, 0.5) * CFrame.new(0, 0, g.DEPTH / 2 - 1.5)
-	local size = Vector3.new(g.WIDTH * Marina.COUNT + 2, 24, g.DEPTH + 5)
-	local clear = centre * CFrame.new(0, size.Y / 2 + 0.05, 0)
-	local dressing = Workspace:FindFirstChild("Dressing")
-	if dressing then
-		for _, p in Workspace:GetPartBoundsInBox(clear, size) do
-			if p:IsDescendantOf(dressing) then
-				p:Destroy()
-			end
-		end
-	end
-	for i = 1, Marina.COUNT do
-		local lot = part(
-			folder,
-			`GarageLot{i}`,
-			Vector3.new(g.WIDTH, 1, g.DEPTH + 2),
-			Marina.garage(i) * CFrame.new(0, -0.5, g.DEPTH / 2 - 1),
-			if i % 2 == 0 then Color3.fromRGB(150, 152, 156) else Color3.fromRGB(162, 164, 168),
-			Enum.Material.SmoothPlastic
-		)
-		lot:SetAttribute("PlotIndex", i)
-	end
-end
-
 function DockService.Init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Marina"
@@ -466,7 +433,6 @@ function DockService.Init()
 		plots[i] = buildPlot(folder, i)
 		dress(plots[i], nil)
 	end
-	garageLots(folder)
 	folder.Parent = Workspace
 
 	Players.PlayerAdded:Connect(claim)

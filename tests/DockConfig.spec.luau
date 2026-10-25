@@ -51,9 +51,9 @@ return function(t)
 	t.test(
 		"buildings (docs/23 h): prices, Robux products, the helipad needs the boathouse",
 		function()
-			local robux = { Garage = 75, Hangar = 199, SubPen = 149 } -- docs/23 (i)
-			local rank = { Garage = "Lifeguard", Hangar = "RescuePilot", SubPen = "Coxswain" }
-			t.expect(#D.BUILDINGS).toBe(3)
+			local robux = { Hangar = 199, SubPen = 149 } -- docs/23 (i)
+			local rank = { Hangar = "RescuePilot", SubPen = "Coxswain" }
+			t.expect(#D.BUILDINGS).toBe(2)
 			for _, key in D.BUILDINGS do
 				local b = D.Buildings[key]
 				t.expect(b.robux).toBe(robux[key])
@@ -70,7 +70,7 @@ return function(t)
 					t.expect(D.buildingOf(id)).toBe(key)
 				end
 			end
-			t.expect(D.Buildings.Garage.cash).toBe(5000)
+			t.expect(D.Buildings.SubPen.cash).toBe(20000)
 			t.expect(D.Buildings.Hangar.needs).toBe(3)
 			t.expect(D.buildingFor("DockLevel2")).toBe(nil)
 			t.expect(D.buildingOf("RIB")).toBe(nil)
@@ -89,9 +89,9 @@ return function(t)
 		t.expect(reason).toBe("Owned")
 		ok, reason = D.canBuyBuilding("Hangar", false, 3, 1e9, pilot - 1)
 		t.expect(reason).toBe("Rank")
-		ok, reason, price = D.canBuyBuilding("Garage", false, 1, 4999, 99)
+		ok, reason, price = D.canBuyBuilding("SubPen", false, 1, 19999, 99)
 		t.expect(reason).toBe("Cash")
-		t.expect(price).toBe(5000)
+		t.expect(price).toBe(20000)
 		t.expect(D.canBuyBuilding("SubPen", false, 1, 20000, D.rankIndex("Coxswain"))).toBe(true)
 	end)
 

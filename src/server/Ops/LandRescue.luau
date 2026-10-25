@@ -195,8 +195,7 @@ local function craftOf(player: Player): Model?
 	local node: Instance? = hum and hum.SeatPart
 	while node do
 		if node:IsA("Model") and node:GetAttribute("VehicleId") ~= nil then
-			-- shortcut: Workspace.Vehicles craft only; a car has no survivor seats (VehicleService.AddSurvivor)
-			return if node:GetAttribute("LandVehicle") == nil then node else nil
+			return node
 		end
 		node = node.Parent
 	end

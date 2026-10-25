@@ -3,15 +3,14 @@
 -- scale models (ReplicatedStorage.VehiclePreviews, shrunk) built while its plot has an owner (berth attribute
 -- Owner, DockService) and, for a building's board, while the berth's building attribute is true:
 --   Boat board    every VehicleConfig.Order craft no building claims; the crane over the berth
---   Garage board  the land vehicles, in the owner's garage bay (Marina.garage); the car rises on the lift
 --   Hangar board  RescueHelicopter (onto the helipad) and Seaplane (into the berth), in the roof shelter
 --   Sub board     Submarine, on the jetty beside the sub pen; lowered into the pen on the gantry hook
 -- Each model's pad carries two owner-only prompts:
 --   BoardLaunch (E)  owned: the beat plays, then the craft spawns at its spot, nobody seated (boats, aircraft,
---                    sub: VehicleService.DockLaunch; cars: LandVehicleService.Spawn). Locked: the client opens
+--                    sub: VehicleService.DockLaunch). Locked: the client opens
 --                    the buy card (BoatBoardController).
 --   BoardCard (F)    owned crafts with upgrades: the client opens the same card (upgrades).
--- An id VehicleConfig / LandVehicleConfig does not know yet shows as a grey silhouette with no prompts (pad
+-- An id VehicleConfig does not know yet shows as a grey silhouette with no prompts (pad
 -- attribute Silhouette). The client lights owned models and puts the padlock and price chips on locked ones;
 -- the server checks ownership again here. Racks: tag "BoatBoard", attributes Owner (UserId) and PlotIndex.
 --   BoatBoard.start(launch)  VehicleService.Start passes DockLaunch(player, id, target?) (no require cycle)
@@ -22,7 +21,6 @@ local TweenService = game:GetService("TweenService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
-local LandVehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("LandVehicleConfig"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local VehicleConfig = require(Shared:WaitForChild("Config"):WaitForChild("VehicleConfig"))
 local VehicleUpgrades = require(Shared:WaitForChild("VehicleUpgrades"))
@@ -50,14 +48,13 @@ local SILHOUETTE = Color3.fromRGB(120, 124, 130)
 
 type Launch = (Player, string, CFrame?) -> (boolean, any)
 
--- One kind of board. Frames: `garage` boards stand in Marina.garage(plot), the others in the berth frame
--- (sea level). `targets[id]` = where that craft spawns in that frame (nil: the berth); the beat moves a copy
--- from `from` (in the craft's frame) to its rest spot, on a hook from `hook` studs over it when set.
+-- One kind of board, in the berth frame (sea level). `targets[id]` = where that craft spawns in that frame (nil:
+-- the berth); the beat moves a copy from `from` (in the craft's frame) to its rest spot, on a hook from `hook`
+-- studs over it when set.
 type Def = {
 	name: string,
 	building: string?, -- berth attribute (DockConfig.Buildings key); nil = always (the boat board)
 	vehicles: { string },
-	garage: boolean?,
 	rack: CFrame,
 	targets: { [string]: CFrame },
 	from: Vector3,
@@ -117,13 +114,7 @@ end
 
 local function displayName(id: string): string?
 	local spec: any = VehicleConfig.get(id)
-	local land: any = (LandVehicleConfig :: any)[id]
-	if spec then
-		return spec.displayName
-	elseif type(land) == "table" and land.driveable then
-		return land.displayName
-	end
-	return nil
+	return if spec then spec.displayName else nil
 end
 
 -- the shared placeholder builders give a not-yet-registered craft its shape (grey, no prompts)
@@ -175,10 +166,7 @@ local function prompt(
 	return p
 end
 
-local function frameOf(def: Def, berth: BasePart): CFrame
-	if def.garage then
-		return Marina.garage(berth:GetAttribute("PlotIndex") :: number)
-	end
+local function frameOf(_def: Def, berth: BasePart): CFrame
 	return berth.CFrame - Vector3.new(0, 0.2, 0)
 end
 
@@ -201,7 +189,7 @@ local function play(board: Board, berth: BasePart, player: Player, id: string)
 	local frame = frameOf(def, berth)
 	local offset = def.targets[id]
 	local target = if offset then frame * offset else nil
-	if not target and not def.garage then
+	if not target then
 		-- the berth or the Lv 2 pontoon spot; the hulls this launch replaces go first, so the copy never
 		-- comes down on them (required here: VehicleService requires this module)
 		target = (require(Services:WaitForChild("VehicleService")) :: any).DockSpot(player, id)
@@ -459,11 +447,6 @@ local function water(player: Player, id: string, target: CFrame?): (boolean, any
 	return launch(player, id, target)
 end
 
-local function car(player: Player, id: string, target: CFrame?): (boolean, any)
-	local land = require(Services:WaitForChild("LandVehicleService")) :: any
-	return land.Spawn(player, id, nil, false, target)
-end
-
 local function boats(): { string }
 	local out = {}
 	for _, id in VehicleConfig.Order do
@@ -487,17 +470,6 @@ function BoatBoard.start(launch: Launch)
 			hook = JIB_Y,
 			boathouse = true,
 			launch = water,
-		},
-		{
-			name = "GarageBoard",
-			building = "Garage",
-			vehicles = DockConfig.Buildings.Garage.vehicles,
-			garage = true,
-			rack = B.Garage.board,
-			targets = B.Garage.targets,
-			from = Vector3.new(0, -4, 0),
-			ground = true,
-			launch = car,
 		},
 		{
 			name = "HangarBoard",

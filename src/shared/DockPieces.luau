@@ -4,7 +4,7 @@
 -- finger at x 10..18). DockService builds them on the plot (everyone sees them); DockController builds
 -- the next level again as the owner's local ghost. Named hooks: parts "Flag" take the owner's colour,
 -- TextLabels "Count" show the rescue count, TextLabels "Owner" the owner's name. The WP-10b buildings
--- (DockPieces.building) sit in their own frame: the garage in Marina.garage(plot), the others in the berth frame. Materials stay off the MaterialService remap (no Slate,
+-- (DockPieces.building) sit in the berth frame. Materials stay off the MaterialService remap (no Slate,
 -- WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
@@ -434,8 +434,6 @@ local LEVELS = { [2] = level2, [3] = level3, [4] = level4, [5] = level5 }
 
 -- WP-10b buildings ------------------------------------------------------------------------------
 
-local G = Marina.GARAGE
-local GARAGE_H = 10 -- the CoastguardResponse's light bar clears the door
 -- the helipad's top, on posts over the Lv 3 boathouse ridge and clear over the Lv 4 crane's boom (top y 19)
 local PAD_Y = TOP + 18
 -- the helicopter's spot: the plot's centre line (Marina.PLOT_X), so its 41-stud rotor stays on the plot
@@ -446,11 +444,6 @@ local PEN = { x0 = 19.6, x1 = 28.4, z0 = -21, z1 = 1, top = 14 } -- the sub pen 
 -- along its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the
 -- gantry height the sub hangs from.
 DockPieces.Buildings = {
-	Garage = {
-		buildAt = CFrame.new(0, 3, 4),
-		board = CFrame.new(G.WIDTH / 2 - 2.2, 0, G.DEPTH / 2) * CFrame.Angles(0, math.pi / 2, 0),
-		targets = {} :: { [string]: CFrame },
-	},
 	Hangar = {
 		buildAt = CFrame.new(1, TOP + 2.5, 34),
 		board = CFrame.new(-11, PAD_Y, 50.4),
@@ -463,104 +456,6 @@ DockPieces.Buildings = {
 		hook = PEN.top - 0.5,
 	},
 }
-for _, id in DockConfig.Buildings.Garage.vehicles do
-	-- beside the board's lane, nose out of the door
-	DockPieces.Buildings.Garage.targets[id] = CFrame.new(-2.6, 0, G.DEPTH / 2)
-end
-
--- the garage bay: walls, a flat roof, the header with the owner's name over a stripe in their colour, the
--- roll-up door's drum (their colour too) and a ceiling light; the floor is DockService's lot
-local function garage(m: Model, g: CFrame)
-	local w, d, h = G.WIDTH, G.DEPTH, GARAGE_H
-	for _, side in { -1, 1 } do
-		part(
-			m,
-			"Wall",
-			Vector3.new(0.6, h, d),
-			g * CFrame.new(side * (w / 2 - 0.3), h / 2, d / 2),
-			WHITE,
-			M.SmoothPlastic
-		)
-	end
-	part(
-		m,
-		"Wall",
-		Vector3.new(w, h, 0.6),
-		g * CFrame.new(0, h / 2, d - 0.3),
-		WHITE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"Roof",
-		Vector3.new(w, 0.6, d + 1),
-		g * CFrame.new(0, h + 0.3, d / 2 - 0.5),
-		GREY,
-		M.Metal
-	)
-	local header = part(
-		m,
-		"Header",
-		Vector3.new(w, 2.2, 0.6),
-		g * CFrame.new(0, h - 1.1, 0.3),
-		WHITE,
-		M.SmoothPlastic
-	)
-	local gui = Instance.new("SurfaceGui")
-	gui.Face = Enum.NormalId.Front
-	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	gui.PixelsPerStud = 40
-	gui.Parent = header
-	local name = Instance.new("TextLabel")
-	name.Name = "Owner"
-	name.Size = UDim2.fromScale(1, 1)
-	name.BackgroundTransparency = 1
-	name.Font = Enum.Font.GothamBold
-	name.TextScaled = true
-	name.TextColor3 = Color3.fromRGB(30, 38, 52)
-	name.Text = ""
-	name.Parent = gui
-	part(
-		m,
-		"Flag",
-		Vector3.new(w, 0.5, 0.2),
-		g * CFrame.new(0, h - 2.45, 0.1),
-		WHITE,
-		M.SmoothPlastic
-	)
-	part(
-		m,
-		"Flag",
-		Vector3.new(w - 1.2, 1.4, 1.4),
-		g * CFrame.new(0, h - 1.1, -0.8),
-		WHITE,
-		M.Metal,
-		Enum.PartType.Cylinder
-	)
-	for _, side in { -1, 1 } do
-		part(
-			m,
-			"DoorRail",
-			Vector3.new(0.3, h - 2.2, 0.3),
-			g * CFrame.new(side * (w / 2 - 0.75), (h - 2.2) / 2, 0.2),
-			GREY,
-			M.Metal
-		)
-	end
-	local strip = part(
-		m,
-		"Light",
-		Vector3.new(0.6, 0.2, d - 6),
-		g * CFrame.new(0, h - 0.1, d / 2),
-		WARM,
-		M.Neon
-	)
-	local light = Instance.new("PointLight")
-	light.Color = WARM
-	light.Range = 16
-	light.Brightness = 1
-	light.Parent = strip
-end
 
 -- the helipad on posts over the boathouse roof and the deck east of it (an H, an edge line and lights), a
 -- small hangar shelter at its back and a ladder up its east side
@@ -739,7 +634,7 @@ local function subPen(m: Model, b: CFrame)
 	)
 end
 
-local BUILDINGS = { Garage = garage, Hangar = hangar, SubPen = subPen }
+local BUILDINGS = { Hangar = hangar, SubPen = subPen }
 
 -- The pieces of building `key` (DockConfig.Buildings) around its frame `cf`, as a Model named `key`.
 function DockPieces.building(key: string, cf: CFrame): Model

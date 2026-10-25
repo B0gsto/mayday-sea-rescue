@@ -38,6 +38,6 @@ return function(t)
 		t.expect(MapConfig.zoomFor("foot", 50)).toBe(MapConfig.Zoom.foot)
 		t.expect(MapConfig.zoomFor("boat", 0)).toBe(MapConfig.Zoom.boat.slow)
 		t.expect(MapConfig.zoomFor("boat", 500)).toBe(MapConfig.Zoom.boat.fast)
-		t.expect(MapConfig.zoomFor("boat", 60) > MapConfig.zoomFor("car", 0)).toBe(true)
+		t.expect(MapConfig.zoomFor("boat", 60) > MapConfig.zoomFor("foot", 0)).toBe(true)
 	end)
 end

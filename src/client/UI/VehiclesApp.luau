@@ -1,9 +1,8 @@
 --!strict
 -- VehiclesApp: the phone's vehicle page (portrait). Since docs/23 c.5 the boats are chosen and bought at
 -- the dock's boards, so the phone page is just one big Boat to me (RequestVehicle(nil, false, true): your
--- current or last craft comes to the open water nearest you, seated); cars are chosen at the dock's garage
--- board since docs/23 WP-10b. A board opens one card through Phone.openApp(_, mount) with `only` = that craft
--- (buy, upgrades, Spawn = docked at the berth; a car in your dock garage, else the nearest road spawn point).
+-- current or last craft comes to the open water nearest you, seated). A board opens one card through
+-- Phone.openApp(_, mount) with `only` = that craft (buy, upgrades, Spawn = docked at the berth).
 -- Cards: a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
 -- model (the server's ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a
 -- live one of that kind; else the shared builder's greybox), the name (gold for the Robux-only premium
@@ -21,7 +20,6 @@
 --                   server's CanUseVehicle reads it: Cash-owned OR pass-owned)
 --   Fit upgrade     Upgrade_Buy(vehicleId, upgradeId)    (UpgradeService)
 --   Spawn a boat    (the board's card) RequestVehicle(vehicleId, true): docked at your berth
---   Spawn a car     CarController.Request(vehicleId)     (Land_Request: your garage bay, else the nearest road spawn point)
 -- Spawning closes the phone and FootTrail walks you to it. Data: PlayerDataChanged snapshots.
 --   VehiclesApp.mount(page: Frame, close?, only: string?) -> cleanup
 local ContextActionService = game:GetService("ContextActionService")
@@ -38,8 +36,6 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = Shared:WaitForChild("Config")
 local Affordable = require(Shared:WaitForChild("Affordable"))
 local BoatBuilder = require(Shared:WaitForChild("Boat"):WaitForChild("Builder"))
-local CarBuilder = require(Shared:WaitForChild("Car"):WaitForChild("Builder"))
-local LandVehicleConfig = require(Config:WaitForChild("LandVehicleConfig"))
 local MonetizationConfig = require(Config:WaitForChild("MonetizationConfig"))
 local MonetizationEffects = require(Shared:WaitForChild("MonetizationEffects"))
 local Net = require(Shared:WaitForChild("Net"))
@@ -61,7 +57,7 @@ local Telemetry = require(Client:WaitForChild("Telemetry"))
 local C = HudTheme.Colors
 local ROBUX_GREEN = Color3.fromHex("2F9E5B")
 local player = Players.LocalPlayer
-local FOLDERS = { "Vehicles", "LandVehicles" } -- VehicleService / LandVehicleService
+local FOLDERS = { "Vehicles" } -- VehicleService
 local PREVIEWS = "VehiclePreviews" -- ReplicatedStorage folder the two services fill
 local UPGRADE_ICON = { Engine = "speed", Hull = "shield", Fit = "seat" }
 local STAT_ART = { "Speed", "People", "Tough" } -- UiImages.VehicleArt keys of the three stat rows
@@ -72,7 +68,6 @@ local UPGRADE_WORD = { Engine = "Engine", Hull = "Hull", Fit = "Seat" }
 local TABS = {
 	{ name = "Boats", glyph = "boat" },
 	{ name = "Jet Skis", glyph = "jetski" },
-	{ name = "Cars", glyph = "car" },
 }
 local TAB_H = 40
 -- server reason codes -> 1 to 2 words on the button
@@ -94,7 +89,6 @@ local KG_PER_RMU = 37 -- VehicleConfig massHint units
 
 type Entry = {
 	id: string,
-	land: boolean,
 	tab: number,
 	name: string,
 	premium: boolean, -- Robux only
@@ -164,12 +158,7 @@ end
 -- icons Glyph lacks, from the same pill bars
 local function drawIcon(kind: string, parent: Instance, c: Color3)
 	local bar, v = Glyph.bar, Vector2.new
-	if kind == "car" then
-		bar(parent, v(0.92, 0.26), v(0.5, 0.56), 0, c, 0.35)
-		bar(parent, v(0.5, 0.24), v(0.48, 0.38), 0, c, 0.45)
-		bar(parent, v(0.24, 0.24), v(0.26, 0.74), 0, c)
-		bar(parent, v(0.24, 0.24), v(0.74, 0.74), 0, c)
-	elseif kind == "jetski" then
+	if kind == "jetski" then
 		bar(parent, v(0.9, 0.18), v(0.5, 0.7), -6, c, 0.5)
 		bar(parent, v(0.38, 0.13), v(0.6, 0.55), 0, c)
 		bar(parent, v(0.08, 0.32), v(0.32, 0.46), 22, c)
@@ -240,7 +229,6 @@ local function entries(): { Entry }
 		if spec then
 			table.insert(out, {
 				id = id,
-				land = false,
 				tab = if VehicleConfig.isJetSki(id) then 2 else 1,
 				name = spec.displayName,
 				premium = unlock ~= nil and unlock.passOnly == true,
@@ -251,44 +239,20 @@ local function entries(): { Entry }
 			})
 		end
 	end
-	for _, id in LandVehicleConfig.Order do
-		local spec = (LandVehicleConfig :: any)[id]
-		local unlock = ProgressionConfig.Vehicles[id]
-		if spec then
-			table.insert(out, {
-				id = id,
-				land = true,
-				tab = 3,
-				name = spec.displayName,
-				premium = unlock ~= nil and unlock.passOnly == true,
-				pass = Rules.vehiclePass(id),
-				speed = spec.topSpeed,
-				people = spec.seats,
-				mass = spec.mass,
-			})
-		end
-	end
 	return out
 end
 
--- 0..1 bar fills, scaled across the sea fleet or the land fleet, with room left for the upgrades
+-- 0..1 bar fills, scaled across the fleet, with room left for the upgrades
 local function statFills(list: { Entry }): { [string]: { number } }
-	local range = {}
-	for _, land in { false, true } do
-		local r = { speed = 0, people = 0, lo = math.huge, hi = 0 }
-		for _, e in list do
-			if e.land == land then
-				r.speed = math.max(r.speed, e.speed)
-				r.people = math.max(r.people, e.people)
-				r.lo = math.min(r.lo, math.log(e.mass))
-				r.hi = math.max(r.hi, math.log(e.mass))
-			end
-		end
-		range[land] = r
+	local r = { speed = 0, people = 0, lo = math.huge, hi = 0 }
+	for _, e in list do
+		r.speed = math.max(r.speed, e.speed)
+		r.people = math.max(r.people, e.people)
+		r.lo = math.min(r.lo, math.log(e.mass))
+		r.hi = math.max(r.hi, math.log(e.mass))
 	end
 	local out = {}
 	for _, e in list do
-		local r = range[e.land]
 		local tough = if r.hi > r.lo then (math.log(e.mass) - r.lo) / (r.hi - r.lo) else 1
 		out[e.id] = {
 			math.max(0.12, e.speed / (r.speed * ENGINE)),
@@ -371,10 +335,6 @@ local function previewModel(entry: Entry): (Model?, boolean)
 	local real = model ~= nil
 	if not model then
 		local ok, built = pcall(function(): Model?
-			if entry.land then
-				local spec = (LandVehicleConfig :: any)[entry.id]
-				return if spec then (CarBuilder.build(spec)) else nil
-			end
 			local spec = VehicleConfig.get(entry.id)
 			return if spec then BoatBuilder.build(spec) else nil
 		end)
@@ -786,12 +746,6 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 			return
 		end
 		call(card, card.main, function()
-			if card.entry.land then
-				local cars = require(
-					script.Parent.Parent:WaitForChild("Controllers"):WaitForChild("CarController")
-				) :: any
-				return cars.Request(id)
-			end
 			return Net.func("RequestVehicle"):InvokeServer(id, true) -- the board's card: docked at your berth
 		end, function(result: any)
 			spawned(result)
@@ -1091,7 +1045,7 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 
 		-- Quick Launch upsell for non-owners: the Roblox pass prompt (MonetizationService grants Pass_)
 		local quickPass = MonetizationConfig.GamePasses[QUICK]
-		if not entry.land and quickPass and quickPass.ready and quickPass.id ~= 0 then
+		if quickPass and quickPass.ready and quickPass.id ~= 0 then
 			local chip = Instance.new("TextButton")
 			chip.Name = "QuickLaunchChip"
 			chip.Text = ""
@@ -1310,7 +1264,7 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 	local function current(): Card?
 		local tab = tabs[activeTab]
 		if not tab then
-			return nil -- the page opens on its last tab (cars), still being built
+			return nil -- the page opens on its last tab, still being built
 		end
 		for _, card in tab.cards do
 			if card.frame == tab.pages.CurrentPage then

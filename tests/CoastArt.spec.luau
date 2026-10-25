@@ -59,4 +59,20 @@ return function(t)
 			t.expect(string.find(s.keep, "M_Sea_SandRipples_Patch") == 1).toBe(true)
 		end
 	end)
+
+	t.test("scatter is deterministic, evenly spread and inside the disk", function()
+		local a = Layout.scatter(Vector3.new(10, 0, -4), 60, 24, 7, 10)
+		local b = Layout.scatter(Vector3.new(10, 0, -4), 60, 24, 7, 10)
+		t.expect(#a).toBe(24)
+		local minD, maxD = math.huge, -math.huge
+		for i, p in a do
+			t.expect(p.X == b[i].X and p.Z == b[i].Z).toBe(true)
+			local d = Vector3.new(p.X - 10, 0, p.Z + 4).Magnitude
+			minD = math.min(minD, d)
+			maxD = math.max(maxD, d)
+		end
+		t.expect(maxD <= 60 + 1e-4).toBe(true)
+		t.expect(minD >= 10 * 0.85).toBe(true)
+		t.expect(maxD > 40).toBe(true) -- the outer ring is populated too
+	end)
 end

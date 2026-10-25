@@ -15,7 +15,7 @@
 --   ctx.muted(kind): boolean                      kind "Horns" | "Sirens" | "Radios": the local
 --                                                 player muted OTHER players' sounds of that kind
 --   ctx.currentVehicle(): (Model?, kind?)         the vehicle the local player is seated in;
---                                                 kind "Boat" | "JetSki" | "Car"
+--                                                 kind "Boat" | "JetSki"
 --   ctx.kindOf(model): kind?
 --   ctx.bindVehicleAction{ name, label, key?, gamepad?, callback(), visible?() -> boolean }
 --       -> unbind()   While the local player is seated in a vehicle and visible() is true: binds
@@ -62,9 +62,6 @@ local stack: Frame? = nil
 local function kindOf(model: Instance?): string?
 	if not model or not model:IsA("Model") then
 		return nil
-	end
-	if model:GetAttribute("LandVehicle") ~= nil or model:HasTag("LandVehicle") then
-		return "Car"
 	end
 	local id = model:GetAttribute("VehicleId")
 	if VehicleConfig.isJetSki(id) then

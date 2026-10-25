@@ -4,7 +4,7 @@
 -- SpotLights aimed down onto the quay, towards the sea), the H3 eaves wash lights (ATT_Lamp_Wash_01..04, SpotLights
 -- down the side walls), the H3 sign light (ATT_Lamp_Sign, aimed at ATT_Sign) and the GlassLit mesh (watch-room panes, door lamp and
 -- flood lenses) as warm Neon, plus the hall's lifeboat on its trailer (a static display at ATT_BoatHall).
--- The lights are on only at night or in a storm (ChandleryRig.preset(): "Night" when
+-- The lights are on only at night or in a storm (StationRig.preset(): "Night" when
 -- the sun is below the horizon or WeatherBase is Night, "Storm" while Shared.Weather says so), off by day.
 -- Re-evaluated on Weather.changed, Lighting WeatherBase and Lighting.ClockTime changes; no per-frame loop.
 --
@@ -20,7 +20,6 @@ local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
-local ChandleryRig = require(script.Parent:WaitForChild("ChandleryRig"))
 local Weather = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Weather"))
 
 local StationRig = {}
@@ -49,8 +48,24 @@ local HALL_LINE = Color3.fromRGB(236, 190, 30)
 
 local active: { [Model]: () -> () } = {}
 
+-- "Clear" | "Overcast" | "Storm" | "Night" (also read by CottageRig)
+function StationRig.preset(): string
+	if Weather.getState() == "Storm" then
+		return "Storm"
+	end
+	local base = Lighting:GetAttribute("WeatherBase")
+	local name = if base == "Clear" or base == "Calm"
+		then "Clear"
+		elseif base == "Night" then "Night"
+		else "Overcast"
+	if Lighting:GetSunDirection().Y < 0 then
+		name = "Night"
+	end
+	return name
+end
+
 local function isOn(): boolean
-	local preset = ChandleryRig.preset()
+	local preset = StationRig.preset()
 	return preset == "Night" or preset == "Storm"
 end
 

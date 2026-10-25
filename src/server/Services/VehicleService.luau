@@ -1177,13 +1177,12 @@ local function nearestOpenWater(
 	return nil, nil
 end
 
--- No other vehicle (boat or car) within a hull's reach of `at`; the player's own craft don't count
+-- No other vehicle within a hull's reach of `at`; the player's own craft don't count
 -- (a launch replaces them).
 local function spotFree(at: Vector3, hull: Vector3, player: Player): boolean
 	local params = OverlapParams.new()
 	params.FilterType = Enum.RaycastFilterType.Include
-	local land = Workspace:FindFirstChild("LandVehicles")
-	params.FilterDescendantsInstances = if land then { folder, land } else { folder }
+	params.FilterDescendantsInstances = { folder }
 	local reach = math.max(hull.X, hull.Z) + 4
 	for _, part in
 		Workspace:GetPartBoundsInBox(
@@ -1193,7 +1192,7 @@ local function spotFree(at: Vector3, hull: Vector3, player: Player): boolean
 		)
 	do
 		local node: Instance = part -- up to the vehicle model (real models nest inside it)
-		while node.Parent and node.Parent ~= folder and node.Parent ~= land do
+		while node.Parent and node.Parent ~= folder do
 			node = node.Parent
 		end
 		if node:GetAttribute("Owner") ~= player.UserId then
@@ -1378,7 +1377,7 @@ local function simulateServerOwned(dt: number)
 end
 
 -- The phone's Vehicles app previews exactly what the spawner builds: ReplicatedStorage.VehiclePreviews.<id>
--- (anchored BuildProp copies; LandVehicleService adds the cars).
+-- (anchored BuildProp copies).
 local function publishPreviews()
 	local previews = ReplicatedStorage:FindFirstChild("VehiclePreviews")
 	if not previews then
@@ -1625,13 +1624,6 @@ function VehicleService.Start()
 		)
 	end
 	PhysicsService:CollisionGroupSetCollidable(BOAT_GROUP, BOAT_GROUP, false)
-	pcall(
-		PhysicsService.CollisionGroupSetCollidable,
-		PhysicsService,
-		BOAT_GROUP,
-		"LandVehicle",
-		false
-	)
 	RunService.PreSimulation:Connect(simulateServerOwned)
 	local acc = 0
 	RunService.Heartbeat:Connect(function(dt)

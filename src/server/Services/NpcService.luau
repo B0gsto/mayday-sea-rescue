@@ -3,7 +3,6 @@
 -- retired coxswain) at the top of the station slipway, and two lifeboat crew either side of the ramp.
 -- Each is a Roblox R15 character from NpcFactory (docs/12 section 2.9), the block greybox when the
 -- build fails. Scenery only: anchored, non-colliding, under Workspace.Npcs.
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
@@ -69,25 +68,6 @@ local function spawnStation()
 	end
 end
 
--- R15 rigs the client ambient crowd clones (AmbientController reads ReplicatedStorage.AmbientNpcTemplates;
--- HumanoidDescription characters can only be built on the server).
-local AMBIENT_TEMPLATES: { [string]: number } = { Passenger = 6, Boater = 3, Swimmer = 3 }
-
-local function buildAmbientTemplates()
-	local templates = Instance.new("Folder")
-	templates.Name = "AmbientNpcTemplates"
-	for role, count in AMBIENT_TEMPLATES do
-		for i = 1, count do
-			local m = NpcFactory.build(role, { name = `{role}{i}`, seed = i - 1 })
-			if m then
-				m:SetAttribute("NpcRole", role)
-				m.Parent = templates
-			end
-		end
-	end
-	templates.Parent = ReplicatedStorage -- parented once complete so clients never see a half-built set
-end
-
 -- The end of the cold open (docs/14 section 3) --------------------------------------------------
 
 local SHORE_PARTY_LIFE = 120 -- s the blanket scene stays
@@ -143,7 +123,6 @@ function NpcService.Init()
 end
 
 function NpcService.Start()
-	task.spawn(buildAmbientTemplates)
 	spawnStation()
 end
 

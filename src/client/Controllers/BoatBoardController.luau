@@ -1,6 +1,6 @@
 --!strict
 -- BoatBoardController (docs/23 d.3, WP-5): the client half of the vehicle boards (server/Dock/BoatBoard: the
--- boat board and the garage, hangar and sub pen boards, all tagged BoatBoard).
+-- boat board and the hangar and sub pen boards, all tagged BoatBoard).
 -- On your own rack, owned models stay lit with Launch (the server's crane does the rest); locked ones go
 -- dark with a padlock, a Cash chip (coin + price, or the rank's colour + name) and an R$ chip, and their
 -- prompt reads Buy. Buy and Upgrade open the phone's card for that craft (VehiclesApp, only = id), the

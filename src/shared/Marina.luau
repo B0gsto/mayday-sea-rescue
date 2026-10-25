@@ -33,20 +33,6 @@ function Marina.berth(i: number): CFrame
 	return CFrame.lookAt(pos, pos + look)
 end
 
--- Car garages (docs/23 h, WP-10b): the beach strip at the spine root is ~18 studs deep (cars are ~28 long), so
--- the row of 16 bays stands on the open grass along Penhallow Road's west kerb (WorldConfig PortHaven_Av1),
--- across Harbour Road from the walkway root: bay i's door opens east onto the road, bay 1 nearest the
--- harbour. A bay is WIDTH across (along the kerb) and DEPTH deep (west, away from the road); floor top at Y.
-Marina.GARAGE = { X = -562, Z0 = -46, WIDTH = 14, DEPTH = 30, Y = 6.1 }
-
--- Garage i's frame: the door's centre at floor level, LookVector out of the door onto the road (+X),
--- local +Z = into the bay, local +X = along the kerb (south, toward the harbour).
-function Marina.garage(i: number): CFrame
-	local g = Marina.GARAGE
-	local pos = Vector3.new(g.X, g.Y, g.Z0 - g.WIDTH * (i - 0.5))
-	return CFrame.lookAt(pos, pos + Vector3.xAxis)
-end
-
 -- The far end of the spine (past the last pair of plots).
 function Marina.spineEndZ(): number
 	return Marina.Z0 + Marina.WIDTH * math.ceil(Marina.COUNT / 2)

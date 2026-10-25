@@ -1,8 +1,7 @@
 --!strict
 -- Sirens (RP-M5 Siren Pack, server). Action "Siren" (no arguments) toggles the equipped pack tone on
--- the vehicle the player drives (boat, jet ski or car). Switching on needs: DriverSeat, a Siren Pack
--- tone equipped (Cos_Siren), and a tasking (OperationService.GetOperationOf; the car's blues follow
--- the same rule, docs 10 section 3.3). Switching off is always allowed for the player who switched
+-- the vehicle the player drives (boat or jet ski). Switching on needs: DriverSeat, a Siren Pack
+-- tone equipped (Cos_Siren), and a tasking (OperationService.GetOperationOf). Switching off is always allowed for the player who switched
 -- it on.
 --
 -- While a siren sounds the vehicle Model carries (contract in Config/Cosmetics/Siren.luau):
@@ -10,8 +9,6 @@
 -- plus SirenBy = the UserId who switched it on (0 when off) and the CollectionService tag
 -- "CosmeticSiren" (so clients find sounding vehicles as they stream in, late joiners included).
 -- src/client/Cosmetics/Sirens plays the looped Sound.
--- Cars: when the car's own blues switch its "Siren" attribute on (LandVehicleService) and the
--- driver has a pack tone equipped, the pack tone sounds with them and stops with them.
 -- A siren stops when the operation ends, the tone is unequipped, the owner leaves or the vehicle
 -- goes. Refusals answer with "CosmeticRefused" ("Siren", reason).
 local CollectionService = game:GetService("CollectionService")
@@ -27,11 +24,10 @@ Sirens.Priority = 50
 local CHECK_EVERY = 2 -- s between tasking checks of the sounding sirens
 local TAG = "CosmeticSiren"
 
-type Active = { owner: Player, tone: string, viaBlues: boolean }
+type Active = { owner: Player, tone: string }
 
 local service: any = nil
 local active: { [Model]: Active } = {}
-local hooked: { [Model]: boolean } = {}
 
 local function onTasking(player: Player): boolean
 	local services = script.Parent.Parent:FindFirstChild("Services")
@@ -57,17 +53,12 @@ local function isDriver(player: Player, model: Model): boolean
 		and (seat :: VehicleSeat).Occupant == humanoid
 end
 
-local function setTone(
-	model: Model,
-	owner: Player?,
-	option: VehicleSounds.Option?,
-	viaBlues: boolean
-)
+local function setTone(model: Model, owner: Player?, option: VehicleSounds.Option?)
 	local tone, pattern = VehicleSounds.sirenAttributes(option)
 	if tone == "" or not owner then
 		active[model] = nil
 	else
-		active[model] = { owner = owner, tone = tone, viaBlues = viaBlues }
+		active[model] = { owner = owner, tone = tone }
 	end
 	model:SetAttribute("SirenTone", tone)
 	model:SetAttribute("SirenPattern", pattern)
@@ -81,7 +72,7 @@ end
 
 local function stop(model: Model)
 	if active[model] or (model:GetAttribute("SirenTone") or "") ~= "" then
-		setTone(model, nil, nil, false)
+		setTone(model, nil, nil)
 	end
 end
 
@@ -116,39 +107,7 @@ local function onToggle(player: Player)
 		service.FireClient(player, "CosmeticRefused", "Siren", reason)
 		return
 	end
-	setTone(model, player, equippedOption(player), false)
-end
-
--- cars: follow the car's own blues ("Siren" attribute) with the equipped pack tone
-local function hookCar(player: Player, model: Model)
-	if hooked[model] then
-		return
-	end
-	hooked[model] = true
-	model:GetAttributeChangedSignal("Siren"):Connect(function()
-		local on = model:GetAttribute("Siren") == true
-		local a = active[model]
-		if not on then
-			if a and a.viaBlues then
-				stop(model)
-			end
-			return
-		end
-		if a then
-			return -- already sounding (toggled with G)
-		end
-		local driver = player
-		if not isDriver(driver, model) then
-			return
-		end
-		if request(driver, model, "Car") then
-			setTone(model, driver, equippedOption(driver), true)
-		end
-	end)
-	model.Destroying:Connect(function()
-		hooked[model] = nil
-		active[model] = nil
-	end)
+	setTone(model, player, equippedOption(player))
 end
 
 function Sirens.Init(s: any)
@@ -162,16 +121,11 @@ function Sirens.Init(s: any)
 			if a.owner == player then
 				local option = s.Cosmetics.option("Siren", id)
 				if VehicleSounds.playable(option) then
-					setTone(model, player, option, a.viaBlues)
+					setTone(model, player, option)
 				else
 					stop(model)
 				end
 			end
-		end
-	end)
-	s.VehicleSpawned:Connect(function(player: Player, model: Model, kind: string)
-		if kind == "Car" then
-			hookCar(player, model)
 		end
 	end)
 	Players.PlayerRemoving:Connect(function(player: Player)

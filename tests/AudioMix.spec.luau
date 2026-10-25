@@ -54,14 +54,6 @@ return function(t)
 		end
 	end)
 
-	t.test("car engine: idle layer at idle, load layer and higher pitch near redline", function()
-		local i1, l1, p1 = AudioMix.carEngine(750, 750, 4000, 0)
-		local i2, l2, p2 = AudioMix.carEngine(3800, 750, 4000, 1)
-		t.expect(i1 > l1).toBeTruthy()
-		t.expect(l2 > i2).toBeTruthy()
-		t.expect(p2 > p1).toBeTruthy()
-	end)
-
 	t.test(
 		"wind rises with the storm: gale only in a storm, apparent wind adds a breeze",
 		function()
