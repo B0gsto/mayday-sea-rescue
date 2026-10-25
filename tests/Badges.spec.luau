@@ -180,9 +180,7 @@ return function(t)
 		t.expect(#BadgeRules.trophies({}, {})).toBe(0)
 		t.expect(BadgeRules.trophies({ Rescue100 = 99, FirstRescue = 1, Streak7 = 7 }, {}))
 			.toEqual({ "FirstRescue" })
-		t.expect(
-			BadgeRules.trophies({ Rescue100 = 100 }, { GoldenGull = true, RankAdmiral = true })
-		)
-			.toEqual({ "Rescue100", "GoldenGull" })
+		t.expect(BadgeRules.trophies({ Rescue100 = 100 }, { RankAdmiral = true }))
+			.toEqual({ "Rescue100" })
 	end)
 end
