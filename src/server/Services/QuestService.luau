@@ -1,15 +1,18 @@
 --!strict
--- QuestService (docs/23 (l), WP-21b): the six quest givers at the hub's quest camps (Quests/Data, HubLayout
--- questSpots) and each player's one active quest (Quests/Rules; saved in the profile flag `quest`).
---   Talk (TalkController, numbered replies) -> remote Quest_Talk C->S (npcId, "accept" | "handIn" | "drop").
---   find: the item waits on its island; walk into it and it rides on your back. salvage: the same from the sub
---   at a wreck. deliver: you carry it from the camp; walk it to the flag. rescue: a call is offered at the zone
+-- QuestService (docs/23 (l) + (p), WP-21b / WP-27): quests come to you. The six quest givers (Quests/Data) sail in on
+-- small boats to your own island's quest pontoon (World/QuestPontoons, up to 3 at once: your active quest's giver
+-- first, then the givers with an offer for you today) and sail off when you hand in; unclaimed islands have none.
+-- Each player has one active quest (Quests/Rules; saved in the profile flag `quest`).
+--   Talk to a moored giver (TalkController, numbered replies) or use your quest tablet (QuestController) -> remote
+--   Quest_Talk C->S (npcId, "accept" | "handIn" | "drop"): only for a giver moored at your island, from beside them
+--   or from your tablet. find: the item waits on its island; walk into it and it rides on your back. salvage: the
+--   same from the sub at a wreck. deliver: you carry it from the pontoon; walk it to the flag. rescue: a call is offered at the zone
 --   (OperationService.OfferCall), done when its survivor is delivered (OperationCompleted). Then back to the
 --   giver ("?") to hand in: Cash (flat), and the chain's last step adds its blueprint to your island.
 -- Player attributes (QuestController / MapController / TalkController read them): QuestId, QuestStage
 -- ("go" | "back"), QuestTarget (Vector3: the thing, then the giver), QuestOffer_<npcId> (today's offer).
--- Studio: ServerStorage.QuestDev:Invoke("accept", npcId) | ("reach") | ("hand") | ("tp": to the pin) | ("chain") |
--- ("reset").
+-- Studio: ServerStorage.QuestDev:Invoke("accept", npcId: ties its boat up, puts you beside it) | ("tablet": to your
+-- quest tablet) | ("reach") | ("hand") | ("tp": to the pin) | ("chain") | ("reset").
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -22,9 +25,10 @@ local DataService = require(script.Parent:WaitForChild("DataService"))
 local DockService = require(script.Parent:WaitForChild("DockService"))
 local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local Net = require(Shared:WaitForChild("Net"))
-local NpcFactory = require(script.Parent.Parent:WaitForChild("Npc"):WaitForChild("NpcFactory"))
 local OperationService = require(script.Parent:WaitForChild("OperationService"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
+local QuestPontoons =
+	require(script.Parent.Parent:WaitForChild("World"):WaitForChild("QuestPontoons"))
 local Rules = require(Shared:WaitForChild("Quests"):WaitForChild("Rules"))
 
 local QuestService = {}
@@ -32,6 +36,8 @@ QuestService.Priority = 130
 
 local TICK = 0.3
 local TALK_RANGE = 16 -- studs from the giver a reply counts from
+local TABLET_RANGE = 16 -- studs from your quest tablet
+local BOATS = 3 -- givers at a pontoon at once (HubLayout quest.slots)
 local OFFER_RETRY = CallTypes.Scheduler.OfferSeconds + 10 -- a quest call not taken by then is offered again
 
 type Live = {
@@ -41,7 +47,7 @@ type Live = {
 
 local states: { [Player]: Rules.State } = {}
 local live: { [Player]: Live } = {}
-local giverAt: { [string]: Vector3 } = {}
+local skipper: { [number]: Player } = {} -- island -> the owner its boats came for
 local folder: Folder
 local npcFolder: Instance
 
@@ -128,7 +134,8 @@ end
 local function settle(at: Vector3): Vector3
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = { folder, npcFolder }
+	params.FilterDescendantsInstances =
+		{ folder, npcFolder, Workspace:FindFirstChild("QuestBoats") }
 	params.IgnoreWater = true
 	local hit = Workspace:Raycast(at + Vector3.new(0, 40, 0), Vector3.new(0, -90, 0), params)
 	local y = if hit then hit.Position.Y else at.Y
@@ -265,7 +272,12 @@ local function publish(player: Player)
 	player:SetAttribute("QuestStage", s.stage)
 	local target: Vector3? = nil
 	if quest and s.stage == "back" then
-		target = giverAt[quest.npc]
+		local i = DockService.GetPlot(player)
+		local b = QuestPontoons.Find(i, quest.npc)
+		target = if b
+			then QuestPontoons.Beside(b)
+			elseif i then HubLayout.Islands[i].quest.pontoon.Position
+			else nil
 	elseif quest then
 		local l = live[player]
 		target = if l and l.item then l.item:GetPivot().Position else Rules.target(quest)
@@ -343,6 +355,10 @@ local function handIn(player: Player)
 		return
 	end
 	ProgressionService.Award(player, quest.cash, `Quest:{quest.id}`, true)
+	local boat = QuestPontoons.Giver(DockService.GetPlot(player), quest.npc)
+	if boat then
+		QuestPontoons.Leave(boat) -- the next giver sails in (reconcile); a chain's next step brings them back
+	end
 	local data: any = DataService.Get(player)
 	if quest.blueprint and data then
 		data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
@@ -359,9 +375,17 @@ local function handIn(player: Player)
 end
 
 local function onTalk(player: Player, npcId: any, action: any)
-	local s, root = states[player], rootOf(player)
-	local at: Vector3? = if type(npcId) == "string" then giverAt[npcId] else nil
-	if not (s and root and at) or (root.Position - at).Magnitude > TALK_RANGE then
+	local s, root, i = states[player], rootOf(player), DockService.GetPlot(player)
+	-- only a giver tied up at your own island, from beside them or from your tablet
+	local boat = if type(npcId) == "string" then QuestPontoons.Giver(i, npcId) else nil
+	if not (s and root and i and boat) then
+		return
+	end
+	local giver = boat.model:GetPivot().Position + Vector3.new(0, 3, 0)
+	if
+		(root.Position - giver).Magnitude > TALK_RANGE
+		and (root.Position - QuestPontoons.TabletAt(i)).Magnitude > TABLET_RANGE
+	then
 		return
 	end
 	local quest = questOf(player)
@@ -382,66 +406,51 @@ local function onTalk(player: Player, npcId: any, action: any)
 	publish(player)
 end
 
--- A giver at their camp: a canvas lean-to, crates and a lantern post behind them.
-local function spawnGiver(npc: Data.Npc, spot: { cframe: CFrame })
-	local cf = spot.cframe
-	local feet = settle(cf.Position)
-	local stand = CFrame.lookAt(feet, feet + cf.LookVector * Vector3.new(1, 0, 1))
-	giverAt[npc.id] = feet + Vector3.new(0, 3, 0)
-	local camp = Instance.new("Model")
-	camp.Name = `{npc.id}Camp`
-	local back = stand * CFrame.new(0, 0, 7)
-	local canvas = Color3.fromRGB(214, 200, 160)
-	local wood = Color3.fromRGB(110, 80, 52)
-	for _, x in { -4, 4 } do
-		part(camp, Vector3.new(0.5, 6, 0.5), back * CFrame.new(x, 3, -2), wood, Enum.Material.Wood)
+-- The givers island i's owner should have at their pontoon: the active quest's first, then today's offers.
+local function wanted(player: Player): { [string]: Data.Npc }
+	local s, out, n = states[player], {}, 0
+	local quest = questOf(player)
+	local day, ok = today(), can(player)
+	if quest then
+		out[quest.npc], n = Data.npcById[quest.npc], 1
 	end
-	part(
-		camp,
-		Vector3.new(9.5, 0.2, 6),
-		back * CFrame.new(0, 4, 0.4) * CFrame.Angles(math.rad(-30), 0, 0),
-		canvas,
-		Enum.Material.Fabric
-	)
-	part(
-		camp,
-		Vector3.new(2, 2, 2),
-		stand * CFrame.new(3.5, 1, 2),
-		Color3.fromRGB(176, 132, 80),
-		Enum.Material.Wood
-	)
-	part(
-		camp,
-		Vector3.new(1.6, 1.6, 1.6),
-		stand * CFrame.new(3.6, 2.8, 2.2),
-		Color3.fromRGB(150, 110, 70),
-		Enum.Material.Wood
-	)
-	part(
-		camp,
-		Vector3.new(0.4, 5, 0.4),
-		stand * CFrame.new(-3.5, 2.5, 1.5),
-		wood,
-		Enum.Material.Wood
-	)
-	local lamp = part(
-		camp,
-		Vector3.new(0.8, 1, 0.8),
-		stand * CFrame.new(-3.5, 5.3, 1.5),
-		Color3.fromRGB(255, 200, 120),
-		Enum.Material.Neon
-	)
-	local light = Instance.new("PointLight")
-	light.Color, light.Range, light.Brightness = lamp.Color, 14, 1.2
-	light.Parent = lamp
-	camp.Parent = folder
-	task.spawn(NpcFactory.spawn, npc.role, {
-		name = npc.id,
-		pose = "Idle",
-		seed = npc.seed,
-		cframe = stand,
-		parent = npcFolder,
-	})
+	for _, npc in Data.Npcs do
+		if n < BOATS and not out[npc.id] and Rules.offer(s, npc.id, day, ok) then
+			out[npc.id], n = npc, n + 1
+		end
+	end
+	return out
+end
+
+-- Boats follow the owners: unwanted givers sail off, wanted ones sail in to a free slot, a changed owner clears.
+local function sail()
+	local owners: { [number]: Player } = {}
+	for player in states do
+		local i = DockService.GetPlot(player)
+		if i then
+			owners[i] = player
+		end
+	end
+	for i in HubLayout.Islands do
+		local owner = owners[i]
+		if skipper[i] ~= owner then
+			QuestPontoons.Clear(i)
+			skipper[i] = owner
+		end
+		if owner then
+			local want = wanted(owner)
+			for _, b in QuestPontoons.Boats(i) do
+				if b.state ~= "out" and not want[b.npc] then
+					QuestPontoons.Leave(b)
+				end
+			end
+			for _, npc in Data.Npcs do
+				if want[npc.id] and not QuestPontoons.Find(i, npc.id) then
+					QuestPontoons.Arrive(i, npc)
+				end
+			end
+		end
+	end
 end
 
 local function load(player: Player, data: any)
@@ -469,12 +478,7 @@ end
 
 function QuestService.Start()
 	npcFolder = Workspace:WaitForChild("Npcs")
-	for i, npc in Data.Npcs do
-		local spot = HubLayout.Hub.questSpots[i]
-		if spot then
-			spawnGiver(npc, spot)
-		end
-	end
+	QuestPontoons.Build(npcFolder)
 	DataService.OnLoaded(load)
 	Players.PlayerRemoving:Connect(function(player)
 		clearLive(player)
@@ -503,6 +507,9 @@ function QuestService.Start()
 					publish(player) -- day rollover, a sub bought, the rescue call taken
 				end
 			end
+			if n % 3 == 0 then
+				sail()
+			end
 		end
 	end)
 
@@ -516,9 +523,20 @@ function QuestService.Start()
 			if not (s and root) then
 				return nil
 			end
+			local i = DockService.GetPlot(player)
 			if cmd == "accept" then
-				root.CFrame = CFrame.new(giverAt[arg] + Vector3.new(0, 0, 4))
+				local b = QuestPontoons.Find(i, arg)
+				if b then
+					QuestPontoons.Snap(b)
+					root.CFrame = CFrame.new(QuestPontoons.Beside(b))
+				end
 				onTalk(player, arg, "accept")
+			elseif cmd == "tablet" and i then
+				local t = HubLayout.Islands[i].lots.QuestTablet.cframe
+				root.CFrame = CFrame.lookAt(
+					(t * CFrame.new(0, 3, -5)).Position,
+					t.Position + Vector3.new(0, 3, 0)
+				)
 			elseif cmd == "tp" then
 				local target = player:GetAttribute("QuestTarget")
 				if typeof(target) == "Vector3" then

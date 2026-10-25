@@ -7,7 +7,7 @@ Reads tools/world/layout.py (island polygons, coast kinds, basins, reefs, POIs) 
   map/generated/terrain.json          grid metadata, material table, stats
   map/generated/terrain_height.i16    int16 LE, surface Y * 8, row-major [z][x], CELL-stud samples
   map/generated/terrain_material.u8   uint8 material index (terrain.json "materials")
-  src/shared/Config/WorldConfig.luau  pure-data module: the hub ring, islands, POIs (generated)
+  src/shared/Config/WorldConfig.luau  pure-data module: the island ring, islands, POIs (generated)
 Same layout + SEED = byte-identical output. Needs numpy (and Pillow for --preview)."""
 import json, math, os, sys
 import numpy as np
@@ -176,7 +176,7 @@ def micro_relief(X, Z, hl, dl, wb, s, fk=1.0):
 
 def bake_island(isl):
     """One bake window (layout.HUB_WINDOW or an ARCHIPELAGO island, docs/21 6.1): only its own polygons, with the
-    coast profiles plus gaussian peaks, flat pads, a flat `plateau` (the hub and player islands), dredged basins and
+    coast profiles plus gaussian peaks, flat pads, dredged basins and
     shoals (reef rock or lagoon sand); the seabed ramps to the deep floor at the window edge over `edgeRamp` studs.
     Rough massing only: the per-island build modules (src/server/World/Islands) dress it. Returns (xs, zs, h, mat)."""
     s = L.SEED
@@ -205,11 +205,6 @@ def bake_island(isl):
     peaks = sum(ph * np.exp(-((X - px) ** 2 + (Z - pz) ** 2) / (2 * pr ** 2)) for px, pz, ph, pr in isl["peaks"])
     h_land = wc * cliff_l + wr * rocky_l + wb * beach_l + wh * harb_l + wm * mud_l + peaks * smoothstep(0, 80, dl)
     h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s)
-    if "plateau" in isl:  # docs/23 (k): flat buildable ground 30 studs in from the waterline
-        h_land = h_land + (isl["plateau"] - h_land) * smoothstep(6, 30, dl)
-    trail = flat = None
-    if "forest" in isl:
-        h_land, trail, flat = forest(X, Z, h_land, dl, isl["forest"])
 
     # sea: the main shelf, a little steeper (small islands drop off faster). The kind weights are blurred (~100
     # studs) first: coast_field switches hard between polygons, which left step lines on the seabed between stacks
@@ -218,6 +213,8 @@ def bake_island(isl):
     dep = (sc * np.maximum(shelf, np.minimum(ds * 0.6, 45)) + sr * np.maximum(shelf, np.minimum(ds / 4, 25))
            + sb * shelf + sh * np.maximum(shelf, np.minimum(10 + ds * 0.065, 70)) + sm * ds / 60)
     dep = dep + 7 * fbm(X, Z, 420, s + 8) * smoothstep(80, 400, ds) + 2.5 * fbm(X, Z, 90, s + 9) * smoothstep(20, 200, ds)
+    if not isl["polys"]:  # docs/23 (p): a window with no island (the ring) is deep floor until its shoals raise it
+        dep = np.full(X.shape, -float(L.SEABED_FLOOR_Y))
     h = np.where(land, h_land, -dep)
 
     feat = np.zeros(X.shape, dtype=np.int8)  # 1 reef rock (materials())
@@ -246,8 +243,6 @@ def bake_island(isl):
     h = h + (L.SEABED_FLOOR_Y - h) * smoothstep(isl.get("edgeRamp", 260), 0, sides)
     h = np.maximum(h, L.SEABED_FLOOR_Y)
 
-    if "plateau" in isl:  # a 25-stud sand / rock rim, turf on the plateau (no dunes)
-        W = W * np.where(np.arange(len(L.KINDS))[:, None, None] == L.KINDS.index(L.BEACH), smoothstep(30, 18, dl), 1)
     mat = materials(X, Z, h, d, W, feat, np.where(land, gully, 0), np.where(land, outc, 0))
     # biome accents: guano / chalk streaks on the cliffs, dark wet rock on the reef
     rockish = (mat == MI["Rock"]) | (mat == MI["Basalt"])
@@ -258,55 +253,7 @@ def bake_island(isl):
         mat = np.where((h > 6) & ~rockish & (mat != MI["Limestone"]), MI["Rock"], mat)
     if isl["biome"] == "reef":
         mat = np.where((h > 0) & rockish, MI["Basalt"], mat)
-    if trail is not None:  # docs/23 (l): forest floor, trampled clearings, dirt trails (outcrops and rims keep theirs)
-        n = fbm(X, Z, 26, s + 950, 3) + 0.4 * vnoise(X, Z, 7, s + 951)
-        wood = (np.hypot(X - L.HUB["center"][0], Z - L.HUB["center"][1]) < L.HUB["radius"] + 40) & (dl > 28) \
-            & (h > 1) & (np.hypot(*np.gradient(h, L.CELL)) < 0.75)  # only real faces stay rock
-        floor = np.where(n > 0.4, MI["Ground"], np.where(n < -0.3, MI["LeafyGrass"], MI[OLIVE]))
-        camp = np.where(n > 0.05, MI["Ground"], MI[WORN])
-        path = np.where(fbm(X, Z, 9, s + 952, 2) > 0.45, MI["Mud"], MI["Ground"])
-        pick = np.where(trail > 0.5, path, np.where(flat > 0.6, camp, floor))
-        mat = np.where(wood, pick, mat)
     return xs, zs, h, mat.astype(np.uint8)
-
-
-def trail_distance(X, Z, trails):
-    """Distance (studs) to the nearest hub trail, meandering (scatter_props.py keeps the trees off the same field)."""
-    Xw, Zw = warp(X, Z, L.SEED + 960, 9.0, 70.0)
-    dist = np.full(X.shape, 1e9)
-    for line in trails:
-        for (x0, z0), (x1, z1) in zip(line, line[1:]):
-            dx, dz = x1 - x0, z1 - z0
-            t = np.clip(((Xw - x0) * dx + (Zw - z0) * dz) / (dx * dx + dz * dz), 0, 1)
-            dist = np.minimum(dist, np.hypot(Xw - (x0 + t * dx), Zw - (z0 + t * dz)))
-    return dist
-
-
-def forest(X, Z, h, dl, f):
-    """docs/23 (l): the hub's gentle hills and rough forest floor over the plateau, flat clearings (rendered at their
-    `y`; None = the ground's mean, written back into the clearing as `bakedY`) and meandering dirt trails. Returns
-    (height, trail mask 0..1, clearing mask 0..1)."""
-    s = L.SEED
-    hub = np.hypot(X - L.HUB["center"][0], Z - L.HUB["center"][1]) < L.HUB["radius"] + 60  # not the ring's plateaus
-    rim = smoothstep(40, 110, dl) * hub
-    hills = sum(ph * np.exp(-((X - px) ** 2 + (Z - pz) ** 2) / (2 * (pr * 0.6) ** 2)) for px, pz, ph, pr in f["hills"])
-    rough = 5 * fbm(X, Z, 110, s + 940, 3) + 0.9 * fbm(X, Z, 16, s + 941, 2)
-    h = h + (hills + rough + 3) * rim
-    flat = np.zeros(X.shape)
-    for c in f["clearings"]:
-        (cx, cz), r = c["pos"], c["radius"]
-        dist = np.hypot(X - cx, Z - cz)
-        y = float(h[dist < r].mean()) if c["y"] is None else c["y"] - L.RENDER_BIAS
-        c["bakedY"] = round(y + L.RENDER_BIAS, 1)
-        m = smoothstep(r + 45, r, dist)
-        h = h + (y - h) * m
-        flat = np.maximum(flat, smoothstep(r + 6, r - 4, dist))
-    dist = trail_distance(X, Z, f["trails"])
-    width = 3.2 + 1.4 * fbm(X, Z, 40, s + 961, 2)
-    trail = smoothstep(width + 1.5, width - 1.5, dist) * (dl > 20)
-    keep = 1 - smoothstep(0.3, 0.9, flat)
-    h = h + (box_blur(h, 2) - h - 0.5) * trail * keep  # a worn bed, a little sunk
-    return h, trail, flat
 
 
 def box_blur(a, r):
@@ -571,16 +518,12 @@ def write_worldconfig(wins):
         "Terrain": {"cell": L.CELL, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED,
                     "windows": [{"id": i["id"], "min": Vec(i["window"][0], L.SEABED_FLOOR_Y, i["window"][1]),
                                  "max": Vec(i["window"][2], 0, i["window"][3])} for i in L.ISLAND_WINDOWS]},
-        # docs/23 (k): the hub island at the centre and the six player islands round it (HubLayout.luau lays the
-        # lots, berths and bridges out from this). Bearings: 0 east, 90 south; notch = harbour / berth cove
-        "Hub": {"center": Vec(L.HUB["center"][0], py, L.HUB["center"][1]), "radius": L.HUB["radius"],
-                "bearing": L.HUB["bearing"], "notch": L.HUB["notch"], "plateauY": py,
-                "ring": L.RING["radius"], "islandRadius": L.RING["islandRadius"], "islandNotch": L.RING["notch"],
-                "islands": [{"id": p["id"], "bearing": p["bearing"], "center": Vec(p["center"][0], py, p["center"][1])}
-                            for p in L.PLAYER_ISLANDS],
-                # docs/23 (l): the forest's clearings (outposts, bridge heads, quest camps, hidden spots); Y = rendered
-                "clearings": [{"id": c["id"], "kind": c["kind"], "center": Vec(c["pos"][0], c["bakedY"], c["pos"][1]),
-                               "radius": c["radius"]} for c in L.HUB_CLEARINGS]},
+        # docs/23 (p): the six player islands in a ring round an open lagoon (HubLayout.luau lays the lots, berths and
+        # bridges out from this). Bearings: 0 east, 90 south; islandNotch = the berth cove, facing out to sea
+        "Ring": {"center": Vec(L.CENTER[0], py, L.CENTER[1]), "plateauY": py, "radius": L.RING["radius"],
+                 "islandRadius": L.RING["islandRadius"], "islandNotch": L.RING["notch"],
+                 "islands": [{"id": p["id"], "bearing": p["bearing"],
+                              "center": Vec(p["center"][0], py, p["center"][1])} for p in L.PLAYER_ISLANDS]},
         # docs/21: one row per explorable island. landmark / stamp / landing sit on the bake surface; dock at sea
         # level (a boat's stop, B3's DropOff dock); radius = the island's zone
         "Islands": [{"id": i["id"], "name": i["name"], "center": Vec(i["center"][0], 0, i["center"][1]),
@@ -599,7 +542,7 @@ def write_worldconfig(wins):
     }
     body = "".join(f"\t{k} = {luau_value(v, 1)},\n" for k, v in cfg.items())
     src = ("--!strict\n-- GENERATED by tools/world/gen_terrain.py from tools/world/layout.py. Do not edit by hand.\n"
-           "-- WorldConfig: the Gale Isles layout as pure data (docs/23 (k), docs/21): the hub and the six player\n"
+           "-- WorldConfig: the Gale Isles layout as pure data (docs/23 (p), docs/21): the ring of six player\n"
            "-- islands, the outer islands, seabed points of interest, reefs and kelp beds. Studs from the map centre;\n"
            "-- +X east, -Z north, sea level Y = 0. Safe to load in Lune.\n\n"
            "local WorldConfig = {\n" + body + "}\n\nreturn WorldConfig\n")
@@ -632,7 +575,7 @@ def preview(h, mat, path):
 
 
 def main():
-    xs, zs, h, mat = bake_island(L.HUB_WINDOW)  # the main grid: the hub and the six player islands
+    xs, zs, h, mat = bake_island(L.HUB_WINDOW)  # the main grid: the ring's open water (the islands are Lego plates)
     out = os.path.join(REPO, "map/generated")
     os.makedirs(out, exist_ok=True)
     hq = np.clip(np.round(h * 8), -32768, 32767).astype("<i2")

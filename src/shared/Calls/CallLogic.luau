@@ -24,23 +24,23 @@ function CallLogic.travelSeconds(distance: number, topSpeed: number): number
 	return distance / math.max(topSpeed * CallTypes.CRUISE_FACTOR, 1e-3)
 end
 
--- Where a player's calls count from (docs/23 (k)): their berth (player attribute BayCFrame), else the hub drop-off.
+-- Where a player's calls count from (docs/23 (p)): their berth (player attribute BayCFrame), else Plot1's berth.
 -- At sea level.
 function CallLogic.homeOf(bay: any): Vector3
 	local p: Vector3 = if typeof(bay) == "CFrame"
 		then bay.Position
 		elseif typeof(bay) == "Vector3" then bay
-		else HubLayout.Hub.dropOff
+		else HubLayout.Islands[1].berths.Boat.Position
 	return Vector3.new(p.X, 0, p.Z)
 end
 
--- Straight out of a home's cove: the flat unit from the hub to it (every cove opens away from the hub).
+-- Straight out of a home's cove: the flat unit from the ring centre to it (every cove opens away from it).
 local function outOf(home: Vector3): Vector3
 	local d = Vector3.new(home.X - CallTypes.STATION.X, 0, home.Z - CallTypes.STATION.Z)
 	return if d.Magnitude > 1 then d.Unit else Vector3.zAxis
 end
 
--- Open water 1,500 studs out from the hub on the home's bearing: past its cove, short of the outer islands.
+-- Open water 1,500 studs out from the ring centre on the home's bearing: past its cove, short of the outer islands.
 function CallLogic.homeFallback(home: Vector3): Vector3
 	return CallTypes.STATION + outOf(home) * 1500
 end
@@ -53,15 +53,16 @@ local function segmentDistance(p: Vector3, a: Vector3, b: Vector3): number
 	return (ap - ab * t).Magnitude
 end
 
--- Is this point open water (pure map data: off the hub, the six islands and the outer islands, clear of the
--- bridges, inside the map)? area "Outer" also keeps Areas.OuterMin from the hub. The server adds its raycasts.
+-- Is this point open water (pure map data: outside the ring (no calls in the lagoon, docs/23 (p)), off the six
+-- islands and the outer islands, clear of the bridges, inside the map)? area "Outer" also keeps Areas.OuterMin from
+-- the ring centre. The server adds its raycasts.
 function CallLogic.isWater(pos: Vector3, area: string): boolean
 	local A = CallTypes.Areas
-	local fromHub = flatDistance(pos, CallTypes.STATION)
+	local fromCentre = flatDistance(pos, CallTypes.STATION)
 	if
-		fromHub < HubLayout.HubRadius + A.Shore
-		or fromHub > GameConfig.MapRadius - A.MapMargin
-		or (area == "Outer" and fromHub < A.OuterMin)
+		fromCentre < HubLayout.Ring
+		or fromCentre > GameConfig.MapRadius - A.MapMargin
+		or (area == "Outer" and fromCentre < A.OuterMin)
 	then
 		return false
 	end
@@ -327,7 +328,7 @@ function CallLogic.distancePay(distance: number): number
 end
 
 -- Pay multiplier for a call at `scene` landed at `at`: distancePay from `home` (your berth), but landed
--- elsewhere (the hub drop-off, another island) it pays for half the round trip sailed (home -> scene -> `at`),
+-- elsewhere it pays for half the round trip sailed (home -> scene -> `at`),
 -- never more.
 function CallLogic.deliveredPay(scene: Vector3, at: Vector3, home: Vector3?): number
 	local h = home or CallLogic.homeOf(nil)
@@ -336,18 +337,6 @@ function CallLogic.deliveredPay(scene: Vector3, at: Vector3, home: Vector3?): nu
 		return CallLogic.distancePay(out)
 	end
 	return CallLogic.distancePay(math.min(out, (out + flatDistance(scene, at)) / 2))
-end
-
--- Where to take a survivor: the nearest of the drop-off points (your berth, the hub drop-off).
-function CallLogic.nearestDropOff(from: Vector3, points: { Vector3 }): Vector3?
-	local best: Vector3?, bestD = nil, math.huge
-	for _, p in points do
-		local d = flatDistance(p, from)
-		if d < bestD then
-			best, bestD = p, d
-		end
-	end
-	return best
 end
 
 -- Choose the next call for a player. completed = calls finished this session; reach = craftReach; sub =
@@ -389,7 +378,7 @@ function CallLogic.chooseCall(
 		end
 	end
 	local spec = CallTypes.Kinds[kind]
-	-- one-place scenes (the rip off the hub beach)
+	-- one-place scenes (the rip off Puffin Isle's beach)
 	if #spec.zones == 1 then
 		return { kind = kind, zone = spec.zones[1] }
 	end

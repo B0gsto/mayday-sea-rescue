@@ -186,13 +186,13 @@ Helicopter → the rest) watches these:
 |---|---:|---|
 | Workshop | 0:07 | The first building inside the first session (NewPlayerPace: ~8 min). |
 | Boathouse | 0:24 | The boat board and paint booth. |
-| RIB | 0:33 | The first bought boat. |
-| Pontoon | 0:46 | The second berth. |
-| Lifeboat | 2:07 | Top reach. |
-| Helicopter | 7:38 | Week 1 (helipad + hangar + 55,000). |
-| Submarine | 12:37 | Crane and sub pen first. |
-| Station | 15:25 | The beacon and the Harbour Master race. |
-| Clinic (the whole tree) | 17:52 | Everything a free player can build. |
+| RIB | 0:34 | The first bought boat. |
+| Pontoon | 0:49 | The second berth. |
+| Lifeboat | 2:14 | Top reach. |
+| Helicopter | 7:35 | Week 1 (helipad + hangar + 55,000). |
+| Submarine | 12:02 | Crane and sub pen first. |
+| Station | 14:42 | The beacon and the Harbour Master race. |
+| Clinic (the whole tree) | 17:17 | Everything a free player can build. |
 
 - **First session:** the workshop and the boathouse, one quest, the first Album stamp. End with more island.
 - **First week:** the RIB, the lifeboat, the helicopter, most of the lamp chain.

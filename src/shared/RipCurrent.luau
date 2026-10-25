@@ -15,19 +15,17 @@ export type Field = {
 	length: number, -- studs out: the flow fades away by here
 }
 
-local HubLayout = require(script.Parent.Config.HubLayout)
-
 local RipCurrent = {}
 
--- The hub-beach rip (docs/23 (k)): off the hub's north-east beach, on bearing BEARING (midway between the
--- Plot6 and Plot1 bridges), from the waterline straight out to sea, so the flow runs out and away from the
--- sand: the casualty starts about 120 studs down the channel and is carried toward `length`.
-RipCurrent.BEARING = 330
+-- The beach rip (docs/23 (p)): off Puffin Isle's north-east beach (the hub beach went with the hub), from the
+-- waterline straight out to sea on bearing BEARING from the isle's centre, so the flow runs out and away from the
+-- sand: the casualty starts about 120 studs down the channel and is carried toward `length`. Bake-sampled
+-- (map/generated, PuffinIsle window): waterline 420 studs out, 6 studs deep at 120, 31 at 240.
+RipCurrent.BEARING = 325
 local out =
 	Vector3.new(math.cos(math.rad(RipCurrent.BEARING)), 0, math.sin(math.rad(RipCurrent.BEARING)))
-RipCurrent.HubBeach = table.freeze({
-	origin = Vector3.new(HubLayout.Hub.center.X, 0, HubLayout.Hub.center.Z)
-		+ out * (HubLayout.HubRadius + 5),
+RipCurrent.Beach = table.freeze({
+	origin = Vector3.new(-2600, 0, 3400) + out * 425,
 	direction = out,
 	strength = 6.5,
 	width = 70,

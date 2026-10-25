@@ -2,7 +2,7 @@
 -- UiImages: uploaded UI sprites (assets/ui/<set>/*.png, uploaded with tools/assets.py upload).
 -- Hud: the gameplay HUD set (assets/ui/hud, mockup.png). Panel / SpeedPanel / Bar* are 9-slice.
 return {
-	-- World signs: the hub shop counter's sign (map/Build.luau buildHub; the old phone Store icon art)
+	-- World signs: the old hub shop counter's sign (the hub went in docs/23 (p); the old phone Store icon art)
 	Signs = { Shop = "rbxassetid://138403733104125" },
 	Hud = {
 		Coin = "rbxassetid://73244576620050",

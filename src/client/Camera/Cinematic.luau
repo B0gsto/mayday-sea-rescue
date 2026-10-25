@@ -8,7 +8,7 @@
 --   Cinematic.update(dt): boolean               (CameraController each frame; true while playing)
 --   Cinematic.stop()
 --   LocalPlayer attribute CinematicPlaying (bool) while one plays (the Ops UI hides on it)
---   Cinematic.Lists.arrival() / .coldOpen(model) / .launch(model) / .storm(subject)   shot lists
+--   Cinematic.Lists.coldOpen(model) / .launch(model) / .storm(subject)   shot lists
 --
 -- Shot = { from: CFrame | Pose, to: (CFrame | Pose)?, duration: number, fov: number?,
 --          toFov: number?, caption: string?, handheld: number? }
@@ -312,52 +312,29 @@ function Cinematic.update(dt: number): boolean
 end
 
 ---------------------------------------------------------------- stub shot lists (map/Build.luau)
--- The hub (docs/23 (l), HubLayout): the harbour x -50..50 from its head at z 290 to the mouth at z 400, the
--- Landing clearing round (0, 4, 235), the lookout hut HQ at (0, 4, 205) with its tower top at about (-7, 24, 202),
--- trees up to about Y 45 over the forest.
-
 local Lists = {}
 Cinematic.Lists = Lists
 
--- After the cold open: coming home to the station.
-function Lists.arrival(): { Shot }
-	return {
-		{
-			from = CFrame.lookAt(Vector3.new(60, 16, 480), Vector3.new(0, 10, 235)),
-			to = CFrame.lookAt(Vector3.new(25, 12, 430), Vector3.new(0, 10, 225)),
-			duration = 6,
-			fov = 40,
-			toFov = 36,
-			caption = "Coastguard Hub",
-		},
-		{
-			from = CFrame.lookAt(Vector3.new(-30, 6, 395), Vector3.new(0, 9, 205)),
-			to = CFrame.lookAt(Vector3.new(-25, 6, 330), Vector3.new(0, 10, 205)),
-			duration = 5,
-			fov = 55,
-		},
-		{
-			from = CFrame.lookAt(Vector3.new(30, 10, 252), Vector3.new(-7, 22, 202)),
-			to = CFrame.lookAt(Vector3.new(24, 28, 240), Vector3.new(-7, 24, 200)),
-			duration = 5,
-			fov = 45,
-			caption = "Coastguard Lookout",
-		},
-	}
-end
-
--- The cold open (about 7 s, skippable): wide over the hub harbour and the lookout, a sweep out to the
--- casualty (the craft's ColdOpenTarget), then down behind the jet ski as control comes back.
+-- The cold open (about 7 s, skippable): wide over your island from behind it (the jet ski sits in its cove,
+-- bow out to sea), a sweep out to the casualty (the craft's ColdOpenTarget), then down behind the jet ski as
+-- control comes back.
 function Lists.coldOpen(model: Model): { Shot }
 	local target = model:GetAttribute("ColdOpenTarget")
-	local cas: Vector3 = if typeof(target) == "Vector3" then target else model:GetPivot().Position
+	local pivot = model:GetPivot()
+	local cas: Vector3 = if typeof(target) == "Vector3" then target else pivot.Position
+	local fwd = Vector3.new(pivot.LookVector.X, 0, pivot.LookVector.Z).Unit
 	return {
 		{
-			from = CFrame.lookAt(Vector3.new(40, 34, 480), Vector3.new(0, 14, 220)),
-			to = CFrame.lookAt(Vector3.new(10, 30, 450), Vector3.new(0, 16, 205)),
+			from = CFrame.lookAt(
+				pivot.Position - fwd * 170 + Vector3.new(0, 80, 0),
+				pivot.Position + fwd * 60
+			),
+			to = CFrame.lookAt(
+				pivot.Position - fwd * 120 + Vector3.new(0, 55, 0),
+				pivot.Position + fwd * 60
+			),
 			duration = 2.6,
 			fov = 42,
-			caption = "Coastguard Hub",
 		},
 		{
 			from = CFrame.lookAt(cas + Vector3.new(-60, 40, -70), cas),

@@ -2685,6 +2685,15 @@
   "source": "assets/textures/M_Rock_Ledge_01/T_Ledge01_Granite_ALB_Wet.png",
   "type": "Image"
  },
+ "Image:203b5d1b38c40b4da37cb364513bf66ae255dfb2425a686297f4e52a75b2d71c": {
+  "assetId": "124858204802794",
+  "imageId": "124858204802794",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_ring_r2c1",
+  "sha": "203b5d1b38c40b4da37cb364513bf66ae255dfb2425a686297f4e52a75b2d71c",
+  "source": "art/map/v2/gale_isles_map_r2c1.png",
+  "type": "Image"
+ },
  "Image:2078393a4ce821d4ca313921e11fc025813715e07b0443bba92dceaf279cd705": {
   "assetId": "83985848362482",
   "imageId": "83985848362482",
@@ -4337,6 +4346,15 @@
   "name": "T_Station_Render_ALB",
   "sha": "343942c4d560d77991fa74971f7b041324a33e0610b8bdf31a1989c3a90af45f",
   "source": "assets/textures/M_Bld_Station/T_Station_Render_ALB.png",
+  "type": "Image"
+ },
+ "Image:343feff13cd08945f4def244e8498948babf46882eaa7809b5a1443a67cfdf90": {
+  "assetId": "74788418520575",
+  "imageId": "74788418520575",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_ring_r1c2",
+  "sha": "343feff13cd08945f4def244e8498948babf46882eaa7809b5a1443a67cfdf90",
+  "source": "art/map/v2/gale_isles_map_r1c2.png",
   "type": "Image"
  },
  "Image:344e2efa1f5574203700026603178a043d9ee0226d70d08119e89fd8ebb67892": {
@@ -13485,6 +13503,15 @@
   "source": "assets/textures/M_Road_Ribbon/T_Road_CobblesTile_RGH.png",
   "type": "Image"
  },
+ "Image:a811afd14a3647249fc9fee6b2b43f466daf9a80f4c786147e46c4dae4503b00": {
+  "assetId": "76814996162469",
+  "imageId": "76814996162469",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_ring_r1c1",
+  "sha": "a811afd14a3647249fc9fee6b2b43f466daf9a80f4c786147e46c4dae4503b00",
+  "source": "art/map/v2/gale_isles_map_r1c1.png",
+  "type": "Image"
+ },
  "Image:a81246e8899a4bab37200c8aa2304c65c3a3f494cd02572af191c02bfdd7e9a9": {
   "assetId": "88731663285161",
   "imageId": "88731663285161",
@@ -17723,6 +17750,15 @@
   "name": "T_NavMarkPort_Buoy_RGH",
   "sha": "e0f35fcb3e53323b7408e39598c9ef9f721f91dcba124c877988be5cb0b097f0",
   "source": "assets/textures/M_Hbr_NavMark_Port/T_NavMarkPort_Buoy_RGH.png",
+  "type": "Image"
+ },
+ "Image:e10c4987d15d4d800231af04113ab35c72cdfdd5f4f2d6db0c86417fae072fb5": {
+  "assetId": "95566851515316",
+  "imageId": "95566851515316",
+  "moderation": "Reviewing",
+  "name": "gale_isles_map_ring_r2c2",
+  "sha": "e10c4987d15d4d800231af04113ab35c72cdfdd5f4f2d6db0c86417fae072fb5",
+  "source": "art/map/v2/gale_isles_map_r2c2.png",
   "type": "Image"
  },
  "Image:e12403ce931819036bb0dbe8b89dbacddbe8e016bd1a82133ab6c7c96c062fcd": {

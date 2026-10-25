@@ -3,9 +3,9 @@
 -- server placement (src/server/World/Seamarks.luau) and the client motion / flash (SeamarkController). Unit-tested
 -- in tests/Seamarks.spec.luau. No requires: safe to load in Lune.
 --
--- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The hub harbour (docs/23 (k), HubLayout) opens south:
--- the notch |x| < 50 from z 290 to the rim at z 400, the dredged channel straight out from it (tools/world/layout.py
--- _basins). A vessel entering from seaward steers north (-Z), so its port hand is west (-X): red cans
+-- IALA Region A (art/reference/M_Hbr_NavMark_*/dims.md). The south channel into the lagoon (docs/23 (p): between
+-- Plot2 and Plot3, under their bridge at z 400; it led into the old hub harbour). A vessel entering from seaward
+-- steers north (-Z), so its port hand is west (-X): red cans
 -- (even numbers) on the west of the channel, green cones (odd numbers) on the east, numbered from seaward. The
 -- fairway buoy (safe water) is the landfall mark at the head of the channel and the bell buoy the outer port-hand
 -- mark. Cardinals sit on the named side of the danger they mark (a West mark: pass to the west of it), with
@@ -143,28 +143,7 @@ local marks: { Mark } = {
 		light = "Fl G 5s",
 		map = "SeamarkStarboard",
 	},
-	-- the last pair, just off the hub harbour mouth
-	{
-		id = "No8",
-		asset = PORT,
-		name = "No 8",
-		x = -46,
-		z = 420,
-		yaw = 250,
-		light = "Fl R 4s",
-		map = "SeamarkPort",
-	},
-	{
-		id = "No7",
-		asset = STBD,
-		name = "No 7",
-		x = 46,
-		z = 420,
-		yaw = 10,
-		light = "Fl G 5s",
-		map = "SeamarkStarboard",
-	},
-	-- the Morwenna wreck (WorldConfig.POIs, off the ring east of the hub): clear water to its west
+	-- the Morwenna wreck (WorldConfig.POIs, off the ring past Plot1 and Plot6): clear water to its west
 	{
 		id = "MorwennaWest",
 		asset = "M_Hbr_NavMark_West",

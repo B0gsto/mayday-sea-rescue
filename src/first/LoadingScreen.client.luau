@@ -543,16 +543,16 @@ local function main()
 		return
 	end
 
-	local hubCenter: Vector3 = HubLayout.Hub.center
+	local ringCenter: Vector3 = HubLayout.Center -- docs/23 (p): the lagoon, ringed by the islands
 	local bay: CFrame? = nil
 	local firstSession = false
-	local spawnCF: CFrame = HubLayout.Hub.spawn
+	local spawnCF: CFrame = HubLayout.Islands[1].spawn
 	local orbitAngle = 0
 	local flyActive = false
 	local flyStart = 0
-	local flyIsland = hubCenter
-	local flySweep = hubCenter
-	local flyLook = hubCenter
+	local flyIsland = ringCenter
+	local flySweep = ringCenter
+	local flyLook = ringCenter
 
 	local function startOrbit()
 		if reduced ~= false or cameraBound then
@@ -572,7 +572,7 @@ local function main()
 					local t = math.clamp((os.clock() - flyStart) / FLY_SECONDS, 0, 1)
 					frame = LoadingPath.flyover(
 						t,
-						hubCenter,
+						ringCenter,
 						flyIsland,
 						orbitAngle,
 						flySweep,
@@ -581,7 +581,7 @@ local function main()
 					)
 				else
 					orbitAngle += dt * LoadingPath.ORBIT_SPEED
-					frame = LoadingPath.orbit(hubCenter, orbitAngle)
+					frame = LoadingPath.orbit(ringCenter, orbitAngle)
 				end
 				camera.CameraType = Enum.CameraType.Scriptable
 				camera.CFrame = frame
@@ -622,7 +622,7 @@ local function main()
 		task.wait(0.05)
 	end
 
-	local islandCenter = hubCenter
+	local islandCenter = ringCenter
 	local isleFrame: CFrame? = nil
 	local bayCF = bay
 	if bayCF then
@@ -641,9 +641,9 @@ local function main()
 	end)
 	local streamed = false
 	task.spawn(function()
-		local hubOk = streamAround(hubCenter)
+		local ringOk = streamAround(ringCenter)
 		local islandOk = streamAround(islandCenter)
-		streamed = hubOk and islandOk
+		streamed = ringOk and islandOk
 	end)
 	while (not preloaded or not streamed) and os.clock() < deadline do
 		task.wait(0.05)
@@ -702,7 +702,7 @@ local function main()
 
 	task.wait(0.35)
 	local initialFinish = finishPose(bay, firstSession, spawnCF)
-	local from = LoadingPath.spiral(1, hubCenter, islandCenter, orbitAngle)
+	local from = LoadingPath.spiral(1, ringCenter, islandCenter, orbitAngle)
 	local away = (from.Position - initialFinish.Position) * Vector3.new(1, 0, 1)
 	if away.Magnitude < 1 then
 		away = Vector3.new(from.LookVector.X, 0, from.LookVector.Z)

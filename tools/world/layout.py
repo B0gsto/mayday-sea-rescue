@@ -1,8 +1,8 @@
 """World layout for the Gale Isles terrain generator (hand-authored data; docs/23 (k), docs/21).
 
-Coordinates are studs from the map centre (the hub): +X east, -Z north, +Z south, sea level Y = 0, 1 m = 3 studs.
+Coordinates are studs from the map centre (the ring's lagoon): +X east, -Z north, +Z south, sea level Y = 0, 1 m = 3 studs.
 This file is the single source for the island masks and points of interest; gen_terrain.py bakes the terrain from
-it and writes src/shared/Config/WorldConfig.luau from it (WorldConfig.Hub feeds src/shared/Config/HubLayout.luau).
+it and writes src/shared/Config/WorldConfig.luau from it (WorldConfig.Ring feeds src/shared/Config/HubLayout.luau).
 """
 import math
 
@@ -35,21 +35,20 @@ def oval(cx, cz, rx, rz, kind, h, n=8):
                          for k in range(n)])
 
 
-# ---------------------------------------------------------------- the hub and six player islands (docs/23 (k), (l))
-# Bearings: 0 east, 90 south (+Z). Island-local frame (HubLayout.luau uses the same): forward = outward from the hub
-# (cos b, sin b), right = (-sin b, cos b) = CFrame.lookAt(centre, centre + forward).RightVector. Every island is a
-# flat plateau at PLATEAU_Y (beach / rocky rim) with a notch cut into its forward face: the hub's harbour, an
-# island's berth cove (quay walls, dredged to floorY, then a dredged channel straight out to sea).
-PLATEAU_Y = 4  # the quay height (harbour coast kind), so quays, lots and plateau are one level
-# Terrain renders its surface about half a voxel over the baked height (Studio raycasts: +1.9 +-0.25 studs), so every
-# flat (plateaus, hub clearings) is baked this much lower and reads at its config height in game.
+# ---------------------------------------------------------------- the ring of six player islands (docs/23 (p))
+# WP-27: no island at the centre. The six player islands sit in a tight ring round an open lagoon. Bearings: 0 east,
+# 90 south (+Z). Island-local frame (HubLayout.luau uses the same): forward = outward from the ring centre (cos b,
+# sin b), right = (-sin b, cos b) = CFrame.lookAt(centre, centre + forward).RightVector. The islands are not terrain
+# (WP-24): each is a flat Lego plate built from Parts (src/server/World/IslandPlates.luau, footprint in
+# HubLayout.IslandPlate), its berth notch on the forward (sea) face.
+PLATEAU_Y = 4  # the plate top, the quays and every lot
+# Terrain renders its surface about half a voxel over the baked height (Studio raycasts: +1.9 +-0.25 studs)
 RENDER_BIAS = 2
-# docs/23 (l): the hub is a forest island ~800 across with gentle hills; the harbour faces south between two bridges
-HUB = {"center": (0, 0), "radius": 400, "bearing": 90,
-       "notch": {"halfWidth": 50, "head": 290, "floorY": -30}}
-RING = {"radius": 1100, "bearings": (0, 60, 120, 180, 240, 300), "islandRadius": 160,
+CENTER = (0, 0)  # the lagoon's centre (no island)
+# radius 470: the 320-stud plates' nearest corners are 80 studs apart (at 380 they would overlap)
+RING = {"radius": 470, "bearings": (0, 60, 120, 180, 240, 300), "islandRadius": 160,
         "notch": {"halfWidth": 45, "head": 30, "floorY": -30}}
-WINDOW_HALF_X, WINDOW_HALF_Z = 1536, 1280  # the main window: the ring reaches 1,260 east / west, 1,113 north / south
+WINDOW_HALF_X, WINDOW_HALF_Z = 1536, 1280  # the main window: the ring, the lagoon and the sea round them
 
 
 def local(cx, cz, bearing, right, fwd):
@@ -57,82 +56,17 @@ def local(cx, cz, bearing, right, fwd):
     return (cx + fwd * math.cos(b) - right * math.sin(b), cz + fwd * math.sin(b) + right * math.cos(b))
 
 
-def notched(cx, cz, bearing, r, notch, rim, n=20):
-    """Island polygon: a circle of radius r with a rectangular notch (halfWidth wide, from `head` to the rim) in its
-    forward face. rim(theta) -> (kind, H) for the circle vertices (theta: degrees from forward)."""
-    hw = notch["halfWidth"]
-    t0 = math.degrees(math.asin(hw / r))
-    pts = []
-    for k in range(n + 1):
-        t = t0 + (360 - 2 * t0) * k / n
-        rad = math.radians(t)
-        pts.append((*local(cx, cz, bearing, r * math.sin(rad), r * math.cos(rad)), *rim(t)))
-    for right in (-hw, hw):  # the circle's end vertices are the notch's mouth corners
-        pts.append((*local(cx, cz, bearing, right, notch["head"]), HARBOUR, 4))
-    return [(round(x), round(z), k, h) for x, z, k, h in pts]
-
-
-def _rim(t):  # rocky by the notch and on the bridge face, sandy beaches on the flanks
-    a = min(t, 360 - t)
-    return (BEACH, 0) if 70 <= a <= 150 else (ROCKY, 0)
-
-
-def _hub_rim(t):  # docs/23 (l): a rocky shore all round, one sandy beach (the rip, RipCurrent.BEARING 330 = t 240)
-    return (BEACH, 0) if 222 <= t <= 258 else (ROCKY, 0)
-
-
-def _basins(cx, cz, bearing, r, notch):  # the notch dredged to floorY, then a channel straight out
-    f = (notch["head"] + r) / 2
-    return [(*local(cx, cz, bearing, 0, f), r - notch["head"] + 2 * notch["halfWidth"], notch["floorY"]),
-            (*local(cx, cz, bearing, 0, r + 90), 150, notch["floorY"] + 10)]
-
-
-PLAYER_ISLANDS = [{"id": f"Plot{k + 1}", "bearing": b, "center": local(0, 0, b, 0, RING["radius"])}
+PLAYER_ISLANDS = [{"id": f"Plot{k + 1}", "bearing": b, "center": local(*CENTER, b, 0, RING["radius"])}
                   for k, b in enumerate(RING["bearings"])]
 
-# The hub forest (docs/23 (l)). World (x, z). Clearings are flattened to `y` (rendered height; None = the ground's
-# mean there) and kept clear of trees: kind outpost (Build.luau dresses them), bridge (a bridge's hub end), quest (an
-# empty camp for WP-21b's quest NPCs), hidden (a discovery sticker; no trail leads there). Hills are gaussians
-# (x, z, height, radius) over the plateau, faded out near the coast and round every clearing.
-_B = {f"Bridge{k + 1}": local(0, 0, b, 0, 345) for k, b in enumerate(RING["bearings"])}
-HUB_CLEARINGS = [
-    {"id": "Landing", "kind": "outpost", "pos": (0, 235), "radius": 62, "y": PLATEAU_Y},  # spawn, HQ, harbour head
-    {"id": "Market", "kind": "outpost", "pos": (80, 205), "radius": 30, "y": PLATEAU_Y},
-    {"id": "Harbourmaster", "kind": "outpost", "pos": (-100, 318), "radius": 30, "y": PLATEAU_Y},
-    {"id": "Campfire", "kind": "outpost", "pos": (-15, 45), "radius": 48, "y": PLATEAU_Y},
-    {"id": "Monument", "kind": "outpost", "pos": (0, -175), "radius": 36, "y": PLATEAU_Y},
-] + [{"id": k, "kind": "bridge", "pos": (round(x), round(z)), "radius": 38, "y": PLATEAU_Y} for k, (x, z) in _B.items()] + [
-    {"id": f"Quest{k + 1}", "kind": "quest", "pos": p, "radius": 24, "y": PLATEAU_Y}
-    for k, p in enumerate([(205, 115), (-215, 150), (215, -135), (-225, -95), (-260, -230), (115, -30)])
-] + [
-    {"id": "Ruin", "kind": "hidden", "pos": (-130, -45), "radius": 16, "y": None},  # on the west hill's crown
-    {"id": "Wreck", "kind": "hidden", "pos": (285, -175), "radius": 16, "y": None},  # in the trees behind the beach
-]
-HUB_HILLS = [(-130, -45, 30, 80), (150, -170, 22, 70), (270, 60, 16, 55), (-250, 50, 20, 65), (-110, -250, 18, 55),
-             (110, 110, 14, 55)]
-_C = {c["id"]: c["pos"] for c in HUB_CLEARINGS}
-# Rough dirt trails (polylines through clearing centres; the bake meanders them). None to the hidden spots.
-HUB_TRAILS = [
-    [_C["Landing"], (-8, 140), _C["Campfire"]], [_C["Campfire"], (-25, -60), _C["Monument"]],
-    [_C["Landing"], _C["Market"]], [_C["Landing"], (-55, 285), _C["Harbourmaster"]],
-    [_C["Market"], (150, 250), _C["Bridge2"]], [_C["Harbourmaster"], _C["Bridge3"]],
-    [_C["Campfire"], (90, 60), _C["Quest1"], (290, 50), _C["Bridge1"]],
-    [_C["Campfire"], _C["Quest6"], _C["Quest3"], (300, -60), _C["Bridge1"]], [_C["Quest3"], (200, -220), _C["Bridge6"]],
-    [_C["Campfire"], (-110, 110), _C["Quest2"], (-290, 70), _C["Bridge4"]], [_C["Quest2"], (-190, 230), _C["Bridge3"]],
-    [_C["Campfire"], (-140, 30), _C["Quest4"], (-300, -50), _C["Bridge4"]],
-    [_C["Quest4"], _C["Quest5"], _C["Bridge5"]],
-    [_C["Monument"], (-70, -205), _C["Bridge5"]], [_C["Monument"], (90, -230), _C["Bridge6"]],
-    [_C["Quest3"], (290, -215), (335, -195)],  # down to the north-east beach
-]
-HUB_WINDOW = {
+# The main window is open water: a sand seabed (one wide lagoon-sand shoal, about Y -36 to -44, ramping to the deep
+# floor by the window edge) with a basin round each plate deep enough for boats and the submarine.
+PLATE_BASIN = {"radius": 420, "floorY": -34}  # full depth inside 210 (past the 160-stud plate), blending out by 420
+HUB_WINDOW = {  # the main window (historical name)
     "id": "Hub", "window": (-WINDOW_HALF_X, -WINDOW_HALF_Z, WINDOW_HALF_X, WINDOW_HALF_Z), "biome": "hub",
-    "plateau": PLATEAU_Y - RENDER_BIAS, "edgeRamp": 120,  # a short ramp keeps the ring's outer rims dry
-    "polys": [notched(*HUB["center"], HUB["bearing"], HUB["radius"], HUB["notch"], _hub_rim, n=40)]
-    + [notched(*p["center"], p["bearing"], RING["islandRadius"], RING["notch"], _rim) for p in PLAYER_ISLANDS],
-    "basins": _basins(*HUB["center"], HUB["bearing"], HUB["radius"], HUB["notch"])
-    + [b for p in PLAYER_ISLANDS for b in _basins(*p["center"], p["bearing"], RING["islandRadius"], RING["notch"])],
-    "peaks": [], "pads": [],
-    "forest": {"hills": HUB_HILLS, "clearings": HUB_CLEARINGS, "trails": HUB_TRAILS},
+    "edgeRamp": 120, "polys": [], "peaks": [], "pads": [],
+    "shoals": [(*CENTER, 2400, -36, False)],
+    "basins": [(*p["center"], PLATE_BASIN["radius"], PLATE_BASIN["floorY"]) for p in PLAYER_ISLANDS],
 }
 
 # Seabed areas (rock reefs, kelp) as circles: centre, radius (the Skerries; baked as Skerry Isle's shoals).
@@ -144,9 +78,8 @@ KELP_BEDS = [  # kelp on rock from 2 to 15 m (Slate material now, kelp props lat
     {"id": "SkerriesKelp", "center": (1650, 1450), "radius": 220},
 ]
 
-_ANCHOR = local(0, 0, HUB["bearing"], 30, HUB["notch"]["head"] + 40)
-# Wrecks and finds on the seabed (Y from the bake). Morwenna lies off the ring between Plot1 and Plot6, the
-# Admiralty anchor beside the hub harbour wall, the seaplane on the Skerries sand.
+# Wrecks and finds on the seabed (Y from the bake). Morwenna lies off the ring past Plot1 and Plot6, the
+# Admiralty anchor in the middle of the lagoon, the seaplane on the Skerries sand.
 POIS = [
     {"id": "Morwenna", "kind": "Wreck", "name": "Morwenna", "era": "1902",
      "blurb": "A wooden trading schooner lost in the gale of 1902.",
@@ -155,8 +88,8 @@ POIS = [
      "blurb": "A mail seaplane that ditched on the Skerries sand; wrasse live in the cockpit.",
      "pos": (1300, None, 1500), "yaw": -35, "length": 39, "beam": 50},
     {"id": "AdmiraltyAnchor", "kind": "Find", "name": "Admiralty anchor", "era": "1840s",
-     "blurb": "An Admiralty-pattern anchor lying beside the harbour wall.",
-     "pos": (round(_ANCHOR[0]), None, round(_ANCHOR[1])), "yaw": 70, "length": 12, "beam": 10},
+     "blurb": "An Admiralty-pattern anchor lying in the lagoon.",
+     "pos": (CENTER[0], None, CENTER[1]), "yaw": 70, "length": 12, "beam": 10},
 ]
 
 # ---------------------------------------------------------------- the archipelago (docs/21 sections 2.2 and 6.1)

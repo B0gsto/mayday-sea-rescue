@@ -26,7 +26,7 @@ return function(t)
 		t.expect((DevConfig.validate("opEnd", { 7, false }))).toBe(true)
 		t.expect((DevConfig.validate("op", { 7, "PersonInWater" }))).toBe(true)
 		t.expect((DevConfig.validate("op", { 7, "ColdOpen" }))).toBe(true)
-		t.expect((DevConfig.validate("tpSpot", { "Station" }))).toBe(true)
+		t.expect((DevConfig.validate("tpSpot", { "SKERRY ISLE" }))).toBe(true)
 		t.expect((DevConfig.validate("tpPos", { Vector3.new(10, 5, -20) }))).toBe(true)
 	end)
 

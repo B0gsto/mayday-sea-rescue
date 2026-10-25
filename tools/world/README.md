@@ -2,22 +2,20 @@
 
 Bakes the Gale Isles terrain (docs/10-world-and-map.md) and merges it into `build/MaydaySeaRescue.rbxl`.
 
-**Hub ring (docs/23 (k), WP-18; supersedes the Great Gale passes below).** Great Gale, Port Haven, the town ground,
-roads, farms, St Elowen's Mount and its causeway are gone. The main window is x +-1,536, z +-1,280
-(`layout.HUB_WINDOW`, baked by `bake_island()` like every island): the hub island (radius 400) at the centre and six
-player islands (`Plot1..6`, radius 160) 1,100 studs out at bearings 0, 60 .. 300, each a flat `plateau` (Y 4 rendered:
-baked `RENDER_BIAS` 2 lower, since voxels render about half a voxel over the bake) with a 25-stud beach / rocky rim and
-a `notch` in its outward face (hub: the harbour, 100 wide, facing south; islands: the berth cove, 90 wide), dredged to
-Y -30 with a channel straight out; `edgeRamp` 120 keeps the outer rims dry. **Hub forest (docs/23 (l), WP-21a):**
-`forest()` adds gentle hills (`HUB_HILLS`, up to about Y 37) and a rough floor over the hub plateau, flattens the
-`HUB_CLEARINGS` (outposts, bridge heads, quest camps, hidden spots) and wears meandering dirt `HUB_TRAILS` between
-them (`trail_distance()`); the hub rim is rocky with one beach (north-east, the rip). `scatter_props.forest()` puts
-about 1,400 placeholder trees (`trees` rows) and 650 undergrowth plants on it, clear of clearings and trails.
-`WorldConfig.Hub` carries the geometry and the clearings; `src/shared/Config/HubLayout.luau` lays out lots, berths,
-spawns and the bridges (`src/server/World/Bridges.luau`) from it, and `tests/HubLayout.spec.luau` checks them against
-the bake. Skerry Isle has its own window now (1,024..2,560 x 1,280..2,304, the Skerries reefs as shoals); the other
-outer windows are unchanged. `check_zones.py` checks the plateaus, hub clearings, notches and outer islands; `scatter_props.py`
-dresses only the rims (rocks, sea pinks, strand debris: unbuilt plots stay bare, docs/23 (j) rule 1).
+**The ring (docs/23 (p), WP-27; supersedes the hub (k)/(l) and the Great Gale passes below).** Great Gale, Port
+Haven, the town, St Elowen's Mount and the hub forest island are gone. The main window is x +-1,536, z +-1,280
+(`layout.HUB_WINDOW`, historical name, baked by `bake_island()` like every island) and holds no land: a window with
+no polygons is deep floor until its shoals raise it, so one wide lagoon-sand shoal makes a seabed at about Y -37,
+ramping to the -165 floor over the window's `edgeRamp` 120, with a basin round each plate. The six player islands
+(`Plot1..6`, `layout.RING`: centres 470 studs out at bearings 0, 60 .. 300, berth coves facing out to sea) are not
+terrain (WP-24): each is a flat Lego baseplate built from Parts at run time by `src/server/World/IslandPlates.luau`
+from `HubLayout.IslandPlate` (320 across, top at Y 4, 2 thick, a U cut-out over the berth cove). `WorldConfig.Ring`
+carries the ring; `src/shared/Config/HubLayout.luau` lays out lots, berths, spawns, the quest pontoons and the
+neighbour bridges (`src/server/World/Bridges.luau`) from it, and `tests/HubLayout.spec.luau` checks them against the
+bake. Skerry Isle has its own window (1,024..2,560 x 1,280..2,304, the Skerries reefs as shoals); the other outer
+windows are unchanged. `check_zones.py` checks the plate rings' and the lagoon's open water and the outer islands;
+`scatter_props.py` places nothing in the main window now (no land). `make_map_image.py` draws the plates and the
+bridges over the bake (they are Parts, not voxels).
 
 | Step | Command | Output |
 |---|---|---|

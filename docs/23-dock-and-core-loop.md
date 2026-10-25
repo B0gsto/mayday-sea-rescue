@@ -209,8 +209,8 @@ Packs = the cheapest mix of live Cash packs (Calm Bay rate: 1,500 / 4,500 / 16,5
 
 8. **WP-28 (2026-10-26): no ranks, the unlock tree, Cash only.** The sim walks the tree in plan order (Workshop →
    Boathouse → RIB → Pontoon → Lifeboat slip → Lifeboat → Lookout → Helipad → Hangar → Helicopter → the rest), a
-   due upgrade first. Solo: Workshop 0:07, Boathouse 0:24, RIB 0:33, Pontoon 0:46, Lifeboat 2:07, Helicopter 7:38
-   (now 55,000; helipad 10,000, hangar 20,000), Submarine 12:37, Station 15:25, the whole tree 17:52 (Clinic); ~380k
+   due upgrade first. Solo: Workshop 0:07, Boathouse 0:24, RIB 0:34, Pontoon 0:49, Lifeboat 2:14, Helicopter 7:35
+   (now 55,000; helipad 10,000, hangar 20,000), Submarine 12:02, Station 14:42, the whole tree 17:17 (Clinic); ~420k
    Cash unspent at 40 h. Reach = the best craft you launch; the Robux boats sit on the RIB's tier (3,500).
 
 ## (j) Plots v2: big land plots, blueprint table, crew (owner, 2026-10-25)
@@ -442,6 +442,14 @@ Decisions: **quest NPCs come to you** (they arrive by boat at your own jetty), *
 **Work package.** WP-27 ring layout (after WP-24 plates land): generator removes the hub terrain; HubLayout →
 ring positions; neighbour bridges; delete hub camps/HQ/fog/stickers code; quest NPC boats to your jetty; move
 hub-based call sites; loading-flyover centre; map image refresh.
+
+**Done (WP-27).** Island centres 470 studs from the centre (at 380 the 320-stud plates overlap); nearest plate
+corners 80 apart, ~93 studs of water under each bridge. Bridges cross each bisector 400 out, 182 long, 11.3 deg
+ramps from 45 studs onto each plate to a rounded crest (deck ~20.6, underside ~19.4). The main bake window is a sand
+seabed (~Y -37). Quest pontoon off each island's front-left wing (3 mooring slots), quest tablet beside it; givers sail
+in from 400 out. Rip moved to Puffin Isle's north-east beach, the ferry to open sea 1,000 south of the centre. Home
+counts only at your own berth. Leaderboard: a board beside every island's spawn. Chief Aggie and the station crew
+removed (no island needs them).
 
 ## (q) No ranks: a linear unlock tree (owner, 2026-10-25 night)
 

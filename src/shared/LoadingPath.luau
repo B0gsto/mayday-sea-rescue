@@ -1,18 +1,19 @@
 --!strict
--- LoadingPath: the loading screen's camera (src/first/LoadingScreen): a slow orbit high over the hub
--- while loading, then one eased flight that spirals down to the player's island and sweeps past
--- their name sign to a finish pose behind the character (or the cold-open jet ski).
+-- LoadingPath: the loading screen's camera (src/first/LoadingScreen): a slow orbit high over the ring of
+-- islands (round the lagoon at its centre, docs/23 (p)) while loading, then one eased flight that spirals down to
+-- the player's island and sweeps past their name sign to a finish pose behind the character (or the cold-open jet
+-- ski).
 --   orbit(center, angle), spiral(x, hub, island, angle), approach(x, from, sweep, look, finish),
 --   flyover(t, hub, island, angle, sweep, look, finish): t 0..1 eased once over the whole flight
 local LoadingPath = {}
 
--- ~68 degrees down from ~320 studs: further out, terrain past the client's draw radius is cut off
-LoadingPath.START_HEIGHT = 300
-LoadingPath.START_RADIUS = 120
+-- ~62 degrees down from ~740 studs: the whole ring (1,260 studs across) in frame
+LoadingPath.START_HEIGHT = 650
+LoadingPath.START_RADIUS = 350
 LoadingPath.END_RADIUS = 70
 LoadingPath.END_HEIGHT = 55
 LoadingPath.TURNS = 1.25
-LoadingPath.TRAVEL_SHARE = 0.6 -- of the spiral spent moving from the hub to the island
+LoadingPath.TRAVEL_SHARE = 0.6 -- of the spiral spent moving from the ring centre to the island
 LoadingPath.SPIRAL_SHARE = 0.8
 LoadingPath.ORBIT_SPEED = math.rad(6)
 LoadingPath.FOV = 62
@@ -39,7 +40,7 @@ end
 
 -- spiral and approach take a linear 0..1; flyover eases once so the seam never stops the camera
 function LoadingPath.spiral(x: number, hub: Vector3, island: Vector3, angle: number): CFrame
-	-- cross to the island first and stay high doing it (the bridges), then drop in circling it
+	-- cross to the island first and stay high doing it, then drop in circling it
 	local center = hub:Lerp(island, math.min(1, x / LoadingPath.TRAVEL_SHARE))
 	local radius = LoadingPath.START_RADIUS
 		+ (LoadingPath.END_RADIUS - LoadingPath.START_RADIUS) * x

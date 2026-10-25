@@ -13,10 +13,7 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 
 | Work | Branch | Worktree | Builder |
 |---|---|---|---|
-| WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite, second half (01–04, 07, 15, store text) | `t3/rewrite-current-design-docs` | `t3-d7464e33` | DeepSeek Flash |
-| WP-23c delete the phone, left button column + kit panels, map fog overlay, kit polish (done, awaiting merge) | `t3/replace-phone-kit-panels` | `t3-a9ab975a` | Opus |
-| Loading screen + top-down circling flyover onto your island (Chad Tycoon style; ref video `~/RobloxProjects/chad-loading-transition/`) | a `t3/...` branch | `~/.t3/worktrees/MaydaySeaRescue/` | DeepSeek Flash |
 
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
@@ -51,6 +48,8 @@ WP-23c: the left-bar "Boat to me" ring uses the server's rule (`MonetizationEffe
 9. **Publish**: test place after each merged batch; the public launch place is approved once checks + the
    real-client playtest pass (memory: publish-launch-approved), with products created there first.
 
+Merged 2026-10-25 night, live in v44 (except plates): phone removed + left menu (WP-23c), build mode v2 (WP-14e), loading flyover, 80-stud drop-off zone, Lego baseplate islands (WP-24, merged after v44). Merged 2026-10-26: WP-27 ring layout (plates 470 studs out, ring bridges, quest pontoon + quest tablet with sail-in givers, rip moved to Puffin Isle, ferry 1,000 S, own-berth-only home; open: chain giver arrives twice, moored boats don't bob, debrief showed +0 twice, unused Aggie/crew dialogue). In flight: WP-28 no ranks + unlock tree (Opus).
+
 ## 2b. Queued next (owner, 2026-10-25 night)
 
 Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-27 ring → WP-26 workers → WP-25 art pass.
@@ -61,9 +60,11 @@ Order: current batch → **WP-28 no ranks + unlock tree** (docs/23 (q)) → WP-2
   products for the Cash-only buildings (workshop, crane, helipad, workers) if wanted; worker-building spots need a
   look after the WP-24/27 plates.
 
-- **WP-27 ring layout** (docs/23 (p)), right after WP-24 plates merge: remove the middle island; 6 plates in a tight
-  ring (~80 stud gaps) with neighbour bridges; quests arrive by boat at a quest pontoon with its own quest tablet; move hub call sites; flyover
-  centre; map refresh. Then WP-26 workers, then WP-25 art pass.
+- ~~**WP-27 ring layout**~~ done on branch `worktree-agent-ab2f6537443b69f26` (awaiting merge; docs/23 (p) "Done"):
+  hub removed, ring at 470, neighbour bridges, quest pontoon + tablet + boats, rip/ferry moved, own-berth home, map
+  tiles re-uploaded (moderation "Reviewing"). Open: the cold-open arrival cinematic was hub-only (deleted), pet nap
+  spot now your island's station; Dialogue still holds Chief Aggie's / the crew's unused trees. Then WP-26 workers,
+  then WP-25 art pass.
 
 - **WP-26 rescued people become workers** (docs/23 (o)): 5 categories, rarity, worker buildings at the tablet,
   effects, capped offline earnings, remove the crew lineup. Before the art pass.

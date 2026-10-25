@@ -15,12 +15,13 @@ each other's islands). 6 players per server.
 
 | Place | What it is |
 |---|---|
-| **6 player islands** in a tight ring (~380 studs from the centre, ~80 studs of water between neighbours) | One per player. A flat **Lego baseplate** (green stud plate, berth notch facing the open sea), no terrain. Your plot: everything you build stands here, and your neighbours' empires are right next to it. Unclaimed ones are bare plates with a jetty. You spawn on your own island. |
+| **6 player islands** in a tight ring (centres 470 studs from the centre, ~80 studs of water between neighbours) | One per player. A flat **Lego baseplate** (green stud plate, berth notch facing the open sea), no terrain. Your plot: everything you build stands here, and your neighbours' empires are right next to it. Unclaimed ones are bare plates with a jetty. You spawn on your own island. |
 | **Ring bridges** | Short walkable bridges join each island to its two neighbours; boats pass under. No cars. |
 | **Centre lagoon** | Open water inside the ring; no island. |
 | **Outer sea** | Exploration and rescues: Skerry, Puffin Isle, Gannet Rock, Wreck Reef, the Arches, Mermaid Lagoon, Penwyn; wrecks on the seabed; open sea. Calls spawn here. |
 
-(Layout change in progress, WP-27: the old middle forest island is being removed; docs/23 (p).)
+(WP-27, docs/23 (p): the old middle forest island is gone. At ~380 the 320-stud plates would overlap, so the
+centres sit 470 out and the nearest plate corners are 80 apart.)
 
 ## 3. The loop
 
@@ -77,7 +78,7 @@ No ranks and no Reputation. Progress is a **linear unlock tree** on your island:
 ("Needs: Crane"), craft unlock through their building (RIB ← Boathouse, Lifeboat ← slip, Sub ← Sub pen, Helicopter ←
 Hangar), and call reach follows the best craft you can launch. Cash (from calls, quests, workers, the daily chest,
 streaks) is the only currency; it pays for buildings, craft, decor and cosmetics. Free players reach everything
-(pacing sim in `tests/`: the whole tree in ~18 h of play). The tree is one config (`DockConfig.Buildings`, rules
+(pacing sim in `tests/`: the whole tree in ~17 h of play). The tree is one config (`DockConfig.Buildings`, rules
 `shared/UnlockTree`), so new content is a new row. Badges and leaderboards count people rescued. docs/23 (q), (i).
 
 ## 7. Money (Robux)

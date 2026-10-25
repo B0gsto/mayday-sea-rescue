@@ -22,9 +22,15 @@ files without a reason. History of cut systems lives in git and `docs/archive/16
 
 ## Core loop (docs/00 §3)
 
+<<<<<<< HEAD
 A call goes up, you drive a craft near the survivors, they climb aboard by themselves, you bring them to a
 drop-off and get Cash. Cash builds your island's unlock tree (docs/23 (q)); each building unlocks the next and
 its craft. No ranks, no Rep (WP-28).
+=======
+A call goes up, you drive a craft near the survivors, they climb aboard by themselves, you bring them to your
+own berth (the drop-off zone round it) and get Cash and Rep. Cash buys vehicles and upgrades in the phone; Rep raises your rank, and
+rank unlocks bigger boats.
+>>>>>>> main
 Pick-up ring (docs/23 e.1): `PickupRingController` draws an orange `Board.RING` ring on the water round every
 survivor still in the water (grey while your craft is full) and `BoatController` runs the throttle through its
 `Assist` (`Board.assistThrottle`: eases to `ASSIST_SPEED` by the ring). Ram knock-back only from `Board.KNOCK_RANK`.
@@ -170,11 +176,14 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
   complete the page; `DiscoveryConfig.Range.Wreck`).
 - Shared data: `Ops/Types`, `Operations` (registry, `plan`), `Condition` (0-100 meter; survivors tire),
   `Grading` (step and op grades, `payout`), `Board` (pure auto_board rule: close, slow, level, room).
-- Call positions (docs/23 (k), WP-19c): calls count from the owner's berth (`CallLogic.homeOf(BayCFrame)`, the
-  hub drop-off without one). Calls 1-2 (`Near`, `CalmBay`) spawn 150-300 studs straight out of that cove; later
-  calls in the outer ring (1,200+ from the hub: open-sea rings round the berth by reach, every outer island
-  whose centre is in reach). Home = the berth or the hub drop-off, whichever is nearer (`ColdOpen.SHORE` = the
-  hub + every island berth); a call landed away from the berth pays for the trip sailed (`deliveredPay`).
+- Call positions (docs/23 (p), WP-27): calls count from the owner's berth (`CallLogic.homeOf(BayCFrame)`, Plot1's
+  without one). Calls 1-2 (`Near`, `CalmBay`) spawn 150-300 studs straight out of that cove (coves face out to
+  sea); later calls in the outer ring (1,200+ from the ring centre: open-sea rings round the berth by reach, every
+  outer island whose centre is in reach). No calls inside the ring (`CallLogic.isWater`: radius < `HubLayout.Ring`).
+  Fixed sites: the ferry 1,000 studs south of the centre (`FerrySite`), the rip off Puffin Isle's beach
+  (`BeachRip`, `RipCurrent.Beach`). Home = your own berth's drop-off zone only (`ColdOpen.atDropOff`; the cold open
+  lands at your own `ColdOpen.SHORE` point); a call landed away from the berth pays for the trip sailed
+  (`deliveredPay`).
 - `OperationService` (server): offers and pacing (`Calls/CallLogic`, `Calls/OfferPacing`), tracks, the
   condition tick and takeover, pay at the debrief. The Capsized Ferry big call runs on its own clock
   (`OfferPacing.nextBigCallAt`, calm weather; paged only to players past the tutorial chain, with a
@@ -214,7 +223,7 @@ casualty shouts in CasualtyController).
 ## First 10 minutes (docs/00 §3, docs/23 (a)-(e))
 
 - Loading screen (`src/first/LoadingScreen.client.luau`, ReplicatedFirst): overlay + bar while it preloads
-  and streams the hub and the player's island, the camera circling the hub; then a flyover
+  and streams the ring centre and the player's island, the camera circling the ring of islands; then a flyover
   (`src/shared/LoadingPath.luau`, `tests/LoadingPath.spec.luau`) down past the name sign to behind the
   character, or behind the cold-open jet ski on a first session. While it runs the LocalPlayer has
   `LoadingScreenActive` (CameraController stands down, no cold-open cinematic) and `CinematicPlaying` (the
@@ -285,20 +294,19 @@ Player attribute `MenuOpen` while a panel is up.
 
 ## Other systems
 
-- Hub and six islands (docs/23 (k), WP-18): `src/shared/Config/HubLayout.luau` (pure, `tests/HubLayout.spec.luau`
-  checks it against the bake), built from the generated `WorldConfig.Hub`: `Hub` (center, frame, spawn, lots HQ /
-  CallBoard / ShopCounter / Harbourmaster / Campfire / Monument / Jetty, dropOff, clearings[id] = { kind, center,
-  radius }, questSpots = { { id, cframe, radius } }), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
-  lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
-  CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
-  suspension bridges from it (WorldDressingService I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
-  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut, CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
-  the phone Store via HudController, Quay, Jetty, Harbourmaster, Campfire, Monument (LeaderboardService hangs the
-  rescue board there; the album StampPost), QuestCamps (tag `QuestCamp`, attribute `QuestSpot`), the hidden Ruin and
-  Wreck (album page `Hub`)) and the only drop-off pad `Map.DropOffs.DropOff_Dock` (`DropOff = "Dock"`) at
-  `HubLayout.Hub.dropOff`. The trees are `props.json` `trees` rows (`World/ForestTrees` placeholder templates via
-  `AssetLoader.define`; client-drawn by ScatterController, trunk hulls on the server).
-  The old Port Haven harbour (Harbour.luau, breakwaters, slipway, hospital, moorings) is gone.
+- The ring of six islands (docs/23 (p), WP-27): `src/shared/Config/HubLayout.luau` (pure, `tests/HubLayout.spec.luau`
+  checks it against the bake), built from the generated `WorldConfig.Ring`: `Center` (the open lagoon, no island),
+  `Ring` (470), `Islands` / `byId` (Plot1..6: center, facing (out to sea), frame, spawn, berths Boat / Sub, lots
+  Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable, CrewQuarters,
+  LifeguardTower, Spare1..3, QuestTablet; `quest` = { pontoon, slots }), `Bridges` (island i -> i + 1, a full ring)
+  + `deckY` / `deckAt`. `server/World/Bridges` builds the six Lego neighbour bridges (11.3 deg ramps, ~20 studs
+  under the crest; WorldDressingService I2 list). WP-24: the islands are flat Lego plates, not terrain: `IslandPlate`
+  (footprint rects, topY, thick, chamfer, notch) + `onPlate` / `plateContains`; `server/World/IslandPlates` builds
+  one Persistent `Plate<n>` model per `Islands` entry (I2 list). `map/Build.luau` builds `Map.Spawns` (one neutral
+  SpawnLocation per island spawn); the main bake window is open water (a sand seabed ~Y -37). LeaderboardService
+  stands a rescue board beside every island's spawn. The hub forest island (HQ hut, call board, market stall,
+  harbourmaster, campfire, monument, quest camps, hidden spots, its drop-off pad, the forest trees, Chief Aggie and
+  the station crew) was removed in WP-27 (git tag `pre-hub-cut` has the town; history has the hub).
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
 - Crew hire (docs/23 (j), WP-15): `src/shared/Crew/CrewHire.luau` (pure, `tests/CrewHire.spec.luau`: 20-minute
   groups, seeded lineup, Cash price / daily wage, dock Lv 5 + Coxswain gate, effect knobs) and
@@ -310,21 +318,30 @@ Player attribute `MenuOpen` while a panel is up.
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
   `Discovery_Found`, `Discovery_Get`), `DiscoveryController` (`IsRevealed(cell | islandId)`, `IsStamped`,
-  `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/Panels/Album`. The full map draws the fog (coarse cells + the hub's fine cells).
+  `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/Panels/Album`. The full map draws the fog (coarse cells).
 - Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
   `TalkController` zooms in and shows 1 to 3 numbered replies.
-- Quests (docs/23 (l), WP-21b): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
+- Quests (docs/23 (l) + (p), WP-21b / WP-27): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
   rescue, Keeper Ives' 3-step lamp chain) and `Quests/Rules.luau` (pure, `tests/Quests.spec.luau`: one active quest,
   stages go -> back, one offer per giver per day from a day seed, a giver's pool cycles once all are done, save flag
-  `quest`, `talk(npc, active, stage, offer)` -> a Dialogue tree whose replies carry `action`). `QuestService` stands
-  the givers at `HubLayout.Hub.questSpots` (NpcFactory R15, a small camp each), runs pick-up / drop / sub-salvage by
+  `quest`, `talk(npc, active, stage, offer)` -> a Dialogue tree whose replies carry `action`). Quests come to you:
+  `server/World/QuestPontoons` builds each island's Lego quest pontoon (`HubLayout.Islands[i].quest.pontoon`) and
+  quest tablet (`lots.QuestTablet`, part `QuestTablet`) in `Workspace.QuestPontoons.Island<i>`, and sails the givers'
+  boats (`Workspace.QuestBoats`; the NpcFactory R15 rig rides in `Workspace.Npcs`, named by npc id, attributes
+  `QuestIsland`, `Moored`, `Leaving`) in from 400 studs out to the 3 `quest.slots` and off again. `QuestService` keeps
+  each claimed island's boats to its owner's active giver first, then that owner's offering givers (max 3); a
+  hand-in sends that boat off and the next one in; unclaimed islands have none. It runs pick-up / drop / sub-salvage by
   proximity and the rescue quest's call (`OperationService.OfferCall(player, "PersonInWater", { zone })`, done on
   `OperationCompleted` with a survivor saved), pays flat Cash on hand-in and adds the chain's blueprint to
   `data.dockBuildings` (`DockConfig.Blueprints`, built by `DockService.Refresh`). Remote `Quest_Talk` C->S
-  `(npcId, "accept" | "handIn" | "drop")`. Player attributes `QuestId`, `QuestStage`, `QuestTarget`,
-  `QuestOffer_<npcId>`. `QuestController` draws the "!" / "?" over givers; `TalkController` builds a giver's tree
-  from `Quests/Rules.talk`. No radio: every quest line is the giver's, in person. Studio:
-  `ServerStorage.QuestDev:Invoke("accept", npcId | "tp" | "reach" | "hand" | "chain" | "reset")`.
+  `(npcId, "accept" | "handIn" | "drop")`: only for a giver moored at the sender's own island, from within 16 studs of
+  it or of their own quest tablet. Player attributes `QuestId`, `QuestStage`, `QuestTarget`,
+  `QuestOffer_<npcId>`. `QuestController` draws the "!" / "?" over your own island's givers and puts the Quests
+  prompt on your own tablet, which opens `UI/QuestTablet` (Kit panel of cards: tap focuses the giver's boat via
+  `CameraController.SetOverride`; Accept / Hand in / Drop). `TalkController` builds a giver's tree from
+  `Quests/Rules.talk` (another island's givers: the idle line only). No radio: every quest line is the giver's, in
+  person. Studio: `ServerStorage.QuestDev:Invoke("accept", npcId | "tablet" | "tp" | "reach" | "hand" | "chain" |
+  "reset")`.
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),

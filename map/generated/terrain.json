@@ -37,26 +37,12 @@
  "shellSea": 20,
  "stats": {
   "minY": -165.0,
-  "maxY": 34.9,
-  "landFraction": 0.11,
+  "maxY": -36.2,
+  "landFraction": 0.0,
   "cells": {
-   "Sand": 296,
-   "Sandstone": 17821,
-   "Salt": 322456,
-   "Limestone": 14024,
-   "Rock": 58452,
-   "Slate": 26793,
-   "Basalt": 6237,
-   "Grass": 6359,
-   "LeafyGrass": 4330,
-   "Mud": 1557,
-   "Ground": 5459,
-   "CrackedLava": 7457,
-   "Snow": 2658,
-   "WoodPlanks": 16867,
-   "Brick": 1831,
-   "Glacier": 157,
-   "Ice": 175
+   "Salt": 363379,
+   "Limestone": 79334,
+   "Rock": 50216
   }
  },
  "windows": [

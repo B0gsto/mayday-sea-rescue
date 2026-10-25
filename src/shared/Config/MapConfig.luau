@@ -35,14 +35,14 @@ local MapConfig = {
 		},
 		{
 			"rbxassetid://75289648010182",
-			"rbxassetid://110253475621165",
-			"rbxassetid://70720791673889",
+			"rbxassetid://76814996162469",
+			"rbxassetid://74788418520575",
 			"rbxassetid://78356896818176",
 		},
 		{
 			"rbxassetid://81980404591265",
-			"rbxassetid://111469955975911",
-			"rbxassetid://95196954911349",
+			"rbxassetid://124858204802794",
+			"rbxassetid://95566851515316",
 			"rbxassetid://105398316841725",
 		},
 		{
@@ -71,7 +71,6 @@ local MapConfig = {
 	-- left = text starts at the point (else centred).
 	-- tools/world/make_map_image.py --labels reads these rows (keep each on one line).
 	Places = {
-		{ text = "COASTGUARD HUB", x = 0, z = -120, kind = "town" },
 		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "town" },
 		{ text = "PUFFIN ISLE", x = -2600, z = 3400, kind = "town" },
 		{ text = "PENWYN", x = -4800, z = -300, kind = "town" },
@@ -84,17 +83,8 @@ local MapConfig = {
 		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
 	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
-	-- Fixed places (HubLayout.Hub.lots.HQ).
-	Blips = {
-		{
-			id = "Station",
-			label = "Coastguard HQ",
-			glyph = "S",
-			color = Color3.fromHex("FF6B1A"),
-			position = Vector3.new(0, 4, 205), -- HubLayout.Hub.lots.HQ (the lookout hut)
-			legend = true,
-		},
-	} :: { Blip },
+	-- Fixed places (none since WP-27 cut the hub HQ).
+	Blips = {} :: { Blip },
 
 	-- Dynamic blip styles (positions come from the operation, vehicles and players).
 	Styles = {

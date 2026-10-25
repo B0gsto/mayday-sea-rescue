@@ -1,6 +1,6 @@
 --!strict
--- Quests panel: a read-only board of today's offers and the active quest. Accepting still happens
--- by talking to the giver (TalkController), so every row points at the person, not a menu choice.
+-- Quests panel: a read-only board of today's offers and the active quest. Accepting happens
+-- at the giver's boat (TalkController) or your quest tablet (UI/QuestTablet), so every row points at the person.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
