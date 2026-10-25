@@ -15,7 +15,6 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 |---|---|---|---|
 | WP-16 asset diet (unused asset ids out, identical textures merged; must NOT change any kept asset's look) | `worktree-agent-a2259ef3daf9a01d8` | `.claude/worktrees/agent-a2259ef3daf9a01d8` | Opus |
 | WP-23b UI kit `src/client/UI/Kit/` + style guide + art-director rounds | `worktree-agent-a6bbbdb985ed8aac8` | `.claude/worktrees/agent-a6bbbdb985ed8aac8` | Opus |
-| WP-14c blueprint table + Lego brick-by-brick build sequencer (`BuildSeq`) + builder NPCs; ghosts removed | `t3/blueprint-table-lego-build` | `~/.t3/worktrees/MaydaySeaRescue/t3-706ded4c` | DeepSeek Flash |
 | WP-15 late-game crew lineup (`src/shared/Crew`, `CrewHireService`) | `t3/late-game-crew-lineup` | `~/.t3/worktrees/MaydaySeaRescue/t3-f445b038` | DeepSeek Flash |
 | WP-24 player islands → flat Lego baseplates (`IslandPlates`, terrain re-bake, bridges, HubLayout Y) | `t3/add-player-island-baseplates` | `~/.t3/worktrees/MaydaySeaRescue/t3-a3bff4ae` | DeepSeek Flash |
 | Docs rewrite to the new design (01–08, 10, 12, 13, 15, 18, 19, README, store text; archive 09/11/14/16/17/20/21/22/research → `docs/archive/`) | `t3/redesign-current-docs` and `t3/rewrite-current-design-docs` | `t3-239eb32d`, `t3-d7464e33` | DeepSeek Flash |
@@ -24,6 +23,8 @@ means its builder stopped mid-task: finish it there (review the diff first), the
 Stale, safe to delete (cancelled, no changes): worktrees `t3-394fa9ed`, `t3-52b73544`, `t3-6558e19d`, `t3-d3311682`,
 `t3-b9289b21`. Not ours (a sibling thread): `t3/cut-seasonal-clock-events`, `t3/cut-side-progressions` — ask
 before touching.
+
+Merged since: WP-14c blueprint table + `BuildSeq` Lego build (2026-10-25, not yet seen in Studio).
 
 ## 2. Queued (in order)
 
