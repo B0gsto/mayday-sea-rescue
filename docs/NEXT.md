@@ -6,6 +6,9 @@ cuts; no quests/radio-cut yet). Builders: DeepSeek V4.1 Flash (`opencode/deepsee
 via T3 `delegate_task`; Opus reviews. Checks: `~/RobloxProjects/tools/check.sh .`. Publish: `python3 tools/publish.py`.
 Keep this file current: tick items off, add new ones.
 
+**Owner rule (2026-10-25): do NOT start Roblox Studio (agents, smoke tests, terrain bakes, publish) until the owner
+says so.** Studio-only checks and publishing wait.
+
 ## 1. In flight when this was written (merge into main when done)
 
 Each is a branch; check `git log main..<branch>` and `git status` in its worktree. A branch with uncommitted work
