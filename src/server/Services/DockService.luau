@@ -2,7 +2,7 @@
 -- DockService (docs/23 WP-1; WP-19b): your island is your plot. Builds the six player islands' docks
 -- (shared/Marina = HubLayout.Islands) as placeholder Parts in Workspace.Marina, gives each joining player the
 -- lowest free island and frees it on leave. Every island has a bare jetty down its cove; Lv 1 adds the owner's
--- name arch and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
+-- Lego name sign and flag; an unclaimed island is just land and the jetty. The dock level lives in the profile
 -- (data.dockLevel, default 1) so later levels rebuild on whichever island the player gets. VehicleService
 -- launches at the island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
 -- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
@@ -28,7 +28,7 @@
 -- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
 -- (built). Player attributes DockHangar / DockSubPen / Decor<key> (owned; the build tablet).
 -- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
--- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name board and a tall gold
+-- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name sign and a tall gold
 -- beacon on their island; picked on join / leave / a level change (nobody's island ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
 -- plaque per island stamp (DiscoveryRules), rebuilt from the profile every few seconds when it changes.
 local Players = game:GetService("Players")
@@ -65,9 +65,11 @@ type Plot = {
 	model: Model,
 	frame: CFrame, -- the berth frame (Marina.berth, sea level)
 	berth: Part,
-	sign: Model, -- name arch + flag, parented only while owned
+	sign: Model, -- name sign + flag, parented only while owned
 	labels: { TextLabel },
-	board: Part,
+	board: Part, -- the sign's face brick (the owner's flag colour, gold for the Harbour Master)
+	trim: { Part }, -- its frame bricks, posts and bases, a darker shade of the face
+	studs: { Part }, -- the stud row along its top edge, the face colour
 	flag: Part,
 	levels: Model?, -- Lv 2..built pieces
 	built: number,
@@ -118,6 +120,90 @@ local function post(parent: Instance, cf: CFrame, top: number, bottom: number)
 	p.Shape = Enum.PartType.Cylinder
 end
 
+-- The sign's frame, posts and bases: the face colour, darker (only SmoothPlastic: it is a Lego brick).
+local function signTrim(c: Color3): Color3
+	return Color3.new(c.R * 0.62, c.G * 0.62, c.B * 0.62)
+end
+
+-- A Lego name sign: a chunky brick face (18 x 4.4 studs, readable from the water and the bridge) with a
+-- darker brick frame, square brick posts on 2x brick bases and a stud row along the top. The two
+-- SurfaceGui labels are white FredokaOne with a black stroke, TextScaled with a size cap so any
+-- DisplayName fits inside the frame with padding.
+local function nameSign(
+	sign: Model,
+	arch: CFrame,
+	faceColor: Color3
+): (Part, { TextLabel }, { Part }, { Part })
+	local trim: { Part } = {}
+	local studs: { Part } = {}
+	local function brick(
+		name: string,
+		size: Vector3,
+		cf: CFrame,
+		color: Color3,
+		accent: boolean?
+	): Part
+		local p = part(sign, name, size, arch * cf, color, Enum.Material.SmoothPlastic)
+		table.insert(if accent then studs else trim, p)
+		return p
+	end
+	local dark = signTrim(faceColor)
+	for _, dx in { -10.4, 10.4 } do
+		brick("SignBase", Vector3.new(3.2, 0.8, 3.2), CFrame.new(dx, 0.4, 0), dark)
+		brick("SignPost", Vector3.new(1.6, 5.7, 1.6), CFrame.new(dx, 3.65, 0), dark)
+	end
+	for _, dy in { -2.5, 2.5 } do
+		brick("SignFrame", Vector3.new(19.2, 0.6, 1), CFrame.new(0, 9.3 + dy, 0), dark)
+	end
+	for _, dx in { -9.3, 9.3 } do
+		brick("SignFrame", Vector3.new(0.6, 5.6, 1), CFrame.new(dx, 9.3, 0), dark)
+	end
+	for _, dx in { -6, 0, 6 } do
+		local stud = brick(
+			"SignStud",
+			Vector3.new(0.5, 1, 1),
+			CFrame.new(dx, 12.35, 0) * CFrame.Angles(0, 0, math.pi / 2),
+			faceColor,
+			true
+		)
+		stud.Shape = Enum.PartType.Cylinder
+	end
+	local board = part(
+		sign,
+		"NameBoard",
+		Vector3.new(18, 4.4, 0.8),
+		arch * CFrame.new(0, 9.3, 0),
+		faceColor,
+		Enum.Material.SmoothPlastic
+	)
+	local labels = {}
+	for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
+		local gui = Instance.new("SurfaceGui")
+		gui.Face = face
+		gui.PixelsPerStud = 30
+		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+		gui.Parent = board
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(0.93, 0.84)
+		label.Position = UDim2.fromScale(0.035, 0.08)
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.Font = Enum.Font.FredokaOne
+		label.TextColor3 = Color3.new(1, 1, 1)
+		label.Parent = gui
+		local fit = Instance.new("UITextSizeConstraint")
+		fit.MaxTextSize = 100
+		fit.MinTextSize = 8
+		fit.Parent = label
+		local stroke = Instance.new("UIStroke")
+		stroke.Thickness = 5
+		stroke.Color = Color3.new(0, 0, 0)
+		stroke.Parent = label
+		table.insert(labels, label)
+	end
+	return board, labels, trim, studs
+end
+
 local function buildPlot(folder: Instance, i: number): Plot
 	local b = Marina.berth(i)
 	local top = Marina.DECK_TOP
@@ -153,46 +239,13 @@ local function buildPlot(folder: Instance, i: number): Plot
 		post(model, b * CFrame.new(j.x1 - 0.6, 0, z), top + 0.8, -10)
 	end
 
-	-- the owner's sign (only while the island has an owner): a name arch over the jetty's quay end, facing
-	-- the cove, and a flag beside it
+	-- the owner's sign (only while the island has an owner): a Lego name sign over the jetty's quay end,
+	-- facing the cove, and a flag beside it
 	local sign = Instance.new("Model")
 	sign.Name = "Sign"
 	local isle = b * Marina.ISLAND
 	local arch = isle * CFrame.new(0, 0, -28.5)
-	for _, dx in { -7, 7 } do
-		part(
-			sign,
-			"BoardPost",
-			Vector3.new(0.8, 12, 0.8),
-			arch * CFrame.new(dx, 6, 0),
-			DARK_WOOD,
-			Enum.Material.Wood
-		)
-	end
-	local board = part(
-		sign,
-		"NameBoard",
-		Vector3.new(16, 3.6, 0.4),
-		arch * CFrame.new(0, 10.4, 0),
-		BOARD,
-		Enum.Material.SmoothPlastic
-	)
-	local labels = {}
-	for _, face in { Enum.NormalId.Front, Enum.NormalId.Back } do
-		local gui = Instance.new("SurfaceGui")
-		gui.Face = face
-		gui.PixelsPerStud = 30
-		gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-		gui.Parent = board
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.fromScale(1, 1)
-		label.BackgroundTransparency = 1
-		label.TextScaled = true
-		label.Font = Enum.Font.GothamBold
-		label.TextColor3 = Color3.fromRGB(30, 38, 52)
-		label.Parent = gui
-		table.insert(labels, label)
-	end
+	local board, labels, trim, studs = nameSign(sign, arch, BOARD)
 	local poleAt = isle * CFrame.new(-12, 0, -27)
 	part(
 		sign,
@@ -237,6 +290,8 @@ local function buildPlot(folder: Instance, i: number): Plot
 		sign = sign,
 		labels = labels,
 		board = board,
+		trim = trim,
+		studs = studs,
 		flag = flag,
 		built = 1,
 		counts = {},
@@ -456,10 +511,17 @@ local function syncTrophies(plot: Plot, owner: Player?)
 	end
 end
 
--- The Harbour Master's island: a gold name board and a tall gold beacon beside the jetty arch.
+-- The Harbour Master's island: the name sign turns gold and a tall gold beacon stands beside the jetty.
 local function setMaster(plot: Plot, on: boolean)
-	plot.board.Color = if on then GOLD else BOARD
-	plot.board.Material = if on then Enum.Material.Metal else Enum.Material.SmoothPlastic
+	local owner = owners[plot.index]
+	local face = if on then GOLD elseif owner then Marina.flagColor(owner.UserId) else BOARD
+	plot.board.Color = face
+	for _, p in plot.trim do
+		p.Color = signTrim(face)
+	end
+	for _, p in plot.studs do
+		p.Color = face
+	end
 	plot.berth:SetAttribute("HarbourMaster", if on then true else nil)
 	if on and not plot.master then
 		local m = Instance.new("Model")
@@ -529,7 +591,7 @@ local function candidates(): { Marina.Candidate }
 	return list
 end
 
--- Re-pick the Harbour Master (join, leave, level change); only the flag and the board change hands.
+-- Re-pick the Harbour Master (join, leave, level change); only the sign's colours change hands.
 local function crown()
 	local pick = Marina.harbourMaster(candidates(), master)
 	if pick == master then
@@ -550,6 +612,7 @@ local function dress(plot: Plot, owner: Player?)
 	plot.sign.Parent = if owner then plot.model else nil
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
+		setMaster(plot, master == owner)
 		if not plot.buildStation then
 			local st = DockPieces.buildStation(plot.frame)
 			st.Parent = plot.model
