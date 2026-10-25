@@ -1,7 +1,7 @@
 --!strict
 -- DockConfig (docs/23 d.2, WP-4): dock levels 2..5, and the WP-10b buildings (hangar, sub pen). Each has two prices: Cash + rank, or Robux (the
 -- MonetizationConfig product `product`, which skips both). Pure (tests/DockConfig.spec.luau).
--- Piece geometry lives in shared/DockPieces; DockService builds it, DockController draws the ghost.
+-- Piece geometry lives in shared/DockPieces; DockService builds it, the blueprint table prices it.
 local Marina = require(script.Parent.Parent:WaitForChild("Marina"))
 local ProgressionConfig = require(script.Parent.ProgressionConfig)
 

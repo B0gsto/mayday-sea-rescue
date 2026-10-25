@@ -43,7 +43,7 @@ survivor still in the water (grey while your craft is full) and `BoatController`
 
 Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (ProgressionService), `Upgrade_Buy`
 (UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
-`Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` / `Cosmetics_Action` /
+`Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Dock_Upgrade` / `Dock_Build`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
 `_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
 
@@ -72,17 +72,22 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 - Dock levels 2..5 (WP-4): `src/shared/Config/DockConfig.luau` (pure, `tests/DockConfig.spec.luau`: Cash, rank,
   Robux, `canBuy`, `BOARD_SLOT` = the boat board's spot in the Lv 3 boathouse, berth frame) and
   `src/shared/DockPieces.luau` (`build(level, berthCFrame) -> Model`, placeholder Parts). DockService builds each
-  owner's levels on their plot (everyone sees them, the new pieces rise in) and sets player attribute
+  owner's levels on their plot (everyone sees them) and sets player attribute
   `DockLevel`; remote `Dock_Upgrade` C->S fn `(level) -> ok, reason` (Cash + rank); Robux = products
   `DockLevel2..5` (`MonetizationConfig`, `dockLevel` field, kept off the phone Store); rescue boards show
-  `badgeCounters.Rescue100`. `DockController` (client): the next level as a blue ghost on your own plot only, a
-  `Build` prompt and the price card (Cash / Robux). Lv 4 skips VehicleService's relaunch cooldown. Studio:
-  `ServerStorage.DockDev:Invoke("level", n)`.
+  `badgeCounters.Rescue100`. Blueprint table (WP-14c, docs/23 (j) rule 4): `DockPieces.blueprintTable` +
+  `blueprintSheet` on the owner's jetty lot, one paper sheet per available upgrade (`shared/DockBlueprints`:
+  next level, Hangar / SubPen, quest blueprints; locked = greyed + padlock). `DockController` (client) puts a
+  prompt on each sheet and opens the price card (Cash / Robux). A buy plays the Lego build beat: `Dock_Build`
+  S->C `{ plot, parent, name }`, `shared/BuildSeq` drops the pieces client-side (server keeps the final state),
+  two crew builders stand by; instant on rejoin. No ghost, no `Build` prompt. Lv 4 skips VehicleService's
+  relaunch cooldown. Studio: `ServerStorage.DockDev:Invoke("level", n)`.
 - Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Hangar / SubPen (Cash + rank or Robux
   products `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
   Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
-  (prompt spot, board rack, spawn targets). Helipad + hangar on their island lots, sub pen over the sub berth.
-  `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; ghosts in `DockController`.
+  (board rack, spawn targets). Helipad + hangar on their island lots, sub pen over the sub berth.
+  `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; its sheet on the
+  blueprint table, its build the same Lego beat.
   `server/Dock/BoatBoard` builds every board (boat, hangar, sub) from one def list: the heli on the pad and the
   sub in the pen (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. The car garage
   (`DockGarage`, data key `Garage`) was cut 2026-10-25: product kept with `ready = false`. Studio:

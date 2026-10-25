@@ -7,12 +7,17 @@
 -- launches at the island's Berth part (BayLaunch frame) and stands the player on the island spawn (GetSpawn).
 -- Levels 2..5 (WP-4, DockConfig): each adds the DockPieces of that level on the plot, built here so everyone
 -- sees them. Bought with Cash + rank (Dock_Upgrade) or Robux (MonetizationConfig DockLevel<n>, skips both);
--- the new pieces rise into place (the build beat). The owner's ghost of the next level is DockController's.
+-- a buy plays the Lego build beat: the pieces exist here in their final state, the Dock_Build event lets
+-- every client drop them in (shared/BuildSeq), and two builder NPCs stand by the jetty table (WP-14c).
+-- The blueprint table on the jetty holds one paper sheet per available upgrade (docs/23 (j) rule 4):
+-- the next level, each DockConfig building the level qualifies for, and each unearned quest blueprint
+-- (DockBlueprints), locked ones greyed with a padlock; the owner's DockController puts the prompts on
+-- and opens the price card.
 --
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetSpawn(player) -> CFrame?,
 -- GetLevel(player) -> number, Berths() -> { BasePart }, Refresh(player) (rebuild from the profile).
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
--- DockLevel (built level, DockController's ghost reads it).
+-- DockLevel (built level, DockController's sheets and build beat read it).
 -- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
 -- "Owned" | "Data" | "Busy").
 -- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the helipad + hangar on their island lots and the
@@ -21,7 +26,7 @@
 -- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
 -- gives them a building ("all": every one); ("trophies") every rescue milestone and island stamp.
 -- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Hangar / SubPen
--- (built). Player attributes DockHangar / DockSubPen (owned; DockController's ghosts).
+-- (built). Player attributes DockHangar / DockSubPen (owned; the blueprint sheets).
 -- WP-13: plots are handed out once the profile loads (GetBerth claims earlier if asked). Harbour Master
 -- (docs/23 d.1, Marina.harbourMaster): the highest rank among Lv 5 docks gets a gold name board and a tall gold
 -- beacon on their island; picked on join / leave / a level change (nobody's island ever moves). Lv 5 trophy hall: a cup per rescue milestone (BadgeRules.trophies) and a
@@ -29,7 +34,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -37,11 +41,13 @@ local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeCon
 local BadgeRules = require(Shared:WaitForChild("BadgeRules"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DiscoveryRules = require(Shared:WaitForChild("DiscoveryRules"))
+local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
 local DockPieces = require(Shared:WaitForChild("DockPieces"))
 local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local Net = require(Shared:WaitForChild("Net"))
+local NpcFactory = require(script.Parent.Parent.Npc.NpcFactory)
 local ProgressionRules = require(Shared:WaitForChild("ProgressionRules"))
 local ProgressionService = require(script.Parent:WaitForChild("ProgressionService"))
 local Telemetry = require(script.Parent:WaitForChild("TelemetryService"))
@@ -53,8 +59,10 @@ local WOOD = Color3.fromRGB(122, 92, 62)
 local DARK_WOOD = Color3.fromRGB(84, 62, 44)
 local BOARD = Color3.fromRGB(236, 230, 214)
 local GOLD = Color3.fromRGB(222, 178, 60)
+local HARD_HAT = Color3.fromRGB(250, 205, 35)
 
 type Plot = {
+	index: number,
 	model: Model,
 	frame: CFrame, -- the berth frame (Marina.berth, sea level)
 	berth: Part,
@@ -69,6 +77,8 @@ type Plot = {
 	trophies: Model?,
 	trophyKey: string,
 	master: Model?, -- the Harbour Master's gold beacon
+	blueprintTable: Model?, -- the jetty trestle table (WP-14c), while owned
+	blueprints: Model?, -- its paper sheets, one per available upgrade
 }
 
 local plots: { Plot } = {}
@@ -221,6 +231,7 @@ local function buildPlot(folder: Instance, i: number): Plot
 	model.PrimaryPart = berth
 	model.Parent = folder
 	return {
+		index = i,
 		model = model,
 		frame = b,
 		berth = berth,
@@ -235,32 +246,18 @@ local function buildPlot(folder: Instance, i: number): Plot
 	}
 end
 
--- the build beat: every part rises 6 studs from below, faded in, staggered
-local function rise(m: Model)
-	local k = 0
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") then
-			local final, alpha = d.CFrame, d.Transparency
-			d.CFrame = final - Vector3.new(0, 6, 0)
-			d.Transparency = 1
-			k += 1
-			TweenService:Create(
-				d,
-				TweenInfo.new(
-					0.7,
-					Enum.EasingStyle.Back,
-					Enum.EasingDirection.Out,
-					0,
-					false,
-					0.04 * k
-				),
-				{ CFrame = final, Transparency = alpha }
-			):Play()
-		end
+local buildRemote: RemoteEvent? = nil
+local BUILD_WATCH = 6 -- s the builder NPCs stay (matches the client's build beat)
+
+-- Everyone animates the new model in (WP-14c): the pieces are already in their final state here.
+local function announceBuild(plot: Plot, parentName: string?, modelName: string)
+	if buildRemote then
+		buildRemote:FireAllClients({ plot = plot.index, parent = parentName, name = modelName })
 	end
 end
 
--- Build the plot's level pieces up to `level` (beat = the new ones rise in); a lower level starts over.
+-- Build the plot's level pieces up to `level` (beat = the new ones play the build animation); a lower
+-- level starts over.
 local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
 	if level < plot.built and plot.levels then
 		plot.levels:Destroy()
@@ -281,7 +278,7 @@ local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
 		end
 		m.Parent = levels
 		if beat then
-			rise(m)
+			announceBuild(plot, "Levels", `Lv{n}`)
 		end
 		plot.built = n
 	end
@@ -297,7 +294,8 @@ for key in DockConfig.Blueprints do
 	table.insert(BUILT, key)
 end
 
--- The owner's bought buildings stand on the plot (the helipad only on a Lv 3+ boathouse); beat: new ones rise.
+-- The owner's bought buildings stand on the plot (the helipad only on a Lv 3+ boathouse); beat: new
+-- ones play the build animation.
 local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 	local data: any = owner and DataService.Get(owner)
 	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
@@ -317,7 +315,7 @@ local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
 			end
 			m.Parent = plot.model
 			if beat then
-				rise(m)
+				announceBuild(plot, nil, key)
 			end
 			plot.buildings[key] = m
 		elseif have and not want then
@@ -333,6 +331,95 @@ end
 
 local function tableOf(v: any): { [string]: any }
 	return if type(v) == "table" then v else {}
+end
+
+-- The paper sheets on the owner's blueprint table (WP-14c): one per available upgrade, greyed with a
+-- padlock when the rank is too low (or the quest blueprint is still to be earned). Rebuilt whenever the
+-- level or buildings change. Only sold upgrades get DockItem, so DockController puts no prompt on a
+-- quest blueprint (there is nothing to price).
+local function syncBlueprints(plot: Plot, owner: Player?)
+	if plot.blueprints then
+		plot.blueprints:Destroy()
+		plot.blueprints = nil
+	end
+	local data: any = owner and DataService.Get(owner)
+	if not (owner and data) then
+		return
+	end
+	local items = DockBlueprints.available(data.dockLevel or 1, tableOf(data.dockBuildings))
+	if #items == 0 then
+		return
+	end
+	local rank = ProgressionRules.rankIndex(data)
+	local m = Instance.new("Model")
+	m.Name = "Blueprints"
+	local at = plot.frame * Marina.LOTS.BlueprintTable.cf
+	for k, item in items do
+		local sheet = DockPieces.blueprintSheet(
+			item,
+			DockBlueprints.label(item),
+			DockBlueprints.locked(item, rank)
+		)
+		local x = (k - (#items + 1) / 2) * 1.5
+		sheet:PivotTo(at * CFrame.new(x, DockPieces.BLUEPRINT_TABLE_H + 0.25, 0.35))
+		if DockBlueprints.buyable(item) then
+			sheet:SetAttribute("DockItem", item.key)
+		end
+		sheet:SetAttribute("Label", DockBlueprints.label(item))
+		sheet.Parent = m
+	end
+	m.Parent = plot.model
+	plot.blueprints = m
+end
+
+-- The Crew rigs already wear the rescue helmet; swap it for a chunky yellow builder's hard hat (WP-14c).
+local function hardHat(model: Model)
+	local found = model:FindFirstChild("Head")
+	if not (found and found:IsA("BasePart")) then
+		return
+	end
+	local head = found :: BasePart
+	for _, a in model:GetChildren() do
+		if a:IsA("Accessory") and a.AccessoryType == Enum.AccessoryType.Hat then
+			a:Destroy()
+		end
+	end
+	local function cap(name: string, size: Vector3, offset: CFrame)
+		local p = Instance.new("Part")
+		p.Name = name
+		p.Size = size
+		p.CFrame = head.CFrame * offset
+		p.Color = HARD_HAT
+		p.Material = Enum.Material.SmoothPlastic
+		p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery = false, false, false, false
+		p.Massless = true
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = head, p
+		w.Parent = p
+		p.Parent = model
+	end
+	cap("HardHat", Vector3.new(1.7, 0.5, 1.7), CFrame.new(0, head.Size.Y / 2 + 0.2, 0))
+	cap("HardHatBrim", Vector3.new(1.7, 0.12, 0.5), CFrame.new(0, head.Size.Y / 2 + 0.02, -0.85))
+end
+
+-- Two builder NPCs (R15 crew, hard hats, NpcFactory's building) by the table while the beat plays, gone after.
+local function spawnBuilders(plot: Plot)
+	local at = plot.frame * Marina.LOTS.BlueprintTable.cf
+	for side = -1, 1, 2 do
+		task.spawn(function()
+			local feet = at * CFrame.new(side * 3.4, 0, -2.2)
+			local m = NpcFactory.spawn("Crew", {
+				seed = math.random(1, 1_000_000),
+				pose = "Idle",
+				cframe = CFrame.lookAt(feet.Position, at.Position),
+				parent = Workspace,
+			})
+			hardHat(m)
+			task.delay(BUILD_WATCH, function()
+				m:Destroy()
+			end)
+		end)
+	end
 end
 
 -- The Lv 5 trophy hall's cups and plaques, rebuilt only when the owner's list changed.
@@ -455,7 +542,7 @@ local function crown()
 	end
 end
 
--- Lv 1 for the owner (the sign), or the bare jetty when empty.
+-- Lv 1 for the owner (the sign and the blueprint table), or the bare jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
 	for _, label in plot.labels do
@@ -464,21 +551,36 @@ local function dress(plot: Plot, owner: Player?)
 	plot.sign.Parent = if owner then plot.model else nil
 	if owner then
 		plot.flag.Color = Marina.flagColor(owner.UserId)
+		if not plot.blueprintTable then
+			local t = DockPieces.blueprintTable(plot.frame)
+			t.Parent = plot.model
+			plot.blueprintTable = t
+		end
+		syncBlueprints(plot, owner)
 	else
 		sync(plot, nil, 1, false)
 		syncBuildings(plot, nil, false)
 		syncTrophies(plot, nil)
+		syncBlueprints(plot, nil)
 		setMaster(plot, false)
+		if plot.blueprintTable then
+			plot.blueprintTable:Destroy()
+			plot.blueprintTable = nil
+		end
 	end
 end
 
--- The player's built level now matches the profile (beat: the new pieces rise in).
+-- The player's built level now matches the profile (beat: the build animation + builders play).
 local function show(player: Player, beat: boolean)
 	local i = byPlayer[player]
 	local data: any = DataService.Get(player)
 	if i and data then
 		sync(plots[i], player, data.dockLevel or 1, beat)
 		syncBuildings(plots[i], player, beat)
+		syncBlueprints(plots[i], player)
+		if beat then
+			spawnBuilders(plots[i])
+		end
 		crown()
 	end
 end
@@ -594,6 +696,12 @@ function DockService.Init()
 	end
 	remote.Parent = folderNet
 
+	-- the Lego build beat (WP-14c): clients drop the new model's pieces in (DockController)
+	local buildEvent = Instance.new("RemoteEvent")
+	buildEvent.Name = "Dock_Build"
+	buildEvent.Parent = folderNet
+	buildRemote = buildEvent
+
 	-- Robux skips Cash and rank; the grant only raises the level, so a retried receipt is harmless
 	for n, lv in DockConfig.Levels do
 		MonetizationService.OnProduct(lv.product, function(_player, data: any)
@@ -665,6 +773,7 @@ function DockService.Start()
 		if i then
 			sync(plots[i], player, data.dockLevel or 1, false)
 			syncBuildings(plots[i], player, false)
+			syncBlueprints(plots[i], player)
 			crown() -- GetBerth may have claimed before the profile loaded
 		end
 	end)

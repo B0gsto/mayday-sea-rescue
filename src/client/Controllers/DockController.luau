@@ -1,12 +1,13 @@
 --!strict
--- DockController (docs/23 c.3, WP-4): the next dock level as a ghost on your own plot, only you see it:
--- translucent blue pieces (shared/DockPieces) with wireframe edges. The Build prompt stands at the
--- blueprint table spot on the jetty (WP-19b): it shows a "Build" prompt (E / gamepad X / tap) that opens a small price card: the level icon, a Cash button
--- (coin + amount; lock + rank badge when the rank is too low, greyed when Cash is short) and a Robux
--- button (Roblox's live price; greyed while the product has no id). B / the X button / walking off closes.
--- The WP-10b buildings (helipad + hangar, sub pen) get their own ghosts the same way while unowned
--- (the hangar from dock Lv 3); their card shows the building's word instead of the number.
--- Reads player attributes DockPlot, BayCFrame, DockLevel, DockHangar / DockSubPen (DockService)
+-- DockController (docs/23 (j) rule 4, WP-14c): the owner of a plot sees the blueprint table's paper
+-- sheets (built by DockService, one per available upgrade) with a prompt each; one opens the price
+-- card: the level icon, a Cash button (coin + amount; lock + rank badge when the rank is too low,
+-- greyed when Cash is short) and a Robux button (Roblox's live price; greyed while the product has no
+-- id). B / the X button / walking off closes. Locked sheets are greyed with a padlock (DockService).
+-- On a buy the pieces already exist in their final state; Dock_Build tells this controller to play the
+-- Lego build beat (shared/BuildSeq): each piece drops from ~6-10 studs up, staggered, with a snap and a
+-- squash, then a dust puff, client-side tweens only.
+-- Reads player attributes DockPlot, DockLevel, DockHangar / DockSubPen (DockService)
 -- and the PlayerDataChanged snapshot.
 -- Paint booth (docs/23 d.3, WP-13): sitting in a craft inside your own Lv 3+ booth (DockConfig.PAINT_BOOTH)
 -- opens the paint card: a swatch strip and the existing cosmetic pickers for Livery and Decal (the same rows
@@ -18,9 +19,9 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local BuildSeq = require(Shared:WaitForChild("BuildSeq"))
+local DockBlueprints = require(Shared:WaitForChild("DockBlueprints"))
 local DockConfig = require(Shared:WaitForChild("Config"):WaitForChild("DockConfig"))
-local DockPieces = require(Shared:WaitForChild("DockPieces"))
-local Marina = require(Shared:WaitForChild("Marina"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
 local Net = require(Shared:WaitForChild("Net"))
 local ProductShelves = require(Shared:WaitForChild("ProductShelves"))
@@ -40,14 +41,10 @@ local DockController = {}
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local C = HudTheme.Colors
-local GHOST = Color3.fromRGB(90, 170, 255)
 local ROBUX_GREEN = Color3.fromHex("2F9E5B")
 
 local snapshot: { [string]: any } = {}
-local ghosts: { Model } = {}
-local ghostKey = ""
-local shownCount: number? = nil -- level + buildings owned, for the build beat
-local WORDS = { Hangar = "Helipad", SubPen = "Sub pen" }
+local shownCount: number? = nil -- level + buildings owned, for the purchase beat
 
 type Item = number | string -- a dock level, or a DockConfig.Buildings key
 local livePrice: { [number]: number } = {}
@@ -135,7 +132,9 @@ local function buy(level: Item)
 		return
 	end
 	local ok = remote:InvokeServer(level)
-	if not ok and card then
+	if ok then
+		close() -- the build beat plays; the sheet disappears
+	elseif card then
 		shake(card.cash)
 	end
 end
@@ -166,7 +165,7 @@ local function build(): Card
 	house.Size = UDim2.fromScale(1, 1)
 	house.BackgroundTransparency = 1
 	house.Parent = icon
-	Glyph.draw("home", house, GHOST)
+	Glyph.draw("home", house, C.accent)
 	local number = Instance.new("TextLabel")
 	number.Name = "Level"
 	number.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -185,7 +184,7 @@ local function build(): Card
 	word.BackgroundTransparency = 1
 	word.Font = HudTheme.HeaderFont
 	word.TextScaled = true
-	word.TextColor3 = GHOST
+	word.TextColor3 = C.accent
 	word.Parent = panel
 
 	local closeButton = HudTheme.button("Close", "X", UDim2.fromOffset(34, 34), panel)
@@ -236,7 +235,7 @@ local function paint()
 		return
 	end
 	local lv = itemOf(level)
-	local word = if type(level) == "string" then WORDS[level] else nil
+	local word = if type(level) == "string" then DockBlueprints.WORDS[level] else nil
 	c.number.Text = if word then "" else tostring(level)
 	c.house.Visible = word == nil
 	c.word.Text = word or ""
@@ -306,96 +305,197 @@ local function open(level: Item)
 	AudioController.play("UI_Click")
 end
 
--- translucent blue pieces with wire edges (WP-19b: no scaffold box, a level spans several lots), the Build prompt at `promptAt` (nil: the
--- blueprint table spot on the jetty)
-local function makeGhost(level: Item, m: Model, b: CFrame, promptAt: CFrame?): Model
-	m.Name = "DockGhost"
-	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.Color = GHOST
-			d.Material = Enum.Material.SmoothPlastic
-			d.Transparency = 0.82
-			d.CanCollide, d.CanQuery, d.CanTouch, d.CastShadow = false, false, false, false
-			local edge = Instance.new("SelectionBox")
-			edge.Adornee = d
-			edge.Color3 = GHOST
-			edge.LineThickness = 0.04
-			edge.SurfaceTransparency = 1
-			edge.Parent = d
-		elseif d:IsA("Light") or d:IsA("SurfaceGui") or d:IsA("Beam") then
-			d:Destroy()
-		end
+-- One blueprint sheet (built by DockService on the owner's plot): the owner's own prompt opens the card.
+local function bindSheet(sheet: Model)
+	local item = sheet:GetAttribute("DockItem")
+	if item == nil then
+		return
 	end
-	local at = Instance.new("Part")
-	at.Name = "BuildAt"
-	at.Size = Vector3.new(1, 1, 1)
-	-- WP-19b: a level's pieces spread over the island, so its prompt stands at the blueprint table spot
-	at.CFrame = promptAt or b * Marina.LOTS.BlueprintTable.cf * CFrame.new(0, 2.5, 0)
-	at.Transparency = 1
-	at.Anchored, at.CanCollide, at.CanQuery, at.CanTouch = true, false, false, false
-	at.Parent = m
+	local at = sheet:FindFirstChild("Sheet")
+	if at and at:FindFirstChildOfClass("ProximityPrompt") then
+		return -- already bound
+	end
 	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "Build"
+	prompt.ActionText = (sheet:GetAttribute("Label") or "Blueprints") :: string
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = 14
 	prompt.RequiresLineOfSight = false
-	prompt.Parent = at
+	prompt.Parent = if at and at:IsA("BasePart") then at else sheet
 	prompt.Triggered:Connect(function()
-		open(level)
+		open(item :: Item)
 	end)
 	prompt.PromptHidden:Connect(function()
-		if cardLevel == level then
+		if cardLevel == item then
 			close()
 		end
 	end)
-	return m
 end
 
-local function refresh()
-	local level = player:GetAttribute("DockLevel")
-	local b = player:GetAttribute("BayCFrame")
+-- The owner's sheets: rebuilt by DockService when the level or buildings change.
+local promptBounds: { RBXScriptConnection } = {}
+local function bindBlueprints()
+	for _, c in promptBounds do
+		c:Disconnect()
+	end
+	promptBounds = {}
 	local plot = player:GetAttribute("DockPlot")
-	if type(level) ~= "number" or typeof(b) ~= "CFrame" or type(plot) ~= "number" then
+	if type(plot) ~= "number" then
 		return
 	end
-	local owned = { tostring(level) }
-	for _, key in DockConfig.BUILDINGS do
-		if player:GetAttribute("Dock" .. key) == true then
-			table.insert(owned, key)
+	local marina = Workspace:FindFirstChild("Marina")
+	local pm = marina and marina:FindFirstChild(`Plot{plot}`)
+	if not pm then
+		return
+	end
+	local function bindModel(bp: Model)
+		for _, sheet in bp:GetChildren() do
+			if sheet:IsA("Model") then
+				bindSheet(sheet)
+			end
+		end
+		table.insert(
+			promptBounds,
+			bp.ChildAdded:Connect(function(sheet: Instance)
+				if sheet:IsA("Model") then
+					bindSheet(sheet)
+				end
+			end)
+		)
+	end
+	table.insert(
+		promptBounds,
+		pm.ChildAdded:Connect(function(child: Instance)
+			if child:IsA("Model") and child.Name == "Blueprints" then
+				bindModel(child)
+			end
+		end)
+	)
+	local bp = pm:FindFirstChild("Blueprints")
+	if bp and bp:IsA("Model") then
+		bindModel(bp :: Model)
+	end
+end
+
+-- The Lego build beat (WP-14c): each part of a freshly built model drops from above with a stagger,
+-- lands with a squash and a snap, then a dust puff. Client tweens only; the server owns the final
+-- positions, so skipping this (a missed event) just shows the finished building.
+local function snapSound(at: Vector3)
+	AudioController.play("UI_Click", at, 0.5)
+end
+
+local function dustPuff(at: Vector3)
+	local p = Instance.new("Part")
+	p.Name = "BuildDust"
+	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
+	p.Transparency = 1
+	p.Size = Vector3.one
+	p.Position = at
+	local e = Instance.new("ParticleEmitter")
+	e.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	e.Color = ColorSequence.new(Color3.fromRGB(230, 222, 205))
+	e.Size =
+		NumberSequence.new({ NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 8) })
+	e.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.15),
+		NumberSequenceKeypoint.new(1, 1),
+	})
+	e.Lifetime = NumberRange.new(0.6, 1.1)
+	e.Speed = NumberRange.new(6, 14)
+	e.SpreadAngle = Vector2.new(90, 90)
+	e.EmissionDirection = Enum.NormalId.Top
+	e.Acceleration = Vector3.new(0, -4, 0)
+	e.Drag = 2
+	e.Enabled = false
+	e.Parent = p
+	p.Parent = Workspace
+	e:Emit(25)
+	game:GetService("Debris"):AddItem(p, 3)
+end
+
+local function playBuild(model: Model)
+	local parts: { BasePart } = {}
+	local ys: { number } = {}
+	local base = Vector3.zero
+	local minY = math.huge
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			table.insert(parts, d)
+			table.insert(ys, d.CFrame.Y)
+			base += d.Position * Vector3.new(1, 0, 1)
+			minY = math.min(minY, d.CFrame.Y)
 		end
 	end
-	local shown = table.concat(owned, ",")
-	local count = level + #owned
-	if shownCount and count > shownCount then -- a level or a building just got built: the beat
+	if #parts == 0 then
+		return
+	end
+	base /= #parts
+	local at = Vector3.new(base.X, minY, base.Z)
+	local plan = BuildSeq.plan(ys, math.random(0, 1_000_000))
+	local last = 0
+	for _, step in plan do
+		local part = parts[step.i]
+		local final = part.CFrame
+		part.CFrame = final + Vector3.new(0, step.drop, 0)
+		local tween = TweenService:Create(
+			part,
+			TweenInfo.new(
+				0.45,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.In,
+				0,
+				false,
+				step.delay
+			),
+			{ CFrame = final }
+		)
+		last = math.max(last, step.delay + 0.45)
+		tween.Completed:Connect(function()
+			if tween.PlaybackState ~= Enum.PlaybackState.Cancelled then
+				snapSound(final.Position)
+				local size = part.Size
+				TweenService
+					:Create(part, TweenInfo.new(0.07), { Size = size * Vector3.new(1, 0.82, 1) })
+					:Play()
+				TweenService:Create(
+					part,
+					TweenInfo.new(
+						0.07,
+						Enum.EasingStyle.Quad,
+						Enum.EasingDirection.Out,
+						0,
+						false,
+						0.07
+					),
+					{ Size = size }
+				):Play()
+			end
+		end)
+		tween:Play()
+	end
+	task.delay(last + 0.3, function()
+		dustPuff(at)
+	end)
+end
+
+-- A purchase (a level or building landed, seen through the attributes): the till and the coin burst.
+local function refresh()
+	local level = player:GetAttribute("DockLevel")
+	if type(level) ~= "number" then
+		return
+	end
+	local count = level
+	for _, key in DockConfig.BUILDINGS do
+		if player:GetAttribute("Dock" .. key) == true then
+			count += 1
+		end
+	end
+	if shownCount and count > shownCount then
 		AudioController.play("Chandlery_Till")
 		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
 			or Vector2.new(800, 600)
 		CashBurst.playAt(playerGui, view / 2, 0, false)
 	end
 	shownCount = count
-	local key = `{shown}:{b}`
-	if key == ghostKey then
-		return
-	end
-	ghostKey = key
-	close()
-	for _, g in ghosts do
-		g:Destroy()
-	end
-	ghosts = {}
-	local berth = (b :: CFrame) - Vector3.new(0, 0.2, 0)
-	if level < DockConfig.MAX then
-		table.insert(ghosts, makeGhost(level + 1, DockPieces.build(level + 1, berth), b))
-	end
-	for _, name in DockConfig.BUILDINGS do
-		if not table.find(owned, name) and level >= DockConfig.Buildings[name].needs then
-			local m = DockPieces.building(name, berth)
-			table.insert(ghosts, makeGhost(name, m, b, berth * DockPieces.Buildings[name].buildAt))
-		end
-	end
-	for _, g in ghosts do
-		g.Parent = Workspace
-	end
 end
 
 type Booth = { gui: ScreenGui, pickers: { CosmeticPicker.Picker } }
@@ -529,12 +629,43 @@ function DockController.Start()
 		end
 	end)
 	player:GetAttributeChangedSignal("DockLevel"):Connect(refresh)
-	player:GetAttributeChangedSignal("BayCFrame"):Connect(refresh)
-	player:GetAttributeChangedSignal("DockPlot"):Connect(refresh)
 	for _, key in DockConfig.BUILDINGS do
 		player:GetAttributeChangedSignal("Dock" .. key):Connect(refresh)
 	end
 	refresh()
+	-- the Lego build beat, from DockService (the model is already in its final state)
+	local buildEvent = Net.init():WaitForChild("Dock_Build", 30) :: RemoteEvent?
+	if buildEvent then
+		buildEvent.OnClientEvent:Connect(function(payload: any)
+			local plot, name, parent =
+				payload and payload.plot, payload and payload.name, payload and payload.parent
+			if type(plot) ~= "number" or type(name) ~= "string" then
+				return
+			end
+			task.spawn(function()
+				local marina = Workspace:WaitForChild("Marina", 5)
+				local pm = marina and marina:WaitForChild(`Plot{plot}`, 5)
+				if not pm then
+					return
+				end
+				local holder = if typeof(parent) == "string" then pm:WaitForChild(parent, 3) else pm
+				local model = holder and holder:WaitForChild(name, 3)
+				if model and model:IsA("Model") then
+					playBuild(model)
+				end
+			end)
+		end)
+	end
+	-- the blueprint prompts on my own plot: the plot and sheets may stream in after the claim, and
+	-- out and back again (bindSheet skips sheets that already have their prompt)
+	task.spawn(function()
+		while true do
+			if type(player:GetAttribute("DockPlot")) == "number" then
+				bindBlueprints()
+			end
+			task.wait(3)
+		end
+	end)
 	task.spawn(function()
 		while true do
 			boothCheck()

@@ -5,8 +5,9 @@
 -- frame): Lv 2 pontoon (beside the berth), lamps, rescue board on the quay; Lv 3 boathouse (its lot) + paint
 -- booth arches over the berth; Lv 4 lookout tower (the beach tower lot) + slipway crane on the quay; Lv 5 the
 -- station (its lot): lit front, roof beacon, trophy hall wall. Buildings: helipad + hangar on their lots, the
--- sub pen over the sub berth. DockService builds them (everyone sees them); DockController builds the next
--- one again as the owner's local ghost. Named hooks: parts "Flag" take the owner's colour, TextLabels "Count"
+-- sub pen over the sub berth. DockService builds them (everyone sees them); a buy plays the Lego build
+-- beat (shared/BuildSeq) client-side. The blueprint table and its paper sheets (docs/23 (j) rule 4, WP-14c)
+-- stand on the jetty lot. Named hooks: parts "Flag" take the owner's colour, TextLabels "Count"
 -- show the rescue count. Materials stay off the MaterialService remap (no Slate, WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
 local Marina = require(script.Parent:WaitForChild("Marina"))
@@ -601,17 +602,15 @@ local HELI = LOT.Helipad.cf * CFrame.new(0, 0.6, 0) -- the helicopter's spot: th
 local PEN = { hx = 8, hz = 20, top = 16 } -- the sub pen gantry round the sub berth (Marina.SUB frame)
 local PEN_JETTY = LOT.Jetty.cf.X - LOT.Jetty.size.X / 2 - Marina.SUB.X -- the jetty's edge, sub berth frame
 
--- In the berth frame: `buildAt` = the ghost's Build prompt, `board` = the vehicle board's rack (models along
+-- In the berth frame: `board` = the vehicle board's rack (models along
 -- its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the gantry
 -- height the sub hangs from.
 DockPieces.Buildings = {
 	Hangar = {
-		buildAt = LOT.Helipad.cf * CFrame.new(0, 2.5, 0),
 		board = LOT.Hangar.cf * CFrame.new(0, 0.2, 9),
 		targets = { RescueHelicopter = HELI } :: { [string]: CFrame },
 	},
 	SubPen = {
-		buildAt = Marina.SUB * CFrame.new(PEN_JETTY - 3, TOP + 2.5, 0),
 		board = Marina.SUB * CFrame.new(PEN_JETTY - 6, TOP, 0) * CFrame.Angles(0, math.pi / 2, 0),
 		targets = { Submarine = Marina.SUB } :: { [string]: CFrame },
 		hook = PEN.top - 0.5,
@@ -908,6 +907,209 @@ function DockPieces.build(n: number, b: CFrame): Model
 	local fn = LEVELS[n]
 	if fn then
 		fn(m, b)
+	end
+	return m
+end
+
+-- WP-14c (docs/23 (j) rule 4): the blueprint table and its paper sheets. New pieces are blocky and
+-- Lego-like: chunky bricks, bright colours, stud bumps on the table's flat top.
+
+local BRICK_RED = Color3.fromRGB(224, 56, 40)
+local BRICK_YELLOW = Color3.fromRGB(250, 208, 40)
+local BRICK_BLUE = Color3.fromRGB(40, 96, 208)
+local BRICK_NAVY = Color3.fromRGB(35, 70, 160)
+local PAPER = Color3.fromRGB(244, 240, 228)
+local PAPER_LOCKED = Color3.fromRGB(150, 148, 140)
+local INK = Color3.fromRGB(40, 50, 70)
+
+DockPieces.BLUEPRINT_TABLE_H = 1.4 -- the table top, above the jetty deck (Marina.LOTS.BlueprintTable)
+
+-- A trestle table on the BlueprintTable lot: a bright studded top slab on four chunky legs.
+function DockPieces.blueprintTable(b: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = "BlueprintTable"
+	local at = b * LOT.BlueprintTable.cf
+	local hw, hd, h = 3.1, 1.3, DockPieces.BLUEPRINT_TABLE_H
+	part(
+		m,
+		"Top",
+		Vector3.new(hw * 2, 0.5, hd * 2),
+		at * CFrame.new(0, h, 0),
+		BRICK_YELLOW,
+		M.SmoothPlastic
+	)
+	for _, x in { -2.4, -0.8, 0.8, 2.4 } do
+		part(
+			m,
+			"Stud",
+			Vector3.new(0.22, 0.5, 0.5),
+			at * CFrame.new(x, h + 0.36, -hd + 0.35) * CFrame.Angles(0, 0, math.pi / 2),
+			Color3.fromRGB(255, 170, 20),
+			M.SmoothPlastic,
+			Enum.PartType.Cylinder
+		)
+	end
+	for _, x in { -hw + 0.5, hw - 0.5 } do
+		for _, z in { -hd + 0.4, hd - 0.4 } do
+			part(
+				m,
+				"Leg",
+				Vector3.new(0.9, h - 0.1, 0.9),
+				at * CFrame.new(x, (h - 0.1) / 2, z),
+				BRICK_BLUE,
+				M.SmoothPlastic
+			)
+		end
+	end
+	for _, z in { -hd + 0.4, hd - 0.4 } do
+		part(
+			m,
+			"Stretcher",
+			Vector3.new(hw * 2 - 1.8, 0.3, 0.3),
+			at * CFrame.new(0, 0.5, z),
+			BRICK_RED,
+			M.SmoothPlastic
+		)
+	end
+	return m
+end
+
+-- One paper blueprint: a flat sheet with a simple drawing of the building (a SurfaceGui on top), a
+-- 1-3 word label, greyed with a padlock when locked (rank too low, or a quest blueprint). `item` =
+-- DockBlueprints.Item, `label` = its word. The caller sets DockItem / Label attributes and puts the
+-- prompt on.
+function DockPieces.blueprintSheet(
+	item: {
+		kind: "Level" | "Building" | "Blueprint",
+		key: number | string,
+	},
+	label: string,
+	locked: boolean
+): Model
+	local m = Instance.new("Model")
+	m.Name = "Blueprint"
+	local sheet = part(
+		m,
+		"Sheet",
+		Vector3.new(1.45, 0.06, 1.2),
+		CFrame.new(0, 0.03, 0),
+		PAPER,
+		M.SmoothPlastic
+	)
+	sheet.CanCollide = false
+	m.PrimaryPart = sheet
+
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Top
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 60
+	gui.LightInfluence = 0.2
+	gui.Parent = sheet
+	local paper = Instance.new("Frame")
+	paper.Name = "Paper"
+	paper.AnchorPoint = Vector2.new(0.5, 0.5)
+	paper.Position = UDim2.fromScale(0.5, 0.5)
+	paper.Size = UDim2.fromScale(0.9, 0.8)
+	paper.BackgroundColor3 = if locked then PAPER_LOCKED else PAPER
+	paper.Rotation = 3
+	paper.Parent = gui
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 3)
+	corner.Parent = paper
+
+	local function box(
+		parent: Instance,
+		name: string,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+		color: Color3,
+		z: number
+	): Frame
+		local f = Instance.new("Frame")
+		f.Name = name
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Position = UDim2.fromScale(x, y)
+		f.Size = UDim2.fromScale(w, h)
+		f.BackgroundColor3 = color
+		f.BorderSizePixel = 0
+		f.ZIndex = z
+		f.Parent = parent
+		return f
+	end
+
+	local draw = box(paper, "Draw", 0.5, 0.44, 0.94, 0.6, Color3.fromRGB(0, 0, 0), 0)
+	draw.BackgroundTransparency = 1
+	local kind, key = item.kind, item.key
+	if kind == "Level" then
+		local roof = box(draw, "Roof", 0.5, 0.24, 0.42, 0.42, BRICK_RED, 1)
+		roof.Rotation = 45
+		box(draw, "Body", 0.5, 0.62, 0.46, 0.42, WHITE, 2)
+		box(draw, "Door", 0.5, 0.72, 0.14, 0.24, BRICK_NAVY, 3)
+		local number = Instance.new("TextLabel")
+		number.Size = UDim2.fromScale(0.2, 0.2)
+		number.Position = UDim2.fromScale(0.5, 0.55)
+		number.AnchorPoint = Vector2.new(0.5, 0.5)
+		number.BackgroundTransparency = 1
+		number.Font = Enum.Font.FredokaOne
+		number.TextScaled = true
+		number.TextColor3 = BRICK_NAVY
+		number.Text = tostring(key)
+		number.Parent = draw
+	elseif kind == "Building" and key == "Hangar" then
+		local pad = box(draw, "Pad", 0.34, 0.5, 0.62, 0.62, GREY, 1)
+		local round = Instance.new("UICorner")
+		round.CornerRadius = UDim.new(1, 0)
+		round.Parent = pad
+		box(draw, "H1", 0.24, 0.5, 0.06, 0.5, WHITE, 2)
+		box(draw, "H2", 0.44, 0.5, 0.06, 0.5, WHITE, 2)
+		box(draw, "H3", 0.34, 0.5, 0.32, 0.07, WHITE, 2)
+		local roof = box(draw, "HangarRoof", 0.76, 0.3, 0.26, 0.26, BRICK_RED, 1)
+		roof.Rotation = 45
+		box(draw, "Hangar", 0.76, 0.52, 0.32, 0.22, ORANGE, 2)
+	elseif kind == "Building" and key == "SubPen" then
+		box(draw, "Water", 0.5, 0.62, 0.8, 0.4, Color3.fromRGB(40, 120, 200), 1)
+		box(draw, "Hull", 0.36, 0.48, 0.3, 0.24, NAVY, 2)
+		box(draw, "Tower", 0.52, 0.34, 0.1, 0.16, GREY, 2)
+		box(draw, "Scope", 0.52, 0.24, 0.04, 0.1, GREY, 2)
+	elseif kind == "Blueprint" and key == "Lighthouse" then
+		box(draw, "Rock", 0.5, 0.72, 0.7, 0.18, GREY, 1)
+		box(draw, "LightTower", 0.5, 0.5, 0.18, 0.5, WHITE, 2)
+		box(draw, "Stripe1", 0.5, 0.58, 0.2, 0.1, BRICK_RED, 3)
+		box(draw, "Stripe2", 0.5, 0.42, 0.2, 0.1, BRICK_RED, 3)
+		box(draw, "Lamp", 0.5, 0.22, 0.2, 0.12, BRICK_YELLOW, 4)
+		box(draw, "LightRoof", 0.5, 0.14, 0.24, 0.08, BRICK_NAVY, 4)
+	else
+		-- any building added later: a bright brick stack
+		box(draw, "Brick1", 0.3, 0.6, 0.3, 0.2, BRICK_RED, 1)
+		box(draw, "Brick2", 0.5, 0.6, 0.3, 0.2, BRICK_YELLOW, 1)
+		box(draw, "Brick3", 0.7, 0.6, 0.3, 0.2, BRICK_BLUE, 1)
+	end
+
+	local word = Instance.new("TextLabel")
+	word.Name = "Label"
+	word.AnchorPoint = Vector2.new(0.5, 1)
+	word.Position = UDim2.fromScale(0.5, 0.97)
+	word.Size = UDim2.new(0.94, 0, 0, 9)
+	word.BackgroundTransparency = 1
+	word.Font = Enum.Font.FredokaOne
+	word.TextScaled = true
+	word.TextColor3 = if locked then Color3.fromRGB(80, 80, 80) else INK
+	word.Text = label
+	word.Parent = paper
+
+	if locked then
+		local shade =
+			box(paper, "LockShade", 0.5, 0.44, 0.96, 0.62, Color3.fromRGB(120, 120, 120), 4)
+		shade.BackgroundTransparency = 0.35
+		local shackle = box(paper, "Shackle", 0.5, 0.33, 0.18, 0.22, Color3.fromRGB(70, 70, 75), 5)
+		shackle.BackgroundTransparency = 1
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(70, 70, 75)
+		stroke.Thickness = 4
+		stroke.Parent = shackle
+		box(paper, "LockBody", 0.5, 0.47, 0.26, 0.18, Color3.fromRGB(70, 70, 75), 6)
 	end
 	return m
 end
