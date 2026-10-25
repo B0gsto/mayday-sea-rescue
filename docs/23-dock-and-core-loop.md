@@ -315,3 +315,7 @@ quests (after 21a).
 **Order update (owner, 2026-10-25):** publish speed first. (1) `tools/studio/publish_studio.py` re-triggers only the
 texture packs that failed, not all ~455 (~28 min of the publish today). (2) WP-16 asset diet right after WP-21a
 (fewer unique PBR textures, unused asset ids out). Then WP-21b quests, WP-14c blueprint table, WP-15 crew.
+
+**Radio cut (owner, 2026-10-25):** "remove the radio, I want voices only for NPCs". The dispatch radio, its voice lines and
+the HQ radio prop go (WP-22); calls read from the card, pin, flare and sound. NPCs keep their voices; the Sea Shanty
+Radio music item stays.
