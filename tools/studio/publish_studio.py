@@ -2,7 +2,7 @@
 """Publish the Rojo build to the PRIVATE test place from Roblox Studio, so Studio creates the PBR texture packs
 (SurfaceAppearance / MaterialVariant) that an Open Cloud place upload never makes.
 
-usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch 15] [--gap 15]
+usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch 8] [--gap 3] [--rounds 4]
   --launch  the launch experience (deploy/launch-target.json, deploy/state-launch.json, launch pass ids); ask the user first
 
   1. check.sh (unless --skip-check) and build.sh
@@ -12,14 +12,18 @@ usage: python3 tools/studio/publish_studio.py [--skip-check] [--launch] [--batch
      ServerStorage (build/MaydayPublish.rbxl, tools/world/make_work_place.luau): studio-load clears the voxels and
      never carries them, so tools/world/write_terrain.luau writes them (as studio_terrain.py does), the staging is
      removed, and a probe of the town platform must read solid ground
-  4. wait for Studio's own texture-pack burst to end (it hits HTTP 429 / 504 on hundreds of packs at once), then
-     re-trigger every pack slowly: blank and restore ColorMap on --batch surfaces every --gap seconds
+  4. wait for Studio's own texture-pack burst to end (it can hit HTTP 429 / 5xx on hundreds of packs at once); only
+     when it logged failures, re-trigger packs: blank and restore ColorMap on --batch surfaces every --gap seconds,
+     pausing until the 429's "will reset at <time>". The log never names the failed surface, so each failure is
+     pinned to the batches nudged in the WINDOW seconds before it, and only those are retried, up to --rounds times
   5. File > Publish to Roblox through the accessibility menu (tools/studio/studio-menu.swift), read the new
      version from the Studio log, write it to deploy/state.json, quit that Studio process
 
-Holds the machine-wide Studio lock throughout. Exits non-zero (nothing published) when the paced pass still logs
-texture-pack failures."""
+Holds the machine-wide Studio lock throughout. When the last round still logs texture-pack failures it publishes
+anyway if they are at most 1% of the surfaces (warning with the suspect paths: they render untextured on that
+version, the next publish retries), else exits non-zero with nothing published."""
 import glob, json, os, re, subprocess, sys, time
+from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -41,17 +45,26 @@ MONETIZATION = os.path.join("src", "shared", "Config", "MonetizationConfig.luau"
 AUTOSAVES = os.path.expanduser("~/Library/Application Support/Roblox/RobloxStudio/AutoSaves")
 PACK = re.compile(r"TexturePack|AssetResolutionWorkflow|Could not find asset with hash")
 PACK_FAIL = re.compile(r"Failed to upload TexturePack|TexturePack asset creation has failed")
-NUDGE = '''
+RESET = re.compile(r"will reset at (\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)Z")
+WINDOW = 20  # s from a nudge to its failure line: Studio builds the pack, queues the upload (up to ~10 s), logs
+SURFACES = '''
 local list = {}
 for _, d in game:GetDescendants() do
 	if (d:IsA("SurfaceAppearance") or d:IsA("MaterialVariant")) and d.ColorMap ~= "" then table.insert(list, d) end
 end
+'''
+NUDGE = SURFACES + '''
 local batch, saved = {}, {}
-for i = %d, math.min(%d, #list) do table.insert(batch, list[i]) end
+for _, i in {%s} do table.insert(batch, list[i]) end
 for i, d in batch do saved[i] = d.ColorMap; d.ColorMap = "" end
-task.wait(0.5) -- a same-frame restore never reaches the texture-pack job
+if #batch > 0 then task.wait(0.5) end -- a same-frame restore never reaches the texture-pack job
 for i, d in batch do d.ColorMap = saved[i] end
 return #list
+'''
+NAMES = SURFACES + '''
+local out = {}
+for _, i in {%s} do table.insert(out, list[i]:GetFullName()) end
+return table.concat(out, "\\n")
 '''
 # the hub plateau (Y 4, docs/23 (k)) north-west of the HQ: solid voxels, else the terrain did not load
 TOWN_PROBE = '''
@@ -106,6 +119,41 @@ def settle(path, quiet=30, cap=600):
         time.sleep(3)
 
 
+def utc(text, fmt):
+    return datetime.strptime(text, fmt).replace(tzinfo=timezone.utc).timestamp()
+
+
+def failures(lines):
+    """[(log time, is 429)] for each texture-pack failure line."""
+    return [(utc(l[:24], "%Y-%m-%dT%H:%M:%S.%fZ"), "StatusCode: 429" in l) for l in lines if PACK_FAIL.search(l)]
+
+
+def cooldown(lines, now):
+    """Seconds until uploads may resume: the latest "will reset at", else 30 s after the last bare 429."""
+    resets = [utc(t, "%Y-%m-%d %H:%M:%S") + 1 for t in RESET.findall("\n".join(lines))]
+    bare = [t + 30 for t, is429 in failures(lines) if is429]
+    return max([now] + (resets or bare)) - now
+
+
+def suspects(fails, batches):
+    """Surface indices nudged in the WINDOW s before any failure (all of this round's when none fits)."""
+    hit = {i for t, _ in fails for at, part in batches if t - WINDOW <= at <= t for i in part}
+    return sorted(hit or (fails and {i for _, part in batches for i in part}))
+
+
+def selftest():
+    line = "2026-10-25T13:47:08.160Z,48.1,6df3b000,6,Error [FLog::CreatorError] Error: Failed to upload TexturePack " \
+           "(Reason: ... HTTP StatusCode: 429, Message: {"
+    reset = '  "message": "Rate limit exceeded for TexturePack uploads and will reset at 2026-10-25 13:47:09Z."'
+    t = utc("2026-10-25T13:47:08.160Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+    assert failures([line, reset, "noise"]) == [(t, True)]
+    assert abs(cooldown([line, reset], t) - 1.84) < 0.01 and abs(cooldown([line], t) - 30) < 0.01
+    assert cooldown(["noise"], t) == 0
+    assert suspects([(t, True)], [(t - 30, [1, 2]), (t - 5, [3, 4]), (t + 1, [5])]) == [3, 4]
+    assert suspects([(t, True)], [(t + 1, [5, 6])]) == [5, 6] and suspects([], [(t, [1])]) == []
+    print("selftest ok")
+
+
 def find_place(s):
     ok, texts, _ = s.call("list_roblox_studios", {}, 30)
     for st in json.loads(texts[0]).get("studios", []) if ok and texts else []:
@@ -138,7 +186,7 @@ def main():
          os.path.join(REPO, "map", "generated")])
     if studio_pids():
         sys.exit("a Studio already has a roblox-studio: place open; close it first (its edits would be published)")
-    batch, gap = int(arg("--batch", 15)), arg("--gap", 15)
+    batch, gap, rounds = int(arg("--batch", 8)), arg("--gap", 3), int(arg("--rounds", 4))
     with studio_lock(owner="mayday publish", timeout=3600, cap=3600):
         # a killed earlier run leaves an auto-recovery file, whose startup modal disables File > Publish to Roblox
         for f in glob.glob(os.path.join(AUTOSAVES, "%d_AutoRecovery_*.rbxl" % PLACE)):
@@ -159,6 +207,7 @@ def main():
                 log = log_of(pid)
                 print("studio pid %d, log %s" % (pid, log), flush=True)
                 settle(log)  # Studio's on-open texture-pack pass
+                start = len(log_lines(log))
                 print(run([sys.executable, os.path.join(TOOLS, "studio-load.py"), REPO, sid, "--build", "MaydayPublish"])
                       .strip().splitlines()[0], flush=True)
 
@@ -175,23 +224,45 @@ def main():
                 if solid < 6:
                     sys.exit("the loaded place has no terrain at the town platform: nothing published")
                 settle(log)  # the burst for the freshly loaded surfaces
-                time.sleep(60)  # let the upload rate limit cool down
-                start = len(log_lines(log))
-                i, total = 1, 1
-                while i <= total:
+
+                def nudge(idx, code=NUDGE):
                     ok, texts, _ = s.call("execute_luau", {"studio_id": sid, "datamodel_type": "Edit",
-                                                          "code": NUDGE % (i, i + batch - 1)}, 60)
+                                                          "code": code % ",".join(map(str, idx))}, 120)
                     if not ok:
                         sys.exit("nudge failed: " + " ".join(texts)[:300])
-                    total = int(texts[0])
-                    i += batch
-                    time.sleep(gap)
-                settle(log)
-                fails = sum(1 for l in log_lines(log)[start:] if PACK_FAIL.search(l))
-                print("texture packs re-triggered for %d surfaces, %d failures" % (total, fails), flush=True)
+                    return texts[0]
+                total = int(nudge([]))
+                lines = log_lines(log)[start:]
+                fails = failures(lines)
+                todo = list(range(1, total + 1)) if fails else []  # burst failures can't be pinned to a surface
+                print("%d surfaces, load burst: %d texture-pack failures" % (total, len(fails)), flush=True)
+                for rnd in range(1, rounds + 1):
+                    if not todo:
+                        break
+                    time.sleep(cooldown(lines, time.time()))
+                    mark = seen = len(log_lines(log))
+                    batches = []
+                    for k in range(0, len(todo), batch):
+                        part = todo[k:k + batch]
+                        batches.append((time.time(), part))
+                        nudge(part)
+                        new = log_lines(log)[seen:]
+                        seen += len(new)
+                        time.sleep(max(gap, cooldown(new, time.time())))
+                    settle(log)
+                    lines = log_lines(log)[mark:]
+                    fails = failures(lines)
+                    todo = suspects(fails, batches)
+                    print("round %d: re-triggered %d surfaces, %d failures (%d x 429), %d suspects"
+                          % (rnd, sum(len(p) for _, p in batches), len(fails), sum(f[1] for f in fails), len(todo)),
+                          flush=True)
                 if fails:
-                    sys.exit("texture packs still failing (rate limit?): nothing published; re-run later or with "
-                             "a larger --gap")
+                    names = nudge(todo, NAMES)
+                    if len(fails) > total // 100:
+                        sys.exit("%d texture packs still failing after %d rounds (> 1%% of %d): nothing published; "
+                                 "re-run later. Suspects:\n%s" % (len(fails), rounds, total, names))
+                    print("WARNING: publishing with %d failed texture packs (<= 1%%); one of these renders untextured "
+                          "until the next publish:\n%s" % (len(fails), names), flush=True)
                 start = len(log_lines(log))
                 menu = ["swift", os.path.join(HERE, "studio-menu.swift"), str(pid), "File"]
                 end = time.time() + 300  # Studio can still be busy after the pack pass: wait for the item to enable
@@ -225,4 +296,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    selftest() if "--selftest" in sys.argv else main()

@@ -311,3 +311,7 @@ but small outposts". Approved direction:
 
 **Work packages.** WP-21a hub terrain + forest + outposts (after WP-19a/19c land). WP-21b quest system + first
 quests (after 21a).
+
+**Order update (owner, 2026-10-25):** publish speed first. (1) `tools/studio/publish_studio.py` re-triggers only the
+texture packs that failed, not all ~455 (~28 min of the publish today). (2) WP-16 asset diet right after WP-21a
+(fewer unique PBR textures, unused asset ids out). Then WP-21b quests, WP-14c blueprint table, WP-15 crew.
