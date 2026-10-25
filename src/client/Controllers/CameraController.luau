@@ -673,7 +673,8 @@ local function update(dt: number)
 			root = c.root,
 			topSpeed = if c.spec then c.spec.topSpeed else 60,
 			exclude = exclude,
-			waveHeight = waveHeight,
+			-- a dived sub's camera follows it under the surface (Ocean/Underwater draws the view)
+			waveHeight = if craft:GetAttribute("Submerged") == true then nil else waveHeight,
 			telemetry = telemetry(),
 		}, look)
 		if char then

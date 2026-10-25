@@ -380,6 +380,7 @@ local function buildFallback(parent: Instance)
 	far = FarPlane.new(parent, grid.half, SEA, surfaceKind, Horizon.INNER_HALF, false)
 	horizon = Horizon.new(parent, SEA, tint, HAZE_DEFAULT, surfaceKind, true)
 	snapStep = tier.fallbackCell
+	underwater = Underwater.new(parent) -- a snorkel face-down or a dived sub
 	mode = "Parts"
 end
 
@@ -647,6 +648,9 @@ local function step(dt: number)
 		return
 	end
 	local pos = camera.CFrame.Position
+	if underwater then -- every frame (not at the tier rate): its fog slices ride the camera
+		Underwater.update(underwater, camera, OceanController.GetVisualHeight(pos.X, pos.Z))
+	end
 	local cx = math.floor(pos.X / snapStep + 0.5) * snapStep
 	local cz = math.floor(pos.Z / snapStep + 0.5) * snapStep
 	local snapped = cx ~= centreX or cz ~= centreZ
@@ -687,10 +691,6 @@ local function step(dt: number)
 		end
 		updateLook()
 		local surfaceY = OceanController.GetVisualHeight(pos.X, pos.Z)
-		local u = underwater
-		if u then
-			Underwater.update(u, camera, surfaceY)
-		end
 		local bed = seabed
 		if bed then
 			Seabed.update(bed, centreX, centreZ, SEA, pos.Y < surfaceY - 0.15, tint, t)

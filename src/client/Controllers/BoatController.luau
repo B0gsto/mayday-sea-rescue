@@ -458,7 +458,7 @@ local function step(dt: number)
 	end
 	if vehicles then
 		for _, child in vehicles:GetChildren() do
-			if child:IsA("Model") then
+			if child:IsA("Model") and child:GetAttribute("Sub") ~= true then -- SubController drives subs
 				if isLocalDriver(child) then
 					driving = child
 					local seat = seatOf(child) :: VehicleSeat
