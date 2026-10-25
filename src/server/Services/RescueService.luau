@@ -58,7 +58,6 @@ local SKIN =
 	{ Color3.fromRGB(255, 214, 170), Color3.fromRGB(198, 140, 100), Color3.fromRGB(120, 80, 55) }
 local SHIRTS =
 	{ Color3.fromRGB(70, 120, 190), Color3.fromRGB(200, 80, 90), Color3.fromRGB(90, 160, 110) }
-local DELIVER_MARGIN = 12
 -- Survivors of a vessel scene (sinking, fire) or the cliff foot: this far out from the scene's centre.
 local SCATTER_RADIUS = 32 -- clear of the 52-stud trawler
 
@@ -1220,24 +1219,10 @@ local function dropOffPads(): { BasePart }
 	return pads
 end
 
-local function padAt(pos: Vector3, allowed: { string }, margin: number): string?
-	for _, pad in dropOffPads() do
-		local name = pad:GetAttribute("DropOff")
-		if
-			type(name) == "string"
-			and table.find(allowed, name)
-			and CallLogic.insidePad(pad.CFrame, pad.Size, pos, margin)
-		then
-			return name
-		end
-	end
-	return nil
-end
-
 -- Removes the given victims from a vehicle, putting back any survivors that aren't in the list.
 -- The drop-off (docs/20 change 4, a visible beat): a delivered survivor climbs off onto the nearest dry
--- footing beside the boat (quay, pontoon, slipway); with none in reach (a shore point lands them up to
--- 40 studs out) they swim to the first footing toward the nearest pad or slipway, then climb out, stand
+-- footing beside the boat (quay, pontoon, slipway); with none in reach (the drop-off zone lands them up to
+-- 80 studs out) they swim to the first footing toward the nearest pad or slipway, then climb out, stand
 -- and wave, and go up the quay (removed). No footing anywhere: handed straight in.
 local CLIMB_OFF_SECONDS = 1.0
 local SWIM_OFF_SPEED = 16 -- studs/s: a quick swim the camera can follow -- tune
@@ -1403,21 +1388,17 @@ local function checkDeliveries()
 		end
 	end
 	for carrier, list in byCarrier do
-		local pos = carrier:GetPivot().Position
-		local deliverable = {}
-		local padOf: { [any]: string } = {}
-		for _, v in list do
-			local pad = padAt(pos, v.call.spec.dropOffs, DELIVER_MARGIN)
-			if pad then
-				table.insert(deliverable, v)
-				padOf[v.call] = pad
-			end
-		end
-		if #deliverable > 0 then
-			local driver = driverOf(carrier)
-			unloadVictims(carrier, deliverable)
+		-- the drop-off zone round the owner's berth: any craft of theirs, moving or docked
+		local driver = driverOf(carrier)
+		if
+			ColdOpen.atDropOff(
+				carrier:GetPivot().Position,
+				driver and driver:GetAttribute("BayCFrame")
+			)
+		then
+			unloadVictims(carrier, list)
 			local perCall: { [any]: number } = {}
-			for _, v in deliverable do
+			for _, v in list do
 				perCall[v.call] = (perCall[v.call] or 0) + 1
 			end
 			for call, count in perCall do
@@ -1425,9 +1406,9 @@ local function checkDeliveries()
 					operations().RecordAction(call, driver)
 				end
 				if call.onDelivered then
-					call.onDelivered(count, driver, padOf[call]) -- free-roam (AmbientRescueService)
+					call.onDelivered(count, driver, "Home") -- free-roam (AmbientRescueService)
 				else
-					operations().OnVictimsDelivered(call, count, driver, padOf[call])
+					operations().OnVictimsDelivered(call, count, driver, "Home")
 				end
 			end
 		end
