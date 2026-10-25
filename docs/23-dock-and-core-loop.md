@@ -312,6 +312,14 @@ but small outposts". Approved direction:
 **Work packages.** WP-21a hub terrain + forest + outposts (after WP-19a/19c land). WP-21b quest system + first
 quests (after 21a).
 
+**WP-21b as built (2026-10-25).** Six givers at the quest camps: Old Maud (lost things), Tam (cargo), Captain Rook
+(salvage, needs the sub), Nell (special rescues), Keeper Ives (the lamp chain), Pip (odd jobs); 13 quests in
+`Quests/Data`. Pay is flat: find / deliver 1,500 Cash + 250 Rep (a trip out and back, ~1.5 calls), salvage 2,500 +
+400, a rescue quest 1,000 + 200 on top of the call's own pay, the chain's last step 2,000 + 400 + the Lighthouse
+blueprint (rises on your island's Spare1 lot). Each giver offers one quest a day, so the chain takes three days.
+Pin rule: your accepted call > your quest > a call offer > your own waypoint. Shortcuts: the rescue quest's survivor
+is the usual swimmer (named only in the giver's line); carried things ride on your back as placeholder Parts.
+
 **Order update (owner, 2026-10-25):** publish speed first. (1) `tools/studio/publish_studio.py` re-triggers only the
 texture packs that failed, not all ~455 (~28 min of the publish today). (2) WP-16 asset diet right after WP-21a
 (fewer unique PBR textures, unused asset ids out). Then WP-21b quests, WP-14c blueprint table, WP-15 crew.
@@ -350,4 +358,13 @@ Lego-like animations when built." And: "do not redesign the assets that we alrea
 - **Building on your island** plays a Lego build: pieces drop in brick by brick, bottom to top, with a small bounce
   and a snap sound, builders standing by, a dust puff at the end (WP-14c).
 - The UI kit can carry a subtle stud texture on title bars and price buttons (docs/23 (m)).
+- **Player islands are plain Lego baseplates** (owner: "do not use the land on the player's islands, I want a simple
+  plain Lego island, a simple 2D land"): flat green stud plates with a berth notch, no terrain, no scatter (WP-24).
+  The hub forest and outer islands stay terrain.
+- **Build station with a tablet** (owner: "I want it to be a tablet; when accessing it, the camera goes in from the
+  top and there you can build the necessary things"): a small Lego builder's yard near your island spawn with a
+  tablet on a stand. Using it tweens the camera up to a top-down view of your island (build mode). A bottom bar of
+  kit cards lists what you can build (icon, Cash + rank or R$, padlock if locked); picking one makes its empty lot
+  pulse (a flat outline on the ground, never a 3D preview); buying plays the Lego build from above. Exit returns the
+  camera. Replaces the paper-blueprint table (WP-14d, after WP-14c and the UI kit).
 - **Builders from now on: multiple DeepSeek V4 Pro agents** (owner); Opus reviews.

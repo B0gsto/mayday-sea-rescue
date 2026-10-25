@@ -35,14 +35,14 @@ local MapConfig = {
 		},
 		{
 			"rbxassetid://75289648010182",
-			"rbxassetid://125617505542602",
-			"rbxassetid://137166813959739",
+			"rbxassetid://110253475621165",
+			"rbxassetid://70720791673889",
 			"rbxassetid://78356896818176",
 		},
 		{
 			"rbxassetid://81980404591265",
-			"rbxassetid://106639627713075",
-			"rbxassetid://108730647455735",
+			"rbxassetid://111469955975911",
+			"rbxassetid://95196954911349",
 			"rbxassetid://105398316841725",
 		},
 		{
@@ -122,6 +122,11 @@ local MapConfig = {
 			label = "Your vehicle",
 			glyph = A11yPalette.symbol("Marker", "Vehicle"),
 			color = Color3.fromHex("F4F1EA"),
+		},
+		Quest = {
+			label = "Your quest",
+			glyph = A11yPalette.symbol("Marker", "Quest"),
+			color = Color3.fromHex("FFC428"),
 		},
 		Home = {
 			label = "Your dock",

@@ -30,9 +30,16 @@ local BOB = 8 -- px: how far it bobs
 local DISC = 46 -- du
 local LIFT = 34 -- px: the disc floats over the target, its tip pointing down at it
 local RIM = Vector2.new(0.36, 0.28) -- the pin ellipse's radii, share of the screen (down)
-local RIM_UP = 0.24 -- its upward radius: the top band holds the strip and the radio
-local SHOWN: { [string]: boolean } =
-	{ Mayday = true, Casualty = true, Vessel = true, ["Drop-off"] = true, Craft = true }
+local RIM_UP = 0.24 -- its upward radius: the top band holds the strip
+local QUEST = Color3.fromHex("FFC428") -- the quest givers' gold
+local SHOWN: { [string]: boolean } = {
+	Mayday = true,
+	Casualty = true,
+	Vessel = true,
+	["Drop-off"] = true,
+	Craft = true,
+	Quest = true,
+}
 
 function Waypoint.metres(studs: number): string
 	local m = studs / STUDS_PER_M
@@ -141,6 +148,8 @@ function Waypoint.start(
 			return "home", GREEN
 		elseif label == "Craft" then
 			return "boat", CRAFT
+		elseif label == "Quest" then
+			return "quest", QUEST
 		end
 		local s = ops.GetState()
 		local kind = if label == "Mayday" then offerKind elseif s then s.kind else nil

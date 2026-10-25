@@ -8,6 +8,8 @@
 --                                                            cleared, or an island id has been sighted
 --   DiscoveryController.IsStamped(islandId) -> boolean        the map's "?" becomes the stamp
 --   DiscoveryController.CellOf(pos) -> number?                DiscoveryRules.cellOf (grid: DiscoveryConfig.Fog)
+--   DiscoveryController.HubCellOf(pos) -> number?             DiscoveryRules.hubCellOf (the hub's fine grid)
+--   DiscoveryController.IsHubRevealed(index) -> boolean       the hub fine cell is cleared (docs/23 (l))
 --   DiscoveryController.State() -> DiscoveryRules.State       island id -> bit mask (DiscoveryRules.has)
 --   DiscoveryController.Changed                               RBXScriptSignal, fires after every update
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,6 +28,7 @@ DiscoveryController.Changed = changed.Event
 
 local state: Rules.State = {}
 local fog = Rules.newFog()
+local hubFog = Rules.newHubFog()
 local markers: { [string]: BasePart } = {}
 
 function DiscoveryController.IsRevealed(cellOrIsland: number | string): boolean
@@ -35,11 +38,16 @@ function DiscoveryController.IsRevealed(cellOrIsland: number | string): boolean
 	return Rules.revealed(fog, cellOrIsland)
 end
 
+function DiscoveryController.IsHubRevealed(index: number): boolean
+	return Rules.hubRevealed(hubFog, index)
+end
+
 function DiscoveryController.IsStamped(islandId: string): boolean
 	return Rules.has(state, islandId, 4)
 end
 
 DiscoveryController.CellOf = Rules.cellOf
+DiscoveryController.HubCellOf = Rules.hubCellOf
 
 function DiscoveryController.State(): Rules.State
 	return state
@@ -93,6 +101,7 @@ local function apply(payload: any)
 	end
 	state = Rules.decode(payload.isles)
 	fog = Rules.decodeFog(payload.fog)
+	hubFog = Rules.decodeHubFog(payload.hub)
 	paint()
 end
 

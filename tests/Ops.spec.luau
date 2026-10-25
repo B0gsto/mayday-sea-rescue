@@ -7,7 +7,7 @@ return function(t)
 
 	local ROLES = { Helm = true, Navigator = true, Crew = true, Medic = true }
 	local ONFAIL = { retry = true, npc = true, skip = true, takeover = true, continue = true }
-	local SIMPLE = { radio_ack = true, launch = true, auto_board = true, transport = true }
+	local SIMPLE = { answer = true, launch = true, auto_board = true, transport = true }
 
 	t.test("every definition is well formed", function()
 		for id, def in Operations.Defs do
@@ -37,8 +37,8 @@ return function(t)
 					t.expect(banded).toBeTruthy()
 				end
 			end
-			-- docs/16 K1: answer on the radio, get aboard, they climb on, bring them home; nothing else
-			t.expect(def.steps[1].mechanicId).toBe("radio_ack")
+			-- docs/16 K1: answer the call, get aboard, they climb on, bring them home; nothing else
+			t.expect(def.steps[1].mechanicId).toBe("answer")
 			t.expect(def.steps[#def.steps].mechanicId).toBe("transport")
 			for _, s in def.steps do
 				t.expect(SIMPLE[s.mechanicId]).toBeTruthy()

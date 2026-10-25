@@ -45,7 +45,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 (UpgradeService), `Vehicle_QuickLaunch` (VehicleService), `PIW_Rescue` (Ops/PiwRescue), `Ops_*` (below), `Streak_State` / `Streak_Get` /
 `Streak_Open`, `Pet_State` / `Pet_Get` / `Pet_Equip`, `Cosmetics_Equip` / `Cosmetics_Action` /
 `Cosmetics_Event`, `Monetization_GetCatalogue` / `Monetization_Purchased`, `PlatformPrompt_Ask` / `_Offer` /
-`_OptIn`, `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
+`_OptIn`, `Crew_Hire` / `Crew_Fire` (CrewHireService), `Telemetry_Client`, `Dev_Grant` / `Dev_Action`.
 
 ## Weather and storms
 
@@ -144,7 +144,7 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 
 | Step | Mechanic (`src/client/Mechanics/`) | What happens |
 |---|---|---|
-| `tasking` | `radio_ack` | the call is answered (auto-accepted when seated and heading to it, or R / tap) |
+| `tasking` | `answer` | the call is answered (auto-accepted when seated and heading to it, or R / tap) |
 | `launch` | `launch` | get aboard your craft (a `RequestVehicle` from anywhere) |
 | `recovery` | `auto_board` | drive up close and steady: survivors climb aboard if there is room (`effect = "board"`) |
 | `transport` | `transport` | bring them to a drop-off pad (`effect = "deliver"`) |
@@ -190,20 +190,20 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
 
 | Remote | Dir | Payload |
 |---|---|---|
-| `Ops_Offered` | S->C | `{ opId, kind, title, radioLine, zoneName, position, isBig, offerExpiresAt, cash, rep }` |
+| `Ops_Offered` | S->C | `{ opId, kind, title, zoneName, position, isBig, offerExpiresAt, cash, rep }` |
 | `Ops_Accept` | C->S | `(opId)` |
 | `Ops_State` | S->C | the operation snapshot for this player |
 | `Ops_StepStart` | S->C | the mechanic `ctx` (`operation`, `step`, `casualty`, `vehicle`, `attempt`, `scene`) |
 | `Ops_StepResult` | C->S | `(opId, stepKey, { metrics, events?, failed?, stub? })` |
 | `Ops_StepAck` | S->C | `{ opId, stepKey, accepted, grade?, reason? }` |
-| `Ops_Radio` | S->C | `{ opId, from, text }` |
 | `Ops_Debrief` | S->C | `{ opId, kind, grade, stepGrade, reason, takeover?, steps, condition, saved, total, cash, rep, tip, me }` (drawn as stars, Cash and mastery icons, K5) |
-| `Ops_Closed` | S->C | `{ opId, reason, message?, silent? }` |
+| `Ops_Closed` | S->C | `{ opId, reason }` |
 
 Client: `OpsController` plays one mechanic per step (`{ start(ctx, finish) -> cleanup? }`, fallback
 `Mechanics/Default`); UI in `UI/OpsHud`, `OpsTaskingCard` (pager icon), `OpsStepCard` (icon + at most 2
-words, K4), `OpsDebrief`. Radio subtitles: `src/client/UI/RadioSubtitle.luau` (pure, ≤ 6 words, the voice
-says the full line; `tests/RadioSubtitle.spec.luau`), lines in `RadioLines`, voiced by `VoiceTTS`.
+words, K4), `OpsDebrief`; `OpsController` mounts `OpsHud`. No dispatch radio (owner, 2026-10-25): a new call is the
+pager card, its flare and pin, and a pager beep. Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast` (TalkController,
+casualty shouts in CasualtyController).
 
 ## First 10 minutes (docs/16 section 4)
 
@@ -259,6 +259,8 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `src/shared/HudLayout.luau` (pure) places the regions per device.
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
+  The one objective pin (`GetObjective`, docs/20 rule 1): your accepted call, then your quest (`QuestTarget`),
+  then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 
 ## Monetization and cosmetics
 
@@ -278,8 +280,7 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
   CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
   suspension bridges from it (WorldDressingService I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
-  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut with the radio (tag
-  `StationRadio`), CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
+  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut, CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
   the phone Store via HudController, Quay, Jetty, Harbourmaster, Campfire, Monument (LeaderboardService hangs the
   rescue board there; the album StampPost), QuestCamps (tag `QuestCamp`, attribute `QuestSpot`), the hidden Ruin and
   Wreck (album page `Hub`)) and the only drop-off pad `Map.DropOffs.DropOff_Dock` (`DropOff = "Dock"`) at
@@ -287,6 +288,12 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `AssetLoader.define`; client-drawn by ScatterController, trunk hulls on the server).
   The old Port Haven harbour (Harbour.luau, breakwaters, slipway, hospital, moorings) is gone.
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
+- Crew hire (docs/23 (j), WP-15): `src/shared/Crew/CrewHire.luau` (pure, `tests/CrewHire.spec.luau`: 20-minute
+  groups, seeded lineup, Cash price / daily wage, dock Lv 5 + Coxswain gate, effect knobs) and
+  `CrewHireService` (R15 seekers via `NpcFactory` outside your station, `Crew_Hire` / `Crew_Fire`, `data.crew`,
+  wage at session start; `CrewHireController` billboards, Hire / Fire card, next-group clock). Hooks:
+  VehicleService relaunch, AmbientRescueService +1 swimmer, OperationService offer factor. Robux product
+  `CrewHire` (`id = 0`, `ready = false`).
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
@@ -294,6 +301,18 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `CellOf`, `State`, `Changed` for the map fog), `UI/Sticker` (art, stamp slam), `UI/AlbumApp` (phone Album).
 - Talk: `src/shared/Dialogue.luau` trees keyed by NPC model name (`Workspace.Npcs`, `NpcService`);
   `TalkController` zooms in and shows 1 to 3 numbered replies.
+- Quests (docs/23 (l), WP-21b): `src/shared/Quests/Data.luau` (6 givers, 13 quests: find / deliver / salvage /
+  rescue, Keeper Ives' 3-step lamp chain) and `Quests/Rules.luau` (pure, `tests/Quests.spec.luau`: one active quest,
+  stages go -> back, one offer per giver per day from a day seed, a giver's pool cycles once all are done, save flag
+  `quest`, `talk(npc, active, stage, offer)` -> a Dialogue tree whose replies carry `action`). `QuestService` stands
+  the givers at `HubLayout.Hub.questSpots` (NpcFactory R15, a small camp each), runs pick-up / drop / sub-salvage by
+  proximity and the rescue quest's call (`OperationService.OfferCall(player, "PersonInWater", { zone })`, done on
+  `OperationCompleted` with a survivor saved), pays flat Cash + Rep on hand-in and adds the chain's blueprint to
+  `data.dockBuildings` (`DockConfig.Blueprints`, built by `DockService.Refresh`). Remote `Quest_Talk` C->S
+  `(npcId, "accept" | "handIn" | "drop")`. Player attributes `QuestId`, `QuestStage`, `QuestTarget`,
+  `QuestOffer_<npcId>`. `QuestController` draws the "!" / "?" over givers; `TalkController` builds a giver's tree
+  from `Quests/Rules.talk`. No radio: every quest line is the giver's, in person. Studio:
+  `ServerStorage.QuestDev:Invoke("accept", npcId | "tp" | "reach" | "hand" | "chain" | "reset")`.
 - Badges and leaderboards: `BadgeConfig` (keys are stable; id 0 = off), `BadgeRules`, `BadgeService`
   (`Award`, `Count`, `Once`, `Has`), `LeaderboardService`.
 - Analytics: `TelemetryNames` (fixed name lists), `Telemetry/Events` (pure funnel and economy mapping),

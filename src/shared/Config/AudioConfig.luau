@@ -132,12 +132,6 @@ AudioConfig.Clips = {
 	-- Underwater (camera below the surface).
 	Under_Ambience = rl(9112889917, 0.6, "Underwater Ambience 1 (SFX)"),
 
-	-- VHF radio (VoiceManifest.Sfx points here; the radio chain band-passes them).
-	Radio_SquelchOpen = rl(9118026328, 0.6, "Radio Squelches 12 (SFX)"),
-	Radio_SquelchClose = rl(9118021986, 0.6, "Radio Squelches 32 (SFX)"),
-	Radio_Static = rl(9118026602, 0.5, "Radio Static 1 (SFX)", "looped under open squelch"),
-	Radio_Key = rl(9120456241, 0.5, "Walkie Talkie 1 (SFX)", "press-to-talk"),
-
 	-- Interface: one soft switch click, quiet.
 	UI_Click = rl(9119717529, 0.18, "Switch Click On Or Off Toggle Button 1 (SFX)"),
 	UI_Back = rl(9119717523, 0.16, "Switch Click On Or Off Toggle Button 2 (SFX)"),
@@ -207,7 +201,6 @@ AudioConfig.Clips = {
 -- Which category each clip plays in (by name prefix).
 local PREFIX_CATEGORY: { { string | Category } } = {
 	{ "Music_", "Music" },
-	{ "Radio_", "Radio" },
 	{ "Wave_", "Ambience" },
 	{ "Wind_", "Ambience" },
 	{ "Rain_", "Ambience" },
@@ -261,8 +254,8 @@ AudioConfig.Mix = {
 
 -- RP-M5 stream C (Sea Shanty Radio): the radio's tracks are station data in
 -- src/shared/Config/Cosmetics/Radio.luau (RL, APM; verified public, logged in candidates.csv as
--- MUS_Radio_*). They play as 3D Sounds on the vehicle in this category, through its RadioDuck group
--- (ducked under VHF lines) and further under Music_Operation (src/shared/ShantyRadio.luau).
+-- MUS_Radio_*). They play as 3D Sounds on the vehicle in this category, ducked under
+-- Music_Operation (src/shared/ShantyRadio.luau).
 AudioConfig.ShantyRadioCategory = "Music" :: Category
 -- end RP-M5 stream C
 

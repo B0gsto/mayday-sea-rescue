@@ -2,10 +2,7 @@
 -- AudioController: the soundscape and the volume categories (docs 12 section 4, docs 13 RP-AU1).
 --
 -- Volume categories: SoundGroups in SoundService. `Master` holds `Music`, `SFX`, `Ambience` and
--- `Radio` (nested groups multiply). Music and Ambience each hold a `Duck` child tagged
--- "RadioDuck" (RadioController drops it while a line plays) so a settings change never fights
--- the duck. The radio voice chain (Audio API, not Sounds) follows Master x Radio through the
--- `RadioFX.GroupLevel` fader.
+-- `Radio` (nested groups multiply; `Radio` > `Voice` is the NPC voice level, read by VoiceTTS).
 --
 -- API:
 --   AudioController.setVolume(category, 0..1)   also: player attribute `Volume_<Category>` (number)
@@ -21,11 +18,9 @@
 -- gulls (quiet in a storm), underwater bed with a muffle on SFX and Ambience, boat engines (jet ski
 -- and RIB, two layers crossfaded by RPM; RPM follows the throttle), hull lap / bow wash / wake and
 -- hull slams for the driven boat, ticks for world prompts, awards, completed steps and the debrief,
--- a soft click on every HUD button, and two music cues (operation underway, debrief). Rain loop and thunder in WeatherController; squelch
--- and static in RadioController (ids from VoiceManifest.Sfx); the swim splash and strokes in
+-- a soft click on every HUD button, and two music cues (operation underway, debrief). Rain loop and thunder in WeatherController; the swim splash and strokes in
 -- SwimController; Bosun's bark in DogController.
 
-local CollectionService = game:GetService("CollectionService")
 local ContentProvider = game:GetService("ContentProvider")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -56,11 +51,8 @@ local rng = Random.new()
 ---------------------------------------------------------------- groups and volumes
 
 local groups: { [string]: SoundGroup } = {}
-local targets: { [string]: SoundGroup } = {} -- where sounds of a category go (Duck for Music/Ambience)
 local volumes: { [string]: number } = {}
 local muffles: { EqualizerSoundEffect } = {}
-
-local updateRadioLevel: () -> ()
 
 local function ensureGroups()
 	if groups.Master then
@@ -78,7 +70,6 @@ local function ensureGroups()
 		created.Master = true
 	end
 	groups.Master = master
-	targets.Master = master
 	for _, cat in AudioConfig.Categories do
 		if cat ~= "Master" then
 			local existing = master:FindFirstChild(cat)
@@ -92,15 +83,6 @@ local function ensureGroups()
 				created[cat] = true
 			end
 			groups[cat] = g
-			targets[cat] = g
-			if cat == "Music" or cat == "Ambience" then
-				local duck = Instance.new("SoundGroup")
-				duck.Name = "Duck"
-				duck.Volume = 1
-				duck.Parent = g
-				CollectionService:AddTag(duck, "RadioDuck")
-				targets[cat] = duck
-			end
 			if cat == "SFX" or cat == "Ambience" then
 				local eq = Instance.new("EqualizerSoundEffect")
 				eq.Name = "UnderwaterMuffle"
@@ -120,32 +102,17 @@ local function ensureGroups()
 		end
 		volumes[cat] = groups[cat].Volume
 	end
-	-- the radio voice chain is Audio API (no SoundGroup): follow Master x Radio however they change
-	for _, cat in { "Master", "Radio" } do
-		groups[cat]:GetPropertyChangedSignal("Volume"):Connect(function()
-			updateRadioLevel()
-		end)
-	end
 end
 
 function AudioController.group(category: string): SoundGroup
 	ensureGroups()
-	return targets[category] or targets.SFX
+	return groups[category] or groups.SFX
 end
 
 function AudioController.getVolume(category: string): number
 	ensureGroups()
 	local g = groups[category]
 	return if g then g.Volume else (volumes[category] or 1)
-end
-
-function updateRadioLevel()
-	local fx = SoundService:FindFirstChild("RadioFX")
-	local fader = fx and fx:FindFirstChild("GroupLevel")
-	if fader and fader:IsA("AudioFader") then
-		local m, r = groups.Master, groups.Radio
-		fader.Volume = (if m then m.Volume else 1) * (if r then r.Volume else 1)
-	end
 end
 
 function AudioController.setVolume(category: string, value: number)
@@ -157,7 +124,6 @@ function AudioController.setVolume(category: string, value: number)
 	local v = math.clamp(value, 0, 1)
 	volumes[category] = v
 	g.Volume = v
-	updateRadioLevel()
 end
 
 ---------------------------------------------------------------- clips
@@ -787,14 +753,6 @@ function AudioController.Start()
 			AudioController.play(if d and d.grade == "Fail" then "UI_Fail" else "UI_Success")
 		end)
 	end
-
-	-- the radio chain's GroupLevel fader appears when RadioController builds it
-	SoundService.ChildAdded:Connect(function(c)
-		if c.Name == "RadioFX" then
-			task.defer(updateRadioLevel)
-		end
-	end)
-	updateRadioLevel()
 
 	local gui = player:WaitForChild("PlayerGui")
 	for _, d in gui:GetDescendants() do

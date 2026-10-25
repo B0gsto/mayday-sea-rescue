@@ -49,6 +49,7 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		SeamarkCardinal = "✦",
 		SeamarkSafe = "●",
 		SeamarkDanger = "✕",
+		Quest = "Q",
 	},
 }
 

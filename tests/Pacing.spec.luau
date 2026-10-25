@@ -30,7 +30,7 @@ return function(t)
 	-- docs/03 section 10.1: the three-operation cold open chain is about 13 minutes.
 	local TUTORIAL_MIN = { 1.5, 5.75, 5.75 }
 	-- docs/23 (2026-10-25): every later call is a real CallLogic call (zone tier by the best craft, pay x
-	-- distancePay). Its clock: per call the radio, the offer gap and the debrief; per trip out and back to
+	-- distancePay). Its clock: per call the answer, the offer gap and the debrief; per trip out and back to
 	-- the dock at the docs/02 cruise (CallLogic.travelSeconds) plus slow down, climb on and climb off.
 	-- Victims over the craft's seats mean another trip. -- tune
 	local CALL_S, TRIP_S = 45, 35

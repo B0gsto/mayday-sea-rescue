@@ -61,7 +61,7 @@ ProgressionConfig.Ranks = {
 		id = "Commodore",
 		displayName = "Commodore",
 		rep = 55000, -- tune
-		unlocks = { "Iceberg North", "Commodore livery", "Radio title" },
+		unlocks = { "Iceberg North", "Commodore livery" },
 	},
 	{
 		id = "Admiral",

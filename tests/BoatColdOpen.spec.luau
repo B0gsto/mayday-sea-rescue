@@ -193,13 +193,11 @@ return function(t)
 		t.expect(ColdOpen.capGrade("Gold", false)).toBe("Gold")
 	end)
 
-	t.test("show, don't tell: casualty close ahead, no graded approach, a few words", function()
+	t.test("show, don't tell: casualty close ahead, no graded approach", function()
 		t.expect(ColdOpen.DISTANCE[2] < ColdOpen.HANDOVER_DISTANCE).toBe(true) -- creeps on in
 		t.expect(ColdOpen.DISTANCE[1] > ColdOpen.NUDGE_NEAR).toBe(true) -- one move to make
 		t.expect(table.find(ColdOpen.PLAN, "approach")).toBe(nil)
 		t.expect(table.find(ColdOpen.PLAN, "recovery") ~= nil).toBe(true)
-		local _, words = string.gsub(ColdOpen.RADIO, "%S+", "")
-		t.expect(words <= 6).toBe(true)
 	end)
 
 	t.test("the world helps after 10 s without headway, never while closing in or near", function()

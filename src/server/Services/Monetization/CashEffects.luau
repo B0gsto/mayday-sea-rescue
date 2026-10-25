@@ -13,7 +13,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Effects = require(Shared:WaitForChild("MonetizationEffects"))
 local MonetizationConfig = require(Shared:WaitForChild("Config"):WaitForChild("MonetizationConfig"))
-local OpsRemotes = require(Shared:WaitForChild("Ops"):WaitForChild("Remotes"))
 local Rules = require(Shared:WaitForChild("ProgressionRules"))
 
 local Services = script.Parent.Parent
@@ -93,12 +92,6 @@ local function publish(player: Player, data: Rules.PlayerData)
 	player:SetAttribute("CrewBoostActive", crewBoostActive(player))
 end
 
-local function radio(player: Player, from: string, text: string)
-	if player.Parent then
-		OpsRemotes.event("Ops_Radio"):FireClient(player, { opId = "", from = from, text = text })
-	end
-end
-
 local function registerPack(key: string)
 	local item = MonetizationConfig.Products[key]
 	MonetizationService.OnProduct(key, function(_player, data, receipt)
@@ -138,14 +131,6 @@ local function registerBoost(key: string, field: string)
 			local data = DataService.Get(member)
 			if data then
 				publish(member, data)
-			end
-		end
-		if key == "CrewBoost" then
-			-- docs/04 4.2: the radio thanks the buyer by name
-			local text =
-				`{player.DisplayName} has stood the crew a Crew Boost: +50% Cash for 20 minutes. Thank you, {player.DisplayName}!`
-			for _, member in crewOf(player) do
-				radio(member, "Haven Station", text)
 			end
 		end
 	end)

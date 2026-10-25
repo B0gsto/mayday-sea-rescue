@@ -3,16 +3,15 @@
 -- They live under ReplicatedStorage.Net with an Ops_ prefix. The server creates them on first
 -- use (OperationService.Init); clients wait for them.
 --
---   Ops_Offered     S->C  a tasking card { opId, kind, title, radioLine, zoneName, position, isBig,
+--   Ops_Offered     S->C  a tasking card { opId, kind, title, zoneName, position, isBig,
 --                         offerExpiresAt, cash, rep }
 --   Ops_Accept      C->S  (opId) accept the tasking (big calls: join with your crew)
 --   Ops_State       S->C  the operation snapshot for this player (see OperationService.snapshot)
 --   Ops_StepStart   S->C  play a mechanic: the StepContext (CONTRACT.md "Operations v2")
 --   Ops_StepResult  C->S  (opId, stepKey, StepResult) a mechanic finished
 --   Ops_StepAck     S->C  { opId, stepKey, accepted, grade?, reason? }
---   Ops_Radio       S->C  { opId, from, text } a radio line
 --   Ops_Debrief     S->C  the debrief { opId, kind, title, grade, takeover?, steps, condition, cash, rep, tip }
---   Ops_Closed      S->C  { opId, reason, message?, silent? } offer withdrawn or operation closed
+--   Ops_Closed      S->C  { opId, reason } offer withdrawn or operation closed
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -23,7 +22,6 @@ export type EventName =
 	| "Ops_StepStart"
 	| "Ops_StepResult"
 	| "Ops_StepAck"
-	| "Ops_Radio"
 	| "Ops_Debrief"
 	| "Ops_Closed"
 
@@ -36,7 +34,6 @@ Remotes.EVENTS = table.freeze({
 	"Ops_StepStart",
 	"Ops_StepResult",
 	"Ops_StepAck",
-	"Ops_Radio",
 	"Ops_Debrief",
 	"Ops_Closed",
 } :: { EventName })

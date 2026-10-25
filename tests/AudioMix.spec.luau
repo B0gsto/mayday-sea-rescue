@@ -137,7 +137,6 @@ return function(t)
 		end
 		t.expect(n > 30).toBeTruthy()
 		t.expect(AudioConfig.categoryOf("Music_Debrief")).toBe("Music")
-		t.expect(AudioConfig.categoryOf("Radio_Static")).toBe("Radio")
 		t.expect(AudioConfig.categoryOf("Wind_Gale")).toBe("Ambience")
 		t.expect(AudioConfig.categoryOf("Eng_RIB_Idle")).toBe("SFX")
 		t.expect(AudioConfig.categoryOf("UI_Click")).toBe("SFX")

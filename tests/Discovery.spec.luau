@@ -138,4 +138,34 @@ return function(t)
 		t.expect(buffer.tostring(Rules.decodeFog({ f1 = 42 })))
 			.toBe(buffer.tostring(Rules.newFog()))
 	end)
+
+	t.test("the hub forest fog reveals fine cells only, and round-trips as its own flag", function()
+		local hub = Rules.newHubFog()
+		local fog = Rules.newFog()
+		local inHub = WorldConfig.Hub.center + Vector3.new(0, 0, 120)
+		local at = Rules.hubCellOf(inHub)
+		t.expect(at).toBeTruthy()
+		t.expect(Rules.reveal(fog, inHub, hub)).toBe(true)
+		t.expect(Rules.hubRevealed(hub, at :: number)).toBe(true)
+		-- the far side of the forest stays fogged (the old 400-stud rule would have cleared it)
+		local far = Rules.hubCellOf(WorldConfig.Hub.center - Vector3.new(0, 0, 300))
+		t.expect(Rules.hubRevealed(hub, far :: number)).toBe(false)
+		-- and the coarse grid is skipped inside the hub: its cell over the spawn stays fogged
+		t.expect(Rules.revealed(fog, Rules.cellOf(inHub) :: number)).toBe(false)
+		-- outside the hub the world is unchanged: nil hub cell, the coarse grid clears
+		local atSea = Vector3.new(0, 0, -3000)
+		t.expect(Rules.hubCellOf(atSea)).toBeNil()
+		t.expect(Rules.reveal(fog, atSea, hub)).toBe(true)
+		t.expect(Rules.revealed(fog, Rules.cellOf(atSea) :: number)).toBe(true)
+		t.expect(Rules.reveal(fog, atSea)).toBe(false) -- no hub passed: same coarse behaviour
+		-- the fullest hub fog round-trips through the save; old profiles default to all-fogged
+		buffer.fill(hub, 0, 1)
+		local raw = ProgressionRules.defaultData()
+		raw.flags = { foghub = Rules.encodeHubFog(hub) }
+		local back = Rules.decodeHubFog(ProgressionRules.migrate(raw).flags.foghub)
+		t.expect(buffer.tostring(back)).toBe(buffer.tostring(hub))
+		t.expect(buffer.tostring(Rules.decodeHubFog(nil))).toBe(buffer.tostring(Rules.newHubFog()))
+		t.expect(buffer.tostring(Rules.decodeHubFog({ h1 = 42 })))
+			.toBe(buffer.tostring(Rules.newHubFog()))
+	end)
 end

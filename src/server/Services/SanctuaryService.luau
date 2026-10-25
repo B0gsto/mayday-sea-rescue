@@ -74,8 +74,8 @@ local function newTracked(species: string, rare: boolean): Tracked
 	}
 end
 
--- OperationService calls this once per offer, before the card is shown, so the radio line names
--- the animal. It is also the earliest point where the operation's animal is fixed.
+-- OperationService calls this once per offer, before the card is shown: the earliest point where
+-- the operation's animal is fixed.
 function SanctuaryService.DressOffer(op: any, player: Player?)
 	if type(op) ~= "table" or op.kind ~= "WildlifeRescue" then
 		return
@@ -96,7 +96,6 @@ function SanctuaryService.DressOffer(op: any, player: Player?)
 	if player then
 		t.offered[player] = true
 	end
-	op.radioLine = Wildlife.callLine(species, rare)
 	op.wildlifeSpecies = species
 	op.wildlifeRare = rare
 	-- the variant is the animal actually dressed, not a second roll

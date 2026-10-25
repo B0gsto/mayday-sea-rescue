@@ -30,8 +30,6 @@ export type Species = {
 	label: string, -- 1-2 words, the pen prompt
 	rareLabel: string, -- the rare colour variant's 1-2 words
 	verb: string, -- Cut / Wipe / Free, the world action while freeing
-	call: string, -- the radio line (no paragraphs)
-	rareCall: string,
 	palette: Palette,
 	rarePalette: Palette,
 	parts: { PartSpec },
@@ -77,8 +75,6 @@ W.Species = {
 		label = "Seal Pup",
 		rareLabel = "Golden Seal",
 		verb = "Cut",
-		call = "Seal pup tangled in a net near the harbour.",
-		rareCall = "Golden seal pup tangled in a net near the harbour.",
 		palette = {
 			Body = Color3.fromRGB(128, 136, 148),
 			Belly = Color3.fromRGB(208, 214, 218),
@@ -127,8 +123,6 @@ W.Species = {
 		label = "Puffin",
 		rareLabel = "Albino Puffin",
 		verb = "Wipe",
-		call = "Puffin caught in an oil slick near the harbour.",
-		rareCall = "Albino puffin caught in an oil slick near the harbour.",
 		palette = {
 			Body = Color3.fromRGB(40, 42, 48),
 			Belly = Color3.fromRGB(246, 246, 240),
@@ -179,8 +173,6 @@ W.Species = {
 		label = "Otter",
 		rareLabel = "Silver Otter",
 		verb = "Cut",
-		call = "Otter caught in fishing line near the harbour.",
-		rareCall = "Silver otter caught in fishing line near the harbour.",
 		palette = {
 			Body = Color3.fromRGB(132, 92, 60),
 			Belly = Color3.fromRGB(214, 186, 150),
@@ -237,8 +229,6 @@ W.Species = {
 		label = "Sea Turtle",
 		rareLabel = "Golden Turtle",
 		verb = "Cut",
-		call = "Sea turtle tangled in line near the harbour.",
-		rareCall = "Golden sea turtle tangled in line near the harbour.",
 		palette = {
 			Body = Color3.fromRGB(118, 138, 94),
 			Belly = Color3.fromRGB(214, 204, 160),
@@ -299,8 +289,6 @@ W.Species = {
 		label = "Gull",
 		rareLabel = "Snow Gull",
 		verb = "Free",
-		call = "Gull caught in fishing line near the harbour.",
-		rareCall = "Snow gull caught in fishing line near the harbour.",
 		palette = {
 			Body = Color3.fromRGB(245, 245, 242),
 			Belly = Color3.fromRGB(255, 255, 255),
@@ -386,14 +374,6 @@ function W.label(speciesId: string, rare: boolean): string
 		return "Animal"
 	end
 	return if rare then spec.rareLabel else spec.label
-end
-
-function W.callLine(speciesId: string, rare: boolean): string
-	local spec = W.Species[speciesId]
-	if not spec then
-		return "Wildlife in trouble near the harbour."
-	end
-	return if rare then spec.rareCall else spec.call
 end
 
 return W

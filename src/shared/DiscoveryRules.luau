@@ -10,7 +10,9 @@
 --   reached   on foot (not seated, above the sea) within the island radius (horizontal)
 --   sticker   within DiscoveryConfig.Range[kind] of its point (3D)
 -- Fog: a buffer, one byte per cell of the DiscoveryConfig.Fog grid (1 = revealed), saved as flag "fog"
--- (64-char base64 chunks f1..f9). Cell index = iz * count + ix + 1.
+-- (64-char base64 chunks f1..f9). Cell index = iz * count + ix + 1. docs/23 (l): a second, finer buffer
+-- covers the hub island only (DiscoveryConfig.Fog.Hub, saved as flag "foghub", chunks h1..hn) so the
+-- forest fog is not cleared by the coarse 400-stud reveal; inside the hub grid the coarse grid is skipped.
 local CallTypes = require(script.Parent.Calls.CallTypes)
 local DiscoveryConfig = require(script.Parent.Config.DiscoveryConfig)
 local WorldConfig = require(script.Parent.Config.WorldConfig)
@@ -49,6 +51,15 @@ local FOG = DiscoveryConfig.Fog
 local CELLS = FOG.count * FOG.count
 local CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 local CHUNK = 64
+
+-- the hub's fine grid: a square of Hub.cell cells centred on the hub, wide enough that a reveal at the
+-- island's rim stays inside the domain
+local HUB = DiscoveryConfig.Fog.Hub
+local HUB_HALF = math.ceil((WorldConfig.Hub.radius + HUB.radius + HUB.cell) / HUB.cell) * HUB.cell
+local HUB_COUNT = math.floor(2 * HUB_HALF / HUB.cell)
+local HUB_CELLS = HUB_COUNT * HUB_COUNT
+local HUB_X0 = WorldConfig.Hub.center.X - HUB_HALF
+local HUB_Z0 = WorldConfig.Hub.center.Z - HUB_HALF
 
 -- pages in WorldConfig.Islands order, every sticker's bit and unsettled world point
 Rules.Pages = {} :: { Page }
@@ -259,23 +270,31 @@ function Rules.revealed(fog: buffer, index: number): boolean
 end
 
 -- clears every cell whose centre is within the fog radius (+ half a cell); true when any cell changed
-function Rules.reveal(fog: buffer, pos: Vector3): boolean
-	local reach = FOG.radius + FOG.cell / 2
-	local x0 = math.floor((pos.X - reach - FOG.origin) / FOG.cell)
-	local x1 = math.floor((pos.X + reach - FOG.origin) / FOG.cell)
-	local z0 = math.floor((pos.Z - reach - FOG.origin) / FOG.cell)
-	local z1 = math.floor((pos.Z + reach - FOG.origin) / FOG.cell)
+local function clearCells(
+	buf: buffer,
+	count: number,
+	cell: number,
+	ox: number,
+	oz: number,
+	pos: Vector3,
+	radius: number
+): boolean
+	local reach = radius + cell / 2
+	local x0 = math.floor((pos.X - reach - ox) / cell)
+	local x1 = math.floor((pos.X + reach - ox) / cell)
+	local z0 = math.floor((pos.Z - reach - oz) / cell)
+	local z1 = math.floor((pos.Z + reach - oz) / cell)
 	local changed = false
-	for iz = math.max(z0, 0), math.min(z1, FOG.count - 1) do
-		for ix = math.max(x0, 0), math.min(x1, FOG.count - 1) do
-			local cx = FOG.origin + (ix + 0.5) * FOG.cell
-			local cz = FOG.origin + (iz + 0.5) * FOG.cell
-			local i = iz * FOG.count + ix
+	for iz = math.max(z0, 0), math.min(z1, count - 1) do
+		for ix = math.max(x0, 0), math.min(x1, count - 1) do
+			local cx = ox + (ix + 0.5) * cell
+			local cz = oz + (iz + 0.5) * cell
+			local i = iz * count + ix
 			if
 				(cx - pos.X) ^ 2 + (cz - pos.Z) ^ 2 <= reach * reach
-				and buffer.readu8(fog, i) == 0
+				and buffer.readu8(buf, i) == 0
 			then
-				buffer.writeu8(fog, i, 1)
+				buffer.writeu8(buf, i, 1)
 				changed = true
 			end
 		end
@@ -283,14 +302,42 @@ function Rules.reveal(fog: buffer, pos: Vector3): boolean
 	return changed
 end
 
+function Rules.reveal(fog: buffer, pos: Vector3, hub: buffer?): boolean
+	-- inside the hub island the fine grid stands in for the coarse one (docs/23 (l)): the forest fog
+	-- reads from it, and the coarse 400-stud reveal would clear the whole island at spawn
+	if hub and Rules.hubCellOf(pos) then
+		return clearCells(hub, HUB_COUNT, HUB.cell, HUB_X0, HUB_Z0, pos, HUB.radius)
+	end
+	return clearCells(fog, FOG.count, FOG.cell, FOG.origin, FOG.origin, pos, FOG.radius)
+end
+
+-- the hub's fine fog (docs/23 (l)) ---------------------------------------------------------------------
+
+function Rules.newHubFog(): buffer
+	return buffer.create(HUB_CELLS)
+end
+
+function Rules.hubCellOf(pos: Vector3): number?
+	local ix = math.floor((pos.X - HUB_X0) / HUB.cell)
+	local iz = math.floor((pos.Z - HUB_Z0) / HUB.cell)
+	if ix < 0 or iz < 0 or ix >= HUB_COUNT or iz >= HUB_COUNT then
+		return nil
+	end
+	return iz * HUB_COUNT + ix + 1
+end
+
+function Rules.hubRevealed(hub: buffer, index: number): boolean
+	return index >= 1 and index <= HUB_CELLS and buffer.readu8(hub, index - 1) == 1
+end
+
 -- six cells per base64 character, 64 characters per flag field
-function Rules.encodeFog(fog: buffer): { [string]: string }
+local function encodeBits(buf: buffer, cells: number): { [string]: string }
 	local chars = {}
-	for c = 0, math.ceil(CELLS / 6) - 1 do
+	for c = 0, math.ceil(cells / 6) - 1 do
 		local v = 0
 		for b = 0, 5 do
 			local i = c * 6 + b
-			if i < CELLS and buffer.readu8(fog, i) == 1 then
+			if i < cells and buffer.readu8(buf, i) == 1 then
 				v += 2 ^ b
 			end
 		end
@@ -304,12 +351,12 @@ function Rules.encodeFog(fog: buffer): { [string]: string }
 	return out
 end
 
-function Rules.decodeFog(flag: any): buffer
-	local fog = Rules.newFog()
+local function decodeBits(flag: any, cells: number): buffer
+	local buf = buffer.create(cells)
 	if type(flag) ~= "table" then
-		return fog
+		return buf
 	end
-	for k = 1, math.ceil(math.ceil(CELLS / 6) / CHUNK) do
+	for k = 1, math.ceil(math.ceil(cells / 6) / CHUNK) do
 		local s = flag[`f{k}`]
 		if type(s) ~= "string" then
 			continue
@@ -319,13 +366,29 @@ function Rules.decodeFog(flag: any): buffer
 			local c = (k - 1) * CHUNK + j - 1
 			for b = 0, 5 do
 				local i = c * 6 + b
-				if i < CELLS and bit32.band(v, 2 ^ b) ~= 0 then
-					buffer.writeu8(fog, i, 1)
+				if i < cells and bit32.band(v, 2 ^ b) ~= 0 then
+					buffer.writeu8(buf, i, 1)
 				end
 			end
 		end
 	end
-	return fog
+	return buf
+end
+
+function Rules.encodeFog(fog: buffer): { [string]: string }
+	return encodeBits(fog, CELLS)
+end
+
+function Rules.decodeFog(flag: any): buffer
+	return decodeBits(flag, CELLS)
+end
+
+function Rules.encodeHubFog(hub: buffer): { [string]: string }
+	return encodeBits(hub, HUB_CELLS)
+end
+
+function Rules.decodeHubFog(flag: any): buffer
+	return decodeBits(flag, HUB_CELLS)
 end
 
 return Rules

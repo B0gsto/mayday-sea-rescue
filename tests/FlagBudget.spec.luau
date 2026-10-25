@@ -24,16 +24,18 @@ return function(t)
 		pets.nextId = PetRules.MAX + 1
 		pets.active = 1
 		pets.treats = PetRules.TREAT_MAX
-		local isles, fog = {}, DiscoveryRules.newFog()
+		local isles, fog, hubFog = {}, DiscoveryRules.newFog(), DiscoveryRules.newHubFog()
 		for _, page in DiscoveryRules.Pages do
 			isles[page.id] = 2 ^ (#page.stickers + 2) - 1
 		end
 		buffer.fill(fog, 0, 1)
+		buffer.fill(hubFog, 0, 1)
 		return {
 			streak = StreakRules.flagTable({ lastDay = 20717, streak = 7, cosmeticDay = 20717 }),
 			pets = PetRules.encode(pets),
 			isles = DiscoveryRules.encode(isles),
 			fog = DiscoveryRules.encodeFog(fog),
+			foghub = DiscoveryRules.encodeHubFog(hubFog),
 			-- leftovers of cut systems (docs/16 C6, C15) still load
 			lighthouses = { HarbourLight = true, SkerryLight = true },
 			stock = { paint_red = true, decor_signals = true },

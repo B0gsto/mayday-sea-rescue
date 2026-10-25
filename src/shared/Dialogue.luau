@@ -7,9 +7,9 @@
 --   Dialogue.check(tree) -> string?               the first problem in a tree, nil when it is sound
 -- Lines are one short sentence; each node has 1 to 3 replies (keys 1-3).
 
-export type Option = { text: string, next: string? }
+export type Option = { text: string, next: string?, action: string? } -- action: sent to the server (quests)
 export type Node = { line: string, options: { Option } }
-export type Tree = { name: string, start: string, nodes: { [string]: Node } }
+export type Tree = { name: string, start: string, nodes: { [string]: Node }, cast: string? } -- cast: VoiceCast id
 
 local Dialogue = {}
 

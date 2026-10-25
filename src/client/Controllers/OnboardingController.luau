@@ -27,7 +27,7 @@ local OnboardingBeacon = require(UI:WaitForChild("OnboardingBeacon"))
 local OnboardingReward = require(UI:WaitForChild("OnboardingReward"))
 
 local OnboardingController = {}
-OnboardingController.Priority = 85 -- after OpsController (80), before Radio (90)
+OnboardingController.Priority = 85 -- after OpsController (80)
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")

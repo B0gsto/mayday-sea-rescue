@@ -9,7 +9,6 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "PersonInWater",
 	displayName = "Person in the Water",
-	radioLine = "Haven Rescue, Gale Isles Coastguard. Person in the water, request you launch.",
 	weight = 1.0,
 	capSeconds = 720,
 	isBig = false,
@@ -18,7 +17,7 @@ local def: Types.OperationDef = {
 	lifejacketChance = 0.6,
 	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Swimmer", "DriftingCraft" },
-	steps = SimpleSteps("Answer the Coastguard quickly; every second counts in the water."),
+	steps = SimpleSteps("Answer the call quickly; every second counts in the water."),
 }
 
 return def

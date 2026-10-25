@@ -16,7 +16,6 @@ export type Interaction = {
 export type CallKind = {
 	id: string,
 	displayName: string,
-	radioLine: string, -- shown on the call card
 	weight: number, -- payout weight (docs 02 section 3)
 	timer: number, -- seconds from accept until the fail-safe (harbour patrol) takes over
 	victims: number, -- people to pick up
@@ -59,7 +58,7 @@ local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
--- Where the radio dispatches from: the hub island's centre (docs/23 (k); HubLayout.Hub.center at sea level).
+-- Where calls are measured from: the hub island's centre (docs/23 (k); HubLayout.Hub.center at sea level).
 CallTypes.STATION = Vector3.new(HubLayout.Hub.center.X, 0, HubLayout.Hub.center.Z)
 
 -- the fixed scenes, from the hub's size (it may grow): the ferry off its harbour mouth, the rip off its beach
@@ -95,7 +94,7 @@ CallTypes.Payout = {
 
 CallTypes.Scheduler = {
 	OfferDelay = 9, -- seconds after a player is free before the next offer (within ~10 s) -- tune
-	FirstOfferDelay = 3, -- a new player's first radio call (docs 02 section 2, 0:02) -- tune
+	FirstOfferDelay = 3, -- a new player's first call (docs 02 section 2, 0:02) -- tune
 	OfferSeconds = 180, -- docs/16 K2: the call stands while you run to the bay and head out -- tune
 	LateGrace = 90, -- a call with a survivor aboard at timer end gets this long to deliver -- tune
 }
@@ -104,7 +103,6 @@ CallTypes.Kinds = {
 	Swimmer = {
 		id = "Swimmer",
 		displayName = "Swimmer in Trouble",
-		radioLine = "Mayday! Swimmer caught in the current!",
 		weight = 1.0,
 		timer = 150, -- tune
 		victims = 1,
@@ -116,7 +114,6 @@ CallTypes.Kinds = {
 	DriftingCraft = {
 		id = "DriftingCraft",
 		displayName = "Drifting Craft",
-		radioLine = "A dinghy is drifting out with two aboard!",
 		weight = 1.1,
 		timer = 180, -- tune
 		victims = 2,
@@ -128,7 +125,6 @@ CallTypes.Kinds = {
 	CapsizedFerry = {
 		id = "CapsizedFerry",
 		displayName = "Capsized Ferry",
-		radioLine = "All stations! The Gale Queen has capsized off the harbour mouth!",
 		weight = 1.0, -- big calls pay by share, not weight (docs 03 section 2)
 		timer = 420, -- its own 7-minute timer (docs 02 section 3.1, 6 to 8 min)
 		victims = 4, -- base; scaled to at least one per player (CallLogic.bigCallVictimCount)
@@ -140,7 +136,6 @@ CallTypes.Kinds = {
 	RipCurrent = {
 		id = "RipCurrent",
 		displayName = "Rip Current",
-		radioLine = "Swimmer caught in a rip current off the hub beach, one casualty.",
 		weight = 0.9, -- docs/02 section 3
 		timer = 600,
 		victims = 1,
@@ -152,7 +147,6 @@ CallTypes.Kinds = {
 	Sinking = {
 		id = "Sinking",
 		displayName = "Sinking Vessel",
-		radioLine = "Fishing boat taking water off the harbour, three aboard.",
 		weight = 1.2, -- docs/02 section 3
 		timer = 480,
 		victims = 3,
@@ -164,7 +158,6 @@ CallTypes.Kinds = {
 	VesselFire = {
 		id = "VesselFire",
 		displayName = "Vessel Fire",
-		radioLine = "MAYDAY from the motor cruiser Firefly: engine fire, two people in the water.",
 		weight = 1.5, -- docs/02 section 3: all but Calm Bay
 		timer = 480,
 		victims = 2,
@@ -176,7 +169,6 @@ CallTypes.Kinds = {
 	WildlifeRescue = {
 		id = "WildlifeRescue",
 		displayName = "Wildlife Rescue",
-		radioLine = "Wildlife in trouble off the harbour, request a rescue swimmer.",
 		weight = 0.8, -- docs/02 section 3: a light call
 		timer = 420,
 		victims = 1,
@@ -190,7 +182,6 @@ CallTypes.Kinds = {
 	Diver = {
 		id = "Diver",
 		displayName = "Diver at a Wreck",
-		radioLine = "Diver trapped at a wreck, one casualty.",
 		weight = 1.4, -- tune
 		timer = 600, -- x1.3 at the islands = 13 min; the sub runs 40 surfaced, a far wreck ~2.5 min -- tune
 		victims = 1,

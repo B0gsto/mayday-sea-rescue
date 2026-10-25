@@ -11,7 +11,7 @@
 --   | objective          prompt (mechanic panels,             column   |
 --   | (step card)        interaction cards)                   (pager,  |
 --   |  [obj pill]                                             monitor) |
---   |  minimap           subtitle (VHF / dispatcher)          gauges   |
+--   |  minimap           subtitle                             gauges   |
 --   +------------------------------------------------------------------+
 --
 -- Touch: the minimap is 130 px at the top left (tap it for the full map), the phone button and
@@ -26,7 +26,7 @@
 --
 -- Cold open (docs 09 9.1, a new player's first rescue on the jet ski): Layout.coldOpen() is true
 -- from the moment the player rides a ColdOpen craft until the player attribute ColdOpenDone; the
--- HUD shows only the radio subtitle, the interaction prompt, the speed dock and the minimap then.
+-- HUD shows only the interaction prompt, the speed dock and the minimap then.
 -- The minimap stays visible on purpose: with 3D waypoint arrows off it is the only guidance to
 -- the casualty; the world marker (UI/Waypoint: icon + distance) is the one objective readout (no step strip).
 -- Layout.onColdOpen(fn) calls fn(active) now and on every change.

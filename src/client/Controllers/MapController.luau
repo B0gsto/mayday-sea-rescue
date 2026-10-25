@@ -20,7 +20,9 @@
 --     ReplicatedStorage attribute UseMapWaypoints is true (MapService sets it on the server).
 --
 -- API: MapController.SetWaypoint(pos: Vector3?), GetWaypoint(), Open(), Close(), IsOpen(),
---      GetObjective(): (Vector3?, label?), the one goal: "Craft" | "Casualty" | "Drop-off" | "Mayday" | "Waypoint"
+--      GetObjective(): (Vector3?, label?), the one goal: "Craft" | "Casualty" | "Drop-off" | "Quest" | "Mayday" |
+--      "Waypoint". Order (docs/20 rule 1): your accepted call, then your quest (QuestService's QuestTarget
+--      attribute), then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 --      GetTargets(): { Vector3 }
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
@@ -385,6 +387,13 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			elseif typeof(bay) == "CFrame" then -- no craft out (wrong-medium / idle despawn): the bay makes one
 				objective, objectiveLabel = bay.Position, "Craft"
 			end
+		end
+	end
+	local quest = player:GetAttribute("QuestTarget") -- WP-21b: the thing, then the giver
+	if typeof(quest) == "Vector3" then
+		table.insert(list, { id = "Quest", pos = quest, style = S.Quest, clamp = true, size = 24 })
+		if not objective then
+			objective, objectiveLabel = quest, "Quest"
 		end
 	end
 	local now = Workspace:GetServerTimeNow()

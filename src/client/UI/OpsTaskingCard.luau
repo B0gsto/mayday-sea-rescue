@@ -26,7 +26,7 @@ export type Card = {
 	hide: (opId: string?) -> (),
 }
 
--- R answers the radio; the pad's DPadUp is the radio key too. Bound at High priority only while
+-- R answers the call; the pad's DPadUp too. Bound at High priority only while
 -- the pager shows (it outranks the whistle / car lights for those seconds).
 local ACCEPT_KEY, ACCEPT_PAD = Enum.KeyCode.R, Enum.KeyCode.DPadUp
 local ACCEPT_ACTION = "TaskingAccept"

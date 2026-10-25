@@ -29,7 +29,7 @@ export type StepDef = {
 	label: string, -- plain label shown on the step card ("Check them over")
 	realTerm: string, -- the real term underneath ("Primary survey")
 	role: Role,
-	mechanicId: string, -- radio_ack | launch | auto_board | transport (src/client/Mechanics/<id>.luau)
+	mechanicId: string, -- answer | launch | auto_board | transport (src/client/Mechanics/<id>.luau)
 	gradeBands: { GradeBand },
 	weight: number, -- grade points weight (docs 09 section 2.4: most 1, recovery and condition 2)
 	timeoutSec: number, -- hard cap (docs 09 section 10: no step over ~45 s of the same input)
@@ -47,7 +47,6 @@ export type StepDef = {
 export type OperationDef = {
 	id: string, -- "PersonInWater" | "CapsizedFerry" | ...
 	displayName: string,
-	radioLine: string,
 	weight: number, -- payout weight (docs 02 section 3)
 	capSeconds: number, -- takeover when the operation runs past this (docs 09 section 2.5)
 	isBig: boolean,
@@ -56,7 +55,7 @@ export type OperationDef = {
 	-- casualty state -> chance; the server rolls one per casualty
 	states: { [string]: number },
 	lifejacketChance: number,
-	takeoverAsset: string, -- radio name of who takes over
+	takeoverAsset: string, -- who takes over
 	-- greybox scene to spawn in RescueService (legacy call kinds)
 	sceneKinds: { string },
 }
