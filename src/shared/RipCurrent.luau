@@ -15,26 +15,24 @@ export type Field = {
 	length: number, -- studs out: the flow fades away by here
 }
 
+local HubLayout = require(script.Parent.Config.HubLayout)
+
 local RipCurrent = {}
 
--- The Haven Sands rip: off the slipway, out past the lifeguard tower's flag line. Seaward here is
--- the beach normal (the shoreline runs north-east to south-west), so the flow runs out and away
--- from the sand: the casualty starts about 120 studs down the channel and is carried toward `length`.
-RipCurrent.HavenSands = table.freeze({
-	origin = Vector3.new(960, 0, 330),
-	direction = Vector3.new(-0.6, 0, 0.8),
+-- The hub-beach rip (docs/23 (k)): off the hub's north-east beach, on bearing BEARING (midway between the
+-- Plot6 and Plot1 bridges), from the waterline straight out to sea, so the flow runs out and away from the
+-- sand: the casualty starts about 120 studs down the channel and is carried toward `length`.
+RipCurrent.BEARING = 330
+local out =
+	Vector3.new(math.cos(math.rad(RipCurrent.BEARING)), 0, math.sin(math.rad(RipCurrent.BEARING)))
+RipCurrent.HubBeach = table.freeze({
+	origin = Vector3.new(HubLayout.Hub.center.X, 0, HubLayout.Hub.center.Z)
+		+ out * (HubLayout.HubRadius + 5),
+	direction = out,
 	strength = 6.5,
 	width = 70,
 	length = 240,
 } :: Field)
-
--- Where the beach rescue ends: the Haven Sands waterline, and the dry sand where the lifeguard /
--- passer-by takes over (the same points as BoatColdOpen.SHORE.Sands; update both if the beach
--- moves).
-RipCurrent.Shore = table.freeze({
-	water = Vector3.new(1000, 0, 282),
-	dry = Vector3.new(970, 0, 250),
-})
 
 local function flat(v: Vector3): Vector3
 	return Vector3.new(v.X, 0, v.Z)

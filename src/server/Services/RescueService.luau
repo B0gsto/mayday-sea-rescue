@@ -1200,9 +1200,9 @@ local function stepDrift(dt: number)
 				push = push.Unit * RescueService.WAKE_PUSH_MAX
 			end
 			local vel = base * fade + push
-			-- the rip off Haven Sands carries anything drifting in its channel out to sea (docs 09
+			-- the rip off the hub beach carries anything drifting in its channel out to sea (docs 09
 			-- section 8.4). Engaged casualties (swimming to / held by a rescuer) are the rescuer's.
-			vel += RipCurrent.velocityAt(RipCurrent.HavenSands, Vector3.new(f.x, 0, f.z))
+			vel += RipCurrent.velocityAt(RipCurrent.HubBeach, Vector3.new(f.x, 0, f.z))
 			if not RescueService.ClearWater(f.cf.Position, RescueService.CLEAR_DRIFT, vel) then
 				continue -- held off the quay / moored boat
 			end

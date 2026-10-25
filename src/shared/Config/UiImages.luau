@@ -66,7 +66,6 @@ return {
 	-- album stickers (assets/ui/album): island stamps by island id, Bottle / View, rare critters by species
 	Stickers = {
 		SkerryIsle = "rbxassetid://79234382316384",
-		StElowensMount = "rbxassetid://132592157391535",
 		PuffinIsle = "rbxassetid://87680328740912",
 		Penwyn = "rbxassetid://104689252207258",
 		WreckReef = "rbxassetid://89209684718926",

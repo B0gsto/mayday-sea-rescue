@@ -29,26 +29,26 @@ local MapConfig = {
 	Tiles = {
 		{
 			"rbxassetid://95526658035291",
-			"rbxassetid://139523893751651",
-			"rbxassetid://110893276868583",
+			"rbxassetid://95526658035291",
+			"rbxassetid://95526658035291",
 			"rbxassetid://95526658035291",
 		},
 		{
-			"rbxassetid://94325816983082",
-			"rbxassetid://128377183688426",
-			"rbxassetid://131848618270373",
+			"rbxassetid://75289648010182",
+			"rbxassetid://125617505542602",
+			"rbxassetid://137166813959739",
 			"rbxassetid://78356896818176",
 		},
 		{
-			"rbxassetid://103617855016958",
-			"rbxassetid://112256394674574",
-			"rbxassetid://132459975547667",
-			"rbxassetid://73074170715404",
+			"rbxassetid://81980404591265",
+			"rbxassetid://106639627713075",
+			"rbxassetid://108730647455735",
+			"rbxassetid://105398316841725",
 		},
 		{
 			"rbxassetid://112341694227254",
-			"rbxassetid://82392629768586",
-			"rbxassetid://117528142487204",
+			"rbxassetid://108691236646560",
+			"rbxassetid://73085595369325",
 			"rbxassetid://100758580068795",
 		},
 	},
@@ -71,57 +71,28 @@ local MapConfig = {
 	-- left = text starts at the point (else centred).
 	-- tools/world/make_map_image.py --labels reads these rows (keep each on one line).
 	Places = {
-		{ text = "PORT HAVEN", x = -100, z = -325, kind = "town" },
-		{ text = "HAVEN SANDS", x = 1080, z = 210, kind = "town" },
+		{ text = "COASTGUARD HUB", x = 0, z = -120, kind = "town" },
 		{ text = "SKERRY ISLE", x = 1800, z = 1660, kind = "town" },
-		{ text = "GREAT GALE", x = -1300, z = -1500, kind = "region" },
-		{ text = "Calm Bay", x = 0, z = 170, kind = "water" },
-		{ text = "Harbour Mouth", x = 0, z = 450, kind = "water" },
-		{ text = "Harbour Light", x = 64, z = 322, kind = "place", left = true },
-		{ text = "Harbour Hotel", x = 326, z = -133, kind = "place" },
-		{ text = "Customs House", x = 58, z = -70, kind = "place" },
-		{ text = "Chapel Square", x = 76, z = -200, kind = "place" },
-		{ text = "Market Hall", x = 53, z = -239, kind = "place" },
-		{ text = "West Cliff", x = -900, z = -40, kind = "place" },
-		{ text = "Sandy Point", x = 560, z = 530, kind = "place" },
-		{ text = "Haven Head", x = 1560, z = 560, kind = "place" },
-		{ text = "Trevose Farm", x = -720, z = -870, kind = "place" },
-		{ text = "Penmorvah Farm", x = 1040, z = -1130, kind = "place" },
+		{ text = "PUFFIN ISLE", x = -2600, z = 3400, kind = "town" },
+		{ text = "PENWYN", x = -4800, z = -300, kind = "town" },
+		{ text = "WRECK REEF", x = -3800, z = 4200, kind = "town" },
+		{ text = "THE ARCHES", x = 5300, z = -200, kind = "town" },
+		{ text = "GANNET ROCK", x = 3500, z = 3500, kind = "town" },
+		{ text = "MERMAID LAGOON", x = 300, z = 5600, kind = "town" },
 		{ text = "Skerry Light outpost", x = 1800, z = 1850, kind = "place" },
 		{ text = "The Skerries", x = 2060, z = 1380, kind = "water" },
-		{ text = "West Ledges", x = -1200, z = 470, kind = "water" },
 		{ text = "OPEN SEA", x = 0, z = 1900, kind = "region" },
-		{ text = "Gannet Rock outpost >", x = 2150, z = 2440, kind = "water" },
-		{ text = "< Tempest Point Light", x = -2150, z = 600, kind = "place" },
 	} :: { { text: string, x: number, z: number, kind: string, left: boolean? } },
 
-	-- Fixed places (positions from map/Build.luau and WorldConfig).
+	-- Fixed places (HubLayout.Hub.lots.HQ).
 	Blips = {
 		{
 			id = "Station",
-			label = "Lifeboat station",
+			label = "Coastguard HQ",
 			glyph = "S",
 			color = Color3.fromHex("FF6B1A"),
-			position = Vector3.new(-165, 4, 0),
+			position = Vector3.new(0, 4, -20),
 			legend = true,
-		},
-		{
-			id = "Hospital",
-			label = "Cottage Hospital",
-			glyph = "H",
-			color = Color3.fromHex("2F7DE1"),
-			position = Vector3.new(130, 4, -120),
-			legend = true,
-			minimap = false,
-		},
-		{
-			id = "HavenSandsTower",
-			label = "Haven Sands lifeguard tower",
-			glyph = "T",
-			color = Color3.fromHex("E8D44D"),
-			position = Vector3.new(1010, 3.8, 250),
-			legend = true,
-			minimap = false,
 		},
 	} :: { Blip },
 
@@ -196,7 +167,7 @@ local MapConfig = {
 	},
 
 	-- Weather has no positional storm yet: while the State is Warning / Storm / Clearing the exposed
-	-- open sea beyond the breakwater is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather
+	-- open sea south of the hub is shaded. CONTRACT (storm stream): set ReplicatedStorage.Weather
 	-- attributes StormCenter (Vector3) and StormRadius (number) and the map uses those instead.
 	StormAreas = {
 		{ center = Vector3.new(0, 0, 1650), radius = 1250 },

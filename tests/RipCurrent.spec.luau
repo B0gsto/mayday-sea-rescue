@@ -3,13 +3,19 @@
 return function(t)
 	local R = t.load("src/shared/RipCurrent.luau")
 
-	local F = R.HavenSands
+	local F = R.HubBeach
 	local DT = 1 / 30
 
-	t.test("the field is where the Haven Sands rescue happens", function()
+	t.test("the field runs off the hub beach, out to sea and clear of the bridges", function()
+		local HubLayout = t.load("src/shared/Config/HubLayout.luau")
+		local CallLogic = t.load("src/shared/Calls/CallLogic.luau")
 		t.expect(F.origin.Y).toBe(0)
 		t.expect(F.direction.Y).toBe(0)
-		t.expect(F.direction.Unit.X).toBeCloseTo(-0.6, 1e-6)
+		t.expect(F.origin.Magnitude > HubLayout.HubRadius).toBeTruthy() -- the hub centre is the origin
+		t.expect(F.origin.Unit:Dot(F.direction.Unit)).toBeCloseTo(1, 1e-6)
+		for d = 40, F.length, 20 do -- the channel past the surf is open water (CallLogic.isWater: off every bridge)
+			t.expect(CallLogic.isWater(R.point(F, d, 0), "Open")).toBeTruthy()
+		end
 		t.expect(F.strength > 4 and F.strength < 12).toBeTruthy()
 		t.expect(F.width > 20 and F.length > F.width).toBeTruthy()
 		t.expect(R.point(F, 0, 0)).toBe(F.origin)

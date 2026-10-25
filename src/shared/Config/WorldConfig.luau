@@ -197,11 +197,6 @@ local WorldConfig = {
 			},
 		},
 	},
-	Roads = {} :: { any },
-	Towns = {} :: { any },
-	CarParks = {} :: { any },
-	Farms = {} :: { any },
-	Points = {} :: { any },
 	POIs = {
 		{
 			id = "Morwenna",
@@ -256,8 +251,6 @@ local WorldConfig = {
 			radius = 220,
 		},
 	},
-	Eelgrass = {} :: { any },
-	Beaches = {} :: { any },
 }
 
 return WorldConfig

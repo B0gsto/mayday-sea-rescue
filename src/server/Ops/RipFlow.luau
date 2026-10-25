@@ -13,8 +13,8 @@ local RipFlow = {}
 RipFlow.BOARDER_CHANCE = 0.35 -- the body-boarder variant -- tune
 
 local LINE = {
-	Swimmer = "Haven Rescue, Gale Isles Coastguard. Swimmer caught in a rip current off Haven Sands, request you launch.",
-	BodyBoarder = "Haven Rescue, Gale Isles Coastguard. Body-boarder caught in a rip current off Haven Sands, request you launch.",
+	Swimmer = "Haven Rescue, Gale Isles Coastguard. Swimmer caught in a rip current off the hub beach, request you launch.",
+	BodyBoarder = "Haven Rescue, Gale Isles Coastguard. Body-boarder caught in a rip current off the hub beach, request you launch.",
 }
 
 -- Offered: roll the variant; the tasking card and the Coastguard's call both read its line.

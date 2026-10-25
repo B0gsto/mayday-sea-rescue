@@ -124,7 +124,7 @@ ColdOpen.PLAN = { "tasking", "recovery", "transport" }
 -- just off the cove mouth; home is the berth behind you (SHORE). With no berth: the hub drop-off (SHORE[1]),
 -- facing out of the hub harbour (south, +Z).
 ColdOpen.SPAWN = HubLayout.Hub.dropOff
-ColdOpen.SPAWN_FACING = Vector3.zAxis
+ColdOpen.SPAWN_FACING = HubLayout.Hub.frame.LookVector
 ColdOpen.DISTANCE = { 100, 120 } -- studs dead ahead: past the cove mouth, outside NUDGE_NEAR, so they drive in to board (docs/16 B0) -- tune
 ColdOpen.RADIO = "Person in the water. Dead ahead!"
 ColdOpen.NUDGE_AFTER = 10 -- s without headway before the world helps (docs/14 10 s rule)

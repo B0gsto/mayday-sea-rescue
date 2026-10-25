@@ -3,8 +3,8 @@
 
 usage: python3 tools/world/make_map_image.py [--out art/map/gale_isles_map.png] [--size 4096] [--preview PATH] [--labels]
 
-Inputs (read only): map/generated/terrain.json + the main and island-window height / material grids (gen_terrain.py),
-src/shared/Config/WorldConfig.luau (road splines, car parks), the breakwater arms from src/server/World/Harbour.luau.
+Inputs (read only): map/generated/terrain.json + the main and island-window height / material grids
+(gen_terrain.py). The hub and islands come from the bake; place names from MapConfig.Places (--labels).
 
 World -> image (north up, the same frame as the bake: rows are +Z = south), the whole archipelago canvas:
     u = (x + 7168) / 14336,  v = (z + 7168) / 14336
@@ -14,7 +14,7 @@ The transform is printed and must match src/shared/Config/MapConfig.luau (Origin
 Look: sea depth shading (shallow aqua to deep navy) with depth contours and a surf line, the seabed showing
 through the shallows (reefs, kelp, sand), land coloured by terrain material with elevation tint and NW
 multi-directional hillshade (3x relief), subtle hypsometric tint and 5 m / 20 m contours, cliffs greyed by
-slope, the breakwater and harbour, roads with a casing on top, car parks. Place names live in
+slope. Place names live in
 MapConfig.Places and are drawn by the game; --labels bakes them in for a preview. Needs numpy and Pillow; no heavy slot (about 5 s)."""
 
 import json, math, os, re, sys
@@ -80,44 +80,6 @@ def load_terrain():
     h = np.fromfile(os.path.join(GEN, meta["height"]), "<i2").reshape(meta["nz"], n) / meta["heightScale"]
     m = np.fromfile(os.path.join(GEN, meta["material"]), "u1").reshape(meta["nz"], n)
     return meta, h.astype(np.float32), m
-
-
-def parse_world_config():
-    src = open(os.path.join(ROOT, "src", "shared", "Config", "WorldConfig.luau")).read()
-    roads_src = src[src.index("Roads = {"): src.index("CarParks = {")]
-    vec = r"Vector3\.new\(\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+)\)"
-    roads = []
-    for block in re.split(r"\n\t\t\{", roads_src)[1:]:
-        rid = re.search(r'id = "(\w+)"', block)
-        width = re.search(r"width = ([\d.]+)", block)
-        surface = re.search(r'surface = "(\w+)"', block)
-        pts = [(float(a), float(c)) for a, _, c in re.findall(vec, block)]
-        if rid and len(pts) >= 2:
-            roads.append({"id": rid.group(1), "width": float(width.group(1)) if width else 12,
-                          "surface": surface.group(1) if surface else "Asphalt", "points": pts})
-    parks = []
-    cp_src = src[src.index("CarParks = {"): src.index("Farms = {") if "Farms = {" in src else src.index("Points = {")]
-    for block in re.split(r"\n\t\t\{", cp_src)[1:]:
-        c = re.search(vec, block)
-        size = re.search(r"size = \{\s*([\d.]+),\s*([\d.]+)", block)
-        yaw = re.search(r"yaw = (-?[\d.]+)", block)
-        surface = re.search(r'surface = "(\w+)"', block)
-        if c and size:
-            parks.append({"center": (float(c.group(1)), float(c.group(3))),
-                          "size": (float(size.group(1)), float(size.group(2))),
-                          "yaw": float(yaw.group(1)) if yaw else 0, "surface": surface.group(1) if surface else "Asphalt"})
-    towns = []  # built-up rect per town grid: avenues (x) and streets (z offsets from origin), minus keep rects
-    if "Towns = {" in src:
-        for block in re.split(r"\n\t\t\{", src[src.index("Towns = {"): src.index("CarParks = {")])[1:]:
-            o = re.search(vec, block)
-            av = re.search(r"avenues = \{([^}]*)\}", block)
-            st = re.search(r"streets = \{([^}]*)\}", block)
-            if o and av and st:
-                xs = [float(v) for v in re.findall(r"-?[\d.]+", av.group(1))]
-                zs = [float(o.group(3)) + float(v) for v in re.findall(r"-?[\d.]+", st.group(1))]
-                keep = [tuple(map(float, k)) for k in re.findall(r"\{\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+),\s*(-?[\d.]+),?\s*\}", block[block.find("keep = {"):] if "keep = {" in block else "")]
-                towns.append({"rect": (min(xs), min(zs), max(xs), float(o.group(3))), "keep": keep})
-    return roads, parks, towns
 
 
 def lerp_stops(depth):
@@ -263,45 +225,6 @@ def main():
 
     img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(img, "RGBA")
-    k = px_per_stud
-
-    # the harbour breakwaters (src/server/World/Harbour.luau breakwaterLine): each arm runs root -> knee at x +-x,
-    # dog-legs in to the head, then out to the 60-stud mouth at x +-mouth; granite with a dark rock-armour edge
-    hb = open(os.path.join(ROOT, "src", "server", "World", "Harbour.luau")).read()
-    B = {k: float(v) for k, v in re.findall(r"(\w+) = (-?[\d.]+)", re.search(r"Harbour\.BREAKWATER =\s*\{([^}]*)\}", hb).group(1))}
-    wall, wall_edge = (190, 180, 160, 255), (52, 48, 42, 255)
-    w = B["w"] * k
-    arms = [[to_px(s * B["x"], B["root"]), to_px(s * B["x"], B["knee" + e]), to_px(s * B["head" + e], B["far"]),
-             to_px(s * B["mouth"], B["far"])] for s, e in ((-1, "W"), (1, "E"))]
-    for fill, width in ((wall_edge, max(5, int(w) + 3)), (wall, max(3, int(w)))):
-        for pts in arms:
-            d.line(pts, fill=fill, width=width, joint="curve")
-    roads, parks, towns = parse_world_config()
-    for t in towns:  # built-up blocks in a pale stone tone; kept rects (squares, greens) stay terrain
-        x0, z0, x1, z1 = t["rect"]
-        d.rectangle([to_px(x0, z0), to_px(x1, z1)], fill=(206, 198, 184, 255))
-        for kx0, kz0, kx1, kz1 in t["keep"]:
-            d.rectangle([to_px(kx0, kz0), to_px(kx1, kz1)], fill=tuple(int(c) for c in rgb[int(to_px((kx0 + kx1) / 2, (kz0 + kz1) / 2)[1]), int(to_px((kx0 + kx1) / 2, (kz0 + kz1) / 2)[0])]) + (255,))
-    for p in parks:
-        cx, cz = p["center"]
-        sx, sz = p["size"]
-        a = math.radians(p["yaw"])
-        corners = []
-        for ux, uz in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
-            x, z = ux * sx / 2, uz * sz / 2
-            corners.append(to_px(cx + x * math.cos(a) - z * math.sin(a), cz + x * math.sin(a) + z * math.cos(a)))
-        d.polygon(corners, fill=(96, 98, 104, 255) if p["surface"] == "Asphalt" else (160, 140, 104, 255),
-                  outline=(230, 228, 220, 255))
-    # roads: casing then fill, minor tracks thinner and sandy
-    for casing in (True, False):  # all casings first so a later road never cuts an earlier one at a junction
-        for r in roads:
-            pts = [to_px(x, z) for x, z in r["points"]]
-            wpx = max(9.0, r["width"] * k * 1.4)
-            track = r["surface"] in ("Ground", "Sand")
-            if casing:
-                d.line(pts, fill=(60, 60, 60, 255) if not track else (110, 90, 60, 255), width=int(wpx + 4), joint="curve")
-            else:
-                d.line(pts, fill=(250, 245, 230, 255) if not track else (214, 190, 140, 255), width=int(wpx), joint="curve")
 
     # place labels
     def label(text, x, z, size, colour, italic=False, spacing=0, left=False):
@@ -318,8 +241,6 @@ def main():
         px, pz = to_px(x, z)
         d.ellipse([px - r, pz - r, px + r, pz + r], fill=colour, outline=(20, 20, 20, 255), width=2)
 
-    dot(44, 360, (255, 214, 90, 255))  # Harbour Light, east pierhead
-    dot(-36, 360, (220, 50, 40, 255), r=4)  # west pierhead light (Harbour.luau: x -(mouth + 6))
     dot(1800, 1750, (255, 214, 90, 255))
     # Place names are drawn live by MapController from MapConfig.Places (so they stay screen-size,
     # dodge the legend / title / top bar and never sit under a panel). --labels bakes them in too,

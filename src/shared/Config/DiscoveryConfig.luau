@@ -56,22 +56,6 @@ DiscoveryConfig.Pages = {
 			},
 		},
 	},
-	StElowensMount = {
-		colour = Color3.fromHex("8C6B4F"),
-		icon = "castle",
-		cosmetic = "isle:StElowensMount",
-		stickers = {
-			{ id = "Bottle", kind = "Bottle", from = "landing", offset = v(-14, 12) },
-			{ id = "View", kind = "View", from = "stamp", offset = v(14, -12) },
-			{
-				id = "Gull",
-				kind = "Critter",
-				from = "landing",
-				offset = v(24, -20),
-				species = "Gull",
-			},
-		},
-	},
 	PuffinIsle = {
 		colour = Color3.fromHex("E2557A"),
 		icon = "bird",

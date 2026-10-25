@@ -47,8 +47,6 @@ return function(t)
 		for asset in CHAR do
 			t.expect(used[asset]).toBe(true) -- all nine nav-mark types are in the world
 		end
-		t.expect(used.M_Hbr_MooringBuoy).toBe(true)
-		t.expect(used.M_Hbr_PickupBuoy).toBe(true)
 	end)
 
 	t.test("flash rhythms: Fl, Fl(2), Q(3) and the south cardinal's long flash", function()

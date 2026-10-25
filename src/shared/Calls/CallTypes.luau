@@ -22,7 +22,7 @@ export type CallKind = {
 	victims: number, -- people to pick up
 	interaction: Interaction,
 	zones: { string }, -- spawn zone ids (SpawnZones below) this kind may use
-	dropOffs: { string }, -- DropOff attribute values that complete it ("Dock", "Hospital")
+	dropOffs: { string }, -- DropOff attribute values that complete it (the hub pad: "Dock")
 	isBig: boolean,
 	dive: boolean?, -- a diver on the seabed at a CallTypes.DiveSites wreck (zones = their islands)
 }
@@ -53,12 +53,19 @@ export type SpawnZone = {
 	island: boolean?, -- an outer island's ring: offered when its centre is within reach of your berth
 }
 
+local HubLayout = require(script.Parent.Parent.Config.HubLayout)
+local RipCurrent = require(script.Parent.Parent.RipCurrent)
 local WorldConfig = require(script.Parent.Parent.Config.WorldConfig)
 
 local CallTypes = {}
 
 -- Where the radio dispatches from: the hub island's centre (docs/23 (k); HubLayout.Hub.center at sea level).
-CallTypes.STATION = Vector3.new(0, 0, 0)
+CallTypes.STATION = Vector3.new(HubLayout.Hub.center.X, 0, HubLayout.Hub.center.Z)
+
+-- the fixed scenes, from the hub's size (it may grow): the ferry off its harbour mouth, the rip off its beach
+local FERRY_AT = (HubLayout.Hub.frame * CFrame.new(0, 0, -(HubLayout.HubRadius + 300))).Position
+FERRY_AT = Vector3.new(FERRY_AT.X, 0, FERRY_AT.Z)
+local RIP_AT = RipCurrent.point(RipCurrent.HubBeach, 120, 0)
 
 -- Travel budget (docs 02 section 4.1): about 45 s out with the zone's intended vehicle (jet ski).
 -- Cruise is below top speed: waves, turns and the trip out through the harbour mouth. -- tune
@@ -103,7 +110,7 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Near", "CalmBay", "Outer", "HarbourMouth" },
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	DriftingCraft = {
@@ -115,7 +122,7 @@ CallTypes.Kinds = {
 		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "CalmBay", "Outer", "HarbourMouth" },
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	CapsizedFerry = {
@@ -127,7 +134,7 @@ CallTypes.Kinds = {
 		victims = 4, -- base; scaled to at least one per player (CallLogic.bigCallVictimCount)
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "FerrySite" },
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = true,
 	},
 	RipCurrent = {
@@ -138,8 +145,8 @@ CallTypes.Kinds = {
 		timer = 600,
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
-		zones = { "HavenSandsRip" },
-		dropOffs = { "Dock", "Hospital" },
+		zones = { "HubRip" },
+		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	Sinking = {
@@ -151,7 +158,7 @@ CallTypes.Kinds = {
 		victims = 3,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Offshore", "FarSea", "DeepSea" }, -- a distance tier (CallLogic.chooseCall)
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	VesselFire = {
@@ -163,7 +170,7 @@ CallTypes.Kinds = {
 		victims = 2,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = { "Offshore", "FarSea", "DeepSea" },
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = false,
 	},
 	WildlifeRescue = {
@@ -189,7 +196,7 @@ CallTypes.Kinds = {
 		victims = 1,
 		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
 		zones = {}, -- the islands of CallTypes.DiveSites (filled below)
-		dropOffs = { "Dock", "Hospital" },
+		dropOffs = { "Dock" },
 		isBig = false,
 		dive = true,
 	},
@@ -298,28 +305,28 @@ CallTypes.SpawnZones = {
 		area = "Outer",
 		timerMultiplier = 1.3,
 	},
-	-- The big call, off the hub's harbour mouth (it opens south, between the Plot2 and Plot3 bridges).
+	-- The big call, 300 studs off the hub's harbour mouth (it opens south, between the Plot2 and Plot3 bridges).
 	FerrySite = {
 		id = "FerrySite",
 		displayName = "Harbour Mouth",
-		center = Vector3.new(60, 0, 500),
+		center = FERRY_AT,
 		minRadius = 0,
 		maxRadius = 0,
 		area = "Open",
 		timerMultiplier = 1,
-		fallback = Vector3.new(60, 0, 500),
+		fallback = FERRY_AT,
 	},
 	-- Rip-current beach rescue (docs/09 section 8.4): one place, the channel off the hub's north-east beach
-	-- (shared/RipCurrent.HavenSands); the casualty starts 120 studs down the rip: origin + direction * 120.
-	HavenSandsRip = {
-		id = "HavenSandsRip",
+	-- (shared/RipCurrent.HubBeach); the casualty starts 120 studs down the rip: origin + direction * 120.
+	HubRip = {
+		id = "HubRip",
 		displayName = "Hub Beach",
-		center = Vector3.new(282, 0, -163),
+		center = RIP_AT,
 		minRadius = 0,
 		maxRadius = 0,
 		area = "Open",
 		timerMultiplier = 1,
-		fallback = Vector3.new(282, 0, -163),
+		fallback = RIP_AT,
 	},
 } :: { [string]: SpawnZone }
 

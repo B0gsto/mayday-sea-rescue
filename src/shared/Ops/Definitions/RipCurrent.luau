@@ -1,6 +1,6 @@
 --!strict
 -- Operation: rip-current rescue (docs/09-rescue-operations.md section 8.4, docs/16 K1). Data only.
--- A swimmer or body-boarder caught in the rip off Haven Sands is carried seaward while you come: the
+-- A swimmer or body-boarder caught in the rip off the hub beach is carried seaward while you come: the
 -- rip (shared/RipCurrent) is the drift. The plan is SimpleSteps; they climb aboard like any swimmer.
 local SimpleSteps = require(script.Parent.SimpleSteps)
 local Types = require(script.Parent.Parent.Types)
@@ -8,7 +8,7 @@ local Types = require(script.Parent.Parent.Types)
 local def: Types.OperationDef = {
 	id = "RipCurrent",
 	displayName = "Rip Current",
-	radioLine = "Haven Rescue, Gale Isles Coastguard. Swimmer caught in a rip current off Haven Sands, request you launch.",
+	radioLine = "Haven Rescue, Gale Isles Coastguard. Swimmer caught in a rip current off the hub beach, request you launch.",
 	weight = 0.9, -- docs/02 section 3
 	capSeconds = 600,
 	isBig = false,

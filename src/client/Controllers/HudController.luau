@@ -346,6 +346,12 @@ function HudController.Init()
 	ProximityPromptService.PromptHidden:Connect(function(prompt: ProximityPrompt)
 		shown[prompt] = nil
 	end)
+	-- the hub shop counter (map/Build.luau buildHub) opens the phone Store
+	ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt)
+		if prompt:HasTag("ShopCounter") then
+			Phone.openApp("Store")
+		end
+	end)
 	local function watchSeat(char: Model)
 		local hum = char:WaitForChild("Humanoid", 10)
 		if not (hum and hum:IsA("Humanoid")) then

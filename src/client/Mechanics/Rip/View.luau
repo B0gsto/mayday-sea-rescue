@@ -29,7 +29,7 @@ View.STREAKS = 12 -- foam streaks streaming out
 View.SURF = 10 -- whitewater patches per bank
 View.STRIPS = 5 -- band strips across the channel (soft edges)
 
-local F = RipCurrent.HavenSands
+local F = RipCurrent.HubBeach
 local DIR = RipCurrent.unit(F)
 local SDIR = RipCurrent.shoreParallel(F)
 local HALF = F.width / 2
