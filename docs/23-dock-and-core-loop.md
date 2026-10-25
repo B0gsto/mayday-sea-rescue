@@ -247,5 +247,7 @@ lighthouse → a small lighthouse for your plot, the Arches → a stone arch gat
 
 **Work packages.** WP-14a terrain + plot layout (8 plots on the reshaped coast, `tools/world` + map bake, layout
 data). WP-14b move the dock code onto the big plots (Marina/DockService/DockPieces/buildings/boards, server size
-8). WP-14c blueprint table + builder beat, ghost removed. WP-15 crew. 14a first; 14b and 14c after it and after
+8). WP-14c blueprint table + builder beat, ghost removed. WP-15 crew. WP-16 asset diet (owner yes, 2026-10-25): drop unused asset ids (~3,070 referenced, 1,478 in AssetIds),
+merge near-duplicate PBR surfaces (455 texture packs now; they hit the upload rate limit) into shared materials,
+measure client memory and load time on a phone before/after. 14a first; 14b and 14c after it and after
 WP-13 lands.
