@@ -11,7 +11,7 @@ Lists only what is in the 1.0 build (docs/07 §7 rule). Re-check before RP-L1 if
 ## Description
 
 ```
-Mayday! Race out, pull up close and survivors climb aboard. Bring them home to Port Haven!
+Mayday! Race out, pull up close and survivors climb aboard. Bring them home to your own island!
 
 - Jet ski (1 survivor), RIB (3) or the All-Weather Lifeboat (8): bigger boat, bigger rescue
 - Swimmers, rip currents, sinking boats, boats on fire, cliff falls and animals caught in nets
