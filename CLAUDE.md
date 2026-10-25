@@ -1,6 +1,6 @@
 # Mayday: Sea Rescue: dev rules
 
-Current design: `docs/00-design.md` (hub forest island + 6 Lego-baseplate player islands, no phone, no town, no cars, no radio). Old designs: `docs/archive/`, git tag `pre-hub-cut`.
+Current design: `docs/00-design.md` (hub forest island + 6 Lego-baseplate player islands, no phone, no town, no cars, no radio). Old designs: `docs/archive/`, git tag `pre-hub-cut`. **Open work and in-flight branches: `docs/NEXT.md`** (read it first in a new thread; keep it current).
 
 
 - **No choice UI in gameplay.** Never build a menu, card or list where the player picks an option (press 1 / 2 / 3, choose a method, pick a kit). Mechanics are actions in the world only: grab, throw, drive, pull, knock, hold. What to do reads from the world, more than one action works, and nothing is explained in sentences. A device glyph next to a world action is fine. Menus only outside gameplay (the left-button panels: shop, settings, album; in-world counters and boards; the build tablet's top-down build mode). Exception (user, 2026-10-21): talking to an NPC zooms the camera in and shows numbered reply options (1, 2, 3).
