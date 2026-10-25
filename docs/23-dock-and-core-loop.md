@@ -8,7 +8,7 @@ cars + garage for planes/helicopters + submarines, so that we don't need to use 
 everything in the dock." And: "you can buy everything with Robux when you don't have Cash/rank."
 
 This chapter wins over docs/04 §1.1 and rule 4 (where things are sold, rank-gated paid vehicles), over the
-"all UI on the phone" direction for vehicles and upgrades, and over docs/20 change 5 (spawn at the shared bays).
+"all UI on the phone" direction for vehicles and upgrades, and over docs/archive/20-clarity-redesign.md change 5 (spawn at the shared bays).
 Rules kept: no choice UI in gameplay (in-world counters are fine), show don't tell, simple rescue (get near, they
 climb on, home), third person, every action on keyboard, touch and gamepad.
 
@@ -16,7 +16,7 @@ climb on, home), third person, every action on keyboard, touch and gamepad.
 
 | # | Owner felt | What is true |
 |---|---|---|
-| L1 | Survivors are too close | Tutorial calls use `Near` / `CalmBay`: 110–420 studs from `CallTypes.STATION`, inside the harbour. `Outer` stops at `OUTER_MAX` ≈ 1,690 studs; the map is `MapRadius` 7,000 with 7 islands (docs/21). Rescues never reach the islands. |
+| L1 | Survivors are too close | Tutorial calls use `Near` / `CalmBay`: 110–420 studs from `CallTypes.STATION`, inside the harbour. `Outer` stops at `OUTER_MAX` ≈ 1,690 studs; the map is `MapRadius` 7,000 with 7 islands (docs/archive/21-explore-world-plan.md). Rescues never reach the islands. |
 | L2 | "How do I save someone from a boat?" | `Board.luau`: within `REACH` 10 studs of the hull, under `STEADY_SPEED` 6 studs/s (~4 kn), for `HOLD` 0.6 s; above `RAM_SPEED` 14 you knock them away. The only cue is their outline colour. Nothing in the world says "slow down here". |
 | L3 | Land has no purpose | Shops and vehicles moved to the phone, drop-offs are pads at the water, every call is at sea. Walking only serves stamps and NPC chat. |
 | L4 | Boats overlap | 4 bays on one pier (`GameConfig.LaunchBayCount`), a 5th player wraps to bay 1. Phone spawn takes the nearest free bay or shared slipway spot; `spotFree` runs before the new hull exists, so two spawns in the same moment both pass it (likely; not reproduced). |
@@ -50,7 +50,7 @@ bigger craft.** The dock is home, garage, shop and trophy case. Everyone in the 
 - **16 plots** (server size 16, docs/01). Each plot = a water berth + a strip of shore behind it, sized for the
   biggest future build (hangar + sub pen) so nothing ever overlaps. Size (tune, verify on the map): 50 x 90 studs.
 - Port Haven marina: two rows of 8 along the harbour (verify the shoreline fits; else 8 in Port Haven + 8 on the
-  Penwyn second harbour, docs/21 island 3).
+  Penwyn second harbour, docs/archive/21-explore-world-plan.md island 3).
 - Assigned on join; your dock rebuilds from your profile at whichever plot you get. Empty plots show a plain
   "for rent" jetty so the marina never has gaps.
 - Your plot is the spawn and respawn point. A small flag with your avatar colour flies over it so you find it from
@@ -77,7 +77,7 @@ on a shelf, island stamps on the boathouse wall.
 
 ### d.3 Doing things at the dock (no phone)
 
-- **Launch:** your active craft floats at the berth. Walk on and you're seated (docs/20 rule 7 still holds for
+- **Launch:** your active craft floats at the berth. Walk on and you're seated (docs/archive/20-clarity-redesign.md rule 7 still holds for
   the spawn itself: afloat, bow to sea).
 - **Choose / buy a craft (Lv 3+):** the boat board in the boathouse holds a scale model of every craft. Owned ones
   are lit; locked ones show a padlock + Cash + R$ price. Touch a model: the crane lowers that craft into the berth.
@@ -261,7 +261,7 @@ WP-13 lands.
 Owner: "development is going slowly cause there is bloat ... and too many mechanics. Remove the cars and city for
 now (don't publish them). 6 islands, one for each player, and a middle one, the city, that we can go to by boat or
 by suspended highways. The rest exploratory." This section wins over (j) on layout and server size, and over
-docs/10 / docs/21 where they place Great Gale, Port Haven and the town.
+docs/10 / docs/archive/21-explore-world-plan.md where they place Great Gale, Port Haven and the town.
 
 **Layout (tune).**
 - **Hub island** at the centre (~400 studs across): newcomer spawn, Coastguard HQ (the station), radio + call
@@ -272,7 +272,7 @@ docs/10 / docs/21 where they place Great Gale, Port Haven and the town.
   built on it. Unclaimed islands stay plain (sand, grass, a bare jetty).
 - **Suspension bridges** from the hub to each island, walkable, arched high enough for every boat to pass under.
   No cars for now.
-- **Outer ring = exploration and rescues:** the docs/21 islands that don't need the town (Skerry, Puffin, Gannet,
+- **Outer ring = exploration and rescues:** the docs/archive/21-explore-world-plan.md islands that don't need the town (Skerry, Puffin, Gannet,
   Wreck Reef, the Arches, Mermaid Lagoon; Penwyn and St Elowen's only if they stand without the town), wrecks,
   open sea. Calls spawn out here; distance tiers count from your island; you deliver to your island or the hub.
 

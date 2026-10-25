@@ -1,8 +1,10 @@
 # 03 · Progression
 
-> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
 
-This file owns every progression number: payouts, rank thresholds, prices in Cash, and the pacing model. Names come from [`01-game-canon.md`](01-game-canon.md), mechanics from [`02-core-loop-and-mechanics.md`](02-core-loop-and-mechanics.md), and operations, grading and certification content from [`09-rescue-operations.md`](09-rescue-operations.md). Every number marked **(tune)** is a first guess for playtests; nothing here is a Roblox benchmark.
+> Where this chapter and [16 · Launch polish plan](archive/16-launch-polish-plan.md) disagree, docs/00-design.md is the current source of truth (2026-10-23: many systems below were cut for launch).
+
+This file owns every progression number: payouts, rank thresholds, prices in Cash, and the pacing model. Names come from [`01-game-canon.md`](01-game-canon.md), mechanics from [`02-core-loop-and-mechanics.md`](02-core-loop-and-mechanics.md), and operations, grading and certification content from [`09-rescue-operations.md`](archive/09-rescue-operations.md). Every number marked **(tune)** is a first guess for playtests; nothing here is a Roblox benchmark.
 
 ## 1. Principles
 
@@ -31,12 +33,12 @@ Zones are areas on the map ([document 10](10-world-and-map.md), section 1.2): be
 
 Other payout rules (tune):
 
-- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash each and 200 then 160 Rep (op 2 was 160: the first rank lands at ~10 min, `tests/NewPlayerPace.spec.luau`).
-- **Exercises** ([document 09](09-rescue-operations.md), section 9.2) pay 200 Cash and 50 Rep the first time each is passed, nothing on repeats.
+- **Tutorial chain.** Operation 1 (Reopening Day, the cold open, about 90 seconds; [document 09](archive/09-rescue-operations.md), section 9.1) pays 500 Cash and 150 Rep. Operations 2 and 3 pay 600 Cash each and 200 then 160 Rep (op 2 was 160: the first rank lands at ~10 min, `tests/NewPlayerPace.spec.luau`).
+- **Exercises** ([document 09](archive/09-rescue-operations.md), section 9.2) pay 200 Cash and 50 Rep the first time each is passed, nothing on repeats.
 - **Crew members** are paid only if they completed a step on the operation ([document 02](02-core-loop-and-mechanics.md), section 7); otherwise they get the 10% share.
 - **By the Book** [L] (flew or drove the full expanding square or sector search): +10% Rep.
 - **Big calls.** Each casualty pays 0.3x the big call's zone base to the player who hands it over. Every player who completed a step on the big call, including ride-along seats in the Coastguard helicopter, gets a completion bonus of 2.5x the zone base in Cash and 1.5x in Rep, scaled by the share of casualties saved before the big call's own timer ran out ([document 02](02-core-loop-and-mechanics.md), section 3.1). The On Scene Coordinator gets +20% on the completion bonus (tune).
-- **Takeover** (condition reached Critical or the operation cap passed, [document 09](09-rescue-operations.md), section 2.5): each completed step pays half its share of the operation's payout (its weight over the total weight), Cash and Rep; no completion share.
+- **Takeover** (condition reached Critical or the operation cap passed, [document 09](archive/09-rescue-operations.md), section 2.5): each completed step pays half its share of the operation's payout (its weight over the total weight), Cash and Rep; no completion share.
 - **Assisting a takeover** (standing by for the helicopter) pays like a Silver step.
 
 ### 2.1 Earning rates
@@ -69,13 +71,13 @@ A player can always take operations in any zone they have opened. Higher zones p
 
 **Service Stars** are endless prestige levels. Every 30,000 Rep after Admiral (about a week at two sessions a day) (tune) adds a star to the nameplate and pays one cosmetic from a rotating list: a horn, a siren tone, a wake trail, a light bar colour, a Bosun bandana, a livery stripe. After the list runs out, stars pay alternate colours of the same items. Stars never pay stats, and rank gates never sit behind them.
 
-If a player reaches a rank's Rep before passing its certification, the Rep keeps counting and the HUD shows the certification as the next thing ("Pass Rescue Swimmer to be promoted"); the promotion happens the moment both are done. Crew roles are open to everyone from the start as **trainees** beside a certified crewmate ([document 09](09-rescue-operations.md), section 4.3), so a Recruit can ride along as Medic in a friend's RIB or take a trainee winch seat in the Coastguard helicopter on a big call. Rank and certifications only limit which roles a player can lead and which vehicles they can own and drive.
+If a player reaches a rank's Rep before passing its certification, the Rep keeps counting and the HUD shows the certification as the next thing ("Pass Rescue Swimmer to be promoted"); the promotion happens the moment both are done. Crew roles are open to everyone from the start as **trainees** beside a certified crewmate ([document 09](archive/09-rescue-operations.md), section 4.3), so a Recruit can ride along as Medic in a friend's RIB or take a trainee winch seat in the Coastguard helicopter on a big call. Rank and certifications only limit which roles a player can lead and which vehicles they can own and drive.
 
 Each rank-up plays a short ceremony at the station (skippable): Chief Aggie pins the badge, Bosun barks, and the player's nameplate updates for the whole server.
 
 ### 3.1 Certifications
 
-Certifications are the realistic half of progression: real crews are assessed for each role. Their content (exercises, live requirements, what each gates) is in [document 09](09-rescue-operations.md), section 11; their place on the ladder is here. Reputation stays the rank currency. Certifications are never sold, never expire and are never lost.
+Certifications are the realistic half of progression: real crews are assessed for each role. Their content (exercises, live requirements, what each gates) is in [document 09](archive/09-rescue-operations.md), section 11; their place on the ladder is here. Reputation stays the rank currency. Certifications are never sold, never expire and are never lost.
 
 | Certification | Exercise + live requirement (tune) | Expected at (section 10) | Gates | Scope |
 |---|---|---|---|---|
@@ -295,7 +297,7 @@ Rough targets for a player who plays the game's way: takes operations in Assist 
 ### 10.2 Watch list for tuning
 
 - **First rescue in under 2 minutes** (the cold open) for at least 90% of new players, and **first rank in under 15 minutes** for at least 80% (tune).
-- **Operation length.** Standard operations should land at 4 to 7 minutes. If one runs long, cut a step's length (section 10 of [document 09](09-rescue-operations.md)) before raising its pay.
+- **Operation length.** Standard operations should land at 4 to 7 minutes. If one runs long, cut a step's length (section 10 of [document 09](archive/09-rescue-operations.md)) before raising its pay.
 - **Paid Rep.** Track how fast 2x Reputation and Rep Boost owners reach Admiral. If paying players run out of content, add Service Star rewards and content updates; never raise the free Rep thresholds to slow non-payers.
 - **Certification friction.** If more than 30% of players reach a rank's Rep without its certification, make the certification's exercise easier or let more operation types count; never lower the procedure bar.
 - **Unlock cadence.** No gap over 20 minutes in the first 2 hours. If a gap opens, move a price or threshold before raising payouts.

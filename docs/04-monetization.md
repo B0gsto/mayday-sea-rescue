@@ -1,10 +1,12 @@
 # 04 · Monetization
 
-This file owns every Robux price. Cash prices and progression live in [`03-progression.md`](03-progression.md). Research references point to [`research/store-page-and-monetization.md`](research/store-page-and-monetization.md) (shortened to "research") and to the source links it records. Prices marked **(tune)** are first guesses; Managed Pricing tests (section 9) will move them.
+> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
+
+This file owns every Robux price. Cash prices and progression live in [`03-progression.md`](03-progression.md). Research references point to [`research/store-page-and-monetization.md`](archive/research/store-page-and-monetization.md) (shortened to "research") and to the source links it records. Prices marked **(tune)** are first guesses; Managed Pricing tests (section 9) will move them.
 
 ## 1. Stance
 
-Earn hard, fairly. Mayday sells **speed** (Reputation, Cash, launches), **looks** (cosmetics, Signature vehicles, Sea Chests) and **shared fun** (storms). It never sells **skill**: a rescue goes exactly as well as the crew performs it ([document 09](09-rescue-operations.md)). A player who never pays can still reach every rank, certification, vehicle, zone and badge at the pace in [document 03](03-progression.md); paying gets them there sooner and better dressed. Mayday is PvE, so speed bought by one player never takes anything from another.
+Earn hard, fairly. Mayday sells **speed** (Reputation, Cash, launches), **looks** (cosmetics, Signature vehicles, Sea Chests) and **shared fun** (storms). It never sells **skill**: a rescue goes exactly as well as the crew performs it ([document 09](archive/09-rescue-operations.md)). A player who never pays can still reach every rank, certification, vehicle, zone and badge at the pace in [document 03](03-progression.md); paying gets them there sooner and better dressed. Mayday is PvE, so speed bought by one player never takes anything from another.
 
 Rules for every item:
 
@@ -54,7 +56,7 @@ There is **no shop button and no store menu on the HUD**. Every pass, product an
 | 2x money passes seen | 110 R$ and 199 R$ | https://www.rolimons.com/gamepass/9418967 (research, section 3; unverified, prices change) |
 | Marketplace fee | Creator keeps about 70% | https://profitable.app/tools/roblox-gamepass-calculator (unverified; confirm on the official monetization pages) |
 | DevEx rate | $0.0038 per Earned Robux standard; $0.0054 for some purchases by verified U.S. 18+ players | https://create.roblox.com/docs/production/monetization/developer-exchange |
-| Firefighting Sim passes | None found | https://rblxstat.com/games/10767634248 ([`research/reference-games.md`](research/reference-games.md) section 1; unverified) |
+| Firefighting Sim passes | None found | https://rblxstat.com/games/10767634248 ([`research/reference-games.md`](archive/research/reference-games.md) section 1; unverified) |
 
 The price ladder has a step at every budget, so every player with any Robux balance can buy something:
 
@@ -227,7 +229,7 @@ Small, visible items in the tip jar by the Chandlery till (section 1.1). Their j
 
 ## 5. Storm Summon (server-wide social event)
 
-The paid storm is our version of an "admin abuse" event: one player pays, the whole server gets the fun, and the buyer gets the credit. It fits pillar 4 (the sea is the opponent) and the discovery signal for intentional co-play (research, section 5, https://create.roblox.com/docs/discovery.md).
+The paid storm is our version of an "admin abuse" event: one player pays, the whole server gets the fun, and the buyer gets the credit. It fits pillar 4 (the sea is the opponent) and the discovery signal for intentional co-play (research, section 5, https://create.roblox.com/docs/discovery).
 
 | | Call the Storm (249 R$) | Call the Great Storm (699 R$) |
 |---|---|---|
@@ -253,7 +255,7 @@ Rules (tune):
 
 **Price: 25 R$ per month at launch (user, 2026-10-21: launch cheap so more players pay, raise later).** [L]
 
-Why: crews of friends are our best players, and a private server lets them run storms together without strangers. 25 R$ is an impulse price for a friend group; raise it once players are paying. Firefighting Sim's description advertises free private servers, though its stats panel says private servers are off ([`research/reference-games.md`](research/reference-games.md) section 1, unverified). We considered free private servers as a marketing hook and decided against it at launch, because 16-player public servers need people in them for big calls to work. If public servers fill well, we revisit free private servers as a marketing beat.
+Why: crews of friends are our best players, and a private server lets them run storms together without strangers. 25 R$ is an impulse price for a friend group; raise it once players are paying. Firefighting Sim's description advertises free private servers, though its stats panel says private servers are off ([`research/reference-games.md`](archive/research/reference-games.md) section 1, unverified). We considered free private servers as a marketing hook and decided against it at launch, because 16-player public servers need people in them for big calls to work. If public servers fill well, we revisit free private servers as a marketing beat.
 
 Owner tools: kick, pick the time of day, pick which big call comes next. All progress saves as normal. No free storms.
 
@@ -277,7 +279,7 @@ Subscriptions are regionalized automatically and excluded from price optimizatio
 | Vehicles with better stats | Signature Vehicles handle exactly like their free sisters and are drivable only at the same rank and certification (section 3.4). |
 | Rescue success | No "auto-rescue", no skipping a step, no instant finish, no casualty location reveal, no paid takeover rescue. |
 | Grades, step results and Pro mode | Grades measure how the crew performed. Nothing paid changes a grade band, a timing window, the condition meter or the Pro bonus. |
-| Certifications and exercises | Earned only by passing the exercise and the live operations ([document 09](09-rescue-operations.md), section 11). No paid pass, retake skip or shortcut. |
+| Certifications and exercises | Earned only by passing the exercise and the live operations ([document 09](archive/09-rescue-operations.md), section 11). No paid pass, retake skip or shortcut. |
 | Better NPC crew or paid hints | NPC crew are the same for everyone and cannot be upgraded with Robux or Cash; Assist prompts are free and Pro is a free setting. |
 | Kit that grades better | Paid cosmetics can change how kit looks, never what it does. Gear upgrades are Cash-only and never widen a grade band ([document 03](03-progression.md), section 1). |
 | Random items with stats or progression | Sea Chests hold cosmetics only (section 4.5). No eggs, wheels, spins, luck boosts or random Rep, Cash or gear. |
@@ -315,7 +317,7 @@ A rough check that the plan can pay for itself, not a forecast. Every input is o
 
 Robux per daily player rose from 0.5 / 1.5 / 3.0 when Reputation, Signature Vehicles and Sea Chests were added: rank speed is what players in this genre buy most, and repeat products (boosts, Sea Time, chests) let big spenders keep spending.
 
-For scale: Firefighting Sim had 19,225 live CCU when checked (https://rblxstat.com/games/10767634248, 2026-10-17), above our high case. The niche's existing sea rescue games were not verified above a few thousand CCU ([`research/reference-games.md`](research/reference-games.md) section 4), near our mid case.
+For scale: Firefighting Sim had 19,225 live CCU when checked (https://rblxstat.com/games/10767634248, 2026-10-17), above our high case. The niche's existing sea rescue games were not verified above a few thousand CCU ([`research/reference-games.md`](archive/research/reference-games.md) section 4), near our mid case.
 
 **Does the mid case hold up from the bottom?** 300,000 R$ a day at 3,000 CCU (about 190 servers of 16) could come from:
 
