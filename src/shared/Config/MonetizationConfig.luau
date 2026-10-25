@@ -144,7 +144,7 @@ local MonetizationConfig = {
 			dayPassHours = 24,
 		},
 		-- docs/23 WP-4: one per dock level (DockConfig), sold at the ghost on your dock, granted by DockService.
-		-- Prices are docs/23 d.2 first guesses (open question g.3): confirm before deploy.py creates them.
+		-- Prices: docs/23 (i) economy check (never a better Cash deal than the Cash packs; rank skip costs extra).
 		DockLevel2 = {
 			id = 0,
 			name = "Dock Level 2",
@@ -167,7 +167,7 @@ local MonetizationConfig = {
 			id = 0,
 			name = "Dock Level 4",
 			description = "Builds your dock to level 4 now, no Cash or rank needed: a lookout tower and a slipway crane, and no relaunch cooldown.",
-			price = 149,
+			price = 199,
 			order = 33,
 			ready = true,
 			dockLevel = 4,
@@ -176,7 +176,7 @@ local MonetizationConfig = {
 			id = 0,
 			name = "Dock Level 5",
 			description = "Builds your dock to level 5 now, no Cash or rank needed: a lit station front and a beacon seen across the harbour at night.",
-			price = 249,
+			price = 399,
 			order = 34,
 			ready = true,
 			dockLevel = 5,
@@ -186,7 +186,7 @@ local MonetizationConfig = {
 			id = 0,
 			name = "Car Garage",
 			description = "Builds your garage now, no Cash or rank needed: pick a car at its board and drive it out.",
-			price = 99,
+			price = 75,
 			order = 35,
 			ready = true,
 			dockBuilding = "Garage",
@@ -416,7 +416,7 @@ local MonetizationConfig = {
 			id = 0,
 			name = "Rescue Helicopter",
 			description = "The Rescue Helicopter: hover over anyone, sea or cliff, and winch them up. Yours at any rank.",
-			price = 299,
+			price = 399,
 			order = 24,
 			ready = true,
 			vehicle = "RescueHelicopter",

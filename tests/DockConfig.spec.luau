@@ -6,7 +6,7 @@ return function(t)
 
 	t.test("levels 2..5 match docs/23 d.2 and rise in price and rank", function()
 		local cash = { 2500, 10000, 30000, 100000 }
-		local robux = { 49, 99, 149, 249 }
+		local robux = { 49, 99, 199, 399 } -- docs/23 (i)
 		for n = 2, D.MAX do
 			local lv = D.Levels[n]
 			t.expect(lv.cash).toBe(cash[n - 1])
@@ -51,7 +51,7 @@ return function(t)
 	t.test(
 		"buildings (docs/23 h): prices, Robux products, the helipad needs the boathouse",
 		function()
-			local robux = { Garage = 99, Hangar = 199, SubPen = 149 }
+			local robux = { Garage = 75, Hangar = 199, SubPen = 149 } -- docs/23 (i)
 			local rank = { Garage = "Lifeguard", Hangar = "RescuePilot", SubPen = "Coxswain" }
 			t.expect(#D.BUILDINGS).toBe(3)
 			for _, key in D.BUILDINGS do
@@ -79,7 +79,7 @@ return function(t)
 
 	t.test("building Cash purchase: once, level, rank, then Cash", function()
 		local pilot = D.rankIndex("RescuePilot")
-		t.expect(D.canBuyBuilding("Hangar", false, 3, 40000, pilot)).toBe(true)
+		t.expect(D.canBuyBuilding("Hangar", false, 3, 25000, pilot)).toBe(true)
 		local ok, reason, price = D.canBuyBuilding("Hangar", false, 2, 1e9, 99)
 		t.expect(ok).toBe(false)
 		t.expect(reason).toBe("Level")

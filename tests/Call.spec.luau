@@ -200,8 +200,8 @@ return function(t)
 
 	t.test("pay scales with distance", function()
 		t.expect(CallLogic.distancePay(300)).toBe(1)
-		t.expect(CallLogic.distancePay(1200)).toBe(1)
-		t.expect(CallLogic.distancePay(2400)).toBeCloseTo(2, 1e-6)
+		t.expect(CallLogic.distancePay(1500)).toBe(1)
+		t.expect(CallLogic.distancePay(3000)).toBeCloseTo(2, 1e-6)
 		t.expect(CallLogic.distancePay(20000)).toBe(4)
 	end)
 
