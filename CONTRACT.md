@@ -138,6 +138,14 @@ Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau
   stop at the water's edge, and climb aboard once you sit in a boat within 25 studs (the scene casualty
   spawns there: normal board and Home). Player attribute `LandCall` (Vector3) pins the survivor while
   you are off your craft. No NPC racer; cars don't carry them.
+- Diver at a Wreck (docs/23 (h) "Sub pen", WP-10c): kind `Diver` at a `CallTypes.DiveSites` wreck (mail
+  seaplane, *Gannet Star*, Wreck Reef hulk; 25+ studs down). Offered only to Submarine owners from call 3
+  (`CallLogic.chooseCall(..., sub)`, `DIVER_CHANCE` ~1 in 6, within reach). Pin = the surface over the wreck.
+  The casualty is a normal RescueService swimmer held on the seabed (`call.dive`, floater `fixedY`);
+  `server/Ops/DiverRescue` adds the ring (always-on-top Highlight), shot line and buoy, tank/mask/bubbles,
+  and the placeholder hulls (`BuildWrecks`). Only the sub boards them (`CraftBoard.DEEP`); normal Home.
+  Each wreck is a bonus `Wreck` sticker on its island's album page (`DiscoveryRules`, not needed to
+  complete the page; `DiscoveryConfig.Range.Wreck`).
 - Shared data: `Ops/Types`, `Operations` (registry, `plan`), `Condition` (0-100 meter; survivors tire),
   `Grading` (step and op grades, `payout`), `Board` (pure auto_board rule: close, slow, level, room).
 - `OperationService` (server): offers and pacing (`Calls/CallLogic`, `Calls/OfferPacing`), tracks, the

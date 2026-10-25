@@ -11,11 +11,19 @@
 --   sticker   within DiscoveryConfig.Range[kind] of its point (3D)
 -- Fog: a buffer, one byte per cell of the DiscoveryConfig.Fog grid (1 = revealed), saved as flag "fog"
 -- (64-char base64 chunks f1..f9). Cell index = iz * count + ix + 1.
+local CallTypes = require(script.Parent.Calls.CallTypes)
 local DiscoveryConfig = require(script.Parent.Config.DiscoveryConfig)
 local WorldConfig = require(script.Parent.Config.WorldConfig)
 
 export type State = { [string]: number }
-export type Sticker = { id: string, kind: string, bit: number, point: Vector3, species: string? }
+export type Sticker = {
+	id: string,
+	kind: string,
+	bit: number,
+	point: Vector3,
+	species: string?,
+	bonus: boolean?, -- not needed to complete the page (the wreck stickers came after pages were won)
+}
 export type Page = {
 	id: string,
 	name: string,
@@ -67,6 +75,19 @@ for _, island in WorldConfig.Islands do
 			species = s.species,
 		})
 	end
+	-- docs/23 (h): each dive-site wreck is a bonus sticker on its island's page, found by driving the sub
+	-- close (DiscoveryConfig.Range.Wreck). Appended last so the older stickers keep their bits.
+	for _, site in CallTypes.DiveSites do
+		if site.island == island.id then
+			table.insert(page.stickers, {
+				id = "Wreck",
+				kind = "Wreck",
+				bit = 2 ^ (#page.stickers + 2),
+				point = site.wreck,
+				bonus = true,
+			})
+		end
+	end
 	table.insert(Rules.Pages, page)
 	Rules.ById[island.id] = page
 end
@@ -76,7 +97,13 @@ local function full(page: Page): number
 end
 
 local function stickerBits(page: Page): number
-	return full(page) - Rules.SIGHTED - Rules.REACHED
+	local bits = full(page) - Rules.SIGHTED - Rules.REACHED
+	for _, s in page.stickers do
+		if s.bonus then
+			bits -= s.bit
+		end
+	end
+	return bits
 end
 
 function Rules.decode(flag: any): State
@@ -183,12 +210,13 @@ function Rules.scan(
 			local at = spots and spots[s.id] or s.point
 			local reach = DiscoveryConfig.Range[s.kind] or 8
 			if not Rules.has(nextState, id, s.bit) and (pos - at).Magnitude <= reach then
+				local was = Rules.complete(nextState, id) -- a bonus sticker after the page: no second page bonus
 				mark(s.bit)
 				table.insert(events, {
 					island = id,
 					step = "Sticker",
 					sticker = s,
-					page = Rules.complete(nextState, id),
+					page = not was and Rules.complete(nextState, id),
 				})
 			end
 		end

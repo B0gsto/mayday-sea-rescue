@@ -25,10 +25,22 @@ export type CallKind = {
 	dropOffs: { string }, -- DropOff attribute values that complete it ("Dock", "Hospital")
 	isBig: boolean,
 	land: boolean?, -- the survivor is ashore at a CallTypes.LandSites site (zones = their islands)
+	dive: boolean?, -- a diver on the seabed at a CallTypes.DiveSites wreck (zones = their islands)
 }
 
 -- A land call site (docs/23 e.3): `at` is the survivor's feet, `beach` the shore point the craft runs to.
 export type LandSite = { id: string, island: string, beach: Vector3, at: Vector3 }
+
+-- A wreck on the seabed (docs/23 (h) "Sub pen"): `wreck` its centre on the seabed, `at` the diver's feet
+-- beside it, `hull` = build a placeholder hull there (no wreck in the world yet), `yaw` its heading (deg).
+export type DiveSite = {
+	id: string,
+	island: string,
+	wreck: Vector3,
+	at: Vector3,
+	hull: boolean,
+	yaw: number,
+}
 
 export type SpawnZone = {
 	id: string,
@@ -193,7 +205,25 @@ CallTypes.Kinds = {
 		isBig = false,
 		land = true,
 	},
+	-- docs/23 (h) "Sub pen": a diver trapped at a wreck on the seabed; only the submarine reaches them.
+	-- Not in NormalKinds: CallLogic.chooseCall offers it to sub owners (DIVER_CHANCE, from DIVER_FROM_CALL).
+	Diver = {
+		id = "Diver",
+		displayName = "Diver at a Wreck",
+		radioLine = "Diver trapped at a wreck, one casualty.",
+		weight = 1.4, -- tune
+		timer = 900, -- the sub is slow (14 studs/s) -- tune
+		victims = 1,
+		interaction = { kind = "Pull", holdSeconds = 1.5, range = 14, vehicleRange = 30 },
+		zones = {}, -- the islands of CallTypes.DiveSites (filled below)
+		dropOffs = { "Dock", "Hospital" },
+		isBig = false,
+		dive = true,
+	},
 } :: { [string]: CallKind }
+
+CallTypes.DIVER_CHANCE = 1 / 6 -- of a sub owner's calls -- tune
+CallTypes.DIVER_FROM_CALL = 3 -- the first call number a diver can be
 
 -- Normal (non-big) kinds, in offer-weight order.
 CallTypes.NormalKinds = {
@@ -450,6 +480,39 @@ for _, site in CallTypes.LandSites do
 	if not table.find(zones, site.island) then
 		table.insert(zones, site.island)
 	end
+end
+
+-- Dive sites (docs/23 (h)), Studio-sampled 2026-10-25 (terrain raycasts, build/wp10c): the mail seaplane
+-- is the CoastArt wreck (WorldConfig POI MailSeaplane); the SS Gannet Star (docs/10) and the Wreck Reef
+-- hulk are placeholder hulls (server/Ops/DiverRescue). Every diver is over 25 studs down.
+CallTypes.DiveSites = {
+	{
+		id = "MailSeaplane",
+		island = "SkerryIsle",
+		wreck = Vector3.new(1300, -40.8, 1200),
+		at = Vector3.new(1300, -39.8, 1222),
+		hull = false,
+		yaw = -35,
+	},
+	{
+		id = "GannetStar",
+		island = "GannetRock",
+		wreck = Vector3.new(3638, -42, 3420),
+		at = Vector3.new(3660, -42.3, 3420),
+		hull = true,
+		yaw = 0, -- along Z
+	},
+	{
+		id = "ReefHulk",
+		island = "WreckReef",
+		wreck = Vector3.new(-3520, -45.9, 4200),
+		at = Vector3.new(-3520, -45.9, 4222),
+		hull = true,
+		yaw = 90, -- along X
+	},
+} :: { DiveSite }
+for _, site in CallTypes.DiveSites do
+	table.insert(CallTypes.Kinds.Diver.zones, site.island)
 end
 
 -- Water areas (studs) used to reject spawn points on land, the dock or the breakwater.

@@ -81,5 +81,6 @@ return {
 		Puffin = "rbxassetid://95011471355027",
 		Otter = "rbxassetid://78618476254127",
 		Turtle = "rbxassetid://99122489390773",
+		Wreck = "rbxassetid://89209684718926", -- shortcut: the Wreck Reef stamp art until a wreck sticker lands
 	} :: { [string]: string },
 }

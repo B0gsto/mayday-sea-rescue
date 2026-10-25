@@ -251,12 +251,12 @@ function CallLogic.distanceZone(reach: number?, rng: Rng?): string
 	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
 end
 
--- A land call site (docs/23 e.3) whose island is within `reach` (nil: any) and, if given, on island `where`
+-- A site (land or dive) whose island is within `reach` (nil: any) and, if given, on island `where`
 -- (or with that site id). nil when none fits.
-function CallLogic.landSite(reach: number?, rng: Rng?, where: string?): CallTypes.LandSite?
+local function pickSite(sites: { any }, reach: number?, rng: Rng?, where: string?): any?
 	local roll: Rng = rng or (math.random :: any)
 	local pool = {}
-	for _, site in CallTypes.LandSites do
+	for _, site in sites do
 		local r = CallTypes.IslandReach[site.island]
 		if
 			r
@@ -267,6 +267,15 @@ function CallLogic.landSite(reach: number?, rng: Rng?, where: string?): CallType
 		end
 	end
 	return pool[math.floor(roll() * #pool) + 1]
+end
+
+function CallLogic.landSite(reach: number?, rng: Rng?, where: string?): CallTypes.LandSite?
+	return pickSite(CallTypes.LandSites, reach, rng, where)
+end
+
+-- A wreck dive site (docs/23 (h)), the same filter as landSite.
+function CallLogic.diveSite(reach: number?, rng: Rng?, where: string?): CallTypes.DiveSite?
+	return pickSite(CallTypes.DiveSites, reach, rng, where)
 end
 
 -- Pay multiplier for a call this far (flat studs) from the station: 1 close in, rising with distance.
@@ -287,14 +296,22 @@ function CallLogic.nearestDropOff(from: Vector3, points: { Vector3 }): Vector3?
 	return best
 end
 
--- Choose the next call for a player. completed = calls finished this session; reach = craftReach.
+-- Choose the next call for a player. completed = calls finished this session; reach = craftReach; sub =
+-- they own the submarine (a diver at a wreck now and then, from call DIVER_FROM_CALL on).
 function CallLogic.chooseCall(
 	completed: number,
 	weatherState: string?,
 	rng: Rng?,
-	reach: number?
+	reach: number?,
+	sub: boolean?
 ): KindChoice
 	local roll: Rng = rng or (math.random :: any)
+	if sub and completed + 1 >= CallTypes.DIVER_FROM_CALL and roll() < CallTypes.DIVER_CHANCE then
+		local site = CallLogic.diveSite(reach or CallTypes.BASE_REACH, roll)
+		if site then
+			return { kind = "Diver", zone = site.island }
+		end
+	end
 	local tut = CallTypes.TutorialChain[completed + 1]
 	if tut then
 		return {
