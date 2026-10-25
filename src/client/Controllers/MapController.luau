@@ -278,9 +278,19 @@ local function stormAreas(): { { center: Vector3, radius: number } }
 	return MapConfig.StormAreas
 end
 
+-- The harbour pads plus your own dock (BayCFrame): deliveries count at any of them (docs/23 e.2).
+local function dropOffs(): { [string]: Vector3 }
+	local out = table.clone(MapConfig.DropOffs)
+	local bay = player:GetAttribute("BayCFrame")
+	if typeof(bay) == "CFrame" then
+		out.MyDock = bay.Position
+	end
+	return out
+end
+
 local function nearestDropOff(from: Vector3): Vector3
 	local best, bd = MapConfig.DropOffs.Dock, math.huge
-	for _, p in MapConfig.DropOffs do
+	for _, p in dropOffs() do
 		local d = (p - from).Magnitude
 		if d < bd then
 			best, bd = p, d
@@ -406,7 +416,7 @@ local function collect(me: Vector3, myVehicle: Model?): { BlipDraw }
 			end
 			objective, objectiveLabel = coldOpenHop(me), "Drop-off"
 		elseif onBoard then
-			for name, p in MapConfig.DropOffs do
+			for name, p in dropOffs() do
 				table.insert(
 					list,
 					{ id = `Drop{name}`, pos = p, style = S.DropOff, clamp = true, size = 24 }

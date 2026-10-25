@@ -229,12 +229,61 @@ end
 
 export type KindChoice = { kind: string, zone: string, victims: number? }
 
--- Choose the next call for a player. completed = calls finished this session.
-function CallLogic.chooseCall(completed: number, weatherState: string?, rng: Rng?): KindChoice
+-- How far out a player's calls go: the best CallTypes.CraftReach among the craft ids they own.
+function CallLogic.craftReach(owned: { string }): number
+	local reach = CallTypes.BASE_REACH
+	for _, id in owned do
+		reach = math.max(reach, CallTypes.CraftReach[id] or 0)
+	end
+	return reach
+end
+
+-- A distance-tier zone (docs/23 e.2), uniform over every zone the reach covers (the pool widens).
+function CallLogic.distanceZone(reach: number?, rng: Rng?): string
+	local roll: Rng = rng or (math.random :: any)
+	local pool = {}
+	for id, zone in CallTypes.SpawnZones do
+		if zone.reach and zone.reach <= (reach or CallTypes.BASE_REACH) then
+			table.insert(pool, id)
+		end
+	end
+	table.sort(pool) -- pairs order is not stable; a seeded rng must pick the same zone
+	return pool[math.floor(roll() * #pool) + 1] or "Offshore"
+end
+
+-- Pay multiplier for a call this far (flat studs) from the station: 1 close in, rising with distance.
+function CallLogic.distancePay(distance: number): number
+	local D = CallTypes.Distance
+	return math.clamp(distance / D.PayPerStuds, 1, D.PayMax)
+end
+
+-- Where to take a survivor: the nearest of the drop-off points (the player's own dock, harbour pads).
+function CallLogic.nearestDropOff(from: Vector3, points: { Vector3 }): Vector3?
+	local best: Vector3?, bestD = nil, math.huge
+	for _, p in points do
+		local d = flatDistance(p, from)
+		if d < bestD then
+			best, bestD = p, d
+		end
+	end
+	return best
+end
+
+-- Choose the next call for a player. completed = calls finished this session; reach = craftReach.
+function CallLogic.chooseCall(
+	completed: number,
+	weatherState: string?,
+	rng: Rng?,
+	reach: number?
+): KindChoice
 	local roll: Rng = rng or (math.random :: any)
 	local tut = CallTypes.TutorialChain[completed + 1]
 	if tut then
-		return { kind = tut.kind, zone = tut.zone, victims = tut.victims }
+		return {
+			kind = tut.kind,
+			zone = tut.zone or CallLogic.distanceZone(reach, roll),
+			victims = tut.victims,
+		}
 	end
 	local total = 0
 	for _, k in CallTypes.NormalKinds do
@@ -258,7 +307,7 @@ function CallLogic.chooseCall(completed: number, weatherState: string?, rng: Rng
 	if weatherState == "Storm" and table.find(spec.zones, "HarbourMouth") and roll() < 0.6 then
 		return { kind = kind, zone = "HarbourMouth" }
 	end
-	return { kind = kind, zone = if roll() < 0.4 then "CalmBay" else "Outer" }
+	return { kind = kind, zone = CallLogic.distanceZone(reach, roll) }
 end
 
 -- Is a world position over a flat drop-off pad (XZ inside the pad's footprint plus a margin)?
