@@ -15,7 +15,6 @@ local def: Types.OperationDef = {
 	casualtyKind = "Person",
 	states = { Alert = 1 },
 	lifejacketChance = 0,
-	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "Swimmer" },
 	steps = SimpleSteps("Answer the call quickly; the animal is tangled and tiring."),
 }

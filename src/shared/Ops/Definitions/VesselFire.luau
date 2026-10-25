@@ -15,7 +15,6 @@ local def: Types.OperationDef = {
 	casualtyKind = "Person",
 	states = { Alert = 0.5, Panicking = 0.3, Exhausted = 0.2 },
 	lifejacketChance = 1,
-	takeoverAsset = "Haven Patrol",
 	sceneKinds = { "VesselFire" },
 	steps = SimpleSteps("Answer the MAYDAY at once: smoke and cold water wear them down fast."),
 }

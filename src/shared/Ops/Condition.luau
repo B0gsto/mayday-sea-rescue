@@ -1,7 +1,7 @@
 --!strict
 -- Ops/Condition: the casualty condition meter (docs/09-rescue-operations.md section 2.2).
 -- 0..100, the operation's clock. Pure: the server calls Condition.step every tick with the
--- environment, applies one-off events, and checks Condition.isCritical for the takeover (2.5).
+-- environment, applies one-off events, and checks Condition.overdue for the slow grade (2.5).
 local Types = require(script.Parent.Types)
 
 type CasualtyState = Types.CasualtyState
@@ -166,21 +166,19 @@ function Condition.isCritical(c: CasualtyState): boolean
 	return c.condition < Condition.CRITICAL and not c.delivered and not c.takenOver
 end
 
--- The takeover rule (docs 09 section 2.5): a casualty reaches Critical, or the cap passes.
-function Condition.shouldTakeover(
+-- The slow grade (docs/00 section 3: a call never fails): a casualty reaches Critical, or the
+-- operation runs past its cap. The server then grades it Bronze.
+function Condition.overdue(
 	casualties: { CasualtyState },
 	elapsed: number,
 	capSeconds: number
-): (boolean, string?)
+): boolean
 	for _, c in casualties do
 		if Condition.isCritical(c) then
-			return true, "Critical"
+			return true
 		end
 	end
-	if elapsed > capSeconds then
-		return true, "Cap"
-	end
-	return false, nil
+	return elapsed > capSeconds
 end
 
 -- Seconds until the meter reaches Critical at the current rate (math.huge when not declining).

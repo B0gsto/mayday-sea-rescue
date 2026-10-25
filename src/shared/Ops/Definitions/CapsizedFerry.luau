@@ -17,7 +17,6 @@ local def: Types.OperationDef = {
 	casualtyKind = "Person",
 	states = { Alert = 0.45, Exhausted = 0.3, VeryCold = 0.2, Unresponsive = 0.05 },
 	lifejacketChance = 1,
-	takeoverAsset = "Rescue Gale One",
 	sceneKinds = { "CapsizedFerry" },
 	steps = {
 		{

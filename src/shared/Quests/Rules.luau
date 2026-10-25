@@ -3,9 +3,10 @@
 -- them on the server; TalkController builds the talk tree from them.
 --   One active quest per player. Stages: "go" (the pin on the target) -> "back" (the pin on the giver, "?").
 --   Rotation: each giver offers one quest a day (Rules.offer: a day seed over the ones not yet done, chain steps in
---   order); a giver whose quest was finished today offers nothing more till tomorrow. When every quest of a giver
---   is done, their pool starts over.
+--   order); a giver whose quest was finished today offers nothing more till tomorrow, except the next step of the
+--   chain just handed in, which is offered at once. When every quest of a giver is done, their pool starts over.
 --   Save: profile flag `quest` = { a = active id, s = stage, x<id> = true (done), n<giver> = the day of their last }.
+--   `next` (the chain step just unlocked) is session only: it is not encoded.
 local CallTypes = require(script.Parent.Parent:WaitForChild("Calls"):WaitForChild("CallTypes"))
 local Data = require(script.Parent:WaitForChild("Data"))
 local Dialogue = require(script.Parent.Parent:WaitForChild("Dialogue"))
@@ -16,6 +17,7 @@ export type State = {
 	stage: string?,
 	done: { [string]: boolean },
 	last: { [string]: number },
+	next: string?,
 }
 
 local Rules = {}
@@ -107,6 +109,11 @@ function Rules.offer(
 	day: number,
 	can: ((Data.Quest) -> boolean)?
 ): Data.Quest?
+	-- the chain step unlocked by the last hand-in comes before the day rotation
+	local nxt = s.next and Data.byId[s.next]
+	if nxt and nxt.npc == npc and not s.done[nxt.id] and (can == nil or can(nxt)) then
+		return nxt
+	end
 	if s.last[npc] == day then
 		return nil
 	end
@@ -159,6 +166,13 @@ function Rules.complete(s: State, day: number): Data.Quest?
 	s.done[quest.id] = true
 	s.last[quest.npc] = day
 	s.active, s.stage = nil, nil
+	s.next = nil
+	for _, other in Data.Quests do
+		if other.npc == quest.npc and other.after == quest.id and not s.done[other.id] then
+			s.next = other.id
+			break
+		end
+	end
 	local all = true
 	for _, other in Data.Quests do
 		if other.npc == quest.npc and not s.done[other.id] then

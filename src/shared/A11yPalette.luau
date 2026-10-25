@@ -18,7 +18,7 @@ A11yPalette.Modes = table.freeze(MODES)
 
 A11yPalette.States = table.freeze({
 	Rarity = { "Common", "Uncommon", "Rare", "Epic", "Legendary" },
-	Grade = { "Gold", "Silver", "Bronze", "Fail", "Takeover" },
+	Grade = { "Gold", "Silver", "Bronze", "Fail" },
 	Triage = { "Red", "Yellow", "Green", "Black" },
 	Mark = { "Pass", "Fail", "Pending" },
 })
@@ -32,7 +32,7 @@ local SYMBOLS: { [string]: { [string]: string } } = {
 		Epic = "★",
 		Legendary = "♛",
 	},
-	Grade = { Gold = "★", Silver = "◈", Bronze = "◆", Fail = "✕", Takeover = "↔" },
+	Grade = { Gold = "★", Silver = "◈", Bronze = "◆", Fail = "✕" },
 	Triage = { Red = "✚", Yellow = "▲", Green = "●", Black = "■" },
 	Mark = { Pass = "✓", Fail = "✕", Pending = "○" },
 	Marker = {
@@ -67,7 +67,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("8F969B"),
 			Bronze = Color3.fromHex("936037"),
 			Fail = Color3.fromHex("5E3333"),
-			Takeover = Color3.fromHex("EBAF90"),
 		},
 		Triage = {
 			Red = Color3.fromHex("D83B3B"),
@@ -94,7 +93,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("799B9F"),
 			Bronze = Color3.fromHex("9A5E2D"),
 			Fail = Color3.fromHex("613131"),
-			Takeover = Color3.fromHex("EBAF90"),
 		},
 		Triage = {
 			Red = Color3.fromHex("3176C8"),
@@ -121,7 +119,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("8B97A3"),
 			Bronze = Color3.fromHex("936229"),
 			Fail = Color3.fromHex("613131"),
-			Takeover = Color3.fromHex("F2AD72"),
 		},
 		Triage = {
 			Red = Color3.fromHex("3178C6"),
@@ -148,7 +145,6 @@ local PALETTES: { [string]: { [string]: { [string]: Color3 } } } = {
 			Silver = Color3.fromHex("8F969B"),
 			Bronze = Color3.fromHex("AD4F4F"),
 			Fail = Color3.fromHex("613131"),
-			Takeover = Color3.fromHex("A1C4A3"),
 		},
 		Triage = {
 			Red = Color3.fromHex("CD4078"),

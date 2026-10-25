@@ -6,7 +6,7 @@ return function(t)
 	local Operations = t.load("src/shared/Ops/Operations.luau")
 
 	local ROLES = { Helm = true, Navigator = true, Crew = true, Medic = true }
-	local ONFAIL = { retry = true, npc = true, skip = true, takeover = true, continue = true }
+	local ONFAIL = { retry = true, npc = true, skip = true, continue = true }
 	local SIMPLE = { answer = true, launch = true, auto_board = true, transport = true }
 
 	t.test("every definition is well formed", function()
@@ -59,31 +59,18 @@ return function(t)
 			local rec = def.steps[3]
 			t.expect(rec.mechanicId).toBe("auto_board")
 			t.expect(rec.effect).toBe("board")
-			t.expect(rec.onFail).toBe("takeover")
+			t.expect(rec.onFail).toBe("continue") -- a slow pick-up still boards them, at Bronze
 			-- one survivor at a time: a full craft goes home and comes back for the rest
 			t.expect(rec.perCasualty and def.steps[4].perCasualty).toBe(true)
 		end
 	end)
 
-	t.test("a failed call pays nothing; the first missions cannot fail", function()
-		-- taken over with nobody brought home: zero, whatever the steps were graded
-		local none = Grading.takeoverPayout(1, 0, 1, 1)
-		t.expect(none.cash).toBe(0)
-		t.expect(none.rep).toBe(0)
-		t.expect(Grading.takeoverPayout(1.3, 0, 3, 4).cash).toBe(0)
-		-- two of four brought home: half of a Bronze payout
-		local half = Grading.takeoverPayout(1, 2, 4, 1)
-		t.expect(half.cash).toBe(math.floor(Grading.payout(1, "Bronze", 1).cash / 2 + 0.5))
-		-- the cold open and the onboarding calls have no fail path; other calls do
-		t.expect(Operations.canFail(true, false)).toBe(false)
-		t.expect(Operations.canFail(false, true)).toBe(false)
-		t.expect(Operations.canFail(false, false)).toBe(true)
-		-- a picked-up casualty is safe: only the ones still out there can trigger a takeover
+	t.test("a picked-up casualty is safe from the slow grade", function()
 		local out = Condition.new("a", "Alert", true, 5)
 		local safe = Condition.new("b", "Alert", true, 5)
 		safe.aboard = true
 		t.expect(#Operations.atRisk({ out, safe })).toBe(1)
-		t.expect((Condition.shouldTakeover(Operations.atRisk({ safe }), 0, 720))).toBe(false)
+		t.expect(Condition.overdue(Operations.atRisk({ safe }), 0, 720)).toBe(false)
 	end)
 
 	t.test("condition drifts by state, storm and treatment", function()
@@ -106,7 +93,7 @@ return function(t)
 		t.expect(c.condition).toBe(100)
 	end)
 
-	t.test("condition bands, events and the takeover", function()
+	t.test("condition bands, events and the slow grade", function()
 		t.expect(Condition.band(70)).toBe("Stable")
 		t.expect(Condition.band(69.9)).toBe("Concern")
 		t.expect(Condition.band(20)).toBe("Serious")
@@ -117,13 +104,10 @@ return function(t)
 		t.expect(Condition.applyEvent(c, "slam", 2)).toBe(-6)
 		local warm = Condition.new("b", "Alert", true, 90)
 		t.expect(Condition.applyEvent(warm, "slam")).toBe(0)
-		t.expect((Condition.shouldTakeover({ c }, 10, 720))).toBe(false)
+		t.expect(Condition.overdue({ c }, 10, 720)).toBe(false)
 		c.condition = 19
-		local yes, why = Condition.shouldTakeover({ c }, 10, 720)
-		t.expect(yes).toBe(true)
-		t.expect(why).toBe("Critical")
-		local _, why2 = Condition.shouldTakeover({ warm }, 721, 720)
-		t.expect(why2).toBe("Cap")
+		t.expect(Condition.overdue({ c }, 10, 720)).toBe(true)
+		t.expect(Condition.overdue({ warm }, 721, 720)).toBe(true)
 		-- the meter reaches Critical in the water without help, in a few minutes
 		local w = Condition.new("c", "Alert", true, 90)
 		t.expect(Condition.secondsToCritical(w)).toBeCloseTo(350, 1e-6)
@@ -201,7 +185,6 @@ return function(t)
 		t.expect(Grading.payout(1, "Bronze", 1, 0).cash).toBe(500) -- tutorial chain
 		t.expect(Grading.payout(1, "Bronze", 1, 2).rep).toBe(160)
 		t.expect(Grading.payout(1, "Bronze", 1, 3).cash).toBe(math.floor(550 * 0.75 + 0.5))
-		-- takeover: see "a failed call pays nothing"
 		t.expect(Grading.shareWithoutStep(1).cash).toBe(55)
 		t.expect(Grading.bigCasualtyPay().cash).toBe(165)
 		t.expect(Grading.bigCompletionBonus(5, 10).cash).toBe(688)
@@ -241,7 +224,7 @@ return function(t)
 		t.expect(m.smooth).toBe(false) -- one bumpy ride
 		t.expect(m.all).toBe(true)
 		t.expect(Grading.mastery("Gold", steps, 1, 2).all).toBe(false)
-		local lost = Grading.mastery("Takeover", steps, 2, 2)
+		local lost = Grading.mastery("Fail", steps, 2, 2)
 		t.expect(lost.stars).toBe(0)
 		t.expect(lost.fast or lost.all or lost.smooth).toBe(false)
 		local bare = Grading.mastery("Gold", { { id = "tasking", grade = "Gold" } }, 0, 1)
