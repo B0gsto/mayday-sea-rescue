@@ -283,3 +283,27 @@ rip current call, pets + wildlife sanctuary.
 **Work packages.** WP-17 tag + cut cars and town. WP-18 new map: hub, 6 islands, bridges, outer islands (terrain
 generator + bake + layout data). WP-19 plots → islands (dock code, server size 6, calls/drop-off from your island).
 Then WP-14c blueprint table, WP-15 crew, WP-16 asset diet. WP-14a (coast plots) is cancelled.
+
+## (l) Hub v2: a forest island of outposts and quests (owner, 2026-10-25)
+
+Owner: "The main island needs to be bigger ... I think NPCs for quests" and "put a forest there, not buildings
+but small outposts". Approved direction:
+
+- **Bigger hub, ~800 studs across** (was 400); the 6 player islands move out (900 → ~1,100) so the bridges stay
+  long. Check the ocean covers the whole view from a player camera (no square water edge).
+- **Feels unexplored** (owner): a wild, overgrown island the coastguard has only just landed on. Rough trails,
+  not paved paths; the outposts are frontier camps (canvas, crates, rope, lanterns), not a settled town; deeper
+  forest with old ruins, a cave, a waterfall or overgrown wreck to stumble on; the map fog covers the forest
+  until you walk it, and hidden spots give discovery stickers.
+- **A forest, not a town.** Dense trees with paths; clearings hold **small outposts**: a coastguard lookout hut
+  with the radio + call board (the HQ), a market stall (shop counter), a harbourmaster's shack (Storm Summon), a
+  campfire ring/stage (live-ops events), a rescuer monument in a clearing (this week's top rescuer), a visitor
+  jetty. Tents, huts, stalls, platforms in trees; no big buildings.
+- **Quest NPCs** in the outposts with a "!" over their heads; talk = camera zoom + numbered replies (CLAUDE.md
+  exception). Quest kinds: find (a lost dog on Puffin Isle), deliver (supplies to the Gannet Rock keeper),
+  salvage (the *Gannet Star*'s bell, by sub), special rescue (a named person, harder, bigger reward); a few 3–5
+  step chains that unlock a unique blueprint for your island. Rotate daily. Reuse Dialogue/TalkController, pins,
+  discovery and rescue code; no new UI kinds.
+
+**Work packages.** WP-21a hub terrain + forest + outposts (after WP-19a/19c land). WP-21b quest system + first
+quests (after 21a).

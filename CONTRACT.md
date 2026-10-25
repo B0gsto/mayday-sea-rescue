@@ -61,12 +61,14 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 
 ## Vehicles
 
-- `DockService` (docs/23 WP-1): the marina west of the west breakwater (`src/shared/Marina.luau`, pure,
-  `tests/Marina.spec.luau`): 16 plots in two rows of 8 off a pontoon spine, each a deck strip + a water berth
-  (Lv 1: bare jetty, name board, flag in the player's colour; empty plots are a plain jetty). A joining player
-  gets the lowest free plot, freed on leave; `data.dockLevel` (default 1) is the level later packages build.
-  API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetLevel`, `Berths()`. Player attributes `DockPlot`,
-  `BayCFrame` (the berth CFrame); berth part attributes `LaunchBay`, `PlotIndex`, `Owner`.
+- `DockService` (docs/23 WP-1, WP-19b): your island is your plot. `src/shared/Marina.luau` (pure,
+  `tests/Marina.spec.luau`): the 6 plots = `HubLayout.Islands` (server size 6); `Marina.LOTS[name]` = each lot in
+  the berth frame (the same on every island), `Marina.SUB`, `Marina.ISLAND`, `Marina.spawn(i)`. Every island has a
+  bare jetty down its cove + a finger beside the boat berth; Lv 1 adds a name arch and flag (unclaimed: no sign).
+  A joining player gets the lowest free island, freed on leave; `data.dockLevel` (default 1).
+  API: `GetBerth(player) -> BasePart?`, `GetPlot`, `GetSpawn` (VehicleService stands every spawn there), `GetLevel`,
+  `Berths()`. Player attributes `DockPlot`, `BayCFrame` (the berth CFrame); berth part attributes `LaunchBay`,
+  `PlotIndex`, `Owner`.
 - Dock levels 2..5 (WP-4): `src/shared/Config/DockConfig.luau` (pure, `tests/DockConfig.spec.luau`: Cash, rank,
   Robux, `canBuy`, `BOARD_SLOT` = the boat board's spot in the Lv 3 boathouse, berth frame) and
   `src/shared/DockPieces.luau` (`build(level, berthCFrame) -> Model`, placeholder Parts). DockService builds each
@@ -79,7 +81,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 - Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Hangar / SubPen (Cash + rank or Robux
   products `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
   Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
-  (prompt spot, board rack, spawn targets). Hangar + helipad on the boathouse roof, sub pen east of the jetty.
+  (prompt spot, board rack, spawn targets). Helipad + hangar on their island lots, sub pen over the sub berth.
   `Dock_Upgrade(key)` buys one; berth attributes and player attributes `Dock<key>`; ghosts in `DockController`.
   `server/Dock/BoatBoard` builds every board (boat, hangar, sub) from one def list: the heli on the pad and the
   sub in the pen (`VehicleService.DockLaunch(player, id, target?)`), the seaplane at the berth. The car garage
@@ -87,8 +89,8 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   `DockDev:Invoke("building", key | "all")`.
 - Dock WP-13: plots are claimed when the profile loads (`GetBerth` claims earlier; nil before Init). Harbour
   Master = `Marina.harbourMaster` (highest rank among Lv 5 docks, ties keep the holder) on join / leave / level
-  change: gold name board + tall gold flag, berth attribute `HarbourMaster`; a joining one gets the head plot
-  (`Marina.HEAD`) if free, nobody else moves. Lv 5 trophy hall on the boathouse's jetty wall: `BadgeRules.trophies`
+  change: gold name board + tall gold beacon on their island, berth attribute `HarbourMaster`; nobody's island moves.
+  Lv 5 trophy hall on the station's front wall: `BadgeRules.trophies`
   cups + island-stamp plaques (`DockPieces.trophies`). Lv 3 paint booth (`DockConfig.PAINT_BOOTH`): seated in it
   on your own plot → `DockController` paint card (CosmeticPicker Livery + Decal). `MonetizationEffects.passActive`
   = pass or day pass (server `OwnsPass` and the client's Boat to me ring).
