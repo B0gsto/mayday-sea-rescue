@@ -135,11 +135,15 @@ local function row(
 		n.Changed:Connect(function(v: number)
 			label.Text = `+{HudTheme.formatNumber(v)}`
 		end)
-		TweenService:Create(
+		local tw = TweenService:Create(
 			n,
 			TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.35),
 			{ Value = roll }
-		):Play()
+		)
+		tw.Completed:Connect(function()
+			label.Text = `+{HudTheme.formatNumber(roll)}` -- lands on the exact pay, even when the tween is cut short
+		end)
+		tw:Play()
 	end
 	return label
 end

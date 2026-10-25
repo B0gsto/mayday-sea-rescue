@@ -12,7 +12,8 @@
 -- Player attributes (QuestController / MapController / TalkController read them): QuestId, QuestStage
 -- ("go" | "back"), QuestTarget (Vector3: the thing, then the giver), QuestOffer_<npcId> (today's offer).
 -- Studio: ServerStorage.QuestDev:Invoke("accept", npcId: ties its boat up, puts you beside it) | ("tablet": to your
--- quest tablet) | ("reach") | ("hand") | ("tp": to the pin) | ("chain") | ("reset").
+-- quest tablet) | ("reach") | ("hand") | ("tp": to the pin) | ("chain") | ("set", questId:
+-- active, ready to hand in) | ("reset").
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -356,8 +357,9 @@ local function handIn(player: Player)
 	end
 	ProgressionService.Award(player, quest.cash, `Quest:{quest.id}`, true)
 	local boat = QuestPontoons.Giver(DockService.GetPlot(player), quest.npc)
-	if boat then
-		QuestPontoons.Leave(boat) -- the next giver sails in (reconcile); a chain's next step brings them back
+	-- a chain's next step: the giver stays tied up and offers it; else they sail off and the next one comes (sail)
+	if boat and not Rules.offer(s, quest.npc, today(), can(player)) then
+		QuestPontoons.Leave(boat)
 	end
 	local data: any = DataService.Get(player)
 	if quest.blueprint and data then
@@ -406,17 +408,25 @@ local function onTalk(player: Player, npcId: any, action: any)
 	publish(player)
 end
 
--- The givers island i's owner should have at their pontoon: the active quest's first, then today's offers.
-local function wanted(player: Player): { [string]: Data.Npc }
+-- The givers island i's owner should have at their pontoon: the active quest's first, then today's offers from
+-- givers already there (a chain giver stays moored), then the rest.
+local function wanted(player: Player, i: number): { [string]: Data.Npc }
 	local s, out, n = states[player], {}, 0
 	local quest = questOf(player)
 	local day, ok = today(), can(player)
 	if quest then
 		out[quest.npc], n = Data.npcById[quest.npc], 1
 	end
-	for _, npc in Data.Npcs do
-		if n < BOATS and not out[npc.id] and Rules.offer(s, npc.id, day, ok) then
-			out[npc.id], n = npc, n + 1
+	for pass = 1, 2 do
+		for _, npc in Data.Npcs do
+			if
+				n < BOATS
+				and not out[npc.id]
+				and (pass == 2 or QuestPontoons.Find(i, npc.id))
+				and Rules.offer(s, npc.id, day, ok)
+			then
+				out[npc.id], n = npc, n + 1
+			end
 		end
 	end
 	return out
@@ -438,7 +448,7 @@ local function sail()
 			skipper[i] = owner
 		end
 		if owner then
-			local want = wanted(owner)
+			local want = wanted(owner, i)
 			for _, b in QuestPontoons.Boats(i) do
 				if b.state ~= "out" and not want[b.npc] then
 					QuestPontoons.Leave(b)
@@ -551,6 +561,9 @@ function QuestService.Start()
 					s.active, s.stage, s.last.QuestIves = id, "back", nil
 					handIn(player)
 				end
+			elseif cmd == "set" and Data.byId[arg] then -- quest `arg` active and ready to hand in
+				s.active, s.stage = arg, "back"
+				stage(player)
 			elseif cmd == "reset" then
 				states[player] = Rules.new()
 				stage(player)

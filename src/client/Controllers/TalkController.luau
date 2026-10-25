@@ -1,5 +1,5 @@
 --!strict
--- TalkController: walk up to a town NPC (Workspace.Npcs child named in Shared/Dialogue.TREES), press Talk
+-- TalkController: walk up to a quest giver (Workspace.Npcs child named in Quests/Data), press Talk
 -- (ProximityPrompt: E / X / tap) and the camera eases into an over-the-shoulder shot of them, they turn to
 -- face you, and their line shows with up to three numbered replies (keys 1-3, tap, gamepad D-pad + A).
 -- Quest givers (Quests/Data, QuestService) moored at your own island get their tree from Quests/Rules.talk at the
@@ -83,10 +83,10 @@ local function pick(t: Talk, i: number)
 	show(Dialogue.choose(t.tree, t.node, i))
 end
 
--- the model's tree: a town NPC's fixed one, or a quest giver's from the player's quest attributes
+-- a quest giver's tree from the player's quest attributes (nil: not a giver)
 local function treeOf(m: Model): Dialogue.Tree?
 	if not QuestData.npcById[m.Name] then
-		return Dialogue.TREES[m.Name]
+		return nil
 	elseif
 		m:GetAttribute("QuestIsland") ~= player:GetAttribute("DockPlot")
 		or m:GetAttribute("Leaving")

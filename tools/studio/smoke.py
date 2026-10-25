@@ -253,6 +253,13 @@ return string.format("op=%s results=%s current=%s lastGrade=%s lastKind=%s compl
 """
 
 
+DEBRIEF_UI = ('local pg = game:GetService("Players").LocalPlayer.PlayerGui '
+              'local d = pg:FindFirstChild("DebriefTablet", true) '
+              'local t = {} if d then for _, c in d:GetDescendants() do '
+              'if c:IsA("TextLabel") and c.Text ~= "" then table.insert(t, c.Text) end end end '
+              'return "debrief visible=" .. tostring(d and d.Visible) .. " | " .. table.concat(t, " | ")')
+
+
 def cmd_ops(s):
     """Plays operations end to end with the stub mechanics; returns a list of failures."""
     fails = []
@@ -285,17 +292,17 @@ def cmd_ops(s):
         ui = ""
         end = time.time() + 50  # a new player's first debrief waits for the arrival shot and the reward burst (OpsHud caps it at 45 s)
         while time.time() < end:
-            _, ui = lua(s, "Client", 'local pg = game:GetService("Players").LocalPlayer.PlayerGui '
-                                     'local d = pg:FindFirstChild("DebriefTablet", true) '
-                                     'local t = {} if d then for _, c in d:GetDescendants() do '
-                                     'if c:IsA("TextLabel") and c.Text ~= "" then table.insert(t, c.Text) end end end '
-                                     'return "debrief visible=" .. tostring(d and d.Visible) .. " | " .. table.concat(t, " | ")')
+            _, ui = lua(s, "Client", DEBRIEF_UI)
             if "debrief visible=true" in ui:
+                time.sleep(1.5)  # the Cash counts up from +0 for ~1.25 s: read the final pay
+                _, ui = lua(s, "Client", DEBRIEF_UI)
                 break
             time.sleep(0.5)
         print("  client:", ui.strip()[:400].replace("\n", " / "))
         if "debrief visible=true" not in ui:
             fails.append(kind + "-debrief")
+        elif re.search(r"\| \+0( |$)", ui):
+            fails.append(kind + "-pay0")
     return fails
 
 
