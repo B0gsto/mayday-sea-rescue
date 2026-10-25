@@ -1,0 +1,3572 @@
+{
+ "asset": "M_Veh_HarbourGT",
+ "name": "M_Veh_HarbourGT",
+ "date": "2026-10-23",
+ "commit": "6b492175+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 2048,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Cab",
+    "ok": true,
+    "size": 2048,
+    "export": 1024,
+    "pairs": [
+     {
+      "lod0": "M_Veh_HarbourGT_Cab_LOD0",
+      "hp": "M_Veh_HarbourGT_Cab_HP"
+     },
+     {
+      "lod0": "M_Veh_HarbourGT_Glass_LOD0",
+      "hp": "M_Veh_HarbourGT_Glass_HP"
+     }
+    ],
+    "coverage": 0.3607,
+    "seconds": 16.0,
+    "timings": {
+     "nor": 1.8,
+     "mask": 4.4,
+     "pos": 1.5,
+     "wn": 1.4,
+     "base": 1.3,
+     "mr": 1.3,
+     "compose_write": 3.5
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_ALB.png",
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_NOR.png",
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_RGH.png",
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_HarbourGT/textures/T_HarbourGT_Cab_MET.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB_Wet.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_NOR.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH_Wet.png",
+     "assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_HarbourGT/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD0.fbx",
+   "bytes": 2320620,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_HarbourGT_Body_LOD0",
+    "M_Veh_HarbourGT_COL",
+    "M_Veh_HarbourGT_Cab_LOD0",
+    "M_Veh_HarbourGT_Glass_LOD0",
+    "M_Veh_HarbourGT_Trim_LOD0",
+    "M_Veh_HarbourGT_Underbody_LOD0",
+    "M_Veh_HarbourGT_Wheel_FL_LOD0",
+    "M_Veh_HarbourGT_Wheel_FR_LOD0",
+    "M_Veh_HarbourGT_Wheel_RL_LOD0",
+    "M_Veh_HarbourGT_Wheel_RR_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_HarbourGT_Body_LOD0.001",
+     "min": [
+      -2.9298,
+      -6.775,
+      0.42
+     ],
+     "max": [
+      2.9298,
+      6.875,
+      3.8575
+     ],
+     "polygons": 8700,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_COL.001",
+     "min": [
+      -2.9298,
+      -6.775,
+      0.0
+     ],
+     "max": [
+      2.9298,
+      6.875,
+      3.8575
+     ],
+     "polygons": 442,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Cab_LOD0.001",
+     "min": [
+      -2.8965,
+      -1.8286,
+      0.4851
+     ],
+     "max": [
+      2.8965,
+      4.2304,
+      3.7875
+     ],
+     "polygons": 3054,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Glass_LOD0.001",
+     "min": [
+      -2.467,
+      -1.8139,
+      2.56
+     ],
+     "max": [
+      2.467,
+      4.22,
+      3.7711
+     ],
+     "polygons": 972,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Trim_LOD0.001",
+     "min": [
+      -3.07,
+      -6.955,
+      0.44
+     ],
+     "max": [
+      3.07,
+      6.955,
+      3.54
+     ],
+     "polygons": 6200,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Underbody_LOD0.001",
+     "min": [
+      -2.85,
+      -5.2857,
+      0.45
+     ],
+     "max": [
+      2.85,
+      5.3857,
+      2.42
+     ],
+     "polygons": 1632,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FL_LOD0.001",
+     "min": [
+      2.0025,
+      -4.975,
+      0.0
+     ],
+     "max": [
+      2.8618,
+      -2.875,
+      2.1
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FR_LOD0.001",
+     "min": [
+      -2.8618,
+      -4.975,
+      0.0
+     ],
+     "max": [
+      -2.0025,
+      -2.875,
+      2.1
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RL_LOD0.001",
+     "min": [
+      2.0025,
+      2.975,
+      0.0
+     ],
+     "max": [
+      2.8618,
+      5.075,
+      2.1
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RR_LOD0.001",
+     "min": [
+      -2.8618,
+      2.975,
+      0.0
+     ],
+     "max": [
+      -2.0025,
+      5.075,
+      2.1
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD1.fbx",
+   "bytes": 953340,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_HarbourGT_Body_LOD1",
+    "M_Veh_HarbourGT_Cab_LOD1",
+    "M_Veh_HarbourGT_Glass_LOD1",
+    "M_Veh_HarbourGT_Trim_LOD1",
+    "M_Veh_HarbourGT_Underbody_LOD1",
+    "M_Veh_HarbourGT_Wheel_FL_LOD1",
+    "M_Veh_HarbourGT_Wheel_FR_LOD1",
+    "M_Veh_HarbourGT_Wheel_RL_LOD1",
+    "M_Veh_HarbourGT_Wheel_RR_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_HarbourGT_Body_LOD1.001",
+     "min": [
+      -2.9305,
+      -6.775,
+      0.42
+     ],
+     "max": [
+      2.9305,
+      6.8751,
+      3.8572
+     ],
+     "polygons": 3044,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Cab_LOD1.001",
+     "min": [
+      -2.8848,
+      -1.828,
+      0.4871
+     ],
+     "max": [
+      2.8882,
+      4.2288,
+      3.7848
+     ],
+     "polygons": 1068,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Glass_LOD1.001",
+     "min": [
+      -2.4668,
+      -1.8139,
+      2.56
+     ],
+     "max": [
+      2.4668,
+      4.22,
+      3.7708
+     ],
+     "polygons": 340,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Trim_LOD1.001",
+     "min": [
+      -3.0707,
+      -6.9582,
+      0.44
+     ],
+     "max": [
+      3.0707,
+      6.9575,
+      3.537
+     ],
+     "polygons": 2170,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Underbody_LOD1.001",
+     "min": [
+      -2.85,
+      -5.2696,
+      0.4527
+     ],
+     "max": [
+      2.85,
+      5.3696,
+      2.4547
+     ],
+     "polygons": 571,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FL_LOD1.001",
+     "min": [
+      2.0008,
+      -4.9679,
+      0.0009
+     ],
+     "max": [
+      2.8649,
+      -2.8743,
+      2.1081
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FR_LOD1.001",
+     "min": [
+      -2.8586,
+      -4.9829,
+      -0.0083
+     ],
+     "max": [
+      -2.0003,
+      -2.8747,
+      2.1083
+     ],
+     "polygons": 675,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RL_LOD1.001",
+     "min": [
+      2.0006,
+      2.9743,
+      -0.0005
+     ],
+     "max": [
+      2.8578,
+      5.0829,
+      2.0989
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RR_LOD1.001",
+     "min": [
+      -2.8583,
+      2.9754,
+      -0.0005
+     ],
+     "max": [
+      -1.9993,
+      5.0732,
+      2.0929
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx",
+   "bytes": 314828,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_HarbourGT_Body_LOD2",
+    "M_Veh_HarbourGT_Cab_LOD2",
+    "M_Veh_HarbourGT_Glass_LOD2",
+    "M_Veh_HarbourGT_Trim_LOD2",
+    "M_Veh_HarbourGT_Underbody_LOD2",
+    "M_Veh_HarbourGT_Wheel_FL_LOD2",
+    "M_Veh_HarbourGT_Wheel_FR_LOD2",
+    "M_Veh_HarbourGT_Wheel_RL_LOD2",
+    "M_Veh_HarbourGT_Wheel_RR_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_HarbourGT_Body_LOD2.001",
+     "min": [
+      -2.9256,
+      -6.776,
+      0.42
+     ],
+     "max": [
+      2.9301,
+      6.875,
+      3.8594
+     ],
+     "polygons": 870,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Cab_LOD2.001",
+     "min": [
+      -2.8451,
+      -1.8268,
+      0.4892
+     ],
+     "max": [
+      2.8548,
+      4.2244,
+      3.823
+     ],
+     "polygons": 305,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Glass_LOD2.001",
+     "min": [
+      -2.4668,
+      -1.8132,
+      2.56
+     ],
+     "max": [
+      2.4668,
+      4.22,
+      3.7609
+     ],
+     "polygons": 97,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Trim_LOD2.001",
+     "min": [
+      -3.089,
+      -6.9519,
+      0.44
+     ],
+     "max": [
+      3.0611,
+      6.9531,
+      3.5375
+     ],
+     "polygons": 619,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Underbody_LOD2.001",
+     "min": [
+      -2.85,
+      -5.3395,
+      0.4325
+     ],
+     "max": [
+      2.85,
+      5.471,
+      2.4802
+     ],
+     "polygons": 163,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FL_LOD2.001",
+     "min": [
+      1.9977,
+      -4.9752,
+      -0.0028
+     ],
+     "max": [
+      2.8573,
+      -2.9233,
+      2.0677
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_FR_LOD2.001",
+     "min": [
+      -2.8583,
+      -4.9755,
+      0.0153
+     ],
+     "max": [
+      -1.9991,
+      -2.8918,
+      2.0841
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RL_LOD2.001",
+     "min": [
+      1.9991,
+      2.9648,
+      0.012
+     ],
+     "max": [
+      2.8587,
+      5.0674,
+      2.0891
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_HarbourGT_Wheel_RR_LOD2.001",
+     "min": [
+      -2.8578,
+      2.9715,
+      0.0288
+     ],
+     "max": [
+      -1.9985,
+      5.0426,
+      2.1087
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT.attachments.json",
+   "attachments": [
+    "ATT_Wheel_FL",
+    "ATT_Wheel_FR",
+    "ATT_Wheel_RL",
+    "ATT_Wheel_RR",
+    "ATT_DriverSeat",
+    "ATT_Seat2",
+    "ATT_EyePoint",
+    "ATT_Headlamp_L",
+    "ATT_Headlamp_R",
+    "ATT_TailLamp_L",
+    "ATT_TailLamp_R",
+    "ATT_BrakeLamp_L",
+    "ATT_BrakeLamp_R",
+    "ATT_ReverseLamp_L",
+    "ATT_ReverseLamp_R",
+    "ATT_DriveAttachment"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_HarbourGT/M_Veh_HarbourGT.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_HarbourGT_Cab",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "36.1% of texels at 2048 px from M_Veh_HarbourGT_Cab_LOD0<-M_Veh_HarbourGT_Cab_HP, M_Veh_HarbourGT_Glass_LOD0<-M_Veh_HarbourGT_Glass_HP"
+  },
+  {
+   "subject": "T_HarbourGT_Cab",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 2048, export 1024, 16 s"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "land_vehicle"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Body_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "8700 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.13e-03, 232 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.997, v 0.003 to 0.964"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4402 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "56 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Cab_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3054 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.83e-04, 222 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1747 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 44 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Glass_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "972 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.32e-03, 256 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.015 to 0.927, v 0.008 to 0.988"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 486 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 43 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FL_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 31 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FR_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 31 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RL_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 31 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RR_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 31 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Underbody_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1632 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.94e-03, 272 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.968"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 892 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 32 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Trim_LOD0"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6200 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.48e-05, 292 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3447 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "52 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Body_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3044 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.07e-04, 166 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.997, v 0.003 to 0.964"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3044 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Cab_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1068 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.25e-05, 124 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.986, v 0.008 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1068 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.001 (max 0.02), UV area by 3.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Glass_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "340 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.99e-03, 174 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.015 to 0.927, v 0.008 to 0.988"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 340 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FL_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.33e-06, 182 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.010 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 12.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FR_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "675 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.17e-06, 183 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 675 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RL_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.63e-06, 184 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RR_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.64e-06, 182 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.990, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 11.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Underbody_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "571 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.66e-03, 113 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.966, v 0.009 to 0.944"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 571 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.024 (max 0.02), UV area by 14.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Trim_LOD1"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2170 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.75e-06, 162 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.991, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2170 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Body_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "870 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.18e-03, 86 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.996, v 0.003 to 0.964"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 870 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Cab_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "305 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.06e-05, 81 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.981, v 0.008 to 0.990"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 305 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.005 (max 0.02), UV area by 14.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Glass_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "97 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.92e-03, 103 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.015 to 0.927, v 0.008 to 0.961"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 97 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.027 (max 0.02), UV area by 3.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FL_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.29e-06, 89 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.010 to 0.942, v 0.010 to 0.942"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.049 (max 0.02), UV area by 42.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FR_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.72e-06, 89 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.057 to 0.942, v 0.037 to 0.942"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.049 (max 0.02), UV area by 39.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RL_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.00e-05, 91 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.012 to 0.942, v 0.010 to 0.940"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.050 (max 0.02), UV area by 39.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RR_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.91e-06, 87 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.942, v 0.009 to 0.967"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.048 (max 0.02), UV area by 37.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Underbody_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "163 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.85e-03, 33 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.938, v 0.009 to 0.944"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 163 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.052 (max 0.02), UV area by 39.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Trim_LOD2"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "619 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 5.99e-06, 99 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.991, v 0.008 to 0.989"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 619 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.001 (max 0.02), UV area by 16.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Body_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Body_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Cab_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Cab_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Glass_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Glass_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Underbody_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Underbody_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Trim_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Trim_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FL_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FL_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_FR_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_FR_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RL_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RL_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_Wheel_RR_HP"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_Wheel_RR_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_HarbourGT_COL"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "442 of 10000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "442 of 1000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "28286 of 30000 (land_vehicle, asset row)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "9896 of 12000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2826 of 3000"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_HarbourGT/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6.140 studs, real 1.950 m = 5.850 studs, off 5.0% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "13.910 studs, real 4.550 m = 13.650 studs, off 1.9% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3.857 studs, real 1.290 m = 3.870 studs, off 0.3% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_HarbourGT_COL"
+  },
+  {
+   "subject": "M_Veh_HarbourGT",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (4 to 4 sets)"
+  },
+  {
+   "subject": "T_HarbourGT_Body_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_ALB.png"
+  },
+  {
+   "subject": "T_HarbourGT_Body_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Body_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_NOR.png"
+  },
+  {
+   "subject": "T_HarbourGT_Body_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_RGH.png"
+  },
+  {
+   "subject": "T_HarbourGT_Body_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Body_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Body_MET.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_NOR.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Cab_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Cab_MET.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_ALB.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_NOR.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_RGH.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Wheels_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Wheels_MET.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_ALB.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_ALB_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_NOR.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_RGH.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_RGH_Wet.png"
+  },
+  {
+   "subject": "T_HarbourGT_Trim_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_HarbourGT/T_HarbourGT_Trim_MET.png"
+  },
+  {
+   "subject": "ATT_Wheel_FL",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_FR",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_RL",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_RR",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Headlamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Headlamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TailLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TailLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BrakeLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BrakeLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ReverseLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ReverseLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_HarbourGT_Body_LOD0, M_Veh_HarbourGT_COL, M_Veh_HarbourGT_Cab_LOD0, M_Veh_HarbourGT_Glass_LOD0, M_Veh_HarbourGT_Trim_LOD0, M_Veh_HarbourGT_Underbody_LOD0, M_Veh_HarbourGT_Wheel_FL_LOD0, M_Veh_HarbourGT_Wheel_FR_LOD0, M_Veh_HarbourGT_Wheel_RL_LOD0, M_Veh_HarbourGT_Wheel_RR_LOD0; 28728 triangles (scene 28728)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_HarbourGT_Body_LOD1, M_Veh_HarbourGT_Cab_LOD1, M_Veh_HarbourGT_Glass_LOD1, M_Veh_HarbourGT_Trim_LOD1, M_Veh_HarbourGT_Underbody_LOD1, M_Veh_HarbourGT_Wheel_FL_LOD1, M_Veh_HarbourGT_Wheel_FR_LOD1, M_Veh_HarbourGT_Wheel_RL_LOD1, M_Veh_HarbourGT_Wheel_RR_LOD1; 9896 triangles (scene 9896)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_HarbourGT/M_Veh_HarbourGT_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_HarbourGT_Body_LOD2, M_Veh_HarbourGT_Cab_LOD2, M_Veh_HarbourGT_Glass_LOD2, M_Veh_HarbourGT_Trim_LOD2, M_Veh_HarbourGT_Underbody_LOD2, M_Veh_HarbourGT_Wheel_FL_LOD2, M_Veh_HarbourGT_Wheel_FR_LOD2, M_Veh_HarbourGT_Wheel_RL_LOD2, M_Veh_HarbourGT_Wheel_RR_LOD2; 2826 triangles (scene 2826)"
+  },
+  {
+   "subject": "M_Veh_HarbourGT_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_HarbourGT_Body_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 8700,
+   "texel_density": 56.2
+  },
+  {
+   "name": "M_Veh_HarbourGT_Cab_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3054,
+   "texel_density": 43.8
+  },
+  {
+   "name": "M_Veh_HarbourGT_Glass_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 972,
+   "texel_density": 43.4
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FL_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 31.2
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FR_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 31.2
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RL_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 31.2
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RR_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 31.2
+  },
+  {
+   "name": "M_Veh_HarbourGT_Underbody_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1632,
+   "texel_density": 31.6
+  },
+  {
+   "name": "M_Veh_HarbourGT_Trim_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 6200,
+   "texel_density": 51.5
+  },
+  {
+   "name": "M_Veh_HarbourGT_Body_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 10618,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Cab_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 6244,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Glass_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 972,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Underbody_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 11232,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Trim_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 11435,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FL_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FR_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RL_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RR_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 442,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Body_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 3044,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Body_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 870,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Cab_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1068,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Cab_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 305,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Glass_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 340,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Glass_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 97,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FL_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FL_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FR_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 675,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_FR_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RL_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RL_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RR_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Wheel_RR_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Underbody_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 571,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Underbody_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 163,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Trim_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2170,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_HarbourGT_Trim_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 619,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  6.140000343322754,
+  13.910000324249268,
+  3.857487440109253
+ ],
+ "peak_rss_mb": 2883.8
+}

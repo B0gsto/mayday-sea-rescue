@@ -1,10 +1,12 @@
 # 07 · Store page, thumbnails and trailer
 
+> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
+
 How Mayday: Sea Rescue presents itself on its Roblox page and on short-form video: icon, thumbnails, the personalization test, the gameplay video, shorts, the description and the name.
 
 Marks: **(verify)** means check the upload dialog or an official page before relying on it. **(unverified)** means secondary source only. **(tune)** means a starting value.
 
-Research source: [`research/store-page-and-monetization.md`](research/store-page-and-monetization.md) (section numbers below refer to it). Visual rules come from [document 05](05-art-direction.md), the photoreal art bible.
+Research source: [`research/store-page-and-monetization.md`](archive/research/store-page-and-monetization.md) (section numbers below refer to it). Visual rules come from [document 05](05-art-direction.md), the current art direction.
 
 ---
 
@@ -137,7 +139,7 @@ The trailer is mostly **first-person gameplay** (what a player actually sees: th
 | 0:26 to 0:28 | Back at the station: Aggie pins the rank badge, Bosun shakes off water | Rank-up cinematic (third person) | Rank-up banner |
 | 0:28 to 0:30 | Logo over the harbour at dusk, the lighthouse beam sweeping | Capture camera, slow pull-back | Logo overlay |
 
-Cut on wave impacts and knocks so the music lines up. The first 13 seconds are the real first session (the cold open and the arrival, [document 09](09-rescue-operations.md), section 9.1); the rest shows what players grow into (storms, the lifeboat, the helicopter, big calls, rank). Lifeboat and helicopter shots need the [L] build; until then, an MVP cut swaps them for the RIB launch and the Capsized Ferry from the RIB.
+Cut on wave impacts and knocks so the music lines up. The first 13 seconds are the real first session (the cold open and the arrival, [document 09](archive/09-rescue-operations.md), section 9.1); the rest shows what players grow into (storms, the lifeboat, the helicopter, big calls, rank). Lifeboat and helicopter shots need the [L] build; until then, an MVP cut swaps them for the RIB launch and the Capsized Ferry from the RIB.
 
 ### 5.3 How to capture
 

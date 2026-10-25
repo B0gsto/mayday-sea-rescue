@@ -1,0 +1,3644 @@
+{
+ "asset": "M_Veh_LighthouseCruiser",
+ "name": "M_Veh_LighthouseCruiser",
+ "date": "2026-10-23",
+ "commit": "6b492175+dirty",
+ "blender": "5.2.2 LTS",
+ "steps": [
+  "build",
+  "lod",
+  "bake",
+  "validate",
+  "export"
+ ],
+ "scene": "art/blender/_template.blend",
+ "out_root": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/assets",
+ "export_settings": {
+  "exporter": "rbxkit.export_fbx",
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "apply_scale_options": "FBX_SCALE_UNITS",
+  "global_scale": 1.0,
+  "embed_textures": false,
+  "mapping": "roblox = (-bx, bz, by), 1 BU = 1 stud",
+  "roblox_tri_limit": 20000
+ },
+ "bake": {
+  "device": "GPU (METAL: Apple M5 (GPU - 10 cores))",
+  "size": 2048,
+  "samples": 16,
+  "sets": [
+   {
+    "set": "Cab",
+    "ok": true,
+    "size": 2048,
+    "export": 1024,
+    "pairs": [
+     {
+      "lod0": "M_Veh_LighthouseCruiser_Cab_LOD0",
+      "hp": "M_Veh_LighthouseCruiser_Cab_HP"
+     },
+     {
+      "lod0": "M_Veh_LighthouseCruiser_Glass_LOD0",
+      "hp": "M_Veh_LighthouseCruiser_Glass_HP"
+     }
+    ],
+    "coverage": 0.4139,
+    "seconds": 18.0,
+    "timings": {
+     "nor": 1.4,
+     "mask": 4.7,
+     "pos": 1.7,
+     "wn": 1.8,
+     "base": 1.6,
+     "mr": 1.5,
+     "compose_write": 4.4
+    },
+    "written": [
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_ALB.png",
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_ALB_Wet.png",
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_NOR.png",
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_RGH.png",
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_RGH_Wet.png",
+     "art/source/vehicles/M_Veh_LighthouseCruiser/textures/T_LighthouseCruiser_Cab_MET.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB_Wet.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_NOR.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH_Wet.png",
+     "assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_MET.png"
+    ],
+    "master_dir": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_LighthouseCruiser/textures"
+   }
+  ]
+ },
+ "exports": [
+  {
+   "file": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD0.fbx",
+   "bytes": 2458252,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_LighthouseCruiser_Body_LOD0",
+    "M_Veh_LighthouseCruiser_COL",
+    "M_Veh_LighthouseCruiser_Cab_LOD0",
+    "M_Veh_LighthouseCruiser_Glass_LOD0",
+    "M_Veh_LighthouseCruiser_Trim_LOD0",
+    "M_Veh_LighthouseCruiser_Underbody_LOD0",
+    "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+    "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+    "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+    "M_Veh_LighthouseCruiser_Wheel_RR_LOD0"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_LighthouseCruiser_Body_LOD0.001",
+     "min": [
+      -2.9896,
+      -7.6933,
+      0.8011
+     ],
+     "max": [
+      2.9896,
+      7.1567,
+      5.5104
+     ],
+     "polygons": 7552,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_COL.001",
+     "min": [
+      -2.989,
+      -7.6933,
+      0.0
+     ],
+     "max": [
+      2.989,
+      7.1567,
+      5.5476
+     ],
+     "polygons": 528,
+     "all_triangles": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Cab_LOD0.001",
+     "min": [
+      -2.9495,
+      -2.6238,
+      0.8727
+     ],
+     "max": [
+      2.9495,
+      6.7776,
+      5.4603
+     ],
+     "polygons": 3624,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Glass_LOD0.001",
+     "min": [
+      -2.7258,
+      -2.6023,
+      3.4443
+     ],
+     "max": [
+      2.7258,
+      7.0276,
+      5.52
+     ],
+     "polygons": 1848,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Trim_LOD0.001",
+     "min": [
+      -3.31,
+      -7.7767,
+      0.8035
+     ],
+     "max": [
+      3.31,
+      7.7767,
+      5.9636
+     ],
+     "polygons": 7520,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Underbody_LOD0.001",
+     "min": [
+      -2.92,
+      -6.4225,
+      0.61
+     ],
+     "max": [
+      2.92,
+      5.496,
+      2.82
+     ],
+     "polygons": 1632,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0.001",
+     "min": [
+      2.0625,
+      -6.0733,
+      0.0
+     ],
+     "max": [
+      2.9218,
+      -3.6133,
+      2.46
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0.001",
+     "min": [
+      -2.9218,
+      -6.0733,
+      0.0
+     ],
+     "max": [
+      -2.0625,
+      -3.6133,
+      2.46
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0.001",
+     "min": [
+      2.0625,
+      2.6867,
+      0.0
+     ],
+     "max": [
+      2.9218,
+      5.1467,
+      2.46
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0.001",
+     "min": [
+      -2.9218,
+      2.6867,
+      0.0
+     ],
+     "max": [
+      -2.0625,
+      5.1467,
+      2.46
+     ],
+     "polygons": 1932,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD1.fbx",
+   "bytes": 1029548,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_LighthouseCruiser_Body_LOD1",
+    "M_Veh_LighthouseCruiser_Cab_LOD1",
+    "M_Veh_LighthouseCruiser_Glass_LOD1",
+    "M_Veh_LighthouseCruiser_Trim_LOD1",
+    "M_Veh_LighthouseCruiser_Underbody_LOD1",
+    "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+    "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+    "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+    "M_Veh_LighthouseCruiser_Wheel_RR_LOD1"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_LighthouseCruiser_Body_LOD1.001",
+     "min": [
+      -2.9902,
+      -7.6934,
+      0.8011
+     ],
+     "max": [
+      2.9902,
+      7.1568,
+      5.5104
+     ],
+     "polygons": 2642,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Cab_LOD1.001",
+     "min": [
+      -2.9153,
+      -2.6238,
+      0.8764
+     ],
+     "max": [
+      2.9184,
+      6.7775,
+      5.4564
+     ],
+     "polygons": 1267,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Glass_LOD1.001",
+     "min": [
+      -2.7256,
+      -2.6023,
+      3.4443
+     ],
+     "max": [
+      2.7256,
+      7.0276,
+      5.52
+     ],
+     "polygons": 645,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Trim_LOD1.001",
+     "min": [
+      -3.312,
+      -7.7736,
+      0.7984
+     ],
+     "max": [
+      3.311,
+      7.7774,
+      5.9636
+     ],
+     "polygons": 2631,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Underbody_LOD1.001",
+     "min": [
+      -2.92,
+      -6.4038,
+      0.6242
+     ],
+     "max": [
+      2.92,
+      5.4772,
+      2.8234
+     ],
+     "polygons": 571,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1.001",
+     "min": [
+      2.0622,
+      -6.0733,
+      0.0004
+     ],
+     "max": [
+      2.923,
+      -3.6124,
+      2.4605
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1.001",
+     "min": [
+      -2.9231,
+      -6.0733,
+      0.0013
+     ],
+     "max": [
+      -2.0622,
+      -3.632,
+      2.4605
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1.001",
+     "min": [
+      2.0617,
+      2.6864,
+      -0.0005
+     ],
+     "max": [
+      2.9227,
+      5.143,
+      2.4605
+     ],
+     "polygons": 676,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1.001",
+     "min": [
+      -2.9252,
+      2.6859,
+      -0.0005
+     ],
+     "max": [
+      -2.0619,
+      5.1455,
+      2.4504
+     ],
+     "polygons": 675,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD2.fbx",
+   "bytes": 334908,
+   "fbx_version": 7400,
+   "meshes": [
+    "M_Veh_LighthouseCruiser_Body_LOD2",
+    "M_Veh_LighthouseCruiser_Cab_LOD2",
+    "M_Veh_LighthouseCruiser_Glass_LOD2",
+    "M_Veh_LighthouseCruiser_Trim_LOD2",
+    "M_Veh_LighthouseCruiser_Underbody_LOD2",
+    "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+    "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+    "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+    "M_Veh_LighthouseCruiser_Wheel_RR_LOD2"
+   ],
+   "geometry": [
+    {
+     "name": "M_Veh_LighthouseCruiser_Body_LOD2.001",
+     "min": [
+      -2.9954,
+      -7.693,
+      0.8009
+     ],
+     "max": [
+      2.9962,
+      7.1567,
+      5.5062
+     ],
+     "polygons": 755,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Cab_LOD2.001",
+     "min": [
+      -2.8995,
+      -2.6262,
+      0.8786
+     ],
+     "max": [
+      2.9032,
+      6.7753,
+      5.477
+     ],
+     "polygons": 362,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Glass_LOD2.001",
+     "min": [
+      -2.7252,
+      -2.6036,
+      3.4401
+     ],
+     "max": [
+      2.7252,
+      7.0276,
+      5.5214
+     ],
+     "polygons": 183,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Trim_LOD2.001",
+     "min": [
+      -3.3186,
+      -7.7693,
+      0.9167
+     ],
+     "max": [
+      3.3004,
+      7.8022,
+      5.9469
+     ],
+     "polygons": 751,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Underbody_LOD2.001",
+     "min": [
+      -2.92,
+      -6.4805,
+      0.562
+     ],
+     "max": [
+      2.92,
+      5.5848,
+      2.8898
+     ],
+     "polygons": 162,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2.001",
+     "min": [
+      2.0478,
+      -6.0783,
+      -0.0144
+     ],
+     "max": [
+      2.9285,
+      -3.6337,
+      2.4747
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2.001",
+     "min": [
+      -2.9303,
+      -6.0787,
+      0.0077
+     ],
+     "max": [
+      -2.0566,
+      -3.6208,
+      2.4586
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2.001",
+     "min": [
+      2.0518,
+      2.7196,
+      -0.0153
+     ],
+     "max": [
+      2.93,
+      5.1433,
+      2.3992
+     ],
+     "polygons": 192,
+     "all_triangles": true,
+     "uv": true
+    },
+    {
+     "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2.001",
+     "min": [
+      -2.9281,
+      2.7021,
+      0.0183
+     ],
+     "max": [
+      -2.0637,
+      5.1143,
+      2.4522
+     ],
+     "polygons": 193,
+     "all_triangles": true,
+     "uv": true
+    }
+   ],
+   "unit_scale_factor": 100.0,
+   "axes": [
+    1,
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "file": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser.attachments.json",
+   "attachments": [
+    "ATT_Wheel_FL",
+    "ATT_Wheel_FR",
+    "ATT_Wheel_RL",
+    "ATT_Wheel_RR",
+    "ATT_DriverSeat",
+    "ATT_Seat2",
+    "ATT_Seat3",
+    "ATT_Seat4",
+    "ATT_Seat5",
+    "ATT_EyePoint",
+    "ATT_Headlamp_L",
+    "ATT_Headlamp_R",
+    "ATT_TailLamp_L",
+    "ATT_TailLamp_R",
+    "ATT_BrakeLamp_L",
+    "ATT_BrakeLamp_R",
+    "ATT_ReverseLamp_L",
+    "ATT_ReverseLamp_R",
+    "ATT_TowHitch",
+    "ATT_RoofLamp_01",
+    "ATT_RoofLamp_02",
+    "ATT_RoofLamp_03",
+    "ATT_RoofLamp_04",
+    "ATT_DriveAttachment"
+   ]
+  }
+ ],
+ "blend": "/Users/bogdan/RobloxProjects/MaydaySeaRescue/art/source/vehicles/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser.blend",
+ "ok": true,
+ "checks": [
+  {
+   "subject": "T_LighthouseCruiser_Cab",
+   "check": "bake coverage",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "41.4% of texels at 2048 px from M_Veh_LighthouseCruiser_Cab_LOD0<-M_Veh_LighthouseCruiser_Cab_HP, M_Veh_LighthouseCruiser_Glass_LOD0<-M_Veh_LighthouseCruiser_Glass_HP"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab",
+   "check": "bake",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "12 maps, master 2048, export 1024, 18 s"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "scene units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "unit system METRIC, scale 1.000 (1 unit = 1 stud)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "budget class",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "land_vehicle"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Body_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7552 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.89e-03, 386 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.933, v 0.003 to 0.997"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 3826 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "48 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Cab_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "3624 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.66e-05, 306 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1993 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 33 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Glass_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1848 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.24e-02, 386 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.120 to 0.798, v 0.289 to 0.897"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 924 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 33 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FL_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 30 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FR_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 30 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RL_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 30 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RR_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1932 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.70e-03, 288 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.031 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1006 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 30 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Underbody_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1632 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.94e-03, 272 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.980, v 0.009 to 0.969"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 892 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 30 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Trim_LOD0"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "7520 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.25e-05, 240 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.992, v 0.008 to 0.976"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 4228 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "check": "texel density",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (ship maps are 1024 (Roblox downsamples to 1024 at run time); 4 sets per the land_vehicle class; paint is a clean clear-coat whose detail lives in geometry and the baked shut lines): 27 px/stud at 1024 px, standard tier 51 or more px/stud (pass at 46)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Body_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2642 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.47e-04, 206 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.933, v 0.003 to 0.997"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2642 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Cab_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1267 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.45e-06, 119 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 1267 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 2.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Glass_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "645 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.42e-03, 223 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.120 to 0.798, v 0.289 to 0.897"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 645 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 0.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FL_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.36e-06, 212 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FR_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 8.06e-06, 216 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 9.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RL_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "676 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.73e-06, 208 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 676 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 8.5% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RR_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "675 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 7.66e-06, 205 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.031 to 0.981, v 0.009 to 0.991"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 675 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 11.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Underbody_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "571 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.66e-03, 113 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.933, v 0.009 to 0.946"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 571 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.048 (max 0.02), UV area by 13.9% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Trim_LOD1"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2631 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.68e-07, 107 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.976, v 0.008 to 0.976"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 2631 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.016 (max 0.02), UV area by 8.7% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Body_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "755 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 4.25e-03, 95 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.004 to 0.933, v 0.004 to 0.997"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 755 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Cab_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "362 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.66e-05, 62 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.990, v 0.008 to 0.992"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 362 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 10.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Glass_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "183 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.50e-02, 117 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.120 to 0.797, v 0.289 to 0.897"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 183 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV bounds differ by 0.000 (max 0.02), UV area by 1.0% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FL_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 9.51e-06, 91 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.080 to 0.931, v 0.009 to 0.943"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.071 (max 0.02), UV area by 36.6% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FR_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.01e-05, 93 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.119 to 0.932, v 0.009 to 0.969"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.110 (max 0.02), UV area by 34.8% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RL_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "192 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 1.00e-05, 92 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.932, v 0.011 to 0.944"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 192 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.049 (max 0.02), UV area by 33.2% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RR_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "193 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 6.25e-06, 93 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.031 to 0.930, v 0.011 to 0.944"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 193 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.050 (max 0.02), UV area by 35.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Underbody_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "162 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.02e-03, 32 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.009 to 0.930, v 0.009 to 0.946"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 162 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.050 (max 0.02), UV area by 41.1% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Trim_LOD2"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "751 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "geometry",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 loose verts, smallest face 2.01e-06, 63 open edges (open edges allowed on cards and decals)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "one material",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1 material slot(s)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "one UV set",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV sets: UVMap"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "UVs in 0..1",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "u 0.008 to 0.941, v 0.008 to 0.959"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "UV faces",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 of 751 faces have no UV area"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "check": "LOD UV layout",
+   "ok": true,
+   "waived": true,
+   "info": false,
+   "detail": "WAIVED (collapse decimation moves small lamp, grille, spoke and tread islands at LOD1 / LOD2 (seen past 150 / 500 studs, far below the island size in the mip chain); LOD0 unchanged): UV bounds differ by 0.051 (max 0.02), UV area by 34.4% (max 15%)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Body_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Body_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Cab_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Cab_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Glass_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Glass_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Underbody_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Underbody_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Trim_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Trim_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FL_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FL_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_FR_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_FR_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RL_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RL_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_HP",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_Wheel_RR_HP"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_Wheel_RR_HP",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_COL",
+   "check": "naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "object and mesh named M_Veh_LighthouseCruiser_COL"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_COL",
+   "check": "transforms applied",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "location, rotation and scale"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_COL",
+   "check": "per-MeshPart triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "528 of 10000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_COL",
+   "check": "COL closed",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "0 open edges, 0 loose verts"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_COL",
+   "check": "COL triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "528 of 1000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "LOD0 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "29904 of 30000 (land_vehicle, asset row)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "LOD1 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "10459 of 12000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "LOD2 triangles",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "2984 of 3000"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "reference dims",
+   "ok": true,
+   "waived": false,
+   "info": true,
+   "detail": "no art/reference/M_Veh_LighthouseCruiser/dims.md yet: spec dims_m used as given (verify)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "real size x",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "6.620 studs, real 2.000 m = 6.000 studs, off 10.3% (5% free, 15% with a note); NOTE: X includes the door mirrors (2.0 m is the body); Y includes the tow ball behind the bumper; Z is to the top of the roof-bar lamps (the roof is 1.85 m)."
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "real size y",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "15.553 studs, real 4.950 m = 14.850 studs, off 4.7% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "real size z",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "5.964 studs, real 1.950 m = 5.850 studs, off 1.9% (5% free, 15% with a note)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "origin",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "base at z 0.0000, centre (0.000, 0.000); origin is the centre of the base"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "_COL proxy",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_LighthouseCruiser_COL"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser",
+   "check": "texture sets",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "4 (4 to 4 sets)"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_ALB.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_NOR.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_RGH.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Body_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Body_MET.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_NOR.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Cab_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Cab_MET.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_ALB.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_NOR.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_RGH.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Wheels_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Wheels_MET.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_ALB",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_ALB.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_ALB_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_ALB_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_NOR",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_NOR.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_RGH",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_RGH.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_RGH_Wet",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_RGH_Wet.png"
+  },
+  {
+   "subject": "T_LighthouseCruiser_Trim_MET",
+   "check": "PBR map",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "1024 x 1024, cap 4096, assets/textures/M_Veh_LighthouseCruiser/T_LighthouseCruiser_Trim_MET.png"
+  },
+  {
+   "subject": "ATT_Wheel_FL",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_FR",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_RL",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Wheel_RR",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriverSeat",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat2",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat3",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat4",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Seat5",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_EyePoint",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Headlamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_Headlamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TailLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TailLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BrakeLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_BrakeLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ReverseLamp_L",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_ReverseLamp_R",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_TowHitch",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_RoofLamp_01",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_RoofLamp_02",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_RoofLamp_03",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_RoofLamp_04",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "ATT_DriveAttachment",
+   "check": "attachment naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "empty becomes an Attachment on import"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD0.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD0.fbx"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD0.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD0.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD0.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_LighthouseCruiser_Body_LOD0, M_Veh_LighthouseCruiser_COL, M_Veh_LighthouseCruiser_Cab_LOD0, M_Veh_LighthouseCruiser_Glass_LOD0, M_Veh_LighthouseCruiser_Trim_LOD0, M_Veh_LighthouseCruiser_Underbody_LOD0, M_Veh_LighthouseCruiser_Wheel_FL_LOD0, M_Veh_LighthouseCruiser_Wheel_FR_LOD0, M_Veh_LighthouseCruiser_Wheel_RL_LOD0, M_Veh_LighthouseCruiser_Wheel_RR_LOD0; 30432 triangles (scene 30432)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD0.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD1.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD1.fbx"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD1.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD1.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD1.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_LighthouseCruiser_Body_LOD1, M_Veh_LighthouseCruiser_Cab_LOD1, M_Veh_LighthouseCruiser_Glass_LOD1, M_Veh_LighthouseCruiser_Trim_LOD1, M_Veh_LighthouseCruiser_Underbody_LOD1, M_Veh_LighthouseCruiser_Wheel_FL_LOD1, M_Veh_LighthouseCruiser_Wheel_FR_LOD1, M_Veh_LighthouseCruiser_Wheel_RL_LOD1, M_Veh_LighthouseCruiser_Wheel_RR_LOD1; 10459 triangles (scene 10459)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD1.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD2.fbx",
+   "check": "file naming",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "assets/fbx/M_Veh_LighthouseCruiser/M_Veh_LighthouseCruiser_LOD2.fbx"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD2.fbx",
+   "check": "units",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UnitScaleFactor 100.0 (rbxkit FBX_SCALE_UNITS, global scale 1; expected 100.0)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD2.fbx",
+   "check": "axes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UpAxis, sign, FrontAxis, sign = (1, 1, 2, 1), expected (1, 1, 2, 1)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD2.fbx",
+   "check": "meshes",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "M_Veh_LighthouseCruiser_Body_LOD2, M_Veh_LighthouseCruiser_Cab_LOD2, M_Veh_LighthouseCruiser_Glass_LOD2, M_Veh_LighthouseCruiser_Trim_LOD2, M_Veh_LighthouseCruiser_Underbody_LOD2, M_Veh_LighthouseCruiser_Wheel_FL_LOD2, M_Veh_LighthouseCruiser_Wheel_FR_LOD2, M_Veh_LighthouseCruiser_Wheel_RL_LOD2, M_Veh_LighthouseCruiser_Wheel_RR_LOD2; 2984 triangles (scene 2984)"
+  },
+  {
+   "subject": "M_Veh_LighthouseCruiser_LOD2.fbx",
+   "check": "UVs exported",
+   "ok": true,
+   "waived": false,
+   "info": false,
+   "detail": "UV layer on 9 of 9 visual meshes"
+  }
+ ],
+ "meshes": [
+  {
+   "name": "M_Veh_LighthouseCruiser_Body_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 7552,
+   "texel_density": 48.2
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Cab_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 3624,
+   "texel_density": 32.6
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Glass_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1848,
+   "texel_density": 32.5
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 29.9
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 29.9
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 29.9
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1932,
+   "texel_density": 29.9
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Underbody_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 1632,
+   "texel_density": 30.2
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Trim_LOD0",
+   "role": "visual",
+   "lod": "LOD0",
+   "triangles": 7520,
+   "texel_density": 27.1
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Body_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 9376,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Cab_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 7218,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Glass_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 1848,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Underbody_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 11232,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Trim_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 15924,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FL_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FR_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RL_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RR_HP",
+   "role": "hp",
+   "lod": null,
+   "triangles": 3652,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_COL",
+   "role": "col",
+   "lod": null,
+   "triangles": 528,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Body_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2642,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Body_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 755,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Cab_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 1267,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Cab_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 362,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Glass_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 645,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Glass_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 183,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FL_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_FR_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 676,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RL_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 192,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 675,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Wheel_RR_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 193,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Underbody_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 571,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Underbody_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 162,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Trim_LOD1",
+   "role": "visual",
+   "lod": "LOD1",
+   "triangles": 2631,
+   "texel_density": null
+  },
+  {
+   "name": "M_Veh_LighthouseCruiser_Trim_LOD2",
+   "role": "visual",
+   "lod": "LOD2",
+   "triangles": 751,
+   "texel_density": null
+  }
+ ],
+ "bbox_studs": [
+  6.62000036239624,
+  15.553478717803955,
+  5.963583946228027
+ ],
+ "peak_rss_mb": 2841.3
+}

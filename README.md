@@ -1,62 +1,64 @@
 # Mayday: Sea Rescue
 
-**Answer the call. Brave the storm. Bring them home.**
+**Answer the call. Bring them home. Build your island.**
 
-A photoreal Roblox coast guard and sea rescue game. You join the reopened lifeboat station in Port Haven on the North Atlantic, take Mayday taskings over the radio, and run real rescue operations: search, approach, recovery, casualty care, towing and handover, done by a crew or solo with NPC crew. Every few minutes a storm rolls over the whole server and the big calls come in.
+A Roblox coastguard rescue game for kids 8–15, many on phones. You start on a wild forest hub, take a call,
+sail out to a survivor, bring them home, and build up your own Lego island. Six players per server; friends
+can ride along, crew up and visit each other's islands.
 
-The one-line pitch: *Firefighting Sim, but on the ocean, with storms, and every rescue done the real way.*
+The loop: **your island → a call → sail out → pick up → bring them home → build your island → farther calls,
+bigger craft.**
 
-Two rules shape everything:
+## The design
 
-- **Mega realistic.** Photoreal PBR art, a real-looking ocean and weather, and vehicles and kit modelled on real lifeboats, RIBs and rescue helicopters ([chapter 05](docs/05-art-direction.md)).
-- **Real operations, not "go there, press a button, go back".** Every rescue is a chain of real procedure steps with skill, decisions and consequences ([chapter 09](docs/09-rescue-operations.md)).
-
-This repository holds the design bible and a working greybox (the first rescue loop runs in Studio). Photoreal art and the full operations come next.
-
-## Why this game
-
-- **The demand is proven.** *Firefighting Sim* (Blackbox Express) is a fast-rising rescue sim (34.8K peak CCU, Oct 2026), with 92% likes (unverified). Its creation date is unknown. Rescue on land is working.
-- **The water is empty.** The sea rescue niche on Roblox is 8 to 10 small games, none we found above a few thousand concurrent players. Nobody has made a polished one.
-- **The fantasy is big and has room to grow.** Boats, jet skis, helicopters, storms, icebergs and cruise ships all fit, solo or as a crew, on a big open island map with cars, beaches and a seabed to explore.
-
-Full evidence: [`docs/research/reference-games.md`](docs/research/reference-games.md).
-
-## The design bible
+[`docs/00-design.md`](docs/00-design.md) is the source of truth. [`docs/23-dock-and-core-loop.md`](docs/23-dock-and-core-loop.md)
+is the change log that got here (a)–(n). Old designs live in git tag `pre-hub-cut` and [`docs/archive/`](docs/archive/).
 
 | # | Chapter | What it answers |
 |---|---|---|
-| 01 | [Game canon](docs/01-game-canon.md) | Fantasy, pillars, story, setting, characters, tone, scope |
-| 02 | [Core loop and mechanics](docs/02-core-loop-and-mechanics.md) | The call loop, first two minutes, call types, vehicles, rescues, co-op, storms |
-| 03 | [Progression](docs/03-progression.md) | Ranks, vehicle ladder, upgrades, zones, challenges, pacing |
-| 04 | [Monetization](docs/04-monetization.md) | Game passes, developer products, prices, what we never sell, policy |
-| 05 | [Art direction](docs/05-art-direction.md) | Visual style, palette, lighting, VFX, how we avoid slop, asset sources |
-| 06 | [Tools and pipeline](docs/06-tools-and-pipeline.md) | Toolchain, Blender to Studio, ocean/boat/helicopter tech, repo layout |
-| 07 | [Store page, thumbnails and trailer](docs/07-store-page-thumbnails-and-trailer.md) | Icon, thumbnails, gameplay video shot list, description |
-| 08 | [References](docs/08-references.md) | Games, real-world references, tutorials, links |
-| 09 | [Rescue operations](docs/09-rescue-operations.md) | Every operation step by step: real procedure, player mechanic, crew role, failure, grading; radio; certifications |
-| 10 | [World and map](docs/10-world-and-map.md) | The Gale Isles map, roads and beaches, land vehicles, seabed and wrecks, free exploration and the logbook, Terrain and streaming tech |
-| 11 | [Dispatcher and voice](docs/11-dispatcher-and-voice.md) | The voiced Coastguard radio: cast, line script, stitching, radio FX, ElevenLabs pipeline |
-| 12 | [Asset list](docs/12-asset-list.md) | Every photoreal MVP asset with references, sources, budgets, priority and production batches |
-| 13 | [Release plan](docs/13-release-plan.md) | Launch audit: gap table, work packages, definition of launch-ready, user-only steps |
-| 14 | [Playtest feedback and direction](docs/14-playtest-feedback-and-direction.md) | Open playtest issues, show-don't-tell rule, rescue variants, simple characters, living town, the phone |
+| 00 | [The design](docs/00-design.md) | Canonical world, loop, island, craft, economy, UI, build rules |
+| 23 | [Dock and core loop](docs/23-dock-and-core-loop.md) | Why the loop changed, work packages, quests, UI, Lego style |
+| 05 | [Art direction](docs/05-art-direction.md) | Two lanes: existing art kept, new art Lego-style |
+| 06 | [Tools and pipeline](docs/06-tools-and-pipeline.md) | Code toolchain, publish, art pipeline, repo layout |
+| 08 | [References](docs/08-references.md) | Games, look/UI references, real rescue, tech docs |
+| 10 | [World and map](docs/10-world-and-map.md) | Hub, six islands, bridges, outer ring, seabed, streaming |
+| 12 | [Asset list](docs/12-asset-list.md) | What exists, what is new, what is cut |
+| 13 | [Release plan](docs/13-release-plan.md) | What landed, what is left, launch checklist |
+| 18 | [UI art requests](docs/18-ui-art-requests.md) | Simulator-style icons and kit art |
+| 19 | [World sign art](docs/19-world-sign-art.md) | Hub, island, bridge and hazard signs |
 
-Raw research notes: [`docs/research/`](docs/research/).
+Older chapters, kept for history and superseded by 00: [01](docs/01-game-canon.md), [02](docs/02-core-loop-and-mechanics.md),
+[03](docs/03-progression.md), [04](docs/04-monetization.md), [07](docs/07-store-page-thumbnails-and-trailer.md),
+[15](docs/15-retention-and-new-players.md). Do not use them as the current design.
+
+## Why this game
+
+- **The rescue loop is proven.** *Firefighting Sim* shows players want answer-call → drive → rescue → rank.
+- **The water is still open.** The sea-rescue niche on Roblox is small; nobody has made a polished one.
+- **The tycoon is personal.** Your island grows in the world and everyone can see it.
+- **It is readable on a phone.** Flat Lego islands, chunky UI, one clear call at a time.
 
 ## Conventions
 
-- Scope tags: `[MVP]` first playable (the cut list is in [chapter 01, section 9.1](docs/01-game-canon.md#91-mvp-scope)), `[L]` public launch, `[P1]` first update window, `[P2]` later.
-- `(tune)` marks a starting number we expect to change after playtests.
-- `(unverified)` marks a fact we could not confirm from a primary source.
-- Ownership: [chapter 02](docs/02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [chapter 03](docs/03-progression.md) owns numbers (Rep, Cash, thresholds, pacing), [chapter 04](docs/04-monetization.md) owns Robux prices, [chapter 06](docs/06-tools-and-pipeline.md) owns tech, and [chapter 10](docs/10-world-and-map.md) owns the world layout (geography, roads, seabed, discoverables). Other chapters link to them.
+- `(tune)` marks a starting number that playtests may move.
+- `(verify)` marks an engine fact to check in Studio or the official docs.
+- No choice UI in gameplay: actions are in the world. Exceptions: NPC talk, the build tablet, in-world
+  counters and boards.
+- Show, don't tell: icons and 1–3 word labels; every action on keyboard, touch and gamepad.
+- New things are Lego-style; existing finished models keep their look.
 
 ## Code
 
-Greybox code lives in `src/` (Rojo). Module ownership and service APIs: [`CONTRACT.md`](CONTRACT.md).
+The greybox lives in `src/` (Rojo). Module ownership and APIs: [`CONTRACT.md`](CONTRACT.md).
 
-- Checks: `~/RobloxProjects/tools/check.sh .` (types, lint, format, Lune unit tests)
-- Build: `~/RobloxProjects/tools/build.sh .` writes `build/MaydaySeaRescue.rbxl`
-- Studio smoke test: `python3 tools/studio/smoke.py`
+```sh
+~/RobloxProjects/tools/check.sh .          # types, lint, format, Lune specs
+~/RobloxProjects/tools/build.sh .          # writes build/MaydaySeaRescue.rbxl
+python3 tools/studio/smoke.py              # real Studio smoke run
+python3 tools/publish.py                   # private test place, ~2 min
+```
 
 ## Toolchain
 
-Pinned in [`rokit.toml`](rokit.toml). Run `rokit install`. Details in [chapter 06](docs/06-tools-and-pipeline.md).
+Pinned in [`rokit.toml`](rokit.toml). Run `rokit install`. Details in
+[chapter 06](docs/06-tools-and-pipeline.md).

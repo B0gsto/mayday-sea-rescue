@@ -1,15 +1,15 @@
 # Build contract
 
-Who owns what, and the APIs between modules, for the game as it is now (docs/16 is the design source of
-truth). Use another module's API; don't edit its files without a reason. History of cut systems lives in
-git and docs/16 section 2, not here.
+Who owns what, and the APIs between modules, for the game as it is now (`docs/00-design.md` is the design
+source of truth; `docs/23-dock-and-core-loop.md` is the change log). Use another module's API; don't edit its
+files without a reason. History of cut systems lives in git and `docs/archive/16-launch-polish-plan.md`, not here.
 
 ## Rules (every module)
 
 - No choice UI in gameplay: no menu, card or list where the player picks an option. Mechanics are world
   actions (drive, grab, hold), readable without text; a device glyph is fine. Menus live only in the phone
   (settings, Vehicles, Store, Crew) and outside play. Exception: talking to a town NPC shows numbered
-  replies (docs/14 §2).
+  replies (docs/23 (l)).
 - Show, don't tell: icons and 1 to 3 word labels; keyboard, touch and gamepad for every action.
 - Placeholders (code-built Parts) until art lands; gameplay never waits on art.
 - Modules in `src/server/Services/` and `src/client/Controllers/` export `Init()` and `Start()` plus an
@@ -20,7 +20,7 @@ git and docs/16 section 2, not here.
   server handler or a client listener; drop it with its last user.
 - Gate: `~/RobloxProjects/tools/check.sh .` (stylua, selene, luau-lsp, Lune specs in `tests/`) must pass.
 
-## Core loop (docs/16 section 1)
+## Core loop (docs/00 §3)
 
 A call goes up, you drive a craft near the survivors, they climb aboard by themselves, you bring them to a
 drop-off pad and get Cash and Rep. Cash buys vehicles and upgrades in the phone; Rep raises your rank, and
@@ -145,7 +145,7 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
 
 ## Operations (simple rescue)
 
-Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau`, docs/16 K1):
+Every op runs the same 4-step plan (`src/shared/Ops/Definitions/SimpleSteps.luau`, docs/23 (e)):
 
 | Step | Mechanic (`src/client/Mechanics/`) | What happens |
 |---|---|---|
@@ -210,7 +210,7 @@ words, K4), `OpsDebrief`; `OpsController` mounts `OpsHud`. No dispatch radio (ow
 pager card, its flare and pin, and a pager beep. Voices are NPCs only: `VoiceTTS` + `UI/VoiceCast` (TalkController,
 casualty shouts in CasualtyController).
 
-## First 10 minutes (docs/16 section 4)
+## First 10 minutes (docs/00 §3, docs/23 (a)-(e))
 
 - Cold open (B0, B1): `StartColdOpen` seats a new player on a jet ski (`VehicleService.SpawnColdOpen`) with
   a swimmer ahead; auto_board, the slipway pad, `ColdOpenCue` world cues, `OnboardingReward` coins. The
@@ -256,7 +256,7 @@ off since buys moved to the dock boards (WP-11a). `UI/VehiclesApp` (phone: Boat 
 Boat to me only since WP-10b; a dock board opens one craft's card: Cash and Robux buy, upgrades), `UI/StoreApp` (every live product), `UI/PetsApp` (pick the one companion: Bosun or a
 recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings borrows
 `SettingsPanel`, Map opens `MapController`. `UI/AlbumApp` is the sticker album
-(docs/21 §3; a seventh app on the grid).
+(docs/archive/21-explore-world-plan.md §3; a seventh app on the grid).
 
 ## HUD and map
 
@@ -264,7 +264,7 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   `src/shared/HudLayout.luau` (pure) places the regions per device.
 - `MapController` (minimap and full map on M / Select / tap), `MapService`, `MapConfig` (styles, blips);
   `SetBlips(group, items)` for static blips (seamarks). Player attributes `MapWaypoint`, `MapOpen`.
-  The one objective pin (`GetObjective`, docs/20 rule 1): your accepted call, then your quest (`QuestTarget`),
+  The one objective pin (`GetObjective`, docs/archive/20-clarity-redesign.md rule 1): your accepted call, then your quest (`QuestTarget`),
   then a call offer, then your own waypoint. An offer never takes the pin from a quest.
 
 ## Monetization and cosmetics
@@ -299,7 +299,7 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
   wage at session start; `CrewHireController` billboards, Hire / Fire card, next-group clock). Hooks:
   VehicleService relaunch, AmbientRescueService +1 swimmer, OperationService offer factor. Robux product
   `CrewHire` (`id = 0`, `ready = false`).
-- Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
+- Exploration album and map fog (docs/archive/21-explore-world-plan.md §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),
   `DiscoveryRules` (pure: sighted / reached / stickers, flags `isles` and `fog`), `DiscoveryService`
   (server-observed positions only; `Workspace.Discovery` placeholder props; remotes `Discovery_State`,
   `Discovery_Found`, `Discovery_Get`), `DiscoveryController` (`IsRevealed(cell | islandId)`, `IsStamped`,

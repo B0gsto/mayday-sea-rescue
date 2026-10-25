@@ -1,10 +1,12 @@
 # 15 · Retention, live events and the new player
 
-> Where this chapter and [16 · Launch polish plan](16-launch-polish-plan.md) disagree, docs/16 is the current source of truth (2026-10-23: many systems below were cut for launch).
+> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
+
+> Where this chapter and [16 · Launch polish plan](archive/16-launch-polish-plan.md) disagree, docs/00-design.md is the current source of truth (2026-10-23: many systems below were cut for launch).
 
 Goal (user, 2026-10-19): mass appeal for children and adults, heavy focus on retention and the first session, with
 time-limited content that brings players back, executed well enough to compete with the top Roblox CCU games.
-This chapter adds to docs/03 (progression) and docs/04 (monetization); where they disagree, this one wins.
+This chapter adds to docs/03 (progression) and docs/04 (monetization); where any of them disagree with [`00-design.md`](00-design.md), 00 wins.
 
 ## 1. Fair FOMO (hard rules)
 

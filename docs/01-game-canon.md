@@ -1,8 +1,10 @@
 # 01 · Game canon
 
-This file is the single source of truth for **Mayday: Sea Rescue**. Every other design document expands one part of it. If another document disagrees with this one, this one wins until it is changed here first.
+> Older chapter: this predates the 2026-10-25 hub redesign. [`00-design.md`](00-design.md) is the source of truth; the current game is the forest hub, six Lego islands and no town, cars, phone or radio.
 
-Numbers marked **(tune)** are starting values we expect to move after playtests. [Document 02](02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [document 09](09-rescue-operations.md) owns the rescue operations (steps, radio, grading, certifications, kit), [document 03](03-progression.md) owns progression numbers, [document 04](04-monetization.md) owns prices and [document 06](06-tools-and-pipeline.md) owns tech; where they differ from an anchor here, they win and this file is updated.
+This chapter was the single source of truth for the old design. The current source of truth is [`00-design.md`](00-design.md); where this chapter disagrees with it, 00 wins.
+
+Numbers marked **(tune)** are starting values we expect to move after playtests. [Document 02](02-core-loop-and-mechanics.md) owns mechanics (including map scale and vehicle speeds), [document 09](archive/09-rescue-operations.md) owns the rescue operations (steps, radio, grading, certifications, kit), [document 03](03-progression.md) owns progression numbers, [document 04](04-monetization.md) owns prices and [document 06](06-tools-and-pipeline.md) owns tech; where they differ from an anchor here, they win and this file is updated.
 
 ## 1. Identity
 
@@ -20,15 +22,15 @@ Numbers marked **(tune)** are starting values we expect to move after playtests.
 
 ### 1.1 Why this game, why now
 
-- **Firefighting Sim** (Blackbox Express) shows the "answer the call, drive the vehicle, save people, rank up" loop is hot right now: a fast-rising rescue sim (34.8K peak CCU, Oct 2026), 19,225 live, 92% likes (https://rblxstat.com/games/10767634248, seen 2026-10-17). Its place ID looks older than 2025, so we treat its creation date as unknown; the visit count is flagged unverified in [`research/reference-games.md`](research/reference-games.md).
-- **No polished sea rescue game exists.** The coast guard, lifeguard and sea rescue niche is 8 to 10 small roleplay, MilSim and sim titles. None was verified above a few thousand CCU ([`research/reference-games.md`](research/reference-games.md), section 4).
+- **Firefighting Sim** (Blackbox Express) shows the "answer the call, drive the vehicle, save people, rank up" loop is hot right now: a fast-rising rescue sim (34.8K peak CCU, Oct 2026), 19,225 live, 92% likes (https://rblxstat.com/games/10767634248, seen 2026-10-17). Its place ID looks older than 2025, so we treat its creation date as unknown; the visit count is flagged unverified in [`research/reference-games.md`](archive/research/reference-games.md).
+- **No polished sea rescue game exists.** The coast guard, lifeguard and sea rescue niche is 8 to 10 small roleplay, MilSim and sim titles. None was verified above a few thousand CCU ([`research/reference-games.md`](archive/research/reference-games.md), section 4).
 - **The name is clear.** No Roblox game titled "Mayday" was found. "Coast Guard" and "Sea Rescue" are taken, so we avoid them as the lead word.
 
 ## 2. Design pillars
 
 Every feature serves at least one pillar. A feature that serves none is cut.
 
-1. **Every rescue is a real operation.** A rescue is a chain of real search-and-rescue steps (tasking, search, approach, recovery, casualty care, handover), and every step is a skill: steering, timing, positioning, choosing gear, reading the casualty. Never "go there, push a button, go there". Decisions have consequences, every step is graded, and the debrief says what to do better ([document 09](09-rescue-operations.md)).
+1. **Every rescue is a real operation.** A rescue is a chain of real search-and-rescue steps (tasking, search, approach, recovery, casualty care, handover), and every step is a skill: steering, timing, positioning, choosing gear, reading the casualty. Never "go there, push a button, go there". Decisions have consequences, every step is graded, and the debrief says what to do better ([document 09](archive/09-rescue-operations.md)).
 2. **Mega realistic, never grim.** The sea, the boats, the kit, the radio and the procedures look and behave like the real thing ([document 05](05-art-direction.md) for the look). Failure shows as a casualty's condition dropping and another unit taking over, never as injury or death.
 3. **Every operation is a hero moment.** It ends with a casualty handed over safe and someone saying thank you. A new player finishes their first rescue inside 3 minutes of joining; a standard operation takes about 4 to 7 minutes (tune).
 4. **The sea is the opponent.** Wind, waves, tide, fog and storms make rescues hard. Other players never do. There is no PvP and no way to hurt another player's run.
@@ -99,7 +101,7 @@ Newfoundlands are a real water-rescue breed, which lets Bosun do real jobs (towi
 | **Skerries Dive Shop (the Tran twins)** | The Skerries | Dive and kayak tour calls, wildlife calls (a seal in a net). |
 | **Skipper Ingrid Hale** | Trawler *Northern Dawn* | Open Sea and Iceberg North calls. Calm, precise radio voice. |
 
-Voice lines are text plus short radio "crackle" sounds by default. Optional recorded voice lines for the Coastguard, Chief Aggie and the player's radio replies are [L] ([document 09](09-rescue-operations.md), section 3.5).
+Voice lines are text plus short radio "crackle" sounds by default. Optional recorded voice lines for the Coastguard, Chief Aggie and the player's radio replies are [L] ([document 09](archive/09-rescue-operations.md), section 3.5).
 
 ## 6. Season 1 arc: "Relight the Gales"
 
@@ -125,20 +127,20 @@ A light story told through Chief Aggie's radio, Tobias's lighthouse missions and
 4. **Warm and a little funny.** Thank-you lines, Barnaby's mishaps, Bosun shaking himself dry, Vance's photo poses. Jokes are gentle and never at a victim's expense.
 5. **Heroic, not military.** Ranks are rescue service ranks. No weapons anywhere in the game.
 6. **Storms are exciting, not scary.** Big waves and lightning, bright rain-lit colours, rousing music. No horror sounds, no darkness that hides everything.
-7. **Real rescue craft, done the real way.** Approach from downwind, throw the bag beyond the casualty, keep a cold casualty flat, give an ATMIST handover, take the strain gently on a tow. Physics and numbers are simplified; procedure never is. Anything not yet checked against an official source is marked "(verify)" in [document 09](09-rescue-operations.md). Players should come away knowing real sea safety (wear a lifejacket, float to live, wave both arms, call the Coastguard).
+7. **Real rescue craft, done the real way.** Approach from downwind, throw the bag beyond the casualty, keep a cold casualty flat, give an ATMIST handover, take the strain gently on a tow. Physics and numbers are simplified; procedure never is. Anything not yet checked against an official source is marked "(verify)" in [document 09](archive/09-rescue-operations.md). Players should come away knowing real sea safety (wear a lifejacket, float to live, wave both arms, call the Coastguard).
 8. **Plain words on screen.** Short labels a nine-year-old can read. Icons first, text second.
 
 ## 8. Signature features
 
 | Feature | Why it matters | Scope |
 |---|---|---|
-| Realistic multi-step rescue operations | The core: every rescue is a chain of real procedure steps, each a skill, graded and debriefed ([document 09](09-rescue-operations.md)). | [MVP] Person in the Water, Disabled Vessel, Capsized Ferry; [L] sinking, fire, winch, beach, cliff; [P1] medevac |
+| Realistic multi-step rescue operations | The core: every rescue is a chain of real procedure steps, each a skill, graded and debriefed ([document 09](archive/09-rescue-operations.md)). | [MVP] Person in the Water, Disabled Vessel, Capsized Ferry; [L] sinking, fire, winch, beach, cliff; [P1] medevac |
 | A real radio | MAYDAY and PAN-PAN taskings from Gale Isles Coastguard, answered on a quick-reply radio wheel: acknowledgement, ETA, POB, sitreps, handover. | [MVP] wheel; [L] optional voice lines |
 | Certifications | Helm, Casualty Care, Rescue Swimmer, Coxswain, Winch Operator, Pilot: earned in exercises and operations, gating roles and vehicles. | [MVP] first three; [L] the rest |
 | Mayday radio calls with a real search | The "find them" moment is what a fire game cannot do. Flares, radio bearings and Bosun's nose make searching a skill. | [MVP] datum and drift, lookout, flares and strobes, bearing, Bosun points; [L] binoculars, expanding square |
 | Server-wide storm every ~15 min (tune) | A shared clock everyone feels at once, with a burst of calls and rare big calls. Full storm waves at the harbor mouth put it in every first session. | [MVP] storm and harbor mouth, [L] big calls |
 | Bosun the Newfoundland | A companion players love and screenshot. Helps solo players feel like a crew. | [MVP] follower who barks and points, [L] swims and tows |
-| Crew roles with NPC fill-in | Intentional co-play, which Roblox discovery rewards (see [`research/store-page-and-monetization.md`](research/store-page-and-monetization.md), section 5). | [MVP] Helm, Navigator/Radio, Crew/Swimmer, Medic with NPC fill-in; ride-along Winch Operator and Winchman; [L] Pilot |
+| Crew roles with NPC fill-in | Intentional co-play, which Roblox discovery rewards (see [`research/store-page-and-monetization.md`](archive/research/store-page-and-monetization.md), section 5). | [MVP] Helm, Navigator/Radio, Crew/Swimmer, Medic with NPC fill-in; ride-along Winch Operator and Winchman; [L] Pilot |
 | Rescue helicopter with hoist | The headline vehicle and the hero shot for the store page. | [MVP] tech spike only, [L] |
 | Station helicopter ride-along | On big calls, low-rank players can take a seat in the NPC-flown Coastguard helicopter as trainee Winch Operator or Winchman, so the hero vehicle shows up long before they can own it. | [MVP] on the Capsized Ferry if the helicopter spike is ready, else [L] |
 | Lighthouses relit island by island | Visible, permanent progress on the map. | [MVP] Harbor Light, [L] four |
@@ -162,7 +164,7 @@ Used in every design document.
 
 ### 9.1 MVP scope
 
-The MVP proves one thing: a first session of real, step-by-step rescue operations that ends with a storm rescue and a reason to come back. Three operations, built deep rather than many built shallow ([document 09](09-rescue-operations.md)). Anything not on the keep list waits for [L] unless tagged otherwise.
+The MVP proves one thing: a first session of real, step-by-step rescue operations that ends with a storm rescue and a reason to come back. Three operations, built deep rather than many built shallow ([document 09](archive/09-rescue-operations.md)). Anything not on the keep list waits for [L] unless tagged otherwise.
 
 | Keep in the MVP | Defer |
 |---|---|
@@ -191,7 +193,7 @@ Exact MVP numbers (gear items, thresholds, prices) are in [document 03](03-progr
 
 | Term | Meaning |
 |---|---|
-| **Operation** | One rescue, played as a chain of real procedure steps from tasking to handover ([document 09](09-rescue-operations.md)). Older text says "call"; it means the same. |
+| **Operation** | One rescue, played as a chain of real procedure steps from tasking to handover ([document 09](archive/09-rescue-operations.md)). Older text says "call"; it means the same. |
 | **Step** | One part of an operation (search, approach, recovery, survey...), each a skill with its own grade. |
 | **Tasking** | The radio message from Gale Isles Coastguard that starts an operation. |
 | **Big call** | A rare storm-only operation with many casualties, built for several crews (the Capsized Ferry). |

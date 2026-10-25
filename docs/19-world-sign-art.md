@@ -1,69 +1,82 @@
-# 19 · World sign art (Gemini requests, map pass 2)
+# 19 · World sign art
 
-2D faces for in-world signs. Nothing here is drawn with text-heavy Frames: each sign is one image on a Decal.
-Generate with Antigravity Gemini (memory: images-via-antigravity), upload, then paste the `rbxassetid://` into the
-table named under "Wire". Until an id is filled in the sign is not built (no blank white board in the town).
+Sign faces for the current world: the forest hub, six player islands, the bridges and the outer islands. One
+image per sign, applied as a Decal. No text-heavy Frames.
 
-Style for all: real Cornish / UK street furniture, flat front-on artwork filling the canvas edge to edge, no
-perspective, no shadow, no mock-up background, no watermark. Slightly weathered enamel / painted metal, not glossy.
-PNG, sRGB, local only (memory: no-binaries-on-github).
+The old street-name, tide-board, car-park and cliff-warning signs belonged to Port Haven and the roads. They
+are cut with the town; do not build them. No `sign_*` ids are referenced in `src/` or `map/` today.
 
-## Street name plates (P0 6, WP-2)
+## Style
 
-Wire: `src/server/World/Street.luau` `NAME_PLATES` (key = road id). One plate on two posts at a corner of each
-junction, both faces use the same image.
+- Flat, front-on artwork filling the canvas; no perspective, shadow, mock-up background or watermark.
+- Painted wood, enamel or weathered metal. Slightly worn, not glossy.
+- Chunky readable lettering with a thick outline, matching the simulator UI. Keep words to 1–3.
+- New hub and island signs are Lego-like: simple boards, visible bolts, a stud or two, bright paint.
+- No real logos, flags or coastguard insignia. The Gale Isles Coastguard mark is invented.
+- Transparent not required; the board edge is part of the image.
 
-| File | Size | Road id | Text |
+## Wire
+
+Add each uploaded id to [`19-sign-ids.txt`](19-sign-ids.txt) under the key below. The sign builder is not in
+the repo yet; when it lands, it reads that file. Until an id exists, the sign is not built.
+
+## Hub signs
+
+| Key | File | Size | Text / image |
 |---|---|---|---|
-| sign_street_HarbourRoad.png | 1024x256 | HarbourRoad | HARBOUR ROAD |
-| sign_street_PortHaven_Av1.png | 1024x256 | PortHaven_Av1 | PENHALLOW ROAD |
-| sign_street_PortHaven_Av2.png | 1024x256 | PortHaven_Av2 | QUAY LANE |
-| sign_street_PortHaven_Av3.png | 1024x256 | PortHaven_Av3 | STATION HILL |
-| sign_street_PortHaven_Av4.png | 1024x256 | PortHaven_Av4 | CHAPEL HILL |
-| sign_street_PortHaven_Av5.png | 1024x256 | PortHaven_Av5 | HOSPITAL LANE |
-| sign_street_PortHaven_Av6.png | 1024x256 | PortHaven_Av6 | EASTGATE HILL |
-| sign_street_PortHaven_Av7.png | 1024x256 | PortHaven_Av7 | TREGENNA HILL |
-| sign_street_PortHaven_St1.png | 1024x256 | PortHaven_St1 | FORE STREET |
-| sign_street_PortHaven_St2.png | 1024x256 | PortHaven_St2 | CHURCH STREET |
-| sign_street_PortHaven_St3.png | 1024x256 | PortHaven_St3 | TRELAWNEY ROAD |
-| sign_street_PortHaven_St4.png | 1024x256 | PortHaven_St4 | BODMIN ROAD |
+| `hub_hq` | `sign_hub_hq.png` | 1024×256 | `COASTGUARD` with a small lookout-hut mark |
+| `hub_calls` | `sign_hub_calls.png` | 1024×256 | `CALL BOARD` with a pager glyph |
+| `hub_shop` | `sign_hub_shop.png` | 1024×256 | `SHOP` with a striped awning mark |
+| `hub_harbourmaster` | `sign_hub_harbourmaster.png` | 1024×256 | `HARBOURMASTER` with an anchor |
+| `hub_campfire` | `sign_hub_campfire.png` | 1024×512 | `CAMPFIRE` with a flame and two logs |
+| `hub_monument` | `sign_hub_monument.png` | 1024×512 | `RESCUERS` with a simple monument silhouette |
+| `hub_jetty` | `sign_hub_jetty.png` | 1024×256 | `VISITOR JETTY` with a mooring cleat |
+| `hub_quests` | `sign_hub_quests.png` | 512×512 | A red `!` in a speech bubble, no words |
+| `hub_ruin` | `sign_hub_ruin.png` | 512×512 | A cracked stone arch, no words |
+| `hub_wreck` | `sign_hub_wreck.png` | 512×512 | An overgrown boat bow, no words |
 
-Prompt: "UK street name plate, white vitreous enamel, black rounded border inset from the edge, the street name in
-black upright serif capitals centred (Cornish town style, like Penzance or St Ives), small black 'PORT HAVEN' line
-underneath in a smaller sans serif, very light weathering and two dark screw dots at the ends, 4:1 landscape,
-front-on, fills the frame".
+## Player island signs
 
-## Road and shore signs (RoadsShore kit, WP-4 owns the code)
-
-`src/server/World/RoadsShore.luau` `SIGNS` places M_Road_Sign_Kit pieces (Fingerpost, TideBoard, LaunchSign,
-CarPark, CliffWarning). If their faces render blank in the live client, these images go on the kit's face parts
-as Decals (WP-4 wires them).
-
-| File | Size | Sign | Description |
+| Key | File | Size | Text / image |
 |---|---|---|---|
-| sign_tide_board.png | 512x1024 | TideBoard, Harbour Road quay | "Port Haven tide times" board: harbour-blue header band with a white wave icon, a grid of six chalk-white rows (HW / LW clock times as numerals only), a small tide-curve icon; painted wood |
-| sign_car_park.png | 512x512 | CarPark, Coast Road East | UK car park sign: white bold "P" on a blue square, white border, nothing else |
-| sign_fingerpost_arms.png | 1024x256 | Fingerpost, Harbour Road west end | Cornish fingerpost arm: white arm with black capitals "HARBOUR" and "HAVEN SANDS" with small distance numerals, pointed end on the right |
-| sign_slipway.png | 512x512 | LaunchSign, Haven Sands slipway | slipway sign: white square, blue boat-on-trailer pictogram, red "no parking" bar strip along the bottom, no words |
-| sign_cliff_warning.png | 512x512 | CliffWarning, Haven Head track | yellow triangle warning sign with a black falling-person-at-cliff-edge pictogram, no words |
+| `island_1` … `island_6` | `sign_island_1.png` … `sign_island_6.png` | 1024×256 | `ISLAND 1` … `ISLAND 6`; the owner's name is drawn in code on a blank strip |
+| `island_berth` | `sign_island_berth.png` | 512×512 | A boat bow in a berth notch, no words |
+| `island_sub` | `sign_island_sub.png` | 512×512 | A periscope and a bubble, no words |
+| `island_build` | `sign_island_build.png` | 512×512 | A tablet on a stand with a brick, no words |
+| `island_slow` | `sign_island_slow.png` | 512×512 | `SLOW` with a wake mark |
+| `island_no_wake` | `sign_island_no_wake.png` | 512×512 | `NO WAKE` with a crossed-out wake |
 
-## Found in this pass
+## Bridge signs
 
-The "white rectangles on black posts" at `harbour_road_west`, `fuel_dock_boatyard`, `station_slipway` and
-`chandlery` (docs/17 P0 6) were the backs of the traffic signals: the white border was a solid plate behind the
-backboard. Fixed in `Street.luau` (the border is a front rim only); no art needed for them.
-
-# 19 · World sign and surface art requests
-
-2D art the map polish packages (docs/17) need. The orchestrator generates each image (docs/18 rules: no vibe-coded
-look), uploads it and wires the id; until then the named part keeps its neutral placeholder.
-
-## WP-4 (coast, harbour and shore props)
-
-| File | Size | Goes on | Description |
+| Key | File | Size | Text / image |
 |---|---|---|---|
-| `T_Station_RollerDoor.png` | 512 x 512, tiling vertically | `M_Bld_Station_BayDoor_LOD0` (Workspace.Dressing.Station), as a SurfaceAppearance ColorMap or a Texture on the door's front face | Lifeboat station roller shutter seen square on: horizontal galvanised-steel slats about 1/24 of the height each, painted RNLI-style deep navy (#1F3350) with soft weathering, faint rust streaks below the slat joints, a slightly darker bottom rail and a bare-steel bottom edge strip. No text, no logo. Replaces the flat blue face (docs/17 P1 17). |
+| `bridge_hub` | `sign_bridge_hub.png` | 1024×256 | `HUB` with an arrow |
+| `bridge_island` | `sign_bridge_island.png` | 1024×256 | `ISLANDS` with an arrow |
+| `bridge_clearance` | `sign_bridge_clearance.png` | 512×512 | A boat passing under an arch, no words |
 
-Not requested: the "blank white boards" seen from `station_slipway` (-230,12,-80) are the backs of the traffic-light
-backboards (`Workspace.Dressing.Street.Junctions.TrafficLight.Border`, Street.luau, WP-2): a code fix (black back,
-white border only on the front), not art.
+## Outer island signs
+
+| Key | File | Size | Text / image |
+|---|---|---|---|
+| `isle_skerry` | `sign_isle_skerry.png` | 1024×256 | `SKERRY` |
+| `isle_puffin` | `sign_isle_puffin.png` | 1024×256 | `PUFFIN ISLE` |
+| `isle_penwyn` | `sign_isle_penwyn.png` | 1024×256 | `PENWYN` |
+| `isle_wreck` | `sign_isle_wreck.png` | 1024×256 | `WRECK REEF` |
+| `isle_arches` | `sign_isle_arches.png` | 1024×256 | `THE ARCHES` |
+| `isle_gannet` | `sign_isle_gannet.png` | 1024×256 | `GANNET ROCK` |
+| `isle_lagoon` | `sign_isle_lagoon.png` | 1024×256 | `MERMAID LAGOON` |
+
+## Hazard and beacon signs
+
+| Key | File | Size | Text / image |
+|---|---|---|---|
+| `hazard_rocks` | `sign_hazard_rocks.png` | 512×512 | `ROCKS` with three black rock teeth |
+| `hazard_shallows` | `sign_hazard_shallows.png` | 512×512 | `SHALLOWS` with a depth bar |
+| `hazard_wreck` | `sign_hazard_wreck.png` | 512×512 | `WRECK` with a hull and mast |
+| `beacon` | `sign_beacon.png` | 512×512 | A lighthouse beam, no words |
+| `quest_camp` | `sign_quest_camp.png` | 1024×256 | `QUEST CAMP` with a tent |
+
+## Found in the old pass
+
+The old "white rectangles on black posts" at the harbour and station were the backs of traffic signals. That
+code is cut with the town; no art is needed.
