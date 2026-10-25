@@ -871,7 +871,8 @@ local function spawnLocked(
 	quick: boolean?,
 	docked: boolean?,
 	where: string, -- analytics H4: Phone / Quick / Bay / Board
-	near: boolean?
+	near: boolean?,
+	target: CFrame? -- docked: spawn here instead of at the berth (a dock building's pad or pen)
 ): (boolean, string | Model)
 	local spec = VehicleConfig.get(vehicleId)
 	if not spec then
@@ -900,7 +901,7 @@ local function spawnLocked(
 	local launchAt = if docked
 		then nil
 		else (near and nearLaunch(spec, player)) or launchCFrame(at, spec, player)
-	if not launchAt and bayBusy(at, player) then
+	if not launchAt and not target and bayBusy(at, player) then
 		return false, "BayBusy"
 	end
 	local plan, _, why = planSpawn(player, spec, "Request")
@@ -916,8 +917,12 @@ local function spawnLocked(
 	-- a hull longer than the bay slides seaward along it so its stern clears the quay (a RIB on Bay1
 	-- sat with its stern on the quay road)
 	local out = math.max(0, spec.hullSize.Z / 2 - at.Size.Z / 2)
-	local model, seat =
-		createVehicle(player, spec, launchAt or at.CFrame * CFrame.new(0, 0, -out), "Request")
+	local model, seat = createVehicle(
+		player,
+		spec,
+		launchAt or target or at.CFrame * CFrame.new(0, 0, -out),
+		"Request"
+	)
 	if not docked then
 		sitDriver(player, seat)
 	end
@@ -937,13 +942,15 @@ local function spawnVehicle(
 	quick: boolean?,
 	docked: boolean?,
 	where: string,
-	near: boolean?
+	near: boolean?,
+	target: CFrame?
 ): (boolean, string | Model)
 	local key = bay or bayFor(player)
 	if key and not Marina.lock(spawning, key) then
 		return false, "Busy"
 	end
-	local ok, result, model = pcall(spawnLocked, player, vehicleId, bay, quick, docked, where, near)
+	local ok, result, model =
+		pcall(spawnLocked, player, vehicleId, bay, quick, docked, where, near, target)
 	if key then
 		spawning[key] = nil
 	end
@@ -1674,9 +1681,14 @@ function VehicleService.DevLaunch(player: Player, vehicleId: string): (boolean, 
 	return spawnVehicle(player, vehicleId, bayFor(player), true, nil, "Quick")
 end
 
--- The boat board's launch (docs/23 d.3): `vehicleId` docked at the player's berth, afloat, not seated.
-function VehicleService.DockLaunch(player: Player, vehicleId: string): (boolean, string | Model)
-	return spawnVehicle(player, vehicleId, nil, nil, true, "Board")
+-- The boat board's launch (docs/23 d.3): `vehicleId` docked at the player's berth, afloat, not seated; a
+-- dock building's board (WP-10b) passes `target` (the helipad, the sub pen).
+function VehicleService.DockLaunch(
+	player: Player,
+	vehicleId: string,
+	target: CFrame?
+): (boolean, string | Model)
+	return spawnVehicle(player, vehicleId, nil, nil, true, "Board", nil, target)
 end
 
 -- G66: a just-fitted upgrade applies on the next launch. Despawn the empty docked hull of that

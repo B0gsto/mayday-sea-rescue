@@ -4,7 +4,10 @@
 -- a "Build" prompt (E / gamepad X / tap) that opens a small price card: the level icon, a Cash button
 -- (coin + amount; lock + rank badge when the rank is too low, greyed when Cash is short) and a Robux
 -- button (Roblox's live price; greyed while the product has no id). B / the X button / walking off closes.
--- Reads player attributes DockPlot, BayCFrame, DockLevel (DockService) and the PlayerDataChanged snapshot.
+-- The WP-10b buildings (garage, helipad + hangar, sub pen) get their own ghosts the same way while unowned
+-- (the hangar once the Lv 3 boathouse stands); their card shows the building's word instead of the number.
+-- Reads player attributes DockPlot, BayCFrame, DockLevel, DockGarage / DockHangar / DockSubPen (DockService)
+-- and the PlayerDataChanged snapshot.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,6 +29,7 @@ local CashBurst = require(UI:WaitForChild("CashBurst"))
 local Glyph = require(UI:WaitForChild("Glyph"))
 local HudTheme = require(UI:WaitForChild("HudTheme"))
 local InputGlyph = require(UI:WaitForChild("InputGlyph"))
+local Marina = require(Shared:WaitForChild("Marina"))
 
 local DockController = {}
 
@@ -36,21 +40,30 @@ local GHOST = Color3.fromRGB(90, 170, 255)
 local ROBUX_GREEN = Color3.fromHex("2F9E5B")
 
 local snapshot: { [string]: any } = {}
-local ghost: Model? = nil
+local ghosts: { Model } = {}
 local ghostKey = ""
-local shownLevel: number? = nil
+local shownCount: number? = nil -- level + buildings owned, for the build beat
+local WORDS = { Garage = "Garage", Hangar = "Helipad", SubPen = "Sub pen" }
+
+type Item = number | string -- a dock level, or a DockConfig.Buildings key
 local livePrice: { [number]: number } = {}
 
 type Card = {
 	gui: ScreenGui,
+	house: Frame,
 	number: TextLabel,
+	word: TextLabel,
 	cash: TextButton,
 	cashRow: Frame,
 	robux: TextButton,
 	robuxLabel: TextLabel,
 }
 local card: Card? = nil
-local cardLevel: number? = nil
+local cardLevel: Item? = nil
+
+local function itemOf(key: Item): DockConfig.Level
+	return if type(key) == "number" then DockConfig.Levels[key] else DockConfig.Buildings[key]
+end
 local modal: InputGlyph.Modal
 
 local function close()
@@ -112,7 +125,7 @@ local function text(parent: Instance, s: string, color: Color3, order: number): 
 	return l
 end
 
-local function buy(level: number)
+local function buy(level: Item)
 	local remote = Net.init():WaitForChild("Dock_Upgrade", 5) :: RemoteFunction?
 	if not remote or not card then
 		return
@@ -160,6 +173,16 @@ local function build(): Card
 	number.TextScaled = true
 	number.TextColor3 = C.panel
 	number.Parent = icon
+	local word = Instance.new("TextLabel")
+	word.Name = "Word"
+	word.AnchorPoint = Vector2.new(0.5, 0)
+	word.Position = UDim2.fromScale(0.5, 0)
+	word.Size = UDim2.fromOffset(150, 56)
+	word.BackgroundTransparency = 1
+	word.Font = HudTheme.HeaderFont
+	word.TextScaled = true
+	word.TextColor3 = GHOST
+	word.Parent = panel
 
 	local closeButton = HudTheme.button("Close", "X", UDim2.fromOffset(34, 34), panel)
 	closeButton.AnchorPoint = Vector2.new(1, 0)
@@ -175,7 +198,9 @@ local function build(): Card
 
 	local c: Card = {
 		gui = gui,
+		house = house,
 		number = number,
+		word = word,
 		cash = cash,
 		cashRow = row(cash),
 		robux = robux,
@@ -189,7 +214,7 @@ local function build(): Card
 		end
 	end)
 	robux.Activated:Connect(function()
-		local lv = cardLevel and DockConfig.Levels[cardLevel]
+		local lv = cardLevel and itemOf(cardLevel)
 		local item = lv and MonetizationConfig.Products[lv.product]
 		if item and item.id ~= 0 then
 			MarketplaceService:PromptProductPurchase(player, item.id)
@@ -206,8 +231,11 @@ local function paint()
 	if not c or not level then
 		return
 	end
-	local lv = DockConfig.Levels[level]
-	c.number.Text = tostring(level)
+	local lv = itemOf(level)
+	local word = if type(level) == "string" then WORDS[level] else nil
+	c.number.Text = if word then "" else tostring(level)
+	c.house.Visible = word == nil
+	c.word.Text = word or ""
 	for _, child in c.cashRow:GetChildren() do
 		if not child:IsA("UIListLayout") then
 			child:Destroy()
@@ -264,7 +292,7 @@ local function paint()
 	end
 end
 
-local function open(level: number)
+local function open(level: Item)
 	card = card or build()
 	cardLevel = level
 	paint()
@@ -274,9 +302,9 @@ local function open(level: number)
 	AudioController.play("UI_Click")
 end
 
--- translucent blue pieces, wire edges, a scaffold around them, and the Build prompt on the deck
-local function makeGhost(level: number, b: CFrame): Model
-	local m = DockPieces.build(level, b - Vector3.new(0, 0.2, 0))
+-- translucent blue pieces, wire edges, a scaffold around them, and the Build prompt at `promptAt` (nil: on
+-- the deck, as near the pieces' middle as the deck allows)
+local function makeGhost(level: Item, m: Model, b: CFrame, promptAt: CFrame?): Model
 	m.Name = "DockGhost"
 	for _, d in m:GetDescendants() do
 		if d:IsA("BasePart") then
@@ -314,12 +342,11 @@ local function makeGhost(level: number, b: CFrame): Model
 		rod("Scaffold", Vector3.new(size.X, 0.25, 0.25), box * CFrame.new(0, hy, sx * hz))
 	end
 
-	-- the prompt sits on the deck, as near the ghost's middle as the deck allows
 	local p = b:PointToObjectSpace(box.Position)
 	local at = Instance.new("Part")
 	at.Name = "BuildAt"
 	at.Size = Vector3.new(1, 1, 1)
-	at.CFrame = b * CFrame.new(math.clamp(p.X, -19, 27), 5.5, math.clamp(p.Z, 30, 50))
+	at.CFrame = promptAt or b * CFrame.new(math.clamp(p.X, -19, 27), 5.5, math.clamp(p.Z, 30, 50))
 	at.Transparency = 1
 	at.Anchored, at.CanCollide, at.CanQuery, at.CanTouch = true, false, false, false
 	at.Parent = m
@@ -343,29 +370,48 @@ end
 local function refresh()
 	local level = player:GetAttribute("DockLevel")
 	local b = player:GetAttribute("BayCFrame")
-	if type(level) ~= "number" or typeof(b) ~= "CFrame" then
+	local plot = player:GetAttribute("DockPlot")
+	if type(level) ~= "number" or typeof(b) ~= "CFrame" or type(plot) ~= "number" then
 		return
 	end
-	if shownLevel and level > shownLevel then -- a level just got built: the beat
+	local owned = { tostring(level) }
+	for _, key in DockConfig.BUILDINGS do
+		if player:GetAttribute("Dock" .. key) == true then
+			table.insert(owned, key)
+		end
+	end
+	local shown = table.concat(owned, ",")
+	local count = level + #owned
+	if shownCount and count > shownCount then -- a level or a building just got built: the beat
 		AudioController.play("Chandlery_Till")
 		local view = Workspace.CurrentCamera and Workspace.CurrentCamera.ViewportSize
 			or Vector2.new(800, 600)
 		CashBurst.playAt(playerGui, view / 2, 0, false)
 	end
-	shownLevel = level
-	local key = `{level}:{b}`
+	shownCount = count
+	local key = `{shown}:{b}`
 	if key == ghostKey then
 		return
 	end
 	ghostKey = key
 	close()
-	if ghost then
-		ghost:Destroy()
-		ghost = nil
+	for _, g in ghosts do
+		g:Destroy()
 	end
+	ghosts = {}
+	local berth = (b :: CFrame) - Vector3.new(0, 0.2, 0)
 	if level < DockConfig.MAX then
-		ghost = makeGhost(level + 1, b :: CFrame);
-		(ghost :: Model).Parent = Workspace
+		table.insert(ghosts, makeGhost(level + 1, DockPieces.build(level + 1, berth), b))
+	end
+	for _, name in DockConfig.BUILDINGS do
+		if not table.find(owned, name) and level >= DockConfig.Buildings[name].needs then
+			local frame = if name == "Garage" then Marina.garage(plot) else berth
+			local m = DockPieces.building(name, frame)
+			table.insert(ghosts, makeGhost(name, m, b, frame * DockPieces.Buildings[name].buildAt))
+		end
+	end
+	for _, g in ghosts do
+		g.Parent = Workspace
 	end
 end
 
@@ -391,6 +437,10 @@ function DockController.Start()
 	end)
 	player:GetAttributeChangedSignal("DockLevel"):Connect(refresh)
 	player:GetAttributeChangedSignal("BayCFrame"):Connect(refresh)
+	player:GetAttributeChangedSignal("DockPlot"):Connect(refresh)
+	for _, key in DockConfig.BUILDINGS do
+		player:GetAttributeChangedSignal("Dock" .. key):Connect(refresh)
+	end
 	refresh()
 end
 

@@ -36,6 +36,7 @@ export type Item = {
 	dayPassHours: number?, -- day passes: hours of real time (the clock runs while away; buying again adds)
 	vehicle: string?, -- vehicle passes: the VehicleConfig / LandVehicleConfig id it owns (any rank)
 	dockLevel: number?, -- dock levels (DockConfig): builds your dock to this level; sold at the dock only
+	dockBuilding: string?, -- dock buildings (DockConfig.Buildings key); sold at the dock only
 }
 
 local MonetizationConfig = {
@@ -179,6 +180,34 @@ local MonetizationConfig = {
 			order = 34,
 			ready = true,
 			dockLevel = 5,
+		},
+		-- docs/23 h (WP-10b): the dock buildings (DockConfig.Buildings), sold at their ghost, granted by DockService.
+		DockGarage = {
+			id = 0,
+			name = "Car Garage",
+			description = "Builds your garage now, no Cash or rank needed: pick a car at its board and drive it out.",
+			price = 99,
+			order = 35,
+			ready = true,
+			dockBuilding = "Garage",
+		},
+		DockHangar = {
+			id = 0,
+			name = "Helipad and Hangar",
+			description = "Builds a helipad and hangar on your boathouse roof now, no Cash or rank needed (needs the dock level 3 boathouse).",
+			price = 199,
+			order = 36,
+			ready = true,
+			dockBuilding = "Hangar",
+		},
+		DockSubPen = {
+			id = 0,
+			name = "Sub Pen",
+			description = "Builds a sub pen beside your berth now, no Cash or rank needed.",
+			price = 149,
+			order = 37,
+			ready = true,
+			dockBuilding = "SubPen",
 		},
 	} :: { [string]: Item },
 

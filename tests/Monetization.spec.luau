@@ -49,6 +49,9 @@ return function(t)
 			DockLevel3 = 99,
 			DockLevel4 = 149,
 			DockLevel5 = 249,
+			DockGarage = 99, -- docs/23 h (WP-10b)
+			DockHangar = 199,
+			DockSubPen = 149,
 		},
 	}
 

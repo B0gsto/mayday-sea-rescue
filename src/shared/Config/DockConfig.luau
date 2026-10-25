@@ -1,5 +1,5 @@
 --!strict
--- DockConfig (docs/23 d.2, WP-4): dock levels 2..5. Each has two prices: Cash + rank, or Robux (the
+-- DockConfig (docs/23 d.2, WP-4): dock levels 2..5, and the WP-10b buildings (garage, hangar, sub pen). Each has two prices: Cash + rank, or Robux (the
 -- MonetizationConfig product `product`, which skips both). Pure (tests/DockConfig.spec.luau).
 -- Piece geometry lives in shared/DockPieces; DockService builds it, DockController draws the ghost.
 local ProgressionConfig = require(script.Parent.ProgressionConfig)
@@ -51,6 +51,95 @@ DockConfig.Levels = {
 		unlocks = { "TrophyHall", "HarbourMaster" },
 	},
 } :: { [number]: Level }
+
+-- docs/23 h (WP-10b): buildings bought apart from the level, same two prices. `needs` = the lowest dock level
+-- it stands on (the helipad sits on the Lv 3 boathouse roof). `vehicles` = its board's craft, in order.
+export type Building = Level & { needs: number, vehicles: { string } }
+
+DockConfig.BUILDINGS = { "Garage", "Hangar", "SubPen" }
+
+DockConfig.Buildings = {
+	Garage = {
+		cash = 5000,
+		rank = "Lifeguard",
+		robux = 99,
+		product = "DockGarage",
+		adds = { "Garage", "GarageBoard" },
+		unlocks = { "CarsAtDock" },
+		needs = 1,
+		vehicles = {
+			"LifeguardPickup",
+			"BeachATV",
+			"CoastguardResponse",
+			"HarbourGT",
+			"LighthouseCruiser",
+		},
+	},
+	Hangar = {
+		cash = 40000,
+		rank = "RescuePilot",
+		robux = 199,
+		product = "DockHangar",
+		adds = { "Helipad", "Hangar", "HangarBoard" },
+		unlocks = { "AircraftAtDock" },
+		needs = 3,
+		vehicles = { "RescueHelicopter", "Seaplane" },
+	},
+	SubPen = {
+		cash = 20000,
+		rank = "Coxswain",
+		robux = 149,
+		product = "DockSubPen",
+		adds = { "SubPen", "SubBoard" },
+		unlocks = { "SubAtDock" },
+		needs = 1,
+		vehicles = { "Submarine" },
+	},
+} :: { [string]: Building }
+
+-- Can a player buy building `key` with Cash? -> ok, reason ("Owned" | "Level" | "Rank" | "Cash"), price.
+function DockConfig.canBuyBuilding(
+	key: string,
+	owned: boolean,
+	level: number,
+	cash: number,
+	rankIndex: number
+): (boolean, string?, number?)
+	local b = DockConfig.Buildings[key]
+	if not b or owned then
+		return false, "Owned", nil
+	end
+	if level < b.needs then
+		return false, "Level", b.cash
+	end
+	if rankIndex < DockConfig.rankIndex(b.rank) then
+		return false, "Rank", b.cash
+	end
+	if cash < b.cash then
+		return false, "Cash", b.cash
+	end
+	return true, nil, b.cash
+end
+
+-- The building a MonetizationConfig product key builds, or nil.
+function DockConfig.buildingFor(productKey: string): string?
+	for key, b in DockConfig.Buildings do
+		if b.product == productKey then
+			return key
+		end
+	end
+	return nil
+end
+
+-- Which building's board holds craft `id` (nil: the boat board's).
+function DockConfig.buildingOf(id: string): string?
+	for key, b in DockConfig.Buildings do
+		if table.find(b.vehicles, id) then
+			return key
+		end
+	end
+	return nil
+end
 
 -- Where the boat board (WP-5) stands, in the berth frame (Marina.berth): on the boathouse floor (deck
 -- top) against the back wall, facing the roll-up door and the sea. The Lv 3 boathouse keeps a clear

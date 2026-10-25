@@ -48,6 +48,53 @@ return function(t)
 		t.expect(price).toBe(2500)
 	end)
 
+	t.test(
+		"buildings (docs/23 h): prices, Robux products, the helipad needs the boathouse",
+		function()
+			local robux = { Garage = 99, Hangar = 199, SubPen = 149 }
+			local rank = { Garage = "Lifeguard", Hangar = "RescuePilot", SubPen = "Coxswain" }
+			t.expect(#D.BUILDINGS).toBe(3)
+			for _, key in D.BUILDINGS do
+				local b = D.Buildings[key]
+				t.expect(b.robux).toBe(robux[key])
+				t.expect(b.rank).toBe(rank[key])
+				t.expect(b.cash > 0).toBe(true)
+				t.expect(#b.vehicles > 0).toBe(true)
+				local item = Monetization.Products[b.product]
+				t.expect(item.price).toBe(b.robux)
+				t.expect(item.dockBuilding).toBe(key)
+				t.expect(item.dockLevel).toBe(nil)
+				t.expect(D.buildingFor(b.product)).toBe(key)
+				t.expect(D.levelFor(b.product)).toBe(nil)
+				for _, id in b.vehicles do
+					t.expect(D.buildingOf(id)).toBe(key)
+				end
+			end
+			t.expect(D.Buildings.Garage.cash).toBe(5000)
+			t.expect(D.Buildings.Hangar.needs).toBe(3)
+			t.expect(D.buildingFor("DockLevel2")).toBe(nil)
+			t.expect(D.buildingOf("RIB")).toBe(nil)
+		end
+	)
+
+	t.test("building Cash purchase: once, level, rank, then Cash", function()
+		local pilot = D.rankIndex("RescuePilot")
+		t.expect(D.canBuyBuilding("Hangar", false, 3, 40000, pilot)).toBe(true)
+		local ok, reason, price = D.canBuyBuilding("Hangar", false, 2, 1e9, 99)
+		t.expect(ok).toBe(false)
+		t.expect(reason).toBe("Level")
+		ok, reason = D.canBuyBuilding("Hangar", true, 5, 1e9, 99)
+		t.expect(reason).toBe("Owned")
+		ok, reason = D.canBuyBuilding("Nope", false, 5, 1e9, 99)
+		t.expect(reason).toBe("Owned")
+		ok, reason = D.canBuyBuilding("Hangar", false, 3, 1e9, pilot - 1)
+		t.expect(reason).toBe("Rank")
+		ok, reason, price = D.canBuyBuilding("Garage", false, 1, 4999, 99)
+		t.expect(reason).toBe("Cash")
+		t.expect(price).toBe(5000)
+		t.expect(D.canBuyBuilding("SubPen", false, 1, 20000, D.rankIndex("Coxswain"))).toBe(true)
+	end)
+
 	t.test("the boat board slot sits on the deck, inside the plot", function()
 		local p = D.BOARD_SLOT.Position
 		local half = D.BOARD_SIZE / 2

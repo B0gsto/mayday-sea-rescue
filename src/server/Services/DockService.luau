@@ -11,9 +11,16 @@
 -- API: GetBerth(player) -> BasePart?, GetPlot(player) -> number?, GetLevel(player) -> number, Berths() -> { BasePart }.
 -- Player attributes: DockPlot (index), BayCFrame (the berth CFrame; StreakController, MapController read it),
 -- DockLevel (built level, DockController's ghost reads it).
--- Remote: Dock_Upgrade C->S function (level) -> ok, reason ("Level" | "Rank" | "Cash" | "Data" | "Busy").
--- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level.
--- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty).
+-- Remote: Dock_Upgrade C->S function (level | building key) -> ok, reason ("Level" | "Rank" | "Cash" |
+-- "Owned" | "Data" | "Busy").
+-- Buildings (docs/23 h, WP-10b; DockConfig.Buildings): the car garage (one of the 16 bays along Penhallow
+-- Road, Marina.garage), the helipad + hangar on the Lv 3+ boathouse roof and the sub pen beside the berth.
+-- Owned ones live in data.dockBuildings; Dock_Upgrade(key) buys one with Cash + rank, products DockGarage /
+-- DockHangar / DockSubPen with Robux. Their vehicle boards are server/Dock/BoatBoard's.
+-- Studio: ServerStorage.DockDev:Invoke("level", n) sets the first player's dock level; ("building", key)
+-- gives them a building ("all": every one).
+-- Berth attributes: LaunchBay = true, PlotIndex, Owner (UserId, nil when empty), Garage / Hangar / SubPen
+-- (built). Player attributes DockGarage / DockHangar / DockSubPen (owned; DockController's ghosts).
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -47,6 +54,7 @@ type Plot = {
 	flag: Part,
 	levels: Model?, -- Lv 2..built pieces
 	built: number,
+	buildings: { [string]: Model },
 	counts: { TextLabel },
 }
 
@@ -201,6 +209,7 @@ local function buildPlot(folder: Instance, i: number): Plot
 		flag = flag,
 		built = 1,
 		counts = {},
+		buildings = {},
 	}
 end
 
@@ -260,6 +269,44 @@ local function sync(plot: Plot, owner: Player?, level: number, beat: boolean)
 	end
 end
 
+-- The owner's bought buildings stand on the plot (the helipad only on a Lv 3+ boathouse); beat: new ones rise.
+local function syncBuildings(plot: Plot, owner: Player?, beat: boolean)
+	local data: any = owner and DataService.Get(owner)
+	local owned = if data and type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	local level = if data then data.dockLevel or 1 else 1
+	for _, key in DockConfig.BUILDINGS do
+		local want = owner ~= nil
+			and owned[key] == true
+			and level >= DockConfig.Buildings[key].needs
+		local have = plot.buildings[key]
+		if want and not have and owner then
+			local frame = if key == "Garage"
+				then Marina.garage(plot.berth:GetAttribute("PlotIndex") :: number)
+				else plot.berth.CFrame - Vector3.new(0, 0.2, 0)
+			local m = DockPieces.building(key, frame)
+			for _, d in m:GetDescendants() do
+				if d.Name == "Flag" and d:IsA("BasePart") then
+					d.Color = Marina.flagColor(owner.UserId)
+				elseif d.Name == "Owner" and d:IsA("TextLabel") then
+					d.Text = owner.DisplayName
+				end
+			end
+			m.Parent = plot.model
+			if beat then
+				rise(m)
+			end
+			plot.buildings[key] = m
+		elseif have and not want then
+			have:Destroy()
+			plot.buildings[key] = nil
+		end
+		plot.berth:SetAttribute(key, if want then true else nil)
+		if owner then
+			owner:SetAttribute("Dock" .. key, owned[key] == true)
+		end
+	end
+end
+
 -- Lv 1 for the owner, or the plain jetty when empty.
 local function dress(plot: Plot, owner: Player?)
 	plot.berth:SetAttribute("Owner", if owner then owner.UserId else nil)
@@ -271,6 +318,7 @@ local function dress(plot: Plot, owner: Player?)
 		plot.flag.Color = Marina.flagColor(owner.UserId)
 	else
 		sync(plot, nil, 1, false)
+		syncBuildings(plot, nil, false)
 	end
 end
 
@@ -280,18 +328,48 @@ local function show(player: Player, beat: boolean)
 	local data: any = DataService.Get(player)
 	if i and data then
 		sync(plots[i], player, data.dockLevel or 1, beat)
+		syncBuildings(plots[i], player, beat)
 	end
 end
 
 local busy: { [Player]: boolean } = {}
 
--- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products).
+-- Cash + rank purchase of building `key` (Robux goes through its Dock<key> product).
+local function buyBuilding(player: Player, data: any, key: string): (boolean, string)
+	data.dockBuildings = if type(data.dockBuildings) == "table" then data.dockBuildings else {}
+	local ok, reason, price = DockConfig.canBuyBuilding(
+		key,
+		data.dockBuildings[key] == true,
+		data.dockLevel or 1,
+		data.cash,
+		ProgressionRules.rankIndex(data)
+	)
+	if not ok or not price then
+		return false, reason or "Owned"
+	end
+	data.cash -= price
+	data.dockBuildings[key] = true
+	Telemetry.CashSpent(player, price, data.cash, "Dock", key)
+	DataService.MarkDirty(player)
+	ProgressionService.Refresh(player)
+	show(player, true)
+	task.spawn(DataService.Save, player, false)
+	return true, "ok"
+end
+
+-- Cash + rank purchase of the next level (Robux goes through the DockLevel<n> products), or of a building.
 local function buy(player: Player, level: any): (boolean, string)
 	local data: any = DataService.Get(player)
 	if not data then
 		return false, "Data"
 	end
-	if type(level) ~= "number" or busy[player] then
+	if busy[player] then
+		return false, "Busy"
+	end
+	if type(level) == "string" and DockConfig.Buildings[level] then
+		return buyBuilding(player, data, level)
+	end
+	if type(level) ~= "number" then
 		return false, "Busy"
 	end
 	local ok, reason, price =
@@ -332,6 +410,36 @@ local function release(player: Player)
 	end
 end
 
+-- The garage row's 16 lots along Penhallow Road (the garages stand on them once bought): the hedge and post
+-- dressing in the footprint goes; each lot's slab runs 2 studs past the door onto the footway so a car
+-- rolls straight out (no terrain carving: 4-stud voxels left a trench at the door).
+local function garageLots(folder: Instance)
+	local g = Marina.GARAGE
+	local first, last = Marina.garage(1), Marina.garage(Marina.COUNT)
+	local centre = first:Lerp(last, 0.5) * CFrame.new(0, 0, g.DEPTH / 2 - 1.5)
+	local size = Vector3.new(g.WIDTH * Marina.COUNT + 2, 24, g.DEPTH + 5)
+	local clear = centre * CFrame.new(0, size.Y / 2 + 0.05, 0)
+	local dressing = Workspace:FindFirstChild("Dressing")
+	if dressing then
+		for _, p in Workspace:GetPartBoundsInBox(clear, size) do
+			if p:IsDescendantOf(dressing) then
+				p:Destroy()
+			end
+		end
+	end
+	for i = 1, Marina.COUNT do
+		local lot = part(
+			folder,
+			`GarageLot{i}`,
+			Vector3.new(g.WIDTH, 1, g.DEPTH + 2),
+			Marina.garage(i) * CFrame.new(0, -0.5, g.DEPTH / 2 - 1),
+			if i % 2 == 0 then Color3.fromRGB(150, 152, 156) else Color3.fromRGB(162, 164, 168),
+			Enum.Material.SmoothPlastic
+		)
+		lot:SetAttribute("PlotIndex", i)
+	end
+end
+
 function DockService.Init()
 	local folder = Instance.new("Folder")
 	folder.Name = "Marina"
@@ -358,6 +466,7 @@ function DockService.Init()
 		plots[i] = buildPlot(folder, i)
 		dress(plots[i], nil)
 	end
+	garageLots(folder)
 	folder.Parent = Workspace
 
 	Players.PlayerAdded:Connect(claim)
@@ -391,6 +500,17 @@ function DockService.Init()
 			show(player, true)
 		end)
 	end
+	for key, b in DockConfig.Buildings do
+		MonetizationService.OnProduct(b.product, function(_player, data: any)
+			data.dockBuildings = if type(data.dockBuildings) == "table"
+				then data.dockBuildings
+				else {}
+			data.dockBuildings[key] = true
+			return true
+		end, function(player)
+			show(player, true)
+		end)
+	end
 
 	if RunService:IsStudio() then
 		local dev = Instance.new("BindableFunction")
@@ -403,6 +523,18 @@ function DockService.Init()
 				DataService.MarkDirty(player)
 				show(player, true)
 				return data.dockLevel
+			elseif cmd == "building" and data then
+				data.dockBuildings = if type(data.dockBuildings) == "table"
+					then data.dockBuildings
+					else {}
+				for key in DockConfig.Buildings do
+					if n == key or n == "all" then
+						data.dockBuildings[key] = true
+					end
+				end
+				DataService.MarkDirty(player)
+				show(player, true)
+				return true
 			end
 			return nil
 		end
@@ -416,6 +548,7 @@ function DockService.Start()
 		local i = byPlayer[player]
 		if i then
 			sync(plots[i], player, data.dockLevel or 1, false)
+			syncBuildings(plots[i], player, false)
 		end
 	end)
 	-- the rescue boards show each owner's real rescue count (BadgeService's Rescue100 counter)

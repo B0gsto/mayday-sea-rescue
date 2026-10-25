@@ -53,6 +53,28 @@ return function(t)
 		end
 	end)
 
+	t.test(
+		"16 garage bays in one row along Penhallow Road's west kerb, doors onto the road",
+		function()
+			local g = M.GARAGE
+			for i = 1, M.COUNT do
+				local cf = M.garage(i)
+				t.expect((cf.LookVector - Vector3.xAxis).Magnitude < 1e-4).toBe(true) -- out of the door, east onto the road
+				t.expect(cf.Position.X).toBe(g.X)
+				-- the back wall stays clear of the road and the bays tile without gaps or overlap
+				t.expect((cf * Vector3.new(0, 0, g.DEPTH)).X < g.X).toBe(true)
+				if i > 1 then
+					t.expect(
+						math.abs((M.garage(i - 1).Position - cf.Position).Magnitude - g.WIDTH)
+							< 1e-3
+					)
+						.toBe(true)
+				end
+				t.expect(cf.Position.Z + g.WIDTH / 2 <= -41).toBe(true) -- north of Harbour Road (z -26, 30 wide)
+			end
+		end
+	)
+
 	t.test("assign gives the lowest free plot, nil when full", function()
 		t.expect(M.assign({})).toBe(1)
 		t.expect(M.assign({ [1] = true, [2] = true, [4] = true })).toBe(3)

@@ -534,7 +534,8 @@ local function spawnVehicle(
 	player: Player,
 	vehicleId: string,
 	pointId: string?,
-	withTrailer: boolean?
+	withTrailer: boolean?,
+	at: CFrame? -- the dock garage's bay (WP-10b): parked on its floor, the driver walks to it
 ): (boolean, string | Model)
 	local spec = LandVehicleConfig.get(vehicleId)
 	if not spec or not spec.driveable then
@@ -548,15 +549,21 @@ local function spawnVehicle(
 	if not allowed then
 		return false, reason
 	end
-	local towing = withTrailer == true and spec.canTow
-	local point = if pointId then pointById(pointId) else nearestPoint(player, vehicleId, towing)
-	if not point or not pointAllows(point, vehicleId) or (towing and not point.trailers) then
-		return false, "NoSpawnPoint"
-	end
-	local bay = freeBay(point, player, spec)
+	local towing = withTrailer == true and spec.canTow and not at
+	local bay = at
 	if not bay then
-		return false, "BayBusy"
+		local point = if pointId
+			then pointById(pointId)
+			else nearestPoint(player, vehicleId, towing)
+		if not point or not pointAllows(point, vehicleId) or (towing and not point.trailers) then
+			return false, "NoSpawnPoint"
+		end
+		bay = freeBay(point, player, spec)
+		if not bay then
+			return false, "BayBusy"
+		end
 	end
+	assert(bay, "no bay")
 	lastSpawn[player] = now
 	local old = byPlayer[player]
 	if old then
@@ -568,7 +575,7 @@ local function spawnVehicle(
 	model:SetAttribute("Owner", player.UserId)
 	local ignore: { Instance } = characters()
 	table.insert(ignore, folder)
-	local y = groundY(bay.Position, ignore)
+	local y = if at then at.Y else groundY(bay.Position, ignore) -- a garage's roof is over its floor
 	local cf = CFrame.new(bay.Position.X, y + Builder.rideHeight(spec) + 0.15, bay.Position.Z)
 		* bay.Rotation
 	model:PivotTo(cf)
@@ -625,9 +632,11 @@ local function spawnVehicle(
 			onSeatChanged(record)
 		end
 	end)
-	sitDriver(player, seat)
+	if not at then
+		sitDriver(player, seat)
+	end
 	spawnedEvent:Fire(player, model)
-	Telemetry.Vehicle(player, "Spawned", vehicleId, "Road") -- analytics H4
+	Telemetry.Vehicle(player, "Spawned", vehicleId, if at then "Board" else "Road") -- analytics H4
 	return true, model
 end
 
@@ -1387,9 +1396,10 @@ function LandVehicleService.Spawn(
 	player: Player,
 	vehicleId: string,
 	pointId: string?,
-	withTrailer: boolean?
+	withTrailer: boolean?,
+	at: CFrame?
 ): (boolean, string | Model)
-	return spawnVehicle(player, vehicleId, pointId, withTrailer)
+	return spawnVehicle(player, vehicleId, pointId, withTrailer, at)
 end
 
 function LandVehicleService.Despawn(player: Player)

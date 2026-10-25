@@ -1,5 +1,6 @@
 --!strict
--- BoatBoardController (docs/23 d.3, WP-5): the client half of the boat board (server/Dock/BoatBoard).
+-- BoatBoardController (docs/23 d.3, WP-5): the client half of the vehicle boards (server/Dock/BoatBoard: the
+-- boat board and the garage, hangar and sub pen boards, all tagged BoatBoard).
 -- On your own rack, owned models stay lit with Launch (the server's crane does the rest); locked ones go
 -- dark with a padlock, a Cash chip (coin + price, or the rank's colour + name) and an R$ chip, and their
 -- prompt reads Buy. Buy and Upgrade open the phone's card for that craft (VehiclesApp, only = id), the
@@ -199,8 +200,8 @@ local function paintRack(rack: Instance)
 	local mine = rack:GetAttribute("Owner") == player.UserId
 	for _, pad in rack:GetChildren() do
 		local id = pad:GetAttribute("VehicleId")
-		if not (pad:IsA("BasePart") and type(id) == "string") then
-			continue
+		if not (pad:IsA("BasePart") and type(id) == "string") or pad:GetAttribute("Silhouette") then
+			continue -- a craft not built yet stays a grey shape
 		end
 		local launch = pad:FindFirstChild("BoardLaunch") :: ProximityPrompt?
 		local card = pad:FindFirstChild("BoardCard") :: ProximityPrompt?

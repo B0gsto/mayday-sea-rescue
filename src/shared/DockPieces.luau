@@ -3,9 +3,11 @@
 -- (Marina.berth: -Z = out to sea, the deck at z 27.5..52.5, top y 3; the craft at x -7..7; the jetty
 -- finger at x 10..18). DockService builds them on the plot (everyone sees them); DockController builds
 -- the next level again as the owner's local ghost. Named hooks: parts "Flag" take the owner's colour,
--- TextLabels "Count" show the rescue count. Materials stay off the MaterialService remap (no Slate,
+-- TextLabels "Count" show the rescue count, TextLabels "Owner" the owner's name. The WP-10b buildings
+-- (DockPieces.building) sit in their own frame: the garage in Marina.garage(plot), the others in the berth frame. Materials stay off the MaterialService remap (no Slate,
 -- WoodPlanks, Brick, Concrete).
 local DockConfig = require(script.Parent:WaitForChild("Config"):WaitForChild("DockConfig"))
+local Marina = require(script.Parent:WaitForChild("Marina"))
 
 local DockPieces = {}
 
@@ -429,6 +431,322 @@ local function level5(m: Model, b: CFrame)
 end
 
 local LEVELS = { [2] = level2, [3] = level3, [4] = level4, [5] = level5 }
+
+-- WP-10b buildings ------------------------------------------------------------------------------
+
+local G = Marina.GARAGE
+local GARAGE_H = 10 -- the CoastguardResponse's light bar clears the door
+local PAD_Y = TOP + 11 + 4.6 -- the helipad's top, on posts over the Lv 3 boathouse ridge
+local PEN = { x0 = 19.6, x1 = 28.4, z0 = -21, z1 = 1, top = 14 } -- the sub pen gantry, east of the jetty
+
+-- In each building's frame: `buildAt` = the ghost's Build prompt, `board` = the vehicle board's rack (models
+-- along its X, facing its -Z), `targets[id]` = where that craft spawns (the berth when absent), `hook` = the
+-- gantry height the sub hangs from.
+DockPieces.Buildings = {
+	Garage = {
+		buildAt = CFrame.new(0, 3, 4),
+		board = CFrame.new(G.WIDTH / 2 - 2.2, 0, G.DEPTH / 2) * CFrame.Angles(0, math.pi / 2, 0),
+		targets = {} :: { [string]: CFrame },
+	},
+	Hangar = {
+		buildAt = CFrame.new(1, TOP + 2.5, 34),
+		board = CFrame.new(-11, PAD_Y, 50.4),
+		targets = { RescueHelicopter = CFrame.new(-11, PAD_Y, 38) } :: { [string]: CFrame },
+	},
+	SubPen = {
+		buildAt = CFrame.new(14, TOP + 2.5, -10),
+		board = CFrame.new(16.5, TOP, -12) * CFrame.Angles(0, -math.pi / 2, 0),
+		targets = { Submarine = CFrame.new((PEN.x0 + PEN.x1) / 2, 0, (PEN.z0 + PEN.z1) / 2) } :: { [string]: CFrame },
+		hook = PEN.top - 0.5,
+	},
+}
+for _, id in DockConfig.Buildings.Garage.vehicles do
+	-- beside the board's lane, nose out of the door
+	DockPieces.Buildings.Garage.targets[id] = CFrame.new(-2.6, 0, G.DEPTH / 2)
+end
+
+-- the garage bay: walls, a flat roof, the header with the owner's name over a stripe in their colour, the
+-- roll-up door's drum (their colour too) and a ceiling light; the floor is DockService's lot
+local function garage(m: Model, g: CFrame)
+	local w, d, h = G.WIDTH, G.DEPTH, GARAGE_H
+	for _, side in { -1, 1 } do
+		part(
+			m,
+			"Wall",
+			Vector3.new(0.6, h, d),
+			g * CFrame.new(side * (w / 2 - 0.3), h / 2, d / 2),
+			WHITE,
+			M.SmoothPlastic
+		)
+	end
+	part(
+		m,
+		"Wall",
+		Vector3.new(w, h, 0.6),
+		g * CFrame.new(0, h / 2, d - 0.3),
+		WHITE,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"Roof",
+		Vector3.new(w, 0.6, d + 1),
+		g * CFrame.new(0, h + 0.3, d / 2 - 0.5),
+		GREY,
+		M.Metal
+	)
+	local header = part(
+		m,
+		"Header",
+		Vector3.new(w, 2.2, 0.6),
+		g * CFrame.new(0, h - 1.1, 0.3),
+		WHITE,
+		M.SmoothPlastic
+	)
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 40
+	gui.Parent = header
+	local name = Instance.new("TextLabel")
+	name.Name = "Owner"
+	name.Size = UDim2.fromScale(1, 1)
+	name.BackgroundTransparency = 1
+	name.Font = Enum.Font.GothamBold
+	name.TextScaled = true
+	name.TextColor3 = Color3.fromRGB(30, 38, 52)
+	name.Text = ""
+	name.Parent = gui
+	part(
+		m,
+		"Flag",
+		Vector3.new(w, 0.5, 0.2),
+		g * CFrame.new(0, h - 2.45, 0.1),
+		WHITE,
+		M.SmoothPlastic
+	)
+	part(
+		m,
+		"Flag",
+		Vector3.new(w - 1.2, 1.4, 1.4),
+		g * CFrame.new(0, h - 1.1, -0.8),
+		WHITE,
+		M.Metal,
+		Enum.PartType.Cylinder
+	)
+	for _, side in { -1, 1 } do
+		part(
+			m,
+			"DoorRail",
+			Vector3.new(0.3, h - 2.2, 0.3),
+			g * CFrame.new(side * (w / 2 - 0.75), (h - 2.2) / 2, 0.2),
+			GREY,
+			M.Metal
+		)
+	end
+	local strip = part(
+		m,
+		"Light",
+		Vector3.new(0.6, 0.2, d - 6),
+		g * CFrame.new(0, h - 0.1, d / 2),
+		WARM,
+		M.Neon
+	)
+	local light = Instance.new("PointLight")
+	light.Color = WARM
+	light.Range = 16
+	light.Brightness = 1
+	light.Parent = strip
+end
+
+-- the helipad on posts over the boathouse roof (an H, an edge line and lights), a small hangar shelter at its
+-- back and a ladder up the boathouse's open side
+local function hangar(m: Model, b: CFrame)
+	local x0, x1, z0, z1 = -20.5, -1.5, 29.5, 52.5
+	local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
+	for _, x in { x0 + 1, x1 - 1 } do
+		for _, z in { z0 + 1, z1 - 1 } do
+			part(
+				m,
+				"Post",
+				Vector3.new(0.8, PAD_Y - TOP - 11, 0.8),
+				b * CFrame.new(x, (PAD_Y + TOP + 11) / 2, z),
+				GREY,
+				M.Metal
+			)
+		end
+	end
+	part(
+		m,
+		"Pad",
+		Vector3.new(x1 - x0, 0.6, z1 - z0),
+		b * CFrame.new(cx, PAD_Y - 0.3, cz),
+		GREY,
+		M.SmoothPlastic
+	)
+	local hz = 38
+	for _, e in { { 0, -8, 15, 0.4 }, { 0, 8, 15, 0.4 }, { -7.5, 0, 0.4, 16 }, { 7.5, 0, 0.4, 16 } } do
+		part(
+			m,
+			"PadLine",
+			Vector3.new(e[3], 0.06, e[4]),
+			b * CFrame.new(cx + e[1], PAD_Y + 0.03, hz + e[2]),
+			YELLOW,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+	for _, e in { { -2.4, 0, 1.2, 7 }, { 2.4, 0, 1.2, 7 }, { 0, 0, 4.8, 1.2 } } do
+		part(
+			m,
+			"H",
+			Vector3.new(e[3], 0.08, e[4]),
+			b * CFrame.new(cx + e[1], PAD_Y + 0.04, hz + e[2]),
+			WHITE,
+			M.SmoothPlastic
+		).CanCollide =
+			false
+	end
+	for _, x in { x0 + 0.4, cx, x1 - 0.4 } do
+		for _, z in { z0 + 0.4, hz, 46 } do
+			if x ~= cx or z ~= hz then
+				local bulb = part(
+					m,
+					"PadLight",
+					Vector3.new(0.5, 0.5, 0.5),
+					b * CFrame.new(x, PAD_Y + 0.25, z),
+					Color3.fromRGB(90, 255, 120),
+					M.Neon,
+					Enum.PartType.Ball
+				)
+				bulb.CanCollide = false
+			end
+		end
+	end
+	-- the hangar shelter: back wall, two side walls, a red roof
+	local sz0, sh = 46.5, 7
+	part(
+		m,
+		"Wall",
+		Vector3.new(x1 - x0, sh, 0.4),
+		b * CFrame.new(cx, PAD_Y + sh / 2, z1 - 0.2),
+		WHITE,
+		M.Wood
+	)
+	for _, x in { x0 + 0.2, x1 - 0.2 } do
+		part(
+			m,
+			"Wall",
+			Vector3.new(0.4, sh, z1 - sz0),
+			b * CFrame.new(x, PAD_Y + sh / 2, (sz0 + z1) / 2),
+			WHITE,
+			M.Wood
+		)
+	end
+	part(
+		m,
+		"HangarRoof",
+		Vector3.new(x1 - x0 + 0.4, 0.5, z1 - sz0 + 1),
+		b * CFrame.new(cx, PAD_Y + sh + 0.25, (sz0 + z1) / 2 - 0.5),
+		RED,
+		M.SmoothPlastic
+	)
+	local ladder = Instance.new("TrussPart")
+	ladder.Name = "Ladder"
+	ladder.Size = Vector3.new(2, PAD_Y - TOP, 2)
+	ladder.CFrame = b * CFrame.new(x1 + 1, (PAD_Y + TOP) / 2, 36)
+	ladder.Color = GREY
+	ladder.Material = M.Metal
+	ladder.Anchored = true
+	ladder.Parent = m
+end
+
+-- the sub pen: a steel gantry over a moon-pool collar in the water east of the jetty
+local function subPen(m: Model, b: CFrame)
+	local p = PEN
+	local cx, cz = (p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2
+	for _, x in { p.x0, p.x1 } do
+		for _, z in { p.z0, p.z1 } do
+			part(
+				m,
+				"Leg",
+				Vector3.new(0.8, p.top + 6, 0.8),
+				b * CFrame.new(x, (p.top - 6) / 2, z),
+				GREY,
+				M.Metal
+			)
+		end
+		part(
+			m,
+			"Beam",
+			Vector3.new(0.8, 0.8, p.z1 - p.z0 + 0.8),
+			b * CFrame.new(x, p.top, cz),
+			YELLOW,
+			M.Metal
+		)
+	end
+	for _, z in { p.z0, p.z1 } do
+		part(
+			m,
+			"Beam",
+			Vector3.new(p.x1 - p.x0, 0.8, 0.8),
+			b * CFrame.new(cx, p.top, z),
+			YELLOW,
+			M.Metal
+		)
+	end
+	part(
+		m,
+		"Trolley",
+		Vector3.new(p.x1 - p.x0, 1, 1.4),
+		b * CFrame.new(cx, p.top + 0.1, cz),
+		GREY,
+		M.Metal
+	)
+	-- the floating collar round the pool, at the waterline
+	for _, x in { p.x0 + 0.6, p.x1 - 0.6 } do
+		part(
+			m,
+			"Collar",
+			Vector3.new(1, 1, p.z1 - p.z0),
+			b * CFrame.new(x, 0.3, cz),
+			ORANGE,
+			M.SmoothPlastic
+		)
+	end
+	for _, z in { p.z0 + 0.5, p.z1 - 0.5 } do
+		part(
+			m,
+			"Collar",
+			Vector3.new(p.x1 - p.x0 - 2.2, 1, 1),
+			b * CFrame.new(cx, 0.3, z),
+			ORANGE,
+			M.SmoothPlastic
+		)
+	end
+	-- a plank from the jetty onto the collar
+	part(
+		m,
+		"Plank",
+		Vector3.new(p.x0 - 18 + 0.6, 0.4, 3),
+		b * CFrame.new((18 + p.x0 + 0.6) / 2, TOP - 0.2, -10),
+		WOOD,
+		M.Wood
+	)
+end
+
+local BUILDINGS = { Garage = garage, Hangar = hangar, SubPen = subPen }
+
+-- The pieces of building `key` (DockConfig.Buildings) around its frame `cf`, as a Model named `key`.
+function DockPieces.building(key: string, cf: CFrame): Model
+	local m = Instance.new("Model")
+	m.Name = key
+	local fn = BUILDINGS[key]
+	if fn then
+		fn(m, cf)
+	end
+	return m
+end
 
 -- The pieces dock level n adds, as a Model "Lv<n>" around the berth CFrame b (not parented).
 function DockPieces.build(n: number, b: CFrame): Model

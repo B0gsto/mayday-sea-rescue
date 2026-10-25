@@ -142,6 +142,9 @@ return function(t)
 				DockLevel3 = true,
 				DockLevel4 = true,
 				DockLevel5 = true,
+				DockGarage = true, -- DockService grants dock buildings (docs/23 WP-10b)
+				DockHangar = true,
+				DockSubPen = true,
 			},
 			GamePasses = { DoubleCash = true, StarterKit = true, QuickLaunch = true }, -- QuickLaunch: RP-A1 use card
 		}

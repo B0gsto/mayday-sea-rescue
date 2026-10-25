@@ -1,9 +1,9 @@
 --!strict
 -- VehiclesApp: the phone's vehicle page (portrait). Since docs/23 c.5 the boats are chosen and bought at
--- the dock's boat board, so the phone page is one big Boat to me (RequestVehicle(nil, false, true): your
--- current or last craft comes to the open water nearest you, seated) over the cars' carousel (shortcut:
--- car spawning stays on the phone until the dock's garage exists, docs/23 WP-10). The boat board opens one
--- card through Phone.openApp(_, mount) with `only` = that craft (buy, upgrades, Spawn = docked at the berth).
+-- the dock's boards, so the phone page is just one big Boat to me (RequestVehicle(nil, false, true): your
+-- current or last craft comes to the open water nearest you, seated); cars are chosen at the dock's garage
+-- board since docs/23 WP-10b. A board opens one card through Phone.openApp(_, mount) with `only` = that craft
+-- (buy, upgrades, Spawn = docked at the berth; a car at the nearest road spawn point).
 -- Cards: a swipeable carousel of big navy cards (Hud.Panel skin): a slowly turning 3D preview of the real
 -- model (the server's ReplicatedStorage.VehiclePreviews.<id>, the exact build the spawner makes; else a
 -- live one of that kind; else the shared builder's greybox), the name (gold for the Robux-only premium
@@ -418,7 +418,7 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 	local fills = statFills(all)
 	local shown: { Entry } = {}
 	for _, e in all do
-		if if only then e.id == only else e.land then
+		if e.id == only then -- no `only`: the phone page, Boat to me alone
 			table.insert(shown, e)
 		end
 	end
@@ -452,7 +452,7 @@ function VehiclesApp.mount(page: Frame, _close: (() -> ())?, only: string?): () 
 			setTab(i)
 		end
 	)
-	segments.Visible = false -- one kind per page now: the board's one craft, or the phone's cars
+	segments.Visible = false -- one craft per page now (a board's), none on the phone page
 	local top = if only then 0 else BOAT_TO_ME_H + 10
 
 	local function data(): Rules.PlayerData?
