@@ -2,9 +2,9 @@
 -- GameConfig: world layout and storm timings. Pure data (no services), safe to load in Lune
 -- (tests and map/Build.luau read it, so the greybox map and the game agree on zone shapes).
 --
--- World frame: sea level is Y = 0. Port Haven town is on land to the north (-Z); the harbour opens
--- south (+Z). Calm Bay sits inside the breakwater; the gap in the breakwater is Harbour Mouth;
--- beyond it is open sea. Numbers without a doc source are marked -- tune.
+-- World frame: sea level is Y = 0. The hub forest island sits at the centre (docs/23 (l)); its harbour opens
+-- south (+Z) through Harbour Mouth into Calm Bay, the water between the two southern bridges; beyond is
+-- open sea. Numbers without a doc source are marked -- tune.
 
 export type Zone = {
 	id: string,
@@ -26,24 +26,24 @@ local GameConfig = {
 		{
 			id = "HarbourMouth",
 			displayName = "Harbour Mouth",
-			center = Vector3.new(0, 0, 368),
+			center = Vector3.new(0, 0, 420), -- the hub harbour mouth (HubLayout notch, rim at z 400)
 			radius = 60, -- tune
 			shelter = 0.4, -- tune
 			priority = 3,
 		},
 		{
-			id = "PortHaven",
-			displayName = "Port Haven",
-			center = Vector3.new(0, 0, -60),
-			radius = 200, -- tune
+			id = "Hub", -- docs/23 (l): the hub forest island
+			displayName = "Coastguard Hub",
+			center = Vector3.new(0, 0, 0),
+			radius = 420, -- tune
 			shelter = 0.9, -- tune
 			priority = 2,
 		},
 		{
 			id = "CalmBay",
 			displayName = "Calm Bay",
-			center = Vector3.new(0, 0, 190),
-			radius = 300, -- tune
+			center = Vector3.new(0, 0, 600), -- the water south of the harbour, between the bridges
+			radius = 220, -- tune
 			shelter = 0.8, -- docs 02 section 8: small waves even in a storm -- tune
 			priority = 1,
 		},

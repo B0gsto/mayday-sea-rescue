@@ -667,7 +667,9 @@ local function step(dt: number)
 	lastT = t
 	WaveField.beginFrame(t, pos)
 	if horizon then
-		Horizon.setHigh(horizon, pos.Y > SEA + 60)
+		-- WP-21a: hub hilltops (Y 37), the lookout tower and bridge decks put a walking camera at 40-65 studs,
+		-- where the 4,200-stud horizon square showed against the sky: the skirt comes on from 25 up
+		Horizon.setHigh(horizon, pos.Y > SEA + 25)
 	end
 	if snapped then
 		shiftFoam(cx - centreX, cz - centreZ)

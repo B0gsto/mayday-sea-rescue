@@ -516,6 +516,12 @@ function AssetLoader.getTemplate(asset: string, lod: string?): Model?
 	return model
 end
 
+-- Registers a code-built template (placeholder art, e.g. World/ForestTrees) so getTemplate / clone serve it.
+function AssetLoader.define(asset: string, lod: string, model: Model)
+	model.Name = `{asset}_{lod}`
+	model.Parent = templateFolder()
+end
+
 -- A fresh copy of the asset at its authored pivot (parts unanchored), or nil (see getTemplate).
 function AssetLoader.clone(asset: string, lod: string?): Model?
 	local template = AssetLoader.getTemplate(asset, lod)

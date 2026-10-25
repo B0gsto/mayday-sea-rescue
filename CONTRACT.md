@@ -273,13 +273,18 @@ recovered pet; `Pet_Equip` 0 = Bosun, player attribute `CompanionPet`), Settings
 
 - Hub and six islands (docs/23 (k), WP-18): `src/shared/Config/HubLayout.luau` (pure, `tests/HubLayout.spec.luau`
   checks it against the bake), built from the generated `WorldConfig.Hub`: `Hub` (center, frame, spawn, lots HQ /
-  CallBoard / ShopCounter, dropOff), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
+  CallBoard / ShopCounter / Harbourmaster / Campfire / Monument / Jetty, dropOff, clearings[id] = { kind, center,
+  radius }, questSpots = { { id, cframe, radius } }), `Islands` / `byId` (Plot1..6: center, facing, frame, spawn, berths Boat / Sub,
   lots Station, Boathouse, PaintBooth, Helipad (clearRadius 45), Hangar, SubPen, Jetty, BlueprintTable,
   CrewQuarters, LifeguardTower, Spare1..3), `Bridges` + `deckY` / `deckAt`. `server/World/Bridges` builds the six
-  suspension bridges from it (WorldDressingService I2 list). WP-19a: `map/Build.luau` builds `Map.Hub` (HubSpawn,
-  greybox Station under `Swaps.Station`, CallBoard model tag `CallBoard`, ShopCounter whose prompt tag `ShopCounter`
-  opens the phone Store via HudController, Quay dressing) and the only drop-off pad `Map.DropOffs.DropOff_Dock`
-  (`DropOff = "Dock"`) at `HubLayout.Hub.dropOff`; StationRig puts the HQ radio in the hall (tag `StationRadio`).
+  suspension bridges from it (WorldDressingService I2 list). WP-21a (docs/23 (l)): the hub is a forest island ~800
+  across (ring 1,100); `map/Build.luau` builds `Map.Hub` (HubSpawn, the Lookout HQ hut with the radio (tag
+  `StationRadio`), CallBoard model tag `CallBoard`, the market-stall ShopCounter whose prompt tag `ShopCounter` opens
+  the phone Store via HudController, Quay, Jetty, Harbourmaster, Campfire, Monument (LeaderboardService hangs the
+  rescue board there; the album StampPost), QuestCamps (tag `QuestCamp`, attribute `QuestSpot`), the hidden Ruin and
+  Wreck (album page `Hub`)) and the only drop-off pad `Map.DropOffs.DropOff_Dock` (`DropOff = "Dock"`) at
+  `HubLayout.Hub.dropOff`. The trees are `props.json` `trees` rows (`World/ForestTrees` placeholder templates via
+  `AssetLoader.define`; client-drawn by ScatterController, trunk hulls on the server).
   The old Port Haven harbour (Harbour.luau, breakwaters, slipway, hospital, moorings) is gone.
 - Pets and sanctuary: `PetService`, `PetRules`, `PetSeat`, `PetAccessory`, `PetController`.
 - Exploration album and map fog (docs/21 §3): `Config/DiscoveryConfig` (pages, ranges, Cash, fog grid),

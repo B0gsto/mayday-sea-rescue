@@ -152,6 +152,15 @@ DiscoveryConfig.Pages = {
 			},
 		},
 	},
+	-- docs/23 (l): the hub forest's hidden spots (WorldConfig.Hub.clearings), no trail leads to either
+	Hub = {
+		colour = Color3.fromHex("4E7A3A"),
+		icon = "castle",
+		stickers = {
+			{ id = "Ruin", kind = "View", from = "Ruin", offset = v(4, 3) }, -- the hilltop ruin's view
+			{ id = "Wreck", kind = "Bottle", from = "Wreck", offset = v(-6, 5) }, -- by the overgrown wreck
+		},
+	},
 }
 
 return DiscoveryConfig

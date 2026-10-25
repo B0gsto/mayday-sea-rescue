@@ -15,11 +15,12 @@ sys.path.insert(0, HERE)
 import layout as L  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(HERE))
-N = 2 * L.HALF_EXTENT // L.CELL + 1
-H = np.fromfile(os.path.join(REPO, "map/generated/terrain_height.i16"), "<i2").reshape(N, N) / 8.0
+X0, Z0, X1, Z1 = L.HUB_WINDOW["window"]
+H = np.fromfile(os.path.join(REPO, "map/generated/terrain_height.i16"), "<i2").reshape(
+    (Z1 - Z0) // L.CELL + 1, (X1 - X0) // L.CELL + 1) / 8.0
 
 def at(x, z):
-    return float(H[int(round((z + L.HALF_EXTENT) / L.CELL)), int(round((x + L.HALF_EXTENT) / L.CELL))])
+    return float(H[int(round((z - Z0) / L.CELL)), int(round((x - X0) / L.CELL))])
 
 
 def check_islands(fails):
@@ -33,7 +34,7 @@ def check_islands(fails):
     if sorted(grids) != sorted(i["id"] for i in L.ISLAND_WINDOWS):
         fails.append(f"bake windows {sorted(grids)} do not match layout.ISLAND_WINDOWS (re-run gen_terrain.py)")
         return 0
-    boxes = [("Main", (-L.HALF_EXTENT, -L.HALF_EXTENT, L.HALF_EXTENT, L.HALF_EXTENT))] \
+    boxes = [("Main", L.HUB_WINDOW["window"])] \
         + [(i["id"], i["window"]) for i in L.ISLAND_WINDOWS]
     for k, (a, (ax0, az0, ax1, az1)) in enumerate(boxes):
         if any(v % 256 for v in (ax0, az0, ax1, az1)):
@@ -78,18 +79,27 @@ def main():
     fails = []
     hubs = [(L.HUB["center"], L.HUB["bearing"], L.HUB["radius"], L.HUB["notch"])] + [
         (p["center"], p["bearing"], L.RING["islandRadius"], L.RING["notch"]) for p in L.PLAYER_ISLANDS]
-    for (cx, cz), b, r, notch in hubs:
+    flat = L.PLATEAU_Y - L.RENDER_BIAS  # baked; renders at PLATEAU_Y
+    for (cx, cz), b, r, notch in hubs[1:]:
         for right, fwd in ((0, 0), (0.5 * r, -0.3 * r), (-0.5 * r, -0.3 * r), (0, -0.7 * r)):
             y = at(*L.local(cx, cz, b, right, fwd))
-            if abs(y - L.PLATEAU_Y) > 1.5:
+            if abs(y - flat) > 1.5:
                 fails.append(f"plateau at ({cx:.0f}, {cz:.0f}) +({right:.0f}, {fwd:.0f}) is Y {y:.1f}")
+    for c in L.HUB_CLEARINGS:  # docs/23 (l): the hub is hills now; its clearings are the flat ground
+        x, z = c["pos"]
+        for dx, dz in ((0, 0), (0.6, 0), (-0.6, 0), (0, 0.6), (0, -0.6)):
+            y = at(x + dx * c["radius"], z + dz * c["radius"])
+            want = at(x, z) if c["y"] is None else c["y"] - L.RENDER_BIAS
+            if abs(y - want) > 1.5:
+                fails.append(f"hub clearing {c['id']} at +({dx}, {dz}) r is Y {y:.1f}, not {want:.1f}")
+    for (cx, cz), b, r, notch in hubs:
         y = at(*L.local(cx, cz, b, 0, (notch["head"] + r) / 2))
         if y > notch["floorY"] + 6:
             fails.append(f"notch at ({cx:.0f}, {cz:.0f}) only dredged to Y {y:.1f}")
     n_isl = check_islands(fails)
     for f in fails:
         print("FAIL", f)
-    print(f"check_zones: {len(hubs)} plateaus and notches, {n_isl} island points: "
+    print(f"check_zones: {len(hubs) - 1} plateaus, {len(L.HUB_CLEARINGS)} hub clearings, {len(hubs)} notches, {n_isl} island points: "
           + ("OK" if not fails else f"{len(fails)} failures"))
     sys.exit(1 if fails else 0)
 

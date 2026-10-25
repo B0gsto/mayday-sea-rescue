@@ -207,6 +207,9 @@ def bake_island(isl):
     h_land, (gully, outc) = micro_relief(X, Z, h_land, dl, wb, s)
     if "plateau" in isl:  # docs/23 (k): flat buildable ground 30 studs in from the waterline
         h_land = h_land + (isl["plateau"] - h_land) * smoothstep(6, 30, dl)
+    trail = flat = None
+    if "forest" in isl:
+        h_land, trail, flat = forest(X, Z, h_land, dl, isl["forest"])
 
     # sea: the main shelf, a little steeper (small islands drop off faster). The kind weights are blurred (~100
     # studs) first: coast_field switches hard between polygons, which left step lines on the seabed between stacks
@@ -255,7 +258,55 @@ def bake_island(isl):
         mat = np.where((h > 6) & ~rockish & (mat != MI["Limestone"]), MI["Rock"], mat)
     if isl["biome"] == "reef":
         mat = np.where((h > 0) & rockish, MI["Basalt"], mat)
+    if trail is not None:  # docs/23 (l): forest floor, trampled clearings, dirt trails (outcrops and rims keep theirs)
+        n = fbm(X, Z, 26, s + 950, 3) + 0.4 * vnoise(X, Z, 7, s + 951)
+        wood = (np.hypot(X - L.HUB["center"][0], Z - L.HUB["center"][1]) < L.HUB["radius"] + 40) & (dl > 28) \
+            & (h > 1) & (np.hypot(*np.gradient(h, L.CELL)) < 0.75)  # only real faces stay rock
+        floor = np.where(n > 0.4, MI["Ground"], np.where(n < -0.3, MI["LeafyGrass"], MI[OLIVE]))
+        camp = np.where(n > 0.05, MI["Ground"], MI[WORN])
+        path = np.where(fbm(X, Z, 9, s + 952, 2) > 0.45, MI["Mud"], MI["Ground"])
+        pick = np.where(trail > 0.5, path, np.where(flat > 0.6, camp, floor))
+        mat = np.where(wood, pick, mat)
     return xs, zs, h, mat.astype(np.uint8)
+
+
+def trail_distance(X, Z, trails):
+    """Distance (studs) to the nearest hub trail, meandering (scatter_props.py keeps the trees off the same field)."""
+    Xw, Zw = warp(X, Z, L.SEED + 960, 9.0, 70.0)
+    dist = np.full(X.shape, 1e9)
+    for line in trails:
+        for (x0, z0), (x1, z1) in zip(line, line[1:]):
+            dx, dz = x1 - x0, z1 - z0
+            t = np.clip(((Xw - x0) * dx + (Zw - z0) * dz) / (dx * dx + dz * dz), 0, 1)
+            dist = np.minimum(dist, np.hypot(Xw - (x0 + t * dx), Zw - (z0 + t * dz)))
+    return dist
+
+
+def forest(X, Z, h, dl, f):
+    """docs/23 (l): the hub's gentle hills and rough forest floor over the plateau, flat clearings (rendered at their
+    `y`; None = the ground's mean, written back into the clearing as `bakedY`) and meandering dirt trails. Returns
+    (height, trail mask 0..1, clearing mask 0..1)."""
+    s = L.SEED
+    hub = np.hypot(X - L.HUB["center"][0], Z - L.HUB["center"][1]) < L.HUB["radius"] + 60  # not the ring's plateaus
+    rim = smoothstep(40, 110, dl) * hub
+    hills = sum(ph * np.exp(-((X - px) ** 2 + (Z - pz) ** 2) / (2 * (pr * 0.6) ** 2)) for px, pz, ph, pr in f["hills"])
+    rough = 5 * fbm(X, Z, 110, s + 940, 3) + 0.9 * fbm(X, Z, 16, s + 941, 2)
+    h = h + (hills + rough + 3) * rim
+    flat = np.zeros(X.shape)
+    for c in f["clearings"]:
+        (cx, cz), r = c["pos"], c["radius"]
+        dist = np.hypot(X - cx, Z - cz)
+        y = float(h[dist < r].mean()) if c["y"] is None else c["y"] - L.RENDER_BIAS
+        c["bakedY"] = round(y + L.RENDER_BIAS, 1)
+        m = smoothstep(r + 45, r, dist)
+        h = h + (y - h) * m
+        flat = np.maximum(flat, smoothstep(r + 6, r - 4, dist))
+    dist = trail_distance(X, Z, f["trails"])
+    width = 3.2 + 1.4 * fbm(X, Z, 40, s + 961, 2)
+    trail = smoothstep(width + 1.5, width - 1.5, dist) * (dl > 20)
+    keep = 1 - smoothstep(0.3, 0.9, flat)
+    h = h + (box_blur(h, 2) - h - 0.5) * trail * keep  # a worn bed, a little sunk
+    return h, trail, flat
 
 
 def box_blur(a, r):
@@ -457,16 +508,6 @@ def materials(X, Z, h, d, W, feat, gully, outc):
     return mat
 
 
-def sample(h, x, z):
-    n = h.shape[0]
-    u = np.clip((x + L.HALF_EXTENT) / L.CELL, 0, n - 1.001)
-    v = np.clip((z + L.HALF_EXTENT) / L.CELL, 0, n - 1.001)
-    i, j = int(u), int(v)
-    fu, fv = u - i, v - j
-    return (h[j, i] * (1 - fu) * (1 - fv) + h[j, i + 1] * fu * (1 - fv) + h[j + 1, i] * (1 - fu) * fv
-            + h[j + 1, i + 1] * fu * fv)
-
-
 # ---------------------------------------------------------------- outputs
 
 
@@ -527,7 +568,7 @@ def write_worldconfig(wins):
     cfg = {
         "MapRadius": L.MAP_RADIUS,
         "SeaLevel": 0,
-        "Terrain": {"cell": L.CELL, "halfExtent": L.HALF_EXTENT, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED,
+        "Terrain": {"cell": L.CELL, "seabedFloorY": L.SEABED_FLOOR_Y, "seed": L.SEED,
                     "windows": [{"id": i["id"], "min": Vec(i["window"][0], L.SEABED_FLOOR_Y, i["window"][1]),
                                  "max": Vec(i["window"][2], 0, i["window"][3])} for i in L.ISLAND_WINDOWS]},
         # docs/23 (k): the hub island at the centre and the six player islands round it (HubLayout.luau lays the
@@ -536,7 +577,10 @@ def write_worldconfig(wins):
                 "bearing": L.HUB["bearing"], "notch": L.HUB["notch"], "plateauY": py,
                 "ring": L.RING["radius"], "islandRadius": L.RING["islandRadius"], "islandNotch": L.RING["notch"],
                 "islands": [{"id": p["id"], "bearing": p["bearing"], "center": Vec(p["center"][0], py, p["center"][1])}
-                            for p in L.PLAYER_ISLANDS]},
+                            for p in L.PLAYER_ISLANDS],
+                # docs/23 (l): the forest's clearings (outposts, bridge heads, quest camps, hidden spots); Y = rendered
+                "clearings": [{"id": c["id"], "kind": c["kind"], "center": Vec(c["pos"][0], c["bakedY"], c["pos"][1]),
+                               "radius": c["radius"]} for c in L.HUB_CLEARINGS]},
         # docs/21: one row per explorable island. landmark / stamp / landing sit on the bake surface; dock at sea
         # level (a boat's stop, B3's DropOff dock); radius = the island's zone
         "Islands": [{"id": i["id"], "name": i["name"], "center": Vec(i["center"][0], 0, i["center"][1]),
@@ -588,7 +632,7 @@ def preview(h, mat, path):
 
 
 def main():
-    xs, _, h, mat = bake_island(L.HUB_WINDOW)  # the main grid: the hub and the six player islands
+    xs, zs, h, mat = bake_island(L.HUB_WINDOW)  # the main grid: the hub and the six player islands
     out = os.path.join(REPO, "map/generated")
     os.makedirs(out, exist_ok=True)
     hq = np.clip(np.round(h * 8), -32768, 32767).astype("<i2")
@@ -596,7 +640,7 @@ def main():
     mat.astype(np.uint8).tofile(os.path.join(out, "terrain_material.u8"))
     counts = {MATERIALS[i]: int(c) for i, c in enumerate(np.bincount(mat.ravel(), minlength=len(MATERIALS))) if c}
     # outer islands (docs/21 6.1): one small grid per island next to the main one, same format
-    windows, wins = [], {"Hub": (xs, xs, h)}
+    windows, wins = [], {"Hub": (xs, zs, h)}
     for isl in L.ISLAND_WINDOWS:
         wx, wz, wh, wm = bake_island(isl)
         name = f"island_{isl['id']}"
@@ -610,7 +654,7 @@ def main():
             preview(wh, wm, sys.argv[sys.argv.index("--preview") + 1].replace(".png", f"_{isl['id']}.png"))
         print(f"baked {isl['id']} {len(wx)}x{len(wz)}, Y {wh.min():.1f}..{wh.max():.1f}, land {windows[-1]['landFraction']}")
     meta = {"generator": "tools/world/gen_terrain.py", "seed": L.SEED, "cell": L.CELL, "originX": float(xs[0]),
-            "originZ": float(xs[0]), "nx": int(len(xs)), "nz": int(len(xs)), "heightScale": 8,
+            "originZ": float(zs[0]), "nx": int(len(xs)), "nz": int(len(zs)), "heightScale": 8,
             "height": "terrain_height.i16", "material": "terrain_material.u8", "materials": MATERIALS,
             "shellLand": 40, "shellSea": 20,
             "stats": {"minY": round(float(h.min()), 1), "maxY": round(float(h.max()), 1),
@@ -621,7 +665,7 @@ def main():
     wc = write_worldconfig(wins)
     if "--preview" in sys.argv:
         preview(h, mat, sys.argv[sys.argv.index("--preview") + 1])
-    print(f"baked {len(xs)}x{len(xs)} @ {L.CELL} studs, Y {h.min():.1f}..{h.max():.1f}, land {meta['stats']['landFraction']}")
+    print(f"baked {len(xs)}x{len(zs)} @ {L.CELL} studs, Y {h.min():.1f}..{h.max():.1f}, land {meta['stats']['landFraction']}")
     print("wrote", out, "and", wc)
 
 

@@ -45,9 +45,13 @@ PLANTS = {
     "M_Veg_Strand_Shells_01": (0.111, 0.094, 0.010), "M_Veg_Strand_Wrack_01": (0.492, 0.471, 0.033),
     "M_Veg_Strand_Driftwood_01": (0.692, 0.131, 0.046), "M_Veg_Strand_Pebbles_01": (0.181, 0.148, 0.014),
 }
-ASSETS = list(ROCKS) + list(PLANTS)
+# docs/23 (l) hub forest: code-built placeholder trees (src/server/World/ForestTrees.luau); appended, so the older
+# asset indices keep their numbers
+TREES = ("M_Tree_Oak_01", "M_Tree_Oak_02", "M_Tree_Pine_01")
+ASSETS = list(ROCKS) + list(PLANTS) + list(TREES)
 AI = {n: i + 1 for i, n in enumerate(ASSETS)}
 FOOT = {n: 1.5 * max(d[0], d[1]) for n, d in {**ROCKS, **PLANTS}.items()}  # footprint radius, studs, at s = 1
+HX, HZ = L.WINDOW_HALF_X, L.WINDOW_HALF_Z  # the main window's half sizes
 
 SURFACE_BIAS = 2.0  # studs: rendered terrain surface minus bake height (half a 4-stud voxel)
 PLANT_CAP = 4740 + 1660 + 314  # T8: +260 inland hedge gorse, +54 hedge hawthorns; T7: +1260 strand debris (<400 tris each, beaches = seen), +400 turf clumps (Decoration off)
@@ -310,7 +314,7 @@ def scatter_rocks(T, ex_all, reg, seed, space):
     wc, wr, wb, wh, wm = T.W
     M = T.MI
     X, Z = T.X, T.Z
-    inside = (np.abs(X) < L.HALF_EXTENT - 30) & (np.abs(Z) < L.HALF_EXTENT - 30)
+    inside = (np.abs(X) < HX - 30) & (np.abs(Z) < HZ - 30)
     noise = 0.5 + 0.5 * G.fbm(X, Z, 150, seed + 300)
     rocky = (wc + wr > 0.5) & (wb < 0.4) & (wh < 0.3) & (wm < 0.3)
     rock_mats = np.isin(mat, [M[n] for n in ("Rock", "Basalt", "Slate", "Ground", "Grass", "Snow", "WoodPlanks", "LeafyGrass", "Limestone", "Brick")])
@@ -440,7 +444,7 @@ def cliff_cells(T, ex_all, reg):
     in_reg = np.isin(reg, [REGIONS.index(n) for n in CLIFF_REGIONS])
     top = max_filter(T.h, CLIFF_REACH)
     steep = max_filter(T.slope, 4) > CLIFF_SLOPE
-    inside = (np.abs(X) < L.HALF_EXTENT - 60) & (np.abs(Z) < L.HALF_EXTENT - 60)
+    inside = (np.abs(X) < HX - 60) & (np.abs(Z) < HZ - 60)
     far = np.hypot(X - co_x, Z - co_z) > co_r
     return T.shore & in_reg & inside & far & ~ex_all & ((top > CLIFF_DROP) | (steep & (top > 9.0)))
 
@@ -646,7 +650,7 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
                         x, z = cx, cz
                     else:
                         x, z = cx + rng.normal(0, sigma), cz + rng.normal(0, sigma)
-                    if x * x + z * z > L.HALF_EXTENT ** 2:
+                    if abs(x) > HX or abs(z) > HZ:
                         continue
                     j, i = T.idx(x, z)
                     wcell = m[j, i]
@@ -668,6 +672,65 @@ def scatter_plants(T, weights, ex_all, ex_turf, reg, seed, space_rocks):
                     meta.append(rname)
                     placed += 1
     return out, meta
+
+
+# ---------------------------------------------------------------- the hub forest (docs/23 (l))
+
+TREE_SPACING = 13.0  # studs between trunks on a jittered grid (canopies 10-16 across: they touch)
+FOREST_PLANTS = {"bracken": 420, "heather": 120, "gorse": 60, "hawthorn": 50}  # undergrowth rows (client plants)
+
+
+def forest(T, seed, space_rocks):
+    """Trees over the hub except its rim, clearings and trails (some stand inside the hidden clearings' edges), oaks
+    in the low ground and pines on the hills, density by a 90-stud patch noise; undergrowth clusters between them.
+    Undergrowth rows are flagged seen (the hub is where everyone walks)."""
+    rng = np.random.default_rng([seed, 77])
+    trail = G.trail_distance(T.X, T.Z, L.HUB_TRAILS)
+    hx, hz = L.HUB["center"]
+    free = (T.d > 26) & (T.h > 3) & (T.slope < 0.7) & (trail > 7) & (np.hypot(T.X - hx, T.Z - hz) < L.HUB["radius"])
+    for c in L.HUB_CLEARINGS:
+        (cx, cz), r = c["pos"], c["radius"]
+        free &= np.hypot(T.X - cx, T.Z - cz) > (r - 6 if c["kind"] == "hidden" else r + 5)
+    patch = G.fbm(T.X, T.Z, 90, seed + 780, 2)
+    trees = []
+    g = TREE_SPACING
+    for gz in np.arange(hz - L.HUB["radius"], hz + L.HUB["radius"], g):
+        for gx in np.arange(hx - L.HUB["radius"], hx + L.HUB["radius"], g):
+            x, z = gx + rng.uniform(-0.45, 0.45) * g, gz + rng.uniform(-0.45, 0.45) * g
+            j, i = T.idx(x, z)
+            if not free[j, i] or rng.random() < 0.25 - 0.35 * patch[j, i]:  # thinner glades, thicker stands
+                continue
+            pine = T.h[j, i] > 14 + 6 * rng.normal() or rng.random() < 0.18
+            asset = "M_Tree_Pine_01" if pine else ("M_Tree_Oak_01" if rng.random() < 0.6 else "M_Tree_Oak_02")
+            sc = rng.uniform(0.8, 1.3)
+            space_rocks.add(x, z, 2.0 * sc)
+            trees.append(row(asset, x, T.height(x, z), z, rng.uniform(0, 360), 0, 0, sc, 0.04))  # trunk sunk
+    plants = []
+    space = Spacing(8.0)
+    floor = free & (T.slope < 0.5)
+    jj, ii = np.nonzero(floor)
+    for kind, budget in FOREST_PLANTS.items():
+        assets, sigma, members, fac = PLANT_KIND[kind]
+        placed, tries = 0, 0
+        while placed < budget and tries < budget * 8:
+            tries += 1
+            c = int(rng.integers(len(jj)))
+            cx, cz = float(T.X[jj[c], ii[c]]), float(T.Z[jj[c], ii[c]])
+            for q in range(max(1, int(rng.poisson(members)))):
+                x, z = (cx, cz) if q == 0 else (cx + rng.normal(0, sigma), cz + rng.normal(0, sigma))
+                j, i = T.idx(x, z)
+                asset = pick_asset(rng, assets)
+                sc = rng.uniform(0.9, 1.4)
+                r = FOOT[asset] * sc
+                if placed >= budget or not floor[j, i] or not space.ok(x, z, r, fac) or not space_rocks.ok(x, z, r, 0.6):
+                    continue
+                tx, tz = tilt_angles(T.normal(x, z), 0.6, 8.0)
+                space.add(x, z, r)
+                plants.append(row(asset, x, T.height(x, z), z, rng.uniform(0, 360), tx, tz, sc, rng.uniform(0.02, 0.08))
+                              + [1])
+                placed += 1
+    print(f"forest: {len(trees)} trees, {len(plants)} undergrowth")
+    return trees, plants
 
 
 # ---------------------------------------------------------------- performance thinning (I1 perf pass)
@@ -752,15 +815,18 @@ def main():
     plants = plants[:PLANT_CAP]
     pmeta = pmeta[:PLANT_CAP]
     rocks, rmeta, plants, pmeta = thin(T, rocks, rmeta, plants, pmeta, seed)
+    trees, under = forest(T, seed, space_rocks)
+    plants, pmeta = plants + under, pmeta + ["Forest"] * len(under)
     by_asset, by_region = {}, {}
-    for r in rocks + plants:
+    for r in rocks + plants + trees:
         by_asset[ASSETS[r[0] - 1]] = by_asset.get(ASSETS[r[0] - 1], 0) + 1
     for g in rmeta + pmeta:
         by_region[g] = by_region.get(g, 0) + 1
     by_asset = {k: by_asset[k] for k in ASSETS if k in by_asset}
-    by_region = {k: by_region[k] for k in REGIONS if k in by_region}
+    by_region = {k: by_region[k] for k in REGIONS + ["Forest"] if k in by_region}
     doc = {"generator": "tools/world/scatter_props.py", "seed": seed, "assets": ASSETS, "rocks": rocks,
-           "plants": plants, "stats": {"rocks": len(rocks), "plants": len(plants), "byAsset": by_asset,
+           "plants": plants, "trees": trees,
+           "stats": {"rocks": len(rocks), "plants": len(plants), "trees": len(trees), "byAsset": by_asset,
                                        "byRegion": by_region, "cliffs": cliff_stats}}
     text = json.dumps(doc, separators=(",", ":"))
     path = os.path.join(REPO, "map/generated/props.json")

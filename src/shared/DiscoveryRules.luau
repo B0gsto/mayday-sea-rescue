@@ -53,7 +53,22 @@ local CHUNK = 64
 -- pages in WorldConfig.Islands order, every sticker's bit and unsettled world point
 Rules.Pages = {} :: { Page }
 Rules.ById = {} :: { [string]: Page }
-for _, island in WorldConfig.Islands do
+-- docs/23 (l): the hub forest gets a page too (last, so the islands keep their order). Its row carries every hub
+-- clearing's centre by id, so a sticker's `from` can name one (Ruin, Wreck); the stamp is by the monument.
+local hubRow: { [string]: any } = {
+	id = "Hub",
+	name = "Coastguard Hub",
+	center = WorldConfig.Hub.center,
+	radius = WorldConfig.Hub.radius,
+}
+for _, c in WorldConfig.Hub.clearings do
+	hubRow[c.id] = c.center
+end
+hubRow.stamp = hubRow.Monument + Vector3.new(-12, 0, 8)
+local rows = table.clone(WorldConfig.Islands) :: { any }
+table.insert(rows, hubRow)
+
+for _, island in rows do
 	local cfg = DiscoveryConfig.Pages[island.id]
 	local page: Page = {
 		id = island.id,

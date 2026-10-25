@@ -8,7 +8,7 @@ return function(t)
 	local skerry = Rules.ById.SkerryIsle
 
 	t.test("every island has a page, a stamp first and valid sticker points", function()
-		t.expect(#Rules.Pages).toBe(#WorldConfig.Islands)
+		t.expect(#Rules.Pages).toBe(#WorldConfig.Islands + 1) -- + the hub forest (docs/23 (l))
 		for _, page in Rules.Pages do
 			t.expect(page.stickers[1].kind).toBe("Stamp")
 			t.expect(#page.stickers >= 2).toBe(true)
@@ -21,7 +21,7 @@ return function(t)
 	t.test(
 		"far away finds nothing; near the island sights it, from a boat it is not reached",
 		function()
-			local s, ev = Rules.scan({}, Vector3.new(0, 0, 400), false)
+			local s, ev = Rules.scan({}, Vector3.new(0, 0, -3000), false)
 			t.expect(#ev).toBe(0)
 			t.expect(next(s)).toBeNil()
 			s, ev = Rules.scan(

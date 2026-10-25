@@ -312,9 +312,9 @@ function Cinematic.update(dt: number): boolean
 end
 
 ---------------------------------------------------------------- stub shot lists (map/Build.luau)
--- Port Haven: station building x -140..-80, z -90..-40 (doors face +Z at x -110), the tower at
--- (-85, -55), the dock deck x -118..-102 from z 4 to 104, launch bays at x -95. Harbour Mouth at
--- (0, 0, 420).
+-- The hub (docs/23 (l), HubLayout): the harbour x -50..50 from its head at z 290 to the mouth at z 400, the
+-- Landing clearing round (0, 4, 235), the lookout hut HQ at (0, 4, 205) with its tower top at about (-7, 24, 202),
+-- trees up to about Y 45 over the forest.
 
 local Lists = {}
 Cinematic.Lists = Lists
@@ -323,41 +323,41 @@ Cinematic.Lists = Lists
 function Lists.arrival(): { Shot }
 	return {
 		{
-			from = CFrame.lookAt(Vector3.new(60, 16, 190), Vector3.new(-100, 10, 20)),
-			to = CFrame.lookAt(Vector3.new(25, 12, 150), Vector3.new(-100, 10, 10)),
+			from = CFrame.lookAt(Vector3.new(60, 16, 480), Vector3.new(0, 10, 235)),
+			to = CFrame.lookAt(Vector3.new(25, 12, 430), Vector3.new(0, 10, 225)),
 			duration = 6,
 			fov = 40,
 			toFov = 36,
-			caption = "Port Haven",
+			caption = "Coastguard Hub",
 		},
 		{
-			from = CFrame.lookAt(Vector3.new(-108, 5.5, 112), Vector3.new(-110, 9, -40)),
-			to = CFrame.lookAt(Vector3.new(-108, 5.5, 70), Vector3.new(-110, 10, -40)),
+			from = CFrame.lookAt(Vector3.new(-30, 6, 395), Vector3.new(0, 9, 205)),
+			to = CFrame.lookAt(Vector3.new(-25, 6, 330), Vector3.new(0, 10, 205)),
 			duration = 5,
 			fov = 55,
 		},
 		{
-			from = CFrame.lookAt(Vector3.new(-50, 10, -10), Vector3.new(-85, 34, -55)),
-			to = CFrame.lookAt(Vector3.new(-45, 30, 5), Vector3.new(-88, 36, -58)),
+			from = CFrame.lookAt(Vector3.new(30, 10, 252), Vector3.new(-7, 22, 202)),
+			to = CFrame.lookAt(Vector3.new(24, 28, 240), Vector3.new(-7, 24, 200)),
 			duration = 5,
 			fov = 45,
-			caption = "Port Haven Coast Guard Station",
+			caption = "Coastguard Lookout",
 		},
 	}
 end
 
--- The cold open (about 7 s, skippable): wide over Port Haven and the station, a sweep out to the
+-- The cold open (about 7 s, skippable): wide over the hub harbour and the lookout, a sweep out to the
 -- casualty (the craft's ColdOpenTarget), then down behind the jet ski as control comes back.
 function Lists.coldOpen(model: Model): { Shot }
 	local target = model:GetAttribute("ColdOpenTarget")
 	local cas: Vector3 = if typeof(target) == "Vector3" then target else model:GetPivot().Position
 	return {
 		{
-			from = CFrame.lookAt(Vector3.new(40, 34, 170), Vector3.new(-100, 14, -30)),
-			to = CFrame.lookAt(Vector3.new(10, 30, 150), Vector3.new(-110, 16, -50)),
+			from = CFrame.lookAt(Vector3.new(40, 34, 480), Vector3.new(0, 14, 220)),
+			to = CFrame.lookAt(Vector3.new(10, 30, 450), Vector3.new(0, 16, 205)),
 			duration = 2.6,
 			fov = 42,
-			caption = "Port Haven",
+			caption = "Coastguard Hub",
 		},
 		{
 			from = CFrame.lookAt(cas + Vector3.new(-60, 40, -70), cas),
@@ -397,7 +397,10 @@ function Lists.launch(model: Model): { Shot }
 			fov = 50,
 		},
 		{
-			from = CFrame.lookAt(Vector3.new(-110, 8, 110), model:GetPivot().Position),
+			from = CFrame.lookAt(
+				model:GetPivot().Position + Vector3.new(-40, 8, 40),
+				model:GetPivot().Position
+			),
 			to = {
 				subject = model,
 				offset = Vector3.new(-24, 10, 34),
@@ -414,8 +417,8 @@ end
 function Lists.storm(subject: Instance?): { Shot }
 	local shots: { Shot } = {
 		{
-			from = CFrame.lookAt(Vector3.new(-70, 46, 40), Vector3.new(0, 18, 620)),
-			to = CFrame.lookAt(Vector3.new(-40, 52, 90), Vector3.new(20, 22, 640)),
+			from = CFrame.lookAt(Vector3.new(-70, 60, 300), Vector3.new(0, 18, 640)),
+			to = CFrame.lookAt(Vector3.new(-40, 64, 340), Vector3.new(20, 22, 660)),
 			duration = 6,
 			fov = 38,
 			caption = "A storm is rolling in",

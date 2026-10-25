@@ -15,7 +15,7 @@ StreakConfig.WelcomeCash = 500
 -- The station porch: against the crew wing front, east of the old workshop counter, facing the
 -- harbour (+Z). Y is found by the client with a downward ray, falling back to this Y (the apron's terrain top)
 -- before the terrain streams in. The sign stands at +5.9, clear of the bigger welcome-back crate.
-StreakConfig.PorchPosition = Vector3.new(16.7, 6, 7.4) -- the HQ on the hub (Swaps.Station pivot + the old offset)
+StreakConfig.PorchPosition = Vector3.new(4, 5, 211) -- the HQ lookout hut's deck, before its door (HubLayout HQ lot)
 
 StreakConfig.PromptRange = 10 -- studs, the crate's ProximityPrompt
 StreakConfig.OpenRange = 28 -- studs, the server's horizontal sanity check on an open request

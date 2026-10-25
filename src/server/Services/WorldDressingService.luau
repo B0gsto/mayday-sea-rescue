@@ -15,6 +15,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local AssetLoader = require(script.Parent.Parent:WaitForChild("Assets"):WaitForChild("AssetLoader"))
+local ForestTrees = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("ForestTrees"))
 local Swaps = require(script.Parent.Parent:WaitForChild("World"):WaitForChild("Swaps"))
 
 local WorldDressingService = {}
@@ -481,9 +482,9 @@ local function placeHull(asset: string, row: Row): Model?
 	return m
 end
 
-local function hulls(rows: { Row }, assets: { string }): number
+local function hulls(rows: { Row }, assets: { string }, name: string): number
 	local folder = Instance.new("Folder")
-	folder.Name = "Rocks"
+	folder.Name = name
 	folder.Parent = root()
 	local cells: { [string]: Model } = {}
 	local parts = 0
@@ -493,7 +494,7 @@ local function hulls(rows: { Row }, assets: { string }): number
 			local key = `{math.floor(row[2] / CELL)}_{math.floor(row[4] / CELL)}`
 			local cell = cells[key]
 			if not cell then
-				cell = atomic(`Rocks_{key}`, folder)
+				cell = atomic(`{name}_{key}`, folder)
 				cells[key] = cell
 			end
 			for _, d in m:GetChildren() do
@@ -521,16 +522,18 @@ local function scatterAll()
 	end
 	local props = (require :: any)(data)
 	local t0 = os.clock()
+	ForestTrees.define(AssetLoader) -- docs/23 (l): the hub forest's placeholder tree templates
 	local used: { [number]: boolean } = {}
-	for _, group in { props.rocks or {}, props.plants or {} } do
+	for _, group in { props.rocks or {}, props.plants or {}, props.trees or {} } do
 		for _, row in group do
 			used[row[1]] = true
 		end
 	end
 	local n = publishTemplates(props.assets, used)
-	local parts = hulls(props.rocks or {}, props.assets)
+	local parts = hulls(props.rocks or {}, props.assets, "Rocks")
+		+ hulls(props.trees or {}, props.assets, "Trees")
 	print(
-		`[WorldDressing] {n} scatter assets x 3 LODs published; {#(props.rocks or {})} rock hulls ({parts} parts), {#(props.plants or {})} plants drawn by the client, in {math.floor(
+		`[WorldDressing] {n} scatter assets x 3 LODs published; {#(props.rocks or {})} rock + {#(props.trees or {})} tree hulls ({parts} parts), {#(props.plants or {})} plants drawn by the client, in {math.floor(
 			(os.clock() - t0) * 10
 		) / 10} s`
 	)

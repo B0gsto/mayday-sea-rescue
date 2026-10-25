@@ -1,8 +1,8 @@
 --!strict
 -- LeaderboardService: weekly and all-time rescue boards (docs/03 section 9.1: rescues only, never Cash, Rep
 -- or Robux; weekly boards reset Monday 00:00 UTC) on OrderedDataStores, shown on a physical service board
--- in the lifeboat station's boat hall (a varnished, signwritten board on the partition wall, lit by a brass
--- picture lamp; no HUD panel).
+-- at the hub's rescuer monument (docs/23 (l): a varnished, signwritten board on two posts beside the statue, lit
+-- by a brass picture lamp; no HUD panel).
 --
 -- Credit: every helper of a finished operation gets its saved count (Shared.LeaderboardRules.credit).
 -- Increments are batched per player and written every BadgeConfig.Leaderboard.flushSeconds, on leave and at
@@ -19,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local BadgeConfig = require(Shared:WaitForChild("Config"):WaitForChild("BadgeConfig"))
+local HubLayout = require(Shared:WaitForChild("Config"):WaitForChild("HubLayout"))
 local LeaderboardRules = require(Shared:WaitForChild("LeaderboardRules"))
 
 type Entry = LeaderboardRules.Entry
@@ -170,18 +171,8 @@ local function nameOf(userId: number): string?
 	return nil
 end
 
----------------------------------------------------------------- the station board
+---------------------------------------------------------------- the monument board
 
--- M_Bld_Station layout metres (build.py: X across, -Y the sea front, Z up) -> the asset frame in studs,
--- as WorldDressingService.toLocal does; STATION_DY is Swaps' recentring offset for the upload.
-local STATION_DY = 0.175
-local function toLocal(x: number, y: number, z: number): Vector3
-	return Vector3.new(-x * 3, z * 3, (y + STATION_DY) * 3)
-end
-
--- the hall face of the partition wall (build.py: stone box x -1.0..-0.5), towards the back of the hall,
--- clear of the boat on ATT_BoatHall (x -5.25, y 0); the board faces into the hall (-X metres = +X studs)
-local WALL_X, BOARD_Y, BOARD_Z = -1.0, 4.9, 2.5 -- metres: wall face, along the wall, centre height
 local W, H, T = 13.8, 8.4, 0.12 -- studs: 4.6 x 2.8 m (readable from the third-person camera), board thickness
 local PPS = 50 -- SurfaceGui pixels per stud: the text layout below fills the panel at this density
 local FRAME, FRAME_D = 0.33, 0.24 -- moulding width and depth
@@ -257,7 +248,7 @@ local function buildGui(panel: Part)
 	pad.PaddingBottom = UDim.new(0, 12)
 	pad.Parent = gui
 
-	local head = label(gui, "PORT HAVEN LIFEBOAT STATION", 30, GOLD, Enum.FontWeight.Bold)
+	local head = label(gui, "GALE ISLES COASTGUARD", 30, GOLD, Enum.FontWeight.Bold)
 	head.Size = UDim2.new(1, 0, 0, 36)
 	local sub = label(gui, "RESCUE BOARD", 17, GOLD, Enum.FontWeight.Regular)
 	sub.Size = UDim2.new(1, 0, 0, 20)
@@ -314,10 +305,8 @@ local function buildGui(panel: Part)
 	footer = foot
 end
 
-local function buildBoard(modelPivot: CFrame): Model
-	local at = toLocal(WALL_X, BOARD_Y, BOARD_Z)
-	-- board frame: LookVector out of the wall (+X studs in the asset frame), up = +Y
-	local face = modelPivot * CFrame.fromMatrix(at, Vector3.zAxis, Vector3.yAxis, -Vector3.xAxis)
+-- face: the board centre, LookVector out of its front, up = +Y
+local function buildBoard(face: CFrame): Model
 	local m = Instance.new("Model")
 	m.Name = "StationRescueBoard"
 	m.ModelStreamingMode = Enum.ModelStreamingMode.Atomic
@@ -463,42 +452,10 @@ local function refresh()
 	paintFooter()
 end
 
-local function stationPivot(): CFrame?
-	local dressing = Workspace:FindFirstChild("Dressing")
-	local shell = dressing and dressing:FindFirstChild("Station")
-	-- the swap names the loaded model by its LOD (M_Bld_Station_LOD0)
-	local asset = shell
-		and (shell:FindFirstChild("M_Bld_Station") or shell:FindFirstChild("M_Bld_Station_LOD0"))
-	if asset and asset:IsA("Model") then
-		return asset:GetPivot()
-	end
-	return nil
-end
-
 local function placeBoard()
-	local pivot: CFrame? = nil
-	for _ = 1, 90 do -- WorldDressingService swaps the station in once its assets load
-		pivot = stationPivot()
-		if pivot then
-			break
-		end
-		task.wait(2)
-	end
-	if not pivot then
-		local ok, swaps = pcall(function()
-			return (require :: any)(
-				script.Parent.Parent:WaitForChild("World"):WaitForChild("Swaps")
-			)
-		end)
-		local spec = ok and swaps and swaps.Station
-		if not spec then
-			warn("[LeaderboardService] no station to hang the board in")
-			return
-		end
-		pivot = spec.pivot
-		warn("[LeaderboardService] station not swapped in: board placed from the authored pivot")
-	end
-	local board = buildBoard(pivot :: CFrame)
+	-- on the monument's board posts (map/Build.luau buildHub): 5 studs right of the lot centre, 2.5 behind
+	local lot = HubLayout.Hub.lots.Monument.cframe
+	local board = buildBoard(lot * CFrame.new(5, 1.5 + H / 2, 2.5 - 0.6))
 	board.Parent = Workspace
 	for key, entries in shown do
 		show(key, entries)

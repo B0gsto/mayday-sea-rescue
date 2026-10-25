@@ -7,7 +7,11 @@
 -- the lot centre, LookVector = the building's front; size = Vector2 (width along RightVector, depth along
 -- LookVector). Berths are CFrames at sea level, LookVector = bow (pointing out to sea).
 --
---   HubLayout.Hub       { center, frame, spawn, lots = { HQ, CallBoard, ShopCounter }, dropOff }
+--   HubLayout.Hub       { center, frame, spawn, lots, dropOff, clearings, questSpots } (docs/23 (l): a forest island)
+--       lots = { HQ (the lookout hut), CallBoard, ShopCounter (the market stall), Harbourmaster, Campfire, Monument,
+--       Jetty (the visitor jetty) }; clearings[id] = { kind, center (on the ground), radius } from the bake (outpost,
+--       bridge, quest, hidden); questSpots = { { id, cframe, radius } } empty camps for WP-21b's quest NPCs, the
+--       cframe at the camp centre facing the hub centre
 --   HubLayout.Islands   { Island } in WorldConfig order (Plot1..Plot6); HubLayout.byId[id]
 --   HubLayout.Bridges   { Bridge } hub -> island; HubLayout.deckY(bridge, t) deck top at t (0 hub end, 1 island end)
 local WorldConfig = require(script.Parent.WorldConfig)
@@ -48,9 +52,9 @@ HubLayout.HubRadius = Hub.radius
 HubLayout.Notch = { hub = Hub.notch, island = Hub.islandNotch }
 
 local BRIDGE = {
-	hubR = 120, -- deck ends this far from the hub centre
+	hubR = 320, -- deck ends this far from the hub centre (in its bridge-head clearing)
 	islandBack = 90, -- and this far behind an island's centre (both on the plateau)
-	towerHubR = 185, -- towers on the rims, so the span between them is all water
+	towerHubR = 372, -- towers on the rims, so the span between them is all water
 	towerIslandBack = 145,
 	apexY = 50, -- deck top at mid-span: underside 48.8 over the sea, every boat and the helicopter pass under
 	towerTopY = 74,
@@ -87,19 +91,40 @@ local function lot(
 	return { cframe = at(frame, right, fwd, yaw, y), size = Vector2.new(w, d) }
 end
 
--- the hub: harbour on its forward face, the HQ facing it across a plaza, the spawn on the plaza facing the HQ door
+-- the hub (docs/23 (l)): a forest island; the harbour on its forward face (south), the Landing clearing at its head
+-- (spawn, the lookout hut HQ facing the harbour, the call board), the market stall in a clearing beside it. The hub
+-- frame looks out of the harbour (+Z), so world x = -right, z = fwd.
 do
 	local frame = frameAt(Hub.center, Hub.bearing)
+	local head = Hub.notch.head
+	local clearings = {}
+	local questSpots = {}
+	for _, c in Hub.clearings do
+		clearings[c.id] = { kind = c.kind, center = c.center, radius = c.radius }
+		if c.kind == "quest" then
+			local look = Vector3.new(Hub.center.X, c.center.Y, Hub.center.Z)
+			table.insert(
+				questSpots,
+				{ id = c.id, cframe = CFrame.lookAt(c.center, look), radius = c.radius }
+			)
+		end
+	end
 	HubLayout.Hub = {
 		center = Hub.center,
 		frame = frame,
-		spawn = at(frame, 0, 30, 180),
+		spawn = at(frame, 0, head - 32, 180), -- on the Landing, facing the lookout hut
 		lots = {
-			HQ = lot(frame, 0, -20, 0, 64, 44), -- the Coastguard station
-			CallBoard = lot(frame, -45, 20, -90, 12, 3),
-			ShopCounter = lot(frame, 45, 20, 90, 20, 10),
+			HQ = lot(frame, 0, head - 85, 0, 24, 20), -- the coastguard lookout hut, front to the harbour
+			CallBoard = lot(frame, -22, head - 68, 0, 12, 3),
+			ShopCounter = lot(frame, -80, head - 85, -50, 20, 10), -- the market stall, turned to the Landing
+			Harbourmaster = lot(frame, 100, head + 28, 90, 18, 14), -- the shack on the west quay, door to the harbour
+			Campfire = lot(frame, 15, 45, 0, 30, 30),
+			Monument = lot(frame, 0, -175, 0, 16, 16),
+			Jetty = lot(frame, -36, head + 48, 0, 8, 92), -- the visitor jetty along the east harbour wall
 		},
-		dropOff = at(frame, 0, 110, 0, 0).Position, -- sea level, in the harbour
+		dropOff = at(frame, 0, head + 15, 0, 0).Position, -- sea level, in the harbour
+		clearings = clearings,
+		questSpots = questSpots,
 	}
 end
 

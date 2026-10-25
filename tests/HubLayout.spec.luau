@@ -6,7 +6,8 @@ return function(t)
 	local meta = t.lune("serde")
 		.decode("json", fs.readFile(`{t.gameDir}/map/generated/terrain.json`))
 	local raw = fs.readFile(`{t.gameDir}/map/generated/{meta.height}`)
-	local function ground(p: Vector3): number -- the bake's surface Y (nearest sample)
+	local RENDER_BIAS = 2 -- terrain renders this far over the baked height (tools/world/layout.py RENDER_BIAS)
+	local function ground(p: Vector3): number -- the rendered surface Y (nearest bake sample)
 		local ix = math.floor((p.X - meta.originX) / meta.cell + 0.5)
 		local iz = math.floor((p.Z - meta.originZ) / meta.cell + 0.5)
 		assert(
@@ -14,6 +15,7 @@ return function(t)
 			`({p.X}, {p.Z}) is outside the main bake`
 		)
 		return string.unpack("<i2", raw, (iz * meta.nx + ix) * 2 + 1) / meta.heightScale
+			+ RENDER_BIAS
 	end
 	local function corners(lot: any): { Vector3 }
 		local w, d = lot.size.X / 2, lot.size.Y / 2
@@ -35,12 +37,12 @@ return function(t)
 	end
 	local WATER = { SubPen = true, Jetty = true, BlueprintTable = true }
 
-	t.test("six islands 900 studs out, 60 degrees apart, one bridge each", function()
+	t.test("six islands 1,100 studs out, 60 degrees apart, one bridge each", function()
 		t.expect(#L.Islands).toBe(6)
 		t.expect(#L.Bridges).toBe(6)
 		for i, isl in L.Islands do
 			t.expect(isl.id).toBe(`Plot{i}`)
-			t.expect((isl.center - L.Hub.center).Magnitude).toBeCloseTo(900, 1)
+			t.expect((isl.center - L.Hub.center).Magnitude).toBeCloseTo(1100, 1)
 			local nxt = L.Islands[i % 6 + 1]
 			t.expect(math.deg(math.acos(isl.facing:Dot(nxt.facing)))).toBeCloseTo(60, 1e-3)
 			t.expect(L.byId[isl.id]).toBe(isl)
@@ -48,16 +50,42 @@ return function(t)
 		end
 	end)
 
-	t.test("hub lots and spawn stand on the hub plateau; the drop-off is in its harbour", function()
-		for name, lot in L.Hub.lots do
-			for _, c in corners(lot) do
-				if math.abs(ground(c) - L.PlateauY) > 2.5 then
-					error(`hub {name} corner over ground Y {ground(c)}`)
+	t.test(
+		"hub lots and spawn stand on flat ground; the drop-off and the jetty are in its harbour",
+		function()
+			for name, lot in L.Hub.lots do
+				for _, c in corners(lot) do
+					if name == "Jetty" then
+						t.expect(ground(c) < -4).toBe(true)
+						continue
+					end
+					if math.abs(ground(c) - L.PlateauY) > 2.5 then
+						error(`hub {name} corner over ground Y {ground(c)}`)
+					end
+				end
+			end
+			t.expect(math.abs(ground(L.Hub.spawn.Position) - L.PlateauY) < 2.5).toBe(true)
+			t.expect(ground(L.Hub.dropOff) < -8).toBe(true)
+		end
+	)
+
+	t.test("the forest's clearings: flat where baked, 4-6 quest camps, hidden spots", function()
+		local kinds = {}
+		for id, c in L.Hub.clearings do
+			kinds[c.kind] = (kinds[c.kind] or 0) + 1
+			for _, o in { Vector3.zero, Vector3.new(0.6, 0, 0), Vector3.new(0, 0, -0.6) } do
+				local y = ground(c.center + o * c.radius)
+				if math.abs(y - c.center.Y) > 1.5 then
+					error(`clearing {id} ground Y {y}, not {c.center.Y}`)
 				end
 			end
 		end
-		t.expect(math.abs(ground(L.Hub.spawn.Position) - L.PlateauY) < 2.5).toBe(true)
-		t.expect(ground(L.Hub.dropOff) < -8).toBe(true)
+		t.expect(kinds.bridge).toBe(6)
+		t.expect(#L.Hub.questSpots >= 4 and #L.Hub.questSpots <= 6).toBe(true)
+		t.expect((kinds.hidden or 0) >= 1).toBe(true)
+		for _, q in L.Hub.questSpots do
+			t.expect(L.Hub.clearings[q.id].kind).toBe("quest")
+		end
 	end)
 
 	t.test(

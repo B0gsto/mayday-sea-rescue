@@ -236,10 +236,10 @@ end
 
 -- Places (studs). Harbour centre for the marina bed, rigging and gulls; the bell buoy off the
 -- harbour mouth (MapConfig.Places "Harbour Mouth").
-AudioConfig.HarbourCentre = Vector3.new(0, 4, -150)
-AudioConfig.HarbourRadius = 320 -- the marina bed and rigging fade out past this
-AudioConfig.TownCentre = Vector3.new(0, 4, -250) -- MapConfig "PORT HAVEN"
-AudioConfig.TownRadius = 260 -- the town murmur fades out past this
+AudioConfig.HarbourCentre = Vector3.new(0, 4, 330) -- the hub harbour (HubLayout notch)
+AudioConfig.HarbourRadius = 200 -- the marina bed and rigging fade out past this
+AudioConfig.TownCentre = Vector3.new(-15, 4, 45) -- docs/23 (l): no town; a camp murmur round the hub campfire
+AudioConfig.TownRadius = 70 -- the murmur fades out past this
 AudioConfig.BellBuoy = Vector3.new(-60, 5.25, 880) -- SeamarkRules No2Bell, ATT_Bell height
 AudioConfig.CoastRadius = 900 -- gulls only within this of the harbour centre
 

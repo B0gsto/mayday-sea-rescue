@@ -19,7 +19,7 @@ sys.path.insert(0, HERE)
 from studio import StudioSession, studio_lock  # noqa: E402
 import layout as L  # noqa: E402
 
-TAG = "MaydayTerrain"
+TAG = os.environ.get("MAYDAY_TERRAIN_TAG", "MaydayTerrain")  # own tag per worktree: an open window is reused as-is
 WRITER = open(os.path.join(HERE, "write_terrain.luau")).read()
 
 
@@ -35,7 +35,7 @@ def write(run):
     """Write the staged bake (ServerStorage.__WorldTerrain) as voxels, the arch and the material colours.
     `run(args)` executes write_terrain.luau with ARGS in the Edit datamodel; also used by tools/studio/publish_studio.py."""
     meta = json.load(open(os.path.join(REPO, "map/generated/terrain.json")))
-    rows = (meta["nx"] - 1) // 64
+    rows = (meta["nz"] - 1) // 64  # tile rows run along z (the main window is not square)
     step = 4
     for r0 in range(0, rows, step):
         print(run({"mode": "write", "row0": r0, "row1": min(rows, r0 + step)})[:200], flush=True)

@@ -91,7 +91,7 @@ local MapConfig = {
 			label = "Coastguard HQ",
 			glyph = "S",
 			color = Color3.fromHex("FF6B1A"),
-			position = Vector3.new(0, 4, -20),
+			position = Vector3.new(0, 4, 205), -- HubLayout.Hub.lots.HQ (the lookout hut)
 			legend = true,
 		},
 	} :: { Blip },
