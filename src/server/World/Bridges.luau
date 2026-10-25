@@ -1,7 +1,8 @@
 --!strict
 -- Bridges (docs/23 (k), WP-18): six walkable suspension bridges from the hub to the player islands, code-built
--- placeholder Parts from HubLayout.Bridges: an arched Wood deck (sine arch, max grade ~11 deg, underside 48.8 studs
--- over the sea at mid-span so every boat and the helicopter pass under), Metal rails with an invisible anti-fall
+-- placeholder Parts from HubLayout.Bridges: an arched Wood deck (sine arch, max grade ~12 deg, underside 45.8 studs
+-- over the sea at mid-span so every boat and the helicopter pass under), landing on each Lego plate's back edge,
+-- Metal rails with an invisible anti-fall
 -- fence above them, two red-and-white towers per bridge on the rims, Metal main cables, hangers and back-stays.
 -- WorldDressingService calls Bridges.place(base) once at server start.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

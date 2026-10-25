@@ -1,5 +1,6 @@
--- HubLayout (docs/23 (k), WP-18): the ring geometry, every lot on its island's plateau in the terrain bake and
--- clear of the others, berths in deep water with a clear route out, bridges landing on land and arched high enough.
+-- HubLayout (docs/23 (k), WP-18, WP-24): the ring geometry, every lot on its island's Lego plate (built from Parts
+-- by src/server/World/IslandPlates.luau, a U cut-out over the berth cove) and clear of the others, deep water round
+-- the plate and in the cove with a clear route out, bridges landing on the plate's back edge and arched high enough.
 return function(t)
 	local L = t.load("src/shared/Config/HubLayout.luau")
 	local fs = t.lune("fs")
@@ -36,6 +37,7 @@ return function(t)
 		return x0, z0, x1, z1
 	end
 	local WATER = { SubPen = true, Jetty = true, BlueprintTable = true }
+	local PLATE = L.IslandPlate
 
 	t.test("six islands 1,100 studs out, 60 degrees apart, one bridge each", function()
 		t.expect(#L.Islands).toBe(6)
@@ -89,22 +91,33 @@ return function(t)
 	end)
 
 	t.test(
-		"island lots: on the plateau (or in the cove), apart, the helipad's rotor circle clear",
+		"island lots: on the plate (or in its cove water), apart, the helipad's rotor circle clear",
 		function()
 			for _, isl in L.Islands do
 				for name, lot in isl.lots do
 					for _, c in corners(lot) do
-						local y = ground(c)
-						local ok = if WATER[name]
-							then y < -4
-							elseif name == "LifeguardTower" then y > 0.5
-							else math.abs(y - L.PlateauY) < 2.5
-						if not ok then
-							error(`{isl.id} {name} corner ({c.X}, {c.Z}) over ground Y {y}`)
+						if WATER[name] then
+							local l =
+								isl.frame:PointToObjectSpace(Vector3.new(c.X, PLATE.topY, c.Z))
+							if L.plateContains(l.X, -l.Z) then
+								error(
+									`{isl.id} {name} corner ({c.X}, {c.Z}) stands on the plate, not in the cove water`
+								)
+							end
+							local y = ground(c)
+							if y > -4 then
+								error(
+									`{isl.id} {name} cove corner ({c.X}, {c.Z}) is only Y {y} deep`
+								)
+							end
+						elseif not L.onPlate(isl, c.X, c.Z) then
+							error(`{isl.id} {name} corner ({c.X}, {c.Z}) is off the plate`)
 						end
 					end
 				end
-				t.expect(math.abs(ground(isl.spawn.Position) - L.PlateauY) < 2.5).toBe(true)
+				if not L.onPlate(isl, isl.spawn.Position.X, isl.spawn.Position.Z) then
+					error(`{isl.id} spawn is off the plate`)
+				end
 				local names = {}
 				for name in isl.lots do
 					if name ~= "BlueprintTable" then -- it stands on the jetty
@@ -132,6 +145,54 @@ return function(t)
 				end
 				local _, tz0, _, tz1 = box(isl.lots.Jetty.cframe, isl.lots.BlueprintTable)
 				t.expect(math.abs(tz0) < 35 and math.abs(tz1) < 35).toBe(true) -- the table is on the jetty
+			end
+		end
+	)
+
+	t.test(
+		"the plates: chunky 320-stud squares, 2 studs thick, the berth notch open, deep water all round",
+		function()
+			t.expect(PLATE.topY).toBe(L.PlateauY)
+			t.expect(PLATE.thick).toBe(2)
+			t.expect(PLATE.edge).toBe(L.IslandRadius)
+			t.expect(PLATE.notch.halfWidth).toBe(L.Notch.island.halfWidth)
+			t.expect(PLATE.notch.head).toBe(L.Notch.island.head)
+			for a, r in PLATE.rects do
+				t.expect(
+					r[1] >= -PLATE.edge
+						and r[2] <= PLATE.edge
+						and r[3] >= -PLATE.edge
+						and r[4] <= PLATE.edge
+				).toBe(true)
+				for b = a + 1, #PLATE.rects do
+					local o = PLATE.rects[b]
+					if r[1] < o[2] and o[1] < r[2] and r[3] < o[4] and o[3] < r[4] then
+						error(`plate rects {a} and {b} overlap`)
+					end
+				end
+			end
+			-- the U cut-out is open water: the mouth, the middle and the head's approach
+			for _, fwd in
+				{ PLATE.notch.head + 1, (PLATE.notch.head + PLATE.edge) / 2, PLATE.edge - 1 }
+			do
+				t.expect(L.plateContains(0, fwd)).toBe(false)
+				t.expect(L.plateContains(PLATE.notch.halfWidth - 1, fwd)).toBe(false)
+			end
+			t.expect(L.plateContains(0, PLATE.notch.head - 1)).toBe(true) -- the quay at the head
+			t.expect(L.plateContains(PLATE.notch.halfWidth + 1, PLATE.edge - 1)).toBe(true) -- the wing beside the mouth
+			for _, isl in L.Islands do
+				for _, o in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
+					local p = isl.center
+						+ (isl.frame.RightVector * o[1] + isl.facing * o[2]) * (PLATE.edge + 40)
+					local y = ground(p)
+					if y > -22 then
+						error(
+							`{isl.id} plate edge is only Y {y} deep at ({math.floor(p.X)}, {math.floor(
+								p.Z
+							)})`
+						)
+					end
+				end
 			end
 		end
 	)
@@ -165,20 +226,26 @@ return function(t)
 	end)
 
 	t.test(
-		"bridges: both ends on the plateau, towers on land, arched high over the water",
+		"bridges: hub end on the plateau, island end on the plate's back edge, towers on land, arched high over the water",
 		function()
 			for _, br in L.Bridges do
+				local isl = L.byId[br.island]
 				t.expect(math.abs(ground(br.from) - L.PlateauY) < 2.5).toBe(true)
-				t.expect(math.abs(ground(br.to) - L.PlateauY) < 2.5).toBe(true)
-				t.expect(L.deckY(br, 0)).toBe(L.PlateauY)
-				for _, tw in br.towers do
-					t.expect(ground(tw) > 0).toBe(true)
-				end
+				t.expect(L.onPlate(isl, br.to.X, br.to.Z)).toBe(true)
+				t.expect(br.to.Y).toBe(PLATE.topY)
+				local l = isl.frame:PointToObjectSpace(br.to)
+				t.expect(l.Z).toBeCloseTo(PLATE.edge, 1e-3) -- the deck ends exactly on the outer back edge
+				t.expect(L.deckY(br, 0)).toBeCloseTo(L.PlateauY, 1e-6)
+				t.expect(L.deckY(br, 1)).toBeCloseTo(PLATE.topY, 1e-6)
+				t.expect(ground(br.towers[1]) > 0).toBe(true) -- the hub tower stands on the hub
+				t.expect(L.onPlate(isl, br.towers[2].X, br.towers[2].Z)).toBe(true) -- the island tower on the plate
 				t.expect(L.deckY(br, 0.5) - 1.2 >= 35).toBe(true) -- underside at the arch top
 				local steep = 0
 				for k = 0, 200 do
 					local p = L.deckAt(br, k / 200)
-					if ground(p) < -4 and p.Y - 1.2 < 18 then -- navigable water: room for every boat
+					local flat = Vector3.new(p.X - isl.center.X, 0, p.Z - isl.center.Z).Magnitude
+					-- navigable water: the open span, clear of the bridge's own low approach over the plate
+					if ground(p) < -4 and flat > L.IslandRadius + 80 and p.Y - 1.2 < 18 then
 						error(`{br.id} only {p.Y - 1.2} studs over water at t = {k / 200}`)
 					end
 					if k > 0 then

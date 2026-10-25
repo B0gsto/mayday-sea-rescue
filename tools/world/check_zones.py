@@ -3,10 +3,11 @@
 
 usage: python3 tools/world/check_zones.py
 
-Reads map/generated/terrain_height.i16 and the island windows: the hub and the six player islands are flat land at
-PLATEAU_Y round their centres with deep water in their notches (harbour / berth cove; tests/HubLayout.spec.luau checks
-every lot, berth and bridge); the bake windows are disjoint and on the tile grid; every outer island's landmark / stamp
-/ landing is land, its dock water a boat floats in, its pads dry; the Arches' Door channel is open."""
+Reads map/generated/terrain_height.i16 and the island windows: the hub is flat land at PLATEAU_Y in its clearings
+with deep water in its harbour notch; the six player islands are Lego plates built from Parts (WP-24), so their ring
+must be open water deep enough for boats and the submarine (tests/HubLayout.spec.luau checks every lot, berth and
+bridge); the bake windows are disjoint and on the tile grid; every outer island's landmark / stamp / landing is land,
+its dock water a boat floats in, its pads dry; the Arches' Door channel is open."""
 import json, math, os, sys
 import numpy as np
 
@@ -80,11 +81,14 @@ def main():
     hubs = [(L.HUB["center"], L.HUB["bearing"], L.HUB["radius"], L.HUB["notch"])] + [
         (p["center"], p["bearing"], L.RING["islandRadius"], L.RING["notch"]) for p in L.PLAYER_ISLANDS]
     flat = L.PLATEAU_Y - L.RENDER_BIAS  # baked; renders at PLATEAU_Y
+    # WP-24: the player islands are Lego plates built from Parts; their ring must be open water deep enough
+    # for boats and the submarine round each plate (the shelf there is ~36-47 studs).
     for (cx, cz), b, r, notch in hubs[1:]:
-        for right, fwd in ((0, 0), (0.5 * r, -0.3 * r), (-0.5 * r, -0.3 * r), (0, -0.7 * r)):
+        for right, fwd in ((0, 0), (0.5 * r, -0.3 * r), (-0.5 * r, -0.3 * r), (0, -0.7 * r), (0, 0.5 * r),
+                           (r + 40, 0), (-r - 40, 0), (0, r + 40), (0, -(r + 40))):
             y = at(*L.local(cx, cz, b, right, fwd))
-            if abs(y - flat) > 1.5:
-                fails.append(f"plateau at ({cx:.0f}, {cz:.0f}) +({right:.0f}, {fwd:.0f}) is Y {y:.1f}")
+            if y > -22:
+                fails.append(f"plate ring at ({cx:.0f}, {cz:.0f}) +({right:.0f}, {fwd:.0f}) is only Y {y:.1f} deep")
     for c in L.HUB_CLEARINGS:  # docs/23 (l): the hub is hills now; its clearings are the flat ground
         x, z = c["pos"]
         for dx, dz in ((0, 0), (0.6, 0), (-0.6, 0), (0, 0.6), (0, -0.6)):
@@ -92,14 +96,14 @@ def main():
             want = at(x, z) if c["y"] is None else c["y"] - L.RENDER_BIAS
             if abs(y - want) > 1.5:
                 fails.append(f"hub clearing {c['id']} at +({dx}, {dz}) r is Y {y:.1f}, not {want:.1f}")
-    for (cx, cz), b, r, notch in hubs:
+    for (cx, cz), b, r, notch in hubs[:1]:  # the hub's harbour notch (the islands' coves are plate cut-outs)
         y = at(*L.local(cx, cz, b, 0, (notch["head"] + r) / 2))
         if y > notch["floorY"] + 6:
             fails.append(f"notch at ({cx:.0f}, {cz:.0f}) only dredged to Y {y:.1f}")
     n_isl = check_islands(fails)
     for f in fails:
         print("FAIL", f)
-    print(f"check_zones: {len(hubs) - 1} plateaus, {len(L.HUB_CLEARINGS)} hub clearings, {len(hubs)} notches, {n_isl} island points: "
+    print(f"check_zones: {len(hubs) - 1} plate rings, {len(L.HUB_CLEARINGS)} hub clearings, {len(hubs) - 1} notches open, {n_isl} island points: "
           + ("OK" if not fails else f"{len(fails)} failures"))
     sys.exit(1 if fails else 0)
 

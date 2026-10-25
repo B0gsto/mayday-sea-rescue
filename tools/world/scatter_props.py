@@ -198,6 +198,11 @@ def exclusions(T):
     """(excl_all, excl_turf): cells where nothing may go: the POIs and the plateaus (lots, bridges, paths)."""
     X, Z = T.X, T.Z
     ex = (T.d > PLATEAU_IN) & (T.h > 2)
+    # WP-24: the player islands are Lego plates (src/server/World/IslandPlates.luau): keep their ring bare,
+    # water and sea bed alike, so no rock or plant pokes out round a plate or fouls a berth.
+    for isl in L.PLAYER_ISLANDS:
+        cx, cz = isl["center"]
+        ex |= np.hypot(X - cx, Z - cz) < L.RING["islandRadius"] + 40
     for p in L.POIS:
         ex |= np.hypot(X - p["pos"][0], Z - p["pos"][2]) < POI_RADIUS
     T.ex_verge = T.ex_strand = ex

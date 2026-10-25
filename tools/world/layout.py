@@ -124,13 +124,18 @@ HUB_TRAILS = [
     [_C["Monument"], (-70, -205), _C["Bridge5"]], [_C["Monument"], (90, -230), _C["Bridge6"]],
     [_C["Quest3"], (290, -215), (335, -195)],  # down to the north-east beach
 ]
+# WP-24: the six player islands are not terrain any more: each is a flat Lego plate built from Parts
+# (src/server/World/IslandPlates.luau, footprint in HubLayout.IslandPlate). Their ring is open water; a basin
+# round each plate keeps it deep enough for boats and the submarine (the hub coast's shelf is only ~22 studs
+# there) and gives the berth cove a seabed. Only the hub's polygon and the plate basins are baked in the main
+# window; PLAYER_ISLANDS feeds WorldConfig.Hub only.
+PLATE_BASIN = {"radius": 420, "floorY": -34}  # full depth inside 210 (past the 160-stud plate), blending out by 420
 HUB_WINDOW = {
     "id": "Hub", "window": (-WINDOW_HALF_X, -WINDOW_HALF_Z, WINDOW_HALF_X, WINDOW_HALF_Z), "biome": "hub",
     "plateau": PLATEAU_Y - RENDER_BIAS, "edgeRamp": 120,  # a short ramp keeps the ring's outer rims dry
-    "polys": [notched(*HUB["center"], HUB["bearing"], HUB["radius"], HUB["notch"], _hub_rim, n=40)]
-    + [notched(*p["center"], p["bearing"], RING["islandRadius"], RING["notch"], _rim) for p in PLAYER_ISLANDS],
+    "polys": [notched(*HUB["center"], HUB["bearing"], HUB["radius"], HUB["notch"], _hub_rim, n=40)],
     "basins": _basins(*HUB["center"], HUB["bearing"], HUB["radius"], HUB["notch"])
-    + [b for p in PLAYER_ISLANDS for b in _basins(*p["center"], p["bearing"], RING["islandRadius"], RING["notch"])],
+    + [(*p["center"], PLATE_BASIN["radius"], PLATE_BASIN["floorY"]) for p in PLAYER_ISLANDS],
     "peaks": [], "pads": [],
     "forest": {"hills": HUB_HILLS, "clearings": HUB_CLEARINGS, "trails": HUB_TRAILS},
 }
