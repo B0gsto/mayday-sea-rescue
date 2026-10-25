@@ -5,12 +5,19 @@
 local Board = {}
 
 Board.REACH = 10 -- studs from the hull side
-Board.STEADY_SPEED = 6 -- studs/s (about 4 knots): forgiving
+Board.STEADY_SPEED = 10 -- studs/s (about 6 knots): forgiving (docs/23 e.1) -- tune
 Board.STEADY_TILT = 22 -- degrees of pitch or roll
 Board.HOLD = 0.6 -- s close and steady before they climb
 Board.RAM_SPEED = 14 -- studs/s
 Board.CONTACT = 4 -- studs from the hull side
 Board.BUMP_GAP = 2 -- s between bumps
+Board.KNOCK_RANK = 3 -- a ram knocks them back only from this rank (RankIndex) up (docs/23 e.1)
+-- The pick-up ring (docs/23 e.1, PickupRingController): drawn on the water round a survivor; a craft with room
+-- eases its throttle so it is down to ASSIST_SPEED by the ring and holds it inside, under STEADY_SPEED.
+Board.RING = 12 -- studs, radius from the survivor to the hull centre -- tune
+Board.ASSIST_SPEED = 7 -- studs/s inside the ring -- tune
+Board.ASSIST_SPAN = 6 -- studs/s over the allowed speed for full brake
+Board.ASSIST_BRAKE_SHARE = 0.6 -- of the craft's brakeDecel counted on when slowing for the ring
 
 -- May they climb aboard now?
 function Board.ready(gap: number, speed: number, tiltDeg: number, room: boolean): boolean
@@ -20,9 +27,32 @@ function Board.ready(gap: number, speed: number, tiltDeg: number, room: boolean)
 		and tiltDeg <= Board.STEADY_TILT
 end
 
--- Did the boat just run into them?
-function Board.rammed(gap: number, speed: number): boolean
-	return gap <= Board.CONTACT and speed >= Board.RAM_SPEED
+-- May a ram knock them back for this RankIndex? (nil: a new player)
+function Board.knocks(rank: any): boolean
+	return (tonumber(rank) or 1) >= Board.KNOCK_RANK
+end
+
+-- Did the boat just run into them (hard enough to knock them back at this rank)?
+function Board.rammed(gap: number, speed: number, rank: any): boolean
+	return Board.knocks(rank) and gap <= Board.CONTACT and speed >= Board.RAM_SPEED
+end
+
+-- The throttle a craft with room gets near a survivor (docking assist). dist: hull centre to them (flat);
+-- closing: speed toward them; forward: speed along the bow; brakeDecel: the craft's studs/s^2 of brake.
+-- Outside the ring only closing speed counts (passing by is never braked) and is capped to what still
+-- slows to ASSIST_SPEED at the ring edge; inside, forward speed is held at ASSIST_SPEED. Never adds throttle.
+function Board.assistThrottle(
+	input: number,
+	dist: number,
+	closing: number,
+	forward: number,
+	brakeDecel: number
+): number
+	local out = math.max(0, dist - Board.RING)
+	local allowed =
+		math.sqrt(Board.ASSIST_SPEED ^ 2 + 2 * brakeDecel * Board.ASSIST_BRAKE_SHARE * out)
+	local speed = if out > 0 then closing else forward
+	return math.min(input, math.clamp((allowed - speed) / Board.ASSIST_SPAN, -1, 1))
 end
 
 function Board.hasRoom(model: Model?): boolean

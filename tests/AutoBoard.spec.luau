@@ -10,10 +10,31 @@ return function(t)
 		t.expect(AutoBoard.ready(5, 3, AutoBoard.STEADY_TILT + 5, true)).toBe(false) -- big waves
 	end)
 
-	t.test("only a fast run on top of them is a bump", function()
-		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1)).toBe(true)
-		t.expect(AutoBoard.rammed(2, 3)).toBe(false)
-		t.expect(AutoBoard.rammed(AutoBoard.CONTACT + 3, AutoBoard.RAM_SPEED + 5)).toBe(false)
+	t.test("only a fast run on top of them is a bump, and only from KNOCK_RANK up", function()
+		local r = AutoBoard.KNOCK_RANK
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, r)).toBe(true)
+		t.expect(AutoBoard.rammed(2, 3, r)).toBe(false)
+		t.expect(AutoBoard.rammed(AutoBoard.CONTACT + 3, AutoBoard.RAM_SPEED + 5, r)).toBe(false)
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, r - 1)).toBe(false) -- a new player
+		t.expect(AutoBoard.rammed(2, AutoBoard.RAM_SPEED + 1, nil)).toBe(false) -- rank not loaded yet
+	end)
+
+	t.test("pick-up ring: a craft at full throttle is eased to a boarding speed", function()
+		local assist = AutoBoard.assistThrottle
+		t.expect(AutoBoard.ASSIST_SPEED < AutoBoard.STEADY_SPEED).toBe(true)
+		t.expect(assist(1, 300, 40, 40, 16)).toBe(1) -- far out: the player's throttle
+		t.expect(assist(1, 40, 40, 40, 16) < 0).toBe(true) -- closing fast near the ring: brakes
+		t.expect(assist(1, 60, 2, 40, 16)).toBe(1) -- passing by, not closing: untouched
+		t.expect(assist(1, 5, 30, 30, 16)).toBe(-1) -- inside, far too fast: full brake
+		t.expect(assist(1, 5, 0, AutoBoard.ASSIST_SPEED + 2, 16) < 0).toBe(true)
+		local slow = assist(1, 5, 0, AutoBoard.ASSIST_SPEED - 3, 16) -- inside, near the speed: part throttle
+		t.expect(slow > 0 and slow < 1).toBe(true)
+		t.expect(assist(-1, 5, 0, 1, 16)).toBe(-1) -- astern is always the player's
+		t.expect(assist(0.3, 5, 0, 1, 16)).toBe(0.3) -- never more than they asked
+	end)
+
+	t.test("a craft held at the assist speed inside the ring boards them", function()
+		t.expect(AutoBoard.ready(AutoBoard.RING - 4, AutoBoard.ASSIST_SPEED, 5, true)).toBe(true)
 	end)
 
 	t.test("a mission casualty is the crew's until aboard; free-roam ones are anyone's", function()
