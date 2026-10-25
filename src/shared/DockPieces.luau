@@ -915,7 +915,7 @@ end
 
 -- WP-14d (docs/23 (j) rule 4): the build station. Bright Lego bricks, a toolbox, a mini crane and the
 -- tablet whose SurfaceGui opens the build mode (DockController binds its ProximityPrompt). The tablet's
--- Front face looks back toward the spawn (-Z); its part is named "Tablet".
+-- Front face (its screen) looks toward the island spawn; its part is named "Tablet".
 local BRICK_RED = Color3.fromRGB(224, 56, 40)
 local BRICK_YELLOW = Color3.fromRGB(250, 208, 40)
 local BRICK_BLUE = Color3.fromRGB(40, 96, 208)
@@ -1057,51 +1057,50 @@ function DockPieces.buildStation(b: CFrame): Model
 		M.Metal
 	)
 
-	-- tablet on its stand, screen facing -Z (the spawn)
+	-- tablet on its stand at the spawn-side edge, its screen turned toward the spawn (+Z, Marina.spawn)
 	local stand = at * CFrame.new(0, baseY, 3.6)
+	local face = stand
+		* CFrame.new(0, 5.4, 0)
+		* CFrame.Angles(0, math.pi, 0)
+		* CFrame.Angles(math.rad(-8), 0, 0)
 	part(m, "TabletStand", Vector3.new(2.2, 0.6, 2.2), stand * CFrame.new(0, 0.3, 0), GREY, M.Metal)
 	part(m, "TabletPost", Vector3.new(0.6, 3.6, 0.6), stand * CFrame.new(0, 2.4, 0), STEEL, M.Metal)
 	local tablet = part(
 		m,
 		"Tablet",
 		Vector3.new(6.4, 4.2, 0.35),
-		stand * CFrame.new(0, 5.4, 0) * CFrame.Angles(math.rad(-8), 0, 0),
+		face,
 		Color3.fromRGB(24, 28, 38),
 		M.SmoothPlastic
 	)
+	-- a plain lit screen (no Neon slab, no light): the scene lights it like the rest of the station
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "Screen"
 	gui.Face = Enum.NormalId.Front
 	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
 	gui.PixelsPerStud = 64
-	gui.LightInfluence = 0
+	gui.LightInfluence = 1
 	gui.Parent = tablet
-	local screen = Instance.new("ImageLabel")
-	screen.Name = "BuildIcon"
-	screen.Size = UDim2.fromScale(1, 1)
-	screen.BackgroundColor3 = Color3.fromRGB(18, 24, 40)
+	local screen = Instance.new("Frame")
+	screen.Name = "Display"
+	screen.AnchorPoint = Vector2.new(0.5, 0.5)
+	screen.Position = UDim2.fromScale(0.5, 0.5)
+	screen.Size = UDim2.new(1, -28, 1, -28) -- the dark bezel round it
+	screen.BackgroundColor3 = Color3.fromRGB(44, 92, 150)
 	screen.BorderSizePixel = 0
-	screen.Image = UiImages.Kit.build
-	screen.ImageColor3 = Color3.fromRGB(255, 255, 255)
-	screen.ScaleType = Enum.ScaleType.Fit
 	screen.Parent = gui
 	local round = Instance.new("UICorner")
-	round.CornerRadius = UDim.new(0, 40)
+	round.CornerRadius = UDim.new(0, 24)
 	round.Parent = screen
-	part(
-		m,
-		"TabletGlow",
-		Vector3.new(7, 4.8, 0.12),
-		stand * CFrame.new(0, 5.4, 0.28) * CFrame.Angles(math.rad(-8), 0, 0),
-		BRICK_CYAN,
-		M.Neon
-	).CanCollide =
-		false
-	local light = Instance.new("PointLight")
-	light.Color = BRICK_CYAN
-	light.Range = 12
-	light.Brightness = 0.8
-	light.Parent = tablet
+	local icon = Instance.new("ImageLabel")
+	icon.Name = "BuildIcon"
+	icon.AnchorPoint = Vector2.new(0.5, 0.5)
+	icon.Position = UDim2.fromScale(0.5, 0.5)
+	icon.Size = UDim2.fromScale(0.7, 0.7)
+	icon.BackgroundTransparency = 1
+	icon.Image = UiImages.Kit.build
+	icon.ScaleType = Enum.ScaleType.Fit
+	icon.Parent = screen
 
 	return m
 end

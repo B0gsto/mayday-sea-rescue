@@ -60,4 +60,35 @@ function DockBuild.spot(item: any): (CFrame, Vector2)
 	return CFrame.identity, Vector2.new(8, 8)
 end
 
+DockBuild.PAPER_LIFT = 0.3 -- the paper blueprint's centre above its lot (clear of the plate, no z-fight)
+
+-- WP-14e: the paper blueprint of an item, in world space, turned to the berth frame so its drawing reads
+-- upright from the build camera (lots turned 90 degrees swap their footprint) -> CFrame, size (x, z).
+function DockBuild.paper(item: any, frame: CFrame): (CFrame, Vector2)
+	local spot, size = DockBuild.spot(item)
+	if math.abs(spot.LookVector.X) > 0.7 then
+		size = Vector2.new(size.Y, size.X)
+	end
+	return frame * CFrame.new(spot.Position + Vector3.new(0, DockBuild.PAPER_LIFT, 0)), size
+end
+
+DockBuild.FOCUS_ROOM = 1.7 -- footprint radius x this = what the focus view fits
+DockBuild.FOCUS_MIN = 45 -- never closer than this (small decor)
+DockBuild.FOCUS_SHIFT = Vector2.new(0.3, 0.2) -- spot off-centre (viewport halves): left of the list, above the strip
+
+-- The focused view of a lot: same pitch and heading as the island view, close enough to fit the footprint,
+-- panned so the spot sits left of the right-hand list and above the bottom strip.
+function DockBuild.focus(frame: CFrame, at: Vector3, size: Vector2, aspect: number): CFrame
+	local r = math.max(size.X, size.Y) / 2
+	local d = math.max(DockBuild.distance(r * DockBuild.FOCUS_ROOM, aspect), DockBuild.FOCUS_MIN)
+	local pos = at
+		+ Vector3.new(0, d * math.sin(DockBuild.PITCH), 0)
+		- frame.LookVector * (d * math.cos(DockBuild.PITCH))
+	local cam = CFrame.lookAt(pos, at)
+	local vf = math.tan(math.rad(DockBuild.FOV) / 2)
+	local pan = cam.RightVector * (DockBuild.FOCUS_SHIFT.X * d * vf * math.max(aspect, 0.3))
+		- cam.UpVector * (DockBuild.FOCUS_SHIFT.Y * d * vf)
+	return cam + pan
+end
+
 return DockBuild

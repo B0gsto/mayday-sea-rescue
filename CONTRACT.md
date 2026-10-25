@@ -81,7 +81,10 @@ Service-owned remotes: `Progression_GetData`, `Camera_SaveSettings` (Progression
   prompt on each sheet and opens the price card (Cash / Robux). A buy plays the Lego build beat: `Dock_Build`
   S->C `{ plot, parent, name }`, `shared/BuildSeq` drops the pieces client-side (server keeps the final state),
   two crew builders stand by; instant on rejoin. No ghost, no `Build` prompt. Lv 4 skips VehicleService's
-  relaunch cooldown. Studio: `ServerStorage.DockDev:Invoke("level", n)`.
+  relaunch cooldown. Studio: `ServerStorage.DockDev:Invoke("level", n)`. Build tablet (WP-14d/e): the station
+  tablet opens `DockController`'s top-down build mode: paper blueprints on the empty lots for sale
+  (`DockBlueprints.onIsland`, `DockBuild.paper`, drawings `DockBlueprints.GLYPHS`), a right-hand Kit list, and a
+  focus view (`DockBuild.focus`) with a strip of name + `DockConfig` `desc` + Cash / Robux buttons.
 - Dock buildings (docs/23 h, WP-10b): `DockConfig.Buildings` Hangar / SubPen (Cash + rank or Robux
   products `DockHangar` / `DockSubPen`, `dockBuilding` field; `canBuyBuilding`; the helipad needs
   Lv 3), owned in `data.dockBuildings`, geometry `DockPieces.building(key, frame)` + `DockPieces.Buildings`
